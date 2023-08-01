@@ -1,3 +1,5 @@
+import DDeiConfig from './config.js'
+
 export default {
   //获取设备像素比
   getPixelRatio (context) {
@@ -79,6 +81,21 @@ export default {
       }
       return returnP;
     }
+  },
+
+  // 获取不同字体大小的空格所占空间
+  getSpaceWidth (fontFamily, fontSize, fontStyle) {
+    let key = fontFamily + "_" + fontSize + "_" + fontStyle;
+    if (!DDeiConfig.SPACE_WIDTH_MAP[key]) {
+      if ("Arial Unicode" == fontFamily) {
+        let spaceWidth = fontSize * 0.21 / 0.75;
+        DDeiConfig.SPACE_WIDTH_MAP[key] = spaceWidth;
+      } else if ("STSong-Light" == fontFamily) {
+        let spaceWidth = fontSize * 0.21;
+        DDeiConfig.SPACE_WIDTH_MAP[key] = spaceWidth;
+      }
+    }
+    return DDeiConfig.SPACE_WIDTH_MAP[key]
   }
 
 

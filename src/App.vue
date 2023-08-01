@@ -82,7 +82,7 @@ export default {
         y: 10 + (ddInstance.stage.idIdx * 100),
         width: 160,
         height: 80,
-        text: "示例矩形" + ddInstance.stage.idIdx
+        text: "    示 . 例    矩形1示例矩形2222示例矩33形3示例33矩形4示例矩形5示例矩形6示例矩形7呀哈哈示例矩形1示例矩形2222示例矩33形3示例33矩形4示例矩形5示例矩形6示例矩形7呀哈哈" + ddInstance.stage.idIdx
       });
       rect.stage = ddInstance.stage;
       //下标自增1
