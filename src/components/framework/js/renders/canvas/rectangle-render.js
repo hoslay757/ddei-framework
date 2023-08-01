@@ -78,38 +78,43 @@ DDeiRectangleCanvasRender.prototype.drawBorder = function () {
       }
     }
 
-    //绘制四个方向的边框，上
-    //保存状态
-    ctx.save();
-    //TODO 不要边框，考虑用一个特殊的属性(disabled)表示出来，比如，空代表缺省未设置，特殊值代表不要，其他代表实际值，特殊值也要保存，空不保存，这样以区分缺省值和已设置的值
-    //TODO 如果边框未被disabled，则绘制边框
-    if (!borderInfo.disabled) {
+    //绘制四个方向的边框
+    //如果边框未被disabled，则绘制边框
+    if (!borderInfo.disabled && borderInfo.color && (!borderInfo.opacity || borderInfo.opacity > 0) && borderInfo.width > 0) {
+      //保存状态
+      ctx.save();
+      //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
+      let lineOffset = borderInfo.width * ratio / 2;
       ctx.lineWidth = borderInfo.width * ratio;
       ctx.beginPath();
       //线段、虚线样式
       if (borderInfo.dash) {
         ctx.setLineDash(borderInfo.dash);
       }
+      //透明度
+      if (borderInfo.opacity) {
+        ctx.globalAlpha = borderInfo.opacity
+      }
       //颜色
       ctx.strokeStyle = DDeiUtil.getColor(borderInfo.color);
       if (i == 1) {
-        ctx.moveTo(ratPos.x, ratPos.y);
-        ctx.lineTo(ratPos.x + ratPos.width, ratPos.y);
+        ctx.moveTo(ratPos.x, ratPos.y + lineOffset);
+        ctx.lineTo(ratPos.x + ratPos.width, ratPos.y + lineOffset);
       } else if (i == 2) {
-        ctx.moveTo(ratPos.x + ratPos.width, ratPos.y);
-        ctx.lineTo(ratPos.x + ratPos.width, ratPos.y + ratPos.height);
+        ctx.moveTo(ratPos.x + ratPos.width - lineOffset, ratPos.y);
+        ctx.lineTo(ratPos.x + ratPos.width - lineOffset, ratPos.y + ratPos.height);
       } else if (i == 3) {
-        ctx.moveTo(ratPos.x, ratPos.y + ratPos.height);
-        ctx.lineTo(ratPos.x + ratPos.width, ratPos.y + ratPos.height);
+        ctx.moveTo(ratPos.x, ratPos.y + ratPos.height - lineOffset);
+        ctx.lineTo(ratPos.x + ratPos.width, ratPos.y + ratPos.height - lineOffset);
       } else if (i == 4) {
-        ctx.moveTo(ratPos.x, ratPos.y);
-        ctx.lineTo(ratPos.x, ratPos.y + ratPos.height);
+        ctx.moveTo(ratPos.x + lineOffset, ratPos.y);
+        ctx.lineTo(ratPos.x + lineOffset, ratPos.y + ratPos.height);
       }
-
       ctx.stroke();
+      //恢复状态
+      ctx.restore();
     }
-    //恢复状态
-    ctx.restore();
+
   }
 }
 
@@ -126,8 +131,11 @@ DDeiRectangleCanvasRender.prototype.drawFill = function () {
   let ctx = canvas.getContext('2d');
   //获取全局缩放比例
   let ratio = this.ddRender.ratio;
+  //计算填充的原始区域
+  let fillAreaE = this.getFillArea();
   //转换为缩放后的坐标
-  let ratPos = DDeiUtil.getRatioPosition(this.model, ratio);
+  let ratPos = DDeiUtil.getRatioPosition(fillAreaE, ratio);
+  //缩放填充区域
   //保存状态
   ctx.save();
 
@@ -140,7 +148,11 @@ DDeiRectangleCanvasRender.prototype.drawFill = function () {
   }
   //如果拥有填充色，则使用填充色
   if (fillInfo && fillInfo.color) {
-    ctx.fillStyle = DDeiUtil.getColor(fillInfo);
+    ctx.fillStyle = DDeiUtil.getColor(fillInfo.color);
+    //透明度
+    if (fillInfo.opacity) {
+      ctx.globalAlpha = fillInfo.opacity
+    }
     //填充矩形
     ctx.fillRect(ratPos.x, ratPos.y, ratPos.width, ratPos.height);
   }
@@ -159,13 +171,279 @@ DDeiRectangleCanvasRender.prototype.drawText = function () {
   let ctx = canvas.getContext('2d');
   //获取全局缩放比例
   let ratio = this.ddRender.ratio;
+  //计算填充的原始区域
+  let fillAreaE = this.getFillArea();
+  //转换为缩放后的坐标
+  let ratPos = DDeiUtil.getRatioPosition(fillAreaE, ratio);
+
+  //设置所有文本的对齐方式，以便于后续所有的对齐都采用程序计算
+  ctx.textAlign = "left";
+  ctx.textBaseline = "top";
+
+  //获取字体信息
+  let fInfo = this.model.font && this.model.font.default ? this.model.font.default : DDeiConfig.RECTANGLE.FONT.default;
+  //字体对齐信息
+  let align = this.model.textStyle && this.model.textStyle.default && this.model.textStyle.default.align ? this.model.textStyle.default.align : DDeiConfig.RECTANGLE.TEXTSTYLE.default.align;
+  let valign = this.model.textStyle && this.model.textStyle.default && this.model.textStyle.default.valign ? this.model.textStyle.default.valign : DDeiConfig.RECTANGLE.TEXTSTYLE.default.valign;
+  //缩小字体填充
+  let autoScaleFill = this.model.textStyle && this.model.textStyle.default && this.model.textStyle.default.autoScaleFill ? this.model.textStyle.default.autoScaleFill : DDeiConfig.RECTANGLE.TEXTSTYLE.default.autoScaleFill;
+  //镂空
+  let hollow = this.model.textStyle && this.model.textStyle.default && this.model.textStyle.default.hollow ? this.model.textStyle.default.hollow : DDeiConfig.RECTANGLE.TEXTSTYLE.default.hollow;
+  //自动换行
+  let feed = this.model.textStyle && this.model.textStyle.default && this.model.textStyle.default.feed ? this.model.textStyle.default.feed : DDeiConfig.RECTANGLE.TEXTSTYLE.default.feed;
+  if (this.model.selected) {
+    fInfo = this.model.font && this.model.font.selected ? this.model.font.selected : DDeiConfig.RECTANGLE.FONT.selected;
+    align = this.model.textStyle && this.model.textStyle.selected && this.model.textStyle.selected.align ? this.model.textStyle.selected.align : DDeiConfig.RECTANGLE.TEXTSTYLE.selected.align;
+    valign = this.model.textStyle && this.model.textStyle.selected && this.model.textStyle.selected.valign ? this.model.textStyle.selected.valign : DDeiConfig.RECTANGLE.TEXTSTYLE.selected.valign;
+    autoScaleFill = this.model.textStyle && this.model.textStyle.selected && this.model.textStyle.selected.autoScaleFill ? this.model.textStyle.selected.autoScaleFill : DDeiConfig.RECTANGLE.TEXTSTYLE.selected.autoScaleFill;
+    hollow = this.model.textStyle && this.model.textStyle.selected && this.model.textStyle.selected.hollow ? this.model.textStyle.selected.hollow : DDeiConfig.RECTANGLE.TEXTSTYLE.selected.hollow;
+    feed = this.model.textStyle && this.model.textStyle.selected && this.model.textStyle.selected.feed ? this.model.textStyle.selected.feed : DDeiConfig.RECTANGLE.TEXTSTYLE.selected.feed;
+  }
+  //如果字体不存在则退出，不输出
+  if (!fInfo) {
+    return;
+  }
+  //TODO 校验属性，不满足则设置缺省值
+  if (!align) {
+    align = 1
+  }
+  if (!valign) {
+    valign = 2
+  }
+  if (!autoScaleFill) {
+    autoScaleFill = 0
+  }
+  if (!hollow) {
+    hollow = 0
+  }
+  if (!feed) {
+    feed = 0;
+  }
   //保存状态
   ctx.save();
+
+
+  //循环进行分段输出,整体容器，代表了一个整体的文本大小区域
+  let textContainer = []
+
+  //是否全部输出完毕标志
+  let loop = true;
+  let fontSize = fInfo.size * ratio;
+
+  // TODO 如果有金额大小写转换选项，则执行大小写转换
+  let cText = this.model.text;
+  // if (this.convertToRMBY == 2 || this.convertToRMBY == '2') {
+  //   cText = PDSetting.dealBigMoney(this.text);
+  // }
+
+  cText = "" + cText;
+  let contentWidth = ratPos.width;
+  while (loop) {
+
+    //循环拆分结果，分别对空格，非空格按照是否换行，缩小等进行处理
+    let spaceWidth = DDeiUtil.getSpaceWidth(fInfo.family, fontSize, "normal");
+    //记录使用过的宽度和高度
+    let usedWidth = 0;
+    let usedHeight = 0;
+    //行容器
+    let textRowContainer = { text: "" };
+    textContainer.push(textRowContainer);
+
+    //是否超出输出长度标志
+    let isOutSize = false;
+    if (fontSize > ratPos.height) {
+      if (autoScaleFill == 1) {
+        textContainer = [];
+        fontSize = fontSize - 0.5;
+        continue;
+      }
+    }
+    //设置字体
+    ctx.font = fontSize + "px " + fInfo.family
+    //设置字体颜色
+    ctx.fillStyle = fInfo.color
+
+    for (let ti = 0; ti < cText.length; ti++) {
+      let te = cText[ti];
+      textRowContainer.text += te;
+      let fontShapeRect = ctx.measureText(textRowContainer.text);
+      usedWidth = fontShapeRect.width;
+      let fontHeight = parseFloat(fontSize);
+      textRowContainer.width = usedWidth
+      textRowContainer.height = fontHeight
+      //如果不自动换行也不缩小字体，则超过的话，就省略显示
+      if (feed == 0) {
+        //如果具备缩小字体填充，并且usedWidth超出了单行大小,则跳出循环，重新生成
+        if (autoScaleFill == 1 && usedWidth > contentWidth) {
+          isOutSize = true;
+          break;
+        }
+        //省略显示,除去一个字符，重新计算大小
+        else if (usedWidth > contentWidth) {
+          textRowContainer.text = textRowContainer.text.substring(0, textRowContainer.text.length - 1)
+          let fontShapeRect = ctx.measureText(textRowContainer.text);
+          usedWidth = fontShapeRect.width;
+          textRowContainer.width = usedWidth
+          break;
+        }
+      }
+      //处理换行
+      else if (feed == 1) {
+
+        //如果插入本字符后的大小，大于了容器的大小，则需要换行
+        if (usedWidth > contentWidth) {
+          //先使当前行字符-1
+          textRowContainer.text = textRowContainer.text.substring(0, textRowContainer.text.length - 1)
+          let fontShapeRect = ctx.measureText(textRowContainer.text);
+          textRowContainer.width = fontShapeRect.width
+          //新开一行重新开始
+          usedWidth = 0;
+          usedHeight += fontHeight;
+          //换行的情况下，如果行高度超出，则不输出
+          if (usedHeight + fontHeight > ratPos.height) {
+            //如果具备缩小字体填充，则重新生成
+            if (autoScaleFill == 1) {
+              isOutSize = true;
+            }
+            break;
+          }
+          textRowContainer = { text: te };
+          fontShapeRect = ctx.measureText(textRowContainer.text);
+          usedWidth = fontShapeRect.width;
+          textRowContainer.width = usedWidth
+          textRowContainer.height = fontHeight
+          textContainer.push(textRowContainer);
+        }
+      }
+    }
+    //如果没有超出，则输出完毕
+    if (!isOutSize) {
+      loop = false;
+    }
+    //如果超出，清空生成的字段，缩小字体重新输出
+    else {
+      textContainer = [];
+      fontSize = fontSize - 0.5;
+    }
+  }
+  // 计算文字整体区域位置
+  let containerRect = { width: 0, height: 0 };
+  for (let i = 0; i < textContainer.length; i++) {
+    if (i == 0) {
+      containerRect.width += textContainer[i].width
+    }
+    containerRect.height += textContainer[i].height
+  }
+  let containerWidth = containerRect.width;
+  let containerHeight = containerRect.height;
+  let x, y;
+  if (align == 1) {
+    x = 0;
+  } else if (align == 2) {
+    x = (ratPos.width - containerWidth) * 0.5
+  } else if (align == 3) {
+    x = ratPos.width - containerWidth;
+  }
+  x = x + ratPos.x
+
+  if (valign == 1) {
+    y = 0;
+  } else if (valign == 2) {
+    y = (ratPos.height - containerHeight) * 0.5;
+  } else if (valign == 3) {
+    y = ratPos.height - containerHeight;
+  }
+  y = y + ratPos.y
+  //如果换行，则对每一子行进行对齐
+  if (feed == 1) {
+
+    //对内部容器进行排列对齐
+    for (let tci = 0; tci < textContainer.length; tci++) {
+
+      let rRect = textContainer[tci];
+      //绘制文字
+      if (align == 1) {
+        if (hollow == 1) {
+          ctx.strokeText(rRect.text, x, y + rRect.height * tci)
+        } else {
+          ctx.fillText(rRect.text, x, y + rRect.height * tci)
+        }
+      } else if (align == 2) {
+        if (hollow == 1) {
+          ctx.strokeText(rRect.text, ratPos.x + (ratPos.width - rRect.width) * 0.5, y + rRect.height * tci)
+        } else {
+          ctx.fillText(rRect.text, ratPos.x + (ratPos.width - rRect.width) * 0.5, y + rRect.height * tci)
+        }
+      } else if (align == 3) {
+        if (hollow == 1) {
+          ctx.strokeText(rRect.text, ratPos.x + (ratPos.width - rRect.width), y + rRect.height * tci)
+        } else {
+          ctx.fillText(rRect.text, ratPos.x + (ratPos.width - rRect.width), y + rRect.height * tci)
+        }
+
+      }
+    }
+  }
+  //如果不换行，则输出第一行内容,直接对整理进行坐标对齐
+  else {
+    //处理镂空样式
+    if (hollow == 1) {
+      ctx.strokeText(textContainer[0].text, x, y)
+    } else {
+      ctx.fillText(textContainer[0].text, x, y)
+    }
+
+  }
+
 
 
   //恢复状态
   ctx.restore();
 
+}
+
+
+/**
+ * 私有函数，计算除边框外的填充区域，用于填充颜色和字体
+ */
+DDeiRectangleCanvasRender.prototype.getFillArea = function () {
+  //获取边框区域，实际填充区域=坐标-边框区域
+  let topBorder, bottomBorder, leftBorder, rightBorder;
+  if (this.model.selected) {
+    topBorder = this.model.border && this.model.border.top && this.model.border.top.selected ? this.model.border.top.selected : DDeiConfig.RECTANGLE.BORDER.top.selected;
+    rightBorder = this.model.border && this.model.border.right && this.model.border.right.selected ? this.model.border.right.selected : DDeiConfig.RECTANGLE.BORDER.right.selected;
+    bottomBorder = this.model.border && this.model.border.bottom && this.model.border.bottom.selected ? this.model.border.bottom.selected : DDeiConfig.RECTANGLE.BORDER.bottom.selected;
+    leftBorder = this.model.border && this.model.border.left && this.model.border.left.selected ? this.model.border.left.selected : DDeiConfig.RECTANGLE.BORDER.left.selected;
+  } else {
+    topBorder = this.model.border && this.model.border.top && this.model.border.top.default ? this.model.border.top.default : DDeiConfig.RECTANGLE.BORDER.top.default;
+    rightBorder = this.model.border && this.model.border.right && this.model.border.right.default ? this.model.border.right.default : DDeiConfig.RECTANGLE.BORDER.right.default;
+    bottomBorder = this.model.border && this.model.border.bottom && this.model.border.bottom.default ? this.model.border.bottom.default : DDeiConfig.RECTANGLE.BORDER.bottom.default;
+    leftBorder = this.model.border && this.model.border.left && this.model.border.left.default ? this.model.border.left.default : DDeiConfig.RECTANGLE.BORDER.left.default;
+  }
+  //计算填充的原始区域
+  let leftWidth = 0;
+  if (!leftBorder.disabled && leftBorder.color && (!leftBorder.opacity || leftBorder.opacity > 0) && leftBorder.width > 0) {
+    leftWidth = leftBorder.width;
+  }
+  let rightWidth = 0;
+  if (!rightBorder.disabled && rightBorder.color && (!rightBorder.opacity || rightBorder.opacity > 0) > 0 && rightBorder.width > 0) {
+    rightWidth = rightBorder.width;
+  }
+  let topWidth = 0;
+  if (!topBorder.disabled && topBorder.color && (!topBorder.opacity || topBorder.opacity > 0) > 0 && topBorder.width > 0) {
+    topWidth = topBorder.width;
+  }
+  let bottomWidth = 0;
+  if (!bottomBorder.disabled && bottomBorder.color && (!bottomBorder.opacity || bottomBorder.opacity > 0) > 0 && bottomBorder.width > 0) {
+    bottomWidth = bottomBorder.width;
+  }
+  let fillAreaE = {
+    x: this.model.x + leftWidth,
+    y: this.model.y + topWidth,
+    width: this.model.width - leftWidth - rightWidth,
+    height: this.model.height - topWidth - bottomWidth
+  }
+  return fillAreaE;
 }
 
 

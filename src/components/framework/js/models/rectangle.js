@@ -24,10 +24,12 @@ const DDeiRectangle = function (props) {
 
   //边框，包含了选中/未选中，4个边框的大小，颜色，样式等配置
   this.border = props.border ? props.border : null;
-  //圆角，TODO 考虑和border合并
-  this.round = props.round ? props.round : null;
+
   //填充，包含了选中/未选中，填充的颜色等配置
   this.fill = props.fill ? props.fill : null;
+
+  //字体，包含了选中/未选中，字体的名称，大小，颜色等配置
+  this.font = props.font ? props.font : null;
 
 
   //文本内容
@@ -36,18 +38,9 @@ const DDeiRectangle = function (props) {
   //文本区域，文本绘制时的有效区域，由多个矩形数组构成，缺省为图形本身区域构造成的一个矩形，需要修改图形属性后维护。
   this.textArea = props.textArea ? props.textArea : null;
 
-  //文本样式（除字体外），包含了字体、横纵对齐、文字方向、镂空、换行、缩小字体填充等文本相关内容
+  //文本样式（除字体外），包含了横纵对齐、文字方向、镂空、换行、缩小字体填充等文本相关内容
   this.textStyle = props.textStyle ? props.textStyle : null;
-  //TODO 文字横向对齐，1/null左 2中 3右,默认1，合并到textStyle属性中
-  this.align = props.align ? props.align : null;
-  //TODO 文字纵向对齐，1上 2/null中 3,默认2，合并到textStyle属性中
-  this.valign = props.valign ? props.valign : null;
-  //TODO 换行，0/null不换行，1换行，缺省0，合并到textStyle属性中
-  this.feed = props.feed ? props.feed : null;
-  //TODO 缩小字体填充,0/null不开启，1开启，缺省0，合并到textStyle属性中
-  this.autoScaleFill = props.autoScaleFill ? props.autoScaleFill : null;
-  //TODO 字体，包含了选中/未选中，字体的名称，大小，颜色等配置，合并到textStyle属性中
-  this.font = props.font ? props.font : null;
+
   //TODO 镂空，0/null不镂空，1镂空，缺省0，合并到textStyle属性中
   this.hollow = props.hollow ? props.hollow : null;
   // 旋转,0/null 不旋转，默认0

@@ -78,11 +78,11 @@ export default {
       //创建一个矩形
       let rect = DDeiRectangle.initByJSON({
         id: "rect_" + ddInstance.stage.idIdx,
-        x: 10,
-        y: 10,
-        width: 100,
-        height: 100,
-        text: "示例矩形" + ddInstance.stage.idIdx
+        x: 10 + (ddInstance.stage.idIdx * 100),
+        y: 10 + (ddInstance.stage.idIdx * 100),
+        width: 160,
+        height: 80,
+        text: "    示 . 例    矩形1示例矩形2222示例矩33形3示例33矩形4示例矩形5示例矩形6示例矩形7呀哈哈示例矩形1示例矩形2222示例矩33形3示例33矩形4示例矩形5示例矩形6示例矩形7呀哈哈" + ddInstance.stage.idIdx
       });
       rect.stage = ddInstance.stage;
       //下标自增1
