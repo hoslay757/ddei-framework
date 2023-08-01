@@ -52,26 +52,26 @@ export default {
   RECTANGLE: {
     // 默认矩形边框
     BORDER: {
-      left: {
-        default: { width: 0, color: null, dash: null, round: 0 },
+      top: {
+        default: { width: 2, color: "black", dash: [3, 1], round: 0, disabled: true },
         selected: { width: 1, color: "black", dash: null, round: 0 }
       },
       right: {
-        default: { width: 0, color: null, dash: null, round: 0 },
+        default: { width: 2, color: "blue", dash: null, round: 0 },
         selected: { width: 1, color: "black", dash: null, round: 0 }
       },
       bottom: {
-        default: { width: 0, color: null, dash: null, round: 0 },
+        default: { width: 4, color: "green", dash: null, round: 0, opacity: 1 },
         selected: { width: 1, color: "black", dash: null, round: 0 }
       },
-      top: {
-        default: { width: 0, color: null, dash: [3, 1], round: 0, disabled: true },
+      left: {
+        default: { width: 4, color: "yellow", dash: null, round: 0, opacity: 1 },
         selected: { width: 1, color: "black", dash: null, round: 0 }
       }
     },
     // 默认矩形填充
     FILL: {
-      default: { color: null },
+      default: { color: "red", opacity: 0.5 },
       selected: { color: "white" }
     },
     // 默认矩形字体

@@ -78,10 +78,10 @@ export default {
       //创建一个矩形
       let rect = DDeiRectangle.initByJSON({
         id: "rect_" + ddInstance.stage.idIdx,
-        x: 10,
-        y: 10,
-        width: 100,
-        height: 100,
+        x: 10 + (ddInstance.stage.idIdx * 100),
+        y: 10 + (ddInstance.stage.idIdx * 100),
+        width: 160,
+        height: 80,
         text: "示例矩形" + ddInstance.stage.idIdx
       });
       rect.stage = ddInstance.stage;
