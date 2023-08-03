@@ -1,33 +1,44 @@
 import DDeiCanvasRender from "./renders/canvas/ddei-render"
 import DDeiStageCanvasRender from "./renders/canvas/stage-render"
 import DDeiLayerCanvasRender from "./renders/canvas/layer-render"
-import DDeiShapeCanvasRender from "./renders/canvas/shape-render"
 import DDeiRectangleCanvasRender from "./renders/canvas/rectangle-render"
+import DDeiCircleCanvasRender from "./renders/canvas/circle-render"
+// import DDeiCanvasEventListener from "./events/canvas/ddei-listener"
+// import DDeiStageCanvasEventListener from "./events/canvas/stage-listener"
+// import DDeiLayerCanvasEventListener from "./events/canvas/layer-listener"
+// import DDeiCircleCanvasEventListener from "./events/canvas/circle-listener"
+// import DDeiRectangleCanvasEventListener from "./events/canvas/rectangle-listener"
+/**
+ * DDei的配置文件
+ * 提供了全局参数与缺省值的设置
+ * 提供了全局的一些重要函数
+ */
+class DDeiConfig {
 
-
-export default {
+  // ============================ 静态变量 ============================
   //当前采用的渲染器类型，暂时只支持canvas
-  RENDER_TYPE: "CANVAS",
+  static RENDER_TYPE: string = "CANVAS";
 
   // 边框的相关缺省样式属性
-  BORDER: {
+  static BORDER: object = {
     default: { width: 0, color: null, dash: null, round: 0 },
     selected: { width: 1, color: "black", dash: null, round: 0 }
-  },
+  };
+
 
   // 填充的相关缺省样式属性
-  FILL: {
+  static FILL: object = {
     default: { color: null }, selected: { color: "white" }
-  },
+  };
 
   // 字体的相关缺省样式属性
-  FONT: {
+  static FONT: object = {
     default: { family: "STSong-Light", color: "#000000", size: "16" },
     selected: { family: "STSong-Light", color: "#000000", size: "16" }
-  },
+  };
 
   // 图层的相关缺省样式属性
-  LAYER: {
+  static LAYER: object = {
     //普通图层
     NORMAL: {
       //背景的类型，0无背景，1纯色，2图片，3田字
@@ -46,14 +57,14 @@ export default {
       //透明度，0完全透明~1完全不透明
       opacity: 1
     }
-  },
+  };
 
   // 矩形的相关缺省样式属性
-  RECTANGLE: {
+  static RECTANGLE: object = {
     // 默认矩形边框
     BORDER: {
       top: {
-        default: { width: 1, color: "black", dash: [3, 1], round: 0, disabled: true },
+        default: { width: 1, color: "black", dash: [3, 1], round: 0, disabled: false },
         selected: { width: 1, color: "black", dash: null, round: 0 }
       },
       right: {
@@ -108,16 +119,64 @@ export default {
         hollow: 0
       }
     }
-  },
+  };
+
+  // 圆型的相关缺省样式属性
+  static CIRCLE: object = {
+    // 默认矩形边框
+    BORDER: {
+      default: { width: 1, color: "black", dash: [3, 1], round: 0, disabled: false, opacity: 1 },
+      selected: { width: 1, color: "black", dash: null, round: 0, opacity: 1 }
+    },
+    // 默认矩形填充
+    FILL: {
+      default: { color: "red", opacity: 0.5 },
+      selected: { color: "white" }
+    },
+    // 默认矩形字体
+    FONT: {
+      default: {
+        //字体
+        family: "STSong-Light",
+        //颜色
+        color: "white",
+        //大小
+        size: 16
+      },
+      selected: { family: "STSong-Light", color: "#000000", size: 16 }
+    },
+    // 默认矩形文本样式
+    TEXTSTYLE: {
+      default: {
+        //水平对齐，1，2，3左中右，默认1
+        align: 2,
+        //垂直对齐，1，2，3上中下，默认2
+        valign: 2,
+        //自动换行，0/null不换行，1换行，默认0
+        feed: 1,
+        //缩小字体填充，0/null不缩小，1缩小，默认0
+        autoScaleFill: 1,
+        //镂空，0/null不镂空，1镂空，默认0
+        hollow: 0
+      },
+      selected: {
+        align: 2,
+        valign: 2,
+        feed: 0,
+        autoScaleFill: 0,
+        hollow: 0
+      }
+    }
+  };
 
   //用于存储当前浏览器下单位空格字体的大小
-  SPACE_WIDTH_MAP: {},
+  static SPACE_WIDTH_MAP: any = {};
 
   /**
   * 根据配置文件的配置，将模型与渲染器绑定
   * @param  model  模型
   */
-  bindRender: function (model) {
+  static bindRender(model: any): void {
     if (this.RENDER_TYPE == "CANVAS") {
       if (model.modelType == "DDei") {
         model.render = new DDeiCanvasRender({ model: model });
@@ -125,14 +184,39 @@ export default {
         model.render = new DDeiStageCanvasRender({ model: model });
       } else if (model.modelType == "DDeiLayer") {
         model.render = new DDeiLayerCanvasRender({ model: model });
-      } else if (model.modelType == "DDeiShape") {
-        model.render = new DDeiShapeCanvasRender({ model: model });
       } else if (model.modelType == "DDeiRectangle") {
-
         model.render = new DDeiRectangleCanvasRender({ model: model });
+      } else if (model.modelType == "DDeiCircle") {
+        model.render = new DDeiCircleCanvasRender({ model: model });
       }
     } else if (this.RENDER_TYPE == "SVG") {
       //TODO 
     }
   }
+
+
+  // /**
+  // * 绑定事件监听器
+  // * @param  model  模型
+  // */
+  // static bindEventListener(model: any): void {
+  //   if (this.RENDER_TYPE == "CANVAS") {
+  //     if (model.modelType == "DDei") {
+  //       model.eventListener = new DDeiCanvasEventListener({ model: model });
+  //     } else if (model.modelType == "DDeiStage") {
+  //       model.eventListener = new DDeiStageCanvasEventListener({ model: model });
+  //     } else if (model.modelType == "DDeiLayer") {
+  //       model.eventListener = new DDeiLayerCanvasEventListener({ model: model });
+  //     } else if (model.modelType == "DDeiRectangle") {
+  //       model.eventListener = new DDeiRectangleCanvasEventListener({ model: model });
+  //     } else if (model.modelType == "DDeiCircle") {
+  //       model.eventListener = new DDeiCircleCanvasEventListener({ model: model });
+  //     }
+  //     model.eventListener.init();
+  //   } else if (this.RENDER_TYPE == "SVG") {
+  //     //TODO 
+  //   }
+  // }
 }
+
+export default DDeiConfig

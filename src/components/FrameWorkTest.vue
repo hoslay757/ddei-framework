@@ -6,31 +6,24 @@
   </div>
 </template>
 
-<script>
-import DDei from "./framework/js/ddei"
+<script lang="ts">
+import DDei from "./framework/js/ddei";
 
 export default {
-  name: 'DDeiTest',
+  name: "DDeiTest",
   extends: null,
   mixins: [],
   props: {},
-  data () {
-    return {
-
-    }
+  data() {
+    return {};
   },
-  computed: {
-
+  computed: {},
+  watch: {},
+  created() {},
+  mounted() {
+    DDei.newInstance("ddei_demo", "ddei_demo_container");
   },
-  watch: {
-
-  },
-  created () {
-  },
-  mounted () {
-    DDei.newInstance('ddei_demo', 'ddei_demo_container');
-  }
-}
+};
 </script>
 
 <style scoped>
