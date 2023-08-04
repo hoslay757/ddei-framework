@@ -2,9 +2,11 @@ import DDeiConfig from '../../config.js'
 import DDeiEnumControlState from '../../enums/control-state.js';
 import DDeiEnumOperateState from '../../enums/operate-state.js';
 import DDeiLayer from '../../models/layer.js';
+import DDeiSelector from '../../models/selector.js';
 import AbstractShape from '../../models/shape.js';
 import DDeiStage from '../../models/stage.js';
 import DDeiUtil from '../../util.js'
+import DDeiCanvasRender from './ddei-render.js';
 import DDeiStageCanvasRender from './stage-render.js';
 
 /**
@@ -32,7 +34,7 @@ class DDeiLayerCanvasRender {
   /**
    * 当前的ddei实例
    */
-  ddRender: object | null;
+  ddRender: DDeiCanvasRender | null;
 
   /**
     * 当前的stage渲染器
@@ -135,7 +137,6 @@ class DDeiLayerCanvasRender {
         ctx.lineTo(canvas.width, y);
         ctx.stroke();
       }
-
     }
 
     //恢复状态
@@ -343,7 +344,6 @@ class DDeiLayerCanvasRender {
    * 鼠标按下事件
    */
   mouseDown(evt: Event): void {
-
     // 获取当前光标所属位置是否有控件
     let operateControls = this.model.findControlsByArea(evt.offsetX, evt.offsetY);
     //光标所属位置是否有控件
@@ -358,8 +358,20 @@ class DDeiLayerCanvasRender {
     }
     //无控件，显示选择框
     else {
-      //TODO 显示控件选择框
-      //TODO 全局变量：当前操作控件=选择器控件
+      //创建选择框控件
+      this.stageRender.selector = DDeiSelector.initByJSON({
+        id: this.stage.id + "_inner_selector",
+        border: DDeiConfig.SELECTOR.BORDER,
+        fill: { default: {}, selected: {} },
+        x: evt.offsetX, y: evt.offsetY, width: 0, innerHeight: 0
+      });
+      this.stageRender.selector.startX = this.stageRender.selector.x
+      this.stageRender.selector.startY = this.stageRender.selector.y
+      this.stageRender.selector.stage = this.stage
+      DDeiConfig.bindRender(this.stageRender.selector);
+      this.stageRender.selector.layer = this.model
+      this.model.models[this.stageRender.selector.id] = this.stageRender.selector
+      this.stageRender.selector.initRender();
       //当前操作状态：选择器工作中
       this.stageRender.operateState = DDeiEnumOperateState.SELECT_WORKING
     }
@@ -397,18 +409,26 @@ class DDeiLayerCanvasRender {
         this.stageRender.currentOperateShape = null;
         //当前操作状态:无
         this.stageRender.operateState = DDeiEnumOperateState.NONE;
-        //重新渲染
-        this.ddRender.drawShape();
         break;
       //选择器工作中
       case DDeiEnumOperateState.SELECT_WORKING:
-
+        if (this.stageRender.selector) {
+          //选中被选择器包含的控件
+          let includedModels: Map<string, AbstractShape> = this.stageRender.selector.getIncludedModels();
+          includedModels.forEach((model, key) => {
+            model.state = DDeiEnumControlState.SELECTED;
+          });
+          //清空当前选择器对象
+          delete this.model.models[this.stageRender.selector.id]
+          this.stageRender.selector.render = null;
+          this.stageRender.selector = null;
+        }
+        //当前操作状态:无
+        this.stageRender.operateState = DDeiEnumOperateState.NONE;
         break;
       //控件拖拽中
       case DDeiEnumOperateState.CONTROL_DRAGING:
         //清除作为临时变量dragX、dargY、dragObj
-        this.stageRender.dragX = -1
-        this.stageRender.dragY = -1
         this.stageRender.dragObj = null
         //当前操作状态:无
         this.stageRender.operateState = DDeiEnumOperateState.NONE;
@@ -421,6 +441,8 @@ class DDeiLayerCanvasRender {
       default:
         break;
     }
+    //重新渲染
+    this.ddRender.drawShape();
   }
 
   /**
@@ -442,14 +464,30 @@ class DDeiLayerCanvasRender {
         break;
       //选择器工作中
       case DDeiEnumOperateState.SELECT_WORKING:
-
+        let x = this.stageRender.selector.startX;
+        let y = this.stageRender.selector.startY;
+        let width, height
+        if (evt.offsetX < x) {
+          width = x - evt.offsetX
+          x = evt.offsetX
+        } else {
+          width = evt.offsetX - x
+        }
+        if (evt.offsetY < y) {
+          height = y - evt.offsetY
+          y = evt.offsetY
+        } else {
+          height = evt.offsetY - y
+        }
+        this.stageRender.selector.setBounds(x, y, width, height);
+        //重新渲染
+        this.ddRender.drawShape();
         break;
       //控件拖拽中
       case DDeiEnumOperateState.CONTROL_DRAGING:
         //修改当前操作控件坐标
         let movedBounds = this.getMovedBounds(evt, this.stageRender.currentOperateShape);
         this.stageRender.currentOperateShape.setPosition(movedBounds.x, movedBounds.y)
-
         //重新渲染
         this.ddRender.drawShape();
         //显示辅助对齐线、坐标文本等图形

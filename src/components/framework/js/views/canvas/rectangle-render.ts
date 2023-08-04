@@ -1,9 +1,11 @@
 import DDeiConfig from '../../config.js'
+import DDei from '../../ddei.js';
 import DDeiEnumControlState from '../../enums/control-state.js';
 import DDeiLayer from '../../models/layer.js';
 import DDeiRectangle from '../../models/rectangle.js';
 import DDeiStage from '../../models/stage.js';
 import DDeiUtil from '../../util.js'
+import DDeiCanvasRender from './ddei-render.js';
 import DDeiLayerCanvasRender from './layer-render.js';
 import DDeiStageCanvasRender from './stage-render.js';
 
@@ -37,7 +39,7 @@ class DDeiRectangleCanvasRender {
   /**
    * 当前的ddei实例
    */
-  ddRender: object | null;
+  ddRender: DDeiCanvasRender | null;
 
   /**
     * 当前的stage渲染器
@@ -77,8 +79,9 @@ class DDeiRectangleCanvasRender {
 
   /**
    * 绘制边框
+   * @param tempBorder 临时边框，优先级最高
    */
-  drawBorder(): void {
+  drawBorder(tempBorder: object | null): void {
     //获得 2d 上下文对象
     let canvas = this.ddRender.canvas;
     let ctx = canvas.getContext('2d');
@@ -92,7 +95,9 @@ class DDeiRectangleCanvasRender {
       //如果被选中，使用选中的边框，否则使用缺省边框
       //TODO 样式最小替换颗粒度，需要前后保持一致
       let borderInfo = null;
-      if (i == 1) {
+      if (tempBorder) {
+        borderInfo = tempBorder;
+      } else if (i == 1) {
         if (this.model.state == DDeiEnumControlState.SELECTED) {
           borderInfo = this.model.border && this.model.border.top && this.model.border.top.selected ? this.model.border.top.selected : DDeiConfig.RECTANGLE.BORDER.top.selected;
         } else {

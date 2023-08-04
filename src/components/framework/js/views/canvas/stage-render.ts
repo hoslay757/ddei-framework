@@ -1,7 +1,9 @@
 import DDeiConfig from '../../config.js'
 import DDeiEnumOperateState from '../../enums/operate-state.js';
+import DDeiSelector from '../../models/selector.js';
 import AbstractShape from '../../models/shape.js';
 import DDeiStage from '../../models/stage.js';
+import DDeiCanvasRender from './ddei-render.js';
 
 /**
  * DDeiStage的渲染器类，用于渲染文件
@@ -24,7 +26,7 @@ class DDeiStageCanvasRender {
   /**
    * 当前的ddei实例
    */
-  ddRender: object | null;
+  ddRender: DDeiCanvasRender | null;
 
   /**
    * 当前操作图形
@@ -35,6 +37,12 @@ class DDeiStageCanvasRender {
    * 当前操作状态
    */
   operateState: DDeiEnumOperateState = DDeiEnumOperateState.NONE;
+
+
+  /**
+   * 选择框控件模型
+   */
+  selector: DDeiSelector;
   // ============================== 方法 ===============================
   /**
    * 初始化

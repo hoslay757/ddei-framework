@@ -3,6 +3,7 @@ import DDeiRectangle from '../../models/rectangle';
 import DDeiCircle from '../../models/circle';
 import DDeiUtil from '../../util'
 import DDeiRectangleCanvasRender from './rectangle-render';
+import DDeiEnumControlState from '../../enums/control-state';
 
 /**
  * DDeiCircle的渲染器类，用于渲染圆型,继承自矩形渲染器
@@ -15,8 +16,9 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
 
   /**
    * 绘制边框
+   * @param tempBorder 临时border信息
    */
-  drawBorder(): void {
+  drawBorder(tempBorder: object | null): void {
     //获得 2d 上下文对象
     let canvas = this.ddRender.canvas;
     let ctx = canvas.getContext('2d');
@@ -27,7 +29,9 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
 
     //如果被选中，使用选中的边框，否则使用缺省边框
     let borderInfo = null;
-    if (this.model.state == DDeiEnumControlState.SELECTED) {
+    if (tempBorder) {
+      borderInfo = tempBorder;
+    } else if (this.model.state == DDeiEnumControlState.SELECTED) {
       borderInfo = this.model.border && this.model.border.selected ? this.model.border.selected : DDeiConfig.CIRCLE.BORDER.selected;
     } else {
       borderInfo = this.model.border && this.model.border.default ? this.model.border.default : DDeiConfig.CIRCLE.BORDER.default;
@@ -41,6 +45,8 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
       ctx.save();
       //开始绘制  
       ctx.beginPath();
+      //线段的宽度
+      ctx.lineWidth = borderInfo.width * ratio;
       //线段、虚线样式
       if (borderInfo.dash) {
         ctx.setLineDash(borderInfo.dash);

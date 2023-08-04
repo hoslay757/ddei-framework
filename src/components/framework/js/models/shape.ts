@@ -179,10 +179,10 @@ class AbstractShape {
    */
   setSize(w: number, h: number) {
     if (w !== undefined) {
-      this.w = w
+      this.width = w
     }
     if (h !== undefined) {
-      this.h = h
+      this.height = h
     }
   }
 
@@ -200,7 +200,10 @@ class AbstractShape {
    * 获取控件坐标以及位置
    */
   getBounds() {
-    return { x: this.x, y: this.y, width: this.width, height: this.height }
+    return {
+      x: this.x, y: this.y, width: this.width, height: this.height,
+      x1: this.x + this.width, y1: this.y + this.height
+    }
   }
 
   /**

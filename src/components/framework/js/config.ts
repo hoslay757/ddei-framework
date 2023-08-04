@@ -3,11 +3,7 @@ import DDeiStageCanvasRender from "./views/canvas/stage-render"
 import DDeiLayerCanvasRender from "./views/canvas/layer-render"
 import DDeiRectangleCanvasRender from "./views/canvas/rectangle-render"
 import DDeiCircleCanvasRender from "./views/canvas/circle-render"
-// import DDeiCanvasEventListener from "./events/canvas/ddei-listener"
-// import DDeiStageCanvasEventListener from "./events/canvas/stage-listener"
-// import DDeiLayerCanvasEventListener from "./events/canvas/layer-listener"
-// import DDeiCircleCanvasEventListener from "./events/canvas/circle-listener"
-// import DDeiRectangleCanvasEventListener from "./events/canvas/rectangle-listener"
+import DDeiSelectorCanvasRender from "./views/canvas/selector-render"
 /**
  * DDei的配置文件
  * 提供了全局参数与缺省值的设置
@@ -37,6 +33,15 @@ class DDeiConfig {
   static BORDER: object = {
     default: { width: 0, color: null, dash: null, round: 0 },
     selected: { width: 1, color: "black", dash: null, round: 0 }
+  };
+
+
+  // 选择器的相关缺省样式属性
+  static SELECTOR: object = {
+    //选择器边框
+    BORDER: {
+      default: { width: 2, color: "rgb(152,191,91)", dash: [2, 2], round: 0 }
+    }
   };
 
 
@@ -202,6 +207,8 @@ class DDeiConfig {
         model.render = new DDeiRectangleCanvasRender({ model: model });
       } else if (model.modelType == "DDeiCircle") {
         model.render = new DDeiCircleCanvasRender({ model: model });
+      } else if (model.modelType == "DDeiSelector") {
+        model.render = new DDeiSelectorCanvasRender({ model: model });
       }
     } else if (this.RENDER_TYPE == "SVG") {
       //TODO 
