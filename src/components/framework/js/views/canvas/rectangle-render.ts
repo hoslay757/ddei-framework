@@ -78,6 +78,51 @@ class DDeiRectangleCanvasRender {
   }
 
   /**
+   * 取得边框的绘制区域
+   */
+  getBorderRatPos() {
+    //获取全局缩放比例
+    let ratio = this.ddRender.ratio;
+    return DDeiUtil.getRatioPosition(this.model, ratio);
+  }
+
+  /**
+   * 获取边框信息
+   * @param tempBorder 
+   */
+  getBorderInfo(tempBorder, direct): object {
+    let borderInfo = null;
+    if (tempBorder) {
+      borderInfo = tempBorder;
+    } else if (direct == 1) {
+      if (this.model.state == DDeiEnumControlState.SELECTED) {
+        borderInfo = this.model.border && this.model.border.top && this.model.border.top.selected ? this.model.border.top.selected : DDeiConfig.RECTANGLE.BORDER.top.selected;
+      } else {
+        borderInfo = this.model.border && this.model.border.top && this.model.border.top.default ? this.model.border.top.default : DDeiConfig.RECTANGLE.BORDER.top.default;
+      }
+    } else if (direct == 2) {
+      if (this.model.state == DDeiEnumControlState.SELECTED) {
+        borderInfo = this.model.border && this.model.border.right && this.model.border.right.selected ? this.model.border.right.selected : DDeiConfig.RECTANGLE.BORDER.right.selected;
+      } else {
+        borderInfo = this.model.border && this.model.border.right && this.model.border.right.default ? this.model.border.right.default : DDeiConfig.RECTANGLE.BORDER.right.default;
+      }
+    } else if (direct == 3) {
+      if (this.model.state == DDeiEnumControlState.SELECTED) {
+        borderInfo = this.model.border && this.model.border.bottom && this.model.border.bottom.selected ? this.model.border.bottom.selected : DDeiConfig.RECTANGLE.BORDER.bottom.selected;
+      } else {
+        borderInfo = this.model.border && this.model.border.bottom && this.model.border.bottom.default ? this.model.border.bottom.default : DDeiConfig.RECTANGLE.BORDER.bottom.default;
+      }
+    } else if (direct == 4) {
+      if (this.model.state == DDeiEnumControlState.SELECTED) {
+        borderInfo = this.model.border && this.model.border.left && this.model.border.left.selected ? this.model.border.left.selected : DDeiConfig.RECTANGLE.BORDER.left.selected;
+      } else {
+        borderInfo = this.model.border && this.model.border.left && this.model.border.left.default ? this.model.border.left.default : DDeiConfig.RECTANGLE.BORDER.left.default;
+      }
+    }
+    return borderInfo;
+  }
+
+  /**
    * 绘制边框
    * @param tempBorder 临时边框，优先级最高
    */
@@ -88,40 +133,13 @@ class DDeiRectangleCanvasRender {
     //获取全局缩放比例
     let ratio = this.ddRender.ratio;
     //转换为缩放后的坐标
-    let ratPos = DDeiUtil.getRatioPosition(this.model, ratio);
+    let ratPos = this.getBorderRatPos();
 
     //1,2,3,4 上，右，下，左
     for (let i = 1; i <= 4; i++) {
       //如果被选中，使用选中的边框，否则使用缺省边框
       //TODO 样式最小替换颗粒度，需要前后保持一致
-      let borderInfo = null;
-      if (tempBorder) {
-        borderInfo = tempBorder;
-      } else if (i == 1) {
-        if (this.model.state == DDeiEnumControlState.SELECTED) {
-          borderInfo = this.model.border && this.model.border.top && this.model.border.top.selected ? this.model.border.top.selected : DDeiConfig.RECTANGLE.BORDER.top.selected;
-        } else {
-          borderInfo = this.model.border && this.model.border.top && this.model.border.top.default ? this.model.border.top.default : DDeiConfig.RECTANGLE.BORDER.top.default;
-        }
-      } else if (i == 2) {
-        if (this.model.state == DDeiEnumControlState.SELECTED) {
-          borderInfo = this.model.border && this.model.border.right && this.model.border.right.selected ? this.model.border.right.selected : DDeiConfig.RECTANGLE.BORDER.right.selected;
-        } else {
-          borderInfo = this.model.border && this.model.border.right && this.model.border.right.default ? this.model.border.right.default : DDeiConfig.RECTANGLE.BORDER.right.default;
-        }
-      } else if (i == 3) {
-        if (this.model.state == DDeiEnumControlState.SELECTED) {
-          borderInfo = this.model.border && this.model.border.bottom && this.model.border.bottom.selected ? this.model.border.bottom.selected : DDeiConfig.RECTANGLE.BORDER.bottom.selected;
-        } else {
-          borderInfo = this.model.border && this.model.border.bottom && this.model.border.bottom.default ? this.model.border.bottom.default : DDeiConfig.RECTANGLE.BORDER.bottom.default;
-        }
-      } else if (i == 4) {
-        if (this.model.state == DDeiEnumControlState.SELECTED) {
-          borderInfo = this.model.border && this.model.border.left && this.model.border.left.selected ? this.model.border.left.selected : DDeiConfig.RECTANGLE.BORDER.left.selected;
-        } else {
-          borderInfo = this.model.border && this.model.border.left && this.model.border.left.default ? this.model.border.left.default : DDeiConfig.RECTANGLE.BORDER.left.default;
-        }
-      }
+      let borderInfo = this.getBorderInfo(tempBorder, i);
 
       //绘制四个方向的边框
       //如果边框未被disabled，则绘制边框

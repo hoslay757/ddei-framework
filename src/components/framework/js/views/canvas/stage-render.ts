@@ -1,7 +1,7 @@
 import DDeiConfig from '../../config.js'
 import DDeiEnumOperateState from '../../enums/operate-state.js';
 import DDeiSelector from '../../models/selector.js';
-import AbstractShape from '../../models/shape.js';
+import DDeiAbstractShape from '../../models/shape.js';
 import DDeiStage from '../../models/stage.js';
 import DDeiCanvasRender from './ddei-render.js';
 
@@ -31,7 +31,7 @@ class DDeiStageCanvasRender {
   /**
    * 当前操作图形
    */
-  currentOperateShape: AbstractShape | null = null;
+  currentOperateShape: DDeiAbstractShape | null = null;
 
   /**
    * 当前操作状态
@@ -57,6 +57,9 @@ class DDeiStageCanvasRender {
   drawShape(): void {
     for (let i = this.model.layers.length - 1; i >= 0; i--) {
       this.model.layers[i].render.drawShape();
+    }
+    if (this.selector) {
+      this.selector.render.drawShape();
     }
   }
 

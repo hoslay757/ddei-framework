@@ -1,14 +1,14 @@
 import DDeiConfig from '../config'
 import DDeiStage from './stage'
 import DDeiLayer from './layer'
-import AbstractShape from './shape'
+import DDeiAbstractShape from './shape'
 
 /**
  * rectangle（矩形）包含了正方形与长方形。
  * 主要样式属性：坐标、高宽、边框、字体、填充
  * 主要属性：文本、对齐、自动换行、缩小字体填充
  */
-class DDeiRectangle extends AbstractShape {
+class DDeiRectangle extends DDeiAbstractShape {
   // ============================ 构造函数 ============================
   constructor(props: object) {
     super(props);

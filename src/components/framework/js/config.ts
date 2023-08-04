@@ -40,7 +40,8 @@ class DDeiConfig {
   static SELECTOR: object = {
     //选择器边框
     BORDER: {
-      default: { width: 2, color: "rgb(152,191,91)", dash: [2, 2], round: 0 }
+      default: { width: 2, color: "red", dash: [5, 5], round: 0 },
+      selected: { width: 2, color: "green", dash: [5, 5], round: 0 }
     }
   };
 

@@ -1,7 +1,7 @@
 import DDeiConfig from '../config'
 import DDeiLayer from './layer';
 import DDei from '../ddei';
-import AbstractShape from './shape';
+import DDeiAbstractShape from './shape';
 
 /**
  * Stage(舞台),代表一张完整的图像。
@@ -88,7 +88,7 @@ class DDeiStage {
    * @param souceModel 源模型
    * @returns 
    */
-  getAlignModels(bounds: object, souceModel: AbstractShape): object {
+  getAlignModels(bounds: object, souceModel: DDeiAbstractShape): object {
     let models = {
       leftAlignModels: [],
       rightAlignModels: [],
@@ -111,22 +111,22 @@ class DDeiStage {
       //   return
       // }
       distP = { x: model.x, y: model.y, width: model.width, height: model.height }
-      if (AbstractShape.isLeftAlign(sourceP, distP)) {
+      if (DDeiAbstractShape.isLeftAlign(sourceP, distP)) {
         models.leftAlignModels.push(model)
       }
-      if (AbstractShape.isRightAlign(sourceP, distP)) {
+      if (DDeiAbstractShape.isRightAlign(sourceP, distP)) {
         models.rightAlignModels.push(model)
       }
-      if (AbstractShape.isTopAlign(sourceP, distP)) {
+      if (DDeiAbstractShape.isTopAlign(sourceP, distP)) {
         models.topAlignModels.push(model)
       }
-      if (AbstractShape.isBottomAlign(sourceP, distP)) {
+      if (DDeiAbstractShape.isBottomAlign(sourceP, distP)) {
         models.bottomAlignModels.push(model)
       }
-      if (AbstractShape.isHorizontalCenterAlign(sourceP, distP)) {
+      if (DDeiAbstractShape.isHorizontalCenterAlign(sourceP, distP)) {
         models.horizontalCenterAlignModels.push(model)
       }
-      if (AbstractShape.isVerticalCenterAlign(sourceP, distP)) {
+      if (DDeiAbstractShape.isVerticalCenterAlign(sourceP, distP)) {
         models.verticalCenterAlignModels.push(model)
       }
     })

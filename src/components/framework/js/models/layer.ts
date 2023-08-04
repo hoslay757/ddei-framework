@@ -1,6 +1,6 @@
 import DDeiConfig from '../config'
 import DDeiEnumControlState from '../enums/control-state';
-import AbstractShape from './shape';
+import DDeiAbstractShape from './shape';
 import DDeiStage from './stage';
 
 /**
@@ -72,7 +72,7 @@ class DDeiLayer {
    * @param area 选中区域
    * @returns 
    */
-  findControlsByArea(x = undefined, y = undefined, width = 0, height = 0): AbstractShape[] | null {
+  findControlsByArea(x = undefined, y = undefined, width = 0, height = 0): DDeiAbstractShape[] | null {
     let controls = [];
     for (let item in this.models) {
       if (this.models[item].isInSelectArea(x, y, width, height)) {
@@ -87,11 +87,11 @@ class DDeiLayer {
    * 获取选中状态的所有控件
    * @returns 
    */
-  getSelectedControls(): AbstractShape[] | null {
-    let controls = [];
+  getSelectedModels(): Map<string, DDeiAbstractShape> {
+    let controls = new Map();
     for (let item in this.models) {
       if (this.models[item].state == DDeiEnumControlState.SELECTED) {
-        controls.push(this.models[item]);
+        controls.set(this.models[item].id, this.models[item]);
       }
     }
     return controls;

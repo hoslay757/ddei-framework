@@ -6,7 +6,7 @@ import DDeiEnumControlState from '../enums/control-state'
 /**
  * 抽象的图形类，定义了大多数图形都有的属性和方法
  */
-class AbstractShape {
+class DDeiAbstractShape {
   // ============================ 构造函数 ============================
   constructor(props: object) {
     this.id = props.id
@@ -106,6 +106,29 @@ class AbstractShape {
     return { x, y, width, height, x1: x + width, y1: y + height }
   }
 
+  /**
+   * 获取一组图形模型的宽高
+   * @param models
+   */
+  static getOutRect(models: Array<DDeiAbstractShape>): object {
+    models = models.filter(item => !!item)
+    if (!models.length) {
+      return { x: 0, y: 0, width: 0, height: 0 }
+    }
+    let x = Infinity
+    let y = Infinity
+    let width = 0
+    let height = 0
+    models.forEach(item => {
+      x = Math.min(+item.x, x)
+      y = Math.min(+item.y, y)
+    })
+    models.forEach(item => {
+      width = Math.max(Math.floor(+item.x + +item.width - x), width)
+      height = Math.max(Math.floor(+item.y + +item.height - y), height)
+    })
+    return { x, y, width, height, x1: x + width, y1: y + height }
+  }
 
 
   // ============================ 属性 ===============================
@@ -223,4 +246,4 @@ class AbstractShape {
 }
 
 
-export default AbstractShape
+export default DDeiAbstractShape

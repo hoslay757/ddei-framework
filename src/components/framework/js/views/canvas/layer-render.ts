@@ -3,7 +3,7 @@ import DDeiEnumControlState from '../../enums/control-state.js';
 import DDeiEnumOperateState from '../../enums/operate-state.js';
 import DDeiLayer from '../../models/layer.js';
 import DDeiSelector from '../../models/selector.js';
-import AbstractShape from '../../models/shape.js';
+import DDeiAbstractShape from '../../models/shape.js';
 import DDeiStage from '../../models/stage.js';
 import DDeiUtil from '../../util.js'
 import DDeiCanvasRender from './ddei-render.js';
@@ -164,7 +164,7 @@ class DDeiLayerCanvasRender {
    * @param control 当前控件模型
    * @returns 计算的坐标
    */
-  getMovedBounds(evt, control: AbstractShape): object {
+  getMovedBounds(evt, control: DDeiAbstractShape): object {
     //获取移动后的坐标
     let movedBounds = {
       x: evt.offsetX + this.stageRender.dragObj.x,
@@ -239,7 +239,7 @@ class DDeiLayerCanvasRender {
         if (leftAlignModels && leftAlignModels.length > 0) {
           // 显示左侧对齐线
           ctx.beginPath();
-          let mp = AbstractShape.getModelsPosition(bounds, ...leftAlignModels);
+          let mp = DDeiAbstractShape.getModelsPosition(bounds, ...leftAlignModels);
           let startY, endY;
           if (mp.y < bounds.y) {
             startY = mp.y - 50
@@ -255,7 +255,7 @@ class DDeiLayerCanvasRender {
         if (rightAlignModels && rightAlignModels.length > 0) {
           // 显示右侧对齐线
           ctx.beginPath();
-          let mp = AbstractShape.getModelsPosition(bounds, ...rightAlignModels);
+          let mp = DDeiAbstractShape.getModelsPosition(bounds, ...rightAlignModels);
           let startY, endY;
           if (mp.y < bounds.y) {
             startY = mp.y - 50
@@ -271,7 +271,7 @@ class DDeiLayerCanvasRender {
         if (topAlignModels && topAlignModels.length > 0) {
           // 显示上侧对齐线
           ctx.beginPath();
-          let mp = AbstractShape.getModelsPosition(bounds, ...topAlignModels);
+          let mp = DDeiAbstractShape.getModelsPosition(bounds, ...topAlignModels);
           let startX, endX;
           if (mp.x < bounds.x) {
             startX = mp.x - 50
@@ -287,7 +287,7 @@ class DDeiLayerCanvasRender {
         if (bottomAlignModels && bottomAlignModels.length > 0) {
           // 显示下侧对齐线
           ctx.beginPath();
-          let mp = AbstractShape.getModelsPosition(bounds, ...bottomAlignModels);
+          let mp = DDeiAbstractShape.getModelsPosition(bounds, ...bottomAlignModels);
           let startX, endX;
           if (mp.x < bounds.x) {
             startX = mp.x - 50
@@ -303,7 +303,7 @@ class DDeiLayerCanvasRender {
         if (horizontalCenterAlignModels && horizontalCenterAlignModels.length > 0) {
           // 显示水平居中对齐的线
           ctx.beginPath();
-          let mp = AbstractShape.getModelsPosition(bounds, ...horizontalCenterAlignModels);
+          let mp = DDeiAbstractShape.getModelsPosition(bounds, ...horizontalCenterAlignModels);
           let startX, endX;
           if (mp.x < bounds.x) {
             startX = mp.x - 50
@@ -319,7 +319,7 @@ class DDeiLayerCanvasRender {
         if (verticalCenterAlignModels && verticalCenterAlignModels.length > 0) {
           // 显示垂直居中对齐的线
           ctx.beginPath();
-          let mp = AbstractShape.getModelsPosition(bounds, ...verticalCenterAlignModels);
+          let mp = DDeiAbstractShape.getModelsPosition(bounds, ...verticalCenterAlignModels);
           let startY, endY;
           if (mp.y < bounds.y) {
             startY = mp.y - 50
@@ -358,31 +358,39 @@ class DDeiLayerCanvasRender {
     }
     //无控件，显示选择框
     else {
-      //创建选择框控件
-      this.stageRender.selector = DDeiSelector.initByJSON({
-        id: this.stage.id + "_inner_selector",
-        border: DDeiConfig.SELECTOR.BORDER,
-        fill: { default: {}, selected: {} },
-        x: evt.offsetX, y: evt.offsetY, width: 0, innerHeight: 0
-      });
-      this.stageRender.selector.startX = this.stageRender.selector.x
-      this.stageRender.selector.startY = this.stageRender.selector.y
-      this.stageRender.selector.stage = this.stage
-      DDeiConfig.bindRender(this.stageRender.selector);
-      this.stageRender.selector.layer = this.model
-      this.model.models[this.stageRender.selector.id] = this.stageRender.selector
-      this.stageRender.selector.initRender();
+      if (!this.stageRender.selector) {
+        //创建选择框控件
+        this.stageRender.selector = DDeiSelector.initByJSON({
+          id: this.stage.id + "_inner_selector",
+          border: DDeiConfig.SELECTOR.BORDER,
+          fill: { default: {}, selected: {} },
+          x: evt.offsetX, y: evt.offsetY, width: 0, height: 0
+        });
+        this.stageRender.selector.stage = this.stage
+        DDeiConfig.bindRender(this.stageRender.selector);
+        this.stageRender.selector.layer = this.model
+        this.stageRender.selector.initRender();
+      }
+
       //当前操作状态：选择器工作中
       this.stageRender.operateState = DDeiEnumOperateState.SELECT_WORKING
     }
     //清空除了当前操作控件外所有选中状态控件
-    let selectedControls = this.model.getSelectedControls();
+    let selectedControls = this.model.getSelectedModels();
     if (selectedControls) {
-      for (let i = 0; i < selectedControls.length; i++) {
-        if (this.stageRender.currentOperateShape != selectedControls[i]) {
-          selectedControls[i].state = DDeiEnumControlState.DEFAULT;
+      selectedControls.forEach((model, key) => {
+        if (this.stageRender.currentOperateShape != model) {
+          model.state = DDeiEnumControlState.DEFAULT;
         }
-      }
+      });
+    }
+    //初始化选择器状态
+    if (this.stageRender.selector) {
+      this.stageRender.selector.startX = evt.offsetX
+      this.stageRender.selector.startY = evt.offsetY
+      this.stageRender.selector.width = 0
+      this.stageRender.selector.height = 0
+      this.stageRender.selector.state = DDeiEnumControlState.DEFAULT;
     }
     //重新渲染
     this.ddRender.drawShape();
@@ -395,6 +403,7 @@ class DDeiLayerCanvasRender {
     switch (this.stageRender.operateState) {
       //控件状态确认中
       case DDeiEnumOperateState.CONTROL_CONFIRMING:
+        debugger
         //判断当前操作控件是否选中
         if (this.stageRender.currentOperateShape.state == DDeiEnumControlState.SELECTED) {
           //取消选中当前操作控件
@@ -414,14 +423,23 @@ class DDeiLayerCanvasRender {
       case DDeiEnumOperateState.SELECT_WORKING:
         if (this.stageRender.selector) {
           //选中被选择器包含的控件
-          let includedModels: Map<string, AbstractShape> = this.stageRender.selector.getIncludedModels();
+          let includedModels: Map<string, DDeiAbstractShape> = this.stageRender.selector.getIncludedModels();
           includedModels.forEach((model, key) => {
             model.state = DDeiEnumControlState.SELECTED;
           });
-          //清空当前选择器对象
-          delete this.model.models[this.stageRender.selector.id]
-          this.stageRender.selector.render = null;
-          this.stageRender.selector = null;
+          //设置坐标为所有选中控件的外接矩形坐标
+          if (this.model.getSelectedModels().size > 0) {
+            let outRectBounds = DDeiAbstractShape.getOutRect(Array.from(this.model.getSelectedModels().values()));
+            this.stageRender.selector.setBounds(outRectBounds.x, outRectBounds.y, outRectBounds.width, outRectBounds.height);
+            //设置选择器状态为选中后
+            this.stageRender.selector.state = DDeiEnumControlState.SELECTED;
+          } else {
+            this.stageRender.selector.startX = 0
+            this.stageRender.selector.startY = 0
+            this.stageRender.selector.width = 0
+            this.stageRender.selector.height = 0
+            this.stageRender.selector.state = DDeiEnumControlState.DEFAULT;
+          }
         }
         //当前操作状态:无
         this.stageRender.operateState = DDeiEnumOperateState.NONE;

@@ -1,8 +1,11 @@
 import DDeiRectangle from './rectangle';
-import AbstractShape from './shape';
+import DDeiAbstractShape from './shape';
 
 /**
- * selector选择器，用来选择界面上的控件，选择器不是一个实体控件，选择完成后将会销毁
+ * selector选择器，用来选择界面上的控件，选择器不是一个实体控件,不会被序列化
+ * 选择器有两种状态一种是选择中（默认default)，一种是选择后selected
+ * 选择中状态时，随鼠标的拖选而放大缩小
+ * 选择后状态时，为所有选中图形的外接矩形
  * 选择器主体上是一个矩形，因此可以继承自Rectangle
  */
 class DDeiSelector extends DDeiRectangle {
@@ -24,12 +27,13 @@ class DDeiSelector extends DDeiRectangle {
   modelType: string = 'DDeiSelector';
   // 本模型的基础图形
   baseModelType: string = 'DDeiSelector';
+
   // ============================ 方法 ===============================
   /**
    * 获取当前选择器包含的模型
    * @returns 
    */
-  getIncludedModels(): Map<string, AbstractShape> {
+  getIncludedModels(): Map<string, DDeiAbstractShape> {
     //选中选择器区域内控件
     let selectBounds = this.getBounds();
     let models = new Map();
