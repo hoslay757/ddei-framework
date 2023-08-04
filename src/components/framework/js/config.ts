@@ -1,8 +1,8 @@
-import DDeiCanvasRender from "./renders/canvas/ddei-render"
-import DDeiStageCanvasRender from "./renders/canvas/stage-render"
-import DDeiLayerCanvasRender from "./renders/canvas/layer-render"
-import DDeiRectangleCanvasRender from "./renders/canvas/rectangle-render"
-import DDeiCircleCanvasRender from "./renders/canvas/circle-render"
+import DDeiCanvasRender from "./views/canvas/ddei-render"
+import DDeiStageCanvasRender from "./views/canvas/stage-render"
+import DDeiLayerCanvasRender from "./views/canvas/layer-render"
+import DDeiRectangleCanvasRender from "./views/canvas/rectangle-render"
+import DDeiCircleCanvasRender from "./views/canvas/circle-render"
 // import DDeiCanvasEventListener from "./events/canvas/ddei-listener"
 // import DDeiStageCanvasEventListener from "./events/canvas/stage-listener"
 // import DDeiLayerCanvasEventListener from "./events/canvas/layer-listener"
@@ -18,6 +18,20 @@ class DDeiConfig {
   // ============================ 静态变量 ============================
   //当前采用的渲染器类型，暂时只支持canvas
   static RENDER_TYPE: string = "CANVAS";
+
+  // 是否打开辅助线功能
+  static GLOBAL_HELP_LINE_ENABLE: boolean = true;
+  // 是否打开辅助对齐线
+  static GLOBAL_HELP_LINE_ALIGN_ENABLE: boolean = true;
+  // 缺省辅助线颜色
+  static GLOBAL_HELP_LINE_COLOR: string = 'grey';
+  // 缺省辅助对齐线颜色
+  static GLOBAL_HELP_LINE_ALIGN_COLOR = 'red';
+  // 缺省辅助线宽度
+  static GLOBAL_HELP_LINE_WEIGHT: number = 10;
+
+  // 键盘对齐,开启后允许通过上下左右来改变控件位置,每次改变位置的大小为GLOBAL_HELP_LINE_WEIGHT
+  static GLOBAL_KEYBOARD_ALIGN_ENABLE: boolean = true;
 
   // 边框的相关缺省样式属性
   static BORDER: object = {

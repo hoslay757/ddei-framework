@@ -17,6 +17,97 @@ class AbstractShape {
     this.height = props.height ? props.height : 0
     this.zIndex = props.zIndex ? props.zIndex : null
   }
+  // ============================ 静态方法 ============================
+  /**
+     * 是否左对齐
+     * 源图形的左上顶点与图形的左边线或右边线处于一个x
+     * @param {*} sourceP 源图形位置 { x }
+     * @param {*} distP 目标图形位置 { x, width }
+     * @returns
+     */
+  static isLeftAlign(sourceP, distP): boolean {
+    return sourceP.x === distP.x || sourceP.x === distP.x + distP.width
+  }
+
+  /**
+   * 是否右对齐
+   * 源图形的右上顶点与图形的左边线或右边线处于一个x
+   * @param {*} sourceP 源图形位置 { x, width }
+   * @param {*} distP 目标图形位置 { x, width }
+   * @returns
+   */
+  static isRightAlign(sourceP, distP): boolean {
+    return sourceP.x + sourceP.width === distP.x || sourceP.x + sourceP.width === distP.x + distP.width
+  }
+
+  /**
+   * 是否顶部对齐
+   * 源图形的右上顶点与图形的上边线或下边线处于一个y
+   * @param {*} sourceP 源图形位置 { y }
+   * @param {*} distP 目标图形位置 { y, height }
+   * @returns
+   */
+  static isTopAlign(sourceP, distP): boolean {
+    return sourceP.y === distP.y || sourceP.y === distP.y + distP.height
+  }
+
+  /**
+   * 是否低部对齐
+   * 源图形的右上顶点与图形的上边线或下边线处于一个y
+   * @param {*} sourceP 源图形位置 { y, height }
+   * @param {*} distP 目标图形位置 { y, height }
+   * @returns
+   */
+  static isBottomAlign(sourceP, distP): boolean {
+    return sourceP.y + sourceP.height === distP.y || sourceP.y + sourceP.height === distP.y + distP.height
+  }
+
+  /**
+   * 水平居中对齐
+   * @param {*} sourceP 源图形位置 { y, height }
+   * @param {*} distP 目标图形位置 { y, height }
+   * @returns true/false
+   */
+  static isHorizontalCenterAlign(sourceP, distP): boolean {
+    return sourceP.y + sourceP.height / 2 === distP.y + distP.height / 2
+  }
+
+  /**
+   * 垂直居中对齐
+   * @param {*} sourceP 源图形位置 { x, width }
+   * @param {*} distP 目标图形位置 { x, width }
+   * @returns true/false
+   */
+  static isVerticalCenterAlign(sourceP, distP): boolean {
+    return sourceP.x + sourceP.width / 2 === distP.x + distP.width / 2
+  }
+
+  /**
+   * 获取一组图形模型的宽高
+   * @param models
+   */
+  static getModelsPosition(...models): object {
+    models = models.filter(item => !!item)
+    if (!models.length) {
+      return { x: 0, y: 0, width: 0, height: 0 }
+    }
+    let x = Infinity
+    let y = Infinity
+    let width = 0
+    let height = 0
+    models.forEach(item => {
+      x = Math.min(+item.x, x)
+      y = Math.min(+item.y, y)
+    })
+    models.forEach(item => {
+      width = Math.max(Math.floor(+item.x + +item.width - x), width)
+      height = Math.max(Math.floor(+item.y + +item.height - y), height)
+    })
+    return { x, y, width, height, x1: x + width, y1: y + height }
+  }
+
+
+
   // ============================ 属性 ===============================
   id: string;
   //坐标与宽高，实际的图形区域，根据这四个属性用来绘制图形
@@ -65,6 +156,65 @@ class AbstractShape {
       modelY <= y &&
       modelX1 <= x1 &&
       modelY1 <= y1
+  }
+
+  /**
+   * 设置控件坐标
+   * @param x 
+   * @param y 
+   */
+  setPosition(x: number, y: number) {
+    if (x !== undefined) {
+      this.x = x
+    }
+    if (y !== undefined) {
+      this.y = y
+    }
+  }
+
+  /**
+   * 设置大小
+   * @param w
+   * @param h
+   */
+  setSize(w: number, h: number) {
+    if (w !== undefined) {
+      this.w = w
+    }
+    if (h !== undefined) {
+      this.h = h
+    }
+  }
+
+  /**
+   * 设置控件坐标以及位置
+   * @param x 
+   * @param y 
+   */
+  setBounds(x: number, y: number, w: number, h: number) {
+    this.setPosition(x, y)
+    this.setSize(w, h)
+  }
+
+  /**
+   * 获取控件坐标以及位置
+   */
+  getBounds() {
+    return { x: this.x, y: this.y, width: this.width, height: this.height }
+  }
+
+  /**
+   * 获取控件坐标
+   */
+  getPosition() {
+    return { x: this.x, y: this.y }
+  }
+
+  /**
+   * 获取控件大小
+   */
+  getSize() {
+    return { width: this.width, height: this.height }
   }
 
 }

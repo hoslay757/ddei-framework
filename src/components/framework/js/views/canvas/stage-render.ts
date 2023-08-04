@@ -64,7 +64,6 @@ class DDeiStageCanvasRender {
    * 绘制图形
    */
   mouseUp(evt: Event): void {
-    console.log("鼠标弹起,stage坐标：" + evt.offsetX + " ," + evt.offsetY)
     //分发到当前图层的mouseUp
     this.model.layers[this.model.layerIndex].render.mouseUp(evt);
   }
@@ -73,7 +72,8 @@ class DDeiStageCanvasRender {
    * 鼠标移动
    */
   mouseMove(evt: Event): void {
-    // console.log("鼠标移动,stage坐标：" + evt.x + " ," + evt.y)
+    //分发到当前图层的mouseUp
+    this.model.layers[this.model.layerIndex].render.mouseMove(evt);
   }
 }
 

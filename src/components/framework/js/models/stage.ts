@@ -1,6 +1,7 @@
 import DDeiConfig from '../config'
 import DDeiLayer from './layer';
 import DDei from '../ddei';
+import AbstractShape from './shape';
 
 /**
  * Stage(舞台),代表一张完整的图像。
@@ -68,6 +69,82 @@ class DDeiStage {
       this.layers[i].initRender();
     }
   }
+
+  /**
+   * 获取所有图层的模型
+   */
+  getLayerModels() {
+    let models = [];
+    for (let i = 0; i < this.layers.length; i++) {
+      for (let j in this.layers[i].models) {
+        models.push(this.layers[i].models[j]);
+      }
+    }
+    return models;
+  }
+  /**
+   * 获取多个图层之间的所有对齐模型
+   * @param bounds 坐标
+   * @param souceModel 源模型
+   * @returns 
+   */
+  getAlignModels(bounds: object, souceModel: AbstractShape): object {
+    let models = {
+      leftAlignModels: [],
+      rightAlignModels: [],
+      topAlignModels: [],
+      bottomAlignModels: [],
+      horizontalCenterAlignModels: [],
+      verticalCenterAlignModels: []
+    }
+
+    // 计算每个模型与位置的关系
+    let sourceP = bounds;
+    let distP
+    this.getLayerModels().forEach(model => {
+      // 排除相同的模型
+      if (model.id === souceModel.id) {
+        return
+      }
+      // TODO // 包含在分组内则跳过
+      // if (isGroupModel && sourceModel.includeModel(model)) {
+      //   return
+      // }
+      distP = { x: model.x, y: model.y, width: model.width, height: model.height }
+      if (AbstractShape.isLeftAlign(sourceP, distP)) {
+        models.leftAlignModels.push(model)
+      }
+      if (AbstractShape.isRightAlign(sourceP, distP)) {
+        models.rightAlignModels.push(model)
+      }
+      if (AbstractShape.isTopAlign(sourceP, distP)) {
+        models.topAlignModels.push(model)
+      }
+      if (AbstractShape.isBottomAlign(sourceP, distP)) {
+        models.bottomAlignModels.push(model)
+      }
+      if (AbstractShape.isHorizontalCenterAlign(sourceP, distP)) {
+        models.horizontalCenterAlignModels.push(model)
+      }
+      if (AbstractShape.isVerticalCenterAlign(sourceP, distP)) {
+        models.verticalCenterAlignModels.push(model)
+      }
+    })
+    // 按照远近关系排序
+    let sortFunc = function (aModel, bModel) {
+      let xr = aModel.x - bModel.x
+      if (xr !== 0) {
+        return xr
+      }
+      return aModel.y - bModel.y
+    }
+    for (let key in models) {
+      models[key].sort(sortFunc)
+    }
+    return models
+  }
+
+
 
   /**
    * 转换为JSON的序列化方法
