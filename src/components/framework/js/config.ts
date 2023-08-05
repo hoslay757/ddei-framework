@@ -4,6 +4,7 @@ import DDeiLayerCanvasRender from "./views/canvas/layer-render"
 import DDeiRectangleCanvasRender from "./views/canvas/rectangle-render"
 import DDeiCircleCanvasRender from "./views/canvas/circle-render"
 import DDeiSelectorCanvasRender from "./views/canvas/selector-render"
+import DDeiEnumKeyActionInst from "./enums/key-action-inst"
 /**
  * DDei的配置文件
  * 提供了全局参数与缺省值的设置
@@ -28,6 +29,30 @@ class DDeiConfig {
 
   // 键盘对齐,开启后允许通过上下左右来改变控件位置,每次改变位置的大小为GLOBAL_HELP_LINE_WEIGHT
   static GLOBAL_KEYBOARD_ALIGN_ENABLE: boolean = true;
+
+  // 快捷键-键行为映射配置
+  static HOT_KEY_MAPPING: object[] = [
+    //全选
+    { ctrl: true, keys: "65", action: DDeiEnumKeyActionInst.AllSelect },
+    // //追加选择
+    // { ctrl: true, action: DDeiEnumKeyActionInst.AppendSelect },
+    //删除
+    { keys: "8", action: DDeiEnumKeyActionInst.RemoveModels },
+    //F2
+    { keys: "113", action: DDeiEnumKeyActionInst.StartQuickEdit },
+    //上
+    { keys: "38", action: DDeiEnumKeyActionInst.UpMoveModels },
+    //下
+    { keys: "40", action: DDeiEnumKeyActionInst.DownMoveModels },
+    //左
+    { keys: "37", action: DDeiEnumKeyActionInst.LeftMoveModels },
+    //右
+    { keys: "39", action: DDeiEnumKeyActionInst.RightMoveModels },
+    //回车
+    { keys: "13", action: DDeiEnumKeyActionInst.EnterQuickEdit },
+    //取消
+    { keys: "27", action: DDeiEnumKeyActionInst.CancelQuickEdit },
+  ];
 
   // 边框的相关缺省样式属性
   static BORDER: object = {
