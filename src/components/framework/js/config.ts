@@ -33,26 +33,25 @@ class DDeiConfig {
   // 快捷键-键行为映射配置
   static HOT_KEY_MAPPING: object[] = [
     //全选
-    { ctrl: true, keys: [65], action: DDeiEnumKeyActionInst.AllSelect },
-    { ctrl: true, keys: [83], action: DDeiEnumKeyActionInst.AllSelect },
-    //追加选择
-    { ctrl: true, action: DDeiEnumKeyActionInst.AppendSelect },
+    { ctrl: true, keys: "65", action: DDeiEnumKeyActionInst.AllSelect },
+    // //追加选择
+    // { ctrl: true, action: DDeiEnumKeyActionInst.AppendSelect },
     //删除
-    { del: true, action: DDeiEnumKeyActionInst.RemoveModels },
+    { keys: "8", action: DDeiEnumKeyActionInst.RemoveModels },
     //F2
-    { keys: [113], action: DDeiEnumKeyActionInst.StartQuickEdit },
+    { keys: "113", action: DDeiEnumKeyActionInst.StartQuickEdit },
     //上
-    { keys: [38], action: DDeiEnumKeyActionInst.UpMoveModels },
+    { keys: "38", action: DDeiEnumKeyActionInst.UpMoveModels },
     //下
-    { keys: [40], action: DDeiEnumKeyActionInst.DownMoveModels },
+    { keys: "40", action: DDeiEnumKeyActionInst.DownMoveModels },
     //左
-    { keys: [37], action: DDeiEnumKeyActionInst.LeftMoveModels },
+    { keys: "37", action: DDeiEnumKeyActionInst.LeftMoveModels },
     //右
-    { keys: [39], action: DDeiEnumKeyActionInst.RightMoveModels },
+    { keys: "39", action: DDeiEnumKeyActionInst.RightMoveModels },
     //回车
-    { keys: [13], action: DDeiEnumKeyActionInst.EnterQuickEdit },
+    { keys: "13", action: DDeiEnumKeyActionInst.EnterQuickEdit },
     //取消
-    { keys: [27], action: DDeiEnumKeyActionInst.CancelQuickEdit },
+    { keys: "27", action: DDeiEnumKeyActionInst.CancelQuickEdit },
   ];
 
   // 边框的相关缺省样式属性
