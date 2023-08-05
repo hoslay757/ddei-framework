@@ -11,7 +11,7 @@ class DDeiLayer {
   // ============================ 构造函数 ============================
   constructor(props: object) {
     this.id = props.id
-    this.models = {};
+    this.models = new Map();
     this.modelType = 'DDeiLayer'
     this.stage = null;
     this.index = -1;
@@ -34,7 +34,7 @@ class DDeiLayer {
   // ============================ 属性 ===============================
   id: string;
   // 一个图层包含多个图像
-  models: any;
+  models: Map<string, DDeiAbstractShape>;
   // 本模型的唯一名称
   modelType: string = 'DDeiLayer';
   // 当前layer所在的stage
@@ -61,10 +61,21 @@ class DDeiLayer {
     DDeiConfig.bindRender(this);
     this.render.init();
     //加载所有模型的渲染器
-    for (let i in this.models) {
-      this.models[i].initRender();
-    }
+    this.models.forEach((item, key) => {
+      item.initRender()
+    });
+  }
 
+  /**
+   * 取消选择控件,默认取消所有
+   */
+  cancelSelectModels(models: DDeiAbstractShape[] | undefined): void {
+    if (!models) {
+      models = Array.from(this.models.values());
+    }
+    models.forEach(item => {
+      item.state = DDeiEnumControlState.DEFAULT
+    });
   }
 
   /**
@@ -72,13 +83,13 @@ class DDeiLayer {
    * @param area 选中区域
    * @returns 
    */
-  findControlsByArea(x = undefined, y = undefined, width = 0, height = 0): DDeiAbstractShape[] | null {
+  findModelsByArea(x = undefined, y = undefined, width = 0, height = 0): DDeiAbstractShape[] | null {
     let controls = [];
-    for (let item in this.models) {
-      if (this.models[item].isInSelectArea(x, y, width, height)) {
-        controls.push(this.models[item]);
+    this.models.forEach((item, key) => {
+      if (item.isInSelectArea(x, y, width, height)) {
+        controls.push(item);
       }
-    }
+    });
     //TODO 对控件进行排序，按照zIndex > 添加顺序
     return controls;
   }
@@ -89,11 +100,11 @@ class DDeiLayer {
    */
   getSelectedModels(): Map<string, DDeiAbstractShape> {
     let controls = new Map();
-    for (let item in this.models) {
-      if (this.models[item].state == DDeiEnumControlState.SELECTED) {
-        controls.set(this.models[item].id, this.models[item]);
+    this.models.forEach((item, key) => {
+      if (item.state == DDeiEnumControlState.SELECTED) {
+        controls.set(item.id, item);
       }
-    }
+    });
     return controls;
   }
 

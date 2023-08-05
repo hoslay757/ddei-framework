@@ -58,8 +58,10 @@ class DDeiRectangleCanvasRender {
     this.ddRender = this.model.stage.ddInstance.render
     this.stage = this.model.stage
     this.stageRender = this.model.stage.render
-    this.layer = this.model.layer
-    this.layerRender = this.model.layer.render
+    if (this.model.layer) {
+      this.layer = this.model.layer
+      this.layerRender = this.model.layer.render
+    }
   }
 
   /**

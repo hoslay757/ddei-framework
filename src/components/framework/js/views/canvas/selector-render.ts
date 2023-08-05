@@ -15,6 +15,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
    * 创建图形
    */
   drawShape(): void {
+
     this.drawBorder();
 
     //绘制填充

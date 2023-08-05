@@ -84,8 +84,10 @@ export default {
       //下标自增1
       ddInstance.stage.idIdx++;
       //将矩形添加进图层
-      ddInstance.stage.layers[ddInstance.stage.layerIndex].models[rect.id] =
-        rect;
+      ddInstance.stage.layers[ddInstance.stage.layerIndex].models.set(
+        rect.id,
+        rect
+      );
       rect.layer = ddInstance.stage.layers[ddInstance.stage.layerIndex];
       rect.pModel = rect.layer;
       //绑定并初始化渲染器
@@ -113,8 +115,10 @@ export default {
       //下标自增1
       ddInstance.stage.idIdx++;
       //将矩形添加进图层
-      ddInstance.stage.layers[ddInstance.stage.layerIndex].models[circle.id] =
-        circle;
+      ddInstance.stage.layers[ddInstance.stage.layerIndex].models.set(
+        circle.id,
+        circle
+      );
       circle.layer = ddInstance.stage.layers[ddInstance.stage.layerIndex];
       circle.pModel = circle.layer;
       //绑定并初始化渲染器

@@ -1,3 +1,4 @@
+import DDeiEnumControlState from '../enums/control-state';
 import DDeiRectangle from './rectangle';
 import DDeiAbstractShape from './shape';
 
@@ -29,6 +30,21 @@ class DDeiSelector extends DDeiRectangle {
   baseModelType: string = 'DDeiSelector';
 
   // ============================ 方法 ===============================
+
+  /**
+   * 重制状态
+   */
+  resetState(x: number = -1, y: number = -1): void {
+    //重置选择器状态
+    this.startX = x
+    this.startY = y
+    this.x = x
+    this.y = y
+    this.width = 0
+    this.height = 0
+    this.state = DDeiEnumControlState.DEFAULT;
+  }
+
   /**
    * 获取当前选择器包含的模型
    * @returns 
@@ -37,9 +53,9 @@ class DDeiSelector extends DDeiRectangle {
     //选中选择器区域内控件
     let selectBounds = this.getBounds();
     let models = new Map();
-    for (let i in this.layer?.models) {
+    this.layer?.models.forEach((item, key) => {
       //实际区域减小一定百分比，宽松选择
-      let curModel = this.layer?.models[i];
+      let curModel = item;
       if (curModel.id != this.id) {
         let x = curModel.x + curModel.width * 0.1;
         let y = curModel.y + curModel.height * 0.1;
@@ -51,9 +67,25 @@ class DDeiSelector extends DDeiRectangle {
           models.set(curModel.id, curModel);
         }
       }
-    }
+    });
     return models;
   }
+
+  /**
+   * 根据已选择的控件更新坐标和状态
+   */
+  updatedBoundsBySelectedModels(): void {
+    let selectedModels = this.layer.getSelectedModels();
+    if (selectedModels && selectedModels.size > 0) {
+      let outRectBounds = DDeiAbstractShape.getOutRect(Array.from(selectedModels.values()));
+      this.setBounds(outRectBounds.x, outRectBounds.y, outRectBounds.width, outRectBounds.height);
+      //设置选择器状态为选中后
+      this.state = DDeiEnumControlState.SELECTED;
+    } else {
+      this.resetState();
+    }
+  }
+
 }
 
 

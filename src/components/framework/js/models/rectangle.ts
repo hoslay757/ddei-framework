@@ -34,8 +34,6 @@ class DDeiRectangle extends DDeiAbstractShape {
     this.rotate = props.rotate ? props.rotate : null;
     // 缩放,1/null，不缩放,默认1
     this.zoom = props.zoom ? props.zoom : null;
-    // 是否选中为false
-    this.selected = false
   }
 
   // ============================ 静态变量 ============================

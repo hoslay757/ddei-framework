@@ -73,22 +73,23 @@ class DDeiStage {
   /**
    * 获取所有图层的模型
    */
-  getLayerModels() {
-    let models = [];
+  getLayerModels(): DDeiAbstractShape[] {
+    let models: DDeiAbstractShape[] = [];
     for (let i = 0; i < this.layers.length; i++) {
-      for (let j in this.layers[i].models) {
-        models.push(this.layers[i].models[j]);
-      }
+      this.layers[i].models.forEach((item, key) => {
+        models.push(item);
+      });
     }
     return models;
   }
   /**
    * 获取多个图层之间的所有对齐模型
    * @param bounds 坐标
-   * @param souceModel 源模型
+   * @param souceModels 源模型,可能包含多个
+   * @param ignoreModels 忽略判断的模型
    * @returns 
    */
-  getAlignModels(bounds: object, souceModel: DDeiAbstractShape): object {
+  getAlignModels(bounds: object, souceModels: Map<string, DDeiAbstractShape>): object {
     let models = {
       leftAlignModels: [],
       rightAlignModels: [],
@@ -102,8 +103,8 @@ class DDeiStage {
     let sourceP = bounds;
     let distP
     this.getLayerModels().forEach(model => {
-      // 排除相同的模型
-      if (model.id === souceModel.id) {
+      // 排除源模型
+      if (souceModels.has(model.id)) {
         return
       }
       // TODO // 包含在分组内则跳过
