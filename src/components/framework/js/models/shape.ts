@@ -6,7 +6,7 @@ import DDeiEnumControlState from '../enums/control-state'
 /**
  * 抽象的图形类，定义了大多数图形都有的属性和方法
  */
-class DDeiAbstractShape {
+abstract class DDeiAbstractShape {
   // ============================ 构造函数 ============================
   constructor(props: object) {
     this.id = props.id

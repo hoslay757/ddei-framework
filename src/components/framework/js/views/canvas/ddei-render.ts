@@ -13,7 +13,6 @@ class DDeiCanvasRender {
     this.model = props.model;
   }
 
-
   // ============================== 属性 ===============================
   /**
    * 当前对应模型
@@ -82,6 +81,11 @@ class DDeiCanvasRender {
     this.canvas.addEventListener('mousemove', (evt: Event) => {
       this.mouseMove(evt)
     });
+
+    //绑定键盘事件
+    this.canvas.addEventListener('keydown', (evt: Event) => {
+      this.keyDown(evt)
+    });
   }
 
   /**
@@ -103,6 +107,14 @@ class DDeiCanvasRender {
    */
   mouseMove(evt: Event): void {
     this.model.stage.render.mouseMove(evt);
+  }
+
+  /**
+   * 鼠标移动
+   */
+  keyDown(evt: Event): void {
+    //TODO 识别键盘组合
+    console.log(evt.keyCode | evt.keyCode)
   }
 }
 
