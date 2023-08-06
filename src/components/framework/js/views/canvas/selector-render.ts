@@ -69,7 +69,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     if (this.model.state == DDeiEnumControlState.DEFAULT) {
       includedModels = this.model.getIncludedModels();
     } else if (this.model.state == DDeiEnumControlState.SELECTED) {
-      includedModels = this.model.layer.getSelectedModels();
+      includedModels = this.stage.layers[this.stage.layerIndex].getSelectedModels();
     }
     if (includedModels && includedModels.size > 0) {
       includedModels.forEach((model, key) => {

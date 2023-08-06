@@ -49,6 +49,7 @@ class DDeiStageCanvasRender {
    */
   init(): void {
     this.ddRender = this.model.ddInstance.render
+    this.initSelector();
   }
 
   /**
@@ -65,9 +66,8 @@ class DDeiStageCanvasRender {
 
   /**
    * 初始化选择器
-   * @param evt 事件
    */
-  initSelector(evt: Event): void {
+  initSelector(): void {
     if (!this.selector) {
       //创建选择框控件
       this.selector = DDeiSelector.initByJSON({
@@ -79,7 +79,7 @@ class DDeiStageCanvasRender {
       DDeiConfig.bindRender(this.selector);
       this.selector.initRender();
     }
-    this.selector.resetState(evt.offsetX, evt.offsetY);
+    this.selector.resetState();
   }
 
   /**

@@ -53,7 +53,7 @@ class DDeiSelector extends DDeiRectangle {
     //选中选择器区域内控件
     let selectBounds = this.getBounds();
     let models = new Map();
-    this.layer?.models.forEach((item, key) => {
+    this.stage.layers[this.stage.layerIndex].models.forEach((item, key) => {
       //实际区域减小一定百分比，宽松选择
       let curModel = item;
       if (curModel.id != this.id) {
@@ -75,7 +75,7 @@ class DDeiSelector extends DDeiRectangle {
    * 根据已选择的控件更新坐标和状态
    */
   updatedBoundsBySelectedModels(): void {
-    let selectedModels = this.layer.getSelectedModels();
+    let selectedModels = this.stage.layers[this.stage.layerIndex].getSelectedModels();
     if (selectedModels && selectedModels.size > 0) {
       let outRectBounds = DDeiAbstractShape.getOutRect(Array.from(selectedModels.values()));
       this.setBounds(outRectBounds.x, outRectBounds.y, outRectBounds.width, outRectBounds.height);

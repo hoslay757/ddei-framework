@@ -1,5 +1,6 @@
 import DDeiConfig from '../../config.js'
 import DDei from '../../ddei.js';
+import DDeiKeyAction from '../../hotkeys/key-action.js';
 import DDeiUtil from '../../util.js'
 
 /**
@@ -86,6 +87,9 @@ class DDeiCanvasRender {
     document.addEventListener('keydown', (evt: Event) => {
       this.keyDown(evt)
     });
+    document.addEventListener('keyup', (evt: Event) => {
+      this.keyUp(evt)
+    });
   }
 
   /**
@@ -110,50 +114,32 @@ class DDeiCanvasRender {
   }
 
   /**
-   * 鼠标移动
+   * 键盘按下
    */
   keyDown(evt: Event): void {
-    //获取是否按下ctrl、command、alt、shift等键
+    DDeiKeyAction.route(evt, this.model)
+  }
+
+  /**
+   * 键盘弹起
+   */
+  keyUp(evt: Event): void {
     let ctrl = evt.ctrlKey || evt.metaKey;
     let shift = evt.shiftKey;
     let alt = evt.altKey
     let m1Str = "_"
-    if (ctrl == true) {
-      m1Str += "ctrl_"
+    if (ctrl != true) {
+      DDei.KEY_DOWN_STATE.set("ctrl", false);
     }
-    if (shift == true) {
+    if (shift != true) {
       m1Str += "shift_"
+      DDei.KEY_DOWN_STATE.set("shift", false);
     }
-    if (alt == true) {
+    if (alt != true) {
       m1Str += "alt_"
+      DDei.KEY_DOWN_STATE.set("alt", false);
     }
-    if (evt.keyCode != 93 && evt.keyCode != 18 && evt.keyCode != 16 && evt.keyCode != 17) {
-      m1Str += evt.keyCode
-    }
-    console.log(m1Str)
-    //执行下发逻
-    for (let it = 0; it < DDeiConfig.HOT_KEY_MAPPING.length; it++) {
-      let item = DDeiConfig.HOT_KEY_MAPPING[it];
-      let matchStr = "_"
-      if (item.ctrl == true) {
-        matchStr += "ctrl_"
-      }
-      if (item.shift == true) {
-        matchStr += "shift_"
-      }
-      if (item.alt == true) {
-        matchStr += "alt_"
-      }
-      if (item.keys) {
-        matchStr += item.keys
-      }
-      //如果匹配则下发
-      if (m1Str == matchStr) {
-        item.action.action(evt);
-        break;
-      }
-    };
-
+    DDei.KEY_DOWN_STATE.set("" + evt.keyCode, false);
   }
 }
 

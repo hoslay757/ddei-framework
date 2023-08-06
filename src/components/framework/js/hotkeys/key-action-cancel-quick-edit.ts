@@ -1,3 +1,4 @@
+import DDei from "../ddei";
 import DDeiKeyAction from "./key-action";
 
 /**
@@ -7,7 +8,7 @@ import DDeiKeyAction from "./key-action";
 class DDeiKeyActionCancelQuickEdit extends DDeiKeyAction {
 
   // ============================ 方法 ===============================
-  action(evt: Event): void {
+  action(evt: Event, ddInstance: DDei): void {
     console.log("取消快捷编辑");
   }
 

@@ -32,22 +32,22 @@ class DDeiConfig {
 
   // 快捷键-键行为映射配置
   static HOT_KEY_MAPPING: object[] = [
-    //全选
-    { ctrl: true, keys: "65", action: DDeiEnumKeyActionInst.AllSelect },
-    // //追加选择
-    // { ctrl: true, action: DDeiEnumKeyActionInst.AppendSelect },
+    //全选,ctrl 0/null 不按下，1必须按下，2可选按下
+    { ctrl: 1, keys: "65", action: DDeiEnumKeyActionInst.AllSelect },
+    //取消全选,500毫秒内，连续按两下esc键
+    { keys: "27", times: 2, interval: 500, action: DDeiEnumKeyActionInst.CancelSelect },
     //删除
     { keys: "8", action: DDeiEnumKeyActionInst.RemoveModels },
     //F2
     { keys: "113", action: DDeiEnumKeyActionInst.StartQuickEdit },
     //上
-    { keys: "38", action: DDeiEnumKeyActionInst.UpMoveModels },
+    { ctrl: 2, keys: "38", action: DDeiEnumKeyActionInst.UpMoveModels },
     //下
-    { keys: "40", action: DDeiEnumKeyActionInst.DownMoveModels },
+    { ctrl: 2, keys: "40", action: DDeiEnumKeyActionInst.DownMoveModels },
     //左
-    { keys: "37", action: DDeiEnumKeyActionInst.LeftMoveModels },
+    { ctrl: 2, keys: "37", action: DDeiEnumKeyActionInst.LeftMoveModels },
     //右
-    { keys: "39", action: DDeiEnumKeyActionInst.RightMoveModels },
+    { ctrl: 2, keys: "39", action: DDeiEnumKeyActionInst.RightMoveModels },
     //回车
     { keys: "13", action: DDeiEnumKeyActionInst.EnterQuickEdit },
     //取消

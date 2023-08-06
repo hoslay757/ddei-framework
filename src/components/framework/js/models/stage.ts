@@ -71,6 +71,28 @@ class DDeiStage {
   }
 
   /**
+   * 添加模型到当前图层
+   */
+  addModel(model: DDeiAbstractShape): void {
+    if (this.layerIndex != -1) {
+      if (this.layers[this.layerIndex]) {
+        this.layers[this.layerIndex].addModel(model);
+      }
+    }
+  }
+
+  /**
+   * 移除当前图层模型
+   */
+  removeModel(model: DDeiAbstractShape): void {
+    if (this.layerIndex != -1) {
+      if (this.layers[this.layerIndex]) {
+        this.layers[this.layerIndex].removeModel(model);
+      }
+    }
+  }
+
+  /**
    * 获取所有图层的模型
    */
   getLayerModels(): DDeiAbstractShape[] {

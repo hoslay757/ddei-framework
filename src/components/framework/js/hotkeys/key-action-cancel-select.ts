@@ -3,10 +3,10 @@ import DDeiEnumControlState from "../enums/control-state";
 import DDeiKeyAction from "./key-action";
 
 /**
- * 键行为:全选
- * 全选所有控件
+ * 键行为:取消全选
+ * 取消选择所有控件
  */
-class DDeiKeyActionAllSelect extends DDeiKeyAction {
+class DDeiKeyActionCancelSelect extends DDeiKeyAction {
 
   // ============================ 方法 ===============================
   action(evt: Event, ddInstance: DDei): void {
@@ -15,9 +15,9 @@ class DDeiKeyActionAllSelect extends DDeiKeyAction {
       let stageRender = ddInstance.stage.render;
       //当前激活的图层
       let layer = ddInstance.stage.layers[ddInstance.stage.layerIndex]
-      //全选所有图形
+      //取消选择所有图形
       layer.models.forEach(item => {
-        item.state = DDeiEnumControlState.SELECTED
+        item.state = DDeiEnumControlState.DEFAULT
       });
       //根据选中图形的状态更新选择器
       stageRender.selector.updatedBoundsBySelectedModels();
@@ -29,4 +29,4 @@ class DDeiKeyActionAllSelect extends DDeiKeyAction {
 }
 
 
-export default DDeiKeyActionAllSelect
+export default DDeiKeyActionCancelSelect

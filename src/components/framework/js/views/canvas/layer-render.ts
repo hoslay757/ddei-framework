@@ -1,4 +1,5 @@
 import DDeiConfig from '../../config.js'
+import DDei from '../../ddei.js';
 import DDeiEnumControlState from '../../enums/control-state.js';
 import DDeiEnumOperateState from '../../enums/operate-state.js';
 import DDeiLayer from '../../models/layer.js';
@@ -73,7 +74,6 @@ class DDeiLayerCanvasRender {
     let ratio = this.ddRender.ratio;
     //保存状态
     ctx.save();
-
 
     //根据背景的设置绘制图层
     //绘制背景图层
@@ -173,10 +173,12 @@ class DDeiLayerCanvasRender {
       height: control.height
     }
 
-    //辅助对齐线宽度
-    let helpLineWeight = DDeiConfig.GLOBAL_HELP_LINE_WEIGHT;
+
     // 计算图形拖拽后将要到达的坐标
     if (DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
+      //辅助对齐线宽度
+      let helpLineWeight = DDeiConfig.GLOBAL_HELP_LINE_WEIGHT;
+
       var mod = movedBounds.x % helpLineWeight
       if (mod > helpLineWeight * 0.5) {
         movedBounds.x = movedBounds.x + (helpLineWeight - mod)
@@ -344,6 +346,8 @@ class DDeiLayerCanvasRender {
    * 鼠标按下事件
    */
   mouseDown(evt: Event): void {
+    //ctrl键的按下状态
+    let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
     // 获取当前光标所属位置是否有控件
     let operateControls = this.model.findModelsByArea(evt.offsetX, evt.offsetY);
     //光标所属位置是否有控件
@@ -358,26 +362,28 @@ class DDeiLayerCanvasRender {
       //分发事件到当前控件 TODO 事件分发逻辑设计
       operateControl.render.mouseDown(evt);
 
-      //如果当前操作控件不在选中控件中，则清空所有当前选中控件
-      let selectedModels = this.model.getSelectedModels();
-      if (!selectedModels.has(operateControl.id)) {
-        //清空除了当前操作控件外所有选中状态控件
-        this.model.cancelSelectModels();
-        if (this.stageRender.selector) {
-          this.stageRender.selector.resetState();
+      //没有按下ctrl键，并且当前操作控件不在选中控件中，则清空所有当前选中控件
+      if (!isCtrl) {
+        let selectedModels = this.model.getSelectedModels();
+        if (!selectedModels.has(operateControl.id)) {
+          //清空除了当前操作控件外所有选中状态控件
+          this.model.cancelSelectModels();
+          if (this.stageRender.selector) {
+            this.stageRender.selector.resetState();
+          }
         }
       }
-
     }
     //无控件，显示选择框
     else {
-      this.stageRender.initSelector(evt);
-      this.stageRender.selector.layer = this.model
-      this.stageRender.selector.layerRender = this
+      //重置选择器位置
+      this.stageRender.selector.resetState(evt.offsetX, evt.offsetY);
       //当前操作状态：选择器工作中
       this.stageRender.operateState = DDeiEnumOperateState.SELECT_WORKING
-      //清空除了当前操作控件外所有选中状态控件
-      this.model.cancelSelectModels();
+      //当没有按下ctrl键时，清空除了当前操作控件外所有选中状态控件
+      if (!isCtrl) {
+        this.model.cancelSelectModels();
+      }
     }
 
 
@@ -388,6 +394,7 @@ class DDeiLayerCanvasRender {
    * 绘制图形
    */
   mouseUp(evt: Event): void {
+
     //判断当前操作状态
     switch (this.stageRender.operateState) {
       //控件状态确认中
@@ -404,6 +411,10 @@ class DDeiLayerCanvasRender {
         }
         //当前操作控件：无
         this.stageRender.currentOperateShape = null;
+        //根据选中图形的状态更新选择器
+        if (this.stageRender.selector) {
+          this.stageRender.selector.updatedBoundsBySelectedModels();
+        }
         //当前操作状态:无
         this.stageRender.operateState = DDeiEnumOperateState.NONE;
         break;

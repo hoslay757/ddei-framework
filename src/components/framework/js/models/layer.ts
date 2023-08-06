@@ -67,6 +67,28 @@ class DDeiLayer {
   }
 
   /**
+   * 添加模型，并维护关系
+   * @param model 被添加的模型
+   */
+  addModel(model: DDeiAbstractShape): void {
+    model.stage = this.stage;
+    //将模型添加进图层
+    this.models.set(model.id, model);
+    model.layer = this;
+  }
+
+  /**
+   * 移除模型，并维护关系
+   * @param model 被移除的模型
+   */
+  removeModel(model: DDeiAbstractShape): void {
+    this.models.delete(model.id);
+    model.layer = null;
+    model.stage = null;
+    model.render = null;
+  }
+
+  /**
    * 取消选择控件,默认取消所有
    */
   cancelSelectModels(models: DDeiAbstractShape[] | undefined): void {

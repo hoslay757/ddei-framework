@@ -80,16 +80,10 @@ export default {
           "    示 . 例    矩形1示例矩形2222示例矩33形3示例33矩形4示例矩形5示例矩形6示例矩形7呀哈哈示例矩形1示例矩形2222示例矩33形3示例33矩形4示例矩形5示例矩形6示例矩形7呀哈哈" +
           ddInstance.stage.idIdx,
       });
-      rect.stage = ddInstance.stage;
       //下标自增1
       ddInstance.stage.idIdx++;
-      //将矩形添加进图层
-      ddInstance.stage.layers[ddInstance.stage.layerIndex].models.set(
-        rect.id,
-        rect
-      );
-      rect.layer = ddInstance.stage.layers[ddInstance.stage.layerIndex];
-      rect.pModel = rect.layer;
+      //添加模型到图层
+      ddInstance.stage.addModel(rect);
       //绑定并初始化渲染器
       DDeiConfig.bindRender(rect);
       rect.render.init();
@@ -111,16 +105,10 @@ export default {
           "示例圆型1示例圆型2示例圆型3示例圆型4示例圆型5示例圆型6" +
           ddInstance.stage.idIdx,
       });
-      circle.stage = ddInstance.stage;
       //下标自增1
       ddInstance.stage.idIdx++;
-      //将矩形添加进图层
-      ddInstance.stage.layers[ddInstance.stage.layerIndex].models.set(
-        circle.id,
-        circle
-      );
-      circle.layer = ddInstance.stage.layers[ddInstance.stage.layerIndex];
-      circle.pModel = circle.layer;
+      //添加模型到图层
+      ddInstance.stage.addModel(circle);
       //绑定并初始化渲染器
       DDeiConfig.bindRender(circle);
       circle.render.init();
