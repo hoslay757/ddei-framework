@@ -16,6 +16,7 @@
               @click="createCircle()"
               style="width:120px;height:30px;margin-top:10px">圆型</button>
       <button type="button"
+              @click="createDiamond()"
               style="width:120px;height:30px;margin-top:10px">菱形</button>
     </div>
     <div class="middle">
@@ -46,6 +47,7 @@ import DDeiConfig from "./components/framework/js/config";
 import DDei from "./components/framework/js/ddei";
 import DDeiRectangle from "./components/framework/js/models/rectangle";
 import DDeiCircle from "./components/framework/js/models/circle";
+import DDeiDiamond from "./components/framework/js/models/diamond";
 
 export default {
   name: "APP",
@@ -112,6 +114,31 @@ export default {
       //绑定并初始化渲染器
       DDeiConfig.bindRender(circle);
       circle.render.init();
+      //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
+      ddInstance.stage.render.drawShape();
+    },
+    //创建菱形
+    createDiamond() {
+      //获取当前实例
+      let ddInstance = DDei.INSTANCE_POOL["ddei_demo"];
+      //创建一个矩形
+      let diamond = DDeiDiamond.initByJSON({
+        id: "diamond_" + ddInstance.stage.idIdx,
+        x: 10 + ddInstance.stage.idIdx * 100,
+        y: 10 + ddInstance.stage.idIdx * 100,
+        width: 160,
+        height: 80,
+        text:
+          "示例圆型1示例圆型2示例圆型3示例圆型4示例圆型5示例圆型6" +
+          ddInstance.stage.idIdx,
+      });
+      //下标自增1
+      ddInstance.stage.idIdx++;
+      //添加模型到图层
+      ddInstance.stage.addModel(diamond);
+      //绑定并初始化渲染器
+      DDeiConfig.bindRender(diamond);
+      diamond.render.init();
       //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
       ddInstance.stage.render.drawShape();
     },

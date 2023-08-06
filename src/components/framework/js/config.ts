@@ -5,6 +5,7 @@ import DDeiRectangleCanvasRender from "./views/canvas/rectangle-render"
 import DDeiCircleCanvasRender from "./views/canvas/circle-render"
 import DDeiSelectorCanvasRender from "./views/canvas/selector-render"
 import DDeiEnumKeyActionInst from "./enums/key-action-inst"
+import DDeiDiamondCanvasRender from "./views/canvas/diamond-render"
 /**
  * DDei的配置文件
  * 提供了全局参数与缺省值的设置
@@ -214,6 +215,67 @@ class DDeiConfig {
     }
   };
 
+  // 菱形的相关缺省样式属性
+  static DIAMOND: object = {
+    BORDER: {
+      top: {
+        default: { width: 1, color: "black", dash: [3, 1], round: 0, disabled: false },
+        selected: { width: 1, color: "black", dash: null, round: 0 }
+      },
+      right: {
+        default: { width: 1, color: "blue", dash: null, round: 0 },
+        selected: { width: 1, color: "black", dash: null, round: 0 }
+      },
+      bottom: {
+        default: { width: 1, color: "green", dash: null, round: 0, opacity: 1 },
+        selected: { width: 1, color: "black", dash: null, round: 0 }
+      },
+      left: {
+        default: { width: 1, color: "yellow", dash: null, round: 0, opacity: 1 },
+        selected: { width: 1, color: "black", dash: null, round: 0 }
+      }
+    },
+    // 默认矩形填充
+    FILL: {
+      default: { color: "red", opacity: 0.5 },
+      selected: { color: "white" }
+    },
+    // 默认矩形字体
+    FONT: {
+      default: {
+        //字体
+        family: "STSong-Light",
+        //颜色
+        color: "white",
+        //大小
+        size: 16
+      },
+      selected: { family: "STSong-Light", color: "#000000", size: 16 }
+    },
+    // 默认矩形文本样式
+    TEXTSTYLE: {
+      default: {
+        //水平对齐，1，2，3左中右，默认1
+        align: 1,
+        //垂直对齐，1，2，3上中下，默认2
+        valign: 2,
+        //自动换行，0/null不换行，1换行，默认0
+        feed: 1,
+        //缩小字体填充，0/null不缩小，1缩小，默认0
+        autoScaleFill: 1,
+        //镂空，0/null不镂空，1镂空，默认0
+        hollow: 0
+      },
+      selected: {
+        align: 1,
+        valign: 2,
+        feed: 0,
+        autoScaleFill: 0,
+        hollow: 0
+      }
+    }
+  };
+
   //用于存储当前浏览器下单位空格字体的大小
   static SPACE_WIDTH_MAP: any = {};
 
@@ -233,6 +295,8 @@ class DDeiConfig {
         model.render = new DDeiRectangleCanvasRender({ model: model });
       } else if (model.modelType == "DDeiCircle") {
         model.render = new DDeiCircleCanvasRender({ model: model });
+      } else if (model.modelType == "DDeiDiamond") {
+        model.render = new DDeiDiamondCanvasRender({ model: model });
       } else if (model.modelType == "DDeiSelector") {
         model.render = new DDeiSelectorCanvasRender({ model: model });
       }
