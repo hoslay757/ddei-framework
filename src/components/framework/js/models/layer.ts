@@ -17,7 +17,7 @@ class DDeiLayer {
     this.index = -1;
     this.type = props.type ? props.type : 0;
     this.background = props.background ? props.background : null;
-    this.display = props.display ? props.display : true;
+    this.display = props.display ? props.display : 1;
   }
 
   // ============================ 静态变量 ============================
@@ -49,8 +49,10 @@ class DDeiLayer {
   type: number;
   // 背景信息，为一个json，包含了背景的类型，以及各种类型下的详细定义
   background: any;
-  // 当前图层是否显示，true显示，false不显示
-  display: boolean;
+  // 当前图层是否显示，0不显示，1正常显示，2显示在最顶层
+  display: number = 1;
+  // 当前图层是否锁定，true显示，false不显示
+  lock: boolean = false;
   // ============================ 方法 ===============================
   /**
   * 初始化渲染器

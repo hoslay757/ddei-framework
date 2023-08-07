@@ -56,11 +56,13 @@ class DDeiLayerCanvasRender {
    * 绘制图形
    */
   drawShape(): void {
-    //绘制背景
-    this.drawBackground();
-
-    //绘制子元素
-    this.drawChildrenShapes();
+    //只有当显示时才绘制图层
+    if (this.model.display) {
+      //绘制背景
+      this.drawBackground();
+      //绘制子元素
+      this.drawChildrenShapes();
+    }
   }
 
   /**
@@ -346,6 +348,10 @@ class DDeiLayerCanvasRender {
    * 鼠标按下事件
    */
   mouseDown(evt: Event): void {
+    //只有当显示时才绘制图层
+    if (!this.model.display) {
+      return
+    }
     //ctrl键的按下状态
     let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
     // 获取当前光标所属位置是否有控件
@@ -394,7 +400,10 @@ class DDeiLayerCanvasRender {
    * 绘制图形
    */
   mouseUp(evt: Event): void {
-
+    //只有当显示时才绘制图层
+    if (!this.model.display) {
+      return;
+    }
     //判断当前操作状态
     switch (this.stageRender.operateState) {
       //控件状态确认中
@@ -455,6 +464,10 @@ class DDeiLayerCanvasRender {
    * 鼠标移动
    */
   mouseMove(evt: Event): void {
+    //只有当显示时才绘制图层
+    if (!this.model.display) {
+      return;
+    }
     //判断当前操作状态
     switch (this.stageRender.operateState) {
       //控件状态确认中

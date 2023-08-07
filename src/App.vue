@@ -26,13 +26,21 @@
     <div class="bottom">
 
       <button type="button"
-              style="width:120px;height:30px;margin-top:10px">图层1</button>
+              v-for="(item,i) in layers"
+              @click="changeLayer(i)"
+              style="width:120px;height:30px;margin-top:10px">{{item.id}}</button>
       <button type="button"
-              style="width:120px;height:30px;margin-top:10px">图层2</button>
-      <button type="button"
+              @click="createLayer()"
               style="width:120px;height:30px;margin-top:10px">图层+</button>
       <button type="button"
+              @click="removeLayer()"
               style="width:120px;height:30px;margin-top:10px">图层-</button>
+      <button type="button"
+              @click="displayLayer()"
+              style="width:120px;height:30px;margin-top:10px">显示图层</button>
+      <button type="button"
+              @click="hiddenLayer()"
+              style="width:120px;height:30px;margin-top:10px">隐藏图层</button>
       <button type="button"
               style="width:120px;height:30px;margin-top:10px">放大</button>
       <button type="button"
@@ -59,23 +67,28 @@ export default {
     FrameWorkTest,
   },
   data() {
-    return {};
+    return {
+      layers: [],
+    };
   },
   computed: {},
   watch: {},
   created() {},
-  mounted() {},
+  mounted() {
+    let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_demo"];
+    this.layers = ddInstance.stage.layers;
+  },
   methods: {
     //创建矩形
     createRectangle() {
       //TODO 这里是否应该直接封装一个方法维护关系？
       //获取当前实例
-      let ddInstance = DDei.INSTANCE_POOL["ddei_demo"];
+      let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_demo"];
       //创建一个矩形
-      let rect = DDeiRectangle.initByJSON({
+      let rect: DDeiRectangle = DDeiRectangle.initByJSON({
         id: "rect_" + ddInstance.stage.idIdx,
-        x: 10 + ddInstance.stage.idIdx * 100,
-        y: 10 + ddInstance.stage.idIdx * 100,
+        x: 100,
+        y: 100,
         width: 160,
         height: 80,
         text:
@@ -95,12 +108,12 @@ export default {
     //创建圆型
     createCircle() {
       //获取当前实例
-      let ddInstance = DDei.INSTANCE_POOL["ddei_demo"];
+      let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_demo"];
       //创建一个矩形
-      let circle = DDeiCircle.initByJSON({
+      let circle: DDeiCircle = DDeiCircle.initByJSON({
         id: "circle_" + ddInstance.stage.idIdx,
-        x: 10 + ddInstance.stage.idIdx * 100,
-        y: 10 + ddInstance.stage.idIdx * 100,
+        x: 100,
+        y: 100,
         width: 160,
         height: 80,
         text:
@@ -120,12 +133,12 @@ export default {
     //创建菱形
     createDiamond() {
       //获取当前实例
-      let ddInstance = DDei.INSTANCE_POOL["ddei_demo"];
+      let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_demo"];
       //创建一个矩形
-      let diamond = DDeiDiamond.initByJSON({
+      let diamond: DDeiDiamond = DDeiDiamond.initByJSON({
         id: "diamond_" + ddInstance.stage.idIdx,
-        x: 10 + ddInstance.stage.idIdx * 100,
-        y: 10 + ddInstance.stage.idIdx * 100,
+        x: 100,
+        y: 100,
         width: 160,
         height: 80,
         text:
@@ -139,6 +152,62 @@ export default {
       //绑定并初始化渲染器
       DDeiConfig.bindRender(diamond);
       diamond.render.init();
+      //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
+      ddInstance.stage.render.drawShape();
+    },
+
+    //创建图层
+    createLayer() {
+      //获取当前实例
+      let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_demo"];
+      let layer = ddInstance.stage.addLayer();
+      //绑定并初始化渲染器
+      DDeiConfig.bindRender(layer);
+      layer.render.init();
+      //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
+      ddInstance.stage.render.drawShape();
+      this.$forceUpdate();
+    },
+
+    //销毁当前图层
+    removeLayer() {
+      //获取当前实例
+      let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_demo"];
+      let layer = ddInstance.stage.removeLayer();
+      if (layer) {
+        //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
+        ddInstance.stage.render.drawShape();
+        this.$forceUpdate();
+      }
+    },
+
+    //修改图层
+    changeLayer(index) {
+      let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_demo"];
+      ddInstance.stage.cancelSelectModels();
+      //根据选中图形的状态更新选择器
+      if (ddInstance.stage.render.selector) {
+        ddInstance.stage.render.selector.updatedBoundsBySelectedModels();
+      }
+      ddInstance.stage.changeLayer(index);
+      ddInstance.stage.displayLayer(null, true);
+
+      //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
+      ddInstance.stage.render.drawShape();
+    },
+
+    //隐藏图层
+    hiddenLayer() {
+      let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_demo"];
+      ddInstance.stage.hiddenLayer();
+      //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
+      ddInstance.stage.render.drawShape();
+    },
+
+    //显示图层
+    displayLayer() {
+      let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_demo"];
+      ddInstance.stage.displayLayer(null, true);
       //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
       ddInstance.stage.render.drawShape();
     },

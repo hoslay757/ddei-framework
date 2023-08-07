@@ -71,6 +71,119 @@ class DDeiStage {
   }
 
   /**
+   * 添加图层到某一层，如果不指定则添加到最外层
+   * @param layer 被添加的图层
+   * @param layerIndex 图层Index
+   */
+  addLayer(layer: DDeiLayer | undefined, layerIndex: number | undefined): DDeiLayer {
+    //如果layer不存在，创建一个空图层，添加进去
+    if (!layer) {
+      let curIdx = this.idIdx++;
+      layer = DDeiLayer.initByJSON({ id: "layer_" + curIdx });
+      layer.stage = this;
+    }
+    //如果layerIndex不存在，则添加到最外层
+    if (!layerIndex || layerIndex < 0) {
+      layerIndex = 0;
+    }
+    //如果下标超过了background图层，则确保一定在background图层之前
+    else if (layerIndex > this.layers.length - 1) {
+      layerIndex = this.layers.length - 1
+    }
+    //添加图层到相应位置
+    this.layers.splice(layerIndex, 0, layer);
+    //对所有的图层属性进行维护
+    for (let i = 0; i < this.layers.length; i++) {
+      this.layers[i].index = i;
+    }
+    //设置当前图层为新建图层
+    this.layerIndex = layerIndex;
+
+    return layer;
+  }
+
+  /**
+   * 修改当前图层
+   * @param layerIndex 图层下标
+   */
+  changeLayer(layerIndex: number) {
+    this.layerIndex = layerIndex;
+  }
+
+  /**
+   * 隐藏图层
+   * @param layerIndex 图层下标，不传则为当前图层
+   */
+  hiddenLayer(layerIndex: number) {
+    if (!layerIndex) {
+      layerIndex = this.layerIndex;
+    }
+    this.layers[layerIndex].display = 0
+  }
+
+  /**
+  * 显示图层
+  * @param layerIndex 图层下标，不传则为当前图层
+  * @param top 是否显示在最顶层
+  */
+  displayLayer(layerIndex: number, top: boolean) {
+    if (!layerIndex || layerIndex < 0 || layerIndex > this.layers[layerIndex].length - 1) {
+      layerIndex = this.layerIndex;
+    }
+    if (top) {
+      this.layers[layerIndex].display = 2
+      //将其他在顶层显示的图层改为非顶层
+      for (let i = 0; i < this.layers.length; i++) {
+        if (i != layerIndex && this.layers[i].display == 2) {
+          this.layers[i].display = 1;
+        }
+      }
+    } else {
+      this.layers[layerIndex].display = 1
+    }
+  }
+
+  /**
+   * 移除图层,如果不指定则移除当前图层
+   * @param layerIndex 移除图层的index
+   */
+  removeLayer(layerIndex: number | undefined): DDeiLayer {
+    //如果layers只剩下background图层，则不允许移除
+    if (this.layers.length <= 1) {
+      return null;
+    }
+    //如果layerIndex不存在，创建一个空图层，添加进去
+    if (!layerIndex) {
+      layerIndex = this.layerIndex;
+    }
+    //如果layerIndex小于0，则移除最外层图层
+    if (layerIndex < 0) {
+      layerIndex = 0;
+    }
+    //如果下标超过了background图层，则移除background之前的一个图层
+    else if (layerIndex > this.layers.length - 2) {
+      layerIndex = this.layers.length - 2
+    }
+
+    //获取要移除的图层
+    let layer = this.layers[layerIndex];
+
+    //添加图层到相应位置
+    this.layers.splice(layerIndex, 1);
+    if (layerIndex > this.layers.length - 1) {
+      layerIndex = this.layers.length - 1
+    }
+    //对所有的图层属性进行维护
+    for (let i = 0; i < this.layers.length; i++) {
+      this.layers[i].index = i;
+    }
+    //设置当前图层为新建图层
+    this.layerIndex = layerIndex;
+
+    return layer;
+  }
+
+  /**
    * 添加模型到当前图层
    */
   addModel(model: DDeiAbstractShape): void {
@@ -92,6 +205,14 @@ class DDeiStage {
     }
   }
 
+  /**
+   * 全部取消所有已选控件
+   */
+  cancelSelectModels(): void {
+    for (let i = 0; i < this.layers.length; i++) {
+      this.layers[i].cancelSelectModels();
+    }
+  }
   /**
    * 获取所有图层的模型
    */

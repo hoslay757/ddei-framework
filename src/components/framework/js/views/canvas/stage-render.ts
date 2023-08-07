@@ -56,8 +56,17 @@ class DDeiStageCanvasRender {
    * 创建图形
    */
   drawShape(): void {
+    //display=2的节点，最后渲染
+    let topDisplayIndex = -1;
     for (let i = this.model.layers.length - 1; i >= 0; i--) {
-      this.model.layers[i].render.drawShape();
+      if (this.model.layers[i].display == 1) {
+        this.model.layers[i].render.drawShape();
+      } else if (this.model.layers[i].display == 2) {
+        topDisplayIndex = i;
+      }
+    }
+    if (topDisplayIndex != -1) {
+      this.model.layers[topDisplayIndex].render.drawShape();
     }
     if (this.selector) {
       this.selector.render.drawShape();

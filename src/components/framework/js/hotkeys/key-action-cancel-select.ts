@@ -16,9 +16,7 @@ class DDeiKeyActionCancelSelect extends DDeiKeyAction {
       //当前激活的图层
       let layer = ddInstance.stage.layers[ddInstance.stage.layerIndex]
       //取消选择所有图形
-      layer.models.forEach(item => {
-        item.state = DDeiEnumControlState.DEFAULT
-      });
+      layer.cancelSelectModels();
       //根据选中图形的状态更新选择器
       stageRender.selector.updatedBoundsBySelectedModels();
       //重新绘制
