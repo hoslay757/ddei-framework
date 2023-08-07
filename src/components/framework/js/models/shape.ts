@@ -154,6 +154,29 @@ abstract class DDeiAbstractShape {
   zIndex: number | null;
   // ============================ 方法 ===============================
   /**
+   * 判断图形是否在一个区域内，采用宽松的判定模式，允许传入一个大小值
+   * @param x
+   * @param y
+   * @param looseWeight 宽松判定的宽度，默认0
+   * @returns 是否在区域内
+   */
+  isInAreaLoose(x: number | undefined = undefined, y: number | undefined = undefined, looseWeight: number = 0): boolean {
+    if (x === undefined || y === undefined) {
+      return false
+    }
+    // 对角判断
+    let modelX = this.x - looseWeight
+    let modelX1 = this.x + this.width + looseWeight
+    let modelY = this.y - looseWeight
+    let modelY1 = this.y + this.height + looseWeight
+
+    return modelX <= x &&
+      modelY <= y &&
+      modelX1 >= x &&
+      modelY1 >= y
+
+  }
+  /**
    * 判断图形是否在一个区域内
    * @param area 矩形区域
    * @returns 是否在区域内

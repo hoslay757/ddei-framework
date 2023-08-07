@@ -515,6 +515,12 @@ class DDeiLayerCanvasRender {
         break;
       //默认缺省状态
       default:
+        //判断当前鼠标坐标是否落在选择器控件的区域内
+        if (this.stageRender.selector &&
+          this.stageRender.selector.isInAreaLoose(evt.offsetX, evt.offsetY, DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2)) {
+          console.log("selector")
+        }
+
         break;
     }
   }
