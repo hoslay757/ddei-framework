@@ -130,6 +130,26 @@ abstract class DDeiAbstractShape {
     return { x, y, width, height, x1: x + width, y1: y + height }
   }
 
+  /**
+   * 判断图形是否在一个区域内
+   * @param area 矩形区域
+   * @returns 是否在区域内
+   */
+  static isInArea(x: number, y: number, area: object): boolean {
+    if (x === undefined || y === undefined || area === undefined) {
+      return false
+    }
+    // 对角判断
+    let modelX = area.x
+    let modelX1 = area.x + area.width
+    let modelY = area.y
+    let modelY1 = area.y + area.height
+    return modelX <= x &&
+      modelY <= y &&
+      modelX1 >= x &&
+      modelY1 >= y
+  }
+
 
   // ============================ 属性 ===============================
   id: string;

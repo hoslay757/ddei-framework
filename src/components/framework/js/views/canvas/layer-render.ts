@@ -518,7 +518,8 @@ class DDeiLayerCanvasRender {
         //判断当前鼠标坐标是否落在选择器控件的区域内
         if (this.stageRender.selector &&
           this.stageRender.selector.isInAreaLoose(evt.offsetX, evt.offsetY, DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2)) {
-          console.log("selector")
+          //派发给selector的mousemove事件，在事件中对具体坐标进行判断
+          this.stageRender.selector.render.mouseMove(evt);
         }
 
         break;

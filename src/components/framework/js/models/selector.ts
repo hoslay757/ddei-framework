@@ -38,8 +38,24 @@ class DDeiSelector extends DDeiRectangle {
   //操作区域的填充样式，根据选中和未选中状态可以有所变化
   operateIconFill: object;
 
+  //当前操作触发pass的下标，-1为未激活，1～8按，1:中上，2右上顺时针计数，9为旋转
+  passIndex: number = -1;
+
+  //当前操作触发pass的是否发生变化
+  passChange: boolean = false;
+
   // ============================ 方法 ===============================
 
+  /**
+   * 设置passindex
+   * @param index pass值
+   */
+  setPassIndex(index: number) {
+    if (this.passIndex != index) {
+      this.passIndex = index;
+      this.passChange = true;
+    }
+  }
   /**
    * 重制状态
    */
