@@ -437,6 +437,8 @@ class DDeiLayerCanvasRender {
           });
           //根据选中图形的状态更新选择器
           this.stageRender.selector.updatedBoundsBySelectedModels();
+          //重新渲染
+          this.ddRender.drawShape();
         }
         //当前操作状态:无
         this.stageRender.operateState = DDeiEnumOperateState.NONE;

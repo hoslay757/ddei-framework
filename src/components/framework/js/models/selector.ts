@@ -1,3 +1,4 @@
+import DDeiConfig from '../config';
 import DDeiEnumControlState from '../enums/control-state';
 import DDeiRectangle from './rectangle';
 import DDeiAbstractShape from './shape';
@@ -13,6 +14,8 @@ class DDeiSelector extends DDeiRectangle {
   // ============================ 构造函数 ============================
   constructor(props: object) {
     super(props);
+    this.paddingWeight = props.paddingWeight;
+    this.operateIconFill = props.operateIconFill;
   }
 
   // ============================ 静态变量 ============================
@@ -28,6 +31,12 @@ class DDeiSelector extends DDeiRectangle {
   modelType: string = 'DDeiSelector';
   // 本模型的基础图形
   baseModelType: string = 'DDeiSelector';
+
+  //间隔宽度，根据选中单个控件、选中多个控件，间隔宽度可以有所变化
+  paddingWeight: object;
+
+  //操作区域的填充样式，根据选中和未选中状态可以有所变化
+  operateIconFill: object;
 
   // ============================ 方法 ===============================
 
@@ -77,8 +86,15 @@ class DDeiSelector extends DDeiRectangle {
   updatedBoundsBySelectedModels(): void {
     let selectedModels = this.stage.layers[this.stage.layerIndex].getSelectedModels();
     if (selectedModels && selectedModels.size > 0) {
+      let paddingWeightInfo = this.paddingWeight?.selected ? this.paddingWeight.selected : DDeiConfig.SELECTOR.PADDING_WEIGHT.selected;
+      let paddingWeight = 0;
+      if (selectedModels.size > 1) {
+        paddingWeight = paddingWeightInfo.multiple;
+      } else {
+        paddingWeight = paddingWeightInfo.single;
+      }
       let outRectBounds = DDeiAbstractShape.getOutRect(Array.from(selectedModels.values()));
-      this.setBounds(outRectBounds.x, outRectBounds.y, outRectBounds.width, outRectBounds.height);
+      this.setBounds(outRectBounds.x - paddingWeight, outRectBounds.y - paddingWeight, outRectBounds.width + 2 * paddingWeight, outRectBounds.height + 2 * paddingWeight);
       //设置选择器状态为选中后
       this.state = DDeiEnumControlState.SELECTED;
     } else {

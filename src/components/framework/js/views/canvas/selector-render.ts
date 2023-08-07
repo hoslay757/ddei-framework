@@ -1,3 +1,4 @@
+import DDeiConfig from '../../config.js';
 import DDeiEnumControlState from '../../enums/control-state.js';
 import DDeiSelector from '../../models/selector.js';
 import DDeiAbstractShape from '../../models/shape.js';
@@ -16,7 +17,12 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
    */
   drawShape(): void {
 
+    //绘制边框
     this.drawBorder();
+
+
+    //绘制边框上的操作图形
+    this.drawOperatorShape();
 
     //绘制填充
     this.drawFill();
@@ -25,21 +31,78 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     this.drawIncludedStyle();
   }
 
+
   /**
-   * 取得边框的绘制区域
+   * 获取边框上的操作图形
+   * @param tempBorder 
    */
-  getBorderRatPos() {
+  drawOperatorShape(tempBorder: object | null): void {
+    if (this.model.state != DDeiEnumControlState.SELECTED) {
+      return;
+    }
+    //获得 2d 上下文对象
+    let canvas = this.ddRender.canvas;
+    let ctx = canvas.getContext('2d');
     //获取全局缩放比例
     let ratio = this.ddRender.ratio;
-    let ratPos = DDeiUtil.getRatioPosition(this.model, ratio);
-    if (this.model.state == DDeiEnumControlState.SELECTED) {
-      let paddingWidth: number = 10 * ratio;
-      ratPos.x = ratPos.x - paddingWidth
-      ratPos.y = ratPos.y - paddingWidth
-      ratPos.width = ratPos.width + 2 * paddingWidth
-      ratPos.height = ratPos.height + 2 * paddingWidth
+    //转换为缩放后的坐标
+    let ratPos = this.getBorderRatPos();
+
+    //绘制四个方向的操作点
+    //1,2,3,4 上，右，下，左
+    for (let i = 1; i <= 4; i++) {
+      //如果被选中，使用选中的边框，否则使用缺省边框
+      //TODO 样式最小替换颗粒度，需要前后保持一致
+      let borderInfo = this.getBorderInfo(tempBorder, i);
+
+      //绘制四个方向的边框
+      //如果边框未被disabled，则绘制边框
+      if (!borderInfo.disabled && borderInfo.color && (!borderInfo.opacity || borderInfo.opacity > 0) && borderInfo.width > 0) {
+        //保存状态
+        ctx.save();
+        //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
+        let lineOffset = borderInfo.width * ratio / 2;
+        ctx.lineWidth = borderInfo.width * ratio;
+        ctx.beginPath();
+
+        //透明度
+        if (borderInfo.opacity) {
+          ctx.globalAlpha = borderInfo.opacity
+        }
+        //颜色
+        ctx.strokeStyle = DDeiUtil.getColor(borderInfo.color);
+        //填充操作图标的颜色
+        let defaultFillColor = DDeiUtil.getColor(DDeiConfig.SELECTOR.OPERATE_ICON.FILL.default);
+        ctx.fillStyle = defaultFillColor;
+        //操作图标的宽度
+        let width = DDeiConfig.SELECTOR.OPERATE_ICON.weight * ratio;
+        if (i == 1) {
+          ctx.strokeRect(ratPos.x + ratPos.width * 0.5 - width * 0.5 + lineOffset, ratPos.y - width * 0.5 + lineOffset, width, width);
+          ctx.fillRect(ratPos.x + ratPos.width * 0.5 - width * 0.5 + lineOffset, ratPos.y - width * 0.5 + lineOffset, width, width);
+          ctx.strokeRect(ratPos.x + ratPos.width - width * 0.5 - lineOffset, ratPos.y - width * 0.5 + lineOffset, width, width);
+          ctx.fillRect(ratPos.x + ratPos.width - width * 0.5 - lineOffset, ratPos.y - width * 0.5 + lineOffset, width, width);
+        } else if (i == 2) {
+          ctx.strokeRect(ratPos.x + ratPos.width - width * 0.5 - lineOffset, ratPos.y + ratPos.height * 0.5 - width * 0.5 + lineOffset, width, width);
+          ctx.strokeRect(ratPos.x + ratPos.width - width * 0.5 - lineOffset, ratPos.y + ratPos.height - width * 0.5 - lineOffset, width, width);
+          ctx.fillRect(ratPos.x + ratPos.width - width * 0.5 - lineOffset, ratPos.y + ratPos.height * 0.5 - width * 0.5 + lineOffset, width, width);
+          ctx.fillRect(ratPos.x + ratPos.width - width * 0.5 - lineOffset, ratPos.y + ratPos.height - width * 0.5 - lineOffset, width, width);
+        } else if (i == 3) {
+          ctx.strokeRect(ratPos.x + ratPos.width * 0.5 - width * 0.5 + lineOffset, ratPos.y + ratPos.height - width * 0.5 - lineOffset, width, width);
+          ctx.strokeRect(ratPos.x - width * 0.5 + lineOffset, ratPos.y + ratPos.height - width * 0.5 - lineOffset, width, width);
+          ctx.fillRect(ratPos.x + ratPos.width * 0.5 - width * 0.5 + lineOffset, ratPos.y + ratPos.height - width * 0.5 - lineOffset, width, width);
+          ctx.fillRect(ratPos.x - width * 0.5 + lineOffset, ratPos.y + ratPos.height - width * 0.5 - lineOffset, width, width);
+        } else if (i == 4) {
+          ctx.strokeRect(ratPos.x - width * 0.5 + lineOffset, ratPos.y + ratPos.height * 0.5 - width * 0.5 + lineOffset, width, width);
+          ctx.strokeRect(ratPos.x - width * 0.5 + lineOffset, ratPos.y - width * 0.5 + lineOffset, width, width);
+          ctx.fillRect(ratPos.x - width * 0.5 + lineOffset, ratPos.y + ratPos.height * 0.5 - width * 0.5 + lineOffset, width, width);
+          ctx.fillRect(ratPos.x - width * 0.5 + lineOffset, ratPos.y - width * 0.5 + lineOffset, width, width);
+        }
+
+        //恢复状态
+        ctx.restore();
+      }
+
     }
-    return ratPos;
   }
 
   /**
@@ -66,16 +129,18 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
   drawIncludedStyle(): void {
     //选中被选择器包含的控件
     let includedModels: Map<string, DDeiAbstractShape> | null = null;
+    let selectNumber = 0
     if (this.model.state == DDeiEnumControlState.DEFAULT) {
       includedModels = this.model.getIncludedModels();
     } else if (this.model.state == DDeiEnumControlState.SELECTED) {
       includedModels = this.stage.layers[this.stage.layerIndex].getSelectedModels();
+      selectNumber = 1
     }
-    if (includedModels && includedModels.size > 0) {
+    if (includedModels && includedModels.size > selectNumber) {
       includedModels.forEach((model, key) => {
         //绘制临时Border
         //TODO 样式的配置
-        model.render.drawBorder({ width: 2, color: "red" });
+        model.render.drawBorder({ width: 1, color: "red" });
       });
     }
 
