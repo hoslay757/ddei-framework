@@ -46,6 +46,132 @@ class DDeiSelector extends DDeiRectangle {
 
   // ============================ 方法 ===============================
 
+
+  /**
+   * 计算移动后的坐标
+   */
+  getMovedBounds(dx: number, dy: number): object {
+    if (!dx && !dy) {
+      return null;
+    }
+    let returnBounds = { x: this.x, y: this.y, width: this.width, height: this.height }
+    switch (this.passIndex) {
+      //上中
+      case 1: {
+        returnBounds.y = returnBounds.y + dy
+        returnBounds.height = returnBounds.height - dy
+        break;
+      }
+      //上右
+      case 2: {
+        returnBounds.y = returnBounds.y + dy
+        returnBounds.height = returnBounds.height - dy
+        returnBounds.width = returnBounds.width + dx
+        break;
+      }
+      //中右
+      case 3: {
+        returnBounds.width = returnBounds.width + dx
+        break;
+      }
+      //下右
+      case 4: {
+        returnBounds.width = returnBounds.width + dx
+        returnBounds.height = returnBounds.height + dy
+        break;
+      }
+      //下中
+      case 5: {
+        returnBounds.height = returnBounds.height + dy
+        break;
+      }
+      //下左
+      case 6: {
+        returnBounds.x = returnBounds.x + dx
+        returnBounds.width = returnBounds.width - dx
+        returnBounds.height = returnBounds.height + dy
+        break;
+      }
+      //中左
+      case 7: {
+        returnBounds.x = returnBounds.x + dx
+        returnBounds.width = returnBounds.width - dx
+        break;
+      }
+      //上左
+      case 8: {
+        returnBounds.x = returnBounds.x + dx
+        returnBounds.width = returnBounds.width - dx
+        returnBounds.y = returnBounds.y + dy
+        returnBounds.height = returnBounds.height - dy
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+    return returnBounds;
+  }
+  /**
+   * 根据移动后的选择器，等比缩放图形
+   * @return 是否成功改变，校验失败则会终止改变
+   */
+  changeSelectedModelBounds(movedBounds: object): boolean {
+    let layer = this.stage.layers[this.stage.layerIndex];
+    let selectedModels = layer.getSelectedModels();
+    if (!selectedModels || this.passIndex == -1 || !movedBounds) {
+      return false;
+    }
+    let models: DDeiAbstractShape[] = Array.from(selectedModels.values());
+    //原始路径
+    let originRect: object = DDeiAbstractShape.getOutRect(models);
+    //记录每一个图形在原始矩形中的比例
+    let originPosMap: Map<string, object> = new Map();
+    //获取模型在原始模型中的位置比例
+    for (let i = 0; i < models.length; i++) {
+      let item = models[i]
+      originPosMap.set(item.id, {
+        xR: (item.x - originRect.x) / originRect.width,
+        yR: (item.y - originRect.y) / originRect.height,
+        wR: item.width / originRect.width,
+        hR: item.height / originRect.height
+      });
+    }
+
+    let helpLineWeight = 1;
+    // 计算图形拖拽后将要到达的坐标
+    if (DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
+      //辅助对齐线宽度
+      helpLineWeight = DDeiConfig.GLOBAL_HELP_LINE_WEIGHT;
+    }
+    let paddingWeightInfo = this.paddingWeight?.selected ? this.paddingWeight.selected : DDeiConfig.SELECTOR.PADDING_WEIGHT.selected;
+    let paddingWeight = 0;
+    if (selectedModels.size > 1) {
+      paddingWeight = paddingWeightInfo.multiple;
+    } else {
+      paddingWeight = paddingWeightInfo.single;
+    }
+    //考虑paddingWeight，计算实际移动后的区域
+    movedBounds.y = movedBounds.y + paddingWeight
+    movedBounds.height = movedBounds.height - 2 * paddingWeight
+    movedBounds.x = movedBounds.x + paddingWeight
+    movedBounds.width = movedBounds.width - 2 * paddingWeight
+    //校验，如果拖拽后图形消失不见，则停止拖拽
+    if (movedBounds.height <= paddingWeight || movedBounds.width <= paddingWeight) {
+      return false
+    }
+    //同步多个模型到等比缩放状态
+    if (this.passIndex != -1) {
+      selectedModels.forEach((item, key) => {
+        item.x = movedBounds.x + movedBounds.width * originPosMap.get(item.id).xR
+        item.width = movedBounds.width * originPosMap.get(item.id).wR
+        item.y = movedBounds.y + movedBounds.height * originPosMap.get(item.id).yR
+        item.height = movedBounds.height * originPosMap.get(item.id).hR
+      })
+
+    }
+    return true;
+  }
   /**
    * 设置passindex
    * @param index pass值

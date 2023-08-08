@@ -160,7 +160,7 @@ class DDeiLayerCanvasRender {
 
 
   /**
-   * 获取控件移动后的坐标
+   * 获取控件移动后的区域
    * 考虑最小移动像素
    * @param e 事件
    * @param control 当前控件模型
@@ -199,6 +199,41 @@ class DDeiLayerCanvasRender {
     }
     if (movedBounds.y < 0) {
       movedBounds.y = 0
+    }
+    return movedBounds
+  }
+
+  /**
+   * 获取单个点移动后的坐标
+   * 考虑最小移动像素
+   * @param evt 事件
+   * @returns 计算的坐标
+   */
+  getMovedPosition(evt): object {
+    //获取移动后的坐标
+    let movedBounds = {
+      x: evt.offsetX - this.stageRender.dragObj.x,
+      y: evt.offsetY - this.stageRender.dragObj.y
+    }
+
+
+    // 计算图形拖拽后将要到达的坐标
+    if (DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
+      //辅助对齐线宽度
+      let helpLineWeight = DDeiConfig.GLOBAL_HELP_LINE_WEIGHT;
+
+      var mod = movedBounds.x % helpLineWeight
+      if (mod > helpLineWeight * 0.5) {
+        movedBounds.x = movedBounds.x + (helpLineWeight - mod)
+      } else {
+        movedBounds.x = movedBounds.x - mod
+      }
+      mod = movedBounds.y % helpLineWeight
+      if (mod > helpLineWeight * 0.5) {
+        movedBounds.y = movedBounds.y + (helpLineWeight - mod)
+      } else {
+        movedBounds.y = movedBounds.y - mod
+      }
     }
     return movedBounds
   }
@@ -380,15 +415,22 @@ class DDeiLayerCanvasRender {
         }
       }
     }
-    //无控件，显示选择框
+    //无控件
     else {
-      //重置选择器位置
-      this.stageRender.selector.resetState(evt.offsetX, evt.offsetY);
-      //当前操作状态：选择器工作中
-      this.stageRender.operateState = DDeiEnumOperateState.SELECT_WORKING
-      //当没有按下ctrl键时，清空除了当前操作控件外所有选中状态控件
-      if (!isCtrl) {
-        this.model.cancelSelectModels();
+      //判断当前鼠标坐标是否落在选择器控件的区域内
+      if (this.stageRender.selector &&
+        this.stageRender.selector.isInAreaLoose(evt.offsetX, evt.offsetY, DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2)) {
+        //派发给selector的mousemove事件，在事件中对具体坐标进行判断
+        this.stageRender.selector.render.mouseDown(evt);
+      } else {
+        //重置选择器位置
+        this.stageRender.selector.resetState(evt.offsetX, evt.offsetY);
+        //当前操作状态：选择器工作中
+        this.stageRender.operateState = DDeiEnumOperateState.SELECT_WORKING
+        //当没有按下ctrl键时，清空除了当前操作控件外所有选中状态控件
+        if (!isCtrl) {
+          this.model.cancelSelectModels();
+        }
       }
     }
 
@@ -454,6 +496,16 @@ class DDeiLayerCanvasRender {
         //重新渲染
         this.ddRender.drawShape();
         break;
+      case DDeiEnumOperateState.CONTROL_CHANGING_BOUND:
+        //清除作为临时变量dragX、dargY、dragObj
+        this.stageRender.dragObj = null
+        //当前操作状态:无
+        this.stageRender.operateState = DDeiEnumOperateState.NONE;
+        //当前操作控件：无
+        this.stageRender.currentOperateShape = null;
+        //重新渲染
+        this.ddRender.drawShape();
+        break;
       //默认缺省状态
       default:
         break;
@@ -473,7 +525,7 @@ class DDeiLayerCanvasRender {
     //判断当前操作状态
     switch (this.stageRender.operateState) {
       //控件状态确认中
-      case DDeiEnumOperateState.CONTROL_CONFIRMING:
+      case DDeiEnumOperateState.CONTROL_CONFIRMING: {
         //当前操作状态：控件拖拽中
         this.stageRender.operateState = DDeiEnumOperateState.CONTROL_DRAGING
         //记录当前的拖拽的x,y,写入dragObj作为临时变量
@@ -483,15 +535,17 @@ class DDeiLayerCanvasRender {
           model: this.stageRender.currentOperateShape
         }
         break;
+      }
       //选择器工作中
-      case DDeiEnumOperateState.SELECT_WORKING:
+      case DDeiEnumOperateState.SELECT_WORKING: {
         //根据事件更新选择器位置
         this.stageRender.updateSelectorBounds(evt);
         //重新渲染
         this.ddRender.drawShape();
         break;
+      }
       //控件拖拽中
-      case DDeiEnumOperateState.CONTROL_DRAGING:
+      case DDeiEnumOperateState.CONTROL_DRAGING: {
         //修改当前操作控件坐标
         let movedBounds = this.getMovedBounds(evt, this.stageRender.currentOperateShape);
         //获取当前选择的控件
@@ -513,16 +567,41 @@ class DDeiLayerCanvasRender {
         selectedModels.set(this.stageRender.currentOperateShape?.id, this.stageRender.currentOperateShape)
         this.drawHelpLines(movedBounds, selectedModels);
         break;
+      }
+      //控件改变大小中
+      case DDeiEnumOperateState.CONTROL_CHANGING_BOUND: {
+        //获取当前移动的坐标量
+        let movedPos = this.getMovedPosition(evt);
+        //计算移动后的坐标以及大小
+        let movedBounds = this.stageRender.selector.getMovedBounds(movedPos.x, movedPos.y);
+        if (movedBounds) {
+          let successChange = this.stageRender.selector.changeSelectedModelBounds(movedBounds);
+          if (successChange) {
+            this.stageRender.dragObj.x = this.stageRender.dragObj.x + movedPos.x
+            this.stageRender.dragObj.y = this.stageRender.dragObj.y + movedPos.y
+            //更新选择器状态
+            this.stageRender.selector.updatedBoundsBySelectedModels();
+            //重新渲染
+            this.ddRender.drawShape();
+          }
+        }
+
+        break;
+      }
       //默认缺省状态
-      default:
+      default: {
         //判断当前鼠标坐标是否落在选择器控件的区域内
         if (this.stageRender.selector &&
           this.stageRender.selector.isInAreaLoose(evt.offsetX, evt.offsetY, DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2)) {
           //派发给selector的mousemove事件，在事件中对具体坐标进行判断
           this.stageRender.selector.render.mouseMove(evt);
         }
-
+        else {
+          //恢复鼠标等状态
+          document.body.style.cursor = 'default';
+        }
         break;
+      }
     }
   }
 }

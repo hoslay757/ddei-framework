@@ -1,5 +1,6 @@
 import DDeiConfig from '../../config.js';
 import DDeiEnumControlState from '../../enums/control-state.js';
+import DDeiEnumOperateState from '../../enums/operate-state.js';
 import DDeiSelector from '../../models/selector.js';
 import DDeiAbstractShape from '../../models/shape.js';
 import DDeiUtil from '../../util.js';
@@ -29,6 +30,9 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
 
     //绘制选中控件特效
     this.drawIncludedStyle();
+
+    //修改鼠标样式
+    this.changeMouseStyle();
   }
 
 
@@ -172,6 +176,44 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
   }
 
   /**
+   * 修改鼠标样式
+   */
+  changeMouseStyle(): void {
+    switch (this.model.passIndex) {
+      case 1:
+        document.body.style.cursor = 'ns-resize';
+        break;
+      case 2:
+        document.body.style.cursor = 'nesw-resize';
+        break;
+      case 3:
+        document.body.style.cursor = 'ew-resize';
+        break;
+      case 4:
+        document.body.style.cursor = 'nwse-resize';
+        break;
+      case 5:
+        document.body.style.cursor = 'ns-resize';
+        break;
+      case 6:
+        document.body.style.cursor = 'nesw-resize';
+        break;
+      case 7:
+        document.body.style.cursor = 'ew-resize';
+        break;
+      case 8:
+        document.body.style.cursor = 'nwse-resize';
+        break;
+      case 9:
+        document.body.style.cursor = 'alias';
+        break;
+      default:
+        document.body.style.cursor = 'default';
+        break;
+    }
+  }
+
+  /**
    * 鼠标移动事件，经由上层容器分发
    */
   mouseMove(evt: Event): void {
@@ -263,6 +305,29 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     }
     if (this.model.passChange) {
       this.drawShape();
+    }
+  }
+
+  /**
+  * 鼠标按下事件，经由上层容器分发
+  */
+  mouseDown(evt: Event): void {
+    //判断当前坐标是否位于操作按钮上,如果是则改变状态为响应状态
+    if (this.model.passIndex >= 1 && this.model.passIndex <= 8) {
+      this.stageRender.dragObj = {
+        x: evt.offsetX,
+        y: evt.offsetY
+      }
+      //当前操作状态：改变控件大小中
+      this.stageRender.operateState = DDeiEnumOperateState.CONTROL_CHANGING_BOUND
+    }
+    //旋转
+    else if (this.model.passIndex == 9) {
+
+    }
+    //记录当前拖拽状态
+    if (this.model.passIndex != -1) {
+
     }
   }
 }
