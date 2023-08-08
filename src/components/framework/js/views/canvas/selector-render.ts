@@ -32,7 +32,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     this.drawIncludedStyle();
 
     //修改鼠标样式
-    this.changeMouseStyle();
+    this.changeCursorStyle();
   }
 
 
@@ -178,7 +178,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
   /**
    * 修改鼠标样式
    */
-  changeMouseStyle(): void {
+  changeCursorStyle(): void {
     switch (this.model.passIndex) {
       case 1:
         document.body.style.cursor = 'ns-resize';

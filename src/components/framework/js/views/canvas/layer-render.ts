@@ -389,40 +389,40 @@ class DDeiLayerCanvasRender {
     }
     //ctrl键的按下状态
     let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
-    // 获取当前光标所属位置是否有控件
-    let operateControls = this.model.findModelsByArea(evt.offsetX, evt.offsetY);
-    //光标所属位置是否有控件
-    //有控件：分发事件到当前控件
-    if (operateControls != null && operateControls.length > 0) {
-      //全局变量：当前操作控件=当前控件
-      let operateControl = operateControls[0];
-      this.stageRender.currentOperateShape = operateControl;
+    //判断当前鼠标坐标是否落在选择器控件的区域内
+    if (this.stageRender.selector &&
+      this.stageRender.selector.passIndex >= 1 && this.stageRender.selector.passIndex <= 8) {
+      //派发给selector的mousemove事件，在事件中对具体坐标进行判断
+      this.stageRender.selector.render.mouseDown(evt);
+    } else {
+      // 获取当前光标所属位置是否有控件
+      let operateControls = this.model.findModelsByArea(evt.offsetX, evt.offsetY);
+      //光标所属位置是否有控件
+      //有控件：分发事件到当前控件
+      if (operateControls != null && operateControls.length > 0) {
+        //全局变量：当前操作控件=当前控件
+        let operateControl = operateControls[0];
+        this.stageRender.currentOperateShape = operateControl;
 
-      //当前操作状态:控件状态确认中
-      this.stageRender.operateState = DDeiEnumOperateState.CONTROL_CONFIRMING
-      //分发事件到当前控件 TODO 事件分发逻辑设计
-      operateControl.render.mouseDown(evt);
+        //当前操作状态:控件状态确认中
+        this.stageRender.operateState = DDeiEnumOperateState.CONTROL_CONFIRMING
+        //分发事件到当前控件 TODO 事件分发逻辑设计
+        operateControl.render.mouseDown(evt);
 
-      //没有按下ctrl键，并且当前操作控件不在选中控件中，则清空所有当前选中控件
-      if (!isCtrl) {
-        let selectedModels = this.model.getSelectedModels();
-        if (!selectedModels.has(operateControl.id)) {
-          //清空除了当前操作控件外所有选中状态控件
-          this.model.cancelSelectModels();
-          if (this.stageRender.selector) {
-            this.stageRender.selector.resetState();
+        //没有按下ctrl键，并且当前操作控件不在选中控件中，则清空所有当前选中控件
+        if (!isCtrl) {
+          let selectedModels = this.model.getSelectedModels();
+          if (!selectedModels.has(operateControl.id)) {
+            //清空除了当前操作控件外所有选中状态控件
+            this.model.cancelSelectModels();
+            if (this.stageRender.selector) {
+              this.stageRender.selector.resetState();
+            }
           }
         }
       }
-    }
-    //无控件
-    else {
-      //判断当前鼠标坐标是否落在选择器控件的区域内
-      if (this.stageRender.selector &&
-        this.stageRender.selector.isInAreaLoose(evt.offsetX, evt.offsetY, DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2)) {
-        //派发给selector的mousemove事件，在事件中对具体坐标进行判断
-        this.stageRender.selector.render.mouseDown(evt);
-      } else {
+      //无控件
+      else {
         //重置选择器位置
         this.stageRender.selector.resetState(evt.offsetX, evt.offsetY);
         //当前操作状态：选择器工作中
