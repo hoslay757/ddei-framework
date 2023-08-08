@@ -12,12 +12,6 @@ class DDeiRectangle extends DDeiAbstractShape {
   // ============================ 构造函数 ============================
   constructor(props: object) {
     super(props);
-    /**
-     * 外部区域，用来响应相关事件的虚拟图形
-     * 绘制图形时才会初始化，比实际图形区域要大一些
-     * 序列化时不会保存
-     */
-    this.outerArea = null;
     //边框，包含了选中/未选中，4个边框的大小，颜色，样式等配置
     this.border = props.border ? props.border : null;
     //填充，包含了选中/未选中，填充的颜色等配置
@@ -49,12 +43,6 @@ class DDeiRectangle extends DDeiAbstractShape {
     return shape;
   }
   // ============================ 属性 ===============================
-  /**
-   * 外部区域，用来响应相关事件的虚拟图形
-   * 绘制图形时才会初始化，比实际图形区域要大一些
-   * 序列化时不会保存
-   */
-  outerArea: any;
   //边框，包含了选中/未选中，4个边框的大小，颜色，样式等配置
   border: any;
   //填充，包含了选中/未选中，填充的颜色等配置

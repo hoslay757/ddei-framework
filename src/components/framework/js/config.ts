@@ -68,6 +68,21 @@ class DDeiConfig {
     BORDER: {
       default: { width: 1.5, color: "rgb(1,127,255)", dash: [10, 10], round: 0 },
       selected: { width: 1.5, color: "rgb(1,127,255)", dash: [10, 10], round: 0 }
+    },
+
+    //操作区域的填充样式，根据选中和未选中状态可以有所变化
+    OPERATE_ICON: {
+      weight: 8,
+      FILL: {
+        default: "white",
+        pass: "rgb(198,230,255)"
+      }
+    },
+
+    //间隔宽度，根据选中单个控件、选中多个控件，间隔宽度可以有所变化
+    PADDING_WEIGHT: {
+      default: { single: 0, multiple: 0 },
+      selected: { single: 0, multiple: 10 }
     }
   };
 
