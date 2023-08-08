@@ -207,6 +207,9 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       case 9:
         document.body.style.cursor = 'alias';
         break;
+      case 10:
+        document.body.style.cursor = 'all-scroll';
+        break;
       default:
         document.body.style.cursor = 'default';
         break;
@@ -301,7 +304,15 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       })) {
       this.model.setPassIndex(9);
     } else {
-      this.model.setPassIndex(-1);
+      //判断是否在某个具体选中的控件上，如果是则分发事件
+      let models = this.stage?.layers[this.stage?.layerIndex].findModelsByArea(offsetX, offsetY);
+      //TODO 事件如何分发，分发一个还是多个？
+      //TODO 不同的逻辑应该放在哪个层的事件去处理？例如控件的移动，变光标等等
+      if (models && models.length > 0) {
+        this.model.setPassIndex(10);
+      } else {
+        this.model.setPassIndex(-1);
+      }
     }
     if (this.model.passChange) {
       this.drawShape();
