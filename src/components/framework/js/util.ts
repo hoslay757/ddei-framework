@@ -109,6 +109,23 @@ class DDeiUtil {
     }
     return DDeiConfig.SPACE_WIDTH_MAP[key]
   }
+
+  /**
+    * 通过当前P点和旋转角度计算旋转之前的点
+    */
+  static computePosition(occ: { x: number, y: number }, rcc: { x: number, y: number }, angle: number): { x: number, y: number } {
+    // 圆心
+    let a: number = occ.x;
+    let b: number = occ.y;
+    // 计算
+    let c: number = Math.PI / 180 * angle;
+    let rx: number = (rcc.x - a) * Math.cos(c) - (rcc.y - b) * Math.sin(c) + a;
+    let ry: number = (rcc.y - b) * Math.cos(c) + (rcc.x - a) * Math.sin(c) + b;
+    // 取整
+    rx = Math.round(rx);
+    ry = Math.round(ry);
+    return { x: rx, y: ry };
+  }
 }
 
 export default DDeiUtil

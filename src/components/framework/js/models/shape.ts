@@ -16,6 +16,8 @@ abstract class DDeiAbstractShape {
     this.width = props.width ? props.width : 0
     this.height = props.height ? props.height : 0
     this.zIndex = props.zIndex ? props.zIndex : null
+    this.rotate = props.rotate ? props.rotate : null;
+    this.zoom = props.zoom ? props.zoom : null;
   }
   // ============================ 静态方法 ============================
   /**
@@ -172,6 +174,10 @@ abstract class DDeiAbstractShape {
   stage: DDeiStage | null;
   // 当前图形在当前图层的层次
   zIndex: number | null;
+  // 旋转,0/null 不旋转，默认0
+  rotate: number;
+  // 缩放,1/null，不缩放,默认1
+  zoom: number;
   // ============================ 方法 ===============================
   /**
    * 判断图形是否在一个区域内，采用宽松的判定模式，允许传入一个大小值

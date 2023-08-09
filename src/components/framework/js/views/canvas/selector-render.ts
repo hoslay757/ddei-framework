@@ -334,7 +334,12 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     }
     //旋转
     else if (this.model.passIndex == 9) {
-
+      this.stageRender.dragObj = {
+        x: evt.offsetX,
+        y: evt.offsetY
+      }
+      //当前操作状态：改变控件大小中
+      this.stageRender.operateState = DDeiEnumOperateState.CONTROL_ROTATE
     }
     //记录当前拖拽状态
     if (this.model.passIndex != -1) {

@@ -148,6 +148,14 @@ class DDeiRectangleCanvasRender {
       if (!borderInfo.disabled && borderInfo.color && (!borderInfo.opacity || borderInfo.opacity > 0) && borderInfo.width > 0) {
         //保存状态
         ctx.save();
+        //设置旋转角度
+        if (this.model.rotate) {
+          ctx.translate(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5)
+          ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
+          ctx.translate(-ratPos.x - ratPos.width * 0.5, -ratPos.y - ratPos.height * 0.5)
+        }
+
+
         //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
         let lineOffset = borderInfo.width * ratio / 2;
         ctx.lineWidth = borderInfo.width * ratio;
@@ -203,6 +211,12 @@ class DDeiRectangleCanvasRender {
     //缩放填充区域
     //保存状态
     ctx.save();
+    //设置旋转角度
+    if (this.model.rotate) {
+      ctx.translate(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5)
+      ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
+      ctx.translate(-ratPos.x - ratPos.width * 0.5, -ratPos.y - ratPos.height * 0.5)
+    }
 
     //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
     let fillInfo = null;
@@ -286,6 +300,12 @@ class DDeiRectangleCanvasRender {
     }
     //保存状态
     ctx.save();
+    //设置旋转角度
+    if (this.model.rotate) {
+      ctx.translate(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5)
+      ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
+      ctx.translate(-ratPos.x - ratPos.width * 0.5, -ratPos.y - ratPos.height * 0.5)
+    }
 
 
     //循环进行分段输出,整体容器，代表了一个整体的文本大小区域

@@ -1,5 +1,6 @@
 import DDeiConfig from '../config';
 import DDeiEnumControlState from '../enums/control-state';
+import DDeiUtil from '../util';
 import DDeiRectangle from './rectangle';
 import DDeiAbstractShape from './shape';
 
@@ -111,6 +112,43 @@ class DDeiSelector extends DDeiRectangle {
       }
     }
     return returnBounds;
+  }
+
+  /**
+   * 根据移动后的坐标，调整选中控件的旋转角度
+   * @param movedNumber 
+   */
+  changeSelectedModelRotate(movedNumber: number = 0) {
+
+    let layer = this.stage.layers[this.stage.layerIndex];
+    let selectedModels = layer.getSelectedModels();
+    if (!selectedModels || this.passIndex == -1 || movedNumber == 0) {
+      return false;
+    }
+    //计算旋转角度
+    let angle = movedNumber * 0.5;
+    let models: DDeiAbstractShape[] = Array.from(selectedModels.values());
+    //获取当前选择控件外接矩形
+    let originRect: object = DDeiAbstractShape.getOutRect(models);
+    //外接矩形的圆心x0和y0
+    let occ = { x: originRect.x + originRect.width * 0.5, y: originRect.y + originRect.height * 0.5 };
+    //对所有选中图形进行位移并旋转
+    for (let i = 0; i < models.length; i++) {
+      let item = models[i]
+      //当前图形的圆心x1和y1
+      let rcc = { x: item.x + item.width * 0.5, y: item.y + item.height * 0.5 };
+      //已知圆心位置、起始点位置和旋转角度，求终点的坐标位置，坐标系为笛卡尔坐标系，计算机中y要反转计算
+      let dcc = DDeiUtil.computePosition(occ, rcc, angle);
+      //修改坐标与旋转角度
+      item.setPosition(dcc.x - item.width * 0.5, dcc.y - item.height * 0.5)
+      if (!item.rotate) {
+        item.rotate = 0;
+      }
+      item.rotate = item.rotate + angle
+      if (item.rotate > 360) {
+        item.rotate = 0
+      }
+    }
   }
   /**
    * 根据移动后的选择器，等比缩放图形
