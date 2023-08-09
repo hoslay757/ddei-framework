@@ -108,6 +108,32 @@ abstract class DDeiAbstractShape {
     return { x, y, width, height, x1: x + width, y1: y + height }
   }
 
+
+  /**
+   * 判断一组模型的旋转值是否相等
+   * @param models
+   */
+  static isSameRotate(models: Array<DDeiAbstractShape>): boolean {
+    if (!models || models.length < 1) {
+      return true;
+    }
+    let upValues = models[0].rotate
+    if (!upValues) {
+      upValues = 0;
+    }
+    for (let i = 1; i < models.length; i++) {
+      let r = models[i].rotate;
+      if (!r) {
+        r = 0
+      }
+      if (upValues != r) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+
   /**
    * 获取一组图形模型的宽高
    * @param models

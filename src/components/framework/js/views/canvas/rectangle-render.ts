@@ -148,12 +148,8 @@ class DDeiRectangleCanvasRender {
       if (!borderInfo.disabled && borderInfo.color && (!borderInfo.opacity || borderInfo.opacity > 0) && borderInfo.width > 0) {
         //保存状态
         ctx.save();
-        //设置旋转角度
-        if (this.model.rotate) {
-          ctx.translate(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5)
-          ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
-          ctx.translate(-ratPos.x - ratPos.width * 0.5, -ratPos.y - ratPos.height * 0.5)
-        }
+        //设置旋转
+        this.doRotate(ctx, ratPos);
 
 
         //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
@@ -212,11 +208,7 @@ class DDeiRectangleCanvasRender {
     //保存状态
     ctx.save();
     //设置旋转角度
-    if (this.model.rotate) {
-      ctx.translate(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5)
-      ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
-      ctx.translate(-ratPos.x - ratPos.width * 0.5, -ratPos.y - ratPos.height * 0.5)
-    }
+    this.doRotate(ctx, ratPos);
 
     //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
     let fillInfo = null;
@@ -300,13 +292,8 @@ class DDeiRectangleCanvasRender {
     }
     //保存状态
     ctx.save();
-    //设置旋转角度
-    if (this.model.rotate) {
-      ctx.translate(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5)
-      ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
-      ctx.translate(-ratPos.x - ratPos.width * 0.5, -ratPos.y - ratPos.height * 0.5)
-    }
-
+    //设置旋转
+    this.doRotate(ctx, ratPos);
 
     //循环进行分段输出,整体容器，代表了一个整体的文本大小区域
     let textContainer = []
@@ -485,6 +472,17 @@ class DDeiRectangleCanvasRender {
 
   }
 
+  /**
+   * 根据模型的值，设置旋转
+   */
+  doRotate(ctx, ratPos): void {
+    //设置旋转角度
+    if (this.model.rotate) {
+      ctx.translate(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5)
+      ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
+      ctx.translate(-ratPos.x - ratPos.width * 0.5, -ratPos.y - ratPos.height * 0.5)
+    }
+  }
 
   /**
    * 私有函数，计算除边框外的填充区域，用于填充颜色和字体

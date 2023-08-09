@@ -35,6 +35,23 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     this.changeCursorStyle();
   }
 
+  // //设置旋转,覆写
+  // doRotate(ctx, ratPos): void {
+  //   //设置旋转角度
+  //   if (this.model.rotate) {
+  //     let paddingWeightInfo = this.paddingWeight?.selected ? this.paddingWeight.selected : DDeiConfig.SELECTOR.PADDING_WEIGHT.selected;
+  //     let paddingWeight = 0;
+  //     let selectedModels = this.stage?.layers[this.stage.layerIndex].getSelectedModels();
+  //     if (selectedModels.size > 1) {
+  //       paddingWeight = paddingWeightInfo.multiple;
+  //     } else {
+  //       paddingWeight = paddingWeightInfo.single;
+  //     }
+  //     ctx.translate(ratPos.x + ratPos.width * 0.5 + paddingWeight, ratPos.y + ratPos.height * 0.5 + paddingWeight)
+  //     ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
+  //     ctx.translate(-ratPos.x - ratPos.width * 0.5 - paddingWeight, -ratPos.y - ratPos.height * 0.5 - paddingWeight)
+  //   }
+  // }
 
   /**
    * 获取边框上的操作图形
@@ -51,7 +68,10 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     let ratio = this.ddRender.ratio;
     //转换为缩放后的坐标
     let ratPos = this.getBorderRatPos();
-
+    //保存状态
+    ctx.save();
+    //设置旋转
+    this.doRotate(ctx, ratPos);
     for (let i = 1; i <= 9; i++) {
       //如果被选中，使用选中的边框，否则使用缺省边框
       let borderInfo = null;
@@ -69,8 +89,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
 
       //如果边框未被disabled，则绘制边框
       if (!borderInfo.disabled && borderInfo.color && (!borderInfo.opacity || borderInfo.opacity > 0) && borderInfo.width > 0) {
-        //保存状态
-        ctx.save();
+
         //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
         let lineOffset = borderInfo.width * ratio / 2;
         ctx.lineWidth = borderInfo.width * ratio;
@@ -127,11 +146,12 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
             ctx.stroke()
           }
         }
-        //恢复状态
-        ctx.restore();
+
       }
 
     }
+    //恢复状态
+    ctx.restore();
   }
 
   /**
