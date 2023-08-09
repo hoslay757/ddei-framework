@@ -43,6 +43,12 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
     if (!borderInfo.disabled && borderInfo.color && (!borderInfo.opacity || borderInfo.opacity > 0) && borderInfo.width > 0) {
       //保存状态
       ctx.save();
+      //设置旋转角度
+      if (this.model.rotate) {
+        ctx.translate(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5)
+        ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
+        ctx.translate(-ratPos.x - ratPos.width * 0.5, -ratPos.y - ratPos.height * 0.5)
+      }
       //开始绘制  
       ctx.beginPath();
       //线段的宽度
@@ -86,7 +92,12 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
     //缩放填充区域
     //保存状态
     ctx.save();
-
+    //设置旋转角度
+    if (this.model.rotate) {
+      ctx.translate(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5)
+      ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
+      ctx.translate(-ratPos.x - ratPos.width * 0.5, -ratPos.y - ratPos.height * 0.5)
+    }
     //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
     let fillInfo = null;
     if (this.model.state == DDeiEnumControlState.SELECTED) {
@@ -170,7 +181,12 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
     }
     //保存状态
     ctx.save();
-
+    //设置旋转角度
+    if (this.model.rotate) {
+      ctx.translate(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5)
+      ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
+      ctx.translate(-ratPos.x - ratPos.width * 0.5, -ratPos.y - ratPos.height * 0.5)
+    }
 
     //循环进行分段输出,整体容器，代表了一个整体的文本大小区域
     let textContainer = []
