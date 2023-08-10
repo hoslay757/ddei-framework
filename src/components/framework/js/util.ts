@@ -122,8 +122,8 @@ class DDeiUtil {
     let rx: number = (rcc.x - a) * Math.cos(c) - (rcc.y - b) * Math.sin(c) + a;
     let ry: number = (rcc.y - b) * Math.cos(c) + (rcc.x - a) * Math.sin(c) + b;
     // 取整
-    rx = Math.round(rx);
-    ry = Math.round(ry);
+    // rx = Math.round(rx);
+    // ry = Math.round(ry);
     return { x: rx, y: ry };
   }
 }

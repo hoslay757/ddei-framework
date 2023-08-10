@@ -114,6 +114,7 @@ class DDeiSelector extends DDeiRectangle {
     return returnBounds;
   }
 
+
   /**
    * 根据移动后的坐标，调整选中控件的旋转角度
    * @param movedNumber 
@@ -284,15 +285,7 @@ class DDeiSelector extends DDeiRectangle {
       } else {
         paddingWeight = paddingWeightInfo.single;
       }
-      // //如果当前所有的已选控件都是旋转的，则当前选择器也是旋转的
-      // let sameRotate = DDeiAbstractShape.isSameRotate(models);
-      // if (sameRotate) {
-      //   //TODO 将所有图形逆向还原，然后再根据还原后的图形计算大小
-      //   this.rotate = models[0].rotate;
-      // } else {
-      //   this.rotate = 0
-      // }
-      //TODO 计算多个图形的顶点最大范围，根据顶点范围构建一个最大的外接矩形，规则的外接矩形，可以看作由4个顶点构成的图形
+      //计算多个图形的顶点最大范围，根据顶点范围构建一个最大的外接矩形，规则的外接矩形，可以看作由4个顶点构成的图形
       let outRectBounds = null
       if (models.length > 1) {
         outRectBounds = DDeiAbstractShape.getOutRect(models);

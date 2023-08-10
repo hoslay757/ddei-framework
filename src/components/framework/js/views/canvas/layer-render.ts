@@ -392,7 +392,7 @@ class DDeiLayerCanvasRender {
     //判断当前鼠标坐标是否落在选择器控件的区域内
     if (this.stageRender.selector &&
       this.stageRender.selector.passIndex >= 1 && this.stageRender.selector.passIndex <= 9) {
-      //派发给selector的mousemove事件，在事件中对具体坐标进行判断
+      //派发给selector的mousedown事件，在事件中对具体坐标进行判断
       this.stageRender.selector.render.mouseDown(evt);
     } else {
       // 获取当前光标所属位置是否有控件
@@ -477,8 +477,7 @@ class DDeiLayerCanvasRender {
         if (this.stageRender.selector) {
           this.stageRender.selector.updatedBoundsBySelectedModels();
         }
-        //当前操作状态:无
-        this.stageRender.operateState = DDeiEnumOperateState.NONE;
+
         break;
       //选择器工作中
       case DDeiEnumOperateState.SELECT_WORKING:
@@ -519,6 +518,7 @@ class DDeiLayerCanvasRender {
         break;
       case DDeiEnumOperateState.CONTROL_ROTATE:
         //清除作为临时变量dragX、dargY、dragObj
+        this.stageRender?.selector.setPassIndex(-1);
         this.stageRender.dragObj = null
         //当前操作状态:无
         this.stageRender.operateState = DDeiEnumOperateState.NONE;
@@ -531,6 +531,7 @@ class DDeiLayerCanvasRender {
       default:
         break;
     }
+
     //重新渲染
     this.ddRender.drawShape();
   }
@@ -580,7 +581,8 @@ class DDeiLayerCanvasRender {
         this.stageRender.currentOperateShape.setPosition(movedBounds.x, movedBounds.y)
         //根据选中图形的状态更新选择器
         if (this.stageRender.selector) {
-          this.stageRender.selector.updatedBoundsBySelectedModels();
+          this.stageRender.selector.x = this.stageRender.selector.x + deltaX
+          this.stageRender.selector.y = this.stageRender.selector.y + deltaY
         }
         //重新渲染
         this.ddRender.drawShape();

@@ -243,85 +243,39 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     let offsetX = evt.offsetX;
     let offsetY = evt.offsetY;
     //判断当前坐标是否位于操作按钮上
-    //中上
-    if (DDeiAbstractShape.isInArea(offsetX, offsetY,
-      {
-        x: this.model.x + this.model.width * 0.5 - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        y: this.model.y - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        width: DDeiConfig.SELECTOR.OPERATE_ICON.weight, height: DDeiConfig.SELECTOR.OPERATE_ICON.weight
-      })) {
+    if (this.isIconOn(1, offsetX, offsetY)) {
       this.model.setPassIndex(1);
     }
     //右上
-    else if (DDeiAbstractShape.isInArea(offsetX, offsetY,
-      {
-        x: this.model.x + this.model.width - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        y: this.model.y - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        width: DDeiConfig.SELECTOR.OPERATE_ICON.weight, height: DDeiConfig.SELECTOR.OPERATE_ICON.weight
-      })) {
+    else if (this.isIconOn(2, offsetX, offsetY)) {
       this.model.setPassIndex(2);
     }
     //右中
-    else if (DDeiAbstractShape.isInArea(offsetX, offsetY,
-      {
-        x: this.model.x + this.model.width - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        y: this.model.y + this.model.height * 0.5 - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        width: DDeiConfig.SELECTOR.OPERATE_ICON.weight, height: DDeiConfig.SELECTOR.OPERATE_ICON.weight
-      })) {
+    else if (this.isIconOn(3, offsetX, offsetY)) {
       this.model.setPassIndex(3);
     }
     //右下
-    else if (DDeiAbstractShape.isInArea(offsetX, offsetY,
-      {
-        x: this.model.x + this.model.width - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        y: this.model.y + this.model.height - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        width: DDeiConfig.SELECTOR.OPERATE_ICON.weight, height: DDeiConfig.SELECTOR.OPERATE_ICON.weight
-      })) {
+    else if (this.isIconOn(4, offsetX, offsetY)) {
       this.model.setPassIndex(4);
     }
     //中下
-    else if (DDeiAbstractShape.isInArea(offsetX, offsetY,
-      {
-        x: this.model.x + this.model.width * 0.5 - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        y: this.model.y + this.model.height - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        width: DDeiConfig.SELECTOR.OPERATE_ICON.weight, height: DDeiConfig.SELECTOR.OPERATE_ICON.weight
-      })) {
+    else if (this.isIconOn(5, offsetX, offsetY)) {
       this.model.setPassIndex(5);
     }
     //左下
-    else if (DDeiAbstractShape.isInArea(offsetX, offsetY,
-      {
-        x: this.model.x - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        y: this.model.y + this.model.height - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        width: DDeiConfig.SELECTOR.OPERATE_ICON.weight, height: DDeiConfig.SELECTOR.OPERATE_ICON.weight
-      })) {
+    else if (this.isIconOn(6, offsetX, offsetY)) {
       this.model.setPassIndex(6);
     }
     //左中
-    else if (DDeiAbstractShape.isInArea(offsetX, offsetY,
-      {
-        x: this.model.x - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        y: this.model.y + this.model.height * 0.5 - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        width: DDeiConfig.SELECTOR.OPERATE_ICON.weight, height: DDeiConfig.SELECTOR.OPERATE_ICON.weight
-      })) {
+    else if (this.isIconOn(7, offsetX, offsetY)) {
       this.model.setPassIndex(7);
     }
     //左上
-    else if (DDeiAbstractShape.isInArea(offsetX, offsetY,
-      {
-        x: this.model.x - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        y: this.model.y - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        width: DDeiConfig.SELECTOR.OPERATE_ICON.weight, height: DDeiConfig.SELECTOR.OPERATE_ICON.weight
-      })) {
+    else if (this.isIconOn(8, offsetX, offsetY)) {
       this.model.setPassIndex(8);
     }
     //旋转
-    else if (DDeiAbstractShape.isInArea(offsetX, offsetY,
-      {
-        x: this.model.x + this.model.width * 0.5 - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        y: this.model.y - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2.5,
-        width: DDeiConfig.SELECTOR.OPERATE_ICON.weight, height: DDeiConfig.SELECTOR.OPERATE_ICON.weight
-      })) {
+    else if (this.isIconOn(9, offsetX, offsetY)) {
       this.model.setPassIndex(9);
     } else {
       //判断是否在某个具体选中的控件上，如果是则分发事件
@@ -365,6 +319,83 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     if (this.model.passIndex != -1) {
 
     }
+  }
+
+  /**
+   * 判断是否在某个图标上
+   * @param direct 
+   */
+  isIconOn(direct: number, x: number, y: number): boolean {
+    //当前模型的圆心
+    let occ = { x: this.model.x + this.model.width * 0.5, y: this.model.y + this.model.height * 0.5 };
+    let iconRect = null;
+    //判断当前坐标是否位于操作按钮上
+    if (direct == 1) {
+      //中上的图标矩阵
+      iconRect = {
+        x: this.model.x + this.model.width * 0.5 - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
+        y: this.model.y - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
+        width: DDeiConfig.SELECTOR.OPERATE_ICON.weight, height: DDeiConfig.SELECTOR.OPERATE_ICON.weight
+      };
+    } else if (direct == 2) {
+      iconRect = {
+        x: this.model.x + this.model.width - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
+        y: this.model.y - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
+        width: DDeiConfig.SELECTOR.OPERATE_ICON.weight, height: DDeiConfig.SELECTOR.OPERATE_ICON.weight
+      }
+    } else if (direct == 3) {
+      iconRect = {
+        x: this.model.x + this.model.width - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
+        y: this.model.y + this.model.height * 0.5 - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
+        width: DDeiConfig.SELECTOR.OPERATE_ICON.weight, height: DDeiConfig.SELECTOR.OPERATE_ICON.weight
+      }
+    } else if (direct == 4) {
+      iconRect = {
+        x: this.model.x + this.model.width - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
+        y: this.model.y + this.model.height - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
+        width: DDeiConfig.SELECTOR.OPERATE_ICON.weight, height: DDeiConfig.SELECTOR.OPERATE_ICON.weight
+      }
+    } else if (direct == 5) {
+      iconRect = {
+        x: this.model.x + this.model.width * 0.5 - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
+        y: this.model.y + this.model.height - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
+        width: DDeiConfig.SELECTOR.OPERATE_ICON.weight, height: DDeiConfig.SELECTOR.OPERATE_ICON.weight
+      }
+    } else if (direct == 6) {
+      iconRect = {
+        x: this.model.x - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
+        y: this.model.y + this.model.height - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
+        width: DDeiConfig.SELECTOR.OPERATE_ICON.weight, height: DDeiConfig.SELECTOR.OPERATE_ICON.weight
+      }
+    } else if (direct == 7) {
+      iconRect = {
+        x: this.model.x - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
+        y: this.model.y + this.model.height * 0.5 - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
+        width: DDeiConfig.SELECTOR.OPERATE_ICON.weight, height: DDeiConfig.SELECTOR.OPERATE_ICON.weight
+      }
+    } else if (direct == 8) {
+      iconRect = {
+        x: this.model.x - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
+        y: this.model.y - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
+        width: DDeiConfig.SELECTOR.OPERATE_ICON.weight, height: DDeiConfig.SELECTOR.OPERATE_ICON.weight
+      }
+    } else if (direct == 9) {
+      iconRect = {
+        x: this.model.x + this.model.width * 0.5 - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
+        y: this.model.y - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2.5,
+        width: DDeiConfig.SELECTOR.OPERATE_ICON.weight, height: DDeiConfig.SELECTOR.OPERATE_ICON.weight
+      }
+    }
+    if (!iconRect) {
+      return false;
+    }
+    //对所有选中图形进行位移并旋转
+    let rcc = { x: iconRect.x + iconRect.width * 0.5, y: iconRect.y + iconRect.height * 0.5 };
+    //已知圆心位置、起始点位置和旋转角度，求终点的坐标位置，坐标系为笛卡尔坐标系，计算机中y要反转计算
+    let dcc = DDeiUtil.computePosition(occ, rcc, this.model.rotate);
+    iconRect.x = dcc.x - iconRect.width * 0.5
+    iconRect.y = dcc.y - iconRect.height * 0.5
+    return DDeiAbstractShape.isInsidePolygon(DDeiAbstractShape.getRotatedPoints(iconRect, this.model.rotate), { x: x, y: y });
   }
 }
 

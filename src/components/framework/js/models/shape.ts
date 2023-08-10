@@ -21,6 +21,56 @@ abstract class DDeiAbstractShape {
     this.zoom = props.zoom ? props.zoom : null;
   }
   // ============================ 静态方法 ============================
+
+  /**
+    * 通过射线法判断点是否在图形内部
+    * @param pps 多边形顶点 
+    * @param point 测试点
+    * @returns
+    */
+  static isInsidePolygon(polygon: object[], point: { x: number, y: number }): boolean {
+    var x = point.x, y = point.y;
+    var inside = false;
+    for (var i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+      var xi = polygon[i].x, yi = polygon[i].y;
+      var xj = polygon[j].x, yj = polygon[j].y;
+      var intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+      if (intersect) {
+        inside = !inside;
+      }
+    }
+    return inside;
+  }
+
+  /**
+   * 获取旋转后的点集合
+   * @param model 模型
+   * @param rotate 旋转角度
+   * @param looseWeight 宽松判定区域
+   */
+  static getRotatedPoints(model: object, rotate: number = 0, looseWeight: number = 0): object[] {
+    let ps = [];
+    ps.push({ x: model.x - looseWeight, y: model.y - looseWeight });
+    ps.push({ x: model.x + model.width + 2 * looseWeight, y: model.y - looseWeight });
+    ps.push({ x: model.x + model.width + 2 * looseWeight, y: model.y + model.height + 2 * looseWeight });
+    ps.push({ x: model.x - looseWeight, y: model.y + model.height + 2 * looseWeight });
+
+    if (rotate && rotate > 0) {
+      let points = [];
+      let occ = { x: model.x + model.width * 0.5 + looseWeight, y: model.y + model.height * 0.5 + looseWeight }
+      //按圆心进行旋转rotate度，得到绘制出来的点位
+      ps.forEach(oldPoint => {
+        //已知圆心位置、起始点位置和旋转角度，求终点的坐标位置
+        let newPoint = DDeiUtil.computePosition(occ, oldPoint, rotate);
+        points.push(newPoint);
+      })
+      return points;
+    } else {
+      return ps;
+    }
+
+  }
+
   /**
      * 是否左对齐
      * 源图形的左上顶点与图形的左边线或右边线处于一个x
@@ -235,17 +285,7 @@ abstract class DDeiAbstractShape {
     if (x === undefined || y === undefined) {
       return false
     }
-    // 对角判断
-    let modelX = this.x - looseWeight
-    let modelX1 = this.x + this.width + looseWeight
-    let modelY = this.y - looseWeight
-    let modelY1 = this.y + this.height + looseWeight
-
-    return modelX <= x &&
-      modelY <= y &&
-      modelX1 >= x &&
-      modelY1 >= y
-
+    return DDeiAbstractShape.isInsidePolygon(this.getRotatedPoints(looseWeight), { x: x, y: y });
   }
   /**
    * 判断图形是否在一个区域内
@@ -273,28 +313,6 @@ abstract class DDeiAbstractShape {
       modelY <= y &&
       modelX1 <= x1 &&
       modelY1 <= y1
-  }
-
-  /**
-   * 通过射线法判断点是否在图形内部
-   * @param pps 多边形顶点 
-   * @param point 测试点
-   * @returns
-   */
-  isInsidePolygon(polygon: [], point: { x: number, y: number }): boolean {
-    var x = point.x, y = point.y;
-    var inside = false;
-    for (var i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-      var xi = polygon[i].x, yi = polygon[i].y;
-      var xj = polygon[j].x, yj = polygon[j].y;
-      var intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-      if (intersect) {
-        inside = !inside;
-      }
-    }
-
-    return inside;
-
   }
 
   /**
@@ -347,23 +365,27 @@ abstract class DDeiAbstractShape {
 
   /**
    * 获取图形上所有的点
+   * @param looseWeight 宽松判定区域
    */
-  getPoints(): object[] {
+  getPoints(looseWeight: number = 0): object[] {
     let returnVal = []
     let bounds = this.getBounds();
-    returnVal.push({ x: bounds.x, y: bounds.y });
-    returnVal.push({ x: bounds.x1, y: bounds.y });
-    returnVal.push({ x: bounds.x1, y: bounds.y1 });
-    returnVal.push({ x: bounds.x, y: bounds.y1 });
+    returnVal.push({ x: bounds.x - looseWeight, y: bounds.y - looseWeight });
+    returnVal.push({ x: bounds.x1 + 2 * looseWeight, y: bounds.y - looseWeight });
+    returnVal.push({ x: bounds.x1 + 2 * looseWeight, y: bounds.y1 + 2 * looseWeight });
+    returnVal.push({ x: bounds.x - looseWeight, y: bounds.y1 + 2 * looseWeight });
     return returnVal;
   }
 
+
+
   /**
    * 获取旋转后的点集合
+   * @param looseWeight 宽松的判断矩阵
    */
-  getRotatedPoints(): object[] {
+  getRotatedPoints(looseWeight: number = 0): object[] {
     //对当前图形，按照rotate进行旋转，求得新的四个点的位置
-    let ps = this.getPoints();
+    let ps = this.getPoints(looseWeight);
     if (this.rotate && this.rotate > 0) {
       let points = [];
       //按圆心进行旋转rotate度，得到绘制出来的点位
@@ -378,7 +400,6 @@ abstract class DDeiAbstractShape {
     } else {
       return ps;
     }
-
   }
 
   /**

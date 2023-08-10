@@ -112,7 +112,7 @@ class DDeiLayer {
     let controls = [];
     this.models.forEach((item) => {
       //如果射线相交，则视为选中
-      if (item.isInsidePolygon(item.getRotatedPoints(), { x: x, y: y })) {
+      if (DDeiAbstractShape.isInsidePolygon(item.getRotatedPoints(), { x: x, y: y })) {
         controls.push(item);
       }
     });
