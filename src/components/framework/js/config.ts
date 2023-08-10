@@ -6,6 +6,8 @@ import DDeiCircleCanvasRender from "./views/canvas/circle-render"
 import DDeiSelectorCanvasRender from "./views/canvas/selector-render"
 import DDeiEnumKeyActionInst from "./enums/key-action-inst"
 import DDeiDiamondCanvasRender from "./views/canvas/diamond-render"
+import DDei from "./ddei"
+import DDeiRectContainerCanvasRender from "./views/canvas/rect-container-render"
 /**
  * DDei的配置文件
  * 提供了全局参数与缺省值的设置
@@ -315,6 +317,8 @@ class DDeiConfig {
         model.render = new DDeiDiamondCanvasRender({ model: model });
       } else if (model.modelType == "DDeiSelector") {
         model.render = new DDeiSelectorCanvasRender({ model: model });
+      } else if (model.modelType == "DDeiRectContainer") {
+        model.render = new DDeiRectContainerCanvasRender({ model: model });
       }
     } else if (this.RENDER_TYPE == "SVG") {
       //TODO 

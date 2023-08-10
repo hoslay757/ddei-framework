@@ -12,7 +12,7 @@ class DDeiLayer {
   // ============================ 构造函数 ============================
   constructor(props: object) {
     this.id = props.id
-    this.models = new Map();
+    this.models = props.models ? props.models : new Map();
     this.modelType = 'DDeiLayer'
     this.stage = null;
     this.index = -1;
