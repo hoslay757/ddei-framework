@@ -446,18 +446,29 @@ class DDeiLayerCanvasRender {
     if (!this.model.display) {
       return;
     }
+    //ctrl键的按下状态
+    let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
     //判断当前操作状态
     switch (this.stageRender.operateState) {
       //控件状态确认中
       case DDeiEnumOperateState.CONTROL_CONFIRMING:
-        //判断当前操作控件是否选中
-        if (this.stageRender.currentOperateShape.state == DDeiEnumControlState.SELECTED) {
-          //取消选中当前操作控件
-          this.stageRender.currentOperateShape.state = DDeiEnumControlState.DEFAULT;
-          //全局变量：当前操作控件=空
-          this.stageRender.currentOperateShape = null;
-        } else {
-          //选中当前操作控件
+        //按下ctrl增加选中，或取消当前选中
+        if (isCtrl) {
+          //判断当前操作控件是否选中
+          if (this.stageRender.currentOperateShape.state == DDeiEnumControlState.SELECTED) {
+            //取消选中当前操作控件
+            this.stageRender.currentOperateShape.state = DDeiEnumControlState.DEFAULT;
+            //全局变量：当前操作控件=空
+            this.stageRender.currentOperateShape = null;
+          } else {
+            //选中当前操作控件
+            this.stageRender.currentOperateShape.state = DDeiEnumControlState.SELECTED;
+          }
+        }
+        //没有按下ctrl键，取消选中非当前控件
+        else {
+          //清空除了当前操作控件外所有选中状态控件
+          this.model.cancelSelectModels();
           this.stageRender.currentOperateShape.state = DDeiEnumControlState.SELECTED;
         }
         //当前操作控件：无

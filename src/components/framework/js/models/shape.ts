@@ -276,6 +276,28 @@ abstract class DDeiAbstractShape {
   }
 
   /**
+   * 通过射线法判断点是否在图形内部
+   * @param pps 多边形顶点 
+   * @param point 测试点
+   * @returns
+   */
+  isInsidePolygon(polygon: [], point: { x: number, y: number }): boolean {
+    var x = point.x, y = point.y;
+    var inside = false;
+    for (var i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+      var xi = polygon[i].x, yi = polygon[i].y;
+      var xj = polygon[j].x, yj = polygon[j].y;
+      var intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+      if (intersect) {
+        inside = !inside;
+      }
+    }
+
+    return inside;
+
+  }
+
+  /**
    * 设置控件坐标
    * @param x 
    * @param y 
@@ -330,10 +352,33 @@ abstract class DDeiAbstractShape {
     let returnVal = []
     let bounds = this.getBounds();
     returnVal.push({ x: bounds.x, y: bounds.y });
-    returnVal.push({ x: bounds.x1, y: bounds.y1 });
     returnVal.push({ x: bounds.x1, y: bounds.y });
+    returnVal.push({ x: bounds.x1, y: bounds.y1 });
     returnVal.push({ x: bounds.x, y: bounds.y1 });
     return returnVal;
+  }
+
+  /**
+   * 获取旋转后的点集合
+   */
+  getRotatedPoints(): object[] {
+    //对当前图形，按照rotate进行旋转，求得新的四个点的位置
+    let ps = this.getPoints();
+    if (this.rotate && this.rotate > 0) {
+      let points = [];
+      //按圆心进行旋转rotate度，得到绘制出来的点位
+      //当前item的圆心
+      let occ = { x: this.x + this.width * 0.5, y: this.y + this.height * 0.5 };
+      ps.forEach(oldPoint => {
+        //已知圆心位置、起始点位置和旋转角度，求终点的坐标位置
+        let newPoint = DDeiUtil.computePosition(occ, oldPoint, this.rotate);
+        points.push(newPoint);
+      })
+      return points;
+    } else {
+      return ps;
+    }
+
   }
 
   /**

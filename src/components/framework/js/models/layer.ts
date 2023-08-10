@@ -1,5 +1,6 @@
 import DDeiConfig from '../config'
 import DDeiEnumControlState from '../enums/control-state';
+import DDeiUtil from '../util';
 import DDeiAbstractShape from './shape';
 import DDeiStage from './stage';
 
@@ -109,8 +110,9 @@ class DDeiLayer {
    */
   findModelsByArea(x = undefined, y = undefined, width = 0, height = 0): DDeiAbstractShape[] | null {
     let controls = [];
-    this.models.forEach((item, key) => {
-      if (item.isInSelectArea(x, y, width, height)) {
+    this.models.forEach((item) => {
+      //如果射线相交，则视为选中
+      if (item.isInsidePolygon(item.getRotatedPoints(), { x: x, y: y })) {
         controls.push(item);
       }
     });
