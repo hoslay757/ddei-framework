@@ -56,19 +56,6 @@ class DDeiSelector extends DDeiRectangle {
       return null;
     }
     let returnBounds = { x: this.x, y: this.y, width: this.width, height: this.height }
-    //获取旋转后的坐标
-    if (this.rotate > 0) {
-      let points = DDeiAbstractShape.getRotatedPoints(returnBounds, this.rotate);
-      let rx: number = Infinity, ry: number = Infinity, rx1: number = 0, ry1: number = 0;
-      //找到最大、最小的x和y
-      points.forEach(p => {
-        rx = Math.min(Math.floor(p.x), rx)
-        rx1 = Math.max(Math.floor(p.x), rx1)
-        ry = Math.min(Math.floor(p.y), ry)
-        ry1 = Math.max(Math.floor(p.y), ry1)
-      })
-      returnBounds = { x: rx, y: ry, width: rx1 - rx, height: ry1 - ry }
-    }
 
     switch (this.passIndex) {
       //上中
@@ -194,12 +181,29 @@ class DDeiSelector extends DDeiRectangle {
     }
     let models: DDeiAbstractShape[] = Array.from(selectedModels.values());
     //原始路径
-    let originRect: object = DDeiAbstractShape.getOutRect(models);
+    let originRect: object = null;
+    if (this.rotate > 0) {
+      originRect = this.getAbsBounds();
+      let paddingWeightInfo = this.paddingWeight?.selected ? this.paddingWeight.selected : DDeiConfig.SELECTOR.PADDING_WEIGHT.selected;
+      let paddingWeight = 0;
+      if (selectedModels.size > 1) {
+        paddingWeight = paddingWeightInfo.multiple;
+      } else {
+        paddingWeight = paddingWeightInfo.single;
+      }
+      originRect.x = originRect.x + paddingWeight;
+      originRect.y = originRect.y + paddingWeight;
+      originRect.width = originRect.width - 2 * paddingWeight;
+      originRect.height = originRect.height - 2 * paddingWeight;
+    } else {
+      originRect = DDeiAbstractShape.getOutRect(models);
+    }
     //记录每一个图形在原始矩形中的比例
     let originPosMap: Map<string, object> = new Map();
     //获取模型在原始模型中的位置比例
     for (let i = 0; i < models.length; i++) {
       let item = models[i]
+
       originPosMap.set(item.id, {
         xR: (item.x - originRect.x) / originRect.width,
         yR: (item.y - originRect.y) / originRect.height,
@@ -207,7 +211,6 @@ class DDeiSelector extends DDeiRectangle {
         hR: item.height / originRect.height
       });
     }
-
     let helpLineWeight = 1;
     // 计算图形拖拽后将要到达的坐标
     if (DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
@@ -227,25 +230,23 @@ class DDeiSelector extends DDeiRectangle {
     movedBounds.x = movedBounds.x + paddingWeight
     movedBounds.width = movedBounds.width - 2 * paddingWeight
     //校验，如果拖拽后图形消失不见，则停止拖拽
-    if (movedBounds.height <= paddingWeight || movedBounds.width <= paddingWeight) {
+    if (this.passIndex == -1 || movedBounds.height <= paddingWeight || movedBounds.width <= paddingWeight) {
       return false
     }
     //同步多个模型到等比缩放状态
-    if (this.passIndex != -1) {
-      selectedModels.forEach((item, key) => {
-        let originBound = { x: item.x, y: item.y, width: item.width, height: item.height };
-        item.x = movedBounds.x + movedBounds.width * originPosMap.get(item.id).xR
-        item.width = movedBounds.width * originPosMap.get(item.id).wR
-        item.y = movedBounds.y + movedBounds.height * originPosMap.get(item.id).yR
-        item.height = movedBounds.height * originPosMap.get(item.id).hR
-        //如果当前模型是容器，则按照容器比例更新子元素的大小
-        if (item.baseModelType == "DDeiContainer") {
-          let changedBound = { x: item.x, y: item.y, width: item.width, height: item.height };
-          item.changeSelfAndChildrenBounds(originBound, changedBound)
-        };
-      })
+    selectedModels.forEach((item, key) => {
+      let originBound = { x: item.x, y: item.y, width: item.width, height: item.height };
+      item.x = movedBounds.x + movedBounds.width * originPosMap.get(item.id).xR
+      item.width = movedBounds.width * originPosMap.get(item.id).wR
+      item.y = movedBounds.y + movedBounds.height * originPosMap.get(item.id).yR
+      item.height = movedBounds.height * originPosMap.get(item.id).hR
+      //如果当前模型是容器，则按照容器比例更新子元素的大小
+      if (item.baseModelType == "DDeiContainer") {
+        let changedBound = { x: item.x, y: item.y, width: item.width, height: item.height };
+        item.changeSelfAndChildrenBounds(originBound, changedBound)
+      };
+    })
 
-    }
     return true;
   }
   /**

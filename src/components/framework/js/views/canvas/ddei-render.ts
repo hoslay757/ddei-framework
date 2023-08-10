@@ -85,10 +85,13 @@ class DDeiCanvasRender {
 
     //绑定键盘事件
     document.addEventListener('keydown', (evt: Event) => {
-      this.keyDown(evt)
+      if (this.keyDown(evt)) {
+        evt.preventDefault()
+      }
     });
     document.addEventListener('keyup', (evt: Event) => {
       this.keyUp(evt)
+      evt.preventDefault()
     });
   }
 
@@ -117,7 +120,7 @@ class DDeiCanvasRender {
    * 键盘按下
    */
   keyDown(evt: Event): void {
-    DDeiKeyAction.route(evt, this.model)
+    return DDeiKeyAction.route(evt, this.model)
   }
 
   /**

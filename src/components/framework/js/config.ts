@@ -56,6 +56,10 @@ class DDeiConfig {
     { keys: "13", action: DDeiEnumKeyActionInst.EnterQuickEdit },
     //取消
     { keys: "27", action: DDeiEnumKeyActionInst.CancelQuickEdit },
+    //组合
+    { keys: "71", ctrl: 1, action: DDeiEnumKeyActionInst.MakeCompose },
+    //取消组合
+    { keys: "71", ctrl: 1, shift: 1, action: DDeiEnumKeyActionInst.CancelCompose },
   ];
 
   // 边框的相关缺省样式属性
