@@ -56,6 +56,20 @@ class DDeiSelector extends DDeiRectangle {
       return null;
     }
     let returnBounds = { x: this.x, y: this.y, width: this.width, height: this.height }
+    //获取旋转后的坐标
+    if (this.rotate > 0) {
+      let points = DDeiAbstractShape.getRotatedPoints(returnBounds, this.rotate);
+      let rx: number = Infinity, ry: number = Infinity, rx1: number = 0, ry1: number = 0;
+      //找到最大、最小的x和y
+      points.forEach(p => {
+        rx = Math.min(Math.floor(p.x), rx)
+        rx1 = Math.max(Math.floor(p.x), rx1)
+        ry = Math.min(Math.floor(p.y), ry)
+        ry1 = Math.max(Math.floor(p.y), ry1)
+      })
+      returnBounds = { x: rx, y: ry, width: rx1 - rx, height: ry1 - ry }
+    }
+
     switch (this.passIndex) {
       //上中
       case 1: {

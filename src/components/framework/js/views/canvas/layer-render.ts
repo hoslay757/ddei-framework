@@ -210,6 +210,7 @@ class DDeiLayerCanvasRender {
    * @returns 计算的坐标
    */
   getMovedPosition(evt): object {
+
     //获取移动后的坐标
     let movedBounds = {
       x: evt.offsetX - this.stageRender.dragObj.x,
@@ -477,7 +478,8 @@ class DDeiLayerCanvasRender {
         if (this.stageRender.selector) {
           this.stageRender.selector.updatedBoundsBySelectedModels();
         }
-
+        //当前操作状态:无
+        this.stageRender.operateState = DDeiEnumOperateState.NONE;
         break;
       //选择器工作中
       case DDeiEnumOperateState.SELECT_WORKING:
