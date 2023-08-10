@@ -270,7 +270,7 @@ abstract class DDeiAbstractShape {
   // 当前图形在当前图层的层次
   zIndex: number | null;
   // 旋转,0/null 不旋转，默认0
-  rotate: number;
+  rotate: number | null;
   // 缩放,1/null，不缩放,默认1
   zoom: number;
   // ============================ 方法 ===============================
