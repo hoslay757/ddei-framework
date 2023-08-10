@@ -18,6 +18,9 @@
       <button type="button"
               @click="createDiamond()"
               style="width:120px;height:30px;margin-top:10px">菱形</button>
+      <button type="button"
+              @click="createContainer()"
+              style="width:120px;height:30px;margin-top:10px">容器</button>
     </div>
     <div class="middle">
       <FrameWorkTest />
@@ -56,6 +59,7 @@ import DDei from "./components/framework/js/ddei";
 import DDeiRectangle from "./components/framework/js/models/rectangle";
 import DDeiCircle from "./components/framework/js/models/circle";
 import DDeiDiamond from "./components/framework/js/models/diamond";
+import DDeiRectContainer from "./components/framework/js/models/rect-container";
 
 export default {
   name: "APP",
@@ -81,9 +85,13 @@ export default {
   methods: {
     //创建矩形
     createRectangle() {
-      //TODO 这里是否应该直接封装一个方法维护关系？
       //获取当前实例
       let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_demo"];
+      //获取当前选择的控件，如果是一个容器则添加到容器中
+      let models =
+        ddInstance.stage.layers[
+          ddInstance.stage.layerIndex
+        ].getSelectedModels();
       //创建一个矩形
       let rect: DDeiRectangle = DDeiRectangle.initByJSON({
         id: "rect_" + ddInstance.stage.idIdx,
@@ -97,6 +105,20 @@ export default {
       });
       //下标自增1
       ddInstance.stage.idIdx++;
+      if (models && models.size > 0) {
+        let md = Array.from(models.values())[0];
+        if (md.modelType == "DDeiRectContainer") {
+          //下标自增1
+          ddInstance.stage.idIdx++;
+          md.addModel(rect);
+          //绑定并初始化渲染器
+          DDeiConfig.bindRender(rect);
+          rect.render.init();
+          //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
+          ddInstance.stage.render.drawShape();
+          return;
+        }
+      }
       //添加模型到图层
       ddInstance.stage.addModel(rect);
       //绑定并初始化渲染器
@@ -152,6 +174,48 @@ export default {
       //绑定并初始化渲染器
       DDeiConfig.bindRender(diamond);
       diamond.render.init();
+      //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
+      ddInstance.stage.render.drawShape();
+    },
+
+    //创建容器
+    createContainer() {
+      //获取当前实例
+      let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_demo"];
+      //创建一个矩形
+      let container: DDeiRectContainer = DDeiRectContainer.initByJSON({
+        id: "container_" + ddInstance.stage.idIdx,
+        x: 100,
+        y: 100,
+        width: 500,
+        height: 500,
+      });
+      //下标自增1
+      ddInstance.stage.idIdx++;
+      //获取当前选择的控件，如果是一个容器则添加到容器中
+      let models =
+        ddInstance.stage.layers[
+          ddInstance.stage.layerIndex
+        ].getSelectedModels();
+      if (models && models.size > 0) {
+        let md = Array.from(models.values())[0];
+        if (md.modelType == "DDeiRectContainer") {
+          //下标自增1
+          ddInstance.stage.idIdx++;
+          md.addModel(container);
+          //绑定并初始化渲染器
+          DDeiConfig.bindRender(container);
+          container.render.init();
+          //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
+          ddInstance.stage.render.drawShape();
+          return;
+        }
+      }
+      //添加模型到图层
+      ddInstance.stage.addModel(container);
+      //绑定并初始化渲染器
+      DDeiConfig.bindRender(container);
+      container.render.init();
       //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
       ddInstance.stage.render.drawShape();
     },

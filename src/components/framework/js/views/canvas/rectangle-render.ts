@@ -85,7 +85,8 @@ class DDeiRectangleCanvasRender {
   getBorderRatPos() {
     //获取全局缩放比例
     let ratio = this.ddRender.ratio;
-    return DDeiUtil.getRatioPosition(this.model, ratio);
+    let absBounds = this.model.getAbsBounds();
+    return DDeiUtil.getRatioPosition(absBounds, ratio);
   }
 
   /**
@@ -518,11 +519,12 @@ class DDeiRectangleCanvasRender {
     if (!bottomBorder.disabled && bottomBorder.color && (!bottomBorder.opacity || bottomBorder.opacity > 0) > 0 && bottomBorder.width > 0) {
       bottomWidth = bottomBorder.width;
     }
+    let absBounds = this.model.getAbsBounds();
     let fillAreaE = {
-      x: this.model.x + leftWidth,
-      y: this.model.y + topWidth,
-      width: this.model.width - leftWidth - rightWidth,
-      height: this.model.height - topWidth - bottomWidth
+      x: absBounds.x + leftWidth,
+      y: absBounds.y + topWidth,
+      width: absBounds.width - leftWidth - rightWidth,
+      height: absBounds.height - topWidth - bottomWidth
     }
     return fillAreaE;
   }

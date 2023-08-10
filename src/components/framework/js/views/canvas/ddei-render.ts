@@ -35,7 +35,7 @@ class DDeiCanvasRender {
         this.canvas = document.createElement("canvas");
         this.canvas.setAttribute("id", this.model.id + "_canvas");
         //获得 2d 上下文对象
-        var ctx = this.canvas.getContext('2d');
+        let ctx = this.canvas.getContext('2d');
         //获取缩放比例
         let ratio = DDeiUtil.getPixelRatio(ctx);
         this.canvas.setAttribute("style", "zoom:" + (1 / ratio));
@@ -85,10 +85,13 @@ class DDeiCanvasRender {
 
     //绑定键盘事件
     document.addEventListener('keydown', (evt: Event) => {
-      this.keyDown(evt)
+      if (this.keyDown(evt)) {
+        evt.preventDefault()
+      }
     });
     document.addEventListener('keyup', (evt: Event) => {
       this.keyUp(evt)
+      evt.preventDefault()
     });
   }
 
@@ -117,7 +120,7 @@ class DDeiCanvasRender {
    * 键盘按下
    */
   keyDown(evt: Event): void {
-    DDeiKeyAction.route(evt, this.model)
+    return DDeiKeyAction.route(evt, this.model)
   }
 
   /**

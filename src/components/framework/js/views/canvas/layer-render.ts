@@ -604,7 +604,6 @@ class DDeiLayerCanvasRender {
           if (successChange) {
             this.stageRender.dragObj.x = this.stageRender.dragObj.x + movedPos.x
             this.stageRender.dragObj.y = this.stageRender.dragObj.y + movedPos.y
-            //更新选择器状态
             this.stageRender.selector.updatedBoundsBySelectedModels();
             //重新渲染
             this.ddRender.drawShape();

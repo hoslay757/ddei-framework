@@ -97,7 +97,7 @@ abstract class DDeiKeyAction {
           }
         } else {
           item.action.action(evt, ddInstance);
-          break;
+          return true;
         }
       }
 

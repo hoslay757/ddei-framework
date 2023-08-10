@@ -410,6 +410,45 @@ abstract class DDeiAbstractShape {
   }
 
   /**
+   * 获取绝对的控件坐标
+   */
+  getAbsPosition(pm): object {
+    if (!pm) {
+      pm = this;
+    }
+    let rp = pm.getPosition();
+    if (!pm.pModel || pm.pModel.modelType == "DDeiLayer") {
+      return rp;
+    } else {
+      let mp = pm.getAbsPosition(pm.pModel);
+      rp.x = rp.x + mp.x
+      rp.y = rp.y + mp.y
+      return rp;
+    }
+  }
+
+
+  /**
+   * 获取绝对的bounds
+   */
+  getAbsBounds(pm): object {
+    if (!pm) {
+      pm = this;
+    }
+    let rp = pm.getBounds();
+    if (!pm.pModel || pm.pModel.modelType == "DDeiLayer") {
+      return rp;
+    } else {
+      let mp = pm.getAbsPosition(pm.pModel);
+      rp.x = rp.x + mp.x
+      rp.y = rp.y + mp.y
+      rp.x1 = rp.x1 + mp.x
+      rp.y1 = rp.y1 + mp.y
+      return rp;
+    }
+  }
+
+  /**
    * 获取控件大小
    */
   getSize() {
