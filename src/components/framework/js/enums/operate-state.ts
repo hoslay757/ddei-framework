@@ -16,6 +16,8 @@ enum DDeiEnumOperateState {
   CONTROL_DRAGING = 3,
   //控件修改大小中
   CONTROL_CHANGING_BOUND = 4,
+  //控件旋转中
+  CONTROL_ROTATE = 5,
   //选择器工作中
   SELECT_WORKING = 10,
 }

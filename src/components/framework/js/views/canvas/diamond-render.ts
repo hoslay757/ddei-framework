@@ -40,7 +40,14 @@ class DDeiDiamondCanvasRender extends DDeiRectangleCanvasRender {
     let ratPos = this.getBorderRatPos();
 
     //1,2,3,4 上，右，下，左
-
+    //保存状态
+    ctx.save();
+    //设置旋转角度
+    if (this.model.rotate) {
+      ctx.translate(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5)
+      ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
+      ctx.translate(-ratPos.x - ratPos.width * 0.5, -ratPos.y - ratPos.height * 0.5)
+    }
     for (let i = 1; i <= 4; i++) {
       //如果被选中，使用选中的边框，否则使用缺省边框
       //TODO 样式最小替换颗粒度，需要前后保持一致
@@ -49,8 +56,8 @@ class DDeiDiamondCanvasRender extends DDeiRectangleCanvasRender {
       //绘制四个方向的边框
       //如果边框未被disabled，则绘制边框
       if (!borderInfo.disabled && borderInfo.color && (!borderInfo.opacity || borderInfo.opacity > 0) && borderInfo.width > 0) {
-        //保存状态
-        ctx.save();
+
+
         ctx.beginPath();
         //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
         let lineOffset = borderInfo.width * ratio / 2;
@@ -83,9 +90,6 @@ class DDeiDiamondCanvasRender extends DDeiRectangleCanvasRender {
         ctx.closePath();
       }
     }
-    //恢复状态
-    ctx.restore();
-
     //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
     let fillInfo = null;
     if (this.model.state == DDeiEnumControlState.SELECTED) {
@@ -95,6 +99,7 @@ class DDeiDiamondCanvasRender extends DDeiRectangleCanvasRender {
     }
     //如果拥有填充色，则使用填充色
     if (fillInfo && fillInfo.color) {
+
       ctx.fillStyle = DDeiUtil.getColor(fillInfo.color);
       //透明度
       if (fillInfo.opacity) {

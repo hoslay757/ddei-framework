@@ -1,5 +1,6 @@
 import DDeiConfig from '../config';
 import DDeiEnumControlState from '../enums/control-state';
+import DDeiUtil from '../util';
 import DDeiRectangle from './rectangle';
 import DDeiAbstractShape from './shape';
 
@@ -55,6 +56,20 @@ class DDeiSelector extends DDeiRectangle {
       return null;
     }
     let returnBounds = { x: this.x, y: this.y, width: this.width, height: this.height }
+    //获取旋转后的坐标
+    if (this.rotate > 0) {
+      let points = DDeiAbstractShape.getRotatedPoints(returnBounds, this.rotate);
+      let rx: number = Infinity, ry: number = Infinity, rx1: number = 0, ry1: number = 0;
+      //找到最大、最小的x和y
+      points.forEach(p => {
+        rx = Math.min(Math.floor(p.x), rx)
+        rx1 = Math.max(Math.floor(p.x), rx1)
+        ry = Math.min(Math.floor(p.y), ry)
+        ry1 = Math.max(Math.floor(p.y), ry1)
+      })
+      returnBounds = { x: rx, y: ry, width: rx1 - rx, height: ry1 - ry }
+    }
+
     switch (this.passIndex) {
       //上中
       case 1: {
@@ -111,6 +126,61 @@ class DDeiSelector extends DDeiRectangle {
       }
     }
     return returnBounds;
+  }
+
+
+  /**
+   * 根据移动后的坐标，调整选中控件的旋转角度
+   * @param movedNumber 
+   */
+  changeSelectedModelRotate(movedNumber: number = 0) {
+
+    let layer = this.stage.layers[this.stage.layerIndex];
+    let selectedModels = layer.getSelectedModels();
+    if (!selectedModels || this.passIndex == -1 || movedNumber == 0) {
+      return false;
+    }
+    //更新旋转器角度
+    if (!this.rotate) {
+      this.rotate = 0;
+      this.originX = this.x;
+      this.originY = this.y;
+    }
+    //计算旋转角度
+    let angle = movedNumber * 0.5;
+    let models: DDeiAbstractShape[] = Array.from(selectedModels.values());
+    //获取当前选择控件外接矩形
+    let originRect: object = DDeiAbstractShape.getOutRect(models);
+    //外接矩形的圆心x0和y0
+    let occ = { x: originRect.x + originRect.width * 0.5, y: originRect.y + originRect.height * 0.5 };
+    //对所有选中图形进行位移并旋转
+    for (let i = 0; i < models.length; i++) {
+      let item = models[i]
+      if (!item.rotate) {
+        item.rotate = 0;
+        item.originX = item.x;
+        item.originY = item.y;
+      }
+      //当前图形的圆心x1和y1
+      let rcc = { x: item.x + item.width * 0.5, y: item.y + item.height * 0.5 };
+      //已知圆心位置、起始点位置和旋转角度，求终点的坐标位置，坐标系为笛卡尔坐标系，计算机中y要反转计算
+      let dcc = DDeiUtil.computePosition(occ, rcc, angle);
+      //修改坐标与旋转角度
+      item.setPosition(dcc.x - item.width * 0.5, dcc.y - item.height * 0.5)
+      item.rotate = item.rotate + angle
+      if (item.rotate >= 360) {
+        item.rotate = null
+        item.x = item.originX;
+        item.y = item.originY;
+      }
+    }
+
+    this.rotate = this.rotate + angle
+    if (this.rotate >= 360) {
+      this.rotate = 0
+      this.x = this.originX;
+      this.y = this.originY;
+    }
   }
   /**
    * 根据移动后的选择器，等比缩放图形
@@ -193,6 +263,7 @@ class DDeiSelector extends DDeiRectangle {
     this.y = y
     this.width = 0
     this.height = 0
+    this.rotate = 0
     this.state = DDeiEnumControlState.DEFAULT;
   }
 
@@ -228,15 +299,26 @@ class DDeiSelector extends DDeiRectangle {
   updatedBoundsBySelectedModels(): void {
     let selectedModels = this.stage.layers[this.stage.layerIndex].getSelectedModels();
     if (selectedModels && selectedModels.size > 0) {
+      let models = Array.from(selectedModels.values());
+      //获取间距设定
       let paddingWeightInfo = this.paddingWeight?.selected ? this.paddingWeight.selected : DDeiConfig.SELECTOR.PADDING_WEIGHT.selected;
       let paddingWeight = 0;
-      if (selectedModels.size > 1) {
+      if (models.length > 1) {
         paddingWeight = paddingWeightInfo.multiple;
       } else {
         paddingWeight = paddingWeightInfo.single;
       }
-      let outRectBounds = DDeiAbstractShape.getOutRect(Array.from(selectedModels.values()));
+      //计算多个图形的顶点最大范围，根据顶点范围构建一个最大的外接矩形，规则的外接矩形，可以看作由4个顶点构成的图形
+      let outRectBounds = null
+      if (models.length > 1) {
+        outRectBounds = DDeiAbstractShape.getOutRect(models);
+      } else {
+        outRectBounds = models[0].getBounds();
+        this.rotate = models[0].rotate;
+      }
+
       this.setBounds(outRectBounds.x - paddingWeight, outRectBounds.y - paddingWeight, outRectBounds.width + 2 * paddingWeight, outRectBounds.height + 2 * paddingWeight);
+
       //设置选择器状态为选中后
       this.state = DDeiEnumControlState.SELECTED;
     } else {

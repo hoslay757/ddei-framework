@@ -250,10 +250,6 @@ class DDeiStage {
       if (souceModels.has(model.id)) {
         return
       }
-      // TODO // 包含在分组内则跳过
-      // if (isGroupModel && sourceModel.includeModel(model)) {
-      //   return
-      // }
       distP = { x: model.x, y: model.y, width: model.width, height: model.height }
       if (DDeiAbstractShape.isLeftAlign(sourceP, distP)) {
         models.leftAlignModels.push(model)

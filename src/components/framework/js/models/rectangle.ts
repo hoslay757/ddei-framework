@@ -24,10 +24,6 @@ class DDeiRectangle extends DDeiAbstractShape {
     this.textArea = props.textArea ? props.textArea : null;
     //文本样式（除字体外），包含了横纵对齐、文字方向、镂空、换行、缩小字体填充等文本相关内容
     this.textStyle = props.textStyle ? props.textStyle : null;
-    // 旋转,0/null 不旋转，默认0
-    this.rotate = props.rotate ? props.rotate : null;
-    // 缩放,1/null，不缩放,默认1
-    this.zoom = props.zoom ? props.zoom : null;
   }
 
   // ============================ 静态变量 ============================
@@ -55,10 +51,6 @@ class DDeiRectangle extends DDeiAbstractShape {
   textArea: any;
   //文本样式（除字体外），包含了横纵对齐、文字方向、镂空、换行、缩小字体填充等文本相关内容
   textStyle: any;
-  // 旋转,0/null 不旋转，默认0
-  rotate: number;
-  // 缩放,1/null，不缩放,默认1
-  zoom: number;
   // 本模型的唯一名称
   modelType: string = 'DDeiRectangle';
   // 本模型的基础图形

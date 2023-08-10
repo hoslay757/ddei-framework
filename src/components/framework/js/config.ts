@@ -12,7 +12,8 @@ import DDeiDiamondCanvasRender from "./views/canvas/diamond-render"
  * 提供了全局的一些重要函数
  */
 class DDeiConfig {
-
+  //单个角度的旋转单位
+  static ROTATE_UNIT = Math.PI / 180;
   // ============================ 静态变量 ============================
   //当前采用的渲染器类型，暂时只支持canvas
   static RENDER_TYPE: string = "CANVAS";
