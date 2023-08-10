@@ -275,15 +275,15 @@ class DDeiSelector extends DDeiRectangle {
   updatedBoundsBySelectedModels(): void {
     let selectedModels = this.stage.layers[this.stage.layerIndex].getSelectedModels();
     if (selectedModels && selectedModels.size > 0) {
+      let models = Array.from(selectedModels.values());
       //获取间距设定
       let paddingWeightInfo = this.paddingWeight?.selected ? this.paddingWeight.selected : DDeiConfig.SELECTOR.PADDING_WEIGHT.selected;
       let paddingWeight = 0;
-      if (selectedModels.size > 1) {
+      if (models.length > 1) {
         paddingWeight = paddingWeightInfo.multiple;
       } else {
         paddingWeight = paddingWeightInfo.single;
       }
-      let models = Array.from(selectedModels.values());
       // //如果当前所有的已选控件都是旋转的，则当前选择器也是旋转的
       // let sameRotate = DDeiAbstractShape.isSameRotate(models);
       // if (sameRotate) {
@@ -293,7 +293,14 @@ class DDeiSelector extends DDeiRectangle {
       //   this.rotate = 0
       // }
       //TODO 计算多个图形的顶点最大范围，根据顶点范围构建一个最大的外接矩形，规则的外接矩形，可以看作由4个顶点构成的图形
-      let outRectBounds = DDeiAbstractShape.getOutRect(models);
+      let outRectBounds = null
+      if (models.length > 1) {
+        outRectBounds = DDeiAbstractShape.getOutRect(models);
+      } else {
+        outRectBounds = models[0].getBounds();
+        this.rotate = models[0].rotate;
+      }
+
       this.setBounds(outRectBounds.x - paddingWeight, outRectBounds.y - paddingWeight, outRectBounds.width + 2 * paddingWeight, outRectBounds.height + 2 * paddingWeight);
 
       //设置选择器状态为选中后
