@@ -2,6 +2,7 @@ import DDeiConfig from '../config'
 import DDeiStage from './stage'
 import DDeiLayer from './layer'
 import DDeiEnumControlState from '../enums/control-state'
+import DDeiUtil from '../util'
 
 /**
  * 抽象的图形类，定义了大多数图形都有的属性和方法
@@ -143,19 +144,37 @@ abstract class DDeiAbstractShape {
     if (!models.length) {
       return { x: 0, y: 0, width: 0, height: 0 }
     }
-    let x = Infinity
-    let y = Infinity
-    let width = 0
-    let height = 0
+
+    //按照rotate对图形进行旋转，求的旋转后的四个点坐标
+    //遍历所有点，求得最大、最小的x、y
+    let points: object[] = [];
     models.forEach(item => {
-      x = Math.min(+item.x, x)
-      y = Math.min(+item.y, y)
+      //对当前图形，按照rotate进行旋转，求得新的四个点的位置
+      let ps = item.getPoints();
+      //按圆心进行旋转rotate度，得到绘制出来的点位
+      if (item.rotate && item.rotate > 0) {
+        //当前item的圆心
+        let occ = { x: item.x + item.width * 0.5, y: item.y + item.height * 0.5 };
+        ps.forEach(oldPoint => {
+          //已知圆心位置、起始点位置和旋转角度，求终点的坐标位置
+          let newPoint = DDeiUtil.computePosition(occ, oldPoint, item.rotate);
+          points.push(newPoint);
+        })
+      } else {
+        points = points.concat(ps)
+      }
     })
-    models.forEach(item => {
-      width = Math.max(Math.floor(+item.x + +item.width - x), width)
-      height = Math.max(Math.floor(+item.y + +item.height - y), height)
+    let x: number = Infinity, y: number = Infinity, x1: number = 0, y1: number = 0;
+    //找到最大、最小的x和y
+    points.forEach(p => {
+      x = Math.min(Math.floor(p.x), x)
+      x1 = Math.max(Math.floor(p.x), x1)
+      y = Math.min(Math.floor(p.y), y)
+      y1 = Math.max(Math.floor(p.y), y1)
     })
-    return { x, y, width, height, x1: x + width, y1: y + height }
+    return {
+      x: x, y: y, width: x1 - x, height: y1 - y, x1: x1, y1: y1
+    }
   }
 
   /**
@@ -302,6 +321,19 @@ abstract class DDeiAbstractShape {
       x: this.x, y: this.y, width: this.width, height: this.height,
       x1: this.x + this.width, y1: this.y + this.height
     }
+  }
+
+  /**
+   * 获取图形上所有的点
+   */
+  getPoints(): object[] {
+    let returnVal = []
+    let bounds = this.getBounds();
+    returnVal.push({ x: bounds.x, y: bounds.y });
+    returnVal.push({ x: bounds.x1, y: bounds.y1 });
+    returnVal.push({ x: bounds.x1, y: bounds.y });
+    returnVal.push({ x: bounds.x, y: bounds.y1 });
+    return returnVal;
   }
 
   /**

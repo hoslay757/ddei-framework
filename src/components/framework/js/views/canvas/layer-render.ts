@@ -606,9 +606,6 @@ class DDeiLayerCanvasRender {
           //更改已选择控件的旋转
           this.stageRender.selector.changeSelectedModelRotate(movedPos.x);
           this.stageRender.dragObj.x = this.stageRender.dragObj.x + movedPos.x
-          // //更新选择器状态
-          this.stageRender.selector.updatedBoundsBySelectedModels();
-          console.log(this.stageRender.selector.width + " .  " + this.stageRender.selector.height);
           //重新渲染
           this.ddRender.drawShape();
         }

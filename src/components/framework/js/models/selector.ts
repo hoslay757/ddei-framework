@@ -149,6 +149,14 @@ class DDeiSelector extends DDeiRectangle {
         item.rotate = 0
       }
     }
+    //更新旋转器角度
+    if (!this.rotate) {
+      this.rotate = 0;
+    }
+    this.rotate = this.rotate + angle
+    if (this.rotate > 360) {
+      this.rotate = 0
+    }
   }
   /**
    * 根据移动后的选择器，等比缩放图形
@@ -276,14 +284,14 @@ class DDeiSelector extends DDeiRectangle {
         paddingWeight = paddingWeightInfo.single;
       }
       let models = Array.from(selectedModels.values());
-      //如果当前所有的已选控件都是旋转的，则当前选择器也是旋转的
-      let sameRotate = DDeiAbstractShape.isSameRotate(models);
-      if (sameRotate) {
-        //TODO 将所有图形逆向还原，然后再根据还原后的图形计算大小
-        this.rotate = models[0].rotate;
-      } else {
-        this.rotate = 0
-      }
+      // //如果当前所有的已选控件都是旋转的，则当前选择器也是旋转的
+      // let sameRotate = DDeiAbstractShape.isSameRotate(models);
+      // if (sameRotate) {
+      //   //TODO 将所有图形逆向还原，然后再根据还原后的图形计算大小
+      //   this.rotate = models[0].rotate;
+      // } else {
+      //   this.rotate = 0
+      // }
       //TODO 计算多个图形的顶点最大范围，根据顶点范围构建一个最大的外接矩形，规则的外接矩形，可以看作由4个顶点构成的图形
       let outRectBounds = DDeiAbstractShape.getOutRect(models);
       this.setBounds(outRectBounds.x - paddingWeight, outRectBounds.y - paddingWeight, outRectBounds.width + 2 * paddingWeight, outRectBounds.height + 2 * paddingWeight);
