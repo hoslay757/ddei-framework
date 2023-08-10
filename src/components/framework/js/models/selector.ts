@@ -233,10 +233,16 @@ class DDeiSelector extends DDeiRectangle {
     //同步多个模型到等比缩放状态
     if (this.passIndex != -1) {
       selectedModels.forEach((item, key) => {
+        let originBound = { x: item.x, y: item.y, width: item.width, height: item.height };
         item.x = movedBounds.x + movedBounds.width * originPosMap.get(item.id).xR
         item.width = movedBounds.width * originPosMap.get(item.id).wR
         item.y = movedBounds.y + movedBounds.height * originPosMap.get(item.id).yR
         item.height = movedBounds.height * originPosMap.get(item.id).hR
+        //如果当前模型是容器，则按照容器比例更新子元素的大小
+        if (item.baseModelType == "DDeiContainer") {
+          let changedBound = { x: item.x, y: item.y, width: item.width, height: item.height };
+          item.changeSelfAndChildrenBounds(originBound, changedBound)
+        };
       })
 
     }

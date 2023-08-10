@@ -28,7 +28,7 @@ class DDeiRectContainer extends DDeiRectangle {
   // 本模型的唯一名称
   modelType: string = 'DDeiRectContainer';
   // 本模型的基础图形
-  baseModelType: string = 'DDeiRectangle';
+  baseModelType: string = 'DDeiContainer';
   //布局方式，null/0自由布局，缺省null
   layout: number;
   // 本容器包含的所有模型
@@ -69,6 +69,39 @@ class DDeiRectContainer extends DDeiRectangle {
     model.pModel = null;
     model.stage = null;
     model.render = null;
+  }
+
+  /**
+   * 修改子模型的大小
+   */
+  changeSelfAndChildrenBounds(originRect, newRect): boolean {
+    let models: DDeiAbstractShape[] = Array.from(this.models.values());
+    //记录每一个图形在原始矩形中的比例
+    let originPosMap: Map<string, object> = new Map();
+    //获取模型在原始模型中的位置比例
+    for (let i = 0; i < models.length; i++) {
+      let item = models[i]
+      originPosMap.set(item.id, {
+        xR: item.x / originRect.width,
+        yR: item.y / originRect.height,
+        wR: item.width / originRect.width,
+        hR: item.height / originRect.height
+      });
+    }
+    //同步多个模型到等比缩放状态
+    models.forEach(item => {
+      let originBound = { x: item.x, y: item.y, width: item.width, height: item.height };
+      item.x = newRect.width * originPosMap.get(item.id).xR
+      item.width = newRect.width * originPosMap.get(item.id).wR
+      item.y = newRect.height * originPosMap.get(item.id).yR
+      item.height = newRect.height * originPosMap.get(item.id).hR
+      //如果当前模型是容器，则按照容器比例更新子元素的大小
+      if (item.baseModelType == "DDeiContainer") {
+        let changedBound = { x: item.x, y: item.y, width: item.width, height: item.height };
+        item.changeSelfAndChildrenBounds(originBound, changedBound)
+      };
+    })
+    return true;
   }
 }
 

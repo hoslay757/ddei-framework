@@ -18,7 +18,7 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
     super.drawShape();
     //保存状态
     ctx.save();
-    //设置旋转
+    //设置旋转，以确保子图形元素都被旋转
     this.doRotate(ctx, ratPos);
     this.drawChildrenShapes();
     ctx.restore();

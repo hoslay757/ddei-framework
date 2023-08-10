@@ -192,6 +192,25 @@ export default {
       });
       //下标自增1
       ddInstance.stage.idIdx++;
+      //获取当前选择的控件，如果是一个容器则添加到容器中
+      let models =
+        ddInstance.stage.layers[
+          ddInstance.stage.layerIndex
+        ].getSelectedModels();
+      if (models && models.size > 0) {
+        let md = Array.from(models.values())[0];
+        if (md.modelType == "DDeiRectContainer") {
+          //下标自增1
+          ddInstance.stage.idIdx++;
+          md.addModel(container);
+          //绑定并初始化渲染器
+          DDeiConfig.bindRender(container);
+          container.render.init();
+          //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
+          ddInstance.stage.render.drawShape();
+          return;
+        }
+      }
       //添加模型到图层
       ddInstance.stage.addModel(container);
       //绑定并初始化渲染器
