@@ -78,6 +78,7 @@ class DDeiLayer {
     //将模型添加进图层
     this.models.set(model.id, model);
     model.layer = this;
+    model.pModel = this;
   }
 
   /**
@@ -102,6 +103,21 @@ class DDeiLayer {
       item.state = DDeiEnumControlState.DEFAULT
     });
   }
+
+  /**
+   * 取消选择控件,默认取消所有
+   */
+  cancelAllLevelSelectModels(): void {
+    this.models.forEach(item => {
+      item.state = DDeiEnumControlState.DEFAULT
+      if (item.baseModelType == "DDeiContainer") {
+        item.cancelAllLevelSelectModels();
+      }
+    });
+  }
+
+
+
 
   /**
    * 获取某个选中区域的所有控件

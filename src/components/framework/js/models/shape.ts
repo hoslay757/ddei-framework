@@ -228,6 +228,35 @@ abstract class DDeiAbstractShape {
   }
 
   /**
+   * 获取某个容器下选中区域的所有控件,如果控件已被选中，且是一个容器，则继续向下直到最底层
+   * @param area 选中区域
+   * @returns 
+   */
+  static findBottomModelsByArea(container, x = undefined, y = undefined, width = 0, height = 0): DDeiAbstractShape[] | null {
+    let controls = [];
+    if (container) {
+      container.models.forEach((item) => {
+        //如果射线相交，则视为选中
+        if (DDeiAbstractShape.isInsidePolygon(item.getRotatedPoints(), { x: x, y: y })) {
+          //如果当前控件状态为选中，且是容器，则往下寻找控件，否则返回当前控件
+          if (item.state == DDeiEnumControlState.SELECTED && item.baseModelType == "DDeiContainer") {
+            let subControls = DDeiAbstractShape.findBottomModelsByArea(item, x - item.x, y - item.y, width, height);
+            if (subControls && subControls.length > 0) {
+              controls = controls.concat(subControls);
+            } else {
+              controls.push(item);
+            }
+          } else {
+            controls.push(item);
+          }
+        }
+      });
+    }
+    //TODO 对控件进行排序，按照zIndex > 添加顺序
+    return controls;
+  }
+
+  /**
    * 判断图形是否在一个区域内
    * @param area 矩形区域
    * @returns 是否在区域内
