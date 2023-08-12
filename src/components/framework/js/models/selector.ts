@@ -163,7 +163,7 @@ class DDeiSelector extends DDeiRectangle {
       //修改坐标与旋转角度
       item.setPosition(dcc.x - item.width * 0.5, dcc.y - item.height * 0.5)
       item.rotate = item.rotate + angle
-      if (item.rotate >= 360) {
+      if (item.rotate >= 360 || item.rotate <= -360) {
         item.rotate = null
         item.x = item.originX;
         item.y = item.originY;
@@ -171,7 +171,7 @@ class DDeiSelector extends DDeiRectangle {
     }
 
     this.rotate = this.rotate + angle
-    if (this.rotate >= 360) {
+    if (this.rotate >= 360 || this.rotate <= -360) {
       this.rotate = 0
       this.x = this.originX;
       this.y = this.originY;
