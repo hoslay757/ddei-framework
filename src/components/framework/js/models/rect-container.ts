@@ -130,9 +130,20 @@ class DDeiRectContainer extends DDeiRectangle {
     });
   }
   /**
-   * 修改子模型的大小
+   * 修改上层模型大小
    */
-  changeSelfAndChildrenBounds(originRect, newRect): boolean {
+  changeParentsBounds(): boolean {
+    this.updateBoundsByModels();
+    if (this.pModel) {
+      this.pModel.changeParentsBounds();
+    }
+    return true;
+  }
+
+  /**
+   * 修改子元素大小
+   */
+  changeChildrenBounds(originRect, newRect): boolean {
     let models: DDeiAbstractShape[] = Array.from(this.models.values());
     //记录每一个图形在原始矩形中的比例
     let originPosMap: Map<string, object> = new Map();
@@ -156,7 +167,7 @@ class DDeiRectContainer extends DDeiRectangle {
       //如果当前模型是容器，则按照容器比例更新子元素的大小
       if (item.baseModelType == "DDeiContainer") {
         let changedBound = { x: item.x, y: item.y, width: item.width, height: item.height };
-        item.changeSelfAndChildrenBounds(originBound, changedBound)
+        item.changeChildrenBounds(originBound, changedBound)
       };
     })
     return true;

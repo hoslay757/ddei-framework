@@ -316,33 +316,6 @@ abstract class DDeiAbstractShape {
     }
     return DDeiAbstractShape.isInsidePolygon(this.getRotatedPoints(looseWeight), { x: x, y: y });
   }
-  /**
-   * 判断图形是否在一个区域内
-   * @param area 矩形区域
-   * @returns 是否在区域内
-   */
-  isInSelectArea(x = undefined, y = undefined, width = 0, height = 0): boolean {
-    if (x === undefined || y === undefined) {
-      return false
-    }
-    // 对角判断
-    let modelX = this.x
-    let modelX1 = this.x + this.width
-    let modelY = this.y
-    let modelY1 = this.y + this.height
-    if (!width || !height) {
-      return modelX <= x &&
-        modelY <= y &&
-        modelX1 >= x &&
-        modelY1 >= y
-    }
-    let x1 = x + width
-    let y1 = x + height
-    return modelX <= x &&
-      modelY <= y &&
-      modelX1 <= x1 &&
-      modelY1 <= y1
-  }
 
   /**
    * 设置控件坐标

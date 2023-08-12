@@ -137,6 +137,14 @@ class DDeiLayer {
   }
 
   /**
+  * 修改上层模型大小
+  */
+  changeParentsBounds(): boolean {
+
+    return true;
+  }
+
+  /**
    * 获取选中状态的所有控件
    * @returns 
    */

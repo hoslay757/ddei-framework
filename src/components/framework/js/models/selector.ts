@@ -39,6 +39,9 @@ class DDeiSelector extends DDeiRectangle {
   //操作区域的填充样式，根据选中和未选中状态可以有所变化
   operateIconFill: object;
 
+  //当前操作的容器
+  currentContainer: DDeiAbstractShape | null = null;
+
   //当前操作触发pass的下标，-1为未激活，1～8按，1:中上，2右上顺时针计数，9为旋转
   passIndex: number = -1;
 
@@ -173,9 +176,11 @@ class DDeiSelector extends DDeiRectangle {
    * 根据移动后的选择器，等比缩放图形
    * @return 是否成功改变，校验失败则会终止改变
    */
-  changeSelectedModelBounds(movedBounds: object): boolean {
-    let layer = this.stage.layers[this.stage.layerIndex];
-    let selectedModels = layer.getSelectedModels();
+  changeSelectedModelBounds(pContainerModel: DDeiAbstractShape, movedBounds: object): boolean {
+    if (!pContainerModel) {
+      pContainerModel = this.stage.layers[this.stage.layerIndex];;
+    }
+    let selectedModels = pContainerModel.getSelectedModels();
     if (!selectedModels || this.passIndex == -1 || !movedBounds) {
       return false;
     }
@@ -205,10 +210,10 @@ class DDeiSelector extends DDeiRectangle {
       let item = models[i]
 
       originPosMap.set(item.id, {
-        xR: (item.x - originRect.x) / originRect.width,
-        yR: (item.y - originRect.y) / originRect.height,
-        wR: item.width / originRect.width,
-        hR: item.height / originRect.height
+        xR: ((item.x - originRect.x) / originRect.width),
+        yR: ((item.y - originRect.y) / originRect.height),
+        wR: (item.width / originRect.width),
+        hR: (item.height / originRect.height)
       });
     }
     let helpLineWeight = 1;
@@ -233,18 +238,31 @@ class DDeiSelector extends DDeiRectangle {
     if (this.passIndex == -1 || movedBounds.height <= paddingWeight || movedBounds.width <= paddingWeight) {
       return false
     }
+    let cx = 0;
+    let cy = 0;
+    if (pContainerModel.baseModelType == "DDeiContainer") {
+      let cAbsBound = pContainerModel.getAbsBounds();
+      cx = cAbsBound.x;
+      cy = cAbsBound.y;
+    }
+
     //同步多个模型到等比缩放状态
+    //TODO 未来考虑精度问题
     selectedModels.forEach((item, key) => {
       let originBound = { x: item.x, y: item.y, width: item.width, height: item.height };
-      item.x = movedBounds.x + movedBounds.width * originPosMap.get(item.id).xR
-      item.width = movedBounds.width * originPosMap.get(item.id).wR
-      item.y = movedBounds.y + movedBounds.height * originPosMap.get(item.id).yR
-      item.height = movedBounds.height * originPosMap.get(item.id).hR
+      item.x = Math.floor(movedBounds.x - cx + movedBounds.width * originPosMap.get(item.id).xR)
+      item.width = Math.floor(movedBounds.width * originPosMap.get(item.id).wR)
+      item.y = Math.floor(movedBounds.y - cy + movedBounds.height * originPosMap.get(item.id).yR)
+      item.height = Math.floor(movedBounds.height * originPosMap.get(item.id).hR)
+
       //如果当前模型是容器，则按照容器比例更新子元素的大小
       if (item.baseModelType == "DDeiContainer") {
         let changedBound = { x: item.x, y: item.y, width: item.width, height: item.height };
-        item.changeSelfAndChildrenBounds(originBound, changedBound)
+        item.changeChildrenBounds(originBound, changedBound)
       };
+
+      //pContainerModel修改上层容器直至layer的大小
+      pContainerModel.changeParentsBounds()
     })
 
     return true;
@@ -302,9 +320,14 @@ class DDeiSelector extends DDeiRectangle {
 
   /**
    * 根据已选择的控件更新坐标和状态
+   * @param pContainerModel 上层容器控件
    */
-  updatedBoundsBySelectedModels(): void {
-    let selectedModels = this.stage.layers[this.stage.layerIndex].getSelectedModels();
+  updatedBoundsBySelectedModels(pContainerModel: DDeiAbstractShape): void {
+    if (!pContainerModel) {
+      pContainerModel = this.stage.layers[this.stage.layerIndex];
+    }
+    this.currentContainer = pContainerModel
+    let selectedModels = pContainerModel.getSelectedModels();
     if (selectedModels && selectedModels.size > 0) {
       let models = Array.from(selectedModels.values());
       //获取间距设定
@@ -320,7 +343,7 @@ class DDeiSelector extends DDeiRectangle {
       if (models.length > 1) {
         outRectBounds = DDeiAbstractShape.getOutRect(models);
       } else {
-        outRectBounds = models[0].getBounds();
+        outRectBounds = models[0].getAbsBounds();
         this.rotate = models[0].rotate;
       }
 

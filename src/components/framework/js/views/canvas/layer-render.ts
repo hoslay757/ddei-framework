@@ -477,7 +477,7 @@ class DDeiLayerCanvasRender {
         this.stageRender.currentOperateShape = null;
         //根据选中图形的状态更新选择器
         if (this.stageRender.selector) {
-          this.stageRender.selector.updatedBoundsBySelectedModels();
+          this.stageRender.selector.updatedBoundsBySelectedModels(pContainerModel);
         }
         //当前操作状态:无
         this.stageRender.operateState = DDeiEnumOperateState.NONE;
@@ -590,11 +590,11 @@ class DDeiLayerCanvasRender {
             this.stageRender.dragObj.y = this.stageRender.dragObj.y + movedPosDelta.y;
             //如果上层容器是Container，同步更新其大小和坐标
             if (pContainerModel.baseModelType == "DDeiContainer") {
-              pContainerModel.updateBoundsByModels()
+              pContainerModel.changeParentsBounds()
             }
             //更新选择器
             if (this.stageRender.selector) {
-              this.stageRender.selector.updatedBoundsBySelectedModels()
+              this.stageRender.selector.updatedBoundsBySelectedModels(pContainerModel)
             }
             //重新渲染
             this.ddRender.drawShape();
@@ -606,18 +606,26 @@ class DDeiLayerCanvasRender {
       }
       //控件改变大小中
       case DDeiEnumOperateState.CONTROL_CHANGING_BOUND: {
-        //获取当前移动的坐标量
-        let movedPos = this.getMovedPosition(evt);
-        //计算移动后的坐标以及大小
-        let movedBounds = this.stageRender.selector.getMovedBounds(movedPos.x, movedPos.y);
-        if (movedBounds) {
-          let successChange = this.stageRender.selector.changeSelectedModelBounds(movedBounds);
-          if (successChange) {
-            this.stageRender.dragObj.x = this.stageRender.dragObj.x + movedPos.x
-            this.stageRender.dragObj.y = this.stageRender.dragObj.y + movedPos.y
-            this.stageRender.selector.updatedBoundsBySelectedModels();
-            //重新渲染
-            this.ddRender.drawShape();
+        //当前移动的坐标增量
+        let movedPosDelta = this.getMovedPositionDelta(evt);
+        if (movedPosDelta.x != 0 || movedPosDelta.y != 0) {
+          //计算移动后的坐标以及大小
+          let pContainerModel = this.stageRender.selector.currentContainer;
+          if (!pContainerModel) {
+            pContainerModel = this.model;
+          }
+          let movedBounds = this.stageRender.selector.getMovedBounds(movedPosDelta.x, movedPosDelta.y);
+          if (movedBounds) {
+            //改变控件以及容器的大小
+            let successChange = this.stageRender.selector.changeSelectedModelBounds(pContainerModel, movedBounds);
+            if (successChange) {
+              this.stageRender.dragObj.x = this.stageRender.dragObj.x + movedPosDelta.x
+              this.stageRender.dragObj.y = this.stageRender.dragObj.y + movedPosDelta.y
+              this.stageRender.selector.updatedBoundsBySelectedModels(pContainerModel);
+              //重新渲染
+              this.ddRender.drawShape();
+            }
+
           }
         }
 
