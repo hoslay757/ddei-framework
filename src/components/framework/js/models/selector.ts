@@ -190,7 +190,7 @@ class DDeiSelector extends DDeiRectangle {
       return false;
     }
     let models: DDeiAbstractShape[] = Array.from(selectedModels.values());
-    //原始路径
+    //原始路径,绝对坐标
     let originRect: object = null;
     if (this.rotate != 0) {
       originRect = this.getAbsBounds();
@@ -208,6 +208,15 @@ class DDeiSelector extends DDeiRectangle {
     } else {
       originRect = DDeiAbstractShape.getOutRect(models);
     }
+
+    //容器所在的坐标，容器内元素加上容器坐标才是绝对坐标，绝对坐标剪去容器坐标才是相对坐标
+    let cx = 0;
+    let cy = 0;
+    if (pContainerModel.baseModelType == "DDeiContainer") {
+      let cAbsBound = pContainerModel.getAbsBounds();
+      cx = cAbsBound.x;
+      cy = cAbsBound.y;
+    }
     //记录每一个图形在原始矩形中的比例
     let originPosMap: Map<string, object> = new Map();
     //获取模型在原始模型中的位置比例
@@ -215,17 +224,11 @@ class DDeiSelector extends DDeiRectangle {
       let item = models[i]
 
       originPosMap.set(item.id, {
-        xR: ((item.x - originRect.x) / originRect.width),
-        yR: ((item.y - originRect.y) / originRect.height),
+        xR: ((item.x + cx - originRect.x) / originRect.width),
+        yR: ((item.y + cy - originRect.y) / originRect.height),
         wR: (item.width / originRect.width),
         hR: (item.height / originRect.height)
       });
-    }
-    let helpLineWeight = 1;
-    // 计算图形拖拽后将要到达的坐标
-    if (DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
-      //辅助对齐线宽度
-      helpLineWeight = DDeiConfig.GLOBAL_HELP_LINE_WEIGHT;
     }
     let paddingWeightInfo = this.paddingWeight?.selected ? this.paddingWeight.selected : DDeiConfig.SELECTOR.PADDING_WEIGHT.selected;
     let paddingWeight = 0;
@@ -243,17 +246,12 @@ class DDeiSelector extends DDeiRectangle {
     if (this.passIndex == -1 || movedBounds.height <= paddingWeight || movedBounds.width <= paddingWeight) {
       return false
     }
-    let cx = 0;
-    let cy = 0;
-    if (pContainerModel.baseModelType == "DDeiContainer") {
-      let cAbsBound = pContainerModel.getAbsBounds();
-      cx = cAbsBound.x;
-      cy = cAbsBound.y;
-    }
+
 
     //同步多个模型到等比缩放状态
     //TODO 未来考虑精度问题
     selectedModels.forEach((item, key) => {
+      debugger
       let originBound = { x: item.x, y: item.y, width: item.width, height: item.height };
       item.x = Math.floor(movedBounds.x - cx + movedBounds.width * originPosMap.get(item.id).xR)
       item.width = Math.floor(movedBounds.width * originPosMap.get(item.id).wR)
@@ -264,6 +262,7 @@ class DDeiSelector extends DDeiRectangle {
       if (item.baseModelType == "DDeiContainer") {
         let changedBound = { x: item.x, y: item.y, width: item.width, height: item.height };
         item.changeChildrenBounds(originBound, changedBound)
+        item.changeParentsBounds();
       };
 
       //pContainerModel修改上层容器直至layer的大小
