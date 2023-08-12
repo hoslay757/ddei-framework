@@ -55,7 +55,7 @@ abstract class DDeiAbstractShape {
     ps.push({ x: model.x + model.width + 2 * looseWeight, y: model.y + model.height + 2 * looseWeight });
     ps.push({ x: model.x - looseWeight, y: model.y + model.height + 2 * looseWeight });
 
-    if (rotate && rotate > 0) {
+    if (rotate && rotate != 0) {
       let points = [];
       let occ = { x: model.x + model.width * 0.5 + looseWeight, y: model.y + model.height * 0.5 + looseWeight }
       //按圆心进行旋转rotate度，得到绘制出来的点位
@@ -202,7 +202,7 @@ abstract class DDeiAbstractShape {
       //对当前图形，按照rotate进行旋转，求得新的四个点的位置
       let ps = item.getPoints();
       //按圆心进行旋转rotate度，得到绘制出来的点位
-      if (item.rotate && item.rotate > 0) {
+      if (item.rotate && item.rotate != 0) {
         //当前item的圆心
         let occ = { x: item.x + item.width * 0.5, y: item.y + item.height * 0.5 };
         ps.forEach(oldPoint => {
@@ -388,7 +388,7 @@ abstract class DDeiAbstractShape {
   getRotatedPoints(looseWeight: number = 0): object[] {
     //对当前图形，按照rotate进行旋转，求得新的四个点的位置
     let ps = this.getPoints(looseWeight);
-    if (this.rotate && this.rotate > 0) {
+    if (this.rotate && this.rotate != 0) {
       let points = [];
       //按圆心进行旋转rotate度，得到绘制出来的点位
       //当前item的圆心

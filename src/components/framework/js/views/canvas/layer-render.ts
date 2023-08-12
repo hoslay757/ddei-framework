@@ -588,17 +588,16 @@ class DDeiLayerCanvasRender {
             //更新dragObj临时变量中的数值,确保坐标对应关系一致
             this.stageRender.dragObj.x = this.stageRender.dragObj.x + movedPosDelta.x;
             this.stageRender.dragObj.y = this.stageRender.dragObj.y + movedPosDelta.y;
-            //如果上层容器是Container，同步更新其大小和坐标
-            if (pContainerModel.baseModelType == "DDeiContainer") {
-              pContainerModel.changeParentsBounds()
-            }
+            //同步更新上层容器其大小和坐标
+            pContainerModel.changeParentsBounds()
+
             //更新选择器
             if (this.stageRender.selector) {
               this.stageRender.selector.updatedBoundsBySelectedModels(pContainerModel)
             }
             //重新渲染
             this.ddRender.drawShape();
-            // //显示辅助对齐线、坐标文本等图形
+            //显示辅助对齐线、坐标文本等图形
             this.drawHelpLines(this.stageRender.currentOperateShape?.getAbsBounds(), selectedModels);
           }
         }
@@ -634,11 +633,18 @@ class DDeiLayerCanvasRender {
       //控件旋转
       case DDeiEnumOperateState.CONTROL_ROTATE: {
         //获取当前移动的坐标量
-        let movedPos = this.getMovedPosition(evt);
+        let movedPos = this.getMovedPositionDelta(evt);
         if (movedPos.x != 0) {
           //更改已选择控件的旋转
           this.stageRender.selector.changeSelectedModelRotate(movedPos.x);
           this.stageRender.dragObj.x = this.stageRender.dragObj.x + movedPos.x
+          //计算上级控件的大小
+          let pContainerModel = this.stageRender.selector.currentContainer;
+          if (!pContainerModel) {
+            pContainerModel = this.model;
+          }
+          //同步更新上层容器其大小和坐标
+          pContainerModel.changeParentsBounds()
           //重新渲染
           this.ddRender.drawShape();
         }

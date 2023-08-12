@@ -125,8 +125,13 @@ class DDeiSelector extends DDeiRectangle {
    */
   changeSelectedModelRotate(movedNumber: number = 0) {
 
-    let layer = this.stage.layers[this.stage.layerIndex];
-    let selectedModels = layer.getSelectedModels();
+    //计算上级控件的大小
+    let pContainerModel = this.currentContainer;
+    if (!pContainerModel) {
+      pContainerModel = this.stage.layers[this.stage.layerIndex];
+    }
+    let selectedModels = pContainerModel.getSelectedModels();
+
     if (!selectedModels || this.passIndex == -1 || movedNumber == 0) {
       return false;
     }
@@ -187,7 +192,7 @@ class DDeiSelector extends DDeiRectangle {
     let models: DDeiAbstractShape[] = Array.from(selectedModels.values());
     //原始路径
     let originRect: object = null;
-    if (this.rotate > 0) {
+    if (this.rotate != 0) {
       originRect = this.getAbsBounds();
       let paddingWeightInfo = this.paddingWeight?.selected ? this.paddingWeight.selected : DDeiConfig.SELECTOR.PADDING_WEIGHT.selected;
       let paddingWeight = 0;
