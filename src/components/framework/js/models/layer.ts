@@ -13,7 +13,6 @@ class DDeiLayer {
   constructor(props: object) {
     this.id = props.id
     this.models = props.models ? props.models : new Map();
-    this.modelType = 'DDeiLayer'
     this.stage = null;
     this.index = -1;
     this.type = props.type ? props.type : 0;
@@ -38,6 +37,7 @@ class DDeiLayer {
   models: Map<string, DDeiAbstractShape>;
   // 本模型的唯一名称
   modelType: string = 'DDeiLayer';
+  baseModelType: string = 'DDeiLayer';
   // 当前layer所在的stage
   stage: DDeiStage | null;
   // 当前layer的下标，该属性与实际的图层index保持同步
