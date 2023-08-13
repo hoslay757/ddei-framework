@@ -55,7 +55,7 @@ abstract class DDeiAbstractShape {
     ps.push({ x: model.x + model.width + 2 * looseWeight, y: model.y + model.height + 2 * looseWeight });
     ps.push({ x: model.x - looseWeight, y: model.y + model.height + 2 * looseWeight });
 
-    if (rotate && rotate > 0) {
+    if (rotate && rotate != 0) {
       let points = [];
       let occ = { x: model.x + model.width * 0.5 + looseWeight, y: model.y + model.height * 0.5 + looseWeight }
       //按圆心进行旋转rotate度，得到绘制出来的点位
@@ -202,7 +202,7 @@ abstract class DDeiAbstractShape {
       //对当前图形，按照rotate进行旋转，求得新的四个点的位置
       let ps = item.getPoints();
       //按圆心进行旋转rotate度，得到绘制出来的点位
-      if (item.rotate && item.rotate > 0) {
+      if (item.rotate && item.rotate != 0) {
         //当前item的圆心
         let occ = { x: item.x + item.width * 0.5, y: item.y + item.height * 0.5 };
         ps.forEach(oldPoint => {
@@ -225,6 +225,35 @@ abstract class DDeiAbstractShape {
     return {
       x: x, y: y, width: x1 - x, height: y1 - y, x1: x1, y1: y1
     }
+  }
+
+  /**
+   * 获取某个容器下选中区域的所有控件,如果控件已被选中，且是一个容器，则继续向下直到最底层
+   * @param area 选中区域
+   * @returns 
+   */
+  static findBottomModelsByArea(container, x = undefined, y = undefined, width = 0, height = 0): DDeiAbstractShape[] | null {
+    let controls = [];
+    if (container) {
+      container.models.forEach((item) => {
+        //如果射线相交，则视为选中
+        if (DDeiAbstractShape.isInsidePolygon(item.getRotatedPoints(), { x: x, y: y })) {
+          //如果当前控件状态为选中，且是容器，则往下寻找控件，否则返回当前控件
+          if (item.state == DDeiEnumControlState.SELECTED && item.baseModelType == "DDeiContainer") {
+            let subControls = DDeiAbstractShape.findBottomModelsByArea(item, x - item.x, y - item.y, width, height);
+            if (subControls && subControls.length > 0) {
+              controls = controls.concat(subControls);
+            } else {
+              controls.push(item);
+            }
+          } else {
+            controls.push(item);
+          }
+        }
+      });
+    }
+    //TODO 对控件进行排序，按照zIndex > 添加顺序
+    return controls;
   }
 
   /**
@@ -286,33 +315,6 @@ abstract class DDeiAbstractShape {
       return false
     }
     return DDeiAbstractShape.isInsidePolygon(this.getRotatedPoints(looseWeight), { x: x, y: y });
-  }
-  /**
-   * 判断图形是否在一个区域内
-   * @param area 矩形区域
-   * @returns 是否在区域内
-   */
-  isInSelectArea(x = undefined, y = undefined, width = 0, height = 0): boolean {
-    if (x === undefined || y === undefined) {
-      return false
-    }
-    // 对角判断
-    let modelX = this.x
-    let modelX1 = this.x + this.width
-    let modelY = this.y
-    let modelY1 = this.y + this.height
-    if (!width || !height) {
-      return modelX <= x &&
-        modelY <= y &&
-        modelX1 >= x &&
-        modelY1 >= y
-    }
-    let x1 = x + width
-    let y1 = x + height
-    return modelX <= x &&
-      modelY <= y &&
-      modelX1 <= x1 &&
-      modelY1 <= y1
   }
 
   /**
@@ -378,6 +380,19 @@ abstract class DDeiAbstractShape {
   }
 
 
+  /**
+   * 获取当前图形的绝对旋转坐标值
+   */
+  getAbsRotate(): number {
+    let rotate = 0;
+    if (this.rotate) {
+      rotate += this.rotate
+    }
+    if (this.pModel && this.pModel.baseModelType != "DDeiLayer") {
+      rotate += this.pModel.getAbsRotate();
+    }
+    return rotate;
+  }
 
   /**
    * 获取旋转后的点集合
@@ -386,14 +401,16 @@ abstract class DDeiAbstractShape {
   getRotatedPoints(looseWeight: number = 0): object[] {
     //对当前图形，按照rotate进行旋转，求得新的四个点的位置
     let ps = this.getPoints(looseWeight);
-    if (this.rotate && this.rotate > 0) {
+    //TODO 多次旋转后的真实位移坐标
+    let absRotate = this.rotate
+    if (absRotate && absRotate != 0) {
       let points = [];
       //按圆心进行旋转rotate度，得到绘制出来的点位
       //当前item的圆心
       let occ = { x: this.x + this.width * 0.5, y: this.y + this.height * 0.5 };
       ps.forEach(oldPoint => {
         //已知圆心位置、起始点位置和旋转角度，求终点的坐标位置
-        let newPoint = DDeiUtil.computePosition(occ, oldPoint, this.rotate);
+        let newPoint = DDeiUtil.computePosition(occ, oldPoint, absRotate);
         points.push(newPoint);
       })
       return points;

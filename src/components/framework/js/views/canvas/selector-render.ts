@@ -35,24 +35,6 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     this.changeCursorStyle();
   }
 
-  // //设置旋转,覆写
-  // doRotate(ctx, ratPos): void {
-  //   //设置旋转角度
-  //   if (this.model.rotate) {
-  //     let paddingWeightInfo = this.paddingWeight?.selected ? this.paddingWeight.selected : DDeiConfig.SELECTOR.PADDING_WEIGHT.selected;
-  //     let paddingWeight = 0;
-  //     let selectedModels = this.stage?.layers[this.stage.layerIndex].getSelectedModels();
-  //     if (selectedModels.size > 1) {
-  //       paddingWeight = paddingWeightInfo.multiple;
-  //     } else {
-  //       paddingWeight = paddingWeightInfo.single;
-  //     }
-  //     ctx.translate(ratPos.x + ratPos.width * 0.5 + paddingWeight, ratPos.y + ratPos.height * 0.5 + paddingWeight)
-  //     ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
-  //     ctx.translate(-ratPos.x - ratPos.width * 0.5 - paddingWeight, -ratPos.y - ratPos.height * 0.5 - paddingWeight)
-  //   }
-  // }
-
   /**
    * 获取边框上的操作图形
    * @param tempBorder 

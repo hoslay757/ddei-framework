@@ -39,6 +39,9 @@ class DDeiSelector extends DDeiRectangle {
   //操作区域的填充样式，根据选中和未选中状态可以有所变化
   operateIconFill: object;
 
+  //当前操作的容器
+  currentContainer: DDeiAbstractShape | null = null;
+
   //当前操作触发pass的下标，-1为未激活，1～8按，1:中上，2右上顺时针计数，9为旋转
   passIndex: number = -1;
 
@@ -122,8 +125,13 @@ class DDeiSelector extends DDeiRectangle {
    */
   changeSelectedModelRotate(movedNumber: number = 0) {
 
-    let layer = this.stage.layers[this.stage.layerIndex];
-    let selectedModels = layer.getSelectedModels();
+    //计算上级控件的大小
+    let pContainerModel = this.currentContainer;
+    if (!pContainerModel) {
+      pContainerModel = this.stage.layers[this.stage.layerIndex];
+    }
+    let selectedModels = pContainerModel.getSelectedModels();
+
     if (!selectedModels || this.passIndex == -1 || movedNumber == 0) {
       return false;
     }
@@ -155,7 +163,7 @@ class DDeiSelector extends DDeiRectangle {
       //修改坐标与旋转角度
       item.setPosition(dcc.x - item.width * 0.5, dcc.y - item.height * 0.5)
       item.rotate = item.rotate + angle
-      if (item.rotate >= 360) {
+      if (item.rotate >= 360 || item.rotate <= -360) {
         item.rotate = null
         item.x = item.originX;
         item.y = item.originY;
@@ -163,7 +171,7 @@ class DDeiSelector extends DDeiRectangle {
     }
 
     this.rotate = this.rotate + angle
-    if (this.rotate >= 360) {
+    if (this.rotate >= 360 || this.rotate <= -360) {
       this.rotate = 0
       this.x = this.originX;
       this.y = this.originY;
@@ -173,16 +181,18 @@ class DDeiSelector extends DDeiRectangle {
    * 根据移动后的选择器，等比缩放图形
    * @return 是否成功改变，校验失败则会终止改变
    */
-  changeSelectedModelBounds(movedBounds: object): boolean {
-    let layer = this.stage.layers[this.stage.layerIndex];
-    let selectedModels = layer.getSelectedModels();
+  changeSelectedModelBounds(pContainerModel: DDeiAbstractShape, movedBounds: object): boolean {
+    if (!pContainerModel) {
+      pContainerModel = this.stage.layers[this.stage.layerIndex];;
+    }
+    let selectedModels = pContainerModel.getSelectedModels();
     if (!selectedModels || this.passIndex == -1 || !movedBounds) {
       return false;
     }
     let models: DDeiAbstractShape[] = Array.from(selectedModels.values());
-    //原始路径
+    //原始路径,绝对坐标
     let originRect: object = null;
-    if (this.rotate > 0) {
+    if (this.rotate != 0) {
       originRect = this.getAbsBounds();
       let paddingWeightInfo = this.paddingWeight?.selected ? this.paddingWeight.selected : DDeiConfig.SELECTOR.PADDING_WEIGHT.selected;
       let paddingWeight = 0;
@@ -198,6 +208,15 @@ class DDeiSelector extends DDeiRectangle {
     } else {
       originRect = DDeiAbstractShape.getOutRect(models);
     }
+
+    //容器所在的坐标，容器内元素加上容器坐标才是绝对坐标，绝对坐标剪去容器坐标才是相对坐标
+    let cx = 0;
+    let cy = 0;
+    if (pContainerModel.baseModelType == "DDeiContainer") {
+      let cAbsBound = pContainerModel.getAbsBounds();
+      cx = cAbsBound.x;
+      cy = cAbsBound.y;
+    }
     //记录每一个图形在原始矩形中的比例
     let originPosMap: Map<string, object> = new Map();
     //获取模型在原始模型中的位置比例
@@ -205,17 +224,11 @@ class DDeiSelector extends DDeiRectangle {
       let item = models[i]
 
       originPosMap.set(item.id, {
-        xR: (item.x - originRect.x) / originRect.width,
-        yR: (item.y - originRect.y) / originRect.height,
-        wR: item.width / originRect.width,
-        hR: item.height / originRect.height
+        xR: ((item.x + cx - originRect.x) / originRect.width),
+        yR: ((item.y + cy - originRect.y) / originRect.height),
+        wR: (item.width / originRect.width),
+        hR: (item.height / originRect.height)
       });
-    }
-    let helpLineWeight = 1;
-    // 计算图形拖拽后将要到达的坐标
-    if (DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
-      //辅助对齐线宽度
-      helpLineWeight = DDeiConfig.GLOBAL_HELP_LINE_WEIGHT;
     }
     let paddingWeightInfo = this.paddingWeight?.selected ? this.paddingWeight.selected : DDeiConfig.SELECTOR.PADDING_WEIGHT.selected;
     let paddingWeight = 0;
@@ -233,18 +246,27 @@ class DDeiSelector extends DDeiRectangle {
     if (this.passIndex == -1 || movedBounds.height <= paddingWeight || movedBounds.width <= paddingWeight) {
       return false
     }
+
+
     //同步多个模型到等比缩放状态
+    //TODO 未来考虑精度问题
     selectedModels.forEach((item, key) => {
+      debugger
       let originBound = { x: item.x, y: item.y, width: item.width, height: item.height };
-      item.x = movedBounds.x + movedBounds.width * originPosMap.get(item.id).xR
-      item.width = movedBounds.width * originPosMap.get(item.id).wR
-      item.y = movedBounds.y + movedBounds.height * originPosMap.get(item.id).yR
-      item.height = movedBounds.height * originPosMap.get(item.id).hR
+      item.x = Math.floor(movedBounds.x - cx + movedBounds.width * originPosMap.get(item.id).xR)
+      item.width = Math.floor(movedBounds.width * originPosMap.get(item.id).wR)
+      item.y = Math.floor(movedBounds.y - cy + movedBounds.height * originPosMap.get(item.id).yR)
+      item.height = Math.floor(movedBounds.height * originPosMap.get(item.id).hR)
+
       //如果当前模型是容器，则按照容器比例更新子元素的大小
       if (item.baseModelType == "DDeiContainer") {
         let changedBound = { x: item.x, y: item.y, width: item.width, height: item.height };
-        item.changeSelfAndChildrenBounds(originBound, changedBound)
+        item.changeChildrenBounds(originBound, changedBound)
+        item.changeParentsBounds();
       };
+
+      //pContainerModel修改上层容器直至layer的大小
+      pContainerModel.changeParentsBounds()
     })
 
     return true;
@@ -302,9 +324,14 @@ class DDeiSelector extends DDeiRectangle {
 
   /**
    * 根据已选择的控件更新坐标和状态
+   * @param pContainerModel 上层容器控件
    */
-  updatedBoundsBySelectedModels(): void {
-    let selectedModels = this.stage.layers[this.stage.layerIndex].getSelectedModels();
+  updatedBoundsBySelectedModels(pContainerModel: DDeiAbstractShape): void {
+    if (!pContainerModel) {
+      pContainerModel = this.stage.layers[this.stage.layerIndex];
+    }
+    this.currentContainer = pContainerModel
+    let selectedModels = pContainerModel.getSelectedModels();
     if (selectedModels && selectedModels.size > 0) {
       let models = Array.from(selectedModels.values());
       //获取间距设定
@@ -320,7 +347,7 @@ class DDeiSelector extends DDeiRectangle {
       if (models.length > 1) {
         outRectBounds = DDeiAbstractShape.getOutRect(models);
       } else {
-        outRectBounds = models[0].getBounds();
+        outRectBounds = models[0].getAbsBounds();
         this.rotate = models[0].rotate;
       }
 

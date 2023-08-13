@@ -13,7 +13,6 @@ class DDeiLayer {
   constructor(props: object) {
     this.id = props.id
     this.models = props.models ? props.models : new Map();
-    this.modelType = 'DDeiLayer'
     this.stage = null;
     this.index = -1;
     this.type = props.type ? props.type : 0;
@@ -38,6 +37,7 @@ class DDeiLayer {
   models: Map<string, DDeiAbstractShape>;
   // 本模型的唯一名称
   modelType: string = 'DDeiLayer';
+  baseModelType: string = 'DDeiLayer';
   // 当前layer所在的stage
   stage: DDeiStage | null;
   // 当前layer的下标，该属性与实际的图层index保持同步
@@ -78,6 +78,7 @@ class DDeiLayer {
     //将模型添加进图层
     this.models.set(model.id, model);
     model.layer = this;
+    model.pModel = this;
   }
 
   /**
@@ -104,6 +105,21 @@ class DDeiLayer {
   }
 
   /**
+   * 取消选择控件,默认取消所有
+   */
+  cancelAllLevelSelectModels(): void {
+    this.models.forEach(item => {
+      item.state = DDeiEnumControlState.DEFAULT
+      if (item.baseModelType == "DDeiContainer") {
+        item.cancelAllLevelSelectModels();
+      }
+    });
+  }
+
+
+
+
+  /**
    * 获取某个选中区域的所有控件
    * @param area 选中区域
    * @returns 
@@ -118,6 +134,14 @@ class DDeiLayer {
     });
     //TODO 对控件进行排序，按照zIndex > 添加顺序
     return controls;
+  }
+
+  /**
+  * 修改上层模型大小
+  */
+  changeParentsBounds(): boolean {
+
+    return true;
   }
 
   /**

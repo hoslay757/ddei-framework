@@ -1,4 +1,5 @@
 import DDeiConfig from '../config';
+import DDeiEnumControlState from '../enums/control-state';
 import DDeiRectangle from './rectangle'
 import DDeiAbstractShape from './shape';
 
@@ -58,6 +59,7 @@ class DDeiRectContainer extends DDeiRectangle {
     //将模型添加进图层
     this.models.set(model.id, model);
     model.pModel = this;
+    model.layer = this.layer;
   }
 
   /**
@@ -72,9 +74,76 @@ class DDeiRectContainer extends DDeiRectangle {
   }
 
   /**
-   * 修改子模型的大小
+   * 通过下层模型更新本层模型的信息
    */
-  changeSelfAndChildrenBounds(originRect, newRect): boolean {
+  updateBoundsByModels(): void {
+    let subModels = Array.from(this.models.values());
+    //换算为上层容器坐标
+    subModels.forEach((si, key) => {
+      si.x = si.x + this.x
+      si.y = si.y + this.y
+    });
+    let outRect = DDeiAbstractShape.getOutRect(subModels);
+    this.setBounds(outRect.x, outRect.y, outRect.width, outRect.height);
+    //换算为下层容器坐标
+    subModels.forEach((si, key) => {
+      si.x = si.x - this.x
+      si.y = si.y - this.y
+    });
+  }
+
+  /**
+  * 获取选中状态的所有控件
+  * @returns 
+  */
+  getSelectedModels(): Map<string, DDeiAbstractShape> {
+    let controls = new Map();
+    this.models.forEach((item, key) => {
+      if (item.state == DDeiEnumControlState.SELECTED) {
+        controls.set(item.id, item);
+      }
+    });
+    return controls;
+  }
+
+  /**
+   * 取消选择控件,默认取消所有
+   */
+  cancelSelectModels(models: DDeiAbstractShape[] | undefined): void {
+    if (!models) {
+      models = Array.from(this.models.values());
+    }
+    models.forEach(item => {
+      item.state = DDeiEnumControlState.DEFAULT
+    });
+  }
+
+  /**
+   * 取消选择控件,默认取消所有
+   */
+  cancelAllLevelSelectModels(): void {
+    this.models.forEach(item => {
+      item.state = DDeiEnumControlState.DEFAULT
+      if (item.baseModelType == "DDeiContainer") {
+        item.cancelAllLevelSelectModels();
+      }
+    });
+  }
+  /**
+   * 修改上层模型大小
+   */
+  changeParentsBounds(): boolean {
+    this.updateBoundsByModels();
+    if (this.pModel) {
+      this.pModel.changeParentsBounds();
+    }
+    return true;
+  }
+
+  /**
+   * 修改子元素大小
+   */
+  changeChildrenBounds(originRect, newRect): boolean {
     let models: DDeiAbstractShape[] = Array.from(this.models.values());
     //记录每一个图形在原始矩形中的比例
     let originPosMap: Map<string, object> = new Map();
@@ -98,7 +167,7 @@ class DDeiRectContainer extends DDeiRectangle {
       //如果当前模型是容器，则按照容器比例更新子元素的大小
       if (item.baseModelType == "DDeiContainer") {
         let changedBound = { x: item.x, y: item.y, width: item.width, height: item.height };
-        item.changeSelfAndChildrenBounds(originBound, changedBound)
+        item.changeChildrenBounds(originBound, changedBound)
       };
     })
     return true;
