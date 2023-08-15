@@ -257,6 +257,32 @@ abstract class DDeiAbstractShape {
   }
 
   /**
+   * 获取某个容器下选中区域的最底层容器
+   * @param area 选中区域
+   * @returns 
+   */
+  static findBottomContainersByArea(container, x = undefined, y = undefined, width = 0, height = 0): DDeiAbstractShape[] | null {
+    let controls = [];
+    if (container) {
+      container.models.forEach((item) => {
+        //如果射线相交，则视为选中
+        if (DDeiAbstractShape.isInsidePolygon(item.getRotatedPoints(), { x: x, y: y })) {
+          //如果当前控件状态为选中，且是容器，则往下寻找控件，否则返回当前控件
+          if (item.baseModelType == "DDeiContainer") {
+            let subControls = DDeiAbstractShape.findBottomContainersByArea(item, x - item.x, y - item.y, width, height);
+            if (subControls && subControls.length > 0) {
+              controls = controls.concat(subControls);
+            } else {
+              controls.push(item);
+            }
+          }
+        }
+      });
+    }
+    return controls;
+  }
+
+  /**
    * 判断图形是否在一个区域内
    * @param area 矩形区域
    * @returns 是否在区域内

@@ -434,8 +434,6 @@ class DDeiLayerCanvasRender {
         }
       }
     }
-
-
     //重新渲染
     this.ddRender.drawShape();
   }
@@ -500,6 +498,72 @@ class DDeiLayerCanvasRender {
         break;
       //控件拖拽中
       case DDeiEnumOperateState.CONTROL_DRAGING:
+        //如果按下了ctrl键，则需要修改容器的关系并更新样式
+        if (isCtrl) {
+          //寻找鼠标落点当前所在的容器
+          let mouseOnContainers: DDeiAbstractShape[] = DDeiAbstractShape.findBottomContainersByArea(this.model, evt.offsetX, evt.offsetY);
+          let lastOnContainer = this.model;
+          let pContainerModel = this.stageRender.currentOperateShape.pModel;
+          //移除当前元素
+          if (mouseOnContainers && mouseOnContainers.length > 0) {
+            //获取最下层容器
+            for (let k = mouseOnContainers.length - 1; k >= 0; k--) {
+              if (mouseOnContainers[k].id != this.stageRender.currentOperateShape.id) {
+                lastOnContainer = mouseOnContainers[k]
+                break;
+              }
+            }
+          }
+          //如果最小层容器不是当前容器，执行的移动容器操作
+          if (lastOnContainer.id != pContainerModel.id) {
+            //将所有的模型的坐标调整为新的相对于新容器的坐标
+            let selectedModels = pContainerModel.getSelectedModels();
+            //将当前操作控件加入临时选择控件
+            selectedModels.set(this.stageRender.currentOperateShape?.id, this.stageRender.currentOperateShape)
+            let loAbsPos = lastOnContainer.getAbsPosition();
+            let loAbsRotate = lastOnContainer.getAbsRotate();
+            selectedModels.forEach((item, key) => {
+              //转换坐标，获取最外层的坐标
+              let itemAbsPos = item.getAbsPosition();
+              let itemAbsRotate = item.getAbsRotate();
+              item.x = itemAbsPos.x - loAbsPos.x
+              item.y = itemAbsPos.y - loAbsPos.y
+              item.rotate = itemAbsRotate - loAbsRotate
+              pContainerModel.removeModel(item);
+              lastOnContainer.addModel(item);
+              //绑定并初始化渲染器
+              DDeiConfig.bindRender(item);
+              item.render.init();
+            });
+            //检查老容器中是否只有一个元素，如果有，则将其移动到上层容器，并销毁老容器
+            if (pContainerModel.baseModelType != 'DDeiLayer' && pContainerModel.models.size == 1) {
+              let onlyModel = Array.from(pContainerModel.models.values())[0];
+              let itemAbsPos = onlyModel.getAbsPosition();
+              let itemAbsRotate = onlyModel.getAbsRotate();
+              let loAbsPos = pContainerModel.pModel.getAbsPosition()
+              let loAbsRotate = pContainerModel.pModel.getAbsRotate()
+              onlyModel.x = itemAbsPos.x - loAbsPos.x
+              onlyModel.y = itemAbsPos.y - loAbsPos.y
+              onlyModel.rotate = itemAbsRotate - loAbsRotate
+              pContainerModel.removeModel(onlyModel);
+              pContainerModel.pModel.addModel(onlyModel);
+              //绑定并初始化渲染器
+              DDeiConfig.bindRender(onlyModel);
+              onlyModel.render.init();
+            }
+            //TODO 将来考虑手工创建的容器和组合后产生的容器，组合后的容器才销毁，手工的容器不销毁
+            if (pContainerModel.baseModelType != 'DDeiLayer' && pContainerModel.models.size == 0) {
+              pContainerModel.pModel.removeModel(pContainerModel);
+            }
+            else {
+              //更新老容器大小
+              pContainerModel.changeParentsBounds();
+            }
+            //更新新容器大小
+            lastOnContainer.changeParentsBounds()
+          }
+        }
+        this.stageRender.selector.setPassIndex(-1);
         //清除作为临时变量dragX、dargY、dragObj
         this.stageRender.dragObj = null
         //当前操作状态:无
@@ -554,10 +618,21 @@ class DDeiLayerCanvasRender {
         //当前操作状态：控件拖拽中
         this.stageRender.operateState = DDeiEnumOperateState.CONTROL_DRAGING
         //记录当前的拖拽的x,y,写入dragObj作为临时变量
-        this.stageRender.dragObj = {
+        let dragObj = {
           x: evt.offsetX,
           y: evt.offsetY,
+          originX: evt.offsetX,//原始X、Y不随x、y改变，用来实现取消还原
+          originY: evt.offsetY,
           model: this.stageRender.currentOperateShape
+        }
+        this.stageRender.dragObj = dragObj;
+        //如果当前元素父元素不是Layer，则记录直到Layer父控件的大小，用来实现取消还原
+        let pModel = dragObj.pModel;
+        for (; pModel != null && pModel.baseModelType != 'DDeiLayer'; pModel = pModel.pModel) {
+          if (!dragObj.pms) {
+            dragObj.pms = new Map();
+          }
+          dragObj.pms.set(pModel.id, { x: pModel.x, y: pModel.y, width: pModel.width, height: pModel.height });
         }
         break;
       }
@@ -574,10 +649,13 @@ class DDeiLayerCanvasRender {
         //当前移动的坐标增量
         let movedPosDelta = this.getMovedPositionDelta(evt);
         if (movedPosDelta.x != 0 || movedPosDelta.y != 0) {
+
           //当前控件的上层控件，可能是一个layer也可能是容器
           let pContainerModel = this.stageRender.currentOperateShape.pModel;
           if (pContainerModel) {
             //获取当前层次选择的控件
+            //ctrl键的按下状态
+            let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
             let selectedModels = pContainerModel.getSelectedModels();
             //将当前操作控件加入临时选择控件
             selectedModels.set(this.stageRender.currentOperateShape?.id, this.stageRender.currentOperateShape)
@@ -588,8 +666,34 @@ class DDeiLayerCanvasRender {
             //更新dragObj临时变量中的数值,确保坐标对应关系一致
             this.stageRender.dragObj.x = this.stageRender.dragObj.x + movedPosDelta.x;
             this.stageRender.dragObj.y = this.stageRender.dragObj.y + movedPosDelta.y;
-            //同步更新上层容器其大小和坐标
-            pContainerModel.changeParentsBounds()
+            //如果按下ctrl键，则不改变父容器大小，而是走控件移出逻辑
+            //TODO 后续通过状态机来控制，使按下ctrl后立刻发生反应，而不是拖放以后
+            if (!isCtrl) {
+              //同步更新上层容器其大小和坐标
+              pContainerModel.changeParentsBounds()
+              this.stageRender.selector.setPassIndex(10);
+            } else {
+              //寻找鼠标落点当前所在的容器
+              let mouseOnContainers = DDeiAbstractShape.findBottomContainersByArea(this.model, evt.offsetX, evt.offsetY);
+              let lastOnContainer = this.model;
+              if (mouseOnContainers && mouseOnContainers.length > 0) {
+                //获取最下层容器
+                for (let k = mouseOnContainers.length - 1; k >= 0; k--) {
+                  if (mouseOnContainers[k].id != this.stageRender.currentOperateShape.id) {
+                    lastOnContainer = mouseOnContainers[k]
+                    break;
+                  }
+                }
+              }
+              //如果最小层容器不是当前容器，则修改鼠标样式，代表可能要移入
+              if (lastOnContainer.id != pContainerModel.id) {
+                this.stageRender.selector.setPassIndex(11);
+              } else {
+                this.stageRender.selector.setPassIndex(10);
+              }
+            }
+
+
 
             //更新选择器
             if (this.stageRender.selector) {

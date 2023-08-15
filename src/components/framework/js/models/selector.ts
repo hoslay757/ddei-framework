@@ -251,7 +251,6 @@ class DDeiSelector extends DDeiRectangle {
     //同步多个模型到等比缩放状态
     //TODO 未来考虑精度问题
     selectedModels.forEach((item, key) => {
-      debugger
       let originBound = { x: item.x, y: item.y, width: item.width, height: item.height };
       item.x = Math.floor(movedBounds.x - cx + movedBounds.width * originPosMap.get(item.id).xR)
       item.width = Math.floor(movedBounds.width * originPosMap.get(item.id).wR)
@@ -346,11 +345,14 @@ class DDeiSelector extends DDeiRectangle {
       let outRectBounds = null
       if (models.length > 1) {
         outRectBounds = DDeiAbstractShape.getOutRect(models);
+        let pAbsPosition = pContainerModel.getAbsPosition();
+        outRectBounds.x = outRectBounds.x + pAbsPosition.x
+        outRectBounds.y = outRectBounds.y + pAbsPosition.y
       } else {
         outRectBounds = models[0].getAbsBounds();
+
         this.rotate = models[0].rotate;
       }
-
       this.setBounds(outRectBounds.x - paddingWeight, outRectBounds.y - paddingWeight, outRectBounds.width + 2 * paddingWeight, outRectBounds.height + 2 * paddingWeight);
 
       //设置选择器状态为选中后

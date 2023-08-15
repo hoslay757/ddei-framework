@@ -82,6 +82,12 @@ class DDeiLayer {
   }
 
   /**
+   * 获取当前图形的绝对旋转坐标值
+   */
+  getAbsRotate(): number {
+    return 0;
+  }
+  /**
    * 移除模型，并维护关系
    * @param model 被移除的模型
    */
@@ -116,7 +122,13 @@ class DDeiLayer {
     });
   }
 
+  /**
+   * 获取绝对的控件坐标
+   */
+  getAbsPosition(pm): object {
+    return { x: 0, y: 0 }
 
+  }
 
 
   /**

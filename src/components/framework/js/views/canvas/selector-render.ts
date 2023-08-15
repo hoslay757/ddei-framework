@@ -212,6 +212,9 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       case 10:
         document.body.style.cursor = 'all-scroll';
         break;
+      case 11:
+        document.body.style.cursor = 'alias';
+        break;
       default:
         document.body.style.cursor = 'default';
         break;
