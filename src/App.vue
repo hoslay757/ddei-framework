@@ -16,8 +16,17 @@
               @click="createCircle()"
               style="width:120px;height:30px;margin-top:10px">圆型</button>
       <button type="button"
-              @click="createDiamond()"
-              style="width:120px;height:30px;margin-top:10px">菱形</button>
+                @click="createDiamond()"
+                style="width:120px;height:30px;margin-top:10px">菱形</button>
+      <button type="button"
+                  @click="createImg(1)"
+                  style="width:120px;height:30px;margin-top:10px">矩形图片</button>
+      <button type="button"
+                @click="createImg(2)"
+                style="width:120px;height:30px;margin-top:10px">圆形图片</button>
+      <button type="button"
+                @click="createImg(3)"
+                style="width:120px;height:30px;margin-top:10px">菱形图片</button>
       <button type="button"
               @click="createContainer()"
               style="width:120px;height:30px;margin-top:10px">容器</button>
@@ -83,6 +92,59 @@ export default {
     this.layers = ddInstance.stage.layers;
   },
   methods: {
+   //创建方形图片
+    createImg(type:number = 1) {
+      //获取当前实例
+      let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_demo"];
+      //创建一个矩形
+      let rect: DDeiRectangle = null;
+      if(type == 1){
+        rect = DDeiRectangle.initByJSON({
+          id: "rect_" + ddInstance.stage.idIdx,
+          x: 100,
+          y: 100,
+          width: 160,
+          height: 80,
+          img:"/test_img.jpg",
+          text:
+            "测试图片" +
+            ddInstance.stage.idIdx,
+        });
+      } else if (type == 2) {
+        rect = DDeiCircle.initByJSON({
+          id: "circle_" + ddInstance.stage.idIdx,
+          x: 100,
+          y: 100,
+          width: 160,
+          height: 80,
+          img: "/test_img.jpg",
+          text:
+            "测试图片" +
+            ddInstance.stage.idIdx,
+        });
+      } else if (type == 3) {
+        rect = DDeiDiamond.initByJSON({
+          id: "dia_" + ddInstance.stage.idIdx,
+          x: 100,
+          y: 100,
+          width: 160,
+          height: 80,
+          img: "/test_img.jpg",
+          text:
+            "测试图片" +
+            ddInstance.stage.idIdx,
+        });
+      }
+      //下标自增1
+      ddInstance.stage.idIdx++;
+      //添加模型到图层
+      ddInstance.stage.addModel(rect);
+      //绑定并初始化渲染器
+      DDeiConfig.bindRender(rect);
+      rect.render.init();
+      //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
+      ddInstance.stage.render.drawShape();
+    },
     //创建矩形
     createRectangle() {
       //获取当前实例

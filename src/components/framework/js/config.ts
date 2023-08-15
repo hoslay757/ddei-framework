@@ -153,6 +153,11 @@ class DDeiConfig {
       default: { color: "red", opacity: 0.5 },
       selected: { color: "white" }
     },
+    // 默认矩形填充
+    IMAGE: {
+      default: { opacity: 0.5 },
+      selected: {}
+    },
     // 默认矩形字体
     FONT: {
       default: {

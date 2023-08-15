@@ -22,9 +22,60 @@ class DDeiDiamondCanvasRender extends DDeiRectangleCanvasRender {
     //绘制边框
     this.drawBorderAndFill();
 
+    //绘制图片
+    this.drawImage();
+
     //绘制文本
     this.drawText();
 
+  }
+
+  /**
+   * 填充图片
+   */
+  drawImage(): void {
+    //如果有图片，则绘制
+    if (this.model.img && this.imgObj) {
+      //获得 2d 上下文对象
+      let canvas = this.ddRender.canvas;
+      let ctx = canvas.getContext('2d');
+      //获取全局缩放比例
+      let ratio = this.ddRender.ratio;
+      //计算填充的原始区域
+      let fillAreaE = this.getFillArea();
+      //转换为缩放后的坐标
+      let ratPos = DDeiUtil.getRatioPosition(fillAreaE, ratio);
+      //缩放填充区域
+      //保存状态
+      ctx.save();
+      //设置旋转角度
+      this.doRotate(ctx, ratPos);
+
+      //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
+      let imgFillInfo = null;
+      if (this.model.state == DDeiEnumControlState.SELECTED) {
+        imgFillInfo = this.model.imgFill && this.model.imgFill.selected ? this.model.imgFill.selected : DDeiConfig.RECTANGLE.IMAGE.selected
+      } else {
+        imgFillInfo = this.model.imgFill && this.model.imgFill.default ? this.model.imgFill.default : DDeiConfig.RECTANGLE.IMAGE.default
+      }
+      //透明度
+      if (imgFillInfo.opacity) {
+        ctx.globalAlpha = imgFillInfo.opacity
+      }
+      ctx.beginPath();
+      ctx.moveTo(ratPos.x + ratPos.width * 0.5, ratPos.y);
+      ctx.lineTo(ratPos.x + ratPos.width, ratPos.y + ratPos.height * 0.5);
+      ctx.lineTo(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height);
+      ctx.lineTo(ratPos.x, ratPos.y + ratPos.height * 0.5);
+      ctx.lineTo(ratPos.x + ratPos.width * 0.5, ratPos.y);
+      ctx.clip();
+
+
+      ctx.drawImage(this.imgObj, ratPos.x, ratPos.y, ratPos.width, ratPos.height);
+      ctx.closePath();
+      //恢复状态
+      ctx.restore();
+    }
   }
   /**
    * 绘制边框

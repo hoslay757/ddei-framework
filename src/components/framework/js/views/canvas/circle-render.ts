@@ -25,7 +25,7 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
     //获取全局缩放比例
     let ratio = this.ddRender.ratio;
     //转换为缩放后的坐标
-    let ratPos = DDeiUtil.getRatioPosition(this.model, ratio);
+    let ratPos = this.getBorderRatPos();
 
     //如果被选中，使用选中的边框，否则使用缺省边框
     let borderInfo = null;
@@ -44,11 +44,7 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
       //保存状态
       ctx.save();
       //设置旋转角度
-      if (this.model.rotate) {
-        ctx.translate(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5)
-        ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
-        ctx.translate(-ratPos.x - ratPos.width * 0.5, -ratPos.y - ratPos.height * 0.5)
-      }
+      this.doRotate(ctx, ratPos);
       //开始绘制  
       ctx.beginPath();
       //线段的宽度
@@ -93,11 +89,7 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
     //保存状态
     ctx.save();
     //设置旋转角度
-    if (this.model.rotate) {
-      ctx.translate(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5)
-      ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
-      ctx.translate(-ratPos.x - ratPos.width * 0.5, -ratPos.y - ratPos.height * 0.5)
-    }
+    this.doRotate(ctx, ratPos);
     //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
     let fillInfo = null;
     if (this.model.state == DDeiEnumControlState.SELECTED) {
@@ -120,6 +112,48 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
     //恢复状态
     ctx.restore();
 
+  }
+
+
+  /**
+   * 填充图片
+   */
+  drawImage(): void {
+    //如果有图片，则绘制
+    if (this.model.img && this.imgObj) {
+      //获得 2d 上下文对象
+      let canvas = this.ddRender.canvas;
+      let ctx = canvas.getContext('2d');
+      //获取全局缩放比例
+      let ratio = this.ddRender.ratio;
+      //计算填充的原始区域
+      let fillAreaE = this.getFillArea();
+      //转换为缩放后的坐标
+      let ratPos = DDeiUtil.getRatioPosition(fillAreaE, ratio);
+      //缩放填充区域
+      //保存状态
+      ctx.save();
+      //设置旋转角度
+      this.doRotate(ctx, ratPos);
+
+      //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
+      let imgFillInfo = null;
+      if (this.model.state == DDeiEnumControlState.SELECTED) {
+        imgFillInfo = this.model.imgFill && this.model.imgFill.selected ? this.model.imgFill.selected : DDeiConfig.RECTANGLE.IMAGE.selected
+      } else {
+        imgFillInfo = this.model.imgFill && this.model.imgFill.default ? this.model.imgFill.default : DDeiConfig.RECTANGLE.IMAGE.default
+      }
+      //透明度
+      if (imgFillInfo.opacity) {
+        ctx.globalAlpha = imgFillInfo.opacity
+      }
+      ctx.ellipse(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5, ratPos.width * 0.5, ratPos.height * 0.5, 0, 0, Math.PI * 2)
+      ctx.clip();
+      ctx.drawImage(this.imgObj, ratPos.x, ratPos.y, ratPos.width, ratPos.height);
+
+      //恢复状态
+      ctx.restore();
+    }
   }
 
   /**
@@ -182,11 +216,7 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
     //保存状态
     ctx.save();
     //设置旋转角度
-    if (this.model.rotate) {
-      ctx.translate(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5)
-      ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
-      ctx.translate(-ratPos.x - ratPos.width * 0.5, -ratPos.y - ratPos.height * 0.5)
-    }
+    this.doRotate(ctx, ratPos);
 
     //循环进行分段输出,整体容器，代表了一个整体的文本大小区域
     let textContainer = []
@@ -384,12 +414,12 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
     if (!borderInfo.disabled && borderInfo.color && (!borderInfo.opacity || borderInfo.opacity > 0) && borderInfo.width > 0) {
       borderWidth = borderInfo.width;
     }
-
+    let absBounds = this.model.getAbsBounds();
     let fillAreaE = {
-      x: this.model.x + borderWidth,
-      y: this.model.y + borderWidth,
-      width: this.model.width - borderWidth - borderWidth,
-      height: this.model.height - borderWidth - borderWidth
+      x: absBounds.x + borderWidth,
+      y: absBounds.y + borderWidth,
+      width: absBounds.width - borderWidth - borderWidth,
+      height: absBounds.height - borderWidth - borderWidth
     }
     return fillAreaE;
   }

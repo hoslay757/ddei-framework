@@ -62,6 +62,16 @@ class DDeiRectangleCanvasRender {
       this.layer = this.model.layer
       this.layerRender = this.model.layer.render
     }
+    //加载图片
+    if (this.model.img && !this.imgObj) {
+      let img = new Image();   // 创建一个<img>元素
+      let that = this;
+      img.onload = function () {
+        that.imgObj = img;
+        that.stageRender.drawShape()//绘制图片
+      }
+      img.src = this.model.img;
+    }
   }
 
   /**
@@ -73,6 +83,9 @@ class DDeiRectangleCanvasRender {
 
     //绘制填充
     this.drawFill();
+
+    //绘制图片
+    this.drawImage();
 
     //绘制文本
     this.drawText();
@@ -190,7 +203,44 @@ class DDeiRectangleCanvasRender {
 
 
 
+  /**
+   * 填充图片
+   */
+  drawImage(): void {
+    //如果有图片，则绘制
+    if (this.model.img && this.imgObj) {
+      //获得 2d 上下文对象
+      let canvas = this.ddRender.canvas;
+      let ctx = canvas.getContext('2d');
+      //获取全局缩放比例
+      let ratio = this.ddRender.ratio;
+      //计算填充的原始区域
+      let fillAreaE = this.getFillArea();
+      //转换为缩放后的坐标
+      let ratPos = DDeiUtil.getRatioPosition(fillAreaE, ratio);
+      //缩放填充区域
+      //保存状态
+      ctx.save();
+      //设置旋转角度
+      this.doRotate(ctx, ratPos);
 
+      //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
+      let imgFillInfo = null;
+      if (this.model.state == DDeiEnumControlState.SELECTED) {
+        imgFillInfo = this.model.imgFill && this.model.imgFill.selected ? this.model.imgFill.selected : DDeiConfig.RECTANGLE.IMAGE.selected
+      } else {
+        imgFillInfo = this.model.imgFill && this.model.imgFill.default ? this.model.imgFill.default : DDeiConfig.RECTANGLE.IMAGE.default
+      }
+      //透明度
+      if (imgFillInfo.opacity) {
+        ctx.globalAlpha = imgFillInfo.opacity
+      }
+      ctx.drawImage(this.imgObj, ratPos.x, ratPos.y, ratPos.width, ratPos.height);
+
+      //恢复状态
+      ctx.restore();
+    }
+  }
 
   /**
    * 绘制填充

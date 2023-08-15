@@ -20,6 +20,8 @@ class DDeiRectangle extends DDeiAbstractShape {
     this.font = props.font ? props.font : null;
     //文本内容
     this.text = props.text ? props.text : "";
+    //图片路径
+    this.img = props.img ? props.img : "";
     //文本区域，文本绘制时的有效区域，由多个矩形数组构成，缺省为图形本身区域构造成的一个矩形，需要修改图形属性后维护。
     this.textArea = props.textArea ? props.textArea : null;
     //文本样式（除字体外），包含了横纵对齐、文字方向、镂空、换行、缩小字体填充等文本相关内容
@@ -45,6 +47,8 @@ class DDeiRectangle extends DDeiAbstractShape {
   fill: any;
   //字体，包含了选中/未选中，字体的名称，大小，颜色等配置
   font: any;
+  //图片背景
+  img: string;
   //文本内容
   text: string;
   //文本区域，文本绘制时的有效区域，由多个矩形数组构成，缺省为图形本身区域构造成的一个矩形，需要修改图形属性后维护。
