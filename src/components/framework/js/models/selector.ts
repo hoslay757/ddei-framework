@@ -1,4 +1,5 @@
 import DDeiConfig from '../config';
+import DDei from '../ddei';
 import DDeiEnumControlState from '../enums/control-state';
 import DDeiUtil from '../util';
 import DDeiRectangle from './rectangle';
@@ -53,8 +54,11 @@ class DDeiSelector extends DDeiRectangle {
 
   /**
    * 计算移动后的坐标
+   * @param dx x的增量
+   * @param dy y的增量
+   * @param er 是否等比
    */
-  getMovedBounds(dx: number, dy: number): object {
+  getMovedBounds(dx: number, dy: number, er: boolean = false): object {
     if (!dx && !dy) {
       return null;
     }
@@ -65,6 +69,10 @@ class DDeiSelector extends DDeiRectangle {
       case 1: {
         returnBounds.y = returnBounds.y + dy
         returnBounds.height = returnBounds.height - dy
+        if (er) {
+          returnBounds.x = returnBounds.x + dy * 0.5
+          returnBounds.width = returnBounds.width - dy
+        }
         break;
       }
       //上右
@@ -77,6 +85,10 @@ class DDeiSelector extends DDeiRectangle {
       //中右
       case 3: {
         returnBounds.width = returnBounds.width + dx
+        if (er) {
+          returnBounds.y = returnBounds.y - dx * 0.5
+          returnBounds.height = returnBounds.height + dx
+        }
         break;
       }
       //下右
@@ -88,6 +100,10 @@ class DDeiSelector extends DDeiRectangle {
       //下中
       case 5: {
         returnBounds.height = returnBounds.height + dy
+        if (er) {
+          returnBounds.x = returnBounds.x - dy * 0.5
+          returnBounds.width = returnBounds.width + dy
+        }
         break;
       }
       //下左
@@ -101,6 +117,10 @@ class DDeiSelector extends DDeiRectangle {
       case 7: {
         returnBounds.x = returnBounds.x + dx
         returnBounds.width = returnBounds.width - dx
+        if (er) {
+          returnBounds.y = returnBounds.y + dx * 0.5
+          returnBounds.height = returnBounds.height - dx
+        }
         break;
       }
       //上左

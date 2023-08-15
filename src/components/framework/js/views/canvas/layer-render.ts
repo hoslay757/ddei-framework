@@ -611,6 +611,8 @@ class DDeiLayerCanvasRender {
     if (!this.model.display) {
       return;
     }
+    //ctrl键的按下状态
+    let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
     //判断当前操作状态
     switch (this.stageRender.operateState) {
       //控件状态确认中
@@ -654,8 +656,6 @@ class DDeiLayerCanvasRender {
           let pContainerModel = this.stageRender.currentOperateShape.pModel;
           if (pContainerModel) {
             //获取当前层次选择的控件
-            //ctrl键的按下状态
-            let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
             let selectedModels = pContainerModel.getSelectedModels();
             //将当前操作控件加入临时选择控件
             selectedModels.set(this.stageRender.currentOperateShape?.id, this.stageRender.currentOperateShape)
@@ -712,12 +712,14 @@ class DDeiLayerCanvasRender {
         //当前移动的坐标增量
         let movedPosDelta = this.getMovedPositionDelta(evt);
         if (movedPosDelta.x != 0 || movedPosDelta.y != 0) {
+          //按下ctrl同比拉伸
           //计算移动后的坐标以及大小
           let pContainerModel = this.stageRender.selector.currentContainer;
           if (!pContainerModel) {
             pContainerModel = this.model;
           }
-          let movedBounds = this.stageRender.selector.getMovedBounds(movedPosDelta.x, movedPosDelta.y);
+          //按下ctrl则等比放大缩小
+          let movedBounds = this.stageRender.selector.getMovedBounds(movedPosDelta.x, movedPosDelta.y, isCtrl);
           if (movedBounds) {
             //改变控件以及容器的大小
             let successChange = this.stageRender.selector.changeSelectedModelBounds(pContainerModel, movedBounds);
