@@ -152,7 +152,8 @@ class DDeiLayerCanvasRender {
   drawChildrenShapes(): void {
     if (this.model.models) {
       //遍历子元素，绘制子元素
-      this.model.models.forEach((item, key) => {
+      this.model.midList.forEach(key => {
+        let item = this.model.models.get(key);
         item.render.drawShape();
       });
     }
@@ -471,6 +472,8 @@ class DDeiLayerCanvasRender {
           pContainerModel.cancelAllLevelSelectModels();
           this.stageRender.currentOperateShape.state = DDeiEnumControlState.SELECTED;
         }
+        //当前操作层级容器
+        this.stageRender.currentOperateContainer = pContainerModel;
         //当前操作控件：无
         this.stageRender.currentOperateShape = null;
         //根据选中图形的状态更新选择器
@@ -487,6 +490,8 @@ class DDeiLayerCanvasRender {
           let includedModels: Map<string, DDeiAbstractShape> = this.stageRender.selector.getIncludedModels();
           includedModels.forEach((model, key) => {
             model.state = DDeiEnumControlState.SELECTED;
+            //当前操作层级容器
+            this.stageRender.currentOperateContainer = this.model;
           });
           //根据选中图形的状态更新选择器
           this.stageRender.selector.updatedBoundsBySelectedModels();

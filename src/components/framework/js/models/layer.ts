@@ -13,6 +13,7 @@ class DDeiLayer {
   constructor(props: object) {
     this.id = props.id
     this.models = props.models ? props.models : new Map();
+    this.midList = props.midList ? props.midList : new Array();
     this.stage = null;
     this.index = -1;
     this.type = props.type ? props.type : 0;
@@ -33,8 +34,10 @@ class DDeiLayer {
   }
   // ============================ 属性 ===============================
   id: string;
-  // 一个图层包含多个图像
+  // 一个图层包含多个模型，每添加一个模型，则向midList末尾添加一条数据
   models: Map<string, DDeiAbstractShape>;
+  // 模型的ID按照添加顺序的索引
+  midList: Array<string>;
   // 本模型的唯一名称
   modelType: string = 'DDeiLayer';
   baseModelType: string = 'DDeiLayer';
@@ -77,27 +80,127 @@ class DDeiLayer {
     model.stage = this.stage;
     //将模型添加进图层
     this.models.set(model.id, model);
+    if (this.midList && this.midList.length > 0) {
+      model.zIndex = this.models.get(this.midList[this.midList.length - 1]).zIndex;
+    }
+    this.midList.push(model.id);
+
     model.layer = this;
     model.pModel = this;
+    this.resortModelByZIndex();
   }
 
-  /**
-   * 获取当前图形的绝对旋转坐标值
-   */
-  getAbsRotate(): number {
-    return 0;
-  }
   /**
    * 移除模型，并维护关系
    * @param model 被移除的模型
    */
   removeModel(model: DDeiAbstractShape): void {
     this.models.delete(model.id);
+    this.midList.splice(this.midList.indexOf(model.id), 1);
+    //清除原有的zindex属性
+    model.zIndex = null;
     model.layer = null;
     model.stage = null;
     model.render = null;
+    this.resortModelByZIndex();
   }
 
+
+  /**
+  * 将控件设置到顶层
+  */
+  pushTop(models: DDeiAbstractShape[]): void {
+    models.forEach(item => {
+      let lastItem = this.models.get(this.midList[this.midList.length - 1]);
+      if (lastItem.id != item.id) {
+        let lastIndex = lastItem.zIndex ? lastItem?.zIndex : 0
+        item.zIndex = lastIndex + 1;
+      }
+    })
+    this.resortModelByZIndex()
+  }
+
+  /**
+   * 将控件设置到底层
+   */
+  pushBottom(models: DDeiAbstractShape[]): void {
+    models.forEach(item => {
+      item.zIndex = null
+      let oldIdIndex = this.midList.indexOf(item.id);
+      if (oldIdIndex > 0) {
+        this.midList.splice(oldIdIndex, 1);
+        this.midList.splice(0, 0, item.id);
+      }
+    })
+    this.resortModelByZIndex()
+  }
+
+  /**
+  * 将控件设置到上一层
+  */
+  pushUp(models: DDeiAbstractShape[]): void {
+    models.forEach(item => {
+      if (!item.zIndex) {
+        item.zIndex = 1
+      } else {
+        item.zIndex++;
+      }
+    })
+    this.resortModelByZIndex()
+  }
+
+  /**
+   * 将控件设置到下一层
+   */
+  pushDown(models: DDeiAbstractShape[]): void {
+    models.forEach(item => {
+      if (!item.zIndex || item.zIndex <= 1) {
+        item.zIndex = null
+        let oldIdIndex = this.midList.indexOf(item.id);
+        if (oldIdIndex > 0) {
+          let temp = this.midList[oldIdIndex];
+          this.midList[oldIdIndex] = this.midList[oldIdIndex - 1]
+          this.midList[oldIdIndex - 1] = temp;
+        }
+      } else {
+        item.zIndex--;
+      }
+    })
+    this.resortModelByZIndex()
+  }
+
+  /**
+   * 按照Zindex的顺序，从小到大排列，并重新设置子元素的zindex确保其连续，最后将排序后的List设置成新的midList
+   */
+  resortModelByZIndex(): void {
+    //zIndex按照从大到小排列,按从小到大排列，找到第一个有zIndex的项目
+    let newMidList: Array<string> = new Array();
+    let hadZIndexList: Array<string> = new Array();
+    for (let mg = 0; mg < this.midList.length; mg++) {
+      let item = this.models.get(this.midList[mg]);
+      if (item.zIndex && item.zIndex > 0) {
+        //找到hadZIndexList中zIndex等于当前zIndex的最大元素
+        let insertIndex = hadZIndexList.length;
+        for (let j = 0; j < hadZIndexList.length; j++) {
+          if (this.models.get(hadZIndexList[j]).zIndex > item.zIndex) {
+            insertIndex = j;
+            break;
+          }
+        }
+        hadZIndexList.splice(insertIndex, 0, item.id);
+      } else {
+        newMidList.push(item.id);
+      }
+    }
+    this.midList = newMidList.concat(hadZIndexList);
+  }
+
+  /**
+  * 获取当前图形的绝对旋转坐标值
+  */
+  getAbsRotate(): number {
+    return 0;
+  }
   /**
    * 取消选择控件,默认取消所有
    */
