@@ -14,10 +14,9 @@ class DDeiKeyActionDownMoveModels extends DDeiKeyAction {
     if (ddInstance && ddInstance.stage) {
       let stageRender = ddInstance.stage.render;
       //当前激活的图层
-      let layer = ddInstance.stage.layers[ddInstance.stage.layerIndex]
-      //获取当前选择的控件
-      let selectedModels = layer.getSelectedModels();
-      if (layer && selectedModels.size > 0) {
+      let optContainer = stageRender.currentOperateContainer;
+      if (optContainer) {
+        let selectedModels = optContainer.getSelectedModels();
         let moveSize = 1;
         if (!DDei.KEY_DOWN_STATE.get("ctrl") && DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
           //辅助对齐线宽度
@@ -62,9 +61,10 @@ class DDeiKeyActionDownMoveModels extends DDeiKeyAction {
             }
             item.setPosition(item.x + moveSize - mod, item.y)
           }
+          optContainer.changeParentsBounds()
         });
         //根据选中图形的状态更新选择器
-        stageRender.selector.updatedBoundsBySelectedModels();
+        stageRender.selector.updatedBoundsBySelectedModels(optContainer);
         //重新绘制
         stageRender.drawShape()
       }

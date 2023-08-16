@@ -104,7 +104,7 @@ class DDeiRectContainer extends DDeiRectangle {
       item.zIndex = null
       let oldIdIndex = this.midList.indexOf(item.id);
       if (oldIdIndex > 0) {
-        this.midList.splice(oldIdIndex, -1);
+        this.midList.splice(oldIdIndex, 1);
         this.midList.splice(0, 0, item.id);
       }
 
@@ -155,6 +155,7 @@ class DDeiRectContainer extends DDeiRectangle {
     //zIndex按照从大到小排列,按从小到大排列，找到第一个有zIndex的项目
     let newMidList: Array<string> = new Array();
     let hadZIndexList: Array<string> = new Array();
+    console.log(this.midList)
     for (let mg = 0; mg < this.midList.length; mg++) {
       let item = this.models.get(this.midList[mg]);
       if (item.zIndex && item.zIndex > 0) {

@@ -128,7 +128,7 @@ class DDeiLayer {
       item.zIndex = null
       let oldIdIndex = this.midList.indexOf(item.id);
       if (oldIdIndex > 0) {
-        this.midList.splice(oldIdIndex, -1);
+        this.midList.splice(oldIdIndex, 1);
         this.midList.splice(0, 0, item.id);
       }
     })

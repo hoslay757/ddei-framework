@@ -490,6 +490,8 @@ class DDeiLayerCanvasRender {
           let includedModels: Map<string, DDeiAbstractShape> = this.stageRender.selector.getIncludedModels();
           includedModels.forEach((model, key) => {
             model.state = DDeiEnumControlState.SELECTED;
+            //当前操作层级容器
+            this.stageRender.currentOperateContainer = this.model;
           });
           //根据选中图形的状态更新选择器
           this.stageRender.selector.updatedBoundsBySelectedModels();

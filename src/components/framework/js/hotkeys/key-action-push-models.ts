@@ -49,7 +49,6 @@ class DDeiKeyActionPushModels extends DDeiKeyAction {
       }
       //重新绘制
       stageRender.drawShape()
-      stageRender.operate = DDeiEnumOperateState.NONE;
     }
   }
 
