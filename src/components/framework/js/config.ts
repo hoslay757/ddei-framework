@@ -60,6 +60,14 @@ class DDeiConfig {
     { keys: "71", ctrl: 1, action: DDeiEnumKeyActionInst.MakeCompose },
     //取消组合
     { keys: "71", ctrl: 1, shift: 1, action: DDeiEnumKeyActionInst.CancelCompose },
+    //置于上层
+    { shift: 1, keys: "38", action: DDeiEnumKeyActionInst.PushUpModels },
+    //置于下层
+    { shift: 1, keys: "40", action: DDeiEnumKeyActionInst.PushDownModels },
+    //置于顶层
+    { ctrl: 1, shift: 1, keys: "38", action: DDeiEnumKeyActionInst.PushTopModels },
+    //置于底层
+    { ctrl: 1, shift: 1, keys: "40", action: DDeiEnumKeyActionInst.PushBottomModels },
   ];
 
   // 边框的相关缺省样式属性
@@ -150,12 +158,12 @@ class DDeiConfig {
     },
     // 默认矩形填充
     FILL: {
-      default: { color: "red", opacity: 0.5 },
+      default: { color: "red", opacity: 1 },
       selected: { color: "white" }
     },
     // 默认矩形填充
     IMAGE: {
-      default: { opacity: 0.5 },
+      default: { opacity: 1 },
       selected: {}
     },
     // 默认矩形字体
@@ -203,7 +211,7 @@ class DDeiConfig {
     },
     // 默认矩形填充
     FILL: {
-      default: { color: "red", opacity: 0.5 },
+      default: { color: "red", opacity: 1 },
       selected: { color: "white" }
     },
     // 默认矩形字体
@@ -264,7 +272,7 @@ class DDeiConfig {
     },
     // 默认矩形填充
     FILL: {
-      default: { color: "red", opacity: 0.5 },
+      default: { color: "red", opacity: 1 },
       selected: { color: "white" }
     },
     // 默认矩形字体

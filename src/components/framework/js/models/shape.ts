@@ -235,7 +235,8 @@ abstract class DDeiAbstractShape {
   static findBottomModelsByArea(container, x = undefined, y = undefined, width = 0, height = 0): DDeiAbstractShape[] | null {
     let controls = [];
     if (container) {
-      container.models.forEach((item) => {
+      for (let mg = container.midList.length - 1; mg >= 0; mg--) {
+        let item = container.models.get(container.midList[mg]);
         //如果射线相交，则视为选中
         if (DDeiAbstractShape.isInsidePolygon(item.getRotatedPoints(), { x: x, y: y })) {
           //如果当前控件状态为选中，且是容器，则往下寻找控件，否则返回当前控件
@@ -250,11 +251,13 @@ abstract class DDeiAbstractShape {
             controls.push(item);
           }
         }
-      });
+      }
+      // });
     }
     //TODO 对控件进行排序，按照zIndex > 添加顺序
     return controls;
   }
+
 
   /**
    * 获取某个容器下选中区域的最底层容器
@@ -264,7 +267,8 @@ abstract class DDeiAbstractShape {
   static findBottomContainersByArea(container, x = undefined, y = undefined, width = 0, height = 0): DDeiAbstractShape[] | null {
     let controls = [];
     if (container) {
-      container.models.forEach((item) => {
+      for (let mg = container.midList.length - 1; mg >= 0; mg--) {
+        let item = container.models.get(container.midList[mg]);
         //如果射线相交，则视为选中
         if (DDeiAbstractShape.isInsidePolygon(item.getRotatedPoints(), { x: x, y: y })) {
           //如果当前控件状态为选中，且是容器，则往下寻找控件，否则返回当前控件
@@ -277,7 +281,7 @@ abstract class DDeiAbstractShape {
             }
           }
         }
-      });
+      }
     }
     return controls;
   }

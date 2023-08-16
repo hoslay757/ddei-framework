@@ -7,6 +7,7 @@ import DDeiKeyActionStartQuickEdit from "../hotkeys/key-action-start-quick-edit"
 import DDeiKeyActionCancelSelect from "../hotkeys/key-action-cancel-select";
 import DDeiKeyActionCompose from "../hotkeys/key-action-compose";
 import DDeiKeyActionCancelCompose from "../hotkeys/key-action-cancel-compose";
+import DDeiKeyActionPushModels from "../hotkeys/key-action-push-models";
 
 /**
  * 所有key实例的枚举
@@ -23,7 +24,11 @@ enum DDeiEnumKeyActionInst {
   EnterQuickEdit = new DDeiKeyActionEnterQuickEdit({ code: "key-action-enter-quick-edit", name: "确认快捷编辑", desc: "当某个控件具备快捷编辑的特性时，将快捷编辑框的内容写入实际控件" }),
   CancelQuickEdit = new DDeiKeyActionCancelQuickEdit({ code: "key-action-cancel-quick-edit", name: "取消快捷编辑", desc: "当某个控件具备快捷编辑的特性时，取消快捷编辑框" }),
   MakeCompose = new DDeiKeyActionCompose({ code: "key-action-make-compose", name: "组合", desc: "选择多个控件时，将其组合成一个控件" }),
-  CancelCompose = new DDeiKeyActionCancelCompose({ code: "key-action-cancel-compose", name: "取消组合", desc: "将一个组合控件打散成为多个控件" })
+  CancelCompose = new DDeiKeyActionCancelCompose({ code: "key-action-cancel-compose", name: "取消组合", desc: "将一个组合控件打散成为多个控件" }),
+  PushUpModels = new DDeiKeyActionPushModels({ code: "key-action-push-up-models", name: "置于上层", desc: "将选中图形置于上层" }),
+  PushDownModels = new DDeiKeyActionPushModels({ code: "key-action-push-down-models", name: "置于下层", desc: "将选中图形置于下层" }),
+  PushTopModels = new DDeiKeyActionPushModels({ code: "key-action-push-top-models", name: "置于顶层", desc: "将选中图形置于顶层" }),
+  PushBottomModels = new DDeiKeyActionPushModels({ code: "key-action-push-bottom-models", name: "置于底层", desc: "将选中图形置于底层" })
 }
 
 export default DDeiEnumKeyActionInst

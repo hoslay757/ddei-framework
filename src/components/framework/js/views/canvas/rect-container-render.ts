@@ -29,7 +29,8 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
   drawChildrenShapes(): void {
     if (this.model.models) {
       //遍历子元素，绘制子元素
-      this.model.models.forEach((item, key) => {
+      this.model.midList.forEach(key => {
+        let item = this.model.models.get(key);
         item.render.drawShape();
       });
     }
