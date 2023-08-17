@@ -4,6 +4,7 @@ import DDeiCircle from '../../models/circle';
 import DDeiUtil from '../../util'
 import DDeiRectangleCanvasRender from './rectangle-render';
 import DDeiEnumControlState from '../../enums/control-state';
+import DDeiModelArrtibuteValue from '../../models/attribute/attribute-value';
 
 /**
  * DDeiCircle的渲染器类，用于渲染圆型,继承自矩形渲染器
@@ -137,14 +138,9 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
       this.doRotate(ctx, ratPos);
 
       //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
-      let imgFillInfo = null;
-      if (this.model.state == DDeiEnumControlState.SELECTED) {
-        imgFillInfo = this.model.imgFill && this.model.imgFill.selected ? this.model.imgFill.selected : DDeiConfig.RECTANGLE.IMAGE.selected
-      } else {
-        imgFillInfo = this.model.imgFill && this.model.imgFill.default ? this.model.imgFill.default : DDeiConfig.RECTANGLE.IMAGE.default
-      }
+      let imgFillInfo = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "image");
       //透明度
-      if (imgFillInfo.opacity) {
+      if (imgFillInfo && imgFillInfo.opacity) {
         ctx.globalAlpha = imgFillInfo.opacity
       }
       ctx.ellipse(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5, ratPos.width * 0.5, ratPos.height * 0.5, 0, 0, Math.PI * 2)
@@ -175,24 +171,17 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
     ctx.textBaseline = "top";
 
     //获取字体信息
-    let fInfo = this.model.font && this.model.font.default ? this.model.font.default : DDeiConfig.CIRCLE.FONT.default;
+    let fInfo = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "font");
     //字体对齐信息
-    let align = this.model.textStyle && this.model.textStyle.default && this.model.textStyle.default.align ? this.model.textStyle.default.align : DDeiConfig.CIRCLE.TEXTSTYLE.default.align;
-    let valign = this.model.textStyle && this.model.textStyle.default && this.model.textStyle.default.valign ? this.model.textStyle.default.valign : DDeiConfig.CIRCLE.TEXTSTYLE.default.valign;
+    let align = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.align");
+    let valign = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.valign");
     //缩小字体填充
-    let autoScaleFill = this.model.textStyle && this.model.textStyle.default && this.model.textStyle.default.autoScaleFill ? this.model.textStyle.default.autoScaleFill : DDeiConfig.CIRCLE.TEXTSTYLE.default.autoScaleFill;
+    let autoScaleFill = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.autoScaleFill");
     //镂空
-    let hollow = this.model.textStyle && this.model.textStyle.default && this.model.textStyle.default.hollow ? this.model.textStyle.default.hollow : DDeiConfig.CIRCLE.TEXTSTYLE.default.hollow;
+    let hollow = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.hollow");
     //自动换行
-    let feed = this.model.textStyle && this.model.textStyle.default && this.model.textStyle.default.feed ? this.model.textStyle.default.feed : DDeiConfig.CIRCLE.TEXTSTYLE.default.feed;
-    if (this.model.state == DDeiEnumControlState.SELECTED) {
-      fInfo = this.model.font && this.model.font.selected ? this.model.font.selected : DDeiConfig.CIRCLE.FONT.selected;
-      align = this.model.textStyle && this.model.textStyle.selected && this.model.textStyle.selected.align ? this.model.textStyle.selected.align : DDeiConfig.CIRCLE.TEXTSTYLE.selected.align;
-      valign = this.model.textStyle && this.model.textStyle.selected && this.model.textStyle.selected.valign ? this.model.textStyle.selected.valign : DDeiConfig.CIRCLE.TEXTSTYLE.selected.valign;
-      autoScaleFill = this.model.textStyle && this.model.textStyle.selected && this.model.textStyle.selected.autoScaleFill ? this.model.textStyle.selected.autoScaleFill : DDeiConfig.CIRCLE.TEXTSTYLE.selected.autoScaleFill;
-      hollow = this.model.textStyle && this.model.textStyle.selected && this.model.textStyle.selected.hollow ? this.model.textStyle.selected.hollow : DDeiConfig.CIRCLE.TEXTSTYLE.selected.hollow;
-      feed = this.model.textStyle && this.model.textStyle.selected && this.model.textStyle.selected.feed ? this.model.textStyle.selected.feed : DDeiConfig.CIRCLE.TEXTSTYLE.selected.feed;
-    }
+    let feed = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.feed");
+
     //如果字体不存在则退出，不输出
     if (!fInfo) {
       return;

@@ -4,6 +4,7 @@ import DDeiCircle from '../../models/circle';
 import DDeiUtil from '../../util'
 import DDeiRectangleCanvasRender from './rectangle-render';
 import DDeiEnumControlState from '../../enums/control-state';
+import DDeiModelArrtibuteValue from '../../models/attribute/attribute-value';
 
 /**
  * DDeiDiamond的渲染器类，用于渲染菱形,继承自矩形渲染器
@@ -52,14 +53,9 @@ class DDeiDiamondCanvasRender extends DDeiRectangleCanvasRender {
       this.doRotate(ctx, ratPos);
 
       //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
-      let imgFillInfo = null;
-      if (this.model.state == DDeiEnumControlState.SELECTED) {
-        imgFillInfo = this.model.imgFill && this.model.imgFill.selected ? this.model.imgFill.selected : DDeiConfig.RECTANGLE.IMAGE.selected
-      } else {
-        imgFillInfo = this.model.imgFill && this.model.imgFill.default ? this.model.imgFill.default : DDeiConfig.RECTANGLE.IMAGE.default
-      }
+      let imgFillInfo = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "image");
       //透明度
-      if (imgFillInfo.opacity) {
+      if (imgFillInfo && imgFillInfo.opacity) {
         ctx.globalAlpha = imgFillInfo.opacity
       }
       ctx.beginPath();

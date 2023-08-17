@@ -1,6 +1,7 @@
 import DDeiConfig from '../../config.js'
 import DDei from '../../ddei.js';
 import DDeiEnumControlState from '../../enums/control-state.js';
+import DDeiModelArrtibuteValue from '../../models/attribute/attribute-value.js';
 import DDeiLayer from '../../models/layer.js';
 import DDeiRectangle from '../../models/rectangle.js';
 import DDeiStage from '../../models/stage.js';
@@ -111,29 +112,13 @@ class DDeiRectangleCanvasRender {
     if (tempBorder) {
       borderInfo = tempBorder;
     } else if (direct == 1) {
-      if (this.model.state == DDeiEnumControlState.SELECTED) {
-        borderInfo = this.model.border && this.model.border.top && this.model.border.top.selected ? this.model.border.top.selected : DDeiConfig.RECTANGLE.BORDER.top.selected;
-      } else {
-        borderInfo = this.model.border && this.model.border.top && this.model.border.top.default ? this.model.border.top.default : DDeiConfig.RECTANGLE.BORDER.top.default;
-      }
+      borderInfo = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.top");
     } else if (direct == 2) {
-      if (this.model.state == DDeiEnumControlState.SELECTED) {
-        borderInfo = this.model.border && this.model.border.right && this.model.border.right.selected ? this.model.border.right.selected : DDeiConfig.RECTANGLE.BORDER.right.selected;
-      } else {
-        borderInfo = this.model.border && this.model.border.right && this.model.border.right.default ? this.model.border.right.default : DDeiConfig.RECTANGLE.BORDER.right.default;
-      }
+      borderInfo = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.right");
     } else if (direct == 3) {
-      if (this.model.state == DDeiEnumControlState.SELECTED) {
-        borderInfo = this.model.border && this.model.border.bottom && this.model.border.bottom.selected ? this.model.border.bottom.selected : DDeiConfig.RECTANGLE.BORDER.bottom.selected;
-      } else {
-        borderInfo = this.model.border && this.model.border.bottom && this.model.border.bottom.default ? this.model.border.bottom.default : DDeiConfig.RECTANGLE.BORDER.bottom.default;
-      }
+      borderInfo = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.bottom");
     } else if (direct == 4) {
-      if (this.model.state == DDeiEnumControlState.SELECTED) {
-        borderInfo = this.model.border && this.model.border.left && this.model.border.left.selected ? this.model.border.left.selected : DDeiConfig.RECTANGLE.BORDER.left.selected;
-      } else {
-        borderInfo = this.model.border && this.model.border.left && this.model.border.left.default ? this.model.border.left.default : DDeiConfig.RECTANGLE.BORDER.left.default;
-      }
+      borderInfo = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.left");
     }
     return borderInfo;
   }
@@ -159,7 +144,7 @@ class DDeiRectangleCanvasRender {
 
       //绘制四个方向的边框
       //如果边框未被disabled，则绘制边框
-      if (!borderInfo.disabled && borderInfo.color && (!borderInfo.opacity || borderInfo.opacity > 0) && borderInfo.width > 0) {
+      if (borderInfo && !borderInfo.disabled && borderInfo.color && (!borderInfo.opacity || borderInfo.opacity > 0) && borderInfo.width > 0) {
         //保存状态
         ctx.save();
         //设置旋转
@@ -225,14 +210,10 @@ class DDeiRectangleCanvasRender {
       this.doRotate(ctx, ratPos);
 
       //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
-      let imgFillInfo = null;
-      if (this.model.state == DDeiEnumControlState.SELECTED) {
-        imgFillInfo = this.model.imgFill && this.model.imgFill.selected ? this.model.imgFill.selected : DDeiConfig.RECTANGLE.IMAGE.selected
-      } else {
-        imgFillInfo = this.model.imgFill && this.model.imgFill.default ? this.model.imgFill.default : DDeiConfig.RECTANGLE.IMAGE.default
-      }
+      let imgFillInfo = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "image");
+
       //透明度
-      if (imgFillInfo.opacity) {
+      if (imgFillInfo && imgFillInfo.opacity) {
         ctx.globalAlpha = imgFillInfo.opacity
       }
       ctx.drawImage(this.imgObj, ratPos.x, ratPos.y, ratPos.width, ratPos.height);
@@ -262,12 +243,7 @@ class DDeiRectangleCanvasRender {
     this.doRotate(ctx, ratPos);
 
     //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
-    let fillInfo = null;
-    if (this.model.state == DDeiEnumControlState.SELECTED) {
-      fillInfo = this.model.fill && this.model.fill.selected ? this.model.fill.selected : DDeiConfig.RECTANGLE.FILL.selected
-    } else {
-      fillInfo = this.model.fill && this.model.fill.default ? this.model.fill.default : DDeiConfig.RECTANGLE.FILL.default
-    }
+    let fillInfo = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "fill");;
     //如果拥有填充色，则使用填充色
     if (fillInfo && fillInfo.color) {
       ctx.fillStyle = DDeiUtil.getColor(fillInfo.color);
@@ -303,24 +279,16 @@ class DDeiRectangleCanvasRender {
     ctx.textBaseline = "top";
 
     //获取字体信息
-    let fInfo = this.model.font && this.model.font.default ? this.model.font.default : DDeiConfig.RECTANGLE.FONT.default;
+    let fInfo = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "font");
     //字体对齐信息
-    let align = this.model.textStyle && this.model.textStyle.default && this.model.textStyle.default.align ? this.model.textStyle.default.align : DDeiConfig.RECTANGLE.TEXTSTYLE.default.align;
-    let valign = this.model.textStyle && this.model.textStyle.default && this.model.textStyle.default.valign ? this.model.textStyle.default.valign : DDeiConfig.RECTANGLE.TEXTSTYLE.default.valign;
+    let align = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.align");
+    let valign = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.valign");
     //缩小字体填充
-    let autoScaleFill = this.model.textStyle && this.model.textStyle.default && this.model.textStyle.default.autoScaleFill ? this.model.textStyle.default.autoScaleFill : DDeiConfig.RECTANGLE.TEXTSTYLE.default.autoScaleFill;
+    let autoScaleFill = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.autoScaleFill");
     //镂空
-    let hollow = this.model.textStyle && this.model.textStyle.default && this.model.textStyle.default.hollow ? this.model.textStyle.default.hollow : DDeiConfig.RECTANGLE.TEXTSTYLE.default.hollow;
+    let hollow = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.hollow");
     //自动换行
-    let feed = this.model.textStyle && this.model.textStyle.default && this.model.textStyle.default.feed ? this.model.textStyle.default.feed : DDeiConfig.RECTANGLE.TEXTSTYLE.default.feed;
-    if (this.model.state == DDeiEnumControlState.SELECTED) {
-      fInfo = this.model.font && this.model.font.selected ? this.model.font.selected : DDeiConfig.RECTANGLE.FONT.selected;
-      align = this.model.textStyle && this.model.textStyle.selected && this.model.textStyle.selected.align ? this.model.textStyle.selected.align : DDeiConfig.RECTANGLE.TEXTSTYLE.selected.align;
-      valign = this.model.textStyle && this.model.textStyle.selected && this.model.textStyle.selected.valign ? this.model.textStyle.selected.valign : DDeiConfig.RECTANGLE.TEXTSTYLE.selected.valign;
-      autoScaleFill = this.model.textStyle && this.model.textStyle.selected && this.model.textStyle.selected.autoScaleFill ? this.model.textStyle.selected.autoScaleFill : DDeiConfig.RECTANGLE.TEXTSTYLE.selected.autoScaleFill;
-      hollow = this.model.textStyle && this.model.textStyle.selected && this.model.textStyle.selected.hollow ? this.model.textStyle.selected.hollow : DDeiConfig.RECTANGLE.TEXTSTYLE.selected.hollow;
-      feed = this.model.textStyle && this.model.textStyle.selected && this.model.textStyle.selected.feed ? this.model.textStyle.selected.feed : DDeiConfig.RECTANGLE.TEXTSTYLE.selected.feed;
-    }
+    let feed = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.feed");
     //如果字体不存在则退出，不输出
     if (!fInfo) {
       return;
@@ -540,33 +508,26 @@ class DDeiRectangleCanvasRender {
    */
   getFillArea(): object {
     //获取边框区域，实际填充区域=坐标-边框区域
-    let topBorder, bottomBorder, leftBorder, rightBorder;
-    if (this.model.state == DDeiEnumControlState.SELECTED) {
-      topBorder = this.model.border && this.model.border.top && this.model.border.top.selected ? this.model.border.top.selected : DDeiConfig.RECTANGLE.BORDER.top.selected;
-      rightBorder = this.model.border && this.model.border.right && this.model.border.right.selected ? this.model.border.right.selected : DDeiConfig.RECTANGLE.BORDER.right.selected;
-      bottomBorder = this.model.border && this.model.border.bottom && this.model.border.bottom.selected ? this.model.border.bottom.selected : DDeiConfig.RECTANGLE.BORDER.bottom.selected;
-      leftBorder = this.model.border && this.model.border.left && this.model.border.left.selected ? this.model.border.left.selected : DDeiConfig.RECTANGLE.BORDER.left.selected;
-    } else {
-      topBorder = this.model.border && this.model.border.top && this.model.border.top.default ? this.model.border.top.default : DDeiConfig.RECTANGLE.BORDER.top.default;
-      rightBorder = this.model.border && this.model.border.right && this.model.border.right.default ? this.model.border.right.default : DDeiConfig.RECTANGLE.BORDER.right.default;
-      bottomBorder = this.model.border && this.model.border.bottom && this.model.border.bottom.default ? this.model.border.bottom.default : DDeiConfig.RECTANGLE.BORDER.bottom.default;
-      leftBorder = this.model.border && this.model.border.left && this.model.border.left.default ? this.model.border.left.default : DDeiConfig.RECTANGLE.BORDER.left.default;
-    }
+    let topBorder = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.top");
+    let rightBorder = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.right");
+    let bottomBorder = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.bottom");
+    let leftBorder = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.left");
+
     //计算填充的原始区域
     let leftWidth = 0;
-    if (!leftBorder.disabled && leftBorder.color && (!leftBorder.opacity || leftBorder.opacity > 0) && leftBorder.width > 0) {
+    if (leftBorder && !leftBorder.disabled && leftBorder.color && (!leftBorder.opacity || leftBorder.opacity > 0) && leftBorder.width > 0) {
       leftWidth = leftBorder.width;
     }
     let rightWidth = 0;
-    if (!rightBorder.disabled && rightBorder.color && (!rightBorder.opacity || rightBorder.opacity > 0) > 0 && rightBorder.width > 0) {
+    if (rightBorder && !rightBorder.disabled && rightBorder.color && (!rightBorder.opacity || rightBorder.opacity > 0) > 0 && rightBorder.width > 0) {
       rightWidth = rightBorder.width;
     }
     let topWidth = 0;
-    if (!topBorder.disabled && topBorder.color && (!topBorder.opacity || topBorder.opacity > 0) > 0 && topBorder.width > 0) {
+    if (topBorder && !topBorder.disabled && topBorder.color && (!topBorder.opacity || topBorder.opacity > 0) > 0 && topBorder.width > 0) {
       topWidth = topBorder.width;
     }
     let bottomWidth = 0;
-    if (!bottomBorder.disabled && bottomBorder.color && (!bottomBorder.opacity || bottomBorder.opacity > 0) > 0 && bottomBorder.width > 0) {
+    if (bottomBorder && !bottomBorder.disabled && bottomBorder.color && (!bottomBorder.opacity || bottomBorder.opacity > 0) > 0 && bottomBorder.width > 0) {
       bottomWidth = bottomBorder.width;
     }
     let absBounds = this.model.getAbsBounds();

@@ -81,9 +81,9 @@ class DDeiLayerCanvasRender {
     //绘制背景图层
     let bgInfo = null;
     if (this.model.type == 99) {
-      bgInfo = this.model.background ? this.model.background : DDeiConfig.LAYER.BACKGROUND;
+      bgInfo = this.model.background ? this.model.background : DDeiConfig.BACKGROUND_LAYER;
     } else {
-      bgInfo = this.model.background ? this.model.background : DDeiConfig.LAYER.NORMAL;
+      bgInfo = this.model.background ? this.model.background : DDeiConfig.LAYER;
     }
     //绘制无背景
     if (!bgInfo || !bgInfo.type || bgInfo.type == 0) {

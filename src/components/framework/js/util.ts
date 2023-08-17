@@ -1,7 +1,36 @@
 import DDeiConfig from './config.js'
 
 class DDeiUtil {
+
+
+
   // ============================ 静态方法 ============================
+
+
+  /**
+   * 根据Path获取JSON的数据
+   */
+  static getDataByPath(data: object, path: string[]): object {
+    let returnValue = null;
+    if (path && path.length > 0) {
+      //属性详情路径code
+      let dataJson = data;
+      //尝试转为json获取深层次数据
+      if (typeof (data) == 'string') {
+        dataJson = JSON.parse(data);
+      }
+      //获取属性
+      for (let i = 0; i < path.length; i++) {
+        dataJson = dataJson[path[i]];
+      }
+      returnValue = dataJson;
+    } else {
+      returnValue = data;
+    }
+
+    return returnValue;
+  }
+
   /**
    * 获取设备像素比
    */

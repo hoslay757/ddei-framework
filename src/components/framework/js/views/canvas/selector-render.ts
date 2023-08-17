@@ -146,9 +146,9 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       borderInfo = tempBorder;
     } else {
       if (this.model.state == DDeiEnumControlState.SELECTED) {
-        borderInfo = this.model.border && this.model.border && this.model.border.selected ? this.model.border.selected : DDeiConfig.SELECTOR.BORDER.selected;
+        borderInfo = this.model.border && this.model.border.selected ? this.model.border.selected : DDeiConfig.SELECTOR.border.selected;
       } else {
-        borderInfo = this.model.border && this.model.border && this.model.border.default ? this.model.border.default : DDeiConfig.SELECTOR.BORDER.default;
+        borderInfo = this.model.border ? this.model.border : DDeiConfig.SELECTOR.border;
       }
     }
     return borderInfo;

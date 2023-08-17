@@ -3,6 +3,7 @@ import DDeiStage from './stage'
 import DDeiLayer from './layer'
 import DDeiEnumControlState from '../enums/control-state'
 import DDeiUtil from '../util'
+import DDeiModelArrtibuteValue from './attribute/attribute-value'
 
 /**
  * 抽象的图形类，定义了大多数图形都有的属性和方法
@@ -17,8 +18,9 @@ abstract class DDeiAbstractShape {
     this.width = props.width ? props.width : 0
     this.height = props.height ? props.height : 0
     this.zIndex = props.zIndex ? props.zIndex : null
-    this.rotate = props.rotate ? props.rotate : null;
-    this.zoom = props.zoom ? props.zoom : null;
+    this.rotate = props.rotate ? props.rotate : null
+    this.modelCode = props.modelCode ? props.modelCode : null
+    this.attrs = props.attrs ? props.attrs : new Map();
   }
   // ============================ 静态方法 ============================
 
@@ -314,6 +316,8 @@ abstract class DDeiAbstractShape {
   y: number;
   width: number;
   height: number;
+  // 本模型的编码,用来却分modelType相同，但业务含义不同的模型
+  modelCode: string;
   // 本模型的唯一名称
   modelType: string = 'AbastractShape';
   // 本模型的基础图形
@@ -330,8 +334,8 @@ abstract class DDeiAbstractShape {
   zIndex: number | null;
   // 旋转,0/null 不旋转，默认0
   rotate: number | null;
-  // 缩放,1/null，不缩放,默认1
-  zoom: number;
+  // 属性，只包含code和值
+  attrs: Map<string, DDeiModelArrtibuteValue> | null;
   // ============================ 方法 ===============================
   /**
    * 判断图形是否在一个区域内，采用宽松的判定模式，允许传入一个大小值
