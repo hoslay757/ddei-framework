@@ -9,9 +9,11 @@ class DDeiUtil {
 
   /**
    * 根据Path获取JSON的数据
+   * 如果data路径中存在override，则强制覆盖不从上级获取
    */
   static getDataByPath(data: object, path: string[]): object {
     let returnValue = null;
+    let isoverwrite = false;
     if (path && path.length > 0) {
       //属性详情路径code
       let dataJson = data;
@@ -19,16 +21,24 @@ class DDeiUtil {
       if (typeof (data) == 'string') {
         dataJson = JSON.parse(data);
       }
+      if(dataJson && dataJson.overwrite == true){
+        isoverwrite = true
+      }
       //获取属性
       for (let i = 0; i < path.length; i++) {
         dataJson = dataJson[path[i]];
+        if(dataJson.overwrite && dataJson.overwrite == true){
+          isoverwrite = true
+        }
       }
       returnValue = dataJson;
     } else {
       returnValue = data;
+      if(returnValue.overwrite && returnValue.overwrite == true){
+        isoverwrite = true
+      }
     }
-
-    return returnValue;
+    return {data:returnValue,overwrite:isoverwrite}
   }
 
   /**

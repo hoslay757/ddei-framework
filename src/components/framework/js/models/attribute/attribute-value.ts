@@ -39,6 +39,8 @@ class DDeiModelArrtibuteValue {
       if (model.state == DDeiEnumControlState.DEFAULT) {
         stateCode = "";
       }
+      //是否复写，复写后将不会读取后续优先级更低的数据
+      let overwrite = false
       //当前状态下是否实例复写
       if (model.attrs?.has(attrCode)) {
         //实例的复写属性
@@ -50,15 +52,19 @@ class DDeiModelArrtibuteValue {
             path = [stateCode].concat(detailCode);
           }
           try {
-            returnValue = DDeiUtil.getDataByPath(modelAttr.data, path);
+            let returnJSON = DDeiUtil.getDataByPath(modelAttr.data, path);
+            overwrite = returnJSON.overwrite
+            returnValue = returnJSON.data;
           } catch (e) {
             console.warn("获取属性值【" + model.id + "(" + model.state + "):" + attrPath + "】失败", e);
           }
           //如果开启了default则尝试获取default的值
-          if (!returnValue && useDefault && stateCode.length > 0) {
+          if (!overwrite && !returnValue && useDefault && stateCode.length > 0) {
             path = detailCode;
             try {
-              returnValue = DDeiUtil.getDataByPath(modelAttr.data, path);
+              let returnJSON = DDeiUtil.getDataByPath(modelAttr.data, path);
+              overwrite = returnJSON.overwrite
+              returnValue = returnJSON.data;
             } catch (e) {
               console.warn("获取属性值【" + model.id + "(" + model.state + "):" + attrPath + "】失败", e);
             }
@@ -67,12 +73,12 @@ class DDeiModelArrtibuteValue {
       }
 
       //TODO 控件默认值获取判断
-      if (!returnValue) {
+      if (!overwrite && !returnValue) {
         //TODO 基于模型的modelCode，反向寻找所指向的定义中的属性
       }
 
       //系统默认值获取判断
-      if (!returnValue) {
+      if (!overwrite && !returnValue) {
         //基于模型的modelType，反向寻找所指向的系统属性
         let sysData = DDeiConfig.getSysDefaultData(model);
         if (sysData && sysData[attrCode]) {
@@ -82,15 +88,19 @@ class DDeiModelArrtibuteValue {
             path = [stateCode].concat(detailCode);
           }
           try {
-            returnValue = DDeiUtil.getDataByPath(sysData[attrCode], path);
+            let returnJSON = DDeiUtil.getDataByPath(sysData[attrCode], path);
+            overwrite = returnJSON.overwrite
+            returnValue = returnJSON.data;
           } catch (e) {
             console.warn("获取系统属性值【" + model.id + "(" + model.state + "):" + attrPath + "】失败", e);
           }
           //如果开启了default则尝试获取default的值
-          if (!returnValue && useDefault && stateCode.length > 0) {
+          if (!overwrite && !returnValue && useDefault && stateCode.length > 0) {
             path = detailCode;
             try {
-              returnValue = DDeiUtil.getDataByPath(sysData[attrCode], path);
+              let returnJSON = DDeiUtil.getDataByPath(sysData[attrCode], path);
+              overwrite = returnJSON.overwrite
+              returnValue = returnJSON.data;
             } catch (e) {
               console.warn("获取系统属性值【" + model.id + "(" + model.state + "):" + attrPath + "】失败", e);
             }
