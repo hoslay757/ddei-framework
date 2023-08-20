@@ -212,22 +212,22 @@ class DDeiSelector extends DDeiRectangle {
     let models: DDeiAbstractShape[] = Array.from(selectedModels.values());
     //原始路径,绝对坐标
     let originRect: object = null;
-    if (this.rotate != 0) {
-      originRect = this.getAbsBounds();
-      let paddingWeightInfo = this.paddingWeight?.selected ? this.paddingWeight.selected : DDeiConfig.SELECTOR.PADDING_WEIGHT.selected;
-      let paddingWeight = 0;
-      if (selectedModels.size > 1) {
-        paddingWeight = paddingWeightInfo.multiple;
-      } else {
-        paddingWeight = paddingWeightInfo.single;
-      }
-      originRect.x = originRect.x + paddingWeight;
-      originRect.y = originRect.y + paddingWeight;
-      originRect.width = originRect.width - 2 * paddingWeight;
-      originRect.height = originRect.height - 2 * paddingWeight;
+    // if (this.rotate != 0) {
+    originRect = this.getAbsBounds();
+    let paddingWeightInfo = this.paddingWeight?.selected ? this.paddingWeight.selected : DDeiConfig.SELECTOR.PADDING_WEIGHT.selected;
+    let paddingWeight = 0;
+    if (selectedModels.size > 1) {
+      paddingWeight = paddingWeightInfo.multiple;
     } else {
-      originRect = DDeiAbstractShape.getOutRect(models);
+      paddingWeight = paddingWeightInfo.single;
     }
+    originRect.x = originRect.x + paddingWeight;
+    originRect.y = originRect.y + paddingWeight;
+    originRect.width = originRect.width - 2 * paddingWeight;
+    originRect.height = originRect.height - 2 * paddingWeight;
+    // } else {
+    //   originRect = DDeiAbstractShape.getOutRect(models);
+    // }
 
     //容器所在的坐标，容器内元素加上容器坐标才是绝对坐标，绝对坐标剪去容器坐标才是相对坐标
     let cx = 0;
@@ -250,13 +250,7 @@ class DDeiSelector extends DDeiRectangle {
         hR: (item.height / originRect.height)
       });
     }
-    let paddingWeightInfo = this.paddingWeight?.selected ? this.paddingWeight.selected : DDeiConfig.SELECTOR.PADDING_WEIGHT.selected;
-    let paddingWeight = 0;
-    if (selectedModels.size > 1) {
-      paddingWeight = paddingWeightInfo.multiple;
-    } else {
-      paddingWeight = paddingWeightInfo.single;
-    }
+
     //考虑paddingWeight，计算实际移动后的区域
     movedBounds.y = movedBounds.y + paddingWeight
     movedBounds.height = movedBounds.height - 2 * paddingWeight

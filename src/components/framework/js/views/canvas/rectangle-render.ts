@@ -504,7 +504,7 @@ class DDeiRectangleCanvasRender {
   }
 
   /**
-   * 私有函数，计算除边框外的填充区域，用于填充颜色和字体
+   * 计算除边框外的填充区域，用于填充颜色和字体
    */
   getFillArea(): object {
     //获取边框区域，实际填充区域=坐标-边框区域

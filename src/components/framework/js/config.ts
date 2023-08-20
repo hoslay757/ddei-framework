@@ -271,6 +271,45 @@ class DDeiConfig {
     }
   };
 
+
+  // 容器的相关缺省样式属性
+  static CONTAINER: object = {
+    // 默认矩形边框
+    border: {
+      top: {
+        width: 1, color: "yellow", dash: [2, 2], round: 0
+      },
+      right: {
+        width: 1, color: "yellow", dash: [2, 2], round: 0
+      },
+      bottom: {
+        width: 1, color: "yellow", dash: [2, 2], round: 0
+      },
+      left: {
+        width: 1, color: "yellow", dash: [2, 2], round: 0
+      },
+      selected: {
+        top: {
+          width: 1, color: "black", dash: null, round: 0
+        },
+        right: {
+          width: 1, color: "black", dash: null, round: 0
+        },
+        bottom: {
+          width: 1, color: "black", dash: null, round: 0
+        },
+        left: {
+          width: 1, color: "black", dash: null, round: 0
+        }
+      }
+    },
+    // 默认填充
+    fill: {
+      color: "#787878", opacity: 1,
+      selected: { color: "#23AE78" }
+    }
+  };
+
   //用于存储当前浏览器下单位空格字体的大小
   static SPACE_WIDTH_MAP: any = {};
 
@@ -295,7 +334,7 @@ class DDeiConfig {
     } else if (model.modelType == "DDeiSelector") {
       return DDeiConfig.SELECTOR;
     } else if (model.modelType == "DDeiRectContainer") {
-      DDeiConfig.RECTANGLE
+      return DDeiConfig.CONTAINER;
     }
     return null;
   }

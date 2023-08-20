@@ -1,35 +1,21 @@
 <template>
   <div class="main">
     <div class="top">
-      <button type="button"
-              style="width:120px;height:30px;margin-top:10px">新建</button>
-      <button type="button"
-              style="width:120px;height:30px;margin-top:10px">打开</button>
-      <button type="button"
-              style="width:120px;height:30px;margin-top:10px">保存</button>
+      <button type="button" style="width:120px;height:30px;margin-top:10px">新建</button>
+      <button type="button" style="width:120px;height:30px;margin-top:10px">打开</button>
+      <button type="button" style="width:120px;height:30px;margin-top:10px">保存</button>
     </div>
     <div class="left">
-      <button type="button"
-              @click="createRectangle()"
-              style="width:120px;height:30px;margin-top:10px">矩形</button>
-      <button type="button"
-              @click="createCircle()"
-              style="width:120px;height:30px;margin-top:10px">圆型</button>
-      <button type="button"
-                @click="createDiamond()"
-                style="width:120px;height:30px;margin-top:10px">菱形</button>
-      <button type="button"
-                  @click="createImg(1)"
-                  style="width:120px;height:30px;margin-top:10px">矩形图片</button>
-      <button type="button"
-                @click="createImg(2)"
-                style="width:120px;height:30px;margin-top:10px">圆形图片</button>
-      <button type="button"
-                @click="createImg(3)"
-                style="width:120px;height:30px;margin-top:10px">菱形图片</button>
-      <button type="button"
-              @click="createContainer()"
-              style="width:120px;height:30px;margin-top:10px">容器</button>
+      <button type="button" @click="createRectangle()" style="width:120px;height:30px;margin-top:10px">矩形</button>
+      <button type="button" @click="createCircle()" style="width:120px;height:30px;margin-top:10px">圆型</button>
+      <button type="button" @click="createDiamond()" style="width:120px;height:30px;margin-top:10px">菱形</button>
+      <button type="button" @click="createImg(1)" style="width:120px;height:30px;margin-top:10px">矩形图片</button>
+      <button type="button" @click="createImg(2)" style="width:120px;height:30px;margin-top:10px">圆形图片</button>
+      <button type="button" @click="createImg(3)" style="width:120px;height:30px;margin-top:10px">菱形图片</button>
+      <button type="button" @click="createContainer(1)" style="width:120px;height:30px;margin-top:10px">容器-不联动</button>
+      <button type="button" @click="createContainer(2)" style="width:120px;height:30px;margin-top:10px">容器-联动子</button>
+      <button type="button" @click="createContainer(3)" style="width:120px;height:30px;margin-top:10px">容器-联动父</button>
+      <button type="button" @click="createContainer(4)" style="width:120px;height:30px;margin-top:10px">容器-双联动</button>
     </div>
     <div class="middle">
       <FrameWorkTest />
@@ -37,26 +23,14 @@
     <div class="right"></div>
     <div class="bottom">
 
-      <button type="button"
-              v-for="(item,i) in layers"
-              @click="changeLayer(i)"
-              style="width:120px;height:30px;margin-top:10px">{{item.id}}</button>
-      <button type="button"
-              @click="createLayer()"
-              style="width:120px;height:30px;margin-top:10px">图层+</button>
-      <button type="button"
-              @click="removeLayer()"
-              style="width:120px;height:30px;margin-top:10px">图层-</button>
-      <button type="button"
-              @click="displayLayer()"
-              style="width:120px;height:30px;margin-top:10px">显示图层</button>
-      <button type="button"
-              @click="hiddenLayer()"
-              style="width:120px;height:30px;margin-top:10px">隐藏图层</button>
-      <button type="button"
-              style="width:120px;height:30px;margin-top:10px">放大</button>
-      <button type="button"
-              style="width:120px;height:30px;margin-top:10px">缩小</button>
+      <button type="button" v-for="(item, i) in layers" @click="changeLayer(i)"
+        style="width:120px;height:30px;margin-top:10px">{{ item.id }}</button>
+      <button type="button" @click="createLayer()" style="width:120px;height:30px;margin-top:10px">图层+</button>
+      <button type="button" @click="removeLayer()" style="width:120px;height:30px;margin-top:10px">图层-</button>
+      <button type="button" @click="displayLayer()" style="width:120px;height:30px;margin-top:10px">显示图层</button>
+      <button type="button" @click="hiddenLayer()" style="width:120px;height:30px;margin-top:10px">隐藏图层</button>
+      <button type="button" style="width:120px;height:30px;margin-top:10px">放大</button>
+      <button type="button" style="width:120px;height:30px;margin-top:10px">缩小</button>
 
     </div>
   </div>
@@ -86,26 +60,26 @@ export default {
   },
   computed: {},
   watch: {},
-  created() {},
+  created() { },
   mounted() {
     let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_demo"];
     this.layers = ddInstance.stage.layers;
   },
   methods: {
-   //创建方形图片
-    createImg(type:number = 1) {
+    //创建方形图片
+    createImg(type: number = 1) {
       //获取当前实例
       let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_demo"];
       //创建一个矩形
       let rect: DDeiRectangle = null;
-      if(type == 1){
+      if (type == 1) {
         rect = DDeiRectangle.initByJSON({
           id: "rect_" + ddInstance.stage.idIdx,
           x: 100,
           y: 100,
           width: 160,
           height: 80,
-          img:"/test_img.jpg",
+          img: "/test_img.jpg",
           text:
             "测试图片" +
             ddInstance.stage.idIdx,
@@ -241,17 +215,52 @@ export default {
     },
 
     //创建容器
-    createContainer() {
+    createContainer(type) {
       //获取当前实例
       let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_demo"];
       //创建一个矩形
-      let container: DDeiRectContainer = DDeiRectContainer.initByJSON({
-        id: "container_" + ddInstance.stage.idIdx,
-        x: 100,
-        y: 100,
-        width: 500,
-        height: 500,
-      });
+      let container: DDeiRectContainer = null;
+      if (type == 1) {
+        container = DDeiRectContainer.initByJSON({
+          id: "container_" + ddInstance.stage.idIdx,
+          x: 100,
+          y: 100,
+          width: 500,
+          height: 500,
+          linkChild: false,
+          linkSelf: false
+        });
+      } else if (type == 2) {
+        container = DDeiRectContainer.initByJSON({
+          id: "container_" + ddInstance.stage.idIdx,
+          x: 100,
+          y: 100,
+          width: 500,
+          height: 500,
+          linkChild: true,
+          linkSelf: false
+        });
+      } else if (type == 3) {
+        container = DDeiRectContainer.initByJSON({
+          id: "container_" + ddInstance.stage.idIdx,
+          x: 100,
+          y: 100,
+          width: 500,
+          height: 500,
+          linkChild: false,
+          linkSelf: true
+        });
+      } else if (type == 4) {
+        container = DDeiRectContainer.initByJSON({
+          id: "container_" + ddInstance.stage.idIdx,
+          x: 100,
+          y: 100,
+          width: 500,
+          height: 500,
+          linkChild: true,
+          linkSelf: true
+        });
+      }
       //下标自增1
       ddInstance.stage.idIdx++;
       //获取当前选择的控件，如果是一个容器则添加到容器中
@@ -344,22 +353,26 @@ export default {
 body {
   display: block;
 }
+
 #app {
   padding: 0;
   margin: 0;
   display: block;
   max-width: 100%;
 }
+
 .main {
   width: 100%;
   height: calc(100vh);
 }
+
 .top {
   float: left;
   background: grey;
   width: 100%;
   height: 175px;
 }
+
 .left {
   text-align: center;
   float: left;
@@ -367,18 +380,21 @@ body {
   width: 200px;
   height: calc(100vh - 235px);
 }
+
 .middle {
   float: left;
   background: green;
   width: calc(100% - 470px);
   height: calc(100vh - 235px);
 }
+
 .right {
   float: left;
   background: red;
   width: 270px;
   height: calc(100vh - 235px);
 }
+
 .bottom {
   float: left;
   background: blue;

@@ -154,6 +154,44 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     return borderInfo;
   }
 
+
+  /**
+   * 计算除边框外的填充区域，用于填充颜色和字体
+   */
+  getFillArea(): object {
+    //获取边框区域，实际填充区域=坐标-边框区域
+    let topBorder = this.getBorderInfo(1);
+    let rightBorder = this.getBorderInfo(2);
+    let bottomBorder = this.getBorderInfo(3);
+    let leftBorder = this.getBorderInfo(4);
+
+    //计算填充的原始区域
+    let leftWidth = 0;
+    if (leftBorder && !leftBorder.disabled && leftBorder.color && (!leftBorder.opacity || leftBorder.opacity > 0) && leftBorder.width > 0) {
+      leftWidth = leftBorder.width;
+    }
+    let rightWidth = 0;
+    if (rightBorder && !rightBorder.disabled && rightBorder.color && (!rightBorder.opacity || rightBorder.opacity > 0) > 0 && rightBorder.width > 0) {
+      rightWidth = rightBorder.width;
+    }
+    let topWidth = 0;
+    if (topBorder && !topBorder.disabled && topBorder.color && (!topBorder.opacity || topBorder.opacity > 0) > 0 && topBorder.width > 0) {
+      topWidth = topBorder.width;
+    }
+    let bottomWidth = 0;
+    if (bottomBorder && !bottomBorder.disabled && bottomBorder.color && (!bottomBorder.opacity || bottomBorder.opacity > 0) > 0 && bottomBorder.width > 0) {
+      bottomWidth = bottomBorder.width;
+    }
+    let absBounds = this.model.getAbsBounds();
+    let fillAreaE = {
+      x: absBounds.x + leftWidth,
+      y: absBounds.y + topWidth,
+      width: absBounds.width - leftWidth - rightWidth,
+      height: absBounds.height - topWidth - bottomWidth
+    }
+    return fillAreaE;
+  }
+
   /**
    * 绘制选中图形特效
    */
