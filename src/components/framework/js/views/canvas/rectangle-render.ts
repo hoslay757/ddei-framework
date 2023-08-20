@@ -110,7 +110,12 @@ class DDeiRectangleCanvasRender {
   getBorderInfo(tempBorder, direct, path): object {
     let borderInfo = null;
     if (tempBorder) {
-      borderInfo = tempBorder;
+      try {
+        let returnJSON = DDeiUtil.getDataByPath(tempBorder, path.split('.'));
+        borderInfo = returnJSON.data
+      } catch (e) {
+
+      }
     } else if (direct == 1) {
       borderInfo = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.top" + "." + path, true);
     } else if (direct == 2) {
