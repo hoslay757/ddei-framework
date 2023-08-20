@@ -53,10 +53,10 @@ class DDeiDiamondCanvasRender extends DDeiRectangleCanvasRender {
       this.doRotate(ctx, ratPos);
 
       //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
-      let imgFillInfo = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "image");
+      let imgFillInfo = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "image.opacity", true);
       //透明度
-      if (imgFillInfo && imgFillInfo.opacity) {
-        ctx.globalAlpha = imgFillInfo.opacity
+      if (imgFillInfo) {
+        ctx.globalAlpha = imgFillInfo
       }
       ctx.beginPath();
       ctx.moveTo(ratPos.x + ratPos.width * 0.5, ratPos.y);
@@ -97,29 +97,29 @@ class DDeiDiamondCanvasRender extends DDeiRectangleCanvasRender {
     }
     for (let i = 1; i <= 4; i++) {
       //如果被选中，使用选中的边框，否则使用缺省边框
-      //TODO 样式最小替换颗粒度，需要前后保持一致
-      let borderInfo = this.getBorderInfo(tempBorder, i);
-
+      let disabled = this.getBorderInfo(tempBorder, i, "disabled");
+      let color = this.getBorderInfo(tempBorder, i, "color");
+      let opacity = this.getBorderInfo(tempBorder, i, "opacity");
+      let width = this.getBorderInfo(tempBorder, i, "width");
+      let dash = this.getBorderInfo(tempBorder, i, "dash");
       //绘制四个方向的边框
       //如果边框未被disabled，则绘制边框
-      if (!borderInfo.disabled && borderInfo.color && (!borderInfo.opacity || borderInfo.opacity > 0) && borderInfo.width > 0) {
-
+      if (!disabled && color && (!opacity || opacity > 0) && width > 0) {
 
         ctx.beginPath();
         //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
-        let lineOffset = borderInfo.width * ratio / 2;
-        ctx.lineWidth = borderInfo.width * ratio;
+        ctx.lineWidth = width * ratio;
 
         //线段、虚线样式
-        if (borderInfo.dash) {
-          ctx.setLineDash(borderInfo.dash);
+        if (dash) {
+          ctx.setLineDash(dash);
         }
         //透明度
-        if (borderInfo.opacity) {
-          ctx.globalAlpha = borderInfo.opacity
+        if (opacity) {
+          ctx.globalAlpha = opacity
         }
         //颜色
-        ctx.strokeStyle = DDeiUtil.getColor(borderInfo.color);
+        ctx.strokeStyle = DDeiUtil.getColor(color);
         if (i == 1) {
           ctx.moveTo(ratPos.x + ratPos.width * 0.5, ratPos.y);
           ctx.lineTo(ratPos.x + ratPos.width, ratPos.y + ratPos.height * 0.5);
@@ -138,19 +138,15 @@ class DDeiDiamondCanvasRender extends DDeiRectangleCanvasRender {
       }
     }
     //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
-    let fillInfo = null;
-    if (this.model.state == DDeiEnumControlState.SELECTED) {
-      fillInfo = this.model.fill && this.model.fill.selected ? this.model.fill.selected : DDeiConfig.DIAMOND.FILL.selected
-    } else {
-      fillInfo = this.model.fill && this.model.fill.default ? this.model.fill.default : DDeiConfig.DIAMOND.FILL.default
-    }
+    let fillColor = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "fill.color", true);
     //如果拥有填充色，则使用填充色
-    if (fillInfo && fillInfo.color) {
+    if (fillColor) {
 
-      ctx.fillStyle = DDeiUtil.getColor(fillInfo.color);
+      ctx.fillStyle = DDeiUtil.getColor(fillColor);
       //透明度
-      if (fillInfo.opacity) {
-        ctx.globalAlpha = fillInfo.opacity
+      let fillOpac = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "fill.opacity", true);
+      if (fillOpac) {
+        ctx.globalAlpha = fillOpac
       }
       ctx.beginPath();
       ctx.moveTo(ratPos.x + ratPos.width * 0.5, ratPos.y);
@@ -166,41 +162,7 @@ class DDeiDiamondCanvasRender extends DDeiRectangleCanvasRender {
     ctx.restore();
   }
 
-  /**
-     * 获取边框信息
-     * @param tempBorder 
-     */
-  getBorderInfo(tempBorder, direct): object {
-    let borderInfo = null;
-    if (tempBorder) {
-      borderInfo = tempBorder;
-    } else if (direct == 1) {
-      if (this.model.state == DDeiEnumControlState.SELECTED) {
-        borderInfo = this.model.border && this.model.border.top && this.model.border.top.selected ? this.model.border.top.selected : DDeiConfig.DIAMOND.BORDER.top.selected;
-      } else {
-        borderInfo = this.model.border && this.model.border.top && this.model.border.top.default ? this.model.border.top.default : DDeiConfig.DIAMOND.BORDER.top.default;
-      }
-    } else if (direct == 2) {
-      if (this.model.state == DDeiEnumControlState.SELECTED) {
-        borderInfo = this.model.border && this.model.border.right && this.model.border.right.selected ? this.model.border.right.selected : DDeiConfig.DIAMOND.BORDER.right.selected;
-      } else {
-        borderInfo = this.model.border && this.model.border.right && this.model.border.right.default ? this.model.border.right.default : DDeiConfig.DIAMOND.BORDER.right.default;
-      }
-    } else if (direct == 3) {
-      if (this.model.state == DDeiEnumControlState.SELECTED) {
-        borderInfo = this.model.border && this.model.border.bottom && this.model.border.bottom.selected ? this.model.border.bottom.selected : DDeiConfig.DIAMOND.BORDER.bottom.selected;
-      } else {
-        borderInfo = this.model.border && this.model.border.bottom && this.model.border.bottom.default ? this.model.border.bottom.default : DDeiConfig.DIAMOND.BORDER.bottom.default;
-      }
-    } else if (direct == 4) {
-      if (this.model.state == DDeiEnumControlState.SELECTED) {
-        borderInfo = this.model.border && this.model.border.left && this.model.border.left.selected ? this.model.border.left.selected : DDeiConfig.DIAMOND.BORDER.left.selected;
-      } else {
-        borderInfo = this.model.border && this.model.border.left && this.model.border.left.default ? this.model.border.left.default : DDeiConfig.DIAMOND.BORDER.left.default;
-      }
-    }
-    return borderInfo;
-  }
+
 }
 
 export default DDeiDiamondCanvasRender

@@ -136,7 +136,7 @@ class DDeiConfig {
     },
     // 默认矩形填充
     image: {
-      opacity: 1
+      opacity: 0.5
     },
     // 默认矩形字体
     font: {
@@ -173,13 +173,13 @@ class DDeiConfig {
   // 圆型的相关缺省样式属性
   static CIRCLE: object = {
     // 默认矩形边框
-    BORDER: {
-      default: { width: 1, color: "black", dash: [3, 1], round: 0, disabled: false, opacity: 1 },
+    border: {
+      width: 1, color: "black", dash: [3, 1], round: 0, disabled: false, opacity: 1,
       selected: { width: 1, color: "black", dash: null, round: 0, opacity: 1 }
     },
     // 默认矩形填充
-    FILL: {
-      default: { color: "red", opacity: 1 },
+    fill: {
+      color: "red", opacity: 1,
       selected: { color: "white" }
     },
     // 默认矩形字体
@@ -216,27 +216,37 @@ class DDeiConfig {
 
   // 菱形的相关缺省样式属性
   static DIAMOND: object = {
-    BORDER: {
+    border: {
       top: {
-        default: { width: 1, color: "black", dash: [3, 1], round: 0, disabled: false },
-        selected: { width: 1, color: "black", dash: null, round: 0 }
+        width: 1, color: "black", dash: [3, 1], round: 0, disabled: false
       },
       right: {
-        default: { width: 1, color: "blue", dash: null, round: 0 },
-        selected: { width: 1, color: "black", dash: null, round: 0 }
+        width: 1, color: "blue", dash: null, round: 0
       },
       bottom: {
-        default: { width: 1, color: "green", dash: null, round: 0, opacity: 1 },
-        selected: { width: 1, color: "black", dash: null, round: 0 }
+        width: 1, color: "green", dash: null, round: 0, opacity: 1
       },
       left: {
-        default: { width: 1, color: "yellow", dash: null, round: 0, opacity: 1 },
-        selected: { width: 1, color: "black", dash: null, round: 0 }
+        width: 1, color: "yellow", dash: null, round: 0, opacity: 1
+      },
+      selected: {
+        top: {
+          width: 1, color: "black", dash: null, round: 0
+        },
+        right: {
+          width: 1, color: "black", dash: null, round: 0
+        },
+        bottom: {
+          width: 1, color: "black", dash: null, round: 0
+        },
+        left: {
+          width: 1, color: "black", dash: null, round: 0
+        }
       }
     },
     // 默认矩形填充
-    FILL: {
-      default: { color: "red", opacity: 1 },
+    fill: {
+      color: "red", opacity: 1,
       selected: { color: "white" }
     },
     // 默认矩形字体

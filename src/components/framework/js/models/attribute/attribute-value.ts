@@ -58,7 +58,7 @@ class DDeiModelArrtibuteValue {
             }
             returnValue = returnJSON.data;
           } catch (e) {
-            console.warn("获取属性值【" + model.id + "(" + model.state + "):" + attrPath + "】失败", e);
+            console.warn("获取属性值【" + model.id + "(" + model.state + "):" + attrPath + "】失败,PATH:" + attrPath, e);
           }
           //如果开启了default则尝试获取default的值
           if (!overwrite && !returnValue && useDefault && stateCode.length > 0) {
@@ -70,7 +70,7 @@ class DDeiModelArrtibuteValue {
               }
               returnValue = returnJSON.data;
             } catch (e) {
-              console.warn("获取属性值【" + model.id + "(" + model.state + "):" + attrPath + "】失败", e);
+              console.warn("获取属性值【" + model.id + "(" + model.state + "):" + attrPath + "】失败,PATH:" + attrPath, e);
             }
           }
         }
@@ -98,7 +98,7 @@ class DDeiModelArrtibuteValue {
             }
             returnValue = returnJSON.data;
           } catch (e) {
-            console.warn("获取系统属性值【" + model.id + "(" + model.state + "):" + attrPath + "】失败", e);
+            console.warn("获取系统属性值【" + model.id + "(" + model.state + "):" + attrPath + "】失败,PATH:" + attrPath, e);
           }
           //如果开启了default则尝试获取default的值
           if (!overwrite && !returnValue && useDefault && stateCode.length > 0) {
@@ -110,7 +110,7 @@ class DDeiModelArrtibuteValue {
               }
               returnValue = returnJSON.data;
             } catch (e) {
-              console.warn("获取系统属性值【" + model.id + "(" + model.state + "):" + attrPath + "】失败", e);
+              console.warn("获取系统属性值【" + model.id + "(" + model.state + "):" + attrPath + "】失败,PATH:" + attrPath, e);
             }
           }
         }
