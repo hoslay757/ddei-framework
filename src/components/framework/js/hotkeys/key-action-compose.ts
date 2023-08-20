@@ -32,7 +32,9 @@ class DDeiKeyActionCompose extends DDeiKeyAction {
           x: outRect.x,
           y: outRect.y,
           width: outRect.width,
-          height: outRect.height
+          height: outRect.height,
+          linkChild: true,
+          linkSelf: true
         });
         container.state = DDeiEnumControlState.SELECTED;
         //下标自增1

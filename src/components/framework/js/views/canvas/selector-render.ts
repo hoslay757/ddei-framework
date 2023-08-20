@@ -1,6 +1,7 @@
 import DDeiConfig from '../../config.js';
 import DDeiEnumControlState from '../../enums/control-state.js';
 import DDeiEnumOperateState from '../../enums/operate-state.js';
+import DDeiModelArrtibuteValue from '../../models/attribute/attribute-value.js';
 import DDeiSelector from '../../models/selector.js';
 import DDeiAbstractShape from '../../models/shape.js';
 import DDeiUtil from '../../util.js';
@@ -56,33 +57,46 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     this.doRotate(ctx, ratPos);
     for (let i = 1; i <= 9; i++) {
       //如果被选中，使用选中的边框，否则使用缺省边框
-      let borderInfo = null;
-      if (i <= 2) {
-        borderInfo = this.getBorderInfo(tempBorder, 1);
+      let disabled = null;
+      let color = null;
+      let opacity = null;
+      let bWidth = null;
+      if (i <= 2 || i == 9) {
+        disabled = this.getBorderInfo(tempBorder, 1, "disabled");
+        color = this.getBorderInfo(tempBorder, 1, "color");
+        opacity = this.getBorderInfo(tempBorder, 1, "opacity");
+        bWidth = this.getBorderInfo(tempBorder, 1, "width");
       } else if (i <= 4) {
-        borderInfo = this.getBorderInfo(tempBorder, 2);
+        disabled = this.getBorderInfo(tempBorder, 2, "disabled");
+        color = this.getBorderInfo(tempBorder, 2, "color");
+        opacity = this.getBorderInfo(tempBorder, 2, "opacity");
+        bWidth = this.getBorderInfo(tempBorder, 2, "width");
       } else if (i <= 6) {
-        borderInfo = this.getBorderInfo(tempBorder, 3);
+        disabled = this.getBorderInfo(tempBorder, 3, "disabled");
+        color = this.getBorderInfo(tempBorder, 3, "color");
+        opacity = this.getBorderInfo(tempBorder, 3, "opacity");
+        bWidth = this.getBorderInfo(tempBorder, 3, "width");
       } else if (i <= 8) {
-        borderInfo = this.getBorderInfo(tempBorder, 4);
-      } else if (i == 9) {
-        borderInfo = this.getBorderInfo(tempBorder, 1);
+        disabled = this.getBorderInfo(tempBorder, 4, "disabled");
+        color = this.getBorderInfo(tempBorder, 4, "color");
+        opacity = this.getBorderInfo(tempBorder, 4, "opacity");
+        bWidth = this.getBorderInfo(tempBorder, 4, "width");
       }
 
       //如果边框未被disabled，则绘制边框
-      if (!borderInfo.disabled && borderInfo.color && (!borderInfo.opacity || borderInfo.opacity > 0) && borderInfo.width > 0) {
+      if (!disabled && color && (!opacity || opacity > 0) && bWidth > 0) {
 
         //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
-        let lineOffset = borderInfo.width * ratio / 2;
-        ctx.lineWidth = borderInfo.width * ratio;
+        let lineOffset = bWidth * ratio / 2;
+        ctx.lineWidth = bWidth * ratio;
         ctx.beginPath();
 
         //透明度
-        if (borderInfo.opacity) {
-          ctx.globalAlpha = borderInfo.opacity
+        if (opacity) {
+          ctx.globalAlpha = opacity
         }
         //颜色
-        ctx.strokeStyle = DDeiUtil.getColor(borderInfo.color);
+        ctx.strokeStyle = DDeiUtil.getColor(color);
         //填充操作图标的颜色
         let defaultFillColor = DDeiUtil.getColor(DDeiConfig.SELECTOR.OPERATE_ICON.FILL.default);
         ctx.fillStyle = defaultFillColor;
@@ -140,18 +154,44 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
    * 获取边框信息
    * @param tempBorder 
    */
-  getBorderInfo(tempBorder, direct): object {
+  getBorderInfo(tempBorder, direct, path): object {
     let borderInfo = null;
     if (tempBorder) {
-      borderInfo = tempBorder;
-    } else {
-      if (this.model.state == DDeiEnumControlState.SELECTED) {
-        borderInfo = this.model.border && this.model.border.selected ? this.model.border.selected : DDeiConfig.SELECTOR.border.selected;
-      } else {
-        borderInfo = this.model.border ? this.model.border : DDeiConfig.SELECTOR.border;
+      try {
+        let returnJSON = DDeiUtil.getDataByPath(tempBorder, path.split('.'));
+        borderInfo = returnJSON.data
+      } catch (e) {
+
       }
+    } else {
+      borderInfo = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border" + "." + path, true);
     }
     return borderInfo;
+  }
+
+
+  /**
+   * 计算除边框外的填充区域，用于填充颜色和字体
+   */
+  getFillArea(): object {
+    //获取边框区域，实际填充区域=坐标-边框区域
+    let disabled = this.getBorderInfo(null, 1, "disabled");
+    let color = this.getBorderInfo(null, 1, "color");
+    let opacity = this.getBorderInfo(null, 1, "opacity");
+    let width = this.getBorderInfo(null, 1, "width");
+
+    //计算填充的原始区域
+    if (!(!disabled && color && (!opacity || opacity > 0) && width > 0)) {
+      width = 0
+    }
+    let absBounds = this.model.getAbsBounds();
+    let fillAreaE = {
+      x: absBounds.x - width,
+      y: absBounds.y - width,
+      width: absBounds.width + 2 * width,
+      height: absBounds.height + 2 * width
+    }
+    return fillAreaE;
   }
 
   /**

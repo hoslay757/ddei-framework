@@ -21,24 +21,24 @@ class DDeiUtil {
       if (typeof (data) == 'string') {
         dataJson = JSON.parse(data);
       }
-      if(dataJson && dataJson.overwrite == true){
+      if (dataJson?.overwrite == true) {
         isoverwrite = true
       }
       //获取属性
       for (let i = 0; i < path.length; i++) {
         dataJson = dataJson[path[i]];
-        if(dataJson.overwrite && dataJson.overwrite == true){
+        if (dataJson?.overwrite == true) {
           isoverwrite = true
         }
       }
       returnValue = dataJson;
     } else {
       returnValue = data;
-      if(returnValue.overwrite && returnValue.overwrite == true){
+      if (returnValue?.overwrite == true) {
         isoverwrite = true
       }
     }
-    return {data:returnValue,overwrite:isoverwrite}
+    return { data: returnValue, overwrite: isoverwrite }
   }
 
   /**

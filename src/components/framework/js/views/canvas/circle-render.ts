@@ -29,19 +29,30 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
     let ratPos = this.getBorderRatPos();
 
     //如果被选中，使用选中的边框，否则使用缺省边框
-    let borderInfo = null;
+    let borderDisabled = null;
+    let borderColor = null;
+    let borderOpac = null;
+    let borderWidth = null;
+    let borderDash = null;
     if (tempBorder) {
-      borderInfo = tempBorder;
-    } else if (this.model.state == DDeiEnumControlState.SELECTED) {
-      borderInfo = this.model.border && this.model.border.selected ? this.model.border.selected : DDeiConfig.CIRCLE.BORDER.selected;
+      borderDisabled = tempBorder?.disabled
+      borderColor = tempBorder?.color
+      borderOpac = tempBorder?.opacity
+      borderWidth = tempBorder?.width
+      borderDash = tempBorder?.dash
     } else {
-      borderInfo = this.model.border && this.model.border.default ? this.model.border.default : DDeiConfig.CIRCLE.BORDER.default;
+      borderDisabled = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.disabled", true);
+      borderColor = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.color", true);
+      borderOpac = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.opacity", true);
+      borderWidth = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.width", true);
+      borderDash = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.dash", true);
     }
+
 
 
     //绘制四个方向的边框
     //如果边框未被disabled，则绘制边框
-    if (!borderInfo.disabled && borderInfo.color && (!borderInfo.opacity || borderInfo.opacity > 0) && borderInfo.width > 0) {
+    if (!borderDisabled && borderColor && (!borderOpac || borderOpac > 0) && borderWidth > 0) {
       //保存状态
       ctx.save();
       //设置旋转角度
@@ -49,17 +60,17 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
       //开始绘制  
       ctx.beginPath();
       //线段的宽度
-      ctx.lineWidth = borderInfo.width * ratio;
+      ctx.lineWidth = borderWidth * ratio;
       //线段、虚线样式
-      if (borderInfo.dash) {
-        ctx.setLineDash(borderInfo.dash);
+      if (borderDash) {
+        ctx.setLineDash(borderDash);
       }
       //透明度
-      if (borderInfo.opacity) {
-        ctx.globalAlpha = borderInfo.opacity
+      if (borderOpac) {
+        ctx.globalAlpha = borderOpac
       }
       //颜色
-      ctx.strokeStyle = DDeiUtil.getColor(borderInfo.color);
+      ctx.strokeStyle = DDeiUtil.getColor(borderColor);
       //绘制一个椭圆
       ctx.ellipse(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5, ratPos.width * 0.5, ratPos.height * 0.5, 0, 0, Math.PI * 2)
       ctx.stroke();
@@ -92,18 +103,14 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
     //设置旋转角度
     this.doRotate(ctx, ratPos);
     //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
-    let fillInfo = null;
-    if (this.model.state == DDeiEnumControlState.SELECTED) {
-      fillInfo = this.model.fill && this.model.fill.selected ? this.model.fill.selected : DDeiConfig.CIRCLE.FILL.selected
-    } else {
-      fillInfo = this.model.fill && this.model.fill.default ? this.model.fill.default : DDeiConfig.CIRCLE.FILL.default
-    }
+    let fillColor = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "fill.color", true);
     //如果拥有填充色，则使用填充色
-    if (fillInfo && fillInfo.color) {
-      ctx.fillStyle = DDeiUtil.getColor(fillInfo.color);
+    if (fillColor) {
+      ctx.fillStyle = DDeiUtil.getColor(fillColor);
+      let fillOpac = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "fill.opacity", true);
       //透明度
-      if (fillInfo.opacity) {
-        ctx.globalAlpha = fillInfo.opacity
+      if (fillOpac) {
+        ctx.globalAlpha = fillOpac
       }
       //填充一个椭圆
       ctx.ellipse(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5, ratPos.width * 0.5, ratPos.height * 0.5, 0, 0, Math.PI * 2)
@@ -138,10 +145,10 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
       this.doRotate(ctx, ratPos);
 
       //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
-      let imgFillInfo = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "image");
+      let imgFillInfo = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "image.opacity", true);
       //透明度
-      if (imgFillInfo && imgFillInfo.opacity) {
-        ctx.globalAlpha = imgFillInfo.opacity
+      if (imgFillInfo) {
+        ctx.globalAlpha = imgFillInfo
       }
       ctx.ellipse(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5, ratPos.width * 0.5, ratPos.height * 0.5, 0, 0, Math.PI * 2)
       ctx.clip();
@@ -171,19 +178,21 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
     ctx.textBaseline = "top";
 
     //获取字体信息
-    let fInfo = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "font");
+    let fiFamily = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "font.family", true);
+    let fiSize = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "font.size", true);
+    let fiColor = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "font.color", true);
     //字体对齐信息
-    let align = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.align");
-    let valign = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.valign");
+    let align = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.align", true);
+    let valign = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.valign", true);
     //缩小字体填充
-    let autoScaleFill = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.autoScaleFill");
+    let autoScaleFill = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.autoScaleFill", true);
     //镂空
-    let hollow = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.hollow");
+    let hollow = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.hollow", true);
     //自动换行
-    let feed = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.feed");
+    let feed = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.feed", true);
 
     //如果字体不存在则退出，不输出
-    if (!fInfo) {
+    if (!fiFamily) {
       return;
     }
     //TODO 校验属性，不满足则设置缺省值
@@ -212,7 +221,7 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
 
     //是否全部输出完毕标志
     let loop = true;
-    let fontSize = fInfo.size * ratio;
+    let fontSize = fiSize * ratio;
 
     // TODO 如果有金额大小写转换选项，则执行大小写转换
     let cText = this.model.text;
@@ -224,8 +233,6 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
     let contentWidth = ratPos.width;
     while (loop) {
 
-      //循环拆分结果，分别对空格，非空格按照是否换行，缩小等进行处理
-      let spaceWidth = DDeiUtil.getSpaceWidth(fInfo.family, fontSize, "normal");
       //记录使用过的宽度和高度
       let usedWidth = 0;
       let usedHeight = 0;
@@ -243,9 +250,9 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
         }
       }
       //设置字体
-      ctx.font = fontSize + "px " + fInfo.family
+      ctx.font = fontSize + "px " + fiFamily
       //设置字体颜色
-      ctx.fillStyle = fInfo.color
+      ctx.fillStyle = fiColor
 
       for (let ti = 0; ti < cText.length; ti++) {
         let te = cText[ti];
@@ -392,16 +399,15 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
    */
   getFillArea(): object {
     //获取边框区域，实际填充区域=坐标-边框区域
-    let borderInfo;
-    if (this.model.state == DDeiEnumControlState.SELECTED) {
-      borderInfo = this.model.border && this.model.border.selected ? this.model.border.selected : DDeiConfig.CIRCLE.BORDER.selected;
-    } else {
-      borderInfo = this.model.border && this.model.border.default ? this.model.border.default : DDeiConfig.CIRCLE.BORDER.default;
-    }
+    let borderDisabled = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.disabled", true);
+    let borderColor = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.color", true);
+    let borderOpac = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.opacity", true);
+    let borderWidth = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.width", true);
+
+
     //计算填充的原始区域
-    let borderWidth = 0;
-    if (!borderInfo.disabled && borderInfo.color && (!borderInfo.opacity || borderInfo.opacity > 0) && borderInfo.width > 0) {
-      borderWidth = borderInfo.width;
+    if (!(!borderDisabled && borderColor && (!borderOpac || borderOpac > 0) && borderWidth > 0)) {
+      borderWidth = 0
     }
     let absBounds = this.model.getAbsBounds();
     let fillAreaE = {
