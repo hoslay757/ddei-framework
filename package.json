@@ -1,20 +1,50 @@
 {
-  "name": "ddei-framework",
+  "name": "@ddei/ddei-framework",
   "version": "0.0.1",
-  "private": true,
+  "private": false,
+  "author":"hoslay@163.com",
+  "description": "ddei图形基础框架",
+  "keywords": [
+    "@ddei",
+    "@ddei/ddei-framework"
+  ],
+  "homepage":"http://www.ddei.com",
+  "repository": {
+        "type": "git",
+        "url": "https://github.com/wei-design/web-vue.git"
+    },
+  "files": [
+        "lib/*",
+        "packages/*",
+        "Readme.md",
+        "package.json"
+  ],
+  "main": "./lib/web-vue.umd.js",
+  "module": "./lib/web-vue.mjs",
+  "exports": {
+      ".": {
+          "import": "./lib/web-vue.mjs",
+          "require": "./lib/web-vue.umd.js"
+      },
+      "./lib/style.css": "./lib/style.css"
+  },
+  "engines": {
+      "node": ">=16.0.0"
+  },
   "scripts": {
     "dev": "vite",
-    "build": "run-p type-check build-only",
+    "build": "vite build",
     "preview": "vite preview",
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false"
   },
   "dependencies": {
+    "sass": "^1.66.1",
     "vue": "^3.3.4"
   },
   "devDependencies": {
     "@tsconfig/node18": "^18.2.0",
-    "@types/node": "^18.17.0",
+    "@types/node": "^18.17.6",
     "@vitejs/plugin-vue": "^4.2.3",
     "@vue/tsconfig": "^0.4.0",
     "npm-run-all": "^4.1.5",
