@@ -2,34 +2,34 @@
   "name": "@ddei/ddei-framework",
   "version": "0.0.1",
   "private": false,
-  "author":"hoslay@163.com",
+  "author": "hoslay@163.com",
   "description": "ddei图形基础框架",
   "keywords": [
     "@ddei",
     "@ddei/ddei-framework"
   ],
-  "homepage":"http://www.ddei.com",
+  "homepage": "http://www.ddei.com",
   "repository": {
-        "type": "git",
-        "url": "https://github.com/wei-design/web-vue.git"
-    },
+    "type": "git",
+    "url": "https://github.com/wei-design/web-vue.git"
+  },
   "files": [
-        "lib/*",
-        "packages/*",
-        "Readme.md",
-        "package.json"
+    "lib/*",
+    "packages/*",
+    "Readme.md",
+    "package.json"
   ],
   "main": "./lib/web-vue.umd.js",
   "module": "./lib/web-vue.mjs",
   "exports": {
-      ".": {
-          "import": "./lib/web-vue.mjs",
-          "require": "./lib/web-vue.umd.js"
-      },
-      "./lib/style.css": "./lib/style.css"
+    ".": {
+      "import": "./lib/web-vue.mjs",
+      "require": "./lib/web-vue.umd.js"
+    },
+    "./lib/style.css": "./lib/style.css"
   },
   "engines": {
-      "node": ">=16.0.0"
+    "node": ">=16.0.0"
   },
   "scripts": {
     "dev": "vite",
