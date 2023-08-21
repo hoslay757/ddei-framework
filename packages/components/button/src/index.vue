@@ -2,6 +2,7 @@
   <button :class="[classString]" :disabled="disabled">
     <slot></slot>
   </button>
+  <h1>112233</h1>
 </template>
 
 <script lang="ts">
