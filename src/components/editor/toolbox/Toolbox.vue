@@ -2,6 +2,14 @@
   <div>
     <div id="ddei_editor_toolbox"
          class="ddei_editor_toolbox">
+         <div v-for="(group, groupIndex) in groups" class="group">
+            <div class="title">
+              {{ group.name }}
+            </div>
+            <div class="item" v-for="(control, controlIndex) in group.controls">
+              {{ control.name }}
+            </div>
+         </div>
       <button type="button" @click="createRectangle()" style="width:120px;height:30px;margin-top:10px">矩形</button>
       <button type="button" @click="createCircle()" style="width:120px;height:30px;margin-top:10px">圆型</button>
       <button type="button" @click="createDiamond()" style="width:120px;height:30px;margin-top:10px">菱形</button>
@@ -23,6 +31,7 @@ import DDeiRectangle from "@/components/framework/js/models/rectangle";
 import DDeiCircle from "@/components/framework/js/models/circle";
 import DDeiDiamond from "@/components/framework/js/models/diamond";
 import DDeiRectContainer from "@/components/framework/js/models/rect-container";
+import loadToolGroups from "../configs/toolgroup"
 
 export default {
   name: "DDei-Editor-Toolbox",
@@ -30,14 +39,20 @@ export default {
   mixins: [],
   props: {},
   data() {
-    return {};
+    return {
+      //分组数据
+      groups: []
+    };
   },
   computed: {},
   watch: {},
   created() {},
   mounted() {
+    loadToolGroups().then(module=>{
+      this.groups = module;
+    });
   },
-    methods: {
+  methods: {
     //创建方形图片
     createImg(type: number = 1) {
       //获取当前实例
@@ -327,4 +342,20 @@ export default {
   text-align: center;
   background: green;
 }
+
+.ddei_editor_toolbox .group {
+  text-align: center;
+  background: greenyellow;
+}
+
+.ddei_editor_toolbox .group .title{
+  text-align: center;
+  background: gold;
+}
+
+.ddei_editor_toolbox .group .item{
+  text-align: center;
+  background: red;
+}
+
 </style>
