@@ -1,7 +1,5 @@
 import DDeiConfig from './config'
 import DDeiStage from './models/stage'
-import DDeiLayer from './models/layer'
-import DDeiRectangle from './models/rectangle'
 
 /**
  * DDei图形框架的基础类，通过此类对图形框架进行初始化

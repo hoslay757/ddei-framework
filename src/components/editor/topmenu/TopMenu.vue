@@ -4,8 +4,6 @@
       <button type="button" style="width:120px;height:30px;margin-top:10px">新建</button>
       <button type="button" style="width:120px;height:30px;margin-top:10px">打开</button>
       <button type="button" style="width:120px;height:30px;margin-top:10px">保存</button>
-      <we-button>按钮组件</we-button>
-      <we-button style="margin-left: 12px" disabled>按钮组件</we-button>
     </div>
   </div>
 </template>

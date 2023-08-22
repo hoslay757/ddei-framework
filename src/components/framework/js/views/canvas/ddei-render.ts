@@ -38,7 +38,7 @@ class DDeiCanvasRender {
         let ctx = this.canvas.getContext('2d');
         //获取缩放比例
         let ratio = DDeiUtil.getPixelRatio(ctx);
-        this.canvas.setAttribute("style", "zoom:" + (1 / ratio));
+        this.canvas.setAttribute("style", "display:block;zoom:" + (1 / ratio));
         this.canvas.setAttribute("width", this.container.clientWidth * ratio);
         this.canvas.setAttribute("height", this.container.clientHeight * ratio);
         this.ratio = ratio;

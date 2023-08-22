@@ -1,8 +1,6 @@
 <template>
-  <div>
-    <div id="ddei_editor_canvasyview"
-         class="ddei_editor_canvasyview">
-    </div>
+  <div id="ddei_editor_canvasview"
+        class="ddei_editor_canvasview">
   </div>
 </template>
 
@@ -16,19 +14,23 @@ export default {
   mixins: [],
   props: {},
   data() {
-    return {};
+    return {
+      layers: [],
+    };
   },
   computed: {},
   watch: {},
   created() {},
   mounted() {
-    DDei.newInstance("ddei_editor_yview", "ddei_editor_canvasyview");
-  },
+    let ddInstance: DDei = DDei.newInstance("ddei_editor_view", "ddei_editor_canvasview");
+    this.layers = ddInstance.stage.layers;
+  }
 };
 </script>
 
 <style scoped>
-.ddei_editor_canvasyview {
+.ddei_editor_canvasview {
   background: blue;
+  height:100%;
 }
 </style>
