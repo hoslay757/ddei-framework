@@ -1,31 +1,34 @@
 <template>
   <div>
     <div id="ddei_editor_toolbox"
-         class="ddei_editor_toolbox">
-         <div v-for="(group, groupIndex) in groups" v-show="group.display == true" class="group">
-            <div :class="{ 'box': true, 'expanded': group.expand}" @click="groupBoxExpand(group)">
-              <img class="expand" v-show="!group.expand" src="../icons/toolbox-unexpanded.png"/>
-              <img class="expand" v-show="group.expand" src="../icons/toolbox-expanded.png"/>
-              <span class="title">{{ group.name }}</span>
-              <img class="close" src="../icons/toolbox-close.png" @click="groupBoxClose(group)"/>
-            </div>
-            <div class="item_panel" v-if="group.expand == true">
-              <div class="item" :title="control.desc" v-for="(control, controlIndex) in group.controls">
-                <img class="icon" :src="control.icon"/>
-                <div class="text">{{ control.name }}</div>
+           class="ddei_editor_toolbox">
+      <div class="expandbox">
+        <img class="img" src="../icons/toolbox-d-left.png"/>
+      </div>
+      <div class="searchbox">
+        <div class="group">
+        <input class="input" placeholder="搜索控件">
+        <div class="button">搜索</div>
+        </div>
+      </div>
+      <hr/>
+      <div
+          class="groups">
+          <div v-for="(group, groupIndex) in groups" v-show="group.display == true" class="group">
+              <div :class="{ 'box': true, 'expanded': group.expand}" @click="groupBoxExpand(group)">
+                <img class="expand" v-show="!group.expand" src="../icons/toolbox-unexpanded.png"/>
+                <img class="expand" v-show="group.expand" src="../icons/toolbox-expanded.png"/>
+                <span class="title">{{ group.name }}</span>
+                <img class="close" src="../icons/toolbox-close.png" @click="groupBoxClose(group)"/>
               </div>
-            </div>
-         </div>
-      <button type="button" @click="createRectangle()" style="width:120px;height:30px;margin-top:10px">矩形</button>
-      <button type="button" @click="createCircle()" style="width:120px;height:30px;margin-top:10px">圆型</button>
-      <button type="button" @click="createDiamond()" style="width:120px;height:30px;margin-top:10px">菱形</button>
-      <button type="button" @click="createImg(1)" style="width:120px;height:30px;margin-top:10px">矩形图片</button>
-      <button type="button" @click="createImg(2)" style="width:120px;height:30px;margin-top:10px">圆形图片</button>
-      <button type="button" @click="createImg(3)" style="width:120px;height:30px;margin-top:10px">菱形图片</button>
-      <button type="button" @click="createContainer(1)" style="width:120px;height:30px;margin-top:10px">容器-不联动</button>
-      <button type="button" @click="createContainer(2)" style="width:120px;height:30px;margin-top:10px">容器-联动子</button>
-      <button type="button" @click="createContainer(3)" style="width:120px;height:30px;margin-top:10px">容器-联动父</button>
-      <button type="button" @click="createContainer(4)" style="width:120px;height:30px;margin-top:10px">容器-双联动</button>
+              <div class="item_panel" v-if="group.expand == true">
+                <div class="item" :title="control.desc" v-for="(control, controlIndex) in group.controls">
+                  <img class="icon" :src="control.icon"/>
+                  <div class="text">{{ control.name }}</div>
+                </div>
+              </div>
+          </div>
+      </div>
     </div>
   </div>
 </template>
@@ -388,69 +391,144 @@ export default {
   text-align: center;
   background: rgb(254,254,255);
   border:1pt solid rgb(235,235,239);
-  height:calc(100vh - 235px);
-  overflow-y:scroll;
+  display:flex;
+  flex-flow:column;
+}
+/**以下为分割线 */
+.ddei_editor_toolbox hr{
+  border:0.5px solid rgb(240,240,240);
+  width:93%;
+  margin:auto 4px 5px 7px;
+
+}
+
+/**以下为收折框 */
+.ddei_editor_toolbox .expandbox {
+  flex: 0 0 38px;
+  height:38px;
+  text-align: right;
+}
+.ddei_editor_toolbox .expandbox .img{
+  width:30px;
+  height:24px;
+  padding:4px 4px;
+  margin-top:6px;
+  margin-right:2px;
+  border-radius: 4px;
+}
+
+.ddei_editor_toolbox .expandbox .img:hover{
+  background-color:rgb(244,244,244)
+}
+/**以下为搜索框 */
+.ddei_editor_toolbox .searchbox {
+  flex: 0 0 38px;
+  height:38px;
+}
+
+.ddei_editor_toolbox .searchbox .group {
+  background-color: #F2F2F7;
+  width:93%;
+  margin:auto 4px auto 7px;
+  display:flex;
+  height:32px;
+  border-radius: 4px;
 }
 
 
-.ddei_editor_toolbox::-webkit-scrollbar {
-width:6px;
-height:6px;
+.ddei_editor_toolbox .searchbox .group .input {
+  flex: 1 1 140px;
+  height:28px;
+  border:transparent;
+  outline:none;
+  font-size:13px;
+  margin:auto 0px auto 5px;
+  background:transparent;
+}
+
+.ddei_editor_toolbox .searchbox .group .button {
+  flex: 0 0 42px;
+  height: 23px;
+  background-color:#017fff;
+  font-size:14px;
+  color:white;
+  margin:auto 7px auto 5px;
+  border-radius: 4px;
+}
+.ddei_editor_toolbox .searchbox .group .button:hover {
+  background-color:#0177f0;
+}
+
+
+/**以下为控件分组以及控件框 */
+
+.ddei_editor_toolbox .groups{
+  text-align: center;
+  background: rgb(254,254,255);
+  height:calc(100vh - 310px);
+  overflow-y:auto;
+  display:flex;
+  flex-flow:column;
+}
+
+.ddei_editor_toolbox .groups::-webkit-scrollbar {
+  width:6px;
+  height:6px;
 }
 /*正常情况下滑块的样式*/
-.ddei_editor_toolbox::-webkit-scrollbar-thumb {
+.ddei_editor_toolbox .groups::-webkit-scrollbar-thumb {
   background-color:rgba(0,0,0,.05);
   border-radius:6px;
   -webkit-box-shadow:inset1px1px0rgba(0,0,0,.1);
 }
 /*鼠标悬浮在该类指向的控件上时滑块的样式*/
-.ddei_editor_toolbox:hover::-webkit-scrollbar-thumb {
+.ddei_editor_toolbox .groups:hover::-webkit-scrollbar-thumb {
   background-color:rgba(0,0,0,.2);
   border-radius:6px;
   -webkit-box-shadow:inset1px1px0rgba(0,0,0,.1);
 }
 /*鼠标悬浮在滑块上时滑块的样式*/
-.ddei_editor_toolbox::-webkit-scrollbar-thumb:hover {
+.ddei_editor_toolbox .groups::-webkit-scrollbar-thumb:hover {
   background-color:rgba(0,0,0,.4);
   -webkit-box-shadow:inset1px1px0rgba(0,0,0,.1);
 }
 /*正常时候的主干部分*/
-.ddei_editor_toolbox::-webkit-scrollbar-track {
+.ddei_editor_toolbox .groups::-webkit-scrollbar-track {
   border-radius:6px;
   -webkit-box-shadow:inset006pxrgba(0,0,0,0);
   background-color:white;
 }
 /*鼠标悬浮在滚动条上的主干部分*/
-.ddei_editor_toolbox::-webkit-scrollbar-track:hover {
+.ddei_editor_toolbox .groups::-webkit-scrollbar-track:hover {
   -webkit-box-shadow:inset006pxrgba(0,0,0,.4);
   background-color:rgba(0,0,0,.01);
 }
 
 
 
-.ddei_editor_toolbox .group {
+.ddei_editor_toolbox .groups .group {
   text-align: center;
-  background: greenyellow;
 }
 
-.ddei_editor_toolbox .group .box{
+.ddei_editor_toolbox .groups .group .box{
   display: flex;
   height: 40px;
   background-color:rgb(254,254,254);
   user-select: none;
+  border-radius: 4px;
 }
-.ddei_editor_toolbox .group .expanded{
+.ddei_editor_toolbox .groups .group .expanded{
   background-color:rgb(240,240,240)
 }
 
-.ddei_editor_toolbox .group .box:hover{
+.ddei_editor_toolbox .groups .group .box:hover{
   background-color:rgb(244,244,244)
 }
-.ddei_editor_toolbox .group .box:active{
+.ddei_editor_toolbox .groups .group .box:active{
   background-color:rgb(240,240,240)
 }
 
-.ddei_editor_toolbox .group .box .expand{
+.ddei_editor_toolbox .groups .group .box .expand{
   flex: 0 0 9px;
   margin:auto 7px auto 7px;
   width:9px;
@@ -458,13 +536,13 @@ height:6px;
 }
 
 
-.ddei_editor_toolbox .group .box .title{
+.ddei_editor_toolbox .groups .group .box .title{
   flex: 1;
   font-size: 13px;
   text-align: left;
   margin:auto
 }
-.ddei_editor_toolbox .group .box .close{
+.ddei_editor_toolbox .groups .group .box .close{
   flex: 0 0 12px;
   margin:auto;
   width:12px;
@@ -472,31 +550,33 @@ height:6px;
   margin:auto 7px auto 7px;
 }
 
-.ddei_editor_toolbox .group .box .close:hover{
+.ddei_editor_toolbox .groups .group .box .close:hover{
   background-color:rgb(200,200,200)
 }
 
-.ddei_editor_toolbox .group .item_panel{
+.ddei_editor_toolbox .groups .group .item_panel{
   display:flex;
   flex-flow:row wrap;
   background: rgb(254,254,254);
+  margin-bottom:5px;
 }
 
-.ddei_editor_toolbox .group .item_panel .item{
+.ddei_editor_toolbox .groups .group .item_panel .item{
   flex: 0 0 60px !important;
   height: 66px;
   width:60px;
   margin-top: 10px;
   display:flex;
   flex-flow: column;
+  border-radius: 4px;
 }
 
-.ddei_editor_toolbox .group .item_panel .item:hover{
+.ddei_editor_toolbox .groups .group .item_panel .item:hover{
   background-color:rgb(244,244,244);
   cursor:all-scroll
 }
 
-.ddei_editor_toolbox .group .item_panel .item .text{
+.ddei_editor_toolbox .groups .group .item_panel .item .text{
   font-size:12px;
   transform: scale(0.8);
   margin-top: -5px;
@@ -504,7 +584,7 @@ height:6px;
   text-align: center;
 }
 
-.ddei_editor_toolbox .group .item_panel .item .icon{
+.ddei_editor_toolbox .groups .group .item_panel .item .icon{
   width:50px;
   white-space: nowrap;
   margin:auto;
