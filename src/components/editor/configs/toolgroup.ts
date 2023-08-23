@@ -69,7 +69,12 @@ const loadToolGroups = async function () {
       groupOriginDefinies.push(group)
     })
   });
-  return groupOriginDefinies;
+  //对分组进行排序
+  groupOriginDefinies.sort((a, b) => {
+    return a.orderNo - b.orderNo
+  })
+  //返回克隆后的数据
+  return cloneDeep(groupOriginDefinies);
 }
 //将属性转换为更深的groups中
 const parseAttrsToGroup = function (attrs) {
@@ -98,46 +103,3 @@ const parseAttrsToGroup = function (attrs) {
 
 }
 export default loadToolGroups;
-
-
-
-// /**
-//  * 扫描controls下所有控件
-//  */
-// const ctx = import.meta.glob('./toolgroups/*.js')
-// const tgs = []
-// for (const key of ctx.keys()) {
-//   console.log("读取属性")
-//   let group = ctx(key).default;
-//   //获取控件定义
-  // //读取控件的信息,将实际的控件读取进到group中
-  // if (group.controls) {
-  //   let cos = [];
-  //   group.controls.forEach(control => {
-  //     let id = control.id;
-  //     let controlDefine = controls[id];
-  //     if (controlDefine) {
-  //       //复制控件定义
-  //       let c = cloneDeep(controlDefine);
-  //       //复写group重点定义
-  //       for (let i in control) {
-  //         if (control[i]) {
-  //           c[i] = control[i];
-  //         }
-  //       }
-  //       //处理属性
-  //       cos.push(c);
-  //     }
-  //   });
-  //   // 内部控件排序
-  //   cos.sort((a, b) => {
-  //     return a.orderNo - b.orderNo
-  //   })
-  //   group.controls = cos;
-  // }
-  // tgs.push(group)
-// }
-// // 分组排序
-// tgs.sort((a, b) => {
-//   return a.orderNo - b.orderNo
-// })

@@ -14,7 +14,63 @@ export default {
     {
       'id': '100001',
       'name': '正方形（大）',
+      'icon': 'toolbox-shape-square-big.png',
       'orderNo': 2
+    },
+    {
+      'id': '100002',
+      'name': '长方形',
+      'orderNo': 3
+    },
+    {
+      'id': '100002',
+      'name': '长方形（大）',
+      'icon': 'toolbox-shape-rect-big.png',
+      'orderNo': 4
+    },
+    {
+      'id': '100002',
+      'name': '长方形',
+      'orderNo': 3
+    },
+    {
+      'id': '100002',
+      'name': '长方形（大）',
+      'icon': 'toolbox-shape-rect-big.png',
+      'orderNo': 4
+    },
+    {
+      'id': '100002',
+      'name': '长方形',
+      'orderNo': 3
+    },
+    {
+      'id': '100002',
+      'name': '长方形（大）',
+      'icon': 'toolbox-shape-rect-big.png',
+      'orderNo': 4
+    },
+    {
+      'id': '100002',
+      'name': '长方形',
+      'orderNo': 3
+    },
+    {
+      'id': '100002',
+      'name': '长方形（大）',
+      'icon': 'toolbox-shape-rect-big.png',
+      'orderNo': 4
+    },
+    {
+      'id': '100002',
+      'name': '长方形',
+      'orderNo': 3
+    },
+    {
+      'id': '100002',
+      'name': '长方形（大）',
+      'icon': 'toolbox-shape-rect-big.png',
+      'orderNo': 4
     },
   ]
 }
