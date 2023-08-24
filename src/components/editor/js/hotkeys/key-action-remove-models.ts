@@ -1,5 +1,5 @@
-import DDeiConfig from "../config";
-import DDei from "../ddei";
+import DDeiConfig from "@/components/framework/js/config";
+import DDei from "@/components/framework/js/ddei";
 import DDeiKeyAction from "./key-action";
 
 /**

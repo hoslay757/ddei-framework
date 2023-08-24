@@ -24,20 +24,23 @@ class DDei {
   static INSTANCE_POOL: Map<string, DDei> = new Map();
 
   /**
-   * 所有特殊按键的按下状态，当键盘按下时会触发事件，并修改当前全局状态
-   * 通过全局状态可以判断一些键鼠组合操作，如按下ctrl和鼠标左键时追加选择
-   */
+  * 所有特殊按键的按下状态，当键盘按下时会触发事件，并修改当前全局状态
+  * 通过全局状态可以判断一些键鼠组合操作，如按下ctrl和鼠标左键时追加选择
+  */
   static KEY_DOWN_STATE: Map<string, boolean> = new Map();
 
   /**
-   * 所有特殊按键的计时器，记录了上一次按下按键的时间
+   * 同步KEY_DOWN_STATE状态
+   * @param stateMap 状态
    */
-  static KEY_DOWN_INTERVAL: Map<string, number> = new Map();
-
-  /**
-   * 所有特殊按键的计数器，记录了有效时间内事件的执行次数
-   */
-  static KEY_DOWN_TIMES: Map<string, number> = new Map();
+  static syncKeyDownState(stateMap: Map<string, boolean>) {
+    if (stateMap) {
+      DDei.KEY_DOWN_STATE.clear();
+      stateMap.forEach((item, key) => {
+        DDei.KEY_DOWN_STATE.set(key, item);
+      });
+    }
+  }
 
   // ============================ 静态方法 ============================
   /**

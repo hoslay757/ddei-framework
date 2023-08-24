@@ -1,6 +1,4 @@
-import DDeiConfig from '../../config.js'
 import DDei from '../../ddei.js';
-import DDeiKeyAction from '../../hotkeys/key-action.js';
 import DDeiUtil from '../../util.js'
 
 /**
@@ -83,16 +81,7 @@ class DDeiCanvasRender {
       this.mouseMove(evt)
     });
 
-    //绑定键盘事件
-    document.addEventListener('keydown', (evt: Event) => {
-      if (this.keyDown(evt)) {
-        evt.preventDefault()
-      }
-    });
-    document.addEventListener('keyup', (evt: Event) => {
-      this.keyUp(evt)
-      evt.preventDefault()
-    });
+
   }
 
   /**
@@ -114,35 +103,6 @@ class DDeiCanvasRender {
    */
   mouseMove(evt: Event): void {
     this.model.stage.render.mouseMove(evt);
-  }
-
-  /**
-   * 键盘按下
-   */
-  keyDown(evt: Event): void {
-    return DDeiKeyAction.route(evt, this.model)
-  }
-
-  /**
-   * 键盘弹起
-   */
-  keyUp(evt: Event): void {
-    let ctrl = evt.ctrlKey || evt.metaKey;
-    let shift = evt.shiftKey;
-    let alt = evt.altKey
-    let m1Str = "_"
-    if (ctrl != true) {
-      DDei.KEY_DOWN_STATE.set("ctrl", false);
-    }
-    if (shift != true) {
-      m1Str += "shift_"
-      DDei.KEY_DOWN_STATE.set("shift", false);
-    }
-    if (alt != true) {
-      m1Str += "alt_"
-      DDei.KEY_DOWN_STATE.set("alt", false);
-    }
-    DDei.KEY_DOWN_STATE.set("" + evt.keyCode, false);
   }
 }
 

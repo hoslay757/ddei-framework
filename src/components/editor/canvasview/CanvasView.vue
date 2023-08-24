@@ -1,11 +1,13 @@
 <template>
-  <div id="ddei_editor_canvasview"
+  <div id="ddei_editor_canvasview" @mousedown="forceEditorView"
         class="ddei_editor_canvasview">
   </div>
 </template>
 
 <script lang="ts">
 import DDei from '@/components/framework/js/ddei';
+import DDeiEditor from '../js/editor';
+import DDeiEditorState from '../js/enums/editor-state';
 
 
 export default {
@@ -15,15 +17,27 @@ export default {
   props: {},
   data() {
     return {
-      layers: [],
+      //当前编辑器
+      editor: null,
     };
   },
   computed: {},
   watch: {},
   created() {},
   mounted() {
-    let ddInstance: DDei = DDei.newInstance("ddei_editor_view", "ddei_editor_canvasview");
-    this.layers = ddInstance.stage.layers;
+    //获取编辑器
+    this.editor = DDeiEditor.ACTIVE_INSTANCE;
+    this.editor.ddInstance = DDei.newInstance("ddei_editor_view", "ddei_editor_canvasview");
+  },
+  methods: {
+    /**
+     * 焦点进入当前区域
+     */
+    forceEditorView() {
+      if (DDeiEditor.ACTIVE_INSTANCE.state != DDeiEditorState.DESIGNING) {
+        DDeiEditor.ACTIVE_INSTANCE.state = DDeiEditorState.DESIGNING
+      }
+    },
   }
 };
 </script>

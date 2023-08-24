@@ -7,6 +7,7 @@
 </template>
 
 <script lang="ts">
+import DDeiEditor from '../js/editor';
 
 export default {
   name: "DDei-Editor-PropertyView",

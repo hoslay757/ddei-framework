@@ -1,9 +1,9 @@
-import DDeiConfig from "../config";
-import DDei from "../ddei";
-import DDeiEnumControlState from "../enums/control-state";
-import DDeiEnumOperateState from "../enums/operate-state";
-import DDeiRectContainer from "../models/rect-container";
-import DDeiAbstractShape from "../models/shape";
+import DDeiConfig from "@/components/framework/js/config";
+import DDei from "@/components/framework/js/ddei";
+import DDeiEnumControlState from "@/components/framework/js/enums/control-state";
+import DDeiEnumOperateState from "@/components/framework/js/enums/operate-state";
+import DDeiRectContainer from "@/components/framework/js/models/rect-container";
+import DDeiAbstractShape from "@/components/framework/js/models/shape";
 import DDeiKeyAction from "./key-action";
 
 /**

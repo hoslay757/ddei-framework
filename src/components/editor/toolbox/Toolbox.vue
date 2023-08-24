@@ -1,28 +1,27 @@
 <template>
   <div>
-    <div id="ddei_editor_toolbox"
+    <div id="ddei_editor_toolbox" @mousedown="forceEditorToolBox"
            class="ddei_editor_toolbox">
       <div class="expandbox">
         <img class="img" src="../icons/toolbox-d-left.png"/>
       </div>
       <div class="searchbox">
         <div class="group">
-        <input class="input" placeholder="搜索控件">
-        <div class="button">搜索</div>
+        <input v-model="searchText" class="input" @keypress="searchInputEnter" placeholder="搜索控件">
+        <div class="button" @click="searchControl">搜索</div>
         </div>
       </div>
       <hr/>
-      <div
-          class="groups">
+      <div class="groups">
           <div v-for="(group, groupIndex) in groups" v-show="group.display == true" class="group">
               <div :class="{ 'box': true, 'expanded': group.expand}" @click="groupBoxExpand(group)">
                 <img class="expand" v-show="!group.expand" src="../icons/toolbox-unexpanded.png"/>
                 <img class="expand" v-show="group.expand" src="../icons/toolbox-expanded.png"/>
                 <span class="title">{{ group.name }}</span>
-                <img class="close" src="../icons/toolbox-close.png" @click="groupBoxClose(group)"/>
+                <img v-if="!group.cannotClose" class="close" src="../icons/toolbox-close.png" @click="groupBoxClose(group)"/>
               </div>
               <div class="item_panel" v-if="group.expand == true">
-                <div class="item" :title="control.desc" v-for="(control, controlIndex) in group.controls">
+                <div class="item" :title="control.desc" @click="createImg(1)" v-for="(control, controlIndex) in group.controls">
                   <img class="icon" :src="control.icon"/>
                   <div class="text">{{ control.name }}</div>
                 </div>
@@ -34,6 +33,7 @@
 </template>
 
 <script lang="ts">
+import DDeiEditor from "../js/editor";
 import DDeiConfig from "@/components/framework/js/config";
 import DDei from "@/components/framework/js/ddei";
 import DDeiRectangle from "@/components/framework/js/models/rectangle";
@@ -41,6 +41,8 @@ import DDeiCircle from "@/components/framework/js/models/circle";
 import DDeiDiamond from "@/components/framework/js/models/diamond";
 import DDeiRectContainer from "@/components/framework/js/models/rect-container";
 import loadToolGroups from "../configs/toolgroup"
+import DDeiEditorState from '../js/enums/editor-state';
+import { cloneDeep, trim } from 'lodash';
 
 export default {
   name: "DDei-Editor-Toolbox",
@@ -50,7 +52,13 @@ export default {
   data() {
     return {
       //分组数据
-      groups: []
+      groups: [],
+      //用于搜索时保存原始的groups
+      searchOriginGroups: null,
+      //搜索控件时用的文本
+      searchText:"",
+      //当前编辑器
+      editor:null
     };
   },
   computed: {
@@ -58,6 +66,8 @@ export default {
   watch: {},
   created() {},
   mounted() {
+    //获取编辑器
+    this.editor = DDeiEditor.ACTIVE_INSTANCE;
     //加载工具栏
     loadToolGroups().then(module=>{
       //遍历module，加上display、expand两个属性，来控制在本组件内是否展开、和关闭
@@ -77,6 +87,7 @@ export default {
         });
       });
       this.groups = module;
+      this.searchOriginGroups = this.groups;
       
     });
   },
@@ -91,12 +102,63 @@ export default {
       }
     },
 
-     /**
+    /**
     * 关闭groupbox
     */
     groupBoxClose(group: object) {
       if (group) {
         group.display = false
+      }
+    },
+
+    /**
+     * 搜索按钮按下时，检测是否按下enter，按下后执行搜索
+     * @param evt 
+     */
+    searchInputEnter(evt) {
+      if(evt.keyCode == 13){
+        this.searchControl();
+      }
+    },
+
+    /**
+     * 焦点进入当前区域
+     */
+    forceEditorToolBox() {
+      if(DDeiEditor.ACTIVE_INSTANCE.state != DDeiEditorState.TOOLBOX_ACTIVE){
+        DDeiEditor.ACTIVE_INSTANCE.state = DDeiEditorState.TOOLBOX_ACTIVE
+      }
+    },
+
+    /**
+     * 搜索控件
+     */
+    searchControl() {
+      //如果清空搜索框则还原
+      let text = trim(this.searchText);
+      if(text == ''){
+        this.groups = this.searchOriginGroups;
+        this.searchOriginGroups = null;
+      }
+      //如果搜索框有内容则搜索
+      else{
+        let searchControls = [];
+        let gp = {};
+        gp.name = "搜索结果"
+        this.searchOriginGroups.forEach(group => {
+          if(group.controls){
+            group.controls.forEach(control => {
+              if(control.code.indexOf(text) != -1 || control.name.indexOf(text) != -1 ){
+                searchControls.push(control);
+              }
+            });
+          }
+        });
+        gp.controls = cloneDeep(searchControls);
+        gp.display = true;
+        gp.expand = true;
+        gp.cannotClose = true;
+        this.groups = [gp];
       }
     },
 

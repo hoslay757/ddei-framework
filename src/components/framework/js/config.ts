@@ -4,7 +4,7 @@ import DDeiLayerCanvasRender from "./views/canvas/layer-render"
 import DDeiRectangleCanvasRender from "./views/canvas/rectangle-render"
 import DDeiCircleCanvasRender from "./views/canvas/circle-render"
 import DDeiSelectorCanvasRender from "./views/canvas/selector-render"
-import DDeiEnumKeyActionInst from "./enums/key-action-inst"
+import DDeiEnumKeyActionInst from "../../editor/js/enums/key-action-inst"
 import DDeiDiamondCanvasRender from "./views/canvas/diamond-render"
 import DDei from "./ddei"
 import DDeiRectContainerCanvasRender from "./views/canvas/rect-container-render"
@@ -31,9 +31,6 @@ class DDeiConfig {
   static GLOBAL_HELP_LINE_ALIGN_COLOR = 'red';
   // 缺省辅助线宽度
   static GLOBAL_HELP_LINE_WEIGHT: number = 10;
-
-  // 键盘对齐,开启后允许通过上下左右来改变控件位置,每次改变位置的大小为GLOBAL_HELP_LINE_WEIGHT
-  static GLOBAL_KEYBOARD_ALIGN_ENABLE: boolean = true;
 
   // 边框的相关缺省样式属性
   static BORDER: object = {
@@ -376,41 +373,7 @@ class DDeiConfig {
     }
   }
 
-  // 快捷键-键行为映射配置
-  static HOT_KEY_MAPPING: object[] = [
-    //全选,ctrl 0/null 不按下，1必须按下，2可选按下
-    { ctrl: 1, keys: "65", action: DDeiEnumKeyActionInst.AllSelect },
-    //取消全选,500毫秒内，连续按两下esc键
-    { keys: "27", times: 2, interval: 500, action: DDeiEnumKeyActionInst.CancelSelect },
-    //删除
-    { keys: "8", action: DDeiEnumKeyActionInst.RemoveModels },
-    //F2
-    { keys: "113", action: DDeiEnumKeyActionInst.StartQuickEdit },
-    //上
-    { ctrl: 2, keys: "38", action: DDeiEnumKeyActionInst.UpMoveModels },
-    //下
-    { ctrl: 2, keys: "40", action: DDeiEnumKeyActionInst.DownMoveModels },
-    //左
-    { ctrl: 2, keys: "37", action: DDeiEnumKeyActionInst.LeftMoveModels },
-    //右
-    { ctrl: 2, keys: "39", action: DDeiEnumKeyActionInst.RightMoveModels },
-    //回车
-    { keys: "13", action: DDeiEnumKeyActionInst.EnterQuickEdit },
-    //取消
-    { keys: "27", action: DDeiEnumKeyActionInst.CancelQuickEdit },
-    //组合
-    { keys: "71", ctrl: 1, action: DDeiEnumKeyActionInst.MakeCompose },
-    //取消组合
-    { keys: "71", ctrl: 1, shift: 1, action: DDeiEnumKeyActionInst.CancelCompose },
-    //置于上层
-    { shift: 1, keys: "38", action: DDeiEnumKeyActionInst.PushUpModels },
-    //置于下层
-    { shift: 1, keys: "40", action: DDeiEnumKeyActionInst.PushDownModels },
-    //置于顶层
-    { ctrl: 1, shift: 1, keys: "38", action: DDeiEnumKeyActionInst.PushTopModels },
-    //置于底层
-    { ctrl: 1, shift: 1, keys: "40", action: DDeiEnumKeyActionInst.PushBottomModels },
-  ];
+
 }
 
 export default DDeiConfig

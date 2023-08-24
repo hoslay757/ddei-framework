@@ -23,18 +23,23 @@
 </template>
 
 <script lang="ts">
+import DDeiEditor from './js/editor';
 import TopMenu from './topmenu/TopMenu.vue';
 import Toolbox from './toolbox/Toolbox.vue';
 import BottomMenu from './bottommenu/BottomMenu.vue';
 import PropertyView from './propertyview/PropertyView.vue';
 import CanvasView from './canvasview/CanvasView.vue';
+
+
 export default {
   name: "DDei-Editor",
   extends: null,
   mixins: [],
   props: {},
   data() {
-    return {};
+    return {
+      editor: DDeiEditor.newInstance("ddei_editor_ins","ddei_editor")
+    };
   },
   //注册组件
   components: {
@@ -48,7 +53,7 @@ export default {
   watch: {},
   created() { },
   mounted() {
-
+    this.editor.bindEvent();
   },
 };
 </script>

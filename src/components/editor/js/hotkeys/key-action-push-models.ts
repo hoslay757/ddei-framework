@@ -1,9 +1,5 @@
-import DDeiConfig from "../config";
-import DDei from "../ddei";
-import DDeiEnumControlState from "../enums/control-state";
-import DDeiEnumOperateState from "../enums/operate-state";
-import DDeiRectContainer from "../models/rect-container";
-import DDeiAbstractShape from "../models/shape";
+import DDei from "@/components/framework/js/ddei";
+import DDeiEditor from "../editor";
 import DDeiKeyAction from "./key-action";
 
 /**
@@ -21,8 +17,8 @@ class DDeiKeyActionPushModels extends DDeiKeyAction {
       if (optContainer) {
         let selectedModels = optContainer.getSelectedModels();
         if (selectedModels.size > 0) {
-          let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
-          let isShift = DDei.KEY_DOWN_STATE.get("shift");
+          let isCtrl = DDeiEditor.KEY_DOWN_STATE.get("ctrl");
+          let isShift = DDeiEditor.KEY_DOWN_STATE.get("shift");
           //同时按下ctrl和shift
           if (isCtrl && isShift) {
             //上

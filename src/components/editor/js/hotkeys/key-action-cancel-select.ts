@@ -1,5 +1,4 @@
-import DDei from "../ddei";
-import DDeiEnumControlState from "../enums/control-state";
+import DDei from "@/components/framework/js/ddei";
 import DDeiKeyAction from "./key-action";
 
 /**
