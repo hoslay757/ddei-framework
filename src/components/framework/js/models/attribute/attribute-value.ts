@@ -10,10 +10,6 @@ import DDeiAbstractArrtibuteDefine from "./attribute-define";
  */
 class DDeiModelArrtibuteValue {
   // ============================ 构造函数 ============================
-  constructor(props: object) {
-    this.define = props.define
-    this.data = props.data
-  }
   // ============================ 静态方法 ============================
   /**
    * 根据模型的当前状态，获取属性值
@@ -42,9 +38,9 @@ class DDeiModelArrtibuteValue {
       //是否复写，复写后将不会读取后续优先级更低的数据
       let overwrite = false
       //当前状态下是否实例复写
-      if (model.attrs?.has(attrCode)) {
+      if (model.attrs[attrCode]) {
         //实例的复写属性
-        let modelAttr = model.attrs?.get(attrCode);
+        let modelAttr = model.attrs[attrCode];
         if (modelAttr) {
           //如果有状态，则增加状态层级
           let path = detailCode;
@@ -52,7 +48,7 @@ class DDeiModelArrtibuteValue {
             path = [stateCode].concat(detailCode);
           }
           try {
-            let returnJSON = DDeiUtil.getDataByPath(modelAttr.data, path);
+            let returnJSON = DDeiUtil.getDataByPath(modelAttr, path);
             if (returnJSON.overwrite && returnJSON.overwrite == true) {
               overwrite = true;
             }
@@ -64,7 +60,7 @@ class DDeiModelArrtibuteValue {
           if (!overwrite && !returnValue && useDefault && stateCode.length > 0) {
             path = detailCode;
             try {
-              let returnJSON = DDeiUtil.getDataByPath(modelAttr.data, path);
+              let returnJSON = DDeiUtil.getDataByPath(modelAttr, path);
               if (returnJSON.overwrite && returnJSON.overwrite == true) {
                 overwrite = true;
               }
@@ -120,10 +116,6 @@ class DDeiModelArrtibuteValue {
   }
 
   // ============================ 属性 ===============================
-  //属性类别
-  define: DDeiAbstractArrtibuteDefine | null;
-  //属性当前值,可能包含多个状态下的值
-  data: object;
   // ============================ 方法 ===============================
 }
 

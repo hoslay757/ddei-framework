@@ -219,7 +219,6 @@ class DDeiRectangleCanvasRender {
 
       //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
       let imgFillInfo = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "image.opacity", true);
-
       //透明度
       if (imgFillInfo) {
         ctx.globalAlpha = imgFillInfo

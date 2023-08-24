@@ -1,4 +1,5 @@
 import DDeiConfig from './config.js'
+import DDeiModelArrtibuteValue from './models/attribute/attribute-value.js';
 
 class DDeiUtil {
 
@@ -6,6 +7,39 @@ class DDeiUtil {
 
   // ============================ 静态方法 ============================
 
+
+  /**
+   * 设置样式属性，自动创建不存在的层级
+   * @param model 模型
+   * @param paths 样式路径,支持传入多个
+   * @param value 值
+   */
+  static setStyle(model: DDeiAbstractShape, paths: string[] | string, value: object): void {
+    if (model?.attrs) {
+      let pathArray: string[];
+      if (typeof (paths) == 'string') {
+        pathArray = [paths];
+      } else {
+        pathArray = paths;
+      }
+      pathArray.forEach(path => {
+        if (path != '') {
+          let attrPaths: string[] = path.split('.');
+          let curObj = model?.attrs;
+          for (let i = 0; i < attrPaths.length; i++) {
+            if (i != attrPaths.length - 1) {
+              if (!curObj[attrPaths[i]]) {
+                curObj[attrPaths[i]] = {};
+              }
+              curObj = curObj[attrPaths[i]];
+            } else {
+              curObj[attrPaths[i]] = value;
+            }
+          }
+        }
+      });
+    }
+  }
 
   /**
    * 根据Path获取JSON的数据

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="ddei_editor_toolbox" @mousedown="forceEditorToolBox"
+    <div id="ddei_editor_toolbox" @mousedown="changeEditorFocus"
            class="ddei_editor_toolbox">
       <div class="expandbox">
         <img class="img" src="../icons/toolbox-d-left.png"/>
@@ -13,7 +13,7 @@
       </div>
       <hr/>
       <div class="groups">
-          <div v-for="(group, groupIndex) in groups" v-show="group.display == true" class="group">
+          <div v-for="group in groups" v-show="group.display == true" class="group">
               <div :class="{ 'box': true, 'expanded': group.expand}" @click="groupBoxExpand(group)">
                 <img class="expand" v-show="!group.expand" src="../icons/toolbox-unexpanded.png"/>
                 <img class="expand" v-show="group.expand" src="../icons/toolbox-expanded.png"/>
@@ -21,7 +21,10 @@
                 <img v-if="!group.cannotClose" class="close" src="../icons/toolbox-close.png" @click="groupBoxClose(group)"/>
               </div>
               <div class="item_panel" v-if="group.expand == true">
-                <div class="item" :title="control.desc" @click="createImg(1)" v-for="(control, controlIndex) in group.controls">
+                <div class="item" :title="control.desc" 
+                      draggable="true"
+                      @dragstart="createControlPrepare(control, $event)" 
+                      v-for="control in group.controls">
                   <img class="icon" :src="control.icon"/>
                   <div class="text">{{ control.name }}</div>
                 </div>
@@ -43,6 +46,8 @@ import DDeiRectContainer from "@/components/framework/js/models/rect-container";
 import loadToolGroups from "../configs/toolgroup"
 import DDeiEditorState from '../js/enums/editor-state';
 import { cloneDeep, trim } from 'lodash';
+import DDeiAbstractShape from "@/components/framework/js/models/shape";
+import DDeiUtil from '../../framework/js/util';
 
 export default {
   name: "DDei-Editor-Toolbox",
@@ -65,6 +70,7 @@ export default {
   },
   watch: {},
   created() {},
+  emits: ['createControlPrepare','changeEditorFocus'],
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
@@ -124,10 +130,33 @@ export default {
     /**
      * 焦点进入当前区域
      */
-    forceEditorToolBox() {
-      if(DDeiEditor.ACTIVE_INSTANCE.state != DDeiEditorState.TOOLBOX_ACTIVE){
-        DDeiEditor.ACTIVE_INSTANCE.state = DDeiEditorState.TOOLBOX_ACTIVE
-      }
+    changeEditorFocus() {
+      this.$emit('changeEditorFocus', DDeiEditorState.TOOLBOX_ACTIVE)
+    },
+
+    /**
+     * 准备创建
+     */
+    createControlPrepare(control,e){
+      //获取当前实例
+      let ddInstance: DDei = this.editor.ddInstance;
+      //TODO 根据control的定义，初始化临时控件，并推送至上层Editor
+   
+      let model:DDeiAbstractShape = DDeiRectangle.initByJSON({
+        id: "rect_" + ddInstance.stage.idIdx,
+        x: 0,
+        y: 0,
+        width: 160,
+        height: 80,
+        img: "/test_img.jpg",
+        text:
+          "测试图片" +
+          ddInstance.stage.idIdx,
+      });
+      //设置透明
+      DDeiUtil.setStyle(model,["border.top.opacity", "border.right.opacity", "border.bottom.opacity",
+      "border.left.opacity", "fill.opacity", "image.opacity"], 0.4);
+      this.$emit('createControlPrepare', model)
     },
 
     /**

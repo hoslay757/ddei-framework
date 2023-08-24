@@ -6,7 +6,9 @@
       </div>
       <div class="body">
         <div class="left">
-          <Toolbox></Toolbox>
+          <Toolbox @changeEditorFocus="changeEditorFocus"
+                 @createControlPrepare="createControlPrepare" 
+                   ></Toolbox>
         </div>
         <div class="middle">
           <CanvasView></CanvasView>
@@ -29,6 +31,8 @@ import Toolbox from './toolbox/Toolbox.vue';
 import BottomMenu from './bottommenu/BottomMenu.vue';
 import PropertyView from './propertyview/PropertyView.vue';
 import CanvasView from './canvasview/CanvasView.vue';
+import DDeiEditorState from './js/enums/editor-state';
+import DDeiAbstractShape from '../framework/js/models/shape';
 
 
 export default {
@@ -55,6 +59,33 @@ export default {
   mounted() {
     this.editor.bindEvent();
   },
+  methods: {
+    /**
+        * 焦点进入当前区域
+        */
+    changeEditorFocus(state: DDeiEditorState): void {
+      if (DDeiEditor.ACTIVE_INSTANCE.state != state) {
+        DDeiEditor.ACTIVE_INSTANCE.state = state
+      }
+    },
+
+    /**
+     * 准备创建控件
+     * @param control 要创建的控件定义
+     */
+    createControlPrepare(model: DDeiAbstractShape):void{
+      if(model){
+        //修改编辑器状态为控件创建中
+        this.changeEditorFocus(DDeiEditorState.CONTROL_CREATING);
+        //设置正在需要创建的控件
+        this.editor.creatingControl = model;
+      }
+    },
+
+    
+
+    
+  }
 };
 </script>
 
