@@ -6,9 +6,7 @@
       </div>
       <div class="body">
         <div class="left">
-          <Toolbox @changeEditorFocus="changeEditorFocus"
-                 @createControlPrepare="createControlPrepare" 
-                   ></Toolbox>
+          <Toolbox @changeEditorFocus="changeEditorFocus" @createControlPrepare="createControlPrepare"></Toolbox>
         </div>
         <div class="middle">
           <CanvasView></CanvasView>
@@ -42,7 +40,7 @@ export default {
   props: {},
   data() {
     return {
-      editor: DDeiEditor.newInstance("ddei_editor_ins","ddei_editor")
+      editor: DDeiEditor.newInstance("ddei_editor_ins", "ddei_editor")
     };
   },
   //注册组件
@@ -73,8 +71,8 @@ export default {
      * 准备创建控件
      * @param control 要创建的控件定义
      */
-    createControlPrepare(model: DDeiAbstractShape):void{
-      if(model){
+    createControlPrepare(model: DDeiAbstractShape): void {
+      if (model) {
         //修改编辑器状态为控件创建中
         this.changeEditorFocus(DDeiEditorState.CONTROL_CREATING);
         //设置正在需要创建的控件
@@ -82,9 +80,9 @@ export default {
       }
     },
 
-    
 
-    
+
+
   }
 };
 </script>

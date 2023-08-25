@@ -1,11 +1,7 @@
 <template>
-  <div id="ddei_editor_canvasview" @mousedown="changeEditorFocus"
-    ondragstart="return false;"
-    @dragover="createControlOver" 
-    @drop="createControlDrop"
-    @dragleave="createControlCancel"
-    @contextmenu.prevent
-        class="ddei_editor_canvasview">
+  <div id="ddei_editor_canvasview" @mousedown="changeEditorFocus" ondragstart="return false;"
+    @dragover="createControlOver" @drop="createControlDrop" @dragleave="createControlCancel" @contextmenu.prevent
+    class="ddei_editor_canvasview">
   </div>
 </template>
 
@@ -31,7 +27,7 @@ export default {
   },
   computed: {},
   watch: {},
-  created() {},
+  created() { },
   emits: ['changeEditorFocus'],
   mounted() {
     //获取编辑器
@@ -51,11 +47,11 @@ export default {
      * 拖拽元素移动
      */
     createControlOver(e) {
-      if(!window.uptime){
+      if (!window.uptime) {
         window.uptime = new Date().getTime();
       }
       //TOOD 引入双缓冲、考虑帧率的问题
-      if(new Date().getTime()-window.uptime < 16){
+      if (new Date().getTime() - window.uptime < 16) {
         e.preventDefault();
         return;
       }
@@ -65,13 +61,13 @@ export default {
           let ddInstance = this.editor.ddInstance;
           //当前激活的图层
           let layer = ddInstance.stage.layers[ddInstance.stage.layerIndex]
-          if(layer){
+          if (layer) {
             ddInstance.stage.render.currentOperateContainer = layer
             let control = this.editor.creatingControl;
             //在画布上创建临时对象
-            if(!layer.models.has(control.id)){
+            if (!layer.models.has(control.id)) {
               layer.addModel(control);
-               //绑定并初始化渲染器
+              //绑定并初始化渲染器
               DDeiConfig.bindRender(control);
               control.render.init();
             }
@@ -94,7 +90,7 @@ export default {
     createControlDrop(e) {
       if (this.editor.state == DDeiEditorState.CONTROL_CREATING) {
         if (this.editor.creatingControl) {
-          let ddInstance:DDei = this.editor.ddInstance;
+          let ddInstance: DDei = this.editor.ddInstance;
           ddInstance.stage.idIdx++;
           //清除透明
           // DDeiUtil.setStyle(this.editor.creatingControl, ["border.top.opacity", "border.right.opacity", "border.bottom.opacity",
@@ -119,7 +115,7 @@ export default {
     /**
      * 拖拽元素离开，清空元素
      */
-    createControlCancel(e){
+    createControlCancel(e) {
       if (this.editor.state == DDeiEditorState.CONTROL_CREATING) {
         if (this.editor.creatingControl) {
           let ddInstance: DDei = this.editor.ddInstance;
@@ -137,6 +133,6 @@ export default {
 <style scoped>
 .ddei_editor_canvasview {
   background: blue;
-  height:100%;
+  height: 100%;
 }
 </style>
