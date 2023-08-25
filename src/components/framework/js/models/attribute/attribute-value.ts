@@ -1,4 +1,5 @@
 import DDeiConfig from "../../config";
+import DDei from "../../ddei";
 import DDeiEnumControlState from "../../enums/control-state";
 import DDeiUtil from "../../util";
 import DDeiAbstractShape from "../shape";
@@ -54,7 +55,7 @@ class DDeiModelArrtibuteValue {
             }
             returnValue = returnJSON.data;
           } catch (e) {
-            console.warn("获取属性值【" + model.id + "(" + model.state + "):" + attrPath + "】失败,PATH:" + attrPath, e);
+            // console.warn("获取属性值【" + model.id + "(" + model.state + "):" + attrPath + "】失败,PATH:" + attrPath, e);
           }
           //如果开启了default则尝试获取default的值
           if (!overwrite && !returnValue && useDefault && stateCode.length > 0) {
@@ -66,15 +67,32 @@ class DDeiModelArrtibuteValue {
               }
               returnValue = returnJSON.data;
             } catch (e) {
-              console.warn("获取属性值【" + model.id + "(" + model.state + "):" + attrPath + "】失败,PATH:" + attrPath, e);
+              // console.warn("获取属性值【" + model.id + "(" + model.state + "):" + attrPath + "】失败,PATH:" + attrPath, e);
             }
           }
         }
       }
 
-      //TODO 控件默认值获取判断
+      //控件默认值获取判断
       if (!overwrite && !returnValue) {
-        //TODO 基于模型的modelCode，反向寻找所指向的定义中的属性
+        //基于模型的modelCode，反向寻找所指向的定义中的属性
+        if (model.modelType != 'DDeiSelector' && DDeiUtil.getAttrValueByConfig) {
+          if (stateCode != "") {
+            //重新拼接路径,加上状态
+            let attrCode = relPath[0];
+            let searchPath = attrCode + "." + stateCode + attrPath.substring(attrPath.indexOf('.'));
+            let configAtrs = DDeiUtil.getAttrValueByConfig(model, searchPath);
+            if (configAtrs && configAtrs.size > 0) {
+              returnValue = Array.from(configAtrs.values())[0];
+            }
+          }
+          if (!returnValue) {
+            let configAtrs = DDeiUtil.getAttrValueByConfig(model, attrPath);
+            if (configAtrs && configAtrs.size > 0) {
+              returnValue = Array.from(configAtrs.values())[0];
+            }
+          }
+        }
       }
 
       //系统默认值获取判断
@@ -94,7 +112,7 @@ class DDeiModelArrtibuteValue {
             }
             returnValue = returnJSON.data;
           } catch (e) {
-            console.warn("获取系统属性值【" + model.id + "(" + model.state + "):" + attrPath + "】失败,PATH:" + attrPath, e);
+            // console.warn("获取系统属性值【" + model.id + "(" + model.state + "):" + attrPath + "】失败,PATH:" + attrPath, e);
           }
           //如果开启了default则尝试获取default的值
           if (!overwrite && !returnValue && useDefault && stateCode.length > 0) {
@@ -106,7 +124,7 @@ class DDeiModelArrtibuteValue {
               }
               returnValue = returnJSON.data;
             } catch (e) {
-              console.warn("获取系统属性值【" + model.id + "(" + model.state + "):" + attrPath + "】失败,PATH:" + attrPath, e);
+              // console.warn("获取系统属性值【" + model.id + "(" + model.state + "):" + attrPath + "】失败,PATH:" + attrPath, e);
             }
           }
         }
@@ -116,6 +134,7 @@ class DDeiModelArrtibuteValue {
   }
 
   // ============================ 属性 ===============================
+
   // ============================ 方法 ===============================
 }
 

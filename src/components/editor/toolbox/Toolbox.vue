@@ -43,11 +43,13 @@ import DDeiRectangle from "@/components/framework/js/models/rectangle";
 import DDeiCircle from "@/components/framework/js/models/circle";
 import DDeiDiamond from "@/components/framework/js/models/diamond";
 import DDeiRectContainer from "@/components/framework/js/models/rect-container";
-import loadToolGroups from "../configs/toolgroup"
+import { loadToolGroups } from "../configs/toolgroup"
 import DDeiEditorState from '../js/enums/editor-state';
 import { cloneDeep, trim } from 'lodash';
 import DDeiAbstractShape from "@/components/framework/js/models/shape";
-import DDeiUtil from '../../framework/js/util';
+import DDeiUtil from "@/components/framework/js/util";
+import DDeiEditorUtil from "../js/util/editor-util"
+import DDeiEnumControlState from '../../framework/js/enums/control-state';
 
 export default {
   name: "DDei-Editor-Toolbox",
@@ -140,22 +142,29 @@ export default {
     createControlPrepare(control,e){
       //获取当前实例
       let ddInstance: DDei = this.editor.ddInstance;
-      //TODO 根据control的定义，初始化临时控件，并推送至上层Editor
-   
-      let model:DDeiAbstractShape = DDeiRectangle.initByJSON({
-        id: "rect_" + ddInstance.stage.idIdx,
+      //根据control的定义，初始化临时控件，并推送至上层Editor
+      let searchPaths = ["width", "height", "img", "text", "linkChild", "linkSelf"];
+      let configAtrs = DDeiEditorUtil.getAttrValueByConfig(control, searchPaths);
+      let dataJson = {
+        id: control.code+"_" + ddInstance.stage.idIdx,
+        modelCode:control.id,
         x: 0,
-        y: 0,
-        width: 160,
-        height: 80,
-        img: "/test_img.jpg",
-        text:
-          "测试图片" +
-          ddInstance.stage.idIdx,
+        y: 0
+      };
+      //设置配置的属性值
+      searchPaths.forEach(key=>{
+        dataJson[key] = configAtrs.get(key);
+        if (control[key] != undefined && control[key] != null) {
+          dataJson[key] = control[key];
+        }
       });
+      let model: DDeiAbstractShape = null;
+      eval("model = "+control.type+".initByJSON(dataJson)")
+
+      model.state = DDeiEnumControlState.CREATING;
       //设置透明
-      DDeiUtil.setStyle(model,["border.top.opacity", "border.right.opacity", "border.bottom.opacity",
-      "border.left.opacity", "fill.opacity", "image.opacity"], 0.4);
+      // DDeiUtil.setStyle(model,["border.top.opacity", "border.right.opacity", "border.bottom.opacity",
+      // "border.left.opacity", "fill.opacity", "image.opacity"], 0.4);
       this.$emit('createControlPrepare', model)
     },
 
@@ -189,233 +198,6 @@ export default {
         gp.cannotClose = true;
         this.groups = [gp];
       }
-    },
-
-
-    //以下为demo方法，后续会移除
-    //创建方形图片
-    createImg(type: number = 1) {
-      //获取当前实例
-      let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_editor_view"];
-      //创建一个矩形
-      let rect: DDeiRectangle = null;
-      if (type == 1) {
-        rect = DDeiRectangle.initByJSON({
-          id: "rect_" + ddInstance.stage.idIdx,
-          x: 100,
-          y: 100,
-          width: 160,
-          height: 80,
-          img: "/test_img.jpg",
-          text:
-            "测试图片" +
-            ddInstance.stage.idIdx,
-        });
-      } else if (type == 2) {
-        rect = DDeiCircle.initByJSON({
-          id: "circle_" + ddInstance.stage.idIdx,
-          x: 100,
-          y: 100,
-          width: 160,
-          height: 80,
-          img: "/test_img.jpg",
-          text:
-            "测试图片" +
-            ddInstance.stage.idIdx,
-        });
-      } else if (type == 3) {
-        rect = DDeiDiamond.initByJSON({
-          id: "dia_" + ddInstance.stage.idIdx,
-          x: 100,
-          y: 100,
-          width: 160,
-          height: 80,
-          img: "/test_img.jpg",
-          text:
-            "测试图片" +
-            ddInstance.stage.idIdx,
-        });
-      }
-      //下标自增1
-      ddInstance.stage.idIdx++;
-      //添加模型到图层
-      ddInstance.stage.addModel(rect);
-      //绑定并初始化渲染器
-      DDeiConfig.bindRender(rect);
-      rect.render.init();
-      //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
-      ddInstance.stage.render.drawShape();
-    },
-    //创建矩形
-    createRectangle() {
-      //获取当前实例
-      let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_editor_view"];
-      //获取当前选择的控件，如果是一个容器则添加到容器中
-      let models =
-        ddInstance.stage.layers[
-          ddInstance.stage.layerIndex
-        ].getSelectedModels();
-      //创建一个矩形
-      let rect: DDeiRectangle = DDeiRectangle.initByJSON({
-        id: "rect_" + ddInstance.stage.idIdx,
-        x: 100,
-        y: 100,
-        width: 160,
-        height: 80,
-        text:
-          "    示 . 例    矩形1示例矩形2222示例矩33形3示例33矩形4示例矩形5示例矩形6示例矩形7呀哈哈示例矩形1示例矩形2222示例矩33形3示例33矩形4示例矩形5示例矩形6示例矩形7呀哈哈" +
-          ddInstance.stage.idIdx,
-      });
-      //下标自增1
-      ddInstance.stage.idIdx++;
-      if (models && models.size > 0) {
-        let md = Array.from(models.values())[0];
-        if (md.modelType == "DDeiRectContainer") {
-          //下标自增1
-          ddInstance.stage.idIdx++;
-          md.addModel(rect);
-          //绑定并初始化渲染器
-          DDeiConfig.bindRender(rect);
-          rect.render.init();
-          //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
-          ddInstance.stage.render.drawShape();
-          return;
-        }
-      }
-      //添加模型到图层
-      ddInstance.stage.addModel(rect);
-      //绑定并初始化渲染器
-      DDeiConfig.bindRender(rect);
-      rect.render.init();
-      //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
-      ddInstance.stage.render.drawShape();
-    },
-    //创建圆型
-    createCircle() {
-      //获取当前实例
-      let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_editor_view"];
-      //创建一个矩形
-      let circle: DDeiCircle = DDeiCircle.initByJSON({
-        id: "circle_" + ddInstance.stage.idIdx,
-        x: 100,
-        y: 100,
-        width: 160,
-        height: 80,
-        text:
-          "示例圆型1示例圆型2示例圆型3示例圆型4示例圆型5示例圆型6" +
-          ddInstance.stage.idIdx,
-      });
-      //下标自增1
-      ddInstance.stage.idIdx++;
-      //添加模型到图层
-      ddInstance.stage.addModel(circle);
-      //绑定并初始化渲染器
-      DDeiConfig.bindRender(circle);
-      circle.render.init();
-      //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
-      ddInstance.stage.render.drawShape();
-    },
-    //创建菱形
-    createDiamond() {
-      //获取当前实例
-      let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_editor_view"];
-      //创建一个矩形
-      let diamond: DDeiDiamond = DDeiDiamond.initByJSON({
-        id: "diamond_" + ddInstance.stage.idIdx,
-        x: 100,
-        y: 100,
-        width: 160,
-        height: 80,
-        text:
-          "示例圆型1示例圆型2示例圆型3示例圆型4示例圆型5示例圆型6" +
-          ddInstance.stage.idIdx,
-      });
-      //下标自增1
-      ddInstance.stage.idIdx++;
-      //添加模型到图层
-      ddInstance.stage.addModel(diamond);
-      //绑定并初始化渲染器
-      DDeiConfig.bindRender(diamond);
-      diamond.render.init();
-      //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
-      ddInstance.stage.render.drawShape();
-    },
-
-    //创建容器
-    createContainer(type) {
-      //获取当前实例
-      let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_editor_view"];
-      //创建一个矩形
-      let container: DDeiRectContainer = null;
-      if (type == 1) {
-        container = DDeiRectContainer.initByJSON({
-          id: "container_" + ddInstance.stage.idIdx,
-          x: 100,
-          y: 100,
-          width: 500,
-          height: 500,
-          linkChild: false,
-          linkSelf: false
-        });
-      } else if (type == 2) {
-        container = DDeiRectContainer.initByJSON({
-          id: "container_" + ddInstance.stage.idIdx,
-          x: 100,
-          y: 100,
-          width: 500,
-          height: 500,
-          linkChild: true,
-          linkSelf: false
-        });
-      } else if (type == 3) {
-        container = DDeiRectContainer.initByJSON({
-          id: "container_" + ddInstance.stage.idIdx,
-          x: 100,
-          y: 100,
-          width: 500,
-          height: 500,
-          linkChild: false,
-          linkSelf: true
-        });
-      } else if (type == 4) {
-        container = DDeiRectContainer.initByJSON({
-          id: "container_" + ddInstance.stage.idIdx,
-          x: 100,
-          y: 100,
-          width: 500,
-          height: 500,
-          linkChild: true,
-          linkSelf: true
-        });
-      }
-      //下标自增1
-      ddInstance.stage.idIdx++;
-      //获取当前选择的控件，如果是一个容器则添加到容器中
-      let models =
-        ddInstance.stage.layers[
-          ddInstance.stage.layerIndex
-        ].getSelectedModels();
-      if (models && models.size > 0) {
-        let md = Array.from(models.values())[0];
-        if (md.modelType == "DDeiRectContainer") {
-          //下标自增1
-          ddInstance.stage.idIdx++;
-          md.addModel(container);
-          //绑定并初始化渲染器
-          DDeiConfig.bindRender(container);
-          container.render.init();
-          //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
-          ddInstance.stage.render.drawShape();
-          return;
-        }
-      }
-      //添加模型到图层
-      ddInstance.stage.addModel(container);
-      //绑定并初始化渲染器
-      DDeiConfig.bindRender(container);
-      container.render.init();
-      //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
-      ddInstance.stage.render.drawShape();
     },
 
     //创建图层

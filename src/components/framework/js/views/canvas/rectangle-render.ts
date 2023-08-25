@@ -79,6 +79,7 @@ class DDeiRectangleCanvasRender {
    * 创建图形
    */
   drawShape(): void {
+
     //绘制边框
     this.drawBorder();
 
@@ -93,6 +94,19 @@ class DDeiRectangleCanvasRender {
 
   }
 
+
+
+  /**
+   * 恢复滤镜
+   */
+  clearFilter(): void {
+    //如果为创建中，则设置为半透明
+    if (this.model.state == DDeiEnumControlState.CREATING) {
+      let canvas = this.ddRender.canvas;
+      let ctx = canvas.getContext('2d');
+      ctx.restore();
+    }
+  }
   /**
    * 取得边框的绘制区域
    */

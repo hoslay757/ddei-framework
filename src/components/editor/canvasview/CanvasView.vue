@@ -97,8 +97,8 @@ export default {
           let ddInstance:DDei = this.editor.ddInstance;
           ddInstance.stage.idIdx++;
           //清除透明
-          DDeiUtil.setStyle(this.editor.creatingControl, ["border.top.opacity", "border.right.opacity", "border.bottom.opacity",
-            "border.left.opacity", "fill.opacity", "image.opacity"], null);
+          // DDeiUtil.setStyle(this.editor.creatingControl, ["border.top.opacity", "border.right.opacity", "border.bottom.opacity",
+          //   "border.left.opacity", "fill.opacity", "image.opacity"], null);
           //取消选中其他控件
           let layer = ddInstance.stage.layers[ddInstance.stage.layerIndex]
           layer.cancelSelectModels();

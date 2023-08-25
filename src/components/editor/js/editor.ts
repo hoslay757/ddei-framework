@@ -2,6 +2,8 @@ import DDeiEnumKeyActionInst from "./enums/key-action-inst";
 import DDeiKeyAction from "./hotkeys/key-action"
 import DDeiEditorState from "./enums/editor-state";
 import DDei from "@/components/framework/js/ddei";
+import DDeiEditorUtil from "./util/editor-util";
+import DDeiUtil from "@/components/framework/js/util";
 
 /**
  * DDei图形编辑器类，用于维护编辑器实例、全局状态以及全局属性
@@ -96,6 +98,9 @@ class DDeiEditor {
       if (!DDeiEditor.INSTANCE_POOL[id]) {
         //初始化DDeiEditor对象
         let ddInstance = new DDeiEditor({ id: id, containerid: containerid });
+        if (!DDeiUtil.getAttrValueByConfig) {
+          DDeiUtil.getAttrValueByConfig = DDeiEditorUtil.getAttrValueByConfig;
+        }
         //将DDeiEditor对象装入全局缓存
         DDeiEditor.INSTANCE_POOL[id] = ddInstance;
         if (active) {

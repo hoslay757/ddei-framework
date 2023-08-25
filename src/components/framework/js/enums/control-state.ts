@@ -9,7 +9,9 @@ enum DDeiEnumControlState {
   //普通缺省状态，没有被选中的任何状态
   DEFAULT = "default",
   //选中状态
-  SELECTED = "selected"
+  SELECTED = "selected",
+  //选中状态
+  CREATING = "creating"
 }
 
 export default DDeiEnumControlState

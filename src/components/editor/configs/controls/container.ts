@@ -1,9 +1,9 @@
 export default {
-  'id': '100002',
-  'name': '长方形',
-  'code': 'rectangle',
-  'desc': '标准的长方形',
-  'type': 'DDeiRectangle',
+  'id': '100201',
+  'name': '矩形容器',
+  'code': 'rectange_container',
+  'desc': '矩形形状的容器，能够包含其他容器',
+  'type': 'DDeiRectContainer',
   'icon': 'toolbox-shape-rect.png'
 }
 
@@ -22,7 +22,7 @@ export const styles = {
   'name': '样式',
   'children': [
     {
-      'id': '100002001',
+      'id': '100201001',
       'code': 'width',
       'name': '宽度',
       'desc': '控件的宽度',
@@ -30,12 +30,12 @@ export const styles = {
       'controlType': 'text',
       'dataSource': null,
       'dataType': 'integer',
-      'defaultValue': "160",
+      'defaultValue': "300",
       'orderNo': 1,
       'visiable': 0
     },
     {
-      'id': '100002002',
+      'id': '100201002',
       'code': 'height',
       'name': '高度',
       'desc': '控件的高度',
@@ -43,12 +43,12 @@ export const styles = {
       'controlType': 'text',
       'dataSource': null,
       'dataType': 'integer',
-      'defaultValue': "80",
+      'defaultValue': "240",
       'orderNo': 2,
       'visiable': 0
     },
     {
-      'id': '100002003',
+      'id': '100201003',
       'code': 'borderType',
       'name': '边框类型',
       'desc': '用来快速选择边框的类型，以便于套用相关的样式',
@@ -64,7 +64,7 @@ export const styles = {
       'visiable': 1
     },
     {
-      'id': '100002004',
+      'id': '100201004',
       'code': 'borderColor',
       'name': '颜色',
       'desc': '图形的边框显示颜色，在高级设置中，可以分别设置不同方向边框的样式',
@@ -77,7 +77,7 @@ export const styles = {
       'visiable': 1
     },
     {
-      'id': '100002005',
+      'id': '100201005',
       'code': 'borderOpacity',
       'name': '透明度',
       'desc': '图形的边框的透明度，0完全透明~1完全不透明',
@@ -91,7 +91,7 @@ export const styles = {
       'visiable': 1
     },
     {
-      'id': '100002006',
+      'id': '100201006',
       'code': 'borderWidth',
       'name': '粗细',
       'desc': '图形的边框的粗细，0为无边框',
@@ -104,7 +104,7 @@ export const styles = {
       'visiable': 1
     },
     {
-      'id': '100002007',
+      'id': '100201007',
       'code': 'borderDash',
       'name': '虚线',
       'desc': '图形的边框的是否为虚线样式，虚线由长短不一的线段构成',
@@ -118,7 +118,7 @@ export const styles = {
       'visiable': 1
     },
     {
-      'id': '100002008',
+      'id': '100201008',
       'code': 'borderRound',
       'name': '圆角',
       'desc': '图形的边框的是否为为圆角的弧度',
@@ -131,7 +131,7 @@ export const styles = {
       'visiable': 1
     },
     {
-      'id': '100002101',
+      'id': '100201101',
       'code': 'fillType',
       'name': '填充类型',
       'desc': '图形填充的类型快速设置',
@@ -147,7 +147,7 @@ export const styles = {
       'visiable': 1
     },
     {
-      'id': '100002102',
+      'id': '100201102',
       'code': 'fill.color',
       'name': '颜色',
       'desc': '图形的填充颜色',
@@ -159,7 +159,7 @@ export const styles = {
       'visiable': 1
     },
     {
-      'id': '100002103',
+      'id': '100201103',
       'code': 'fill.opacity',
       'name': '透明度',
       'desc': '图形的填充的透明度，0完全透明~1完全不透明',
@@ -171,7 +171,7 @@ export const styles = {
       'visiable': 1
     },
     {
-      'id': '100002201',
+      'id': '100201201',
       'code': 'font.family',
       'name': '字体',
       'desc': '文本的字体名称',
@@ -183,7 +183,7 @@ export const styles = {
       'visiable': 1
     },
     {
-      'id': '100002202',
+      'id': '100201202',
       'code': 'font.size',
       'name': '大小',
       'desc': '文本的字体大小',
@@ -195,7 +195,7 @@ export const styles = {
       'visiable': 1
     },
     {
-      'id': '100002203',
+      'id': '100201203',
       'code': 'font.color',
       'name': '颜色',
       'desc': '文本的颜色',
@@ -207,7 +207,7 @@ export const styles = {
       'visiable': 1
     },
     {
-      'id': '100002204',
+      'id': '100201204',
       'code': 'fontAlign',
       'name': '对齐',
       'desc': '文本的对齐，采用九宫格式设置',
@@ -219,7 +219,7 @@ export const styles = {
       'visiable': 1
     },
     {
-      'id': '100002205',
+      'id': '100201205',
       'code': 'textStyle.feed',
       'name': '换行',
       'desc': '自动换行',
@@ -233,7 +233,7 @@ export const styles = {
       'visiable': 1
     },
     {
-      'id': '100002206',
+      'id': '100201206',
       'code': 'textStyle.autoScaleFill',
       'name': '缩小字体填充',
       'desc': '文本的自动缩小字体填充',
@@ -247,7 +247,7 @@ export const styles = {
       'visiable': 1
     },
     {
-      'id': '100002207',
+      'id': '100201207',
       'code': 'textStyle.hollow',
       'name': '镂空',
       'desc': '文本的镂空显示',
@@ -261,7 +261,7 @@ export const styles = {
       'visiable': 1
     },
     {
-      'id': '100002301',
+      'id': '100201301',
       'code': 'border.top.dash',
       'name': '虚线',
       'desc': '图形的边框的是否为虚线样式，虚线由长短不一的线段构成',
@@ -273,7 +273,7 @@ export const styles = {
       'visiable': 0
     },
     {
-      'id': '100002302',
+      'id': '100201302',
       'code': 'border.right.dash',
       'name': '虚线',
       'desc': '图形的边框的是否为虚线样式，虚线由长短不一的线段构成',
@@ -285,7 +285,7 @@ export const styles = {
       'visiable': 0
     },
     {
-      'id': '100002303',
+      'id': '100201303',
       'code': 'textStyle.align',
       'name': '水平对齐',
       'desc': '文本的水平对齐',
@@ -296,7 +296,7 @@ export const styles = {
       'visiable': 0
     },
     {
-      'id': '100002304',
+      'id': '100201304',
       'code': 'textStyle.valign',
       'name': '垂直对齐',
       'desc': '文本的垂直对齐',
@@ -307,7 +307,7 @@ export const styles = {
       'visiable': 0
     },
     {
-      'id': '100002305',
+      'id': '100201305',
       'code': 'borderCreatingOpacity',
       'name': '透明度',
       'desc': '图形的边框的透明度，0完全透明~1完全不透明',
@@ -321,7 +321,7 @@ export const styles = {
       'visiable': 0
     },
     {
-      'id': '100002306',
+      'id': '100201306',
       'code': 'fillCreatingOpacity',
       'name': '透明度',
       'desc': '图形的填充的透明度，0完全透明~1完全不透明',
@@ -335,7 +335,7 @@ export const styles = {
       'visiable': 0
     },
     {
-      'id': '100002307',
+      'id': '100201307',
       'code': 'imageCreatingOpacity',
       'name': '透明度',
       'desc': '图形的填充图片的透明度，0完全透明~1完全不透明',
@@ -344,6 +344,32 @@ export const styles = {
       'mapping': ["image.creating.opacity"],
       'dataType': 'float',
       'defaultValue': 0.5,
+      'display': 'column',
+      'orderNo': 3,
+      'visiable': 0
+    },
+    {
+      'id': '100201308',
+      'code': 'linkChild',
+      'name': '透明度',
+      'desc': '图形的填充图片的透明度，0完全透明~1完全不透明',
+      'group': '填充',
+      'controlType': 'text',
+      'dataType': 'boolean',
+      'defaultValue': true,
+      'display': 'column',
+      'orderNo': 3,
+      'visiable': 0
+    },
+    {
+      'id': '100201309',
+      'code': 'linkSelf',
+      'name': '透明度',
+      'desc': '图形的填充图片的透明度，0完全透明~1完全不透明',
+      'group': '填充',
+      'controlType': 'text',
+      'dataType': 'boolean',
+      'defaultValue': true,
       'display': 'column',
       'orderNo': 3,
       'visiable': 0
@@ -361,7 +387,7 @@ export const datas = {
   'name': '数据',
   'children': [
     {
-      'id': '100002401',
+      'id': '100201401',
       'code': 'id',
       'name': 'id',
       'desc': '控件在画布的全局唯一ID',
@@ -373,7 +399,7 @@ export const datas = {
       'visiable': 0
     },
     {
-      'id': '100002402',
+      'id': '100201402',
       'code': 'code',
       'name': '编码',
       'desc': '控件在业务上的唯一编码，缺省和控件ID一致',
@@ -384,7 +410,7 @@ export const datas = {
       'visiable': 1
     },
     {
-      'id': '100002403',
+      'id': '100201403',
       'code': 'text',
       'name': '文本',
       'desc': '控件的主体显示文本',

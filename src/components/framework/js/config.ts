@@ -100,7 +100,7 @@ class DDeiConfig {
     // 默认矩形边框
     border: {
       top: {
-        width: 1, color: "black", dash: [3, 1], round: 0, disabled: false
+        width: 1, color: "black", dash: null, round: 0, disabled: false
       },
       right: {
         width: 1, color: "blue", dash: null, round: 0
@@ -133,7 +133,7 @@ class DDeiConfig {
     },
     // 默认矩形填充
     image: {
-      opacity: 0.5
+      opacity: 1
     },
     // 默认矩形字体
     font: {

@@ -3,8 +3,6 @@ import DDeiStage from './stage'
 import DDeiLayer from './layer'
 import DDeiEnumControlState from '../enums/control-state'
 import DDeiUtil from '../util'
-import DDeiModelArrtibuteValue from './attribute/attribute-value'
-
 /**
  * 抽象的图形类，定义了大多数图形都有的属性和方法
  */

@@ -1,9 +1,14 @@
+import DDeiArrtibuteDefine from '@/components/framework/js/models/attribute/attribute-define';
 import { cloneDeep } from 'lodash'
+
+//已读取的配置组原始定义
+const groupOriginDefinies = [];
+
+//已读取的控件原始定义
+const controlOriginDefinies = new Map();
 
 
 const loadToolGroups = async function () {
-  //加载控件原始定义信息
-  const controlOriginDefinies = new Map();
   //加载控件定义
   const control_ctx = import.meta.glob('./controls/*.ts')
   let loadArray = [];
@@ -18,13 +23,13 @@ const loadToolGroups = async function () {
       controlDefine.events = item.events;
       // 排序属性
       if (controlDefine?.styles?.children) {
-        parseAttrsToGroup(controlDefine.styles);
+        parseAttrsToGroup(controlDefine, controlDefine.styles);
       }
       if (controlDefine?.datas?.children) {
-        parseAttrsToGroup(controlDefine.datas);
+        parseAttrsToGroup(controlDefine, controlDefine.datas);
       }
       if (controlDefine?.events?.children) {
-        parseAttrsToGroup(controlDefine.events);
+        parseAttrsToGroup(controlDefine, controlDefine.events);
       }
       controlOriginDefinies.set(controlDefine.id, controlDefine);
     });
@@ -37,7 +42,6 @@ const loadToolGroups = async function () {
   }
 
   //组的定义
-  const groupOriginDefinies = [];
   await Promise.all(loadArray).then(modules => {
     modules.forEach(item => {
       let group = item.default;
@@ -50,9 +54,9 @@ const loadToolGroups = async function () {
           if (controlDefine) {
             //复制控件定义
             let c = cloneDeep(controlDefine);
-            //复写group重点定义
+            //复写group中定义的属性
             for (let i in control) {
-              if (control[i]) {
+              if (control[i] != undefined && control[i] != null) {
                 c[i] = control[i];
               }
             }
@@ -77,18 +81,24 @@ const loadToolGroups = async function () {
   return cloneDeep(groupOriginDefinies);
 }
 //将属性转换为更深的groups中
-const parseAttrsToGroup = function (attrs) {
+const parseAttrsToGroup = function (control, attrs) {
   if (attrs?.children) {
     let newGroups = [];
     let lastGroupName = '';
     for (let i = 0; i < attrs.children.length; i++) {
       let curAttr = attrs.children[i];
+      let attrDefine = new DDeiArrtibuteDefine(curAttr);
       let groupName = curAttr.group;
       if (lastGroupName != groupName) {
         lastGroupName = groupName;
         newGroups.push({ "name": groupName, "children": [] });
       }
-      newGroups[newGroups.length - 1].children.push(curAttr);
+      newGroups[newGroups.length - 1].children.push(attrDefine);
+      //将属性加入控件的属性map
+      if (!control.attrDefineMap) {
+        control.attrDefineMap = new Map();
+      }
+      control.attrDefineMap.set(curAttr.code, attrDefine);
     }
     //对每个group中的属性进行排序
     newGroups.forEach(group => {
@@ -103,3 +113,4 @@ const parseAttrsToGroup = function (attrs) {
 
 }
 export default loadToolGroups;
+export { loadToolGroups, groupOriginDefinies, controlOriginDefinies };
