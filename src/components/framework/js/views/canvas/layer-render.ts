@@ -214,21 +214,50 @@ class DDeiLayerCanvasRender {
 
 
     // 计算图形拖拽后将要到达的坐标
+    // TODO 后续考虑做成🤵效果，不由辅助线是否开启作为判断条件
     if (DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
       //辅助对齐线宽度
       let helpLineWeight = DDeiConfig.GLOBAL_HELP_LINE_WEIGHT;
 
       var mod = movedBounds.x % helpLineWeight
+
       if (mod > helpLineWeight * 0.5) {
-        movedBounds.x = movedBounds.x + (helpLineWeight - mod)
+        movedBounds.x += (helpLineWeight - mod)
       } else {
-        movedBounds.x = movedBounds.x - mod
+        movedBounds.x -= mod
       }
+
+
+
+
+
       mod = movedBounds.y % helpLineWeight
       if (mod > helpLineWeight * 0.5) {
-        movedBounds.y = movedBounds.y + (helpLineWeight - mod)
+        movedBounds.y += (helpLineWeight - mod)
       } else {
-        movedBounds.y = movedBounds.y - mod
+        movedBounds.y -= mod
+      }
+
+      //移动时的二次调整，确保移动后的坐标轴在辅助线上
+      if (this.stageRender.dragObj.model) {
+        if (this.stageRender.dragObj.model.x % helpLineWeight != 0) {
+          let xmod = this.stageRender.dragObj.model.x % helpLineWeight;
+          if (xmod > helpLineWeight * 0.5) {
+            movedBounds.x += (helpLineWeight - xmod);
+          }
+          else {
+            movedBounds.x -= xmod;
+          }
+        }
+        if (this.stageRender.dragObj.model.y % helpLineWeight != 0) {
+          let ymod = this.stageRender.dragObj.model.y % helpLineWeight;
+          if (ymod > helpLineWeight * 0.5) {
+            movedBounds.y += (helpLineWeight - ymod);
+          }
+          else {
+            movedBounds.y -= ymod;
+          }
+        }
       }
     }
     return movedBounds

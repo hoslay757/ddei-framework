@@ -12,6 +12,7 @@ import DDeiEditorState from '../js/enums/editor-state';
 import DDeiConfig from '../../framework/js/config';
 import DDeiEnumControlState from '../../framework/js/enums/control-state';
 import DDeiUtil from '../../framework/js/util';
+import type DDeiAbstractShape from '@/components/framework/js/models/shape';
 
 
 export default {
@@ -70,14 +71,39 @@ export default {
               //绑定并初始化渲染器
               DDeiConfig.bindRender(control);
               control.render.init();
+              //记录当前的拖拽的x,y,写入dragObj作为临时变量
+              let dragObj = {
+                x: e.offsetX,
+                y: e.offsetY,
+                originX: e.offsetX,
+                originY: e.offsetY,
+                model: control
+              }
+              ddInstance.stage.render.dragObj = dragObj;
+              //当前编辑器最外部容器的坐标 TODO 无限画布后需要转换为layer的视窗坐标
+              let containerX = e.offsetX;
+              let containerY = e.offsetY;
+              control.x = containerX - control.width * 0.5;
+              control.y = containerY - control.height * 0.5;
+              //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
+              ddInstance.stage.render.drawShape();
+            } else {
+              //获取增量
+              let movedPosDelta = layer.render.getMovedPositionDelta(e);
+              if (movedPosDelta.x != 0 || movedPosDelta.y != 0) {
+                control.x += movedPosDelta.x;
+                control.y += movedPosDelta.y;
+                //更新dragObj临时变量中的数值,确保坐标对应关系一致
+                ddInstance.stage.render.dragObj.x += movedPosDelta.x;
+                ddInstance.stage.render.dragObj.y += movedPosDelta.y;
+                //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
+                ddInstance.stage.render.drawShape();
+                //显示辅助对齐线、坐标文本等图形
+                let selectedModels: Map<string, DDeiAbstractShape> = new Map();
+                selectedModels.set(control.id, control);
+                layer.render.drawHelpLines(control?.getAbsBounds(), selectedModels);
+              }
             }
-            //当前编辑器最外部容器的坐标 TODO 无限画布后需要转换为layer的视窗坐标
-            let containerX = e.offsetX;
-            let containerY = e.offsetY;
-            control.x = containerX - control.width * 0.5;
-            control.y = containerY - control.height * 0.5;
-            //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
-            ddInstance.stage.render.drawShape();
             e.preventDefault();
           }
         }
@@ -90,11 +116,9 @@ export default {
     createControlDrop(e) {
       if (this.editor.state == DDeiEditorState.CONTROL_CREATING) {
         if (this.editor.creatingControl) {
+
           let ddInstance: DDei = this.editor.ddInstance;
           ddInstance.stage.idIdx++;
-          //清除透明
-          // DDeiUtil.setStyle(this.editor.creatingControl, ["border.top.opacity", "border.right.opacity", "border.bottom.opacity",
-          //   "border.left.opacity", "fill.opacity", "image.opacity"], null);
           //取消选中其他控件
           let layer = ddInstance.stage.layers[ddInstance.stage.layerIndex]
           layer.cancelSelectModels();
@@ -104,6 +128,9 @@ export default {
           ddInstance.stage.render.selector.updatedBoundsBySelectedModels();
 
           this.editor.creatingControl = null;
+
+          ddInstance.stage.render.dragObj = null;
+
           //切换到设计器
           this.editor.state = DDeiEditorState.DESIGNING;
           //重绘
@@ -121,6 +148,7 @@ export default {
           let ddInstance: DDei = this.editor.ddInstance;
           let layer = ddInstance.stage.layers[ddInstance.stage.layerIndex]
           layer.removeModel(this.editor.creatingControl);
+          ddInstance.stage.render.dragObj = null;
           //重绘
           ddInstance.stage.render.drawShape();
         }
