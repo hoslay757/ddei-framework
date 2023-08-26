@@ -59,13 +59,13 @@ class DDeiEditor {
     //F2
     { keys: "113", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.StartQuickEdit },
     //上
-    { ctrl: 2, keys: "38", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.UpMoveModels },
+    { shift: 2, keys: "38", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.UpMoveModels },
     //下
-    { ctrl: 2, keys: "40", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.DownMoveModels },
+    { shift: 2, keys: "40", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.DownMoveModels },
     //左
-    { ctrl: 2, keys: "37", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.LeftMoveModels },
+    { shift: 2, keys: "37", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.LeftMoveModels },
     //右
-    { ctrl: 2, keys: "39", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.RightMoveModels },
+    { shift: 2, keys: "39", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.RightMoveModels },
     //回车
     { keys: "13", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.EnterQuickEdit },
     //取消
@@ -75,9 +75,9 @@ class DDeiEditor {
     //取消组合
     { keys: "71", ctrl: 1, shift: 1, editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.CancelCompose },
     //置于上层
-    { shift: 1, keys: "38", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.PushUpModels },
+    { ctrl: 1, keys: "38", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.PushUpModels },
     //置于下层
-    { shift: 1, keys: "40", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.PushDownModels },
+    { ctrl: 1, keys: "40", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.PushDownModels },
     //置于顶层
     { ctrl: 1, shift: 1, keys: "38", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.PushTopModels },
     //置于底层
@@ -153,20 +153,7 @@ class DDeiEditor {
    * 键盘弹起
    */
   keyUp(evt: Event): void {
-    let ctrl = evt.ctrlKey || evt.metaKey;
-    let shift = evt.shiftKey;
-    let alt = evt.altKey
-    if (ctrl != true) {
-      DDeiEditor.KEY_DOWN_STATE.set("ctrl", false);
-    }
-    if (shift != true) {
-      DDeiEditor.KEY_DOWN_STATE.set("shift", false);
-    }
-    if (alt != true) {
-      DDeiEditor.KEY_DOWN_STATE.set("alt", false);
-    }
-    DDeiEditor.KEY_DOWN_STATE.set("" + evt.keyCode, false);
-    DDei.syncKeyDownState(DDeiEditor.KEY_DOWN_STATE);
+    DDeiKeyAction.updateKeyState(evt);
   }
 }
 

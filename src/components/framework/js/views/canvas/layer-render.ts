@@ -215,7 +215,9 @@ class DDeiLayerCanvasRender {
 
     // 计算图形拖拽后将要到达的坐标
     // TODO 后续考虑做成🤵效果，不由辅助线是否开启作为判断条件
-    if (DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
+    //shift键的按下状态
+    let isShift = DDei.KEY_DOWN_STATE.get("shift");
+    if (!isShift && DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
       //辅助对齐线宽度
       let helpLineWeight = DDeiConfig.GLOBAL_HELP_LINE_WEIGHT;
 
@@ -475,8 +477,9 @@ class DDeiLayerCanvasRender {
     if (!this.model.display) {
       return;
     }
-    //ctrl键的按下状态
+    //ctrl、alt键的按下状态
     let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
+    let isAlt = DDei.KEY_DOWN_STATE.get("alt");
     //判断当前操作状态
     switch (this.stageRender.operateState) {
       //控件状态确认中
@@ -533,7 +536,7 @@ class DDeiLayerCanvasRender {
       //控件拖拽中
       case DDeiEnumOperateState.CONTROL_DRAGING:
         //如果按下了ctrl键，则需要修改容器的关系并更新样式
-        if (isCtrl) {
+        if (isAlt) {
           //寻找鼠标落点当前所在的容器
           let mouseOnContainers: DDeiAbstractShape[] = DDeiAbstractShape.findBottomContainersByArea(this.model, evt.offsetX, evt.offsetY);
           let lastOnContainer = this.model;
@@ -645,8 +648,9 @@ class DDeiLayerCanvasRender {
     if (!this.model.display) {
       return;
     }
-    //ctrl键的按下状态
+    //ctrl、alt键的按下状态
     let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
+    let isAlt = DDei.KEY_DOWN_STATE.get("alt");
     //判断当前操作状态
     switch (this.stageRender.operateState) {
       //控件状态确认中
@@ -702,7 +706,7 @@ class DDeiLayerCanvasRender {
             this.stageRender.dragObj.y = this.stageRender.dragObj.y + movedPosDelta.y;
             //如果按下ctrl键，则不改变父容器大小，而是走控件移出逻辑
             //TODO 后续通过状态机来控制，使按下ctrl后立刻发生反应，而不是拖放以后
-            if (!isCtrl) {
+            if (!isAlt) {
               //同步更新上层容器其大小和坐标
               pContainerModel.changeParentsBounds()
               this.stageRender.selector.setPassIndex(10);

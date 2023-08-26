@@ -13,6 +13,7 @@ import DDeiConfig from '../../framework/js/config';
 import DDeiEnumControlState from '../../framework/js/enums/control-state';
 import DDeiUtil from '../../framework/js/util';
 import type DDeiAbstractShape from '@/components/framework/js/models/shape';
+import DDeiKeyAction from '../js/hotkeys/key-action';
 
 
 export default {
@@ -57,7 +58,9 @@ export default {
         return;
       }
       window.uptime = new Date().getTime();
+
       if (this.editor.state == DDeiEditorState.CONTROL_CREATING) {
+        DDeiKeyAction.updateKeyState(e);
         if (this.editor.creatingControl) {
           let ddInstance = this.editor.ddInstance;
           //当前激活的图层
