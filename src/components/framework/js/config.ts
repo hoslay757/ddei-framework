@@ -312,8 +312,8 @@ class DDeiConfig {
     },
     // 默认填充
     fill: {
-      color: "#787878", opacity: 1,
-      selected: { color: "#23AE78" }
+      color: "#787878", opacity: 0,
+      selected: { color: "#23AE78", opacity: 0 }
     }
   };
 

@@ -28,6 +28,7 @@ class DDeiArrtibuteDefine {
     this.readonly = props.readonly ? props.readonly : false
     this.orderNo = props.orderNo
     this.isArray = props.isArray ? props.isArray : false;
+    this.overwrite = props.overwrite ? props.overwrite : false;
     this.parser = props.parser
 
     //根据传入的解析器类型初始化解析器，如果没有传入则根据dataType
@@ -66,6 +67,8 @@ class DDeiArrtibuteDefine {
   orderNo: number | null;
   //是否为数组
   isArray: boolean;
+  //是否复写
+  overwrite: boolean;
   //属性值解析器，负责读取或写入属性值，以确保输入和输出值正确
   parser: DDeiAbstractArrtibuteParser;
   // ============================ 方法 ===============================

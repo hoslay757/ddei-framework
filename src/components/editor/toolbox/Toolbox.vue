@@ -160,7 +160,9 @@ export default {
       };
       //设置配置的属性值
       searchPaths.forEach(key => {
-        dataJson[key] = configAtrs.get(key);
+        if (configAtrs.get(key)) {
+          dataJson[key] = configAtrs.get(key).data;
+        }
         if (control[key] != undefined && control[key] != null) {
           dataJson[key] = control[key];
         }

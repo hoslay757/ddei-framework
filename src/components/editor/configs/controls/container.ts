@@ -154,7 +154,8 @@ export const styles = {
       'group': '填充',
       'controlType': 'text',
       'dataType': 'string',
-      'defaultValue': 'white',
+      'defaultValue': '',
+      'overwrite': true,
       'orderNo': 2,
       'visiable': 1
     },
