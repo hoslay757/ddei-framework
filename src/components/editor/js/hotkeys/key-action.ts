@@ -17,6 +17,35 @@ abstract class DDeiKeyAction {
   // ============================ 静态方法 ============================
 
   /**
+   * 更新按键状态
+   */
+  static updateKeyState(evt: Event): void {
+    //获取是否按下ctrl、command、alt、shift等键
+    let ctrl = evt.ctrlKey || evt.metaKey;
+    let shift = evt.shiftKey;
+    let alt = evt.altKey
+    if (ctrl == true) {
+      DDeiEditor.KEY_DOWN_STATE.set("ctrl", true);
+    } else {
+      DDeiEditor.KEY_DOWN_STATE.set("ctrl", false);
+    }
+    if (shift == true) {
+      DDeiEditor.KEY_DOWN_STATE.set("shift", true);
+    } else {
+      DDeiEditor.KEY_DOWN_STATE.set("shift", false);
+    }
+    if (alt == true) {
+      DDeiEditor.KEY_DOWN_STATE.set("alt", true);
+    } else {
+      DDeiEditor.KEY_DOWN_STATE.set("alt", false);
+    }
+    if (evt.keyCode != 93 && evt.keyCode != 18 && evt.keyCode != 16 && evt.keyCode != 17) {
+      DDeiEditor.KEY_DOWN_STATE.set("" + evt.keyCode, true);
+    }
+    DDei.syncKeyDownState(DDeiEditor.KEY_DOWN_STATE);
+  }
+
+  /**
    * 根据快捷键配置以及当前操作的上下文环境
    * 路由到合理的键行为实例上
    */
@@ -30,24 +59,22 @@ abstract class DDeiKeyAction {
     let ctrl = evt.ctrlKey || evt.metaKey;
     let shift = evt.shiftKey;
     let alt = evt.altKey
+    DDeiKeyAction.updateKeyState(evt);
     let m1Str = editor.state + "_";
     if (ctrl == true) {
       m1Str += "ctrl_"
-      DDeiEditor.KEY_DOWN_STATE.set("ctrl", true);
     }
     if (shift == true) {
       m1Str += "shift_"
-      DDeiEditor.KEY_DOWN_STATE.set("shift", true);
     }
     if (alt == true) {
       m1Str += "alt_"
-      DDeiEditor.KEY_DOWN_STATE.set("alt", true);
     }
     if (evt.keyCode != 93 && evt.keyCode != 18 && evt.keyCode != 16 && evt.keyCode != 17) {
       m1Str += evt.keyCode
-      DDeiEditor.KEY_DOWN_STATE.set("" + evt.keyCode, true);
     }
-    DDei.syncKeyDownState(DDeiEditor.KEY_DOWN_STATE);
+
+
     //执行下发逻
     for (let it = 0; it < DDeiEditor.HOT_KEY_MAPPING.length; it++) {
       let item = DDeiEditor.HOT_KEY_MAPPING[it];

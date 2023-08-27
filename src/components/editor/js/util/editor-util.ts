@@ -27,6 +27,7 @@ class DDeiEditorUtil {
         //找到控件定义
         let control = controlOriginDefinies.get(id);
         searchMap = control.attrDefineMap;
+
       }
       if (searchMap) {
         let noCodeMatchPaths: string[] = [];

@@ -61,7 +61,7 @@ export default {
       'text': '圆形',
       'width': 150,
       'height': 150,
-      'icon': 'toolbox-shape-rect-big.png',
+      'icon': 'toolbox-shape-circle.png',
       'orderNo': 6
     },
     {
@@ -70,7 +70,7 @@ export default {
       'text': '椭圆',
       'width': 160,
       'height': 100,
-      'icon': 'toolbox-shape-rect-big.png',
+      'icon': 'toolbox-shape-ellipse.png',
       'orderNo': 6
     },
     {
@@ -79,7 +79,7 @@ export default {
       'text': '菱形',
       'width': 200,
       'height': 120,
-      'icon': 'toolbox-shape-rect-big.png',
+      'icon': 'toolbox-shape-diamond.png',
       'orderNo': 5
     },
     {

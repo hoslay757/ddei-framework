@@ -4,7 +4,7 @@ export default {
   'code': 'ellipse',
   'desc': '标准的椭圆形',
   'type': 'DDeiCircle',
-  'icon': 'toolbox-shape-square.png'
+  'icon': 'toolbox-shape-ellipse.png'
 }
 
 
@@ -232,20 +232,6 @@ export const styles = {
       'display': 'column',
       'defaultValue': '0',
       'orderNo': 6,
-      'visiable': 1
-    },
-    {
-      'id': '100004207',
-      'code': 'textStyle.hollow',
-      'name': '镂空',
-      'desc': '文本的镂空显示',
-      'group': '文本',
-      'controlType': 'radio',
-      'dataType': 'string',
-      'dataSource': [{ 'text': '是', 'value': '1' }, { 'text': '否', 'value': '0' }],
-      'display': 'column',
-      'defaultValue': '0',
-      'orderNo': 7,
       'visiable': 1
     },
     {

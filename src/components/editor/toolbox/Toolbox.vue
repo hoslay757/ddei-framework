@@ -60,6 +60,8 @@ export default {
       editor: null,
       //用于缓存动态引入的控件
       controlCls: {},
+      //创建时的图片
+      creatingImg: new Image()
     };
   },
   computed: {
@@ -68,8 +70,9 @@ export default {
   created() { },
   emits: ['createControlPrepare', 'changeEditorFocus'],
   mounted() {
-
-
+    //空图片
+    this.creatingImg.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+    this.creatingImg.style.visibility = 'hidden'
     //动态加载控件
     const control_ctx = import.meta.glob('@/components/framework/js/models/*.ts')
     for (const path in control_ctx) {
@@ -164,6 +167,9 @@ export default {
       });
       let model: DDeiAbstractShape = this.controlCls[control.type].initByJSON(dataJson);
       model.state = DDeiEnumControlState.CREATING;
+
+      e.dataTransfer.setDragImage(this.creatingImg, 0, 0)
+
       this.$emit('createControlPrepare', model)
     },
 

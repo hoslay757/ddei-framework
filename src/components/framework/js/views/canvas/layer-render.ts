@@ -214,22 +214,126 @@ class DDeiLayerCanvasRender {
 
 
     // 计算图形拖拽后将要到达的坐标
-    if (DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
+    // TODO 后续考虑做成粘附效果，不由辅助线是否开启作为判断条件
+    //shift键的按下状态
+    let isShift = DDei.KEY_DOWN_STATE.get("shift");
+    if (!isShift && DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
       //辅助对齐线宽度
       let helpLineWeight = DDeiConfig.GLOBAL_HELP_LINE_WEIGHT;
 
       var mod = movedBounds.x % helpLineWeight
+
       if (mod > helpLineWeight * 0.5) {
-        movedBounds.x = movedBounds.x + (helpLineWeight - mod)
+        movedBounds.x += (helpLineWeight - mod)
       } else {
-        movedBounds.x = movedBounds.x - mod
+        movedBounds.x -= mod
       }
       mod = movedBounds.y % helpLineWeight
       if (mod > helpLineWeight * 0.5) {
-        movedBounds.y = movedBounds.y + (helpLineWeight - mod)
+        movedBounds.y += (helpLineWeight - mod)
       } else {
-        movedBounds.y = movedBounds.y - mod
+        movedBounds.y -= mod
       }
+
+
+      //判断是改变控件大小，还是移动控件，两者的二次调整策略有差异
+      //移动时的二次调整，确保移动后的坐标轴在辅助线上
+      let dragModel = null;
+      let isX = false;
+      let isY = false;
+      let isW = false;
+      let isH = false;
+      switch (this.stageRender.operateState) {
+        case DDeiEnumOperateState.CONTROL_CREATING:
+        case DDeiEnumOperateState.CONTROL_DRAGING:
+          dragModel = this.stageRender.dragObj.model;
+          isX = true;
+          isY = true;
+          break;
+        case DDeiEnumOperateState.CONTROL_CHANGING_BOUND:
+          dragModel = this.stageRender.selector;
+          switch (dragModel.passIndex) {
+            //上中
+            case 1: {
+              isY = true;
+              break;
+            }
+            //上右
+            case 2: {
+              isY = true;
+              isW = true;
+              break;
+            }
+            //中右
+            case 3: {
+              isW = true;
+              break;
+            }
+            //下右
+            case 4: {
+              isW = true;
+              isH = true;
+              break;
+            }
+            //下中
+            case 5: {
+              isH = true;
+              break;
+            }
+            //下左
+            case 6: {
+              isX = true;
+              isH = true;
+              break;
+            }
+            //中左
+            case 7: {
+              isX = true;
+              break;
+            }
+            //上左
+            case 8: {
+              isY = true;
+              isX = true;
+              break;
+            }
+            default: {
+              break;
+            }
+          }
+          break;
+        default: break;
+      }
+
+      if (dragModel) {
+        let mx = dragModel.x;
+        if (isW) {
+          mx += dragModel.width;
+        }
+        if (mx % helpLineWeight != 0) {
+          let xmod = mx % helpLineWeight;
+          if (xmod > helpLineWeight * 0.5) {
+            movedBounds.x += (helpLineWeight - xmod);
+          }
+          else {
+            movedBounds.x -= xmod;
+          }
+        }
+        let my = dragModel.y;
+        if (isH) {
+          my += dragModel.height;
+        }
+        if (my % helpLineWeight != 0) {
+          let ymod = my % helpLineWeight;
+          if (ymod > helpLineWeight * 0.5) {
+            movedBounds.y += (helpLineWeight - ymod);
+          }
+          else {
+            movedBounds.y -= ymod;
+          }
+        }
+      }
+
     }
     return movedBounds
   }
@@ -446,8 +550,9 @@ class DDeiLayerCanvasRender {
     if (!this.model.display) {
       return;
     }
-    //ctrl键的按下状态
+    //ctrl、alt键的按下状态
     let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
+    let isAlt = DDei.KEY_DOWN_STATE.get("alt");
     //判断当前操作状态
     switch (this.stageRender.operateState) {
       //控件状态确认中
@@ -504,7 +609,7 @@ class DDeiLayerCanvasRender {
       //控件拖拽中
       case DDeiEnumOperateState.CONTROL_DRAGING:
         //如果按下了ctrl键，则需要修改容器的关系并更新样式
-        if (isCtrl) {
+        if (isAlt) {
           //寻找鼠标落点当前所在的容器
           let mouseOnContainers: DDeiAbstractShape[] = DDeiAbstractShape.findBottomContainersByArea(this.model, evt.offsetX, evt.offsetY);
           let lastOnContainer = this.model;
@@ -616,8 +721,9 @@ class DDeiLayerCanvasRender {
     if (!this.model.display) {
       return;
     }
-    //ctrl键的按下状态
+    //ctrl、alt键的按下状态
     let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
+    let isAlt = DDei.KEY_DOWN_STATE.get("alt");
     //判断当前操作状态
     switch (this.stageRender.operateState) {
       //控件状态确认中
@@ -673,7 +779,7 @@ class DDeiLayerCanvasRender {
             this.stageRender.dragObj.y = this.stageRender.dragObj.y + movedPosDelta.y;
             //如果按下ctrl键，则不改变父容器大小，而是走控件移出逻辑
             //TODO 后续通过状态机来控制，使按下ctrl后立刻发生反应，而不是拖放以后
-            if (!isCtrl) {
+            if (!isAlt) {
               //同步更新上层容器其大小和坐标
               pContainerModel.changeParentsBounds()
               this.stageRender.selector.setPassIndex(10);
@@ -734,6 +840,9 @@ class DDeiLayerCanvasRender {
               this.stageRender.selector.updatedBoundsBySelectedModels(pContainerModel);
               //重新渲染
               this.ddRender.drawShape();
+              //显示辅助对齐线、坐标文本等图形
+              let selectedModels = pContainerModel.getSelectedModels();
+              this.drawHelpLines(DDeiAbstractShape.getOutRect(Array.from(selectedModels.values())), selectedModels);
             }
 
           }

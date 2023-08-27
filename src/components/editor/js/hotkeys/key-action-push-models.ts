@@ -30,8 +30,8 @@ class DDeiKeyActionPushModels extends DDeiKeyAction {
               optContainer.pushBottom(Array.from(selectedModels.values()))
             }
           }
-          //只按下了shift
-          else if (isShift) {
+          //只按下了ctrl
+          else if (isCtrl) {
             //上
             if (evt.keyCode == 38) {
               optContainer.pushUp(Array.from(selectedModels.values()))
