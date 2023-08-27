@@ -143,6 +143,9 @@ export default {
       this.$emit('changeEditorFocus', DDeiEditorState.TOOLBOX_ACTIVE)
     },
 
+
+
+
     /**
      * 准备创建
      */

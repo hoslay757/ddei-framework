@@ -148,6 +148,7 @@ export default {
   flex: 0 0 30px;
   display: flex;
   border-bottom: 1pt solid rgb(211, 211, 211);
+  color: grey;
 }
 
 .ddei_editor_pv_subgroup_view_tab_title_item {
