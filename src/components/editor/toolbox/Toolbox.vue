@@ -2,7 +2,7 @@
   <div>
     <div id="ddei_editor_toolbox" @mousedown="changeEditorFocus" class="ddei_editor_toolbox">
       <div class="expandbox">
-        <img class="img" src="../icons/toolbox-d-left.png" />
+        <img class="img" src="../icons/icon-expand-left.png" />
       </div>
       <div class="searchbox">
         <div class="group">
@@ -143,6 +143,9 @@ export default {
       this.$emit('changeEditorFocus', DDeiEditorState.TOOLBOX_ACTIVE)
     },
 
+
+
+
     /**
      * 准备创建
      */
@@ -160,7 +163,9 @@ export default {
       };
       //设置配置的属性值
       searchPaths.forEach(key => {
-        dataJson[key] = configAtrs.get(key);
+        if (configAtrs.get(key)) {
+          dataJson[key] = configAtrs.get(key).data;
+        }
         if (control[key] != undefined && control[key] != null) {
           dataJson[key] = control[key];
         }

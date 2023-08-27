@@ -1,21 +1,21 @@
 <template>
   <div>
-    <div id="ddei_editor" class="ddei_editor">
-      <div class="top">
+    <div id="ddei_editor" class="ddei_editor" @mousemove="changeSizePrepare" @mousedown="changeSizeStart">
+      <div class="top" id="ddei_editor_frame_top">
         <TopMenu></TopMenu>
       </div>
       <div class="body">
-        <div class="left">
+        <div class="left" id="ddei_editor_frame_left">
           <Toolbox @changeEditorFocus="changeEditorFocus" @createControlPrepare="createControlPrepare"></Toolbox>
         </div>
         <div class="middle">
           <CanvasView></CanvasView>
         </div>
-        <div class="right">
+        <div class="right" id="ddei_editor_frame_right">
           <PropertyView></PropertyView>
         </div>
       </div>
-      <div class="bottom">
+      <div class="bottom" id="ddei_editor_frame_bottom">
         <BottomMenu></BottomMenu>
       </div>
     </div>
@@ -58,6 +58,34 @@ export default {
     this.editor.bindEvent();
   },
   methods: {
+
+    /**
+     * 判断是否移动到拖拽区
+     */
+    changeSizePrepare(e) {
+      //判断落点是否在某个区域的拖拽区附近
+      let frameLeftElement = document.getElementById("ddei_editor_frame_left");
+      let frameRightElement = document.getElementById("ddei_editor_frame_right");
+      let frameTopElement = document.getElementById("ddei_editor_frame_top");
+      let frameBottomElement = document.getElementById("ddei_editor_frame_bottom");
+
+      //判断鼠标落点是否在框架上
+      if (frameLeftElement.offsetTop <= e.clientY && frameLeftElement.offsetTop + frameLeftElement.offsetHeight >= e.clientY
+        && frameLeftElement.offsetLeft + frameLeftElement.offsetWidth >= e.clientX && frameLeftElement.offsetLeft + frameLeftElement.offsetWidth - 5 <= e.clientX) {
+        document.body.style.cursor = 'col-resize';
+      } else if (frameRightElement.offsetTop <= e.clientY && frameRightElement.offsetTop + frameRightElement.offsetHeight >= e.clientY
+        && frameRightElement.offsetLeft + 5 >= e.clientX && frameRightElement.offsetLeft <= e.clientX) {
+        document.body.style.cursor = 'col-resize';
+      } else if (frameTopElement.offsetTop + frameTopElement.offsetHeight - 5 <= e.clientY && frameTopElement.offsetTop + frameTopElement.offsetHeight >= e.clientY) {
+        document.body.style.cursor = 'row-resize';
+      } else if (frameBottomElement.offsetTop <= e.clientY && frameBottomElement.offsetTop + 5 >= e.clientY) {
+        document.body.style.cursor = 'row-resize';
+      } else {
+        document.body.style.cursor = 'default';
+      }
+
+    },
+
     /**
         * 焦点进入当前区域
         */

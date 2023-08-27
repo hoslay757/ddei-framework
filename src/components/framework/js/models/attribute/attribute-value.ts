@@ -83,13 +83,21 @@ class DDeiModelArrtibuteValue {
             let searchPath = attrCode + "." + stateCode + attrPath.substring(attrPath.indexOf('.'));
             let configAtrs = DDeiUtil.getAttrValueByConfig(model, searchPath);
             if (configAtrs && configAtrs.size > 0) {
-              returnValue = Array.from(configAtrs.values())[0];
+              let returnJSON = Array.from(configAtrs.values())[0];
+              if (returnJSON.overwrite && returnJSON.overwrite == true) {
+                overwrite = true;
+              }
+              returnValue = returnJSON.data;
             }
           }
           if (!returnValue) {
             let configAtrs = DDeiUtil.getAttrValueByConfig(model, attrPath);
             if (configAtrs && configAtrs.size > 0) {
-              returnValue = Array.from(configAtrs.values())[0];
+              let returnJSON = Array.from(configAtrs.values())[0];
+              if (returnJSON.overwrite && returnJSON.overwrite == true) {
+                overwrite = true;
+              }
+              returnValue = returnJSON.data;
             }
           }
         }
