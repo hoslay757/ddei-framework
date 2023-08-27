@@ -43,8 +43,8 @@ class DDeiConfig {
   static SELECTOR: object = {
     //选择器边框
     border: {
-      width: 1.5, color: "rgb(1,127,255)", dash: [10, 10], round: 0,
-      selected: { width: 1.5, color: "rgb(1,127,255)", dash: [10, 10], round: 0 }
+      width: 1, color: "rgb(1,127,255)", dash: [5, 3], round: 0,
+      selected: { width: 1, color: "rgb(1,127,255)", dash: [5, 3], round: 0 }
     },
 
     //操作区域的填充样式，根据选中和未选中状态可以有所变化

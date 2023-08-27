@@ -14,6 +14,7 @@ import DDeiEnumControlState from '../../framework/js/enums/control-state';
 import DDeiUtil from '../../framework/js/util';
 import type DDeiAbstractShape from '@/components/framework/js/models/shape';
 import DDeiKeyAction from '../js/hotkeys/key-action';
+import DDeiEnumOperateState from '@/components/framework/js/enums/operate-state';
 
 
 export default {
@@ -67,6 +68,7 @@ export default {
           let layer = ddInstance.stage.layers[ddInstance.stage.layerIndex]
           if (layer) {
             ddInstance.stage.render.currentOperateContainer = layer
+            ddInstance.stage.render.operateState = DDeiEnumOperateState.CONTROL_CREATING
             let control = this.editor.creatingControl;
             //在画布上创建临时对象
             if (!layer.models.has(control.id)) {
@@ -134,6 +136,7 @@ export default {
 
           ddInstance.stage.render.dragObj = null;
 
+          ddInstance.stage.render.operateState = DDeiEnumOperateState.NONE;
           //切换到设计器
           this.editor.state = DDeiEditorState.DESIGNING;
           //重绘
@@ -152,6 +155,7 @@ export default {
           let layer = ddInstance.stage.layers[ddInstance.stage.layerIndex]
           layer.removeModel(this.editor.creatingControl);
           ddInstance.stage.render.dragObj = null;
+          ddInstance.stage.render.operateState = DDeiEnumOperateState.NONE;
           //重绘
           ddInstance.stage.render.drawShape();
         }

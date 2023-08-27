@@ -214,7 +214,7 @@ class DDeiLayerCanvasRender {
 
 
     // 计算图形拖拽后将要到达的坐标
-    // TODO 后续考虑做成🤵效果，不由辅助线是否开启作为判断条件
+    // TODO 后续考虑做成粘附效果，不由辅助线是否开启作为判断条件
     //shift键的按下状态
     let isShift = DDei.KEY_DOWN_STATE.get("shift");
     if (!isShift && DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
@@ -228,11 +228,6 @@ class DDeiLayerCanvasRender {
       } else {
         movedBounds.x -= mod
       }
-
-
-
-
-
       mod = movedBounds.y % helpLineWeight
       if (mod > helpLineWeight * 0.5) {
         movedBounds.y += (helpLineWeight - mod)
@@ -240,10 +235,83 @@ class DDeiLayerCanvasRender {
         movedBounds.y -= mod
       }
 
+
+      //判断是改变控件大小，还是移动控件，两者的二次调整策略有差异
       //移动时的二次调整，确保移动后的坐标轴在辅助线上
-      if (this.stageRender.dragObj.model) {
-        if (this.stageRender.dragObj.model.x % helpLineWeight != 0) {
-          let xmod = this.stageRender.dragObj.model.x % helpLineWeight;
+      let dragModel = null;
+      let isX = false;
+      let isY = false;
+      let isW = false;
+      let isH = false;
+      switch (this.stageRender.operateState) {
+        case DDeiEnumOperateState.CONTROL_CREATING:
+        case DDeiEnumOperateState.CONTROL_DRAGING:
+          dragModel = this.stageRender.dragObj.model;
+          isX = true;
+          isY = true;
+          break;
+        case DDeiEnumOperateState.CONTROL_CHANGING_BOUND:
+          dragModel = this.stageRender.selector;
+          switch (dragModel.passIndex) {
+            //上中
+            case 1: {
+              isY = true;
+              break;
+            }
+            //上右
+            case 2: {
+              isY = true;
+              isW = true;
+              break;
+            }
+            //中右
+            case 3: {
+              isW = true;
+              break;
+            }
+            //下右
+            case 4: {
+              isW = true;
+              isH = true;
+              break;
+            }
+            //下中
+            case 5: {
+              isH = true;
+              break;
+            }
+            //下左
+            case 6: {
+              isX = true;
+              isH = true;
+              break;
+            }
+            //中左
+            case 7: {
+              isX = true;
+              break;
+            }
+            //上左
+            case 8: {
+              isY = true;
+              isX = true;
+              break;
+            }
+            default: {
+              break;
+            }
+          }
+          break;
+        default: break;
+      }
+
+      if (dragModel) {
+        let mx = dragModel.x;
+        if (isW) {
+          mx += dragModel.width;
+        }
+        if (mx % helpLineWeight != 0) {
+          let xmod = mx % helpLineWeight;
           if (xmod > helpLineWeight * 0.5) {
             movedBounds.x += (helpLineWeight - xmod);
           }
@@ -251,8 +319,12 @@ class DDeiLayerCanvasRender {
             movedBounds.x -= xmod;
           }
         }
-        if (this.stageRender.dragObj.model.y % helpLineWeight != 0) {
-          let ymod = this.stageRender.dragObj.model.y % helpLineWeight;
+        let my = dragModel.y;
+        if (isH) {
+          my += dragModel.height;
+        }
+        if (my % helpLineWeight != 0) {
+          let ymod = my % helpLineWeight;
           if (ymod > helpLineWeight * 0.5) {
             movedBounds.y += (helpLineWeight - ymod);
           }
@@ -261,6 +333,7 @@ class DDeiLayerCanvasRender {
           }
         }
       }
+
     }
     return movedBounds
   }
@@ -767,6 +840,9 @@ class DDeiLayerCanvasRender {
               this.stageRender.selector.updatedBoundsBySelectedModels(pContainerModel);
               //重新渲染
               this.ddRender.drawShape();
+              //显示辅助对齐线、坐标文本等图形
+              let selectedModels = pContainerModel.getSelectedModels();
+              this.drawHelpLines(DDeiAbstractShape.getOutRect(Array.from(selectedModels.values())), selectedModels);
             }
 
           }
