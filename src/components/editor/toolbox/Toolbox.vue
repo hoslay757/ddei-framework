@@ -2,7 +2,7 @@
   <div>
     <div id="ddei_editor_toolbox" @mousedown="changeEditorFocus" class="ddei_editor_toolbox">
       <div class="expandbox">
-        <img class="img" src="../icons/toolbox-d-left.png" />
+        <img class="img" src="../icons/icon-expand-left.png" />
       </div>
       <div class="searchbox">
         <div class="group">
