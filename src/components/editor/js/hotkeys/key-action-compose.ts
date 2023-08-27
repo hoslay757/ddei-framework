@@ -26,16 +26,17 @@ class DDeiKeyActionCompose extends DDeiKeyAction {
         //获取选中图形的外接矩形
         let outRect = DDeiAbstractShape.getOutRect(models);
         //创建一个容器，添加到画布,其坐标等于外接矩形
-        //创建一个矩形
         let container: DDeiRectContainer = DDeiRectContainer.initByJSON({
           id: "container_" + ddInstance.stage.idIdx,
           x: outRect.x,
           y: outRect.y,
+          modelCode: "100201",
           width: outRect.width,
           height: outRect.height,
           linkChild: true,
           linkSelf: true
         });
+
         container.state = DDeiEnumControlState.SELECTED;
         //下标自增1
         ddInstance.stage.idIdx++;

@@ -4,7 +4,7 @@ export default {
   'code': 'circle',
   'desc': '标准的圆形',
   'type': 'DDeiCircle',
-  'icon': 'toolbox-shape-square.png'
+  'icon': 'toolbox-shape-circle.png'
 }
 
 

@@ -4,7 +4,7 @@ export default {
   'code': 'ellipse',
   'desc': '标准的椭圆形',
   'type': 'DDeiCircle',
-  'icon': 'toolbox-shape-square.png'
+  'icon': 'toolbox-shape-ellipse.png'
 }
 
 

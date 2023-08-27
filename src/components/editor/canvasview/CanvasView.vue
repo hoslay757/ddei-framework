@@ -11,8 +11,7 @@ import DDeiEditor from '../js/editor';
 import DDeiEditorState from '../js/enums/editor-state';
 import DDeiConfig from '../../framework/js/config';
 import DDeiEnumControlState from '../../framework/js/enums/control-state';
-import DDeiUtil from '../../framework/js/util';
-import type DDeiAbstractShape from '@/components/framework/js/models/shape';
+import DDeiAbstractShape from '@/components/framework/js/models/shape';
 import DDeiKeyAction from '../js/hotkeys/key-action';
 import DDeiEnumOperateState from '@/components/framework/js/enums/operate-state';
 
@@ -50,6 +49,7 @@ export default {
      * 拖拽元素移动
      */
     createControlOver(e) {
+
       if (!window.uptime) {
         window.uptime = new Date().getTime();
       }
@@ -101,6 +101,22 @@ export default {
                 //更新dragObj临时变量中的数值,确保坐标对应关系一致
                 ddInstance.stage.render.dragObj.x += movedPosDelta.x;
                 ddInstance.stage.render.dragObj.y += movedPosDelta.y;
+                let isAlt = DDeiEditor.KEY_DOWN_STATE.get("alt");
+                ddInstance.stage.render.selector.setPassIndex(10);
+                let lastOnContainer = layer;
+                if (isAlt) {
+                  //寻找鼠标落点当前所在的容器
+                  let mouseOnContainers = DDeiAbstractShape.findBottomContainersByArea(layer, e.offsetX, e.offsetY);
+                  if (mouseOnContainers && mouseOnContainers.length > 0) {
+                    lastOnContainer = mouseOnContainers[mouseOnContainers.length - 1];
+                  }
+                  //如果最小层容器不是当前容器，则修改鼠标样式，代表可能要移入
+                  if (lastOnContainer != layer) {
+                    ddInstance.stage.render.selector.setPassIndex(11);
+                  }
+                }
+
+
                 //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
                 ddInstance.stage.render.drawShape();
                 //显示辅助对齐线、坐标文本等图形
@@ -121,11 +137,42 @@ export default {
     createControlDrop(e) {
       if (this.editor.state == DDeiEditorState.CONTROL_CREATING) {
         if (this.editor.creatingControl) {
-
+          let isAlt = DDeiEditor.KEY_DOWN_STATE.get("alt");
           let ddInstance: DDei = this.editor.ddInstance;
           ddInstance.stage.idIdx++;
           //取消选中其他控件
           let layer = ddInstance.stage.layers[ddInstance.stage.layerIndex]
+          //如果按下了ctrl键，则移入容器
+          if (isAlt) {
+            //寻找鼠标落点当前所在的容器
+            let mouseOnContainers: DDeiAbstractShape[] = DDeiAbstractShape.findBottomContainersByArea(layer, e.offsetX, e.offsetY);
+            let lastOnContainer = layer;
+            if (mouseOnContainers && mouseOnContainers.length > 0) {
+              lastOnContainer = mouseOnContainers[mouseOnContainers.length - 1];
+            }
+            //如果最小层容器不是当前容器，执行的移动容器操作
+            if (lastOnContainer != layer) {
+              let loAbsPos = lastOnContainer.getAbsPosition();
+              let loAbsRotate = lastOnContainer.getAbsRotate();
+              //转换坐标，获取最外层的坐标
+              let item = this.editor.creatingControl;
+              let itemAbsPos = item.getAbsPosition();
+              let itemAbsRotate = item.getAbsRotate();
+              item.x = itemAbsPos.x - loAbsPos.x
+              item.y = itemAbsPos.y - loAbsPos.y
+              item.rotate = itemAbsRotate - loAbsRotate
+              layer.removeModel(item);
+              lastOnContainer.addModel(item);
+              //绑定并初始化渲染器
+              DDeiConfig.bindRender(item);
+              item.render.init();
+              //更新新容器大小
+              lastOnContainer.changeParentsBounds()
+            }
+          }
+
+          ddInstance.stage.render.selector.setPassIndex(-1);
+
           layer.cancelSelectModels();
           //设置选中当前控件
           this.editor.creatingControl.state = DDeiEnumControlState.SELECTED;

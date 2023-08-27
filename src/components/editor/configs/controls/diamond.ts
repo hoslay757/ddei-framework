@@ -4,7 +4,7 @@ export default {
   'code': 'diamond',
   'desc': '标准的菱形',
   'type': 'DDeiDiamond',
-  'icon': 'toolbox-shape-rect.png'
+  'icon': 'toolbox-shape-diamond.png'
 }
 
 
