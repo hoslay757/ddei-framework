@@ -30,7 +30,6 @@ export default {
   computed: {},
   watch: {},
   created() { },
-  emits: ['changeEditorFocus'],
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
@@ -42,7 +41,7 @@ export default {
      * 焦点进入当前区域
      */
     changeEditorFocus() {
-      this.$emit('changeEditorFocus', DDeiEditorState.DESIGNING)
+      this.editor.changeState(DDeiEditorState.DESIGNING);
     },
 
     /**

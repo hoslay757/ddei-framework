@@ -36,19 +36,39 @@ class DDeiCanvasRender {
         let ctx = this.canvas.getContext('2d');
         //获取缩放比例
         let ratio = DDeiUtil.getPixelRatio(ctx);
+        this.container.appendChild(this.canvas);
         this.canvas.setAttribute("style", "display:block;zoom:" + (1 / ratio));
         this.canvas.setAttribute("width", this.container.clientWidth * ratio);
         this.canvas.setAttribute("height", this.container.clientHeight * ratio);
         this.ratio = ratio;
-        this.container.appendChild(this.canvas);
+
         //向canvas绑定事件
         this.bindEvent();
+        setTimeout(() => {
+          this.setSize(0, 0, 1, 1);
+          this.drawShape();
+        }, 10);
       }
     } else {
       throw new Error("容器" + this.model.containerid + "不存在");
     }
   }
 
+  /** 
+   * 重新设置大小
+  */
+  setSize(width: number = 0, height: number = 0, deltaX: number = 0, deltaY: number = 0): void {
+    if (!width || width == 0) {
+      width = this.container.clientWidth;
+    }
+    width += deltaX;
+    if (!height || height == 0) {
+      height = this.container.clientHeight;
+    }
+    height += deltaY;
+    this.canvas.setAttribute("width", width * this.ratio);
+    this.canvas.setAttribute("height", height * this.ratio);
+  }
 
   /**
    * 绘制图形
@@ -66,20 +86,20 @@ class DDeiCanvasRender {
    */
   bindEvent(): void {
 
-    //绑定鼠标按下事件
-    this.canvas.addEventListener('mousedown', (evt: Event) => {
-      this.mouseDown(evt)
-    });
+    // //绑定鼠标按下事件
+    // this.canvas.addEventListener('mousedown', (evt: Event) => {
+    //   this.mouseDown(evt)
+    // });
 
-    //绑定鼠标弹起事件
-    this.canvas.addEventListener('mouseup', (evt: Event) => {
-      this.mouseUp(evt)
-    });
+    // //绑定鼠标弹起事件
+    // this.canvas.addEventListener('mouseup', (evt: Event) => {
+    //   this.mouseUp(evt)
+    // });
 
-    //绑定鼠标移动事件
-    this.canvas.addEventListener('mousemove', (evt: Event) => {
-      this.mouseMove(evt)
-    });
+    // //绑定鼠标移动事件
+    // this.canvas.addEventListener('mousemove', (evt: Event) => {
+    //   this.mouseMove(evt)
+    // });
 
 
   }

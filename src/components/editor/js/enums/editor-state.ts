@@ -11,6 +11,8 @@ enum DDeiEditorState {
   CONTROL_CREATING = "control_creating",
   //工具栏控件激活中
   TOOLBOX_ACTIVE = "toolbox_active",
+  //框架大小改变中
+  FRAME_CHANGING = "frame_changing",
 }
 
 export default DDeiEditorState

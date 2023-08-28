@@ -1,21 +1,21 @@
 <template>
   <div>
-    <div id="ddei_editor" class="ddei_editor" @mousemove="changeSizePrepare" @mousedown="changeSizeStart">
-      <div class="top" id="ddei_editor_frame_top">
+    <div id="ddei_editor" class="ddei_editor" @mouseup="mouseUp" @mousemove="mouseMove" @mousedown="mouseDown">
+      <div style="flex:0 0 175px" class="top" id="ddei_editor_frame_top">
         <TopMenu></TopMenu>
       </div>
       <div class="body">
-        <div class="left" id="ddei_editor_frame_left">
-          <Toolbox @changeEditorFocus="changeEditorFocus" @createControlPrepare="createControlPrepare"></Toolbox>
+        <div style="flex:0 0 220px" id="ddei_editor_frame_left">
+          <Toolbox @createControlPrepare="createControlPrepare"></Toolbox>
         </div>
-        <div class="middle">
+        <div class="middle" id="ddei_editor_frame_middle">
           <CanvasView></CanvasView>
         </div>
-        <div class="right" id="ddei_editor_frame_right">
+        <div style="flex:0 0 275px" class="right" id="ddei_editor_frame_right">
           <PropertyView></PropertyView>
         </div>
       </div>
-      <div class="bottom" id="ddei_editor_frame_bottom">
+      <div style="flex: 0 0 60px" class="bottom" id="ddei_editor_frame_bottom">
         <BottomMenu></BottomMenu>
       </div>
     </div>
@@ -40,7 +40,9 @@ export default {
   props: {},
   data() {
     return {
-      editor: DDeiEditor.newInstance("ddei_editor_ins", "ddei_editor")
+      editor: DDeiEditor.newInstance("ddei_editor_ins", "ddei_editor"),
+      dragObj:null,
+      changeIndex: -1
     };
   },
   //注册组件
@@ -56,42 +58,148 @@ export default {
   created() { },
   mounted() {
     this.editor.bindEvent();
+    let frameLeftElement = document.getElementById("ddei_editor_frame_left");
+    let frameRightElement = document.getElementById("ddei_editor_frame_right");
+    let frameTopElement = document.getElementById("ddei_editor_frame_top");
+    let frameBottomElement = document.getElementById("ddei_editor_frame_bottom");
+    let frameMiddleElement = document.getElementById("ddei_editor_frame_middle");
+    this.editor.leftWidth = frameLeftElement.offsetWidth;
+    this.editor.rightWidth = frameRightElement.offsetWidth;
+    this.editor.topHeight = frameTopElement.offsetHeight;
+    this.editor.bottomHeight = frameBottomElement.offsetHeight;
+    this.editor.middleWidth = frameMiddleElement.offsetWidth;
+    this.editor.middleHeight = frameMiddleElement.offsetHeight;
   },
   methods: {
 
     /**
+     * 停止改变大小
+     * @param e 
+     */
+    mouseUp(e:Event){
+      if (this.editor.state == DDeiEditorState.FRAME_CHANGING) {
+        this.dragObj = null;
+        this.changeIndex = -1;
+        this.editor.state = DDeiEditorState.DESIGNING;
+      }else if(this.editor.state == DDeiEditorState.DESIGNING){
+        //事件下发到绘图区
+        this.editor.ddInstance.render.mouseUp(e);
+      }
+    },
+    /**
      * 判断是否移动到拖拽区
      */
-    changeSizePrepare(e) {
+     mouseMove(e: Event) {
       //判断落点是否在某个区域的拖拽区附近
       let frameLeftElement = document.getElementById("ddei_editor_frame_left");
       let frameRightElement = document.getElementById("ddei_editor_frame_right");
       let frameTopElement = document.getElementById("ddei_editor_frame_top");
+      let frameMiddleElement = document.getElementById("ddei_editor_frame_middle");
       let frameBottomElement = document.getElementById("ddei_editor_frame_bottom");
+      //拖拽中，根据拖拽的类型，改变大小
+      if(this.editor.state == DDeiEditorState.FRAME_CHANGING){
+        let deltaY = e.clientY - this.dragObj.y;
+        let deltaX = e.clientX - this.dragObj.x;
+        switch(this.changeIndex){
+          case 1:
+            if(deltaY != 0){
+              if(frameTopElement.offsetHeight+ deltaY <= 175 && frameTopElement.offsetHeight+ deltaY >= 40){
+                frameTopElement.style.flexBasis =  (frameTopElement.offsetHeight+ deltaY)+"px";
+                frameTopElement.style.flexShrink = "0";
+                frameTopElement.style.flexGrow = "0";
+                this.editor.middleHeight -= deltaY;
+                this.editor.ddInstance.render.setSize(this.editor.middleWidth , this.editor.middleHeight, 0,0)
+                this.editor.ddInstance.render.drawShape()
+              }
+            } 
+            break;
+          case 2:
+            if (deltaX != 0) {
+              if (frameRightElement.offsetWidth - deltaX <= 400 && frameRightElement.offsetWidth - deltaX >= 275) {
+                frameRightElement.style.flexBasis = (frameRightElement.offsetWidth - deltaX) + "px";
+                frameRightElement.style.flexShrink = "0";
+                frameRightElement.style.flexGrow = "0";
+                this.editor.middleWidth += deltaX;
+                this.editor.ddInstance.render.setSize(this.editor.middleWidth, this.editor.middleHeight, 0, 0)
+                this.editor.ddInstance.render.drawShape()
+              }
+            }
+            break;
+          case 4:
+            if (deltaX != 0) {
+              if (frameLeftElement.offsetWidth + deltaX <= 500 && frameLeftElement.offsetWidth + deltaX >= 140) {
+                frameLeftElement.style.flexBasis = (frameLeftElement.offsetWidth + deltaX) + "px";
+                frameLeftElement.style.flexShrink = "0";
+                frameLeftElement.style.flexGrow = "0";
+                //重新设置画布大小
+                this.editor.middleWidth -= deltaX;
+                this.editor.ddInstance.render.setSize(this.editor.middleWidth, this.editor.middleHeight, 0, 0)
+                this.editor.ddInstance.render.drawShape()
+              }
+            }
+            break;
+          default:
+            break;
+        }
+        this.dragObj.x = e.clientX;
+        this.dragObj.y = e.clientY;
+        //同步记录大小
+        this.editor.leftWidth = frameLeftElement.offsetWidth;
+        this.editor.rightWidth = frameRightElement.offsetWidth;
+        this.editor.topHeight = frameTopElement.offsetHeight;
+        this.editor.bottomHeight = frameBottomElement.offsetHeight;
+      }else{
+        //判断鼠标落点是否在框架上
+        if (frameLeftElement.offsetTop <= e.clientY && frameLeftElement.offsetTop + frameLeftElement.offsetHeight >= e.clientY
+          && frameLeftElement.offsetLeft + frameLeftElement.offsetWidth >= e.clientX && frameLeftElement.offsetLeft + frameLeftElement.offsetWidth - 5 <= e.clientX) {
+          document.body.style.cursor = 'col-resize';
+        } else if (frameRightElement.offsetTop <= e.clientY && frameRightElement.offsetTop + frameRightElement.offsetHeight >= e.clientY
+          && frameRightElement.offsetLeft + 5 >= e.clientX && frameRightElement.offsetLeft <= e.clientX) {
+          document.body.style.cursor = 'col-resize';
+        } else if (frameTopElement.offsetTop + frameTopElement.offsetHeight - 5 <= e.clientY && frameTopElement.offsetTop + frameTopElement.offsetHeight >= e.clientY) {
+          document.body.style.cursor = 'row-resize';
+        } else if (frameMiddleElement.offsetTop <= e.clientY && frameMiddleElement.offsetLeft <= e.clientX
+          && frameMiddleElement.offsetTop + frameMiddleElement.offsetHeight >= e.clientY && frameMiddleElement.offsetLeft + frameMiddleElement.offsetWidth >= e.clientX) {
+            //事件下发到绘图区
+          this.editor.ddInstance.render.mouseMove(e);
+        } else {
+          document.body.style.cursor = 'default';
+        }
+      }
+      
+
+    },
+
+
+    /**
+     * 准备拖拽
+     */
+     mouseDown(e: Event) {
+      //判断落点是否在某个区域的拖拽区附近
+      let frameLeftElement = document.getElementById("ddei_editor_frame_left");
+      let frameRightElement = document.getElementById("ddei_editor_frame_right");
+      let frameTopElement = document.getElementById("ddei_editor_frame_top");
+      let frameMiddleElement = document.getElementById("ddei_editor_frame_middle");
 
       //判断鼠标落点是否在框架上
       if (frameLeftElement.offsetTop <= e.clientY && frameLeftElement.offsetTop + frameLeftElement.offsetHeight >= e.clientY
         && frameLeftElement.offsetLeft + frameLeftElement.offsetWidth >= e.clientX && frameLeftElement.offsetLeft + frameLeftElement.offsetWidth - 5 <= e.clientX) {
-        document.body.style.cursor = 'col-resize';
+        this.changeIndex = 4
+        this.dragObj = { x: e.clientX, y: e.clientY, originX: e.offsetX, originY: e.offsetY }
+        this.editor.state = DDeiEditorState.FRAME_CHANGING;
       } else if (frameRightElement.offsetTop <= e.clientY && frameRightElement.offsetTop + frameRightElement.offsetHeight >= e.clientY
         && frameRightElement.offsetLeft + 5 >= e.clientX && frameRightElement.offsetLeft <= e.clientX) {
-        document.body.style.cursor = 'col-resize';
+        this.changeIndex = 2
+        this.dragObj = { x: e.clientX, y: e.clientY, originX: e.offsetX, originY: e.offsetY }
+        this.editor.state = DDeiEditorState.FRAME_CHANGING;
       } else if (frameTopElement.offsetTop + frameTopElement.offsetHeight - 5 <= e.clientY && frameTopElement.offsetTop + frameTopElement.offsetHeight >= e.clientY) {
-        document.body.style.cursor = 'row-resize';
-      } else if (frameBottomElement.offsetTop <= e.clientY && frameBottomElement.offsetTop + 5 >= e.clientY) {
-        document.body.style.cursor = 'row-resize';
-      } else {
-        document.body.style.cursor = 'default';
-      }
-
-    },
-
-    /**
-        * 焦点进入当前区域
-        */
-    changeEditorFocus(state: DDeiEditorState): void {
-      if (DDeiEditor.ACTIVE_INSTANCE.state != state) {
-        DDeiEditor.ACTIVE_INSTANCE.state = state
+        this.changeIndex = 1
+        this.dragObj = { x: e.clientX, y: e.clientY, originX: e.offsetX, originY: e.offsetY }
+        this.editor.state = DDeiEditorState.FRAME_CHANGING;
+      } else if (frameMiddleElement.offsetTop <= e.clientY && frameMiddleElement.offsetLeft <= e.clientX
+        && frameMiddleElement.offsetTop + frameMiddleElement.offsetHeight >= e.clientY && frameMiddleElement.offsetLeft + frameMiddleElement.offsetWidth >= e.clientX) {
+        //事件下发到绘图区
+        this.editor.ddInstance.render.mouseDown(e);
       }
     },
 
@@ -102,7 +210,7 @@ export default {
     createControlPrepare(model: DDeiAbstractShape): void {
       if (model) {
         //修改编辑器状态为控件创建中
-        this.changeEditorFocus(DDeiEditorState.CONTROL_CREATING);
+        this.editor.changeState(DDeiEditorState.CONTROL_CREATING);
         //设置正在需要创建的控件
         this.editor.creatingControl = model;
       }
@@ -124,32 +232,18 @@ export default {
   background-color: aquamarine;
 }
 
-.ddei_editor .top {
-  background: grey;
-  flex: 0 0 175px !important;
-}
-
 .ddei_editor .body {
   display: flex;
   flex: 1;
 }
 
-.ddei_editor .body .left {
-  text-align: center;
-  background: green;
-  flex: 0 0 220px !important;
-}
 
 .ddei_editor .body .middle {
-  background: blue;
   flex: 1;
 }
 
 .ddei_editor .body .right {
-  flex: 0 0 275px !important;
-}
-
-.ddei_editor .bottom {
-  flex: 0 0 60px !important;
+  display: flex;
+  flex-direction: column;
 }
 </style>

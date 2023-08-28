@@ -32,6 +32,5 @@ export default {
 .ddei_editor_topmenu {
   background: grey;
   width: 100%;
-  height: 175px;
 }
 </style>

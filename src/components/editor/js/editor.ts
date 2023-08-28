@@ -123,6 +123,11 @@ class DDeiEditor {
   modelType: string = "DDeiEditor";
   //当前的实例
   ddInstance: DDei | null;
+  //上下左右四个方向的大小
+  leftWidth: number = 0;
+  topHeight: number = 0;
+  rightWidth: number = 0;
+  bottomHeight: number = 0;
 
   // ============================ 方法 ============================
   // ============================ 事件 ============================
@@ -140,6 +145,16 @@ class DDeiEditor {
       this.keyUp(evt)
       evt.preventDefault()
     });
+  }
+
+  /**
+   * 改变编辑器状态
+   * @param state 新状态
+   */
+  changeState(state: DDeiEditorState): void {
+    if (this.state != state) {
+      this.state = state
+    }
   }
 
   /**
