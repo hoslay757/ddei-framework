@@ -82,6 +82,7 @@ export default {
         this.editor.middleWidth -= deltaX;
       }
       this.editor.ddInstance.render.setSize(this.editor.middleWidth, this.editor.middleHeight, 0, 0)
+      
       this.editor.ddInstance.render.drawShape()
     }
   }
