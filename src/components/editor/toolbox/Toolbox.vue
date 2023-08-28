@@ -1,7 +1,7 @@
 <template>
-  <div id="ddei_editor_toolbox" @mousedown="changeEditorFocus" class="ddei_editor_toolbox">
+  <div id="ddei_editor_toolbox" v-show="editor?.leftWidth >0" @mousedown="changeEditorFocus" class="ddei_editor_toolbox">
     <div class="expandbox">
-      <img class="img" :src="expandLeftImg" />
+      <img class="img" :src="expandLeftImg" @click="hiddenToolBox" />
     </div>
     <div class="searchbox">
       <div class="group">
@@ -108,6 +108,20 @@ export default {
     });
   },
   methods: {
+
+    /**
+     * 隐藏工具栏
+     */
+    hiddenToolBox(){
+      let deltaX = this.editor.leftWidth;
+      let frameLeftElement = document.getElementById("ddei_editor_frame_left");
+      this.editor.leftWidth = 0;
+      frameLeftElement.style.flexBasis = "0px";
+      //重新设置画布大小
+      this.editor.middleWidth += deltaX;
+      this.editor.ddInstance.render.setSize(this.editor.middleWidth, this.editor.middleHeight, 0, 0)
+      this.editor.ddInstance.render.drawShape()
+    },
 
     /**
      * 展开或收折groupbox

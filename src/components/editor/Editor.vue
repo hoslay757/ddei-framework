@@ -15,7 +15,7 @@
           <PropertyView></PropertyView>
         </div>
       </div>
-      <div style="flex: 0 0 60px" class="bottom" id="ddei_editor_frame_bottom">
+      <div style="flex: 0 0 60px;" class="bottom" id="ddei_editor_frame_bottom">
         <BottomMenu></BottomMenu>
       </div>
     </div>
@@ -96,6 +96,8 @@ export default {
       let frameTopElement = document.getElementById("ddei_editor_frame_top");
       let frameMiddleElement = document.getElementById("ddei_editor_frame_middle");
       let frameBottomElement = document.getElementById("ddei_editor_frame_bottom");
+      this.editor.middleWidth = frameMiddleElement.offsetWidth;
+      this.editor.middleHeight = frameMiddleElement.offsetHeight;
       //拖拽中，根据拖拽的类型，改变大小
       if(this.editor.state == DDeiEditorState.FRAME_CHANGING){
         let deltaY = e.clientY - this.dragObj.y;
@@ -115,7 +117,7 @@ export default {
             break;
           case 2:
             if (deltaX != 0) {
-              if (frameRightElement.offsetWidth - deltaX <= 400 && frameRightElement.offsetWidth - deltaX >= 275) {
+              if (frameRightElement.offsetWidth - deltaX <= 500 && frameRightElement.offsetWidth - deltaX >= 275) {
                 frameRightElement.style.flexBasis = (frameRightElement.offsetWidth - deltaX) + "px";
                 frameRightElement.style.flexShrink = "0";
                 frameRightElement.style.flexGrow = "0";
@@ -155,7 +157,9 @@ export default {
           document.body.style.cursor = 'col-resize';
         } else if (frameRightElement.offsetTop <= e.clientY && frameRightElement.offsetTop + frameRightElement.offsetHeight >= e.clientY
           && frameRightElement.offsetLeft + 5 >= e.clientX && frameRightElement.offsetLeft <= e.clientX) {
-          document.body.style.cursor = 'col-resize';
+          if(frameRightElement.offsetWidth > 38){
+            document.body.style.cursor = 'col-resize';
+          }
         } else if (frameTopElement.offsetTop + frameTopElement.offsetHeight - 5 <= e.clientY && frameTopElement.offsetTop + frameTopElement.offsetHeight >= e.clientY) {
           document.body.style.cursor = 'row-resize';
         } else if (frameMiddleElement.offsetTop <= e.clientY && frameMiddleElement.offsetLeft <= e.clientX

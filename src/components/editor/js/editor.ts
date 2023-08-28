@@ -128,6 +128,8 @@ class DDeiEditor {
   topHeight: number = 0;
   rightWidth: number = 0;
   bottomHeight: number = 0;
+  middleWidth: number = 0;
+  middleHeight: number = 0;
 
   // ============================ 方法 ============================
   // ============================ 事件 ============================

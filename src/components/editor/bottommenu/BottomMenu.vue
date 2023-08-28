@@ -31,7 +31,7 @@ export default {
 
 <style scoped>
 .ddei_editor_bottommenu {
-  height:60px;
+  height:100%;
   width:100%;
   background: #d87093;
 }

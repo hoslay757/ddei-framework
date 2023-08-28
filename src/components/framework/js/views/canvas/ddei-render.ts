@@ -40,12 +40,13 @@ class DDeiCanvasRender {
         this.canvas.setAttribute("style", "display:block;zoom:" + (1 / ratio));
         this.canvas.setAttribute("width", this.container.clientWidth * ratio);
         this.canvas.setAttribute("height", this.container.clientHeight * ratio);
+
         this.ratio = ratio;
 
         //向canvas绑定事件
         this.bindEvent();
         setTimeout(() => {
-          this.setSize(0, 0, 1, 1);
+          this.setSize(0, 0, 0, 0);
           this.drawShape();
         }, 10);
       }
@@ -59,6 +60,7 @@ class DDeiCanvasRender {
   */
   setSize(width: number = 0, height: number = 0, deltaX: number = 0, deltaY: number = 0): void {
     if (!width || width == 0) {
+
       width = this.container.clientWidth;
     }
     width += deltaX;
