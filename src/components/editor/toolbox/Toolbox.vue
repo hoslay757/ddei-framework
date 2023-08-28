@@ -233,7 +233,7 @@ export default {
       DDeiConfig.bindRender(layer);
       layer.render.init();
       //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
-      ddInstance.stage.render.drawShape();
+      ddInstance.render.drawShape();
       this.$forceUpdate();
     },
 
@@ -244,7 +244,7 @@ export default {
       let layer = ddInstance.stage.removeLayer();
       if (layer) {
         //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
-        ddInstance.stage.render.drawShape();
+        ddInstance.render.drawShape();
         this.$forceUpdate();
       }
     },
@@ -261,7 +261,7 @@ export default {
       ddInstance.stage.displayLayer(null, true);
 
       //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
-      ddInstance.stage.render.drawShape();
+      ddInstance.render.drawShape();
     },
 
     //隐藏图层
@@ -269,7 +269,7 @@ export default {
       let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_editor_view"];
       ddInstance.stage.hiddenLayer();
       //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
-      ddInstance.stage.render.drawShape();
+      ddInstance.render.drawShape();
     },
 
     //显示图层
@@ -277,7 +277,7 @@ export default {
       let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_editor_view"];
       ddInstance.stage.displayLayer(null, true);
       //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
-      ddInstance.stage.render.drawShape();
+      ddInstance.render.drawShape();
     },
   },
 };

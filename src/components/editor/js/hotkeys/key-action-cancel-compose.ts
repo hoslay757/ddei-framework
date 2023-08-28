@@ -41,7 +41,7 @@ class DDeiKeyActionCancelCompose extends DDeiKeyAction {
         });
         stageRender.selector.updatedBoundsBySelectedModels()
         //重新绘制
-        stageRender.drawShape()
+        ddInstance.render.drawShape()
       }
       stageRender.operate = DDeiEnumOperateState.NONE;
     }

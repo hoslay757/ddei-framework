@@ -49,16 +49,6 @@ export default {
      */
     createControlOver(e) {
 
-      if (!window.uptime) {
-        window.uptime = new Date().getTime();
-      }
-      //TOOD 引入双缓冲、考虑帧率的问题
-      if (new Date().getTime() - window.uptime < 16) {
-        e.preventDefault();
-        return;
-      }
-      window.uptime = new Date().getTime();
-
       if (this.editor.state == DDeiEditorState.CONTROL_CREATING) {
         DDeiKeyAction.updateKeyState(e);
         if (this.editor.creatingControl) {
@@ -90,7 +80,7 @@ export default {
               control.x = containerX - control.width * 0.5;
               control.y = containerY - control.height * 0.5;
               //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
-              ddInstance.stage.render.drawShape();
+              ddInstance.render.drawShape();
             } else {
               //获取增量
               let movedPosDelta = layer.render.getMovedPositionDelta(e);
@@ -117,7 +107,7 @@ export default {
 
 
                 //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
-                ddInstance.stage.render.drawShape();
+                ddInstance.render.drawShape();
                 //显示辅助对齐线、坐标文本等图形
                 let selectedModels: Map<string, DDeiAbstractShape> = new Map();
                 selectedModels.set(control.id, control);
@@ -186,7 +176,7 @@ export default {
           //切换到设计器
           this.editor.state = DDeiEditorState.DESIGNING;
           //重绘
-          ddInstance.stage.render.drawShape();
+          ddInstance.render.drawShape();
         }
       }
     },
@@ -203,7 +193,7 @@ export default {
           ddInstance.stage.render.dragObj = null;
           ddInstance.stage.render.operateState = DDeiEnumOperateState.NONE;
           //重绘
-          ddInstance.stage.render.drawShape();
+          ddInstance.render.drawShape();
         }
       }
     }

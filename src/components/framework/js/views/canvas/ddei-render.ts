@@ -30,16 +30,18 @@ class DDeiCanvasRender {
         throw new Error("容器" + this.containerid + "已拥有元素，不能创建画布");
       } else {
         //创建容器
-        this.canvas = document.createElement("canvas");
-        this.canvas.setAttribute("id", this.model.id + "_canvas");
+        this.realCanvas = document.createElement("canvas");
+        this.realCanvas.setAttribute("id", this.model.id + "_canvas");
         //获得 2d 上下文对象
-        let ctx = this.canvas.getContext('2d');
+        let ctx = this.realCanvas.getContext('2d');
         //获取缩放比例
         let ratio = DDeiUtil.getPixelRatio(ctx);
-        this.container.appendChild(this.canvas);
-        this.canvas.setAttribute("style", "display:block;zoom:" + (1 / ratio));
-        this.canvas.setAttribute("width", this.container.clientWidth * ratio);
-        this.canvas.setAttribute("height", this.container.clientHeight * ratio);
+        this.container.appendChild(this.realCanvas);
+        this.canvas = new OffscreenCanvas(this.container.clientWidth * ratio, this.container.clientHeight * ratio);
+
+        this.realCanvas.setAttribute("style", "display:block;zoom:" + (1 / ratio));
+        this.realCanvas.setAttribute("width", this.container.clientWidth * ratio);
+        this.realCanvas.setAttribute("height", this.container.clientHeight * ratio);
 
         this.ratio = ratio;
 
@@ -68,8 +70,8 @@ class DDeiCanvasRender {
       height = this.container.clientHeight;
     }
     height += deltaY;
-    this.canvas.setAttribute("width", width * this.ratio);
-    this.canvas.setAttribute("height", height * this.ratio);
+    this.realCanvas.setAttribute("width", width * this.ratio);
+    this.realCanvas.setAttribute("height", height * this.ratio);
   }
 
   /**
@@ -78,6 +80,9 @@ class DDeiCanvasRender {
   drawShape(): void {
     if (this.model.stage) {
       this.model.stage.render.drawShape();
+      const imageBitmap = this.canvas.transferToImageBitmap();
+      let ctx = this.realCanvas.getContext('2d');
+      ctx.drawImage(imageBitmap, 0, 0);
     } else {
       throw new Error("当前实例未加载舞台模型，无法渲染图形");
     }

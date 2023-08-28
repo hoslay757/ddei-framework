@@ -44,7 +44,7 @@ class DDeiKeyActionPushModels extends DDeiKeyAction {
         }
       }
       //重新绘制
-      stageRender.drawShape()
+      ddInstance.render.drawShape()
     }
   }
 

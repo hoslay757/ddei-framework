@@ -69,7 +69,7 @@ class DDeiRectangleCanvasRender {
       let that = this;
       img.onload = function () {
         that.imgObj = img;
-        that.stageRender.drawShape()//绘制图片
+        that.ddInstance.render.drawShape()//绘制图片
       }
       img.src = this.model.img;
     }
