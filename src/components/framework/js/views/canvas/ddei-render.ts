@@ -30,25 +30,49 @@ class DDeiCanvasRender {
         throw new Error("容器" + this.containerid + "已拥有元素，不能创建画布");
       } else {
         //创建容器
-        this.canvas = document.createElement("canvas");
-        this.canvas.setAttribute("id", this.model.id + "_canvas");
+        this.realCanvas = document.createElement("canvas");
+        this.realCanvas.setAttribute("id", this.model.id + "_canvas");
         //获得 2d 上下文对象
-        let ctx = this.canvas.getContext('2d');
+        let ctx = this.realCanvas.getContext('2d');
         //获取缩放比例
         let ratio = DDeiUtil.getPixelRatio(ctx);
-        this.canvas.setAttribute("style", "display:block;zoom:" + (1 / ratio));
-        this.canvas.setAttribute("width", this.container.clientWidth * ratio);
-        this.canvas.setAttribute("height", this.container.clientHeight * ratio);
+        this.container.appendChild(this.realCanvas);
+        this.canvas = new OffscreenCanvas(this.container.clientWidth * ratio, this.container.clientHeight * ratio);
+
+        this.realCanvas.setAttribute("style", "display:block;zoom:" + (1 / ratio));
+        this.realCanvas.setAttribute("width", this.container.clientWidth * ratio);
+        this.realCanvas.setAttribute("height", this.container.clientHeight * ratio);
+
         this.ratio = ratio;
-        this.container.appendChild(this.canvas);
+
         //向canvas绑定事件
         this.bindEvent();
+        setTimeout(() => {
+          this.setSize(0, 0, 0, 0);
+          this.drawShape();
+        }, 10);
       }
     } else {
       throw new Error("容器" + this.model.containerid + "不存在");
     }
   }
 
+  /** 
+   * 重新设置大小
+  */
+  setSize(width: number = 0, height: number = 0, deltaX: number = 0, deltaY: number = 0): void {
+    if (!width || width == 0) {
+
+      width = this.container.clientWidth;
+    }
+    width += deltaX;
+    if (!height || height == 0) {
+      height = this.container.clientHeight;
+    }
+    height += deltaY;
+    this.realCanvas.setAttribute("width", width * this.ratio);
+    this.realCanvas.setAttribute("height", height * this.ratio);
+  }
 
   /**
    * 绘制图形
@@ -56,6 +80,9 @@ class DDeiCanvasRender {
   drawShape(): void {
     if (this.model.stage) {
       this.model.stage.render.drawShape();
+      const imageBitmap = this.canvas.transferToImageBitmap();
+      let ctx = this.realCanvas.getContext('2d');
+      ctx.drawImage(imageBitmap, 0, 0);
     } else {
       throw new Error("当前实例未加载舞台模型，无法渲染图形");
     }
@@ -66,20 +93,20 @@ class DDeiCanvasRender {
    */
   bindEvent(): void {
 
-    //绑定鼠标按下事件
-    this.canvas.addEventListener('mousedown', (evt: Event) => {
-      this.mouseDown(evt)
-    });
+    // //绑定鼠标按下事件
+    // this.canvas.addEventListener('mousedown', (evt: Event) => {
+    //   this.mouseDown(evt)
+    // });
 
-    //绑定鼠标弹起事件
-    this.canvas.addEventListener('mouseup', (evt: Event) => {
-      this.mouseUp(evt)
-    });
+    // //绑定鼠标弹起事件
+    // this.canvas.addEventListener('mouseup', (evt: Event) => {
+    //   this.mouseUp(evt)
+    // });
 
-    //绑定鼠标移动事件
-    this.canvas.addEventListener('mousemove', (evt: Event) => {
-      this.mouseMove(evt)
-    });
+    // //绑定鼠标移动事件
+    // this.canvas.addEventListener('mousemove', (evt: Event) => {
+    //   this.mouseMove(evt)
+    // });
 
 
   }

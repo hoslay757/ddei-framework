@@ -41,7 +41,8 @@
   "dependencies": {
     "lodash": "^4.17.21",
     "sass": "^1.66.1",
-    "vue": "^3.3.4"
+    "vue": "^3.3.4",
+    "webworker": "^0.8.4"
   },
   "devDependencies": {
     "@tsconfig/node18": "^18.2.0",

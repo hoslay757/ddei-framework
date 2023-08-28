@@ -1,36 +1,34 @@
 <template>
-  <div>
-    <div id="ddei_editor_propertyview" class="ddei_editor_propertyview">
-      <div class="ddei_editor_pv_group_view">
-        <div class="ddei_editor_pv_group_view_expandbox">
-          <img class="ddei_editor_pv_group_view_expandbox_img" src="../icons/icon-expand-right.png" />
+  <div id="ddei_editor_propertyview" class="ddei_editor_propertyview">
+    <div class="ddei_editor_pv_group_view">
+      <div class="ddei_editor_pv_group_view_expandbox" @click="hidOrShowPV" >
+        <img class="ddei_editor_pv_group_view_expandbox_img" :src="editor?.rightWidth > 38 ? expandRightImg : expandLeftImg" />
+      </div>
+      <div class="ddei_editor_pv_group_view_items" >
+        <div class="ddei_editor_pv_group_view_items_item" title="样式">
+          <img draggable="false" class="img" src="../icons/icon-fill.png" />
         </div>
-        <div class="ddei_editor_pv_group_view_items">
-          <div class="ddei_editor_pv_group_view_items_item" title="样式">
-            <img class="img" src="../icons/icon-fill.png" />
-          </div>
-          <div class="ddei_editor_pv_group_view_items_item_selected" title="数据">
-            <img class="img" src="../icons/icon-data.png" />
-          </div>
-          <div class="ddei_editor_pv_group_view_items_item" title="事件">
-            <img class="img" src="../icons/icon-event.png" />
-          </div>
-          <div class="ddei_editor_pv_group_view_items_item" title="图层">
-            <img class="img" src="../icons/icon-layers.png" />
-          </div>
+        <div class="ddei_editor_pv_group_view_items_item_selected" title="数据">
+          <img draggable="false" class="img" src="../icons/icon-data.png" />
+        </div>
+        <div class="ddei_editor_pv_group_view_items_item" title="事件">
+          <img draggable="false" class="img" src="../icons/icon-event.png" />
+        </div>
+        <div class="ddei_editor_pv_group_view_items_item" title="图层">
+          <img draggable="false" class="img" src="../icons/icon-layers.png" />
         </div>
       </div>
+    </div>
 
-      <div class="ddei_editor_pv_subgroup_view">
-        <div class="ddei_editor_pv_subgroup_view_tab_title">
-          <div class="ddei_editor_pv_subgroup_view_tab_title_item_selected" title="填充颜色">填充</div>
-          <div class="ddei_editor_pv_subgroup_view_tab_title_item" title="线条">线条</div>
-          <div class="ddei_editor_pv_subgroup_view_tab_title_item" title="文本">文本</div>
-        </div>
-        <div class="ddei_editor_pv_subgroup_view_tab_panel">
-          <div class="ddei_editor_pv_subgroup_view_tab_panel_editors">
-            <div class="ddei_editor_pv_subgroup_view_tab_panel_editors_item">
-            </div>
+    <div class="ddei_editor_pv_subgroup_view" v-show="editor?.rightWidth > 38">
+      <div class="ddei_editor_pv_subgroup_view_tab_title">
+        <div class="ddei_editor_pv_subgroup_view_tab_title_item_selected" title="填充颜色">填充</div>
+        <div class="ddei_editor_pv_subgroup_view_tab_title_item" title="线条">线条</div>
+        <div class="ddei_editor_pv_subgroup_view_tab_title_item" title="文本">文本</div>
+      </div>
+      <div class="ddei_editor_pv_subgroup_view_tab_panel">
+        <div class="ddei_editor_pv_subgroup_view_tab_panel_editors">
+          <div class="ddei_editor_pv_subgroup_view_tab_panel_editors_item">
           </div>
         </div>
       </div>
@@ -47,24 +45,57 @@ export default {
   mixins: [],
   props: {},
   data() {
-    return {};
+    return {
+      //当前编辑器
+      editor: null,
+      expandLeftImg: new URL('../icons/icon-expand-left.png', import.meta.url).href,
+      expandRightImg: new URL('../icons/icon-expand-right.png', import.meta.url).href,
+    };
   },
   computed: {},
   watch: {},
   created() { },
   mounted() {
-
+    //获取编辑器
+    this.editor = DDeiEditor.ACTIVE_INSTANCE;
   },
+  methods: {
+
+    /**
+     * 隐藏or展示属性编辑器
+     */
+    hidOrShowPV() {
+      let rightWidth = this.editor.rightWidth;
+      if(rightWidth > 38){
+        let deltaX = this.editor.rightWidth - 38;
+        let frameRightElement = document.getElementById("ddei_editor_frame_right");
+        this.editor.rightWidth = 38;
+        frameRightElement.style.flexBasis = "38px";
+        //重新设置画布大小
+        this.editor.middleWidth += deltaX;
+      }else{
+        let deltaX =  237;
+        let frameRightElement = document.getElementById("ddei_editor_frame_right");
+        this.editor.rightWidth = 275;
+        frameRightElement.style.flexBasis = "275px";
+        //重新设置画布大小
+        this.editor.middleWidth -= deltaX;
+      }
+      this.editor.ddInstance.render.setSize(this.editor.middleWidth, this.editor.middleHeight, 0, 0)
+      this.editor.ddInstance.render.drawShape()
+    }
+  }
 };
 </script>
 
 <style scoped>
 .ddei_editor_propertyview {
-  height: calc(100vh - 225px);
+  flex: 1;
   text-align: center;
   background: rgb(254, 254, 255);
   border: 1pt solid rgb(211, 211, 211);
   display: flex;
+  user-select: none;
 }
 
 .ddei_editor_pv_group_view {
@@ -103,11 +134,6 @@ export default {
   flex: 0 0 36px;
   display: inherit;
 }
-
-.ddei_editor_pv_group_view_items_item:hover {
-  cursor: pointer;
-}
-
 
 
 

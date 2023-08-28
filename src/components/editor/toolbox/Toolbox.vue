@@ -1,30 +1,28 @@
 <template>
-  <div>
-    <div id="ddei_editor_toolbox" @mousedown="changeEditorFocus" class="ddei_editor_toolbox">
-      <div class="expandbox">
-        <img class="img" src="../icons/icon-expand-left.png" />
+  <div id="ddei_editor_toolbox" v-show="editor?.leftWidth >0" @mousedown="changeEditorFocus" class="ddei_editor_toolbox">
+    <div class="expandbox">
+      <img class="img" :src="expandLeftImg" @click="hiddenToolBox" />
+    </div>
+    <div class="searchbox">
+      <div class="group">
+        <input v-model="searchText" class="input" @keypress="searchInputEnter" placeholder="搜索控件">
+        <div class="button" @click="searchControl">搜索</div>
       </div>
-      <div class="searchbox">
-        <div class="group">
-          <input v-model="searchText" class="input" @keypress="searchInputEnter" placeholder="搜索控件">
-          <div class="button" @click="searchControl">搜索</div>
+    </div>
+    <hr />
+    <div class="groups" :style="{ height: 'calc(100vh - '+(editor?.topHeight+ editor?.bottomHeight+77)+'px' }">
+      <div v-for="group in groups" v-show="group.display == true" class="group">
+        <div :class="{ 'box': true, 'expanded': group.expand }" @click="groupBoxExpand(group)">
+          <img class="expand" v-show="!group.expand" src="../icons/toolbox-unexpanded.png" />
+          <img class="expand" v-show="group.expand" src="../icons/toolbox-expanded.png" />
+          <span class="title">{{ group.name }}</span>
+          <img v-if="!group.cannotClose" class="close" src="../icons/toolbox-close.png" @click="groupBoxClose(group)" />
         </div>
-      </div>
-      <hr />
-      <div class="groups">
-        <div v-for="group in groups" v-show="group.display == true" class="group">
-          <div :class="{ 'box': true, 'expanded': group.expand }" @click="groupBoxExpand(group)">
-            <img class="expand" v-show="!group.expand" src="../icons/toolbox-unexpanded.png" />
-            <img class="expand" v-show="group.expand" src="../icons/toolbox-expanded.png" />
-            <span class="title">{{ group.name }}</span>
-            <img v-if="!group.cannotClose" class="close" src="../icons/toolbox-close.png" @click="groupBoxClose(group)" />
-          </div>
-          <div class="item_panel" v-if="group.expand == true">
-            <div class="item" :title="control.desc" draggable="true" @dragstart="createControlPrepare(control, $event)"
-              v-for="control in group.controls">
-              <img class="icon" :src="control.icon" />
-              <div class="text">{{ control.name }}</div>
-            </div>
+        <div class="item_panel" v-if="group.expand == true">
+          <div class="item" :title="control.desc" draggable="true" @dragstart="createControlPrepare(control, $event)"
+            v-for="control in group.controls">
+            <img class="icon" :src="control.icon" />
+            <div class="text">{{ control.name }}</div>
           </div>
         </div>
       </div>
@@ -61,14 +59,17 @@ export default {
       //用于缓存动态引入的控件
       controlCls: {},
       //创建时的图片
-      creatingImg: new Image()
+      creatingImg: new Image(),
+      //展开的图片
+      expandLeftImg: new URL('../icons/icon-expand-left.png', import.meta.url).href,
+      expandRightImg: new URL('../icons/icon-expand-right.png', import.meta.url).href,
     };
   },
   computed: {
   },
   watch: {},
   created() { },
-  emits: ['createControlPrepare', 'changeEditorFocus'],
+  emits: ['createControlPrepare'],
   mounted() {
     //空图片
     this.creatingImg.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
@@ -109,6 +110,20 @@ export default {
   methods: {
 
     /**
+     * 隐藏工具栏
+     */
+    hiddenToolBox(){
+      let deltaX = this.editor.leftWidth;
+      let frameLeftElement = document.getElementById("ddei_editor_frame_left");
+      this.editor.leftWidth = 0;
+      frameLeftElement.style.flexBasis = "0px";
+      //重新设置画布大小
+      this.editor.middleWidth += deltaX;
+      this.editor.ddInstance.render.setSize(this.editor.middleWidth, this.editor.middleHeight, 0, 0)
+      this.editor.ddInstance.render.drawShape()
+    },
+
+    /**
      * 展开或收折groupbox
      */
     groupBoxExpand(group: object) {
@@ -140,7 +155,7 @@ export default {
      * 焦点进入当前区域
      */
     changeEditorFocus() {
-      this.$emit('changeEditorFocus', DDeiEditorState.TOOLBOX_ACTIVE)
+      this.editor.changeState(DDeiEditorState.TOOLBOX_ACTIVE);
     },
 
 
@@ -186,7 +201,6 @@ export default {
       let text = trim(this.searchText);
       if (text == '') {
         this.groups = this.searchOriginGroups;
-        this.searchOriginGroups = null;
       }
       //如果搜索框有内容则搜索
       else {
@@ -219,7 +233,7 @@ export default {
       DDeiConfig.bindRender(layer);
       layer.render.init();
       //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
-      ddInstance.stage.render.drawShape();
+      ddInstance.render.drawShape();
       this.$forceUpdate();
     },
 
@@ -230,7 +244,7 @@ export default {
       let layer = ddInstance.stage.removeLayer();
       if (layer) {
         //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
-        ddInstance.stage.render.drawShape();
+        ddInstance.render.drawShape();
         this.$forceUpdate();
       }
     },
@@ -247,7 +261,7 @@ export default {
       ddInstance.stage.displayLayer(null, true);
 
       //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
-      ddInstance.stage.render.drawShape();
+      ddInstance.render.drawShape();
     },
 
     //隐藏图层
@@ -255,7 +269,7 @@ export default {
       let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_editor_view"];
       ddInstance.stage.hiddenLayer();
       //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
-      ddInstance.stage.render.drawShape();
+      ddInstance.render.drawShape();
     },
 
     //显示图层
@@ -263,7 +277,7 @@ export default {
       let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_editor_view"];
       ddInstance.stage.displayLayer(null, true);
       //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
-      ddInstance.stage.render.drawShape();
+      ddInstance.render.drawShape();
     },
   },
 };
@@ -271,11 +285,13 @@ export default {
 
 <style scoped>
 .ddei_editor_toolbox {
+  user-select: none;
   text-align: center;
   background: rgb(254, 254, 255);
   border: 1pt solid rgb(235, 235, 239);
   display: flex;
   flex-flow: column;
+  height:100%;
 }
 
 /**以下为分割线 */
@@ -325,6 +341,7 @@ export default {
 .ddei_editor_toolbox .searchbox .group .input {
   flex: 1 1 140px;
   height: 28px;
+  width:100%;
   border: transparent;
   outline: none;
   font-size: 13px;
@@ -352,10 +369,10 @@ export default {
 .ddei_editor_toolbox .groups {
   text-align: center;
   background: rgb(254, 254, 255);
-  height: calc(100vh - 310px);
   overflow-y: auto;
   display: flex;
   flex-flow: column;
+  flex:1 1 auto;
 }
 
 .ddei_editor_toolbox .groups::-webkit-scrollbar {

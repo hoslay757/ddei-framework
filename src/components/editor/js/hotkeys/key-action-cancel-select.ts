@@ -19,7 +19,7 @@ class DDeiKeyActionCancelSelect extends DDeiKeyAction {
       //根据选中图形的状态更新选择器
       stageRender.selector.updatedBoundsBySelectedModels();
       //重新绘制
-      stageRender.drawShape()
+      ddInstance.render.drawShape()
     }
   }
 

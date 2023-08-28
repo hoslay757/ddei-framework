@@ -58,7 +58,7 @@ class DDeiKeyActionCompose extends DDeiKeyAction {
         });
         stageRender.selector.updatedBoundsBySelectedModels()
         //重新绘制
-        stageRender.drawShape()
+        ddInstance.render.drawShape()
       } else {
         console.warn("组合操作至少需要两个图形")
       }
