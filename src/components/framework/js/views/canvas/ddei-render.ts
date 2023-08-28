@@ -72,6 +72,8 @@ class DDeiCanvasRender {
     height += deltaY;
     this.realCanvas.setAttribute("width", width * this.ratio);
     this.realCanvas.setAttribute("height", height * this.ratio);
+    this.canvas.width = width * this.ratio;
+    this.canvas.height = height * this.ratio;
   }
 
   /**
