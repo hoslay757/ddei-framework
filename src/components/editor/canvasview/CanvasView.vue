@@ -106,12 +106,17 @@ export default {
                 }
 
 
-                //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
-                ddInstance.render.drawShape();
+                
                 //显示辅助对齐线、坐标文本等图形
                 let selectedModels: Map<string, DDeiAbstractShape> = new Map();
                 selectedModels.set(control.id, control);
-                layer.render.drawHelpLines(control?.getAbsBounds(), selectedModels);
+                layer.render.helpLines = {
+                  "bounds": control?.getAbsBounds(),
+                  models: selectedModels
+                };
+                // layer.render.drawHelpLines(control?.getAbsBounds(), selectedModels);
+                //重新绘制图形
+                ddInstance.render.drawShape();
               }
             }
             e.preventDefault();

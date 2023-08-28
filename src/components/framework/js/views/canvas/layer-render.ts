@@ -42,6 +42,11 @@ class DDeiLayerCanvasRender {
     */
   stageRender: DDeiStageCanvasRender | null;
 
+  /**
+   * 辅助线对象
+   */
+  helpLines: object = {};
+
   // ============================ 方法 ===============================
   /**
    * 初始化
@@ -62,6 +67,11 @@ class DDeiLayerCanvasRender {
       this.drawBackground();
       //绘制子元素
       this.drawChildrenShapes();
+      //绘制辅助线
+      if (this.helpLines && this.helpLines.bounds && this.helpLines.models) {
+        this.drawHelpLines(this.helpLines.bounds, this.helpLines.models)
+        this.helpLines = null
+      }
     }
   }
 
@@ -810,10 +820,14 @@ class DDeiLayerCanvasRender {
             if (this.stageRender.selector) {
               this.stageRender.selector.updatedBoundsBySelectedModels(pContainerModel)
             }
+            //显示辅助对齐线、坐标文本等图形
+            this.helpLines = {
+              "bounds": this.stageRender.currentOperateShape?.getAbsBounds(),
+              models: selectedModels
+            };
+            // this.drawHelpLines(this.stageRender.currentOperateShape?.getAbsBounds(), selectedModels);
             //重新渲染
             this.ddRender.drawShape();
-            //显示辅助对齐线、坐标文本等图形
-            this.drawHelpLines(this.stageRender.currentOperateShape?.getAbsBounds(), selectedModels);
           }
         }
         break;
@@ -838,11 +852,16 @@ class DDeiLayerCanvasRender {
               this.stageRender.dragObj.x = this.stageRender.dragObj.x + movedPosDelta.x
               this.stageRender.dragObj.y = this.stageRender.dragObj.y + movedPosDelta.y
               this.stageRender.selector.updatedBoundsBySelectedModels(pContainerModel);
-              //重新渲染
-              this.ddRender.drawShape();
+
               //显示辅助对齐线、坐标文本等图形
               let selectedModels = pContainerModel.getSelectedModels();
-              this.drawHelpLines(DDeiAbstractShape.getOutRect(Array.from(selectedModels.values())), selectedModels);
+              this.helpLines = {
+                "bounds": DDeiAbstractShape.getOutRect(Array.from(selectedModels.values())),
+                models: selectedModels
+              };
+              //重新渲染
+              this.ddRender.drawShape();
+              // this.drawHelpLines(DDeiAbstractShape.getOutRect(Array.from(selectedModels.values())), selectedModels);
             }
 
           }
