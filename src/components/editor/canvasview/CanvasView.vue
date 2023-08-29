@@ -1,7 +1,42 @@
 <template>
-  <div id="ddei_editor_canvasview" @mousedown="changeEditorFocus" ondragstart="return false;"
-    @dragover="createControlOver" @drop="createControlDrop" @dragleave="createControlCancel" @contextmenu.prevent
-    class="ddei_editor_canvasview">
+  <div id="ddei_editor_canvasview" class="ddei_editor_canvasview">
+    <div id="ddei_editor_canvasview_tabs" class="ddei_editor_canvasview_tabs">
+      <div v-show="this.editor?.leftWidth == 0" class="ddei_editor_canvasview_tabs_expandbox">
+        <img width="25" height="16" src="../icons/icon-expand-right.png" @click="expandToolBox" />
+      </div>
+      <div class="ddei_editor_canvasview_tabs_item" title="事件分发逻辑">
+        <img src="../icons/icon-file.png"/>
+        <span>事件分发逻辑</span>
+        <div>
+          <img src="../icons/toolbox-close.png"/>
+        </div>
+      </div>
+
+      <div class="ddei_editor_canvasview_tabs_item ddei_editor_canvasview_tabs_item_selected" title="事件分发逻辑">
+        <img src="../icons/icon-file-selected.png" />
+        <span>事件分发逻辑</span>
+        <div>
+          <img src="../icons/toolbox-close.png"/>
+        </div>
+      </div>
+      <div class="ddei_editor_canvasview_tabs_item" title="事件自定义表达超长了超长了超长了">
+      <img src="../icons/icon-file.png"/>
+        <span>事件自定义表达超长了超长了超长了</span>
+        <div>
+          <img src="../icons/toolbox-close.png"/>
+        </div>
+      </div>
+      <div class="ddei_editor_canvasview_tabs_movebox">
+          <img width="16" height="16" src="../icons/icon-left.png" @click="moveItem(-1)" />
+      </div>
+      <div class="ddei_editor_canvasview_tabs_movebox">
+        <img width="16" height="16" src="../icons/icon-right.png" @click="moveItem(1)" />
+      </div>
+    </div>
+    <div id="ddei_editor_canvasview_conetent" class="ddei_editor_canvasview_conetent" @mousedown="changeEditorFocus" ondragstart="return false;"
+      @dragover="createControlOver" @drop="createControlDrop" @dragleave="createControlCancel" @contextmenu.prevent
+      >
+    </div>
   </div>
 </template>
 
@@ -24,7 +59,7 @@ export default {
   data() {
     return {
       //当前编辑器
-      editor: null,
+      editor: null
     };
   },
   computed: {},
@@ -33,10 +68,31 @@ export default {
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
-    this.editor.ddInstance = DDei.newInstance("ddei_editor_view", "ddei_editor_canvasview");
+    this.editor.ddInstance = DDei.newInstance("ddei_editor_view", "ddei_editor_canvasview_conetent");
   },
   methods: {
+    /**
+     * 在存在显示隐藏的情况下移动tab
+     */
+    moveItem(index:number = 0){
+      if(index != 0){
+        console.log("移动")
+      }
+    },
 
+    /**
+     * 展开工具栏
+     */
+    expandToolBox(){
+      let deltaX = 220;
+      let frameLeftElement = document.getElementById("ddei_editor_frame_left");
+      this.editor.leftWidth = 220;
+      frameLeftElement.style.flexBasis = "220px";
+      //重新设置画布大小
+      this.editor.middleWidth -= deltaX;
+      this.editor.ddInstance.render.setSize(this.editor.middleWidth, this.editor.middleHeight, 0, 0)
+      this.editor.ddInstance.render.drawShape()
+    },
     /**
      * 焦点进入当前区域
      */
@@ -114,7 +170,6 @@ export default {
                   "bounds": control?.getAbsBounds(),
                   models: selectedModels
                 };
-                // layer.render.drawHelpLines(control?.getAbsBounds(), selectedModels);
                 //重新绘制图形
                 ddInstance.render.drawShape();
               }
@@ -208,7 +263,100 @@ export default {
 
 <style scoped>
 .ddei_editor_canvasview {
-  background: blue;
   height: 100%;
+}
+
+.ddei_editor_canvasview_tabs{
+  height:25px;
+  background: rgb(254,254,254);
+  border-top: 1px solid rgb(235, 235, 239);
+  border-bottom: 1px solid rgb(235, 235, 239);
+  display:flex;
+}
+
+.ddei_editor_canvasview_tabs_expandbox{
+  flex: 0 0 30px;
+  height: 25px;
+  text-align:center;
+}
+
+.ddei_editor_canvasview_tabs_expandbox:hover{
+  background: rgb(235, 235, 239);
+  cursor: pointer;
+}
+
+.ddei_editor_canvasview_tabs_expandbox img{
+  filter: brightness(60%);
+  margin-top: 3px;
+}
+
+.ddei_editor_canvasview_tabs_movebox{
+  flex: 0 0 25px;
+  height: 25px;
+  text-align:center;
+}
+
+.ddei_editor_canvasview_tabs_movebox:hover{
+  background: rgb(235, 235, 239);
+  cursor: pointer;
+}
+
+.ddei_editor_canvasview_tabs_movebox img{
+  filter: brightness(60%);
+  margin-top: 4px;
+}
+
+.ddei_editor_canvasview_tabs_item{
+  flex: 0 0 160px;
+  height: 25px;
+  display:flex;
+}
+
+.ddei_editor_canvasview_tabs_item img{
+  padding:3px;
+  flex:0 0 25px;
+}
+
+.ddei_editor_canvasview_tabs_item span{
+  font-size: 13px;
+  margin-top:1px;
+  flex:0 0 110px;
+  width:110px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.ddei_editor_canvasview_tabs_item div{
+  height: 25px;
+  flex:0 0 25px;
+  margin:auto;
+}
+
+.ddei_editor_canvasview_tabs_item div img{
+  width: 12px;
+  height: 12px;
+  margin:auto;
+  padding:0px;
+}
+
+.ddei_editor_canvasview_tabs_item div img:hover{
+  background:rgb(200, 200, 200);
+  cursor:pointer;
+}
+
+.ddei_editor_canvasview_tabs_item:hover{
+  background: rgb(247,247,247);
+}
+
+
+.ddei_editor_canvasview_tabs_item_selected span{
+  color:#017fff;
+  font-weight: bold !important;
+}
+
+
+.ddei_editor_canvasview_conetent{
+  height:calc(100% - 25px);
 }
 </style>

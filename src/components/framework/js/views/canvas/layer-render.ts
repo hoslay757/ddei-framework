@@ -1,6 +1,7 @@
 import DDeiConfig from '../../config.js'
 import DDei from '../../ddei.js';
 import DDeiEnumControlState from '../../enums/control-state.js';
+import DDeiEnumState from '../../enums/ddei-state.js';
 import DDeiEnumOperateState from '../../enums/operate-state.js';
 import DDeiLayer from '../../models/layer.js';
 import DDeiSelector from '../../models/selector.js';
@@ -493,6 +494,9 @@ class DDeiLayerCanvasRender {
    * 鼠标按下事件
    */
   mouseDown(evt: Event): void {
+    if (this.stage.ddInstance.state == DDeiEnumState.IN_ACTIVITY) {
+      return;
+    }
     //只有当显示时才绘制图层
     if (!this.model.display) {
       return
@@ -556,6 +560,9 @@ class DDeiLayerCanvasRender {
    * 绘制图形
    */
   mouseUp(evt: Event): void {
+    if (this.stage.ddInstance.state == DDeiEnumState.IN_ACTIVITY) {
+      return;
+    }
     //只有当显示时才绘制图层
     if (!this.model.display) {
       return;
@@ -727,6 +734,9 @@ class DDeiLayerCanvasRender {
    * 鼠标移动
    */
   mouseMove(evt: Event): void {
+    if (this.stage.ddInstance.state == DDeiEnumState.IN_ACTIVITY) {
+      return;
+    }
     //只有当显示时才绘制图层
     if (!this.model.display) {
       return;

@@ -61,8 +61,7 @@ export default {
       //创建时的图片
       creatingImg: new Image(),
       //展开的图片
-      expandLeftImg: new URL('../icons/icon-expand-left.png', import.meta.url).href,
-      expandRightImg: new URL('../icons/icon-expand-right.png', import.meta.url).href,
+      expandLeftImg: new URL('../icons/icon-expand-left.png', import.meta.url).href
     };
   },
   computed: {

@@ -1,5 +1,6 @@
 import DDeiConfig from '../../config.js';
 import DDeiEnumControlState from '../../enums/control-state.js';
+import DDeiEnumState from '../../enums/ddei-state.js';
 import DDeiEnumOperateState from '../../enums/operate-state.js';
 import DDeiModelArrtibuteValue from '../../models/attribute/attribute-value.js';
 import DDeiSelector from '../../models/selector.js';
@@ -221,43 +222,46 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
    * 修改鼠标样式
    */
   changeCursorStyle(): void {
-    switch (this.model.passIndex) {
-      case 1:
-        document.body.style.cursor = 'ns-resize';
-        break;
-      case 2:
-        document.body.style.cursor = 'nesw-resize';
-        break;
-      case 3:
-        document.body.style.cursor = 'ew-resize';
-        break;
-      case 4:
-        document.body.style.cursor = 'nwse-resize';
-        break;
-      case 5:
-        document.body.style.cursor = 'ns-resize';
-        break;
-      case 6:
-        document.body.style.cursor = 'nesw-resize';
-        break;
-      case 7:
-        document.body.style.cursor = 'ew-resize';
-        break;
-      case 8:
-        document.body.style.cursor = 'nwse-resize';
-        break;
-      case 9:
-        document.body.style.cursor = 'alias';
-        break;
-      case 10:
-        document.body.style.cursor = 'all-scroll';
-        break;
-      case 11:
-        document.body.style.cursor = 'alias';
-        break;
-      default:
-        document.body.style.cursor = 'default';
-        break;
+    console.log()
+    if (this.stage.ddInstance.state != DDeiEnumState.IN_ACTIVITY) {
+      switch (this.model.passIndex) {
+        case 1:
+          document.body.style.cursor = 'ns-resize';
+          break;
+        case 2:
+          document.body.style.cursor = 'nesw-resize';
+          break;
+        case 3:
+          document.body.style.cursor = 'ew-resize';
+          break;
+        case 4:
+          document.body.style.cursor = 'nwse-resize';
+          break;
+        case 5:
+          document.body.style.cursor = 'ns-resize';
+          break;
+        case 6:
+          document.body.style.cursor = 'nesw-resize';
+          break;
+        case 7:
+          document.body.style.cursor = 'ew-resize';
+          break;
+        case 8:
+          document.body.style.cursor = 'nwse-resize';
+          break;
+        case 9:
+          document.body.style.cursor = 'alias';
+          break;
+        case 10:
+          document.body.style.cursor = 'all-scroll';
+          break;
+        case 11:
+          document.body.style.cursor = 'alias';
+          break;
+        default:
+          document.body.style.cursor = 'default';
+          break;
+      }
     }
   }
 

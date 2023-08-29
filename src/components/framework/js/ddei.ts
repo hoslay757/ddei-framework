@@ -1,4 +1,5 @@
 import DDeiConfig from './config'
+import DDeiEnumState from './enums/ddei-state'
 import DDeiStage from './models/stage'
 
 /**
@@ -83,6 +84,9 @@ class DDei {
   stage: DDeiStage | null;
   //当前模型的类型
   modelType: string = "DDei";
+
+  //当前实例的状态
+  state: DDeiEnumState = DDeiEnumState.NONE;
 
   // ============================ 方法 ============================
   /**

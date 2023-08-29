@@ -94,7 +94,7 @@ export default {
   flex: 1;
   text-align: center;
   background: rgb(254, 254, 255);
-  border: 1pt solid rgb(211, 211, 211);
+  border: 1pt solid rgb(235, 235, 239);
   display: flex;
   user-select: none;
 }
@@ -103,7 +103,7 @@ export default {
   flex: 0 0 36px;
   display: flex;
   flex-flow: column;
-  border-right: 1pt solid rgb(211, 211, 211);
+  border-right: 1pt solid rgb(235, 235, 239);
 }
 
 .ddei_editor_pv_group_view_expandbox {
@@ -112,7 +112,7 @@ export default {
 }
 
 .ddei_editor_pv_group_view_expandbox:hover {
-  background: rgb(211, 211, 211);
+  background: rgb(235, 235, 239);
   cursor: pointer;
 }
 
@@ -174,7 +174,7 @@ export default {
 .ddei_editor_pv_subgroup_view_tab_title {
   flex: 0 0 30px;
   display: flex;
-  border-bottom: 1pt solid rgb(211, 211, 211);
+  border-bottom: 1pt solid rgb(235, 235, 239);
   color: grey;
 }
 
