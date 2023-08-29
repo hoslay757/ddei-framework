@@ -1,41 +1,30 @@
 <template>
   <div id="ddei_editor_canvasview" class="ddei_editor_canvasview">
     <div id="ddei_editor_canvasview_tabs" class="ddei_editor_canvasview_tabs">
-      <div v-show="this.editor?.leftWidth == 0" class="ddei_editor_canvasview_tabs_expandbox">
-        <img width="25" height="16" src="../icons/icon-expand-right.png" @click="expandToolBox" />
+      <div v-show="this.editor?.leftWidth == 0" class="ddei_editor_canvasview_tabs_expandbox" @click="expandToolBox">
+        <img width="25" height="16" src="../icons/icon-expand-right.png" />
       </div>
-      <div class="ddei_editor_canvasview_tabs_item" title="事件分发逻辑">
-        <img src="../icons/icon-file.png"/>
-        <span>事件分发逻辑</span>
+      <div
+        :class="item.state == 1 ? 'ddei_editor_canvasview_tabs_item ddei_editor_canvasview_tabs_item_selected' : 'ddei_editor_canvasview_tabs_item'"
+        @click="changeInstance(item)" v-for="(item, i) in instances"
+        v-show="i >= openIndex && ((i - openIndex + 1) * 160 + 40) <= editor?.middleWidth" :title="item.name">
+        <img src="../icons/icon-file.png" />
+        <span>{{ item.name }}</span>
         <div>
-          <img src="../icons/toolbox-close.png"/>
+          <img src="../icons/toolbox-close.png" />
         </div>
       </div>
-
-      <div class="ddei_editor_canvasview_tabs_item ddei_editor_canvasview_tabs_item_selected" title="事件分发逻辑">
-        <img src="../icons/icon-file-selected.png" />
-        <span>事件分发逻辑</span>
-        <div>
-          <img src="../icons/toolbox-close.png"/>
-        </div>
+      <div style="flex:1 1 1px"></div>
+      <div class="ddei_editor_canvasview_tabs_movebox" @click="moveItem(-1)">
+        <img width="16" height="16" src="../icons/icon-left.png" />
       </div>
-      <div class="ddei_editor_canvasview_tabs_item" title="事件自定义表达超长了超长了超长了">
-      <img src="../icons/icon-file.png"/>
-        <span>事件自定义表达超长了超长了超长了</span>
-        <div>
-          <img src="../icons/toolbox-close.png"/>
-        </div>
-      </div>
-      <div class="ddei_editor_canvasview_tabs_movebox">
-          <img width="16" height="16" src="../icons/icon-left.png" @click="moveItem(-1)" />
-      </div>
-      <div class="ddei_editor_canvasview_tabs_movebox">
-        <img width="16" height="16" src="../icons/icon-right.png" @click="moveItem(1)" />
+      <div class="ddei_editor_canvasview_tabs_movebox" @click="moveItem(1)">
+        <img width="16" height="16" src="../icons/icon-right.png" />
       </div>
     </div>
-    <div id="ddei_editor_canvasview_conetent" class="ddei_editor_canvasview_conetent" @mousedown="changeEditorFocus" ondragstart="return false;"
-      @dragover="createControlOver" @drop="createControlDrop" @dragleave="createControlCancel" @contextmenu.prevent
-      >
+    <div id="ddei_editor_canvasview_conetent" class="ddei_editor_canvasview_conetent" @mousedown="changeEditorFocus"
+      ondragstart="return false;" @dragover="createControlOver" @drop="createControlDrop" @dragleave="createControlCancel"
+      @contextmenu.prevent>
     </div>
   </div>
 </template>
@@ -59,7 +48,17 @@ export default {
   data() {
     return {
       //当前编辑器
-      editor: null
+      editor: null,
+      //当前打开的页的开始下标
+      openIndex: 0,
+      //当前打开页在instances的下标
+      currentIndex: 1,
+      //最大可以打开的数量
+      maxOpenSize: 1,
+      //当前打开的实例
+      instances: [{ "name": "1事件分发逻辑", "url": "1", "state": 0 }, { "name": "2事件分发逻辑", "url": "1", "state": 0 }, { "name": "3事件分发逻辑", "url": "1", "state": 1 },
+      { "name": "事件分发逻辑4", "url": "1", "state": 0 }, { "name": "事件分发逻辑5", "url": "1", "state": 0 }, { "name": "事件分发逻辑6", "url": "1", "state": 0 }, { "name": "事件分发逻辑7", "url": "1", "state": 0 },
+      { "name": "事件分发逻辑8", "url": "1", "state": 0 }, { "name": "事件分发逻辑9", "url": "1", "state": 0 }]
     };
   },
   computed: {},
@@ -71,19 +70,36 @@ export default {
     this.editor.ddInstance = DDei.newInstance("ddei_editor_view", "ddei_editor_canvasview_conetent");
   },
   methods: {
+
+    /**
+     * 变更实例
+     * @param instance 
+     */
+    changeInstance(instance) {
+      this.instances.forEach(item => {
+        item.state = 0
+      });
+      instance.state = 1
+      //TODO 刷新画布
+    },
     /**
      * 在存在显示隐藏的情况下移动tab
      */
-    moveItem(index:number = 0){
-      if(index != 0){
-        console.log("移动")
+    moveItem(index: number = 0) {
+      if (index != 0) {
+        this.openIndex += index
+        if (this.openIndex > this.instances.length - 1) {
+          this.openIndex = this.instances.length - 1
+        } else if (this.openIndex < 0) {
+          this.openIndex = 0
+        }
       }
     },
 
     /**
      * 展开工具栏
      */
-    expandToolBox(){
+    expandToolBox() {
       let deltaX = 220;
       let frameLeftElement = document.getElementById("ddei_editor_frame_left");
       this.editor.leftWidth = 220;
@@ -162,7 +178,7 @@ export default {
                 }
 
 
-                
+
                 //显示辅助对齐线、坐标文本等图形
                 let selectedModels: Map<string, DDeiAbstractShape> = new Map();
                 selectedModels.set(control.id, control);
@@ -266,97 +282,100 @@ export default {
   height: 100%;
 }
 
-.ddei_editor_canvasview_tabs{
-  height:25px;
-  background: rgb(254,254,254);
+.ddei_editor_canvasview_tabs {
+  height: 25px;
+  background: rgb(254, 254, 254);
   border-top: 1px solid rgb(235, 235, 239);
   border-bottom: 1px solid rgb(235, 235, 239);
-  display:flex;
+  display: flex;
+  user-select: none;
 }
 
-.ddei_editor_canvasview_tabs_expandbox{
+
+.ddei_editor_canvasview_tabs_expandbox {
   flex: 0 0 30px;
   height: 25px;
-  text-align:center;
+  text-align: center;
 }
 
-.ddei_editor_canvasview_tabs_expandbox:hover{
+.ddei_editor_canvasview_tabs_expandbox:hover {
   background: rgb(235, 235, 239);
   cursor: pointer;
 }
 
-.ddei_editor_canvasview_tabs_expandbox img{
+.ddei_editor_canvasview_tabs_expandbox img {
   filter: brightness(60%);
   margin-top: 3px;
 }
 
-.ddei_editor_canvasview_tabs_movebox{
+.ddei_editor_canvasview_tabs_movebox {
   flex: 0 0 25px;
   height: 25px;
-  text-align:center;
+  text-align: center;
 }
 
-.ddei_editor_canvasview_tabs_movebox:hover{
+.ddei_editor_canvasview_tabs_movebox:hover {
   background: rgb(235, 235, 239);
   cursor: pointer;
 }
 
-.ddei_editor_canvasview_tabs_movebox img{
+.ddei_editor_canvasview_tabs_movebox img {
   filter: brightness(60%);
   margin-top: 4px;
 }
 
-.ddei_editor_canvasview_tabs_item{
+.ddei_editor_canvasview_tabs_item {
   flex: 0 0 160px;
   height: 25px;
-  display:flex;
+  display: flex;
 }
 
-.ddei_editor_canvasview_tabs_item img{
-  padding:3px;
-  flex:0 0 25px;
+.ddei_editor_canvasview_tabs_item img {
+  padding: 3px;
+  flex: 0 0 25px;
 }
 
-.ddei_editor_canvasview_tabs_item span{
+.ddei_editor_canvasview_tabs_item span {
   font-size: 13px;
-  margin-top:1px;
-  flex:0 0 110px;
-  width:110px;
+  margin-top: 1px;
+  flex: 0 0 110px;
+  width: 110px;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+  color: black;
 }
 
-.ddei_editor_canvasview_tabs_item div{
+.ddei_editor_canvasview_tabs_item div {
   height: 25px;
-  flex:0 0 25px;
-  margin:auto;
+  flex: 0 0 25px;
+  margin: auto;
 }
 
-.ddei_editor_canvasview_tabs_item div img{
+.ddei_editor_canvasview_tabs_item div img {
   width: 12px;
   height: 12px;
-  margin:auto;
-  padding:0px;
+  margin: auto;
+  padding: 0px;
 }
 
-.ddei_editor_canvasview_tabs_item div img:hover{
-  background:rgb(200, 200, 200);
-  cursor:pointer;
+.ddei_editor_canvasview_tabs_item div img:hover {
+  background: rgb(200, 200, 200);
+  cursor: pointer;
 }
 
-.ddei_editor_canvasview_tabs_item:hover{
-  background: rgb(247,247,247);
+.ddei_editor_canvasview_tabs_item:hover {
+  background: rgb(247, 247, 247);
 }
 
 
-.ddei_editor_canvasview_tabs_item_selected span{
-  color:#017fff;
+.ddei_editor_canvasview_tabs_item_selected span {
+  color: #017fff;
   font-weight: bold !important;
 }
 
 
-.ddei_editor_canvasview_conetent{
-  height:calc(100% - 25px);
+.ddei_editor_canvasview_conetent {
+  height: calc(100% - 25px);
 }
 </style>

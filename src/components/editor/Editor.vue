@@ -42,7 +42,7 @@ export default {
   data() {
     return {
       editor: DDeiEditor.newInstance("ddei_editor_ins", "ddei_editor"),
-      dragObj:null,
+      dragObj: null,
       changeIndex: -1
     };
   },
@@ -69,7 +69,7 @@ export default {
     this.editor.topHeight = frameTopElement.offsetHeight;
     this.editor.bottomHeight = frameBottomElement.offsetHeight;
     this.editor.middleWidth = frameMiddleElement.offsetWidth;
-    this.editor.middleHeight = frameMiddleElement.offsetHeight-25;
+    this.editor.middleHeight = frameMiddleElement.offsetHeight - 25;
   },
   methods: {
 
@@ -77,13 +77,13 @@ export default {
      * 停止改变大小
      * @param e 
      */
-    mouseUp(e:Event){
+    mouseUp(e: Event) {
       if (this.editor.state == DDeiEditorState.FRAME_CHANGING) {
         this.dragObj = null;
         this.changeIndex = -1;
         this.editor.state = DDeiEditorState.DESIGNING;
         this.editor.ddInstance.state = DDeiEnumState.NONE;
-      }else if(this.editor.state == DDeiEditorState.DESIGNING){
+      } else if (this.editor.state == DDeiEditorState.DESIGNING) {
         //事件下发到绘图区
         this.editor.ddInstance.render.mouseUp(e);
       }
@@ -91,7 +91,7 @@ export default {
     /**
      * 判断是否移动到拖拽区
      */
-     mouseMove(e: Event) {
+    mouseMove(e: Event) {
       //判断落点是否在某个区域的拖拽区附近
       let frameLeftElement = document.getElementById("ddei_editor_frame_left");
       let frameRightElement = document.getElementById("ddei_editor_frame_right");
@@ -99,27 +99,27 @@ export default {
       let frameMiddleElement = document.getElementById("ddei_editor_frame_middle");
       let frameBottomElement = document.getElementById("ddei_editor_frame_bottom");
       this.editor.middleWidth = frameMiddleElement.offsetWidth;
-      this.editor.middleHeight = frameMiddleElement.offsetHeight-25;
+      this.editor.middleHeight = frameMiddleElement.offsetHeight - 25;
       //拖拽中，根据拖拽的类型，改变大小
-      if(this.editor.state == DDeiEditorState.FRAME_CHANGING){
+      if (this.editor.state == DDeiEditorState.FRAME_CHANGING) {
         let deltaY = e.clientY - this.dragObj.y;
         let deltaX = e.clientX - this.dragObj.x;
-        switch(this.changeIndex){
+        switch (this.changeIndex) {
           case 1:
-            if(deltaY != 0){
-              if(frameTopElement.offsetHeight+ deltaY <= 175 && frameTopElement.offsetHeight+ deltaY >= 40){
-                frameTopElement.style.flexBasis =  (frameTopElement.offsetHeight+ deltaY)+"px";
+            if (deltaY != 0) {
+              if (frameTopElement.offsetHeight + deltaY <= 175 && frameTopElement.offsetHeight + deltaY >= 40) {
+                frameTopElement.style.flexBasis = (frameTopElement.offsetHeight + deltaY) + "px";
                 frameTopElement.style.flexShrink = "0";
                 frameTopElement.style.flexGrow = "0";
                 this.editor.middleHeight -= deltaY;
-                this.editor.ddInstance.render.setSize(this.editor.middleWidth , this.editor.middleHeight, 0,0)
+                this.editor.ddInstance.render.setSize(this.editor.middleWidth, this.editor.middleHeight, 0, 0)
                 this.editor.ddInstance.render.drawShape()
               }
-            } 
+            }
             break;
           case 2:
             if (deltaX != 0) {
-              if (frameRightElement.offsetWidth - deltaX <= 500 && frameRightElement.offsetWidth - deltaX >= 275) {
+              if (frameRightElement.offsetWidth - deltaX <= 800 && frameRightElement.offsetWidth - deltaX >= 275) {
                 frameRightElement.style.flexBasis = (frameRightElement.offsetWidth - deltaX) + "px";
                 frameRightElement.style.flexShrink = "0";
                 frameRightElement.style.flexGrow = "0";
@@ -131,7 +131,7 @@ export default {
             break;
           case 4:
             if (deltaX != 0) {
-              if (frameLeftElement.offsetWidth + deltaX <= 500 && frameLeftElement.offsetWidth + deltaX >= 140) {
+              if (frameLeftElement.offsetWidth + deltaX <= 800 && frameLeftElement.offsetWidth + deltaX >= 140) {
                 frameLeftElement.style.flexBasis = (frameLeftElement.offsetWidth + deltaX) + "px";
                 frameLeftElement.style.flexShrink = "0";
                 frameLeftElement.style.flexGrow = "0";
@@ -152,33 +152,33 @@ export default {
         this.editor.rightWidth = frameRightElement.offsetWidth;
         this.editor.topHeight = frameTopElement.offsetHeight;
         this.editor.bottomHeight = frameBottomElement.offsetHeight;
-      }else{
+      } else {
         //判断鼠标落点是否在框架上
         if (frameLeftElement.offsetTop <= e.clientY && frameLeftElement.offsetTop + frameLeftElement.offsetHeight >= e.clientY
-          && Math.abs(e.clientX-(frameLeftElement.offsetLeft + frameLeftElement.offsetWidth)) <= 5 ) {
+          && Math.abs(e.clientX - (frameLeftElement.offsetLeft + frameLeftElement.offsetWidth)) <= 5) {
           document.body.style.cursor = 'col-resize';
         } else if (frameRightElement.offsetTop <= e.clientY && frameRightElement.offsetTop + frameRightElement.offsetHeight >= e.clientY
           && Math.abs(e.clientX - frameRightElement.offsetLeft) <= 5) {
-          if(frameRightElement.offsetWidth > 38){
+          if (frameRightElement.offsetWidth > 38) {
             document.body.style.cursor = 'col-resize';
           }
-        } else if (Math.abs(e.clientY - (frameTopElement.offsetTop + frameTopElement.offsetHeight))  <= 5) {
+        } else if (Math.abs(e.clientY - (frameTopElement.offsetTop + frameTopElement.offsetHeight)) <= 5) {
           document.body.style.cursor = 'row-resize';
-        } else if (frameMiddleElement.offsetTop <= e.clientY && frameMiddleElement.offsetLeft <= e.clientX
+        } else if (frameMiddleElement.offsetTop + 25 <= e.clientY && frameMiddleElement.offsetLeft <= e.clientX
           && frameMiddleElement.offsetTop + frameMiddleElement.offsetHeight >= e.clientY && frameMiddleElement.offsetLeft + frameMiddleElement.offsetWidth >= e.clientX) {
-            //事件下发到绘图区
+          //事件下发到绘图区
           this.editor.ddInstance.render.mouseMove(e);
         } else {
           document.body.style.cursor = 'default';
         }
       }
-      
+
 
     },
     /**
      * 准备拖拽
      */
-     mouseDown(e: Event) {
+    mouseDown(e: Event) {
       //判断落点是否在某个区域的拖拽区附近
       let frameLeftElement = document.getElementById("ddei_editor_frame_left");
       let frameRightElement = document.getElementById("ddei_editor_frame_right");
@@ -186,7 +186,7 @@ export default {
       let frameMiddleElement = document.getElementById("ddei_editor_frame_middle");
 
       //判断鼠标落点是否在框架上
-     if (frameLeftElement.offsetTop <= e.clientY && frameLeftElement.offsetTop + frameLeftElement.offsetHeight >= e.clientY
+      if (frameLeftElement.offsetTop <= e.clientY && frameLeftElement.offsetTop + frameLeftElement.offsetHeight >= e.clientY
         && Math.abs(e.clientX - (frameLeftElement.offsetLeft + frameLeftElement.offsetWidth)) <= 5) {
         this.changeIndex = 4
         this.dragObj = { x: e.clientX, y: e.clientY, originX: e.offsetX, originY: e.offsetY }
@@ -198,13 +198,14 @@ export default {
         this.dragObj = { x: e.clientX, y: e.clientY, originX: e.offsetX, originY: e.offsetY }
         this.editor.state = DDeiEditorState.FRAME_CHANGING;
         this.editor.ddInstance.state = DDeiEnumState.IN_ACTIVITY;
-      } else if(Math.abs(e.clientY - (frameTopElement.offsetTop + frameTopElement.offsetHeight)) <= 5) {
+      } else if (Math.abs(e.clientY - (frameTopElement.offsetTop + frameTopElement.offsetHeight)) <= 5) {
         this.changeIndex = 1
         this.dragObj = { x: e.clientX, y: e.clientY, originX: e.offsetX, originY: e.offsetY }
         this.editor.state = DDeiEditorState.FRAME_CHANGING;
         this.editor.ddInstance.state = DDeiEnumState.IN_ACTIVITY;
-      } else if (frameMiddleElement.offsetTop <= e.clientY && frameMiddleElement.offsetLeft <= e.clientX
+      } else if (frameMiddleElement.offsetTop + 25 <= e.clientY && frameMiddleElement.offsetLeft <= e.clientX
         && frameMiddleElement.offsetTop + frameMiddleElement.offsetHeight >= e.clientY && frameMiddleElement.offsetLeft + frameMiddleElement.offsetWidth >= e.clientX) {
+
         //事件下发到绘图区
         this.editor.ddInstance.state = DDeiEnumState.NONE;
         this.editor.ddInstance.render.mouseDown(e);
@@ -240,6 +241,8 @@ export default {
   background-color: aquamarine;
 }
 
+
+
 .ddei_editor .body {
   display: flex;
   flex: 1;
@@ -253,5 +256,24 @@ export default {
 .ddei_editor .body .right {
   display: flex;
   flex-direction: column;
+}
+</style>
+<style>
+.ddei_editor img {
+  -webkit-user-drag: none;
+  user-drag: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.ddei_editor div {
+
+
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 </style>

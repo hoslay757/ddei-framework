@@ -1,5 +1,5 @@
 <template>
-  <div id="ddei_editor_toolbox" v-show="editor?.leftWidth >0" @mousedown="changeEditorFocus" class="ddei_editor_toolbox">
+  <div id="ddei_editor_toolbox" v-show="editor?.leftWidth > 0" @mousedown="changeEditorFocus" class="ddei_editor_toolbox">
     <div class="expandbox">
       <img class="img" :src="expandLeftImg" @click="hiddenToolBox" />
     </div>
@@ -10,7 +10,7 @@
       </div>
     </div>
     <hr />
-    <div class="groups" :style="{ height: 'calc(100vh - '+(editor?.topHeight+ editor?.bottomHeight+77)+'px' }">
+    <div class="groups" :style="{ height: 'calc(100vh - ' + (editor?.topHeight + editor?.bottomHeight + 77) + 'px' }">
       <div v-for="group in groups" v-show="group.display == true" class="group">
         <div :class="{ 'box': true, 'expanded': group.expand }" @click="groupBoxExpand(group)">
           <img class="expand" v-show="!group.expand" src="../icons/toolbox-unexpanded.png" />
@@ -111,7 +111,7 @@ export default {
     /**
      * 隐藏工具栏
      */
-    hiddenToolBox(){
+    hiddenToolBox() {
       let deltaX = this.editor.leftWidth;
       let frameLeftElement = document.getElementById("ddei_editor_frame_left");
       this.editor.leftWidth = 0;
@@ -290,7 +290,7 @@ export default {
   border: 1pt solid rgb(235, 235, 239);
   display: flex;
   flex-flow: column;
-  height:100%;
+  height: 100%;
 }
 
 /**以下为分割线 */
@@ -301,12 +301,16 @@ export default {
 
 }
 
+
+
+
 /**以下为收折框 */
 .ddei_editor_toolbox .expandbox {
   flex: 0 0 38px;
   height: 38px;
   text-align: right;
 }
+
 
 .ddei_editor_toolbox .expandbox .img {
   width: 30px;
@@ -340,7 +344,7 @@ export default {
 .ddei_editor_toolbox .searchbox .group .input {
   flex: 1 1 140px;
   height: 28px;
-  width:100%;
+  width: 100%;
   border: transparent;
   outline: none;
   font-size: 13px;
@@ -371,7 +375,7 @@ export default {
   overflow-y: auto;
   display: flex;
   flex-flow: column;
-  flex:1 1 auto;
+  flex: 1 1 auto;
 }
 
 .ddei_editor_toolbox .groups::-webkit-scrollbar {
