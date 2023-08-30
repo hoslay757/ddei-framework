@@ -73,6 +73,7 @@ export default {
         this.openIndex--;
       }
       this.maxOpenSize = size;
+      document.getElementById("ddei_editor_canvasview_conetent").style.width = (newVal - 15) + "px";
     });
   },
   mounted() {
