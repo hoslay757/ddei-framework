@@ -82,7 +82,7 @@ class DDeiUtil {
    * 获取设备像素比
    */
   static getPixelRatio(context: any): number {
-    var backingStore = context.backingStorePixelRatio ||
+    let backingStore = context.backingStorePixelRatio ||
       context.webkitBackingStorePixelRatio ||
       context.mozBackingStorePixelRatio ||
       context.msBackingStorePixelRatio ||

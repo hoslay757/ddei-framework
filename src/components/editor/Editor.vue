@@ -112,6 +112,8 @@ export default {
                 frameTopElement.style.flexShrink = "0";
                 frameTopElement.style.flexGrow = "0";
                 this.editor.middleHeight -= deltaY;
+                this.dragObj.x = e.clientX;
+                this.dragObj.y = e.clientY;
                 this.editor.ddInstance.render.setSize(this.editor.middleWidth, this.editor.middleHeight, 0, 0)
                 this.editor.ddInstance.render.drawShape()
               }
@@ -119,11 +121,13 @@ export default {
             break;
           case 2:
             if (deltaX != 0) {
-              if (frameRightElement.offsetWidth - deltaX <= 800 && frameRightElement.offsetWidth - deltaX >= 275) {
+              if (this.editor.middleWidth + deltaX >= 300 && frameRightElement.offsetWidth - deltaX >= 275) {
                 frameRightElement.style.flexBasis = (frameRightElement.offsetWidth - deltaX) + "px";
                 frameRightElement.style.flexShrink = "0";
                 frameRightElement.style.flexGrow = "0";
                 this.editor.middleWidth += deltaX;
+                this.dragObj.x = e.clientX;
+                this.dragObj.y = e.clientY;
                 this.editor.ddInstance.render.setSize(this.editor.middleWidth, this.editor.middleHeight, 0, 0)
                 this.editor.ddInstance.render.drawShape()
               }
@@ -131,12 +135,14 @@ export default {
             break;
           case 4:
             if (deltaX != 0) {
-              if (frameLeftElement.offsetWidth + deltaX <= 800 && frameLeftElement.offsetWidth + deltaX >= 140) {
+              if (this.editor.middleWidth - deltaX >= 300 && frameLeftElement.offsetWidth + deltaX >= 140) {
                 frameLeftElement.style.flexBasis = (frameLeftElement.offsetWidth + deltaX) + "px";
                 frameLeftElement.style.flexShrink = "0";
                 frameLeftElement.style.flexGrow = "0";
                 //重新设置画布大小
                 this.editor.middleWidth -= deltaX;
+                this.dragObj.x = e.clientX;
+                this.dragObj.y = e.clientY;
                 this.editor.ddInstance.render.setSize(this.editor.middleWidth, this.editor.middleHeight, 0, 0)
                 this.editor.ddInstance.render.drawShape()
               }
@@ -145,8 +151,7 @@ export default {
           default:
             break;
         }
-        this.dragObj.x = e.clientX;
-        this.dragObj.y = e.clientY;
+
         //同步记录大小
         this.editor.leftWidth = frameLeftElement.offsetWidth;
         this.editor.rightWidth = frameRightElement.offsetWidth;

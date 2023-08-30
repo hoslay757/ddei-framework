@@ -15,10 +15,10 @@
         </div>
       </div>
       <div style="flex:1 1 1px"></div>
-      <div class="ddei_editor_canvasview_tabs_movebox" @click="moveItem(-1)">
+      <div class="ddei_editor_canvasview_tabs_movebox" v-show="instances.length > maxOpenSize" @click="moveItem(-1)">
         <img width="16" height="16" src="../icons/icon-left.png" />
       </div>
-      <div class="ddei_editor_canvasview_tabs_movebox" @click="moveItem(1)">
+      <div class="ddei_editor_canvasview_tabs_movebox" v-show="instances.length > maxOpenSize" @click="moveItem(1)">
         <img width="16" height="16" src="../icons/icon-right.png" />
       </div>
     </div>
@@ -62,8 +62,19 @@ export default {
     };
   },
   computed: {},
-  watch: {},
-  created() { },
+  watch: {
+
+  },
+  created() {
+    // 监听obj对象中prop属性的变化
+    this.$watch('editor.middleWidth', function (newVal, oldVal) {
+      let size = parseInt((newVal - 40) / 160);
+      if (size > this.maxOpenSize && this.openIndex > 0) {
+        this.openIndex--;
+      }
+      this.maxOpenSize = size;
+    });
+  },
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
@@ -88,8 +99,8 @@ export default {
     moveItem(index: number = 0) {
       if (index != 0) {
         this.openIndex += index
-        if (this.openIndex > this.instances.length - 1) {
-          this.openIndex = this.instances.length - 1
+        if (this.openIndex > this.instances.length - this.maxOpenSize) {
+          this.openIndex = this.instances.length - this.maxOpenSize
         } else if (this.openIndex < 0) {
           this.openIndex = 0
         }
