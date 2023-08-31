@@ -121,33 +121,35 @@ class DDeiLayerCanvasRender {
       }
       ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-      ctx.lineWidth = 1 * ratio;
+      ctx.lineWidth = 1;
       let r20 = ratio * 20;
       let r40 = ratio * 40;
+      let offsetWidth = 0.5;
       for (let x = 0; x <= canvas.width; x = x + r20) {
+
         ctx.beginPath();
         if (x % r40 == 0) {
           ctx.setLineDash([]);
-          ctx.strokeStyle = "rgb(220,220,220)";
+          ctx.strokeStyle = "rgb(210,210,210)";
         } else {
           ctx.setLineDash([3, 1]);
-          ctx.strokeStyle = "rgb(240,240,240)";
+          ctx.strokeStyle = "rgb(220,220,220)";
         }
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, canvas.height);
+        ctx.moveTo(x + offsetWidth, offsetWidth);
+        ctx.lineTo(x + offsetWidth, canvas.height + offsetWidth);
         ctx.stroke();
       }
       for (let y = 0; y <= canvas.height; y = y + r20) {
         ctx.beginPath();
         if (y % r40 == 0) {
           ctx.setLineDash([]);
-          ctx.strokeStyle = "rgb(220,220,220)";
+          ctx.strokeStyle = "rgb(210,210,210)";
         } else {
           ctx.setLineDash([3, 1]);
-          ctx.strokeStyle = "rgb(240,240,240)";
+          ctx.strokeStyle = "rgb(220,220,220)";
         }
-        ctx.moveTo(0, y);
-        ctx.lineTo(canvas.width, y);
+        ctx.moveTo(offsetWidth, y + offsetWidth);
+        ctx.lineTo(canvas.width + offsetWidth, y + offsetWidth);
         ctx.stroke();
       }
     }

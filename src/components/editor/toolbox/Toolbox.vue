@@ -10,7 +10,7 @@
       </div>
     </div>
     <hr />
-    <div class="groups" :style="{ height: 'calc(100vh - ' + (editor?.topHeight + editor?.bottomHeight + 77) + 'px' }">
+    <div class="groups" :style="{ height: 'calc(100vh - ' + (editor?.topHeight + editor?.bottomHeight + 90) + 'px' }">
       <div v-for="group in groups" v-show="group.display == true" class="group">
         <div :class="{ 'box': true, 'expanded': group.expand }" @click="groupBoxExpand(group)">
           <img class="expand" v-show="!group.expand" src="../icons/toolbox-unexpanded.png" />
@@ -322,7 +322,8 @@ export default {
 }
 
 .ddei_editor_toolbox .expandbox .img:hover {
-  background-color: rgb(244, 244, 244)
+  background-color: rgb(244, 244, 244);
+  cursor: pointer;
 }
 
 /**以下为搜索框 */

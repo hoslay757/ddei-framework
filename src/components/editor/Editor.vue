@@ -9,6 +9,7 @@
           <Toolbox @createControlPrepare="createControlPrepare"></Toolbox>
         </div>
         <div class="middle" id="ddei_editor_frame_middle">
+          <OpenFilesView></OpenFilesView>
           <CanvasView></CanvasView>
         </div>
         <div style="flex:0 0 275px" class="right" id="ddei_editor_frame_right">
@@ -29,6 +30,7 @@ import Toolbox from './toolbox/Toolbox.vue';
 import BottomMenu from './bottommenu/BottomMenu.vue';
 import PropertyView from './propertyview/PropertyView.vue';
 import CanvasView from './canvasview/CanvasView.vue';
+import OpenFilesView from './openfilesview/OpenFilesView.vue'
 import DDeiEditorState from './js/enums/editor-state';
 import DDeiAbstractShape from '../framework/js/models/shape';
 import DDeiEnumState from '../framework/js/enums/ddei-state';
@@ -52,6 +54,7 @@ export default {
     Toolbox,
     BottomMenu,
     PropertyView,
+    OpenFilesView,
     CanvasView
   },
   computed: {},
@@ -64,12 +67,13 @@ export default {
     let frameTopElement = document.getElementById("ddei_editor_frame_top");
     let frameBottomElement = document.getElementById("ddei_editor_frame_bottom");
     let frameMiddleElement = document.getElementById("ddei_editor_frame_middle");
+
     this.editor.leftWidth = frameLeftElement.offsetWidth;
     this.editor.rightWidth = frameRightElement.offsetWidth;
     this.editor.topHeight = frameTopElement.offsetHeight;
     this.editor.bottomHeight = frameBottomElement.offsetHeight;
     this.editor.middleWidth = frameMiddleElement.offsetWidth;
-    this.editor.middleHeight = frameMiddleElement.offsetHeight - 25;
+    this.editor.middleHeight = frameMiddleElement.offsetHeight;
   },
   methods: {
 
@@ -98,8 +102,9 @@ export default {
       let frameTopElement = document.getElementById("ddei_editor_frame_top");
       let frameMiddleElement = document.getElementById("ddei_editor_frame_middle");
       let frameBottomElement = document.getElementById("ddei_editor_frame_bottom");
+      let filesElement = document.getElementById("ddei_editor_ofsview");
       this.editor.middleWidth = frameMiddleElement.offsetWidth;
-      this.editor.middleHeight = frameMiddleElement.offsetHeight - 25;
+      this.editor.middleHeight = frameMiddleElement.offsetHeight - filesElement?.offsetHeight;
       //拖拽中，根据拖拽的类型，改变大小
       if (this.editor.state == DDeiEditorState.FRAME_CHANGING) {
         if (e.buttons !== 1) {
@@ -261,6 +266,8 @@ export default {
 
 .ddei_editor .body .middle {
   flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .ddei_editor .body .right {
