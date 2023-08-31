@@ -113,7 +113,7 @@ export const styles = {
       'dataSource': '',
       'mapping': ["border.dash"],
       'dataType': 'integer',
-      'defaultValue': [3, 3],
+      'defaultValue': null,
       'isArray': true,
       'orderNo': 5,
       'visiable': 1

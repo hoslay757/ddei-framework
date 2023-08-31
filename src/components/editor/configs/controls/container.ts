@@ -257,7 +257,7 @@ export const styles = {
       'dataType': 'string',
       'dataSource': [{ 'text': '是', 'value': '1' }, { 'text': '否', 'value': '0' }],
       'display': 'column',
-      'defaultValue': '1',
+      'defaultValue': '0',
       'orderNo': 7,
       'visiable': 1
     },
@@ -281,7 +281,7 @@ export const styles = {
       'group': '边框',
       'controlType': 'text',
       'dataType': 'integer',
-      'defaultValue': [5, 5],
+      'defaultValue': null,
       'isArray': true,
       'visiable': 0
     },

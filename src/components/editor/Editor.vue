@@ -102,6 +102,11 @@ export default {
       this.editor.middleHeight = frameMiddleElement.offsetHeight - 25;
       //拖拽中，根据拖拽的类型，改变大小
       if (this.editor.state == DDeiEditorState.FRAME_CHANGING) {
+        if (e.buttons !== 1) {
+          this.mouseUp(e);
+          e.preventDefault();
+          return;
+        }
         let deltaY = e.clientY - this.dragObj.y;
         let deltaX = e.clientX - this.dragObj.x;
         switch (this.changeIndex) {

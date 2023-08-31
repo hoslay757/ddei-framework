@@ -71,14 +71,14 @@ class DDeiConfig {
 
   // 字体的相关缺省样式属性
   static FONT: object = {
-    default: { family: "STSong-Light", color: "#000000", size: "16" },
-    selected: { family: "STSong-Light", color: "#000000", size: "16" }
+    default: { family: "Microsoft YaHei", color: "#000000", size: "16" },
+    selected: { family: "Microsoft YaHei", color: "#000000", size: "16" }
   };
 
   // 图层的相关缺省样式属性
   static LAYER: object = {
     //背景的类型，0无背景，1纯色，2图片，3田字
-    type: 1,
+    type: 0,
     //背景色
     bgcolor: "grey",
     //透明度，0完全透明~1完全不透明
@@ -103,13 +103,13 @@ class DDeiConfig {
         width: 1, color: "black", dash: null, round: 0, disabled: false
       },
       right: {
-        width: 1, color: "blue", dash: null, round: 0
+        width: 1, color: "black", dash: null, round: 0
       },
       bottom: {
-        width: 1, color: "green", dash: null, round: 0, opacity: 1
+        width: 1, color: "black", dash: null, round: 0, opacity: 1
       },
       left: {
-        width: 1, color: "yellow", dash: null, round: 0, opacity: 1
+        width: 1, color: "black", dash: null, round: 0, opacity: 1
       },
       selected: {
         top: {
@@ -138,12 +138,12 @@ class DDeiConfig {
     // 默认矩形字体
     font: {
       //字体
-      family: "STSong-Light",
+      family: "Microsoft YaHei",
       //颜色
       color: "white",
       //大小
       size: 16,
-      selected: { family: "STSong-Light", color: "#000000", size: 16 }
+      selected: { family: "Microsoft YaHei", color: "#000000", size: 16 }
     },
     // 默认矩形文本样式
     textStyle: {
@@ -171,23 +171,23 @@ class DDeiConfig {
   static CIRCLE: object = {
     // 默认矩形边框
     border: {
-      width: 1, color: "black", dash: [3, 1], round: 0, disabled: false, opacity: 1,
+      width: 1, color: "black", dash: null, round: 0, disabled: false, opacity: 1,
       selected: { width: 1, color: "black", dash: null, round: 0, opacity: 1 }
     },
     // 默认矩形填充
     fill: {
-      color: "red", opacity: 1,
+      color: "white", opacity: 1,
       selected: { color: "white" }
     },
     // 默认矩形字体
     font: {
       //字体
-      family: "STSong-Light",
+      family: "Microsoft YaHei",
       //颜色
       color: "white",
       //大小
       size: 16,
-      selected: { family: "STSong-Light", color: "#000000", size: 16 }
+      selected: { family: "Microsoft YaHei", color: "#000000", size: 16 }
     },
     // 默认矩形文本样式
     textStyle: {
@@ -215,16 +215,16 @@ class DDeiConfig {
   static DIAMOND: object = {
     border: {
       top: {
-        width: 1, color: "black", dash: [3, 1], round: 0, disabled: false
+        width: 1, color: "black", dash: null, round: 0, disabled: false
       },
       right: {
-        width: 1, color: "blue", dash: null, round: 0
+        width: 1, color: "black", dash: null, round: 0
       },
       bottom: {
-        width: 1, color: "green", dash: null, round: 0, opacity: 1
+        width: 1, color: "black", dash: null, round: 0, opacity: 1
       },
       left: {
-        width: 1, color: "yellow", dash: null, round: 0, opacity: 1
+        width: 1, color: "black", dash: null, round: 0, opacity: 1
       },
       selected: {
         top: {
@@ -249,12 +249,12 @@ class DDeiConfig {
     // 默认矩形字体
     font: {
       //字体
-      family: "STSong-Light",
+      family: "Microsoft YaHei",
       //颜色
       color: "white",
       //大小
       size: 16,
-      selected: { family: "STSong-Light", color: "#000000", size: 16 }
+      selected: { family: "Microsoft YaHei", color: "#000000", size: 16 }
     },
     // 默认矩形文本样式
     textStyle: {
@@ -284,16 +284,16 @@ class DDeiConfig {
     // 默认矩形边框
     border: {
       top: {
-        width: 1, color: "yellow", dash: [2, 2], round: 0
+        width: 1, color: "black", dash: null, round: 0
       },
       right: {
-        width: 1, color: "yellow", dash: [2, 2], round: 0
+        width: 1, color: "black", dash: null, round: 0
       },
       bottom: {
-        width: 1, color: "yellow", dash: [2, 2], round: 0
+        width: 1, color: "black", dash: null, round: 0
       },
       left: {
-        width: 1, color: "yellow", dash: [2, 2], round: 0
+        width: 1, color: "black", dash: null, round: 0
       },
       selected: {
         top: {

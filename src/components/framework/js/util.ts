@@ -165,6 +165,7 @@ class DDeiUtil {
       if (pos.height) {
         returnP.height = pos.height * ratio;
       }
+      returnP.x = returnP.width % 2 === 0 ? Math.floor(returnP.x) : Math.floor(returnP.x) + 0.5;
       return returnP;
     }
   }

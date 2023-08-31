@@ -113,7 +113,7 @@ export const styles = {
       'dataSource': '',
       'mapping': ["border.dash"],
       'dataType': 'integer',
-      'defaultValue': [3, 3],
+      'defaultValue': null,
       'isArray': true,
       'orderNo': 5,
       'visiable': 1
@@ -190,7 +190,7 @@ export const styles = {
       'group': '文本',
       'controlType': 'text',
       'dataType': 'string',
-      'defaultValue': "black",
+      'defaultValue': "#252525",
       'orderNo': 3,
       'visiable': 1
     },

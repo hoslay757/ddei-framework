@@ -202,7 +202,7 @@ export const styles = {
       'group': '文本',
       'controlType': 'text',
       'dataType': 'string',
-      'defaultValue': "black",
+      'defaultValue': "#252525",
       'orderNo': 3,
       'visiable': 1
     },
@@ -267,7 +267,7 @@ export const styles = {
       'group': '边框',
       'controlType': 'text',
       'dataType': 'integer',
-      'defaultValue': [5, 5],
+      'defaultValue': null,
       'isArray': true,
       'visiable': 0
     },
