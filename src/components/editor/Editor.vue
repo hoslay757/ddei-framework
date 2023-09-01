@@ -1,7 +1,7 @@
 <template>
   <div>
     <div id="ddei_editor" class="ddei_editor" @mouseup="mouseUp" @mousemove="mouseMove" @mousedown="mouseDown">
-      <div style="flex:0 0 175px" class="top" id="ddei_editor_frame_top">
+      <div style="flex:0 0 100px" class="top" id="ddei_editor_frame_top">
         <TopMenu></TopMenu>
       </div>
       <div class="body">
@@ -116,18 +116,18 @@ export default {
         let deltaX = e.clientX - this.dragObj.x;
         switch (this.changeIndex) {
           case 1:
-            if (deltaY != 0) {
-              if (frameTopElement.offsetHeight + deltaY <= 175 && frameTopElement.offsetHeight + deltaY >= 40) {
-                frameTopElement.style.flexBasis = (frameTopElement.offsetHeight + deltaY) + "px";
-                frameTopElement.style.flexShrink = "0";
-                frameTopElement.style.flexGrow = "0";
-                this.editor.middleHeight -= deltaY;
-                this.dragObj.x = e.clientX;
-                this.dragObj.y = e.clientY;
-                this.editor.ddInstance.render.setSize(this.editor.middleWidth, this.editor.middleHeight, 0, 0)
-                this.editor.ddInstance.render.drawShape()
-              }
-            }
+            // if (deltaY != 0) {
+            //   if (frameTopElement.offsetHeight + deltaY <= 175 && frameTopElement.offsetHeight + deltaY >= 40) {
+            //     frameTopElement.style.flexBasis = (frameTopElement.offsetHeight + deltaY) + "px";
+            //     frameTopElement.style.flexShrink = "0";
+            //     frameTopElement.style.flexGrow = "0";
+            //     this.editor.middleHeight -= deltaY;
+            //     this.dragObj.x = e.clientX;
+            //     this.dragObj.y = e.clientY;
+            //     this.editor.ddInstance.render.setSize(this.editor.middleWidth, this.editor.middleHeight, 0, 0)
+            //     this.editor.ddInstance.render.drawShape()
+            //   }
+            // }
             break;
           case 2:
             if (deltaX != 0) {
@@ -172,14 +172,17 @@ export default {
         if (frameLeftElement.offsetTop <= e.clientY && frameLeftElement.offsetTop + frameLeftElement.offsetHeight >= e.clientY
           && Math.abs(e.clientX - (frameLeftElement.offsetLeft + frameLeftElement.offsetWidth)) <= 5) {
           document.body.style.cursor = 'col-resize';
-        } else if (frameRightElement.offsetTop <= e.clientY && frameRightElement.offsetTop + frameRightElement.offsetHeight >= e.clientY
+        } 
+        else if (frameRightElement.offsetTop <= e.clientY && frameRightElement.offsetTop + frameRightElement.offsetHeight >= e.clientY
           && Math.abs(e.clientX - frameRightElement.offsetLeft) <= 5) {
           if (frameRightElement.offsetWidth > 38) {
             document.body.style.cursor = 'col-resize';
           }
-        } else if (Math.abs(e.clientY - (frameTopElement.offsetTop + frameTopElement.offsetHeight)) <= 5) {
-          document.body.style.cursor = 'row-resize';
-        } else if (frameMiddleElement.offsetTop + 25 <= e.clientY && frameMiddleElement.offsetLeft <= e.clientX
+        } 
+        // else if (Math.abs(e.clientY - (frameTopElement.offsetTop + frameTopElement.offsetHeight)) <= 5) {
+        //   document.body.style.cursor = 'row-resize';
+        // } 
+        else if (frameMiddleElement.offsetTop + 25 <= e.clientY && frameMiddleElement.offsetLeft <= e.clientX
           && frameMiddleElement.offsetTop + frameMiddleElement.offsetHeight >= e.clientY && frameMiddleElement.offsetLeft + frameMiddleElement.offsetWidth >= e.clientX) {
           //事件下发到绘图区
           this.editor.ddInstance.render.mouseMove(e);
