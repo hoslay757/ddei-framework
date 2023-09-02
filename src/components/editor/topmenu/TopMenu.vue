@@ -10,6 +10,15 @@
       <div class="ddei_editor_topmenu_quickbox_group">
         <QuickBoxTool></QuickBoxTool>
       </div>
+      <div class="ddei_editor_topmenu_quickbox_group">
+        <QuickBoxStyle></QuickBoxStyle>
+      </div>
+      <div class="ddei_editor_topmenu_quickbox_group">
+        <QuickBoxSort></QuickBoxSort>
+      </div>
+      <div class="ddei_editor_topmenu_quickbox_group">
+        <QuickBoxChangeShape></QuickBoxChangeShape>
+      </div>
     </div>
 
   </div>
@@ -18,6 +27,9 @@
 import QuickBoxOperate from './quickbox/QuickBoxOperate.vue';
 import QuickBoxFontAndText from './quickbox/QuickBoxFontAndText.vue';
 import QuickBoxTool from './quickbox/QuickBoxTool.vue';
+import QuickBoxStyle from './quickbox/QuickBoxStyle.vue';
+import QuickBoxSort from './quickbox/QuickBoxSort.vue';
+import QuickBoxChangeShape from './quickbox/QuickBoxChangeShape.vue';
 
 export default {
   name: "DDei-Editor-TopMenu",
@@ -31,7 +43,10 @@ export default {
   components: {
     QuickBoxOperate,
     QuickBoxFontAndText,
-    QuickBoxTool
+    QuickBoxTool,
+    QuickBoxStyle,
+    QuickBoxSort,
+    QuickBoxChangeShape
   },
   computed: {},
   watch: {},

@@ -122,7 +122,7 @@ export default {
   text-align: center;
   font-family: "Microsoft YaHei";
   font-size: 12px;
-  color: rgb(150, 150, 150);
+  color: rgb(120, 120, 120);
   margin-top: -3px;
 }
 

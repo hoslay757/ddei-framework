@@ -2,22 +2,22 @@
   <div class="ddei_editor_quick_operate">
     <div class="ddei_editor_quick_operate_item">
       <div class="ddei_editor_quick_operate_item_box_selected">
-        <img width="16px" height="16px" src="../../icons/icon-shear.png"/>
+        <img width="16px" height="16px" src="../../icons/icon-shear.png" />
       </div>
     </div>
     <div class="ddei_editor_quick_operate_item">
       <div class="ddei_editor_quick_operate_item_box">
-        <img width="16px" height="16px" src="../../icons/icon-brush.png"/>
-      </div>  
-    </div>
-    <div class="ddei_editor_quick_operate_item">
-      <div class="ddei_editor_quick_operate_item_box">
-        <img width="16px" height="16px" src="../../icons/icon-copy.png"/>
+        <img width="16px" height="16px" src="../../icons/icon-brush.png" />
       </div>
     </div>
     <div class="ddei_editor_quick_operate_item">
       <div class="ddei_editor_quick_operate_item_box">
-        <img width="16px" height="16px" src="../../icons/icon-paste.png"/>
+        <img width="16px" height="16px" src="../../icons/icon-copy.png" />
+      </div>
+    </div>
+    <div class="ddei_editor_quick_operate_item">
+      <div class="ddei_editor_quick_operate_item_box">
+        <img width="16px" height="16px" src="../../icons/icon-paste.png" />
       </div>
     </div>
     <div class="ddei_editor_quick_operate_item" style="grid-column:1/3;">
@@ -60,45 +60,46 @@ export default {
 }
 
 .ddei_editor_quick_operate_item {
-  margin:auto;
-  
+  margin: auto;
+
 }
+
 .ddei_editor_quick_operate_item_text {
-  text-align:center;
+  text-align: center;
   font-family: "Microsoft YaHei";
-  font-size:12px;
-  color:rgb(150,150,150)
+  font-size: 12px;
+  color: rgb(120, 120, 120)
 }
 
 
 
 .ddei_editor_quick_operate_item_box {
-  width:25px;
-  height:25px;
-  text-align:center;
+  width: 25px;
+  height: 25px;
+  text-align: center;
 }
-.ddei_editor_quick_operate_item_box img{
-  margin-top:4px;
-  filter:brightness(45%) drop-shadow(0.2px 0px 0.2px #000);
+
+.ddei_editor_quick_operate_item_box img {
+  margin-top: 4px;
+  filter: brightness(45%) drop-shadow(0.2px 0px 0.2px #000);
 }
 
 .ddei_editor_quick_operate_item_box_selected {
-  width:25px;
-  height:25px;
-  text-align:center;
-  background-color:rgb(228,228,232);
+  width: 25px;
+  height: 25px;
+  text-align: center;
+  background-color: rgb(228, 228, 232);
   border-radius: 4px;
 }
-.ddei_editor_quick_operate_item_box_selected img{
-  margin-top:4px;
-  filter:brightness(45%) drop-shadow(0.2px 0px 0.2px #000);
+
+.ddei_editor_quick_operate_item_box_selected img {
+  margin-top: 4px;
+  filter: brightness(45%) drop-shadow(0.2px 0px 0.2px #000);
 }
 
 
 .ddei_editor_quick_operate_item_box:hover {
-  background-color:rgb(233,233,238);
+  background-color: rgb(233, 233, 238);
   border-radius: 4px;
 }
-
-
 </style>

@@ -4,24 +4,28 @@
       <div class="ddei_editor_quick_tool_item_box_selected">
         <img width="20px" height="20px" src="../../icons/icon-cursor.png" />
         <div>选择</div>
+        <img width="6px" height="6px" style="margin-left:5px;margin-top:10px" src="../../icons/toolbox-expanded.png" />
       </div>
     </div>
     <div class="ddei_editor_quick_tool_item">
       <div class="ddei_editor_quick_tool_item_box">
         <img width="20px" height="20px" src="../../icons/toolbox-shape-rect.png" />
         <div>形状</div>
+        <img width="6px" height="6px" style="margin-left:5px;margin-top:10px" src="../../icons/toolbox-expanded.png" />
       </div>
     </div>
     <div class="ddei_editor_quick_tool_item">
       <div class="ddei_editor_quick_tool_item_box">
         <img width="20px" height="20px" src="../../icons/icon-text.png" />
         <div>文本</div>
+        <img width="6px" height="6px" style="margin-left:5px;margin-top:10px" src="../../icons/toolbox-expanded.png" />
       </div>
     </div>
     <div class="ddei_editor_quick_tool_item">
       <div class="ddei_editor_quick_tool_item_box">
         <img width="20px" height="20px" src="../../icons/icon-line-fold.png" />
         <div>线段</div>
+        <img width="6px" height="6px" style="margin-left:5px;margin-top:10px" src="../../icons/toolbox-expanded.png" />
       </div>
     </div>
     <div class="ddei_editor_quick_tool_item" style="grid-column:1/3;">
@@ -73,7 +77,7 @@ export default {
   text-align: center;
   font-family: "Microsoft YaHei";
   font-size: 12px;
-  color: rgb(150, 150, 150)
+  color: rgb(120, 120, 120)
 }
 
 
