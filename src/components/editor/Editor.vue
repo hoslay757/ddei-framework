@@ -11,12 +11,13 @@
         <div class="middle" id="ddei_editor_frame_middle">
           <OpenFilesView></OpenFilesView>
           <CanvasView></CanvasView>
+          <QuickColorView></QuickColorView>
         </div>
         <div style="flex:0 0 275px" class="right" id="ddei_editor_frame_right">
           <PropertyView></PropertyView>
         </div>
       </div>
-      <div style="flex: 0 0 60px;" class="bottom" id="ddei_editor_frame_bottom">
+      <div style="flex: 0 0 35px;" class="bottom" id="ddei_editor_frame_bottom">
         <BottomMenu></BottomMenu>
       </div>
     </div>
@@ -31,6 +32,7 @@ import BottomMenu from './bottommenu/BottomMenu.vue';
 import PropertyView from './propertyview/PropertyView.vue';
 import CanvasView from './canvasview/CanvasView.vue';
 import OpenFilesView from './openfilesview/OpenFilesView.vue'
+import QuickColorView from './quickcolorview/QuickColorView.vue'
 import DDeiEditorState from './js/enums/editor-state';
 import DDeiAbstractShape from '../framework/js/models/shape';
 import DDeiEnumState from '../framework/js/enums/ddei-state';
@@ -55,7 +57,8 @@ export default {
     BottomMenu,
     PropertyView,
     OpenFilesView,
-    CanvasView
+    CanvasView,
+    QuickColorView
   },
   computed: {},
   watch: {},
@@ -103,8 +106,9 @@ export default {
       let frameMiddleElement = document.getElementById("ddei_editor_frame_middle");
       let frameBottomElement = document.getElementById("ddei_editor_frame_bottom");
       let filesElement = document.getElementById("ddei_editor_ofsview");
+      let quickColorElement = document.getElementById("ddei_editor_qcview");
       this.editor.middleWidth = frameMiddleElement.offsetWidth;
-      this.editor.middleHeight = frameMiddleElement.offsetHeight - filesElement?.offsetHeight;
+      this.editor.middleHeight = frameMiddleElement.offsetHeight - filesElement?.offsetHeight - quickColorElement?.offsetHeight;
       //拖拽中，根据拖拽的类型，改变大小
       if (this.editor.state == DDeiEditorState.FRAME_CHANGING) {
         if (e.buttons !== 1) {
@@ -172,13 +176,13 @@ export default {
         if (frameLeftElement.offsetTop <= e.clientY && frameLeftElement.offsetTop + frameLeftElement.offsetHeight >= e.clientY
           && Math.abs(e.clientX - (frameLeftElement.offsetLeft + frameLeftElement.offsetWidth)) <= 5) {
           document.body.style.cursor = 'col-resize';
-        } 
+        }
         else if (frameRightElement.offsetTop <= e.clientY && frameRightElement.offsetTop + frameRightElement.offsetHeight >= e.clientY
           && Math.abs(e.clientX - frameRightElement.offsetLeft) <= 5) {
           if (frameRightElement.offsetWidth > 38) {
             document.body.style.cursor = 'col-resize';
           }
-        } 
+        }
         // else if (Math.abs(e.clientY - (frameTopElement.offsetTop + frameTopElement.offsetHeight)) <= 5) {
         //   document.body.style.cursor = 'row-resize';
         // } 

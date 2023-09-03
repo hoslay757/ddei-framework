@@ -60,7 +60,6 @@ export default {
 <style scoped>
 .ddei_editor_topmenu {
   background: rgb(225, 225, 225);
-  width: 100%;
 }
 
 .ddei_editor_topmenu_quickbox {
