@@ -43,7 +43,33 @@
       </div>
     </div>
     <div class="ddei_editor_bottommenu_other">
-
+      <div class="ddei_editor_bottommenu_other_play">
+        <div>
+          <img src="../icons/icon-play.png" />
+        </div>
+      </div>
+      <div class="ddei_editor_bottommenu_other_changesize">
+        <div class="ddei_editor_bottommenu_other_changesize_combox">
+          <span>
+            100%
+          </span>
+          <img style="width:8px;height:8px;margin-top:9px;" width="8px" height="8px"
+            src="../icons/toolbox-expanded.png" />
+        </div>
+        <div>
+          <img src="../icons/icon-reduce.png" />
+        </div>
+        <input type="range" min="0" max="400" value="100" />
+        <div>
+          <img src="../icons/icon-add.png" />
+        </div>
+        <div>
+          <img src="../icons/icon-screen-full.png" />
+        </div>
+        <div>
+          <img src="../icons/icon-screen-width.png" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -70,6 +96,7 @@ export default {
 .ddei_editor_bottommenu {
   background: rgb(225, 225, 225);
   display: flex;
+  color: black;
 }
 
 
@@ -89,7 +116,8 @@ export default {
 }
 
 .ddei_editor_bottommenu_preview img:hover {
-  background-color: rgb(235, 235, 235)
+  background-color: rgb(235, 235, 235);
+  cursor: pointer;
 }
 
 .ddei_editor_bottommenu_preview img {
@@ -124,7 +152,8 @@ export default {
 }
 
 .ddei_editor_bottommenu_pagepreview div:hover {
-  background-color: rgb(235, 235, 235)
+  background-color: rgb(235, 235, 235);
+  cursor: pointer;
 }
 
 .ddei_editor_bottommenu_pagepreview img {
@@ -151,7 +180,6 @@ export default {
   height: 24px;
   margin-left: 12px;
   padding-right: 5px;
-
   border-right: 1px solid rgb(235, 235, 235)
 }
 
@@ -207,9 +235,9 @@ export default {
 .ddei_editor_bottommenu_shapecount {
   flex: 0 0 100px;
   height: 35px;
-  padding-top: 6px;
+  padding-top: 5px;
   display: block;
-  font-size: 13px;
+  font-size: 14px;
   text-align: center;
 }
 
@@ -222,7 +250,7 @@ export default {
 
 
 .ddei_editor_bottommenu_layers {
-  flex: 0 0 40px;
+  flex: 0 0 35px;
   height: 35px;
   padding-top: 5px;
 }
@@ -249,8 +277,78 @@ export default {
 
 
 .ddei_editor_bottommenu_other {
-  flex: 0 0 370px;
+  flex: 0 0 330px;
   height: 35px;
   padding-top: 5px;
+}
+
+.ddei_editor_bottommenu_other_play {
+  float: left;
+}
+
+.ddei_editor_bottommenu_other_play div {
+  float: left;
+  height: 24px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 2px;
+  border-right: 1px solid rgb(235, 235, 235);
+}
+
+.ddei_editor_bottommenu_other_play img:hover {
+  filter: brightness(20%);
+  cursor: pointer;
+}
+
+
+
+.ddei_editor_bottommenu_other_play img {
+  filter: brightness(40%);
+  width: 20px;
+  height: 20px;
+}
+
+
+
+.ddei_editor_bottommenu_other_changesize {
+  float: left;
+}
+
+.ddei_editor_bottommenu_other_changesize span {
+  float: left;
+}
+
+.ddei_editor_bottommenu_other_changesize div {
+  float: left;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.ddei_editor_bottommenu_other_changesize_combox:hover {
+  background-color: rgb(235, 235, 235);
+  float: left;
+  padding-left: 5px;
+  padding-right: 5px;
+  cursor: pointer;
+}
+
+.ddei_editor_bottommenu_other_changesize input {
+  float: left;
+  width: 100px;
+  margin-top: 4px;
+  border-radius: 4px;
+}
+
+.ddei_editor_bottommenu_other_changesize img {
+  filter: brightness(40%);
+  width: 20px;
+  height: 20px;
+  float: left;
+  margin-top: 2px;
+}
+
+.ddei_editor_bottommenu_other_changesize img:hover {
+  filter: brightness(20%);
+  cursor: pointer;
 }
 </style>
