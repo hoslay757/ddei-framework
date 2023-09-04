@@ -33,7 +33,7 @@ class DDeiBusActionRefreshShape extends DDeiBusAction {
 
     let stage = bus.ddInstance.stage;
     if (stage) {
-      stage.render.drawShape();
+      stage.ddInstance.render.drawShape();
       return true;
     } else {
       return false;
