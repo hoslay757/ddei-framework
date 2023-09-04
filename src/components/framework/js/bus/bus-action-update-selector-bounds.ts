@@ -2,9 +2,9 @@ import DDeiEnumBusActionType from '../enums/bus-action-type';
 import DDeiBus from './bus';
 import DDeiBusAction from './bus-action';
 /**
- * 改变模型选择状态的总线Action
+ * 修改选择器大小以及位置的的总线Action
  */
-class DDeiBusActionModelChangeSelect extends DDeiBusAction {
+class DDeiBusActionUpdateSelectorBounds extends DDeiBusAction {
   // ============================ 构造函数 ============================
 
   // ============================ 静态方法 ============================
@@ -29,27 +29,17 @@ class DDeiBusActionModelChangeSelect extends DDeiBusAction {
    * @param evt 事件对象引用
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
-    if (data) {
-      let models = data;
-      let stage = bus.ddInstance.stage;
-      for (let i = 0; i < models.length; i++) {
-        if (models[i]) {
-          let newData = models[i];
-          let newValue = newData.value;
-          //从bus中获取实际控件
-          let model = stage?.getModelById(newData.id);
-          if (model) {
-            if (model.state != newValue) {
-              model.state = newValue;
-            }
-          }
-        }
+    let stage = bus.ddInstance.stage;
+    if (stage) {
+      //获取当前选中控件
+      //当前激活的图层
+      let optContainer = stage.render.currentOperateContainer;
+      let selector = stage.render.selector;;
+      if (selector) {
+        selector.updatedBoundsBySelectedModels(optContainer);
       }
-      return true;
-    } else {
-      return false;
     }
-
+    return true;
   }
 
   /**
@@ -59,12 +49,11 @@ class DDeiBusActionModelChangeSelect extends DDeiBusAction {
    * @param evt 事件对象引用
    */
   after(data: object, bus: DDeiBus, evt: Event): boolean {
-    bus.insertHeader(DDeiEnumBusActionType.StageChangeSelectModels, {}, evt);
-    bus.insertHeader(DDeiEnumBusActionType.UpdateSelectorBounds, {}, evt);
+
     return true;
   }
 
 }
 
 
-export default DDeiBusActionModelChangeSelect
+export default DDeiBusActionUpdateSelectorBounds

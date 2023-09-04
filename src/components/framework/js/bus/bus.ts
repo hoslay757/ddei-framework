@@ -28,6 +28,19 @@ class DDeiBus {
 
   // ============================ 方法 ============================
 
+
+  /**
+  * 插入事件进入总线最前方
+  * @param actionType 类型
+  * @param data 承载数据
+  * @param evt 事件
+  */
+  insertHeader(actionType: string, data: object, evt: Event): void {
+    if (actionType) {
+      this.queue.unshift({ type: actionType, data: data, evt: evt });
+    }
+  }
+
   /**
    * 推送事件进入总线
    * @param actionType 类型
@@ -37,9 +50,28 @@ class DDeiBus {
   push(actionType: string, data: object, evt: Event): void {
     if (actionType) {
       this.queue.push({ type: actionType, data: data, evt: evt });
-      //TODO 暂时一进入就执行，后续考虑改成多线程并行
+    }
+  }
+
+  /**
+   * 推送多个事件进入总线
+   * @param actions 多个action
+   * @param evt 事件
+   */
+  pushMulit(actions: object[], evt: Event): void {
+    if (actions) {
+      actions.forEach(item => {
+        this.push(item.actionType, item.data, evt);
+      });
+    }
+  }
+
+  /**
+   * 按照先进先出的顺序执行所有action
+   */
+  executeALl(): void {
+    while (this?.queue?.length > 0) {
       this.execute();
-      console.log("push")
     }
   }
 
@@ -58,6 +90,18 @@ class DDeiBus {
             break;
           case DDeiEnumBusActionType.StageChangeSelectModels:
             action = DDeiEnumBusActionInstance.StageChangeSelectModels;
+            break;
+          case DDeiEnumBusActionType.CancelCurLevelSelectedModels:
+            action = DDeiEnumBusActionInstance.CancelCurLevelSelectedModels;
+            break;
+          case DDeiEnumBusActionType.UpdateSelectorBounds:
+            action = DDeiEnumBusActionInstance.UpdateSelectorBounds;
+            break;
+          case DDeiEnumBusActionType.ClearTemplateVars:
+            action = DDeiEnumBusActionInstance.ClearTemplateVars;
+            break;
+          case DDeiEnumBusActionType.RefreshShape:
+            action = DDeiEnumBusActionInstance.RefreshShape;
             break;
           default: break;
         }
