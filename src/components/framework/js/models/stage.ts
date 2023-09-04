@@ -56,6 +56,8 @@ class DDeiStage {
   modelType: string = "DDeiStage";
   // 当前模型挂载的ddei实例
   ddInstance: DDei | null = null;
+  // 当前画布、当前layer选中的图形，切换画布layerIndex后会变化
+  selectedModels: Map<string, DDeiAbstractShape> | null = null;
   // ============================ 方法 ===============================
   /**
    * 初始化渲染器
@@ -109,6 +111,7 @@ class DDeiStage {
   changeLayer(layerIndex: number) {
     this.layerIndex = layerIndex;
   }
+
 
   /**
    * 隐藏图层
@@ -211,6 +214,39 @@ class DDeiStage {
   cancelSelectModels(): void {
     for (let i = 0; i < this.layers.length; i++) {
       this.layers[i].cancelSelectModels();
+    }
+  }
+
+  /**
+   * 根据ID获取控件
+   * @param id 控件ID
+   * @param allLayer 是否查询所有layer，true是，false只查询当前layer
+   */
+  getModelById(id: string, allLayer: boolean = false): DDeiAbstractShape | null {
+    let reutrnModel = null;
+    let curLayer = this.layers[this.layerIndex];
+    if (curLayer) {
+      reutrnModel = curLayer.getModelById(id);
+    }
+    if (!reutrnModel && allLayer) {
+      for (let i = 0; i < this.layers.length; i++) {
+        if (i != this.layerIndex) {
+          reutrnModel = this.layers[i].getModelById(id);
+          if (reutrnModel) {
+            break;
+          }
+        }
+      }
+    }
+    return reutrnModel;
+  }
+
+  /**
+   * 更改选中控件
+   */
+  changeSelecetdModels(selectedModels: Map<string, DDeiAbstractShape> | null) {
+    if (this.selectedModels != selectedModels) {
+      this.selectedModels = selectedModels;
     }
   }
   /**

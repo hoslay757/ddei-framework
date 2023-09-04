@@ -273,6 +273,33 @@ class DDeiLayer {
     return controls;
   }
 
+  /**
+   * 根据ID获取模型
+   * @param id 模型id
+   */
+  getModelById(id: string): DDeiAbstractShape | null {
+    let reutrnModel = null;
+    if (id) {
+      if (this.models.has(id)) {
+        reutrnModel = this.models.get(id);
+      } else {
+        //遍历所有容器
+        this.models.forEach(item => {
+          if (item.baseModelType == "DDeiContainer") {
+            let rm = item.getModelById(id);
+            if (rm) {
+              reutrnModel = rm;
+            }
+          }
+        });
+      }
+    }
+    if (!reutrnModel) {
+      reutrnModel = null;
+    }
+    return reutrnModel;
+  }
+
 
   /**
    * 转换为JSON的序列化方法

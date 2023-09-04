@@ -4,6 +4,7 @@ import DDeiEditorState from "./enums/editor-state";
 import DDei from "@/components/framework/js/ddei";
 import DDeiEditorUtil from "./util/editor-util";
 import DDeiUtil from "@/components/framework/js/util";
+import DDeiBus from "@/components/framework/js/bus/bus";
 
 /**
  * DDei图形编辑器类，用于维护编辑器实例、全局状态以及全局属性
@@ -97,16 +98,16 @@ class DDeiEditor {
     if (id && containerid) {
       if (!DDeiEditor.INSTANCE_POOL[id]) {
         //初始化DDeiEditor对象
-        let ddInstance = new DDeiEditor({ id: id, containerid: containerid });
+        let editorInstance = new DDeiEditor({ id: id, containerid: containerid });
         if (!DDeiUtil.getAttrValueByConfig) {
           DDeiUtil.getAttrValueByConfig = DDeiEditorUtil.getAttrValueByConfig;
         }
         //将DDeiEditor对象装入全局缓存
-        DDeiEditor.INSTANCE_POOL[id] = ddInstance;
+        DDeiEditor.INSTANCE_POOL[id] = editorInstance;
         if (active) {
-          DDeiEditor.ACTIVE_INSTANCE = ddInstance;
+          DDeiEditor.ACTIVE_INSTANCE = editorInstance;
         }
-        return ddInstance;
+        return editorInstance;
       } else {
         throw new Error('实例池中已存在ID相同的实例，初始化失败')
       }
@@ -122,7 +123,7 @@ class DDeiEditor {
   //当前模型的类型
   modelType: string = "DDeiEditor";
   //当前的实例
-  ddInstance: DDei | null;
+  ddInstance: DDei | null = null;
   //上下左右四个方向的大小
   leftWidth: number = 0;
   topHeight: number = 0;
@@ -130,6 +131,9 @@ class DDeiEditor {
   bottomHeight: number = 0;
   middleWidth: number = 0;
   middleHeight: number = 0;
+
+  //当前bus
+  bus: DDeiBus | null = null;
 
   // ============================ 方法 ============================
   // ============================ 事件 ============================

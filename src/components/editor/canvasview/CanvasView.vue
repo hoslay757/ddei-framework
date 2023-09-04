@@ -37,6 +37,8 @@ export default {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     this.editor.ddInstance = DDei.newInstance("ddei_editor_view", "ddei_editor_canvasview");
+    this.editor.ddInstance.bus.invoker = this.editor;
+    this.editor.bus = this.editor.ddInstance.bus;
   },
   methods: {
     /**

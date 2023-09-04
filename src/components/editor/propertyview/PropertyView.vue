@@ -50,11 +50,25 @@ export default {
       editor: null,
       expandLeftImg: new URL('../icons/icon-expand-left.png', import.meta.url).href,
       expandRightImg: new URL('../icons/icon-expand-right.png', import.meta.url).href,
+      //当前被选中控件的引用
+      selectedModels:null
     };
   },
   computed: {},
   watch: {},
-  created() { },
+  created() {
+    // 监听obj对象中prop属性的变化
+    this.$watch('editor.ddInstance.stage.selectedModels', function (newVal, oldVal) {
+      if(newVal && newVal.size > 0){
+        newVal.forEach(element => {
+          console.log(element.id)
+        });
+      }else{
+        console.log("没有控件")
+      }
+      this.selectedModels = newVal;
+    });
+   },
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;

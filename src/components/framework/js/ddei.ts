@@ -1,3 +1,4 @@
+import DDeiBus from './bus/bus'
 import DDeiConfig from './config'
 import DDeiEnumState from './enums/ddei-state'
 import DDeiStage from './models/stage'
@@ -65,6 +66,9 @@ class DDei {
         ddInstance.stage.ddInstance = ddInstance;
         //将DDei对象装入全局缓存
         DDei.INSTANCE_POOL[id] = ddInstance;
+
+        //初始化bus
+        ddInstance.bus = new DDeiBus({ ddInstance: ddInstance });
         //初始化渲染器
         ddInstance.initRender();
         //通过当前装载的stage更新图形
@@ -87,6 +91,9 @@ class DDei {
 
   //当前实例的状态
   state: DDeiEnumState = DDeiEnumState.NONE;
+
+  //当前bus
+  bus: DDeiBus | null = null;
 
   // ============================ 方法 ============================
   /**

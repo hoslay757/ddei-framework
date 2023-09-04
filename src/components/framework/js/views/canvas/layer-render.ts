@@ -1,5 +1,6 @@
 import DDeiConfig from '../../config.js'
 import DDei from '../../ddei.js';
+import DDeiEnumBusActionType from '../../enums/bus-action-type.js';
 import DDeiEnumControlState from '../../enums/control-state.js';
 import DDeiEnumState from '../../enums/ddei-state.js';
 import DDeiEnumOperateState from '../../enums/operate-state.js';
@@ -578,26 +579,33 @@ class DDeiLayerCanvasRender {
       case DDeiEnumOperateState.CONTROL_CONFIRMING:
         //按下ctrl增加选中，或取消当前选中
         let pContainerModel = this.stageRender.currentOperateShape.pModel;
+        //当前操作层级容器
+        let pushDatas = {};
+        //当前操作层级容器
+        this.stageRender.currentOperateContainer = pContainerModel;
+
         if (isCtrl) {
           //判断当前操作控件是否选中
           if (this.stageRender.currentOperateShape.state == DDeiEnumControlState.SELECTED) {
-            //取消选中当前操作控件
-            this.stageRender.currentOperateShape.state = DDeiEnumControlState.DEFAULT;
+            pushDatas[this.stageRender.currentOperateShape.id] = { id: this.stageRender.currentOperateShape.id, value: DDeiEnumControlState.DEFAULT };
             //全局变量：当前操作控件=空
             this.stageRender.currentOperateShape = null;
           } else {
             //选中当前操作控件
-            this.stageRender.currentOperateShape.state = DDeiEnumControlState.SELECTED;
+            pushDatas[this.stageRender.currentOperateShape.id] = { id: this.stageRender.currentOperateShape.id, value: DDeiEnumControlState.SELECTED };
           }
         }
         //没有按下ctrl键，取消选中非当前控件
         else {
           //清空除了当前操作控件外所有选中状态控件
           pContainerModel.cancelAllLevelSelectModels();
-          this.stageRender.currentOperateShape.state = DDeiEnumControlState.SELECTED;
+          pushDatas[this.stageRender.currentOperateShape.id] = { id: this.stageRender.currentOperateShape.id, value: DDeiEnumControlState.SELECTED };
         }
-        //当前操作层级容器
-        this.stageRender.currentOperateContainer = pContainerModel;
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ModelChangeSelect, pushDatas, evt);
+        //更改当前选中控件
+        this.stage.changeSelecetdModels(pContainerModel.getSelectedModels())
+
+
         //当前操作控件：无
         this.stageRender.currentOperateShape = null;
         //根据选中图形的状态更新选择器
@@ -611,12 +619,14 @@ class DDeiLayerCanvasRender {
       case DDeiEnumOperateState.SELECT_WORKING:
         if (this.stageRender.selector) {
           //选中被选择器包含的控件
+          //当前操作层级容器
+          let pushDatas = {};
           let includedModels: Map<string, DDeiAbstractShape> = this.stageRender.selector.getIncludedModels();
+          this.stageRender.currentOperateContainer = this.model;
           includedModels.forEach((model, key) => {
-            model.state = DDeiEnumControlState.SELECTED;
-            //当前操作层级容器
-            this.stageRender.currentOperateContainer = this.model;
+            pushDatas[model.id] = { id: model.id, value: DDeiEnumControlState.SELECTED };
           });
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ModelChangeSelect, pushDatas, evt);
           //根据选中图形的状态更新选择器
           this.stageRender.selector.updatedBoundsBySelectedModels();
           //重新渲染
