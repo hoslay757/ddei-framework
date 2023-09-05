@@ -3,9 +3,10 @@ import DDeiEnumOperateState from '../../enums/operate-state';
 import DDeiBus from '../bus';
 import DDeiBusAction from '../bus-action';
 /**
- * 取消所有选中控件层级的总线Action
+ * 模型放置层级的总线Action
+ * 图形类action一般在普通action之后执行
  */
-class DDeiBusActionCancelCurLevelSelectedModels extends DDeiBusAction {
+class DDeiBusActionModelPush extends DDeiBusAction {
   // ============================ 构造函数 ============================
 
   // ============================ 静态方法 ============================
@@ -20,35 +21,35 @@ class DDeiBusActionCancelCurLevelSelectedModels extends DDeiBusAction {
    * @param evt 事件对象引用
    */
   before(data: object, bus: DDeiBus, evt: Event): boolean {
-    return true;
+    if (data?.container && data?.type) {
+      if (data?.type == "top" || data?.type == "bottom" || data?.type == "up" || data?.type == "down") {
+        let selectedModels = data?.container.getSelectedModels();
+        if (selectedModels?.size > 0) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   /**
-   * 具体行为，设置当前控件的选中状态
+   * 具体行为，重绘所有图形
    * @param data bus分发后，当前承载的数据
    * @param bus 总线对象引用
    * @param evt 事件对象引用
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
-    let stage = bus.ddInstance.stage;
-    if (stage) {
-
-      let optContainer = data?.container;
-      if (!optContainer) {
-        optContainer = stage.render.currentOperateContainer;
-      }
-      if (optContainer) {
-        if (data?.curLevel == true) {
-          optContainer.cancelSelectModels();
-        } else {
-          optContainer.cancelAllLevelSelectModels();
-        }
-        return true;
-      }
-    } else {
-      return false;
+    let selectedModels = data?.container.getSelectedModels();
+    if (data?.type == "top") {
+      data.container.pushTop(Array.from(selectedModels.values()));
+    } else if (data?.type == "bottom") {
+      data.container.pushBottom(Array.from(selectedModels.values()));
+    } else if (data?.type == "up") {
+      data.container.pushUp(Array.from(selectedModels.values()));
+    } else if (data?.type == "down") {
+      data.container.pushDown(Array.from(selectedModels.values()));
     }
-
+    return true;
   }
 
   /**
@@ -58,11 +59,10 @@ class DDeiBusActionCancelCurLevelSelectedModels extends DDeiBusAction {
    * @param evt 事件对象引用
    */
   after(data: object, bus: DDeiBus, evt: Event): boolean {
-    bus.insert(DDeiEnumBusActionType.StageChangeSelectModels, {}, evt);
     return true;
   }
 
 }
 
 
-export default DDeiBusActionCancelCurLevelSelectedModels
+export default DDeiBusActionModelPush

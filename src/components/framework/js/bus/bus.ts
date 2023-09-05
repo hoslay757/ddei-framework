@@ -134,6 +134,9 @@ class DDeiBus {
           case DDeiEnumBusActionType.ResetSelectorState:
             action = DDeiEnumBusActionInstance.ResetSelectorState;
             break;
+          case DDeiEnumBusActionType.ModelPush:
+            action = DDeiEnumBusActionInstance.ModelPush;
+            break;
           default: break;
         }
         //执行action逻辑

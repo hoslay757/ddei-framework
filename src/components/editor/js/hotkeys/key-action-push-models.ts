@@ -1,6 +1,7 @@
 import DDei from "@/components/framework/js/ddei";
 import DDeiEditor from "../editor";
 import DDeiKeyAction from "./key-action";
+import DDeiEnumBusActionType from "@/components/framework/js/enums/bus-action-type";
 
 /**
  * 键行为:图形移动到上层或下层、顶层或底层
@@ -15,36 +16,35 @@ class DDeiKeyActionPushModels extends DDeiKeyAction {
       let stageRender = ddInstance.stage.render;
       let optContainer = stageRender.currentOperateContainer;
       if (optContainer) {
-        let selectedModels = optContainer.getSelectedModels();
-        if (selectedModels.size > 0) {
-          let isCtrl = DDeiEditor.KEY_DOWN_STATE.get("ctrl");
-          let isShift = DDeiEditor.KEY_DOWN_STATE.get("shift");
-          //同时按下ctrl和shift
-          if (isCtrl && isShift) {
-            //上
-            if (evt.keyCode == 38) {
-              optContainer.pushTop(Array.from(selectedModels.values()))
-            }
-            //下
-            else if (evt.keyCode == 40) {
-              optContainer.pushBottom(Array.from(selectedModels.values()))
-            }
+        let isCtrl = DDeiEditor.KEY_DOWN_STATE.get("ctrl");
+        let isShift = DDeiEditor.KEY_DOWN_STATE.get("shift");
+        //同时按下ctrl和shift
+        if (isCtrl && isShift) {
+          //上
+          if (evt.keyCode == 38) {
+            ddInstance.bus.push(DDeiEnumBusActionType.ModelPush, { container: optContainer, type: "top" }, evt);
           }
-          //只按下了ctrl
-          else if (isCtrl) {
-            //上
-            if (evt.keyCode == 38) {
-              optContainer.pushUp(Array.from(selectedModels.values()))
-            }
-            //下
-            else if (evt.keyCode == 40) {
-              optContainer.pushDown(Array.from(selectedModels.values()))
-            }
+          //下
+          else if (evt.keyCode == 40) {
+            ddInstance.bus.push(DDeiEnumBusActionType.ModelPush, { container: optContainer, type: "bottom" }, evt);
+          }
+        }
+        //只按下了ctrl
+        else if (isCtrl) {
+          //上
+          if (evt.keyCode == 38) {
+            ddInstance.bus.push(DDeiEnumBusActionType.ModelPush, { container: optContainer, type: "up" }, evt);
+          }
+          //下
+          else if (evt.keyCode == 40) {
+            ddInstance.bus.push(DDeiEnumBusActionType.ModelPush, { container: optContainer, type: "down" }, evt);
           }
         }
       }
-      //重新绘制
-      ddInstance.render.drawShape()
+      //渲染图形
+      ddInstance.bus.push(DDeiEnumBusActionType.RefreshShape, null, evt);
+
+      ddInstance.bus.executeAll();
     }
   }
 

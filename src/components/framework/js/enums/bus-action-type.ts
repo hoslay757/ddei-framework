@@ -17,7 +17,8 @@ enum DDeiEnumBusActionType {
   ChangeSelectorPassIndex = "change-selector-passindex",
   ChangeCursor = "change-cursor",
   ModelChangeRotate = "model-change-rotate",
-  ResetSelectorState = "reset-selector-state"
+  ResetSelectorState = "reset-selector-state",
+  ModelPush = "model-push"
 }
 
 export default DDeiEnumBusActionType

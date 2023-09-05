@@ -5,6 +5,7 @@ import DDeiEnumOperateState from "@/components/framework/js/enums/operate-state"
 import DDeiRectContainer from "@/components/framework/js/models/rect-container";
 import DDeiAbstractShape from "@/components/framework/js/models/shape";
 import DDeiKeyAction from "./key-action";
+import DDeiEnumBusActionType from "@/components/framework/js/enums/bus-action-type";
 
 /**
  * 键行为:组合
@@ -16,7 +17,6 @@ class DDeiKeyActionCompose extends DDeiKeyAction {
   action(evt: Event, ddInstance: DDei): void {
     //修改当前操作控件坐标
     if (ddInstance && ddInstance.stage) {
-      let stageRender = ddInstance.stage.render;
       //当前激活的图层
       let layer = ddInstance.stage.layers[ddInstance.stage.layerIndex]
       let selectedModels = layer.getSelectedModels();
@@ -36,33 +36,19 @@ class DDeiKeyActionCompose extends DDeiKeyAction {
           linkChild: true,
           linkSelf: true
         });
-
-        container.state = DDeiEnumControlState.SELECTED;
         //下标自增1
         ddInstance.stage.idIdx++;
-        //添加模型到图层
-        ddInstance.stage.addModel(container);
-        //绑定并初始化渲染器
-        DDeiConfig.bindRender(container);
-        container.render.init();
-        //添加元素到容器,并从当前layer移除元素
-        models.forEach(item => {
-          layer.removeModel(item);
-          container.addModel(item);
-          //修改item的坐标，将其移动到容器里面
-          item.x = item.x - container.x
-          item.y = item.y - container.y
-          DDeiConfig.bindRender(item);
-          item.render.init();
-          item.state = DDeiEnumControlState.DEFAULT;
-        });
-        stageRender.selector.updatedBoundsBySelectedModels()
-        //重新绘制
-        ddInstance.render.drawShape()
+
+        ddInstance.bus.push(DDeiEnumBusActionType.ModelChangeContainer, { newContainer: ddInstance.stage.layers[ddInstance.stage.layerIndex], models: [container] }, evt);
+        ddInstance.bus.push(DDeiEnumBusActionType.ModelChangeContainer, { newContainer: container, oldContainer: layer, models: models }, evt);
+        ddInstance.bus.push(DDeiEnumBusActionType.ModelChangeSelect, { models: [container], value: DDeiEnumControlState.SELECTED }, evt);
+        ddInstance.bus.push(DDeiEnumBusActionType.ClearTemplateVars, null, evt);
+        //渲染图形
+        ddInstance.bus.push(DDeiEnumBusActionType.RefreshShape, null, evt);
+        ddInstance.bus.executeAll();
       } else {
         console.warn("组合操作至少需要两个图形")
       }
-      stageRender.operate = DDeiEnumOperateState.NONE;
     }
   }
 

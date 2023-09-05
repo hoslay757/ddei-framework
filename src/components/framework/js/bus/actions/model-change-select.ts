@@ -30,10 +30,10 @@ class DDeiBusActionModelChangeSelect extends DDeiBusAction {
    * @param evt 事件对象引用
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
-    if (data) {
+    console.log(typeof (data))
+    if (Array.isArray(data)) {
       let models = data;
       let stage = bus.ddInstance.stage;
-      debugger
       for (let i = 0; i < models.length; i++) {
         if (models[i]) {
           let newData = models[i];
@@ -47,6 +47,17 @@ class DDeiBusActionModelChangeSelect extends DDeiBusAction {
           }
         }
       }
+      return true;
+    } else if (typeof (data) == "object") {
+      let models = data.models;
+      let state = data.value;
+      let stage = bus.ddInstance.stage;
+      if (models) {
+        models.forEach(item => {
+          item.state = state;
+        });
+      }
+
       return true;
     } else {
       return false;

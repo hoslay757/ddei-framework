@@ -12,6 +12,7 @@ import DDeiBusActionChangeCursor from "../bus/actions/change-cursor";
 import DDeiBusActionChangeSelectorPassIndex from "../bus/actions/change-selector-passindex";
 import DDeiBusActionModelChangeRotate from "../bus/actions/model-change-rotate";
 import DDeiBusActionResetSelectorState from "../bus/actions/reset-selector-state";
+import DDeiBusActionModelPush from "../bus/actions/model-push";
 
 /**
  * Bus总线上的Action实例
@@ -30,7 +31,8 @@ enum DDeiEnumBusActionInstance {
   ChangeSelectorPassIndex = new DDeiBusActionChangeSelectorPassIndex({ code: "change-selector-passindex", name: "", desc: "" }),//更新select的passindex
   ChangeCursor = new DDeiBusActionChangeCursor({ code: "change-cursor", name: "", desc: "" }),//更新光标
   ModelChangeRotate = new DDeiBusActionModelChangeRotate({ code: "model-change-rotate", name: "", desc: "" }),
-  ResetSelectorState = new DDeiBusActionResetSelectorState({ code: "reset-selector-state", name: "", desc: "" });
+  ResetSelectorState = new DDeiBusActionResetSelectorState({ code: "reset-selector-state", name: "", desc: "" }),
+  ModelPush = new DDeiBusActionModelPush({ code: "model-push", name: "", desc: "" }),
 
 }
 

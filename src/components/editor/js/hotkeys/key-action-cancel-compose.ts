@@ -3,6 +3,7 @@ import DDei from "@/components/framework/js/ddei";
 import DDeiEnumControlState from "@/components/framework/js/enums/control-state";
 import DDeiEnumOperateState from "@/components/framework/js/enums/operate-state";
 import DDeiKeyAction from "./key-action";
+import DDeiEnumBusActionType from "@/components/framework/js/enums/bus-action-type";
 
 /**
  * 键行为:取消组合
@@ -40,10 +41,14 @@ class DDeiKeyActionCancelCompose extends DDeiKeyAction {
           }
         });
         stageRender.selector.updatedBoundsBySelectedModels()
-        //重新绘制
-        ddInstance.render.drawShape()
+        // ddInstance.bus.push(DDeiEnumBusActionType.ModelChangeContainer, { newContainer: ddInstance.stage.layers[ddInstance.stage.layerIndex], models: [container] }, evt);
+        // ddInstance.bus.push(DDeiEnumBusActionType.ModelChangeContainer, { newContainer: container, oldContainer: layer, models: models }, evt);
+        // ddInstance.bus.push(DDeiEnumBusActionType.ModelChangeSelect, { models: [container], value: DDeiEnumControlState.SELECTED }, evt);
+        ddInstance.bus.push(DDeiEnumBusActionType.ClearTemplateVars, null, evt);
+        //渲染图形
+        ddInstance.bus.push(DDeiEnumBusActionType.RefreshShape, null, evt);
+        ddInstance.bus.executeAll();
       }
-      stageRender.operate = DDeiEnumOperateState.NONE;
     }
   }
 

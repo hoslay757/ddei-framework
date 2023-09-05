@@ -1,6 +1,8 @@
 import DDeiConfig from "@/components/framework/js/config";
 import DDei from "@/components/framework/js/ddei";
 import DDeiKeyAction from "./key-action";
+import DDeiEnumBusActionType from "@/components/framework/js/enums/bus-action-type";
+import DDeiAbstractShape from "@/components/framework/js/models/shape";
 
 /**
  * 键行为:移动模型
@@ -23,51 +25,52 @@ class DDeiKeyActionDownMoveModels extends DDeiKeyAction {
           //辅助对齐线宽度
           moveSize = DDeiConfig.GLOBAL_HELP_LINE_WEIGHT;
         }
-        selectedModels.forEach((item, key) => {
-          //上
-          if (evt.keyCode == 38) {
-            let mod = 0;
-            //如果开启辅助对齐线，则跳回到对齐线上
-            if (!isShift && DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
-              if (item.y % moveSize > 0) {
-                mod = moveSize - (item.y % moveSize);
-              }
+        let models = Array.from(selectedModels.values());
+        let outRect = DDeiAbstractShape.getOutRect(models);
+        let deltaX, deltaY
+        //上
+        if (evt.keyCode == 38) {
+          let mod = 0;
+          //如果开启辅助对齐线，则跳回到对齐线上
+          if (!isShift && DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
+            if (outRect.y % moveSize > 0) {
+              mod = moveSize - (outRect.y % moveSize);
             }
-            item.setPosition(item.x, item.y - moveSize + mod)
           }
-          //下
-          else if (evt.keyCode == 40) {
-            let mod = 0;
-            if (!isShift && DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
-              mod = item.y % moveSize;
+          deltaY = - moveSize + mod
+        }
+        //下
+        else if (evt.keyCode == 40) {
+          let mod = 0;
+          if (!isShift && DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
+            mod = outRect.y % moveSize;
+          }
+          deltaY = moveSize - mod
+        }
+        //左
+        else if (evt.keyCode == 37) {
+          let mod = 0;
+          //如果开启辅助对齐线，则跳回到对齐线上
+          if (!isShift && DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
+            if (outRect.x % moveSize > 0) {
+              mod = moveSize - (outRect.x % moveSize);
             }
-            item.setPosition(item.x, item.y + moveSize - mod)
           }
-          //左
-          else if (evt.keyCode == 37) {
-            let mod = 0;
-            //如果开启辅助对齐线，则跳回到对齐线上
-            if (!isShift && DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
-              if (item.x % moveSize > 0) {
-                mod = moveSize - (item.x % moveSize);
-              }
-            }
-            item.setPosition(item.x - moveSize + mod, item.y)
+          deltaX = - moveSize + mod
+        }
+        //右
+        else if (evt.keyCode == 39) {
+          let mod = 0;
+          if (!isShift && DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
+            mod = outRect.x % moveSize;
           }
-          //右
-          else if (evt.keyCode == 39) {
-            let mod = 0;
-            if (!isShift && DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
-              mod = item.x % moveSize;
-            }
-            item.setPosition(item.x + moveSize - mod, item.y)
-          }
-          optContainer.changeParentsBounds()
-        });
-        //根据选中图形的状态更新选择器
-        stageRender.selector.updatedBoundsBySelectedModels(optContainer);
-        //重新绘制
-        ddInstance.render.drawShape()
+          deltaX = moveSize - mod
+        }
+        ddInstance.bus.push(DDeiEnumBusActionType.ModelChangeBounds, { models: models, deltaX: deltaX, deltaY: deltaY }, evt);
+        //渲染图形
+        ddInstance.bus.push(DDeiEnumBusActionType.RefreshShape, null, evt);
+
+        ddInstance.bus.executeAll();
       }
     }
   }
