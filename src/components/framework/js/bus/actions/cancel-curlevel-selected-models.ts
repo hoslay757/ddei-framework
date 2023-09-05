@@ -32,9 +32,18 @@ class DDeiBusActionCancelCurLevelSelectedModels extends DDeiBusAction {
   action(data: object, bus: DDeiBus, evt: Event): boolean {
     let stage = bus.ddInstance.stage;
     if (stage) {
-      let optContainer = stage.render.currentOperateContainer;
-      optContainer.cancelAllLevelSelectModels();
-      return true;
+      let optContainer = data?.container;
+      if (!optContainer) {
+        optContainer = stage.render.currentOperateContainer;
+      }
+      if (optContainer) {
+        if (data?.curLevel == true) {
+          optContainer.cancelSelectModels();
+        } else {
+          optContainer.cancelAllLevelSelectModels();
+        }
+        return true;
+      }
     } else {
       return false;
     }

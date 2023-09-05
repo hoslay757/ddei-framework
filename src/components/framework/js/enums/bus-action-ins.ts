@@ -8,6 +8,10 @@ import DDeiBusActionModelChangeContainer from "../bus/actions/model-change-conta
 import DDeiBusActionModelChangeBounds from "../bus/actions/model-change-bounds";
 import DDeiBusActionSetHelpLine from "../bus/actions/set-helpline";
 import DDeiBusActionUpdateDragObj from "../bus/actions/update-drawobj";
+import DDeiBusActionChangeCursor from "../bus/actions/change-cursor";
+import DDeiBusActionChangeSelectorPassIndex from "../bus/actions/change-selector-passindex";
+import DDeiBusActionModelChangeRotate from "../bus/actions/model-change-rotate";
+import DDeiBusActionResetSelectorState from "../bus/actions/reset-selector-state";
 
 /**
  * Bus总线上的Action实例
@@ -23,6 +27,11 @@ enum DDeiEnumBusActionInstance {
   ModelChangeBounds = new DDeiBusActionModelChangeBounds({ code: "model-change-bounds", name: "", desc: "" }),//模型修改大小和位置
   SetHelpLine = new DDeiBusActionSetHelpLine({ code: "set-helpline", name: "", desc: "" }),//设置辅助线
   UpdateDragObj = new DDeiBusActionUpdateDragObj({ code: "update-dragobj", name: "", desc: "" }),//更新临时变量dragobj
+  ChangeSelectorPassIndex = new DDeiBusActionChangeSelectorPassIndex({ code: "change-selector-passindex", name: "", desc: "" }),//更新select的passindex
+  ChangeCursor = new DDeiBusActionChangeCursor({ code: "change-cursor", name: "", desc: "" }),//更新光标
+  ModelChangeRotate = new DDeiBusActionModelChangeRotate({ code: "model-change-rotate", name: "", desc: "" }),
+  ResetSelectorState = new DDeiBusActionResetSelectorState({ code: "reset-selector-state", name: "", desc: "" });
+
 }
 
 export default DDeiEnumBusActionInstance

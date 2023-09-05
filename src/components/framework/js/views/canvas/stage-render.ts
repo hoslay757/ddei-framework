@@ -91,28 +91,6 @@ class DDeiStageCanvasRender {
     this.selector.resetState();
   }
 
-  /**
-   * 根据事件更新选择器位置
-   * @param evt 事件
-   */
-  updateSelectorBounds(evt: Event): void {
-    let x = this.selector.startX;
-    let y = this.selector.startY;
-    let width, height
-    if (evt.offsetX < x) {
-      width = x - evt.offsetX
-      x = evt.offsetX
-    } else {
-      width = evt.offsetX - x
-    }
-    if (evt.offsetY < y) {
-      height = y - evt.offsetY
-      y = evt.offsetY
-    } else {
-      height = evt.offsetY - y
-    }
-    this.selector.setBounds(x, y, width, height);
-  }
 
   /**
    * 重置选择器状态

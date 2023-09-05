@@ -77,6 +77,9 @@ class DDeiBus {
     while (this?.queue?.length > 0 && result) {
       result = this.execute();
     }
+    if (!result) {
+      console.log("中断")
+    }
   }
 
   /**
@@ -118,6 +121,18 @@ class DDeiBus {
             break;
           case DDeiEnumBusActionType.UpdateDragObj:
             action = DDeiEnumBusActionInstance.UpdateDragObj;
+            break;
+          case DDeiEnumBusActionType.ChangeSelectorPassIndex:
+            action = DDeiEnumBusActionInstance.ChangeSelectorPassIndex;
+            break;
+          case DDeiEnumBusActionType.ChangeCursor:
+            action = DDeiEnumBusActionInstance.ChangeCursor;
+            break;
+          case DDeiEnumBusActionType.ModelChangeRotate:
+            action = DDeiEnumBusActionInstance.ModelChangeRotate;
+            break;
+          case DDeiEnumBusActionType.ResetSelectorState:
+            action = DDeiEnumBusActionInstance.ResetSelectorState;
             break;
           default: break;
         }

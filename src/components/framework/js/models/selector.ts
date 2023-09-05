@@ -141,7 +141,7 @@ class DDeiSelector extends DDeiRectangle {
    * @param movedNumber 
    */
   changeSelectedModelRotate(movedNumber: number = 0) {
-
+    return false;
     //计算上级控件的大小
     let pContainerModel = this.stage.render.currentOperateContainer;
     if (!pContainerModel) {
@@ -199,6 +199,7 @@ class DDeiSelector extends DDeiRectangle {
    * @return 是否成功改变，校验失败则会终止改变
    */
   changeSelectedModelBounds(pContainerModel: DDeiAbstractShape, movedBounds: object): boolean {
+    return false;
     if (!pContainerModel) {
       pContainerModel = this.stage.layers[this.stage.layerIndex];;
     }

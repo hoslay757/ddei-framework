@@ -142,9 +142,9 @@ class DDeiBusActionModelChangeBounds extends DDeiBusAction {
         } else {
           //如果最小层容器不是当前容器，则修改鼠标样式，代表可能要移入
           if (newContainer.id != parentContainer.id) {
-            stage.render.selector.setPassIndex(11);
+            bus?.insert(DDeiEnumBusActionType.ChangeSelectorPassIndex, { passIndex: 11 }, evt);
           } else {
-            stage.render.selector.setPassIndex(10);
+            bus?.insert(DDeiEnumBusActionType.ChangeSelectorPassIndex, { passIndex: 10 }, evt);
           }
         }
       }

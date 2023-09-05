@@ -33,11 +33,29 @@ class DDeiBusActionUpdateSelectorBounds extends DDeiBusAction {
     let stage = bus.ddInstance.stage;
     if (stage) {
       //获取当前选中控件
-      //当前激活的图层
       let optContainer = stage.render.currentOperateContainer;
-      let selector = stage.render.selector;;
+      let selector = stage.render.selector;
       if (selector) {
-        selector.updatedBoundsBySelectedModels(optContainer);
+        if (data?.operateState == DDeiEnumOperateState.SELECT_WORKING) {
+          let x = selector.startX;
+          let y = selector.startY;
+          let width, height
+          if (evt.offsetX < x) {
+            width = x - evt.offsetX
+            x = evt.offsetX
+          } else {
+            width = evt.offsetX - x
+          }
+          if (evt.offsetY < y) {
+            height = y - evt.offsetY
+            y = evt.offsetY
+          } else {
+            height = evt.offsetY - y
+          }
+          selector.setBounds(x, y, width, height);
+        } else {
+          selector.updatedBoundsBySelectedModels(optContainer);
+        }
       }
     }
     return true;

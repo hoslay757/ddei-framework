@@ -3,9 +3,9 @@ import DDeiEnumOperateState from '../../enums/operate-state';
 import DDeiBus from '../bus';
 import DDeiBusAction from '../bus-action';
 /**
- * 更新临时变量dragObj总线Action
+ * 更新selector的passindex总线Action
  */
-class DDeiBusActionUpdateDragObj extends DDeiBusAction {
+class DDeiBusActionResetSelectorState extends DDeiBusAction {
   // ============================ 构造函数 ============================
 
   // ============================ 静态方法 ============================
@@ -30,23 +30,11 @@ class DDeiBusActionUpdateDragObj extends DDeiBusAction {
    * @param evt 事件对象引用
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
-
     let stage = bus.ddInstance.stage;
-    if (stage) {
-      if (data?.dragObj) {
-        stage.render.dragObj = data.dragObj;
-      } else {
-        if (data.deltaX) {
-          stage.render.dragObj.x += data.deltaX;
-        }
-        if (data.deltaY) {
-          stage.render.dragObj.y += data.deltaY;
-        }
-      }
-
+    if (stage && stage.render.selector) {
+      stage.render.selector.resetState(data?.x, data?.y)
     }
     return true;
-
   }
 
   /**
@@ -63,4 +51,4 @@ class DDeiBusActionUpdateDragObj extends DDeiBusAction {
 }
 
 
-export default DDeiBusActionUpdateDragObj
+export default DDeiBusActionResetSelectorState

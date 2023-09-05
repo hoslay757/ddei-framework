@@ -1,4 +1,5 @@
 import DDeiConfig from '../../config.js';
+import DDeiEnumBusActionType from '../../enums/bus-action-type.js';
 import DDeiEnumControlState from '../../enums/control-state.js';
 import DDeiEnumState from '../../enums/ddei-state.js';
 import DDeiEnumOperateState from '../../enums/operate-state.js';
@@ -32,9 +33,6 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
 
     //绘制选中控件特效
     this.drawIncludedStyle();
-
-    //修改鼠标样式
-    this.changeCursorStyle();
   }
 
   /**
@@ -219,52 +217,6 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
   }
 
   /**
-   * 修改鼠标样式
-   */
-  changeCursorStyle(): void {
-    if (this.stage.ddInstance.state != DDeiEnumState.IN_ACTIVITY) {
-      switch (this.model.passIndex) {
-        case 1:
-          document.body.style.cursor = 'ns-resize';
-          break;
-        case 2:
-          document.body.style.cursor = 'nesw-resize';
-          break;
-        case 3:
-          document.body.style.cursor = 'ew-resize';
-          break;
-        case 4:
-          document.body.style.cursor = 'nwse-resize';
-          break;
-        case 5:
-          document.body.style.cursor = 'ns-resize';
-          break;
-        case 6:
-          document.body.style.cursor = 'nesw-resize';
-          break;
-        case 7:
-          document.body.style.cursor = 'ew-resize';
-          break;
-        case 8:
-          document.body.style.cursor = 'nwse-resize';
-          break;
-        case 9:
-          document.body.style.cursor = 'alias';
-          break;
-        case 10:
-          document.body.style.cursor = 'all-scroll';
-          break;
-        case 11:
-          document.body.style.cursor = 'alias';
-          break;
-        default:
-          document.body.style.cursor = 'default';
-          break;
-      }
-    }
-  }
-
-  /**
    * 鼠标移动事件，经由上层容器分发
    */
   mouseMove(evt: Event): void {
@@ -272,53 +224,51 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     let offsetY = evt.offsetY;
     //判断当前坐标是否位于操作按钮上
     if (this.isIconOn(1, offsetX, offsetY)) {
-      this.model.setPassIndex(1);
+      this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ChangeSelectorPassIndex, { passIndex: 1 }, evt);
     }
     //右上
     else if (this.isIconOn(2, offsetX, offsetY)) {
-      this.model.setPassIndex(2);
+      this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ChangeSelectorPassIndex, { passIndex: 2 }, evt);
     }
     //右中
     else if (this.isIconOn(3, offsetX, offsetY)) {
-      this.model.setPassIndex(3);
+      this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ChangeSelectorPassIndex, { passIndex: 3 }, evt);
     }
     //右下
     else if (this.isIconOn(4, offsetX, offsetY)) {
-      this.model.setPassIndex(4);
+      this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ChangeSelectorPassIndex, { passIndex: 4 }, evt);
     }
     //中下
     else if (this.isIconOn(5, offsetX, offsetY)) {
-      this.model.setPassIndex(5);
+      this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ChangeSelectorPassIndex, { passIndex: 5 }, evt);
     }
     //左下
     else if (this.isIconOn(6, offsetX, offsetY)) {
-      this.model.setPassIndex(6);
+      this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ChangeSelectorPassIndex, { passIndex: 6 }, evt);
     }
     //左中
     else if (this.isIconOn(7, offsetX, offsetY)) {
-      this.model.setPassIndex(7);
+      this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ChangeSelectorPassIndex, { passIndex: 7 }, evt);
     }
     //左上
     else if (this.isIconOn(8, offsetX, offsetY)) {
-      this.model.setPassIndex(8);
+      this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ChangeSelectorPassIndex, { passIndex: 8 }, evt);
     }
     //旋转
     else if (this.isIconOn(9, offsetX, offsetY)) {
-      this.model.setPassIndex(9);
+      this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ChangeSelectorPassIndex, { passIndex: 9 }, evt);
     } else {
       //判断是否在某个具体选中的控件上，如果是则分发事件
       let models = this.stage?.layers[this.stage?.layerIndex].findModelsByArea(offsetX, offsetY);
-      //TODO 事件如何分发，分发一个还是多个？
-      //TODO 不同的逻辑应该放在哪个层的事件去处理？例如控件的移动，变光标等等
       if (models && models.length > 0) {
-        this.model.setPassIndex(10);
+        //普通拖动
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ChangeSelectorPassIndex, { passIndex: 10 }, evt);
       } else {
-        this.model.setPassIndex(-1);
+        //清空
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ChangeSelectorPassIndex, { passIndex: -1 }, evt);
       }
     }
-    if (this.model.passChange) {
-      this.drawShape();
-    }
+    this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.RefreshShape, null, evt);
   }
 
   /**
