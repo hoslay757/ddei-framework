@@ -29,15 +29,18 @@ class DDeiBus {
   // ============================ 方法 ============================
 
 
+
+
+
   /**
-  * 插入事件进入总线最前方
+  * 插入事件进入总线指定位置,默认最前方
   * @param actionType 类型
   * @param data 承载数据
   * @param evt 事件
   */
-  insertHeader(actionType: string, data: object, evt: Event): void {
+  insert(actionType: string, data: object, evt: Event, index: number = 0): void {
     if (actionType) {
-      this.queue.unshift({ type: actionType, data: data, evt: evt });
+      this.queue.splice(index, 0, { type: actionType, data: data, evt: evt });
     }
   }
 
@@ -69,16 +72,17 @@ class DDeiBus {
   /**
    * 按照先进先出的顺序执行所有action
    */
-  executeALl(): void {
-    while (this?.queue?.length > 0) {
-      this.execute();
+  executeAll(): void {
+    let result = true;
+    while (this?.queue?.length > 0 && result) {
+      result = this.execute();
     }
   }
 
   /**
    * 取出队列并执行
    */
-  execute(): void {
+  execute(): boolean {
     if (this.queue && this.queue.length > 0) {
       let firstActionData = this.queue[0];
       this.queue.splice(0, 1);
@@ -103,21 +107,34 @@ class DDeiBus {
           case DDeiEnumBusActionType.RefreshShape:
             action = DDeiEnumBusActionInstance.RefreshShape;
             break;
+          case DDeiEnumBusActionType.ModelChangeContainer:
+            action = DDeiEnumBusActionInstance.ModelChangeContainer;
+            break;
+          case DDeiEnumBusActionType.ModelChangeBounds:
+            action = DDeiEnumBusActionInstance.ModelChangeBounds;
+            break;
+          case DDeiEnumBusActionType.SetHelpLine:
+            action = DDeiEnumBusActionInstance.SetHelpLine;
+            break;
           default: break;
         }
         //执行action逻辑
         if (action) {
           let validResult = action.before(firstActionData.data, this, firstActionData.evt);
           if (validResult) {
-
             let actionResult = action.action(firstActionData.data, this, firstActionData.evt);
             if (actionResult) {
-              action.after(firstActionData.data, this, firstActionData.evt);
+              return action.after(firstActionData.data, this, firstActionData.evt);
+            } else {
+              return false;
             }
+          } else {
+            return false;
           }
         }
       }
     }
+    return true;
   }
 
 
