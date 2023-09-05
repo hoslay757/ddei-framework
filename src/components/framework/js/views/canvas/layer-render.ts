@@ -656,8 +656,15 @@ class DDeiLayerCanvasRender {
         //渲染图形
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.RefreshShape, null, evt);
         break;
+      case DDeiEnumOperateState.CONTROL_CHANGING_BOUND:
+        //清空临时变量
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ClearTemplateVars, null, evt);
+        //渲染图形
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.RefreshShape, null, evt);
+        break;
       //默认缺省状态
       default:
+        console.log("错过：" + this.stageRender.operateState)
         break;
     }
 
@@ -724,9 +731,6 @@ class DDeiLayerCanvasRender {
             let selectedModels = pContainerModel.getSelectedModels();
             //将当前操作控件加入临时选择控件
             selectedModels.set(this.stageRender.currentOperateShape?.id, this.stageRender.currentOperateShape)
-            //更新dragObj临时变量中的数值,确保坐标对应关系一致
-            this.stageRender.dragObj.x = this.stageRender.dragObj.x + movedPosDelta.x;
-            this.stageRender.dragObj.y = this.stageRender.dragObj.y + movedPosDelta.y;
             let pushData = { deltaX: movedPosDelta.x, deltaY: movedPosDelta.y, models: Array.from(selectedModels.values()), changeContainer: isAlt };
             if (isAlt) {
               //寻找鼠标落点当前所在的容器
@@ -743,6 +747,9 @@ class DDeiLayerCanvasRender {
               }
               pushData.newContainer = lastOnContainer
             }
+
+            //更新dragObj临时变量中的数值,确保坐标对应关系一致
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.UpdateDragObj, { deltaX: movedPosDelta.x, deltaY: movedPosDelta.y }, evt);
             //修改所有选中控件坐标
             this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ModelChangeBounds, pushData, evt);
             //修改辅助线
@@ -798,7 +805,7 @@ class DDeiLayerCanvasRender {
           this.stageRender.selector.changeSelectedModelRotate(movedPos.x);
           this.stageRender.dragObj.x = this.stageRender.dragObj.x + movedPos.x
           //计算上级控件的大小
-          let pContainerModel = this.stageRender.selector.currentContainer;
+          let pContainerModel = this.stageRender?.currentOperateContainer;
           if (!pContainerModel) {
             pContainerModel = this.model;
           }

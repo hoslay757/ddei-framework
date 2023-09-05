@@ -116,6 +116,9 @@ class DDeiBus {
           case DDeiEnumBusActionType.SetHelpLine:
             action = DDeiEnumBusActionInstance.SetHelpLine;
             break;
+          case DDeiEnumBusActionType.UpdateDragObj:
+            action = DDeiEnumBusActionInstance.UpdateDragObj;
+            break;
           default: break;
         }
         //执行action逻辑

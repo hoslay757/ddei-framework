@@ -7,6 +7,7 @@ import DDeiBusActionUpdateSelectorBounds from "../bus/actions/update-selector-bo
 import DDeiBusActionModelChangeContainer from "../bus/actions/model-change-container";
 import DDeiBusActionModelChangeBounds from "../bus/actions/model-change-bounds";
 import DDeiBusActionSetHelpLine from "../bus/actions/set-helpline";
+import DDeiBusActionUpdateDragObj from "../bus/actions/update-drawobj";
 
 /**
  * Bus总线上的Action实例
@@ -21,6 +22,7 @@ enum DDeiEnumBusActionInstance {
   ModelChangeContainer = new DDeiBusActionModelChangeContainer({ code: "model-change-container", name: "", desc: "" }),//模型修改所在容器
   ModelChangeBounds = new DDeiBusActionModelChangeBounds({ code: "model-change-bounds", name: "", desc: "" }),//模型修改大小和位置
   SetHelpLine = new DDeiBusActionSetHelpLine({ code: "set-helpline", name: "", desc: "" }),//设置辅助线
+  UpdateDragObj = new DDeiBusActionUpdateDragObj({ code: "update-dragobj", name: "", desc: "" }),//更新临时变量dragobj
 }
 
 export default DDeiEnumBusActionInstance

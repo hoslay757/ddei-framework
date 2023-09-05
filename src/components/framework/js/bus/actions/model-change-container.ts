@@ -77,7 +77,8 @@ class DDeiBusActionModelChangeContainer extends DDeiBusAction {
    * @param evt 事件对象引用
    */
   after(data: object, bus: DDeiBus, evt: Event): boolean {
-
+    //更新选择器
+    bus?.insert(DDeiEnumBusActionType.UpdateSelectorBounds, null, evt);
     return true;
   }
 

@@ -40,9 +40,6 @@ class DDeiSelector extends DDeiRectangle {
   //操作区域的填充样式，根据选中和未选中状态可以有所变化
   operateIconFill: object;
 
-  //当前操作的容器
-  currentContainer: DDeiAbstractShape | null = null;
-
   //当前操作触发pass的下标，-1为未激活，1～8按，1:中上，2右上顺时针计数，9为旋转
   passIndex: number = -1;
 
@@ -146,7 +143,7 @@ class DDeiSelector extends DDeiRectangle {
   changeSelectedModelRotate(movedNumber: number = 0) {
 
     //计算上级控件的大小
-    let pContainerModel = this.currentContainer;
+    let pContainerModel = this.stage.render.currentOperateContainer;
     if (!pContainerModel) {
       pContainerModel = this.stage.layers[this.stage.layerIndex];
     }
@@ -343,7 +340,6 @@ class DDeiSelector extends DDeiRectangle {
     if (!pContainerModel) {
       pContainerModel = this.stage.layers[this.stage.layerIndex];
     }
-    this.currentContainer = pContainerModel
     let selectedModels = pContainerModel.getSelectedModels();
     if (selectedModels && selectedModels.size > 0) {
       let models = Array.from(selectedModels.values());

@@ -13,6 +13,7 @@ enum DDeiEnumBusActionType {
   ModelChangeContainer = "model-change-container",//模型修改所在容器
   ModelChangeBounds = "model-change-bounds",//模型修改大小和位置
   SetHelpLine = "set-helpline",//设置辅助线
+  UpdateDragObj = "update-dragobj"//更新辅助变量dragobj
 }
 
 export default DDeiEnumBusActionType
