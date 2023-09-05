@@ -639,83 +639,22 @@ class DDeiLayerCanvasRender {
           }
           //如果最小层容器不是当前容器，执行的移动容器操作
           if (lastOnContainer.id != pContainerModel.id) {
-            //将所有的模型的坐标调整为新的相对于新容器的坐标
+            //构造移动容器action数据
             let selectedModels = pContainerModel.getSelectedModels();
-            //将当前操作控件加入临时选择控件
             selectedModels.set(this.stageRender.currentOperateShape?.id, this.stageRender.currentOperateShape)
-            let loAbsPos = lastOnContainer.getAbsPosition();
-            let loAbsRotate = lastOnContainer.getAbsRotate();
-            selectedModels.forEach((item, key) => {
-              //转换坐标，获取最外层的坐标
-              let itemAbsPos = item.getAbsPosition();
-              let itemAbsRotate = item.getAbsRotate();
-              item.x = itemAbsPos.x - loAbsPos.x
-              item.y = itemAbsPos.y - loAbsPos.y
-              item.rotate = itemAbsRotate - loAbsRotate
-              pContainerModel.removeModel(item);
-              lastOnContainer.addModel(item);
-              //绑定并初始化渲染器
-              DDeiConfig.bindRender(item);
-              item.render.init();
-            });
-            //检查老容器中是否只有一个元素，如果有，则将其移动到上层容器，并销毁老容器
-            if (pContainerModel.baseModelType != 'DDeiLayer' && pContainerModel.models.size == 1) {
-              let onlyModel = Array.from(pContainerModel.models.values())[0];
-              let itemAbsPos = onlyModel.getAbsPosition();
-              let itemAbsRotate = onlyModel.getAbsRotate();
-              let loAbsPos = pContainerModel.pModel.getAbsPosition()
-              let loAbsRotate = pContainerModel.pModel.getAbsRotate()
-              onlyModel.x = itemAbsPos.x - loAbsPos.x
-              onlyModel.y = itemAbsPos.y - loAbsPos.y
-              onlyModel.rotate = itemAbsRotate - loAbsRotate
-              pContainerModel.removeModel(onlyModel);
-              pContainerModel.pModel.addModel(onlyModel);
-              //绑定并初始化渲染器
-              DDeiConfig.bindRender(onlyModel);
-              onlyModel.render.init();
-            }
-            //TODO 将来考虑手工创建的容器和组合后产生的容器，组合后的容器才销毁，手工的容器不销毁
-            if (pContainerModel.baseModelType != 'DDeiLayer' && pContainerModel.models.size == 0) {
-              pContainerModel.pModel.removeModel(pContainerModel);
-            }
-            else {
-              //更新老容器大小
-              pContainerModel.changeParentsBounds();
-            }
-            //更新新容器大小
-            lastOnContainer.changeParentsBounds()
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ModelChangeContainer, { oldContainer: pContainerModel, newContainer: lastOnContainer, models: Array.from(selectedModels.values()) }, evt);
           }
         }
-        this.stageRender.selector.setPassIndex(-1);
-        //清除作为临时变量dragX、dargY、dragObj
-        this.stageRender.dragObj = null
-        //当前操作状态:无
-        this.stageRender.operateState = DDeiEnumOperateState.NONE;
-        //当前操作控件：无
-        this.stageRender.currentOperateShape = null;
-        //重新渲染
-        this.ddRender.drawShape();
-        break;
-      case DDeiEnumOperateState.CONTROL_CHANGING_BOUND:
-        //清除作为临时变量dragX、dargY、dragObj
-        this.stageRender.dragObj = null
-        //当前操作状态:无
-        this.stageRender.operateState = DDeiEnumOperateState.NONE;
-        //当前操作控件：无
-        this.stageRender.currentOperateShape = null;
-        //重新渲染
-        this.ddRender.drawShape();
+        //清空临时变量
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ClearTemplateVars, null, evt);
+        //渲染图形
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.RefreshShape, null, evt);
         break;
       case DDeiEnumOperateState.CONTROL_ROTATE:
-        //清除作为临时变量dragX、dargY、dragObj
-        this.stageRender?.selector.setPassIndex(-1);
-        this.stageRender.dragObj = null
-        //当前操作状态:无
-        this.stageRender.operateState = DDeiEnumOperateState.NONE;
-        //当前操作控件：无
-        this.stageRender.currentOperateShape = null;
-        //重新渲染
-        this.ddRender.drawShape();
+        //清空临时变量
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ClearTemplateVars, null, evt);
+        //渲染图形
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.RefreshShape, null, evt);
         break;
       //默认缺省状态
       default:
@@ -723,12 +662,7 @@ class DDeiLayerCanvasRender {
     }
 
     //排序并执行所有action
-    if (this.stage?.ddInstance?.bus?.queue.length > 0) {
-      this.stage?.ddInstance?.bus?.executeALl();
-    } else {
-      // //重新渲染
-      this.ddRender.drawShape();
-    }
+    this.stage?.ddInstance?.bus?.executeAll();
   }
 
   /**
@@ -774,8 +708,8 @@ class DDeiLayerCanvasRender {
       case DDeiEnumOperateState.SELECT_WORKING: {
         //根据事件更新选择器位置
         this.stageRender.updateSelectorBounds(evt);
-        //重新渲染
-        this.ddRender.drawShape();
+        //渲染图形
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.RefreshShape, null, evt);
         break;
       }
       //控件拖拽中
@@ -783,7 +717,6 @@ class DDeiLayerCanvasRender {
         //当前移动的坐标增量
         let movedPosDelta = this.getMovedPositionDelta(evt);
         if (movedPosDelta.x != 0 || movedPosDelta.y != 0) {
-
           //当前控件的上层控件，可能是一个layer也可能是容器
           let pContainerModel = this.stageRender.currentOperateShape.pModel;
           if (pContainerModel) {
@@ -791,20 +724,11 @@ class DDeiLayerCanvasRender {
             let selectedModels = pContainerModel.getSelectedModels();
             //将当前操作控件加入临时选择控件
             selectedModels.set(this.stageRender.currentOperateShape?.id, this.stageRender.currentOperateShape)
-            //移动所有选中控件坐标
-            selectedModels.forEach((item, key) => {
-              item.setPosition(item.x + movedPosDelta.x, item.y + movedPosDelta.y);
-            });
             //更新dragObj临时变量中的数值,确保坐标对应关系一致
             this.stageRender.dragObj.x = this.stageRender.dragObj.x + movedPosDelta.x;
             this.stageRender.dragObj.y = this.stageRender.dragObj.y + movedPosDelta.y;
-            //如果按下ctrl键，则不改变父容器大小，而是走控件移出逻辑
-            //TODO 后续通过状态机来控制，使按下ctrl后立刻发生反应，而不是拖放以后
-            if (!isAlt) {
-              //同步更新上层容器其大小和坐标
-              pContainerModel.changeParentsBounds()
-              this.stageRender.selector.setPassIndex(10);
-            } else {
+            let pushData = { deltaX: movedPosDelta.x, deltaY: movedPosDelta.y, models: Array.from(selectedModels.values()), changeContainer: isAlt };
+            if (isAlt) {
               //寻找鼠标落点当前所在的容器
               let mouseOnContainers = DDeiAbstractShape.findBottomContainersByArea(this.model, evt.offsetX, evt.offsetY);
               let lastOnContainer = this.model;
@@ -817,28 +741,14 @@ class DDeiLayerCanvasRender {
                   }
                 }
               }
-              //如果最小层容器不是当前容器，则修改鼠标样式，代表可能要移入
-              if (lastOnContainer.id != pContainerModel.id) {
-                this.stageRender.selector.setPassIndex(11);
-              } else {
-                this.stageRender.selector.setPassIndex(10);
-              }
+              pushData.newContainer = lastOnContainer
             }
-
-
-
-            //更新选择器
-            if (this.stageRender.selector) {
-              this.stageRender.selector.updatedBoundsBySelectedModels(pContainerModel)
-            }
-            //显示辅助对齐线、坐标文本等图形
-            this.helpLines = {
-              "bounds": this.stageRender.currentOperateShape?.getAbsBounds(),
-              models: selectedModels
-            };
-            // this.drawHelpLines(this.stageRender.currentOperateShape?.getAbsBounds(), selectedModels);
-            //重新渲染
-            this.ddRender.drawShape();
+            //修改所有选中控件坐标
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ModelChangeBounds, pushData, evt);
+            //修改辅助线
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.SetHelpLine, { models: selectedModels }, evt);
+            //渲染图形
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.RefreshShape, null, evt);
           }
         }
         break;
@@ -850,7 +760,7 @@ class DDeiLayerCanvasRender {
         if (movedPosDelta.x != 0 || movedPosDelta.y != 0) {
           //按下ctrl同比拉伸
           //计算移动后的坐标以及大小
-          let pContainerModel = this.stageRender.selector.currentContainer;
+          let pContainerModel = this.stage.render.currentOperateContainer;
           if (!pContainerModel) {
             pContainerModel = this.model;
           }
@@ -870,9 +780,8 @@ class DDeiLayerCanvasRender {
                 "bounds": DDeiAbstractShape.getOutRect(Array.from(selectedModels.values())),
                 models: selectedModels
               };
-              //重新渲染
-              this.ddRender.drawShape();
-              // this.drawHelpLines(DDeiAbstractShape.getOutRect(Array.from(selectedModels.values())), selectedModels);
+              //渲染图形
+              this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.RefreshShape, null, evt);
             }
 
           }
@@ -895,8 +804,8 @@ class DDeiLayerCanvasRender {
           }
           //同步更新上层容器其大小和坐标
           pContainerModel.changeParentsBounds()
-          //重新渲染
-          this.ddRender.drawShape();
+          //渲染图形
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.RefreshShape, null, evt);
         }
         break;
       }
@@ -915,6 +824,7 @@ class DDeiLayerCanvasRender {
         break;
       }
     }
+    this.stage?.ddInstance?.bus?.executeAll();
   }
 }
 
