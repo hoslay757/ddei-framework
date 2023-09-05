@@ -41,9 +41,16 @@ class DDeiBusActionSetHelpLine extends DDeiBusAction {
         models = data?.container.getSelectedModels();
       }
       if (models?.size > 0) {
+        let control = data?.control;
+        if (!control) {
+          control = stage.render.currentOperateShape;
+        }
+        if (!control) {
+          control = Array.from(models.values())[0];
+        }
         //显示辅助对齐线、坐标文本等图形
         layer.render.helpLines = {
-          "bounds": stage.render.currentOperateShape?.getAbsBounds(),
+          "bounds": control?.getAbsBounds(),
           models: data?.models
         };
         return true;

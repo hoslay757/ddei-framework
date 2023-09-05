@@ -33,6 +33,7 @@ class DDeiBusActionModelChangeSelect extends DDeiBusAction {
     if (data) {
       let models = data;
       let stage = bus.ddInstance.stage;
+      debugger
       for (let i = 0; i < models.length; i++) {
         if (models[i]) {
           let newData = models[i];

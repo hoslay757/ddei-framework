@@ -276,20 +276,18 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
   */
   mouseDown(evt: Event): void {
     //判断当前坐标是否位于操作按钮上,如果是则改变状态为响应状态
+    let dragObj = {
+      x: evt.offsetX,
+      y: evt.offsetY
+    }
     if (this.model.passIndex >= 1 && this.model.passIndex <= 8) {
-      this.stageRender.dragObj = {
-        x: evt.offsetX,
-        y: evt.offsetY
-      }
+      this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.UpdateDragObj, { dragObj: dragObj }, evt);
       //当前操作状态：改变控件大小中
       this.stageRender.operateState = DDeiEnumOperateState.CONTROL_CHANGING_BOUND
     }
     //旋转
     else if (this.model.passIndex == 9) {
-      this.stageRender.dragObj = {
-        x: evt.offsetX,
-        y: evt.offsetY
-      }
+      this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.UpdateDragObj, { dragObj: dragObj }, evt);
       //当前操作状态：改变控件大小中
       this.stageRender.operateState = DDeiEnumOperateState.CONTROL_ROTATE
     }

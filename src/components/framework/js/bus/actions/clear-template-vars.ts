@@ -39,8 +39,6 @@ class DDeiBusActionClearTemplateVars extends DDeiBusAction {
       stage.render.operateState = DDeiEnumOperateState.NONE;
       //渲染图形
       stage.render.dragObj = null
-      //当前操作状态:无
-      stage.render.operateState = DDeiEnumOperateState.NONE;
 
       //清除作为临时变量dragX、dargY、dragObj
       stage.render.selector.setPassIndex(-1);

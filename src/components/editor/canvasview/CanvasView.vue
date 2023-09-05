@@ -14,6 +14,7 @@ import DDeiEnumControlState from '../../framework/js/enums/control-state';
 import DDeiAbstractShape from '@/components/framework/js/models/shape';
 import DDeiKeyAction from '../js/hotkeys/key-action';
 import DDeiEnumOperateState from '@/components/framework/js/enums/operate-state';
+import DDeiEnumBusActionType from '../../framework/js/enums/bus-action-type';
 
 
 export default {
@@ -65,10 +66,7 @@ export default {
             let control = this.editor.creatingControl;
             //在画布上创建临时对象
             if (!layer.models.has(control.id)) {
-              layer.addModel(control);
-              //绑定并初始化渲染器
-              DDeiConfig.bindRender(control);
-              control.render.init();
+              this.editor.bus.push(DDeiEnumBusActionType.ModelChangeContainer,{newContainer:layer,models:[control]},e);
               //记录当前的拖拽的x,y,写入dragObj作为临时变量
               let dragObj = {
                 x: e.offsetX,
@@ -77,25 +75,22 @@ export default {
                 originY: e.offsetY,
                 model: control
               }
-              ddInstance.stage.render.dragObj = dragObj;
+              this.editor.bus.push(DDeiEnumBusActionType.UpdateDragObj, { dragObj: dragObj }, e);
+              //归零坐标
+              this.editor.bus.push(DDeiEnumBusActionType.ModelChangeBounds, { models: [control], deltaX: -control.x, deltaY: -control.y }, e);
+              //设置新坐标
               //当前编辑器最外部容器的坐标 TODO 无限画布后需要转换为layer的视窗坐标
-              let containerX = e.offsetX;
-              let containerY = e.offsetY;
-              control.x = containerX - control.width * 0.5;
-              control.y = containerY - control.height * 0.5;
-              //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
-              ddInstance.render.drawShape();
+              this.editor.bus.push(DDeiEnumBusActionType.ModelChangeBounds, { models: [control], deltaX:  e.offsetX - control.width * 0.5, deltaY:  e.offsetY - control.height * 0.5 }, e);
+              this.editor.bus.push(DDeiEnumBusActionType.RefreshShape,null, e);
             } else {
               //获取增量
               let movedPosDelta = layer.render.getMovedPositionDelta(e);
               if (movedPosDelta.x != 0 || movedPosDelta.y != 0) {
-                control.x += movedPosDelta.x;
-                control.y += movedPosDelta.y;
+                this.editor.bus.push(DDeiEnumBusActionType.ModelChangeBounds, { models: [control], deltaX:  movedPosDelta.x, deltaY:  movedPosDelta.y }, e);
                 //更新dragObj临时变量中的数值,确保坐标对应关系一致
-                ddInstance.stage.render.dragObj.x += movedPosDelta.x;
-                ddInstance.stage.render.dragObj.y += movedPosDelta.y;
+                this.editor.bus.push(DDeiEnumBusActionType.UpdateDragObj, { deltaX: movedPosDelta.x ,deltaY: movedPosDelta.y}, e);
                 let isAlt = DDeiEditor.KEY_DOWN_STATE.get("alt");
-                ddInstance.stage.render.selector.setPassIndex(10);
+                this.editor.bus.push(DDeiEnumBusActionType.ChangeSelectorPassIndex, {passIndex:10}, e);
                 let lastOnContainer = layer;
                 if (isAlt) {
                   //寻找鼠标落点当前所在的容器
@@ -105,23 +100,21 @@ export default {
                   }
                   //如果最小层容器不是当前容器，则修改鼠标样式，代表可能要移入
                   if (lastOnContainer != layer) {
-                    ddInstance.stage.render.selector.setPassIndex(11);
+                    this.editor.bus.push(DDeiEnumBusActionType.ChangeSelectorPassIndex, { passIndex: 11 }, e);
                   }
                 }
-
-
-
+                
                 //显示辅助对齐线、坐标文本等图形
                 let selectedModels: Map<string, DDeiAbstractShape> = new Map();
                 selectedModels.set(control.id, control);
-                layer.render.helpLines = {
-                  "bounds": control?.getAbsBounds(),
-                  models: selectedModels
-                };
-                //重新绘制图形
-                ddInstance.render.drawShape();
+
+                //修改辅助线
+                this.editor?.bus?.push(DDeiEnumBusActionType.SetHelpLine, { models: selectedModels}, e);
+                //渲染图形
+                this.editor?.bus?.push(DDeiEnumBusActionType.RefreshShape, null, e);
               }
             }
+            this.editor.bus.executeAll();
             e.preventDefault();
           }
         }
@@ -137,9 +130,8 @@ export default {
           let isAlt = DDeiEditor.KEY_DOWN_STATE.get("alt");
           let ddInstance: DDei = this.editor.ddInstance;
           ddInstance.stage.idIdx++;
-          //取消选中其他控件
           let layer = ddInstance.stage.layers[ddInstance.stage.layerIndex]
-          //如果按下了ctrl键，则移入容器
+          //如果按下了alt键，则移入容器
           if (isAlt) {
             //寻找鼠标落点当前所在的容器
             let mouseOnContainers: DDeiAbstractShape[] = DDeiAbstractShape.findBottomContainersByArea(layer, e.offsetX, e.offsetY);
@@ -149,42 +141,21 @@ export default {
             }
             //如果最小层容器不是当前容器，执行的移动容器操作
             if (lastOnContainer != layer) {
-              let loAbsPos = lastOnContainer.getAbsPosition();
-              let loAbsRotate = lastOnContainer.getAbsRotate();
-              //转换坐标，获取最外层的坐标
-              let item = this.editor.creatingControl;
-              let itemAbsPos = item.getAbsPosition();
-              let itemAbsRotate = item.getAbsRotate();
-              item.x = itemAbsPos.x - loAbsPos.x
-              item.y = itemAbsPos.y - loAbsPos.y
-              item.rotate = itemAbsRotate - loAbsRotate
-              layer.removeModel(item);
-              lastOnContainer.addModel(item);
-              //绑定并初始化渲染器
-              DDeiConfig.bindRender(item);
-              item.render.init();
-              //更新新容器大小
-              lastOnContainer.changeParentsBounds()
+              this.editor.bus.push(DDeiEnumBusActionType.ModelChangeContainer, { newContainer: lastOnContainer,oldContainer:layer, models: [control] }, e);
             }
           }
-
-          ddInstance.stage.render.selector.setPassIndex(-1);
-
-          layer.cancelSelectModels();
-          //设置选中当前控件
-          this.editor.creatingControl.state = DDeiEnumControlState.SELECTED;
-          //根据选中图形的状态更新选择器
-          ddInstance.stage.render.selector.updatedBoundsBySelectedModels();
-
+          //移除其他选中
+          this.editor.bus.push(DDeiEnumBusActionType.CancelCurLevelSelectedModels, { container: layer, curLevel: true }, e);
+    
+          this.editor.bus.push(DDeiEnumBusActionType.ModelChangeSelect,[{ id: this.editor.creatingControl.id, value: DDeiEnumControlState.SELECTED }],e);
+          //清除临时变量
+          this.editor.bus.push(DDeiEnumBusActionType.ClearTemplateVars, null, e);
+          //渲染图形
+          this.editor.bus.push(DDeiEnumBusActionType.RefreshShape, null, e);
           this.editor.creatingControl = null;
-
-          ddInstance.stage.render.dragObj = null;
-
-          ddInstance.stage.render.operateState = DDeiEnumOperateState.NONE;
           //切换到设计器
           this.editor.state = DDeiEditorState.DESIGNING;
-          //重绘
-          ddInstance.render.drawShape();
+          this.editor.bus.executeAll();
         }
       }
     },
@@ -197,11 +168,13 @@ export default {
         if (this.editor.creatingControl) {
           let ddInstance: DDei = this.editor.ddInstance;
           let layer = ddInstance.stage.layers[ddInstance.stage.layerIndex]
-          layer.removeModel(this.editor.creatingControl);
-          ddInstance.stage.render.dragObj = null;
-          ddInstance.stage.render.operateState = DDeiEnumOperateState.NONE;
-          //重绘
-          ddInstance.render.drawShape();
+          //从layer中移除控件
+          this.editor.bus.push(DDeiEnumBusActionType.ModelChangeContainer, { oldContainer: layer, models: [this.editor.creatingControl] }, e);
+          //清除临时变量
+          this.editor.bus.push(DDeiEnumBusActionType.ClearTemplateVars, null, e);
+          //渲染图形
+          this.editor.bus.push(DDeiEnumBusActionType.RefreshShape, null, e);
+          this.editor.bus.executeAll();
         }
       }
     }
