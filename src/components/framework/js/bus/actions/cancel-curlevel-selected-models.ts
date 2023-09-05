@@ -1,10 +1,11 @@
-import DDeiEnumBusActionType from '../enums/bus-action-type';
-import DDeiBus from './bus';
-import DDeiBusAction from './bus-action';
+import DDeiEnumBusActionType from '../../enums/bus-action-type';
+import DDeiEnumOperateState from '../../enums/operate-state';
+import DDeiBus from '../bus';
+import DDeiBusAction from '../bus-action';
 /**
- * 改变模型选择状态的总线Action
+ * 取消所有选中控件层级的总线Action
  */
-class DDeiBusActionModelChangeSelect extends DDeiBusAction {
+class DDeiBusActionCancelCurLevelSelectedModels extends DDeiBusAction {
   // ============================ 构造函数 ============================
 
   // ============================ 静态方法 ============================
@@ -29,22 +30,10 @@ class DDeiBusActionModelChangeSelect extends DDeiBusAction {
    * @param evt 事件对象引用
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
-    if (data) {
-      let models = data;
-      let stage = bus.ddInstance.stage;
-      for (let i = 0; i < models.length; i++) {
-        if (models[i]) {
-          let newData = models[i];
-          let newValue = newData.value;
-          //从bus中获取实际控件
-          let model = stage?.getModelById(newData.id);
-          if (model) {
-            if (model.state != newValue) {
-              model.state = newValue;
-            }
-          }
-        }
-      }
+    let stage = bus.ddInstance.stage;
+    if (stage) {
+      let optContainer = stage.render.currentOperateContainer;
+      optContainer.cancelAllLevelSelectModels();
       return true;
     } else {
       return false;
@@ -59,12 +48,11 @@ class DDeiBusActionModelChangeSelect extends DDeiBusAction {
    * @param evt 事件对象引用
    */
   after(data: object, bus: DDeiBus, evt: Event): boolean {
-    bus.insertHeader(DDeiEnumBusActionType.StageChangeSelectModels, {}, evt);
-    bus.insertHeader(DDeiEnumBusActionType.UpdateSelectorBounds, {}, evt);
+    bus.insert(DDeiEnumBusActionType.StageChangeSelectModels, {}, evt);
     return true;
   }
 
 }
 
 
-export default DDeiBusActionModelChangeSelect
+export default DDeiBusActionCancelCurLevelSelectedModels

@@ -1,10 +1,11 @@
-import DDeiEnumBusActionType from '../enums/bus-action-type';
-import DDeiBus from './bus';
-import DDeiBusAction from './bus-action';
+import DDeiEnumBusActionType from '../../enums/bus-action-type';
+import DDeiEnumOperateState from '../../enums/operate-state';
+import DDeiBus from '../bus';
+import DDeiBusAction from '../bus-action';
 /**
- * 改变Stage已选控件的总线Action
+ * 修改选择器大小以及位置的的总线Action
  */
-class DDeiBusActionStageChangeSelectModels extends DDeiBusAction {
+class DDeiBusActionUpdateSelectorBounds extends DDeiBusAction {
   // ============================ 构造函数 ============================
 
   // ============================ 静态方法 ============================
@@ -34,12 +35,12 @@ class DDeiBusActionStageChangeSelectModels extends DDeiBusAction {
       //获取当前选中控件
       //当前激活的图层
       let optContainer = stage.render.currentOperateContainer;
-      if (optContainer) {
-        let selectedModels = optContainer.getSelectedModels();
-        stage.changeSelecetdModels(selectedModels);
+      let selector = stage.render.selector;;
+      if (selector) {
+        selector.updatedBoundsBySelectedModels(optContainer);
       }
     }
-    return false;
+    return true;
   }
 
   /**
@@ -49,10 +50,11 @@ class DDeiBusActionStageChangeSelectModels extends DDeiBusAction {
    * @param evt 事件对象引用
    */
   after(data: object, bus: DDeiBus, evt: Event): boolean {
+
     return true;
   }
 
 }
 
 
-export default DDeiBusActionStageChangeSelectModels
+export default DDeiBusActionUpdateSelectorBounds

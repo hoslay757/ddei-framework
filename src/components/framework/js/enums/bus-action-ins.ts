@@ -1,11 +1,12 @@
-
-import DDeiBusActionCancelCurLevelSelectedModels from '../bus/bus-action-cancel-curlevel-selected-models'
-import DDeiBusActionClearTemplateVars from '../bus/bus-action-clear-template-vars'
-import DDeiBusActionModelChangeSelect from '../bus/bus-action-model-change-select'
-import DDeiBusActionRefreshShape from '../bus/bus-action-refresh-shape'
-import DDeiBusActionStageChangeSelectModels from '../bus/bus-action-stage-change-select-models'
-import DDeiBusActionUpdateSelectorBounds from '../bus/bus-action-update-selector-bounds'
-import DDeiConfig from '../config'
+import DDeiBusActionCancelCurLevelSelectedModels from "../bus/actions/cancel-curlevel-selected-models";
+import DDeiBusActionClearTemplateVars from "../bus/actions/clear-template-vars";
+import DDeiBusActionRefreshShape from "../bus/actions/refresh-shape";
+import DDeiBusActionModelChangeSelect from "../bus/actions/model-change-select";
+import DDeiBusActionStageChangeSelectModels from "../bus/actions/stage-change-select-models";
+import DDeiBusActionUpdateSelectorBounds from "../bus/actions/update-selector-bounds";
+import DDeiBusActionModelChangeContainer from "../bus/actions/model-change-container";
+import DDeiBusActionModelChangeBounds from "../bus/actions/model-change-bounds";
+import DDeiBusActionSetHelpLine from "../bus/actions/set-helpline";
 
 /**
  * Bus总线上的Action实例
@@ -17,7 +18,9 @@ enum DDeiEnumBusActionInstance {
   UpdateSelectorBounds = new DDeiBusActionUpdateSelectorBounds({ code: "update-selector-bounds", name: "", desc: "" }),//更新选择器状态
   ClearTemplateVars = new DDeiBusActionClearTemplateVars({ code: "clear-template-vars", name: "", desc: "" }),//清楚临时变量，重置状态
   RefreshShape = new DDeiBusActionRefreshShape({ code: "refresh-shape", name: "", desc: "" }),//重绘图形
-
+  ModelChangeContainer = new DDeiBusActionModelChangeContainer({ code: "model-change-container", name: "", desc: "" }),//模型修改所在容器
+  ModelChangeBounds = new DDeiBusActionModelChangeBounds({ code: "model-change-bounds", name: "", desc: "" }),//模型修改大小和位置
+  SetHelpLine = new DDeiBusActionSetHelpLine({ code: "set-helpline", name: "", desc: "" }),//设置辅助线
 }
 
 export default DDeiEnumBusActionInstance

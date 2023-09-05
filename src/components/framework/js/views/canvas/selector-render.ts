@@ -222,7 +222,6 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
    * 修改鼠标样式
    */
   changeCursorStyle(): void {
-    console.log()
     if (this.stage.ddInstance.state != DDeiEnumState.IN_ACTIVITY) {
       switch (this.model.passIndex) {
         case 1:

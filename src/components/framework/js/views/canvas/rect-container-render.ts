@@ -14,7 +14,6 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
   drawShape(): void {
     let canvas = this.ddRender.canvas;
     let ctx = canvas.getContext('2d');
-
     //转换为缩放后的坐标
     let ratPos = this.getBorderRatPos();
 
@@ -48,9 +47,11 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
    */
   drawChildrenShapes(): void {
     if (this.model.models) {
+      console.log(this.model.models)
       //遍历子元素，绘制子元素
       this.model.midList.forEach(key => {
         let item = this.model.models.get(key);
+
         item.render.drawShape();
       });
     }
