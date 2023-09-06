@@ -96,7 +96,10 @@ class DDeiLayer {
    */
   removeModel(model: DDeiAbstractShape): void {
     this.models.delete(model.id);
-    this.midList.splice(this.midList.indexOf(model.id), 1);
+    let idx = this.midList.indexOf(model.id);
+    if (idx != -1) {
+      this.midList.splice(idx, 1);
+    }
     //清除原有的zindex属性
     model.zIndex = null;
     model.layer = null;
