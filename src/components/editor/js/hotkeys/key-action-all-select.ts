@@ -1,7 +1,7 @@
 import DDei from "@/components/framework/js/ddei";
 import DDeiEnumControlState from "@/components/framework/js/enums/control-state";
 import DDeiKeyAction from "./key-action";
-import DDeiEnumBusActionType from "@/components/framework/js/enums/bus-action-type";
+import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type";
 
 /**
  * 键行为:全选
@@ -16,9 +16,9 @@ class DDeiKeyActionAllSelect extends DDeiKeyAction {
       //当前激活的图层
       let layer = ddInstance.stage.layers[ddInstance.stage.layerIndex]
 
-      ddInstance?.bus?.push(DDeiEnumBusActionType.ModelChangeSelect, { models: layer.models, value: DDeiEnumControlState.SELECTED }, evt);
+      ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, { models: layer.models, value: DDeiEnumControlState.SELECTED }, evt);
       //渲染图形
-      ddInstance?.bus?.push(DDeiEnumBusActionType.RefreshShape, null, evt);
+      ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
 
       ddInstance?.bus?.executeAll();
     }

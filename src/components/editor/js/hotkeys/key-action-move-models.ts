@@ -1,7 +1,7 @@
 import DDeiConfig from "@/components/framework/js/config";
 import DDei from "@/components/framework/js/ddei";
 import DDeiKeyAction from "./key-action";
-import DDeiEnumBusActionType from "@/components/framework/js/enums/bus-action-type";
+import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type";
 import DDeiAbstractShape from "@/components/framework/js/models/shape";
 
 /**
@@ -66,9 +66,9 @@ class DDeiKeyActionDownMoveModels extends DDeiKeyAction {
           }
           deltaX = moveSize - mod
         }
-        ddInstance.bus.push(DDeiEnumBusActionType.ModelChangeBounds, { models: models, deltaX: deltaX, deltaY: deltaY }, evt);
+        ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeBounds, { models: models, deltaX: deltaX, deltaY: deltaY }, evt);
         //渲染图形
-        ddInstance.bus.push(DDeiEnumBusActionType.RefreshShape, null, evt);
+        ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
 
         ddInstance.bus.executeAll();
       }

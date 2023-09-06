@@ -1,12 +1,11 @@
-import DDeiEnumBusActionType from '../../enums/bus-action-type';
+import DDeiEnumBusCommandType from '../../enums/bus-command-type';
 import DDeiEnumOperateState from '../../enums/operate-state';
 import DDeiBus from '../bus';
-import DDeiBusAction from '../bus-action';
+import DDeiBusCommand from '../bus-command';
 /**
- * 重绘图形的总线Action
- * 图形类action一般在普通action之后执行
+ * 取消所有选中控件层级的总线Command
  */
-class DDeiBusActionRefreshShape extends DDeiBusAction {
+class DDeiBusCommandCancelCurLevelSelectedModels extends DDeiBusCommand {
   // ============================ 构造函数 ============================
 
   // ============================ 静态方法 ============================
@@ -15,7 +14,7 @@ class DDeiBusActionRefreshShape extends DDeiBusAction {
 
   // ============================ 方法 ===============================
   /**
-   * 前置行为，用于校验,本Action无需校验
+   * 前置行为，用于校验,本Command无需校验
    * @param data bus分发后，当前承载的数据
    * @param bus 总线对象引用
    * @param evt 事件对象引用
@@ -25,17 +24,27 @@ class DDeiBusActionRefreshShape extends DDeiBusAction {
   }
 
   /**
-   * 具体行为，重绘所有图形
+   * 具体行为，设置当前控件的选中状态
    * @param data bus分发后，当前承载的数据
    * @param bus 总线对象引用
    * @param evt 事件对象引用
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
-
     let stage = bus.ddInstance.stage;
     if (stage) {
-      stage.ddInstance.render.drawShape();
-      return true;
+
+      let optContainer = data?.container;
+      if (!optContainer) {
+        optContainer = stage.render.currentOperateContainer;
+      }
+      if (optContainer) {
+        if (data?.curLevel == true) {
+          optContainer.cancelSelectModels();
+        } else {
+          optContainer.cancelAllLevelSelectModels();
+        }
+        return true;
+      }
     } else {
       return false;
     }
@@ -49,10 +58,18 @@ class DDeiBusActionRefreshShape extends DDeiBusAction {
    * @param evt 事件对象引用
    */
   after(data: object, bus: DDeiBus, evt: Event): boolean {
+    bus.insert(DDeiEnumBusCommandType.StageChangeSelectModels, {}, evt);
     return true;
   }
 
+  /**
+   * 返回当前实例
+   * @returns 
+   */
+  static newInstance(): DDeiBusCommand {
+    return new DDeiBusCommandCancelCurLevelSelectedModels({ code: DDeiEnumBusCommandType.CancelCurLevelSelectedModels, name: "", desc: "" })
+  }
 }
 
 
-export default DDeiBusActionRefreshShape
+export default DDeiBusCommandCancelCurLevelSelectedModels

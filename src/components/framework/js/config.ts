@@ -9,12 +9,18 @@ import DDeiDiamondCanvasRender from "./views/canvas/diamond-render"
 import DDei from "./ddei"
 import DDeiRectContainerCanvasRender from "./views/canvas/rect-container-render"
 import DDeiAbstractShape from "./models/shape"
+import loadCommands from "./config/command"
 /**
  * DDei的配置文件
  * 提供了全局参数与缺省值的设置
  * 提供了全局的一些重要函数
  */
 class DDeiConfig {
+  static {
+    //加载配置
+    loadCommands();
+  }
+
   //单个角度的旋转单位
   static ROTATE_UNIT = Math.PI / 180;
   // ============================ 静态变量 ============================
@@ -372,6 +378,7 @@ class DDeiConfig {
       //TODO 
     }
   }
+
 
 
 }

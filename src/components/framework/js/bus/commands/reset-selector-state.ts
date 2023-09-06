@@ -1,11 +1,12 @@
-import DDeiEnumBusActionType from '../../enums/bus-action-type';
+import DDeiEnumBusCommandType from '../../enums/bus-command-type';
 import DDeiEnumOperateState from '../../enums/operate-state';
 import DDeiBus from '../bus';
-import DDeiBusAction from '../bus-action';
+import DDeiBusCommand from '../bus-command';
+import DDeiBusCommandSetHelpLine from './set-helpline';
 /**
- * 清空临时变量的总线Action
+ * 更新selector的passindex总线Command
  */
-class DDeiBusActionClearTemplateVars extends DDeiBusAction {
+class DDeiBusCommandResetSelectorState extends DDeiBusCommand {
   // ============================ 构造函数 ============================
 
   // ============================ 静态方法 ============================
@@ -30,21 +31,11 @@ class DDeiBusActionClearTemplateVars extends DDeiBusAction {
    * @param evt 事件对象引用
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
-
     let stage = bus.ddInstance.stage;
-    if (stage) {
-      //当前操作控件：无
-      stage.render.currentOperateShape = null;
-      //当前操作状态:无
-      stage.render.operateState = DDeiEnumOperateState.NONE;
-      //渲染图形
-      stage.render.dragObj = null
-
-      //清除作为临时变量dragX、dargY、dragObj
-      stage.render.selector.setPassIndex(-1);
+    if (stage && stage.render.selector) {
+      stage.render.selector.resetState(data?.x, data?.y)
     }
     return true;
-
   }
 
   /**
@@ -58,7 +49,14 @@ class DDeiBusActionClearTemplateVars extends DDeiBusAction {
     return true;
   }
 
+  /**
+   * 返回当前实例
+   * @returns 
+   */
+  static newInstance(): DDeiBusCommand {
+    return new DDeiBusCommandResetSelectorState({ code: DDeiEnumBusCommandType.ResetSelectorState, name: "", desc: "" })
+  }
 }
 
 
-export default DDeiBusActionClearTemplateVars
+export default DDeiBusCommandResetSelectorState

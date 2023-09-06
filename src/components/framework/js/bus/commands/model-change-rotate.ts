@@ -1,14 +1,14 @@
 import DDeiConfig from '../../config';
-import DDeiEnumBusActionType from '../../enums/bus-action-type';
+import DDeiEnumBusCommandType from '../../enums/bus-command-type';
 import DDeiEnumOperateState from '../../enums/operate-state';
 import DDeiAbstractShape from '../../models/shape';
 import DDeiUtil from '../../util';
 import DDeiBus from '../bus';
-import DDeiBusAction from '../bus-action';
+import DDeiBusCommand from '../bus-command';
 /**
- * 改变模型旋转的总线Action
+ * 改变模型旋转的总线Command
  */
-class DDeiBusActionModelChangeRotate extends DDeiBusAction {
+class DDeiBusCommandModelChangeRotate extends DDeiBusCommand {
   // ============================ 构造函数 ============================
 
   // ============================ 静态方法 ============================
@@ -107,11 +107,19 @@ class DDeiBusActionModelChangeRotate extends DDeiBusAction {
    */
   after(data: object, bus: DDeiBus, evt: Event): boolean {
     //更新选择器
-    bus?.insert(DDeiEnumBusActionType.UpdateSelectorBounds, null, evt);
+    bus?.insert(DDeiEnumBusCommandType.UpdateSelectorBounds, null, evt);
     return true;
+  }
+
+  /**
+   * 返回当前实例
+   * @returns 
+   */
+  static newInstance(): DDeiBusCommand {
+    return new DDeiBusCommandModelChangeRotate({ code: DDeiEnumBusCommandType.ModelChangeRotate, name: "", desc: "" })
   }
 
 }
 
 
-export default DDeiBusActionModelChangeRotate
+export default DDeiBusCommandModelChangeRotate

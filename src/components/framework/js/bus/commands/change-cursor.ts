@@ -1,12 +1,12 @@
-import DDeiEnumBusActionType from '../../enums/bus-action-type';
+import DDeiEnumBusCommandType from '../../enums/bus-command-type';
 import DDeiEnumState from '../../enums/ddei-state';
 import DDeiEnumOperateState from '../../enums/operate-state';
 import DDeiBus from '../bus';
-import DDeiBusAction from '../bus-action';
+import DDeiBusCommand from '../bus-command';
 /**
- * 改变光标总线Action
+ * 改变光标总线Command
  */
-class DDeiBusActionChangeCursor extends DDeiBusAction {
+class DDeiBusCommandChangeCursor extends DDeiBusCommand {
   // ============================ 构造函数 ============================
 
   // ============================ 静态方法 ============================
@@ -92,7 +92,15 @@ class DDeiBusActionChangeCursor extends DDeiBusAction {
     return true;
   }
 
+  /**
+   * 返回当前实例
+   * @returns 
+   */
+  static newInstance(): DDeiBusCommand {
+    return new DDeiBusCommandChangeCursor({ code: DDeiEnumBusCommandType.ChangeCursor, name: "", desc: "" })
+  }
+
 }
 
 
-export default DDeiBusActionChangeCursor
+export default DDeiBusCommandChangeCursor

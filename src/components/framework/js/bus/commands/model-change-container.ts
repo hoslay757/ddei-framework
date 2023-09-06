@@ -1,12 +1,12 @@
 import DDeiConfig from '../../config';
-import DDeiEnumBusActionType from '../../enums/bus-action-type';
+import DDeiEnumBusCommandType from '../../enums/bus-command-type';
 import DDeiEnumOperateState from '../../enums/operate-state';
 import DDeiBus from '../bus';
-import DDeiBusAction from '../bus-action';
+import DDeiBusCommand from '../bus-command';
 /**
- * 改变模型所属容器的总线Action
+ * 改变模型所属容器的总线Command
  */
-class DDeiBusActionModelChangeContainer extends DDeiBusAction {
+class DDeiBusCommandModelChangeContainer extends DDeiBusCommand {
   // ============================ 构造函数 ============================
 
   // ============================ 静态方法 ============================
@@ -63,7 +63,7 @@ class DDeiBusActionModelChangeContainer extends DDeiBusAction {
       if (oldContainer) {
         //检查老容器中是否只有一个元素，如果有，则将其移动到上层容器
         if (oldContainer.baseModelType != 'DDeiLayer' && oldContainer.models.size == 1) {
-          bus.insert(DDeiEnumBusActionType.ModelChangeContainer, { oldContainer: oldContainer, newContainer: oldContainer.pModel, models: Array.from(oldContainer.models.values()) }, evt);
+          bus.insert(DDeiEnumBusCommandType.ModelChangeContainer, { oldContainer: oldContainer, newContainer: oldContainer.pModel, models: Array.from(oldContainer.models.values()) }, evt);
         }
         //TODO 如果移动后，老容器中没有元素，则移除，将来考虑手工创建的容器和组合后产生的容器，组合后的容器才销毁，手工的容器不销毁
         if (oldContainer.baseModelType != 'DDeiLayer' && oldContainer.models.size == 0) {
@@ -89,11 +89,19 @@ class DDeiBusActionModelChangeContainer extends DDeiBusAction {
    */
   after(data: object, bus: DDeiBus, evt: Event): boolean {
     //更新选择器
-    bus?.insert(DDeiEnumBusActionType.UpdateSelectorBounds, null, evt);
+    bus?.insert(DDeiEnumBusCommandType.UpdateSelectorBounds, null, evt);
     return true;
+  }
+
+  /**
+   * 返回当前实例
+   * @returns 
+   */
+  static newInstance(): DDeiBusCommand {
+    return new DDeiBusCommandModelChangeContainer({ code: DDeiEnumBusCommandType.ModelChangeContainer, name: "", desc: "" })
   }
 
 }
 
 
-export default DDeiBusActionModelChangeContainer
+export default DDeiBusCommandModelChangeContainer

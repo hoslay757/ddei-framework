@@ -1,11 +1,11 @@
-import DDeiEnumBusActionType from '../../enums/bus-action-type';
+import DDeiEnumBusCommandType from '../../enums/bus-command-type';
 import DDeiEnumOperateState from '../../enums/operate-state';
 import DDeiBus from '../bus';
-import DDeiBusAction from '../bus-action';
+import DDeiBusCommand from '../bus-command';
 /**
- * 更新临时变量dragObj总线Action
+ * 更新临时变量dragObj总线Command
  */
-class DDeiBusActionUpdateDragObj extends DDeiBusAction {
+class DDeiBusCommandUpdateDragObj extends DDeiBusCommand {
   // ============================ 构造函数 ============================
 
   // ============================ 静态方法 ============================
@@ -60,7 +60,15 @@ class DDeiBusActionUpdateDragObj extends DDeiBusAction {
     return true;
   }
 
+  /**
+   * 返回当前实例
+   * @returns 
+   */
+  static newInstance(): DDeiBusCommand {
+    return new DDeiBusCommandUpdateDragObj({ code: DDeiEnumBusCommandType.UpdateDragObj, name: "", desc: "" })
+  }
+
 }
 
 
-export default DDeiBusActionUpdateDragObj
+export default DDeiBusCommandUpdateDragObj

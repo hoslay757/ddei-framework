@@ -1,9 +1,9 @@
 import DDeiConfig from '../config'
 
 /**
- * Bus总线上的Action类别，以Code为准
+ * Bus总线上的Command类别，以Code为准
  */
-enum DDeiEnumBusActionType {
+enum DDeiEnumBusCommandType {
   ModelChangeSelect = "model-change-select",//模型改变选择状态
   StageChangeSelectModels = "stage-change-select-models",//Stage改变选择控件
   CancelCurLevelSelectedModels = "cancel-curlevel-selected-models",//取消所有的选中
@@ -21,4 +21,4 @@ enum DDeiEnumBusActionType {
   ModelPush = "model-push"
 }
 
-export default DDeiEnumBusActionType
+export default DDeiEnumBusCommandType

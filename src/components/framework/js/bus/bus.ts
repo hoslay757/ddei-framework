@@ -1,6 +1,5 @@
 import DDei from "../ddei";
-import DDeiEnumBusActionInstance from "../enums/bus-action-ins";
-import DDeiEnumBusActionType from "../enums/bus-action-type";
+import { COMMANDS } from "../config/command"
 
 /**
  * DDeiBus图形框架的交换类，用于和其他外部应用进行数据交换
@@ -91,54 +90,7 @@ class DDeiBus {
       this.queue.splice(0, 1);
       let action = null;
       if (firstActionData) {
-        switch (firstActionData.type) {
-          case DDeiEnumBusActionType.ModelChangeSelect:
-            action = DDeiEnumBusActionInstance.ModelChangeSelect;
-            break;
-          case DDeiEnumBusActionType.StageChangeSelectModels:
-            action = DDeiEnumBusActionInstance.StageChangeSelectModels;
-            break;
-          case DDeiEnumBusActionType.CancelCurLevelSelectedModels:
-            action = DDeiEnumBusActionInstance.CancelCurLevelSelectedModels;
-            break;
-          case DDeiEnumBusActionType.UpdateSelectorBounds:
-            action = DDeiEnumBusActionInstance.UpdateSelectorBounds;
-            break;
-          case DDeiEnumBusActionType.ClearTemplateVars:
-            action = DDeiEnumBusActionInstance.ClearTemplateVars;
-            break;
-          case DDeiEnumBusActionType.RefreshShape:
-            action = DDeiEnumBusActionInstance.RefreshShape;
-            break;
-          case DDeiEnumBusActionType.ModelChangeContainer:
-            action = DDeiEnumBusActionInstance.ModelChangeContainer;
-            break;
-          case DDeiEnumBusActionType.ModelChangeBounds:
-            action = DDeiEnumBusActionInstance.ModelChangeBounds;
-            break;
-          case DDeiEnumBusActionType.SetHelpLine:
-            action = DDeiEnumBusActionInstance.SetHelpLine;
-            break;
-          case DDeiEnumBusActionType.UpdateDragObj:
-            action = DDeiEnumBusActionInstance.UpdateDragObj;
-            break;
-          case DDeiEnumBusActionType.ChangeSelectorPassIndex:
-            action = DDeiEnumBusActionInstance.ChangeSelectorPassIndex;
-            break;
-          case DDeiEnumBusActionType.ChangeCursor:
-            action = DDeiEnumBusActionInstance.ChangeCursor;
-            break;
-          case DDeiEnumBusActionType.ModelChangeRotate:
-            action = DDeiEnumBusActionInstance.ModelChangeRotate;
-            break;
-          case DDeiEnumBusActionType.ResetSelectorState:
-            action = DDeiEnumBusActionInstance.ResetSelectorState;
-            break;
-          case DDeiEnumBusActionType.ModelPush:
-            action = DDeiEnumBusActionInstance.ModelPush;
-            break;
-          default: break;
-        }
+        action = COMMANDS.get(firstActionData.type);
         //执行action逻辑
         if (action) {
           let validResult = action.before(firstActionData.data, this, firstActionData.evt);

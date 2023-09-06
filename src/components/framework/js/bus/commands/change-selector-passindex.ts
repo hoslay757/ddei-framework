@@ -1,11 +1,11 @@
-import DDeiEnumBusActionType from '../../enums/bus-action-type';
+import DDeiEnumBusCommandType from '../../enums/bus-command-type';
 import DDeiEnumOperateState from '../../enums/operate-state';
 import DDeiBus from '../bus';
-import DDeiBusAction from '../bus-action';
+import DDeiBusCommand from '../bus-command';
 /**
- * 更新selector的passindex总线Action
+ * 更新selector的passindex总线Command
  */
-class DDeiBusActionChangeSelectorPassIndex extends DDeiBusAction {
+class DDeiBusCommandChangeSelectorPassIndex extends DDeiBusCommand {
   // ============================ 构造函数 ============================
 
   // ============================ 静态方法 ============================
@@ -44,11 +44,19 @@ class DDeiBusActionChangeSelectorPassIndex extends DDeiBusAction {
    * @param evt 事件对象引用
    */
   after(data: object, bus: DDeiBus, evt: Event): boolean {
-    bus?.insert(DDeiEnumBusActionType.ChangeCursor, { passIndex: data?.passIndex }, evt);
+    bus?.insert(DDeiEnumBusCommandType.ChangeCursor, { passIndex: data?.passIndex }, evt);
     return true;
+  }
+
+  /**
+   * 返回当前实例
+   * @returns 
+   */
+  static newInstance(): DDeiBusCommand {
+    return new DDeiBusCommandChangeSelectorPassIndex({ code: DDeiEnumBusCommandType.ChangeSelectorPassIndex, name: "", desc: "" })
   }
 
 }
 
 
-export default DDeiBusActionChangeSelectorPassIndex
+export default DDeiBusCommandChangeSelectorPassIndex

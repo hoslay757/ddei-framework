@@ -1,7 +1,7 @@
 import DDei from "@/components/framework/js/ddei";
 import DDeiEditor from "../editor";
 import DDeiKeyAction from "./key-action";
-import DDeiEnumBusActionType from "@/components/framework/js/enums/bus-action-type";
+import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type";
 
 /**
  * 键行为:图形移动到上层或下层、顶层或底层
@@ -22,27 +22,27 @@ class DDeiKeyActionPushModels extends DDeiKeyAction {
         if (isCtrl && isShift) {
           //上
           if (evt.keyCode == 38) {
-            ddInstance.bus.push(DDeiEnumBusActionType.ModelPush, { container: optContainer, type: "top" }, evt);
+            ddInstance.bus.push(DDeiEnumBusCommandType.ModelPush, { container: optContainer, type: "top" }, evt);
           }
           //下
           else if (evt.keyCode == 40) {
-            ddInstance.bus.push(DDeiEnumBusActionType.ModelPush, { container: optContainer, type: "bottom" }, evt);
+            ddInstance.bus.push(DDeiEnumBusCommandType.ModelPush, { container: optContainer, type: "bottom" }, evt);
           }
         }
         //只按下了ctrl
         else if (isCtrl) {
           //上
           if (evt.keyCode == 38) {
-            ddInstance.bus.push(DDeiEnumBusActionType.ModelPush, { container: optContainer, type: "up" }, evt);
+            ddInstance.bus.push(DDeiEnumBusCommandType.ModelPush, { container: optContainer, type: "up" }, evt);
           }
           //下
           else if (evt.keyCode == 40) {
-            ddInstance.bus.push(DDeiEnumBusActionType.ModelPush, { container: optContainer, type: "down" }, evt);
+            ddInstance.bus.push(DDeiEnumBusCommandType.ModelPush, { container: optContainer, type: "down" }, evt);
           }
         }
       }
       //渲染图形
-      ddInstance.bus.push(DDeiEnumBusActionType.RefreshShape, null, evt);
+      ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
 
       ddInstance.bus.executeAll();
     }

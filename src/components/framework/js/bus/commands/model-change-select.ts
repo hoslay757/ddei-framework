@@ -1,11 +1,11 @@
-import DDeiEnumBusActionType from '../../enums/bus-action-type';
+import DDeiEnumBusCommandType from '../../enums/bus-command-type';
 import DDeiEnumOperateState from '../../enums/operate-state';
 import DDeiBus from '../bus';
-import DDeiBusAction from '../bus-action';
+import DDeiBusCommand from '../bus-command';
 /**
- * 改变模型选择状态的总线Action
+ * 改变模型选择状态的总线Command
  */
-class DDeiBusActionModelChangeSelect extends DDeiBusAction {
+class DDeiBusCommandModelChangeSelect extends DDeiBusCommand {
   // ============================ 构造函数 ============================
 
   // ============================ 静态方法 ============================
@@ -14,7 +14,7 @@ class DDeiBusActionModelChangeSelect extends DDeiBusAction {
 
   // ============================ 方法 ===============================
   /**
-   * 前置行为，用于校验,本Action无需校验
+   * 前置行为，用于校验,本Command无需校验
    * @param data bus分发后，当前承载的数据
    * @param bus 总线对象引用
    * @param evt 事件对象引用
@@ -72,12 +72,20 @@ class DDeiBusActionModelChangeSelect extends DDeiBusAction {
    * @param evt 事件对象引用
    */
   after(data: object, bus: DDeiBus, evt: Event): boolean {
-    bus.insert(DDeiEnumBusActionType.StageChangeSelectModels, {}, evt, 0);
-    bus.insert(DDeiEnumBusActionType.UpdateSelectorBounds, {}, evt, 1);
+    bus.insert(DDeiEnumBusCommandType.StageChangeSelectModels, {}, evt, 0);
+    bus.insert(DDeiEnumBusCommandType.UpdateSelectorBounds, {}, evt, 1);
     return true;
+  }
+
+  /**
+   * 返回当前实例
+   * @returns 
+   */
+  static newInstance(): DDeiBusCommand {
+    return new DDeiBusCommandModelChangeSelect({ code: DDeiEnumBusCommandType.ModelChangeSelect, name: "", desc: "" })
   }
 
 }
 
 
-export default DDeiBusActionModelChangeSelect
+export default DDeiBusCommandModelChangeSelect

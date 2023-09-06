@@ -1,11 +1,11 @@
 import DDeiBus from './bus';
 /**
- * 总线行为定义，Action采用单例模式，不承载数据，数据由Bus本身承载
+ * 总线行为定义，Command采用单例模式，不承载数据，数据由Bus本身承载
  * 总线行为包含名称、编码和行为
- * action与对应的data相匹配，即特定aciton处理特定data
- * action的行为分为，before（前置行为），action（行为），和after（后置行为）
+ * Command与对应的data相匹配，即特定aciton处理特定data
+ * Command的行为分为，before（前置行为），Command（行为），和after（后置行为）
  */
-abstract class DDeiBusAction {
+abstract class DDeiBusCommand {
   // ============================ 构造函数 ============================
   constructor(props: object) {
     this.code = props.code
@@ -16,11 +16,11 @@ abstract class DDeiBusAction {
   // ============================ 静态方法 ============================
 
   // ============================ 属性 ===============================
-  //action的唯一编号
+  //Command的唯一编号
   code: string;
-  //action的名称
+  //Command的名称
   name: string;
-  //action的描述备注
+  //Command的描述备注
   desc: string;
 
   // ============================ 方法 ===============================
@@ -48,7 +48,8 @@ abstract class DDeiBusAction {
    */
   abstract after(data: object, bus: DDeiBus, evt: Event): boolean
 
+
 }
 
 
-export default DDeiBusAction
+export default DDeiBusCommand

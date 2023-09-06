@@ -1,7 +1,7 @@
 import DDeiConfig from "@/components/framework/js/config";
 import DDei from "@/components/framework/js/ddei";
 import DDeiKeyAction from "./key-action";
-import DDeiEnumBusActionType from "@/components/framework/js/enums/bus-action-type";
+import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type";
 
 /**
  * 键行为:删除模型
@@ -18,10 +18,10 @@ class DDeiKeyActionRemoveModels extends DDeiKeyAction {
       if (optContainer) {
         let selectedModels = optContainer.getSelectedModels();
 
-        ddInstance.bus.push(DDeiEnumBusActionType.ModelChangeContainer, { oldContainer: optContainer, models: Array.from(selectedModels.values()) }, evt);
+        ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeContainer, { oldContainer: optContainer, models: Array.from(selectedModels.values()) }, evt);
 
         //渲染图形
-        ddInstance.bus.push(DDeiEnumBusActionType.RefreshShape, null, evt);
+        ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
 
         ddInstance.bus.executeAll();
       }

@@ -3,7 +3,7 @@ import DDei from "@/components/framework/js/ddei";
 import DDeiEnumControlState from "@/components/framework/js/enums/control-state";
 import DDeiEnumOperateState from "@/components/framework/js/enums/operate-state";
 import DDeiKeyAction from "./key-action";
-import DDeiEnumBusActionType from "@/components/framework/js/enums/bus-action-type";
+import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type";
 
 /**
  * 键行为:取消组合
@@ -24,6 +24,7 @@ class DDeiKeyActionCancelCompose extends DDeiKeyAction {
         //添加元素到容器,并从当前layer移除元素
         models.forEach(item => {
           if (item.baseModelType == "DDeiContainer") {
+            item.state = DDeiEnumControlState.DEFAULT;
             if (item.models && item.models.size > 0) {
               layer.removeModel(item);
               item.state = DDeiEnumControlState.DEFAULT;
@@ -41,12 +42,12 @@ class DDeiKeyActionCancelCompose extends DDeiKeyAction {
           }
         });
         stageRender.selector.updatedBoundsBySelectedModels()
-        // ddInstance.bus.push(DDeiEnumBusActionType.ModelChangeContainer, { newContainer: ddInstance.stage.layers[ddInstance.stage.layerIndex], models: [container] }, evt);
-        // ddInstance.bus.push(DDeiEnumBusActionType.ModelChangeContainer, { newContainer: container, oldContainer: layer, models: models }, evt);
-        // ddInstance.bus.push(DDeiEnumBusActionType.ModelChangeSelect, { models: [container], value: DDeiEnumControlState.SELECTED }, evt);
-        ddInstance.bus.push(DDeiEnumBusActionType.ClearTemplateVars, null, evt);
+        // ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeContainer, { newContainer: ddInstance.stage.layers[ddInstance.stage.layerIndex], models: [container] }, evt);
+        // ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeContainer, { newContainer: container, oldContainer: layer, models: models }, evt);
+        // ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeSelect, { models: [container], value: DDeiEnumControlState.SELECTED }, evt);
+        ddInstance.bus.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
         //渲染图形
-        ddInstance.bus.push(DDeiEnumBusActionType.RefreshShape, null, evt);
+        ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
         ddInstance.bus.executeAll();
       }
     }

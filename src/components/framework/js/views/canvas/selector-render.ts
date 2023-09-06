@@ -1,5 +1,5 @@
 import DDeiConfig from '../../config.js';
-import DDeiEnumBusActionType from '../../enums/bus-action-type.js';
+import DDeiEnumBusCommandType from '../../enums/bus-command-type.js';
 import DDeiEnumControlState from '../../enums/control-state.js';
 import DDeiEnumState from '../../enums/ddei-state.js';
 import DDeiEnumOperateState from '../../enums/operate-state.js';
@@ -224,51 +224,51 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     let offsetY = evt.offsetY;
     //判断当前坐标是否位于操作按钮上
     if (this.isIconOn(1, offsetX, offsetY)) {
-      this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ChangeSelectorPassIndex, { passIndex: 1 }, evt);
+      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 1 }, evt);
     }
     //右上
     else if (this.isIconOn(2, offsetX, offsetY)) {
-      this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ChangeSelectorPassIndex, { passIndex: 2 }, evt);
+      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 2 }, evt);
     }
     //右中
     else if (this.isIconOn(3, offsetX, offsetY)) {
-      this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ChangeSelectorPassIndex, { passIndex: 3 }, evt);
+      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 3 }, evt);
     }
     //右下
     else if (this.isIconOn(4, offsetX, offsetY)) {
-      this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ChangeSelectorPassIndex, { passIndex: 4 }, evt);
+      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 4 }, evt);
     }
     //中下
     else if (this.isIconOn(5, offsetX, offsetY)) {
-      this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ChangeSelectorPassIndex, { passIndex: 5 }, evt);
+      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 5 }, evt);
     }
     //左下
     else if (this.isIconOn(6, offsetX, offsetY)) {
-      this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ChangeSelectorPassIndex, { passIndex: 6 }, evt);
+      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 6 }, evt);
     }
     //左中
     else if (this.isIconOn(7, offsetX, offsetY)) {
-      this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ChangeSelectorPassIndex, { passIndex: 7 }, evt);
+      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 7 }, evt);
     }
     //左上
     else if (this.isIconOn(8, offsetX, offsetY)) {
-      this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ChangeSelectorPassIndex, { passIndex: 8 }, evt);
+      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 8 }, evt);
     }
     //旋转
     else if (this.isIconOn(9, offsetX, offsetY)) {
-      this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ChangeSelectorPassIndex, { passIndex: 9 }, evt);
+      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 9 }, evt);
     } else {
       //判断是否在某个具体选中的控件上，如果是则分发事件
       let models = this.stage?.layers[this.stage?.layerIndex].findModelsByArea(offsetX, offsetY);
       if (models && models.length > 0) {
         //普通拖动
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ChangeSelectorPassIndex, { passIndex: 10 }, evt);
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 10 }, evt);
       } else {
         //清空
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ChangeSelectorPassIndex, { passIndex: -1 }, evt);
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: -1 }, evt);
       }
     }
-    this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.RefreshShape, null, evt);
+    this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
   }
 
   /**
@@ -281,13 +281,13 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       y: evt.offsetY
     }
     if (this.model.passIndex >= 1 && this.model.passIndex <= 8) {
-      this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.UpdateDragObj, { dragObj: dragObj }, evt);
+      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
       //当前操作状态：改变控件大小中
       this.stageRender.operateState = DDeiEnumOperateState.CONTROL_CHANGING_BOUND
     }
     //旋转
     else if (this.model.passIndex == 9) {
-      this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.UpdateDragObj, { dragObj: dragObj }, evt);
+      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
       //当前操作状态：改变控件大小中
       this.stageRender.operateState = DDeiEnumOperateState.CONTROL_ROTATE
     }

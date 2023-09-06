@@ -1,11 +1,11 @@
-import DDeiEnumBusActionType from '../../enums/bus-action-type';
+import DDeiEnumBusCommandType from '../../enums/bus-command-type';
 import DDeiEnumOperateState from '../../enums/operate-state';
 import DDeiBus from '../bus';
-import DDeiBusAction from '../bus-action';
+import DDeiBusCommand from '../bus-command';
 /**
- * 取消所有选中控件层级的总线Action
+ * 清空临时变量的总线Command
  */
-class DDeiBusActionCancelCurLevelSelectedModels extends DDeiBusAction {
+class DDeiBusCommandClearTemplateVars extends DDeiBusCommand {
   // ============================ 构造函数 ============================
 
   // ============================ 静态方法 ============================
@@ -14,7 +14,7 @@ class DDeiBusActionCancelCurLevelSelectedModels extends DDeiBusAction {
 
   // ============================ 方法 ===============================
   /**
-   * 前置行为，用于校验,本Action无需校验
+   * 前置行为
    * @param data bus分发后，当前承载的数据
    * @param bus 总线对象引用
    * @param evt 事件对象引用
@@ -24,45 +24,49 @@ class DDeiBusActionCancelCurLevelSelectedModels extends DDeiBusAction {
   }
 
   /**
-   * 具体行为，设置当前控件的选中状态
+   * 具体行为
    * @param data bus分发后，当前承载的数据
    * @param bus 总线对象引用
    * @param evt 事件对象引用
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
+
     let stage = bus.ddInstance.stage;
     if (stage) {
+      //当前操作控件：无
+      stage.render.currentOperateShape = null;
+      //当前操作状态:无
+      stage.render.operateState = DDeiEnumOperateState.NONE;
+      //渲染图形
+      stage.render.dragObj = null
 
-      let optContainer = data?.container;
-      if (!optContainer) {
-        optContainer = stage.render.currentOperateContainer;
-      }
-      if (optContainer) {
-        if (data?.curLevel == true) {
-          optContainer.cancelSelectModels();
-        } else {
-          optContainer.cancelAllLevelSelectModels();
-        }
-        return true;
-      }
-    } else {
-      return false;
+      //清除作为临时变量dragX、dargY、dragObj
+      stage.render.selector.setPassIndex(-1);
     }
+    return true;
 
   }
 
   /**
-   * 后置行为，分发，修改当前editor的状态
+   * 后置行为，分发
    * @param data bus分发后，当前承载的数据
    * @param bus 总线对象引用
    * @param evt 事件对象引用
    */
   after(data: object, bus: DDeiBus, evt: Event): boolean {
-    bus.insert(DDeiEnumBusActionType.StageChangeSelectModels, {}, evt);
+
     return true;
+  }
+
+  /**
+   * 返回当前实例
+   * @returns 
+   */
+  static newInstance(): DDeiBusCommand {
+    return new DDeiBusCommandClearTemplateVars({ code: DDeiEnumBusCommandType.ClearTemplateVars, name: "", desc: "" })
   }
 
 }
 
 
-export default DDeiBusActionCancelCurLevelSelectedModels
+export default DDeiBusCommandClearTemplateVars

@@ -1,11 +1,12 @@
-import DDeiEnumBusActionType from '../../enums/bus-action-type';
+import DDeiEnumBusCommandType from '../../enums/bus-command-type';
 import DDeiEnumOperateState from '../../enums/operate-state';
 import DDeiBus from '../bus';
-import DDeiBusAction from '../bus-action';
+import DDeiBusCommand from '../bus-command';
 /**
- * 更新selector的passindex总线Action
+ * 重绘图形的总线Command
+ * 图形类Command一般在普通Command之后执行
  */
-class DDeiBusActionResetSelectorState extends DDeiBusAction {
+class DDeiBusCommandRefreshShape extends DDeiBusCommand {
   // ============================ 构造函数 ============================
 
   // ============================ 静态方法 ============================
@@ -14,7 +15,7 @@ class DDeiBusActionResetSelectorState extends DDeiBusAction {
 
   // ============================ 方法 ===============================
   /**
-   * 前置行为
+   * 前置行为，用于校验,本Command无需校验
    * @param data bus分发后，当前承载的数据
    * @param bus 总线对象引用
    * @param evt 事件对象引用
@@ -24,31 +25,42 @@ class DDeiBusActionResetSelectorState extends DDeiBusAction {
   }
 
   /**
-   * 具体行为
+   * 具体行为，重绘所有图形
    * @param data bus分发后，当前承载的数据
    * @param bus 总线对象引用
    * @param evt 事件对象引用
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
+
     let stage = bus.ddInstance.stage;
-    if (stage && stage.render.selector) {
-      stage.render.selector.resetState(data?.x, data?.y)
+    if (stage) {
+      stage.ddInstance.render.drawShape();
+      return true;
+    } else {
+      return false;
     }
-    return true;
+
   }
 
   /**
-   * 后置行为，分发
+   * 后置行为，分发，修改当前editor的状态
    * @param data bus分发后，当前承载的数据
    * @param bus 总线对象引用
    * @param evt 事件对象引用
    */
   after(data: object, bus: DDeiBus, evt: Event): boolean {
-
     return true;
+  }
+
+  /**
+   * 返回当前实例
+   * @returns 
+   */
+  static newInstance(): DDeiBusCommand {
+    return new DDeiBusCommandRefreshShape({ code: DDeiEnumBusCommandType.RefreshShape, name: "", desc: "" })
   }
 
 }
 
 
-export default DDeiBusActionResetSelectorState
+export default DDeiBusCommandRefreshShape

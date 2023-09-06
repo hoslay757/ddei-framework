@@ -1,11 +1,11 @@
-import DDeiEnumBusActionType from '../../enums/bus-action-type';
+import DDeiEnumBusCommandType from '../../enums/bus-command-type';
 import DDeiEnumOperateState from '../../enums/operate-state';
 import DDeiBus from '../bus';
-import DDeiBusAction from '../bus-action';
+import DDeiBusCommand from '../bus-command';
 /**
- * 设置辅助线的总线Action
+ * 设置辅助线的总线Command
  */
-class DDeiBusActionSetHelpLine extends DDeiBusAction {
+class DDeiBusCommandSetHelpLine extends DDeiBusCommand {
   // ============================ 构造函数 ============================
 
   // ============================ 静态方法 ============================
@@ -71,8 +71,15 @@ class DDeiBusActionSetHelpLine extends DDeiBusAction {
 
     return true;
   }
+  /**
+     * 返回当前实例
+     * @returns 
+     */
+  static newInstance(): DDeiBusCommand {
+    return new DDeiBusCommandSetHelpLine({ code: DDeiEnumBusCommandType.SetHelpLine, name: "", desc: "" })
+  }
 
 }
 
 
-export default DDeiBusActionSetHelpLine
+export default DDeiBusCommandSetHelpLine

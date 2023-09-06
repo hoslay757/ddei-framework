@@ -5,7 +5,7 @@ import DDeiEnumOperateState from "@/components/framework/js/enums/operate-state"
 import DDeiRectContainer from "@/components/framework/js/models/rect-container";
 import DDeiAbstractShape from "@/components/framework/js/models/shape";
 import DDeiKeyAction from "./key-action";
-import DDeiEnumBusActionType from "@/components/framework/js/enums/bus-action-type";
+import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type";
 
 /**
  * 键行为:组合
@@ -39,12 +39,12 @@ class DDeiKeyActionCompose extends DDeiKeyAction {
         //下标自增1
         ddInstance.stage.idIdx++;
 
-        ddInstance.bus.push(DDeiEnumBusActionType.ModelChangeContainer, { newContainer: ddInstance.stage.layers[ddInstance.stage.layerIndex], models: [container] }, evt);
-        ddInstance.bus.push(DDeiEnumBusActionType.ModelChangeContainer, { newContainer: container, oldContainer: layer, models: models }, evt);
-        ddInstance.bus.push(DDeiEnumBusActionType.ModelChangeSelect, { models: [container], value: DDeiEnumControlState.SELECTED }, evt);
-        ddInstance.bus.push(DDeiEnumBusActionType.ClearTemplateVars, null, evt);
+        ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeContainer, { newContainer: ddInstance.stage.layers[ddInstance.stage.layerIndex], models: [container] }, evt);
+        ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeContainer, { newContainer: container, oldContainer: layer, models: models }, evt);
+        ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeSelect, { models: [container], value: DDeiEnumControlState.SELECTED }, evt);
+        ddInstance.bus.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
         //渲染图形
-        ddInstance.bus.push(DDeiEnumBusActionType.RefreshShape, null, evt);
+        ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
         ddInstance.bus.executeAll();
       } else {
         console.warn("组合操作至少需要两个图形")

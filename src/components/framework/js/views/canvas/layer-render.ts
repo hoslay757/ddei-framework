@@ -1,6 +1,6 @@
 import DDeiConfig from '../../config.js'
 import DDei from '../../ddei.js';
-import DDeiEnumBusActionType from '../../enums/bus-action-type.js';
+import DDeiEnumBusCommandType from '../../enums/bus-command-type.js';
 import DDeiEnumControlState from '../../enums/control-state.js';
 import DDeiEnumState from '../../enums/ddei-state.js';
 import DDeiEnumOperateState from '../../enums/operate-state.js';
@@ -535,8 +535,8 @@ class DDeiLayerCanvasRender {
             // 当前操作控件不在选中控件中，则清空所有当前选中控件
             if (!selectedModels.has(operateControl.id)) {
               //清空除了当前操作控件外所有选中状态控件
-              this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.CancelCurLevelSelectedModels, { container: pContainerModel, curLevel: true }, evt);
-              this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ResetSelectorState, {}, evt);
+              this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, { container: pContainerModel, curLevel: true }, evt);
+              this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ResetSelectorState, {}, evt);
             }
           }
         }
@@ -544,19 +544,19 @@ class DDeiLayerCanvasRender {
       //无控件
       else {
         //重置选择器位置
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ResetSelectorState, { x: evt.offsetX, y: evt.offsetY }, evt);
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ResetSelectorState, { x: evt.offsetX, y: evt.offsetY }, evt);
         //当前操作状态：选择器工作中
         this.stageRender.operateState = DDeiEnumOperateState.SELECT_WORKING
         //当没有按下ctrl键时，清空除了当前操作控件外所有选中状态控件
         if (!isCtrl) {
           //清空所有层级的已选状态
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.CancelCurLevelSelectedModels, null, evt);
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
         }
       }
     }
 
     //渲染图形
-    this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.RefreshShape, null, evt);
+    this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
 
     //排序并执行所有action
     this.stage?.ddInstance?.bus?.executeAll();
@@ -588,22 +588,22 @@ class DDeiLayerCanvasRender {
         if (isCtrl) {
           //判断当前操作控件是否选中
           if (this.stageRender.currentOperateShape.state == DDeiEnumControlState.SELECTED) {
-            pushMulits.push({ actionType: DDeiEnumBusActionType.ModelChangeSelect, data: [{ id: this.stageRender.currentOperateShape.id, value: DDeiEnumControlState.DEFAULT }] });
+            pushMulits.push({ actionType: DDeiEnumBusCommandType.ModelChangeSelect, data: [{ id: this.stageRender.currentOperateShape.id, value: DDeiEnumControlState.DEFAULT }] });
           } else {
             //选中当前操作控件
-            pushMulits.push({ actionType: DDeiEnumBusActionType.ModelChangeSelect, data: [{ id: this.stageRender.currentOperateShape.id, value: DDeiEnumControlState.SELECTED }] });
+            pushMulits.push({ actionType: DDeiEnumBusCommandType.ModelChangeSelect, data: [{ id: this.stageRender.currentOperateShape.id, value: DDeiEnumControlState.SELECTED }] });
           }
         }
         //没有按下ctrl键，取消选中非当前控件
         else {
-          pushMulits.push({ actionType: DDeiEnumBusActionType.CancelCurLevelSelectedModels });
-          pushMulits.push({ actionType: DDeiEnumBusActionType.ModelChangeSelect, data: [{ id: this.stageRender.currentOperateShape.id, value: DDeiEnumControlState.SELECTED }] });
+          pushMulits.push({ actionType: DDeiEnumBusCommandType.CancelCurLevelSelectedModels });
+          pushMulits.push({ actionType: DDeiEnumBusCommandType.ModelChangeSelect, data: [{ id: this.stageRender.currentOperateShape.id, value: DDeiEnumControlState.SELECTED }] });
         }
         this.stage?.ddInstance?.bus?.pushMulit(pushMulits, evt);
         //清空临时变量
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ClearTemplateVars, null, evt);
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
         //渲染图形
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.RefreshShape, null, evt);
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
         break;
       //选择器工作中
       case DDeiEnumOperateState.SELECT_WORKING:
@@ -615,11 +615,11 @@ class DDeiLayerCanvasRender {
         includedModels.forEach((model, key) => {
           pushDatas[pushDatas.length] = { id: model.id, value: DDeiEnumControlState.SELECTED };
         });
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ModelChangeSelect, pushDatas, evt);
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, pushDatas, evt);
         //清空临时变量
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ClearTemplateVars, null, evt);
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
         //渲染图形
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.RefreshShape, null, evt);
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
         break;
       //控件拖拽中
       case DDeiEnumOperateState.CONTROL_DRAGING:
@@ -644,25 +644,25 @@ class DDeiLayerCanvasRender {
             //构造移动容器action数据
             let selectedModels = pContainerModel.getSelectedModels();
             selectedModels.set(this.stageRender.currentOperateShape?.id, this.stageRender.currentOperateShape)
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ModelChangeContainer, { oldContainer: pContainerModel, newContainer: lastOnContainer, models: Array.from(selectedModels.values()) }, evt);
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeContainer, { oldContainer: pContainerModel, newContainer: lastOnContainer, models: Array.from(selectedModels.values()) }, evt);
           }
         }
         //清空临时变量
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ClearTemplateVars, null, evt);
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
         //渲染图形
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.RefreshShape, null, evt);
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
         break;
       case DDeiEnumOperateState.CONTROL_ROTATE:
         //清空临时变量
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ClearTemplateVars, null, evt);
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
         //渲染图形
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.RefreshShape, null, evt);
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
         break;
       case DDeiEnumOperateState.CONTROL_CHANGING_BOUND:
         //清空临时变量
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ClearTemplateVars, null, evt);
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
         //渲染图形
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.RefreshShape, null, evt);
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
         break;
       //默认缺省状态
       default:
@@ -710,15 +710,15 @@ class DDeiLayerCanvasRender {
           }
           dragObj.pms.set(pModel.id, { x: pModel.x, y: pModel.y, width: pModel.width, height: pModel.height });
         }
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.UpdateDragObj, { dragObj: dragObj }, evt);
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
         break;
       }
       //选择器工作中
       case DDeiEnumOperateState.SELECT_WORKING: {
         //根据事件更新选择器位置
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.UpdateSelectorBounds, { operateState: this.stageRender.operateState }, evt);
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateSelectorBounds, { operateState: this.stageRender.operateState }, evt);
         //渲染图形
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.RefreshShape, null, evt);
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
         break;
       }
       //控件拖拽中
@@ -751,13 +751,13 @@ class DDeiLayerCanvasRender {
             }
 
             //更新dragObj临时变量中的数值,确保坐标对应关系一致
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.UpdateDragObj, { deltaX: movedPosDelta.x, deltaY: movedPosDelta.y }, evt);
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { deltaX: movedPosDelta.x, deltaY: movedPosDelta.y }, evt);
             //修改所有选中控件坐标
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ModelChangeBounds, pushData, evt);
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeBounds, pushData, evt);
             //修改辅助线
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.SetHelpLine, { models: selectedModels }, evt);
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.SetHelpLine, { models: selectedModels }, evt);
             //渲染图形
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.RefreshShape, null, evt);
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
           }
         }
         break;
@@ -781,13 +781,13 @@ class DDeiLayerCanvasRender {
             let mds = pContainerModel.getSelectedModels();
             let pushData = { deltaX: movedBounds.x - selector.x, deltaY: movedBounds.y - selector.y, deltaWidth: movedBounds.width - selector.width, deltaHeight: movedBounds.height - selector.height, models: Array.from(mds.values()) };
             //更新dragObj临时变量中的数值,确保坐标对应关系一致
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.UpdateDragObj, { deltaX: movedPosDelta.x, deltaY: movedPosDelta.y }, evt);
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { deltaX: movedPosDelta.x, deltaY: movedPosDelta.y }, evt);
             //修改所有选中控件坐标
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ModelChangeBounds, pushData, evt);
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeBounds, pushData, evt);
             //修改辅助线
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.SetHelpLine, { models: mds }, evt);
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.SetHelpLine, { models: mds }, evt);
             //渲染图形
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.RefreshShape, null, evt);
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
           }
         }
 
@@ -804,11 +804,11 @@ class DDeiLayerCanvasRender {
             pContainerModel = this.model;
           }
           //更新旋转
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ModelChangeRotate, { deltaX: movedPos.x, container: pContainerModel }, evt);
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeRotate, { deltaX: movedPos.x, container: pContainerModel }, evt);
           //更新dragObj临时变量中的数值,确保坐标对应关系一致
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.UpdateDragObj, { deltaX: movedPos.x, deltaY: 0 }, evt);
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { deltaX: movedPos.x, deltaY: 0 }, evt);
           //渲染图形
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.RefreshShape, null, evt);
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
         }
         break;
       }
@@ -822,7 +822,7 @@ class DDeiLayerCanvasRender {
         }
         else {
           //恢复鼠标等状态
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusActionType.ChangeCursor, { cursor: 'default' }, evt);
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
         }
         break;
       }

@@ -1,13 +1,13 @@
 import DDeiConfig from '../../config';
-import DDeiEnumBusActionType from '../../enums/bus-action-type';
+import DDeiEnumBusCommandType from '../../enums/bus-command-type';
 import DDeiEnumOperateState from '../../enums/operate-state';
 import DDeiAbstractShape from '../../models/shape';
 import DDeiBus from '../bus';
-import DDeiBusAction from '../bus-action';
+import DDeiBusCommand from '../bus-command';
 /**
- * 改变模型坐标以及大小的总线Action
+ * 改变模型坐标以及大小的总线Command
  */
-class DDeiBusActionModelChangeBounds extends DDeiBusAction {
+class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
   // ============================ 构造函数 ============================
 
   // ============================ 静态方法 ============================
@@ -142,9 +142,9 @@ class DDeiBusActionModelChangeBounds extends DDeiBusAction {
         } else {
           //如果最小层容器不是当前容器，则修改鼠标样式，代表可能要移入
           if (newContainer.id != parentContainer.id) {
-            bus?.insert(DDeiEnumBusActionType.ChangeSelectorPassIndex, { passIndex: 11 }, evt);
+            bus?.insert(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 11 }, evt);
           } else {
-            bus?.insert(DDeiEnumBusActionType.ChangeSelectorPassIndex, { passIndex: 10 }, evt);
+            bus?.insert(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 10 }, evt);
           }
         }
       }
@@ -161,11 +161,18 @@ class DDeiBusActionModelChangeBounds extends DDeiBusAction {
    */
   after(data: object, bus: DDeiBus, evt: Event): boolean {
     //更新选择器
-    bus?.insert(DDeiEnumBusActionType.UpdateSelectorBounds, null, evt);
+    bus?.insert(DDeiEnumBusCommandType.UpdateSelectorBounds, null, evt);
     return true;
   }
 
+  /**
+   * 返回当前实例
+   * @returns 
+   */
+  static newInstance(): DDeiBusCommand {
+    return new DDeiBusCommandModelChangeBounds({ code: DDeiEnumBusCommandType.ModelChangeBounds, name: "", desc: "" })
+  }
 }
 
 
-export default DDeiBusActionModelChangeBounds
+export default DDeiBusCommandModelChangeBounds

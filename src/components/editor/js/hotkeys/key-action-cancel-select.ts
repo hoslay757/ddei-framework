@@ -1,6 +1,6 @@
 import DDei from "@/components/framework/js/ddei";
 import DDeiKeyAction from "./key-action";
-import DDeiEnumBusActionType from "@/components/framework/js/enums/bus-action-type";
+import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type";
 import DDeiEnumControlState from "@/components/framework/js/enums/control-state";
 
 /**
@@ -16,10 +16,10 @@ class DDeiKeyActionCancelSelect extends DDeiKeyAction {
       //当前激活的图层
       let layer = ddInstance.stage.layers[ddInstance.stage.layerIndex]
 
-      ddInstance?.bus?.push(DDeiEnumBusActionType.CancelCurLevelSelectedModels, { container: layer, curLevel: true }, evt);
-      ddInstance?.bus?.push(DDeiEnumBusActionType.UpdateSelectorBounds, null, evt);
+      ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, { container: layer, curLevel: true }, evt);
+      ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateSelectorBounds, null, evt);
       //渲染图形
-      ddInstance?.bus?.push(DDeiEnumBusActionType.RefreshShape, null, evt);
+      ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
 
       ddInstance?.bus?.executeAll();
     }
