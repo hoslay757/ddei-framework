@@ -38,7 +38,10 @@
 
 <script lang="ts">
 import DDeiEditor from '../js/editor';
-
+import { controlOriginDefinies } from "../configs/toolgroup"
+import { cloneDeep } from 'lodash'
+import DDeiUtil from '../../framework/js/util';
+import DDeiAbstractShape from '../../framework/js/models/shape';
 export default {
   name: "DDei-Editor-PropertyView",
   extends: null,
@@ -59,6 +62,7 @@ export default {
   created() {
     // 监听obj对象中prop属性的变化
     this.$watch('editor.ddInstance.stage.selectedModels', function (newVal, oldVal) {
+      console.log("触发")
       if(newVal && newVal.size > 0){
         newVal.forEach(element => {
           console.log(element.id)
@@ -67,6 +71,51 @@ export default {
         console.log("没有控件")
       }
       this.selectedModels = newVal;
+      if(this.selectedModels?.size > 0){
+        //获取当前所有组件的公共属性定义
+        let models: DDeiAbstractShape[] = Array.from(this.selectedModels.values());
+        //获取第一个组件及其定义
+        let firstModel: DDeiAbstractShape = cloneDeep(models[0]);
+        let firstControlDefine = cloneDeep(controlOriginDefinies.get(firstModel.modelCode));
+        //如果同时有多个组件被选中，则以第一个组件为基准，对属性定义进行过滤，属性值相同则采用相同值，属性值不同采用空值
+        let removeKeys = [];
+        for(let i = 0;i < models.length;i++){
+          let curModel:DDeiAbstractShape = models[i];
+          let curDefine = controlOriginDefinies.get(curModel.modelCode);
+          
+          firstControlDefine.attrDefineMap.forEach((firstAttrDefine,attrKey) => {
+            //key不存在
+            if(!curDefine.attrDefineMap.has(attrKey)){
+              removeKeys.push(attrKey);
+            }
+            //隐藏
+            else if(!firstAttrDefine.visiable){
+              removeKeys.push(attrKey);
+            }
+            //key存在，进一步比较值
+            else{
+              //当前属性的定义
+              let curAttrDefine = curDefine.attrDefineMap.get(attrKey)
+              //记录属性值
+              if (i == 0) {
+                firstAttrDefine.value = DDeiUtil.getDataByPathList(firstModel, curAttrDefine.code, curAttrDefine.mapping);
+              }  
+              //根据属性定义，从model获取值
+              let curAttrValue = DDeiUtil.getDataByPathList(curModel, curAttrDefine.code, curAttrDefine.mapping);
+              if(firstAttrDefine.value != curAttrValue){
+                //值不相同
+                removeKeys.push(attrKey);
+                //记录备选值
+                firstAttrDefine.diffValues.push(curAttrValue);
+              }
+            }
+            
+          });
+        }
+        //清除不同的属性
+        this.deleteAttrDefineByKeys(firstControlDefine,removeKeys);
+        //TODO 同步引用关系
+      }
     });
    },
   mounted() {
@@ -75,6 +124,48 @@ export default {
   },
   methods: {
 
+    /**
+     * 移除属性定义中的属性
+     * @param firstControlDefine 
+     * @param removeKeys 
+     */
+    deleteAttrDefineByKeys(firstControlDefine:object,removeKeys:string[]){
+      //移除属性
+      removeKeys.forEach(item => {
+        firstControlDefine.attrDefineMap.delete(item)
+        this.deleteGroupAttrsByKey(firstControlDefine.styles, item);
+        this.deleteGroupAttrsByKey(firstControlDefine.datas, item);
+        this.deleteGroupAttrsByKey(firstControlDefine.events, item);
+      })
+    },
+
+    deleteGroupAttrsByKey(pData,key:string):void{
+      let rmglist = [];
+      pData.groups.forEach(group => {
+        let rmlist = []
+        for (let gci = 0; gci < group.children.length; gci++) {
+          if (group.children[gci].code == key) {
+            rmlist.push(group.children[gci])
+          }
+        }
+        rmlist.forEach(rm => {
+          let index = group.children.indexOf(rm);
+          if (index > -1) {
+            group.children.splice(index, 1);
+          }
+        })
+        //如果group被清空，则删除group
+        if (group.children.length == 0) {
+          rmglist.push(group);
+        }
+      });
+      rmglist.forEach(rmg => {
+        let index = pData.groups.indexOf(rmg);
+        if (index > -1) {
+          pData.groups.splice(index, 1);
+        }
+      })
+    },
     /**
      * 隐藏or展示属性编辑器
      */

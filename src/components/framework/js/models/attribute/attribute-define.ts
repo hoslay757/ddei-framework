@@ -28,6 +28,7 @@ class DDeiArrtibuteDefine {
     this.readonly = props.readonly ? props.readonly : false
     this.orderNo = props.orderNo
     this.isArray = props.isArray ? props.isArray : false;
+    this.visiable = props.visiable == false ? false : true;
     this.overwrite = props.overwrite ? props.overwrite : false;
     this.parser = props.parser
 
@@ -61,7 +62,7 @@ class DDeiArrtibuteDefine {
   defaultValue: object;
   //非空
   notNull: boolean;
-  // 制度
+  // 只读
   readonly: boolean;
   // 顺序号
   orderNo: number | null;
@@ -69,6 +70,12 @@ class DDeiArrtibuteDefine {
   isArray: boolean;
   //是否复写
   overwrite: boolean;
+  //是否隐藏
+  visiable: boolean;
+  //当出现值不同时，记录由不同备选值
+  diffValues: object[] = [];
+  //当前属性值
+  value: object | null = null;
   //属性值解析器，负责读取或写入属性值，以确保输入和输出值正确
   parser: DDeiAbstractArrtibuteParser;
   // ============================ 方法 ===============================

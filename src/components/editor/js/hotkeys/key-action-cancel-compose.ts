@@ -52,7 +52,6 @@ class DDeiKeyActionCancelCompose extends DDeiKeyAction {
         ddInstance.bus.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
         //渲染图形
         ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
-        debugger
         ddInstance.bus.executeAll();
       }
     }

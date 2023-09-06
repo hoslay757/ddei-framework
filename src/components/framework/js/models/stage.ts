@@ -3,6 +3,7 @@ import DDeiLayer from './layer';
 import DDei from '../ddei';
 import DDeiAbstractShape from './shape';
 
+
 /**
  * Stage(舞台),代表一张完整的图像。
  * 每个Stage包含多个Layer（图层），图层上才会承载图像

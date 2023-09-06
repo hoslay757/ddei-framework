@@ -18,7 +18,7 @@ class DDeiUtil {
    * @param value 值
    */
   static setStyle(model: DDeiAbstractShape, paths: string[] | string, value: object): void {
-    if (model?.attrs) {
+    if (model) {
       let pathArray: string[];
       if (typeof (paths) == 'string') {
         pathArray = [paths];
@@ -28,7 +28,7 @@ class DDeiUtil {
       pathArray.forEach(path => {
         if (path != '') {
           let attrPaths: string[] = path.split('.');
-          let curObj = model?.attrs;
+          let curObj = model;
           for (let i = 0; i < attrPaths.length; i++) {
             if (i != attrPaths.length - 1) {
               if (!curObj[attrPaths[i]]) {
@@ -42,6 +42,43 @@ class DDeiUtil {
         }
       });
     }
+  }
+
+  /**
+   * 根据Path获取JSON的数据
+   * 如果data路径中存在override，则强制覆盖不从上级获取
+   */
+  static getDataByPathList(data: object, ...paths: string): object | null {
+    if (data && paths) {
+      for (let ix = 0; ix < paths.length; ix++) {
+        if (paths[ix]) {
+          let obj = paths[ix];
+          let pathArray = null;
+          if (typeof (obj) == "string") {
+            pathArray = paths[ix].split(".");
+            try {
+              let returnJSON = DDeiUtil.getDataByPath(data, pathArray);
+              if (returnJSON?.data) {
+                return returnJSON.data;
+              }
+            } catch (e) { }
+          } else if (Array.isArray(obj)) {
+            if (obj.length > 0) {
+              for (let jx = 0; jx < obj.length; jx++) {
+                pathArray = obj[jx].split(".");
+                try {
+                  let returnJSON = DDeiUtil.getDataByPath(data, pathArray);
+                  if (returnJSON?.data) {
+                    return returnJSON.data;
+                  }
+                } catch (e) { }
+              }
+            }
+          }
+        }
+      }
+    }
+    return null;
   }
 
   /**

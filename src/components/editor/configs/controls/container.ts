@@ -32,7 +32,7 @@ export const styles = {
       'dataType': 'integer',
       'defaultValue': "300",
       'orderNo': 1,
-      'visiable': 0
+      'visiable': false
     },
     {
       'id': '100201002',
@@ -45,7 +45,7 @@ export const styles = {
       'dataType': 'integer',
       'defaultValue': "240",
       'orderNo': 2,
-      'visiable': 0
+      'visiable': false
     },
     {
       'id': '100201003',
@@ -61,7 +61,7 @@ export const styles = {
       'display': 'column',
       'mapping': [],
       'orderNo': 1,
-      'visiable': 1
+      'visiable': true
     },
     {
       'id': '100201004',
@@ -74,7 +74,7 @@ export const styles = {
       'dataType': 'string',
       'defaultValue': 'black',
       'orderNo': 2,
-      'visiable': 1
+      'visiable': true
     },
     {
       'id': '100201005',
@@ -88,7 +88,7 @@ export const styles = {
       'defaultValue': null,
       'display': 'column',
       'orderNo': 3,
-      'visiable': 1
+      'visiable': true
     },
     {
       'id': '100201006',
@@ -101,7 +101,7 @@ export const styles = {
       'dataType': 'integer',
       'defaultValue': 1,
       'orderNo': 4,
-      'visiable': 1
+      'visiable': true
     },
     {
       'id': '100201007',
@@ -115,7 +115,7 @@ export const styles = {
       'dataType': 'integer',
       'isArray': true,
       'orderNo': 5,
-      'visiable': 1
+      'visiable': true
     },
     {
       'id': '100201008',
@@ -128,7 +128,7 @@ export const styles = {
       'dataType': 'integer',
       'defaultValue': null,
       'orderNo': 6,
-      'visiable': 1
+      'visiable': true
     },
     {
       'id': '100201101',
@@ -144,7 +144,7 @@ export const styles = {
       'hiddenTitle': true,
       'display': 'column',
       'orderNo': 1,
-      'visiable': 1
+      'visiable': true
     },
     {
       'id': '100201102',
@@ -157,7 +157,7 @@ export const styles = {
       'defaultValue': '',
       'overwrite': true,
       'orderNo': 2,
-      'visiable': 1
+      'visiable': true
     },
     {
       'id': '100201103',
@@ -169,7 +169,7 @@ export const styles = {
       'dataType': 'float',
       'display': 'column',
       'orderNo': 3,
-      'visiable': 1
+      'visiable': true
     },
     {
       'id': '100201201',
@@ -181,7 +181,7 @@ export const styles = {
       'dataType': 'string',
       'defaultValue': "Microsoft YaHei",
       'orderNo': 1,
-      'visiable': 1
+      'visiable': true
     },
     {
       'id': '100201202',
@@ -193,7 +193,7 @@ export const styles = {
       'dataType': 'float',
       'defaultValue': "14",
       'orderNo': 2,
-      'visiable': 1
+      'visiable': true
     },
     {
       'id': '100201203',
@@ -205,7 +205,7 @@ export const styles = {
       'dataType': 'string',
       'defaultValue': "black",
       'orderNo': 3,
-      'visiable': 1
+      'visiable': true
     },
     {
       'id': '100201204',
@@ -217,7 +217,7 @@ export const styles = {
       'mapping': [],
       'dataType': 'string',
       'orderNo': 4,
-      'visiable': 1
+      'visiable': true
     },
     {
       'id': '100201205',
@@ -231,7 +231,7 @@ export const styles = {
       'display': 'column',
       'defaultValue': '0',
       'orderNo': 5,
-      'visiable': 1
+      'visiable': true
     },
     {
       'id': '100201206',
@@ -245,7 +245,7 @@ export const styles = {
       'display': 'column',
       'defaultValue': '0',
       'orderNo': 6,
-      'visiable': 1
+      'visiable': true
     },
     {
       'id': '100201207',
@@ -259,7 +259,7 @@ export const styles = {
       'display': 'column',
       'defaultValue': '0',
       'orderNo': 7,
-      'visiable': 1
+      'visiable': true
     },
     {
       'id': '100201301',
@@ -271,7 +271,7 @@ export const styles = {
       'dataType': 'integer',
       'defaultValue': [],
       'isArray': true,
-      'visiable': 0
+      'visiable': false
     },
     {
       'id': '100201302',
@@ -283,7 +283,7 @@ export const styles = {
       'dataType': 'integer',
       'defaultValue': null,
       'isArray': true,
-      'visiable': 0
+      'visiable': false
     },
     {
       'id': '100201303',
@@ -294,7 +294,7 @@ export const styles = {
       'controlType': 'text',
       'dataType': 'integer',
       'defaultValue': 2,
-      'visiable': 0
+      'visiable': false
     },
     {
       'id': '100201304',
@@ -305,7 +305,7 @@ export const styles = {
       'controlType': 'text',
       'dataType': 'integer',
       'defaultValue': 2,
-      'visiable': 0
+      'visiable': false
     },
     {
       'id': '100201305',
@@ -319,7 +319,7 @@ export const styles = {
       'defaultValue': 0.5,
       'display': 'column',
       'orderNo': 3,
-      'visiable': 0
+      'visiable': false
     },
     {
       'id': '100201306',
@@ -333,7 +333,7 @@ export const styles = {
       'defaultValue': 0.5,
       'display': 'column',
       'orderNo': 3,
-      'visiable': 0
+      'visiable': false
     },
     {
       'id': '100201307',
@@ -347,7 +347,7 @@ export const styles = {
       'defaultValue': 0.5,
       'display': 'column',
       'orderNo': 3,
-      'visiable': 0
+      'visiable': false
     },
     {
       'id': '100201308',
@@ -360,7 +360,7 @@ export const styles = {
       'defaultValue': true,
       'display': 'column',
       'orderNo': 3,
-      'visiable': 0
+      'visiable': false
     },
     {
       'id': '100201309',
@@ -373,10 +373,10 @@ export const styles = {
       'defaultValue': true,
       'display': 'column',
       'orderNo': 3,
-      'visiable': 0
+      'visiable': false
     }
   ],
-  'visiable': 0,
+  'visiable': false,
   'order': 1
 }
 
@@ -395,9 +395,9 @@ export const datas = {
       'group': '基础信息',
       'controlType': 'text',
       'dataType': 'string',
-      'readonly': 1,
+      'readonly': true,
       'orderNo': 1,
-      'visiable': 0
+      'visiable': false
     },
     {
       'id': '100201402',
@@ -408,7 +408,7 @@ export const datas = {
       'controlType': 'text',
       'dataType': 'string',
       'orderNo': 2,
-      'visiable': 1
+      'visiable': true
     },
     {
       'id': '100201403',
@@ -419,10 +419,10 @@ export const datas = {
       'controlType': 'text',
       'dataType': 'string',
       'orderNo': 3,
-      'visiable': 1
+      'visiable': true
     }
   ],
-  'visiable': 1,
+  'visiable': true,
   'order': 2
 }
 
@@ -435,6 +435,6 @@ export const events = {
   'name': '事件',
   'children': [
   ],
-  'visiable': 0,
+  'visiable': false,
   'order': 3
 }

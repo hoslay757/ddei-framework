@@ -39,9 +39,9 @@ class DDeiModelArrtibuteValue {
       //是否复写，复写后将不会读取后续优先级更低的数据
       let overwrite = false
       //当前状态下是否实例复写
-      if (model.attrs[attrCode]) {
+      if (model[attrCode]) {
         //实例的复写属性
-        let modelAttr = model.attrs[attrCode];
+        let modelAttr = model[attrCode];
         if (modelAttr) {
           //如果有状态，则增加状态层级
           let path = detailCode;

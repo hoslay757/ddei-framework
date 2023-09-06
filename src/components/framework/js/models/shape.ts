@@ -18,7 +18,6 @@ abstract class DDeiAbstractShape {
     this.zIndex = props.zIndex ? props.zIndex : null
     this.rotate = props.rotate ? props.rotate : null
     this.modelCode = props.modelCode ? props.modelCode : null
-    this.attrs = props.attrs ? props.attrs : {};
   }
   // ============================ 静态方法 ============================
 
@@ -332,8 +331,6 @@ abstract class DDeiAbstractShape {
   zIndex: number | null;
   // 旋转,0/null 不旋转，默认0
   rotate: number | null;
-  // 属性，只包含code和值
-  attrs: object | null;
   // ============================ 方法 ===============================
 
   /**

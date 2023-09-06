@@ -30,7 +30,6 @@ class DDeiBusCommandModelChangeSelect extends DDeiBusCommand {
    * @param evt 事件对象引用
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
-    console.log(typeof (data))
     if (Array.isArray(data)) {
       let models = data;
       let stage = bus.ddInstance.stage;
