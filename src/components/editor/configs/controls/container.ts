@@ -417,6 +417,7 @@ export const datas = {
       'desc': '控件的主体显示文本',
       'group': '基础信息',
       'controlType': 'text',
+      'type': [1, 2], //类别，1图形，2业务，3事件
       'dataType': 'string',
       'orderNo': 3,
       'visiable': true

@@ -37,7 +37,7 @@ class DDeiEditorUtil {
 
             if (!attrDefine.mapping) {
               //获取属性值
-              returnDatas.set(searchPath, { "overwrite": attrDefine.overwrite ? attrDefine.overwrite : false, "data": attrDefine.parser.getDefaultValue() });
+              returnDatas.set(searchPath, { "overwrite": attrDefine.overwrite ? attrDefine.overwrite : false, "data": attrDefine.getParser().getDefaultValue() });
             } else {
               noCodeMatchPaths.push(searchPath);
             }
@@ -52,7 +52,7 @@ class DDeiEditorUtil {
             let attrDefine = hasMappingAttrs[j];
             //找到mapping中对应的属性
             if (attrDefine.mapping && attrDefine.mapping.indexOf(searchPath) != -1) {
-              returnDatas.set(searchPath, { "overwrite": attrDefine.overwrite ? attrDefine.overwrite : false, "data": attrDefine.parser.getDefaultValue() });
+              returnDatas.set(searchPath, { "overwrite": attrDefine.overwrite ? attrDefine.overwrite : false, "data": attrDefine.getParser().getDefaultValue() });
               break;
             }
           }

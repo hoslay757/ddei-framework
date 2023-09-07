@@ -1,4 +1,5 @@
-import DDeiArrtibuteDefine from '@/components/framework/js/models/attribute/attribute-define';
+import DDeiEnumAttributeType from '@/components/framework/js/enums/attribute-type';
+import DDeiEditorArrtibute from '../js/attribute/editor-attribute';
 import { cloneDeep } from 'lodash'
 
 //已读取的配置组原始定义
@@ -23,13 +24,13 @@ const loadToolGroups = async function () {
       controlDefine.events = item.events;
       // 排序属性
       if (controlDefine?.styles?.children) {
-        parseAttrsToGroup(controlDefine, controlDefine.styles);
+        parseAttrsToGroup(controlDefine, controlDefine.styles, DDeiEnumAttributeType.GRAPHICS);
       }
       if (controlDefine?.datas?.children) {
-        parseAttrsToGroup(controlDefine, controlDefine.datas);
+        parseAttrsToGroup(controlDefine, controlDefine.datas, DDeiEnumAttributeType.BUSINESS);
       }
       if (controlDefine?.events?.children) {
-        parseAttrsToGroup(controlDefine, controlDefine.events);
+        parseAttrsToGroup(controlDefine, controlDefine.events, DDeiEnumAttributeType.EVENT);
       }
       controlOriginDefinies.set(controlDefine.id, controlDefine);
     });
@@ -81,13 +82,16 @@ const loadToolGroups = async function () {
   return cloneDeep(groupOriginDefinies);
 }
 //将属性转换为更深的groups中
-const parseAttrsToGroup = function (control, attrs) {
+const parseAttrsToGroup = function (control, attrs, type) {
   if (attrs?.children) {
     let newGroups = [];
     let lastGroupName = '';
     for (let i = 0; i < attrs.children.length; i++) {
       let curAttr = attrs.children[i];
-      let attrDefine = new DDeiArrtibuteDefine(curAttr);
+      if (!curAttr.type) {
+        curAttr.type = type;
+      }
+      let attrDefine = new DDeiEditorArrtibute(curAttr);
       let groupName = curAttr.group;
       if (lastGroupName != groupName) {
         lastGroupName = groupName;

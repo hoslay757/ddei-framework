@@ -32,6 +32,7 @@ export const styles = {
       'dataType': 'integer',
       'defaultValue': "80",
       'orderNo': 1,
+      'type': 1,
       'visiable': false
     },
     {
@@ -44,6 +45,7 @@ export const styles = {
       'dataSource': null,
       'dataType': 'integer',
       'defaultValue': "80",
+      'type': 1,
       'orderNo': 2,
       'visiable': false
     },
@@ -60,6 +62,7 @@ export const styles = {
       'hiddenTitle': true,
       'display': 'column',
       'mapping': [],
+      'type': 1,
       'orderNo': 1,
       'visiable': true
     },
@@ -73,6 +76,7 @@ export const styles = {
       'mapping': ["border.color"],
       'dataType': 'string',
       'defaultValue': 'black',
+      'type': 1,
       'orderNo': 2,
       'visiable': true
     },
@@ -87,6 +91,7 @@ export const styles = {
       'dataType': 'float',
       'defaultValue': null,
       'display': 'column',
+      'type': 1,
       'orderNo': 3,
       'visiable': true
     },
@@ -100,6 +105,7 @@ export const styles = {
       'mapping': ["border.width"],
       'dataType': 'integer',
       'defaultValue': 1,
+      'type': 1,
       'orderNo': 4,
       'visiable': true
     },
@@ -115,6 +121,7 @@ export const styles = {
       'dataType': 'integer',
       'defaultValue': null,
       'isArray': true,
+      'type': 1,
       'orderNo': 5,
       'visiable': true
     },
@@ -131,6 +138,7 @@ export const styles = {
       'defaultValue': '1',
       'hiddenTitle': true,
       'display': 'column',
+
       'orderNo': 1,
       'visiable': true
     },
@@ -354,6 +362,7 @@ export const datas = {
       'desc': '控件的主体显示文本',
       'group': '基础信息',
       'controlType': 'text',
+      'type': [1, 2], //类别，1图形，2业务，3事件
       'dataType': 'string',
       'orderNo': 3,
       'visiable': true
@@ -371,6 +380,18 @@ export const datas = {
 export const events = {
   'name': '事件',
   'children': [
+    {
+      'id': '100003801',
+      'code': 'test1',
+      'name': '文本',
+      'desc': '控件的主体显示文本',
+      'group': '基础信息',
+      'controlType': 'text',
+      'type': [1, 2], //类别，1图形，2业务，3事件
+      'dataType': 'string',
+      'orderNo': 3,
+      'visiable': true
+    }
   ],
   'visiable': false,
   'order': 3

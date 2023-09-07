@@ -392,6 +392,7 @@ export const datas = {
       'group': '基础信息',
       'controlType': 'text',
       'dataType': 'string',
+      'type': [1, 2], //类别，1图形，2业务，3事件
       'orderNo': 3,
       'visiable': true
     }
