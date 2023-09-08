@@ -1,3 +1,4 @@
+import DDeiConfig from '../../config.js';
 import DDei from '../../ddei.js';
 import DDeiUtil from '../../util.js'
 
@@ -37,9 +38,19 @@ class DDeiCanvasRender {
         //获取缩放比例
         let ratio = DDeiUtil.getPixelRatio(ctx);
         this.container.appendChild(this.realCanvas);
-        this.canvas = new OffscreenCanvas(this.container.clientWidth * ratio, this.container.clientHeight * ratio);
-
-        this.realCanvas.setAttribute("style", "display:block;zoom:" + (1 / ratio));
+        //检测是否支持离屏渲染特性
+        try {
+          if (OffscreenCanvas) {
+            this.isSupportOffScreen = true;
+            console.log("支持OffScreen")
+          }
+        } catch (e) { }
+        if (this.isSupportOffScreen) {
+          this.canvas = new OffscreenCanvas(this.container.clientWidth * ratio, this.container.clientHeight * ratio);
+        } else {
+          this.canvas = this.realCanvas
+        }
+        this.realCanvas.setAttribute("style", "-moz-transform-origin:left top;-moz-transform:scale(" + (1 / ratio) + ");display:block;zoom:" + (1 / ratio));
         this.realCanvas.setAttribute("width", this.container.clientWidth * ratio);
         this.realCanvas.setAttribute("height", this.container.clientHeight * ratio);
 
@@ -82,9 +93,12 @@ class DDeiCanvasRender {
   drawShape(): void {
     if (this.model.stage) {
       this.model.stage.render.drawShape();
-      const imageBitmap = this.canvas.transferToImageBitmap();
-      let ctx = this.realCanvas.getContext('2d');
-      ctx.drawImage(imageBitmap, 0, 0);
+      if (this.isSupportOffScreen) {
+        console.log("支持OffScreen")
+        const imageBitmap = this.canvas.transferToImageBitmap();
+        let ctx = this.realCanvas.getContext('2d');
+        ctx.drawImage(imageBitmap, 0, 0);
+      }
     } else {
       throw new Error("当前实例未加载舞台模型，无法渲染图形");
     }

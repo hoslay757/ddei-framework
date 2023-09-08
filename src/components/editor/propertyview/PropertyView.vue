@@ -15,7 +15,7 @@
       <div class="ddei_editor_pv_subgroup_view_tab_title">
         <div :class="currentTopGroup?.groups.length > 1 && subGroup.selected? 'ddei_editor_pv_subgroup_view_tab_title_item_selected' : 'ddei_editor_pv_subgroup_view_tab_title_item'" 
           v-for="subGroup in currentTopGroup?.groups" :title="subGroup.name" 
-          @click="changeSubGroup(subGroup)">{{ subGroup.name }}</div>
+          @mouseup="changeSubGroup(subGroup)">{{ subGroup.name }}</div>
       </div>
       <div class="ddei_editor_pv_subgroup_view_tab_panel" :style="{ height: 'calc(100vh - ' + (editor?.topHeight + editor?.bottomHeight + 40) + 'px' }">
         <div :class="{'ddei_editor_pv_subgroup_view_tab_panel_editors_column':attrDefine.display == 'column', 'ddei_editor_pv_subgroup_view_tab_panel_editors_row': attrDefine.display != 'column', 'empty_value': attrDefine.value ? false : true}"
@@ -50,6 +50,7 @@ import PVRangeEditor from './editors/PVRangeEditor.vue'
 import PVColorEditor from './editors/PVColorEditor.vue'
 import PVRadioEditor from './editors/PVRadioEditor.vue'
 import PVFontSizeEditor from './editors/PVFontSizeEditor.vue'
+import ICONS from "../js/icon"
 export default {
   name: "DDei-Editor-PropertyView",
   extends: null,
@@ -59,8 +60,8 @@ export default {
     return {
       //当前编辑器
       editor: null,
-      expandLeftImg: new URL('../icons/icon-expand-left.png', import.meta.url).href,
-      expandRightImg: new URL('../icons/icon-expand-right.png', import.meta.url).href,
+      expandLeftImg: ICONS['../icons/icon-expand-left.png'].default,
+      expandRightImg: ICONS['../icons/icon-expand-right.png'].default,
       //当前被选中控件的引用
       selectedModels:null,
       //属性定义的引用
@@ -140,10 +141,10 @@ export default {
         this.syncAttrsToGroup(firstControlDefine, firstControlDefine.styles);
         this.syncAttrsToGroup(firstControlDefine, firstControlDefine.datas);
         this.syncAttrsToGroup(firstControlDefine, firstControlDefine.events);
-        let layerTopGroup = {name:"图层",img: new URL('../icons/icon-layers.png', import.meta.url).href,groups:[{}]};
-        firstControlDefine.styles.img = new URL('../icons/icon-fill.png', import.meta.url).href;
-        firstControlDefine.datas.img = new URL('../icons/icon-data.png', import.meta.url).href;
-        firstControlDefine.events.img = new URL('../icons/icon-event.png', import.meta.url).href;
+        let layerTopGroup = {name:"图层",img: ICONS['../icons/icon-layers.png'].default,groups:[{}]};
+        firstControlDefine.styles.img = ICONS['../icons/icon-fill.png'].default;
+        firstControlDefine.datas.img = ICONS['../icons/icon-data.png'].default;
+        firstControlDefine.events.img = ICONS['../icons/icon-event.png'].default;
         let topGroups = [firstControlDefine?.styles, firstControlDefine?.datas, firstControlDefine?.events, layerTopGroup];
         //上一次编辑的名称
         let upName = this.currentTopGroup?.name;

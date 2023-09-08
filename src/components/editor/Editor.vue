@@ -64,6 +64,7 @@ export default {
   watch: {},
   created() { },
   mounted() {
+
     this.editor.bindEvent();
     let frameLeftElement = document.getElementById("ddei_editor_frame_left");
     let frameRightElement = document.getElementById("ddei_editor_frame_right");
@@ -90,6 +91,11 @@ export default {
         this.changeIndex = -1;
         this.editor.state = DDeiEditorState.DESIGNING;
         this.editor.ddInstance.state = DDeiEnumState.NONE;
+        e.stopImmediatePropagation();
+        e.stopPropagation();
+        e.cancelBubble = true;
+        e.preventDefault();
+        return false;
       } else if (this.editor.state == DDeiEditorState.DESIGNING) {
         //事件下发到绘图区
         this.editor.ddInstance.render.mouseUp(e);
@@ -178,7 +184,7 @@ export default {
           document.body.style.cursor = 'col-resize';
         }
         else if (frameRightElement.offsetTop <= e.clientY && frameRightElement.offsetTop + frameRightElement.offsetHeight >= e.clientY
-          && Math.abs(e.clientX - frameRightElement.offsetLeft) <= 5) {
+          && e.clientX - frameRightElement.offsetLeft >= -5 && e.clientX - frameRightElement.offsetLeft <= -1) {
           if (frameRightElement.offsetWidth > 38) {
             document.body.style.cursor = 'col-resize';
           }
@@ -215,7 +221,7 @@ export default {
         this.editor.state = DDeiEditorState.FRAME_CHANGING;
         this.editor.ddInstance.state = DDeiEnumState.IN_ACTIVITY;
       } else if (frameRightElement.offsetTop <= e.clientY && frameRightElement.offsetTop + frameRightElement.offsetHeight >= e.clientY
-        && Math.abs(e.clientX - frameRightElement.offsetLeft) <= 5) {
+        && e.clientX - frameRightElement.offsetLeft >= -5 && e.clientX - frameRightElement.offsetLeft <= -1) {
         this.changeIndex = 2
         this.dragObj = { x: e.clientX, y: e.clientY, originX: e.offsetX, originY: e.offsetY }
         this.editor.state = DDeiEditorState.FRAME_CHANGING;

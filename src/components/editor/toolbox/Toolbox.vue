@@ -40,6 +40,7 @@ import { cloneDeep, trim } from 'lodash';
 import DDeiAbstractShape from "@/components/framework/js/models/shape";
 import DDeiEditorUtil from "../js/util/editor-util"
 import DDeiEnumControlState from '../../framework/js/enums/control-state';
+import ICONS from "../js/icon"
 
 export default {
   name: "DDei-Editor-Toolbox",
@@ -61,7 +62,7 @@ export default {
       //创建时的图片
       creatingImg: new Image(),
       //展开的图片
-      expandLeftImg: new URL('../icons/icon-expand-left.png', import.meta.url).href
+      expandLeftImg: ICONS['../icons/icon-expand-left.png'].default
     };
   },
   computed: {
@@ -97,7 +98,7 @@ export default {
         //处理control的图标
         item.controls.forEach(control => {
           if (control.icon) {
-            control.icon = new URL('../icons/' + control.icon, import.meta.url).href;
+            control.icon = ICONS['../icons/' + control.icon].default;
           }
         });
       });
