@@ -78,7 +78,7 @@ export default {
     for (const path in control_ctx) {
       control_ctx[path]().then(module => {
         let cls = module.default;
-        this.controlCls[cls.name] = cls
+        this.controlCls[cls.ClsName] = cls
       });
     }
     //获取编辑器

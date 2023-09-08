@@ -1,0 +1,145 @@
+<template>
+   <div :class="{ 'ddei_pv_editor_fontsize': true, 'ddei_pv_editor_fontsize_disabled': attrDefine.readonly }">
+      <input type="range" :step="attrDefine.step" class="range" :min="attrDefine.min" :max="attrDefine.max" v-model="attrDefine.value" :disabled="attrDefine.readonly"/>
+      <div class="textinput">
+        <input type="number"  :step="attrDefine.step" :min="attrDefine.min" :max="attrDefine.max" v-model="attrDefine.value" :disabled="attrDefine.readonly" :placeholder="attrDefine.defaultValue"/>
+       <div style="float:left">px</div>
+      </div>
+    </div>
+</template>
+
+<script lang="ts">
+import { debounce } from 'lodash';
+import DDeiEditorArrtibute from '../../js/attribute/editor-attribute';
+import DDeiEditor from '../../js/editor';
+import DDeiEnumBusCommandType from '../../../framework/js/enums/bus-command-type';
+import DDeiAbstractArrtibuteParser from '../../../framework/js/models/attribute/parser/attribute-parser';
+
+export default {
+  name: "DDei-Editor-PV-FontSize-Editor",
+  extends: null,
+  mixins: [],
+  props: {
+    //当前属性定义
+    attrDefine: {
+      type:DDeiEditorArrtibute,
+      default:null
+    },
+  },
+  data() {
+    return {
+      //当前编辑器
+      editor:null,
+    };
+  },
+  computed: {},
+  watch: {
+   
+  },
+  created() {
+    // 监听obj对象中prop属性的变化
+    this.$watch('attrDefine.value', function (newVal, oldVal) {
+      this.valueChange();
+    });
+  },
+  mounted() {
+    //获取编辑器
+    this.editor = DDeiEditor.ACTIVE_INSTANCE;
+  },
+  methods: {
+    valueChange(evt) {
+      //获取属性路径
+      let paths = [];
+      this.attrDefine?.mapping?.forEach(element => {
+        paths.push(element);
+      });
+      if(!(paths?.length > 0)){
+        paths = [this.attrDefine.code]
+      }
+      
+      //通过解析器获取有效值
+      let parser: DDeiAbstractArrtibuteParser = this.attrDefine.getParser();
+      //属性值
+      let value = parser.parseValue(this.attrDefine.value);
+      this.editor.ddInstance.stage.selectedModels.forEach(element => {
+        //推送信息进入总线
+        this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: value }, evt,true);
+      });
+      this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape,null, evt);
+      this.editor.bus.executeAll();
+    }
+  }
+};
+</script>
+
+<style scoped>
+
+/**以下为range属性编辑器 */
+.ddei_pv_editor_fontsize{
+  border-radius: 4px;
+  height: 24px;
+  margin-right:10px;
+  display:flex;
+}
+
+.ddei_pv_editor_fontsize .range{
+  height:6px;
+  width:60%;
+  border: transparent;
+  outline: none;
+  background: transparent;
+  flex:1;
+  margin:auto;
+}
+
+.ddei_pv_editor_fontsize_disabled .range{
+  height:6px;
+  width:60%;
+  border: transparent;
+  outline: none;
+  background-color:rgb(210,210,210) !important;
+  flex:1;
+  margin:auto;
+}
+
+.ddei_pv_editor_fontsize .textinput{
+  flex:0 0 80px;
+  margin-left:10px;
+  padding-left:5px;
+  padding-right:5px;
+  border: 0.5px solid rgb(210,210,210);
+  border-radius: 4px;
+}
+
+.ddei_pv_editor_fontsize .textinput:hover{
+  border: 1px solid #017fff;
+  box-sizing: border-box;
+}
+
+.ddei_pv_editor_fontsize_disabled .textinput{
+  flex:0 0 80px;
+  margin-left:10px;
+  padding-left:5px;
+  padding-right:5px;
+  background-color: rgb(210,210,210);
+  border: 0.5px solid rgb(210,210,210);
+  border-radius: 4px;
+}
+
+.ddei_pv_editor_fontsize_disabled .textinput:hover{
+  border: 1px solid grey !important;
+  box-sizing: border-box;
+}
+
+
+.ddei_pv_editor_fontsize .textinput input{
+  width:50px;
+  border: transparent;
+  outline: none;
+  font-size: 13px;
+  margin: 0px 2%;
+  background: transparent;
+  float:left;
+  margin-top:3px;
+}
+</style>

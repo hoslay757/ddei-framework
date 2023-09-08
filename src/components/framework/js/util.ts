@@ -82,6 +82,42 @@ class DDeiUtil {
   }
 
   /**
+   * 根据配置定义，设置属性值
+   * @param model 模型
+   * @param paths 属性路径,支持传入多个
+   * @param value值
+   * @return 由构成的属性的实际路径和配置中对应的值组成的Map
+   */
+  static setAttrValueByPath(model: object, paths: string[] | string, value: any): void {
+    if (model && paths) {
+      let attrPaths = null;
+      if (typeof (paths) == 'string') {
+        attrPaths = paths.split(",");
+      } else {
+        attrPaths = paths;
+      }
+
+      for (let i = 0; i < attrPaths.length; i++) {
+        let attCode = attrPaths[i];
+        let attrCodePaths = attCode.split(".");
+        let currentObj = model;
+        for (let j = 0; j < attrCodePaths.length; j++) {
+          //最后一个元素，直接设置值，无需创建中间json
+          let code = attrCodePaths[j];
+          if (j == attrCodePaths.length - 1) {
+            currentObj[code] = value;
+          } else {
+            if (!currentObj[code]) {
+              currentObj[code] = {};
+            }
+            currentObj = currentObj[code];
+          }
+        }
+      }
+    }
+  }
+
+  /**
    * 根据Path获取JSON的数据
    * 如果data路径中存在override，则强制覆盖不从上级获取
    */

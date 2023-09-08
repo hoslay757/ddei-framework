@@ -7,22 +7,25 @@ class DDeiArrtibuteParserBool extends DDeiAbstractArrtibuteParser {
   // ============================ 构造函数 ===============================
 
   // ============================ 属性 ===============================
-  // ============================ 方法 ===============================
 
   /**
-   * 获取缺省值
-   * 根据dataType返回不同的结果
-   */
-  getValue(): boolean {
-    return false;
-  }
-
-  /**
-   * 设置缺省值
-   * 根据dataType返回不同的结果
-   */
-  setValue(value: boolean): void {
-
+    * 转换一个外部值到正确的值
+    * 根据dataType返回不同的结果
+    */
+  parseValue(value: any): any {
+    if (value) {
+      if (this.define.isArray) {
+        if (Array.isArray(value)) {
+          return value;
+        }
+      } else if (value == true || value.toLocaleLowerCase() == "true") {
+        return true;
+      } else {
+        return false
+      }
+    } else {
+      return null
+    }
   }
 
   /**

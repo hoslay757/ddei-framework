@@ -104,7 +104,7 @@ class DDeiLayerCanvasRender {
     else if (bgInfo.type == 1) {
       ctx.fillStyle = bgInfo.bgcolor
       //透明度
-      if (bgInfo.opacity) {
+      if (bgInfo.opacity != null && bgInfo.opacity != undefined) {
         ctx.globalAlpha = bgInfo.opacity
       }
       ctx.fillRect(0, 0, canvas.width, canvas.height)
@@ -117,7 +117,7 @@ class DDeiLayerCanvasRender {
     else if (bgInfo.type == 3) {
       ctx.fillStyle = bgInfo.bgcolor
       //透明度
-      if (bgInfo.opacity) {
+      if (bgInfo.opacity != null && bgInfo.opacity != undefined) {
         ctx.globalAlpha = bgInfo.opacity
       }
       ctx.fillRect(0, 0, canvas.width, canvas.height)

@@ -1,5 +1,5 @@
 <template>
-  <div id="ddei_editor_propertyview" class="ddei_editor_propertyview">
+  <div id="ddei_editor_propertyview" class="ddei_editor_propertyview" @mousedown="changeEditorFocus">
     <div class="ddei_editor_pv_group_view">
       <div class="ddei_editor_pv_group_view_expandbox" @click="hidOrShowPV" >
         <img class="ddei_editor_pv_group_view_expandbox_img" :src="editor?.rightWidth > 38 ? expandRightImg : expandLeftImg" />
@@ -18,30 +18,18 @@
           @click="changeSubGroup(subGroup)">{{ subGroup.name }}</div>
       </div>
       <div class="ddei_editor_pv_subgroup_view_tab_panel" :style="{ height: 'calc(100vh - ' + (editor?.topHeight + editor?.bottomHeight + 40) + 'px' }">
-        <div :class="attrDefine.display == 'column' ? 'ddei_editor_pv_subgroup_view_tab_panel_editors_column' : 'ddei_editor_pv_subgroup_view_tab_panel_editors_row'"
-         v-for="attrDefine in currentSubGroup?.children" :title="attrDefine.desc">
+        <div :class="{'ddei_editor_pv_subgroup_view_tab_panel_editors_column':attrDefine.display == 'column', 'ddei_editor_pv_subgroup_view_tab_panel_editors_row': attrDefine.display != 'column', 'empty_value': attrDefine.value ? false : true}"
+         v-for="attrDefine in currentSubGroup?.children" :title="attrDefine.desc" >
           <div class="title" v-if="!attrDefine.hiddenTitle">{{ attrDefine.name }}<span v-if="attrDefine.notNull">*</span>：</div>
           <div class="editor">
-            <div v-if="attrDefine.controlType == 'text'"  :class="{ 'ddei_pv_editor_text': true, 'ddei_pv_editor_text_disabled': attrDefine.readonly }">
-                <input type="input" v-model="attrDefine.value" :disabled="attrDefine.readonly" :placeholder="attrDefine.defaultValue"/>
-            </div>
-            <div v-if="attrDefine.controlType == 'range'"  :class="{ 'ddei_pv_editor_range': true, 'ddei_pv_editor_range_disabled': attrDefine.readonly }">
-              <input type="range" :step="attrDefine.step" class="range" :min="attrDefine.min" :max="attrDefine.max" v-model="attrDefine.value" :disabled="attrDefine.readonly"/>
-              <div class="textinput">
-                <input type="number"  :step="attrDefine.step" :min="attrDefine.min" :max="attrDefine.max" v-model="attrDefine.value" :disabled="attrDefine.readonly" :placeholder="attrDefine.defaultValue"/>
-              </div>
-            </div>
-            <div v-if="attrDefine.controlType == 'color'"  :class="{ 'ddei_pv_editor_color': true, 'ddei_pv_editor_color_disabled': attrDefine.readonly }">
-              <input type="color" :step="attrDefine.step" class="color" v-model="attrDefine.value" :disabled="attrDefine.readonly"/>
-              <div class="textinput">
-                <input type="text" v-model="attrDefine.value" :disabled="attrDefine.readonly" :placeholder="attrDefine.defaultValue"/>
-              </div>
-            </div>
-            <div v-if="attrDefine.controlType == 'radio'"  :class="{ 'ddei_pv_editor_radio': true, 'ddei_pv_editor_radio_disabled': attrDefine.readonly }">
-              <div class="itembox" v-for="item in getDataSource(attrDefine)" @click="checkRadioValue($event)">
-                <input type="radio" :disabled="attrDefine.readonly" :name="attrDefine.id" :value="item.value" :checked="item.value == attrDefine.value"/><div>{{ item.text }}</div>
-              </div>
-            </div>
+            <PVTextEditor :attrDefine="attrDefine" v-if="attrDefine.controlType == 'text'" ></PVTextEditor> 
+            <PVRangeEditor :attrDefine="attrDefine" v-if="attrDefine.controlType == 'range'" ></PVRangeEditor> 
+            <PVColorEditor :attrDefine="attrDefine" v-if="attrDefine.controlType == 'color'" ></PVColorEditor> 
+            <PVRadioEditor :attrDefine="attrDefine" v-if="attrDefine.controlType == 'radio'" ></PVRadioEditor> 
+            <PVFontSizeEditor :attrDefine="attrDefine" v-if="attrDefine.controlType == 'font-size'" ></PVFontSizeEditor> 
+           
+            
+            
           </div>
         </div>
       </div>
@@ -56,6 +44,12 @@ import { cloneDeep } from 'lodash'
 import DDeiUtil from '../../framework/js/util';
 import DDeiAbstractShape from '../../framework/js/models/shape';
 import DDeiEditorArrtibute from '../js/attribute/editor-attribute'
+import DDeiEditorState from '../js/enums/editor-state';
+import PVTextEditor from './editors/PVTextEditor.vue'
+import PVRangeEditor from './editors/PVRangeEditor.vue'
+import PVColorEditor from './editors/PVColorEditor.vue'
+import PVRadioEditor from './editors/PVRadioEditor.vue'
+import PVFontSizeEditor from './editors/PVFontSizeEditor.vue'
 export default {
   name: "DDei-Editor-PropertyView",
   extends: null,
@@ -75,24 +69,38 @@ export default {
       topGroups:null,
       currentTopGroup: null,
       currentSubGroup: null,
-      //当前存在的解析后的数据源
-      cacheDataSource:null
     };
   },
   computed: {
     
   },
   watch: {},
+  components:{
+    PVTextEditor,
+    PVRangeEditor,
+    PVColorEditor,
+    PVRadioEditor,
+    PVFontSizeEditor
+  },
   created() {
     // 监听obj对象中prop属性的变化
     this.$watch('editor.ddInstance.stage.selectedModels', function (newVal, oldVal) {
       this.selectedModels = newVal;
+      let models: DDeiAbstractShape[] = null;
+      let firstModel: DDeiAbstractShape = null;
       if(this.selectedModels?.size > 0){
         //获取当前所有组件的公共属性定义
-        let models: DDeiAbstractShape[] = Array.from(this.selectedModels.values());
-        //获取第一个组件及其定义
-        let firstModel: DDeiAbstractShape = cloneDeep(models[0]);
-        let firstControlDefine = cloneDeep(controlOriginDefinies.get(firstModel.modelCode));
+        models = Array.from(this.selectedModels.values());
+        firstModel = cloneDeep(models[0]);
+      }else{
+        //获取当前所有组件的公共属性定义
+        models = [this.editor.ddInstance.stage];
+        firstModel = models[0];
+        this.selectedModels = models;
+      }
+      let firstControlDefine = cloneDeep(controlOriginDefinies.get(firstModel?.modelCode));
+      //获取第一个组件及其定义
+      if(firstControlDefine){
         //如果同时有多个组件被选中，则以第一个组件为基准，对属性定义进行过滤，属性值相同则采用相同值，属性值不同采用空值
         let removeKeys = [];
         for(let i = 0;i < models.length;i++){
@@ -158,7 +166,7 @@ export default {
         if(!currentTopGroup){
           if(!firstControlDefine?.styles?.empty){
             firstControlDefine.styles.selected = true;
-           currentTopGroup = firstControlDefine.styles
+            currentTopGroup = firstControlDefine.styles
           }else if (!firstControlDefine?.datas?.empty) {
             firstControlDefine.datas.selected = true;
             currentTopGroup = firstControlDefine.datas
@@ -173,6 +181,32 @@ export default {
         this.currentTopGroup = currentTopGroup;
         this.controlDefine = firstControlDefine;
         this.topGroups = topGroups;
+        //上一次编辑的名称
+        let upSubGroupName = this.currentSubGroup?.name;
+        let currentSubGroup = null;
+        if(upSubGroupName){
+          for(let sgi = 0;sgi < currentTopGroup?.groups.length;sgi++){
+            if(!currentTopGroup?.groups[sgi]?.empty && upSubGroupName == currentTopGroup?.groups[sgi]?.name){
+              currentSubGroup = currentTopGroup?.groups[sgi];
+              break;
+            }
+          }
+        }
+        if(!currentSubGroup){
+          for (let sgi = 0; sgi < currentTopGroup?.groups.length; sgi++) {
+            if (!currentTopGroup?.groups[sgi]?.empty) {
+              currentSubGroup = currentTopGroup?.groups[sgi];
+              break;
+            }
+          }
+        }
+        this.changeSubGroup(currentSubGroup);
+      }else{
+        //清除信息
+          this.controlDefine = null;
+          this.topGroups = null;
+          this.currentTopGroup = null;
+          this.currentSubGroup = null;
       }
     });
    },
@@ -183,28 +217,6 @@ export default {
   methods: {
 
     /**
-     * 选中radio
-     */
-    checkRadioValue(evt:Event){
-      let targetElement = evt.target;
-      if(targetElement.tagName == 'INPUT'){
-        targetElement.checked = true;
-      }else if(targetElement.tagName == "DIV" && targetElement.className == 'itembox'){
-        targetElement.children[0].checked = true;
-      } else if (targetElement.tagName == "DIV") {
-        targetElement.parentElement.children[0].checked = true;
-      }
-    },
-    /**
-     * 获取数据源数据
-     */
-    getDataSource(attrDefine) {
-      if(attrDefine.dataSource){
-        return attrDefine.dataSource
-      }
-      return [];
-    },
-    /**
      * 展开顶级属性，收起其他顶级层级
      */
     changeTopGroup(pData) {
@@ -214,9 +226,28 @@ export default {
             group.selected = false;
           }
         });
-
         pData.selected = true;
         this.currentTopGroup = pData;
+        //上一次编辑的名称
+        let upSubGroupName = this.currentSubGroup?.name;
+        let currentSubGroup = null;
+        if (upSubGroupName) {
+          for (let sgi = 0; sgi < pData?.groups.length; sgi++) {
+            if (!pData?.groups[sgi]?.empty && upSubGroupName == pData?.groups[sgi]?.name) {
+              currentSubGroup = pData?.groups[sgi];
+              break;
+            }
+          }
+        }
+        if (!currentSubGroup) {
+          for (let sgi = 0; sgi < pData?.groups.length; sgi++) {
+            if (!pData?.groups[sgi]?.empty) {
+              currentSubGroup = pData?.groups[sgi];
+              break;
+            }
+          }
+        }
+        this.changeSubGroup(currentSubGroup);
       }
     },
 
@@ -234,6 +265,10 @@ export default {
         pData.selected = true;
         this.currentSubGroup = pData;
       }
+      setTimeout(() => {
+        this.$forceUpdate();
+      }, 10);
+
     },
 
     /**
@@ -248,7 +283,6 @@ export default {
         this.deleteGroupAttrsByKey(firstControlDefine.styles, item);
         this.deleteGroupAttrsByKey(firstControlDefine.datas, item);
         this.deleteGroupAttrsByKey(firstControlDefine.events, item);
-        
       })
       
     },
@@ -330,7 +364,14 @@ export default {
       this.editor.ddInstance.render.setSize(this.editor.middleWidth, this.editor.middleHeight, 0, 0)
       
       this.editor.ddInstance.render.drawShape()
-    }
+    },
+
+     /**
+     * 焦点进入当前区域
+     */
+    changeEditorFocus() {
+      this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
+    },
   }
 };
 </script>
@@ -343,6 +384,10 @@ export default {
   border: 1pt solid rgb(235, 235, 239);
   display: flex;
   user-select: none;
+}
+
+.ddei_editor_propertyview .empty_value{
+  filter:opacity(50%);
 }
 
 .ddei_editor_pv_group_view {
@@ -545,229 +590,6 @@ export default {
 
 .ddei_editor_pv_subgroup_view_tab_panel span{
   color:red;
-}
-
-/**以下为text属性编辑器 */
-.ddei_pv_editor_text{
-  border-radius: 4px;
-  border: 0.5px solid rgb(210,210,210);
-  height: 24px;
-  margin-right:10px;
-  padding:0 5px;
-}
-.ddei_pv_editor_text_disabled{
-  background-color:rgb(210,210,210) !important;
-}
-.ddei_pv_editor_text_disabled:hover{
-  border: 1px solid grey !important;
-}
-
-.ddei_pv_editor_text:hover {
-  border: 1px solid #017fff;
-  box-sizing: border-box;
-}
-
-.ddei_pv_editor_text input{
-  height:20px;
-  width:100%;
-  border: transparent;
-  outline: none;
-  font-size: 13px;
-  margin: 1px 0;
-  background: transparent;
-}
-
-
-
-/**以下为range属性编辑器 */
-.ddei_pv_editor_range{
-  border-radius: 4px;
-  height: 24px;
-  margin-right:10px;
-  display:flex;
-}
-
-.ddei_pv_editor_range .range{
-  height:6px;
-  width:60%;
-  border: transparent;
-  outline: none;
-  background: transparent;
-  flex:1;
-  margin:auto;
-}
-
-.ddei_pv_editor_range_disabled .range{
-  height:6px;
-  width:60%;
-  border: transparent;
-  outline: none;
-  background-color:rgb(210,210,210) !important;
-  flex:1;
-  margin:auto;
-}
-
-.ddei_pv_editor_range .textinput{
-  flex:0 0 70px;
-  margin-left:10px;
-  padding-left:5px;
-  padding-right:5px;
-  border: 0.5px solid rgb(210,210,210);
-  border-radius: 4px;
-}
-
-.ddei_pv_editor_range .textinput:hover{
-  border: 1px solid #017fff;
-  box-sizing: border-box;
-}
-
-.ddei_pv_editor_range_disabled .textinput{
-  flex:0 0 70px;
-  margin-left:10px;
-  padding-left:5px;
-  padding-right:5px;
-  background-color: rgb(210,210,210);
-  border: 0.5px solid rgb(210,210,210);
-  border-radius: 4px;
-}
-
-.ddei_pv_editor_range_disabled .textinput:hover{
-  border: 1px solid grey !important;
-  box-sizing: border-box;
-}
-
-
-.ddei_pv_editor_range .textinput input{
-  width:100%;
-  border: transparent;
-  outline: none;
-  font-size: 13px;
-  margin: 0px 2%;
-  background: transparent;
-  
-}
-
-
-/**以下为color属性编辑器 */
-.ddei_pv_editor_color{
-  border-radius: 4px;
-  height: 24px;
-  margin-right:10px;
-  display:flex;
-}
-
-.ddei_pv_editor_color .color{
-  height:24px;
-  width:60%;
-  border: transparent;
-  outline: none;
-  background: transparent;
-  flex:1;
-  margin:auto;
-}
-
-
-.ddei_pv_editor_color_disabled .color{
-  height:24px;
-  width:60%;
-  border: transparent;
-  outline: none;
-  background-color:rgb(210,210,210) !important;
-  flex:1;
-  margin:auto;
-}
-
-.ddei_pv_editor_color .textinput{
-  flex:0 0 70px;
-  margin-left:10px;
-  padding-left:5px;
-  padding-right:5px;
-  border: 0.5px solid rgb(210,210,210);
-  border-radius: 4px;
-}
-
-.ddei_pv_editor_color .textinput:hover{
-  border: 1px solid #017fff;
-  box-sizing: border-box;
-}
-
-.ddei_pv_editor_color_disabled .textinput{
-  flex:0 0 70px;
-  margin-left:10px;
-  padding-left:5px;
-  padding-right:5px;
-  background-color: rgb(210,210,210);
-  border: 0.5px solid rgb(210,210,210);
-  border-radius: 4px;
-}
-
-.ddei_pv_editor_color_disabled .textinput:hover{
-  border: 1px solid grey !important;
-  box-sizing: border-box;
-}
-
-
-.ddei_pv_editor_color .textinput input{
-  width:100%;
-  border: transparent;
-  outline: none;
-  font-size: 13px;
-  margin: 0px 2%;
-  background: transparent;
-  
-}
-
-
-
-/**以下为radio属性编辑器 */
-.ddei_pv_editor_radio{
-  border-radius: 4px;
-  margin-right:10px;
-}
-.ddei_pv_editor_radio_disabled{
-  background-color:rgb(210,210,210) !important;
-}
-
-.ddei_pv_editor_radio .itembox{
-  height:24px;
-  outline: none;
-  font-size: 13px;
-  margin: 0;
-  padding-top:2px;
-  background: transparent;
-}
-
-
-
-
-
-.ddei_pv_editor_radio .itembox input{
-  float:left;
-  width:14px;
-  height:14px;
-  margin-top:3px;
-}
-
-.ddei_pv_editor_radio .itembox div{
-  float:left;
-  margin-left:15px;
-}
-
-
-.ddei_editor_pv_subgroup_view_tab_panel_editors_row .itembox{
-  float:left;
-  margin-right:10px;
-}
-
-.ddei_editor_pv_subgroup_view_tab_panel_editors_column .itembox{
-  margin-top:10px;
-}
-
-
-
-.ddei_editor_pv_subgroup_view_tab_panel_editors_row .itembox div{
-  float:left;
-  margin-left:5px;
 }
 
 

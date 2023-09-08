@@ -18,7 +18,8 @@ enum DDeiEnumBusCommandType {
   ChangeCursor = "change-cursor",
   ModelChangeRotate = "model-change-rotate",
   ResetSelectorState = "reset-selector-state",
-  ModelPush = "model-push"
+  ModelPush = "model-push",
+  ModelChangeValue = "model-change-value",
 }
 
 export default DDeiEnumBusCommandType

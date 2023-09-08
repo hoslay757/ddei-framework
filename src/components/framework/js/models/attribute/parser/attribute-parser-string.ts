@@ -11,21 +11,25 @@ class DDeiArrtibuteParserString extends DDeiAbstractArrtibuteParser {
 
   // ============================ 方法 ===============================
 
-  /**
-   * 获取缺省值
-   * 根据dataType返回不同的结果
-   */
-  getValue(): string | null {
-    return "";
-  }
 
   /**
-  * 设置缺省值
+  * 转换一个外部值到正确的值
   * 根据dataType返回不同的结果
   */
-  setValue(value: string): void {
-
+  parseValue(value: any): any {
+    if (value) {
+      if (this.define.isArray) {
+        if (Array.isArray(value)) {
+          return value;
+        }
+      } else {
+        return value.toString();
+      }
+    } else {
+      return null;
+    }
   }
+
 
   /**
    * 获取缺省值

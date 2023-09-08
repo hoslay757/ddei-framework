@@ -58,7 +58,7 @@ class DDeiModelArrtibuteValue {
             // console.warn("获取属性值【" + model.id + "(" + model.state + "):" + attrPath + "】失败,PATH:" + attrPath, e);
           }
           //如果开启了default则尝试获取default的值
-          if (!overwrite && !returnValue && useDefault && stateCode.length > 0) {
+          if (!overwrite && (returnValue == null || returnValue == undefined) && useDefault && stateCode.length > 0) {
             path = detailCode;
             try {
               let returnJSON = DDeiUtil.getDataByPath(modelAttr, path);
@@ -74,7 +74,7 @@ class DDeiModelArrtibuteValue {
       }
 
       //控件默认值获取判断
-      if (!overwrite && !returnValue) {
+      if (!overwrite && (returnValue == null || returnValue == undefined)) {
         //基于模型的modelCode，反向寻找所指向的定义中的属性
         if (model.modelType != 'DDeiSelector' && DDeiUtil.getAttrValueByConfig) {
           if (stateCode != "") {
@@ -90,7 +90,7 @@ class DDeiModelArrtibuteValue {
               returnValue = returnJSON.data;
             }
           }
-          if (!returnValue) {
+          if ((returnValue == null || returnValue == undefined)) {
             let configAtrs = DDeiUtil.getAttrValueByConfig(model, attrPath);
             if (configAtrs && configAtrs.size > 0) {
               let returnJSON = Array.from(configAtrs.values())[0];
@@ -104,7 +104,7 @@ class DDeiModelArrtibuteValue {
       }
 
       //系统默认值获取判断
-      if (!overwrite && !returnValue) {
+      if (!overwrite && (returnValue == null || returnValue == undefined)) {
         //基于模型的modelType，反向寻找所指向的系统属性
         let sysData = DDeiConfig.getSysDefaultData(model);
         if (sysData && sysData[attrCode]) {
@@ -123,7 +123,7 @@ class DDeiModelArrtibuteValue {
             // console.warn("获取系统属性值【" + model.id + "(" + model.state + "):" + attrPath + "】失败,PATH:" + attrPath, e);
           }
           //如果开启了default则尝试获取default的值
-          if (!overwrite && !returnValue && useDefault && stateCode.length > 0) {
+          if (!overwrite && (returnValue == null || returnValue == undefined) && useDefault && stateCode.length > 0) {
             path = detailCode;
             try {
               let returnJSON = DDeiUtil.getDataByPath(sysData[attrCode], path);

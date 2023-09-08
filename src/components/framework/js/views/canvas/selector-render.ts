@@ -91,7 +91,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         ctx.beginPath();
 
         //透明度
-        if (opacity) {
+        if (opacity != null && opacity != undefined) {
           ctx.globalAlpha = opacity
         }
         //颜色

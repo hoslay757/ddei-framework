@@ -28,6 +28,9 @@ class DDeiSelector extends DDeiRectangle {
     let shape = new DDeiSelector(json);
     return shape;
   }
+
+  //类名，用于反射和动态加载
+  static ClsName: string = "DDeiSelector";
   // ============================ 属性 ===============================
   // 本模型的唯一名称
   modelType: string = 'DDeiSelector';

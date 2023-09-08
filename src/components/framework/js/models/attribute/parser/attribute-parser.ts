@@ -18,17 +18,12 @@ abstract class DDeiAbstractArrtibuteParser {
 
   // ============================ 方法 ===============================
 
-  /**
-   * 获取缺省值
-   * 根据dataType返回不同的结果
-   */
-  abstract getValue(): any;
 
   /**
-  * 设置缺省值
+  * 转换一个外部值到正确的值
   * 根据dataType返回不同的结果
   */
-  abstract setValue(value: any): void;
+  abstract parseValue(value: any): any;
 
   /**
    * 获取缺省值

@@ -10,19 +10,25 @@ class DDeiArrtibuteParserNumber extends DDeiAbstractArrtibuteParser {
   // ============================ 方法 ===============================
 
   /**
-   * 获取缺省值
-   * 根据dataType返回不同的结果
-   */
-  getValue(): number | null {
-    return null;
-  }
-
-  /**
-   * 设置缺省值
-   * 根据dataType返回不同的结果
-   */
-  setValue(value: number): void {
-
+  * 转换一个外部值到正确的值
+  * 根据dataType返回不同的结果
+  */
+  parseValue(value: any): any {
+    if (value != null && value != undefined) {
+      if (this.define.isArray) {
+        if (Array.isArray(value)) {
+          return value;
+        }
+      } else {
+        try {
+          return parseFloat(value);
+        } catch (e) {
+          return null;
+        }
+      }
+    } else {
+      return null;
+    }
   }
 
   /**

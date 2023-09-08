@@ -115,7 +115,7 @@ class DDeiDiamondCanvasRender extends DDeiRectangleCanvasRender {
           ctx.setLineDash(dash);
         }
         //透明度
-        if (opacity) {
+        if (opacity != null && opacity != undefined) {
           ctx.globalAlpha = opacity
         }
         //颜色

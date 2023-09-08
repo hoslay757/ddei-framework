@@ -4,6 +4,8 @@ class DDeiEditorUtil {
 
   // ============================ 静态方法 ============================
 
+
+
   /**
    * 从配置定义中获取属性值，优先从code中获取，其次从mapping获取
    * @param configModel 配置模型，如果包含了attrDefineMap等数据，则直接获取数据,如果只包含id则通过id取原始数据

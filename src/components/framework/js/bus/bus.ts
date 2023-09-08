@@ -37,9 +37,9 @@ class DDeiBus {
   * @param data 承载数据
   * @param evt 事件
   */
-  insert(actionType: string, data: object, evt: Event, index: number = 0): void {
+  insert(actionType: string, data: object, evt: Event, index: number = 0, parallel: boolean = false): void {
     if (actionType) {
-      this.queue.splice(index, 0, { type: actionType, data: data, evt: evt });
+      this.queue.splice(index, 0, { type: actionType, data: data, evt: evt, parallel: parallel });
     }
   }
 
@@ -49,9 +49,9 @@ class DDeiBus {
    * @param data 承载数据
    * @param evt 事件
    */
-  push(actionType: string, data: object, evt: Event): void {
+  push(actionType: string, data: object, evt: Event, parallel: boolean = false): void {
     if (actionType) {
-      this.queue.push({ type: actionType, data: data, evt: evt });
+      this.queue.push({ type: actionType, data: data, evt: evt, parallel: parallel });
     }
   }
 
@@ -73,21 +73,52 @@ class DDeiBus {
    */
   executeAll(): void {
     let result = true;
+    //并行执行的commands
+
     while (this?.queue?.length > 0 && result) {
-      result = this.execute();
+      let paralCommands = [];
+      let firstActionData = this.queue[0];
+      //如果当前data中有并行参数，则并行执行
+      if (firstActionData.parallel == true) {
+        for (let i = 0; i < this.queue.length; i++) {
+          let command = this.queue[i];
+          if (command.parallel == true) {
+            let commandAction = new Promise((resolve, reject) => {
+              this.execute(command);
+            });
+            paralCommands.push(commandAction);
+          } else {
+            break;
+          }
+        }
+        //移除加入到并行的Command
+        this.queue.splice(0, paralCommands.length);
+        //执行并行处理
+
+        Promise.all(paralCommands);
+      } else {
+        result = this.execute();
+      }
     }
     if (!result) {
       console.log("中断")
     }
   }
 
+
   /**
    * 取出队列并执行
    */
-  execute(): boolean {
+  execute(command: any): boolean {
     if (this.queue && this.queue.length > 0) {
-      let firstActionData = this.queue[0];
-      this.queue.splice(0, 1);
+
+      let firstActionData = null;
+      if (!command) {
+        firstActionData = this.queue[0];
+        this.queue.splice(0, 1);
+      } else {
+        firstActionData = command;
+      }
       let action = null;
       if (firstActionData) {
         action = COMMANDS.get(firstActionData.type);

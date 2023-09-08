@@ -32,6 +32,9 @@ class DDeiLayer {
     let layer = new DDeiLayer(json);
     return layer;
   }
+
+  //类名，用于反射和动态加载
+  static ClsName: string = "DDeiLayer";
   // ============================ 属性 ===============================
   id: string;
   // 一个图层包含多个模型，每添加一个模型，则向midList末尾添加一条数据

@@ -40,6 +40,9 @@ class DDeiRectangle extends DDeiAbstractShape {
     let shape = new DDeiRectangle(json);
     return shape;
   }
+
+  //类名，用于反射和动态加载
+  static ClsName: string = "DDeiRectangle";
   // ============================ 属性 ===============================
   //边框，包含了选中/未选中，4个边框的大小，颜色，样式等配置
   border: any;

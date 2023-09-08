@@ -45,6 +45,9 @@ class DDeiStage {
     return stage;
   }
 
+  //类名，用于反射和动态加载
+  static ClsName: string = "DDeiStage";
+
   // ============================ 属性 ===============================
   id: string;
   // 一个舞台包含多个图层

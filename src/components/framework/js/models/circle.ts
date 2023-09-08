@@ -22,6 +22,9 @@ class DDeiCircle extends DDeiRectangle {
     return shape;
   }
 
+  //类名，用于反射和动态加载
+  static ClsName: string = "DDeiCircle";
+
   // ============================ 属性 ===============================
   // 本模型的唯一名称
   modelType: string = 'DDeiCircle';
