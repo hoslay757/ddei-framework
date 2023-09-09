@@ -225,7 +225,7 @@ export const styles = {
       'name': '对齐',
       'desc': '文本的对齐，采用九宫格式设置',
       'group': '文本',
-      'controlType': 'text',
+      'controlType': 'align-type',
       'mapping': [],
       'dataType': 'string',
       'orderNo': 4,

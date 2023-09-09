@@ -1,11 +1,15 @@
 <template>
   <div id="ddei_editor_propertyview" class="ddei_editor_propertyview" @mousedown="changeEditorFocus">
     <div class="ddei_editor_pv_group_view">
-      <div class="ddei_editor_pv_group_view_expandbox" @click="hidOrShowPV" >
-        <img class="ddei_editor_pv_group_view_expandbox_img" :src="editor?.rightWidth > 38 ? expandRightImg : expandLeftImg" />
+      <div class="ddei_editor_pv_group_view_expandbox" @click="hidOrShowPV">
+        <img class="ddei_editor_pv_group_view_expandbox_img"
+          :src="editor?.rightWidth > 38 ? expandRightImg : expandLeftImg" />
       </div>
-      <div class="ddei_editor_pv_group_view_items" >
-        <div :class="topGroup.selected ? 'ddei_editor_pv_group_view_items_item_selected':'ddei_editor_pv_group_view_items_item'" v-for="topGroup in topGroups" v-show="!topGroup?.empty" @click="changeTopGroup(topGroup)" :title="topGroup.name">
+      <div class="ddei_editor_pv_group_view_items">
+        <div
+          :class="topGroup.selected ? 'ddei_editor_pv_group_view_items_item_selected' : 'ddei_editor_pv_group_view_items_item'"
+          v-for="topGroup in topGroups" v-show="!topGroup?.empty" @click="changeTopGroup(topGroup)"
+          :title="topGroup.name">
           <img class="img" :src="topGroup.img" />
         </div>
       </div>
@@ -13,23 +17,28 @@
 
     <div class="ddei_editor_pv_subgroup_view" v-show="editor?.rightWidth > 38">
       <div class="ddei_editor_pv_subgroup_view_tab_title">
-        <div :class="currentTopGroup?.groups.length > 1 && subGroup.selected? 'ddei_editor_pv_subgroup_view_tab_title_item_selected' : 'ddei_editor_pv_subgroup_view_tab_title_item'" 
-          v-for="subGroup in currentTopGroup?.groups" :title="subGroup.name" 
-          @mouseup="changeSubGroup(subGroup)">{{ subGroup.name }}</div>
+        <div
+          :class="currentTopGroup?.groups.length > 1 && subGroup.selected ? 'ddei_editor_pv_subgroup_view_tab_title_item_selected' : 'ddei_editor_pv_subgroup_view_tab_title_item'"
+          v-for="subGroup in currentTopGroup?.groups" :title="subGroup.name" @mouseup="changeSubGroup(subGroup)">{{
+            subGroup.name }}</div>
       </div>
-      <div class="ddei_editor_pv_subgroup_view_tab_panel" :style="{ height: 'calc(100vh - ' + (editor?.topHeight + editor?.bottomHeight + 40) + 'px' }">
-        <div :class="{'ddei_editor_pv_subgroup_view_tab_panel_editors_column':attrDefine.display == 'column', 'ddei_editor_pv_subgroup_view_tab_panel_editors_row': attrDefine.display != 'column', 'empty_value': attrDefine.value ? false : true}"
-         v-for="attrDefine in currentSubGroup?.children" :title="attrDefine.desc" >
-          <div class="title" v-if="!attrDefine.hiddenTitle">{{ attrDefine.name }}<span v-if="attrDefine.notNull">*</span>：</div>
+      <div class="ddei_editor_pv_subgroup_view_tab_panel"
+        :style="{ height: 'calc(100vh - ' + (editor?.topHeight + editor?.bottomHeight + 40) + 'px' }">
+        <div
+          :class="{ 'ddei_editor_pv_subgroup_view_tab_panel_editors_column': attrDefine.display == 'column', 'ddei_editor_pv_subgroup_view_tab_panel_editors_row': attrDefine.display != 'column', 'empty_value': attrDefine.value ? false : true }"
+          v-for="attrDefine in currentSubGroup?.children" :title="attrDefine.desc">
+          <div class="title" v-if="!attrDefine.hiddenTitle">{{ attrDefine.name }}<span v-if="attrDefine.notNull">*</span>：
+          </div>
           <div class="editor">
-            <PVTextEditor :attrDefine="attrDefine" v-if="attrDefine.controlType == 'text'" ></PVTextEditor> 
-            <PVRangeEditor :attrDefine="attrDefine" v-if="attrDefine.controlType == 'range'" ></PVRangeEditor> 
-            <PVColorEditor :attrDefine="attrDefine" v-if="attrDefine.controlType == 'color'" ></PVColorEditor> 
-            <PVRadioEditor :attrDefine="attrDefine" v-if="attrDefine.controlType == 'radio'" ></PVRadioEditor> 
-            <PVFontSizeEditor :attrDefine="attrDefine" v-if="attrDefine.controlType == 'font-size'" ></PVFontSizeEditor> 
-           
-            
-            
+            <PVTextEditor :attrDefine="attrDefine" v-if="attrDefine.controlType == 'text'"></PVTextEditor>
+            <PVRangeEditor :attrDefine="attrDefine" v-if="attrDefine.controlType == 'range'"></PVRangeEditor>
+            <PVColorEditor :attrDefine="attrDefine" v-if="attrDefine.controlType == 'color'"></PVColorEditor>
+            <PVRadioEditor :attrDefine="attrDefine" v-if="attrDefine.controlType == 'radio'"></PVRadioEditor>
+            <PVFontSizeEditor :attrDefine="attrDefine" v-if="attrDefine.controlType == 'font-size'"></PVFontSizeEditor>
+            <PVAlignTypeEditor :attrDefine="attrDefine" v-if="attrDefine.controlType == 'align-type'"></PVAlignTypeEditor>
+
+
+
           </div>
         </div>
       </div>
@@ -50,6 +59,7 @@ import PVRangeEditor from './editors/PVRangeEditor.vue'
 import PVColorEditor from './editors/PVColorEditor.vue'
 import PVRadioEditor from './editors/PVRadioEditor.vue'
 import PVFontSizeEditor from './editors/PVFontSizeEditor.vue'
+import PVAlignTypeEditor from './editors/PVAlignTypeEditor.vue'
 import ICONS from "../js/icon"
 export default {
   name: "DDei-Editor-PropertyView",
@@ -63,25 +73,26 @@ export default {
       expandLeftImg: ICONS['../icons/icon-expand-left.png'].default,
       expandRightImg: ICONS['../icons/icon-expand-right.png'].default,
       //当前被选中控件的引用
-      selectedModels:null,
+      selectedModels: null,
       //属性定义的引用
-      controlDefine :null,
+      controlDefine: null,
       //当前的顶级group
-      topGroups:null,
+      topGroups: null,
       currentTopGroup: null,
       currentSubGroup: null,
     };
   },
   computed: {
-    
+
   },
   watch: {},
-  components:{
+  components: {
     PVTextEditor,
     PVRangeEditor,
     PVColorEditor,
     PVRadioEditor,
-    PVFontSizeEditor
+    PVFontSizeEditor,
+    PVAlignTypeEditor
   },
   created() {
     // 监听obj对象中prop属性的变化
@@ -89,11 +100,11 @@ export default {
       this.selectedModels = newVal;
       let models: DDeiAbstractShape[] = null;
       let firstModel: DDeiAbstractShape = null;
-      if(this.selectedModels?.size > 0){
+      if (this.selectedModels?.size > 0) {
         //获取当前所有组件的公共属性定义
         models = Array.from(this.selectedModels.values());
         firstModel = cloneDeep(models[0]);
-      }else{
+      } else {
         //获取当前所有组件的公共属性定义
         models = [this.editor.ddInstance.stage];
         firstModel = models[0];
@@ -101,47 +112,48 @@ export default {
       }
       let firstControlDefine = cloneDeep(controlOriginDefinies.get(firstModel?.modelCode));
       //获取第一个组件及其定义
-      if(firstControlDefine){
+      if (firstControlDefine) {
         //如果同时有多个组件被选中，则以第一个组件为基准，对属性定义进行过滤，属性值相同则采用相同值，属性值不同采用空值
         let removeKeys = [];
-        for(let i = 0;i < models.length;i++){
-          let curModel:DDeiAbstractShape = models[i];
+        for (let i = 0; i < models.length; i++) {
+          let curModel: DDeiAbstractShape = models[i];
           let curDefine = controlOriginDefinies.get(curModel.modelCode);
-          
-          firstControlDefine.attrDefineMap.forEach((firstAttrDefine,attrKey) => {
+
+          firstControlDefine.attrDefineMap.forEach((firstAttrDefine, attrKey) => {
             //key不存在
-            if(!curDefine.attrDefineMap.has(attrKey)){
+            if (!curDefine.attrDefineMap.has(attrKey)) {
               removeKeys.push(attrKey);
             }
             //隐藏
-            else if(!firstAttrDefine.visiable){
+            else if (!firstAttrDefine.visiable) {
               removeKeys.push(attrKey);
             }
             //key存在，进一步比较值
-            else{
+            else {
               //当前属性的定义
               let curAttrDefine = curDefine.attrDefineMap.get(attrKey)
               //记录属性值
               if (i == 0) {
                 firstAttrDefine.value = DDeiUtil.getDataByPathList(firstModel, curAttrDefine.code, curAttrDefine.mapping);
-              }  
+                firstAttrDefine.model = firstModel;
+              }
               //根据属性定义，从model获取值
               let curAttrValue = DDeiUtil.getDataByPathList(curModel, curAttrDefine.code, curAttrDefine.mapping);
-              if(firstAttrDefine.value != curAttrValue){
+              if (firstAttrDefine.value != curAttrValue) {
                 //记录备选值
                 firstAttrDefine.diffValues.push(curAttrValue);
               }
             }
-            
+
           });
         }
         //清除不同的属性
-        this.deleteAttrDefineByKeys(firstControlDefine,removeKeys);
+        this.deleteAttrDefineByKeys(firstControlDefine, removeKeys);
         //同步引用关系
         this.syncAttrsToGroup(firstControlDefine, firstControlDefine.styles);
         this.syncAttrsToGroup(firstControlDefine, firstControlDefine.datas);
         this.syncAttrsToGroup(firstControlDefine, firstControlDefine.events);
-        let layerTopGroup = {name:"图层",img: ICONS['../icons/icon-layers.png'].default,groups:[{}]};
+        let layerTopGroup = { name: "图层", img: ICONS['../icons/icon-layers.png'].default, groups: [{}] };
         firstControlDefine.styles.img = ICONS['../icons/icon-fill.png'].default;
         firstControlDefine.datas.img = ICONS['../icons/icon-data.png'].default;
         firstControlDefine.events.img = ICONS['../icons/icon-event.png'].default;
@@ -149,8 +161,8 @@ export default {
         //上一次编辑的名称
         let upName = this.currentTopGroup?.name;
         let currentTopGroup = null;
-        if(upName){
-          if(!firstControlDefine?.styles?.empty && upName == firstControlDefine?.styles?.name){
+        if (upName) {
+          if (!firstControlDefine?.styles?.empty && upName == firstControlDefine?.styles?.name) {
             firstControlDefine.styles.selected = true;
             currentTopGroup = firstControlDefine.styles
           } else if (!firstControlDefine?.datas?.empty && upName == firstControlDefine?.datas?.name) {
@@ -164,17 +176,17 @@ export default {
             currentTopGroup = layerTopGroup
           }
         }
-        if(!currentTopGroup){
-          if(!firstControlDefine?.styles?.empty){
+        if (!currentTopGroup) {
+          if (!firstControlDefine?.styles?.empty) {
             firstControlDefine.styles.selected = true;
             currentTopGroup = firstControlDefine.styles
-          }else if (!firstControlDefine?.datas?.empty) {
+          } else if (!firstControlDefine?.datas?.empty) {
             firstControlDefine.datas.selected = true;
             currentTopGroup = firstControlDefine.datas
-          }else if (!firstControlDefine?.events?.empty) {
+          } else if (!firstControlDefine?.events?.empty) {
             firstControlDefine.events.selected = true;
             currentTopGroup = firstControlDefine.events
-          }else if(!layerTopGroup.empty){
+          } else if (!layerTopGroup.empty) {
             layerTopGroup.selected = true;
             currentTopGroup = layerTopGroup
           }
@@ -185,15 +197,15 @@ export default {
         //上一次编辑的名称
         let upSubGroupName = this.currentSubGroup?.name;
         let currentSubGroup = null;
-        if(upSubGroupName){
-          for(let sgi = 0;sgi < currentTopGroup?.groups.length;sgi++){
-            if(!currentTopGroup?.groups[sgi]?.empty && upSubGroupName == currentTopGroup?.groups[sgi]?.name){
+        if (upSubGroupName) {
+          for (let sgi = 0; sgi < currentTopGroup?.groups.length; sgi++) {
+            if (!currentTopGroup?.groups[sgi]?.empty && upSubGroupName == currentTopGroup?.groups[sgi]?.name) {
               currentSubGroup = currentTopGroup?.groups[sgi];
               break;
             }
           }
         }
-        if(!currentSubGroup){
+        if (!currentSubGroup) {
           for (let sgi = 0; sgi < currentTopGroup?.groups.length; sgi++) {
             if (!currentTopGroup?.groups[sgi]?.empty) {
               currentSubGroup = currentTopGroup?.groups[sgi];
@@ -202,15 +214,15 @@ export default {
           }
         }
         this.changeSubGroup(currentSubGroup);
-      }else{
+      } else {
         //清除信息
-          this.controlDefine = null;
-          this.topGroups = null;
-          this.currentTopGroup = null;
-          this.currentSubGroup = null;
+        this.controlDefine = null;
+        this.topGroups = null;
+        this.currentTopGroup = null;
+        this.currentSubGroup = null;
       }
     });
-   },
+  },
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
@@ -277,7 +289,7 @@ export default {
      * @param firstControlDefine 
      * @param removeKeys 
      */
-    deleteAttrDefineByKeys(firstControlDefine:object,removeKeys:string[]){
+    deleteAttrDefineByKeys(firstControlDefine: object, removeKeys: string[]) {
       //移除属性
       removeKeys.forEach(item => {
         firstControlDefine.attrDefineMap.delete(item)
@@ -285,10 +297,10 @@ export default {
         this.deleteGroupAttrsByKey(firstControlDefine.datas, item);
         this.deleteGroupAttrsByKey(firstControlDefine.events, item);
       })
-      
+
     },
 
-    deleteGroupAttrsByKey(pData:object,key:string):void{
+    deleteGroupAttrsByKey(pData: object, key: string): void {
       let rmglist = [];
       pData.groups.forEach(group => {
         let rmlist = []
@@ -317,29 +329,29 @@ export default {
     },
 
 
-    syncAttrsToGroup(firstControlDefine: object,pData:object):void {
+    syncAttrsToGroup(firstControlDefine: object, pData: object): void {
       let newChildren = []
       if (pData?.groups?.length > 0) {
-         pData?.groups?.forEach(group => {
+        pData?.groups?.forEach(group => {
           let newGroupChildren = [];
-           group.children?.forEach((curAttr:DDeiEditorArrtibute) => {
+          group.children?.forEach((curAttr: DDeiEditorArrtibute) => {
             let mapObj = firstControlDefine?.attrDefineMap?.get(curAttr.code)
-            if(mapObj){
+            if (mapObj) {
               newGroupChildren.push(mapObj);
               newChildren.push(mapObj);
             }
-           });
-           group.children = newGroupChildren;
-           if (newGroupChildren.length == 0) {
+          });
+          group.children = newGroupChildren;
+          if (newGroupChildren.length == 0) {
             group.empty = true;
           }
         });
       }
       pData.children = newChildren;
-      if(newChildren.length == 0){
+      if (newChildren.length == 0) {
         pData.empty = true;
       }
-      
+
     },
 
     /**
@@ -347,15 +359,15 @@ export default {
      */
     hidOrShowPV() {
       let rightWidth = this.editor.rightWidth;
-      if(rightWidth > 38){
+      if (rightWidth > 38) {
         let deltaX = this.editor.rightWidth - 38;
         let frameRightElement = document.getElementById("ddei_editor_frame_right");
         this.editor.rightWidth = 38;
         frameRightElement.style.flexBasis = "38px";
         //重新设置画布大小
         this.editor.middleWidth += deltaX;
-      }else{
-        let deltaX =  237;
+      } else {
+        let deltaX = 237;
         let frameRightElement = document.getElementById("ddei_editor_frame_right");
         this.editor.rightWidth = 275;
         frameRightElement.style.flexBasis = "275px";
@@ -363,13 +375,13 @@ export default {
         this.editor.middleWidth -= deltaX;
       }
       this.editor.ddInstance.render.setSize(this.editor.middleWidth, this.editor.middleHeight, 0, 0)
-      
+
       this.editor.ddInstance.render.drawShape()
     },
 
-     /**
-     * 焦点进入当前区域
-     */
+    /**
+    * 焦点进入当前区域
+    */
     changeEditorFocus() {
       this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
     },
@@ -387,8 +399,8 @@ export default {
   user-select: none;
 }
 
-.ddei_editor_propertyview .empty_value{
-  filter:opacity(50%);
+.ddei_editor_propertyview .empty_value {
+  filter: opacity(50%);
 }
 
 .ddei_editor_pv_group_view {
@@ -504,9 +516,9 @@ export default {
   display: flex;
   flex-flow: column;
   flex: 1 1 auto;
-  color:black;
-  font-size:13px;
-  font-family:"Microsoft YaHei";
+  color: black;
+  font-size: 13px;
+  font-family: "Microsoft YaHei";
 }
 
 .ddei_editor_pv_subgroup_view_tab_panel::-webkit-scrollbar {
@@ -547,51 +559,52 @@ export default {
   background-color: rgba(0, 0, 0, .01);
 }
 
-.ddei_editor_pv_subgroup_view_tab_panel_editors_column{
-  display:flex;
+.ddei_editor_pv_subgroup_view_tab_panel_editors_column {
+  display: flex;
   flex-flow: column;
-  margin-top:10px;
-  margin-bottom:10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
-.ddei_editor_pv_subgroup_view_tab_panel_editors_column .title{
+.ddei_editor_pv_subgroup_view_tab_panel_editors_column .title {
   background: rgb(254, 254, 255);
-  text-align:left;
-  padding-left:10px;
-  margin:auto 0;
-  margin-bottom:5px;
+  text-align: left;
+  padding-left: 10px;
+  margin: auto 0;
+  margin-bottom: 5px;
 }
 
-.ddei_editor_pv_subgroup_view_tab_panel_editors_column .editor{
-  text-align:left;
-  padding-left:10px;
+.ddei_editor_pv_subgroup_view_tab_panel_editors_column .editor {
+  text-align: left;
+  padding-left: 10px;
 }
 
-.ddei_editor_pv_subgroup_view_tab_panel_editors_row{
-  display:flex;
-  margin-top:10px;
-  margin-bottom:10px;
+.ddei_editor_pv_subgroup_view_tab_panel_editors_row {
+  display: flex;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
-.ddei_editor_pv_subgroup_view_tab_panel_editors_row .title{
-  text-align:left;
-  padding-left:10px;
+.ddei_editor_pv_subgroup_view_tab_panel_editors_row .title {
+  text-align: left;
+  padding-left: 10px;
   flex: 0 0 100px;
-  white-space: nowrap; /*文字不换行*/
-  overflow: hidden; /*超出部分隐藏*/
-  text-overflow: ellipsis; /*溢出部分用省略号表示*/
-  margin:auto 0;
+  white-space: nowrap;
+  /*文字不换行*/
+  overflow: hidden;
+  /*超出部分隐藏*/
+  text-overflow: ellipsis;
+  /*溢出部分用省略号表示*/
+  margin: auto 0;
 }
 
-.ddei_editor_pv_subgroup_view_tab_panel_editors_row .editor{
-  text-align:center;
-  flex:1;
+.ddei_editor_pv_subgroup_view_tab_panel_editors_row .editor {
+  text-align: center;
+  flex: 1;
 }
 
 
-.ddei_editor_pv_subgroup_view_tab_panel span{
-  color:red;
+.ddei_editor_pv_subgroup_view_tab_panel span {
+  color: red;
 }
-
-
 </style>

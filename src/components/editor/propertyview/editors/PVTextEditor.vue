@@ -1,6 +1,7 @@
 <template>
   <div :class="{ 'ddei_pv_editor_text': true, 'ddei_pv_editor_text_disabled': attrDefine.readonly }">
-      <input type="input" v-model="attrDefine.value" :disabled="attrDefine.readonly" :placeholder="attrDefine.defaultValue"/>
+    <input type="input" v-model="attrDefine.value" :disabled="attrDefine.readonly"
+      :placeholder="attrDefine.defaultValue" />
   </div>
 </template>
 
@@ -18,14 +19,14 @@ export default {
   props: {
     //当前属性定义
     attrDefine: {
-      type:DDeiEditorArrtibute,
-      default:null
+      type: DDeiEditorArrtibute,
+      default: null
     },
   },
   data() {
     return {
       //当前编辑器
-      editor:null,
+      editor: null,
     };
   },
   computed: {},
@@ -49,19 +50,19 @@ export default {
       this.attrDefine?.mapping?.forEach(element => {
         paths.push(element);
       });
-      if(!(paths?.length > 0)){
+      if (!(paths?.length > 0)) {
         paths = [this.attrDefine.code]
       }
-      
+
       //通过解析器获取有效值
       let parser: DDeiAbstractArrtibuteParser = this.attrDefine.getParser();
       //属性值
       let value = parser.parseValue(this.attrDefine.value);
       this.editor.ddInstance.stage.selectedModels.forEach(element => {
         //推送信息进入总线
-        this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: value }, evt,true);
+        this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: value }, evt, true);
       });
-      this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape,null, evt);
+      this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
       this.editor.bus.executeAll();
     }
   }
@@ -69,19 +70,20 @@ export default {
 </script>
 
 <style scoped>
-
 /**以下为text属性编辑器 */
-.ddei_pv_editor_text{
+.ddei_pv_editor_text {
   border-radius: 4px;
-  border: 0.5px solid rgb(210,210,210);
+  border: 0.5px solid rgb(210, 210, 210);
   height: 24px;
-  margin-right:10px;
-  padding:0 5px;
+  margin-right: 10px;
+  padding: 0 5px;
 }
-.ddei_pv_editor_text_disabled{
-  background-color:rgb(210,210,210) !important;
+
+.ddei_pv_editor_text_disabled {
+  background-color: rgb(210, 210, 210) !important;
 }
-.ddei_pv_editor_text_disabled:hover{
+
+.ddei_pv_editor_text_disabled:hover {
   border: 1px solid grey !important;
 }
 
@@ -90,9 +92,9 @@ export default {
   box-sizing: border-box;
 }
 
-.ddei_pv_editor_text input{
-  height:20px;
-  width:100%;
+.ddei_pv_editor_text input {
+  height: 20px;
+  width: 100%;
   border: transparent;
   outline: none;
   font-size: 13px;
