@@ -16,6 +16,8 @@ class DDeiEditorArrtibute extends DDeiArrtibuteDefine {
     this.display = props.display ? props.display : "row";
     this.hiddenTitle = props.hiddenTitle ? props.hiddenTitle : false;
     this.step = props.step ? props.step : 1;
+    this.itemStyle = props.itemStyle ? props.itemStyle : null;
+    this.canSearch = props.canSearch ? props.canSearch : false;
   }
   // ============================ 属性 ===============================
   //属性所在分组
@@ -34,6 +36,11 @@ class DDeiEditorArrtibute extends DDeiArrtibuteDefine {
   display: string;
   //当前属性值
   value: object | null = null;
+
+  //单个元素的样式，用于combox等控件控制样式
+  itemStyle: object | null = null;
+  //是否允许搜索
+  canSearch: boolean = false;
   //数字框每次增加数
   step: number = 1;
   // ============================ 方法 ===============================

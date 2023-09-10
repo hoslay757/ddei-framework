@@ -42,7 +42,7 @@ export default {
       'text': '正方形',
       'width': 120,
       'height': 120,
-      'icon': 'toolbox-shape-square-big.png',
+      'icon': 'toolbox-shape-square-big',
       'orderNo': 4
     },
 
@@ -52,7 +52,7 @@ export default {
       'text': '长方形',
       'width': 240,
       'height': 160,
-      'icon': 'toolbox-shape-rect-big.png',
+      'icon': 'toolbox-shape-rect-big',
       'orderNo': 5
     },
     {
@@ -61,7 +61,7 @@ export default {
       'text': '圆形',
       'width': 150,
       'height': 150,
-      'icon': 'toolbox-shape-circle.png',
+      'icon': 'toolbox-shape-circle',
       'orderNo': 6
     },
     {
@@ -70,7 +70,7 @@ export default {
       'text': '椭圆',
       'width': 160,
       'height': 100,
-      'icon': 'toolbox-shape-ellipse.png',
+      'icon': 'toolbox-shape-ellipse',
       'orderNo': 6
     },
     {
@@ -79,7 +79,7 @@ export default {
       'text': '菱形',
       'width': 200,
       'height': 120,
-      'icon': 'toolbox-shape-diamond.png',
+      'icon': 'toolbox-shape-diamond',
       'orderNo': 5
     },
     {

@@ -12,6 +12,29 @@ class DDeiUtil {
 
 
   /**
+   * 返回dom绝对坐标
+   * @param element 
+   */
+  static getDomAbsPosition(element): object {
+    //计算x坐标
+    var actualLeft = element.offsetLeft;
+    var current = element.offsetParent;
+    while (current !== null) {
+      actualLeft += current.offsetLeft;
+      current = current.offsetParent;
+    }
+    //计算y坐标
+    var actualTop = element.offsetTop;
+    var current = element.offsetParent;
+    while (current !== null) {
+      actualTop += (current.offsetTop + current.clientTop);
+      current = current.offsetParent;
+    }
+    //返回结果
+    return { left: actualLeft, top: actualTop }
+  }
+
+  /**
    * 设置样式属性，自动创建不存在的层级
    * @param model 模型
    * @param paths 样式路径,支持传入多个

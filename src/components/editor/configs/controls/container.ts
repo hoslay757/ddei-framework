@@ -4,7 +4,7 @@ export default {
   'code': 'rectange_container',
   'desc': '矩形形状的容器，能够包含其他容器',
   'type': 'DDeiRectContainer',
-  'icon': 'toolbox-shape-rect.png'
+  'icon': 'toolbox-shape-rect'
 }
 
 

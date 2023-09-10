@@ -36,6 +36,8 @@ import QuickColorView from './quickcolorview/QuickColorView.vue'
 import DDeiEditorState from './js/enums/editor-state';
 import DDeiAbstractShape from '../framework/js/models/shape';
 import DDeiEnumState from '../framework/js/enums/ddei-state';
+import { COMMANDS } from "../framework/js/config/command"
+import { loadEditorCommands } from "./js/util/command"
 
 
 export default {
@@ -64,7 +66,7 @@ export default {
   watch: {},
   created() { },
   mounted() {
-
+    loadEditorCommands();
     this.editor.bindEvent();
     let frameLeftElement = document.getElementById("ddei_editor_frame_left");
     let frameRightElement = document.getElementById("ddei_editor_frame_right");

@@ -5,6 +5,7 @@ import DDei from "@/components/framework/js/ddei";
 import DDeiEditorUtil from "./util/editor-util";
 import DDeiUtil from "@/components/framework/js/util";
 import DDeiBus from "@/components/framework/js/bus/bus";
+import DDeiEditorEnumBusCommandType from "./enums/editor-command-type";
 
 /**
  * DDei图形编辑器类，用于维护编辑器实例、全局状态以及全局属性
@@ -160,7 +161,10 @@ class DDeiEditor {
   changeState(state: DDeiEditorState): void {
     if (this.state != state) {
       this.state = state
+
     }
+    this.bus?.push(DDeiEditorEnumBusCommandType.ClearTemplateUI, null, null)
+    this.bus?.executeAll();
   }
 
   /**
