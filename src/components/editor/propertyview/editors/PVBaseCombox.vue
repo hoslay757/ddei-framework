@@ -2,9 +2,10 @@
   <div :id="getEditorId(attrDefine.code)"
     :class="{ 'ddei_pv_base_combox': true, 'ddei_pv_base_combox_disabled': attrDefine.readonly }">
     <div :class="{ 'textinput': true, 'textinput_expanded': expanded }">
-      <input type="text" :readonly="attrDefine.readonly || !canSearch" v-model="text"
-        :placeholder="attrDefine.defaultValue" @click="!canSearch && showDialog()" />
-      <div> <img style="width:8px;height:8px;margin:auto" src="../../icons/toolbox-expanded.png" @click="showDialog" />
+      <input type="text" :readonly="attrDefine.readonly || !canSearch" v-model="text" :placeholder="defaultText"
+        @click="!attrDefine.readonly && !canSearch && showDialog()" @keydown="search($event)" />
+      <div> <img style="width:8px;height:8px;margin:auto" src="../../icons/toolbox-expanded.png"
+          @click="!attrDefine.readonly && showDialog()" />
       </div>
     </div>
     <div :id="getShowDialogId(attrDefine.code)" :class="{ 'ddei_combox_show_dialog': true }">
@@ -16,6 +17,7 @@
 </template>
 
 <script lang="ts">
+import { debounce } from 'lodash';
 import DDeiEditorArrtibute from '../../js/attribute/editor-attribute';
 import DDeiEditor from '../../js/editor';
 import DDeiUtil from '../../../framework/js/util';
@@ -32,6 +34,10 @@ export default {
     canSearch: {
       type: Boolean,
       default: false
+    },
+    searchMethod: {
+      type: Function,
+      defaut: null
     }
   },
   data() {
@@ -44,6 +50,7 @@ export default {
       value: null,
       //文本
       text: null,
+      defaultText: ""
     };
   },
   computed: {},
@@ -51,7 +58,8 @@ export default {
 
   },
   created() {
-
+    // 搜索框防抖
+    this.search = debounce(this.search, 200);
   },
 
   mounted() {
@@ -69,8 +77,15 @@ export default {
       return "ddei_attr_editor_" + id;
     },
 
+
+    search(evt) {
+      if (this.searchMethod) {
+        this.searchMethod(this.text, evt);
+      }
+    },
+
     //打开弹出框
-    showDialog(evt) {
+    showDialog(show: boolean = false, evt) {
       let dialog = document.getElementById(this.getShowDialogId(this.attrDefine.code));
       let haveElement = false;
       for (let i = 0; i < document.body.children.length; i++) {
@@ -130,6 +145,10 @@ export default {
   padding-right: 10px;
 }
 
+.ddei_pv_base_combox_disabled .textinput {
+  background-color: rgb(210, 210, 210);
+}
+
 
 .ddei_pv_base_combox .textinput {
   width: 100%;
@@ -138,6 +157,7 @@ export default {
   border-radius: 4px;
   display: inline-block;
   padding-left: 5px;
+
 
 }
 

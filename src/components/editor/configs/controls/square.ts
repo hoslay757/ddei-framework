@@ -4,7 +4,7 @@ export default {
   'code': 'square',
   'desc': '标准的正方形',
   'type': 'DDeiRectangle',
-  'icon': 'toolbox-shape-square.png'
+  'icon': 'toolbox-shape-square'
 }
 
 

@@ -174,8 +174,10 @@ export default {
 </script>
 
 <style scoped>
-/**以下为text属性编辑器 */
-.ddei_pv_editor_aligntype {}
+/**以下为aligntype属性编辑器 */
+.ddei_pv_editor_aligntype {
+  margin-top: 4px;
+}
 
 .ddei_pv_editor_aligntype_items {
   width: 200px;
@@ -190,7 +192,6 @@ export default {
 .ddei_pv_editor_aligntype_item {
   text-align: center;
   font-size: 12px;
-  color: red;
   display: table;
   color: black;
   border: 0.5px solid grey;

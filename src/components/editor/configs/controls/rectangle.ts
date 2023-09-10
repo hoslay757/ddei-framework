@@ -4,7 +4,7 @@ export default {
   'code': 'rectangle',
   'desc': '标准的长方形',
   'type': 'DDeiRectangle',
-  'icon': 'toolbox-shape-rect.png'
+  'icon': 'toolbox-shape-rect'
 }
 
 
@@ -393,8 +393,56 @@ export const datas = {
       'dataType': 'string',
       'type': [1, 2], //类别，1图形，2业务，3事件
       'orderNo': 3,
+      'visiable': true,
+      'readonly': true,
+    },
+    {
+      'id': '100002404',
+      'code': 'test.combox',
+      'name': '测试下拉框',
+      'desc': '自动换行',
+      'group': '基础信息',
+      'controlType': 'combox',
+      'dataType': 'string',
+      'dataSource': [{ 'text': '微软雅黑', 'underline': true, 'desc': '当前字体选择人数众多', 'bold': true, 'value': '1' }, { 'text': '方正', 'disabled': true, 'value': '2' }, { 'text': '正楷', 'deleted': true, 'desc': '当前字体即将被删除，请勿选择', 'value': '3' }, { 'text': '宋体', 'value': '4' }, { 'text': 'PingFang', 'value': '5' }, { 'text': '斜体', 'searchText': 'xxx', 'value': '6' }],
+      'itemStyle': { width: 80, height: 25, col: 2, row: 0, imgWidth: 20, imgHeight: 20 },
+      'canSearch': true,
+      'defaultValue': '1',
+      'orderNo': 5,
+      'readonly': false,
       'visiable': true
-    }
+    },
+    {
+      'id': '100002404',
+      'code': 'test.combox1',
+      'name': '测试下拉框1',
+      'desc': '自动换行',
+      'group': '基础信息',
+      'controlType': 'combox',
+      'dataType': 'string',
+      'dataSource': [{ 'text': '微软雅黑', 'value': '1' }, { 'text': '方正', 'value': '2' }, { 'text': '正楷', 'value': '3' }, { 'text': '宋体', 'value': '4' }, { 'text': 'PingFang', 'value': '5' }, { 'text': '斜体', 'searchText': 'xxx', 'value': '6' }],
+      'itemStyle': { width: 80, height: 25, col: 2, row: 0, imgWidth: 20, imgHeight: 20 },
+      'canSearch': true,
+      'readonly': true,
+      'defaultValue': '2',
+      'orderNo': 5,
+      'visiable': true
+    },
+    {
+      'id': '100002404',
+      'code': 'test.combox2',
+      'name': '测试下拉框1',
+      'desc': '自动换行',
+      'group': '基础信息',
+      'controlType': 'combox',
+      'dataType': 'string',
+      'dataSource': [{ 'text': '微软雅黑', 'value': '1', 'img': 'icon-add' }, { 'text': '方正', 'value': '2', 'img': 'icon-reduce' }, { 'text': '正楷', 'value': '3' }, { 'text': '宋体', 'value': '4', 'img': 'icon-align-center' }, { 'text': 'PingFang', 'value': '5' }, { 'text': '斜体', 'searchText': 'xxx', 'value': '6' }],
+      'itemStyle': { width: 80, height: 25, col: 1, row: 0, imgWidth: 20, imgHeight: 20 },
+      'canSearch': true,
+      'defaultValue': '2',
+      'orderNo': 5,
+      'visiable': true
+    },
   ],
   'visiable': true,
   'order': 2

@@ -36,6 +36,7 @@
             <PVRadioEditor :attrDefine="attrDefine" v-if="attrDefine.controlType == 'radio'"></PVRadioEditor>
             <PVFontSizeEditor :attrDefine="attrDefine" v-if="attrDefine.controlType == 'font-size'"></PVFontSizeEditor>
             <PVAlignTypeEditor :attrDefine="attrDefine" v-if="attrDefine.controlType == 'align-type'"></PVAlignTypeEditor>
+            <PVComboxEditor :attrDefine="attrDefine" v-if="attrDefine.controlType == 'combox'"></PVComboxEditor>
 
 
 
@@ -60,6 +61,7 @@ import PVColorEditor from './editors/PVColorEditor.vue'
 import PVRadioEditor from './editors/PVRadioEditor.vue'
 import PVFontSizeEditor from './editors/PVFontSizeEditor.vue'
 import PVAlignTypeEditor from './editors/PVAlignTypeEditor.vue'
+import PVComboxEditor from './editors/PVComboxEditor.vue'
 import ICONS from "../js/icon"
 export default {
   name: "DDei-Editor-PropertyView",
@@ -70,8 +72,8 @@ export default {
     return {
       //当前编辑器
       editor: null,
-      expandLeftImg: ICONS['../icons/icon-expand-left.png'].default,
-      expandRightImg: ICONS['../icons/icon-expand-right.png'].default,
+      expandLeftImg: ICONS['icon-expand-left'].default,
+      expandRightImg: ICONS['icon-expand-right'].default,
       //当前被选中控件的引用
       selectedModels: null,
       //属性定义的引用
@@ -92,7 +94,8 @@ export default {
     PVColorEditor,
     PVRadioEditor,
     PVFontSizeEditor,
-    PVAlignTypeEditor
+    PVAlignTypeEditor,
+    PVComboxEditor
   },
   created() {
     // 监听obj对象中prop属性的变化
@@ -153,10 +156,10 @@ export default {
         this.syncAttrsToGroup(firstControlDefine, firstControlDefine.styles);
         this.syncAttrsToGroup(firstControlDefine, firstControlDefine.datas);
         this.syncAttrsToGroup(firstControlDefine, firstControlDefine.events);
-        let layerTopGroup = { name: "图层", img: ICONS['../icons/icon-layers.png'].default, groups: [{}] };
-        firstControlDefine.styles.img = ICONS['../icons/icon-fill.png'].default;
-        firstControlDefine.datas.img = ICONS['../icons/icon-data.png'].default;
-        firstControlDefine.events.img = ICONS['../icons/icon-event.png'].default;
+        let layerTopGroup = { name: "图层", img: ICONS['icon-layers'].default, groups: [{}] };
+        firstControlDefine.styles.img = ICONS['icon-fill'].default;
+        firstControlDefine.datas.img = ICONS['icon-data'].default;
+        firstControlDefine.events.img = ICONS['icon-event'].default;
         let topGroups = [firstControlDefine?.styles, firstControlDefine?.datas, firstControlDefine?.events, layerTopGroup];
         //上一次编辑的名称
         let upName = this.currentTopGroup?.name;
