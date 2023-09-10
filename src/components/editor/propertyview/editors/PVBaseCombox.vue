@@ -16,11 +16,8 @@
 </template>
 
 <script lang="ts">
-import { debounce } from 'lodash';
 import DDeiEditorArrtibute from '../../js/attribute/editor-attribute';
 import DDeiEditor from '../../js/editor';
-import DDeiEnumBusCommandType from '../../../framework/js/enums/bus-command-type';
-import DDeiAbstractArrtibuteParser from '../../../framework/js/models/attribute/parser/attribute-parser';
 import DDeiUtil from '../../../framework/js/util';
 export default {
   name: "DDei-Editor-PV-Base-Combox",
@@ -56,6 +53,7 @@ export default {
   created() {
 
   },
+
   mounted() {
     this.destroyDialog();
     //获取编辑器
@@ -74,17 +72,18 @@ export default {
     //打开弹出框
     showDialog(evt) {
       let dialog = document.getElementById(this.getShowDialogId(this.attrDefine.code));
-      if (!this.expanded) {
-        let haveElement = false;
-        for (let i = 0; i < document.body.children.length; i++) {
-          if (document.body.children[i] == dialog) {
-            haveElement = true;
-          }
+      let haveElement = false;
+      for (let i = 0; i < document.body.children.length; i++) {
+        if (document.body.children[i] == dialog) {
+          haveElement = true;
         }
-        if (!haveElement) {
-          dialog.remove();
-          document.body.appendChild(dialog);
-        }
+      }
+      if (!haveElement) {
+        //dialog.remove();
+        document.body.appendChild(dialog);
+      }
+      if (!this.expanded || haveElement) {
+
         dialog.style.display = "block";
         //获取父级控件绝对坐标
         let attrEditor = document.getElementById(this.getEditorId(this.attrDefine.code));
@@ -101,15 +100,15 @@ export default {
 
     //移除弹出框
     destroyDialog() {
-      let dialog = null;
+      let dialogs = [];
       for (let i = 0; i < document.body.children.length; i++) {
         if (document.body.children[i].className == "ddei_combox_show_dialog") {
-          dialog = document.body.children[i];
+          dialogs.push(document.body.children[i]);
         }
       }
-      if (dialog) {
+      dialogs.forEach(dialog => {
         dialog.remove();
-      }
+      })
     },
 
     closeDialog(evt) {

@@ -44,7 +44,6 @@
 </template>
 
 <script lang="ts">
-import { debounce } from 'lodash';
 import DDeiEditorArrtibute from '../../js/attribute/editor-attribute';
 import DDeiEditor from '../../js/editor';
 import DDeiEnumBusCommandType from '../../../framework/js/enums/bus-command-type';
@@ -85,10 +84,15 @@ export default {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     let type = this.getTypeValue();
-    let text = this.getTypeText(type);
+    let text = this.getTypeText(type.value);
+
+    if (!type.isDefault) {
+      this.attrDefine.value = type.value;
+    }
+
     this.$refs.combox.text = text;
-    this.$refs.combox.value = type;
-    this.value = type;
+    this.$refs.combox.value = type.value;
+    this.value = type.value;
   },
   methods: {
     getTypeText(type) {
@@ -110,25 +114,25 @@ export default {
       let align = DDeiUtil.getDataByPathList(this.attrDefine.model, "textStyle.align");
       let valign = DDeiUtil.getDataByPathList(this.attrDefine.model, "textStyle.valign");
       if (align == 1 && valign == 1) {
-        return 1;
+        return { value: 1 };
       } else if (align == 2 && valign == 1) {
-        return 2;
+        return { value: 2 };
       } else if (align == 3 && valign == 1) {
-        return 3;
-      } else if (align == 2 && valign == 1) {
-        return 4;
+        return { value: 3 };
+      } else if (align == 1 && valign == 2) {
+        return { value: 4 };
       } else if (align == 2 && valign == 2) {
-        return 5;
-      } else if (align == 2 && valign == 3) {
-        return 6;
-      } else if (align == 3 && valign == 1) {
-        return 7;
+        return { value: 5 };
       } else if (align == 3 && valign == 2) {
-        return 8;
+        return { value: 6 };
+      } else if (align == 1 && valign == 3) {
+        return { value: 7 };
+      } else if (align == 2 && valign == 3) {
+        return { value: 8 };
       } else if (align == 3 && valign == 3) {
-        return 9;
+        return { value: 9 };
       }
-      return 5;
+      return { isDefault: true, value: 5 };
     },
 
 
