@@ -133,8 +133,10 @@ class DDeiRectangleCanvasRender {
     } else if (direct == 1) {
       borderInfo = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.top" + "." + path, true);
     } else if (direct == 2) {
+
       borderInfo = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.right" + "." + path, true);
     } else if (direct == 3) {
+
       borderInfo = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.bottom" + "." + path, true);
     } else if (direct == 4) {
       borderInfo = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.left" + "." + path, true);

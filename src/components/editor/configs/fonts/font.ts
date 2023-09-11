@@ -1,27 +1,41 @@
 //穷举字体
 const fontTypes = {
-  windows: [{
-    ch: '宋体',
-    en: 'SimSun'
-  }, {
-    ch: '黑体',
-    en: 'SimHei'
-  }, {
-    ch: '微软雅黑',
-    en: 'Microsoft Yahei'
-  }, {
-    ch: '微软正黑体',
-    en: 'Microsoft JhengHei'
-  }, {
-    ch: '楷体',
-    en: 'KaiTi'
-  }, {
-    ch: '新宋体',
-    en: 'NSimSun'
-  }, {
-    ch: '仿宋',
-    en: 'FangSong'
-  }],
+  windows: [
+    { ch: 'Arial', en: 'Arial' },
+    { ch: 'Helvetica', en: 'Helvetica' },
+    { ch: 'Arial Black', en: 'Arial Black' },
+    { ch: 'Calibri', en: 'Calibri' },
+    { ch: 'Constantia', en: 'Constantia' },
+    { ch: 'Frutiger', en: 'Frutiger' },
+    { ch: 'Futura', en: 'Futura' },
+    { ch: 'Corbel', en: 'Corbel' },
+    { ch: 'Roboto', en: 'Roboto' },
+    { ch: 'Montserrat', en: 'Montserrat' },
+    { ch: 'Bebas Neue', en: 'Bebas Neue' },
+    { ch: 'Monument Extended', en: 'Monument Extended' },
+    { ch: 'D-DIN', en: 'D-DIN' },
+    {
+      ch: '宋体',
+      en: 'SimSun'
+    }, {
+      ch: '黑体',
+      en: 'SimHei'
+    }, {
+      ch: '微软雅黑',
+      en: 'Microsoft Yahei'
+    }, {
+      ch: '微软正黑体',
+      en: 'Microsoft JhengHei'
+    }, {
+      ch: '楷体',
+      en: 'KaiTi'
+    }, {
+      ch: '新宋体',
+      en: 'NSimSun'
+    }, {
+      ch: '仿宋',
+      en: 'FangSong'
+    }],
   'OS X': [{
     ch: '苹方',
     en: 'PingFang SC'
@@ -31,12 +45,6 @@ const fontTypes = {
   }, {
     ch: '华文楷体',
     en: 'STKaiti'
-  }, {
-    ch: '华文宋体',
-    en: 'STSong'
-  }, {
-    ch: '华文仿宋',
-    en: 'STFangsong'
   }, {
     ch: '华文中宋',
     en: 'STZhongsong'
@@ -92,9 +100,6 @@ const fontTypes = {
   }, {
     ch: '华文细黑',
     en: 'STXihei'
-  }, {
-    ch: '华文楷体',
-    en: 'STKaiti'
   }, {
     ch: '华文宋体',
     en: 'STSong'

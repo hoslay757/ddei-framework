@@ -133,7 +133,7 @@ export const styles = {
       'itemStyle': { width: 80, height: 25, col: 2, row: 6, imgWidth: 60, imgHeight: 20, display: "img-text" },
       'mapping': ["border.top.dash", "border.right.dash", "border.bottom.dash", "border.left.dash"],
       'dataType': 'integer',
-      'defaultValue': null,
+      'defaultValue': [1],
       'isArray': true,
       'orderNo': 5,
       'visiable': true
@@ -144,10 +144,13 @@ export const styles = {
       'name': '圆角',
       'desc': '图形的边框的是否为为圆角的弧度',
       'group': '边框',
-      'controlType': 'text',
+      'controlType': 'range',
       'mapping': ["border.top.round", "border.right.round", "border.bottom.round", "border.left.round"],
+      'min': 0,
+      'max': 100,
+      'step': 1,
+      'defaultValue': 0,
       'dataType': 'integer',
-      'defaultValue': null,
       'orderNo': 6,
       'visiable': true
     },
@@ -282,31 +285,20 @@ export const styles = {
       'orderNo': 6,
       'visiable': true
     },
+    {
+      'id': '100002207',
+      'code': 'textStyle.hollow',
+      'name': '镂空',
+      'desc': '文本的镂空显示',
+      'group': '文本',
+      'controlType': 'radio',
+      'dataType': 'string',
+      'dataSource': [{ 'text': '是', 'value': '1' }, { 'text': '否', 'value': '0' }],
+      'defaultValue': '0',
+      'orderNo': 7,
+      'visiable': true
+    },
 
-    {
-      'id': '100002301',
-      'code': 'border.top.dash',
-      'name': '虚线',
-      'desc': '图形的边框的是否为虚线样式，虚线由长短不一的线段构成',
-      'group': '边框',
-      'controlType': 'text',
-      'dataType': 'integer',
-      'defaultValue': [],
-      'isArray': true,
-      'visiable': false
-    },
-    {
-      'id': '100002302',
-      'code': 'border.right.dash',
-      'name': '虚线',
-      'desc': '图形的边框的是否为虚线样式，虚线由长短不一的线段构成',
-      'group': '边框',
-      'controlType': 'text',
-      'dataType': 'integer',
-      'defaultValue': [],
-      'isArray': true,
-      'visiable': false
-    },
     {
       'id': '100002303',
       'code': 'textStyle.align',
