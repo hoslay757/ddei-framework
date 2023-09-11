@@ -69,7 +69,15 @@ export default {
      */
     getDataSource(attrDefine) {
       if (attrDefine.dataSource) {
-        return attrDefine.dataSource
+        if(Array.isArray(attrDefine.dataSource)){
+          return attrDefine.dataSource
+        }else{
+          let type = attrDefine.dataSource.type;
+          if(!type || type == 'static'){
+            return attrDefine.dataSource.data;
+          }
+          
+        }
       }
       return [];
     },

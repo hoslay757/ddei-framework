@@ -186,8 +186,18 @@ export const styles = {
       'name': '字体',
       'desc': '文本的字体名称',
       'group': '文本',
-      'controlType': 'text',
+      'controlType': 'combox',
       'dataType': 'string',
+      'dataSource': {
+        'type': 'config',
+        'data': 'FONTS',
+        'text': 'ch',
+        'value': 'en',
+        'bold': 'isSystemDefault',
+        'fontFamily': 'en'
+      },
+      'itemStyle': { width: 80, height: 25, col: 2, row: 0, imgWidth: 20, imgHeight: 20 },
+      'canSearch': true,
       'defaultValue': "Microsoft YaHei",
       'orderNo': 1,
       'visiable': true
@@ -394,7 +404,6 @@ export const datas = {
       'type': [1, 2], //类别，1图形，2业务，3事件
       'orderNo': 3,
       'visiable': true,
-      'readonly': true,
     },
     {
       'id': '100002404',
@@ -438,6 +447,21 @@ export const datas = {
       'dataType': 'string',
       'dataSource': [{ 'text': '微软雅黑', 'value': '1', 'img': 'icon-add' }, { 'text': '方正', 'value': '2', 'img': 'icon-reduce' }, { 'text': '正楷', 'value': '3' }, { 'text': '宋体', 'value': '4', 'img': 'icon-align-center' }, { 'text': 'PingFang', 'value': '5' }, { 'text': '斜体', 'searchText': 'xxx', 'value': '6' }],
       'itemStyle': { width: 80, height: 25, col: 1, row: 0, imgWidth: 20, imgHeight: 20 },
+      'canSearch': true,
+      'defaultValue': '2',
+      'orderNo': 5,
+      'visiable': true
+    },
+    {
+      'id': '100002404',
+      'code': 'test.combox3',
+      'name': '测试下拉框3',
+      'desc': '自动换行',
+      'group': '基础信息',
+      'controlType': 'combox',
+      'dataType': 'string',
+      'dataSource': [{ 'img': 'icon-add', value: "1" }, { 'img': 'icon-reduce', value: "2" }, { 'img': 'icon-align-center', value: "3" }, { 'img': 'icon-align-center', value: "4" }, { 'img': 'icon-align-center', value: "5" }, { 'img': 'icon-align-center', value: "6" }, { 'img': 'icon-align-center', value: "7" }, { 'img': 'icon-align-center', value: "8" }],
+      'itemStyle': { width: 60, height: 60, col: 2, row: 2, imgWidth: 40, imgHeight: 40 },
       'canSearch': true,
       'defaultValue': '2',
       'orderNo': 5,

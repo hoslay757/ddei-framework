@@ -11,7 +11,7 @@
               :style="{ width: attrDefine?.itemStyle?.imgWidth + 'px', height: attrDefine?.itemStyle?.imgHeight + 'px' }"
               :src="item.img" />
           </div>
-          <div class="itembox_text">{{ item.text }}</div>
+          <div class="itembox_text" v-if="item.text" :style="{'font-family':item.fontFamily }">{{ item.text }}</div>
         </div>
       </div>
     </PVBaseCombox>
@@ -25,6 +25,7 @@ import DDeiEnumBusCommandType from '../../../framework/js/enums/bus-command-type
 import DDeiAbstractArrtibuteParser from '../../../framework/js/models/attribute/parser/attribute-parser';
 import PVBaseCombox from './PVBaseCombox.vue';
 import DDeiUtil from '@/components/framework/js/util';
+import CONFIGS from "../../js/config"
 import ICONS from "../../js/icon"
 
 export default {
@@ -169,26 +170,69 @@ export default {
      */
     getDataSource(attrDefine) {
       if (attrDefine.dataSource) {
-        let dataSource = attrDefine.dataSource
+        let dsDefine = attrDefine.dataSource;
+        let dataSource = null;
+        if (Array.isArray(dsDefine)) {
+          dataSource = dsDefine;
+        } else {
+          let type = dsDefine.type;
+          if (!type || type == 'static') {
+            dataSource = dsDefine.data;
+          }
+          //从配置中获取数据
+          else if(type == 'config'){
+            dataSource = [];
+            let configData = dsDefine.data;
+            let data = CONFIGS[configData];
+            if(data){
+              let textKey = dsDefine.text;
+              let valueKey = dsDefine.value;
+              let boldKey = dsDefine.bold;
+              let descKey = dsDefine.desc;
+              let underlineKey = dsDefine.underline;
+              let disabledKey = dsDefine.disabled;
+              let deletedKey = dsDefine.deleted;
+              let searchTextKey = dsDefine.searchText;
+              let fontFamilyKey = dsDefine.fontFamily;
+              data.forEach(item => {
+                let text = item[textKey];
+                let value = item[valueKey];
+                let bold = item[boldKey];
+                let desc = item[descKey];
+                let underline = item[underlineKey];
+                let disabled = item[disabledKey];
+                let deleted = item[deletedKey];
+                let searchText = item[searchTextKey];
+                let fontFamily = item[fontFamilyKey];
+                let rowData = { 'text': text, 'searchText': searchText, 'value': value,
+                'bold':bold,'desc':desc,'underline':underline ,'disabled':disabled,'deleted':deleted,'fontFamily': fontFamily
+                }
+                dataSource.push(rowData);
+              });
+              dsDefine.type = 'static';     
+              dsDefine.data = dataSource;
+            }
+          }
+        }
         //处理图片,处理搜索
         let returnDatas = [];
-
-        dataSource.forEach(item => {
-          if (item.img) {
-            if (ICONS[item.img]) {
-              item.img = ICONS[item.img].default;
-            }
-          }
-          if (this.searchText) {
-            if (item.text.indexOf(this.searchText) != -1 || item.value.indexOf(this.searchText) != -1 || (item.searchText && item.searchText.indexOf(this.searchText) != -1)) {
-              returnDatas.push(item);
-            }
-          } else {
-            returnDatas.push(item);
-          }
-        });
-        console.log("调用")
-        this.dataSource = returnDatas;
+          if(dataSource){
+            dataSource.forEach(item => {
+              if (item.img) {
+                if (ICONS[item.img]) {
+                  item.img = ICONS[item.img].default;
+                }
+              }
+              if (this.searchText) {
+                if (item.text.indexOf(this.searchText) != -1 || item.value.indexOf(this.searchText) != -1 || (item.searchText && item.searchText.indexOf(this.searchText) != -1)) {
+                  returnDatas.push(item);
+                }
+              } else {
+                returnDatas.push(item);
+              }
+            });
+            this.dataSource = returnDatas;
+        }
         //过滤搜索条件
         return this.dataSource
       }
@@ -262,6 +306,12 @@ export default {
 .ddei_combox_show_dialog_content .itembox_disabled {
   color: rgb(210, 210, 210);
   text-decoration: line-through;
+
+}
+
+.ddei_combox_show_dialog_content .itembox_disabled:hover {
+  cursor:not-allowed !important;
+
 }
 
 .ddei_combox_show_dialog_content .itembox_underline {
