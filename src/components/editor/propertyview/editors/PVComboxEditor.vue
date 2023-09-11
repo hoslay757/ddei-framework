@@ -91,12 +91,16 @@ export default {
     }
     this.getDataSource(this.attrDefine)
     let type = this.getDataValue();
-    let text = this.getDataText(type.value);
+    let define = this.getDataDefine(type.value);
     if (!type.isDefault) {
       this.attrDefine.value = type.value;
-      this.$refs.combox.text = text;
+      this.$refs.combox.text = define.text;
+      if(define.img){
+        this.$refs.combox.img = define.img;
+      }
     } else {
-      this.$refs.combox.defaultText = text;
+      this.$refs.combox.defaultText = define.text;
+      this.$refs.combox.img = define.img;
     }
     this.$refs.combox.value = type.value;
     this.value = type.value;
@@ -104,18 +108,18 @@ export default {
   },
   methods: {
     /**
-     * 根据值获取文本
+     * 根据值获取选项定义
      * @param value 值
      */
-    getDataText(value) {
+    getDataDefine(value) {
       if (this.dataSource && value) {
         for (let i = 0; i < this.dataSource.length; i++) {
-          if (this.dataSource[i].value == value) {
-            return this.dataSource[i].text;
+          if (this.dataSource[i].value.toString() == value.toString()) {
+            return this.dataSource[i];
           }
         };
       }
-      return "";
+      return {text:""};
     },
 
     doSearch(text, evt) {
@@ -143,8 +147,12 @@ export default {
     valueChange(value, evt) {
 
       this.attrDefine.value = value;
-      let text = this.getDataText(value);
+      let itemDefine = this.getDataDefine(value);
+      let text = itemDefine.text;
       this.$refs.combox.text = text;
+      if(itemDefine.img){
+        this.$refs.combox.img = itemDefine.img;
+      }
       this.$refs.combox.value = value;
       this.value = value;
       //通过解析器获取有效值

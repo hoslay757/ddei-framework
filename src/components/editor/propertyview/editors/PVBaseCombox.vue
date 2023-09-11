@@ -1,10 +1,12 @@
 <template>
   <div :id="getEditorId(attrDefine.code)"
     :class="{ 'ddei_pv_base_combox': true, 'ddei_pv_base_combox_disabled': attrDefine.readonly }">
-    <div :class="{ 'textinput': true, 'textinput_expanded': expanded }">
-      <input type="text" :readonly="attrDefine.readonly || !canSearch" v-model="text" :placeholder="defaultText"
+    <div :class="{ 'textinput': true, 'textinput_expanded': expanded , 'display_img':img && attrDefine?.itemStyle?.display == 'img' , 'display_img_text': img && attrDefine?.itemStyle?.display == 'img-text'}">
+      <img :src="img" type="text" v-if="img && (attrDefine?.itemStyle?.display == 'img-text' || attrDefine?.itemStyle?.display == 'img')" 
+          @click="!attrDefine.readonly && !canSearch && showDialog()" />
+      <input type="text" v-if="!attrDefine?.itemStyle?.display || attrDefine?.itemStyle?.display == 'img-text' || attrDefine?.itemStyle?.display == 'text'" :readonly="attrDefine.readonly || !canSearch" v-model="text" :placeholder="defaultText"
         @click="!attrDefine.readonly && !canSearch && showDialog()" @keydown="search($event)" />
-      <div> <img style="width:8px;height:8px;margin:auto" src="../../icons/toolbox-expanded.png"
+      <div> <img style="width:8px;height:8px;margin:auto;float:none;" src="../../icons/toolbox-expanded.png"
           @click="!attrDefine.readonly && showDialog()" />
       </div>
     </div>
@@ -50,6 +52,8 @@ export default {
       value: null,
       //文本
       text: null,
+      //图片
+      img:null,
       defaultText: ""
     };
   },
@@ -155,7 +159,7 @@ export default {
   padding-right: 5px;
   border: 0.5px solid rgb(210, 210, 210);
   border-radius: 4px;
-  display: inline-block;
+  display: flex;
   padding-left: 5px;
 
 
@@ -167,9 +171,11 @@ export default {
 }
 
 
+
+
 .ddei_pv_base_combox .textinput input {
-  float: left;
-  width: calc(100% - 10px);
+  flex: 1 1 calc(100% - 10px);
+  width:calc(100% - 10px);
   border: transparent;
   outline: none;
   font-size: 13px;
@@ -178,11 +184,33 @@ export default {
 }
 
 .ddei_pv_base_combox .textinput div {
-  float: left;
+  flex:1;
   width: 10px;
   height: 20px;
 }
 
+
+
+
+
+.ddei_pv_base_combox .display_img input{
+  display:none;
+}
+
+.ddei_pv_base_combox .display_img img{
+  width:20px;
+  height:20px;
+}
+
+.ddei_pv_base_combox .display_img_text input{
+  width:calc(100% - 30px);
+}
+
+.ddei_pv_base_combox .display_img_text img{
+  float:left;
+  width:20px;
+  height:20px;
+}
 
 .ddei_combox_show_dialog {
   font-size: 13px;
