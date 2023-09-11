@@ -30,13 +30,16 @@
           <div class="title" v-if="!attrDefine.hiddenTitle">{{ attrDefine.name }}<span v-if="attrDefine.notNull">*</span>：
           </div>
           <div class="editor">
-            <PVTextEditor :attrDefine="attrDefine" v-if="attrDefine.controlType == 'text'"></PVTextEditor>
-            <PVRangeEditor :attrDefine="attrDefine" v-if="attrDefine.controlType == 'range'"></PVRangeEditor>
-            <PVColorEditor :attrDefine="attrDefine" v-if="attrDefine.controlType == 'color'"></PVColorEditor>
-            <PVRadioEditor :attrDefine="attrDefine" v-if="attrDefine.controlType == 'radio'"></PVRadioEditor>
-            <PVFontSizeEditor :attrDefine="attrDefine" v-if="attrDefine.controlType == 'font-size'"></PVFontSizeEditor>
-            <PVAlignTypeEditor :attrDefine="attrDefine" v-if="attrDefine.controlType == 'align-type'"></PVAlignTypeEditor>
-            <PVComboxEditor :attrDefine="attrDefine" v-if="attrDefine.controlType == 'combox'"></PVComboxEditor>
+            <PVTextEditor :attrDefine="attrDefine" v-if="reFresh && attrDefine.controlType == 'text'"></PVTextEditor>
+            <PVRangeEditor :attrDefine="attrDefine" v-if="reFresh && attrDefine.controlType == 'range'"></PVRangeEditor>
+            <PVColorEditor :attrDefine="attrDefine" v-if="reFresh && attrDefine.controlType == 'color'"></PVColorEditor>
+            <PVRadioEditor :attrDefine="attrDefine" v-if="reFresh && attrDefine.controlType == 'radio'"></PVRadioEditor>
+            <PVFontSizeEditor :attrDefine="attrDefine" v-if="reFresh && attrDefine.controlType == 'font-size'">
+            </PVFontSizeEditor>
+            <PVAlignTypeEditor :attrDefine="attrDefine" v-if="reFresh && attrDefine.controlType == 'align-type'">
+            </PVAlignTypeEditor>
+            <PVComboxEditor :attrDefine="attrDefine" v-if="reFresh && attrDefine.controlType == 'combox'">
+            </PVComboxEditor>
 
 
 
@@ -82,12 +85,20 @@ export default {
       topGroups: null,
       currentTopGroup: null,
       currentSubGroup: null,
+      reFresh: true
     };
   },
   computed: {
 
   },
-  watch: {},
+  watch: {
+    currentSubGroup() {
+      this.reFresh = false
+      this.$nextTick(() => {
+        this.reFresh = true
+      })
+    }
+  },
   components: {
     PVTextEditor,
     PVRangeEditor,
@@ -283,7 +294,7 @@ export default {
       }
       setTimeout(() => {
         this.$forceUpdate();
-      }, 10);
+      }, 100);
 
     },
 
@@ -609,5 +620,4 @@ export default {
 
 .ddei_editor_pv_subgroup_view_tab_panel span {
   color: red;
-}
-</style>
+}</style>
