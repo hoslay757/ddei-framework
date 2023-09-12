@@ -4,14 +4,16 @@
       <div class="itemboxs"
         :style="{ width: width ? width + 'px' : '', height: height ? height + 'px' : '', 'grid-template-columns': gridTemplateColumns, 'grid-template-rows': gridTemplateRows }">
         <div :style="{ width: attrDefine?.itemStyle?.width + 'px', height: attrDefine?.itemStyle?.height + 'px' }"
-          :class="{ 'itembox': true, 'itembox_selected': attrDefine?.value && attrDefine?.value?.indexOf(item.value) != -1, 'itembox_deleted': item.deleted, 'itembox_disabled': item.disabled, 'itembox_underline': item.underline, 'itembox_bold': item.bold }"
-          v-for="item in dataSource" @click="!item.disabled && valueChange(item.value, $event)" :title="item.desc">
+          :class="{ 'itembox': true, 'itembox_selected': attrDefine?.value && attrDefine?.value?.indexOf(item.value) != -1, 'itembox_deleted': item.deleted, 'itembox_disabled': item.disabled || (attrDefine?.itemStyle?.maxSelect && attrDefine?.itemStyle?.maxSelect <= attrDefine?.value?.length && attrDefine?.value?.indexOf(item.value) == -1), 'itembox_underline': item.underline, 'itembox_bold': item.bold }"
+          v-for="item in dataSource"
+          @click="!item.disabled && (!attrDefine?.itemStyle?.maxSelect || attrDefine?.itemStyle?.maxSelect > attrDefine?.value?.length || attrDefine?.value?.indexOf(item.value) != -1) && valueChange(item.value, $event)"
+          :title="item.desc">
           <div v-if="item.img" class="itembox_img">
             <img
               :style="{ width: attrDefine?.itemStyle?.imgWidth + 'px', height: attrDefine?.itemStyle?.imgHeight + 'px' }"
               :src="item.img" />
           </div>
-          <div class="itembox_text" v-if="item.text" :style="{'font-family':item.fontFamily }">{{ item.text }}</div>
+          <div class="itembox_text" v-if="item.text" :style="{ 'font-family': item.fontFamily }">{{ item.text }}</div>
         </div>
       </div>
     </PVBaseCombox>
@@ -66,21 +68,21 @@ export default {
     PVBaseCombox
   },
   watch: {
-    
+
   },
   created() {
-    
+
   },
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
-    let itemWidth = this.attrDefine?.itemStyle?.width ? this.attrDefine?.itemStyle?.width + 5 : 100;
+    let itemWidth = this.attrDefine?.itemStyle?.width ? this.attrDefine?.itemStyle?.width : 100;
     let itemCols = this.attrDefine?.itemStyle?.col ? this.attrDefine?.itemStyle?.col : 1;
     let itemHeight = this.attrDefine?.itemStyle?.height ? this.attrDefine?.itemStyle?.height : 30;
     let itemRows = this.attrDefine?.itemStyle?.row ? this.attrDefine?.itemStyle?.row : 0;
-    this.width = itemWidth * itemCols + 10;
+    this.width = (itemWidth + 5) * itemCols + 10;
     this.col = itemCols;
-    this.height = itemHeight * itemRows;
+    this.height = (itemHeight + 5) * itemRows;
     let gridTemplateColumns = this.gridTemplateColumns;
     if (this.col > 1) {
       for (let i = 2; i <= this.col; i++) {
@@ -100,6 +102,9 @@ export default {
     let itemDefine = this.getDataDefine(type.value);
     if (itemDefine?.length > 0) {
       let text = itemDefine[0].text;
+      for (let x = 1; x < itemDefine.length; x++) {
+        text += "," + itemDefine[x].text;
+      }
       this.$refs.combox.text = text;
       if (itemDefine.img) {
         this.$refs.combox.img = itemDefine[0].img;
@@ -108,7 +113,7 @@ export default {
       this.attrDefine.value = type.value;
       this.value = type.value;
     }
-    
+
   },
   methods: {
     /**
@@ -119,9 +124,9 @@ export default {
       let returnList = []
       if (this.dataSource && value) {
         for (let i = 0; i < this.dataSource.length; i++) {
-          for(let j = 0; j < value.length;j++){
-             if (this.dataSource[i].value.toString() == value[j].toString()) {
-              if(returnList.indexOf(this.getDataSource[i]) == -1){
+          for (let j = 0; j < value.length; j++) {
+            if (this.dataSource[i].value.toString() == value[j].toString()) {
+              if (returnList.indexOf(this.getDataSource[i]) == -1) {
                 returnList.push(this.dataSource[i]);
               }
             }
@@ -154,32 +159,34 @@ export default {
 
 
     valueChange(value, evt) {
-      if(!value){
+      if (!value) {
         return;
       }
-      if(!this.value){
+      if (!this.value) {
         this.value = [];
       }
-      let strValue = ""+value;
-      if(this.value.indexOf(strValue) == -1){
+      let strValue = "" + value;
+      if (this.value.indexOf(strValue) == -1) {
         this.value.push(strValue)
-      }else{
+      } else {
         let index = this.value.indexOf(strValue);
-        if(index != -1){
-           this.value.splice(index, 1);
+        if (index != -1) {
+          this.value.splice(index, 1);
         }
       }
 
       this.attrDefine.value = this.value;
-debugger
       let itemDefine = this.getDataDefine(this.value);
-      if(itemDefine?.length > 0){
-          let text = itemDefine[0].text;
-          this.$refs.combox.text = text;
-          if(itemDefine.img){
-            this.$refs.combox.img = itemDefine[0].img;
-          }
-          this.$refs.combox.value = itemDefine[0].value;
+      if (itemDefine?.length > 0) {
+        let text = itemDefine[0].text;
+        for (let x = 1; x < itemDefine.length; x++) {
+          text += "," + itemDefine[x].text;
+        }
+        this.$refs.combox.text = text;
+        if (itemDefine.img) {
+          this.$refs.combox.img = itemDefine[0].img;
+        }
+        this.$refs.combox.value = itemDefine[0].value;
       }
       //通过解析器获取有效值
       let parser: DDeiAbstractArrtibuteParser = this.attrDefine.getParser();
@@ -203,7 +210,7 @@ debugger
      * 获取数据源数据
      */
     getDataSource(attrDefine) {
-      let dataSources = DDeiEditorUtil.getDataSource(this.attrDefine,this.searchText);
+      let dataSources = DDeiEditorUtil.getDataSource(this.attrDefine, this.searchText);
       this.dataSource = dataSources;
       return this.dataSource;
     },
@@ -266,38 +273,38 @@ debugger
 
 .ddei_combox_show_dialog_content .itembox_selected {
   border: 1px solid #017fff;
-  overflow:hidden;
-  position:relative;
+  overflow: hidden;
+  position: relative;
 }
 
 .ddei_combox_show_dialog_content .itembox_selected::before {
-    position: absolute;
-    content: "";
-    -webkit-font-smoothing: antialiased;
-    background-color: #017fff;
-    -webkit-transform: rotate(45deg);
-    -ms-transform: rotate(45deg);
-    transform: rotate(45deg);
-    right: -8px;
-    bottom: -8px;
-    width: 15px;
-    height: 15px;
+  position: absolute;
+  content: "";
+  -webkit-font-smoothing: antialiased;
+  background-color: #017fff;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+  right: -8px;
+  bottom: -8px;
+  width: 15px;
+  height: 15px;
 }
 
 
 
 .ddei_combox_show_dialog_content .itembox_selected::after {
-    font-size: 12px;
-    line-height: 12px;
-    right: -3px;
-    bottom: -2px;
-    position: absolute;
-    -webkit-font-smoothing: antialiased;
-    content: "✓";
-    -webkit-transform: scale(0.5);
-    -ms-transform: scale(0.5);
-    transform: scale(0.5);
-    color: #fff;
+  font-size: 12px;
+  line-height: 12px;
+  right: -3px;
+  bottom: -2px;
+  position: absolute;
+  -webkit-font-smoothing: antialiased;
+  content: "✓";
+  -webkit-transform: scale(0.5);
+  -ms-transform: scale(0.5);
+  transform: scale(0.5);
+  color: #fff;
 }
 
 
@@ -307,12 +314,11 @@ debugger
 
 .ddei_combox_show_dialog_content .itembox_disabled {
   color: rgb(210, 210, 210);
-  text-decoration: line-through;
 
 }
 
 .ddei_combox_show_dialog_content .itembox_disabled:hover {
-  cursor:not-allowed !important;
+  cursor: not-allowed !important;
 
 }
 

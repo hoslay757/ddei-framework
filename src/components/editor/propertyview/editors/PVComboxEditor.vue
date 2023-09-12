@@ -11,7 +11,7 @@
               :style="{ width: attrDefine?.itemStyle?.imgWidth + 'px', height: attrDefine?.itemStyle?.imgHeight + 'px' }"
               :src="item.img" />
           </div>
-          <div class="itembox_text" v-if="item.text" :style="{'font-family':item.fontFamily }">{{ item.text }}</div>
+          <div class="itembox_text" v-if="item.text" :style="{ 'font-family': item.fontFamily }">{{ item.text }}</div>
         </div>
       </div>
     </PVBaseCombox>
@@ -74,13 +74,13 @@ export default {
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
-    let itemWidth = this.attrDefine?.itemStyle?.width ? this.attrDefine?.itemStyle?.width + 5 : 100;
+    let itemWidth = this.attrDefine?.itemStyle?.width ? this.attrDefine?.itemStyle?.width : 100;
     let itemCols = this.attrDefine?.itemStyle?.col ? this.attrDefine?.itemStyle?.col : 1;
     let itemHeight = this.attrDefine?.itemStyle?.height ? this.attrDefine?.itemStyle?.height : 30;
     let itemRows = this.attrDefine?.itemStyle?.row ? this.attrDefine?.itemStyle?.row : 0;
-    this.width = itemWidth * itemCols + 10;
+    this.width = (itemWidth + 5) * itemCols + 10;
     this.col = itemCols;
-    this.height = itemHeight * itemRows;
+    this.height = (itemHeight + 5) * itemRows;
     let gridTemplateColumns = this.gridTemplateColumns;
     if (this.col > 1) {
       for (let i = 2; i <= this.col; i++) {
@@ -101,7 +101,7 @@ export default {
     if (!type.isDefault) {
       this.attrDefine.value = type.value;
       this.$refs.combox.text = define.text;
-      if(define.img){
+      if (define.img) {
         this.$refs.combox.img = define.img;
       }
     } else {
@@ -125,7 +125,7 @@ export default {
           }
         };
       }
-      return {text:""};
+      return { text: "" };
     },
 
     doSearch(text, evt) {
@@ -156,7 +156,7 @@ export default {
       let itemDefine = this.getDataDefine(value);
       let text = itemDefine.text;
       this.$refs.combox.text = text;
-      if(itemDefine.img){
+      if (itemDefine.img) {
         this.$refs.combox.img = itemDefine.img;
       }
       this.$refs.combox.value = value;
@@ -183,7 +183,7 @@ export default {
      * 获取数据源数据
      */
     getDataSource(attrDefine) {
-      let dataSources = DDeiEditorUtil.getDataSource(this.attrDefine,this.searchText);
+      let dataSources = DDeiEditorUtil.getDataSource(this.attrDefine, this.searchText);
       this.dataSource = dataSources;
       return this.dataSource;
     },
@@ -259,7 +259,7 @@ export default {
 }
 
 .ddei_combox_show_dialog_content .itembox_disabled:hover {
-  cursor:not-allowed !important;
+  cursor: not-allowed !important;
 
 }
 

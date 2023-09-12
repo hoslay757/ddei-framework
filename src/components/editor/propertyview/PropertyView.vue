@@ -26,27 +26,39 @@
         :style="{ height: 'calc(100vh - ' + (editor?.topHeight + editor?.bottomHeight + 40) + 'px' }">
         <div
           :class="{ 'ddei_editor_pv_subgroup_view_tab_panel_editors_column': attrDefine.display == 'column', 'ddei_editor_pv_subgroup_view_tab_panel_editors_row': attrDefine.display != 'column', 'empty_value': attrDefine.value ? false : true }"
-          v-for="attrDefine in currentSubGroup?.children" :title="attrDefine.desc">  
-          <div class="title" v-if="!attrDefine.hiddenTitle && attrDefine?.visiable != false">{{ attrDefine.name }}<span v-if="attrDefine.notNull">*</span>：
+          v-for="attrDefine in currentSubGroup?.children" :title="attrDefine.desc">
+          <div class="title" v-if="!attrDefine.hiddenTitle && attrDefine?.visiable != false">{{ attrDefine.name }}<span
+              v-if="attrDefine.notNull">*</span>：
           </div>
           <div class="editor" v-if="attrDefine.visiable != false">
-            <PVTextEditor :controlDefine="controlDefine" :attrDefine="attrDefine" v-if="reFresh  && attrDefine?.visiable != false && attrDefine.controlType == 'text'"></PVTextEditor>
-            <PVRangeEditor :controlDefine="controlDefine" :attrDefine="attrDefine" v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'range'"></PVRangeEditor>
-            <PVColorEditor :controlDefine="controlDefine" :attrDefine="attrDefine" v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'color'"></PVColorEditor>
-            <PVRadioEditor :controlDefine="controlDefine" :attrDefine="attrDefine" v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'radio'"></PVRadioEditor>
-            <PVFontSizeEditor :controlDefine="controlDefine" :attrDefine="attrDefine" v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'font-size'">
+            <PVTextEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'text'">
+            </PVTextEditor>
+            <PVRangeEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'range'"></PVRangeEditor>
+            <PVColorEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'color'"></PVColorEditor>
+            <PVRadioEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'radio'"></PVRadioEditor>
+            <PVFontSizeEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'font-size'">
             </PVFontSizeEditor>
-            <PVAlignTypeEditor :controlDefine="controlDefine" :attrDefine="attrDefine" v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'align-type'">
+            <PVAlignTypeEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'align-type'">
             </PVAlignTypeEditor>
-            <PVComboxEditor :controlDefine="controlDefine" :attrDefine="attrDefine" v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'combox'">
+            <PVComboxEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'combox'">
             </PVComboxEditor>
-            <PVBorderTypeEditor :controlDefine="controlDefine" :attrDefine="attrDefine" v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'border-type'">
-              </PVBorderTypeEditor>
-            <PVFillTypeEditor :controlDefine="controlDefine" :attrDefine="attrDefine" v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'fill-type'">
+            <PVBorderTypeEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'border-type'">
+            </PVBorderTypeEditor>
+            <PVFillTypeEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'fill-type'">
             </PVFillTypeEditor>
-            <PVExCheckboxEditor :controlDefine="controlDefine" :attrDefine="attrDefine" v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'ex-checkbox'">
+            <PVExCheckboxEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'ex-checkbox'">
             </PVExCheckboxEditor>
-            
+
           </div>
         </div>
       </div>
@@ -391,10 +403,10 @@ export default {
         //重新设置画布大小
         this.editor.middleWidth += deltaX;
       } else {
-        let deltaX = 237;
+        let deltaX = 292;
         let frameRightElement = document.getElementById("ddei_editor_frame_right");
-        this.editor.rightWidth = 275;
-        frameRightElement.style.flexBasis = "275px";
+        this.editor.rightWidth = 330;
+        frameRightElement.style.flexBasis = "330px";
         //重新设置画布大小
         this.editor.middleWidth -= deltaX;
       }
@@ -630,4 +642,5 @@ export default {
 
 .ddei_editor_pv_subgroup_view_tab_panel span {
   color: red;
-}</style>
+}
+</style>

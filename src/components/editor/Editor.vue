@@ -13,7 +13,7 @@
           <CanvasView></CanvasView>
           <QuickColorView></QuickColorView>
         </div>
-        <div style="flex:0 0 275px" class="right" id="ddei_editor_frame_right">
+        <div style="flex:0 0 330px" class="right" id="ddei_editor_frame_right">
           <PropertyView></PropertyView>
         </div>
       </div>
@@ -143,7 +143,7 @@ export default {
             break;
           case 2:
             if (deltaX != 0) {
-              if (this.editor.middleWidth + deltaX >= 300 && frameRightElement.offsetWidth - deltaX >= 275) {
+              if (this.editor.middleWidth + deltaX >= 300 && frameRightElement.offsetWidth - deltaX > 330) {
                 frameRightElement.style.flexBasis = (frameRightElement.offsetWidth - deltaX) + "px";
                 frameRightElement.style.flexShrink = "0";
                 frameRightElement.style.flexGrow = "0";
