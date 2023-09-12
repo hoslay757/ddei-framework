@@ -470,6 +470,7 @@ export const datas = {
       'dataSource': [{ 'text': '微软雅黑', 'value': '1', 'img': 'icon-add' }, { 'text': '方正', 'value': '2', 'img': 'icon-reduce' }, { 'text': '正楷', 'value': '3' }, { 'text': '宋体', 'value': '4', 'img': 'icon-align-center' }, { 'text': 'PingFang', 'value': '5' }, { 'text': '斜体', 'searchText': 'xxx', 'value': '6' }],
       'itemStyle': { width: 100, height: 30, col: 2, row: 3, imgWidth: 20, imgHeight: 20 },
       'canSearch': true,
+      'isArray': true,
       'defaultValue': '2',
       'orderNo': 5,
       'visiable': true

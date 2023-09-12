@@ -4,7 +4,7 @@
       <div class="itemboxs"
         :style="{ width: width ? width + 'px' : '', height: height ? height + 'px' : '', 'grid-template-columns': gridTemplateColumns, 'grid-template-rows': gridTemplateRows }">
         <div :style="{ width: attrDefine?.itemStyle?.width + 'px', height: attrDefine?.itemStyle?.height + 'px' }"
-          :class="{ 'itembox': true, 'itembox_selected': item.value == attrDefine.value, 'itembox_deleted': item.deleted, 'itembox_disabled': item.disabled, 'itembox_underline': item.underline, 'itembox_bold': item.bold }"
+          :class="{ 'itembox': true, 'itembox_selected': attrDefine?.value && attrDefine?.value?.indexOf(item.value) != -1, 'itembox_deleted': item.deleted, 'itembox_disabled': item.disabled, 'itembox_underline': item.underline, 'itembox_bold': item.bold }"
           v-for="item in dataSource" @click="!item.disabled && valueChange(item.value, $event)" :title="item.desc">
           <div v-if="item.img" class="itembox_img">
             <img
@@ -66,10 +66,10 @@ export default {
     PVBaseCombox
   },
   watch: {
-
+    
   },
   created() {
-
+    
   },
   mounted() {
     //获取编辑器
@@ -97,20 +97,18 @@ export default {
     }
     this.getDataSource(this.attrDefine)
     let type = this.getDataValue();
-    let define = this.getDataDefine(type.value);
-    if (!type.isDefault) {
-      this.attrDefine.value = type.value;
-      this.$refs.combox.text = define.text;
-      if(define.img){
-        this.$refs.combox.img = define.img;
+    let itemDefine = this.getDataDefine(type.value);
+    if (itemDefine?.length > 0) {
+      let text = itemDefine[0].text;
+      this.$refs.combox.text = text;
+      if (itemDefine.img) {
+        this.$refs.combox.img = itemDefine[0].img;
       }
-    } else {
-      this.$refs.combox.defaultText = define.text;
-      this.$refs.combox.img = define.img;
+      this.$refs.combox.value = itemDefine[0].value;
+      this.attrDefine.value = type.value;
+      this.value = type.value;
     }
-    this.$refs.combox.value = type.value;
-    this.value = type.value;
-
+    
   },
   methods: {
     /**
@@ -118,14 +116,19 @@ export default {
      * @param value 值
      */
     getDataDefine(value) {
+      let returnList = []
       if (this.dataSource && value) {
         for (let i = 0; i < this.dataSource.length; i++) {
-          if (this.dataSource[i].value.toString() == value.toString()) {
-            return this.dataSource[i];
+          for(let j = 0; j < value.length;j++){
+             if (this.dataSource[i].value.toString() == value[j].toString()) {
+              if(returnList.indexOf(this.getDataSource[i]) == -1){
+                returnList.push(this.dataSource[i]);
+              }
+            }
           }
         };
       }
-      return {text:""};
+      return returnList;
     },
 
     doSearch(text, evt) {
@@ -151,20 +154,37 @@ export default {
 
 
     valueChange(value, evt) {
-
-      this.attrDefine.value = value;
-      let itemDefine = this.getDataDefine(value);
-      let text = itemDefine.text;
-      this.$refs.combox.text = text;
-      if(itemDefine.img){
-        this.$refs.combox.img = itemDefine.img;
+      if(!value){
+        return;
       }
-      this.$refs.combox.value = value;
-      this.value = value;
+      if(!this.value){
+        this.value = [];
+      }
+      let strValue = ""+value;
+      if(this.value.indexOf(strValue) == -1){
+        this.value.push(strValue)
+      }else{
+        let index = this.value.indexOf(strValue);
+        if(index != -1){
+           this.value.splice(index, 1);
+        }
+      }
+
+      this.attrDefine.value = this.value;
+debugger
+      let itemDefine = this.getDataDefine(this.value);
+      if(itemDefine?.length > 0){
+          let text = itemDefine[0].text;
+          this.$refs.combox.text = text;
+          if(itemDefine.img){
+            this.$refs.combox.img = itemDefine[0].img;
+          }
+          this.$refs.combox.value = itemDefine[0].value;
+      }
       //通过解析器获取有效值
       let parser: DDeiAbstractArrtibuteParser = this.attrDefine.getParser();
       //属性值
-      let parsedValue = parser.parseValue(value);
+      let parsedValue = parser.parseValue(this.value);
       //获取属性路径
       let paths = [];
       this.attrDefine?.mapping?.forEach(element => {
