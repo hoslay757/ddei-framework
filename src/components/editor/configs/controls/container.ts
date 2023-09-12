@@ -117,7 +117,7 @@ export const styles = {
       'group': '边框',
       'controlType': 'combox',
       'dataSource': [
-        { 'img': 'icon-line-00', 'text': '1', 'value': [1] },
+        { 'img': 'icon-line-00', 'text': '1', 'value': [] },
         { 'img': 'icon-line-00', 'text': '2', 'value': [10, 5] },
         { 'img': 'icon-line-00', 'text': '3', 'value': [5, 5] },
         { 'img': 'icon-line-00', 'text': '4', 'value': [10, 4, 2, 4] },

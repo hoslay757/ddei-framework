@@ -40,7 +40,12 @@ export default {
     searchMethod: {
       type: Function,
       defaut: null
-    }
+    },
+    //当前控件定义
+    controlDefine: {
+      type: Object,
+      default: null
+    },
   },
   data() {
     return {

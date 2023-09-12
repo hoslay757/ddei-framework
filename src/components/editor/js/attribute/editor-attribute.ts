@@ -18,6 +18,7 @@ class DDeiEditorArrtibute extends DDeiArrtibuteDefine {
     this.step = props.step ? props.step : 1;
     this.itemStyle = props.itemStyle ? props.itemStyle : null;
     this.canSearch = props.canSearch ? props.canSearch : false;
+    this.exmapping = props.exmapping;
   }
   // ============================ 属性 ===============================
   //属性所在分组
@@ -37,6 +38,8 @@ class DDeiEditorArrtibute extends DDeiArrtibuteDefine {
   //当前属性值
   value: object | null = null;
 
+  //特殊控件的值映射字段
+  exmapping: string[];
   //单个元素的样式，用于combox等控件控制样式
   itemStyle: object | null = null;
   //是否允许搜索
@@ -44,7 +47,47 @@ class DDeiEditorArrtibute extends DDeiArrtibuteDefine {
   //数字框每次增加数
   step: number = 1;
   // ============================ 方法 ===============================
+
+
+  /**
+   * 
+   * @param propTopGroup 隐藏属性
+   * @param paths 
+   */
+  static hiddenAttributesByCode(propTopGroup: object, ...paths: string): object | null {
+    if (propTopGroup?.groups?.length > 0 && paths) {
+      propTopGroup.groups.forEach(topGroup => {
+        if (topGroup?.children?.length > 0) {
+          topGroup.children.forEach(item => {
+            if (paths.indexOf(item.code) != -1) {
+              item.visiable = false;
+            }
+          });
+        }
+      });
+    }
+  }
+
+  /**
+   * 显示属性
+   * @param propTopGroup 
+   * @param paths 
+   */
+  static showAttributesByCode(propTopGroup: object, ...paths: string): object | null {
+    if (propTopGroup?.groups?.length > 0 && paths) {
+      propTopGroup.groups.forEach(topGroup => {
+        if (topGroup?.children?.length > 0) {
+          topGroup.children.forEach(item => {
+            if (paths.indexOf(item.code) != -1) {
+              item.visiable = true;
+            }
+          });
+        }
+      });
+    }
+  }
 }
+
 
 
 

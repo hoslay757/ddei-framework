@@ -190,17 +190,17 @@ class DDeiRectangleCanvasRender {
         //颜色
         ctx.strokeStyle = DDeiUtil.getColor(color);
         if (i == 1) {
-          ctx.moveTo(ratPos.x, ratPos.y + lineOffset);
-          ctx.lineTo(ratPos.x + ratPos.width, ratPos.y + lineOffset);
+          ctx.moveTo(ratPos.x + lineOffset, ratPos.y + lineOffset);
+          ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + lineOffset);
         } else if (i == 2) {
-          ctx.moveTo(ratPos.x + ratPos.width - lineOffset, ratPos.y);
-          ctx.lineTo(ratPos.x + ratPos.width - lineOffset, ratPos.y + ratPos.height);
+          ctx.moveTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + lineOffset);
+          ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + ratPos.height + lineOffset);
         } else if (i == 3) {
-          ctx.moveTo(ratPos.x, ratPos.y + ratPos.height - lineOffset);
-          ctx.lineTo(ratPos.x + ratPos.width, ratPos.y + ratPos.height - lineOffset);
+          ctx.moveTo(ratPos.x + lineOffset, ratPos.y + ratPos.height + lineOffset);
+          ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + ratPos.height + lineOffset);
         } else if (i == 4) {
-          ctx.moveTo(ratPos.x + lineOffset, ratPos.y);
-          ctx.lineTo(ratPos.x + lineOffset, ratPos.y + ratPos.height);
+          ctx.moveTo(ratPos.x + lineOffset, ratPos.y + lineOffset);
+          ctx.lineTo(ratPos.x + lineOffset, ratPos.y + ratPos.height + lineOffset);
         }
         ctx.stroke();
         //恢复状态
@@ -267,9 +267,10 @@ class DDeiRectangleCanvasRender {
     //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
     let fillColor = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "fill.color", true);
     let fillOpacity = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "fill.opacity", true);
+    let fillDisabled = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "fill.disabled", true);
     //如果拥有填充色，则使用填充色
 
-    if (fillColor) {
+    if (!fillDisabled && fillColor && (!fillOpacity || fillOpacity > 0)) {
       ctx.fillStyle = DDeiUtil.getColor(fillColor);
       //透明度
       if (fillOpacity != null && !fillOpacity != undefined) {

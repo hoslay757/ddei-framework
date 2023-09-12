@@ -61,6 +61,11 @@ export default {
       type: DDeiEditorArrtibute,
       default: null
     },
+    //当前控件定义
+    controlDefine: {
+      type: Object,
+      default: null
+    },
   },
   data() {
     return {
@@ -165,6 +170,10 @@ export default {
         //推送信息进入总线
         this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: ["textStyle.align"], value: alignValue }, evt, true);
         this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: ["textStyle.valign"], value: valignValue }, evt, true);
+        //根据code以及mapping设置属性值
+        DDeiUtil.setAttrValueByPath(this.attrDefine.model, ["textStyle.align"], alignValue)
+        //根据code以及mapping设置属性值
+        DDeiUtil.setAttrValueByPath(this.attrDefine.model, ["textStyle.valign"], valignValue)
       });
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
       this.editor.bus.executeAll();

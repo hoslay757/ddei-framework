@@ -24,6 +24,11 @@ export default {
       type:DDeiEditorArrtibute,
       default:null
     },
+    //当前控件定义
+    controlDefine: {
+      type: Object,
+      default: null
+    },
   },
   data() {
     return {

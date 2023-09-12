@@ -26,23 +26,27 @@
         :style="{ height: 'calc(100vh - ' + (editor?.topHeight + editor?.bottomHeight + 40) + 'px' }">
         <div
           :class="{ 'ddei_editor_pv_subgroup_view_tab_panel_editors_column': attrDefine.display == 'column', 'ddei_editor_pv_subgroup_view_tab_panel_editors_row': attrDefine.display != 'column', 'empty_value': attrDefine.value ? false : true }"
-          v-for="attrDefine in currentSubGroup?.children" :title="attrDefine.desc">
-          <div class="title" v-if="!attrDefine.hiddenTitle">{{ attrDefine.name }}<span v-if="attrDefine.notNull">*</span>：
+          v-for="attrDefine in currentSubGroup?.children" :title="attrDefine.desc">  
+          <div class="title" v-if="!attrDefine.hiddenTitle && attrDefine?.visiable != false">{{ attrDefine.name }}<span v-if="attrDefine.notNull">*</span>：
           </div>
-          <div class="editor">
-            <PVTextEditor :attrDefine="attrDefine" v-if="reFresh && attrDefine.controlType == 'text'"></PVTextEditor>
-            <PVRangeEditor :attrDefine="attrDefine" v-if="reFresh && attrDefine.controlType == 'range'"></PVRangeEditor>
-            <PVColorEditor :attrDefine="attrDefine" v-if="reFresh && attrDefine.controlType == 'color'"></PVColorEditor>
-            <PVRadioEditor :attrDefine="attrDefine" v-if="reFresh && attrDefine.controlType == 'radio'"></PVRadioEditor>
-            <PVFontSizeEditor :attrDefine="attrDefine" v-if="reFresh && attrDefine.controlType == 'font-size'">
+          <div class="editor" v-if="attrDefine.visiable != false">
+            <PVTextEditor :controlDefine="controlDefine" :attrDefine="attrDefine" v-if="reFresh  && attrDefine?.visiable != false && attrDefine.controlType == 'text'"></PVTextEditor>
+            <PVRangeEditor :controlDefine="controlDefine" :attrDefine="attrDefine" v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'range'"></PVRangeEditor>
+            <PVColorEditor :controlDefine="controlDefine" :attrDefine="attrDefine" v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'color'"></PVColorEditor>
+            <PVRadioEditor :controlDefine="controlDefine" :attrDefine="attrDefine" v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'radio'"></PVRadioEditor>
+            <PVFontSizeEditor :controlDefine="controlDefine" :attrDefine="attrDefine" v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'font-size'">
             </PVFontSizeEditor>
-            <PVAlignTypeEditor :attrDefine="attrDefine" v-if="reFresh && attrDefine.controlType == 'align-type'">
+            <PVAlignTypeEditor :controlDefine="controlDefine" :attrDefine="attrDefine" v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'align-type'">
             </PVAlignTypeEditor>
-            <PVComboxEditor :attrDefine="attrDefine" v-if="reFresh && attrDefine.controlType == 'combox'">
+            <PVComboxEditor :controlDefine="controlDefine" :attrDefine="attrDefine" v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'combox'">
             </PVComboxEditor>
-
-
-
+            <PVBorderTypeEditor :controlDefine="controlDefine" :attrDefine="attrDefine" v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'border-type'">
+              </PVBorderTypeEditor>
+            <PVFillTypeEditor :controlDefine="controlDefine" :attrDefine="attrDefine" v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'fill-type'">
+            </PVFillTypeEditor>
+            <PVExCheckboxEditor :controlDefine="controlDefine" :attrDefine="attrDefine" v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'ex-checkbox'">
+            </PVExCheckboxEditor>
+            
           </div>
         </div>
       </div>
@@ -65,6 +69,9 @@ import PVRadioEditor from './editors/PVRadioEditor.vue'
 import PVFontSizeEditor from './editors/PVFontSizeEditor.vue'
 import PVAlignTypeEditor from './editors/PVAlignTypeEditor.vue'
 import PVComboxEditor from './editors/PVComboxEditor.vue'
+import PVBorderTypeEditor from './editors/PVBorderTypeEditor.vue'
+import PVFillTypeEditor from './editors/PVFillTypeEditor.vue'
+import PVExCheckboxEditor from './editors/PVExCheckboxEditor.vue'
 import ICONS from "../js/icon"
 export default {
   name: "DDei-Editor-PropertyView",
@@ -106,7 +113,10 @@ export default {
     PVRadioEditor,
     PVFontSizeEditor,
     PVAlignTypeEditor,
-    PVComboxEditor
+    PVComboxEditor,
+    PVBorderTypeEditor,
+    PVFillTypeEditor,
+    PVExCheckboxEditor
   },
   created() {
     // 监听obj对象中prop属性的变化

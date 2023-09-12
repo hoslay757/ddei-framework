@@ -123,7 +123,7 @@ export const styles = {
       'group': '边框',
       'controlType': 'combox',
       'dataSource': [
-        { 'img': 'icon-line-00', 'text': '1', 'value': [1] },
+        { 'img': 'icon-line-00', 'text': '1', 'value': [] },
         { 'img': 'icon-line-00', 'text': '2', 'value': [10, 5] },
         { 'img': 'icon-line-00', 'text': '3', 'value': [5, 5] },
         { 'img': 'icon-line-00', 'text': '4', 'value': [10, 4, 2, 4] },
@@ -139,7 +139,7 @@ export const styles = {
       'itemStyle': { width: 80, height: 25, col: 2, row: 6, imgWidth: 60, imgHeight: 20, display: "img-text" },
       'mapping': ["border.dash"],
       'dataType': 'integer',
-      'defaultValue': [1],
+      'defaultValue': [],
       'isArray': true,
       'type': 1,
       'orderNo': 5,

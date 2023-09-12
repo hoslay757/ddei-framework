@@ -1,4 +1,7 @@
 import { controlOriginDefinies } from "../../configs/toolgroup"
+import DDeiEditorArrtibute from "../attribute/editor-attribute";
+import CONFIGS from "../../js/config"
+import ICONS from "../../js/icon"
 
 class DDeiEditorUtil {
 
@@ -63,6 +66,80 @@ class DDeiEditorUtil {
     }
 
     return returnDatas;
+  }
+
+  /**
+    * 获取数据源数据
+    */
+  static getDataSource(attrDefine: DDeiEditorArrtibute, searchText: string | null = null): object[] | null {
+    if (attrDefine.dataSource) {
+      let dsDefine = attrDefine.dataSource;
+      let dataSource = null;
+      if (Array.isArray(dsDefine)) {
+        dataSource = dsDefine;
+      } else {
+        let type = dsDefine.type;
+        if (!type || type == 'static') {
+          dataSource = dsDefine.data;
+        }
+        //从配置中获取数据
+        else if (type == 'config') {
+          dataSource = [];
+          let configData = dsDefine.data;
+          let data = CONFIGS[configData];
+          if (data) {
+            let textKey = dsDefine.text;
+            let valueKey = dsDefine.value;
+            let boldKey = dsDefine.bold;
+            let descKey = dsDefine.desc;
+            let underlineKey = dsDefine.underline;
+            let disabledKey = dsDefine.disabled;
+            let deletedKey = dsDefine.deleted;
+            let searchTextKey = dsDefine.searchText;
+            let fontFamilyKey = dsDefine.fontFamily;
+            data.forEach(item => {
+              let text = item[textKey];
+              let value = item[valueKey];
+              let bold = item[boldKey];
+              let desc = item[descKey];
+              let underline = item[underlineKey];
+              let disabled = item[disabledKey];
+              let deleted = item[deletedKey];
+              let searchText = item[searchTextKey];
+              let fontFamily = item[fontFamilyKey];
+              let rowData = {
+                'text': text, 'searchText': searchText, 'value': value,
+                'bold': bold, 'desc': desc, 'underline': underline, 'disabled': disabled, 'deleted': deleted, 'fontFamily': fontFamily
+              }
+              dataSource.push(rowData);
+            });
+            dsDefine.type = 'static';
+            dsDefine.data = dataSource;
+          }
+        }
+      }
+      //处理图片,处理搜索
+      let returnDatas = [];
+      if (dataSource) {
+        dataSource.forEach(item => {
+          if (item.img) {
+            if (ICONS[item.img]) {
+              item.img = ICONS[item.img].default;
+            }
+          }
+          if (searchText) {
+            if (item.text.indexOf(searchText) != -1 || item.value.indexOf(searchText) != -1 || (item.searchText && item.searchText.indexOf(searchText) != -1)) {
+              returnDatas.push(item);
+            }
+          } else {
+            returnDatas.push(item);
+          }
+        });
+      }
+      //过滤搜索条件
+      return returnDatas
+    }
+    return [];
   }
 
 }

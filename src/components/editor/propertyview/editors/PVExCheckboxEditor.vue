@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'ddei_pv_editor_combox': true, 'ddei_pv_editor_combox_disabled': attrDefine.readonly }">
+  <div :class="{ 'ddei_pv_editor_excheckbox': true, 'ddei_pv_editor_excheckbox_disabled': attrDefine.readonly }">
     <PVBaseCombox :attrDefine="attrDefine" :searchMethod="doSearch" ref="combox" :canSearch="attrDefine.canSearch">
       <div class="itemboxs"
         :style="{ width: width ? width + 'px' : '', height: height ? height + 'px' : '', 'grid-template-columns': gridTemplateColumns, 'grid-template-rows': gridTemplateRows }">
@@ -30,7 +30,7 @@ import ICONS from "../../js/icon"
 import DDeiEditorUtil from '../../js/util/editor-util';
 
 export default {
-  name: "DDei-Editor-PV-Combox",
+  name: "DDei-Editor-PV-ExCheckbox",
   extends: null,
   mixins: [],
   props: {
@@ -193,11 +193,11 @@ export default {
 
 <style scoped>
 /**以下为combox属性编辑器 */
-.ddei_pv_editor_combox {
+.ddei_pv_editor_excheckbox {
   margin-top: 4px;
 }
 
-.ddei_pv_editor_combox_disabled {}
+.ddei_pv_editor_excheckbox_disabled {}
 
 .ddei_combox_show_dialog_content .itemboxs {
   border-radius: 4px;
@@ -245,8 +245,41 @@ export default {
 
 
 .ddei_combox_show_dialog_content .itembox_selected {
-  background-color: rgb(240, 240, 240) !important;
+  border: 1px solid #017fff;
+  overflow:hidden;
+  position:relative;
 }
+
+.ddei_combox_show_dialog_content .itembox_selected::before {
+    position: absolute;
+    content: "";
+    -webkit-font-smoothing: antialiased;
+    background-color: #017fff;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+    right: -8px;
+    bottom: -8px;
+    width: 15px;
+    height: 15px;
+}
+
+
+
+.ddei_combox_show_dialog_content .itembox_selected::after {
+    font-size: 12px;
+    line-height: 12px;
+    right: -3px;
+    bottom: -2px;
+    position: absolute;
+    -webkit-font-smoothing: antialiased;
+    content: "✓";
+    -webkit-transform: scale(0.5);
+    -ms-transform: scale(0.5);
+    transform: scale(0.5);
+    color: #fff;
+}
+
 
 .ddei_combox_show_dialog_content .itembox_deleted {
   text-decoration: line-through;
