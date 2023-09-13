@@ -314,6 +314,23 @@ class DDeiRectangleCanvasRender {
     let autoScaleFill = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.autoScaleFill", true);
     //镂空
     let hollow = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.hollow", true);
+
+    //粗体
+    let bold = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.bold", true);
+
+    //斜体
+    let italic = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.italic", true);
+
+    //下划线
+    let underline = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.underline", true);
+
+    //删除线
+    let deleteline = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.deleteline", true);
+
+    //删除线
+    let topline = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.topline", true);
+
+
     //自动换行
     let feed = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.feed", true);
     //如果字体不存在则退出，不输出
@@ -375,7 +392,14 @@ class DDeiRectangleCanvasRender {
           }
         }
         //设置字体
-        ctx.font = fontSize + "px " + fiFamily
+        let font = fontSize + "px " + fiFamily;
+        if (bold == '1') {
+          font = "bold " + font;
+        }
+        if (italic == '1') {
+          font = "italic " + font;
+        }
+        ctx.font = font;
         //设置字体颜色
         ctx.fillStyle = fiColor
 
@@ -484,6 +508,7 @@ class DDeiRectangleCanvasRender {
             } else {
               ctx.fillText(rRect.text, x, y + rRect.height * tci)
             }
+
           } else if (align == 2) {
             if (hollow == 1) {
               ctx.strokeText(rRect.text, ratPos.x + (ratPos.width - rRect.width) * 0.5, y + rRect.height * tci)
@@ -507,6 +532,33 @@ class DDeiRectangleCanvasRender {
           ctx.strokeText(textContainer[0].text, x, y)
         } else {
           ctx.fillText(textContainer[0].text, x, y)
+        }
+        if (underline == '1') {
+          ctx.beginPath();
+          ctx.strokeStyle = fiColor;
+          ctx.lineWidth = 2;
+          ctx.moveTo(x, y + textContainer[0].height);
+          ctx.lineTo(x + textContainer[0].width, y + textContainer[0].height);
+          ctx.closePath();
+          ctx.stroke();
+        }
+        if (deleteline == '1') {
+          ctx.beginPath();
+          ctx.strokeStyle = fiColor;
+          ctx.lineWidth = 2;
+          ctx.moveTo(x, y + textContainer[0].height / 2);
+          ctx.lineTo(x + textContainer[0].width, y + textContainer[0].height / 2);
+          ctx.closePath();
+          ctx.stroke();
+        }
+        if (topline == '1') {
+          ctx.beginPath();
+          ctx.strokeStyle = fiColor;
+          ctx.lineWidth = 2;
+          ctx.moveTo(x, y);
+          ctx.lineTo(x + textContainer[0].width, y);
+          ctx.closePath();
+          ctx.stroke();
         }
 
       }
