@@ -10,7 +10,7 @@
         </div>
         <div class="middle" id="ddei_editor_frame_middle">
           <OpenFilesView></OpenFilesView>
-          <CanvasView></CanvasView>
+          <CanvasView id="ddei_editor_canvasview"></CanvasView>
           <QuickColorView></QuickColorView>
         </div>
         <div style="flex:0 0 330px" class="right" id="ddei_editor_frame_right">
@@ -38,6 +38,7 @@ import DDeiAbstractShape from '../framework/js/models/shape';
 import DDeiEnumState from '../framework/js/enums/ddei-state';
 import { COMMANDS } from "../framework/js/config/command"
 import { loadEditorCommands } from "./js/util/command"
+import DDeiUtil from '../framework/js/util';
 
 
 export default {
@@ -115,6 +116,8 @@ export default {
       let frameBottomElement = document.getElementById("ddei_editor_frame_bottom");
       let filesElement = document.getElementById("ddei_editor_ofsview");
       let quickColorElement = document.getElementById("ddei_editor_qcview");
+      let middleCanvas = document.getElementById("ddei_editor_canvasview");
+      let middleCanvasPos = DDeiUtil.getDomAbsPosition(middleCanvas)
       this.editor.middleWidth = frameMiddleElement.offsetWidth;
       this.editor.middleHeight = frameMiddleElement.offsetHeight - filesElement?.offsetHeight - quickColorElement?.offsetHeight;
       //拖拽中，根据拖拽的类型，改变大小
@@ -194,11 +197,13 @@ export default {
         // else if (Math.abs(e.clientY - (frameTopElement.offsetTop + frameTopElement.offsetHeight)) <= 5) {
         //   document.body.style.cursor = 'row-resize';
         // } 
-        else if (frameMiddleElement.offsetTop + 25 <= e.clientY && frameMiddleElement.offsetLeft <= e.clientX
-          && frameMiddleElement.offsetTop + frameMiddleElement.offsetHeight >= e.clientY && frameMiddleElement.offsetLeft + frameMiddleElement.offsetWidth >= e.clientX) {
-          //事件下发到绘图区
+        else if(middleCanvasPos.top <= e.clientY && middleCanvasPos.left <= e.clientX
+          && middleCanvasPos.top + middleCanvas.offsetHeight >= e.clientY && middleCanvasPos.left + middleCanvas.offsetWidth >= e.clientX) {
+
+        //事件下发到绘图区
           this.editor.ddInstance.render.mouseMove(e);
-        } else {
+        } 
+        else {
           document.body.style.cursor = 'default';
         }
       }
@@ -214,7 +219,8 @@ export default {
       let frameRightElement = document.getElementById("ddei_editor_frame_right");
       let frameTopElement = document.getElementById("ddei_editor_frame_top");
       let frameMiddleElement = document.getElementById("ddei_editor_frame_middle");
-
+      let middleCanvas = document.getElementById("ddei_editor_canvasview");
+      let middleCanvasPos = DDeiUtil.getDomAbsPosition(middleCanvas)
       //判断鼠标落点是否在框架上
       if (frameLeftElement.offsetTop <= e.clientY && frameLeftElement.offsetTop + frameLeftElement.offsetHeight >= e.clientY
         && Math.abs(e.clientX - (frameLeftElement.offsetLeft + frameLeftElement.offsetWidth)) <= 5) {
@@ -233,12 +239,12 @@ export default {
         this.dragObj = { x: e.clientX, y: e.clientY, originX: e.offsetX, originY: e.offsetY }
         this.editor.state = DDeiEditorState.FRAME_CHANGING;
         this.editor.ddInstance.state = DDeiEnumState.IN_ACTIVITY;
-      } else if (frameMiddleElement.offsetTop + 25 <= e.clientY && frameMiddleElement.offsetLeft <= e.clientX
-        && frameMiddleElement.offsetTop + frameMiddleElement.offsetHeight >= e.clientY && frameMiddleElement.offsetLeft + frameMiddleElement.offsetWidth >= e.clientX) {
-
-        //事件下发到绘图区
-        this.editor.ddInstance.state = DDeiEnumState.NONE;
-        this.editor.ddInstance.render.mouseDown(e);
+      } else if (middleCanvasPos.top <= e.clientY && middleCanvasPos.left <= e.clientX
+        && middleCanvasPos.top + middleCanvas.offsetHeight >= e.clientY && middleCanvasPos.left + middleCanvas.offsetWidth >= e.clientX) {
+        
+        // //事件下发到绘图区
+        // this.editor.ddInstance.state = DDeiEnumState.NONE;
+        // this.editor.ddInstance.render.mouseDown(e);
       }
     },
 

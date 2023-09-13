@@ -1,5 +1,5 @@
 <template>
-  <div id="ddei_editor_canvasview" class="ddei_editor_canvasview" @mousedown="changeEditorFocus"
+  <div :id="id" class="ddei_editor_canvasview" @mousedown="changeEditorFocus && mouseDown($event)"
     ondragstart="return false;" @dragover="createControlOver" @drop="createControlDrop" @dragleave="createControlCancel"
     @contextmenu.prevent>
   </div>
@@ -15,13 +15,19 @@ import DDeiAbstractShape from '@/components/framework/js/models/shape';
 import DDeiKeyAction from '../js/hotkeys/key-action';
 import DDeiEnumOperateState from '@/components/framework/js/enums/operate-state';
 import DDeiEnumBusCommandType from '../../framework/js/enums/bus-command-type';
+import DDeiEnumState from '../../framework/js/enums/ddei-state';
 
 
 export default {
   name: "DDei-Editor-CanvasView",
   extends: null,
   mixins: [],
-  props: {},
+  props: {
+    id:{
+      type:String,
+      default:"ddei_editor_canvasview"
+    }
+  },
   data() {
     return {
       //当前编辑器
@@ -47,6 +53,11 @@ export default {
      */
     changeEditorFocus() {
       this.editor.changeState(DDeiEditorState.DESIGNING);
+    },
+
+    mouseDown(evt){
+      this.editor.ddInstance.state = DDeiEnumState.NONE;
+      this.editor.ddInstance.render.mouseDown(evt);
     },
 
     /**
