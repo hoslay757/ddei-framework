@@ -14,6 +14,7 @@ import DDeiEditor from '../../js/editor';
 import DDeiEnumBusCommandType from '../../../framework/js/enums/bus-command-type';
 import DDeiAbstractArrtibuteParser from '../../../framework/js/models/attribute/parser/attribute-parser';
 import DDeiEditorUtil from '../../js/util/editor-util';
+import DDeiEditorEnumBusCommandType from '../../js/enums/editor-command-type';
 
 export default {
   name: "DDei-Editor-PV-Radio-Editor",
@@ -35,7 +36,7 @@ export default {
     return {
       //当前编辑器
       editor: null,
-      dataSource:null
+      dataSource: null
     };
   },
   computed: {},
@@ -101,6 +102,7 @@ export default {
         //推送信息进入总线
         this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: value }, evt, true);
       });
+      this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, null, evt);
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
       this.editor.bus.executeAll();
     }

@@ -1,10 +1,12 @@
 <template>
-   <div :class="{ 'ddei_pv_editor_range': true, 'ddei_pv_editor_range_disabled': attrDefine.readonly }">
-      <input type="range" :step="attrDefine.step" class="range" :min="attrDefine.min" :max="attrDefine.max" v-model="attrDefine.value" :disabled="attrDefine.readonly"/>
-      <div class="textinput">
-        <input type="number"  :step="attrDefine.step" :min="attrDefine.min" :max="attrDefine.max" v-model="attrDefine.value" :disabled="attrDefine.readonly" :placeholder="attrDefine.defaultValue"/>
-      </div>
+  <div :class="{ 'ddei_pv_editor_range': true, 'ddei_pv_editor_range_disabled': attrDefine.readonly }">
+    <input type="range" :step="attrDefine.step" class="range" :min="attrDefine.min" :max="attrDefine.max"
+      v-model="attrDefine.value" :disabled="attrDefine.readonly" />
+    <div class="textinput">
+      <input type="number" :step="attrDefine.step" :min="attrDefine.min" :max="attrDefine.max" v-model="attrDefine.value"
+        :disabled="attrDefine.readonly" :placeholder="attrDefine.defaultValue" />
     </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -13,6 +15,7 @@ import DDeiEditorArrtibute from '../../js/attribute/editor-attribute';
 import DDeiEditor from '../../js/editor';
 import DDeiEnumBusCommandType from '../../../framework/js/enums/bus-command-type';
 import DDeiAbstractArrtibuteParser from '../../../framework/js/models/attribute/parser/attribute-parser';
+import DDeiEditorEnumBusCommandType from '../../js/enums/editor-command-type';
 
 export default {
   name: "DDei-Editor-PV-Range-Editor",
@@ -21,8 +24,8 @@ export default {
   props: {
     //当前属性定义
     attrDefine: {
-      type:DDeiEditorArrtibute,
-      default:null
+      type: DDeiEditorArrtibute,
+      default: null
     },
     //当前控件定义
     controlDefine: {
@@ -33,12 +36,12 @@ export default {
   data() {
     return {
       //当前编辑器
-      editor:null,
+      editor: null,
     };
   },
   computed: {},
   watch: {
-   
+
   },
   created() {
     // 监听obj对象中prop属性的变化
@@ -57,19 +60,20 @@ export default {
       this.attrDefine?.mapping?.forEach(element => {
         paths.push(element);
       });
-      if(!(paths?.length > 0)){
+      if (!(paths?.length > 0)) {
         paths = [this.attrDefine.code]
       }
-      
+
       //通过解析器获取有效值
       let parser: DDeiAbstractArrtibuteParser = this.attrDefine.getParser();
       //属性值
       let value = parser.parseValue(this.attrDefine.value);
       this.editor.ddInstance.stage.selectedModels.forEach(element => {
         //推送信息进入总线
-        this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: value }, evt,true);
+        this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: value }, evt, true);
       });
-      this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape,null, evt);
+      this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, null, evt);
+      this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
       this.editor.bus.executeAll();
     }
   }
@@ -77,72 +81,71 @@ export default {
 </script>
 
 <style scoped>
-
 /**以下为range属性编辑器 */
-.ddei_pv_editor_range{
+.ddei_pv_editor_range {
   border-radius: 4px;
   height: 24px;
-  margin-right:10px;
-  display:flex;
+  margin-right: 10px;
+  display: flex;
 }
 
-.ddei_pv_editor_range .range{
-  height:6px;
-  width:60%;
+.ddei_pv_editor_range .range {
+  height: 6px;
+  width: 60%;
   border: transparent;
   outline: none;
   background: transparent;
-  flex:1;
-  margin:auto;
+  flex: 1;
+  margin: auto;
 }
 
-.ddei_pv_editor_range_disabled .range{
-  height:6px;
-  width:60%;
+.ddei_pv_editor_range_disabled .range {
+  height: 6px;
+  width: 60%;
   border: transparent;
   outline: none;
-  background-color:rgb(210,210,210) !important;
-  flex:1;
-  margin:auto;
+  background-color: rgb(210, 210, 210) !important;
+  flex: 1;
+  margin: auto;
 }
 
-.ddei_pv_editor_range .textinput{
-  flex:0 0 80px;
-  margin-left:10px;
-  padding-left:5px;
-  padding-right:5px;
-  border: 0.5px solid rgb(210,210,210);
+.ddei_pv_editor_range .textinput {
+  flex: 0 0 80px;
+  margin-left: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border: 0.5px solid rgb(210, 210, 210);
   border-radius: 4px;
 }
 
-.ddei_pv_editor_range .textinput:hover{
+.ddei_pv_editor_range .textinput:hover {
   border: 1px solid #017fff;
   box-sizing: border-box;
 }
 
-.ddei_pv_editor_range_disabled .textinput{
-  flex:0 0 80px;
-  margin-left:10px;
-  padding-left:5px;
-  padding-right:5px;
-  background-color: rgb(210,210,210);
-  border: 0.5px solid rgb(210,210,210);
+.ddei_pv_editor_range_disabled .textinput {
+  flex: 0 0 80px;
+  margin-left: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: rgb(210, 210, 210);
+  border: 0.5px solid rgb(210, 210, 210);
   border-radius: 4px;
 }
 
-.ddei_pv_editor_range_disabled .textinput:hover{
+.ddei_pv_editor_range_disabled .textinput:hover {
   border: 1px solid grey !important;
   box-sizing: border-box;
 }
 
 
-.ddei_pv_editor_range .textinput input{
-  width:100%;
+.ddei_pv_editor_range .textinput input {
+  width: 100%;
   border: transparent;
   outline: none;
   font-size: 13px;
   margin: 0px 2%;
   background: transparent;
-  
+
 }
 </style>

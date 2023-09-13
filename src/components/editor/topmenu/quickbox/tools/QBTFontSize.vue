@@ -1,16 +1,18 @@
 <template>
   <div>
     <div id="ddei_editor_quick_fat_item_fontsize" class="ddei_editor_quick_fat_item_fontsize">
-        <input class="ddei_editor_quick_fat_item_fontsize_input" :readonly="attrDefine && (attrDefine.readonly)" v-model="text" :placeholder="defaultText"/>
-        <img width="16px" height="16px" class="ddei_editor_quick_fat_item_fontsize_combox"
-          :src="toolboxExpandedIcon"  @click="attrDefine && !attrDefine.readonly && showDialog()">
+      <input class="ddei_editor_quick_fat_item_fontsize_input" :readonly="attrDefine && (attrDefine.readonly)"
+        v-model="text" @keydown="inputValue($event)" :placeholder="defaultText" />
+      <img width="16px" height="16px" class="ddei_editor_quick_fat_item_fontsize_combox" :src="toolboxExpandedIcon"
+        @click="attrDefine && !attrDefine.readonly && showDialog()">
+    </div>
+    <div id="ddei_editor_quick_fat_item_fontsize_combox_dialog" class="ddei_editor_quick_fat_item_fontsize_combox_dialog">
+      <div
+        :class="{ 'itembox': true, 'itembox_selected': item.value == attrDefine.value, 'itembox_deleted': item.deleted, 'itembox_disabled': item.disabled, 'itembox_underline': item.underline, 'itembox_bold': item.bold }"
+        v-for="item in dataSource" @click="!item.disabled && valueChange(item.value, $event)" :title="item.desc">
+        <div class="itembox_text" v-if="item.text" :style="{ 'font-family': item.fontFamily }">{{ item.text }}</div>
       </div>
-      <div id="ddei_editor_quick_fat_item_fontsize_combox_dialog" class="ddei_editor_quick_fat_item_fontsize_combox_dialog" >
-        <div :class="{ 'itembox': true, 'itembox_selected': item.value == attrDefine.value, 'itembox_deleted': item.deleted, 'itembox_disabled': item.disabled, 'itembox_underline': item.underline, 'itembox_bold': item.bold }"
-          v-for="item in dataSource" @click="!item.disabled && valueChange(item.value, $event)" :title="item.desc">
-          <div class="itembox_text" v-if="item.text" :style="{ 'font-family': item.fontFamily }">{{ item.text }}</div>
-        </div>
-      </div>
+    </div>
   </div>
 </template>
 
@@ -29,7 +31,7 @@ export default {
   name: "DDei-EditorQBT-FontSize",
   extends: null,
   mixins: [],
-  components:{
+  components: {
 
   },
   props: {
@@ -39,14 +41,14 @@ export default {
       //当前编辑器
       editor: null,
       toolboxExpandedIcon: ICONS['toolbox-expanded'].default,
-      controlDefine:null,
-      attrDefine:null,
-      dataSource:null,
-      value:null,
-      text:null,
-      defaultText:null,
-      expanded : false,
-      canSearch:true,
+      controlDefine: null,
+      attrDefine: null,
+      dataSource: null,
+      value: null,
+      text: null,
+      defaultText: null,
+      expanded: false,
+      canSearch: true,
     };
   },
   computed: {},
@@ -54,34 +56,66 @@ export default {
 
   },
   created() {
+    this.inputValue = debounce(this.inputValue, 500);
   },
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
-    if(this.editor?.currentControlDefine){
+    if (this.editor?.currentControlDefine) {
       this.controlDefine = this.editor.currentControlDefine;
       if (this.controlDefine) {
         this.attrDefine = this.controlDefine.attrDefineMap.get('font.size');
       } else {
         this.attrDefine = null
       }
-
       this.getDataSource(this.attrDefine)
       let type = this.getDataValue();
       let define = this.getDataDefine(type.value);
       if (!type.isDefault) {
         this.attrDefine.value = type.value;
         this.text = define.text;
-        if (define.img) {
-          this.$refs.combox.img = define.img;
-        }
       } else {
         this.defaultText = define.text;
       }
-      this.value = type.value;
+      if (this.attrDefine.value) {
+        this.value = this.attrDefine.value;
+        this.text = this.attrDefine.value;
+      } else {
+        this.value = type.value;
+      }
+
     }
   },
   methods: {
+
+    inputValue(evt) {
+      //过滤dataSource，找到text
+      let value = this.text;
+      this.attrDefine.value = value;
+      this.value = value;
+      let itemDefine = this.getDataDefine(value);
+      if (itemDefine?.text) {
+        this.text = itemDefine.text;
+      }
+      //通过解析器获取有效值
+      let parser: DDeiAbstractArrtibuteParser = this.attrDefine.getParser();
+      //属性值
+      let parsedValue = parser.parseValue(value);
+      //获取属性路径
+      let paths = [];
+      this.attrDefine?.mapping?.forEach(element => {
+        paths.push(element);
+      });
+      if (!(paths?.length > 0)) {
+        paths = [this.attrDefine.code]
+      }
+      this.editor.ddInstance.stage.selectedModels.forEach(element => {
+        this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: parsedValue }, evt, true);
+      });
+      this.editor.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels, null, evt);
+      this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+      this.editor.bus.executeAll();
+    },
 
     //打开弹出框
     showDialog(show: boolean = false, evt) {
@@ -203,8 +237,6 @@ export default {
 </script>
 
 <style scoped>
-
-
 /*字体大小设置框 */
 
 .ddei_editor_quick_fat_item_fontsize {
@@ -285,7 +317,7 @@ export default {
   margin-top: 4px;
   display: none;
   position: absolute;
-  background-color:white;
+  background-color: white;
   gap: 4px;
   overflow: auto;
   color: black;
@@ -302,18 +334,18 @@ export default {
   background: transparent;
   display: table;
   border-radius: 4px;
-  width:80px;
-  height:20px;
+  width: 80px;
+  height: 20px;
 }
 
 
 
-.ddei_editor_quick_fat_item_fontsize_combox_dialog  .itembox:hover {
+.ddei_editor_quick_fat_item_fontsize_combox_dialog .itembox:hover {
   background-color: rgb(245, 245, 245);
   cursor: pointer;
 }
 
-.ddei_editor_quick_fat_item_fontsize_combox_dialog  .itembox .itembox_text {
+.ddei_editor_quick_fat_item_fontsize_combox_dialog .itembox .itembox_text {
   text-align: center;
   display: table-cell;
   width: 100%;

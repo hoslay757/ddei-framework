@@ -40,8 +40,8 @@ export default {
   props: {},
   data() {
     return {
-      editor:null,
-      reFresh:true
+      editor: null,
+      reFresh: true
     };
   },
   //注册组件
@@ -63,13 +63,14 @@ export default {
 
     // 监听obj对象中prop属性的变化
     this.$watch('editor.refresh', this.forceRefresh);
-   },
+  },
   mounted() {
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
   },
-  methods:{
+  methods: {
 
     forceRefresh(newVal, oldVal) {
+      console.log("refresh")
       this.reFresh = false
       this.$nextTick(() => {
         this.reFresh = true

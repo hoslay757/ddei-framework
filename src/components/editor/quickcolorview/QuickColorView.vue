@@ -1,16 +1,19 @@
 <template>
   <div id="ddei_editor_qcview" class="ddei_editor_qcview">
-    <div class="ddei_editor_qcview_type" v-for="item in dataSource" v-show="item.value == mode" @click="showDialog(true)" :title="item.text">
-        <img style="width:15px;height:15px; filter: brightness(50%);" :src="item.img" />
-        <img style="width:6px;height:6px;margin-top:4px;"  src="../icons/toolbox-expanded.png" />
+    <div class="ddei_editor_qcview_type" v-for="item in dataSource" v-show="item.value == mode" @click="showDialog(true)"
+      :title="item.text">
+      <img style="width:15px;height:15px; filter: brightness(50%);" :src="item.img" />
+      <img style="width:6px;height:6px;margin-top:4px;" src="../icons/toolbox-expanded.png" />
+    </div>
+    <div class="ddei_editor_qcview_dialog" v-show="dialogShow">
+      <div class="ddei_editor_qcview_dialog_item" v-for="(item, index) in dataSource" v-show="item.value != mode"
+        :title="item.text" @click="changeMode(item.value)">
+        <img :src="item.img" />
+        <div>{{ item.text }}</div>
       </div>
-      <div class="ddei_editor_qcview_dialog" v-show="dialogShow">
-        <div class="ddei_editor_qcview_dialog_item" v-for="(item,index) in dataSource" v-show="item.value != mode" :title="item.text" @click="changeMode(item.value)">
-          <img :src="item.img" />
-          <div>{{ item.text }}</div>
-        </div>
-      </div>
-    <div :class="{'ddei_editor_qcview_color':true,'ddei_editor_qcview_color_disabled': !editor?.ddInstance?.stage?.selectedModels || editor?.ddInstance?.stage?.selectedModels?.size == 0}" v-for="color in  colors " :style="{ 'background-color': '' + color }" @click="editor?.ddInstance?.stage?.selectedModels?.size > 0 && changeModelColor(color,$event)">
+    </div>
+    <div :class="{ 'ddei_editor_qcview_color': true }" v-for="color in  colors " :style="{ 'background-color': '' + color }"
+      @click="editor?.ddInstance?.stage?.selectedModels?.size > 0 && changeModelColor(color, $event)">
     </div>
   </div>
 </template>
@@ -28,14 +31,14 @@ export default {
   data() {
     return {
       colors: [],
-      editor:null,
+      editor: null,
       //当前编辑的模式，1填充，2边框，3字体
-      mode:1,
-      dataSource:[
+      mode: 1,
+      dataSource: [
         { value: 1, text: '填充', img: ICONS['icon-fill'].default },
         { value: 2, text: '边框', img: ICONS['icon-style-line'].default },
         { value: 3, text: '字体', img: ICONS['icon-font-color'].default }],
-      dialogShow:false
+      dialogShow: false
     };
   },
   computed: {},
@@ -56,46 +59,46 @@ export default {
       "#00FF00", "#228B22", "#008000", "#006400", "#7FFF00", "#7CFC00", "#ADFF2F", "#556B2F", "#F5F5DC", "#FAFAD2",
       "#FFFFF0", "#FFFFE0", "#FFFF00", "#808000", "#BDB76B", "#FFFACD", "#EEE8AA", "#F0E68C", "#FFD700", "#FFF8DC"
     ];
-    
-  },
-  methods:{
 
-    changeMode(m){
+  },
+  methods: {
+
+    changeMode(m) {
       this.mode = m;
       this.showDialog(false)
     },
-    showDialog(show){
+    showDialog(show) {
       this.dialogShow = show;
     },
     /**
      * 改变模型颜色
      */
-    changeModelColor(color,evt){
+    changeModelColor(color, evt) {
       let stage = this.editor.ddInstance.stage;
-      if(stage && color){
+      if (stage && color) {
         let selectedModels = stage.selectedModels;
-        if(selectedModels?.size > 0){
-          switch(this.mode){
-            case 1: 
-             selectedModels.forEach(element => {
+        if (selectedModels?.size > 0) {
+          switch (this.mode) {
+            case 1:
+              selectedModels.forEach(element => {
                 //推送信息进入总线
                 this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: ["fill.color"], value: color }, evt, true);
               });
-            break;
-            case 2: 
+              break;
+            case 2:
               selectedModels.forEach(element => {
                 //推送信息进入总线
                 this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: ["border.color", "border.top.color", "border.bottom.color", "border.left.color", "border.right.color"], value: color }, evt, true);
               });
-            break;
-            case 3: 
+              break;
+            case 3:
               selectedModels.forEach(element => {
                 //推送信息进入总线
                 this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: ["font.color"], value: color }, evt, true);
               });
-            break;
+              break;
           }
-          this.editor.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels,null,evt);
+          this.editor.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels, null, evt);
           this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
           this.editor.bus.executeAll();
         }
@@ -111,7 +114,7 @@ export default {
   background: rgb(245, 245, 245);
   border: 0.5pt solid rgb(235, 235, 239);
   display: flex;
-  position:relative;
+  position: relative;
 }
 
 .ddei_editor_qcview_type {
@@ -140,7 +143,7 @@ export default {
 }
 
 .ddei_editor_qcview_color_disabled {
-  background-color:grey !important;
+  background-color: grey !important;
 }
 
 .ddei_editor_qcview_color:hover {
@@ -152,20 +155,20 @@ export default {
 
 
 .ddei_editor_qcview_dialog {
-  width:80px;
-  position:absolute;
-  background-color:white;
-  left:0px;
-  bottom:16px;
-  height:55px;
-  
+  width: 80px;
+  position: absolute;
+  background-color: white;
+  left: 0px;
+  bottom: 16px;
+  height: 55px;
+
 }
 
 .ddei_editor_qcview_dialog_item {
   height: 24px;
   width: 80px;
   padding-left: 5px;
-  margin-bottom:2px;
+  margin-bottom: 2px;
 
 }
 
@@ -177,17 +180,16 @@ export default {
 .ddei_editor_qcview_dialog_item img {
   display: block;
   float: left;
-  width:22px;
-  height:22px;
-  margin-right:10px;
+  width: 22px;
+  height: 22px;
+  margin-right: 10px;
   filter: brightness(50%);
 }
 
 .ddei_editor_qcview_dialog_item div {
-  color:black;
-  font-size:12px;
+  color: black;
+  font-size: 12px;
   float: left;
-  margin-top:2px
+  margin-top: 2px
 }
-
 </style>

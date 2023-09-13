@@ -30,6 +30,7 @@ import DDeiUtil from '@/components/framework/js/util';
 import CONFIGS from "../../js/config"
 import ICONS from "../../js/icon"
 import DDeiEditorUtil from '../../js/util/editor-util';
+import DDeiEditorEnumBusCommandType from '../../js/enums/editor-command-type';
 
 export default {
   name: "DDei-Editor-PV-ExCheckbox",
@@ -203,6 +204,7 @@ export default {
       this.editor.ddInstance.stage.selectedModels.forEach(element => {
         this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: parsedValue }, evt, true);
       });
+      this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, null, evt);
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
       this.editor.bus.executeAll();
     },
