@@ -42,6 +42,30 @@ class DDeiEditorCommandClearTemplateUI extends DDeiBusCommand {
         dialog.style.display = "none";
       })
     }
+
+    {
+      let dialogs = [];
+      for (let i = 0; i < document.body.children.length; i++) {
+        if (document.body.children[i].className == "ddei_editor_quick_fat_item_fontfamily_combox_dialog") {
+          dialogs.push(document.body.children[i]);
+        }
+      }
+      dialogs.forEach(dialog => {
+        dialog.style.display = "none";
+      })
+    }
+
+    {
+      let dialogs = [];
+      for (let i = 0; i < document.body.children.length; i++) {
+        if (document.body.children[i].className == "ddei_editor_quick_fat_item_fontsize_combox_dialog") {
+          dialogs.push(document.body.children[i]);
+        }
+      }
+      dialogs.forEach(dialog => {
+        dialog.style.display = "none";
+      })
+    }
     return true;
 
   }

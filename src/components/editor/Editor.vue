@@ -219,8 +219,7 @@ export default {
       let frameRightElement = document.getElementById("ddei_editor_frame_right");
       let frameTopElement = document.getElementById("ddei_editor_frame_top");
       let frameMiddleElement = document.getElementById("ddei_editor_frame_middle");
-      let middleCanvas = document.getElementById("ddei_editor_canvasview");
-      let middleCanvasPos = DDeiUtil.getDomAbsPosition(middleCanvas)
+   
       //判断鼠标落点是否在框架上
       if (frameLeftElement.offsetTop <= e.clientY && frameLeftElement.offsetTop + frameLeftElement.offsetHeight >= e.clientY
         && Math.abs(e.clientX - (frameLeftElement.offsetLeft + frameLeftElement.offsetWidth)) <= 5) {
@@ -239,13 +238,7 @@ export default {
         this.dragObj = { x: e.clientX, y: e.clientY, originX: e.offsetX, originY: e.offsetY }
         this.editor.state = DDeiEditorState.FRAME_CHANGING;
         this.editor.ddInstance.state = DDeiEnumState.IN_ACTIVITY;
-      } else if (middleCanvasPos.top <= e.clientY && middleCanvasPos.left <= e.clientX
-        && middleCanvasPos.top + middleCanvas.offsetHeight >= e.clientY && middleCanvasPos.left + middleCanvas.offsetWidth >= e.clientX) {
-        
-        // //事件下发到绘图区
-        // this.editor.ddInstance.state = DDeiEnumState.NONE;
-        // this.editor.ddInstance.render.mouseDown(e);
-      }
+      } 
     },
 
     /**

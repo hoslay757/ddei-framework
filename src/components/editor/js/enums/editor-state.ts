@@ -13,6 +13,8 @@ enum DDeiEditorState {
   TOOLBOX_ACTIVE = "toolbox_active",
   //框架大小改变中
   FRAME_CHANGING = "frame_changing",
+  //上方菜单操作中
+  TOP_MENU_OPERATING = "top_menu_operating",
 }
 
 export default DDeiEditorState

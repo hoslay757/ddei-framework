@@ -1,11 +1,11 @@
 <template>
-  <div id="ddei_editor_topmenu" class="ddei_editor_topmenu">
+  <div id="ddei_editor_topmenu" class="ddei_editor_topmenu" @mousedown="changeEditorFocus">
     <div id="ddei_editor_topmenu_quickbox" class="ddei_editor_topmenu_quickbox">
       <div class="ddei_editor_topmenu_quickbox_group">
         <QuickBoxOperate></QuickBoxOperate>
       </div>
       <div class="ddei_editor_topmenu_quickbox_group">
-        <QuickBoxFontAndText></QuickBoxFontAndText>
+        <QuickBoxFontAndText v-if="reFresh"></QuickBoxFontAndText>
       </div>
       <div class="ddei_editor_topmenu_quickbox_group">
         <QuickBoxTool></QuickBoxTool>
@@ -30,6 +30,8 @@ import QuickBoxTool from './quickbox/QuickBoxTool.vue';
 import QuickBoxStyle from './quickbox/QuickBoxStyle.vue';
 import QuickBoxSort from './quickbox/QuickBoxSort.vue';
 import QuickBoxChangeShape from './quickbox/QuickBoxChangeShape.vue';
+import DDeiEditor from '../js/editor';
+import DDeiEditorState from '../js/enums/editor-state';
 
 export default {
   name: "DDei-Editor-TopMenu",
@@ -37,7 +39,10 @@ export default {
   mixins: [],
   props: {},
   data() {
-    return {};
+    return {
+      editor:null,
+      reFresh:true
+    };
   },
   //注册组件
   components: {
@@ -49,11 +54,34 @@ export default {
     QuickBoxChangeShape
   },
   computed: {},
-  watch: {},
-  created() { },
-  mounted() {
+  watch: {
 
   },
+  created() {
+    // 监听obj对象中prop属性的变化
+    this.$watch('editor.currentControlDefine', this.forceRefresh);
+
+    // 监听obj对象中prop属性的变化
+    this.$watch('editor.refresh', this.forceRefresh);
+   },
+  mounted() {
+    this.editor = DDeiEditor.ACTIVE_INSTANCE;
+  },
+  methods:{
+
+    forceRefresh(newVal, oldVal) {
+      this.reFresh = false
+      this.$nextTick(() => {
+        this.reFresh = true
+      })
+    },
+    /**
+    * 焦点进入当前区域
+    */
+    changeEditorFocus() {
+      this.editor.changeState(DDeiEditorState.TOP_MENU_OPERATING);
+    },
+  }
 };
 </script>
 

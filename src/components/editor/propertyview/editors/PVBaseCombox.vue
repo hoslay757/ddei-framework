@@ -1,16 +1,16 @@
 <template>
-  <div :id="getEditorId(attrDefine.code)"
-    :class="{ 'ddei_pv_base_combox': true, 'ddei_pv_base_combox_disabled': attrDefine.readonly }">
+  <div :id="getEditorId(attrDefine?.code)"
+    :class="{ 'ddei_pv_base_combox': true, 'ddei_pv_base_combox_disabled': !attrDefine || attrDefine.readonly }">
     <div :class="{ 'textinput': true, 'textinput_expanded': expanded , 'display_img':img && attrDefine?.itemStyle?.display == 'img' , 'display_img_text': img && attrDefine?.itemStyle?.display == 'img-text'}">
-      <img :src="img" type="text" v-if="img && (attrDefine?.itemStyle?.display == 'img-text' || attrDefine?.itemStyle?.display == 'img')" 
-          @click="!attrDefine.readonly && !canSearch && showDialog()" />
-      <input type="text" v-if="!attrDefine?.itemStyle?.display || attrDefine?.itemStyle?.display == 'img-text' || attrDefine?.itemStyle?.display == 'text'" :readonly="attrDefine.readonly || !canSearch" v-model="text" :placeholder="defaultText"
-        @click="!attrDefine.readonly && !canSearch && showDialog()" @keydown="search($event)" />
+      <img :src="img" v-if="img && (attrDefine?.itemStyle?.display == 'img-text' || attrDefine?.itemStyle?.display == 'img')" 
+          @click="attrDefine && !attrDefine.readonly && !canSearch && showDialog()" />
+      <input type="text" v-if="!attrDefine?.itemStyle?.display || attrDefine?.itemStyle?.display == 'img-text' || attrDefine?.itemStyle?.display == 'text'" :readonly="attrDefine && (attrDefine.readonly || !canSearch)" v-model="text" :placeholder="defaultText"
+        @click="attrDefine && !attrDefine.readonly && !canSearch && showDialog()" @keydown="search($event)" />
       <div> <img style="width:8px;height:8px;margin:auto;float:none;" src="../../icons/toolbox-expanded.png"
-          @click="!attrDefine.readonly && showDialog()" />
+          @click="attrDefine && !attrDefine.readonly && showDialog()" />
       </div>
     </div>
-    <div :id="getShowDialogId(attrDefine.code)" :class="{ 'ddei_combox_show_dialog': true }">
+    <div :id="getShowDialogId(attrDefine?.code)" :class="{ 'ddei_combox_show_dialog': true }">
       <div class="ddei_combox_show_dialog_content">
         <slot>测试</slot>
       </div>

@@ -1,6 +1,6 @@
 <template>
-  <div :class="{ 'ddei_pv_editor_combox': true, 'ddei_pv_editor_combox_disabled': attrDefine.readonly }">
-    <PVBaseCombox :attrDefine="attrDefine" :searchMethod="doSearch" ref="combox" :canSearch="attrDefine.canSearch">
+  <div :class="{ 'ddei_pv_editor_combox': true, 'ddei_pv_editor_combox_disabled': !attrDefine || attrDefine.readonly }">
+    <PVBaseCombox :attrDefine="attrDefine" :searchMethod="doSearch" ref="combox" :canSearch="attrDefine?.canSearch">
       <div class="itemboxs"
         :style="{ width: width ? width + 'px' : '', height: height ? height + 'px' : '', 'grid-template-columns': gridTemplateColumns, 'grid-template-rows': gridTemplateRows }">
         <div :style="{ width: attrDefine?.itemStyle?.width + 'px', height: attrDefine?.itemStyle?.height + 'px' }"
@@ -25,9 +25,8 @@ import DDeiEnumBusCommandType from '../../../framework/js/enums/bus-command-type
 import DDeiAbstractArrtibuteParser from '../../../framework/js/models/attribute/parser/attribute-parser';
 import PVBaseCombox from './PVBaseCombox.vue';
 import DDeiUtil from '@/components/framework/js/util';
-import CONFIGS from "../../js/config"
-import ICONS from "../../js/icon"
 import DDeiEditorUtil from '../../js/util/editor-util';
+import DDeiEditorEnumBusCommandType from '../../js/enums/editor-command-type';
 
 export default {
   name: "DDei-Editor-PV-Combox",
@@ -137,15 +136,17 @@ export default {
 
     //获取数据值
     getDataValue() {
-      let dataValue = this.attrDefine.value;
-      if (!dataValue) {
-        dataValue = DDeiUtil.getDataByPathList(this.attrDefine.model, this.attrDefine.code, this.attrDefine.mapping);
-      }
-      if (dataValue) {
-        return { value: dataValue }
+      if(this.attrDefine){
+        let dataValue = this.attrDefine.value;
+        if (!dataValue) {
+          dataValue = DDeiUtil.getDataByPathList(this.attrDefine.model, this.attrDefine.code, this.attrDefine.mapping);
+        }
+        if (dataValue) {
+          return { value: dataValue }
+        }
       }
       //通过解析器获取有效值
-      return { isDefault: true, value: this.attrDefine.getParser().getDefaultValue() };
+      return { isDefault: true, value: this.attrDefine?.getParser().getDefaultValue() };
     },
 
 
@@ -176,6 +177,7 @@ export default {
       this.editor.ddInstance.stage.selectedModels.forEach(element => {
         this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: parsedValue }, evt, true);
       });
+      this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, null, evt);
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
       this.editor.bus.executeAll();
     },
@@ -183,9 +185,11 @@ export default {
      * 获取数据源数据
      */
     getDataSource(attrDefine) {
-      let dataSources = DDeiEditorUtil.getDataSource(this.attrDefine, this.searchText);
-      this.dataSource = dataSources;
-      return this.dataSource;
+      if(this.attrDefine){
+        let dataSources = DDeiEditorUtil.getDataSource(this.attrDefine, this.searchText);
+        this.dataSource = dataSources;
+        return this.dataSource;
+      }
     },
   }
 };

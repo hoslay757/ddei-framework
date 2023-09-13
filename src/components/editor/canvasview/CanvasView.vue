@@ -1,5 +1,5 @@
 <template>
-  <div :id="id" class="ddei_editor_canvasview" @mousedown="changeEditorFocus() && mouseDown($event)"
+  <div :id="id" class="ddei_editor_canvasview" @mousedown="mouseDown($event)"
     ondragstart="return false;" @dragover="createControlOver" @drop="createControlDrop" @dragleave="createControlCancel"
     @contextmenu.prevent>
   </div>
@@ -16,6 +16,7 @@ import DDeiKeyAction from '../js/hotkeys/key-action';
 import DDeiEnumOperateState from '@/components/framework/js/enums/operate-state';
 import DDeiEnumBusCommandType from '../../framework/js/enums/bus-command-type';
 import DDeiEnumState from '../../framework/js/enums/ddei-state';
+import DDeiUtil from '../../framework/js/util';
 
 
 export default {
@@ -57,8 +58,14 @@ export default {
     },
 
     mouseDown(evt){
-      this.editor.ddInstance.state = DDeiEnumState.NONE;
-      this.editor.ddInstance.render.mouseDown(evt);
+      let middleCanvas = document.getElementById(this.id);
+      let middleCanvasPos = DDeiUtil.getDomAbsPosition(middleCanvas)
+      if(middleCanvasPos.left+5 <= evt.clientX
+        && middleCanvasPos.left + middleCanvas.offsetWidth-5 >= evt.clientX) {
+          this.changeEditorFocus();
+          this.editor.ddInstance.state = DDeiEnumState.NONE;
+           this.editor.ddInstance.render.mouseDown(evt);
+      }
     },
 
     /**

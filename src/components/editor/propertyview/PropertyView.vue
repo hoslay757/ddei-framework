@@ -131,10 +131,16 @@ export default {
     PVExCheckboxEditor
   },
   created() {
-  
     // 监听obj对象中prop属性的变化
-    this.$watch('editor.ddInstance.stage.selectedModels', function (newVal, oldVal) {
-      this.selectedModels = newVal;
+    this.$watch('editor.ddInstance.stage.selectedModels', this.refreshAttrs);
+  },
+  mounted() {
+    //获取编辑器
+    this.editor = DDeiEditor.ACTIVE_INSTANCE;
+  },
+  methods: {
+    refreshAttrs(newVal, oldVal) {
+      this.selectedModels = this.editor.ddInstance.stage.selectedModels;
       let models: DDeiAbstractShape[] = null;
       let firstModel: DDeiAbstractShape = null;
       if (this.selectedModels?.size > 0) {
@@ -251,21 +257,16 @@ export default {
           }
         }
         this.changeSubGroup(currentSubGroup);
+        this.editor.currentControlDefine = this.controlDefine;
       } else {
         //清除信息
         this.controlDefine = null;
         this.topGroups = null;
         this.currentTopGroup = null;
         this.currentSubGroup = null;
+        this.editor.currentControlDefine = null;
       }
-    });
-  },
-  mounted() {
-    //获取编辑器
-    this.editor = DDeiEditor.ACTIVE_INSTANCE;
-  },
-  methods: {
-
+    },
     /**
      * 展开顶级属性，收起其他顶级层级
      */
