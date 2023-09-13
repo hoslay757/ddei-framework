@@ -3,7 +3,7 @@ import type DDeiBus from '@/components/framework/js/bus/bus';
 import DDeiEditorEnumBusCommandType from '../../enums/editor-command-type';
 import DDeiBusCommand from '@/components/framework/js/bus/bus-command';
 /**
- * 改变光标总线Command
+ * 清理临时UI总线Command
  */
 class DDeiEditorCommandClearTemplateUI extends DDeiBusCommand {
   // ============================ 构造函数 ============================

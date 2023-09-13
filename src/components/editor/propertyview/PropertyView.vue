@@ -131,6 +131,7 @@ export default {
     PVExCheckboxEditor
   },
   created() {
+  
     // 监听obj对象中prop属性的变化
     this.$watch('editor.ddInstance.stage.selectedModels', function (newVal, oldVal) {
       this.selectedModels = newVal;

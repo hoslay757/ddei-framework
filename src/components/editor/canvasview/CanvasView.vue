@@ -1,5 +1,5 @@
 <template>
-  <div :id="id" class="ddei_editor_canvasview" @mousedown="changeEditorFocus && mouseDown($event)"
+  <div :id="id" class="ddei_editor_canvasview" @mousedown="changeEditorFocus() && mouseDown($event)"
     ondragstart="return false;" @dragover="createControlOver" @drop="createControlDrop" @dragleave="createControlCancel"
     @contextmenu.prevent>
   </div>
@@ -53,6 +53,7 @@ export default {
      */
     changeEditorFocus() {
       this.editor.changeState(DDeiEditorState.DESIGNING);
+      return true;
     },
 
     mouseDown(evt){

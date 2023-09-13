@@ -18,6 +18,7 @@
 <script lang="ts">
 import DDeiEnumBusCommandType from '../../framework/js/enums/bus-command-type';
 import DDeiEditor from '../js/editor';
+import DDeiEditorEnumBusCommandType from '../js/enums/editor-command-type';
 import ICONS from '../js/icon';
 export default {
   name: "DDei-Editor-QuickColorMenu",
@@ -94,7 +95,7 @@ export default {
               });
             break;
           }
-          
+          this.editor.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels,null,evt);
           this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
           this.editor.bus.executeAll();
         }
