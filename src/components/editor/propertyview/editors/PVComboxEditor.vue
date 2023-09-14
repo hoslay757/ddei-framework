@@ -174,8 +174,10 @@ export default {
       if (!(paths?.length > 0)) {
         paths = [this.attrDefine.code]
       }
+      DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, parsedValue)
       this.editor.ddInstance.stage.selectedModels.forEach(element => {
         this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: parsedValue }, evt, true);
+        
       });
       this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, null, evt);
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);

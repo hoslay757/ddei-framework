@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div id="ddei_editor_quick_fat_item_fontfamily" class="ddei_editor_quick_fat_item_fontfamily">
+    <div id="ddei_editor_quick_fat_item_fontfamily" :class="{'ddei_editor_quick_fat_item_fontfamily':true,'ddei_editor_quick_fat_item_fontfamily_disabled': !attrDefine }">
       <img width="16px" height="16px" class="ddei_editor_quick_fat_item_fontfamily_icon"
             :src="searchIcon"> 
-        <input class="ddei_editor_quick_fat_item_fontfamily_input" :readonly="attrDefine && (attrDefine.readonly || !canSearch)" v-model="text" :placeholder="defaultText"
+        <input class="ddei_editor_quick_fat_item_fontfamily_input" :readonly="!attrDefine || (attrDefine && (attrDefine.readonly || !canSearch))" v-model="text" :placeholder="defaultText"
             @click="attrDefine && !attrDefine.readonly && !canSearch && showDialog()" @keydown="search($event)"  />
         <img width="16px" height="16px" class="ddei_editor_quick_fat_item_fontfamily_combox"
           :src="toolboxExpandedIcon"  @click="attrDefine && !attrDefine.readonly && showDialog()">
@@ -29,7 +29,7 @@ import DDeiUtil from '../../../../framework/js/util';
 import DDeiEnumBusCommandType from '../../../../framework/js/enums/bus-command-type';
 
 export default {
-  name: "DDei-EditorQBT-FontFamily",
+  name: "DDei-Editor-QBT-FontFamily",
   extends: null,
   mixins: [],
   components:{
@@ -207,9 +207,16 @@ export default {
   height: 24px;
 }
 
+
 .ddei_editor_quick_fat_item_fontfamily:hover {
   border: 0.5px solid #017fff;
   box-sizing: border-box;
+}
+
+
+.ddei_editor_quick_fat_item_fontfamily_disabled:hover {
+  background-color:transparent !important;
+  cursor:not-allowed !important;
 }
 
 .ddei_editor_quick_fat_item_fontfamily_icon {

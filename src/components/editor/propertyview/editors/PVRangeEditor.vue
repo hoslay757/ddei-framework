@@ -16,6 +16,7 @@ import DDeiEditor from '../../js/editor';
 import DDeiEnumBusCommandType from '../../../framework/js/enums/bus-command-type';
 import DDeiAbstractArrtibuteParser from '../../../framework/js/models/attribute/parser/attribute-parser';
 import DDeiEditorEnumBusCommandType from '../../js/enums/editor-command-type';
+import DDeiUtil from '../../../framework/js/util';
 
 export default {
   name: "DDei-Editor-PV-Range-Editor",
@@ -68,6 +69,7 @@ export default {
       let parser: DDeiAbstractArrtibuteParser = this.attrDefine.getParser();
       //属性值
       let value = parser.parseValue(this.attrDefine.value);
+      DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, value)
       this.editor.ddInstance.stage.selectedModels.forEach(element => {
         //推送信息进入总线
         this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: value }, evt, true);

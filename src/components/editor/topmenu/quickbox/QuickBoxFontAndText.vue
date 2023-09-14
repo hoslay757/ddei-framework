@@ -15,24 +15,16 @@
     </div>
 
     <div class="ddei_editor_quick_fat_item">
-      <div class="ddei_editor_quick_fat_item_box">
-        <img width="13px" height="13px" src="../../icons/icon-font-bold.png" />
-      </div>
+      <QBTEditBox selectedValue="1" attrCode="textStyle.bold" :img="icons['icon-font-bold']"></QBTEditBox>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <div class="ddei_editor_quick_fat_item_box">
-        <img width="13px" height="13px" src="../../icons/icon-font-italic.png" />
-      </div>
+      <QBTEditBox selectedValue="1" attrCode="textStyle.italic" :img="icons['icon-font-italic']"></QBTEditBox>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <div class="ddei_editor_quick_fat_item_box" style="margin-top:1px;">
-        <img width="13px" height="13px" src="../../icons/icon-text-underline.png" />
-      </div>
+      <QBTEditBox selectedValue="1" attrCode="textStyle.underline" :img="icons['icon-text-underline']"></QBTEditBox>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <div class="ddei_editor_quick_fat_item_box" style="margin-top:0px;">
-        <img width="15px" height="15px" src="../../icons/icon-text-deleteline.png" />
-      </div>
+      <QBTEditBox selectedValue="1" attrCode="textStyle.deleteline" :img="icons['icon-text-deleteline']"></QBTEditBox>
     </div>
     <div class="ddei_editor_quick_fat_item">
       <div class="ddei_editor_quick_fat_item_box" style="margin-top:-2px;">
@@ -45,24 +37,16 @@
       </div>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <div class="ddei_editor_quick_fat_item_box" style="margin-top:-1px;">
-        <img width="18px" height="18px" src="../../icons/icon-font-up.png" />
-      </div>
+       <QBTEditAddFontSize :addValue="1" attrCode="font.size" :img="icons['icon-font-up']"></QBTEditAddFontSize>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <div class="ddei_editor_quick_fat_item_box" style="margin-top:-1px;">
-        <img width="18px" height="18px" src="../../icons/icon-font-down.png" />
-      </div>
+       <QBTEditAddFontSize :addValue="-1" attrCode="font.size" :img="icons['icon-font-down']"></QBTEditAddFontSize>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <div class="ddei_editor_quick_fat_item_box" style="margin-top:1px;">
-        <img width="16px" height="15px" src="../../icons/icon-font-bgcolor.png" />
-      </div>
+      <QBTEditColor attrCode="font.bgcolor" :img="icons['icon-font-bgcolor']"></QBTEditColor>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <div class="ddei_editor_quick_fat_item_box" style="margin-top:-1px;">
-        <img width="18px" height="19x" src="../../icons/icon-font-color.png" />
-      </div>
+      <QBTEditColor attrCode="font.color" :img="icons['icon-font-color']"></QBTEditColor>
     </div>
 
     <div class="ddei_editor_quick_fat_item" style="grid-column:1/11;">
@@ -73,8 +57,12 @@
   </div>
 </template>
 <script lang="ts">
+import ICONS from "../../js/icon"
 import QBTFontFamily from './tools/QBTFontFamily.vue';
 import QBTFontSize from './tools/QBTFontSize.vue';
+import QBTEditBox from './tools/QBTEditBox.vue';
+import QBTEditAddFontSize from './tools/QBTEditAddFontSize.vue';
+import QBTEditColor from './tools/QBTEditColor.vue';
 
 export default {
   name: "DDei-Editor-Quick-FontAndText",
@@ -82,17 +70,24 @@ export default {
   mixins: [],
   props: {},
   data() {
-    return {};
+    return {
+      icons:{}
+    };
   },
   computed: {},
   components:{
     QBTFontSize,
-    QBTFontFamily
+    QBTFontFamily,
+    QBTEditBox,
+    QBTEditAddFontSize,
+    QBTEditColor
   },
   watch: {},
   created() { },
   mounted() {
-
+    for(let i in ICONS){
+      this.icons[i] = ICONS[i].default;
+    }
   },
 };
 </script>

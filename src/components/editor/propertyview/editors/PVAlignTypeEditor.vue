@@ -50,6 +50,7 @@ import DDeiEnumBusCommandType from '../../../framework/js/enums/bus-command-type
 import DDeiAbstractArrtibuteParser from '../../../framework/js/models/attribute/parser/attribute-parser';
 import PVBaseCombox from './PVBaseCombox.vue';
 import DDeiUtil from '@/components/framework/js/util';
+import DDeiEditorEnumBusCommandType from '../../js/enums/editor-command-type';
 
 export default {
   name: "DDei-Editor-PV-Align-Type",
@@ -175,6 +176,7 @@ export default {
         //根据code以及mapping设置属性值
         DDeiUtil.setAttrValueByPath(this.attrDefine.model, ["textStyle.valign"], valignValue)
       });
+      this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, null, evt);
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
       this.editor.bus.executeAll();
     }

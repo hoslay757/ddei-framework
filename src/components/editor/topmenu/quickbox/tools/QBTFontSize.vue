@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div id="ddei_editor_quick_fat_item_fontsize" class="ddei_editor_quick_fat_item_fontsize">
-      <input class="ddei_editor_quick_fat_item_fontsize_input" :readonly="attrDefine && (attrDefine.readonly)"
+    <div id="ddei_editor_quick_fat_item_fontsize" :class="{'ddei_editor_quick_fat_item_fontsize':true,'ddei_editor_quick_fat_item_fontsize_disabled': !attrDefine }">
+      <input class="ddei_editor_quick_fat_item_fontsize_input" :readonly="!attrDefine || (attrDefine && (attrDefine.readonly))"
         v-model="text" @keydown="inputValue($event)" :placeholder="defaultText" />
       <img width="16px" height="16px" class="ddei_editor_quick_fat_item_fontsize_combox" :src="toolboxExpandedIcon"
         @click="attrDefine && !attrDefine.readonly && showDialog()">
@@ -28,7 +28,7 @@ import DDeiUtil from '../../../../framework/js/util';
 import DDeiEnumBusCommandType from '../../../../framework/js/enums/bus-command-type';
 
 export default {
-  name: "DDei-EditorQBT-FontSize",
+  name: "DDei-Editor-QBT-FontSize",
   extends: null,
   mixins: [],
   components: {
@@ -251,6 +251,12 @@ export default {
   box-sizing: border-box;
 }
 
+
+.ddei_editor_quick_fat_item_fontsize_disabled:hover {
+  background-color:transparent !important;
+  cursor:not-allowed !important;
+}
+
 .ddei_editor_quick_fat_item_fontsize_input {
   width: calc(100% - 20px);
   border: transparent;
@@ -285,6 +291,17 @@ export default {
 .ddei_editor_quick_fat_item_box img {
   margin-top: 4px;
   filter: brightness(40%) drop-shadow(0.3px 0px 0.3px #000);
+}
+
+
+.ddei_editor_quick_fat_item_box_disabled {
+  color: rgb(228, 228, 232);
+  filter: brightness(200%) !important;
+}
+
+.ddei_editor_quick_fat_item_box_disabled:hover {
+  background-color:transparent !important;
+  cursor:not-allowed;
 }
 
 .ddei_editor_quick_fat_item_box_selected {
