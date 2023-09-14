@@ -27,14 +27,10 @@
       <QBTEditBox selectedValue="1" attrCode="textStyle.deleteline" :img="icons['icon-text-deleteline']"></QBTEditBox>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <div class="ddei_editor_quick_fat_item_box" style="margin-top:-2px;">
-        <img width="18px" height="18px" src="../../icons/icon-text-superscript.png" />
-      </div>
+       <QBTEditColor attrCode="textStyle.superscript" :img="icons['icon-text-superscript']"></QBTEditColor>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <div class="ddei_editor_quick_fat_item_box" style="margin-top:-1px;">
-        <img width="18px" height="18px" src="../../icons/icon-text-subscript.png" />
-      </div>
+      <QBTEditColor attrCode="textStyle.subscript" :img="icons['icon-text-subscript']"></QBTEditColor>
     </div>
     <div class="ddei_editor_quick_fat_item">
        <QBTEditAddFontSize :addValue="1" attrCode="font.size" :img="icons['icon-font-up']"></QBTEditAddFontSize>

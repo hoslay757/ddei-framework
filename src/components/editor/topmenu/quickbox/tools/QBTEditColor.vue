@@ -1,6 +1,7 @@
 <template>
   <div :class="{'ddei_editor_quick_fat_item_box':true,'ddei_editor_quick_fat_item_box_disabled':!attrDefine}" @click="attrDefine && showColor($el,$event)">
     <img style="width:13px;height:13px" :src="img" />
+    <div :style="{'background-color':value,'width':'13px','height':'10px','margin':'-2px auto'}"></div>
     <input type="color" v-model="value" @input="attrDefine && valueChange($el,$event)" style="width:1px;height:1px;display:block;margin-top:1px"/>
   </div>
 </template>
@@ -62,7 +63,7 @@ export default {
   methods: {
 
     showColor(element,$event){
-      let colorInput = element.children[1];
+      let colorInput = element.children[element.children.length-1];
       colorInput.showPicker()
     },
 
