@@ -18,8 +18,6 @@ class DDei {
     this.stage = null
   }
   // ============================ 静态变量 ============================
-
-
   /**
    * 所有当前被初始化的DDei实例
    */
@@ -105,6 +103,63 @@ class DDei {
     this.render.init();
     //加载场景渲染器
     this.stage.initRender();
+  }
+
+
+  /**
+     * 将模型转换为JSON
+     */
+  toJSON(): Object {
+    let json: Object = new Object();
+    let skipFields = DDeiConfig.SERI_FIELDS[this.modelType]?.SKIP;
+    if (!(skipFields?.length > 0)) {
+      skipFields = DDeiConfig.SERI_FIELDS[this.baseModelType]?.SKIP;
+    }
+    if (!(skipFields?.length > 0)) {
+      skipFields = DDeiConfig.SERI_FIELDS["AbstractShape"]?.SKIP;
+    }
+
+    let toJSONFields = DDeiConfig.SERI_FIELDS[this.modelType]?.TOJSON;
+    if (!(toJSONFields?.length > 0)) {
+      toJSONFields = DDeiConfig.SERI_FIELDS[this.baseModelType]?.TOJSON;
+    }
+    if (!(toJSONFields?.length > 0)) {
+      toJSONFields = DDeiConfig.SERI_FIELDS["AbstractShape"]?.TOJSON;
+    }
+    for (let i in this) {
+      if ((!skipFields || skipFields?.indexOf(i) == -1)) {
+        if (toJSONFields && toJSONFields.indexOf(i) != -1 && this[i]) {
+          if (Array.isArray(this[i])) {
+            let array = [];
+            this[i].forEach(element => {
+              if (element?.toJSON) {
+                array.push(element.toJSON());
+              } else {
+                array.push(element);
+              }
+            });
+            json[i] = array;
+          } else if (this[i].set) {
+            let map = new Map();
+            this[i].forEach((element, key) => {
+              if (element?.toJSON) {
+                map.set(key, element.toJSON());
+              } else {
+                map.set(key, element);
+              }
+            });
+            json[i] = map;
+          } else if (this[i].toJSON) {
+            json[i] = this[i].toJSON();
+          } else {
+            json[i] = this[i];
+          }
+        } else {
+          json[i] = this[i];
+        }
+      }
+    }
+    return json;
   }
 
 

@@ -306,31 +306,62 @@ class DDeiLayer {
     return reutrnModel;
   }
 
-
   /**
-   * 转换为JSON的序列化方法
-   */
-  toJSON(): object {
-    var json = this.getBaseJSON()
-    let modelsJSON = {};
-    //遍历获取模型的JSON
-    for (let i in this.models) {
-      modelsJSON[i] = this.models[i].toJSON();
+     * 将模型转换为JSON
+     */
+  toJSON(): Object {
+    let json: Object = new Object();
+    let skipFields = DDeiConfig.SERI_FIELDS[this.modelType]?.SKIP;
+    if (!(skipFields?.length > 0)) {
+      skipFields = DDeiConfig.SERI_FIELDS[this.baseModelType]?.SKIP;
     }
-    json.models = modelsJSON;
-    return json
+    if (!(skipFields?.length > 0)) {
+      skipFields = DDeiConfig.SERI_FIELDS["AbstractShape"]?.SKIP;
+    }
+
+    let toJSONFields = DDeiConfig.SERI_FIELDS[this.modelType]?.TOJSON;
+    if (!(toJSONFields?.length > 0)) {
+      toJSONFields = DDeiConfig.SERI_FIELDS[this.baseModelType]?.TOJSON;
+    }
+    if (!(toJSONFields?.length > 0)) {
+      toJSONFields = DDeiConfig.SERI_FIELDS["AbstractShape"]?.TOJSON;
+    }
+    for (let i in this) {
+      if ((!skipFields || skipFields?.indexOf(i) == -1)) {
+        if (toJSONFields && toJSONFields.indexOf(i) != -1 && this[i]) {
+          if (Array.isArray(this[i])) {
+            let array = [];
+            this[i].forEach(element => {
+              if (element?.toJSON) {
+                array.push(element.toJSON());
+              } else {
+                array.push(element);
+              }
+            });
+            json[i] = array;
+          } else if (this[i].set) {
+            let map = new Map();
+            this[i].forEach((element, key) => {
+              if (element?.toJSON) {
+                map.set(key, element.toJSON());
+              } else {
+                map.set(key, element);
+              }
+            });
+            json[i] = map;
+          } else if (this[i].toJSON) {
+            json[i] = this[i].toJSON();
+          } else {
+            json[i] = this[i];
+          }
+        } else {
+          json[i] = this[i];
+        }
+      }
+    }
+    return json;
   }
 
-  /**
-   * 获取基本JSON
-   */
-  getBaseJSON(): object {
-    var json = {
-      id: this.id,
-      modelType: this.modelType
-    }
-    return json
-  }
 
 }
 

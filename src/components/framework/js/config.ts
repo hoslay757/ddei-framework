@@ -38,6 +38,15 @@ class DDeiConfig {
   // 缺省辅助线宽度
   static GLOBAL_HELP_LINE_WEIGHT: number = 10;
 
+  //不需要序列化的字段
+  static SERI_FIELDS: object = {
+    "DDei": { "TOJSON": ["stage"], "SKIP": ["bus", "render"] },
+    "DDeiStage": { "TOJSON": ["layers"], "SKIP": ["ddInstance", "selectedModels", "render"] },
+    "DDeiLayer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "render"] },
+    "DDeiContainer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render"] },
+    "AbstractShape": { "SKIP": ["ddInstance", "stage", "layer", "pModel", "render"] },
+  }
+
   // 边框的相关缺省样式属性
   static BORDER: object = {
     default: { width: 0, color: null, dash: null, round: 0 },

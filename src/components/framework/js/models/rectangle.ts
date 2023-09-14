@@ -74,28 +74,7 @@ class DDeiRectangle extends DDeiAbstractShape {
     this.render.init();
   }
 
-  /**
-   * 转换为JSON的序列化方法
-   */
-  toJSON(): object {
-    var json = this.getBaseJSON()
-    return json
-  }
 
-  /**
-   * 获取基本JSON
-   */
-  getBaseJSON(): object {
-    var json = {
-      id: this.id,
-      x: this.x,
-      y: this.y,
-      width: this.width,
-      height: this.height,
-      modelType: this.modelType
-    }
-    return json
-  }
 }
 
 

@@ -316,9 +316,9 @@ abstract class DDeiAbstractShape {
   // 本模型的编码,用来却分modelType相同，但业务含义不同的模型
   modelCode: string;
   // 本模型的唯一名称
-  modelType: string = 'AbastractShape';
+  modelType: string = 'AbstractShape';
   // 本模型的基础图形
-  baseModelType: string = 'AbastractShape';
+  baseModelType: string = 'AbstractShape';
   // 当前控件的状态
   state: DDeiEnumControlState = DDeiEnumControlState.DEFAULT;
   // 当前模型所在的layer
@@ -332,6 +332,7 @@ abstract class DDeiAbstractShape {
   // 旋转,0/null 不旋转，默认0
   rotate: number | null;
   // ============================ 方法 ===============================
+
 
   /**
    * 判断图形是否在一个区域内，采用宽松的判定模式，允许传入一个大小值
@@ -500,6 +501,63 @@ abstract class DDeiAbstractShape {
    */
   getSize() {
     return { width: this.width, height: this.height }
+  }
+
+  /**
+     * 将模型转换为JSON
+     */
+  toJSON(): Object {
+    let json: Object = new Object();
+    let skipFields = DDeiConfig.SERI_FIELDS[this.modelType]?.SKIP;
+    if (!(skipFields?.length > 0)) {
+      skipFields = DDeiConfig.SERI_FIELDS[this.baseModelType]?.SKIP;
+    }
+    if (!(skipFields?.length > 0)) {
+      skipFields = DDeiConfig.SERI_FIELDS["AbstractShape"]?.SKIP;
+    }
+
+    let toJSONFields = DDeiConfig.SERI_FIELDS[this.modelType]?.TOJSON;
+    if (!(toJSONFields?.length > 0)) {
+      toJSONFields = DDeiConfig.SERI_FIELDS[this.baseModelType]?.TOJSON;
+    }
+    if (!(toJSONFields?.length > 0)) {
+      toJSONFields = DDeiConfig.SERI_FIELDS["AbstractShape"]?.TOJSON;
+    }
+
+    for (let i in this) {
+      if ((!skipFields || skipFields?.indexOf(i) == -1)) {
+        if (toJSONFields && toJSONFields.indexOf(i) != -1 && this[i]) {
+          if (Array.isArray(this[i])) {
+            let array = [];
+            this[i].forEach(element => {
+              if (element?.toJSON) {
+                array.push(element.toJSON());
+              } else {
+                array.push(element);
+              }
+            });
+            json[i] = array;
+          } else if (this[i].set) {
+            let map = new Map();
+            this[i].forEach((element, key) => {
+              if (element?.toJSON) {
+                map.set(key, element.toJSON());
+              } else {
+                map.set(key, element);
+              }
+            });
+            json[i] = map;
+          } else if (this[i].toJSON) {
+            json[i] = this[i].toJSON();
+          } else {
+            json[i] = this[i];
+          }
+        } else {
+          json[i] = this[i];
+        }
+      }
+    }
+    return json;
   }
 
 }

@@ -1,18 +1,18 @@
 <template>
   <div class="ddei_editor_sdp">
     <div class="ddei_editor_sdp_item" style="grid-row:1/3">
+      <div class="ddei_editor_sdp_item_box" @click="save">
+        <img width="16px" height="16px" src="../../icons/icon-save.png" />
+        <div>保存</div>
+      </div>
       <div class="ddei_editor_sdp_item_box">
-          <img width="16px" height="16px" src="../../icons/icon-save.png" />
-          <div>保存</div>
-        </div>
-        <div class="ddei_editor_sdp_item_box">
-          <img width="16px" height="16px" src="../../icons/icon-download.png" />
-          <div>下载</div>
-        </div>
-        <div class="ddei_editor_sdp_item_box">
-          <img width="16px" height="16px" src="../../icons/icon-publish.png" />
-          <div>发布</div>
-        </div>
+        <img width="16px" height="16px" src="../../icons/icon-download.png" />
+        <div>下载</div>
+      </div>
+      <div class="ddei_editor_sdp_item_box">
+        <img width="16px" height="16px" src="../../icons/icon-publish.png" />
+        <div>发布</div>
+      </div>
     </div>
     <div class="ddei_editor_sdp_item">
       <div class="ddei_editor_sdp_item_text">
@@ -22,6 +22,9 @@
   </div>
 </template>
 <script lang="ts">
+import DDeiBusCommandStageChangeSelectModels from '@/components/framework/js/bus/commands/stage-change-select-models';
+import DDeiEditor from '../../js/editor';
+
 
 
 export default {
@@ -30,14 +33,29 @@ export default {
   mixins: [],
   props: {},
   data() {
-    return {};
+    return {
+      editor: null
+    };
   },
   computed: {},
   watch: {},
   created() { },
   mounted() {
-
+    this.editor = DDeiEditor.ACTIVE_INSTANCE;
   },
+  methods: {
+    /**
+     * 保存
+     * @param evt 
+     */
+    save(evt) {
+      if (this.editor?.ddInstance?.stage) {
+        let stage = this.editor?.ddInstance?.stage;
+        let json = this.editor.ddInstance.toJSON();
+        debugger
+      }
+    }
+  }
 };
 </script>
 
@@ -55,7 +73,7 @@ export default {
 
 .ddei_editor_sdp_item {
   margin: auto;
-  display:grid;
+  display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 4px;
 
