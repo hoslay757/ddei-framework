@@ -501,27 +501,50 @@ class DDeiRectangleCanvasRender {
         for (let tci = 0; tci < textContainer.length; tci++) {
 
           let rRect = textContainer[tci];
+          let x1, y1, x2;
           //绘制文字
           if (align == 1) {
-            if (hollow == 1) {
-              ctx.strokeText(rRect.text, x, y + rRect.height * tci)
-            } else {
-              ctx.fillText(rRect.text, x, y + rRect.height * tci)
-            }
-
+            x1 = x;
+            y1 = y + rRect.height * tci;
+            x2 = x1 + rRect.width;
           } else if (align == 2) {
-            if (hollow == 1) {
-              ctx.strokeText(rRect.text, ratPos.x + (ratPos.width - rRect.width) * 0.5, y + rRect.height * tci)
-            } else {
-              ctx.fillText(rRect.text, ratPos.x + (ratPos.width - rRect.width) * 0.5, y + rRect.height * tci)
-            }
+            x1 = ratPos.x + (ratPos.width - rRect.width) * 0.5;
+            y1 = y + rRect.height * tci
+            x2 = x1 + rRect.width;
           } else if (align == 3) {
-            if (hollow == 1) {
-              ctx.strokeText(rRect.text, ratPos.x + (ratPos.width - rRect.width), y + rRect.height * tci)
-            } else {
-              ctx.fillText(rRect.text, ratPos.x + (ratPos.width - rRect.width), y + rRect.height * tci)
-            }
-
+            x1 = ratPos.x + (ratPos.width - rRect.width);
+            y1 = y + rRect.height * tci
+            x2 = x1 + rRect.width;
+          }
+          if (hollow == '1') {
+            ctx.strokeStyle = fiColor;
+            ctx.strokeText(rRect.text, x1, y1)
+          } else {
+            ctx.fillText(rRect.text, x1, y1)
+          }
+          if (underline == '1') {
+            ctx.beginPath();
+            ctx.strokeStyle = fiColor;
+            ctx.moveTo(x1, y1 + rRect.height);
+            ctx.lineTo(x2, y1 + rRect.height);
+            ctx.closePath();
+            ctx.stroke();
+          }
+          if (deleteline == '1') {
+            ctx.beginPath();
+            ctx.strokeStyle = fiColor;
+            ctx.moveTo(x1, y1 + rRect.height * 0.5);
+            ctx.lineTo(x2, y1 + rRect.height * 0.5);
+            ctx.closePath();
+            ctx.stroke();
+          }
+          if (topline == '1') {
+            ctx.beginPath();
+            ctx.strokeStyle = fiColor;
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y1);
+            ctx.closePath();
+            ctx.stroke();
           }
         }
       }
@@ -529,6 +552,7 @@ class DDeiRectangleCanvasRender {
       else {
         //处理镂空样式
         if (hollow == 1) {
+          ctx.strokeStyle = fiColor;
           ctx.strokeText(textContainer[0].text, x, y)
         } else {
           ctx.fillText(textContainer[0].text, x, y)
@@ -536,7 +560,6 @@ class DDeiRectangleCanvasRender {
         if (underline == '1') {
           ctx.beginPath();
           ctx.strokeStyle = fiColor;
-          ctx.lineWidth = 2;
           ctx.moveTo(x, y + textContainer[0].height);
           ctx.lineTo(x + textContainer[0].width, y + textContainer[0].height);
           ctx.closePath();
@@ -545,7 +568,6 @@ class DDeiRectangleCanvasRender {
         if (deleteline == '1') {
           ctx.beginPath();
           ctx.strokeStyle = fiColor;
-          ctx.lineWidth = 2;
           ctx.moveTo(x, y + textContainer[0].height / 2);
           ctx.lineTo(x + textContainer[0].width, y + textContainer[0].height / 2);
           ctx.closePath();
@@ -554,7 +576,6 @@ class DDeiRectangleCanvasRender {
         if (topline == '1') {
           ctx.beginPath();
           ctx.strokeStyle = fiColor;
-          ctx.lineWidth = 2;
           ctx.moveTo(x, y);
           ctx.lineTo(x + textContainer[0].width, y);
           ctx.closePath();
