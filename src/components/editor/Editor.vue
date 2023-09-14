@@ -25,6 +25,7 @@
 </template>
 
 <script lang="ts">
+import { debounce } from 'lodash';
 import DDeiEditor from './js/editor';
 import TopMenu from './topmenu/TopMenu.vue';
 import Toolbox from './toolbox/Toolbox.vue';
@@ -65,8 +66,11 @@ export default {
   },
   computed: {},
   watch: {},
-  created() { },
+  created() {
+    window.onresize=this.resetSize
+   },
   mounted() {
+
     loadEditorCommands();
     this.editor.bindEvent();
     let frameLeftElement = document.getElementById("ddei_editor_frame_left");
@@ -81,9 +85,27 @@ export default {
     this.editor.bottomHeight = frameBottomElement.offsetHeight;
     this.editor.middleWidth = frameMiddleElement.offsetWidth;
     this.editor.middleHeight = frameMiddleElement.offsetHeight;
+    this.editor.maxWidth =  this.editor.leftWidth+ this.editor.rightWidth+ this.editor.middleWidth;
   },
   methods: {
-
+    resetSize(evt,a,b){
+      let width = window.innerWidth
+        || document.documentElement.clientWidth
+        || document.body.clientWidth;
+      if(!window.upSize){
+        window.upSize = width;
+      }else{
+        let deltaWidth = width - window.upSize
+        if(this.editor.middleWidth + deltaWidth >= 305){
+          
+          window.upSize = width;
+          this.editor.middleWidth += deltaWidth;
+          this.editor.maxWidth = this.editor.leftWidth + this.editor.rightWidth + this.editor.middleWidth;
+          this.editor.ddInstance.render.setSize(this.editor.middleWidth, this.editor.middleHeight, 0, 0)
+          this.editor.ddInstance.render.drawShape()
+        }
+      }
+    },
     /**
      * 停止改变大小
      * @param e 
