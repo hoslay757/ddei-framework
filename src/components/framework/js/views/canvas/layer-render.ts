@@ -692,6 +692,7 @@ class DDeiLayerCanvasRender {
     switch (this.stageRender.operateState) {
       //控件状态确认中
       case DDeiEnumOperateState.CONTROL_CONFIRMING: {
+
         //当前操作状态：控件拖拽中
         this.stageRender.operateState = DDeiEnumOperateState.CONTROL_DRAGING
         //记录当前的拖拽的x,y,写入dragObj作为临时变量

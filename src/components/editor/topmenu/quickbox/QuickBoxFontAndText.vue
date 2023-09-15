@@ -10,7 +10,7 @@
 
     <div class="ddei_editor_quick_fat_item">
       <div class="ddei_editor_quick_fat_item_box" style="margin-top:1px;">
-        <img width="13px" height="13px" src="../../icons/icon-align-left.png" />
+        <img width="13px" height="13px" :src="icons['icon-align-left']" />
       </div>
     </div>
 

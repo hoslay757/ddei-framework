@@ -10,7 +10,18 @@ class DDeiDiamond extends DDeiRectangle {
   // ============================ 静态方法 ============================
 
   // 通过一个JSON反向序列化成对象，模型数据与JSON完全一样
-  static loadFromJSON(json): any {
+  // 通过一个JSON反向序列化成对象，模型数据与JSON完全一样
+  static loadFromJSON(json, tempData: object = {}): any {
+    let model = new DDeiDiamond(json);
+    model.layer = tempData['currentLayer']
+    model.stage = tempData['currentStage']
+    model.pModel = tempData['currentContainer']
+    if (!model.pModel) {
+      model.pModel = model.layer;
+    }
+    tempData[model.id] = model;
+    model.initRender();
+    return model;
   }
 
   // 通过JSON初始化对象，数据未传入时将初始化数据

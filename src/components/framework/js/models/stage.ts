@@ -15,7 +15,7 @@ class DDeiStage {
   constructor(props: object) {
     this.id = props.id
     this.layers = [];
-    this.layerIndex = props.layerIndex ? props.layerIndex : -1;
+    this.layerIndex = props.layerIndex != undefined && props.layerIndex != null && props.layerIndex >= 0 ? props.layerIndex : -1;
     this.idIdx = props.idIdx ? props.idIdx : 0;
   }
 
@@ -27,7 +27,19 @@ class DDeiStage {
   /**
    * 通过一个JSON反向序列化成对象，模型数据与JSON完全一样
    */
-  static loadFromJSON(json: object): any {
+  static loadFromJSON(json: object, tempData: object = {}): any {
+    let stage = new DDeiStage(json);
+    stage.ddInstance = tempData["currentDdInstance"]
+    tempData['currentStage'] = stage
+    tempData[stage.id] = stage
+    let layers = [];
+    json.layers.forEach(layer => {
+      let model = DDeiLayer.loadFromJSON(layer, tempData);
+      layers.push(model);
+    })
+    stage.layers = layers
+    stage.initRender();
+    return stage;
   }
 
   /**
@@ -361,12 +373,12 @@ class DDeiStage {
             });
             json[i] = array;
           } else if (this[i].set) {
-            let map = new Map();
+            let map = {};
             this[i].forEach((element, key) => {
               if (element?.toJSON) {
-                map.set(key, element.toJSON());
+                map[key] = element.toJSON();
               } else {
-                map.set(key, element);
+                map[key] = element;
               }
             });
             json[i] = map;

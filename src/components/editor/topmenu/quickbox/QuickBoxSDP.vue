@@ -2,15 +2,19 @@
   <div class="ddei_editor_sdp">
     <div class="ddei_editor_sdp_item" style="grid-row:1/3">
       <div class="ddei_editor_sdp_item_box" @click="save">
-        <img width="16px" height="16px" src="../../icons/icon-save.png" />
-        <div>保存</div>
+          <img width="16px" height="16px" :src="icons['icon-save']" />
+          <div>保存</div>
       </div>
-      <div class="ddei_editor_sdp_item_box">
-        <img width="16px" height="16px" src="../../icons/icon-download.png" />
+      <div class="ddei_editor_sdp_item_box" @click="load">
+        <img width="16px" height="16px" :src="icons['icon-open']" />
+        <div>打开</div>
+      </div>
+      <div class="ddei_editor_sdp_item_box" >
+        <img width="16px" height="16px" :src="icons['icon-download']" />
         <div>下载</div>
       </div>
       <div class="ddei_editor_sdp_item_box">
-        <img width="16px" height="16px" src="../../icons/icon-publish.png" />
+        <img width="16px" height="16px" :src="icons['icon-publish']" />
         <div>发布</div>
       </div>
     </div>
@@ -19,11 +23,17 @@
         保存
       </div>
     </div>
+    <div class="ddei_editor_sdp_file_dialog">
+      
+    </div>
   </div>
 </template>
 <script lang="ts">
-import DDeiBusCommandStageChangeSelectModels from '@/components/framework/js/bus/commands/stage-change-select-models';
+import DDeiStoreLocal from '@/components/framework/js/store/local-store';
 import DDeiEditor from '../../js/editor';
+import ICONS from '../../js/icon';
+import DDei from '../../../framework/js/ddei';
+import DDeiStage from '../../../framework/js/models/stage';
 
 
 
@@ -34,7 +44,8 @@ export default {
   props: {},
   data() {
     return {
-      editor: null
+      editor: null,
+      icons: {}
     };
   },
   computed: {},
@@ -42,6 +53,9 @@ export default {
   created() { },
   mounted() {
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
+    for (let i in ICONS) {
+      this.icons[i] = ICONS[i].default;
+    }
   },
   methods: {
     /**
@@ -50,9 +64,35 @@ export default {
      */
     save(evt) {
       if (this.editor?.ddInstance?.stage) {
-        let stage = this.editor?.ddInstance?.stage;
-        let json = this.editor.ddInstance.toJSON();
-        debugger
+        //获取json信息
+        let json = this.editor.ddInstance.stage.toJSON();
+        if (json) {
+          let jsonStr = JSON.stringify(json);
+          //执行保存
+          let storeIns = new DDeiStoreLocal();
+          storeIns.save(this.editor.ddInstance.id+"_stage", jsonStr)
+        }
+      }
+    },
+
+    /**
+     * 加载
+     * @param evt 
+     */
+    load(evt) {
+      if (this.editor?.ddInstance?.stage) {
+        let ddInstance = this.editor.ddInstance;
+        let storeIns = new DDeiStoreLocal();
+        let jsonStr = storeIns.load(ddInstance.id+"_stage");
+        let stageJson = JSON.parse(jsonStr);
+        if(stageJson){
+          //加载恢复画布
+          let stage = DDeiStage.loadFromJSON(stageJson,{currentDdInstance: ddInstance });
+          ddInstance.stage = stage;
+          setTimeout(() => {
+            ddInstance.render.drawShape();
+          }, 100);
+        }
       }
     }
   }
@@ -61,7 +101,7 @@ export default {
 
 <style scoped>
 .ddei_editor_sdp {
-  width: 120px;
+  width: 150px;
   height: 90px;
   border-right: 1px solid rgb(224, 224, 224);
   grid-template-rows: 30px 30px 20px;
@@ -74,7 +114,7 @@ export default {
 .ddei_editor_sdp_item {
   margin: auto;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 4px;
 
 }
@@ -83,7 +123,7 @@ export default {
   text-align: center;
   font-family: "Microsoft YaHei";
   font-size: 12px;
-  grid-column: 1/4;
+  grid-column: 1/5;
   color: rgb(120, 120, 120)
 }
 
@@ -107,6 +147,8 @@ export default {
 
 .ddei_editor_sdp_item_box img {
   filter: brightness(45%) drop-shadow(0.2px 0px 0.2px #000);
+  width:16px;
+  height:16px;
   margin: auto;
 }
 

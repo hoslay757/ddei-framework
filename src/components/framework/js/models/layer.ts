@@ -24,7 +24,21 @@ class DDeiLayer {
   // ============================ 静态变量 ============================
   // ============================ 静态方法 ============================
   // 通过一个JSON反向序列化成对象，模型数据与JSON完全一样
-  static loadFromJSON(json): any {
+  static loadFromJSON(json, tempData: object = {}): any {
+    let layer = new DDeiLayer(json);
+    layer.stage = tempData['currentStage']
+    tempData['currentLayer'] = layer;
+    tempData[layer.id] = layer;
+    let models: Map<String, DDeiAbstractShape> = new Map<String, DDeiAbstractShape>();
+    for (let key in json.models) {
+      let item = json.models[key];
+      let model = DDeiConfig.MODEL_CLS[item.modelType].loadFromJSON(item, tempData);
+      models.set(key, model)
+    }
+    tempData['currentLayer'] = null;
+    layer.models = models;
+    layer.initRender();
+    return layer;
   }
 
   // 通过JSON初始化对象，数据未传入时将初始化数据
@@ -340,12 +354,12 @@ class DDeiLayer {
             });
             json[i] = array;
           } else if (this[i].set) {
-            let map = new Map();
+            let map = {};
             this[i].forEach((element, key) => {
               if (element?.toJSON) {
-                map.set(key, element.toJSON());
+                map[key] = element.toJSON();
               } else {
-                map.set(key, element);
+                map[key] = element;
               }
             });
             json[i] = map;

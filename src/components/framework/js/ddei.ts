@@ -140,12 +140,12 @@ class DDei {
             });
             json[i] = array;
           } else if (this[i].set) {
-            let map = new Map();
+            let map = {};
             this[i].forEach((element, key) => {
               if (element?.toJSON) {
-                map.set(key, element.toJSON());
+                map[key] = element.toJSON();
               } else {
-                map.set(key, element);
+                map[key] = element;
               }
             });
             json[i] = map;

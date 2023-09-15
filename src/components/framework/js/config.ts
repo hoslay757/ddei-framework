@@ -19,7 +19,27 @@ class DDeiConfig {
   static {
     //加载配置
     loadCommands();
+
+    //动态加载控件
+    const control_ctx = import.meta.glob('./models/*.ts')
+    for (const path in control_ctx) {
+      control_ctx[path]().then(module => {
+        let cls = module.default;
+        if (!DDeiConfig.MODEL_CLS) {
+          DDeiConfig.MODEL_CLS = {};
+        }
+        DDeiConfig.MODEL_CLS[cls.ClsName] = cls
+      });
+    }
   }
+
+  /**
+   * 组件的定义，用于根据名称找到组件类型
+   */
+  static MODEL_CLS: {}
+
+  //保存时的key
+  static STORE_KEY: string = "DDEI";
 
   //单个角度的旋转单位
   static ROTATE_UNIT = Math.PI / 180;
