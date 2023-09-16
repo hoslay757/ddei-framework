@@ -51,7 +51,7 @@ export default {
     //TODO基于参数打开一个文件或一组文件
     //创建一个新的文件
     let file = new DDeiFile({
-      id: Math.random(), name: "新建文件", path: "/新建文件",
+      name: "新建文件", path: "/新建文件",
       sheets: [new DDeiSheet({ name: "新建页面", desc: "新建页面", stage: DDeiStage.initByJSON({ id: "stage_1" }), active: DDeiActiveType.ACTIVE })],
       currentSheetIndex: 0,
       state: DDeiFileState.NEW,

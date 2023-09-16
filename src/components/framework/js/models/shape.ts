@@ -18,7 +18,7 @@ abstract class DDeiAbstractShape {
     this.zIndex = props.zIndex ? props.zIndex : null
     this.rotate = props.rotate ? props.rotate : null
     this.modelCode = props.modelCode ? props.modelCode : null
-    this.unicode = DDeiUtil.getUniqueCode()
+    this.unicode = props.unicode ? props.unicode : DDeiUtil.getUniqueCode()
   }
   // ============================ 静态方法 ============================
 

@@ -60,11 +60,11 @@ class DDeiConfig {
 
   //不需要序列化的字段
   static SERI_FIELDS: object = {
-    "DDei": { "TOJSON": ["stage"], "SKIP": ["bus", "render"] },
-    "DDeiStage": { "TOJSON": ["layers"], "SKIP": ["ddInstance", "selectedModels", "render"] },
-    "DDeiLayer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "render"] },
-    "DDeiContainer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render"] },
-    "AbstractShape": { "SKIP": ["ddInstance", "stage", "layer", "pModel", "render"] },
+    "DDei": { "TOJSON": ["stage"], "SKIP": ["bus", "render", "unicode"] },
+    "DDeiStage": { "TOJSON": ["layers"], "SKIP": ["ddInstance", "selectedModels", "render", "unicode"] },
+    "DDeiLayer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "render", "unicode"] },
+    "DDeiContainer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode"] },
+    "AbstractShape": { "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode"] },
   }
 
   // 边框的相关缺省样式属性

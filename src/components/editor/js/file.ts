@@ -1,4 +1,5 @@
 
+import DDeiUtil from "@/components/framework/js/util";
 import DDeiActiveType from "./enums/active-type";
 import type DDeiFileState from "./enums/file-state";
 import type DDeiSheet from "./sheet";
@@ -43,6 +44,45 @@ class DDeiFile {
   modelType: string = "DDeiFile";
 
   // ============================ 方法 ============================
+  /**
+     * 将模型转换为JSON
+     */
+  toJSON(): Object {
+    let json: Object = new Object();
+    for (let i in this) {
+      if (i == 'active') {
+        continue;
+      }
+      if (this[i] || this[i] == 0) {
+        if (Array.isArray(this[i])) {
+          let array = [];
+          this[i].forEach(element => {
+            if (element?.toJSON) {
+              array.push(element.toJSON());
+            } else {
+              array.push(element);
+            }
+          });
+          json[i] = array;
+        } else if (this[i].set) {
+          let map = {};
+          this[i].forEach((element, key) => {
+            if (element?.toJSON) {
+              map[key] = element.toJSON();
+            } else {
+              map[key] = element;
+            }
+          });
+          json[i] = map;
+        } else if (this[i].toJSON) {
+          json[i] = this[i].toJSON();
+        } else {
+          json[i] = this[i];
+        }
+      }
+    }
+    return json;
+  }
 }
 
 export default DDeiFile

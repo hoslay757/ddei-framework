@@ -9,7 +9,7 @@
         <img width="16px" height="16px" :src="icons['icon-save']" />
         <div>保存</div>
       </div>
-      <div class="ddei_editor_sdp_item_box" @click="load">
+      <div class="ddei_editor_sdp_item_box" @click="openFile">
         <img width="16px" height="16px" :src="icons['icon-open']" />
         <div>打开</div>
       </div>
@@ -82,14 +82,36 @@ export default {
     save(evt) {
       if (this.editor?.ddInstance?.stage) {
         //获取json信息
-        let json = this.editor.ddInstance.stage.toJSON();
-        if (json) {
-          let jsonStr = JSON.stringify(json);
-          //执行保存
-          let storeIns = new DDeiStoreLocal();
-          storeIns.save(this.editor.ddInstance.id + "_stage", jsonStr)
+        let file = this.editor?.files[this.editor?.currentFileIndex];
+        if (file) {
+          let json = file.toJSON();
+          if (json) {
+            //执行保存
+            let storeIns = new DDeiStoreLocal();
+
+            storeIns.save(file.id, json).then((data) => {
+              //回写ID
+              if (!file.id) {
+                file.id = data;
+              }
+            });
+          }
+
         }
+
       }
+    },
+
+    /**
+     * 打开文件
+     * @param evt 
+     */
+    openFile(evt) {
+      //执行保存
+      let storeIns = new DDeiStoreLocal();
+      storeIns.find("文件").then((datas) => {
+        this.fileList = datas;
+      });
     },
 
     /**

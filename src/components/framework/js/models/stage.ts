@@ -18,7 +18,7 @@ class DDeiStage {
     this.layers = [];
     this.layerIndex = props.layerIndex != undefined && props.layerIndex != null && props.layerIndex >= 0 ? props.layerIndex : -1;
     this.idIdx = props.idIdx ? props.idIdx : 0;
-    this.unicode = DDeiUtil.getUniqueCode()
+    this.unicode = props.unicode ? props.unicode : DDeiUtil.getUniqueCode()
   }
 
   // ============================ 静态变量 ============================

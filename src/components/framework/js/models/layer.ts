@@ -19,7 +19,7 @@ class DDeiLayer {
     this.type = props.type ? props.type : 0;
     this.background = props.background ? props.background : null;
     this.display = props.display ? props.display : 1;
-    this.unicode = DDeiUtil.getUniqueCode()
+    this.unicode = props.unicode ? props.unicode : DDeiUtil.getUniqueCode()
   }
 
   // ============================ 静态变量 ============================

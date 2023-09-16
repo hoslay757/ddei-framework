@@ -49,8 +49,6 @@ class DDeiStoreLocal extends DDeiStore {
           keyPath: "id",//主键
           autoIncrement: false//是否自增
         };
-        // 创建对象仓库
-        console.log("创建对象仓库");
 
         let temporary = DDeiStoreLocal.db.createObjectStore("temporary", item);
         // 创建索引，为了加速数据的检索，为不同的属性建立索引，只有加了索引的属性才能进行查询
@@ -70,7 +68,7 @@ class DDeiStoreLocal extends DDeiStore {
         };
         let folder = DDeiStoreLocal.db.createObjectStore("folder", item);
         folder.createIndex("name", "name", { unique: false });
-        folder.createIndex("path", "path", { unique: true });
+        folder.createIndex("path", "path", { unique: false });
         folder.createIndex("parentId", "parentId", { unique: false });
       }
       if (!DDeiStoreLocal.db.objectStoreNames.contains("file")) {
@@ -82,7 +80,7 @@ class DDeiStoreLocal extends DDeiStore {
         let file = DDeiStoreLocal.db.createObjectStore("file", item);
         file.createIndex("name", "name", { unique: false });
         file.createIndex("parenId", "parentId", { unique: false });
-        file.createIndex("path", "path", { unique: true });
+        file.createIndex("path", "path", { unique: false });
         file.createIndex("data", "data", { unique: false });
       }
     }
@@ -128,44 +126,110 @@ class DDeiStoreLocal extends DDeiStore {
   }
 
 
+
+
   /**
     * 写入
     * key 键
     * data 数据
-    * fn 回调
     */
-  save(key: string, data: object, fn: Function): void {
-    this.getNextId("file").then((newId) => {
-      let id = newId;
-      //插入数据
-      let storeData = null;
-      if (typeof (data) == 'object') {
-        storeData = JSON.stringify(data);
-      } else {
-        storeData = data;
-      }
-      let rowData = {
-        id: id,
-        name: "测试文件1.dei",
-        path: "/测试目录/测试文件1.dei",
-        parentId: 0,
-        data: storeData
-      };
-      // 开启一个事务
-      let tx = DDeiStoreLocal.db.transaction('file', "readwrite");
-      let store = tx.objectStore("file");
-      // 执行数据操作(根据主键更新记录)
-      let addReq = store.add(rowData);
-      addReq.onsuccess = function () {
-        console.log("新增数据成功");
-      }
-      addReq.onerror = function () {
-        console.log("新增失败");
-      }
-      if (fn) {
-        fn(key, data);
-      }
-    });
+  save(key: string, data: object): Promise {
+    //没有传入键或没有找到数据，则新增
+
+    if (!key) {
+      return new Promise((resolve, reject) => {
+        this.getNextId("file").then((newId) => {
+          let id = newId;
+          //插入数据
+          data.id = id;
+          let storeData = JSON.stringify(data);
+          let rowData = {
+            id: id,
+            name: data.name,
+            path: data.path,
+            parentId: 0,
+            data: storeData
+          };
+          // 开启一个事务
+          let tx = DDeiStoreLocal.db.transaction('file', "readwrite");
+          let store = tx.objectStore("file");
+          // 执行数据操作(根据主键更新记录)
+          let addReq = store.add(rowData);
+          addReq.onsuccess = function () {
+            if (addReq.result) {
+              debugger
+              resolve(addReq.result);
+            }
+          }
+          addReq.onerror = function () {
+            console.log("新增失败");
+          }
+        });
+      });
+
+    }
+    //否则进行修改
+    else {
+      return new Promise((resolve, reject) => {
+        this.load(key).then((rowData) => {
+          //存在数据，执行修改
+          if (rowData) {
+            //插入数据
+            let storeData = JSON.stringify(data);
+            rowData.name = data.name
+            rowData.path = data.path
+            rowData.parentId = 0
+            rowData.data = storeData
+            // 开启一个事务
+            let tx = DDeiStoreLocal.db.transaction('file', "readwrite");
+            let store = tx.objectStore("file");
+            // 执行数据操作(根据主键更新记录)
+            let modReq = store.put(rowData);
+            modReq.onsuccess = function () {
+              if (modReq.result) {
+                debugger
+                resolve(modReq.result);
+              }
+            }
+            modReq.onerror = function () {
+              console.log("新增失败");
+            }
+          }
+          //不存在数据，执行新增
+          else {
+            this.getNextId("file").then((newId) => {
+              let id = newId;
+              //插入数据
+              data.id = id;
+              let storeData = JSON.stringify(data);
+              let rowData = {
+                id: id,
+                name: data.name,
+                path: data.path,
+                parentId: 0,
+                data: storeData
+              };
+              // 开启一个事务
+              let tx = DDeiStoreLocal.db.transaction('file', "readwrite");
+              let store = tx.objectStore("file");
+              // 执行数据操作(根据主键更新记录)
+              let addReq = store.add(rowData);
+              addReq.onsuccess = function () {
+                if (addReq.result) {
+                  debugger
+                  resolve(addReq.result);
+                }
+              }
+              addReq.onerror = function () {
+                console.log("新增失败");
+              }
+            });
+          }
+        });
+      });
+    }
+
+
 
   }
 
@@ -175,15 +239,25 @@ class DDeiStoreLocal extends DDeiStore {
   /**
     * 加载
     * key 键
-    * fn 回调
     * return 数据
     */
-  load(key: string, fn: Function): object {
-    let data = localStorage.getItem(key);
-    if (fn) {
-      fn(key, data);
-    }
-    return data;
+  load(key: string): Promise {
+    return new Promise((resolve, reject) => {
+      // 开启一个事务
+      let tx = DDeiStoreLocal.db.transaction('file', "readonly");
+      // 获取对象仓库
+      let fileStore = tx.objectStore("file");
+      const request = fileStore.get(key);
+      // 写入数据的事件监听
+      request.onsuccess = function (event) {
+        if (request.result) {
+          resolve(request.result);
+        }
+      };
+      request.onerror = function (event) {
+        reject(event);
+      }
+    });
   }
 
   /**
@@ -191,30 +265,64 @@ class DDeiStoreLocal extends DDeiStore {
     * key 键
     * fn 回调
     */
-  del(key: string, fn: Function): void {
-    let data = localStorage.getItem(key);
-    localStorage.removeItem(key);
-    if (fn) {
-      fn(key, data);
-    }
+  del(key: string): Promise {
+    return new Promise((resolve, reject) => {
+      // 开启一个事务
+      let tx = DDeiStoreLocal.db.transaction('file', "readonly");
+      // 获取对象仓库
+      let fileStore = tx.objectStore("file");
+      const request = fileStore.deletes(key);
+      // 写入数据的事件监听
+      request.onsuccess = function (event) {
+        if (request.result) {
+          resolve(request.result);
+        }
+      };
+      request.onerror = function (event) {
+        reject(event);
+      }
+    });
   }
 
   /**
-    * find，返回k、v组成的数据
+    * find，返回数据
     */
-  find(searchKey: string): Map<string, object> {
-    let returnData = new Map();
-    for (let i = 0; i < localStorage.length; i++) {
-      let k = localStorage.key(i);
-      if (k) {
-        if (searchKey && k.indexOf(searchKey) != -1) {
-          returnData.set(k, localStorage.getItem(k));
-        } else if (!searchKey) {
-          returnData.set(k, localStorage.getItem(k));
+  find(searchKey: string): Promise {
+    return new Promise((resolve, reject) => {
+      let list = [];
+      let bol = true;
+      let nameArr = searchKey.split("");
+      if (DDeiStoreLocal.db != null) {
+        let request = DDeiStoreLocal.db.transaction("file", "readwrite")
+          .objectStore("file")
+          .index("name")
+          .openCursor();
+        request.onsuccess = e => {
+          if (request.result) {
+            let cursor = request.result;
+            if (!cursor) {
+              resolve(list);
+            } else {
+              bol = nameArr.every(value => {
+                return cursor.key.indexOf(value) > -1;
+              });
+              if (bol) {
+                list.push({ id: cursor.value.id, name: cursor.value.name, parentId: cursor.value.parentId, path: cursor.value.path });
+              }
+              let c = cursor.continue();
+            }
+
+          } else {
+            resolve(list);
+          }
+        };
+
+        request.onerror = e => {
+          resolve(list)
         }
+
       }
-    }
-    return returnData;
+    });
   }
 
 }
