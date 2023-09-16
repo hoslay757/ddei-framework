@@ -41,6 +41,10 @@ import { COMMANDS } from "../framework/js/config/command"
 import { loadEditorCommands } from "./js/util/command"
 import DDeiUtil from '../framework/js/util';
 import DDeiFile from './js/file';
+import DDeiEnumBusCommandType from '../framework/js/enums/bus-command-type';
+import DDeiEditorEnumBusCommandType from './js/enums/editor-command-type';
+import DDeiFileState from './js/enums/file-state';
+import DDeiEditorCommandFileDirty from './js/bus/commands/file-dirty';
 
 
 export default {
@@ -88,8 +92,21 @@ export default {
     this.editor.middleWidth = frameMiddleElement.offsetWidth;
     this.editor.middleHeight = frameMiddleElement.offsetHeight;
     this.editor.maxWidth = this.editor.leftWidth + this.editor.rightWidth + this.editor.middleWidth;
+    //初始化拦截器
+    //以下为拦截器的配置
+    this.editor.bus.interceptor[DDeiEnumBusCommandType.ModelChangeBounds] = { 'after': [this.changeFileModifyDirty] };
+    this.editor.bus.interceptor[DDeiEnumBusCommandType.ModelChangeContainer] = { 'after': [this.changeFileModifyDirty] };
+    this.editor.bus.interceptor[DDeiEnumBusCommandType.ModelChangeRotate] = { 'after': [this.changeFileModifyDirty] };
+    this.editor.bus.interceptor[DDeiEnumBusCommandType.ModelChangeValue] = { 'after': [this.changeFileModifyDirty] };
+
   },
   methods: {
+
+    changeFileModifyDirty() {
+      let action: DDeiEditorCommandFileDirty = DDeiEditorCommandFileDirty.newInstance();
+      return action.action({ state: DDeiFileState.MODIFY }, this.editor.bus, null);
+    },
+
     resetSize(evt, a, b) {
       let width = window.innerWidth
         || document.documentElement.clientWidth

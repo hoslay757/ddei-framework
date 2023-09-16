@@ -12,7 +12,7 @@
         <div class="text">{{ item.name + item.state }}</div>
         <div class="dirty" v-show="item.state != 0">ꔷ</div>
       </span>
-      <div @click.prevent.stop="closeFile(item)">
+      <div @click.prevent.stop="closeFile(item, $event)">
         <img src="../icons/toolbox-close.png" />
       </div>
     </div>
@@ -23,14 +23,30 @@
     <div class="ddei_editor_ofsview_movebox" v-show="editor?.files?.length > maxOpenSize" @click="moveItem(1)">
       <img width="16" height="16" src="../icons/icon-right.png" />
     </div>
+    <div id="close_file_confirm_dialog" class="close_file_confirm_dialog">
+      <div class="close_file_confirm_dialog_content">
+        当前文件已经被修改，是否保存？
+      </div>
+      <div class="close_file_confirm_dialog_button">
+        <div class="button" style="color:white;background-color: #017fff;" @click="saveAndCloseFileConfirmDialog">保 存
+        </div>
+        <div class="button" style="border-left:0.1px solid grey;border-right:0.1px solid grey;"
+          @click="abortAndCloseFileConfirmDialog">放 弃
+        </div>
+        <div class="button" @click="cancelCloseFileConfirmDialog">取 消</div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
+import DDeiUtil from '@/components/framework/js/util';
 import DDeiEditor from '../js/editor';
 import DDeiActiveType from '../js/enums/active-type';
 import DDeiEditorState from '../js/enums/editor-state';
 import DDeiFileState from '../js/enums/file-state';
+import DDeiFile from '../js/file';
+import DDeiEditorUtil from '../js/util/editor-util';
 
 export default {
   name: "DDei-Editor-OpenFielsView",
@@ -45,6 +61,7 @@ export default {
       openIndex: 0,
       //最大可以打开的数量
       maxOpenSize: 1,
+      tempFile: null,
     };
   },
   computed: {},
@@ -94,29 +111,69 @@ export default {
     },
 
     /**
+     * 关闭确认弹框
+     */
+    cancelCloseFileConfirmDialog() {
+      let confirmDialog = document.getElementById("close_file_confirm_dialog");
+      confirmDialog.style.display = "none";
+    },
+
+    /**
+     * 保存并关闭确认弹框
+     */
+    saveAndCloseFileConfirmDialog() {
+      this.tempFile.state = DDeiFileState.NONE;
+      let confirmDialog = document.getElementById("close_file_confirm_dialog");
+      confirmDialog.style.display = "none";
+      this.closeFile(this.tempFile)
+    },
+
+    /**
+     * 放弃并关闭确认弹框
+     */
+    abortAndCloseFileConfirmDialog() {
+      this.tempFile.state = DDeiFileState.NONE;
+      let confirmDialog = document.getElementById("close_file_confirm_dialog");
+      confirmDialog.style.display = "none";
+      this.closeFile(this.tempFile)
+    },
+
+
+
+    /**
      * 关闭文件
      * @param instance 
      */
-    closeFile(file) {
-      //刷新画布
-      let index = this.editor.files.indexOf(file);
-      this.editor.removeFile(file);
-      if (index < this.editor.currentFileIndex) {
-        this.editor.currentFileIndex--;
-      } else if (index == this.editor.currentFileIndex) {
-        if (index > 0) {
-          this.changeFile(this.editor.files[this.editor.currentFileIndex - 1]);
-        } else if (this.editor.files.length > 0) {
-          this.changeFile(this.editor.files[0]);
-        }
-      }
-      if (index > this.openIndex) {
-        this.openIndex--;
-        if (this.openIndex < 0) {
-          this.openIndex = 0
-        }
-      }
+    closeFile(file, evt) {
+      //如果文件为脏状态，询问是否保存，放弃，或取消
+      if (file.state == DDeiFileState.NEW || file.state == DDeiFileState.MODIFY) {
+        let confirmDialog = document.getElementById("close_file_confirm_dialog");
+        confirmDialog.style.display = "block";
 
+        let pos = DDeiUtil.getDomAbsPosition(evt.target);
+        confirmDialog.style.left = (pos.left + 5) + "px";
+        confirmDialog.style.top = (pos.top + 15) + "px";
+        this.tempFile = file;
+      } else {
+        //刷新画布
+        let index = this.editor.files.indexOf(file);
+        this.editor.removeFile(file);
+        if (index < this.editor.currentFileIndex) {
+          this.editor.currentFileIndex--;
+        } else if (index == this.editor.currentFileIndex) {
+          if (index > 0) {
+            this.changeFile(this.editor.files[this.editor.currentFileIndex - 1]);
+          } else if (this.editor.files.length > 0) {
+            this.changeFile(this.editor.files[0]);
+          }
+        }
+        if (index > this.openIndex) {
+          this.openIndex--;
+          if (this.openIndex < 0) {
+            this.openIndex = 0
+          }
+        }
+      }
     },
     /**
      * 在存在显示隐藏的情况下移动tab
@@ -235,7 +292,7 @@ export default {
   width: 10px;
   flex: 0 0 10px;
   font-size: 16px;
-  margin-top: -2px;
+  margin-top: -2.5px;
 }
 
 .ddei_editor_ofsview_item div {
@@ -275,6 +332,54 @@ export default {
   width: 10px;
   flex: 0 0 10px;
   font-size: 16px;
-  margin-top: -2px;
+  margin-top: -2.5px;
+}
+
+
+/**以下为询问框的样式 */
+.close_file_confirm_dialog {
+  width: 250px;
+  height: 120px;
+  background-color: white;
+  display: none;
+  position: absolute;
+  border: 1px solid #017fff;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+
+.close_file_confirm_dialog_content {
+  width: 100%;
+  height: 90px;
+  padding-top: 35px;
+  border-bottom: 0.3px solid grey;
+  color: black;
+  font-size: 15px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.close_file_confirm_dialog_button {
+  width: 100%;
+  height: 30px;
+  color: black;
+  font-size: 15px;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.close_file_confirm_dialog_button div {
+  width: 100%;
+  height: 30px;
+  text-align: center;
+  padding-top: 1px;
+  margin: auto;
+}
+
+.close_file_confirm_dialog_button div:hover {
+  font-weight: bolder;
+  cursor: pointer;
 }
 </style>

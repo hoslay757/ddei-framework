@@ -25,6 +25,9 @@ class DDeiBus {
   // 普通队列，普通queue完成后才执行drawQueue
   queue: object[] = [];
 
+  //拦截器，用于动态将一个或多个action注入到某个action之前或之后，无需手动添加
+  //格式{key:{before,execute,after}}
+  interceptor: object = {};
   // ============================ 方法 ============================
 
 
@@ -54,6 +57,7 @@ class DDeiBus {
       this.queue.push({ type: actionType, data: data, evt: evt, parallel: parallel });
     }
   }
+
 
   /**
    * 推送多个事件进入总线
@@ -124,10 +128,37 @@ class DDeiBus {
         action = COMMANDS.get(firstActionData.type);
         //执行action逻辑
         if (action) {
+          if (this.interceptor[firstActionData.type]?.before) {
+            let interActions = this.interceptor[firstActionData.type]?.before
+            for (let ii = 0; ii < interActions.length; ii++) {
+              let result = interActions[ii](firstActionData.data, this, firstActionData.evt);
+              if (!result) {
+                return false;
+              }
+            }
+          }
           let validResult = action.before(firstActionData.data, this, firstActionData.evt);
           if (validResult) {
+            if (this.interceptor[firstActionData.type]?.execute) {
+              let interActions = this.interceptor[firstActionData.type]?.execute
+              for (let ii = 0; ii < interActions.length; ii++) {
+                let result = interActions[ii](firstActionData.data, this, firstActionData.evt);
+                if (!result) {
+                  return false;
+                }
+              }
+            }
             let actionResult = action.action(firstActionData.data, this, firstActionData.evt);
             if (actionResult) {
+              if (this.interceptor[firstActionData.type]?.after) {
+                let interActions = this.interceptor[firstActionData.type]?.after
+                for (let ii = 0; ii < interActions.length; ii++) {
+                  let result = interActions[ii](firstActionData.data, this, firstActionData.evt);
+                  if (!result) {
+                    return false;
+                  }
+                }
+              }
               return action.after(firstActionData.data, this, firstActionData.evt);
             } else {
               return false;

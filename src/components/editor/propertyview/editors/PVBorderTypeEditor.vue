@@ -37,7 +37,7 @@ export default {
     return {
       //当前编辑器
       editor: null,
-      dataSource:null
+      dataSource: null
     };
   },
   computed: {},
@@ -45,17 +45,17 @@ export default {
 
   },
   created() {
-    // 监听obj对象中prop属性的变化
-    this.$watch('attrDefine.value', function (newVal, oldVal) {
-      this.valueChange();
-    });
+    // 监听obj对象中prop属性的变化,TODO 一点击就触发file的dirty
+    // this.$watch('attrDefine.value', function (newVal, oldVal) {
+    //   this.valueChange();
+    // });
   },
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     this.getDataSource(this.attrDefine);
     let type = this.getTypeValue();
-    if(type){
+    if (type) {
       this.attrDefine.value = type.value
     }
   },
@@ -113,10 +113,10 @@ export default {
 
       //通过解析器获取有效值
       let value = DDeiUtil.getDataByPathList(this.attrDefine.model, paths);
-      if(!value){
-       return { value:'1' };
-      }else if(value == 'true' || value == true){
-        return {  value: '0' };
+      if (!value) {
+        return { value: '1' };
+      } else if (value == 'true' || value == true) {
+        return { value: '0' };
       }
       return { isDefault: true, value: this.attrDefine.getParser().getDefaultValue() };
     },
@@ -139,9 +139,9 @@ export default {
       let value = parser.parseValue(this.attrDefine.value);
       //显示隐藏其他属性
       if (value == '0') {
-      }else if (value == '1') {
+      } else if (value == '1') {
         DDeiEditorArrtibute.showAttributesByCode(this.controlDefine.styles, "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound");
-      }     
+      }
       //设置当前编辑器控件的临时属性值
       this.editor.ddInstance.stage.selectedModels.forEach(element => {
         if (value == '0') {
@@ -154,15 +154,15 @@ export default {
         else if (value == '1') {
           //推送信息进入总线
           this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: false }, evt, true);
-           //根据code以及mapping设置属性值
+          //根据code以及mapping设置属性值
           DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, false)
         }
-        
+
       });
       this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, null, evt);
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
       this.editor.bus.executeAll();
-      
+
     }
   }
 };
