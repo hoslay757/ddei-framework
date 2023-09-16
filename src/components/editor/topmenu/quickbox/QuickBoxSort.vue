@@ -71,7 +71,7 @@ export default {
 
 <style scoped>
 .ddei_editor_quick_sort {
-  width: 250px;
+  width: 230px;
   height: 90px;
   border-right: 1px solid rgb(224, 224, 224);
   grid-template-rows: 30px 30px 20px;

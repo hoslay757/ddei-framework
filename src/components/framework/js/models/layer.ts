@@ -19,6 +19,7 @@ class DDeiLayer {
     this.type = props.type ? props.type : 0;
     this.background = props.background ? props.background : null;
     this.display = props.display ? props.display : 1;
+    this.unicode = DDeiUtil.getUniqueCode()
   }
 
   // ============================ 静态变量 ============================
@@ -74,6 +75,7 @@ class DDeiLayer {
   display: number = 1;
   // 当前图层是否锁定，true显示，false不显示
   lock: boolean = false;
+  unicode: string;
   // ============================ 方法 ===============================
   /**
   * 初始化渲染器

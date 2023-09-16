@@ -1,7 +1,6 @@
 <template>
-  <div :id="id" class="ddei_editor_canvasview" @mousedown="mouseDown($event)"
-    ondragstart="return false;" @dragover="createControlOver" @drop="createControlDrop" @dragleave="createControlCancel"
-    @contextmenu.prevent>
+  <div :id="id" class="ddei_editor_canvasview" @mousedown="mouseDown($event)" ondragstart="return false;"
+    @dragover="createControlOver" @drop="createControlDrop" @dragleave="createControlCancel" @contextmenu.prevent>
   </div>
 </template>
 
@@ -17,6 +16,11 @@ import DDeiEnumOperateState from '@/components/framework/js/enums/operate-state'
 import DDeiEnumBusCommandType from '../../framework/js/enums/bus-command-type';
 import DDeiEnumState from '../../framework/js/enums/ddei-state';
 import DDeiUtil from '../../framework/js/util';
+import DDeiFile from '../js/file';
+import DDeiSheet from '../js/sheet';
+import DDeiStage from '@/components/framework/js/models/stage';
+import DDeiFileState from '../js/enums/file-state';
+import DDeiActiveType from '../js/enums/active-type';
 
 
 export default {
@@ -24,9 +28,9 @@ export default {
   extends: null,
   mixins: [],
   props: {
-    id:{
-      type:String,
-      default:"ddei_editor_canvasview"
+    id: {
+      type: String,
+      default: "ddei_editor_canvasview"
     }
   },
   data() {
@@ -44,9 +48,25 @@ export default {
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
-    this.editor.ddInstance = DDei.newInstance("ddei_editor_view", "ddei_editor_canvasview");
+    //TODO基于参数打开一个文件或一组文件
+    //创建一个新的文件
+    let file = new DDeiFile({
+      id: Math.random(), name: "新建文件", path: "/新建文件",
+      sheets: [new DDeiSheet({ name: "新建页面", desc: "新建页面", stage: DDeiStage.initByJSON({ id: "stage_1" }), active: DDeiActiveType.ACTIVE })],
+      currentSheetIndex: 0,
+      state: DDeiFileState.NEW,
+      active: DDeiActiveType.ACTIVE
+    });
+    //添加文件
+    this.editor.addFile(file);
+    this.editor.currentFileIndex = 0;
+    //初始化ddInstance,
+    this.editor.ddInstance = DDei.newInstance("ddei_editor_view", "ddei_editor_canvasview", file.sheets[file.currentSheetIndex].stage);
+    file.sheets[file.currentSheetIndex].stage = this.editor.ddInstance.stage;
     this.editor.ddInstance.bus.invoker = this.editor;
     this.editor.bus = this.editor.ddInstance.bus;
+
+
   },
   methods: {
     /**
@@ -57,14 +77,14 @@ export default {
       return true;
     },
 
-    mouseDown(evt){
+    mouseDown(evt) {
       let middleCanvas = document.getElementById(this.id);
       let middleCanvasPos = DDeiUtil.getDomAbsPosition(middleCanvas)
-      if(middleCanvasPos.left+5 <= evt.clientX
-        && middleCanvasPos.left + middleCanvas.offsetWidth-5 >= evt.clientX) {
-          this.changeEditorFocus();
-          this.editor.ddInstance.state = DDeiEnumState.NONE;
-           this.editor.ddInstance.render.mouseDown(evt);
+      if (middleCanvasPos.left + 5 <= evt.clientX
+        && middleCanvasPos.left + middleCanvas.offsetWidth - 5 >= evt.clientX) {
+        this.changeEditorFocus();
+        this.editor.ddInstance.state = DDeiEnumState.NONE;
+        this.editor.ddInstance.render.mouseDown(evt);
       }
     },
 

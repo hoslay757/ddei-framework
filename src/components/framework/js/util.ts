@@ -141,6 +141,24 @@ class DDeiUtil {
   }
 
   /**
+   * 声称唯一编码
+   * @returns 
+   */
+  static getUniqueCode() {
+    let data = new Date().getTime();
+    if (window.performance && typeof window.performance.now === "function") {
+      data += performance.now();
+    }
+    // #endif
+    let codeId = 'xxxxxxxxxxxx6xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function (msg) {
+      let rand = (data + Math.random() * 16) % 16 | 0;
+      data = Math.floor(data / 16);
+      return (msg == 'x' ? rand : (rand & 0x3 | 0x8)).toString(16);
+    });
+    return codeId;
+  }
+
+  /**
    * 根据Path获取JSON的数据
    * 如果data路径中存在override，则强制覆盖不从上级获取
    */

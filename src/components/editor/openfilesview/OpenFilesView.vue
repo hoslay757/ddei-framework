@@ -5,7 +5,7 @@
     </div>
     <div
       :class="item.state == 1 ? 'ddei_editor_ofsview_item ddei_editor_ofsview_item_selected' : 'ddei_editor_ofsview_item'"
-      @click="changeInstance(item)" v-for="(item, i) in instances"
+      @click="changeInstance(item)" v-for="(item, i) in editor?.files"
       v-show="i >= openIndex && ((i - openIndex + 1) * 160 + 40) <= editor?.middleWidth" :title="item.name">
       <img src="../icons/icon-file.png" />
       <span>{{ item.name }}</span>
@@ -14,10 +14,10 @@
       </div>
     </div>
     <div style="flex:1 1 1px"></div>
-    <div class="ddei_editor_ofsview_movebox" v-show="instances.length > maxOpenSize" @click="moveItem(-1)">
+    <div class="ddei_editor_ofsview_movebox" v-show="editors?.files?.length > maxOpenSize" @click="moveItem(-1)">
       <img width="16" height="16" src="../icons/icon-left.png" />
     </div>
-    <div class="ddei_editor_ofsview_movebox" v-show="instances.length > maxOpenSize" @click="moveItem(1)">
+    <div class="ddei_editor_ofsview_movebox" v-show="editors?.files?.length > maxOpenSize" @click="moveItem(1)">
       <img width="16" height="16" src="../icons/icon-right.png" />
     </div>
   </div>
@@ -25,7 +25,9 @@
 
 <script lang="ts">
 import DDeiEditor from '../js/editor';
+import DDeiActiveType from '../js/enums/active-type';
 import DDeiEditorState from '../js/enums/editor-state';
+import DDeiFileState from '../js/enums/file-state';
 
 export default {
   name: "DDei-Editor-OpenFielsView",
@@ -38,14 +40,8 @@ export default {
       editor: null,
       //当前打开的页的开始下标
       openIndex: 0,
-      //当前打开页在instances的下标
-      currentIndex: 1,
       //最大可以打开的数量
       maxOpenSize: 1,
-      //当前打开的实例
-      instances: [{ "name": "1事件分发逻辑", "url": "1", "state": 0 }, { "name": "2事件分发逻辑", "url": "1", "state": 0 }, { "name": "3事件分发逻辑", "url": "1", "state": 1 },
-      { "name": "事件分发逻辑4", "url": "1", "state": 0 }, { "name": "事件分发逻辑5", "url": "1", "state": 0 }, { "name": "事件分发逻辑6", "url": "1", "state": 0 }, { "name": "事件分发逻辑7", "url": "1", "state": 0 },
-      { "name": "事件分发逻辑8", "url": "1", "state": 0 }, { "name": "事件分发逻辑9", "url": "1", "state": 0 }]
     };
   },
   computed: {},
@@ -73,10 +69,10 @@ export default {
      * @param instance 
      */
     changeInstance(instance) {
-      this.instances.forEach(item => {
-        item.state = 0
+      this.editor.files.forEach(item => {
+        item.active = DDeiActiveType.NONE
       });
-      instance.state = 1
+      instance.active = DDeiActiveType.ACTIVE
       //TODO 刷新画布
     },
     /**
@@ -85,8 +81,8 @@ export default {
     moveItem(index: number = 0) {
       if (index != 0) {
         this.openIndex += index
-        if (this.openIndex > this.instances.length - this.maxOpenSize) {
-          this.openIndex = this.instances.length - this.maxOpenSize
+        if (this.openIndex > this.editor.files.length - this.maxOpenSize) {
+          this.openIndex = this.editor.files.length - this.maxOpenSize
         } else if (this.openIndex < 0) {
           this.openIndex = 0
         }

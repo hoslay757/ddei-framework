@@ -6,6 +6,7 @@ import DDeiEditorUtil from "./util/editor-util";
 import DDeiUtil from "@/components/framework/js/util";
 import DDeiBus from "@/components/framework/js/bus/bus";
 import DDeiEditorEnumBusCommandType from "./enums/editor-command-type";
+import type DDeiFile from "./file";
 
 /**
  * DDei图形编辑器类，用于维护编辑器实例、全局状态以及全局属性
@@ -15,9 +16,12 @@ class DDeiEditor {
   constructor(props: object) {
     this.id = props.id
     this.containerid = props.containerid
+    this.files = props.files ? props.files : []
+    this.currentFileIndex = props.currentFileIndex ? props.currentFileIndex : -1;
     this.state = DDeiEditorState.DESIGNING;
   }
   // ============================ 静态变量 ============================
+
 
 
   /**
@@ -119,6 +123,13 @@ class DDeiEditor {
   id: string;
   // 承载的容器id
   containerid: string;
+
+  //当前打开的文件列表
+  files: DDeiFile[];
+
+  //当前打开的文件下标
+  currentFileIndex: number;
+
   // 当前实例的状态
   state: DDeiEditorState | null;
   //当前模型的类型
@@ -137,6 +148,40 @@ class DDeiEditor {
   bus: DDeiBus | null = null;
 
   // ============================ 方法 ============================
+  /**
+   * 添加文件到列表中,默认添加到最后面
+   */
+  addFile(file: DDeiFile, index: number): void {
+    if (index || index == 0) {
+      this.files.splice(index, 0, file);
+    } else {
+      this.files.push(file);
+    }
+  }
+
+  /**
+   * 移除文件
+   */
+  removeFile(file: DDeiFile, index: number): void {
+    if (file) {
+      if (this.files.indexOf(file) != -1) {
+        this.files.splice(this.files.indexOf(file), 1);
+      }
+    } else if (index || index == 0) {
+      this.files.splice(index, 1);
+    }
+  }
+
+  /**
+   * 交换文件的位置
+   */
+  changeFile(indexA: number, indexB: number): void {
+    let fileA = this.files[indexA];
+    let fileB = this.files[indexB];
+    this.files[indexA] = fileB
+    this.files[indexB] = fileA
+  }
+
   // ============================ 事件 ============================
   /**
    * 绑定事件

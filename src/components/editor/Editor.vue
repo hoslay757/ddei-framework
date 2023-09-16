@@ -40,6 +40,7 @@ import DDeiEnumState from '../framework/js/enums/ddei-state';
 import { COMMANDS } from "../framework/js/config/command"
 import { loadEditorCommands } from "./js/util/command"
 import DDeiUtil from '../framework/js/util';
+import DDeiFile from './js/file';
 
 
 export default {
@@ -67,9 +68,10 @@ export default {
   computed: {},
   watch: {},
   created() {
-    window.onresize=this.resetSize
-   },
+    window.onresize = this.resetSize
+  },
   mounted() {
+
 
     loadEditorCommands();
     this.editor.bindEvent();
@@ -85,19 +87,19 @@ export default {
     this.editor.bottomHeight = frameBottomElement.offsetHeight;
     this.editor.middleWidth = frameMiddleElement.offsetWidth;
     this.editor.middleHeight = frameMiddleElement.offsetHeight;
-    this.editor.maxWidth =  this.editor.leftWidth+ this.editor.rightWidth+ this.editor.middleWidth;
+    this.editor.maxWidth = this.editor.leftWidth + this.editor.rightWidth + this.editor.middleWidth;
   },
   methods: {
-    resetSize(evt,a,b){
+    resetSize(evt, a, b) {
       let width = window.innerWidth
         || document.documentElement.clientWidth
         || document.body.clientWidth;
-      if(!window.upSize){
+      if (!window.upSize) {
         window.upSize = width;
-      }else{
+      } else {
         let deltaWidth = width - window.upSize
-        if(this.editor.middleWidth + deltaWidth >= 305){
-          
+        if (this.editor.middleWidth + deltaWidth >= 305) {
+
           window.upSize = width;
           this.editor.middleWidth += deltaWidth;
           this.editor.maxWidth = this.editor.leftWidth + this.editor.rightWidth + this.editor.middleWidth;
@@ -219,12 +221,12 @@ export default {
         // else if (Math.abs(e.clientY - (frameTopElement.offsetTop + frameTopElement.offsetHeight)) <= 5) {
         //   document.body.style.cursor = 'row-resize';
         // } 
-        else if(middleCanvasPos.top <= e.clientY && middleCanvasPos.left <= e.clientX
+        else if (middleCanvasPos.top <= e.clientY && middleCanvasPos.left <= e.clientX
           && middleCanvasPos.top + middleCanvas.offsetHeight >= e.clientY && middleCanvasPos.left + middleCanvas.offsetWidth >= e.clientX) {
 
-        //事件下发到绘图区
+          //事件下发到绘图区
           this.editor.ddInstance.render.mouseMove(e);
-        } 
+        }
         else {
           document.body.style.cursor = 'default';
         }
@@ -241,7 +243,7 @@ export default {
       let frameRightElement = document.getElementById("ddei_editor_frame_right");
       let frameTopElement = document.getElementById("ddei_editor_frame_top");
       let frameMiddleElement = document.getElementById("ddei_editor_frame_middle");
-   
+
       //判断鼠标落点是否在框架上
       if (frameLeftElement.offsetTop <= e.clientY && frameLeftElement.offsetTop + frameLeftElement.offsetHeight >= e.clientY
         && Math.abs(e.clientX - (frameLeftElement.offsetLeft + frameLeftElement.offsetWidth)) <= 5) {
@@ -260,7 +262,7 @@ export default {
         this.dragObj = { x: e.clientX, y: e.clientY, originX: e.offsetX, originY: e.offsetY }
         this.editor.state = DDeiEditorState.FRAME_CHANGING;
         this.editor.ddInstance.state = DDeiEnumState.IN_ACTIVITY;
-      } 
+      }
     },
 
     /**

@@ -2,6 +2,7 @@ import DDeiConfig from '../config'
 import DDeiLayer from './layer';
 import DDei from '../ddei';
 import DDeiAbstractShape from './shape';
+import DDeiUtil from '../util';
 
 
 /**
@@ -17,6 +18,7 @@ class DDeiStage {
     this.layers = [];
     this.layerIndex = props.layerIndex != undefined && props.layerIndex != null && props.layerIndex >= 0 ? props.layerIndex : -1;
     this.idIdx = props.idIdx ? props.idIdx : 0;
+    this.unicode = DDeiUtil.getUniqueCode()
   }
 
   // ============================ 静态变量 ============================
@@ -45,8 +47,9 @@ class DDeiStage {
   /**
    * 通过JSON初始化对象，数据未传入时将初始化数据
    */
-  static initByJSON(json: object): DDeiStage {
+  static initByJSON(json: object, tempData: object = {}): DDeiStage {
     let stage = new DDeiStage(json);
+    stage.ddInstance = tempData["currentDdInstance"]
     //初始化三个Layer
     let dDeiLayer1 = DDeiLayer.initByJSON({ id: "layer_top" });
     dDeiLayer1.index = 0;
@@ -77,6 +80,8 @@ class DDeiStage {
   ddInstance: DDei | null = null;
   // 当前画布、当前layer选中的图形，切换画布layerIndex后会变化
   selectedModels: Map<string, DDeiAbstractShape> | null = null;
+
+  unicode: string;
   // ============================ 方法 ===============================
   /**
    * 初始化渲染器

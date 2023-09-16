@@ -57,9 +57,9 @@ class DDei {
         let ddInstance = new DDei({ id: id, containerid: containerid });
         //初始化DDeiStage对象，如果存在stagejson则加载，不存在则初始化
         if (stagejson) {
-          ddInstance.stage = DDeiStage.loadFromJSON(stagejson);
+          ddInstance.stage = DDeiStage.loadFromJSON(stagejson, { currentDdInstance: ddInstance });
         } else {
-          ddInstance.stage = DDeiStage.initByJSON({ id: "stage_1" });
+          ddInstance.stage = DDeiStage.initByJSON({ id: "stage_1" }, { currentDdInstance: ddInstance });
         }
         ddInstance.stage.ddInstance = ddInstance;
         //将DDei对象装入全局缓存

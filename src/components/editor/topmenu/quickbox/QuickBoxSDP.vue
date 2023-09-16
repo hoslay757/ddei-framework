@@ -1,21 +1,21 @@
 <template>
   <div class="ddei_editor_sdp">
     <div class="ddei_editor_sdp_item" style="grid-row:1/3">
+      <div class="ddei_editor_sdp_item_box" @click="newFile">
+        <img width="16px" height="16px" :src="icons['icon-file']" />
+        <div>新建</div>
+      </div>
       <div class="ddei_editor_sdp_item_box" @click="save">
-          <img width="16px" height="16px" :src="icons['icon-save']" />
-          <div>保存</div>
+        <img width="16px" height="16px" :src="icons['icon-save']" />
+        <div>保存</div>
       </div>
       <div class="ddei_editor_sdp_item_box" @click="load">
         <img width="16px" height="16px" :src="icons['icon-open']" />
         <div>打开</div>
       </div>
-      <div class="ddei_editor_sdp_item_box" >
+      <div class="ddei_editor_sdp_item_box">
         <img width="16px" height="16px" :src="icons['icon-download']" />
         <div>下载</div>
-      </div>
-      <div class="ddei_editor_sdp_item_box">
-        <img width="16px" height="16px" :src="icons['icon-publish']" />
-        <div>发布</div>
       </div>
     </div>
     <div class="ddei_editor_sdp_item">
@@ -24,7 +24,7 @@
       </div>
     </div>
     <div class="ddei_editor_sdp_file_dialog">
-      
+
     </div>
   </div>
 </template>
@@ -58,6 +58,23 @@ export default {
     }
   },
   methods: {
+
+    /**
+     * 新建文件
+     * @param evt 
+     */
+    newFile(evt) {
+      if (this.editor?.ddInstance) {
+        let stage = DDeiStage.initByJSON({ id: "stage_1" });
+        let ddInstance = this.editor.ddInstance;
+        //加载恢复画布
+        ddInstance.stage = stage;
+        stage.ddInstance = ddInstance;
+        stage.initRender();
+        ddInstance.render.drawShape();
+      }
+    },
+
     /**
      * 保存
      * @param evt 
@@ -70,7 +87,7 @@ export default {
           let jsonStr = JSON.stringify(json);
           //执行保存
           let storeIns = new DDeiStoreLocal();
-          storeIns.save(this.editor.ddInstance.id+"_stage", jsonStr)
+          storeIns.save(this.editor.ddInstance.id + "_stage", jsonStr)
         }
       }
     },
@@ -83,11 +100,11 @@ export default {
       if (this.editor?.ddInstance?.stage) {
         let ddInstance = this.editor.ddInstance;
         let storeIns = new DDeiStoreLocal();
-        let jsonStr = storeIns.load(ddInstance.id+"_stage");
+        let jsonStr = storeIns.load(ddInstance.id + "_stage");
         let stageJson = JSON.parse(jsonStr);
-        if(stageJson){
+        if (stageJson) {
           //加载恢复画布
-          let stage = DDeiStage.loadFromJSON(stageJson,{currentDdInstance: ddInstance });
+          let stage = DDeiStage.loadFromJSON(stageJson, { currentDdInstance: ddInstance });
           ddInstance.stage = stage;
           setTimeout(() => {
             ddInstance.render.drawShape();
@@ -147,8 +164,8 @@ export default {
 
 .ddei_editor_sdp_item_box img {
   filter: brightness(45%) drop-shadow(0.2px 0px 0.2px #000);
-  width:16px;
-  height:16px;
+  width: 16px;
+  height: 16px;
   margin: auto;
 }
 

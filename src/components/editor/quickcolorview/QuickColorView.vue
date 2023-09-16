@@ -1,7 +1,7 @@
 <template>
   <div id="ddei_editor_qcview" class="ddei_editor_qcview">
-    <div class="ddei_editor_qcview_type" v-for="item in dataSource" v-show="item.value == mode" @click="showDialog(true)"
-      :title="item.text">
+    <div class="ddei_editor_qcview_type" v-for="item in dataSource" v-show="item.value == mode"
+      @click="showDialog(!dialogShow)" :title="item.text">
       <img style="width:15px;height:15px; filter: brightness(50%);" :src="item.img" />
       <img style="width:6px;height:6px;margin-top:4px;" src="../icons/toolbox-expanded.png" />
     </div>
@@ -12,7 +12,8 @@
         <div>{{ item.text }}</div>
       </div>
     </div>
-    <div :class="{ 'ddei_editor_qcview_color': true }" v-for="color in  colors " :style="{ 'background-color': '' + color }"
+    <div :class="{ 'ddei_editor_qcview_color': true }" v-for="color in  colors "
+      :style="{ 'background-color': '' + color }"
       @click="editor?.ddInstance?.stage?.selectedModels?.size > 0 && changeModelColor(color, $event)">
     </div>
   </div>

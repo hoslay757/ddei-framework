@@ -36,7 +36,7 @@ export default {
 
 <style scoped>
 .ddei_editor_quick_change_shape {
-  width: 90px;
+  width: 80px;
   height: 90px;
   border-right: 1px solid rgb(224, 224, 224);
   grid-template-rows: 30px 30px 20px;

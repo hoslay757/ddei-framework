@@ -13,23 +13,17 @@
         <img width="8px" height="8px" src="../icons/toolbox-expanded.png" />
       </div>
     </div>
-    <div class="ddei_editor_bottommenu_addpage">
+
+    <div class="ddei_editor_bottommenu_addpage" @click="newSheet">
       <div>
         <img src="../icons/icon-add.png" />
       </div>
     </div>
     <div class="ddei_editor_bottommenu_pages">
-      <div class="ddei_editor_bottommenu_page">
-        页-1
-      </div>
-      <div class="ddei_editor_bottommenu_page_selected">
-        页-2
-      </div>
-      <div class="ddei_editor_bottommenu_page">
-        页-3
-      </div>
-      <div class="ddei_editor_bottommenu_page">
-        页-4
+      <div @click="changeSheet(index)"
+        :class="{ 'ddei_editor_bottommenu_page': sheet.active == 0, 'ddei_editor_bottommenu_page_selected': sheet.active == 1 }"
+        :title="sheet.desc" v-for="(sheet, index) in  editor?.files[editor?.currentFileIndex]?.sheets ">
+        {{ sheet.name }}
       </div>
     </div>
     <div class="ddei_editor_bottommenu_shapecount">
@@ -75,20 +69,73 @@
 </template>
 
 <script lang="ts">
+import DDeiStage from '@/components/framework/js/models/stage';
+import DDeiEditor from '../js/editor';
+import DDeiActiveType from '../js/enums/active-type';
+import DDeiSheet from '../js/sheet';
+
 export default {
   name: "DDei-Editor-BottomMenu",
   extends: null,
   mixins: [],
   props: {},
   data() {
-    return {};
+    return {
+      editor: null,
+
+    };
   },
   computed: {},
   watch: {},
   created() { },
   mounted() {
+    //获取编辑器
+    this.editor = DDeiEditor.ACTIVE_INSTANCE;
 
   },
+  methods: {
+    /**
+     * 创建一个sheet
+     */
+    newSheet() {
+      let file = this.editor?.files[this.editor?.currentFileIndex];
+      let sheets = file?.sheets;
+      let ddInstance = this.editor?.ddInstance;
+      if (file && sheets && ddInstance) {
+        let i = sheets.length + 1;
+        sheets.forEach(sheet => {
+          sheet.active = DDeiActiveType.NONE;
+        });
+        let stage = DDeiStage.initByJSON({ id: 'stage' }, { currentDdInstance: ddInstance });
+        sheets.push(new DDeiSheet({ name: "页面-" + i, desc: "页面-" + i, stage: stage, active: DDeiActiveType.ACTIVE }));
+        //刷新页面
+        ddInstance.stage = stage;
+        //加载场景渲染器
+        stage.initRender();
+        ddInstance.render.drawShape();
+      }
+    },
+
+    changeSheet(index) {
+      let file = this.editor?.files[this.editor?.currentFileIndex];
+      let sheets = file?.sheets;
+      let ddInstance = this.editor?.ddInstance;
+      if (file && sheets && ddInstance && (index >= 0 || index < sheets.length)) {
+        for (let i = 0; i < sheets.length; i++) {
+          sheets[i].active = (i == index ? DDeiActiveType.ACTIVE : DDeiActiveType.NONE)
+        }
+        let stage = sheets[index].stage;//DDeiStage.loadFromJSON(sheets[index].stage, { currentDdInstance: ddInstance });
+        stage.ddInstance = ddInstance;
+        //刷新页面
+        ddInstance.stage = stage;
+        //加载场景渲染器
+        stage.initRender();
+        setTimeout(() => {
+          ddInstance.render.drawShape();
+        }, 100);
+      }
+    }
+  }
 };
 </script>
 
