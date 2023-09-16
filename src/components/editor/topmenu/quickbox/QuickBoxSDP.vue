@@ -13,7 +13,7 @@
         <img width="16px" height="16px" :src="icons['icon-open']" />
         <div>打开</div>
       </div>
-      <div class="ddei_editor_sdp_item_box">
+      <div class="ddei_editor_sdp_item_box" @click="download">
         <img width="16px" height="16px" :src="icons['icon-download']" />
         <div>下载</div>
       </div>
@@ -36,6 +36,8 @@ import DDei from '../../../framework/js/ddei';
 import DDeiStage from '../../../framework/js/models/stage';
 import DDeiActiveType from '../../js/enums/active-type';
 import DDeiFile from '../../js/file';
+import DDeiSheet from '../../js/sheet';
+import DDeiFileState from '../../js/enums/file-state';
 
 
 
@@ -67,13 +69,32 @@ export default {
      */
     newFile(evt) {
       if (this.editor?.ddInstance) {
-        let stage = DDeiStage.initByJSON({ id: "stage_1" });
         let ddInstance = this.editor.ddInstance;
-        //加载恢复画布
-        ddInstance.stage = stage;
-        stage.ddInstance = ddInstance;
-        stage.initRender();
-        ddInstance.render.drawShape();
+        let file = DDeiFile.loadFromJSON({
+          name: "新建文件_NEW", path: "/新建文件_NEW",
+          sheets: [new DDeiSheet({ name: "页面-1", desc: "页面-1", stage: DDeiStage.initByJSON({ id: "stage_1" }), active: DDeiActiveType.ACTIVE })],
+          currentSheetIndex: 0,
+          state: DDeiFileState.NEW,
+          active: DDeiActiveType.ACTIVE
+        }, { currentDdInstance: ddInstance });
+        //添加文件
+        if (this.editor.currentFileIndex != -1) {
+          this.editor.files[this.editor.currentFileIndex].active = DDeiActiveType.NONE;
+        }
+        this.editor.addFile(file);
+        this.editor.currentFileIndex = this.editor.files.length - 1;
+        let sheets = file?.sheets;
+        if (file && sheets && ddInstance) {
+          let stage = sheets[0].stage;
+          stage.ddInstance = ddInstance;
+          //刷新页面
+          ddInstance.stage = stage;
+          //加载场景渲染器
+          stage.initRender();
+          setTimeout(() => {
+            ddInstance.render.drawShape();
+          }, 10);
+        }
       }
     },
 
@@ -90,17 +111,45 @@ export default {
           if (json) {
             //执行保存
             let storeIns = new DDeiStoreLocal();
-
+            json.state = DDeiFileState.NONE;
             storeIns.save(file.id, json).then((data) => {
               //回写ID
               if (!file.id) {
                 file.id = data;
+                file.state = DDeiFileState.NONE;
               }
             });
           }
 
         }
 
+      }
+    },
+
+    /**
+     * 下载文件
+     */
+    download(evt) {
+      if (this.editor?.ddInstance?.stage) {
+        //获取json信息
+        let file = this.editor?.files[this.editor?.currentFileIndex];
+        if (file) {
+          let json = file.toJSON();
+          if (json) {
+            // 创建隐藏的可下载链接
+            var eleLink = document.createElement('a');
+            eleLink.download = file.name + ".dei";
+            eleLink.style.display = 'none';
+            // 字符内容转变成blob地址
+            var blob = new Blob([JSON.stringify(json)]);
+            eleLink.href = URL.createObjectURL(blob);
+            // 触发点击
+            document.body.appendChild(eleLink);
+            eleLink.click();
+            // 然后移除
+            document.body.removeChild(eleLink);
+          }
+        }
       }
     },
 
@@ -135,6 +184,7 @@ export default {
                     this.editor.files[x].active = DDeiActiveType.NONE;
                   }
                   this.editor.currentFileIndex = this.editor.files.length - 1;
+                  file.state = DDeiFileState.NONE;
                   file.active = DDeiActiveType.ACTIVE;
                   let sheets = file?.sheets;
 
@@ -150,7 +200,7 @@ export default {
                     stage.initRender();
                     setTimeout(() => {
                       ddInstance.render.drawShape();
-                    }, 100);
+                    }, 10);
                   }
                 }
               });

@@ -8,8 +8,11 @@
       @click="changeFile(item)" v-for="(item, i) in editor?.files"
       v-show="i >= openIndex && ((i - openIndex + 1) * 160 + 40) <= editor?.middleWidth" :title="item.name">
       <img src="../icons/icon-file.png" />
-      <span>{{ item.name }}</span>
-      <div>
+      <span>
+        <div class="text">{{ item.name + item.state }}</div>
+        <div class="dirty" v-show="item.state != 0">ꔷ</div>
+      </span>
+      <div @click.prevent.stop="closeFile(item)">
         <img src="../icons/toolbox-close.png" />
       </div>
     </div>
@@ -27,6 +30,7 @@
 import DDeiEditor from '../js/editor';
 import DDeiActiveType from '../js/enums/active-type';
 import DDeiEditorState from '../js/enums/editor-state';
+import DDeiFileState from '../js/enums/file-state';
 
 export default {
   name: "DDei-Editor-OpenFielsView",
@@ -39,8 +43,6 @@ export default {
       editor: null,
       //当前打开的页的开始下标
       openIndex: 0,
-      //当前打开页在instances的下标
-      currentIndex: 1,
       //最大可以打开的数量
       maxOpenSize: 1,
     };
@@ -85,8 +87,36 @@ export default {
         ddInstance.stage = stage;
         //加载场景渲染器
         stage.initRender();
-        ddInstance.render.drawShape();
+        setTimeout(() => {
+          ddInstance.render.drawShape();
+        }, 10);
       }
+    },
+
+    /**
+     * 关闭文件
+     * @param instance 
+     */
+    closeFile(file) {
+      //刷新画布
+      let index = this.editor.files.indexOf(file);
+      this.editor.removeFile(file);
+      if (index < this.editor.currentFileIndex) {
+        this.editor.currentFileIndex--;
+      } else if (index == this.editor.currentFileIndex) {
+        if (index > 0) {
+          this.changeFile(this.editor.files[this.editor.currentFileIndex - 1]);
+        } else if (this.editor.files.length > 0) {
+          this.changeFile(this.editor.files[0]);
+        }
+      }
+      if (index > this.openIndex) {
+        this.openIndex--;
+        if (this.openIndex < 0) {
+          this.openIndex = 0
+        }
+      }
+
     },
     /**
      * 在存在显示隐藏的情况下移动tab
@@ -176,6 +206,8 @@ export default {
   display: flex;
 }
 
+
+
 .ddei_editor_ofsview_item img {
   padding: 3px;
   flex: 0 0 25px;
@@ -186,10 +218,24 @@ export default {
   margin-top: 1px;
   flex: 0 0 110px;
   width: 110px;
+
+  display: flex;
+}
+
+.ddei_editor_ofsview_item span .text {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
   color: black;
+  flex: 1;
+}
+
+.ddei_editor_ofsview_item span .dirty {
+  color: red;
+  width: 10px;
+  flex: 0 0 10px;
+  font-size: 16px;
+  margin-top: -2px;
 }
 
 .ddei_editor_ofsview_item div {
@@ -215,8 +261,20 @@ export default {
 }
 
 
-.ddei_editor_ofsview_item_selected span {
+.ddei_editor_ofsview_item_selected span .text {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  flex: 1;
   color: #017fff;
   font-weight: bold !important;
+}
+
+.ddei_editor_ofsview_item_selected span .dirty {
+  color: red;
+  width: 10px;
+  flex: 0 0 10px;
+  font-size: 16px;
+  margin-top: -2px;
 }
 </style>
