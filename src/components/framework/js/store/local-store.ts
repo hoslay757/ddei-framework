@@ -157,7 +157,6 @@ class DDeiStoreLocal extends DDeiStore {
           let addReq = store.add(rowData);
           addReq.onsuccess = function () {
             if (addReq.result) {
-              debugger
               resolve(addReq.result);
             }
           }
@@ -187,7 +186,6 @@ class DDeiStoreLocal extends DDeiStore {
             let modReq = store.put(rowData);
             modReq.onsuccess = function () {
               if (modReq.result) {
-                debugger
                 resolve(modReq.result);
               }
             }
@@ -216,7 +214,7 @@ class DDeiStoreLocal extends DDeiStore {
               let addReq = store.add(rowData);
               addReq.onsuccess = function () {
                 if (addReq.result) {
-                  debugger
+
                   resolve(addReq.result);
                 }
               }

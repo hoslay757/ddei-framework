@@ -115,23 +115,27 @@ export default {
         //找到第一个没有打开的文件，执行打开 TODO
         if (datas) {
           for (let i = 0; i < datas.length; i++) {
-            let findId = null;
+            let finded = false;
             for (let j = 0; j < this.editor.files.length; j++) {
-              if (this.editor.files[j].id != datas[i].id) {
-                findId = datas[i].id
+              if (this.editor.files[j].id == datas[i].id) {
+                finded = true
                 break;
               }
             }
-            if (findId) {
+            if (!finded) {
               let storeIns = new DDeiStoreLocal();
 
-              storeIns.load(findId).then((rowData) => {
+              storeIns.load(datas[i].id).then((rowData) => {
                 //存在数据，执行修改
                 if (rowData) {
                   let ddInstance = this.editor?.ddInstance;
                   let file = DDeiFile.loadFromJSON(JSON.parse(rowData.data), { currentDdInstance: ddInstance });
                   this.editor.addFile(file);
+                  for (let x = 0; x < this.editor.files.length; x++) {
+                    this.editor.files[x].active = DDeiActiveType.NONE;
+                  }
                   this.editor.currentFileIndex = this.editor.files.length - 1;
+                  file.active = DDeiActiveType.ACTIVE;
                   let sheets = file?.sheets;
 
                   if (file && sheets && ddInstance) {

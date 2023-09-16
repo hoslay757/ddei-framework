@@ -4,8 +4,8 @@
       <img width="25" height="16" src="../icons/icon-expand-right.png" />
     </div>
     <div
-      :class="item.state == 1 ? 'ddei_editor_ofsview_item ddei_editor_ofsview_item_selected' : 'ddei_editor_ofsview_item'"
-      @click="changeInstance(item)" v-for="(item, i) in editor?.files"
+      :class="item.active == 1 ? 'ddei_editor_ofsview_item ddei_editor_ofsview_item_selected' : 'ddei_editor_ofsview_item'"
+      @click="changeFile(item)" v-for="(item, i) in editor?.files"
       v-show="i >= openIndex && ((i - openIndex + 1) * 160 + 40) <= editor?.middleWidth" :title="item.name">
       <img src="../icons/icon-file.png" />
       <span>{{ item.name }}</span>
@@ -14,10 +14,10 @@
       </div>
     </div>
     <div style="flex:1 1 1px"></div>
-    <div class="ddei_editor_ofsview_movebox" v-show="editors?.files?.length > maxOpenSize" @click="moveItem(-1)">
+    <div class="ddei_editor_ofsview_movebox" v-show="editor?.files?.length > maxOpenSize" @click="moveItem(-1)">
       <img width="16" height="16" src="../icons/icon-left.png" />
     </div>
-    <div class="ddei_editor_ofsview_movebox" v-show="editors?.files?.length > maxOpenSize" @click="moveItem(1)">
+    <div class="ddei_editor_ofsview_movebox" v-show="editor?.files?.length > maxOpenSize" @click="moveItem(1)">
       <img width="16" height="16" src="../icons/icon-right.png" />
     </div>
   </div>
@@ -27,7 +27,6 @@
 import DDeiEditor from '../js/editor';
 import DDeiActiveType from '../js/enums/active-type';
 import DDeiEditorState from '../js/enums/editor-state';
-import DDeiFileState from '../js/enums/file-state';
 
 export default {
   name: "DDei-Editor-OpenFielsView",
@@ -40,6 +39,8 @@ export default {
       editor: null,
       //当前打开的页的开始下标
       openIndex: 0,
+      //当前打开页在instances的下标
+      currentIndex: 1,
       //最大可以打开的数量
       maxOpenSize: 1,
     };
@@ -68,12 +69,24 @@ export default {
      * 变更实例
      * @param instance 
      */
-    changeInstance(instance) {
+    changeFile(file) {
       this.editor.files.forEach(item => {
         item.active = DDeiActiveType.NONE
       });
-      instance.active = DDeiActiveType.ACTIVE
-      //TODO 刷新画布
+      file.active = DDeiActiveType.ACTIVE
+      //刷新画布
+      this.editor.currentFileIndex = this.editor?.files?.indexOf(file);
+      let sheets = file?.sheets;
+      let ddInstance = this.editor?.ddInstance;
+      if (file && sheets && ddInstance) {
+        let stage = sheets[file.currentSheetIndex].stage;
+        stage.ddInstance = ddInstance;
+        //刷新页面
+        ddInstance.stage = stage;
+        //加载场景渲染器
+        stage.initRender();
+        ddInstance.render.drawShape();
+      }
     },
     /**
      * 在存在显示隐藏的情况下移动tab
