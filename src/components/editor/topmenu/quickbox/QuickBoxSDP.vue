@@ -34,6 +34,8 @@ import DDeiEditor from '../../js/editor';
 import ICONS from '../../js/icon';
 import DDei from '../../../framework/js/ddei';
 import DDeiStage from '../../../framework/js/models/stage';
+import DDeiActiveType from '../../js/enums/active-type';
+import DDeiFile from '../../js/file';
 
 
 
@@ -109,31 +111,52 @@ export default {
     openFile(evt) {
       //执行保存
       let storeIns = new DDeiStoreLocal();
-      storeIns.find("文件").then((datas) => {
-        this.fileList = datas;
+      storeIns.find("").then((datas) => {
+        //找到第一个没有打开的文件，执行打开 TODO
+        if (datas) {
+          for (let i = 0; i < datas.length; i++) {
+            let findId = null;
+            for (let j = 0; j < this.editor.files.length; j++) {
+              if (this.editor.files[j].id != datas[i].id) {
+                findId = datas[i].id
+                break;
+              }
+            }
+            if (findId) {
+              let storeIns = new DDeiStoreLocal();
+
+              storeIns.load(findId).then((rowData) => {
+                //存在数据，执行修改
+                if (rowData) {
+                  let ddInstance = this.editor?.ddInstance;
+                  let file = DDeiFile.loadFromJSON(JSON.parse(rowData.data), { currentDdInstance: ddInstance });
+                  this.editor.addFile(file);
+                  this.editor.currentFileIndex = this.editor.files.length - 1;
+                  let sheets = file?.sheets;
+
+                  if (file && sheets && ddInstance) {
+                    for (let i = 0; i < sheets.length; i++) {
+                      sheets[i].active = (i == 0 ? DDeiActiveType.ACTIVE : DDeiActiveType.NONE)
+                    }
+                    let stage = sheets[0].stage;
+                    stage.ddInstance = ddInstance;
+                    //刷新页面
+                    ddInstance.stage = stage;
+                    //加载场景渲染器
+                    stage.initRender();
+                    setTimeout(() => {
+                      ddInstance.render.drawShape();
+                    }, 100);
+                  }
+                }
+              });
+              return;
+            }
+          }
+        }
+
       });
     },
-
-    /**
-     * 加载
-     * @param evt 
-     */
-    load(evt) {
-      if (this.editor?.ddInstance?.stage) {
-        let ddInstance = this.editor.ddInstance;
-        let storeIns = new DDeiStoreLocal();
-        let jsonStr = storeIns.load(ddInstance.id + "_stage");
-        let stageJson = JSON.parse(jsonStr);
-        if (stageJson) {
-          //加载恢复画布
-          let stage = DDeiStage.loadFromJSON(stageJson, { currentDdInstance: ddInstance });
-          ddInstance.stage = stage;
-          setTimeout(() => {
-            ddInstance.render.drawShape();
-          }, 100);
-        }
-      }
-    }
   }
 };
 </script>

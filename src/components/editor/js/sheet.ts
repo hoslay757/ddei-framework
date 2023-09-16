@@ -1,5 +1,5 @@
 import DDeiActiveType from "./enums/active-type";
-import type DDeiStage from "@/components/framework/js/models/stage";
+import DDeiStage from "@/components/framework/js/models/stage";
 
 /**
  * DDei页签，文件包含了多个页签
@@ -13,7 +13,12 @@ class DDeiSheet {
     this.active = props.active ? props.active : DDeiActiveType.NONE
   }
   // ============================ 静态变量 ============================
-
+  static loadFromJSON(json, tempData: object = {}): any {
+    let sheet = new DDeiSheet(json);
+    let stage = DDeiStage.loadFromJSON(sheet.stage, tempData)
+    sheet.stage = stage;
+    return sheet;
+  }
   // ============================ 属性 ===============================
   //页签名称
   name: string;

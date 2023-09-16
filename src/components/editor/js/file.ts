@@ -2,7 +2,7 @@
 import DDeiUtil from "@/components/framework/js/util";
 import DDeiActiveType from "./enums/active-type";
 import type DDeiFileState from "./enums/file-state";
-import type DDeiSheet from "./sheet";
+import DDeiSheet from "./sheet";
 
 /**
  * DDei文件，文件包含了多个页签
@@ -20,6 +20,15 @@ class DDeiFile {
   }
   // ============================ 静态变量 ============================
 
+  static loadFromJSON(json, tempData: object = {}): any {
+    let model = new DDeiFile(json);
+    let sheets = []
+    for (let i = 0; i < model.sheets.length; i++) {
+      sheets[i] = DDeiSheet.loadFromJSON(model.sheets[i], tempData);
+    }
+    model.sheets = sheets;
+    return model;
+  }
   // ============================ 属性 ============================
   //文件ID
   id: number;
