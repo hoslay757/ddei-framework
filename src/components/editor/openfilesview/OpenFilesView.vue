@@ -47,6 +47,7 @@ import DDeiEditorState from '../js/enums/editor-state';
 import DDeiFileState from '../js/enums/file-state';
 import DDeiFile from '../js/file';
 import DDeiEditorUtil from '../js/util/editor-util';
+import DDeiStoreLocal from '@/components/framework/js/store/local-store';
 
 export default {
   name: "DDei-Editor-OpenFielsView",
@@ -118,15 +119,6 @@ export default {
       confirmDialog.style.display = "none";
     },
 
-    /**
-     * 保存并关闭确认弹框
-     */
-    saveAndCloseFileConfirmDialog() {
-      this.tempFile.state = DDeiFileState.NONE;
-      let confirmDialog = document.getElementById("close_file_confirm_dialog");
-      confirmDialog.style.display = "none";
-      this.closeFile(this.tempFile)
-    },
 
     /**
      * 放弃并关闭确认弹框
@@ -138,7 +130,34 @@ export default {
       this.closeFile(this.tempFile)
     },
 
+    /**
+     * 保存
+     * @param evt 
+     */
+    saveAndCloseFileConfirmDialog() {
+      if (this.tempFile) {
+        //获取json信息
+        let file = this.tempFile;
+        if (file) {
+          let json = file.toJSON();
+          if (json) {
+            //执行保存
+            let storeIns = new DDeiStoreLocal();
+            json.state = DDeiFileState.NONE;
+            storeIns.save(file.id, json).then((data) => {
+              //回写ID
+              file.id = data;
+              file.state = DDeiFileState.NONE;
+              let confirmDialog = document.getElementById("close_file_confirm_dialog");
+              confirmDialog.style.display = "none";
+              this.closeFile(this.tempFile)
+            });
+          }
 
+        }
+
+      }
+    },
 
     /**
      * 关闭文件

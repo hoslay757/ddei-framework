@@ -103,7 +103,7 @@ export default {
      * @param evt 
      */
     save(evt) {
-      if (this.editor?.ddInstance?.stage) {
+      if (this.editor?.files) {
         //获取json信息
         let file = this.editor?.files[this.editor?.currentFileIndex];
         if (file) {
@@ -116,8 +116,8 @@ export default {
               //回写ID
               if (!file.id) {
                 file.id = data;
-                file.state = DDeiFileState.NONE;
               }
+              file.state = DDeiFileState.NONE;
             });
           }
 

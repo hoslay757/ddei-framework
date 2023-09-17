@@ -1,7 +1,7 @@
 
 import DDeiUtil from "@/components/framework/js/util";
 import DDeiActiveType from "./enums/active-type";
-import type DDeiFileState from "./enums/file-state";
+import DDeiFileState from "./enums/file-state";
 import DDeiSheet from "./sheet";
 
 /**

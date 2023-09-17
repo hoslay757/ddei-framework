@@ -16,9 +16,9 @@
       <div class="ddei_editor_topmenu_quickbox_group" v-show="editor?.maxWidth >= 1300">
         <QuickBoxSort v-if="reFresh"></QuickBoxSort>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group"  v-show="editor?.maxWidth >= 1400">
-          <QuickBoxChangeShape v-if="reFresh"></QuickBoxChangeShape>
-        </div>
+      <div class="ddei_editor_topmenu_quickbox_group" v-show="editor?.maxWidth >= 1400">
+        <QuickBoxChangeShape v-if="reFresh"></QuickBoxChangeShape>
+      </div>
       <div class="ddei_editor_topmenu_quickbox_group">
         <QuickBoxSDP v-if="reFresh"></QuickBoxSDP>
       </div>
@@ -75,7 +75,6 @@ export default {
   methods: {
 
     forceRefresh(newVal, oldVal) {
-      console.log("refresh")
       this.reFresh = false
       this.$nextTick(() => {
         this.reFresh = true
