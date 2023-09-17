@@ -20,10 +20,18 @@
       </div>
     </div>
     <div class="ddei_editor_bottommenu_pages">
-      <div @click="changeSheet(index)"
+      <div @click="changeSheet(index)" v-show="index >= openIndex && index < openIndex + maxOpenSize"
         :class="{ 'ddei_editor_bottommenu_page': sheet.active == 0, 'ddei_editor_bottommenu_page_selected': sheet.active == 1 }"
         :title="sheet.desc" v-for="(sheet, index) in  editor?.files[editor?.currentFileIndex]?.sheets ">
         {{ sheet.name }}
+      </div>
+      <div class="ddei_editor_bottommenu_pages_movebox"
+        v-show="editor?.files[editor?.currentFileIndex]?.sheets?.length > maxOpenSize" @click="moveItem(-1)">
+        <img src="../icons/icon-left.png" />
+      </div>
+      <div class="ddei_editor_bottommenu_pages_movebox"
+        v-show="editor?.files[editor?.currentFileIndex]?.sheets?.length > maxOpenSize" @click="moveItem(1)">
+        <img src="../icons/icon-right.png" />
       </div>
     </div>
     <div class="ddei_editor_bottommenu_shapecount">
@@ -82,18 +90,46 @@ export default {
   data() {
     return {
       editor: null,
-
+      //当前打开的页的开始下标
+      openIndex: 0,
+      //最大可以打开的数量
+      maxOpenSize: 1,
     };
   },
   computed: {},
   watch: {},
-  created() { },
+  created() {
+    // 监听obj对象中prop属性的变化
+    this.$watch('editor.middleWidth', function (newVal, oldVal) {
+      let size = parseInt((document.body.offsetWidth - 770) / 67);
+      if (size > this.maxOpenSize && this.openIndex > 0) {
+        this.openIndex--;
+      }
+      this.maxOpenSize = size;
+    });
+  },
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
 
   },
   methods: {
+    /**
+   * 在存在显示隐藏的情况下移动tab
+   */
+    moveItem(index: number = 0) {
+      if (index != 0) {
+        let file = this.editor?.files[this.editor?.currentFileIndex];
+        let sheets = file?.sheets;
+        this.openIndex += index
+        if (this.openIndex > sheets.length - this.maxOpenSize) {
+          this.openIndex = sheets.length - this.maxOpenSize
+        } else if (this.openIndex < 0) {
+          this.openIndex = 0
+        }
+      }
+    },
+
     /**
      * 创建一个sheet
      */
@@ -113,6 +149,13 @@ export default {
         //加载场景渲染器
         stage.initRender();
         ddInstance.render.drawShape();
+
+        //打开新文件
+        let activeIndex = sheets.length - 1;
+        this.openIndex = activeIndex + 1 - this.maxOpenSize
+        if (this.openIndex < 0) {
+          this.openIndex = 0;
+        }
       }
     },
 
@@ -251,15 +294,38 @@ export default {
   text-align: center;
 }
 
+.ddei_editor_bottommenu_pages_movebox {
+  width: 25px;
+  height: 25px;
+  float: left;
+  text-align: center;
+}
+
+.ddei_editor_bottommenu_pages_movebox:hover {
+  background: rgb(235, 235, 239);
+  cursor: pointer;
+}
+
+.ddei_editor_bottommenu_pages_movebox img {
+  filter: brightness(60%);
+  margin-top: 4px;
+  width: 16px;
+  height: 16px;
+}
+
 
 .ddei_editor_bottommenu_page {
   float: left;
   height: 24px;
   margin-left: 5px;
-  padding-right: 10px;
-  padding-left: 10px;
+  padding-right: 5px;
+  padding-left: 5px;
   border-right: 1px solid rgb(235, 235, 235);
   padding-top: 2px;
+  width: 65px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .ddei_editor_bottommenu_page:hover {
@@ -277,6 +343,10 @@ export default {
   font-weight: bold;
   border-right: 1px solid rgb(235, 235, 235);
   padding-top: 2px;
+  width: 65px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .ddei_editor_bottommenu_shapecount {

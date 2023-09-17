@@ -9,7 +9,7 @@
       v-show="i >= openIndex && ((i - openIndex + 1) * 160 + 40) <= editor?.middleWidth" :title="item.name">
       <img src="../icons/icon-file.png" />
       <span>
-        <div class="text">{{ item.name + item.state }}</div>
+        <div class="text">{{ item.name }}</div>
         <div class="dirty" v-show="item.state != 0">ꔷ</div>
       </span>
       <div @click.prevent.stop="closeFile(item, $event)">
