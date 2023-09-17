@@ -1,5 +1,5 @@
 <template>
-  <div id="ddei_editor_qcview" class="ddei_editor_qcview">
+  <div id="ddei_editor_qcview" class="ddei_editor_qcview" v-show="show">
     <div class="ddei_editor_qcview_type" v-for="item in dataSource" v-show="item.value == mode"
       @click="showDialog(!dialogShow)" :title="item.text">
       <img style="width:15px;height:15px; filter: brightness(50%);" :src="item.img" />
@@ -39,12 +39,22 @@ export default {
         { value: 1, text: '填充', img: ICONS['icon-fill'].default },
         { value: 2, text: '边框', img: ICONS['icon-style-line'].default },
         { value: 3, text: '字体', img: ICONS['icon-font-color'].default }],
-      dialogShow: false
+      dialogShow: false,
+      show: true
     };
   },
   computed: {},
   watch: {},
-  created() { },
+  created() {
+    // 监听obj对象中prop属性的变化
+    this.$watch('editor.files.length', function (newVal, oldVal) {
+      if (newVal == 0) {
+        this.show = false;
+      } else {
+        this.show = true;
+      }
+    });
+  },
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;

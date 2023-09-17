@@ -58,14 +58,24 @@ class DDeiCanvasRender {
 
         //向canvas绑定事件
         this.bindEvent();
-        // setTimeout(() => {
-        //   this.setSize(0, 0, 0, 0);
-        //   this.drawShape();
-        // }, 10);
       }
     } else {
       throw new Error("容器" + this.model.containerid + "不存在");
     }
+  }
+
+  /**
+   * 显示
+   */
+  show(): void {
+    document.getElementById(this.model.containerid).style.display = "block";
+  }
+
+  /**
+   * 隐藏
+   */
+  hidden(): void {
+    document.getElementById(this.model.containerid).style.display = "none";
   }
 
   /** 

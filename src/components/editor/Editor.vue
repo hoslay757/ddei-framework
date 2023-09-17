@@ -308,7 +308,7 @@ export default {
   height: calc(100vh);
   display: flex;
   flex-direction: column;
-  background-color: aquamarine;
+  background-color: rgb(240, 240, 240);
 }
 
 
