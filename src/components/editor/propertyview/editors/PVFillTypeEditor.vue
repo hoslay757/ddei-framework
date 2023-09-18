@@ -45,10 +45,10 @@ export default {
 
   },
   created() {
-    // 监听obj对象中prop属性的变化
-    this.$watch('attrDefine.value', function (newVal, oldVal) {
-      this.valueChange();
-    });
+    // // 监听obj对象中prop属性的变化
+    // this.$watch('attrDefine.value', function (newVal, oldVal) {
+    //   this.valueChange();
+    // });
   },
   mounted() {
     //获取编辑器
@@ -90,6 +90,7 @@ export default {
       } else {
         attrDefine.value = targetElement.value;
       }
+      this.valueChange();
     },
 
     /**

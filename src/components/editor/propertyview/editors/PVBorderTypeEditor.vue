@@ -90,6 +90,7 @@ export default {
       } else {
         attrDefine.value = targetElement.value;
       }
+      this.valueChange();
     },
 
     /**
@@ -139,6 +140,7 @@ export default {
       let value = parser.parseValue(this.attrDefine.value);
       //显示隐藏其他属性
       if (value == '0') {
+        DDeiEditorArrtibute.hiddenAttributesByCode(this.controlDefine.styles, "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound");
       } else if (value == '1') {
         DDeiEditorArrtibute.showAttributesByCode(this.controlDefine.styles, "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound");
       }

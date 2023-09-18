@@ -203,6 +203,9 @@ export default {
             this.changeFile(this.editor.files[0]);
           }
         }
+        if(this.editor.files.length == 0){
+           this.editor.currentFileIndex = -1;
+        }
         if (index > this.openIndex) {
           this.openIndex--;
           if (this.openIndex < 0) {
