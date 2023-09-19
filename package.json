@@ -41,6 +41,7 @@
   "dependencies": {
     "lodash": "^4.17.21",
     "sass": "^1.66.1",
+    "three": "^0.156.1",
     "vue": "^3.3.4",
     "webworker": "^0.8.4"
   },
