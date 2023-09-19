@@ -166,8 +166,12 @@ class DDeiLayerCanvasRender {
 
       //计算夹角v1到v2看做一条直线
       let v1 = new Vector3(100, 100, 1);
-      let v2 = new Vector3(150, 150, 1);
-      let v3 = new Vector3(130, 110, 1);
+
+      let v2 = new Vector3(160, 160, 1);
+      let v3 = new Vector3(140, 110, 1);
+
+      let v4 = new Vector3(160, 160, 1);
+      let v5 = new Vector3(140, 110, 1);
       let moveV1Matrix = new Matrix3(
         1, 0, -v1.x,
         0, 1, -v1.y,
@@ -175,8 +179,11 @@ class DDeiLayerCanvasRender {
       //将v1看作原点，平移v2和v3
       v2.applyMatrix3(moveV1Matrix)
       v3.applyMatrix3(moveV1Matrix)
-      let angleNumber = v2.angleTo(v3);
-      console.log(angleNumber * 180 / Math.PI);
+      console.log(v2.angleTo(v3) * 180 / Math.PI);
+      let v41 = v4.clone().sub(v1);
+      console.log(v41);
+      let v51 = v5.clone().sub(v1);
+      console.log(v41.angleTo(v51) * 180 / Math.PI);
 
     }
     // //将红色区域看作笛卡尔坐标系区域，变换坐标系
