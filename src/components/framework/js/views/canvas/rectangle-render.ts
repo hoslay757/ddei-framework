@@ -9,6 +9,7 @@ import DDeiUtil from '../../util.js'
 import DDeiCanvasRender from './ddei-render.js';
 import DDeiLayerCanvasRender from './layer-render.js';
 import DDeiStageCanvasRender from './stage-render.js';
+import { Matrix3, Vector3 } from 'three';
 
 /**
  * DDeiRectangle的渲染器类，用于渲染矩形
@@ -51,6 +52,7 @@ class DDeiRectangleCanvasRender {
   * 当前的layer渲染器
   */
   layerRender: DDeiLayerCanvasRender | null;
+
   // ============================== 方法 ===============================
   /**
    * 初始化
@@ -189,20 +191,41 @@ class DDeiRectangleCanvasRender {
         }
         //颜色
         ctx.strokeStyle = DDeiUtil.getColor(color);
-        if (i == 1) {
-          ctx.moveTo(ratPos.x + lineOffset, ratPos.y + lineOffset);
-          ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + lineOffset);
-        } else if (i == 2) {
-          ctx.moveTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + lineOffset);
-          ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + ratPos.height + lineOffset);
-        } else if (i == 3) {
-          ctx.moveTo(ratPos.x + lineOffset, ratPos.y + ratPos.height + lineOffset);
-          ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + ratPos.height + lineOffset);
-        } else if (i == 4) {
-          ctx.moveTo(ratPos.x + lineOffset, ratPos.y + lineOffset);
-          ctx.lineTo(ratPos.x + lineOffset, ratPos.y + ratPos.height + lineOffset);
+        let mp = {}
+        if (!this.model.pModel || this.model.pModel.modelType == "DDeiLayer") {
+          mp = { x: 0, y: 0 };
+        } else {
+          mp = this.model.pModel.getAbsPosition(this.model.pModel);
         }
-        ctx.stroke();
+        mp = DDeiUtil.getRatioPosition(mp, ratio);
+        if (this.pointVectors) {
+          let pv = this.pointVectors[i - 1];
+          let npv = null;
+          if (i == 4) {
+            npv = this.pointVectors[0];
+          } else {
+            npv = this.pointVectors[i];
+          }
+          pv = DDeiUtil.getRatioPosition(pv, ratio);
+          npv = DDeiUtil.getRatioPosition(npv, ratio);
+          ctx.moveTo(mp.x + pv.x + lineOffset, mp.y + pv.y + lineOffset);
+          ctx.lineTo(mp.x + npv.x + lineOffset, mp.y + npv.y + lineOffset);
+
+          // if (i == 1) {
+          //   ctx.moveTo(ratPos.x + lineOffset, ratPos.y + lineOffset);
+          //   ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + lineOffset);
+          // } else if (i == 2) {
+          //   ctx.moveTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + lineOffset);
+          //   ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + ratPos.height + lineOffset);
+          // } else if (i == 3) {
+          //   ctx.moveTo(ratPos.x + lineOffset, ratPos.y + ratPos.height + lineOffset);
+          //   ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + ratPos.height + lineOffset);
+          // } else if (i == 4) {
+          //   ctx.moveTo(ratPos.x + lineOffset, ratPos.y + lineOffset);
+          //   ctx.lineTo(ratPos.x + lineOffset, ratPos.y + ratPos.height + lineOffset);
+          // }
+          ctx.stroke();
+        }
         //恢复状态
         ctx.restore();
       }
@@ -595,10 +618,77 @@ class DDeiRectangleCanvasRender {
    */
   doRotate(ctx, ratPos): void {
     //设置旋转角度
-    if (this.model.rotate) {
-      ctx.translate(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5)
-      ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
-      ctx.translate(-ratPos.x - ratPos.width * 0.5, -ratPos.y - ratPos.height * 0.5)
+    if (this.model.rotate || true) {
+      //设置旋转矩阵,记录旋转后的点
+      if (!this.pointVectors || true) {
+        let parentModel = this.model.pModel;
+        if (!parentModel) {
+          if (!this.layer) {
+            return;
+          }
+          parentModel = this.layer;
+          parentModel.height = 100;
+        }
+
+        let pointVectors = [];
+        //顺序中心、上右下左,记录的是PC坐标
+        let centerPointVector = new Vector3(this.model.x + this.model.width * 0.5, this.model.y + this.model.height * 0.5, 1);
+
+        //变换坐标系到笛卡尔坐标
+        let dkrTransMatrix = new Matrix3(
+          1, 0, 0,
+          0, -1, parentModel.height,
+          0, 0, 1);
+        let halfWidth = this.model.width * 0.5;
+        let halfHeight = this.model.height * 0.5;
+        centerPointVector.applyMatrix3(dkrTransMatrix);
+        let pv1 = new Vector3(centerPointVector.x - halfWidth, centerPointVector.y + halfHeight, 1);
+        let pv2 = new Vector3(centerPointVector.x + halfWidth, centerPointVector.y + halfHeight, 1);
+        let pv3 = new Vector3(centerPointVector.x + halfWidth, centerPointVector.y - halfHeight, 1);
+        let pv4 = new Vector3(centerPointVector.x - halfWidth, centerPointVector.y - halfHeight, 1);
+        pointVectors.push(pv1)
+        pointVectors.push(pv2)
+        pointVectors.push(pv3)
+        pointVectors.push(pv4)
+        this.centerPointVector = centerPointVector;
+        this.pointVectors = pointVectors;
+        //执行旋转
+        //合并旋转矩阵
+        let moveMatrix = new Matrix3(
+          1, 0, -centerPointVector.x,
+          0, 1, -centerPointVector.y,
+          0, 0, 1);
+        let angle = -this.model.rotate * DDeiConfig.ROTATE_UNIT
+        let rotateMatrix = new Matrix3(
+          Math.cos(angle), -Math.sin(angle), 0,
+          Math.sin(angle), Math.cos(angle), 0,
+          0, 0, 1);
+
+        let removeMatrix = new Matrix3(
+          1, 0, centerPointVector.x,
+          0, 1, centerPointVector.y,
+          0, 0, 1);
+        let redkrTransMatrix = new Matrix3(
+          1, 0, 0,
+          0, -1, parentModel.height,
+          0, 0, 1);
+        let m1 = new Matrix3().premultiply(moveMatrix).premultiply(rotateMatrix).premultiply(removeMatrix);
+        pointVectors.forEach(pv => {
+          console.log("矩阵：" + pv.x + " . " + pv.y)
+          pv.applyMatrix3(m1);
+          console.log("矩阵连续操作：" + pv.x + " . " + pv.y)
+          pv.applyMatrix3(redkrTransMatrix);
+          console.log("变换回PC坐标：" + pv.x + " . " + pv.y)
+        });
+
+
+
+      }
+
+
+      // ctx.translate(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5)
+      // ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
+      // ctx.translate(-ratPos.x - ratPos.width * 0.5, -ratPos.y - ratPos.height * 0.5)
     }
   }
 

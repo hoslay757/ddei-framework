@@ -104,7 +104,6 @@ class DDeiCanvasRender {
     if (this.model.stage) {
       this.model.stage.render.drawShape();
       if (this.isSupportOffScreen) {
-        console.log("支持OffScreen")
         const imageBitmap = this.canvas.transferToImageBitmap();
         let ctx = this.realCanvas.getContext('2d');
         ctx.drawImage(imageBitmap, 0, 0);
