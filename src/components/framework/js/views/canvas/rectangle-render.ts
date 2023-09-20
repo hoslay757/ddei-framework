@@ -82,8 +82,15 @@ class DDeiRectangleCanvasRender {
    */
   drawShape(): void {
 
+    let canvas = this.ddRender.canvas;
+    let ctx = canvas.getContext('2d');
+    this.doRotate(ctx, null);
     //绘制边框
     this.drawBorder();
+
+
+    this.vcPoints = null;
+
 
     //绘制填充
     // this.drawFill();
@@ -174,7 +181,7 @@ class DDeiRectangleCanvasRender {
         //保存状态
         ctx.save();
         //设置旋转
-        this.doRotate(ctx, ratPos);
+        // this.doRotate(ctx, ratPos);
 
 
         //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
@@ -648,10 +655,18 @@ class DDeiRectangleCanvasRender {
           let pv2 = this.vcPoints[1];
           let pv3 = this.vcPoints[2];
           let pv4 = this.vcPoints[3];
-          pointVectors.push(pv1)
-          pointVectors.push(pv2)
-          pointVectors.push(pv3)
-          pointVectors.push(pv4)
+          //变换坐标系到本层级
+
+          let transMatrix = new Matrix3(
+            1, 0, -parentModel.x,
+            0, 1, parentModel.y + parentModel.height - parentModel.pModel.height,
+            0, 0, 1);
+
+          centerPointVector.applyMatrix3(transMatrix)
+          pointVectors.push(pv1.applyMatrix3(transMatrix))
+          pointVectors.push(pv2.applyMatrix3(transMatrix))
+          pointVectors.push(pv3.applyMatrix3(transMatrix))
+          pointVectors.push(pv4.applyMatrix3(transMatrix))
         } else {
           //顺序中心、上右下左,记录的是PC坐标
           centerPointVector = new Vector3(this.model.x + this.model.width * 0.5, this.model.y + this.model.height * 0.5, 1);
@@ -672,6 +687,7 @@ class DDeiRectangleCanvasRender {
           pointVectors.push(pv2)
           pointVectors.push(pv3)
           pointVectors.push(pv4)
+          console.log("x2")
         }
 
 
@@ -751,7 +767,7 @@ class DDeiRectangleCanvasRender {
           0, 1, -centerPointVector.y,
           0, 0, 1);
 
-        let angle = -this.model.getAbsRotate() * DDeiConfig.ROTATE_UNIT
+        let angle = -(this.model.rotate ? this.model.rotate : 0) * DDeiConfig.ROTATE_UNIT
         let rotateMatrix = new Matrix3(
           Math.cos(angle), -Math.sin(angle), 0,
           Math.sin(angle), Math.cos(angle), 0,
@@ -776,7 +792,7 @@ class DDeiRectangleCanvasRender {
 
       }
 
-      this.vcPoints = null;
+
       // ctx.translate(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5)
       // ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
       // ctx.translate(-ratPos.x - ratPos.width * 0.5, -ratPos.y - ratPos.height * 0.5)

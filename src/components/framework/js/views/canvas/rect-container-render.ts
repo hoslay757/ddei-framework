@@ -20,28 +20,28 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
 
 
     super.drawShape();
-    //保存状态
-    ctx.save();
-    //设置旋转，以确保子图形元素都被旋转
-    this.doRotate(ctx, ratPos);
+    // //保存状态
+    // ctx.save();
+    // //设置旋转，以确保子图形元素都被旋转
+    // this.doRotate(ctx, ratPos);
 
 
-    //获取全局缩放比例
-    let ratio = this.ddRender.ratio;
-    //计算填充的原始区域
-    let fillAreaE = this.getFillArea();
-    //转换为缩放后的坐标
-    ratPos = DDeiUtil.getRatioPosition(fillAreaE, ratio);
-    //剪切当前区域
-    // ctx.rect(ratPos.x, ratPos.y, ratPos.width, ratPos.height);
-    // ctx.clip();
+    // //获取全局缩放比例
+    // let ratio = this.ddRender.ratio;
+    // //计算填充的原始区域
+    // let fillAreaE = this.getFillArea();
+    // //转换为缩放后的坐标
+    // ratPos = DDeiUtil.getRatioPosition(fillAreaE, ratio);
+    // //剪切当前区域
+    // // ctx.rect(ratPos.x, ratPos.y, ratPos.width, ratPos.height);
+    // // ctx.clip();
 
     this.drawChildrenShapes();
 
 
 
 
-    ctx.restore();
+    // ctx.restore();
   }
 
   /**
@@ -52,19 +52,25 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
     super.doRotate(ctx, ratPos)
     //对所有子元素，沿自身圆心旋转
     this.doSubRotate(ctx, this.m1, this.redkrTransMatrix);
-    // //遍历子元素,处理子元素旋转
-    if (this.model.models) {
-      this.model.midList.forEach(key => {
-        let item = this.model.models.get(key);
-        item.render.doRotate(ctx, ratPos);
-      });
-    }
-    this.vcPoints = null;
+    // // //遍历子元素,处理子元素旋转
+    // if (this.model.models) {
+    //   this.model.midList.forEach(key => {
+    //     let item = this.model.models.get(key);
+    //     item.render.doRotate(ctx, ratPos);
+    //   });
+    // }
+
   }
 
   doSubRotate(ctx, m1, redkrTransMatrix): void {
     if (this.model.models) {
-      let parentCenterPointVector = this.centerPointVector;
+      let parentCenterPointVector = null;
+      // if (this.vcPoints?.length > 0) {
+      //   parentCenterPointVector = this.vcPoints[4];
+      // } else {
+      parentCenterPointVector = this.centerPointVector;
+      // }
+
       let pHalfWidth = this.model.width * 0.5;
       let pHalfHeight = this.model.height * 0.5;
       this.model.midList.forEach(key => {
@@ -109,15 +115,14 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
           vcc2.applyMatrix3(redkrTransMatrix);
           vcc3.applyMatrix3(redkrTransMatrix);
           vcc4.applyMatrix3(redkrTransMatrix);
-          vcc = vcc.applyMatrix3(redkrTransMatrix);
+          vcc.applyMatrix3(redkrTransMatrix);
 
           ctx.fillStyle = DDeiUtil.getColor("red");
           //填充矩形
           let mp = this.model.pModel.getAbsPosition(this.model.pModel);
           mp = DDeiUtil.getRatioPosition(mp, this.ddRender.ratio);
-
           //填充矩形
-          ctx.fillRect(mp.x + vcc.x * this.ddRender.ratio, mp.y + vcc.y * this.ddRender.ratio, 10, 10);
+          ctx.fillText(this.model.id, mp.x + vcc.x * this.ddRender.ratio, mp.y + vcc.y * this.ddRender.ratio);
           ctx.fillRect(mp.x + vcc1.x * this.ddRender.ratio, mp.y + vcc1.y * this.ddRender.ratio, 10, 10);
           ctx.fillRect(mp.x + vcc2.x * this.ddRender.ratio, mp.y + vcc2.y * this.ddRender.ratio, 10, 10);
           ctx.fillRect(mp.x + vcc3.x * this.ddRender.ratio, mp.y + vcc3.y * this.ddRender.ratio, 10, 10);
