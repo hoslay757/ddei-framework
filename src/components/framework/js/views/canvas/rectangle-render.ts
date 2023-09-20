@@ -618,6 +618,7 @@ class DDeiRectangleCanvasRender {
    * 根据模型的值，设置旋转
    */
   doRotate(ctx, ratPos): void {
+
     //设置旋转角度
     if (this.model.rotate || true) {
       //设置旋转矩阵,记录旋转后的点
@@ -636,95 +637,112 @@ class DDeiRectangleCanvasRender {
           parentModel.y = 0;
         }
 
-
-
         let pointVectors = [];
-        //顺序中心、上右下左,记录的是PC坐标
-        let centerPointVector = new Vector3(this.model.x + this.model.width * 0.5, this.model.y + this.model.height * 0.5, 1);
-
-        //变换坐标系到笛卡尔坐标
-        let dkrTransMatrix = new Matrix3(
-          1, 0, 0,
-          0, -1, parentModel.height,
-          0, 0, 1);
+        let centerPointVector = null;
         let halfWidth = this.model.width * 0.5;
         let halfHeight = this.model.height * 0.5;
-        centerPointVector.applyMatrix3(dkrTransMatrix);
-
-
-        //获取父元素的中心矩阵(笛卡尔坐标),以及父元素的旋转角度
-        let parentCenterPointVector = parentModel.render.centerPointVector;
-        let parentRotate = parentModel.rotate;
-        if (parentCenterPointVector) {
-          let pv = centerPointVector
-          //以父容器中心点为原点的坐标系
-          let parentV1 = new Vector3(parentModel.width / 2, parentModel.height / 2, 1);
-          //合并旋转矩阵
-          let moveMatrix = new Matrix3(
-            1, 0, -parentV1.x,
-            0, 1, -parentV1.y,
+        if (this.vcPoints?.length > 0) {
+          centerPointVector = this.vcPoints[4];
+          this.centerPointVector = centerPointVector;
+          let pv1 = this.vcPoints[0];
+          let pv2 = this.vcPoints[1];
+          let pv3 = this.vcPoints[2];
+          let pv4 = this.vcPoints[3];
+          pointVectors.push(pv1)
+          pointVectors.push(pv2)
+          pointVectors.push(pv3)
+          pointVectors.push(pv4)
+        } else {
+          //顺序中心、上右下左,记录的是PC坐标
+          centerPointVector = new Vector3(this.model.x + this.model.width * 0.5, this.model.y + this.model.height * 0.5, 1);
+          //变换坐标系到笛卡尔坐标
+          let dkrTransMatrix = new Matrix3(
+            1, 0, 0,
+            0, -1, parentModel.height,
             0, 0, 1);
 
-          let angle = -parentRotate * DDeiConfig.ROTATE_UNIT
-          let rotateMatrix = new Matrix3(
-            Math.cos(angle), -Math.sin(angle), 0,
-            Math.sin(angle), Math.cos(angle), 0,
-            0, 0, 1);
+          centerPointVector.applyMatrix3(dkrTransMatrix);
+          this.centerPointVector = centerPointVector;
+          let pv1 = new Vector3(centerPointVector.x - halfWidth, centerPointVector.y + halfHeight, 1);
+          let pv2 = new Vector3(centerPointVector.x + halfWidth, centerPointVector.y + halfHeight, 1);
+          let pv3 = new Vector3(centerPointVector.x + halfWidth, centerPointVector.y - halfHeight, 1);
+          let pv4 = new Vector3(centerPointVector.x - halfWidth, centerPointVector.y - halfHeight, 1);
 
-          let removeMatrix = new Matrix3(
-            1, 0, parentV1.x,
-            0, 1, parentV1.y,
-            0, 0, 1);
-          let m1 = new Matrix3().premultiply(moveMatrix).premultiply(rotateMatrix).premultiply(removeMatrix);
-          pv.applyMatrix3(m1);
-
-          if (parentModel) {
-            let pHalfWidth = parentModel.width * 0.5;
-            let pHalfHeight = parentModel.height * 0.5;
-            let vc = new Vector3(parentCenterPointVector.x - pHalfWidth + this.model.x + halfWidth, parentCenterPointVector.y + pHalfHeight - this.model.y - halfHeight, 1);
-            let vc1 = new Vector3(vc.x - halfWidth, vc.y + halfHeight, 1);
-            let vc2 = new Vector3(vc.x + halfWidth, vc.y + halfHeight, 1);
-            let vc3 = new Vector3(vc.x + halfWidth, vc.y - halfHeight, 1);
-            let vc4 = new Vector3(vc.x - halfWidth, vc.y - halfHeight, 1);
-            vc1.applyMatrix3(parentModel.render.m1);
-            vc1.applyMatrix3(parentModel.render.redkrTransMatrix);
-            vc2.applyMatrix3(parentModel.render.m1);
-            vc2.applyMatrix3(parentModel.render.redkrTransMatrix);
-            vc3.applyMatrix3(parentModel.render.m1);
-            vc3.applyMatrix3(parentModel.render.redkrTransMatrix);
-            vc4.applyMatrix3(parentModel.render.m1);
-            vc4.applyMatrix3(parentModel.render.redkrTransMatrix);
-            vc.applyMatrix3(parentModel.render.m1);
-            vc.applyMatrix3(parentModel.render.redkrTransMatrix);
-            ctx.fillStyle = DDeiUtil.getColor("red");
-            //填充矩形
-            let mp = {}
-            if (!parentModel || parentModel.modelType == "DDeiLayer") {
-              mp = { x: 0, y: 0 };
-            } else {
-              mp = parentModel.getAbsPosition(parentModel.pModel);
-              mp = DDeiUtil.getRatioPosition(mp, this.ddRender.ratio);
-            }
-            //填充矩形
-            ctx.fillRect(mp.x + vc.x * this.ddRender.ratio, mp.y + vc.y * this.ddRender.ratio, 10, 10);
-            ctx.fillRect(mp.x + vc1.x * this.ddRender.ratio, mp.y + vc1.y * this.ddRender.ratio, 10, 10);
-            ctx.fillRect(mp.x + vc2.x * this.ddRender.ratio, mp.y + vc2.y * this.ddRender.ratio, 10, 10);
-            ctx.fillRect(mp.x + vc3.x * this.ddRender.ratio, mp.y + vc3.y * this.ddRender.ratio, 10, 10);
-            ctx.fillRect(mp.x + vc4.x * this.ddRender.ratio, mp.y + vc4.y * this.ddRender.ratio, 10, 10);
-
-          }
+          pointVectors.push(pv1)
+          pointVectors.push(pv2)
+          pointVectors.push(pv3)
+          pointVectors.push(pv4)
         }
 
 
-        this.centerPointVector = centerPointVector;
-        let pv1 = new Vector3(centerPointVector.x - halfWidth, centerPointVector.y + halfHeight, 1);
-        let pv2 = new Vector3(centerPointVector.x + halfWidth, centerPointVector.y + halfHeight, 1);
-        let pv3 = new Vector3(centerPointVector.x + halfWidth, centerPointVector.y - halfHeight, 1);
-        let pv4 = new Vector3(centerPointVector.x - halfWidth, centerPointVector.y - halfHeight, 1);
-        pointVectors.push(pv1)
-        pointVectors.push(pv2)
-        pointVectors.push(pv3)
-        pointVectors.push(pv4)
+
+
+
+        // //获取父元素的中心矩阵(笛卡尔坐标),以及父元素的旋转角度
+        // let parentCenterPointVector = parentModel.render.centerPointVector;
+        // let parentRotate = parentModel.rotate;
+        // let pHalfWidth = parentModel.width * 0.5;
+        // let pHalfHeight = parentModel.height * 0.5;
+        // if (parentCenterPointVector) {
+        //   let pv = centerPointVector
+        //   //以父容器中心点为原点的坐标系
+        //   let parentV1 = new Vector3(pHalfWidth, pHalfHeight, 1);
+        //   //合并旋转矩阵
+        //   let moveMatrix = new Matrix3(
+        //     1, 0, -parentV1.x,
+        //     0, 1, -parentV1.y,
+        //     0, 0, 1);
+
+        //   let angle = -parentRotate * DDeiConfig.ROTATE_UNIT
+        //   let rotateMatrix = new Matrix3(
+        //     Math.cos(angle), -Math.sin(angle), 0,
+        //     Math.sin(angle), Math.cos(angle), 0,
+        //     0, 0, 1);
+
+        //   let removeMatrix = new Matrix3(
+        //     1, 0, parentV1.x,
+        //     0, 1, parentV1.y,
+        //     0, 0, 1);
+        //   let m1 = new Matrix3().premultiply(moveMatrix).premultiply(rotateMatrix).premultiply(removeMatrix);
+        //   pv.applyMatrix3(m1);
+        // }
+
+        // if (parentCenterPointVector) {
+        //   let vc = new Vector3(parentCenterPointVector.x - pHalfWidth + this.model.x + halfWidth, parentCenterPointVector.y + pHalfHeight - this.model.y - halfHeight, 1);
+        //   let vc1 = new Vector3(vc.x - halfWidth, vc.y + halfHeight, 1);
+        //   let vc2 = new Vector3(vc.x + halfWidth, vc.y + halfHeight, 1);
+        //   let vc3 = new Vector3(vc.x + halfWidth, vc.y - halfHeight, 1);
+        //   let vc4 = new Vector3(vc.x - halfWidth, vc.y - halfHeight, 1);
+
+        //   vc1.applyMatrix3(parentModel.render.m1);
+        //   vc2.applyMatrix3(parentModel.render.m1);
+        //   vc3.applyMatrix3(parentModel.render.m1);
+        //   vc4.applyMatrix3(parentModel.render.m1);
+        //   vc.applyMatrix3(parentModel.render.m1);
+
+
+        //   vc1.applyMatrix3(parentModel.render.redkrTransMatrix);
+        //   vc2.applyMatrix3(parentModel.render.redkrTransMatrix);
+        //   vc3.applyMatrix3(parentModel.render.redkrTransMatrix);
+        //   vc4.applyMatrix3(parentModel.render.redkrTransMatrix);
+
+        //   ctx.fillStyle = DDeiUtil.getColor("red");
+        //   //填充矩形
+        //   let mp = {}
+        //   if (!parentModel || parentModel.modelType == "DDeiLayer") {
+        //     mp = { x: 0, y: 0 };
+        //   } else {
+        //     mp = parentModel.getAbsPosition(parentModel.pModel);
+        //     mp = DDeiUtil.getRatioPosition(mp, this.ddRender.ratio);
+        //   }
+        //   //填充矩形
+        //   ctx.fillRect(mp.x + vc.x * this.ddRender.ratio, mp.y + vc.y * this.ddRender.ratio, 10, 10);
+        //   ctx.fillRect(mp.x + vc1.x * this.ddRender.ratio, mp.y + vc1.y * this.ddRender.ratio, 10, 10);
+        //   ctx.fillRect(mp.x + vc2.x * this.ddRender.ratio, mp.y + vc2.y * this.ddRender.ratio, 10, 10);
+        //   ctx.fillRect(mp.x + vc3.x * this.ddRender.ratio, mp.y + vc3.y * this.ddRender.ratio, 10, 10);
+        //   ctx.fillRect(mp.x + vc4.x * this.ddRender.ratio, mp.y + vc4.y * this.ddRender.ratio, 10, 10);
+        // }
+
         this.pointVectors = pointVectors;
         //执行旋转
         //合并旋转矩阵
@@ -738,7 +756,6 @@ class DDeiRectangleCanvasRender {
           Math.cos(angle), -Math.sin(angle), 0,
           Math.sin(angle), Math.cos(angle), 0,
           0, 0, 1);
-
         let removeMatrix = new Matrix3(
           1, 0, centerPointVector.x,
           0, 1, centerPointVector.y,
@@ -759,7 +776,7 @@ class DDeiRectangleCanvasRender {
 
       }
 
-
+      this.vcPoints = null;
       // ctx.translate(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5)
       // ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
       // ctx.translate(-ratPos.x - ratPos.width * 0.5, -ratPos.y - ratPos.height * 0.5)
