@@ -86,13 +86,13 @@ class DDeiRectangleCanvasRender {
     this.drawBorder();
 
     //绘制填充
-    this.drawFill();
+    // this.drawFill();
 
-    //绘制图片
-    this.drawImage();
+    // //绘制图片
+    // this.drawImage();
 
-    //绘制文本
-    this.drawText();
+    // //绘制文本
+    // this.drawText();
 
   }
 
@@ -196,8 +196,9 @@ class DDeiRectangleCanvasRender {
           mp = { x: 0, y: 0 };
         } else {
           mp = this.model.pModel.getAbsPosition(this.model.pModel);
+          mp = DDeiUtil.getRatioPosition(mp, ratio);
         }
-        mp = DDeiUtil.getRatioPosition(mp, ratio);
+
         if (this.pointVectors) {
           let pv = this.pointVectors[i - 1];
           let npv = null;
@@ -627,8 +628,15 @@ class DDeiRectangleCanvasRender {
             return;
           }
           parentModel = this.layer;
-          parentModel.height = 100;
+
         }
+        //TODO 
+        if (parentModel == this.layer) {
+          parentModel.height = 600;
+          parentModel.y = 0;
+        }
+
+
 
         let pointVectors = [];
         //顺序中心、上右下左,记录的是PC坐标
@@ -642,6 +650,73 @@ class DDeiRectangleCanvasRender {
         let halfWidth = this.model.width * 0.5;
         let halfHeight = this.model.height * 0.5;
         centerPointVector.applyMatrix3(dkrTransMatrix);
+
+
+        //获取父元素的中心矩阵(笛卡尔坐标),以及父元素的旋转角度
+        let parentCenterPointVector = parentModel.render.centerPointVector;
+        let parentRotate = parentModel.rotate;
+        if (parentCenterPointVector) {
+          let pv = centerPointVector
+          //以父容器中心点为原点的坐标系
+          let parentV1 = new Vector3(parentModel.width / 2, parentModel.height / 2, 1);
+          //合并旋转矩阵
+          let moveMatrix = new Matrix3(
+            1, 0, -parentV1.x,
+            0, 1, -parentV1.y,
+            0, 0, 1);
+
+          let angle = -parentRotate * DDeiConfig.ROTATE_UNIT
+          let rotateMatrix = new Matrix3(
+            Math.cos(angle), -Math.sin(angle), 0,
+            Math.sin(angle), Math.cos(angle), 0,
+            0, 0, 1);
+
+          let removeMatrix = new Matrix3(
+            1, 0, parentV1.x,
+            0, 1, parentV1.y,
+            0, 0, 1);
+          let m1 = new Matrix3().premultiply(moveMatrix).premultiply(rotateMatrix).premultiply(removeMatrix);
+          pv.applyMatrix3(m1);
+
+          if (parentModel) {
+            let pHalfWidth = parentModel.width * 0.5;
+            let pHalfHeight = parentModel.height * 0.5;
+            let vc = new Vector3(parentCenterPointVector.x - pHalfWidth + this.model.x + halfWidth, parentCenterPointVector.y + pHalfHeight - this.model.y - halfHeight, 1);
+            let vc1 = new Vector3(vc.x - halfWidth, vc.y + halfHeight, 1);
+            let vc2 = new Vector3(vc.x + halfWidth, vc.y + halfHeight, 1);
+            let vc3 = new Vector3(vc.x + halfWidth, vc.y - halfHeight, 1);
+            let vc4 = new Vector3(vc.x - halfWidth, vc.y - halfHeight, 1);
+            vc1.applyMatrix3(parentModel.render.m1);
+            vc1.applyMatrix3(parentModel.render.redkrTransMatrix);
+            vc2.applyMatrix3(parentModel.render.m1);
+            vc2.applyMatrix3(parentModel.render.redkrTransMatrix);
+            vc3.applyMatrix3(parentModel.render.m1);
+            vc3.applyMatrix3(parentModel.render.redkrTransMatrix);
+            vc4.applyMatrix3(parentModel.render.m1);
+            vc4.applyMatrix3(parentModel.render.redkrTransMatrix);
+            vc.applyMatrix3(parentModel.render.m1);
+            vc.applyMatrix3(parentModel.render.redkrTransMatrix);
+            ctx.fillStyle = DDeiUtil.getColor("red");
+            //填充矩形
+            let mp = {}
+            if (!parentModel || parentModel.modelType == "DDeiLayer") {
+              mp = { x: 0, y: 0 };
+            } else {
+              mp = parentModel.getAbsPosition(parentModel.pModel);
+              mp = DDeiUtil.getRatioPosition(mp, this.ddRender.ratio);
+            }
+            //填充矩形
+            ctx.fillRect(mp.x + vc.x * this.ddRender.ratio, mp.y + vc.y * this.ddRender.ratio, 10, 10);
+            ctx.fillRect(mp.x + vc1.x * this.ddRender.ratio, mp.y + vc1.y * this.ddRender.ratio, 10, 10);
+            ctx.fillRect(mp.x + vc2.x * this.ddRender.ratio, mp.y + vc2.y * this.ddRender.ratio, 10, 10);
+            ctx.fillRect(mp.x + vc3.x * this.ddRender.ratio, mp.y + vc3.y * this.ddRender.ratio, 10, 10);
+            ctx.fillRect(mp.x + vc4.x * this.ddRender.ratio, mp.y + vc4.y * this.ddRender.ratio, 10, 10);
+
+          }
+        }
+
+
+        this.centerPointVector = centerPointVector;
         let pv1 = new Vector3(centerPointVector.x - halfWidth, centerPointVector.y + halfHeight, 1);
         let pv2 = new Vector3(centerPointVector.x + halfWidth, centerPointVector.y + halfHeight, 1);
         let pv3 = new Vector3(centerPointVector.x + halfWidth, centerPointVector.y - halfHeight, 1);
@@ -650,7 +725,6 @@ class DDeiRectangleCanvasRender {
         pointVectors.push(pv2)
         pointVectors.push(pv3)
         pointVectors.push(pv4)
-        this.centerPointVector = centerPointVector;
         this.pointVectors = pointVectors;
         //执行旋转
         //合并旋转矩阵
@@ -658,7 +732,8 @@ class DDeiRectangleCanvasRender {
           1, 0, -centerPointVector.x,
           0, 1, -centerPointVector.y,
           0, 0, 1);
-        let angle = -this.model.rotate * DDeiConfig.ROTATE_UNIT
+
+        let angle = -this.model.getAbsRotate() * DDeiConfig.ROTATE_UNIT
         let rotateMatrix = new Matrix3(
           Math.cos(angle), -Math.sin(angle), 0,
           Math.sin(angle), Math.cos(angle), 0,
@@ -673,12 +748,11 @@ class DDeiRectangleCanvasRender {
           0, -1, parentModel.height,
           0, 0, 1);
         let m1 = new Matrix3().premultiply(moveMatrix).premultiply(rotateMatrix).premultiply(removeMatrix);
+        this.m1 = m1;
+        this.redkrTransMatrix = redkrTransMatrix;
         pointVectors.forEach(pv => {
-          console.log("矩阵：" + pv.x + " . " + pv.y)
           pv.applyMatrix3(m1);
-          console.log("矩阵连续操作：" + pv.x + " . " + pv.y)
           pv.applyMatrix3(redkrTransMatrix);
-          console.log("变换回PC坐标：" + pv.x + " . " + pv.y)
         });
 
 

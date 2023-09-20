@@ -32,8 +32,8 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
     //转换为缩放后的坐标
     ratPos = DDeiUtil.getRatioPosition(fillAreaE, ratio);
     //剪切当前区域
-    ctx.rect(ratPos.x, ratPos.y, ratPos.width, ratPos.height);
-    ctx.clip();
+    // ctx.rect(ratPos.x, ratPos.y, ratPos.width, ratPos.height);
+    // ctx.clip();
 
     this.drawChildrenShapes();
 
@@ -42,12 +42,25 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
 
     ctx.restore();
   }
+
+  /**
+   * 处理自身的位移以及子元素的位移
+   */
+  doRotate(ctx, ratPos): void {
+    super.doRotate(ctx, ratPos);
+    if (this.model.models) {
+      //遍历子元素，绘制子元素
+      this.model.midList.forEach(key => {
+        let item = this.model.models.get(key);
+        item.render.doRotate(ctx, ratPos);
+      });
+    }
+  }
   /**
    * 绘制子元素
    */
   drawChildrenShapes(): void {
     if (this.model.models) {
-      console.log(this.model.models)
       //遍历子元素，绘制子元素
       this.model.midList.forEach(key => {
         let item = this.model.models.get(key);

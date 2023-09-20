@@ -255,6 +255,10 @@ class DDeiLayer {
 
   }
 
+  getPosition(): object {
+    return { x: 0, y: 0 }
+  }
+
 
   /**
    * 获取某个选中区域的所有控件

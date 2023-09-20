@@ -267,16 +267,16 @@ class DDeiUtil {
       return null;
     } else {
       let returnP = {};
-      if (pos.x) {
+      if (pos.x || pos.x == 0) {
         returnP.x = pos.x * ratio;
       }
-      if (pos.y) {
+      if (pos.y || pos.y == 0) {
         returnP.y = pos.y * ratio;
       }
-      if (pos.width) {
+      if (pos.width || pos.width == 0) {
         returnP.width = pos.width * ratio;
       }
-      if (pos.height) {
+      if (pos.height || pos.height == 0) {
         returnP.height = pos.height * ratio;
       }
       return returnP;
