@@ -67,23 +67,23 @@ class DDeiBusCommandModelChangeRotate extends DDeiBusCommand {
       //对所有选中图形进行位移并旋转
       for (let i = 0; i < models.length; i++) {
         let item = models[i]
-        if (!item.rotate) {
-          item.rotate = 0;
-          item.originX = item.x;
-          item.originY = item.y;
-        }
+        // if (!item.rotate) {
+        //   item.rotate = 0;
+        //   item.originX = item.x;
+        //   item.originY = item.y;
+        // }
         //当前图形的圆心x1和y1
-        let rcc = { x: item.x + item.width * 0.5, y: item.y + item.height * 0.5 };
+        // let rcc = { x: item.x + item.width * 0.5, y: item.y + item.height * 0.5 };
         //已知圆心位置、起始点位置和旋转角度，求终点的坐标位置，坐标系为笛卡尔坐标系，计算机中y要反转计算
-        let dcc = DDeiUtil.computePosition(occ, rcc, angle);
+        // let dcc = DDeiUtil.computePosition(occ, rcc, angle);
         //修改坐标与旋转角度
-        item.setPosition(dcc.x - item.width * 0.5, dcc.y - item.height * 0.5)
+        // item.setPosition(dcc.x - item.width * 0.5, dcc.y - item.height * 0.5)
         item.rotate = item.rotate + angle
-        if (item.rotate >= 360 || item.rotate <= -360) {
-          item.rotate = null
-          item.x = item.originX;
-          item.y = item.originY;
-        }
+        // if (item.rotate >= 360 || item.rotate <= -360) {
+        //   item.rotate = null
+        //   item.x = item.originX;
+        //   item.y = item.originY;
+        // }
       }
 
       selector.rotate = selector.rotate + angle

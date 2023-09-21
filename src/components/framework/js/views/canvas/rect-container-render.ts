@@ -39,7 +39,7 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
     this.drawChildrenShapes();
 
 
-
+    this.pointVectors = null;
 
     // ctx.restore();
   }
@@ -51,26 +51,13 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
     //以当前元素父元素为基准，沿自身圆心旋转
     super.doRotate(ctx, ratPos)
     //对所有子元素，沿自身圆心旋转
-    this.doSubRotate(ctx, this.m1, this.redkrTransMatrix);
-    // // //遍历子元素,处理子元素旋转
-    // if (this.model.models) {
-    //   this.model.midList.forEach(key => {
-    //     let item = this.model.models.get(key);
-    //     item.render.doRotate(ctx, ratPos);
-    //   });
-    // }
+    this.doSubRotate(ctx, this.m1, this.m1Array);
 
   }
 
-  doSubRotate(ctx, m1, redkrTransMatrix): void {
+  doSubRotate(ctx, m1, m1Array): void {
     if (this.model.models) {
-      let parentCenterPointVector = null;
-      // if (this.vcPoints?.length > 0) {
-      //   parentCenterPointVector = this.vcPoints[4];
-      // } else {
-      parentCenterPointVector = this.centerPointVector;
-      // }
-
+      let parentCenterPointVector = this.centerPointVector;
       let pHalfWidth = this.model.width * 0.5;
       let pHalfHeight = this.model.height * 0.5;
       this.model.midList.forEach(key => {
@@ -80,56 +67,34 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
         if (parentCenterPointVector) {
           let vc, vc1, vc2, vc3, vc4;
 
-          if (item.render.vcPoints?.length > 0) {
-            vc = item.render.vcPoints[4];
-            vc1 = item.render.vcPoints[0];
-            vc2 = item.render.vcPoints[1];
-            vc3 = item.render.vcPoints[2];
-            vc4 = item.render.vcPoints[3];
+          if (item.render.pointVectors?.length > 0) {
+            vc = item.render.centerPointVector;
+            vc1 = item.render.pointVectors[0];
+            vc2 = item.render.pointVectors[1];
+            vc3 = item.render.pointVectors[2];
+            vc4 = item.render.pointVectors[3];
           } else {
-            item.render.vcPoints = []
-            vc = new Vector3(parentCenterPointVector.x - pHalfWidth + item.x + halfWidth, parentCenterPointVector.y + pHalfHeight - item.y - halfHeight, 1);
-            vc1 = new Vector3(vc.x - halfWidth, vc.y + halfHeight, 1);
-            vc2 = new Vector3(vc.x + halfWidth, vc.y + halfHeight, 1);
-            vc3 = new Vector3(vc.x + halfWidth, vc.y - halfHeight, 1);
-            vc4 = new Vector3(vc.x - halfWidth, vc.y - halfHeight, 1);
-            item.render.vcPoints.push(vc1)
-            item.render.vcPoints.push(vc2)
-            item.render.vcPoints.push(vc3)
-            item.render.vcPoints.push(vc4)
-            item.render.vcPoints.push(vc)
+            item.render.pointVectors = []
+            let absBoundsOrigin = item.getAbsBounds()
+            vc = new Vector3(absBoundsOrigin.x + halfWidth, absBoundsOrigin.y + halfHeight, 1);
+            vc1 = new Vector3(vc.x - halfWidth, vc.y - halfHeight, 1);
+            vc2 = new Vector3(vc.x + halfWidth, vc.y - halfHeight, 1);
+            vc3 = new Vector3(vc.x + halfWidth, vc.y + halfHeight, 1);
+            vc4 = new Vector3(vc.x - halfWidth, vc.y + halfHeight, 1);
+            item.render.pointVectors.push(vc1)
+            item.render.pointVectors.push(vc2)
+            item.render.pointVectors.push(vc3)
+            item.render.pointVectors.push(vc4)
+            item.render.centerPointVector = vc;
           }
           vc1.applyMatrix3(m1);
           vc2.applyMatrix3(m1);
           vc3.applyMatrix3(m1);
           vc4.applyMatrix3(m1);
           vc.applyMatrix3(m1);
-          let vcc = new Vector3(vc.x, vc.y, 1);
-          let vcc1 = new Vector3(vc1.x, vc1.y, 1);
-          let vcc2 = new Vector3(vc2.x, vc2.y, 1);
-          let vcc3 = new Vector3(vc3.x, vc3.y, 1);
-          let vcc4 = new Vector3(vc4.x, vc4.y, 1);
-
-
-          vcc1.applyMatrix3(redkrTransMatrix);
-          vcc2.applyMatrix3(redkrTransMatrix);
-          vcc3.applyMatrix3(redkrTransMatrix);
-          vcc4.applyMatrix3(redkrTransMatrix);
-          vcc.applyMatrix3(redkrTransMatrix);
-
-          ctx.fillStyle = DDeiUtil.getColor("red");
-          //填充矩形
-          let mp = this.model.pModel.getAbsPosition(this.model.pModel);
-          mp = DDeiUtil.getRatioPosition(mp, this.ddRender.ratio);
-          //填充矩形
-          ctx.fillText(this.model.id, mp.x + vcc.x * this.ddRender.ratio, mp.y + vcc.y * this.ddRender.ratio);
-          ctx.fillRect(mp.x + vcc1.x * this.ddRender.ratio, mp.y + vcc1.y * this.ddRender.ratio, 10, 10);
-          ctx.fillRect(mp.x + vcc2.x * this.ddRender.ratio, mp.y + vcc2.y * this.ddRender.ratio, 10, 10);
-          ctx.fillRect(mp.x + vcc3.x * this.ddRender.ratio, mp.y + vcc3.y * this.ddRender.ratio, 10, 10);
-          ctx.fillRect(mp.x + vcc4.x * this.ddRender.ratio, mp.y + vcc4.y * this.ddRender.ratio, 10, 10);
         }
         if (item.baseModelType == "DDeiContainer") {
-          item.render.doSubRotate(ctx, m1, redkrTransMatrix);
+          item.render.doSubRotate(ctx, m1, m1Array);
         }
       });
     }
