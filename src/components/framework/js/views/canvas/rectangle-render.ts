@@ -4,12 +4,13 @@ import DDeiEnumControlState from '../../enums/control-state.js';
 import DDeiModelArrtibuteValue from '../../models/attribute/attribute-value.js';
 import DDeiLayer from '../../models/layer.js';
 import DDeiRectangle from '../../models/rectangle.js';
+import DDeiAbstractShape from '../../models/shape.js';
 import DDeiStage from '../../models/stage.js';
 import DDeiUtil from '../../util.js'
 import DDeiCanvasRender from './ddei-render.js';
 import DDeiLayerCanvasRender from './layer-render.js';
 import DDeiStageCanvasRender from './stage-render.js';
-import { Matrix3, Vector3 } from 'three';
+import { cloneDeep } from 'lodash'
 
 /**
  * DDeiRectangle的渲染器类，用于渲染矩形
@@ -52,7 +53,6 @@ class DDeiRectangleCanvasRender {
   * 当前的layer渲染器
   */
   layerRender: DDeiLayerCanvasRender | null;
-
   // ============================== 方法 ===============================
   /**
    * 初始化
@@ -82,25 +82,23 @@ class DDeiRectangleCanvasRender {
    */
   drawShape(): void {
 
-    let canvas = this.ddRender.canvas;
-    let ctx = canvas.getContext('2d');
-    this.doRotate(ctx, null);
+    //计算旋转矩阵
+    this.model.calRotatePointVectors();
+
     //绘制边框
     this.drawBorder();
 
-
-    this.pointVectors = null;
-
-
     //绘制填充
-    // this.drawFill();
+    this.drawFill();
 
-    // //绘制图片
-    // this.drawImage();
+    //绘制图片
+    this.drawImage();
 
-    // //绘制文本
-    // this.drawText();
-
+    //绘制文本
+    this.drawText();
+    //清空旋转矩阵
+    this.model.currentPointVectors = this.model.pointVectors;
+    this.model.pointVectors = null;
 
   }
 
@@ -182,7 +180,7 @@ class DDeiRectangleCanvasRender {
         //保存状态
         ctx.save();
         //设置旋转
-        // this.doRotate(ctx, ratPos);
+        this.doRotate(ctx, ratPos);
 
 
         //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
@@ -199,42 +197,38 @@ class DDeiRectangleCanvasRender {
         }
         //颜色
         ctx.strokeStyle = DDeiUtil.getColor(color);
-        let mp = { x: 0, y: 0 }
-        // if (!this.model.pModel || this.model.pModel.modelType == "DDeiLayer") {
-        //   mp = { x: 0, y: 0 };
-        // } else {
-        //   mp = this.model.pModel.getAbsPosition(this.model.pModel);
-        //   mp = DDeiUtil.getRatioPosition(mp, ratio);
-        // }
+        if (this.stage?.selectedModels?.size > 0 && this.model.baseModelType == "DDeiSelector") {
 
-        if (this.pointVectors) {
-          let pv = this.pointVectors[i - 1];
-          let npv = null;
-          if (i == 4) {
-            npv = this.pointVectors[0];
+          let pvs = null;
+          let models = Array.from(this.stage?.selectedModels?.values());
+          if (models.length == 1 && models[0].currentPointVectors?.length > 0) {
+            pvs = cloneDeep(models[0].currentPointVectors);
           } else {
-            npv = this.pointVectors[i];
+            pvs = DDeiAbstractShape.getOutPV(models);
           }
-          pv = DDeiUtil.getRatioPosition(pv, ratio);
-          npv = DDeiUtil.getRatioPosition(npv, ratio);
-          ctx.moveTo(mp.x + pv.x + lineOffset, mp.y + pv.y + lineOffset);
-          ctx.lineTo(mp.x + npv.x + lineOffset, mp.y + npv.y + lineOffset);
-
-          // if (i == 1) {
-          //   ctx.moveTo(ratPos.x + lineOffset, ratPos.y + lineOffset);
-          //   ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + lineOffset);
-          // } else if (i == 2) {
-          //   ctx.moveTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + lineOffset);
-          //   ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + ratPos.height + lineOffset);
-          // } else if (i == 3) {
-          //   ctx.moveTo(ratPos.x + lineOffset, ratPos.y + ratPos.height + lineOffset);
-          //   ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + ratPos.height + lineOffset);
-          // } else if (i == 4) {
-          //   ctx.moveTo(ratPos.x + lineOffset, ratPos.y + lineOffset);
-          //   ctx.lineTo(ratPos.x + lineOffset, ratPos.y + ratPos.height + lineOffset);
-          // }
-          ctx.stroke();
+          if (i == 4) {
+            ctx.moveTo(pvs[i - 1].x * ratio + lineOffset, pvs[i - 1].y * ratio + lineOffset);
+            ctx.lineTo(pvs[0].x * ratio + lineOffset, pvs[0].y * ratio + lineOffset);
+          } else {
+            ctx.moveTo(pvs[i - 1].x * ratio + lineOffset, pvs[i - 1].y * ratio + lineOffset);
+            ctx.lineTo(pvs[i].x * ratio + lineOffset, pvs[i].y * ratio + lineOffset);
+          }
+        } else {
+          if (i == 1) {
+            ctx.moveTo(ratPos.x + lineOffset, ratPos.y + lineOffset);
+            ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + lineOffset);
+          } else if (i == 2) {
+            ctx.moveTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + lineOffset);
+            ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + ratPos.height + lineOffset);
+          } else if (i == 3) {
+            ctx.moveTo(ratPos.x + lineOffset, ratPos.y + ratPos.height + lineOffset);
+            ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + ratPos.height + lineOffset);
+          } else if (i == 4) {
+            ctx.moveTo(ratPos.x + lineOffset, ratPos.y + lineOffset);
+            ctx.lineTo(ratPos.x + lineOffset, ratPos.y + ratPos.height + lineOffset);
+          }
         }
+        ctx.stroke();
         //恢复状态
         ctx.restore();
       }
@@ -626,9 +620,12 @@ class DDeiRectangleCanvasRender {
    * 根据模型的值，设置旋转
    */
   doRotate(ctx, ratPos): void {
-    ctx.translate(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5)
-    ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
-    ctx.translate(-ratPos.x - ratPos.width * 0.5, -ratPos.y - ratPos.height * 0.5)
+    //设置旋转角度
+    if (this.model.rotate) {
+      ctx.translate(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5)
+      ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
+      ctx.translate(-ratPos.x - ratPos.width * 0.5, -ratPos.y - ratPos.height * 0.5)
+    }
   }
 
   /**

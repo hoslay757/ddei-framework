@@ -4,6 +4,7 @@ import DDeiLayer from './layer'
 import DDeiEnumControlState from '../enums/control-state'
 import DDeiUtil from '../util'
 import { Matrix3, Vector3 } from 'three';
+import { cloneDeep } from 'lodash'
 /**
  * 抽象的图形类，定义了大多数图形都有的属性和方法
  */
@@ -227,6 +228,63 @@ abstract class DDeiAbstractShape {
       x: x, y: y, width: x1 - x, height: y1 - y, x1: x1, y1: y1
     }
   }
+
+
+
+
+  /**
+  * 基于向量点获取一组图形模型的宽高
+  * @param models
+  */
+  static getOutRectByPV(models: Array<DDeiAbstractShape>): object {
+    models = models.filter(item => !!item)
+    if (!models.length) {
+      return { x: 0, y: 0, width: 0, height: 0 }
+    }
+
+    //按照rotate对图形进行旋转，求的旋转后的四个点坐标
+    //遍历所有点，求得最大、最小的x、y
+    let points: object[] = [];
+    models.forEach(item => {
+      let ps = null;
+      //对当前图形，按照rotate进行旋转，求得新的四个点的位置
+      if (item.currentPointVectors?.length > 0) {
+        ps = cloneDeep(item.currentPointVectors);
+      } else {
+        ps = item.getPoints();
+      }
+      //按圆心进行旋转rotate度，得到绘制出来的点位
+      points = points.concat(ps)
+    })
+    let x: number = Infinity, y: number = Infinity, x1: number = 0, y1: number = 0;
+    //找到最大、最小的x和y
+    points.forEach(p => {
+      x = Math.min(Math.floor(p.x), x)
+      x1 = Math.max(Math.floor(p.x), x1)
+      y = Math.min(Math.floor(p.y), y)
+      y1 = Math.max(Math.floor(p.y), y1)
+    })
+    return {
+      x: x, y: y, width: x1 - x, height: y1 - y, x1: x1, y1: y1
+    }
+  }
+
+
+  /**
+  * 获取最靠外部的一组pv
+  * @param models
+  */
+  static getOutPV(models: Array<DDeiAbstractShape>): object {
+    let o = DDeiAbstractShape.getOutRectByPV(models);
+    return [
+      { x: o.x, y: o.y },
+      { x: o.x1, y: o.y },
+      { x: o.x1, y: o.y1 },
+      { x: o.x, y: o.y1 },
+    ]
+  }
+
+
 
   /**
    * 获取某个容器下选中区域的所有控件,如果控件已被选中，且是一个容器，则继续向下直到最底层

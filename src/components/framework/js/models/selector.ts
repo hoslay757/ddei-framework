@@ -4,6 +4,7 @@ import DDeiEnumControlState from '../enums/control-state';
 import DDeiUtil from '../util';
 import DDeiRectangle from './rectangle';
 import DDeiAbstractShape from './shape';
+import { cloneDeep } from 'lodash'
 
 /**
  * selector选择器，用来选择界面上的控件，选择器不是一个实体控件,不会被序列化
@@ -356,17 +357,9 @@ class DDeiSelector extends DDeiRectangle {
         paddingWeight = paddingWeightInfo.single;
       }
       //计算多个图形的顶点最大范围，根据顶点范围构建一个最大的外接矩形，规则的外接矩形，可以看作由4个顶点构成的图形
-      let outRectBounds = null
-      if (models.length > 1) {
-        outRectBounds = DDeiAbstractShape.getOutRect(models);
-        let pAbsPosition = pContainerModel.getAbsPosition();
-        outRectBounds.x = outRectBounds.x + pAbsPosition.x
-        outRectBounds.y = outRectBounds.y + pAbsPosition.y
-      } else {
-        outRectBounds = models[0].getAbsBounds();
+      let outRectBounds = DDeiAbstractShape.getOutRectByPV(models);
 
-        this.rotate = models[0].rotate;
-      }
+
       this.setBounds(outRectBounds.x - paddingWeight, outRectBounds.y - paddingWeight, outRectBounds.width + 2 * paddingWeight, outRectBounds.height + 2 * paddingWeight);
 
       //设置选择器状态为选中后

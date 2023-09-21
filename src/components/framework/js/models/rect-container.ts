@@ -2,6 +2,7 @@ import DDeiConfig from '../config';
 import DDeiEnumControlState from '../enums/control-state';
 import DDeiRectangle from './rectangle'
 import DDeiAbstractShape from './shape';
+import { Matrix3, Vector3 } from 'three';
 
 /**
  * 普通容器是一个矩形，能包含其他容器

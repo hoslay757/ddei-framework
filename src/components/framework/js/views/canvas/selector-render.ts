@@ -8,6 +8,7 @@ import DDeiSelector from '../../models/selector.js';
 import DDeiAbstractShape from '../../models/shape.js';
 import DDeiUtil from '../../util.js';
 import DDeiRectangleCanvasRender from './rectangle-render.js';
+import { Matrix3, Vector3 } from 'three';
 
 /**
  * DDeiSelector的渲染器类，用于渲染选择器
@@ -33,6 +34,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
 
     //绘制选中控件特效
     this.drawIncludedStyle();
+
   }
 
   /**
@@ -106,39 +108,112 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         if (this.model.passIndex == i) {
           ctx.fillStyle = DDeiUtil.getColor(DDeiConfig.SELECTOR.OPERATE_ICON.FILL.pass);
         }
-        if (i == 1) {
-          ctx.strokeRect(ratPos.x + ratPos.width * 0.5 - width * 0.5 + lineOffset, ratPos.y - width * 0.5 + lineOffset, width, width);
-          ctx.fillRect(ratPos.x + ratPos.width * 0.5 - width * 0.5 + lineOffset, ratPos.y - width * 0.5 + lineOffset, width, width);
-        } else if (i == 2) {
-          ctx.strokeRect(ratPos.x + ratPos.width - width * 0.5 - lineOffset, ratPos.y - width * 0.5 + lineOffset, width, width);
-          ctx.fillRect(ratPos.x + ratPos.width - width * 0.5 - lineOffset, ratPos.y - width * 0.5 + lineOffset, width, width);
-        } else if (i == 3) {
-          ctx.strokeRect(ratPos.x + ratPos.width - width * 0.5 - lineOffset, ratPos.y + ratPos.height * 0.5 - width * 0.5 + lineOffset, width, width);
-          ctx.fillRect(ratPos.x + ratPos.width - width * 0.5 - lineOffset, ratPos.y + ratPos.height * 0.5 - width * 0.5 + lineOffset, width, width);
-        } else if (i == 4) {
-          ctx.strokeRect(ratPos.x + ratPos.width - width * 0.5 - lineOffset, ratPos.y + ratPos.height - width * 0.5 - lineOffset, width, width);
-          ctx.fillRect(ratPos.x + ratPos.width - width * 0.5 - lineOffset, ratPos.y + ratPos.height - width * 0.5 - lineOffset, width, width);
-        } else if (i == 5) {
-          ctx.strokeRect(ratPos.x + ratPos.width * 0.5 - width * 0.5 + lineOffset, ratPos.y + ratPos.height - width * 0.5 - lineOffset, width, width);
-          ctx.fillRect(ratPos.x + ratPos.width * 0.5 - width * 0.5 + lineOffset, ratPos.y + ratPos.height - width * 0.5 - lineOffset, width, width);
-        } else if (i == 6) {
-          ctx.strokeRect(ratPos.x - width * 0.5 + lineOffset, ratPos.y + ratPos.height - width * 0.5 - lineOffset, width, width);
-          ctx.fillRect(ratPos.x - width * 0.5 + lineOffset, ratPos.y + ratPos.height - width * 0.5 - lineOffset, width, width);
-        } else if (i == 7) {
-          ctx.strokeRect(ratPos.x - width * 0.5 + lineOffset, ratPos.y + ratPos.height * 0.5 - width * 0.5 + lineOffset, width, width);
-          ctx.fillRect(ratPos.x - width * 0.5 + lineOffset, ratPos.y + ratPos.height * 0.5 - width * 0.5 + lineOffset, width, width);
-        } else if (i == 8) {
-          ctx.strokeRect(ratPos.x - width * 0.5 + lineOffset, ratPos.y - width * 0.5 + lineOffset, width, width);
-          ctx.fillRect(ratPos.x - width * 0.5 + lineOffset, ratPos.y - width * 0.5 + lineOffset, width, width);
-        } else if (i == 9) {
-          if (this.model.passIndex == i) {
-            //填充一个圆形
-            ctx.ellipse(ratPos.x + ratPos.width * 0.5 + lineOffset, ratPos.y - width * 2 + lineOffset, width * 0.5, width * 0.5, 0, 0, Math.PI * 2)
-            ctx.fill();
-          } else {
-            //绘制旋转按钮
-            ctx.arc(ratPos.x + ratPos.width * 0.5 + lineOffset, ratPos.y - width * 2 + lineOffset, width * 0.4, 50, Math.PI * 1.6)
-            ctx.stroke()
+        let pvs = null;
+        let models = Array.from(this.stage?.selectedModels?.values());
+        if (models.length == 1 && models[0].currentPointVectors?.length > 0) {
+          pvs = models[0].currentPointVectors;
+        } else {
+          pvs = DDeiAbstractShape.getOutPV(models);
+        }
+        if (pvs?.length > 0) {
+          let helfWidth = width * 0.5;
+          if (i == 1) {
+            ctx.strokeRect((pvs[0].x + pvs[1].x) / 2 * ratio - helfWidth + lineOffset, (pvs[0].y + pvs[1].y) / 2 * ratio - helfWidth + lineOffset, width, width);
+            ctx.fillRect((pvs[0].x + pvs[1].x) / 2 * ratio - helfWidth + lineOffset, (pvs[0].y + pvs[1].y) / 2 * ratio - helfWidth + lineOffset, width, width);
+          } else if (i == 2) {
+            ctx.strokeRect(pvs[1].x * ratio - helfWidth - lineOffset, pvs[1].y * ratio - helfWidth + lineOffset, width, width);
+            ctx.fillRect(pvs[1].x * ratio - helfWidth - lineOffset, pvs[1].y * ratio - helfWidth + lineOffset, width, width);
+          } else if (i == 3) {
+            ctx.strokeRect((pvs[1].x + pvs[2].x) / 2 * ratio - helfWidth - lineOffset, (pvs[1].y + pvs[2].y) / 2 * ratio - helfWidth + lineOffset, width, width);
+            ctx.fillRect((pvs[1].x + pvs[2].x) / 2 * ratio - helfWidth - lineOffset, (pvs[1].y + pvs[2].y) / 2 * ratio - helfWidth + lineOffset, width, width);
+          } else if (i == 4) {
+            ctx.strokeRect(pvs[2].x * ratio - helfWidth - lineOffset, pvs[2].y * ratio - helfWidth + lineOffset, width, width);
+            ctx.fillRect(pvs[2].x * ratio - helfWidth - lineOffset, pvs[2].y * ratio - helfWidth + lineOffset, width, width);
+          } else if (i == 5) {
+            ctx.strokeRect((pvs[2].x + pvs[3].x) / 2 * ratio - helfWidth + lineOffset, (pvs[2].y + pvs[3].y) / 2 * ratio - helfWidth + lineOffset, width, width);
+            ctx.fillRect((pvs[2].x + pvs[3].x) / 2 * ratio - helfWidth + lineOffset, (pvs[2].y + pvs[3].y) / 2 * ratio - helfWidth + lineOffset, width, width);
+          } else if (i == 6) {
+            ctx.strokeRect(pvs[3].x * ratio - helfWidth - lineOffset, pvs[3].y * ratio - helfWidth + lineOffset, width, width);
+            ctx.fillRect(pvs[3].x * ratio - helfWidth - lineOffset, pvs[3].y * ratio - helfWidth + lineOffset, width, width);
+          } else if (i == 7) {
+            ctx.strokeRect((pvs[0].x + pvs[3].x) / 2 * ratio - helfWidth + lineOffset, (pvs[0].y + pvs[3].y) / 2 * ratio - helfWidth + lineOffset, width, width);
+            ctx.fillRect((pvs[0].x + pvs[3].x) / 2 * ratio - helfWidth + lineOffset, (pvs[0].y + pvs[3].y) / 2 * ratio - helfWidth + lineOffset, width, width);
+          } else if (i == 8) {
+            ctx.strokeRect(pvs[0].x * ratio - helfWidth - lineOffset, pvs[0].y * ratio - helfWidth + lineOffset, width, width);
+            ctx.fillRect(pvs[0].x * ratio - helfWidth - lineOffset, pvs[0].y * ratio - helfWidth + lineOffset, width, width);
+          } else if (i == 9) {
+            let v1 = new Vector3(pvs[1].x, pvs[1].y, 1);
+            let angle1 = new Vector3(1, 0, 0).angleTo(new Vector3(pvs[1].x, pvs[1].y, 0));
+            console.log("v1与坐标轴夹角：" + angle1);
+            let moveMatrix = new Matrix3(
+              1, 0, -(pvs[0].x + pvs[1].x) / 2,
+              0, 1, -(pvs[0].y + pvs[1].y) / 2,
+              0, 0, 1);
+            let angle = 90 * DDeiConfig.ROTATE_UNIT + angle1;
+
+            let rotateMatrix = new Matrix3(
+              Math.cos(angle), Math.sin(angle), 0,
+              -Math.sin(angle), Math.cos(angle), 0,
+              0, 0, 1);
+            let removeMatrix = new Matrix3(
+              1, 0, (pvs[0].x + pvs[1].x) / 2,
+              0, 1, (pvs[0].y + pvs[1].y) / 2,
+              0, 0, 1);
+            let m1 = new Matrix3().premultiply(rotateMatrix).premultiply(removeMatrix);
+            console.log("v1变换0：" + v1.x + " . " + v1.y);
+            v1.applyMatrix3(moveMatrix)
+            console.log("v1变换1：" + v1.x + " . " + v1.y);
+            v1.applyMatrix3(rotateMatrix)
+            console.log("v1变换2：" + v1.x + " . " + v1.y);
+            v1.applyMatrix3(removeMatrix)
+            console.log("v1变换3：" + v1.x + " . " + v1.y);
+            let v2 = new Vector3(0, 20, 1);
+            v2.applyMatrix3(m1);
+            if (this.model.passIndex == i) {
+              //填充一个圆形
+              ctx.ellipse((pvs[0].x + pvs[1].x) / 2 * ratio - helfWidth + lineOffset, (pvs[0].y + pvs[1].y) / 2 * ratio - helfWidth + lineOffset, width * 0.5, width * 0.5, 0, 0, Math.PI * 2)
+              ctx.fill();
+            } else {
+              //绘制旋转按钮
+              ctx.arc(v2.x * ratio - helfWidth + lineOffset, v2.y * ratio - helfWidth + lineOffset, width * 0.4, 50, Math.PI * 1.6)
+              ctx.stroke()
+            }
+          }
+        } else {
+          if (i == 1) {
+            ctx.strokeRect(ratPos.x + ratPos.width * 0.5 - width * 0.5 + lineOffset, ratPos.y - width * 0.5 + lineOffset, width, width);
+            ctx.fillRect(ratPos.x + ratPos.width * 0.5 - width * 0.5 + lineOffset, ratPos.y - width * 0.5 + lineOffset, width, width);
+          } else if (i == 2) {
+            ctx.strokeRect(ratPos.x + ratPos.width - width * 0.5 - lineOffset, ratPos.y - width * 0.5 + lineOffset, width, width);
+            ctx.fillRect(ratPos.x + ratPos.width - width * 0.5 - lineOffset, ratPos.y - width * 0.5 + lineOffset, width, width);
+          } else if (i == 3) {
+            ctx.strokeRect(ratPos.x + ratPos.width - width * 0.5 - lineOffset, ratPos.y + ratPos.height * 0.5 - width * 0.5 + lineOffset, width, width);
+            ctx.fillRect(ratPos.x + ratPos.width - width * 0.5 - lineOffset, ratPos.y + ratPos.height * 0.5 - width * 0.5 + lineOffset, width, width);
+          } else if (i == 4) {
+            ctx.strokeRect(ratPos.x + ratPos.width - width * 0.5 - lineOffset, ratPos.y + ratPos.height - width * 0.5 - lineOffset, width, width);
+            ctx.fillRect(ratPos.x + ratPos.width - width * 0.5 - lineOffset, ratPos.y + ratPos.height - width * 0.5 - lineOffset, width, width);
+          } else if (i == 5) {
+            ctx.strokeRect(ratPos.x + ratPos.width * 0.5 - width * 0.5 + lineOffset, ratPos.y + ratPos.height - width * 0.5 - lineOffset, width, width);
+            ctx.fillRect(ratPos.x + ratPos.width * 0.5 - width * 0.5 + lineOffset, ratPos.y + ratPos.height - width * 0.5 - lineOffset, width, width);
+          } else if (i == 6) {
+            ctx.strokeRect(ratPos.x - width * 0.5 + lineOffset, ratPos.y + ratPos.height - width * 0.5 - lineOffset, width, width);
+            ctx.fillRect(ratPos.x - width * 0.5 + lineOffset, ratPos.y + ratPos.height - width * 0.5 - lineOffset, width, width);
+          } else if (i == 7) {
+            ctx.strokeRect(ratPos.x - width * 0.5 + lineOffset, ratPos.y + ratPos.height * 0.5 - width * 0.5 + lineOffset, width, width);
+            ctx.fillRect(ratPos.x - width * 0.5 + lineOffset, ratPos.y + ratPos.height * 0.5 - width * 0.5 + lineOffset, width, width);
+          } else if (i == 8) {
+            ctx.strokeRect(ratPos.x - width * 0.5 + lineOffset, ratPos.y - width * 0.5 + lineOffset, width, width);
+            ctx.fillRect(ratPos.x - width * 0.5 + lineOffset, ratPos.y - width * 0.5 + lineOffset, width, width);
+          } else if (i == 9) {
+            if (this.model.passIndex == i) {
+              //填充一个圆形
+              ctx.ellipse(ratPos.x + ratPos.width * 0.5 + lineOffset, ratPos.y - width * 2 + lineOffset, width * 0.5, width * 0.5, 0, 0, Math.PI * 2)
+              ctx.fill();
+            } else {
+              //绘制旋转按钮
+              ctx.arc(ratPos.x + ratPos.width * 0.5 + lineOffset, ratPos.y - width * 2 + lineOffset, width * 0.4, 50, Math.PI * 1.6)
+              ctx.stroke()
+            }
           }
         }
 
