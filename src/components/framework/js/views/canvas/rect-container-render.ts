@@ -1,6 +1,5 @@
 import DDeiUtil from '../../util';
 import DDeiRectangleCanvasRender from './rectangle-render';
-import { Matrix3, Vector3 } from 'three';
 
 /**
  * DDeiRectContainer的渲染器类，用于渲染一个普通的容器
@@ -20,36 +19,35 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
 
 
     super.drawShape();
-    // //保存状态
-    // ctx.save();
-    // //设置旋转，以确保子图形元素都被旋转
-    // this.doRotate(ctx, ratPos);
+    //保存状态
+    ctx.save();
+    //设置旋转，以确保子图形元素都被旋转
+    this.doRotate(ctx, ratPos);
 
 
-    // //获取全局缩放比例
-    // let ratio = this.ddRender.ratio;
-    // //计算填充的原始区域
-    // let fillAreaE = this.getFillArea();
-    // //转换为缩放后的坐标
-    // ratPos = DDeiUtil.getRatioPosition(fillAreaE, ratio);
-    // //剪切当前区域
-    // // ctx.rect(ratPos.x, ratPos.y, ratPos.width, ratPos.height);
-    // // ctx.clip();
+    //获取全局缩放比例
+    let ratio = this.ddRender.ratio;
+    //计算填充的原始区域
+    let fillAreaE = this.getFillArea();
+    //转换为缩放后的坐标
+    ratPos = DDeiUtil.getRatioPosition(fillAreaE, ratio);
+    //剪切当前区域
+    ctx.rect(ratPos.x, ratPos.y, ratPos.width, ratPos.height);
+    ctx.clip();
 
     this.drawChildrenShapes();
 
 
-    this.pointVectors = null;
 
-    // ctx.restore();
+
+    ctx.restore();
   }
-
-
   /**
    * 绘制子元素
    */
   drawChildrenShapes(): void {
     if (this.model.models) {
+      console.log(this.model.models)
       //遍历子元素，绘制子元素
       this.model.midList.forEach(key => {
         let item = this.model.models.get(key);
