@@ -3,6 +3,7 @@ import DDeiStage from './stage'
 import DDeiLayer from './layer'
 import DDeiEnumControlState from '../enums/control-state'
 import DDeiUtil from '../util'
+import { Matrix3, Vector3 } from 'three';
 /**
  * 抽象的图形类，定义了大多数图形都有的属性和方法
  */
@@ -498,6 +499,57 @@ abstract class DDeiAbstractShape {
       rp.y1 = rp.y1 + mp.y
       return rp;
     }
+  }
+
+  /**
+   * 计算当前图形旋转后的顶点，根据位移以及层次管理
+   */
+  calRotatePointVectors(): void {
+
+    let pointVectors = [];
+    let centerPointVector = null;
+    let halfWidth = this.width * 0.5;
+    let halfHeight = this.height * 0.5;
+
+    if (!this.pointVectors || this.pointVectors?.length == 0) {
+      let absBoundsOrigin = this.getAbsBounds();
+      //顺序中心、上右下左,记录的是PC坐标
+      centerPointVector = new Vector3(absBoundsOrigin.x + this.width * 0.5, absBoundsOrigin.y + this.height * 0.5, 1);
+      let pv1 = new Vector3(centerPointVector.x - halfWidth, centerPointVector.y - halfHeight, 1);
+      let pv2 = new Vector3(centerPointVector.x + halfWidth, centerPointVector.y - halfHeight, 1);
+      let pv3 = new Vector3(centerPointVector.x + halfWidth, centerPointVector.y + halfHeight, 1);
+      let pv4 = new Vector3(centerPointVector.x - halfWidth, centerPointVector.y + halfHeight, 1);
+
+      pointVectors.push(pv1)
+      pointVectors.push(pv2)
+      pointVectors.push(pv3)
+      pointVectors.push(pv4)
+      this.pointVectors = pointVectors;
+      this.centerPointVector = centerPointVector;
+    }
+    pointVectors = this.pointVectors;
+    centerPointVector = this.centerPointVector;
+
+    //执行旋转
+    //合并旋转矩阵
+    let moveMatrix = new Matrix3(
+      1, 0, -centerPointVector.x,
+      0, 1, -centerPointVector.y,
+      0, 0, 1);
+    let angle = -(this.rotate ? this.rotate : 0) * DDeiConfig.ROTATE_UNIT
+    let rotateMatrix = new Matrix3(
+      Math.cos(angle), Math.sin(angle), 0,
+      -Math.sin(angle), Math.cos(angle), 0,
+      0, 0, 1);
+    let removeMatrix = new Matrix3(
+      1, 0, centerPointVector.x,
+      0, 1, centerPointVector.y,
+      0, 0, 1);
+    let m1 = new Matrix3().premultiply(moveMatrix).premultiply(rotateMatrix).premultiply(removeMatrix);
+    this.rotateMatrix = m1;
+    pointVectors.forEach(pv => {
+      pv.applyMatrix3(m1);
+    });
   }
 
   /**

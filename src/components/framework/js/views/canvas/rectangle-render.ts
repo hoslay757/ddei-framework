@@ -626,80 +626,9 @@ class DDeiRectangleCanvasRender {
    * 根据模型的值，设置旋转
    */
   doRotate(ctx, ratPos): void {
-
-    //设置旋转角度
-    if (this.model.rotate || true) {
-      //设置旋转矩阵,记录旋转后的点
-      if (!this.pointVectors || true) {
-        let parentModel = this.model.pModel;
-        if (!parentModel) {
-          if (!this.layer) {
-            return;
-          }
-          parentModel = this.layer;
-
-        }
-        //TODO 
-        if (parentModel == this.layer) {
-          parentModel.height = 600;
-          parentModel.y = 0;
-        }
-
-        let pointVectors = [];
-        let centerPointVector = null;
-        let halfWidth = this.model.width * 0.5;
-        let halfHeight = this.model.height * 0.5;
-        let absBoundsOrigin = this.model.getAbsBounds();
-
-        if (!this.pointVectors || this.pointVectors?.length == 0) {
-          //顺序中心、上右下左,记录的是PC坐标
-          centerPointVector = new Vector3(absBoundsOrigin.x + this.model.width * 0.5, absBoundsOrigin.y + this.model.height * 0.5, 1);
-          let pv1 = new Vector3(centerPointVector.x - halfWidth, centerPointVector.y - halfHeight, 1);
-          let pv2 = new Vector3(centerPointVector.x + halfWidth, centerPointVector.y - halfHeight, 1);
-          let pv3 = new Vector3(centerPointVector.x + halfWidth, centerPointVector.y + halfHeight, 1);
-          let pv4 = new Vector3(centerPointVector.x - halfWidth, centerPointVector.y + halfHeight, 1);
-
-          pointVectors.push(pv1)
-          pointVectors.push(pv2)
-          pointVectors.push(pv3)
-          pointVectors.push(pv4)
-          this.pointVectors = pointVectors;
-          this.centerPointVector = centerPointVector;
-        }
-        pointVectors = this.pointVectors;
-        centerPointVector = this.centerPointVector;
-
-        //执行旋转
-        //合并旋转矩阵
-        let moveMatrix = new Matrix3(
-          1, 0, -centerPointVector.x,
-          0, 1, -centerPointVector.y,
-          0, 0, 1);
-        let angle = -(this.model.rotate ? this.model.rotate : 0) * DDeiConfig.ROTATE_UNIT
-        let rotateMatrix = new Matrix3(
-          Math.cos(angle), Math.sin(angle), 0,
-          -Math.sin(angle), Math.cos(angle), 0,
-          0, 0, 1);
-        let removeMatrix = new Matrix3(
-          1, 0, centerPointVector.x,
-          0, 1, centerPointVector.y,
-          0, 0, 1);
-        let m1 = new Matrix3().premultiply(moveMatrix).premultiply(rotateMatrix).premultiply(removeMatrix);
-        this.m1 = m1;
-        this.m1Array = [moveMatrix, rotateMatrix, removeMatrix];
-        pointVectors.forEach(pv => {
-          pv.applyMatrix3(m1);
-        });
-
-
-
-      }
-
-
-      // ctx.translate(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5)
-      // ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
-      // ctx.translate(-ratPos.x - ratPos.width * 0.5, -ratPos.y - ratPos.height * 0.5)
-    }
+    ctx.translate(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5)
+    ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
+    ctx.translate(-ratPos.x - ratPos.width * 0.5, -ratPos.y - ratPos.height * 0.5)
   }
 
   /**

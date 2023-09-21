@@ -344,6 +344,62 @@ class DDeiRectContainer extends DDeiRectangle {
     }
     return true;
   }
+
+  /**
+    * 计算当前图形旋转后的顶点，根据位移以及层次管理
+    */
+  calRotatePointVectors(): void {
+    super.calRotatePointVectors();
+    this.calChildrenRotatePointVectors(this.rotateMatrix)
+  }
+
+  /**
+   * 计算子元素的点旋转后的坐标
+   * @param rotateMatrix 旋转矩阵 
+   */
+  calChildrenRotatePointVectors(rotateMatrix): void {
+    if (this.models) {
+      let parentCenterPointVector = this.centerPointVector;
+      this.midList.forEach(key => {
+        let item = this.models.get(key);
+        let halfWidth = item.width * 0.5;
+        let halfHeight = item.height * 0.5;
+        if (parentCenterPointVector) {
+          let vc, vc1, vc2, vc3, vc4;
+
+          if (item.pointVectors?.length > 0) {
+            vc = item.centerPointVector;
+            vc1 = item.pointVectors[0];
+            vc2 = item.pointVectors[1];
+            vc3 = item.pointVectors[2];
+            vc4 = item.pointVectors[3];
+          } else {
+            item.pointVectors = []
+            let absBoundsOrigin = item.getAbsBounds()
+            vc = new Vector3(absBoundsOrigin.x + halfWidth, absBoundsOrigin.y + halfHeight, 1);
+            vc1 = new Vector3(vc.x - halfWidth, vc.y - halfHeight, 1);
+            vc2 = new Vector3(vc.x + halfWidth, vc.y - halfHeight, 1);
+            vc3 = new Vector3(vc.x + halfWidth, vc.y + halfHeight, 1);
+            vc4 = new Vector3(vc.x - halfWidth, vc.y + halfHeight, 1);
+            item.pointVectors.push(vc1)
+            item.pointVectors.push(vc2)
+            item.pointVectors.push(vc3)
+            item.pointVectors.push(vc4)
+            item.centerPointVector = vc;
+          }
+          vc1.applyMatrix3(rotateMatrix);
+          vc2.applyMatrix3(rotateMatrix);
+          vc3.applyMatrix3(rotateMatrix);
+          vc4.applyMatrix3(rotateMatrix);
+          vc.applyMatrix3(rotateMatrix);
+        }
+        if (item.baseModelType == "DDeiContainer") {
+          item.calChildrenRotatePointVectors(rotateMatrix);
+        }
+      });
+    }
+
+  }
 }
 
 export default DDeiRectContainer

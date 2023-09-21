@@ -44,62 +44,6 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
     // ctx.restore();
   }
 
-  /**
-   * 处理自身的位移以及子元素的位移
-   */
-  doRotate(ctx, ratPos): void {
-    //以当前元素父元素为基准，沿自身圆心旋转
-    super.doRotate(ctx, ratPos)
-    //对所有子元素，沿自身圆心旋转
-    this.doSubRotate(ctx, this.m1, this.m1Array);
-
-  }
-
-  doSubRotate(ctx, m1, m1Array): void {
-    if (this.model.models) {
-      let parentCenterPointVector = this.centerPointVector;
-      let pHalfWidth = this.model.width * 0.5;
-      let pHalfHeight = this.model.height * 0.5;
-      this.model.midList.forEach(key => {
-        let item = this.model.models.get(key);
-        let halfWidth = item.width * 0.5;
-        let halfHeight = item.height * 0.5;
-        if (parentCenterPointVector) {
-          let vc, vc1, vc2, vc3, vc4;
-
-          if (item.render.pointVectors?.length > 0) {
-            vc = item.render.centerPointVector;
-            vc1 = item.render.pointVectors[0];
-            vc2 = item.render.pointVectors[1];
-            vc3 = item.render.pointVectors[2];
-            vc4 = item.render.pointVectors[3];
-          } else {
-            item.render.pointVectors = []
-            let absBoundsOrigin = item.getAbsBounds()
-            vc = new Vector3(absBoundsOrigin.x + halfWidth, absBoundsOrigin.y + halfHeight, 1);
-            vc1 = new Vector3(vc.x - halfWidth, vc.y - halfHeight, 1);
-            vc2 = new Vector3(vc.x + halfWidth, vc.y - halfHeight, 1);
-            vc3 = new Vector3(vc.x + halfWidth, vc.y + halfHeight, 1);
-            vc4 = new Vector3(vc.x - halfWidth, vc.y + halfHeight, 1);
-            item.render.pointVectors.push(vc1)
-            item.render.pointVectors.push(vc2)
-            item.render.pointVectors.push(vc3)
-            item.render.pointVectors.push(vc4)
-            item.render.centerPointVector = vc;
-          }
-          vc1.applyMatrix3(m1);
-          vc2.applyMatrix3(m1);
-          vc3.applyMatrix3(m1);
-          vc4.applyMatrix3(m1);
-          vc.applyMatrix3(m1);
-        }
-        if (item.baseModelType == "DDeiContainer") {
-          item.render.doSubRotate(ctx, m1, m1Array);
-        }
-      });
-    }
-
-  }
 
   /**
    * 绘制子元素
