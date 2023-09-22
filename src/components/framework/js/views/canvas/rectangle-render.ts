@@ -96,6 +96,25 @@ class DDeiRectangleCanvasRender {
 
     //绘制文本
     this.drawText();
+
+    //绘制临时线段创建点
+    if (this.tempV1) {
+      //获得 2d 上下文对象
+      let canvas = this.ddRender.canvas;
+      let ctx = canvas.getContext('2d');
+      //获取全局缩放比例
+      let ratio = this.ddRender.ratio;
+      //保存状态
+      ctx.save();
+      //设置字体颜色
+      ctx.fillStyle = "red"
+      //开始绘制  
+      ctx.beginPath();
+      ctx.ellipse(this.tempV1.x * ratio + 2, this.tempV1.y * ratio + 2, 10, 10, 0, 0, Math.PI * 2)
+      ctx.fill();
+      ctx.closePath();
+      ctx.restore()
+    }
     //清空旋转矩阵
     this.model.currentPointVectors = this.model.pointVectors;
     this.model.pointVectors = null;

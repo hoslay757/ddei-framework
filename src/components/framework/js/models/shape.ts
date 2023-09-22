@@ -31,8 +31,8 @@ abstract class DDeiAbstractShape {
     * @returns
     */
   static isInsidePolygon(polygon: object[], point: { x: number, y: number }): boolean {
-    var x = point.x, y = point.y;
-    var inside = false;
+    let x = point.x, y = point.y;
+    let inside = false;
     for (var i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
       var xi = polygon[i].x, yi = polygon[i].y;
       var xj = polygon[j].x, yj = polygon[j].y;

@@ -351,13 +351,13 @@ class DDeiSelector extends DDeiRectangle {
 
   /**
    * 判断图形是否在一个区域内，采用宽松的判定模式，允许传入一个大小值
-   * @param x
-   * @param y
+   * @param x0
+   * @param y0
    * @param looseWeight 宽松判定的宽度，默认0
    * @returns 是否在区域内
    */
-  isInAreaLoose(x: number | undefined = undefined, y: number | undefined = undefined, looseWeight: number = 0): boolean {
-    if (x === undefined || y === undefined) {
+  isInAreaLoose(x0: number | undefined = undefined, y0: number | undefined = undefined, looseWeight: number = 0): boolean {
+    if (x0 === undefined || y0 === undefined) {
       return false
     }
     //按照rotate对图形进行旋转，求的旋转后的四个点坐标
@@ -383,7 +383,7 @@ class DDeiSelector extends DDeiRectangle {
           { x: x1 + halfWidth, y: y - halfWidth },
           { x: x1 + halfWidth, y: y1 + halfWidth },
           { x: x - halfWidth, y: y1 + halfWidth },
-        ], { x: x, y: y });
+        ], { x: x0, y: y0 });
     }
 
 
