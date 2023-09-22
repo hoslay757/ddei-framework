@@ -199,13 +199,7 @@ class DDeiRectangleCanvasRender {
         ctx.strokeStyle = DDeiUtil.getColor(color);
         if (this.stage?.selectedModels?.size > 0 && this.model.baseModelType == "DDeiSelector") {
 
-          let pvs = null;
-          let models = Array.from(this.stage?.selectedModels?.values());
-          if (models.length == 1 && models[0].currentPointVectors?.length > 0) {
-            pvs = cloneDeep(models[0].currentPointVectors);
-          } else {
-            pvs = DDeiAbstractShape.getOutPV(models);
-          }
+          let pvs = this.model.currentPointVectors;
           if (i == 4) {
             ctx.moveTo(pvs[i - 1].x * ratio + lineOffset, pvs[i - 1].y * ratio + lineOffset);
             ctx.lineTo(pvs[0].x * ratio + lineOffset, pvs[0].y * ratio + lineOffset);

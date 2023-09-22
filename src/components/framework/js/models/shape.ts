@@ -494,23 +494,14 @@ abstract class DDeiAbstractShape {
    */
   getRotatedPoints(looseWeight: number = 0): object[] {
     //对当前图形，按照rotate进行旋转，求得新的四个点的位置
-    let ps = this.getPoints(looseWeight);
-    //TODO 多次旋转后的真实位移坐标
-    let absRotate = this.rotate
-    if (absRotate && absRotate != 0) {
-      let points = [];
-      //按圆心进行旋转rotate度，得到绘制出来的点位
-      //当前item的圆心
-      let occ = { x: this.x + this.width * 0.5, y: this.y + this.height * 0.5 };
-      ps.forEach(oldPoint => {
-        //已知圆心位置、起始点位置和旋转角度，求终点的坐标位置
-        let newPoint = DDeiUtil.computePosition(occ, oldPoint, absRotate);
-        points.push(newPoint);
-      })
-      return points;
+    let ps = null;
+    //对当前图形，按照rotate进行旋转，求得新的四个点的位置
+    if (this.currentPointVectors?.length > 0) {
+      ps = cloneDeep(this.currentPointVectors);
     } else {
-      return ps;
+      ps = this.getPoints(looseWeight);
     }
+    return ps;
   }
 
   /**

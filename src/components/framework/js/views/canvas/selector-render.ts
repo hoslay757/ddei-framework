@@ -56,6 +56,10 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     ctx.save();
     //设置旋转
     this.doRotate(ctx, ratPos);
+    let opvs = [null];
+    //操作图标的宽度
+    let width = DDeiConfig.SELECTOR.OPERATE_ICON.weight * ratio;
+    let halfWidth = width * 0.5;
     for (let i = 1; i <= 9; i++) {
       //如果被选中，使用选中的边框，否则使用缺省边框
       let disabled = null;
@@ -102,124 +106,74 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         let defaultFillColor = DDeiUtil.getColor(DDeiConfig.SELECTOR.OPERATE_ICON.FILL.default);
         ctx.fillStyle = defaultFillColor;
 
-        //操作图标的宽度
-        let width = DDeiConfig.SELECTOR.OPERATE_ICON.weight * ratio;
+
         //设置填充样式
         if (this.model.passIndex == i) {
           ctx.fillStyle = DDeiUtil.getColor(DDeiConfig.SELECTOR.OPERATE_ICON.FILL.pass);
         }
-        let pvs = null;
-        let models = Array.from(this.stage?.selectedModels?.values());
-        if (models.length == 1 && models[0].currentPointVectors?.length > 0) {
-          pvs = models[0].currentPointVectors;
-        } else {
-          pvs = DDeiAbstractShape.getOutPV(models);
-        }
+        let pvs = this.model.currentPointVectors;
         if (pvs?.length > 0) {
-          let helfWidth = width * 0.5;
+
           if (i == 1) {
-            ctx.strokeRect((pvs[0].x + pvs[1].x) / 2 * ratio - helfWidth + lineOffset, (pvs[0].y + pvs[1].y) / 2 * ratio - helfWidth + lineOffset, width, width);
-            ctx.fillRect((pvs[0].x + pvs[1].x) / 2 * ratio - helfWidth + lineOffset, (pvs[0].y + pvs[1].y) / 2 * ratio - helfWidth + lineOffset, width, width);
+            opvs[1] = { x: (pvs[0].x + pvs[1].x) / 2, y: (pvs[0].y + pvs[1].y) / 2 };
           } else if (i == 2) {
-            ctx.strokeRect(pvs[1].x * ratio - helfWidth - lineOffset, pvs[1].y * ratio - helfWidth + lineOffset, width, width);
-            ctx.fillRect(pvs[1].x * ratio - helfWidth - lineOffset, pvs[1].y * ratio - helfWidth + lineOffset, width, width);
+            opvs[2] = { x: pvs[1].x, y: pvs[1].y };
           } else if (i == 3) {
-            ctx.strokeRect((pvs[1].x + pvs[2].x) / 2 * ratio - helfWidth - lineOffset, (pvs[1].y + pvs[2].y) / 2 * ratio - helfWidth + lineOffset, width, width);
-            ctx.fillRect((pvs[1].x + pvs[2].x) / 2 * ratio - helfWidth - lineOffset, (pvs[1].y + pvs[2].y) / 2 * ratio - helfWidth + lineOffset, width, width);
+            opvs[3] = { x: (pvs[1].x + pvs[2].x) / 2, y: (pvs[1].y + pvs[2].y) / 2 };
           } else if (i == 4) {
-            ctx.strokeRect(pvs[2].x * ratio - helfWidth - lineOffset, pvs[2].y * ratio - helfWidth + lineOffset, width, width);
-            ctx.fillRect(pvs[2].x * ratio - helfWidth - lineOffset, pvs[2].y * ratio - helfWidth + lineOffset, width, width);
+            opvs[4] = { x: pvs[2].x, y: pvs[2].y };
           } else if (i == 5) {
-            ctx.strokeRect((pvs[2].x + pvs[3].x) / 2 * ratio - helfWidth + lineOffset, (pvs[2].y + pvs[3].y) / 2 * ratio - helfWidth + lineOffset, width, width);
-            ctx.fillRect((pvs[2].x + pvs[3].x) / 2 * ratio - helfWidth + lineOffset, (pvs[2].y + pvs[3].y) / 2 * ratio - helfWidth + lineOffset, width, width);
+            opvs[5] = { x: (pvs[2].x + pvs[3].x) / 2, y: (pvs[2].y + pvs[3].y) / 2 };
           } else if (i == 6) {
-            ctx.strokeRect(pvs[3].x * ratio - helfWidth - lineOffset, pvs[3].y * ratio - helfWidth + lineOffset, width, width);
-            ctx.fillRect(pvs[3].x * ratio - helfWidth - lineOffset, pvs[3].y * ratio - helfWidth + lineOffset, width, width);
+            opvs[6] = { x: pvs[3].x, y: pvs[3].y };
           } else if (i == 7) {
-            ctx.strokeRect((pvs[0].x + pvs[3].x) / 2 * ratio - helfWidth + lineOffset, (pvs[0].y + pvs[3].y) / 2 * ratio - helfWidth + lineOffset, width, width);
-            ctx.fillRect((pvs[0].x + pvs[3].x) / 2 * ratio - helfWidth + lineOffset, (pvs[0].y + pvs[3].y) / 2 * ratio - helfWidth + lineOffset, width, width);
+            opvs[7] = { x: (pvs[0].x + pvs[3].x) / 2, y: (pvs[0].y + pvs[3].y) / 2 };
           } else if (i == 8) {
-            ctx.strokeRect(pvs[0].x * ratio - helfWidth - lineOffset, pvs[0].y * ratio - helfWidth + lineOffset, width, width);
-            ctx.fillRect(pvs[0].x * ratio - helfWidth - lineOffset, pvs[0].y * ratio - helfWidth + lineOffset, width, width);
+            opvs[8] = { x: pvs[0].x, y: pvs[0].y };
           } else if (i == 9) {
             let v1 = new Vector3(pvs[1].x, pvs[1].y, 1);
-            let angle1 = new Vector3(1, 0, 0).angleTo(new Vector3(pvs[1].x, pvs[1].y, 0));
-            console.log("v1与坐标轴夹角：" + angle1);
             let moveMatrix = new Matrix3(
               1, 0, -(pvs[0].x + pvs[1].x) / 2,
               0, 1, -(pvs[0].y + pvs[1].y) / 2,
               0, 0, 1);
-            let angle = 90 * DDeiConfig.ROTATE_UNIT + angle1;
-
+            //归到原点，求夹角
+            v1.applyMatrix3(moveMatrix)
+            //基于构建一个向量，经过旋转90度+角度，再平移到目标位置
+            let angle1 = (new Vector3(1, 0, 0).angleTo(new Vector3(v1.x, v1.y, 0)) * 180 / Math.PI).toFixed(4);
+            v1 = new Vector3(20, 0, 1)
+            let angle = (90 * DDeiConfig.ROTATE_UNIT).toFixed(4) - (angle1 * DDeiConfig.ROTATE_UNIT).toFixed(4);
             let rotateMatrix = new Matrix3(
               Math.cos(angle), Math.sin(angle), 0,
               -Math.sin(angle), Math.cos(angle), 0,
               0, 0, 1);
+            v1.applyMatrix3(rotateMatrix);
             let removeMatrix = new Matrix3(
               1, 0, (pvs[0].x + pvs[1].x) / 2,
               0, 1, (pvs[0].y + pvs[1].y) / 2,
               0, 0, 1);
-            let m1 = new Matrix3().premultiply(rotateMatrix).premultiply(removeMatrix);
-            console.log("v1变换0：" + v1.x + " . " + v1.y);
-            v1.applyMatrix3(moveMatrix)
-            console.log("v1变换1：" + v1.x + " . " + v1.y);
-            v1.applyMatrix3(rotateMatrix)
-            console.log("v1变换2：" + v1.x + " . " + v1.y);
-            v1.applyMatrix3(removeMatrix)
-            console.log("v1变换3：" + v1.x + " . " + v1.y);
-            let v2 = new Vector3(0, 20, 1);
-            v2.applyMatrix3(m1);
+            v1.applyMatrix3(removeMatrix);
+            opvs[9] = v1;
             if (this.model.passIndex == i) {
               //填充一个圆形
-              ctx.ellipse((pvs[0].x + pvs[1].x) / 2 * ratio - helfWidth + lineOffset, (pvs[0].y + pvs[1].y) / 2 * ratio - helfWidth + lineOffset, width * 0.5, width * 0.5, 0, 0, Math.PI * 2)
+              ctx.ellipse(v1.x * ratio + lineOffset, v1.y * ratio + lineOffset, halfWidth, halfWidth, 0, 0, Math.PI * 2)
               ctx.fill();
             } else {
               //绘制旋转按钮
-              ctx.arc(v2.x * ratio - helfWidth + lineOffset, v2.y * ratio - helfWidth + lineOffset, width * 0.4, 50, Math.PI * 1.6)
+              ctx.arc(v1.x * ratio + lineOffset, v1.y * ratio + lineOffset, halfWidth, 50, Math.PI * 1.6)
               ctx.stroke()
             }
           }
-        } else {
-          if (i == 1) {
-            ctx.strokeRect(ratPos.x + ratPos.width * 0.5 - width * 0.5 + lineOffset, ratPos.y - width * 0.5 + lineOffset, width, width);
-            ctx.fillRect(ratPos.x + ratPos.width * 0.5 - width * 0.5 + lineOffset, ratPos.y - width * 0.5 + lineOffset, width, width);
-          } else if (i == 2) {
-            ctx.strokeRect(ratPos.x + ratPos.width - width * 0.5 - lineOffset, ratPos.y - width * 0.5 + lineOffset, width, width);
-            ctx.fillRect(ratPos.x + ratPos.width - width * 0.5 - lineOffset, ratPos.y - width * 0.5 + lineOffset, width, width);
-          } else if (i == 3) {
-            ctx.strokeRect(ratPos.x + ratPos.width - width * 0.5 - lineOffset, ratPos.y + ratPos.height * 0.5 - width * 0.5 + lineOffset, width, width);
-            ctx.fillRect(ratPos.x + ratPos.width - width * 0.5 - lineOffset, ratPos.y + ratPos.height * 0.5 - width * 0.5 + lineOffset, width, width);
-          } else if (i == 4) {
-            ctx.strokeRect(ratPos.x + ratPos.width - width * 0.5 - lineOffset, ratPos.y + ratPos.height - width * 0.5 - lineOffset, width, width);
-            ctx.fillRect(ratPos.x + ratPos.width - width * 0.5 - lineOffset, ratPos.y + ratPos.height - width * 0.5 - lineOffset, width, width);
-          } else if (i == 5) {
-            ctx.strokeRect(ratPos.x + ratPos.width * 0.5 - width * 0.5 + lineOffset, ratPos.y + ratPos.height - width * 0.5 - lineOffset, width, width);
-            ctx.fillRect(ratPos.x + ratPos.width * 0.5 - width * 0.5 + lineOffset, ratPos.y + ratPos.height - width * 0.5 - lineOffset, width, width);
-          } else if (i == 6) {
-            ctx.strokeRect(ratPos.x - width * 0.5 + lineOffset, ratPos.y + ratPos.height - width * 0.5 - lineOffset, width, width);
-            ctx.fillRect(ratPos.x - width * 0.5 + lineOffset, ratPos.y + ratPos.height - width * 0.5 - lineOffset, width, width);
-          } else if (i == 7) {
-            ctx.strokeRect(ratPos.x - width * 0.5 + lineOffset, ratPos.y + ratPos.height * 0.5 - width * 0.5 + lineOffset, width, width);
-            ctx.fillRect(ratPos.x - width * 0.5 + lineOffset, ratPos.y + ratPos.height * 0.5 - width * 0.5 + lineOffset, width, width);
-          } else if (i == 8) {
-            ctx.strokeRect(ratPos.x - width * 0.5 + lineOffset, ratPos.y - width * 0.5 + lineOffset, width, width);
-            ctx.fillRect(ratPos.x - width * 0.5 + lineOffset, ratPos.y - width * 0.5 + lineOffset, width, width);
-          } else if (i == 9) {
-            if (this.model.passIndex == i) {
-              //填充一个圆形
-              ctx.ellipse(ratPos.x + ratPos.width * 0.5 + lineOffset, ratPos.y - width * 2 + lineOffset, width * 0.5, width * 0.5, 0, 0, Math.PI * 2)
-              ctx.fill();
-            } else {
-              //绘制旋转按钮
-              ctx.arc(ratPos.x + ratPos.width * 0.5 + lineOffset, ratPos.y - width * 2 + lineOffset, width * 0.4, 50, Math.PI * 1.6)
-              ctx.stroke()
-            }
-          }
+        }
+        if (i >= 1 <= 8) {
+          ctx.ellipse(opvs[i].x * ratio + lineOffset, opvs[i].y * ratio + lineOffset, halfWidth, halfWidth, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
         }
 
       }
 
     }
+    this.model.currentOPVS = opvs;
     //恢复状态
     ctx.restore();
   }
@@ -377,76 +331,24 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
    * @param direct 
    */
   isIconOn(direct: number, x: number, y: number): boolean {
-    //当前模型的圆心
-    let occ = { x: this.model.x + this.model.width * 0.5, y: this.model.y + this.model.height * 0.5 };
-    let iconRect = null;
-    //判断当前坐标是否位于操作按钮上
-    if (direct == 1) {
-      //中上的图标矩阵
-      iconRect = {
-        x: this.model.x + this.model.width * 0.5 - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        y: this.model.y - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        width: DDeiConfig.SELECTOR.OPERATE_ICON.weight, height: DDeiConfig.SELECTOR.OPERATE_ICON.weight
-      };
-    } else if (direct == 2) {
-      iconRect = {
-        x: this.model.x + this.model.width - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        y: this.model.y - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        width: DDeiConfig.SELECTOR.OPERATE_ICON.weight, height: DDeiConfig.SELECTOR.OPERATE_ICON.weight
-      }
-    } else if (direct == 3) {
-      iconRect = {
-        x: this.model.x + this.model.width - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        y: this.model.y + this.model.height * 0.5 - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        width: DDeiConfig.SELECTOR.OPERATE_ICON.weight, height: DDeiConfig.SELECTOR.OPERATE_ICON.weight
-      }
-    } else if (direct == 4) {
-      iconRect = {
-        x: this.model.x + this.model.width - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        y: this.model.y + this.model.height - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        width: DDeiConfig.SELECTOR.OPERATE_ICON.weight, height: DDeiConfig.SELECTOR.OPERATE_ICON.weight
-      }
-    } else if (direct == 5) {
-      iconRect = {
-        x: this.model.x + this.model.width * 0.5 - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        y: this.model.y + this.model.height - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        width: DDeiConfig.SELECTOR.OPERATE_ICON.weight, height: DDeiConfig.SELECTOR.OPERATE_ICON.weight
-      }
-    } else if (direct == 6) {
-      iconRect = {
-        x: this.model.x - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        y: this.model.y + this.model.height - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        width: DDeiConfig.SELECTOR.OPERATE_ICON.weight, height: DDeiConfig.SELECTOR.OPERATE_ICON.weight
-      }
-    } else if (direct == 7) {
-      iconRect = {
-        x: this.model.x - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        y: this.model.y + this.model.height * 0.5 - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        width: DDeiConfig.SELECTOR.OPERATE_ICON.weight, height: DDeiConfig.SELECTOR.OPERATE_ICON.weight
-      }
-    } else if (direct == 8) {
-      iconRect = {
-        x: this.model.x - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        y: this.model.y - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        width: DDeiConfig.SELECTOR.OPERATE_ICON.weight, height: DDeiConfig.SELECTOR.OPERATE_ICON.weight
-      }
-    } else if (direct == 9) {
-      iconRect = {
-        x: this.model.x + this.model.width * 0.5 - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 0.5,
-        y: this.model.y - DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2.5,
-        width: DDeiConfig.SELECTOR.OPERATE_ICON.weight, height: DDeiConfig.SELECTOR.OPERATE_ICON.weight
+    if (this.model?.currentOPVS[direct]) {
+      let pv = this.model.currentOPVS[direct];
+      if (pv) {
+        //操作图标的宽度
+        //获取全局缩放比例
+        let width = DDeiConfig.SELECTOR.OPERATE_ICON.weight;
+        let halfWidth = width * 0.5;
+        return DDeiAbstractShape.isInsidePolygon(
+          [
+            { x: pv.x - halfWidth, y: pv.y - halfWidth },
+            { x: pv.x + halfWidth, y: pv.y - halfWidth },
+            { x: pv.x + halfWidth, y: pv.y + halfWidth },
+            { x: pv.x - halfWidth, y: pv.y + halfWidth }
+          ]
+          , { x: x, y: y });
       }
     }
-    if (!iconRect) {
-      return false;
-    }
-    //对所有选中图形进行位移并旋转
-    let rcc = { x: iconRect.x + iconRect.width * 0.5, y: iconRect.y + iconRect.height * 0.5 };
-    //已知圆心位置、起始点位置和旋转角度，求终点的坐标位置，坐标系为笛卡尔坐标系，计算机中y要反转计算
-    let dcc = DDeiUtil.computePosition(occ, rcc, this.model.rotate);
-    iconRect.x = dcc.x - iconRect.width * 0.5
-    iconRect.y = dcc.y - iconRect.height * 0.5
-    return DDeiAbstractShape.isInsidePolygon(DDeiAbstractShape.getRotatedPoints(iconRect, this.model.rotate), { x: x, y: y });
+    return false;
   }
 }
 

@@ -4,7 +4,7 @@ import DDeiEnumControlState from '../enums/control-state';
 import DDeiUtil from '../util';
 import DDeiRectangle from './rectangle';
 import DDeiAbstractShape from './shape';
-import { cloneDeep } from 'lodash'
+import _, { cloneDeep } from 'lodash'
 
 /**
  * selector选择器，用来选择界面上的控件，选择器不是一个实体控件,不会被序列化
@@ -338,6 +338,59 @@ class DDeiSelector extends DDeiRectangle {
   }
 
   /**
+   * 获取旋转后的点集合
+   * @param looseWeight 宽松的判断矩阵
+   */
+  getRotatedPoints(looseWeight: number = 0): object[] {
+    let ps = null;
+    if (this.currentPointVectors?.length > 0) {
+      ps = [this.currentPointVectors[0], this.currentOPVS[9], this.currentPointVectors[1], this.currentPointVectors[2], this.currentPointVectors[3]]
+    }
+    return ps;
+  }
+
+  /**
+   * 判断图形是否在一个区域内，采用宽松的判定模式，允许传入一个大小值
+   * @param x
+   * @param y
+   * @param looseWeight 宽松判定的宽度，默认0
+   * @returns 是否在区域内
+   */
+  isInAreaLoose(x: number | undefined = undefined, y: number | undefined = undefined, looseWeight: number = 0): boolean {
+    if (x === undefined || y === undefined) {
+      return false
+    }
+    //按照rotate对图形进行旋转，求的旋转后的四个点坐标
+    //遍历所有点，求得最大、最小的x、y
+    if (this.currentOPVS?.length > 0) {
+      //操作图标的宽度
+      //获取全局缩放比例
+      let width = DDeiConfig.SELECTOR.OPERATE_ICON.weight;
+      let halfWidth = width * 0.5;
+      let x: number = Infinity, y: number = Infinity, x1: number = 0, y1: number = 0;
+      //找到最大、最小的x和y
+      this.currentOPVS.forEach(p => {
+        if (p) {
+          x = Math.min(Math.floor(p.x), x)
+          x1 = Math.max(Math.floor(p.x), x1)
+          y = Math.min(Math.floor(p.y), y)
+          y1 = Math.max(Math.floor(p.y), y1)
+        }
+      })
+      return DDeiAbstractShape.isInsidePolygon(
+        [
+          { x: x - halfWidth, y: y - halfWidth },
+          { x: x1 + halfWidth, y: y - halfWidth },
+          { x: x1 + halfWidth, y: y1 + halfWidth },
+          { x: x - halfWidth, y: y1 + halfWidth },
+        ], { x: x, y: y });
+    }
+
+
+    return false;
+  }
+
+  /**
    * 根据已选择的控件更新坐标和状态
    * @param pContainerModel 上层容器控件
    */
@@ -358,7 +411,29 @@ class DDeiSelector extends DDeiRectangle {
       }
       //计算多个图形的顶点最大范围，根据顶点范围构建一个最大的外接矩形，规则的外接矩形，可以看作由4个顶点构成的图形
       let outRectBounds = DDeiAbstractShape.getOutRectByPV(models);
+      let pvs = null;
+      if (models.length == 1 && models[0].currentPointVectors?.length > 0) {
+        pvs = cloneDeep(models[0].currentPointVectors);
+      } else {
+        pvs = DDeiAbstractShape.getOutPV(models);
+        let paddingWeight = 0;
+        let paddingWeightInfo = this.paddingWeight?.selected ? this.paddingWeight.selected : DDeiConfig.SELECTOR.PADDING_WEIGHT.selected;
+        if (models.length > 1) {
+          paddingWeight = paddingWeightInfo.multiple;
+        } else {
+          paddingWeight = paddingWeightInfo.single;
+        }
+        pvs[0].x -= paddingWeight
+        pvs[0].y -= paddingWeight
+        pvs[1].x += paddingWeight
+        pvs[1].y -= paddingWeight
+        pvs[2].x += paddingWeight
+        pvs[2].y += paddingWeight
+        pvs[3].x -= paddingWeight
+        pvs[3].y += paddingWeight
 
+      }
+      this.currentPointVectors = pvs;
 
       this.setBounds(outRectBounds.x - paddingWeight, outRectBounds.y - paddingWeight, outRectBounds.width + 2 * paddingWeight, outRectBounds.height + 2 * paddingWeight);
 
