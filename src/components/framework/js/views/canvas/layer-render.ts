@@ -1015,91 +1015,105 @@ class DDeiLayerCanvasRender {
           //派发给selector的mousemove事件，在事件中对具体坐标进行判断
           this.stageRender.selector.render.mouseMove(evt);
         }
-        else {
 
-          let x0 = evt.offsetX;
-          let y0 = evt.offsetY;
 
-          //判断鼠标是否在某个控件的范围内 TODO 暂时判断全部控件
-          for (let i = 0; i < this.model.midList.length; i++) {
-            let model = this.model.models.get(this.model.midList[i]);
-            if (model?.currentPointVectors?.length > 0) {
-              let st, en;
-              for (let j = 0; j < model.currentPointVectors.length; j++) {
-                //点到直线的距离
-                let plLength = Infinity;
-                if (j == model.currentPointVectors.length - 1) {
-                  st = j;
-                  en = 0;
-                } else {
-                  st = j;
-                  en = j + 1;
+        let x0 = evt.offsetX;
+        let y0 = evt.offsetY;
+
+        //判断鼠标是否在某个控件的范围内 TODO 暂时判断全部控件
+        for (let i = 0; i < this.model.midList.length; i++) {
+          let model = this.model.models.get(this.model.midList[i]);
+          if (model?.currentPointVectors?.length > 0) {
+            let st, en;
+            for (let j = 0; j < model.currentPointVectors.length; j++) {
+              //点到直线的距离
+              let plLength = Infinity;
+              if (j == model.currentPointVectors.length - 1) {
+                st = j;
+                en = 0;
+              } else {
+                st = j;
+                en = j + 1;
+              }
+              let x1 = model.currentPointVectors[st].x;
+              let y1 = model.currentPointVectors[st].y;
+              let x2 = model.currentPointVectors[en].x;
+              let y2 = model.currentPointVectors[en].y;
+              //获取控件所有向量
+              if (x1 == x2 && y1 == y2) {
+                plLength = Math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0))
+              } else {
+                //根据向量外积计算面积
+                let s = (x0 - x1) * (y2 - y1) - (y0 - y1) * (x2 - x1)
+                //计算直线上两点之间的距离
+                let d = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+                plLength = s / d
+              }
+              //plLength > 0时，方向向外
+              if (plLength > -5 && plLength <= 20) {
+                //进一步判断：1.点的投影是否在线段中间，2点的投影的坐标位置
+                //A.求得线向量与直角坐标系的夹角
+                let lineV = new Vector3(x2, y2, 1);
+                let pointV = new Vector3(x0, y0, 1);
+                let toZeroMatrix = new Matrix3(
+                  1, 0, -x1,
+                  0, 1, -y1,
+                  0, 0, 1);
+                //归到原点，求夹角
+                lineV.applyMatrix3(toZeroMatrix)
+                pointV.applyMatrix3(toZeroMatrix)
+
+                let lineAngle = (new Vector3(1, 0, 0).angleTo(new Vector3(lineV.x, lineV.y, 0)) * 180 / Math.PI).toFixed(4);
+
+                //判断移动后的线属于第几象限
+                //B.构建旋转矩阵。旋转linvV和pointV
+                let angle = 0;
+                if (lineV.x >= 0 && lineV.y >= 0) {
+                  angle = (lineAngle * DDeiConfig.ROTATE_UNIT).toFixed(4);
+                } else if (lineV.x <= 0 && lineV.y >= 0) {
+                  angle = (lineAngle * DDeiConfig.ROTATE_UNIT).toFixed(4);
+                } else if (lineV.x <= 0 && lineV.y <= 0) {
+                  angle = (- lineAngle * DDeiConfig.ROTATE_UNIT).toFixed(4);
+                } else if (lineV.x >= 0 && lineV.y <= 0) {
+                  angle = ((- lineAngle) * DDeiConfig.ROTATE_UNIT).toFixed(4);
                 }
-                let x1 = model.currentPointVectors[st].x;
-                let y1 = model.currentPointVectors[st].y;
-                let x2 = model.currentPointVectors[en].x;
-                let y2 = model.currentPointVectors[en].y;
-                //获取控件所有向量
-                if (x1 == x2 && y1 == y2) {
-                  plLength = Math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0))
-                } else {
-                  //根据向量外积计算面积
-                  let s = (x0 - x1) * (y2 - y1) - (y0 - y1) * (x2 - x1)
-                  //计算直线上两点之间的距离
-                  let d = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
-                  plLength = Math.abs(s / d)
-                }
-                if (plLength <= 30) {
-                  //进一步判断：1.点的投影是否在线段中间，2点的投影的坐标位置
-                  //A.求得线向量与直角坐标系的夹角
-                  let lineV = new Vector3(x2, y2, 1);
-                  let pointV = new Vector3(x0, x0, 1);
-                  let toZeroMatrix = new Matrix3(
-                    1, 0, -x1,
-                    0, 1, -y1,
-                    0, 0, 1);
-                  //归到原点，求夹角
-                  lineV.applyMatrix3(toZeroMatrix)
-                  pointV.applyMatrix3(toZeroMatrix)
-                  let lineAngle = (new Vector3(1, 0, 0).angleTo(new Vector3(lineV.x, lineV.y, 0)) * 180 / Math.PI).toFixed(4);
-                  //B.构建旋转矩阵。旋转linvV和pointV
-                  let angle = -(lineAngle * DDeiConfig.ROTATE_UNIT).toFixed(4);
+                let rotateMatrix = new Matrix3(
+                  Math.cos(angle), Math.sin(angle), 0,
+                  -Math.sin(angle), Math.cos(angle), 0,
+                  0, 0, 1);
+                lineV.applyMatrix3(rotateMatrix);
+                pointV.applyMatrix3(rotateMatrix);
+
+                //C.判断两个向量的关系，pointV.x必须大于0，且小于lineV.x
+                if (pointV.x >= 0 && pointV.x <= lineV.x) {
+                  //D.投影点=（pointV.x,0)，通过旋转+位移到达目标点
+                  let v1 = new Vector3(pointV.x, 0, 1);
+                  angle = -angle;
                   let rotateMatrix = new Matrix3(
                     Math.cos(angle), Math.sin(angle), 0,
                     -Math.sin(angle), Math.cos(angle), 0,
                     0, 0, 1);
-                  lineV.applyMatrix3(rotateMatrix);
-                  pointV.applyMatrix3(rotateMatrix);
-                  //C.判断两个向量的关系，pointV.x必须大于0，且小于lineV.x
-                  if (pointV.x > 0 && pointV.x < lineV.x) {
-                    //D.投影点=（pointV.x,0)，通过旋转+位移到达目标点
-                    let v1 = new Vector3(pointV.x, 0, 1);
-                    let rotateMatrix = new Matrix3(
-                      Math.cos(angle), Math.sin(angle), 0,
-                      -Math.sin(angle), Math.cos(angle), 0,
-                      0, 0, 1);
-                    v1.applyMatrix3(rotateMatrix);
-                    let removeMatrix = new Matrix3(
-                      1, 0, x1,
-                      0, 1, y1,
-                      0, 0, 1);
-                    v1.applyMatrix3(removeMatrix);
-                    console.log("控件：" + model.id + "向量：" + j + "投影点：" + v1.x + " .  " + v1.y);
-                    //绘制投影点
-                    model.render.tempV1 = v1;
-                    //渲染图形
-                    this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
-                    break;
+                  v1.applyMatrix3(rotateMatrix);
+                  let removeMatrix = new Matrix3(
+                    1, 0, x1,
+                    0, 1, y1,
+                    0, 0, 1);
+                  v1.applyMatrix3(removeMatrix);
+                  //绘制投影点
+                  model.render.tempV1 = v1;
+                  //渲染图形
+                  this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+                  break;
 
-                  }
                 }
               }
-
             }
+
           }
-          //恢复鼠标等状态
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
         }
+        //恢复鼠标等状态
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
+
         break;
       }
     }
