@@ -140,8 +140,22 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
             v1.applyMatrix3(moveMatrix)
             //基于构建一个向量，经过旋转90度+角度，再平移到目标位置
             let angle1 = (new Vector3(1, 0, 0).angleTo(new Vector3(v1.x, v1.y, 0)) * 180 / Math.PI).toFixed(4);
+
+            //判断移动后的线属于第几象限
+            //B.构建旋转矩阵。旋转linvV和pointV
+            let angle = 0;
+            if (v1.x >= 0 && v1.y >= 0) {
+              angle = (angle1 * DDeiConfig.ROTATE_UNIT).toFixed(4);
+            } else if (v1.x <= 0 && v1.y >= 0) {
+              angle = (angle1 * DDeiConfig.ROTATE_UNIT).toFixed(4);
+            } else if (v1.x <= 0 && v1.y <= 0) {
+              angle = (- angle1 * DDeiConfig.ROTATE_UNIT).toFixed(4);
+            } else if (v1.x >= 0 && v1.y <= 0) {
+              angle = ((- angle1) * DDeiConfig.ROTATE_UNIT).toFixed(4);
+            }
+            angle = (90 * DDeiConfig.ROTATE_UNIT).toFixed(4) - angle
             v1 = new Vector3(20, 0, 1)
-            let angle = (90 * DDeiConfig.ROTATE_UNIT).toFixed(4) - (angle1 * DDeiConfig.ROTATE_UNIT).toFixed(4);
+
             let rotateMatrix = new Matrix3(
               Math.cos(angle), Math.sin(angle), 0,
               -Math.sin(angle), Math.cos(angle), 0,
