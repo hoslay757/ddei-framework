@@ -111,7 +111,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         if (this.model.passIndex == i) {
           ctx.fillStyle = DDeiUtil.getColor(DDeiConfig.SELECTOR.OPERATE_ICON.FILL.pass);
         }
-        let pvs = this.model.currentPointVectors;
+        let pvs = this.model?.currentPointVectors;
         if (pvs?.length > 0) {
 
           if (i == 1) {

@@ -428,7 +428,6 @@ class DDeiSelector extends DDeiRectangle {
 
       }
       this.currentPointVectors = pvs;
-
       this.setBounds(outRectBounds.x - paddingWeight, outRectBounds.y - paddingWeight, outRectBounds.width + 2 * paddingWeight, outRectBounds.height + 2 * paddingWeight);
 
       //设置选择器状态为选中后
