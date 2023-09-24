@@ -7,6 +7,28 @@ import DDeiRectangle from './rectangle'
  */
 class DDeiDiamond extends DDeiRectangle {
 
+  /**
+  * 计算当前图形旋转后的顶点，根据位移以及层次管理
+  */
+  calRotatePointVectors(): void {
+
+    super.calRotatePointVectors();
+    let pv = []
+    for (let i = 0; i < this.pointVectors.length; i++) {
+      let s = null;
+      let e = null;
+      if (i == this.pointVectors.length - 1) {
+        s = this.pointVectors[i];
+        e = this.pointVectors[0];
+      } else {
+        s = this.pointVectors[i];
+        e = this.pointVectors[i + 1];
+      }
+      let p = { x: (s.x + e.x) / 2, y: (s.y + e.y) / 2 }
+      pv.push(p);
+    }
+    this.pointVectors = pv;
+  }
   // ============================ 静态方法 ============================
 
   // 通过一个JSON反向序列化成对象，模型数据与JSON完全一样

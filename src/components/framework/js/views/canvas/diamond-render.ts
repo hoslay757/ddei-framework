@@ -20,6 +20,10 @@ class DDeiDiamondCanvasRender extends DDeiRectangleCanvasRender {
   * 创建图形
   */
   drawShape(): void {
+
+    //计算旋转矩阵
+    this.model.calRotatePointVectors();
+
     //绘制边框
     this.drawBorderAndFill();
 
@@ -29,6 +33,9 @@ class DDeiDiamondCanvasRender extends DDeiRectangleCanvasRender {
     //绘制文本
     this.drawText();
 
+    //清空旋转矩阵
+    this.model.currentPointVectors = this.model.pointVectors;
+    this.model.pointVectors = null;
   }
 
   /**

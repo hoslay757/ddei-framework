@@ -11,8 +11,6 @@ import DDeiStage from '../../models/stage.js';
 import DDeiUtil from '../../util.js'
 import DDeiCanvasRender from './ddei-render.js';
 import DDeiStageCanvasRender from './stage-render.js';
-import { Matrix3, Vector3 } from 'three';
-import { xor } from 'lodash';
 
 /**
  * DDeiLayer的渲染器类，用于渲染文件
@@ -51,6 +49,8 @@ class DDeiLayerCanvasRender {
    */
   helpLines: object = {};
 
+
+
   // ============================ 方法 ===============================
   /**
    * 初始化
@@ -72,6 +72,9 @@ class DDeiLayerCanvasRender {
       //绘制子元素
       this.drawChildrenShapes();
 
+      //绘制操作点
+      this.drawOpPoints();
+
       //绘制辅助线
       if (this.helpLines && this.helpLines.bounds && this.helpLines.models) {
         this.drawHelpLines(this.helpLines.bounds, this.helpLines.models)
@@ -79,195 +82,9 @@ class DDeiLayerCanvasRender {
       }
 
     }
-    // TODO DEMO测试矩阵变换
-    //获得 2d 上下文对象
-    // let canvas = this.ddRender.canvas;
-    // let ctx = canvas.getContext('2d');
-    // //创建一个图像区域
-    // let areaW = 1000, areaH = 1000;
-    // let imgData = ctx.createImageData(areaW, areaH);
-    // //获取图像区域中的像素数据
-    // //r g b a
-    // let rowOffset = 4 * areaW;
-    // let colOffset = 4;
-    // let startI = 0;
-    // for (let i = 0; i < areaW; i++) {
-    //   for (let j = 0; j < areaH; j++) {
-    //     if (i == areaW / 2 || j == areaH / 2) {
-    //       imgData.data[startI + (rowOffset * i) + (j * colOffset) + 0] = 0;
-    //       imgData.data[startI + (rowOffset * i) + (j * colOffset) + 1] = 0;
-    //       imgData.data[startI + (rowOffset * i) + (j * colOffset) + 2] = 0;
-    //       imgData.data[startI + (rowOffset * i) + (j * colOffset) + 3] = 255;
-    //     } else {
-    //       imgData.data[startI + (rowOffset * i) + (j * colOffset) + 0] = 255;
-    //       imgData.data[startI + (rowOffset * i) + (j * colOffset) + 1] = 0;
-    //       imgData.data[startI + (rowOffset * i) + (j * colOffset) + 2] = 0;
-    //       imgData.data[startI + (rowOffset * i) + (j * colOffset) + 3] = 100;
-    //     }
-
-    //   }
-
-    // }
-    // //在电脑坐标系下有一个点位置在100，100
-    // {
-    //   //旋转
-    //   let rect = [
-    //     { x: 200, y: 200, w: 200 }]
-    //   this.testPrint(rect, imgData, areaW, 0, 255, 0, 255);
-    //   let rectPoint1 = new Vector3(rect[0].x, rect[0].y, 1);
-    //   let rectPoint2 = new Vector3(rect[0].x, rect[0].y, 1);
-    //   //变换坐标系到笛卡尔坐标
-    //   let dkrTransMatrix = new Matrix3(
-    //     1, 0, 0,
-    //     0, -1, areaH,
-    //     0, 0, 1);
-    //   rectPoint1.applyMatrix3(dkrTransMatrix);
-    //   rectPoint2.applyMatrix3(dkrTransMatrix);
-    //   console.log("坐标系切换：" + rectPoint1.x + " . " + rectPoint1.y)
-    //   //左上角的点，移动旋转再移动
-    //   let moveMatrix = new Matrix3(
-    //     1, 0, -rectPoint1.x - rect[0].w / 2,
-    //     0, 1, -rectPoint1.y + rect[0].w / 2,
-    //     0, 0, 1);
-
-    //   const angle = Math.PI / 180 * 10;
-    //   let rotateMatrix = new Matrix3(
-    //     Math.cos(angle), -Math.sin(angle), 0,
-    //     Math.sin(angle), Math.cos(angle), 0,
-    //     0, 0, 1);
-
-    //   let removeMatrix = new Matrix3(
-    //     1, 0, rectPoint1.x + rect[0].w / 2,
-    //     0, 1, rectPoint1.y - rect[0].w / 2,
-    //     0, 0, 1);
-    //   rectPoint1 = rectPoint1.applyMatrix3(moveMatrix);
-    //   console.log("移动：" + rectPoint1.x + " . " + rectPoint1.y)
-    //   rectPoint1.applyMatrix3(rotateMatrix);
-    //   console.log("旋转：" + rectPoint1.x + " . " + rectPoint1.y)
-    //   rectPoint1.applyMatrix3(removeMatrix);
-    //   console.log("再移动：" + rectPoint1.x + " . " + rectPoint1.y)
-
-    //   let redkrTransMatrix = new Matrix3(
-    //     1, 0, 0,
-    //     0, -1, areaH,
-    //     0, 0, 1);
-    //   rectPoint1.applyMatrix3(redkrTransMatrix);
-    //   console.log("变换回PC坐标：" + rectPoint1.x + " . " + rectPoint1.y)
-
-    //   //第二种方式，矩阵连乘
-    //   // console.log("矩阵2：" + rectPoint2.x + " . " + rectPoint2.y)
-    //   // // let m1 = new Matrix3().multiply(removeMatrix).multiply(rotateMatrix).multiply(moveMatrix);
-    //   // //采用前乘
-    //   // let m1 = new Matrix3().premultiply(moveMatrix).premultiply(rotateMatrix).premultiply(removeMatrix);
-    //   // rectPoint2.applyMatrix3(m1);
-    //   // console.log("矩阵2连续操作：" + rectPoint2.x + " . " + rectPoint2.y)
-
-    //   rect = [
-    //     { x: Math.floor(rectPoint1.x), y: Math.floor(rectPoint1.y), w: 200 }]
-    //   this.testPrint(rect, imgData, areaW, 0, 110, 0, 255, angle);
-
-    //   //计算夹角v1到v2看做一条直线
-    //   let v1 = new Vector3(100, 100, 1);
-
-    //   let v2 = new Vector3(160, 160, 1);
-    //   let v3 = new Vector3(140, 110, 1);
-
-    //   let v4 = new Vector3(160, 160, 1);
-    //   let v5 = new Vector3(140, 110, 1);
-    //   let moveV1Matrix = new Matrix3(
-    //     1, 0, -v1.x,
-    //     0, 1, -v1.y,
-    //     0, 0, 1);
-    //   //将v1看作原点，平移v2和v3
-    //   v2.applyMatrix3(moveV1Matrix)
-    //   v3.applyMatrix3(moveV1Matrix)
-    //   console.log(v2.angleTo(v3) * 180 / Math.PI);
-    //   let v41 = v4.clone().sub(v1);
-    //   console.log(v41);
-    //   let v51 = v5.clone().sub(v1);
-    //   console.log(v41.angleTo(v51) * 180 / Math.PI);
-
-    // }
-    // //将红色区域看作笛卡尔坐标系区域，变换坐标系
-    // //电脑坐标系到笛卡尔坐标系转换矩阵,(y=-h)
-    // let dkrTransMatrix = new Matrix3(
-    //   1, 0, 0,
-    //   0, -1, 0,
-    //   0, 0, 1);
-    // let moveMatrix = new Matrix3(
-    //   1, 0, areaW / 2,
-    //   0, 1, -areaH / 2,
-    //   0, 0, 1);
-    // //笛卡尔坐标系中旋转矩阵
-    // const angle = Math.PI / 180 * 10;
-    // let rotateMatrix = new Matrix3(
-    //   Math.cos(angle), -Math.sin(angle), 0,
-    //   Math.sin(angle), Math.cos(angle), 0,
-    //   0, 0, 1);
-
-    // //将矩形的点变换到笛卡尔坐标系,(100,100)
-    // let rectPoint1 = new Vector3(rect[0].x, rect[0].y, 1);
-    // console.log(rectPoint1.applyMatrix3(rotateMatrix));
-    // console.log(rectPoint1.applyMatrix3(rotateMatrix));
-    // console.log(rectPoint1.applyMatrix3(new Matrix3().multiplyMatrices(dkrTransMatrix, moveMatrix)));
-    // rect = [
-    //   { x: Math.floor(rectPoint1.x), y: Math.floor(rectPoint1.y), w: 30 }]
-    // this.testPrint(rect, imgData, areaW, 0, 0, 255, 255);
-
-
-    // //旋转角度
-    // for (let x = 0; x < 180; x = x + 10) {
-    //   console.log(rectPoint1.applyMatrix3(rotateMatrix));
-    //   //再次输出矩形
-    //   rect = [
-    //     { x: Math.floor(rectPoint1.x), y: Math.floor(rectPoint1.y), w: 30 }]
-    //   this.testPrint(rect, imgData, areaW, 100, 100, 100, 255);
-    // }
-    //逆向恢复原始坐标
-    // rectPoint1.applyMatrix3(new Matrix3(
-    //   1, 0, 0,
-    //   Math.sin(angle), Math.cos(angle), 0,
-    //   0, 0, 1))
-
-
-    //绘制像素到画布上
-    // ctx.putImageData(imgData, 100, 100);
   }
 
-  // testPrint(rect, imgData, areaW, r, g, b, a, angle = 0) {
-  //   //计算旋转后的像素点
-  //   if (angle != 0) {
-  //     rect.forEach(point => {
-  //       let rowOffset = 4 * areaW;
-  //       let colOffset = 4;
-  //       let startI = (point.x - point.w / 2) * 4 + areaW * (point.y - point.w / 2) * 4;
-  //       //按行输出
-  //       for (let i = 0; i < point.w; i++) {
-  //         for (let j = 0; j < point.w; j++) {
-  //           imgData.data[startI + (rowOffset * i) + (j * colOffset) + 0] = r;
-  //           imgData.data[startI + (rowOffset * i) + (j * colOffset) + 1] = g;
-  //           imgData.data[startI + (rowOffset * i) + (j * colOffset) + 2] = b;
-  //           imgData.data[startI + (rowOffset * i) + (j * colOffset) + 3] = a;
-  //         }
-  //       }
-  //     });
-  //   } else {
-  //     rect.forEach(point => {
-  //       let rowOffset = 4 * areaW;
-  //       let colOffset = 4;
-  //       let startI = (point.x - point.w / 2) * 4 + areaW * (point.y - point.w / 2) * 4;
-  //       //按行输出
-  //       for (let i = 0; i < point.w; i++) {
-  //         for (let j = 0; j < point.w; j++) {
-  //           imgData.data[startI + (rowOffset * i) + (j * colOffset) + 0] = r;
-  //           imgData.data[startI + (rowOffset * i) + (j * colOffset) + 1] = g;
-  //           imgData.data[startI + (rowOffset * i) + (j * colOffset) + 2] = b;
-  //           imgData.data[startI + (rowOffset * i) + (j * colOffset) + 3] = a;
-  //         }
-  //       }
-  //     });
-  //   }
-  // }
+
 
 
   /**
@@ -363,6 +180,35 @@ class DDeiLayerCanvasRender {
         let item = this.model.models.get(key);
         item.render.drawShape();
       });
+    }
+  }
+
+  /**
+   * 绘制操作点
+   */
+  drawOpPoints(): void {
+    if (this.model?.opPoints?.length > 0) {
+      //获得 2d 上下文对象
+      let canvas = this.ddRender.canvas;
+      let ctx = canvas.getContext('2d');
+      //获取全局缩放比例
+      let ratio = this.ddRender.ratio;
+      //保存状态
+      ctx.save();
+      this.model?.opPoints.forEach(point => {
+        //设置字体颜色
+        ctx.fillStyle = "red"
+        //开始绘制  
+        let lineOffset = 1 * ratio / 2;
+        ctx.beginPath();
+        ctx.ellipse(point.x * ratio + lineOffset, point.y * ratio + lineOffset, 10, 10, 0, 0, Math.PI * 2)
+        ctx.fill();
+        ctx.closePath();
+      });
+
+
+      //恢复状态
+      ctx.restore();
     }
   }
 
@@ -1009,111 +855,24 @@ class DDeiLayerCanvasRender {
       }
       //默认缺省状态
       default: {
+        //清空当前opPoints
+        this.model.opPoints = [];
         //判断当前鼠标坐标是否落在选择器控件的区域内
         if (this.stageRender.selector &&
           this.stageRender.selector.isInAreaLoose(evt.offsetX, evt.offsetY, DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2)) {
           //派发给selector的mousemove事件，在事件中对具体坐标进行判断
           this.stageRender.selector.render.mouseMove(evt);
         }
-
-
-        let x0 = evt.offsetX;
-        let y0 = evt.offsetY;
-
-        //判断鼠标是否在某个控件的范围内 TODO 暂时判断全部控件
+        //下发事件到当前层级每个控件
         for (let i = 0; i < this.model.midList.length; i++) {
           let model = this.model.models.get(this.model.midList[i]);
-          if (model?.currentPointVectors?.length > 0) {
-            let st, en;
-            for (let j = 0; j < model.currentPointVectors.length; j++) {
-              //点到直线的距离
-              let plLength = Infinity;
-              if (j == model.currentPointVectors.length - 1) {
-                st = j;
-                en = 0;
-              } else {
-                st = j;
-                en = j + 1;
-              }
-              let x1 = model.currentPointVectors[st].x;
-              let y1 = model.currentPointVectors[st].y;
-              let x2 = model.currentPointVectors[en].x;
-              let y2 = model.currentPointVectors[en].y;
-              //获取控件所有向量
-              if (x1 == x2 && y1 == y2) {
-                plLength = Math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0))
-              } else {
-                //根据向量外积计算面积
-                let s = (x0 - x1) * (y2 - y1) - (y0 - y1) * (x2 - x1)
-                //计算直线上两点之间的距离
-                let d = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
-                plLength = s / d
-              }
-              //plLength > 0时，方向向外
-              if (plLength > -5 && plLength <= 20) {
-                //进一步判断：1.点的投影是否在线段中间，2点的投影的坐标位置
-                //A.求得线向量与直角坐标系的夹角
-                let lineV = new Vector3(x2, y2, 1);
-                let pointV = new Vector3(x0, y0, 1);
-                let toZeroMatrix = new Matrix3(
-                  1, 0, -x1,
-                  0, 1, -y1,
-                  0, 0, 1);
-                //归到原点，求夹角
-                lineV.applyMatrix3(toZeroMatrix)
-                pointV.applyMatrix3(toZeroMatrix)
-
-                let lineAngle = (new Vector3(1, 0, 0).angleTo(new Vector3(lineV.x, lineV.y, 0)) * 180 / Math.PI).toFixed(4);
-
-                //判断移动后的线属于第几象限
-                //B.构建旋转矩阵。旋转linvV和pointV
-                let angle = 0;
-                if (lineV.x >= 0 && lineV.y >= 0) {
-                  angle = (lineAngle * DDeiConfig.ROTATE_UNIT).toFixed(4);
-                } else if (lineV.x <= 0 && lineV.y >= 0) {
-                  angle = (lineAngle * DDeiConfig.ROTATE_UNIT).toFixed(4);
-                } else if (lineV.x <= 0 && lineV.y <= 0) {
-                  angle = (- lineAngle * DDeiConfig.ROTATE_UNIT).toFixed(4);
-                } else if (lineV.x >= 0 && lineV.y <= 0) {
-                  angle = ((- lineAngle) * DDeiConfig.ROTATE_UNIT).toFixed(4);
-                }
-                let rotateMatrix = new Matrix3(
-                  Math.cos(angle), Math.sin(angle), 0,
-                  -Math.sin(angle), Math.cos(angle), 0,
-                  0, 0, 1);
-                lineV.applyMatrix3(rotateMatrix);
-                pointV.applyMatrix3(rotateMatrix);
-
-                //C.判断两个向量的关系，pointV.x必须大于0，且小于lineV.x
-                if (pointV.x >= 0 && pointV.x <= lineV.x) {
-                  //D.投影点=（pointV.x,0)，通过旋转+位移到达目标点
-                  let v1 = new Vector3(pointV.x, 0, 1);
-                  angle = -angle;
-                  let rotateMatrix = new Matrix3(
-                    Math.cos(angle), Math.sin(angle), 0,
-                    -Math.sin(angle), Math.cos(angle), 0,
-                    0, 0, 1);
-                  v1.applyMatrix3(rotateMatrix);
-                  let removeMatrix = new Matrix3(
-                    1, 0, x1,
-                    0, 1, y1,
-                    0, 0, 1);
-                  v1.applyMatrix3(removeMatrix);
-                  //绘制投影点
-                  model.render.tempV1 = v1;
-                  //渲染图形
-                  this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
-                  break;
-
-                }
-              }
-            }
-
+          if (model && model.isInAreaLoose(evt.offsetX, evt.offsetY, DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2)) {
+            model.render.mouseMove(evt);
           }
         }
         //恢复鼠标等状态
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
-
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
         break;
       }
     }

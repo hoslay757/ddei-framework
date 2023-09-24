@@ -9,6 +9,7 @@ import DDeiStage from '../../models/stage.js';
 import DDeiUtil from '../../util.js'
 import DDeiCanvasRender from './ddei-render.js';
 import DDeiLayerCanvasRender from './layer-render.js';
+import DDeiAbstractShapeRender from './shape-render-base.js';
 import DDeiStageCanvasRender from './stage-render.js';
 import { cloneDeep } from 'lodash'
 
@@ -17,42 +18,13 @@ import { cloneDeep } from 'lodash'
  * 渲染器必须要有模型才可以初始化
  * 模型应该操作渲染器，而不是操作canvas
  */
-class DDeiRectangleCanvasRender {
+class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
   // ============================ 构造函数 ============================
   constructor(props: object) {
-    this.model = props.model;
-    this.ddRender = null;
+    super(props)
   }
   // ============================== 属性 ===============================
-  /**
-   * 当前对应模型
-   */
-  model: DDeiRectangle;
 
-  /**
-   * 当前的stage实例
-   */
-  stage: DDeiStage | null;
-
-  /**
-  * 当前的layer实例
-  */
-  layer: DDeiLayer | null;
-
-  /**
-   * 当前的ddei实例
-   */
-  ddRender: DDeiCanvasRender | null;
-
-  /**
-    * 当前的stage渲染器
-    */
-  stageRender: DDeiStageCanvasRender | null;
-
-  /**
-  * 当前的layer渲染器
-  */
-  layerRender: DDeiLayerCanvasRender | null;
   // ============================== 方法 ===============================
   /**
    * 初始化
@@ -97,24 +69,7 @@ class DDeiRectangleCanvasRender {
     //绘制文本
     this.drawText();
 
-    //绘制临时线段创建点
-    if (this.tempV1) {
-      //获得 2d 上下文对象
-      let canvas = this.ddRender.canvas;
-      let ctx = canvas.getContext('2d');
-      //获取全局缩放比例
-      let ratio = this.ddRender.ratio;
-      //保存状态
-      ctx.save();
-      //设置字体颜色
-      ctx.fillStyle = "red"
-      //开始绘制  
-      ctx.beginPath();
-      ctx.ellipse(this.tempV1.x * ratio + 2, this.tempV1.y * ratio + 2, 10, 10, 0, 0, Math.PI * 2)
-      ctx.fill();
-      ctx.closePath();
-      ctx.restore()
-    }
+
     //清空旋转矩阵
     this.model.currentPointVectors = this.model.pointVectors;
     this.model.pointVectors = null;
@@ -691,19 +646,20 @@ class DDeiRectangleCanvasRender {
    * 鼠标按下事件
    */
   mouseDown(evt: Event): void {
-
+    super.mouseDown(evt);
   }
   /**
    * 绘制图形
    */
   mouseUp(evt: Event): void {
-
+    super.mouseUp(evt);
   }
 
   /**
    * 鼠标移动
    */
   mouseMove(evt: Event): void {
+    super.mouseMove(evt);
   }
 }
 

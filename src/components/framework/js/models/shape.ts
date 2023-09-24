@@ -25,6 +25,111 @@ abstract class DDeiAbstractShape {
   // ============================ 静态方法 ============================
 
   /**
+   * 得到点在图形连接线上的投射点
+   * @param point 测试点
+   * @param distance 内外部判定区间的距离
+   * @param direct 方向，1外部，2内部 默认1
+   * @returns 投影点的坐标
+   */
+  getProjPoint(point: { x: number, y: number }
+    , distance: { in: number, out: number } = { in: -5, out: 15 }, direct: number = 1): { x: number, y: number } | null {
+    let x0 = point.x;
+    let y0 = point.y;
+    //判断鼠标是否在某个控件的范围内
+    if (this?.currentPointVectors?.length > 0) {
+      let st, en;
+      for (let j = 0; j < this.currentPointVectors.length; j++) {
+        //点到直线的距离
+        let plLength = Infinity;
+        if (j == this.currentPointVectors.length - 1) {
+          st = j;
+          en = 0;
+        } else {
+          st = j;
+          en = j + 1;
+        }
+        let x1 = this.currentPointVectors[st].x;
+        let y1 = this.currentPointVectors[st].y;
+        let x2 = this.currentPointVectors[en].x;
+        let y2 = this.currentPointVectors[en].y;
+        //获取控件所有向量
+        if (x1 == x2 && y1 == y2) {
+          plLength = Math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0))
+        } else {
+          //根据向量外积计算面积
+          let s = (x0 - x1) * (y2 - y1) - (y0 - y1) * (x2 - x1)
+          //计算直线上两点之间的距离
+          let d = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+          plLength = s / d
+        }
+        let flag = false;
+        //plLength > 0时，方向向外,满足内外部条件
+        if (direct == 1) {
+          if (plLength >= distance.in && plLength <= distance.out) {
+            flag = true;
+          }
+        } else if (direct == 2) {
+          if (plLength <= distance.in && plLength >= distance.out) {
+            flag = true;
+          }
+        }
+        //进一步判断：1.点的投影是否在线段中间，2.点的投影的坐标位置
+        if (flag) {
+          //A.求得线向量与直角坐标系的夹角
+          let lineV = new Vector3(x2, y2, 1);
+          let pointV = new Vector3(x0, y0, 1);
+          let toZeroMatrix = new Matrix3(
+            1, 0, -x1,
+            0, 1, -y1,
+            0, 0, 1);
+          //归到原点，求夹角
+          lineV.applyMatrix3(toZeroMatrix)
+          pointV.applyMatrix3(toZeroMatrix)
+          let lineAngle = (new Vector3(1, 0, 0).angleTo(new Vector3(lineV.x, lineV.y, 0)) * 180 / Math.PI).toFixed(4);
+          //判断移动后的线属于第几象限
+          //B.构建旋转矩阵。旋转linvV和pointV
+          let angle = 0;
+          if (lineV.x >= 0 && lineV.y >= 0) {
+            angle = (lineAngle * DDeiConfig.ROTATE_UNIT).toFixed(4);
+          } else if (lineV.x <= 0 && lineV.y >= 0) {
+            angle = (lineAngle * DDeiConfig.ROTATE_UNIT).toFixed(4);
+          } else if (lineV.x <= 0 && lineV.y <= 0) {
+            angle = (- lineAngle * DDeiConfig.ROTATE_UNIT).toFixed(4);
+          } else if (lineV.x >= 0 && lineV.y <= 0) {
+            angle = (- lineAngle * DDeiConfig.ROTATE_UNIT).toFixed(4);
+          }
+          let rotateMatrix = new Matrix3(
+            Math.cos(angle), Math.sin(angle), 0,
+            -Math.sin(angle), Math.cos(angle), 0,
+            0, 0, 1);
+          lineV.applyMatrix3(rotateMatrix);
+          pointV.applyMatrix3(rotateMatrix);
+
+          //C.判断两个向量的关系，pointV.x必须大于0，且小于lineV.x
+          if (pointV.x >= 0 && pointV.x <= lineV.x) {
+            //D.投影点=（pointV.x,0)，通过旋转+位移到达目标点
+            let v1 = new Vector3(pointV.x, 0, 1);
+            angle = -angle;
+            let rotateMatrix = new Matrix3(
+              Math.cos(angle), Math.sin(angle), 0,
+              -Math.sin(angle), Math.cos(angle), 0,
+              0, 0, 1);
+            v1.applyMatrix3(rotateMatrix);
+            let removeMatrix = new Matrix3(
+              1, 0, x1,
+              0, 1, y1,
+              0, 0, 1);
+            v1.applyMatrix3(removeMatrix);
+            //返回投影点
+            return v1;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
     * 通过射线法判断点是否在图形内部
     * @param pps 多边形顶点 
     * @param point 测试点
@@ -408,7 +513,25 @@ abstract class DDeiAbstractShape {
     if (x === undefined || y === undefined) {
       return false
     }
-    return DDeiAbstractShape.isInsidePolygon(this.getRotatedPoints(looseWeight), { x: x, y: y });
+    let ps = this.getRotatedPoints(looseWeight);
+
+    let mx: number = Infinity, my: number = Infinity, mx1: number = 0, my1: number = 0;
+    //找到最大、最小的x和y
+    ps.forEach(p => {
+      if (p) {
+        mx = Math.min(Math.floor(p.x), mx)
+        mx1 = Math.max(Math.floor(p.x), mx1)
+        my = Math.min(Math.floor(p.y), my)
+        my1 = Math.max(Math.floor(p.y), my1)
+      }
+    })
+    return DDeiAbstractShape.isInsidePolygon(
+      [
+        { x: mx - looseWeight, y: my - looseWeight },
+        { x: mx1 + looseWeight, y: my - looseWeight },
+        { x: mx1 + looseWeight, y: my1 + looseWeight },
+        { x: mx - looseWeight, y: my1 + looseWeight },
+      ], { x: x, y: y });
   }
 
   /**

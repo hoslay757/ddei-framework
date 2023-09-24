@@ -359,14 +359,8 @@ class DDeiSelector extends DDeiRectangle {
   isInAreaLoose(x0: number | undefined = undefined, y0: number | undefined = undefined, looseWeight: number = 0): boolean {
     if (x0 === undefined || y0 === undefined) {
       return false
-    }
-    //按照rotate对图形进行旋转，求的旋转后的四个点坐标
-    //遍历所有点，求得最大、最小的x、y
+    }    //遍历所有点，求得最大、最小的x、y
     if (this.currentOPVS?.length > 0) {
-      //操作图标的宽度
-      //获取全局缩放比例
-      let width = DDeiConfig.SELECTOR.OPERATE_ICON.weight;
-      let halfWidth = width * 0.5;
       let x: number = Infinity, y: number = Infinity, x1: number = 0, y1: number = 0;
       //找到最大、最小的x和y
       this.currentOPVS.forEach(p => {
@@ -379,10 +373,10 @@ class DDeiSelector extends DDeiRectangle {
       })
       return DDeiAbstractShape.isInsidePolygon(
         [
-          { x: x - halfWidth, y: y - halfWidth },
-          { x: x1 + halfWidth, y: y - halfWidth },
-          { x: x1 + halfWidth, y: y1 + halfWidth },
-          { x: x - halfWidth, y: y1 + halfWidth },
+          { x: x - looseWeight, y: y - looseWeight },
+          { x: x1 + looseWeight, y: y - looseWeight },
+          { x: x1 + looseWeight, y: y1 + looseWeight },
+          { x: x - looseWeight, y: y1 + looseWeight },
         ], { x: x0, y: y0 });
     }
 
