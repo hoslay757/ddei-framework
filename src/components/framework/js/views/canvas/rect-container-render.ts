@@ -1,3 +1,4 @@
+import DDeiConfig from '../../config';
 import DDeiUtil from '../../util';
 import DDeiRectangleCanvasRender from './rectangle-render';
 
@@ -49,6 +50,37 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
         let item = this.model.models.get(key);
 
         item.render.drawShape();
+      });
+    }
+  }
+
+
+  // ============================== 事件 ===============================
+  /**
+   * 鼠标按下事件
+   */
+  mouseDown(evt: Event): void {
+    super.mouseDown(evt);
+  }
+  /**
+   * 绘制图形
+   */
+  mouseUp(evt: Event): void {
+    super.mouseUp(evt);
+  }
+
+  /**
+   * 鼠标移动
+   */
+  mouseMove(evt: Event): void {
+    super.mouseMove(evt);
+    if (this.model.models) {
+      //遍历子元素，绘制子元素
+      this.model.midList.forEach(key => {
+        let model = this.model.models.get(key);
+        if (model && model.isInAreaLoose(evt.offsetX, evt.offsetY, DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2)) {
+          model.render.mouseMove(evt);
+        }
       });
     }
   }
