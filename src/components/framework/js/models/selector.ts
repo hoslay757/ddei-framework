@@ -5,6 +5,7 @@ import DDeiUtil from '../util';
 import DDeiRectangle from './rectangle';
 import DDeiAbstractShape from './shape';
 import _, { cloneDeep } from 'lodash'
+import { Matrix3, Vector3 } from 'three';
 
 /**
  * selector选择器，用来选择界面上的控件，选择器不是一个实体控件,不会被序列化
@@ -404,11 +405,14 @@ class DDeiSelector extends DDeiRectangle {
         paddingWeight = paddingWeightInfo.single;
       }
       //计算多个图形的顶点最大范围，根据顶点范围构建一个最大的外接矩形，规则的外接矩形，可以看作由4个顶点构成的图形
-      let outRectBounds = DDeiAbstractShape.getOutRectByPV(models);
+
       let pvs = null;
       if (models.length == 1 && models[0].currentPointVectors?.length > 0) {
         pvs = cloneDeep(models[0].currentPointVectors);
+        this.setBounds(models[0].x, models[0].y, models[0].width, models[0].height);
+        this.rotate = models[0].rotate;
       } else {
+        let outRectBounds = DDeiAbstractShape.getOutRectByPV(models);
         pvs = DDeiAbstractShape.getOutPV(models);
         let paddingWeight = 0;
         let paddingWeightInfo = this.paddingWeight?.selected ? this.paddingWeight.selected : DDeiConfig.SELECTOR.PADDING_WEIGHT.selected;
@@ -425,15 +429,123 @@ class DDeiSelector extends DDeiRectangle {
         pvs[2].y += paddingWeight
         pvs[3].x -= paddingWeight
         pvs[3].y += paddingWeight
-
+        this.setBounds(outRectBounds.x - paddingWeight, outRectBounds.y - paddingWeight, outRectBounds.width + 2 * paddingWeight, outRectBounds.height + 2 * paddingWeight);
+        this.rotate = 0;
       }
+
       this.currentPointVectors = pvs;
-      this.setBounds(outRectBounds.x - paddingWeight, outRectBounds.y - paddingWeight, outRectBounds.width + 2 * paddingWeight, outRectBounds.height + 2 * paddingWeight);
+      this.calRotateOperateVectors();
+
+
 
       //设置选择器状态为选中后
       this.state = DDeiEnumControlState.SELECTED;
     } else {
       this.resetState();
+    }
+  }
+
+
+  /**
+   * 计算当前图形旋转后的顶点，根据位移以及层次管理
+   */
+  calRotatePointVectors(): void {
+
+    let pointVectors = [];
+    let centerPointVector = null;
+    let halfWidth = this.width * 0.5;
+    let halfHeight = this.height * 0.5;
+
+    if (!this.pointVectors || this.pointVectors?.length == 0) {
+      //顺序中心、上右下左,记录的是PC坐标
+      centerPointVector = new Vector3(this.x + this.width * 0.5, this.y + this.height * 0.5, 1);
+      let pv1 = new Vector3(centerPointVector.x - halfWidth, centerPointVector.y - halfHeight, 1);
+      let pv2 = new Vector3(centerPointVector.x + halfWidth, centerPointVector.y - halfHeight, 1);
+      let pv3 = new Vector3(centerPointVector.x + halfWidth, centerPointVector.y + halfHeight, 1);
+      let pv4 = new Vector3(centerPointVector.x - halfWidth, centerPointVector.y + halfHeight, 1);
+
+      pointVectors.push(pv1)
+      pointVectors.push(pv2)
+      pointVectors.push(pv3)
+      pointVectors.push(pv4)
+      this.pointVectors = pointVectors;
+      this.centerPointVector = centerPointVector;
+    }
+    pointVectors = this.pointVectors;
+    centerPointVector = this.centerPointVector;
+
+    //执行旋转
+    //合并旋转矩阵
+    let moveMatrix = new Matrix3(
+      1, 0, -centerPointVector.x,
+      0, 1, -centerPointVector.y,
+      0, 0, 1);
+    let angle = -(this.rotate ? this.rotate : 0) * DDeiConfig.ROTATE_UNIT
+    let rotateMatrix = new Matrix3(
+      Math.cos(angle), Math.sin(angle), 0,
+      -Math.sin(angle), Math.cos(angle), 0,
+      0, 0, 1);
+    let removeMatrix = new Matrix3(
+      1, 0, centerPointVector.x,
+      0, 1, centerPointVector.y,
+      0, 0, 1);
+    let m1 = new Matrix3().premultiply(moveMatrix).premultiply(rotateMatrix).premultiply(removeMatrix);
+    this.rotateMatrix = m1;
+    pointVectors.forEach(pv => {
+      pv.applyMatrix3(m1);
+    });
+  }
+
+
+  calRotateOperateVectors(): void {
+    let pvs = this.currentPointVectors;
+    let opvs = [];
+    if (pvs?.length > 0) {
+      opvs[1] = { x: (pvs[0].x + pvs[1].x) / 2, y: (pvs[0].y + pvs[1].y) / 2 };
+      opvs[2] = { x: pvs[1].x, y: pvs[1].y };
+      opvs[3] = { x: (pvs[1].x + pvs[2].x) / 2, y: (pvs[1].y + pvs[2].y) / 2 };
+      opvs[4] = { x: pvs[2].x, y: pvs[2].y };
+      opvs[5] = { x: (pvs[2].x + pvs[3].x) / 2, y: (pvs[2].y + pvs[3].y) / 2 };
+      opvs[6] = { x: pvs[3].x, y: pvs[3].y };
+      opvs[7] = { x: (pvs[0].x + pvs[3].x) / 2, y: (pvs[0].y + pvs[3].y) / 2 };
+      opvs[8] = { x: pvs[0].x, y: pvs[0].y };
+      let v1 = new Vector3(pvs[1].x, pvs[1].y, 1);
+      let moveMatrix = new Matrix3(
+        1, 0, -(pvs[0].x + pvs[1].x) / 2,
+        0, 1, -(pvs[0].y + pvs[1].y) / 2,
+        0, 0, 1);
+      //归到原点，求夹角
+      v1.applyMatrix3(moveMatrix)
+      //基于构建一个向量，经过旋转90度+角度，再平移到目标位置
+      let angle1 = (new Vector3(1, 0, 0).angleTo(new Vector3(v1.x, v1.y, 0)) * 180 / Math.PI).toFixed(4);
+
+      //判断移动后的线属于第几象限
+      //B.构建旋转矩阵。旋转linvV和pointV
+      let angle = 0;
+      if (v1.x >= 0 && v1.y >= 0) {
+        angle = (angle1 * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      } else if (v1.x <= 0 && v1.y >= 0) {
+        angle = (angle1 * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      } else if (v1.x <= 0 && v1.y <= 0) {
+        angle = (- angle1 * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      } else if (v1.x >= 0 && v1.y <= 0) {
+        angle = ((- angle1) * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      }
+      angle = (90 * DDeiConfig.ROTATE_UNIT).toFixed(4) - angle
+      v1 = new Vector3(20, 0, 1)
+
+      let rotateMatrix = new Matrix3(
+        Math.cos(angle), Math.sin(angle), 0,
+        -Math.sin(angle), Math.cos(angle), 0,
+        0, 0, 1);
+      v1.applyMatrix3(rotateMatrix);
+      let removeMatrix = new Matrix3(
+        1, 0, (pvs[0].x + pvs[1].x) / 2,
+        0, 1, (pvs[0].y + pvs[1].y) / 2,
+        0, 0, 1);
+      v1.applyMatrix3(removeMatrix);
+      opvs[9] = v1;
+      this.currentOPVS = opvs;
     }
   }
 

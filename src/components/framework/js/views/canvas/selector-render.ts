@@ -22,18 +22,22 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
    */
   drawShape(): void {
 
+
     //绘制边框
     this.drawBorder();
-
 
     //绘制边框上的操作图形
     this.drawOperatorShape();
 
-    //绘制填充
-    this.drawFill();
-
     //绘制选中控件特效
     this.drawIncludedStyle();
+
+  }
+
+  /**
+    * 根据模型的值，设置旋转
+    */
+  doRotate(ctx, ratPos): void {
 
   }
 
@@ -55,8 +59,6 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     //保存状态
     ctx.save();
     //设置旋转
-    this.doRotate(ctx, ratPos);
-    let opvs = [null];
     //操作图标的宽度
     let width = DDeiConfig.SELECTOR.OPERATE_ICON.weight * ratio;
     let halfWidth = width * 0.5;
@@ -111,83 +113,29 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         if (this.model.passIndex == i) {
           ctx.fillStyle = DDeiUtil.getColor(DDeiConfig.SELECTOR.OPERATE_ICON.FILL.pass);
         }
-        let pvs = this.model?.currentPointVectors;
-        if (pvs?.length > 0) {
+        let opvs = this.model?.currentOPVS;
+        if (opvs?.length > 0) {
 
-          if (i == 1) {
-            opvs[1] = { x: (pvs[0].x + pvs[1].x) / 2, y: (pvs[0].y + pvs[1].y) / 2 };
-          } else if (i == 2) {
-            opvs[2] = { x: pvs[1].x, y: pvs[1].y };
-          } else if (i == 3) {
-            opvs[3] = { x: (pvs[1].x + pvs[2].x) / 2, y: (pvs[1].y + pvs[2].y) / 2 };
-          } else if (i == 4) {
-            opvs[4] = { x: pvs[2].x, y: pvs[2].y };
-          } else if (i == 5) {
-            opvs[5] = { x: (pvs[2].x + pvs[3].x) / 2, y: (pvs[2].y + pvs[3].y) / 2 };
-          } else if (i == 6) {
-            opvs[6] = { x: pvs[3].x, y: pvs[3].y };
-          } else if (i == 7) {
-            opvs[7] = { x: (pvs[0].x + pvs[3].x) / 2, y: (pvs[0].y + pvs[3].y) / 2 };
-          } else if (i == 8) {
-            opvs[8] = { x: pvs[0].x, y: pvs[0].y };
-          } else if (i == 9) {
-            let v1 = new Vector3(pvs[1].x, pvs[1].y, 1);
-            let moveMatrix = new Matrix3(
-              1, 0, -(pvs[0].x + pvs[1].x) / 2,
-              0, 1, -(pvs[0].y + pvs[1].y) / 2,
-              0, 0, 1);
-            //归到原点，求夹角
-            v1.applyMatrix3(moveMatrix)
-            //基于构建一个向量，经过旋转90度+角度，再平移到目标位置
-            let angle1 = (new Vector3(1, 0, 0).angleTo(new Vector3(v1.x, v1.y, 0)) * 180 / Math.PI).toFixed(4);
-
-            //判断移动后的线属于第几象限
-            //B.构建旋转矩阵。旋转linvV和pointV
-            let angle = 0;
-            if (v1.x >= 0 && v1.y >= 0) {
-              angle = (angle1 * DDeiConfig.ROTATE_UNIT).toFixed(4);
-            } else if (v1.x <= 0 && v1.y >= 0) {
-              angle = (angle1 * DDeiConfig.ROTATE_UNIT).toFixed(4);
-            } else if (v1.x <= 0 && v1.y <= 0) {
-              angle = (- angle1 * DDeiConfig.ROTATE_UNIT).toFixed(4);
-            } else if (v1.x >= 0 && v1.y <= 0) {
-              angle = ((- angle1) * DDeiConfig.ROTATE_UNIT).toFixed(4);
-            }
-            angle = (90 * DDeiConfig.ROTATE_UNIT).toFixed(4) - angle
-            v1 = new Vector3(20, 0, 1)
-
-            let rotateMatrix = new Matrix3(
-              Math.cos(angle), Math.sin(angle), 0,
-              -Math.sin(angle), Math.cos(angle), 0,
-              0, 0, 1);
-            v1.applyMatrix3(rotateMatrix);
-            let removeMatrix = new Matrix3(
-              1, 0, (pvs[0].x + pvs[1].x) / 2,
-              0, 1, (pvs[0].y + pvs[1].y) / 2,
-              0, 0, 1);
-            v1.applyMatrix3(removeMatrix);
-            opvs[9] = v1;
+          if (i >= 1 <= 8) {
+            ctx.ellipse(opvs[i].x * ratio + lineOffset, opvs[i].y * ratio + lineOffset, halfWidth, halfWidth, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+          } else {
             if (this.model.passIndex == i) {
               //填充一个圆形
-              ctx.ellipse(v1.x * ratio + lineOffset, v1.y * ratio + lineOffset, halfWidth, halfWidth, 0, 0, Math.PI * 2)
+              ctx.ellipse(opvs[9].x * ratio + lineOffset, opvs[9].y * ratio + lineOffset, halfWidth, halfWidth, 0, 0, Math.PI * 2)
               ctx.fill();
             } else {
               //绘制旋转按钮
-              ctx.arc(v1.x * ratio + lineOffset, v1.y * ratio + lineOffset, halfWidth, 50, Math.PI * 1.6)
+              ctx.arc(opvs[9].x * ratio + lineOffset, opvs[9].y * ratio + lineOffset, halfWidth, 50, Math.PI * 1.6)
               ctx.stroke()
             }
           }
         }
-        if (i >= 1 <= 8) {
-          ctx.ellipse(opvs[i].x * ratio + lineOffset, opvs[i].y * ratio + lineOffset, halfWidth, halfWidth, 0, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.stroke();
-        }
+
 
       }
-
     }
-    this.model.currentOPVS = opvs;
     //恢复状态
     ctx.restore();
   }

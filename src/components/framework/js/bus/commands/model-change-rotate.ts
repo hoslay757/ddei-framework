@@ -80,7 +80,11 @@ class DDeiBusCommandModelChangeRotate extends DDeiBusCommand {
 
 
       selector.rotate = selector.rotate + angle
-
+      selector.calRotatePointVectors();
+      // //清空旋转矩阵
+      selector.currentPointVectors = selector.pointVectors;
+      selector.pointVectors = null;
+      selector.calRotateOperateVectors();
 
 
 

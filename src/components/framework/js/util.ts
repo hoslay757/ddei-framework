@@ -308,9 +308,9 @@ class DDeiUtil {
     let a: number = occ.x;
     let b: number = occ.y;
     // 计算
-    let c: number = Math.PI / 180 * angle;
-    let rx: number = (rcc.x - a) * Math.cos(c) - (rcc.y - b) * Math.sin(c) + a;
-    let ry: number = (rcc.y - b) * Math.cos(c) + (rcc.x - a) * Math.sin(c) + b;
+    let c: number = (Math.PI / 180 * angle).toFixed(4);
+    let rx: number = ((rcc.x - a) * Math.cos(c) - (rcc.y - b) * Math.sin(c) + a).toFixed(4);
+    let ry: number = ((rcc.y - b) * Math.cos(c) + (rcc.x - a) * Math.sin(c) + b).toFixed(4);
     // 取整
     // rx = Math.round(rx);
     // ry = Math.round(ry);
