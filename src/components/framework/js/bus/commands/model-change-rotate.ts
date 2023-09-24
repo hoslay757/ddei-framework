@@ -61,7 +61,7 @@ class DDeiBusCommandModelChangeRotate extends DDeiBusCommand {
         item.rotate = item.rotate + angle
       }
 
-      selector.rotate = selector.rotate + angle
+      // selector.rotate = selector.rotate + angle
 
       //同步更新上层容器其大小和坐标
       pContainerModel.changeParentsBounds()
