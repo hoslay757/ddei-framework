@@ -54,8 +54,6 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
     let ratio = this.ddRender.ratio;
-    //转换为缩放后的坐标
-    let ratPos = this.getBorderRatPos();
     //保存状态
     ctx.save();
     //设置旋转

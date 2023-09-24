@@ -409,8 +409,9 @@ class DDeiSelector extends DDeiRectangle {
       let pvs = null;
       if (models.length == 1 && models[0].currentPointVectors?.length > 0) {
         pvs = cloneDeep(models[0].currentPointVectors);
+        this.centerPointVector = models[0].centerPointVector
         this.setBounds(models[0].x, models[0].y, models[0].width, models[0].height);
-        this.rotate = models[0].rotate;
+        this.rotate = models[0].getAbsRotate();
       } else {
         let outRectBounds = DDeiAbstractShape.getOutRectByPV(models);
         pvs = DDeiAbstractShape.getOutPV(models);
@@ -429,6 +430,7 @@ class DDeiSelector extends DDeiRectangle {
         pvs[2].y += paddingWeight
         pvs[3].x -= paddingWeight
         pvs[3].y += paddingWeight
+        this.centerPointVector = { x: outRectBounds.x + outRectBounds.width / 2, y: outRectBounds.y + outRectBounds.height / 2, z: 1 };
         this.setBounds(outRectBounds.x - paddingWeight, outRectBounds.y - paddingWeight, outRectBounds.width + 2 * paddingWeight, outRectBounds.height + 2 * paddingWeight);
         this.rotate = 0;
       }
@@ -452,13 +454,12 @@ class DDeiSelector extends DDeiRectangle {
   calRotatePointVectors(): void {
 
     let pointVectors = [];
-    let centerPointVector = null;
+    let centerPointVector = this.centerPointVector;
     let halfWidth = this.width * 0.5;
     let halfHeight = this.height * 0.5;
 
     if (!this.pointVectors || this.pointVectors?.length == 0) {
       //顺序中心、上右下左,记录的是PC坐标
-      centerPointVector = new Vector3(this.x + this.width * 0.5, this.y + this.height * 0.5, 1);
       let pv1 = new Vector3(centerPointVector.x - halfWidth, centerPointVector.y - halfHeight, 1);
       let pv2 = new Vector3(centerPointVector.x + halfWidth, centerPointVector.y - halfHeight, 1);
       let pv3 = new Vector3(centerPointVector.x + halfWidth, centerPointVector.y + halfHeight, 1);
@@ -469,7 +470,6 @@ class DDeiSelector extends DDeiRectangle {
       pointVectors.push(pv3)
       pointVectors.push(pv4)
       this.pointVectors = pointVectors;
-      this.centerPointVector = centerPointVector;
     }
     pointVectors = this.pointVectors;
     centerPointVector = this.centerPointVector;

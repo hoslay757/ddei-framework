@@ -121,6 +121,10 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
         item.width = Math.floor(movedBounds.width * originPosMap.get(item.id).wR)
         item.y = Math.floor(movedBounds.y - cy + movedBounds.height * originPosMap.get(item.id).yR)
         item.height = Math.floor(movedBounds.height * originPosMap.get(item.id).hR)
+        item.calRotatePointVectors();
+        //清空旋转矩阵
+        item.currentPointVectors = item.pointVectors;
+        item.pointVectors = null;
 
         //如果当前是修改坐标，并且不改变容器大小，则按照容器比例更新子元素的大小
         if (!changeContainer && stage.render.selector.passIndex != 10 && stage.render.selector.passIndex != 11) {
@@ -160,6 +164,7 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
    * @param evt 事件对象引用
    */
   after(data: object, bus: DDeiBus, evt: Event): boolean {
+    debugger
     //更新选择器
     bus?.insert(DDeiEnumBusCommandType.UpdateSelectorBounds, null, evt);
     return true;
