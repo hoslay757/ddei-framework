@@ -164,7 +164,6 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
    * @param evt 事件对象引用
    */
   after(data: object, bus: DDeiBus, evt: Event): boolean {
-    debugger
     //更新选择器
     bus?.insert(DDeiEnumBusCommandType.UpdateSelectorBounds, null, evt);
     return true;

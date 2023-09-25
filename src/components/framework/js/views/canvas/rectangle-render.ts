@@ -174,12 +174,14 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
         if (this.stage?.selectedModels?.size > 0 && this.model.baseModelType == "DDeiSelector") {
 
           let pvs = this.model.currentPointVectors;
-          if (i == 4) {
-            ctx.moveTo(pvs[i - 1].x * ratio + lineOffset, pvs[i - 1].y * ratio + lineOffset);
-            ctx.lineTo(pvs[0].x * ratio + lineOffset, pvs[0].y * ratio + lineOffset);
-          } else {
-            ctx.moveTo(pvs[i - 1].x * ratio + lineOffset, pvs[i - 1].y * ratio + lineOffset);
-            ctx.lineTo(pvs[i].x * ratio + lineOffset, pvs[i].y * ratio + lineOffset);
+          if (pvs?.length > 0) {
+            if (i == 4) {
+              ctx.moveTo(pvs[i - 1].x * ratio + lineOffset, pvs[i - 1].y * ratio + lineOffset);
+              ctx.lineTo(pvs[0].x * ratio + lineOffset, pvs[0].y * ratio + lineOffset);
+            } else {
+              ctx.moveTo(pvs[i - 1].x * ratio + lineOffset, pvs[i - 1].y * ratio + lineOffset);
+              ctx.lineTo(pvs[i].x * ratio + lineOffset, pvs[i].y * ratio + lineOffset);
+            }
           }
         } else {
           if (i == 1) {
