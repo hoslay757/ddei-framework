@@ -735,6 +735,8 @@ class DDeiLayerCanvasRender {
 
         //当前操作状态：控件拖拽中
         this.stageRender.operateState = DDeiEnumOperateState.CONTROL_DRAGING
+        //清除临时操作点
+        this.model.opPoints = [];
         //记录当前的拖拽的x,y,写入dragObj作为临时变量
         let dragObj = {
           x: evt.offsetX,
@@ -821,6 +823,7 @@ class DDeiLayerCanvasRender {
             //改变控件以及容器的大小
             let mds = pContainerModel.getSelectedModels();
             let pushData = { deltaX: movedBounds.x - selector.x, deltaY: movedBounds.y - selector.y, deltaWidth: movedBounds.width - selector.width, deltaHeight: movedBounds.height - selector.height, models: Array.from(mds.values()) };
+            this.model.opPoints = [];
             //更新dragObj临时变量中的数值,确保坐标对应关系一致
             this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { deltaX: movedPosDelta.x, deltaY: movedPosDelta.y }, evt);
             //修改所有选中控件坐标
@@ -858,6 +861,7 @@ class DDeiLayerCanvasRender {
       default: {
         //清空当前opPoints
         this.model.opPoints = [];
+
         //判断当前鼠标坐标是否落在选择器控件的区域内
         if (this.stageRender.selector &&
           this.stageRender.selector.isInAreaLoose(evt.offsetX, evt.offsetY, DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2)) {
@@ -871,8 +875,7 @@ class DDeiLayerCanvasRender {
             model.render.mouseMove(evt);
           }
         }
-        //恢复鼠标等状态
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
+
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
         break;
       }

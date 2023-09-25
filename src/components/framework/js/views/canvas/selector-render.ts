@@ -273,6 +273,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
       //当前操作状态：改变控件大小中
       this.stageRender.operateState = DDeiEnumOperateState.CONTROL_CHANGING_BOUND
+
     }
     //旋转
     else if (this.model.passIndex == 9) {
