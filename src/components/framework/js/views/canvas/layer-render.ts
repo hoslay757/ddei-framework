@@ -273,121 +273,120 @@ class DDeiLayerCanvasRender {
     let isShift = DDei.KEY_DOWN_STATE.get("shift");
     if (!isShift && DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
       //辅助对齐线宽度
-      let helpLineWeight = DDeiConfig.GLOBAL_HELP_LINE_WEIGHT;
+      // let helpLineWeight = DDeiConfig.GLOBAL_HELP_LINE_WEIGHT;
 
-      var mod = movedBounds.x % helpLineWeight
+      // let mod = movedBounds.x % helpLineWeight
 
-      if (mod > helpLineWeight * 0.5) {
-        movedBounds.x += (helpLineWeight - mod)
-      } else {
-        movedBounds.x -= mod
-      }
-      mod = movedBounds.y % helpLineWeight
-      if (mod > helpLineWeight * 0.5) {
-        movedBounds.y += (helpLineWeight - mod)
-      } else {
-        movedBounds.y -= mod
-      }
-
+      // if (mod > helpLineWeight * 0.5) {
+      //   movedBounds.x += (helpLineWeight - mod)
+      // } else {
+      //   movedBounds.x -= mod
+      // }
+      // mod = movedBounds.y % helpLineWeight
+      // if (mod > helpLineWeight * 0.5) {
+      //   movedBounds.y += (helpLineWeight - mod)
+      // } else {
+      //   movedBounds.y -= mod
+      // }
 
 
       //判断是改变控件大小，还是移动控件，两者的二次调整策略有差异
       //移动时的二次调整，确保移动后的坐标轴在辅助线上
-      let dragModel = null;
-      let isX = false;
-      let isY = false;
-      let isW = false;
-      let isH = false;
-      switch (this.stageRender.operateState) {
-        case DDeiEnumOperateState.CONTROL_CREATING:
-        case DDeiEnumOperateState.CONTROL_DRAGING:
-          dragModel = this.stageRender.dragObj.model;
-          isX = true;
-          isY = true;
-          break;
-        case DDeiEnumOperateState.CONTROL_CHANGING_BOUND:
-          dragModel = this.stageRender.selector;
-          switch (dragModel.passIndex) {
-            //上中
-            case 1: {
-              isY = true;
-              break;
-            }
-            //上右
-            case 2: {
-              isY = true;
-              isW = true;
-              break;
-            }
-            //中右
-            case 3: {
-              isW = true;
-              break;
-            }
-            //下右
-            case 4: {
-              isW = true;
-              isH = true;
-              break;
-            }
-            //下中
-            case 5: {
-              isH = true;
-              break;
-            }
-            //下左
-            case 6: {
-              isX = true;
-              isH = true;
-              break;
-            }
-            //中左
-            case 7: {
-              isX = true;
-              break;
-            }
-            //上左
-            case 8: {
-              isY = true;
-              isX = true;
-              break;
-            }
-            default: {
-              break;
-            }
-          }
-          break;
-        default: break;
-      }
+      // let dragModel = null;
+      // let isX = false;
+      // let isY = false;
+      // let isW = false;
+      // let isH = false;
+      // switch (this.stageRender.operateState) {
+      //   case DDeiEnumOperateState.CONTROL_CREATING:
+      //   case DDeiEnumOperateState.CONTROL_DRAGING:
+      //     dragModel = this.stageRender.dragObj.model;
+      //     isX = true;
+      //     isY = true;
+      //     break;
+      //   case DDeiEnumOperateState.CONTROL_CHANGING_BOUND:
+      //     dragModel = this.stageRender.selector;
+      //     switch (dragModel.passIndex) {
+      //       //上中
+      //       case 1: {
+      //         isY = true;
+      //         break;
+      //       }
+      //       //上右
+      //       case 2: {
+      //         isY = true;
+      //         isW = true;
+      //         break;
+      //       }
+      //       //中右
+      //       case 3: {
+      //         isW = true;
+      //         break;
+      //       }
+      //       //下右
+      //       case 4: {
+      //         isW = true;
+      //         isH = true;
+      //         break;
+      //       }
+      //       //下中
+      //       case 5: {
+      //         isH = true;
+      //         break;
+      //       }
+      //       //下左
+      //       case 6: {
+      //         isX = true;
+      //         isH = true;
+      //         break;
+      //       }
+      //       //中左
+      //       case 7: {
+      //         isX = true;
+      //         break;
+      //       }
+      //       //上左
+      //       case 8: {
+      //         isY = true;
+      //         isX = true;
+      //         break;
+      //       }
+      //       default: {
+      //         break;
+      //       }
+      //     }
+      //     break;
+      //   default: break;
+      // }
 
-      if (dragModel) {
-        let mx = dragModel.x;
-        if (isW) {
-          mx += dragModel.width;
-        }
-        // if (mx % helpLineWeight != 0) {
-        //   let xmod = mx % helpLineWeight;
-        //   if (xmod > helpLineWeight * 0.5) {
-        //     movedBounds.x += (helpLineWeight - xmod);
-        //   }
-        //   else {
-        //     movedBounds.x -= xmod;
-        //   }
-        // }
-        let my = dragModel.y;
-        if (isH) {
-          my += dragModel.height;
-        }
-        // if (my % helpLineWeight != 0) {
-        //   let ymod = my % helpLineWeight;
-        //   if (ymod > helpLineWeight * 0.5) {
-        //     movedBounds.y += (helpLineWeight - ymod);
-        //   }
-        //   else {
-        //     movedBounds.y -= ymod;
-        //   }
-        // }
-      }
+      // if (dragModel) {
+      //   let mx = dragModel.x;
+      //   if (isW) {
+      //     mx += dragModel.width;
+      //   }
+      // if (mx % helpLineWeight != 0) {
+      //   let xmod = mx % helpLineWeight;
+      //   if (xmod > helpLineWeight * 0.5) {
+      //     movedBounds.x += (helpLineWeight - xmod);
+      //   }
+      //   else {
+      //     movedBounds.x -= xmod;
+      //   }
+      // }
+      // let my = dragModel.y;
+      // if (isH) {
+      //   my += dragModel.height;
+      // }
+      // if (my % helpLineWeight != 0) {
+      //   let ymod = my % helpLineWeight;
+      //   if (ymod > helpLineWeight * 0.5) {
+      //     movedBounds.y += (helpLineWeight - ymod);
+      //   }
+      //   else {
+      //     movedBounds.y -= ymod;
+      //   }
+      // }
+      // }
 
     }
     return movedBounds
@@ -739,12 +738,14 @@ class DDeiLayerCanvasRender {
         this.stageRender.operateState = DDeiEnumOperateState.CONTROL_DRAGING
         //清除临时操作点
         this.model.opPoints = [];
+        //中心点坐标
+        let centerPointVector = this.stageRender.currentOperateShape?.centerPointVector;
         //记录当前的拖拽的x,y,写入dragObj作为临时变量
         let dragObj = {
           x: evt.offsetX,
           y: evt.offsetY,
-          originX: evt.offsetX,//原始X、Y不随x、y改变，用来实现取消还原
-          originY: evt.offsetY,
+          dx: centerPointVector.x - evt.offsetX,//鼠标在控件中心坐标的增量位置
+          dy: centerPointVector.y - evt.offsetY,
           model: this.stageRender.currentOperateShape
         }
         //如果当前元素父元素不是Layer，则记录直到Layer父控件的大小，用来实现取消还原
@@ -769,42 +770,37 @@ class DDeiLayerCanvasRender {
       //控件拖拽中
       case DDeiEnumOperateState.CONTROL_DRAGING: {
         //当前移动的坐标增量
-        let movedPosDelta = this.getMovedPositionDelta(evt);
-        if (movedPosDelta.x != 0 || movedPosDelta.y != 0) {
-          //当前控件的上层控件，可能是一个layer也可能是容器
-          let pContainerModel = this.stageRender.currentOperateShape.pModel;
-          if (pContainerModel) {
-            //获取当前层次选择的控件
-            let selectedModels = pContainerModel.getSelectedModels();
-            //将当前操作控件加入临时选择控件
-            selectedModels.set(this.stageRender.currentOperateShape?.id, this.stageRender.currentOperateShape)
-            let pushData = { deltaX: movedPosDelta.x, deltaY: movedPosDelta.y, models: Array.from(selectedModels.values()), changeContainer: isAlt };
-            if (isAlt) {
-              //寻找鼠标落点当前所在的容器
-              let mouseOnContainers = DDeiAbstractShape.findBottomContainersByArea(this.model, evt.offsetX, evt.offsetY);
-              let lastOnContainer = this.model;
-              if (mouseOnContainers && mouseOnContainers.length > 0) {
-                //获取最下层容器
-                for (let k = mouseOnContainers.length - 1; k >= 0; k--) {
-                  if (mouseOnContainers[k].id != this.stageRender.currentOperateShape.id) {
-                    lastOnContainer = mouseOnContainers[k]
-                    break;
-                  }
+        //当前控件的上层控件，可能是一个layer也可能是容器
+        let pContainerModel = this.stageRender.currentOperateShape.pModel;
+        if (pContainerModel) {
+          //获取当前层次选择的控件
+          let selectedModels = pContainerModel.getSelectedModels();
+          //将当前操作控件加入临时选择控件
+          selectedModels.set(this.stageRender.currentOperateShape?.id, this.stageRender.currentOperateShape)
+          let pushData = { x: evt.offsetX, y: evt.offsetY, dx: this.stageRender.dragObj.dx, dy: this.stageRender.dragObj.dy, models: Array.from(selectedModels.values()), changeContainer: isAlt };
+          if (isAlt) {
+            //寻找鼠标落点当前所在的容器
+            let mouseOnContainers = DDeiAbstractShape.findBottomContainersByArea(this.model, evt.offsetX, evt.offsetY);
+            let lastOnContainer = this.model;
+            if (mouseOnContainers && mouseOnContainers.length > 0) {
+              //获取最下层容器
+              for (let k = mouseOnContainers.length - 1; k >= 0; k--) {
+                if (mouseOnContainers[k].id != this.stageRender.currentOperateShape.id) {
+                  lastOnContainer = mouseOnContainers[k]
+                  break;
                 }
               }
-              pushData.newContainer = lastOnContainer
             }
-
-            //更新dragObj临时变量中的数值,确保坐标对应关系一致
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { deltaX: movedPosDelta.x, deltaY: movedPosDelta.y }, evt);
-            //修改所有选中控件坐标
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeBounds, pushData, evt);
-            //修改辅助线
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.SetHelpLine, { models: selectedModels }, evt);
-            //渲染图形
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+            pushData.newContainer = lastOnContainer
           }
+          //修改所有选中控件坐标
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeBounds, pushData, evt);
+          //修改辅助线
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.SetHelpLine, { models: selectedModels }, evt);
+          //渲染图形
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
         }
+        // }
         break;
       }
       //控件改变大小中

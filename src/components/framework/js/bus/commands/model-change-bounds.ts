@@ -65,8 +65,13 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
     if (data?.models?.length > 0) {
+      let x = data.x ? data.x : 0;
+      let y = data.y ? data.y : 0;
+      let dx = data.dx ? data.dx : 0;
+      let dy = data.dy ? data.dy : 0;
       let deltaX = data.deltaX ? data.deltaX : 0;
       let deltaY = data.deltaY ? data.deltaY : 0;
+
       let deltaWidth = data.deltaWidth ? data.deltaWidth : 0;
       let deltaHeight = data.deltaHeight ? data.deltaHeight : 0;
       let changeContainer = data.changeContainer ? data.changeContainer : false;
@@ -85,10 +90,13 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
             Math.cos(angle), Math.sin(angle), 0,
             -Math.sin(angle), Math.cos(angle), 0,
             0, 0, 1);
-          let vc1 = new Vector3(deltaX, deltaY, 1);
+          console.log("前：" + x + " .  " + 0)
+          let vc1 = new Vector3(x, y, 1);
           vc1.applyMatrix3(rotateMatrix)
-          deltaX = parseFloat(vc1.x.toFixed(4))
-          deltaY = parseFloat(vc1.y.toFixed(4))
+          x = parseFloat(vc1.x.toFixed(4))
+          y = parseFloat(vc1.y.toFixed(4))
+
+          console.log("后:" + x + " .  " + y)
         }
       }
       //计算外接矩形
@@ -130,9 +138,10 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
           hR: (item.height / originRect.height)
         });
       }
+
       //考虑paddingWeight，计算预先实际移动后的区域
-      let movedBounds = { x: originRect.x + deltaX, y: originRect.y + deltaY, width: originRect.width + deltaWidth, height: originRect.height + deltaHeight }
-      console.log(movedBounds.x + " .  " + movedBounds.y)
+      let movedBounds = { x: x + dx - originRect.width / 2 - cx, y: y + dy - originRect.height / 2 - cy, width: originRect.width + deltaWidth, height: originRect.height + deltaHeight }
+
       models.forEach(item => {
         let originBound = { x: item.x, y: item.y, width: item.width, height: item.height };
         item.x = Math.floor(movedBounds.x - cx + movedBounds.width * originPosMap.get(item.id).xR)
