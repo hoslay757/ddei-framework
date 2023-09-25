@@ -81,24 +81,33 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
       let parentContainer = data?.models[0].pModel;
       let stage = bus.ddInstance.stage;
       //如果当前控件的父控件存在旋转，则需要换算成未旋转时的移动量
+      x = x + dx;
+      y = y + dy;
+      let cx = 0;
+      let cy = 0;
+      if (parentContainer.baseModelType == "DDeiContainer") {
+        cx = parentContainer.currentPointVectors[0].x;
+        cy = parentContainer.currentPointVectors[0].y;
+      }
       if (parentContainer) {
         //绝对旋转量，构建旋转矩阵
         let parentAbsRotate = parentContainer.getAbsRotate();
         if (parentAbsRotate != 0) {
+          //变换坐标系，将最外部的坐标系，变换到容器坐标系，目前x和y都是相对于外部坐标的坐标
+          //注意由于外部容器存在旋转，因此减去的是外部容器的第一个点
           let angle = (parentAbsRotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
           let rotateMatrix = new Matrix3(
             Math.cos(angle), Math.sin(angle), 0,
             -Math.sin(angle), Math.cos(angle), 0,
             0, 0, 1);
-          console.log("前：" + x + " .  " + 0)
-          let vc1 = new Vector3(x, y, 1);
+          let vc1 = new Vector3(x - cx, y - cy, 1);
           vc1.applyMatrix3(rotateMatrix)
           x = parseFloat(vc1.x.toFixed(4))
           y = parseFloat(vc1.y.toFixed(4))
 
-          console.log("后:" + x + " .  " + y)
         }
       }
+
       //计算外接矩形
       let originRect: object = null;
       if (selector) {
@@ -117,14 +126,7 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
       } else {
         originRect = DDeiAbstractShape.getOutRect(models);
       }
-      //容器所在的坐标，容器内元素加上容器坐标才是绝对坐标，绝对坐标剪去容器坐标才是相对坐标
-      let cx = 0;
-      let cy = 0;
-      if (parentContainer.baseModelType == "DDeiContainer") {
-        let cAbsBound = parentContainer.getAbsBounds();
-        cx = cAbsBound.x;
-        cy = cAbsBound.y;
-      }
+
       //记录每一个图形在原始矩形中的比例
       let originPosMap: Map<string, object> = new Map();
       //获取模型在原始模型中的位置比例
@@ -140,7 +142,8 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
       }
 
       //考虑paddingWeight，计算预先实际移动后的区域
-      let movedBounds = { x: x + dx - originRect.width / 2 - cx, y: y + dy - originRect.height / 2 - cy, width: originRect.width + deltaWidth, height: originRect.height + deltaHeight }
+      console.log(x + "   " + cx + "    " + y + "    " + cy)
+      let movedBounds = { x: x - originRect.width / 2, y: y - originRect.height / 2, width: originRect.width + deltaWidth, height: originRect.height + deltaHeight }
 
       models.forEach(item => {
         let originBound = { x: item.x, y: item.y, width: item.width, height: item.height };
