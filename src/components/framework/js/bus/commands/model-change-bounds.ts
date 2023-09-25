@@ -4,6 +4,7 @@ import DDeiEnumOperateState from '../../enums/operate-state';
 import DDeiAbstractShape from '../../models/shape';
 import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
+import { Matrix3, Vector3 } from 'three';
 /**
  * 改变模型坐标以及大小的总线Command
  */
@@ -74,6 +75,22 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
       let models = data.models;
       let parentContainer = data?.models[0].pModel;
       let stage = bus.ddInstance.stage;
+      //如果当前控件的父控件存在旋转，则需要换算成未旋转时的移动量
+      if (parentContainer) {
+        //绝对旋转量，构建旋转矩阵
+        let parentAbsRotate = parentContainer.getAbsRotate();
+        if (parentAbsRotate != 0) {
+          let angle = (parentAbsRotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+          let rotateMatrix = new Matrix3(
+            Math.cos(angle), Math.sin(angle), 0,
+            -Math.sin(angle), Math.cos(angle), 0,
+            0, 0, 1);
+          let vc1 = new Vector3(deltaX, deltaY, 1);
+          vc1.applyMatrix3(rotateMatrix)
+          deltaX = parseFloat(vc1.x.toFixed(4))
+          deltaY = parseFloat(vc1.y.toFixed(4))
+        }
+      }
       //计算外接矩形
       let originRect: object = null;
       if (selector) {
@@ -115,6 +132,7 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
       }
       //考虑paddingWeight，计算预先实际移动后的区域
       let movedBounds = { x: originRect.x + deltaX, y: originRect.y + deltaY, width: originRect.width + deltaWidth, height: originRect.height + deltaHeight }
+      console.log(movedBounds.x + " .  " + movedBounds.y)
       models.forEach(item => {
         let originBound = { x: item.x, y: item.y, width: item.width, height: item.height };
         item.x = Math.floor(movedBounds.x - cx + movedBounds.width * originPosMap.get(item.id).xR)

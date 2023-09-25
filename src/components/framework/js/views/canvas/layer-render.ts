@@ -12,6 +12,7 @@ import DDeiUtil from '../../util.js'
 import DDeiCanvasRender from './ddei-render.js';
 import DDeiStageCanvasRender from './stage-render.js';
 
+
 /**
  * DDeiLayer的渲染器类，用于渲染文件
  * 渲染器必须要有模型才可以初始化
@@ -289,6 +290,7 @@ class DDeiLayerCanvasRender {
       }
 
 
+
       //判断是改变控件大小，还是移动控件，两者的二次调整策略有差异
       //移动时的二次调整，确保移动后的坐标轴在辅助线上
       let dragModel = null;
@@ -363,28 +365,28 @@ class DDeiLayerCanvasRender {
         if (isW) {
           mx += dragModel.width;
         }
-        if (mx % helpLineWeight != 0) {
-          let xmod = mx % helpLineWeight;
-          if (xmod > helpLineWeight * 0.5) {
-            movedBounds.x += (helpLineWeight - xmod);
-          }
-          else {
-            movedBounds.x -= xmod;
-          }
-        }
+        // if (mx % helpLineWeight != 0) {
+        //   let xmod = mx % helpLineWeight;
+        //   if (xmod > helpLineWeight * 0.5) {
+        //     movedBounds.x += (helpLineWeight - xmod);
+        //   }
+        //   else {
+        //     movedBounds.x -= xmod;
+        //   }
+        // }
         let my = dragModel.y;
         if (isH) {
           my += dragModel.height;
         }
-        if (my % helpLineWeight != 0) {
-          let ymod = my % helpLineWeight;
-          if (ymod > helpLineWeight * 0.5) {
-            movedBounds.y += (helpLineWeight - ymod);
-          }
-          else {
-            movedBounds.y -= ymod;
-          }
-        }
+        // if (my % helpLineWeight != 0) {
+        //   let ymod = my % helpLineWeight;
+        //   if (ymod > helpLineWeight * 0.5) {
+        //     movedBounds.y += (helpLineWeight - ymod);
+        //   }
+        //   else {
+        //     movedBounds.y -= ymod;
+        //   }
+        // }
       }
 
     }
