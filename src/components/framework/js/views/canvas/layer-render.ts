@@ -738,7 +738,19 @@ class DDeiLayerCanvasRender {
         //清除临时操作点
         this.model.opPoints = [];
         //中心点坐标
-        let centerPointVector = this.stageRender.currentOperateShape?.centerPointVector;
+        //当前控件的上层控件，可能是一个layer也可能是容器
+        let pContainerModel = this.stageRender.currentOperateShape.pModel;
+        let selectSize = 0;
+        if (pContainerModel) {
+          //获取当前层次选择的控件
+          selectSize = pContainerModel.getSelectedModels().size;
+        }
+        let centerPointVector = null;
+        if (selectSize > 1) {
+          centerPointVector = this.stageRender.selector.centerPointVector;
+        } else {
+          centerPointVector = this.stageRender.currentOperateShape?.centerPointVector;
+        }
         //记录当前的拖拽的x,y,写入dragObj作为临时变量
         let dragObj = {
           x: evt.offsetX,
