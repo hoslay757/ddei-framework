@@ -11,7 +11,8 @@ enum DDeiEnumBusCommandType {
   ClearTemplateVars = "clear-template-vars",//清楚临时变量，重置状态
   RefreshShape = "refresh-shape",//重绘图形
   ModelChangeContainer = "model-change-container",//模型修改所在容器
-  ModelChangeBounds = "model-change-bounds",//模型修改大小和位置
+  ModelChangeBounds = "model-change-bounds",//模型修改大小
+  ModelChangePosition = "model-change-position",//模型修改大小
   SetHelpLine = "set-helpline",//设置辅助线
   UpdateDragObj = "update-dragobj",//更新辅助变量dragobj
   ChangeSelectorPassIndex = "change-selector-passindex",

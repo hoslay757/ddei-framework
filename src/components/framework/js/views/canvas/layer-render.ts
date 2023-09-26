@@ -793,7 +793,7 @@ class DDeiLayerCanvasRender {
             pushData.newContainer = lastOnContainer
           }
           //修改所有选中控件坐标
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeBounds, pushData, evt);
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangePosition, pushData, evt);
           //修改辅助线
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.SetHelpLine, { models: selectedModels }, evt);
           //渲染图形
@@ -804,34 +804,30 @@ class DDeiLayerCanvasRender {
       }
       //控件改变大小中
       case DDeiEnumOperateState.CONTROL_CHANGING_BOUND: {
-        //当前移动的坐标增量
-        let movedPosDelta = this.getMovedPositionDelta(evt);
-        if (movedPosDelta.x != 0 || movedPosDelta.y != 0) {
-          //按下ctrl同比拉伸
-          //计算移动后的坐标以及大小
-          let pContainerModel = this.stage.render.currentOperateContainer;
-          if (!pContainerModel) {
-            pContainerModel = this.model;
-          }
-          //按下ctrl则等比放大缩小
-          let movedBounds = this.stageRender.selector.getMovedBounds(movedPosDelta.x, movedPosDelta.y, isCtrl);
-          if (movedBounds) {
-            let selector = this.stageRender.selector;
-            //改变控件以及容器的大小
-            let mds = pContainerModel.getSelectedModels();
-            let pushData = { deltaX: movedBounds.x - selector.x, deltaY: movedBounds.y - selector.y, deltaWidth: movedBounds.width - selector.width, deltaHeight: movedBounds.height - selector.height, models: Array.from(mds.values()) };
-            this.model.opPoints = [];
-            //更新dragObj临时变量中的数值,确保坐标对应关系一致
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { deltaX: movedPosDelta.x, deltaY: movedPosDelta.y }, evt);
-            //修改所有选中控件坐标
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeBounds, pushData, evt);
-            //修改辅助线
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.SetHelpLine, { models: mds }, evt);
-            //渲染图形
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
-          }
+        //按下ctrl同比拉伸
+        //计算移动后的坐标以及大小
+        let pContainerModel = this.stage.render.currentOperateContainer;
+        if (!pContainerModel) {
+          pContainerModel = this.model;
         }
+        //得到改变后的新坐标以及大小，按下ctrl则等比放大缩小
+        let movedBounds = this.stageRender.selector.render.getMovedBounds(evt.offsetX, evt.offsetY, isCtrl);
 
+        if (movedBounds) {
+          let selector = this.stageRender.selector;
+          //改变控件以及容器的大小
+          let mds = pContainerModel.getSelectedModels();
+
+          let pushData = { x: evt.offsetX, y: evt.offsetY, dx: this.stageRender.dragObj.dx, dy: this.stageRender.dragObj.dy, deltaX: movedBounds.x - selector.x, deltaY: movedBounds.y - selector.y, deltaWidth: movedBounds.width - selector.width, deltaHeight: movedBounds.height - selector.height, selector: selector, models: Array.from(mds.values()) };
+          this.model.opPoints = [];
+          //更新dragObj临时变量中的数值,确保坐标对应关系一致
+          //修改所有选中控件坐标
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeBounds, pushData, evt);
+          //修改辅助线
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.SetHelpLine, { models: mds }, evt);
+          //渲染图形
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+        }
         break;
       }
       //控件旋转

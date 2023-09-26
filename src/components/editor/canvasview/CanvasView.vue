@@ -129,10 +129,10 @@ export default {
               }
               this.editor.bus.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, e);
               //归零坐标
-              this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeBounds, { models: [control], x: e.offsetX, y: e.offsetY, dx: dragObj.dx, dy: dragObj.dy, }, e);
+              this.editor.bus.push(DDeiEnumBusCommandType.ModelChangePosition, { models: [control], x: e.offsetX, y: e.offsetY, dx: dragObj.dx, dy: dragObj.dy, }, e);
               //设置新坐标
               //当前编辑器最外部容器的坐标 TODO 无限画布后需要转换为layer的视窗坐标
-              this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeBounds, { models: [control], deltaX: e.offsetX - control.width * 0.5, deltaY: e.offsetY - control.height * 0.5 }, e);
+              this.editor.bus.push(DDeiEnumBusCommandType.ModelChangePosition, { models: [control], deltaX: e.offsetX - control.width * 0.5, deltaY: e.offsetY - control.height * 0.5 }, e);
               this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, e);
             } else {
               let dt = new Date().getTime();
@@ -146,7 +146,7 @@ export default {
                 isExec = false;
               }
               if(isExec){
-                this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeBounds, { models: [control], x: e.offsetX, y: e.offsetY, dx: 0, dy:0 }, e);
+                this.editor.bus.push(DDeiEnumBusCommandType.ModelChangePosition, { models: [control], x: e.offsetX, y: e.offsetY, dx: 0, dy:0 }, e);
                 let isAlt = DDeiEditor.KEY_DOWN_STATE.get("alt");
                 this.editor.bus.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 10 }, e);
                 let lastOnContainer = layer;

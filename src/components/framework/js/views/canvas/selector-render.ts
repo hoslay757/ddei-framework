@@ -265,11 +265,14 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
   */
   mouseDown(evt: Event): void {
     //判断当前坐标是否位于操作按钮上,如果是则改变状态为响应状态
-    let dragObj = {
-      x: evt.offsetX,
-      y: evt.offsetY
-    }
+
     if (this.model.passIndex >= 1 && this.model.passIndex <= 8) {
+      let dragObj = {
+        x: evt.offsetX,
+        y: evt.offsetY,
+        dx: this.model.centerPointVector.x - evt.offsetX,//鼠标在控件中心坐标的增量位置
+        dy: this.model.centerPointVector.y - evt.offsetY,
+      }
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
       //当前操作状态：改变控件大小中
       this.stageRender.operateState = DDeiEnumOperateState.CONTROL_CHANGING_BOUND
@@ -277,6 +280,10 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     }
     //旋转
     else if (this.model.passIndex == 9) {
+      let dragObj = {
+        x: evt.offsetX,
+        y: evt.offsetY
+      }
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
       //当前操作状态：改变控件大小中
       this.stageRender.operateState = DDeiEnumOperateState.CONTROL_ROTATE
@@ -285,6 +292,107 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     if (this.model.passIndex != -1) {
 
     }
+  }
+
+
+  /**
+  * 计算移动后的坐标
+  * @param x 
+  * @param y
+  * @param er 是否等比
+  */
+  getMovedBounds(x: number, y: number, er: boolean = false): object {
+    let returnBounds = { x: this.model.x, y: this.model.y, width: this.model.width, height: this.model.height }
+    //中心点
+    let centerPointVector = this.model.centerPointVector;
+    //旋转角度
+    let rotate = this.model.rotate;
+    //高度和宽度的比例
+    let wbh = returnBounds.width / returnBounds.height;
+    switch (this.model.passIndex) {
+      //上中
+      case 1: {
+        let dy = y - (centerPointVector.y - returnBounds.height / 2)
+        returnBounds.y = returnBounds.y + dy
+        returnBounds.height = returnBounds.height - dy
+        if (er) {
+          returnBounds.x = returnBounds.x + dy * wbh / 2
+          returnBounds.width = returnBounds.width - dy * wbh
+        }
+        break;
+      }
+      //上右
+      case 2: {
+        let dy = y - (centerPointVector.y - returnBounds.height / 2)
+        let dx = x - centerPointVector.x - returnBounds.width / 2
+        returnBounds.y = returnBounds.y + dy
+        returnBounds.height = returnBounds.height - dy
+        returnBounds.width = returnBounds.width + dx
+        break;
+      }
+      //中右
+      case 3: {
+        let dx = x - centerPointVector.x - returnBounds.width / 2
+        returnBounds.width = returnBounds.width + dx
+        if (er) {
+          returnBounds.y = returnBounds.y - (dx / wbh / 2)
+          returnBounds.height = returnBounds.height + (dx / wbh)
+        }
+        break;
+      }
+      //下右
+      case 4: {
+        let dx = x - centerPointVector.x - returnBounds.width / 2
+        let dy = y - centerPointVector.y - returnBounds.height / 2
+        returnBounds.width = returnBounds.width + dx
+        returnBounds.height = returnBounds.height + dy
+        break;
+      }
+      //下中
+      case 5: {
+        let dy = y - centerPointVector.y - returnBounds.height / 2
+        returnBounds.height = returnBounds.height + dy
+        if (er) {
+          returnBounds.x = returnBounds.x - dy * wbh / 2
+          returnBounds.width = returnBounds.width + dy * wbh
+        }
+        break;
+      }
+      //下左
+      case 6: {
+        let dy = y - centerPointVector.y - returnBounds.height / 2
+        let dx = -((centerPointVector.x - x) - returnBounds.width / 2)
+        returnBounds.x = returnBounds.x + dx
+        returnBounds.width = returnBounds.width - dx
+        returnBounds.height = returnBounds.height + dy
+        break;
+      }
+      //中左
+      case 7: {
+        let dx = -((centerPointVector.x - x) - returnBounds.width / 2)
+        returnBounds.x = returnBounds.x + dx
+        returnBounds.width = returnBounds.width - dx
+        if (er) {
+          returnBounds.y = returnBounds.y + (dx / wbh / 2)
+          returnBounds.height = returnBounds.height - (dx / wbh)
+        }
+        break;
+      }
+      //上左
+      case 8: {
+        let dy = y - (centerPointVector.y - returnBounds.height / 2)
+        let dx = -((centerPointVector.x - x) - returnBounds.width / 2)
+        returnBounds.x = returnBounds.x + dx
+        returnBounds.width = returnBounds.width - dx
+        returnBounds.y = returnBounds.y + dy
+        returnBounds.height = returnBounds.height - dy
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+    return returnBounds;
   }
 
   /**

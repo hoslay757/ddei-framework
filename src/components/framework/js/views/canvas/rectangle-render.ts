@@ -54,7 +54,6 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
    */
   drawShape(): void {
 
-    //计算旋转矩阵
     this.model.calRotatePointVectors();
 
     //绘制边框
