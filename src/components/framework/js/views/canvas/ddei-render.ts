@@ -42,7 +42,6 @@ class DDeiCanvasRender {
         try {
           if (OffscreenCanvas) {
             this.isSupportOffScreen = true;
-            console.log("支持OffScreen")
           }
         } catch (e) { }
         if (this.isSupportOffScreen) {

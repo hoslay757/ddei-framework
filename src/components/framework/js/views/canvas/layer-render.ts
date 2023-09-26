@@ -706,7 +706,6 @@ class DDeiLayerCanvasRender {
         break;
       //默认缺省状态
       default:
-        console.log("错过：" + this.stageRender.operateState)
         break;
     }
 
@@ -748,7 +747,6 @@ class DDeiLayerCanvasRender {
           dy: centerPointVector.y - evt.offsetY,
           model: this.stageRender.currentOperateShape
         }
-        console.log("中心点：" + centerPointVector.x + "   " + centerPointVector.y)
         //如果当前元素父元素不是Layer，则记录直到Layer父控件的大小，用来实现取消还原
         let pModel = dragObj?.model?.pModel;
         for (; pModel != null && pModel.baseModelType != 'DDeiLayer'; pModel = pModel.pModel) {

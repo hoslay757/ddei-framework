@@ -21,7 +21,7 @@ import DDeiSheet from '../js/sheet';
 import DDeiStage from '@/components/framework/js/models/stage';
 import DDeiFileState from '../js/enums/file-state';
 import DDeiActiveType from '../js/enums/active-type';
-
+import { debounce } from 'lodash';
 
 export default {
   name: "DDei-Editor-CanvasView",
@@ -114,28 +114,39 @@ export default {
             //在画布上创建临时对象
             if (!layer.models.has(control.id)) {
               this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeContainer, { newContainer: layer, models: [control] }, e);
+              // //计算向量点
+              // control.calRotatePointVectors();
+              // //中心点坐标
+              // let centerPointVector = control.centerPointVector;
+              
               //记录当前的拖拽的x,y,写入dragObj作为临时变量
               let dragObj = {
                 x: e.offsetX,
                 y: e.offsetY,
-                originX: e.offsetX,
-                originY: e.offsetY,
+                dx: 0,//鼠标在控件中心坐标的增量位置
+                dy: 0,
                 model: control
               }
               this.editor.bus.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, e);
               //归零坐标
-              this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeBounds, { models: [control], deltaX: -control.x, deltaY: -control.y }, e);
+              this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeBounds, { models: [control], x: e.offsetX, y: e.offsetY, dx: dragObj.dx, dy: dragObj.dy, }, e);
               //设置新坐标
               //当前编辑器最外部容器的坐标 TODO 无限画布后需要转换为layer的视窗坐标
               this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeBounds, { models: [control], deltaX: e.offsetX - control.width * 0.5, deltaY: e.offsetY - control.height * 0.5 }, e);
               this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, e);
             } else {
-              //获取增量
-              let movedPosDelta = layer.render.getMovedPositionDelta(e);
-              if (movedPosDelta.x != 0 || movedPosDelta.y != 0) {
-                this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeBounds, { models: [control], deltaX: movedPosDelta.x, deltaY: movedPosDelta.y }, e);
-                //更新dragObj临时变量中的数值,确保坐标对应关系一致
-                this.editor.bus.push(DDeiEnumBusCommandType.UpdateDragObj, { deltaX: movedPosDelta.x, deltaY: movedPosDelta.y }, e);
+              let dt = new Date().getTime();
+              let isExec = true;
+              //控制帧率
+              if (!window.upTime) {
+                window.upTime = dt;
+              } else if (dt - window.upTime > 20) {
+                window.upTime = dt;
+              } else{
+                isExec = false;
+              }
+              if(isExec){
+                this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeBounds, { models: [control], x: e.offsetX, y: e.offsetY, dx: 0, dy:0 }, e);
                 let isAlt = DDeiEditor.KEY_DOWN_STATE.get("alt");
                 this.editor.bus.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 10 }, e);
                 let lastOnContainer = layer;
@@ -163,6 +174,7 @@ export default {
             }
             this.editor.bus.executeAll();
             e.preventDefault();
+          
           }
         }
       }

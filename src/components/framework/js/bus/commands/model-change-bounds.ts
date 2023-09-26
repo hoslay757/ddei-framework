@@ -64,6 +64,8 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
    * @param evt 事件对象引用
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
+
+
     if (data?.models?.length > 0) {
       let x = data.x ? data.x : 0;
       let y = data.y ? data.y : 0;
@@ -92,20 +94,17 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
       if (parentContainer) {
         //绝对旋转量，构建旋转矩阵
         let parentAbsRotate = parentContainer.getAbsRotate();
-        if (parentAbsRotate != 0) {
-          //变换坐标系，将最外部的坐标系，变换到容器坐标系，目前x和y都是相对于外部坐标的坐标
-          //注意由于外部容器存在旋转，因此减去的是外部容器的第一个点
-          let angle = (parentAbsRotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
-          let rotateMatrix = new Matrix3(
-            Math.cos(angle), Math.sin(angle), 0,
-            -Math.sin(angle), Math.cos(angle), 0,
-            0, 0, 1);
-          let vc1 = new Vector3(x - cx, y - cy, 1);
-          vc1.applyMatrix3(rotateMatrix)
-          x = parseFloat(vc1.x.toFixed(4))
-          y = parseFloat(vc1.y.toFixed(4))
-
-        }
+        //变换坐标系，将最外部的坐标系，变换到容器坐标系，目前x和y都是相对于外部坐标的坐标
+        //注意由于外部容器存在旋转，因此减去的是外部容器的第一个点
+        let angle = (parentAbsRotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+        let rotateMatrix = new Matrix3(
+          Math.cos(angle), Math.sin(angle), 0,
+          -Math.sin(angle), Math.cos(angle), 0,
+          0, 0, 1);
+        let vc1 = new Vector3(x - cx, y - cy, 1);
+        vc1.applyMatrix3(rotateMatrix)
+        x = parseFloat(vc1.x.toFixed(4))
+        y = parseFloat(vc1.y.toFixed(4))
       }
 
       //计算外接矩形
@@ -142,7 +141,6 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
       }
 
       //考虑paddingWeight，计算预先实际移动后的区域
-      console.log(x + "   " + cx + "    " + y + "    " + cy)
       let movedBounds = { x: x - originRect.width / 2, y: y - originRect.height / 2, width: originRect.width + deltaWidth, height: originRect.height + deltaHeight }
 
       models.forEach(item => {
