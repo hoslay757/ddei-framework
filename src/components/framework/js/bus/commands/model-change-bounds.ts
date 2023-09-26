@@ -123,11 +123,13 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
         item.width = parseFloat((movedBounds.width * originPosMap.get(item.id).wR).toFixed(4))
         item.y = parseFloat((movedBounds.y + movedBounds.height * originPosMap.get(item.id).yR).toFixed(4))
         item.height = parseFloat((movedBounds.height * originPosMap.get(item.id).hR).toFixed(4))
-        //TODO去掉这一句后，多个控件拖拽时坐标会出现问题，加上则会导致显示不正常
-        item.calRotatePointVectors();
-        //清空旋转矩阵
-        item.currentPointVectors = item.pointVectors;
-        item.pointVectors = null;
+        if (models.length > 1) {
+          //去掉这一句后，多个控件拖拽时坐标会出现问题，加上则会导致旋转后嵌套容器显示不正常,因此控制一下，只在多个控件时才这样处理
+          item.calRotatePointVectors();
+          //清空旋转矩阵
+          item.currentPointVectors = item.pointVectors;
+          item.pointVectors = null;
+        }
 
         //如果当前是修改坐标，并且不改变容器大小，则按照容器比例更新子元素的大小
         if (stage.render.selector.passIndex != 10 && stage.render.selector.passIndex != 11) {
