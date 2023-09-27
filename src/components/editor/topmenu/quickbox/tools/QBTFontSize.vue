@@ -68,22 +68,23 @@ export default {
       } else {
         this.attrDefine = null
       }
-      this.getDataSource(this.attrDefine)
-      let type = this.getDataValue();
-      let define = this.getDataDefine(type.value);
-      if (!type.isDefault) {
-        this.attrDefine.value = type.value;
-        this.text = define.text;
-      } else {
-        this.defaultText = define.text;
+      if(this.attrDefine){
+        this.getDataSource(this.attrDefine)
+        let type = this.getDataValue();
+        let define = this.getDataDefine(type.value);
+        if (!type.isDefault) {
+          this.attrDefine.value = type.value;
+          this.text = define.text;
+        } else {
+          this.defaultText = define.text;
+        }
+        if (this.attrDefine.value) {
+          this.value = this.attrDefine.value;
+          this.text = this.attrDefine.value;
+        } else {
+          this.value = type.value;
+        }
       }
-      if (this.attrDefine.value) {
-        this.value = this.attrDefine.value;
-        this.text = this.attrDefine.value;
-      } else {
-        this.value = type.value;
-      }
-
     }
   },
   methods: {

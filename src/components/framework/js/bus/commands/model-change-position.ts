@@ -23,37 +23,17 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
    * @param evt 事件对象引用
    */
   before(data: object, bus: DDeiBus, evt: Event): boolean {
-    let deltaX = data.deltaX ? data.deltaX : 0;
-    let deltaY = data.deltaY ? data.deltaY : 0;
-    let deltaWidth = data.deltaWidth ? data.deltaWidth : 0;
-    let deltaHeight = data.deltaHeight ? data.deltaHeight : 0;
-    let selector = data.selector;
-    let models = data.models;
-    //计算外接矩形
-    let originRect: object = null;
-    let paddingWeight = 0;
-    if (selector) {
-      originRect = selector.getAbsBounds();
-      let paddingWeightInfo = selector.paddingWeight?.selected ? selector.paddingWeight.selected : DDeiConfig.SELECTOR.PADDING_WEIGHT.selected;
-      if (models.length > 1) {
-        paddingWeight = paddingWeightInfo.multiple;
-      } else {
-        paddingWeight = paddingWeightInfo.single;
+    if (data?.models?.length > 0) {
+      let models = data.models;
+      for (let i = 0; i < models.length; i++) {
+        let parentContainer = data?.models[i].pModel;
+        if (parentContainer?.layoutManager) {
+          if (!parentContainer.layoutManager.canChangePosition(data.x, data.y, models, data.isAlt)) {
+            return false;
+          }
+        }
       }
-      originRect.x = originRect.x + paddingWeight;
-      originRect.y = originRect.y + paddingWeight;
-      originRect.width = originRect.width - 2 * paddingWeight;
-      originRect.height = originRect.height - 2 * paddingWeight;
-    } else {
-      originRect = DDeiAbstractShape.getOutRect(models);
     }
-    //考虑paddingWeight，计算预先实际移动后的区域
-    let movedBounds = { x: originRect.x + deltaX, y: originRect.y + deltaY, width: originRect.width + deltaWidth, height: originRect.height + deltaHeight }
-    //校验，如果拖拽后图形消失不见，则停止拖拽
-    if (models?.size <= 0 || selector?.passIndex == -1 || movedBounds.height <= paddingWeight || movedBounds.width <= paddingWeight) {
-      return false
-    }
-
     return true;
   }
 
@@ -85,6 +65,7 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
         cx = parentContainer.currentPointVectors[0].x;
         cy = parentContainer.currentPointVectors[0].y;
       }
+
       if (parentContainer) {
         //绝对旋转量，构建旋转矩阵
         let parentAbsRotate = parentContainer.getAbsRotate();
@@ -100,7 +81,18 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
         x = parseFloat(vc1.x.toFixed(4))
         y = parseFloat(vc1.y.toFixed(4))
       }
+      //清空移入移出向量效果
 
+      models[0].layer.dragInPoints = []
+      models[0].layer.dragOutPoints = []
+      //设置移入移出效果的向量
+      if (parentContainer && newContainer && parentContainer != newContainer) {
+        parentContainer?.layoutManager?.calDragOutPVS(data.x, data.y, models);
+        newContainer?.layoutManager?.calDragInPVS(data.x, data.y, models);
+      } else if (parentContainer) {
+        parentContainer?.layoutManager?.calDragOutPVS(data.x, data.y, models);
+        parentContainer?.layoutManager?.calDragInPVS(data.x, data.y, models);
+      }
       //计算外接矩形
       let originRect: object = null;
       if (selector) {
@@ -164,6 +156,7 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
         } else {
           //如果最小层容器不是当前容器，则修改鼠标样式，代表可能要移入
           if (newContainer.id != parentContainer.id) {
+
             bus?.insert(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 11 }, evt);
           } else {
             bus?.insert(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 10 }, evt);

@@ -23,6 +23,19 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
    * @param evt 事件对象引用
    */
   before(data: object, bus: DDeiBus, evt: Event): boolean {
+
+    if (data?.models?.length > 0) {
+      let models = data.models;
+      for (let i = 0; i < models.length; i++) {
+        let parentContainer = data?.models[i].pModel;
+        if (parentContainer?.layoutManager) {
+          if (!parentContainer.layoutManager.canChangeSize(data.x, data.y, models)) {
+            return false;
+          }
+        }
+      }
+    }
+
     let deltaX = data.deltaX ? data.deltaX : 0;
     let deltaY = data.deltaY ? data.deltaY : 0;
     let deltaWidth = data.deltaWidth ? data.deltaWidth : 0;

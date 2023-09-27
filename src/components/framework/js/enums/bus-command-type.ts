@@ -21,6 +21,7 @@ enum DDeiEnumBusCommandType {
   ResetSelectorState = "reset-selector-state",
   ModelPush = "model-push",
   ModelChangeValue = "model-change-value",
+  ChangeLayout = "change-layout",
 }
 
 export default DDeiEnumBusCommandType

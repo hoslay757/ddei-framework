@@ -76,6 +76,11 @@ class DDeiLayerCanvasRender {
       //绘制操作点
       this.drawOpPoints();
 
+      //绘制移入移出效果图形
+      this.drawDragInOutPoints();
+
+
+
       //绘制辅助线
       if (this.helpLines && this.helpLines.bounds && this.helpLines.models) {
         this.drawHelpLines(this.helpLines.bounds, this.helpLines.models)
@@ -213,6 +218,62 @@ class DDeiLayerCanvasRender {
     }
   }
 
+  /**
+  * 绘制移入移出效果图形
+  */
+  drawDragInOutPoints(): void {
+
+    if (this.model?.dragInPoints?.length > 0 || this.model?.dragOutPoints?.length > 0) {
+      //获得 2d 上下文对象
+      let canvas = this.ddRender.canvas;
+      let ctx = canvas.getContext('2d');
+      //获取全局缩放比例
+      let ratio = this.ddRender.ratio;
+      //保存状态
+      ctx.save();
+      ctx.lineWidth = 2.5 * ratio;
+      ctx.setLineDash([0, 1 * ratio, 1 * ratio]);
+      //设置颜色
+      ctx.strokeStyle = DDeiUtil.getColor("green");
+      //开始绘制  
+      let lineOffset = 1 * ratio / 2;
+      let pvs = this.model.dragInPoints;
+      for (let i = 0; i < pvs?.length; i++) {
+        let s = i;
+        let e = i + 1;
+        if (i == pvs.length - 1) {
+          e = 0
+        }
+        ctx.beginPath();
+        ctx.moveTo(pvs[s].x * ratio + lineOffset, pvs[s].y * ratio + lineOffset);
+        ctx.lineTo(pvs[e].x * ratio + lineOffset, pvs[e].y * ratio + lineOffset);
+        ctx.stroke();
+        ctx.closePath();
+      }
+      //设置颜色
+      ctx.strokeStyle = DDeiUtil.getColor("red");
+      pvs = this.model.dragOutPoints;
+      for (let i = 0; i < pvs?.length; i++) {
+        let s = i;
+        let e = i + 1;
+        if (i == pvs.length - 1) {
+          e = 0
+        }
+        ctx.beginPath();
+        ctx.moveTo(pvs[s].x * ratio + lineOffset, pvs[s].y * ratio + lineOffset);
+        ctx.lineTo(pvs[e].x * ratio + lineOffset, pvs[e].y * ratio + lineOffset);
+        ctx.stroke();
+        ctx.closePath();
+      }
+
+
+      //恢复状态
+      ctx.restore();
+    }
+    this.model.dragInPoints = []
+    this.model.dragOutPoints = []
+  }
+
 
   /**
    * 获取控件移动后的区域
@@ -264,130 +325,6 @@ class DDeiLayerCanvasRender {
     let movedBounds = {
       x: evt.offsetX - this.stageRender.dragObj.x,
       y: evt.offsetY - this.stageRender.dragObj.y
-    }
-
-
-    // 计算图形拖拽后将要到达的坐标
-    // TODO 后续考虑做成粘附效果，不由辅助线是否开启作为判断条件
-    //shift键的按下状态
-    let isShift = DDei.KEY_DOWN_STATE.get("shift");
-    if (!isShift && DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
-      //辅助对齐线宽度
-      // let helpLineWeight = DDeiConfig.GLOBAL_HELP_LINE_WEIGHT;
-
-      // let mod = movedBounds.x % helpLineWeight
-
-      // if (mod > helpLineWeight * 0.5) {
-      //   movedBounds.x += (helpLineWeight - mod)
-      // } else {
-      //   movedBounds.x -= mod
-      // }
-      // mod = movedBounds.y % helpLineWeight
-      // if (mod > helpLineWeight * 0.5) {
-      //   movedBounds.y += (helpLineWeight - mod)
-      // } else {
-      //   movedBounds.y -= mod
-      // }
-
-
-      //判断是改变控件大小，还是移动控件，两者的二次调整策略有差异
-      //移动时的二次调整，确保移动后的坐标轴在辅助线上
-      // let dragModel = null;
-      // let isX = false;
-      // let isY = false;
-      // let isW = false;
-      // let isH = false;
-      // switch (this.stageRender.operateState) {
-      //   case DDeiEnumOperateState.CONTROL_CREATING:
-      //   case DDeiEnumOperateState.CONTROL_DRAGING:
-      //     dragModel = this.stageRender.dragObj.model;
-      //     isX = true;
-      //     isY = true;
-      //     break;
-      //   case DDeiEnumOperateState.CONTROL_CHANGING_BOUND:
-      //     dragModel = this.stageRender.selector;
-      //     switch (dragModel.passIndex) {
-      //       //上中
-      //       case 1: {
-      //         isY = true;
-      //         break;
-      //       }
-      //       //上右
-      //       case 2: {
-      //         isY = true;
-      //         isW = true;
-      //         break;
-      //       }
-      //       //中右
-      //       case 3: {
-      //         isW = true;
-      //         break;
-      //       }
-      //       //下右
-      //       case 4: {
-      //         isW = true;
-      //         isH = true;
-      //         break;
-      //       }
-      //       //下中
-      //       case 5: {
-      //         isH = true;
-      //         break;
-      //       }
-      //       //下左
-      //       case 6: {
-      //         isX = true;
-      //         isH = true;
-      //         break;
-      //       }
-      //       //中左
-      //       case 7: {
-      //         isX = true;
-      //         break;
-      //       }
-      //       //上左
-      //       case 8: {
-      //         isY = true;
-      //         isX = true;
-      //         break;
-      //       }
-      //       default: {
-      //         break;
-      //       }
-      //     }
-      //     break;
-      //   default: break;
-      // }
-
-      // if (dragModel) {
-      //   let mx = dragModel.x;
-      //   if (isW) {
-      //     mx += dragModel.width;
-      //   }
-      // if (mx % helpLineWeight != 0) {
-      //   let xmod = mx % helpLineWeight;
-      //   if (xmod > helpLineWeight * 0.5) {
-      //     movedBounds.x += (helpLineWeight - xmod);
-      //   }
-      //   else {
-      //     movedBounds.x -= xmod;
-      //   }
-      // }
-      // let my = dragModel.y;
-      // if (isH) {
-      //   my += dragModel.height;
-      // }
-      // if (my % helpLineWeight != 0) {
-      //   let ymod = my % helpLineWeight;
-      //   if (ymod > helpLineWeight * 0.5) {
-      //     movedBounds.y += (helpLineWeight - ymod);
-      //   }
-      //   else {
-      //     movedBounds.y -= ymod;
-      //   }
-      // }
-      // }
-
     }
     return movedBounds
   }
@@ -681,11 +618,20 @@ class DDeiLayerCanvasRender {
           }
           //如果最小层容器不是当前容器，执行的移动容器操作
           if (lastOnContainer.id != pContainerModel.id) {
+
             //构造移动容器action数据
             let selectedModels = pContainerModel.getSelectedModels();
             selectedModels.set(this.stageRender.currentOperateShape?.id, this.stageRender.currentOperateShape)
             this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeContainer, { oldContainer: pContainerModel, newContainer: lastOnContainer, models: Array.from(selectedModels.values()) }, evt);
+          } else {
+            pContainerModel?.layoutManager?.updateLayout(evt.offsetX, evt.offsetY, Array.from(selectedModels.values()));
           }
+        } else {
+          let pContainerModel = this.stageRender.currentOperateShape.pModel;
+          //构造移动容器action数据
+          let selectedModels = pContainerModel.getSelectedModels();
+          selectedModels.set(this.stageRender.currentOperateShape?.id, this.stageRender.currentOperateShape)
+          pContainerModel?.layoutManager?.updateLayout(evt.offsetX, evt.offsetY, Array.from(selectedModels.values()));
         }
         //清空临时变量
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
@@ -802,6 +748,7 @@ class DDeiLayerCanvasRender {
                 }
               }
             }
+            pushData.isAlt = true;
             pushData.newContainer = lastOnContainer
           }
           //修改所有选中控件坐标

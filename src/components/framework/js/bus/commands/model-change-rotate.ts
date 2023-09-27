@@ -32,6 +32,17 @@ class DDeiBusCommandModelChangeRotate extends DDeiBusCommand {
       if (!selectedModels || selector.passIndex == -1 || movedNumber == 0) {
         return false;
       }
+      if (selectedModels.set) {
+        selectedModels = Array.from(selectedModels.values());
+      }
+      for (let i = 0; i < selectedModels.length; i++) {
+        let parentContainer = selectedModels[i].pModel;
+        if (parentContainer?.layoutManager) {
+          if (!parentContainer.layoutManager.canChangeRotate()) {
+            return false;
+          }
+        }
+      }
       return true
     }
     return false;

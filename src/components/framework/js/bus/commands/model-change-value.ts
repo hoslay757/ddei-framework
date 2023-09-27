@@ -22,6 +22,7 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
    * @param evt 事件对象引用
    */
   before(data: object, bus: DDeiBus, evt: Event): boolean {
+
     return true;
   }
 
@@ -40,16 +41,20 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
       let paths = data.paths;
       //值
       let value = data.value;
-      mids.forEach(modelId => {
-        if (modelId) {
-          //从bus中获取实际控件
-          let model = stage?.getModelById(modelId);
-          if (model) {
-            //根据code以及mapping设置属性值
-            DDeiUtil.setAttrValueByPath(model, paths, value)
+      if (data?.paths?.indexOf('layout') != -1) {
+
+      } else {
+        mids.forEach(modelId => {
+          if (modelId) {
+            //从bus中获取实际控件
+            let model = stage?.getModelById(modelId);
+            if (model) {
+              //根据code以及mapping设置属性值
+              DDeiUtil.setAttrValueByPath(model, paths, value)
+            }
           }
-        }
-      });
+        });
+      }
       return true;
     }
     return false;
@@ -62,6 +67,11 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
    * @param evt 事件对象引用
    */
   after(data: object, bus: DDeiBus, evt: Event): boolean {
+    //如果修改的是layout属性，则同步修改layoutmanager，并重新计算布局
+    if (data?.paths?.indexOf('layout') != -1) {
+      //更新选择器
+      bus?.insert(DDeiEnumBusCommandType.ChangeLayout, data, evt);
+    }
     return true;
   }
 

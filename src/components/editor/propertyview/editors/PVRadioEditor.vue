@@ -3,6 +3,7 @@
     <div class="itembox" v-for="item in dataSource" @click="checkRadioValue(attrDefine, $event)">
       <input type="radio" :disabled="attrDefine.readonly" :name="attrDefine.id" :value="item.value"
         v-model="attrDefine.value" />
+        
       <div>{{ item.text }}</div>
     </div>
   </div>
@@ -85,7 +86,6 @@ export default {
 
 
     valueChange(evt) {
-
       //获取属性路径
       let paths = [];
       this.attrDefine?.mapping?.forEach(element => {

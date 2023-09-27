@@ -3,6 +3,8 @@ import DDeiEnumControlState from '../enums/control-state';
 import DDeiRectangle from './rectangle'
 import DDeiAbstractShape from './shape';
 import { Matrix3, Vector3 } from 'three';
+import DDeiLayoutManager from '../layout/layout-manager';
+import DDeiLayoutManagerFactory from '../layout/layout-manager-factory';
 
 /**
  * 普通容器是一个矩形，能包含其他容器
@@ -12,10 +14,13 @@ class DDeiRectContainer extends DDeiRectangle {
   constructor(props: object) {
     super(props);
     this.layout = props.layout;
+    this.layoutData = props.layoutData;
     this.linkChild = props.linkChild ? props.linkChild : false;
     this.linkSelf = props.linkSelf ? props.linkSelf : false;
     this.models = props.models ? props.models : new Map();
     this.midList = props.midList ? props.midList : new Array();
+    this.layoutManager = DDeiLayoutManagerFactory.getLayoutInstance(this.layout);
+    this.layoutManager.container = this;
   }
   // ============================ 静态方法 ============================
 
@@ -60,13 +65,18 @@ class DDeiRectContainer extends DDeiRectangle {
   // 本模型的基础图形
   baseModelType: string = 'DDeiContainer';
   /**
-   * 布局方式，null/0自由布局,1九宫格，2表格，3绕圆心，4栅格，缺省null
+   * 布局方式，null/free自由布局，full完全填充,nine九宫格，table表格，cc绕圆心，缺省null
    * 自由布局：可以修改自身以及子控件的大小、位置，通过linkChild、linkSelf两个属性控制大小联动关系
+   * 完全填充：单个控件完全填充容器
    * 表格：内部实为一个表格控件，能够调整行列、合并单元格等改变内部布局，不可以自由改动控件的大小
    * 九宫格：空间平均分成9份，不可以自由改动控件的大小
-   * 栅格：类似HTML的栅格布局
+   * 绕圆心：围绕圆心进行布局
    */
-  layout: number;
+  layout: string;
+  //布局数据，布局管理器会利用这个数据来修改控件的位置，大小坐标等
+  layoutData: object;
+  //布局管理器，用来实现布局的效果
+  layoutManager: DDeiLayoutManager;
   //是否联动子控件，为true时，修改自身大小时，自动会修改子控件大小
   linkChild: boolean = false;
   //是否联动自身，为true时，修改子控件大小时，自动修改自身大小
@@ -315,7 +325,10 @@ class DDeiRectContainer extends DDeiRectangle {
    * 修改子元素大小
    */
   changeChildrenBounds(originRect, newRect): boolean {
-    if (this.linkChild) {
+    if (this.layoutManager) {
+      this.layoutManager.changeSubModelBounds();
+    }
+    else if (this.linkChild) {
       let models: DDeiAbstractShape[] = Array.from(this.models.values());
       //记录每一个图形在原始矩形中的比例
       let originPosMap: Map<string, object> = new Map();

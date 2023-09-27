@@ -1,5 +1,6 @@
 import DDeiConfig from './config.js'
 import DDeiModelArrtibuteValue from './models/attribute/attribute-value.js';
+import DDeiAbstractShape from './models/shape.js';
 
 class DDeiUtil {
 
@@ -10,6 +11,41 @@ class DDeiUtil {
   //钩子函数，调用外部的配置属性读取函数,由外部调用者初始化
   static getAttrValueByConfig: Function;
 
+
+  /**
+   * 将一组控件按照从上到下从左到右的顺序进行排序，返回新的顺序
+   * @param element 
+   */
+  static getSortedModels(models: Map<string, DDeiAbstractShape> | Array<DDeiAbstractShape>): Array<any> {
+    let returnArray = new Array()
+    if (models) {
+      let modelArray = null;
+      if (models.set) {
+        modelArray = Array.from(models.values());
+      } else {
+        modelArray = models;
+      }
+      modelArray.forEach(model => {
+        let insert = false;
+        for (let i = returnArray.length - 1; i > 0; i--) {
+          let rm = returnArray[i];
+          if (rm.y <= model.y) {
+            returnArray.splice(i + 1, 0, model);
+            insert = true
+            break;
+          } else if (rm.y == model.y && rm.x <= model.x) {
+            returnArray.splice(i + 1, 0, model);
+            insert = true
+            break;
+          }
+        }
+        if (!insert) {
+          returnArray.splice(0, 0, model);
+        }
+      })
+    }
+    return returnArray
+  }
 
   /**
    * 返回dom绝对坐标
