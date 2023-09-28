@@ -54,7 +54,11 @@ class DDeiBusCommandUpdateSelectorBounds extends DDeiBusCommand {
           }
           selector.setBounds(x, y, width, height);
         } else {
-          selector.updatedBoundsBySelectedModels(optContainer);
+          let models = data?.models;
+          if (!models?.length > 0 && !models?.size > 0) {
+            models = optContainer.getSelectedModels();
+          }
+          selector.updatedBoundsByModels(models);
         }
       }
     }

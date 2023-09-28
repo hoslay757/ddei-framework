@@ -155,14 +155,15 @@ class DDeiSelector extends DDeiRectangle {
    * 根据已选择的控件更新坐标和状态
    * @param pContainerModel 上层容器控件
    */
-  updatedBoundsBySelectedModels(pContainerModel: DDeiAbstractShape): void {
-    if (!pContainerModel) {
-      pContainerModel = this.stage.layers[this.stage.layerIndex];
+  updatedBoundsByModels(models: Map<string, DDeiAbstractShape> | Array<DDeiAbstractShape>): void {
+    if (!models) {
+      let pContainerModel = this.stage.layers[this.stage.layerIndex];
+      models = pContainerModel.getSelectedModels();
     }
-    let selectedModels = pContainerModel.getSelectedModels();
-    if (selectedModels && selectedModels.size > 0) {
-
-      let models = Array.from(selectedModels.values());
+    if (models?.size > 0 || models?.length > 0) {
+      if (models.set) {
+        models = Array.from(models.values());
+      }
       //获取间距设定
       let paddingWeightInfo = this.paddingWeight?.selected ? this.paddingWeight.selected : DDeiConfig.SELECTOR.PADDING_WEIGHT.selected;
       let paddingWeight = 0;

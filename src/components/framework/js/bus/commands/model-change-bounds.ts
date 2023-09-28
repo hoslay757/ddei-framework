@@ -78,6 +78,7 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
     if (data?.models?.length > 0) {
+
       let deltaX = data.deltaX ? data.deltaX : 0;
       let deltaY = data.deltaY ? data.deltaY : 0;
       let deltaWidth = data.deltaWidth ? data.deltaWidth : 0;
@@ -96,6 +97,7 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
 
       //计算外接矩形
       let originRect: object = null;
+
       if (selector) {
         originRect = selector.getAbsBounds();
         let paddingWeightInfo = selector.paddingWeight?.selected ? selector.paddingWeight.selected : DDeiConfig.SELECTOR.PADDING_WEIGHT.selected;
@@ -118,6 +120,7 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
       //获取模型在原始模型中的位置比例
       for (let i = 0; i < models.length; i++) {
         let item = models[i]
+
         originPosMap.set(item.id, {
           xR: ((item.x - originRect.x) / originRect.width),
           yR: ((item.y - originRect.y) / originRect.height),
@@ -127,7 +130,7 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
       }
 
       //考虑paddingWeight，计算预先实际移动后的区域
-
+      console.log(originRect.width + "   " + originPosMap)
       let movedBounds = { x: originRect.x + deltaX, y: originRect.y + deltaY, width: originRect.width + deltaWidth, height: originRect.height + deltaHeight }
 
       models.forEach(item => {
@@ -136,6 +139,7 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
         item.width = parseFloat((movedBounds.width * originPosMap.get(item.id).wR).toFixed(4))
         item.y = parseFloat((movedBounds.y + movedBounds.height * originPosMap.get(item.id).yR).toFixed(4))
         item.height = parseFloat((movedBounds.height * originPosMap.get(item.id).hR).toFixed(4))
+
         if (models.length > 1) {
           //去掉这一句后，多个控件拖拽时坐标会出现问题，加上则会导致旋转后嵌套容器显示不正常,因此控制一下，只在多个控件时才这样处理
           item.calRotatePointVectors();
@@ -168,7 +172,8 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
    */
   after(data: object, bus: DDeiBus, evt: Event): boolean {
     //更新选择器
-    bus?.insert(DDeiEnumBusCommandType.UpdateSelectorBounds, null, evt);
+    let stage = bus.ddInstance.stage;
+    bus?.insert(DDeiEnumBusCommandType.UpdateSelectorBounds, { models: stage?.layers[stage?.layerIndex]?.shadowControls }, evt);
     return true;
   }
 

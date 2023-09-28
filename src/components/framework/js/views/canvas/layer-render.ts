@@ -10,7 +10,7 @@ import DDeiStage from '../../models/stage.js';
 import DDeiUtil from '../../util.js'
 import DDeiCanvasRender from './ddei-render.js';
 import DDeiStageCanvasRender from './stage-render.js';
-import { cloneDeep, clone } from 'lodash'
+import { cloneDeep } from 'lodash'
 
 
 
@@ -700,10 +700,23 @@ class DDeiLayerCanvasRender {
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
         break;
       case DDeiEnumOperateState.CONTROL_CHANGING_BOUND:
+        //同步影子元素的坐标大小等状态到当前模型
+        this.model.shadowControls.forEach(item => {
+          let model = this.stage?.getModelById(item.id)
+          model.x = item.x
+          model.y = item.y
+          model.width = item.width
+          model.height = item.height
+          model.rotate = item.rotate
+          model.currentPointVectors = item.currentPointVectors
+          model.centerPointVector = item.centerPointVector
+        })
+        this.model.shadowControls = [];
         //清空临时变量
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
         //渲染图形
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+
         break;
       //默认缺省状态
       default:
@@ -820,27 +833,20 @@ class DDeiLayerCanvasRender {
       }
       //控件改变大小中
       case DDeiEnumOperateState.CONTROL_CHANGING_BOUND: {
-        //按下ctrl同比拉伸
-        //计算移动后的坐标以及大小
-        let pContainerModel = this.stage.render.currentOperateContainer;
-        if (!pContainerModel) {
-          pContainerModel = this.model;
-        }
+
         //得到改变后的新坐标以及大小，按下ctrl则等比放大缩小
         let movedBounds = this.stageRender.selector.render.getMovedBounds(evt.offsetX, evt.offsetY, isCtrl);
 
         if (movedBounds) {
           let selector = this.stageRender.selector;
-          //改变控件以及容器的大小
-          let mds = pContainerModel.getSelectedModels();
 
-          let pushData = { x: evt.offsetX, y: evt.offsetY, dx: this.stageRender.dragObj.dx, dy: this.stageRender.dragObj.dy, deltaX: movedBounds.x - selector.x, deltaY: movedBounds.y - selector.y, deltaWidth: movedBounds.width - selector.width, deltaHeight: movedBounds.height - selector.height, selector: selector, models: Array.from(mds.values()) };
+          let pushData = { x: evt.offsetX, y: evt.offsetY, dx: this.stageRender.dragObj.dx, dy: this.stageRender.dragObj.dy, deltaX: movedBounds.x - selector.x, deltaY: movedBounds.y - selector.y, deltaWidth: movedBounds.width - selector.width, deltaHeight: movedBounds.height - selector.height, selector: selector, models: this.model.shadowControls };
           this.model.opPoints = [];
           //更新dragObj临时变量中的数值,确保坐标对应关系一致
           //修改所有选中控件坐标
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeBounds, pushData, evt);
           //修改辅助线
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.SetHelpLine, { models: mds }, evt);
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.SetHelpLine, { models: this.model.shadowControls }, evt);
           //渲染图形
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
         }

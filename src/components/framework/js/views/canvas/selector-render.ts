@@ -9,6 +9,7 @@ import DDeiAbstractShape from '../../models/shape.js';
 import DDeiUtil from '../../util.js';
 import DDeiRectangleCanvasRender from './rectangle-render.js';
 import { Matrix3, Vector3 } from 'three';
+import { cloneDeep } from 'lodash'
 
 /**
  * DDeiSelector的渲染器类，用于渲染选择器
@@ -273,6 +274,12 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         dx: this.model.centerPointVector.x - evt.offsetX,//鼠标在控件中心坐标的增量位置
         dy: this.model.centerPointVector.y - evt.offsetY,
       }
+      //获取当前层次选择的控件
+      //计算移动后的坐标以及大小
+      let pContainerModel = this.stage.render.currentOperateContainer;
+      let selectedModels = pContainerModel.getSelectedModels();
+      let layer = this.stage.layers[this.stage.layerIndex]
+      layer.shadowControls = cloneDeep(Array.from(selectedModels.values()));
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
       //当前操作状态：改变控件大小中
       this.stageRender.operateState = DDeiEnumOperateState.CONTROL_CHANGING_BOUND
