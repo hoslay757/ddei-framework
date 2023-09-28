@@ -192,8 +192,19 @@ class DDeiLayerCanvasRender {
       //保存状态
       ctx.save();
       this.model.shadowControls.forEach(item => {
+        //找到实际图形的旋转关系，进行旋转变换，然后再进行绘制
+        let pModelList = []
+        //转换为缩放后的坐标
+        let lm = item.pModel
+        while (lm && lm.modelType != 'DDeiLayer') {
+          pModelList.push(lm)
+          lm = lm.pModel;
+        }
+        pModelList.forEach(pm => {
+          let ratPos = pm.render.getBorderRatPos();
+          pm.render.doRotate(ctx, ratPos)
+        })
         item.render.drawShape();
-        item.calRotatePointVectors();
         let pvs = item.currentPointVectors;
         item.pointVectors = null;
         ctx.globalAlpha = 0.7
@@ -209,9 +220,9 @@ class DDeiLayerCanvasRender {
         ctx.lineTo(pvs[0].x * ratio + lineOffset, pvs[0].y * ratio + lineOffset);
         ctx.closePath();
         ctx.fill();
-
+        ctx.restore();
       });
-      ctx.restore();
+
     }
   }
 
