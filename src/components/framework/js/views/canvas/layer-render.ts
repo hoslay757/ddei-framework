@@ -795,28 +795,12 @@ class DDeiLayerCanvasRender {
         //获取当前层次选择的控件
         let selectedModels = pContainerModel.getSelectedModels();
         selectedModels.forEach(m => {
-          let md = clone(m);
-          //将当前操作控件加入临时选择控件
-          md.id = md.id + "_shadow"
-          md.initRender();
+          let md = DDeiUtil.getShadowControl(m);
           this.model.shadowControls.push(md);
         });
         if (!selectedModels.has(this.stageRender.currentOperateShape?.id)) {
-          let md = clone(this.stageRender.currentOperateShape)
-          //将当前操作控件加入临时选择控件
-          md.id = md.id + "_shadow"
-          md.initRender();
-          if (md?.baseModelType == "DDeiContainer") {
-            let newModels = new Map();
-            md.models.forEach(smi => {
-              let sm = clone(smi)
-              sm.pModel = md;
-              newModels.set(sm.id, sm)
-              sm.initRender();
-            });
-            md.models = newModels;
-          }
-          this.model.shadowControls.push(md)
+          let md = DDeiUtil.getShadowControl(this.stageRender.currentOperateShape)
+          this.model.shadowControls.push(md);
         }
 
         //将当前被拖动的控件转变为影子控件

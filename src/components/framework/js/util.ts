@@ -1,6 +1,7 @@
 import DDeiConfig from './config.js'
 import DDeiModelArrtibuteValue from './models/attribute/attribute-value.js';
 import DDeiAbstractShape from './models/shape.js';
+import { clone } from 'lodash'
 
 class DDeiUtil {
 
@@ -45,6 +46,29 @@ class DDeiUtil {
       })
     }
     return returnArray
+  }
+
+  /**
+   * 获取影子图形
+   * @param model 
+   */
+  static getShadowControl(model: DDeiAbstractShape): DDeiAbstractShape {
+    let md = clone(model);
+    md.initRender();
+    //将当前操作控件加入临时选择控件
+    md.id = md.id + "_shadow"
+    if (md?.baseModelType == "DDeiContainer") {
+      let newModels = new Map();
+      md.models.forEach(smi => {
+        let sm = DDeiUtil.getShadowControl(smi)
+        sm.id = sm.id.substring(0, sm.id.lastIndexOf("_shadow"))
+        sm.pModel = md;
+        newModels.set(sm.id, sm)
+        sm.initRender();
+      });
+      md.models = newModels;
+    }
+    return md;
   }
 
   /**
