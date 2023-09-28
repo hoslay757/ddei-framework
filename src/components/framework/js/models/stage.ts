@@ -292,7 +292,7 @@ class DDeiStage {
    * @param ignoreModels 忽略判断的模型
    * @returns 
    */
-  getAlignModels(bounds: object, souceModels: Map<string, DDeiAbstractShape>): object {
+  getAlignModels(bounds: object, souceModels: Map<string, DDeiAbstractShape> | Array<DDeiAbstractShape>): object {
     let models = {
       leftAlignModels: [],
       rightAlignModels: [],
@@ -307,7 +307,10 @@ class DDeiStage {
     let distP
     this.getLayerModels().forEach(model => {
       // 排除源模型
-      if (souceModels.has(model.id)) {
+      if (souceModels.set) {
+        souceModels = Array.from(souceModels.values());
+      }
+      if (souceModels.indexOf(model) != -1) {
         return
       }
       distP = { x: model.x, y: model.y, width: model.width, height: model.height }

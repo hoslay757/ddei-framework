@@ -31,16 +31,21 @@ class DDeiBusCommandSetHelpLine extends DDeiBusCommand {
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
     let stage = bus.ddInstance.stage;
-    if (stage && (data?.models?.size > 0 || data?.container)) {
+    if (stage && (data?.models?.length > 0 || data?.models?.size > 0 || data?.container)) {
+
       let layer = data.layer;
       if (!layer) {
         layer = stage.layers[stage.layerIndex];
       }
       let models = data?.models;
+
       if (!models && data?.container) {
         models = data?.container.getSelectedModels();
       }
-      if (models?.size > 0) {
+      if (models.set) {
+        models = Array.from(models.values());
+      }
+      if (models?.length > 0) {
         let control = data?.control;
         if (!control) {
           control = stage.render.currentOperateShape;

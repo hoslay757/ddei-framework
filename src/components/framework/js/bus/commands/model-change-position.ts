@@ -45,6 +45,7 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
     if (data?.models?.length > 0) {
+
       let x = data.x ? data.x : 0;
       let y = data.y ? data.y : 0;
       let dx = data.dx ? data.dx : 0;
@@ -128,14 +129,12 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
 
       //考虑paddingWeight，计算预先实际移动后的区域
       let movedBounds = { x: x - originRect.width / 2, y: y - originRect.height / 2, width: originRect.width, height: originRect.height }
-
       models.forEach(item => {
         let originBound = { x: item.x, y: item.y, width: item.width, height: item.height };
         item.x = parseFloat((movedBounds.x - cx + movedBounds.width * originPosMap.get(item.id).xR).toFixed(4))
         item.width = parseFloat((movedBounds.width * originPosMap.get(item.id).wR).toFixed(4))
         item.y = parseFloat((movedBounds.y - cy + movedBounds.height * originPosMap.get(item.id).yR).toFixed(4))
         item.height = parseFloat((movedBounds.height * originPosMap.get(item.id).hR).toFixed(4))
-
         //如果当前是修改坐标，并且不改变容器大小，则按照容器比例更新子元素的大小
         if (!changeContainer && stage.render.selector.passIndex != 10 && stage.render.selector.passIndex != 11) {
           if (item.baseModelType == "DDeiContainer") {
@@ -163,6 +162,7 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
           }
         }
       }
+
       return true;
     }
     return false;

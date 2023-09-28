@@ -86,6 +86,9 @@ class DDeiLayer {
 
   //因容器拖入操作而产生的向量
   dragOutPoints: object[] = [];
+
+  //拖拽时的影子控件，拖拽完成或取消后会销毁
+  shadowControls: DDeiAbstractShape[] = []
   // ============================ 方法 ===============================
   /**
   * 初始化渲染器

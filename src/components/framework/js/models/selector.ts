@@ -161,6 +161,7 @@ class DDeiSelector extends DDeiRectangle {
     }
     let selectedModels = pContainerModel.getSelectedModels();
     if (selectedModels && selectedModels.size > 0) {
+
       let models = Array.from(selectedModels.values());
       //获取间距设定
       let paddingWeightInfo = this.paddingWeight?.selected ? this.paddingWeight.selected : DDeiConfig.SELECTOR.PADDING_WEIGHT.selected;
