@@ -10,7 +10,7 @@ import DDeiStage from '../../models/stage.js';
 import DDeiUtil from '../../util.js'
 import DDeiCanvasRender from './ddei-render.js';
 import DDeiStageCanvasRender from './stage-render.js';
-import { cloneDeep } from 'lodash'
+import { cloneDeep, clone } from 'lodash'
 
 
 
@@ -189,9 +189,10 @@ class DDeiLayerCanvasRender {
       let ctx = canvas.getContext('2d');
       //获取全局缩放比例
       let ratio = this.ddRender.ratio;
-      //保存状态
-      ctx.save();
+
       this.model.shadowControls.forEach(item => {
+        //保存状态
+        ctx.save();
         //找到实际图形的旋转关系，进行旋转变换，然后再进行绘制
         let pModelList = []
         //转换为缩放后的坐标
@@ -204,6 +205,7 @@ class DDeiLayerCanvasRender {
           let ratPos = pm.render.getBorderRatPos();
           pm.render.doRotate(ctx, ratPos)
         })
+
         item.render.drawShape();
         let pvs = item.currentPointVectors;
         item.pointVectors = null;
@@ -404,7 +406,7 @@ class DDeiLayerCanvasRender {
       //设置字体颜色
       ctx.fillStyle = "red"
       //执行绘制
-      ctx.fillText(bounds.x + "," + bounds.y, bounds.x * ratio - 30, bounds.y * ratio - 30);
+      ctx.fillText(bounds.x.toFixed(0) + "," + bounds.y.toFixed(0), bounds.x.toFixed(0) * ratio - 30, bounds.y.toFixed(0) * ratio - 30);
       // 计算对齐辅助线
       if (DDeiConfig.GLOBAL_HELP_LINE_ALIGN_ENABLE) {
         // 获取对齐的模型
@@ -654,7 +656,8 @@ class DDeiLayerCanvasRender {
       case DDeiEnumOperateState.CONTROL_DRAGING:
         //同步影子元素的坐标大小等状态到当前模型
         this.model.shadowControls.forEach(item => {
-          let model = this.stage?.getModelById(item.id)
+          let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
+          let model = this.stage?.getModelById(id)
           model.x = item.x
           model.y = item.y
           model.width = item.width
@@ -713,7 +716,8 @@ class DDeiLayerCanvasRender {
       case DDeiEnumOperateState.CONTROL_CHANGING_BOUND:
         //同步影子元素的坐标大小等状态到当前模型
         this.model.shadowControls.forEach(item => {
-          let model = this.stage?.getModelById(item.id)
+          let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
+          let model = this.stage?.getModelById(id)
           model.x = item.x
           model.y = item.y
           model.width = item.width
@@ -790,9 +794,31 @@ class DDeiLayerCanvasRender {
         }
         //获取当前层次选择的控件
         let selectedModels = pContainerModel.getSelectedModels();
-        this.model.shadowControls = cloneDeep(Array.from(selectedModels.values()));
-        //将当前操作控件加入临时选择控件
-        this.model.shadowControls.push(cloneDeep(this.stageRender.currentOperateShape))
+        selectedModels.forEach(m => {
+          let md = clone(m);
+          //将当前操作控件加入临时选择控件
+          md.id = md.id + "_shadow"
+          md.initRender();
+          this.model.shadowControls.push(md);
+        });
+        if (!selectedModels.has(this.stageRender.currentOperateShape?.id)) {
+          let md = clone(this.stageRender.currentOperateShape)
+          //将当前操作控件加入临时选择控件
+          md.id = md.id + "_shadow"
+          md.initRender();
+          if (md?.baseModelType == "DDeiContainer") {
+            let newModels = new Map();
+            md.models.forEach(smi => {
+              let sm = clone(smi)
+              sm.pModel = md;
+              newModels.set(sm.id, sm)
+              sm.initRender();
+            });
+            md.models = newModels;
+          }
+          this.model.shadowControls.push(md)
+        }
+
         //将当前被拖动的控件转变为影子控件
 
         this.stageRender.currentOperateShape = this.model.shadowControls[this.model.shadowControls.length - 1]

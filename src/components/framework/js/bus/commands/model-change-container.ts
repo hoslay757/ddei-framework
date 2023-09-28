@@ -39,7 +39,10 @@ class DDeiBusCommandModelChangeContainer extends DDeiBusCommand {
       let loAbsRotate = null;
 
       models.forEach((item, key) => {
-
+        if (item.id.lastIndexOf("_shadow") != -1) {
+          let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
+          item = bus.ddInstance.stage.getModelById(id);
+        }
         //转换坐标，获取最外层的坐标
         let itemAbsPos = item.getAbsPosition();
         let itemAbsRotate = item.getAbsRotate();

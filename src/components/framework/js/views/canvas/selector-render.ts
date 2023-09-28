@@ -9,7 +9,7 @@ import DDeiAbstractShape from '../../models/shape.js';
 import DDeiUtil from '../../util.js';
 import DDeiRectangleCanvasRender from './rectangle-render.js';
 import { Matrix3, Vector3 } from 'three';
-import { cloneDeep } from 'lodash'
+import { clone } from 'lodash'
 
 /**
  * DDeiSelector的渲染器类，用于渲染选择器
@@ -279,7 +279,23 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       let pContainerModel = this.stage.render.currentOperateContainer;
       let selectedModels = pContainerModel.getSelectedModels();
       let layer = this.stage.layers[this.stage.layerIndex]
-      layer.shadowControls = cloneDeep(Array.from(selectedModels.values()));
+      selectedModels.forEach(m => {
+        let md = clone(m);
+        md.initRender();
+        //将当前操作控件加入临时选择控件
+        md.id = md.id + "_shadow"
+        layer.shadowControls.push(md);
+        if (md?.baseModelType == "DDeiContainer") {
+          let newModels = new Map();
+          md.models.forEach(smi => {
+            let sm = clone(smi)
+            sm.pModel = md;
+            newModels.set(sm.id, sm)
+            sm.initRender();
+          });
+          md.models = newModels;
+        }
+      });
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
       //当前操作状态：改变控件大小中
       this.stageRender.operateState = DDeiEnumOperateState.CONTROL_CHANGING_BOUND

@@ -34,31 +34,33 @@ class DDeiBusCommandUpdateSelectorBounds extends DDeiBusCommand {
     if (stage) {
       //获取当前选中控件
       let optContainer = stage.render.currentOperateContainer;
-      let selector = stage.render.selector;
-      if (selector) {
-        if (data?.operateState == DDeiEnumOperateState.SELECT_WORKING) {
-          let x = selector.startX;
-          let y = selector.startY;
-          let width, height
-          if (evt.offsetX < x) {
-            width = x - evt.offsetX
-            x = evt.offsetX
+      if (optContainer) {
+        let selector = stage.render.selector;
+        if (selector) {
+          if (data?.operateState == DDeiEnumOperateState.SELECT_WORKING) {
+            let x = selector.startX;
+            let y = selector.startY;
+            let width, height
+            if (evt.offsetX < x) {
+              width = x - evt.offsetX
+              x = evt.offsetX
+            } else {
+              width = evt.offsetX - x
+            }
+            if (evt.offsetY < y) {
+              height = y - evt.offsetY
+              y = evt.offsetY
+            } else {
+              height = evt.offsetY - y
+            }
+            selector.setBounds(x, y, width, height);
           } else {
-            width = evt.offsetX - x
+            let models = data?.models;
+            if (!models?.length > 0 && !models?.size > 0) {
+              models = optContainer.getSelectedModels();
+            }
+            selector.updatedBoundsByModels(models);
           }
-          if (evt.offsetY < y) {
-            height = y - evt.offsetY
-            y = evt.offsetY
-          } else {
-            height = evt.offsetY - y
-          }
-          selector.setBounds(x, y, width, height);
-        } else {
-          let models = data?.models;
-          if (!models?.length > 0 && !models?.size > 0) {
-            models = optContainer.getSelectedModels();
-          }
-          selector.updatedBoundsByModels(models);
         }
       }
     }

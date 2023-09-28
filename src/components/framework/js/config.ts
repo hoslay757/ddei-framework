@@ -62,9 +62,9 @@ class DDeiConfig {
   static SERI_FIELDS: object = {
     "DDei": { "TOJSON": ["stage"], "SKIP": ["bus", "render", "unicode"] },
     "DDeiStage": { "TOJSON": ["layers"], "SKIP": ["ddInstance", "selectedModels", "render", "unicode"] },
-    "DDeiLayer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "render", "unicode"] },
-    "DDeiContainer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode"] },
-    "AbstractShape": { "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode"] },
+    "DDeiLayer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "render", "unicode", "opPoints", "dragInPoints", "dragOutPoints", "shadowControls"] },
+    "DDeiContainer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "pointVectors", "currentPointVectors", "centerPointVector", "layoutManager"] },
+    "AbstractShape": { "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "pointVectors", "currentPointVectors", "centerPointVector"] },
   }
 
   // 边框的相关缺省样式属性

@@ -129,6 +129,7 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
 
       //考虑paddingWeight，计算预先实际移动后的区域
       let movedBounds = { x: x - originRect.width / 2, y: y - originRect.height / 2, width: originRect.width, height: originRect.height }
+
       models.forEach(item => {
         let originBound = { x: item.x, y: item.y, width: item.width, height: item.height };
         item.x = parseFloat((movedBounds.x - cx + movedBounds.width * originPosMap.get(item.id).xR).toFixed(4))
@@ -145,6 +146,8 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
           //pContainerModel修改上层容器直至layer的大小
           parentContainer.changeParentsBounds()
         }
+        console.log("移动：" + item.id + " .  " + item.x)
+
       })
 
       //如果移动过程中需要改变容器，一般用于拖拽时的逻辑
