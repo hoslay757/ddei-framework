@@ -34,6 +34,9 @@ class DDeiBusCommandUpdateSelectorBounds extends DDeiBusCommand {
     if (stage) {
       //获取当前选中控件
       let optContainer = stage.render.currentOperateContainer;
+      if (!optContainer) {
+        optContainer = stage.layers[stage.layerIndex];
+      }
       if (optContainer) {
         let selector = stage.render.selector;
         if (selector) {
@@ -56,6 +59,9 @@ class DDeiBusCommandUpdateSelectorBounds extends DDeiBusCommand {
             selector.setBounds(x, y, width, height);
           } else {
             let models = data?.models;
+            if (!models?.length > 0 && !models?.size > 0) {
+              models = stage.selectedModels;
+            }
             if (!models?.length > 0 && !models?.size > 0) {
               models = optContainer.getSelectedModels();
             }

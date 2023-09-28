@@ -174,7 +174,6 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
         //颜色
         ctx.strokeStyle = DDeiUtil.getColor(color);
         if (this.stage?.selectedModels?.size > 0 && this.model.baseModelType == "DDeiSelector") {
-
           let pvs = this.model.currentPointVectors;
           if (pvs?.length > 0) {
             if (i == 4) {
@@ -187,6 +186,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
           }
         } else {
           if (i == 1) {
+            console.log(ratPos)
             ctx.moveTo(ratPos.x + lineOffset, ratPos.y + lineOffset);
             ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + lineOffset);
           } else if (i == 2) {

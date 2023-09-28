@@ -22,8 +22,9 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
    * 创建图形
    */
   drawShape(): void {
-
-
+    if (this.model.state != DDeiEnumControlState.DEFAULT) {
+      this.model.updatedBoundsByModels();
+    }
     //绘制边框
     this.drawBorder();
 

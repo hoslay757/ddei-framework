@@ -706,8 +706,6 @@ class DDeiLayerCanvasRender {
           pContainerModel?.layoutManager?.updateLayout(evt.offsetX, evt.offsetY, Array.from(selectedModels.values()));
         }
         this.model.shadowControls = [];
-        //更新选择框的状态
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateSelectorBounds, { operateState: this.stageRender.operateState }, evt);
         //清空临时变量
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
         //渲染图形

@@ -157,6 +157,9 @@ class DDeiSelector extends DDeiRectangle {
    */
   updatedBoundsByModels(models: Map<string, DDeiAbstractShape> | Array<DDeiAbstractShape>): void {
     if (!models) {
+      models = this.stage?.selectedModels;
+    }
+    if (!models) {
       let pContainerModel = this.stage.layers[this.stage.layerIndex];
       models = pContainerModel.getSelectedModels();
     }
