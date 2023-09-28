@@ -109,17 +109,19 @@ class DDeiLayer {
    * @param model 被添加的模型
    */
   addModel(model: DDeiAbstractShape): void {
-    model.stage = this.stage;
-    //将模型添加进图层
-    this.models.set(model.id, model);
-    if (this.midList && this.midList.length > 0) {
-      model.zIndex = this.models.get(this.midList[this.midList.length - 1]).zIndex;
-    }
-    this.midList.push(model.id);
+    if (this.midList.indexOf(model.id) == -1) {
+      model.stage = this.stage;
+      //将模型添加进图层
+      this.models.set(model.id, model);
+      if (this.midList && this.midList.length > 0) {
+        model.zIndex = this.models.get(this.midList[this.midList.length - 1]).zIndex;
+      }
+      this.midList.push(model.id);
 
-    model.layer = this;
-    model.pModel = this;
-    this.resortModelByZIndex();
+      model.layer = this;
+      model.pModel = this;
+      this.resortModelByZIndex();
+    }
   }
 
   /**

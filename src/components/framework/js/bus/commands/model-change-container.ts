@@ -66,6 +66,7 @@ class DDeiBusCommandModelChangeContainer extends DDeiBusCommand {
       if (oldContainer) {
         //检查老容器中是否只有一个元素，如果有，则将其移动到上层容器
         if (oldContainer.baseModelType != 'DDeiLayer' && oldContainer.models.size == 1) {
+          console.log("追加")
           bus.insert(DDeiEnumBusCommandType.ModelChangeContainer, { oldContainer: oldContainer, newContainer: oldContainer.pModel, models: Array.from(oldContainer.models.values()) }, evt);
         }
         //TODO 如果移动后，老容器中没有元素，则移除，将来考虑手工创建的容器和组合后产生的容器，组合后的容器才销毁，手工的容器不销毁

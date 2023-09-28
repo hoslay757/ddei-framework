@@ -30,6 +30,9 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
    * 初始化
    */
   init(): void {
+    if (!this.model.stage) {
+      debugger
+    }
     this.ddRender = this.model.stage.ddInstance.render
     this.stage = this.model.stage
     this.stageRender = this.model.stage.render

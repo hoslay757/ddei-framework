@@ -130,7 +130,6 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
       }
 
       //考虑paddingWeight，计算预先实际移动后的区域
-      console.log(originRect.width + "   " + originPosMap)
       let movedBounds = { x: originRect.x + deltaX, y: originRect.y + deltaY, width: originRect.width + deltaWidth, height: originRect.height + deltaHeight }
 
       models.forEach(item => {

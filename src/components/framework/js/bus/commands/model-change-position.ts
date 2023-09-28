@@ -146,7 +146,6 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
           //pContainerModel修改上层容器直至layer的大小
           parentContainer.changeParentsBounds()
         }
-        console.log("移动：" + item.id + " .  " + item.x)
 
       })
 

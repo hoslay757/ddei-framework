@@ -106,13 +106,16 @@ class DDeiRectContainer extends DDeiRectangle {
    * @param model 被添加的模型
    */
   addModel(model: DDeiAbstractShape): void {
-    model.stage = this.stage;
-    //将模型添加进图层
-    this.models.set(model.id, model);
-    this.midList.push(model.id);
-    model.pModel = this;
-    model.layer = this.layer;
-    this.resortModelByZIndex();
+    if (this.midList.indexOf(model.id) == -1) {
+      model.stage = this.stage;
+
+      //将模型添加进图层
+      this.models.set(model.id, model);
+      this.midList.push(model.id);
+      model.pModel = this;
+      model.layer = this.layer;
+      this.resortModelByZIndex();
+    }
   }
 
   /**

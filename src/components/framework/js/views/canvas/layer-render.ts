@@ -687,7 +687,13 @@ class DDeiLayerCanvasRender {
           if (lastOnContainer.id != pContainerModel.id) {
             //构造移动容器action数据
             let selectedModels = pContainerModel.getSelectedModels();
-            selectedModels.set(this.stageRender.currentOperateShape?.id, this.stageRender.currentOperateShape)
+            if (this.stageRender.currentOperateShape?.id.indexOf("_shadow") != -1) {
+              let id = this.stageRender.currentOperateShape.id;
+              id = id.substring(0, id.lastIndexOf("_shadow"));
+              selectedModels.set(id, this.stage?.getModelById(id))
+            } else {
+              selectedModels.set(this.stageRender.currentOperateShape?.id, this.stageRender.currentOperateShape)
+            }
             this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeContainer, { oldContainer: pContainerModel, newContainer: lastOnContainer, models: Array.from(selectedModels.values()) }, evt);
           } else {
             pContainerModel?.layoutManager?.updateLayout(evt.offsetX, evt.offsetY, Array.from(selectedModels.values()));
