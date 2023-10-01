@@ -71,29 +71,36 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
    * 鼠标按下事件
    */
   mouseDown(evt: Event): void {
-    super.mouseDown(evt);
+    if (!this.stage.ddInstance.eventCancel) {
+      super.mouseDown(evt);
+    }
   }
   /**
    * 绘制图形
    */
   mouseUp(evt: Event): void {
-    super.mouseUp(evt);
+    if (!this.stage.ddInstance.eventCancel) {
+      super.mouseUp(evt);
+    }
   }
 
   /**
    * 鼠标移动
    */
   mouseMove(evt: Event): void {
-    super.mouseMove(evt);
-    if (this.model.models) {
-      //遍历子元素，绘制子元素
-      this.model.midList.forEach(key => {
-        let model = this.model.models.get(key);
-        if (model && model.isInAreaLoose(evt.offsetX, evt.offsetY, DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2)) {
-          model.render.mouseMove(evt);
-        }
-      });
+    if (!this.stage.ddInstance.eventCancel) {
+      super.mouseMove(evt);
+      if (this.model.models) {
+        //遍历子元素，绘制子元素
+        this.model.midList.forEach(key => {
+          let model = this.model.models.get(key);
+          if (model && model.isInAreaLoose(evt.offsetX, evt.offsetY, DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2)) {
+            model.render.mouseMove(evt);
+          }
+        });
+      }
     }
+
   }
 }
 

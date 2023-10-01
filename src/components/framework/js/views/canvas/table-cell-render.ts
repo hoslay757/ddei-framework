@@ -13,6 +13,9 @@ import DDeiAbstractShapeRender from './shape-render-base.js';
 import DDeiStageCanvasRender from './stage-render.js';
 import { cloneDeep } from 'lodash'
 import DDeiRectangleCanvasRender from './rectangle-render.js';
+import DDeiEnumBusCommandType from '../../enums/bus-command-type.js';
+import DDeiTable from '../../models/table.js';
+import DDeiTableCell from '../../models/table-cell.js';
 
 /**
  * 表格单元格的渲染器
@@ -33,27 +36,229 @@ class DDeiTableCellCanvasRender extends DDeiRectangleCanvasRender {
   //类名，用于反射和动态加载
   static ClsName: string = "DDeiTableCellCanvasRender";
   // ============================== 方法 ===============================
-
+  /**
+   * 判断是否在某个边线上
+   * @param direct 1，2，3，4 上、右、下、左
+   */
+  isBorderOn(direct: number, x: number, y: number): boolean {
+    let projPoint = this.model.getProjPointOnLine({ x: x, y: y }
+      , { in: -5, out: 5 }, 1, direct - 1)
+    if (projPoint) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   // ============================== 事件 ===============================
   /**
    * 鼠标按下事件
    */
-  mouseDown(evt: Event): void {
-    super.mouseDown(evt);
+  mouseDown(e: Event): void {
+    if (!this.stage.ddInstance.eventCancel) {
+      let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
+      let isShift = DDei.KEY_DOWN_STATE.get("shift");
+      // 取得整个表格
+      let table: DDeiTable = this.model.table;
+      let currentCell: DDeiTableCell = this.model;
+      // 按下ctrl就是多选，不按下就是单选,表格的多选，选的是里面的单元格
+      if (isCtrl) {
+        //处理整行选中
+        if (table.tempDragType == 'table-row-select') {
+          let row = currentCell.row;
+          for (let i = 0; i < table.cols.length; i++) {
+            table.cols[i][row].state = DDeiEnumControlState.SELECTED
+          }
+        }
+        //处理整列选中
+        else if (table.tempDragType == 'table-col-select') {
+          let col = currentCell.col;
+          for (let i = 0; i < table.rows.length; i++) {
+            table.rows[i][col].state = DDeiEnumControlState.SELECTED
+          }
+        }
+      }
+      //按下shift选中区域
+      else if (isShift) {
+
+        //有已选单元格的情况下，选中区域，否则只选中当前单元格
+        if (table.curRow != -1 && table.curCol != -1) {
+          let minMax = table.getMinMaxRowAndCol([currentCell, table.rows[table.curRow][table.curCol]]);
+          //选中区域内所哟段元格
+          for (let x = minMax.minRow; x <= minMax.maxRow; x++) {
+            for (let y = minMax.minCol; y <= minMax.maxCol; y++) {
+              //选中所有单元格
+              table.rows[x][y].state = DDeiEnumControlState.SELECTED
+            }
+          }
+          table.curRow = currentCell.row;
+          table.curCol = currentCell.col;
+        }
+      } else {
+        // 清空目前的其他选中，重新选中表格
+        table.state = DDeiEnumControlState.SELECTED;
+        //清空所有选中的单元格
+        table.clearSelectionCells();
+        //处理整行选中
+        if (table.tempDragType == 'table-row-select') {
+          let row = currentCell.row;
+          for (let i = 0; i < table.cols.length; i++) {
+            table.cols[i][row].state = DDeiEnumControlState.SELECTED;
+          }
+        }
+        //处理整列选中
+        else if (table.tempDragType == 'table-col-select') {
+          let col = currentCell.col;
+          for (let i = 0; i < table.rows.length; i++) {
+            table.rows[i][col].state = DDeiEnumControlState.SELECTED;
+          }
+        } else {
+
+          //选中当前单元格
+          currentCell.state = DDeiEnumControlState.SELECTED;
+        }
+      }
+      //绘制选中的单元格框
+      let minMax = table.getMinMaxRowAndCol(table.getSelectedCells());
+      let rect = table.getCellPositionRect(minMax.minRow, minMax.minCol, minMax.maxRow, minMax.maxCol);
+      let tableAbsPos = table.getAbsPosition();
+      //设置选中区域
+      table.selector.state = DDeiEnumControlState.SELECTED;
+      table.selector.x = tableAbsPos.x + rect.x;
+      table.selector.y = tableAbsPos.y + rect.y;
+      table.selector.width = rect.width;
+      table.selector.height = rect.height;
+
+
+
+      //如果存在临时拖拽类型，则将临时拖拽转换为正式拖拽
+      if (table.tempDragType) {
+        table.dragChanging = true;
+        table.dragCell = table.tempDragCell;
+        if (table.dragCell != null && table.dragCell.isMergeCell()) {
+          table.dragCell = table.rows[table.dragCell.row + table.dragCell.mergeRowNum - 1][table.dragCell.col + table.dragCell.mergeColNum - 1];
+        }
+        table.dragType = table.tempDragType;
+        if (table.dragType == 'cell' && isCtrl) {
+          table.dragType = 'table';
+        }
+      } else {
+        table.dragChanging = false;
+        table.dragCell = null;
+        table.dragType = null;
+      }
+
+      this.stage.ddInstance.eventCancel = true;
+    }
   }
   /**
    * 绘制图形
    */
-  mouseUp(evt: Event): void {
-    super.mouseUp(evt);
+  mouseUp(e: Event): void {
+    if (!this.stage.ddInstance.eventCancel) {
+      // 取得整个表格
+      let table = this.model.table;
+      if (table.dragChanging) {
+        //拖动列
+        if (table.dragType == "col") {
+          table.dragCol(e);
+        }
+        //从最右边拖拽表格大小
+        else if (table.dragType == "table-size-right") {
+          table.changeTableSizeToRight(e);
+
+        }
+        //从最左边拖拽表格大小
+        else if (table.dragType == "table-size-left") {
+          table.changeTableSizeToLeft(e);
+        }
+        //拖动行
+        else if (table.dragType == "row") {
+          table.dragRow(e);
+
+        }//从最下边拖拽表格大小
+        else if (table.dragType == "table-size-bottom") {
+          table.changeTableSizeToBottom(e);
+
+        }
+        //从最上边拖拽表格大小
+        else if (table.dragType == "table-size-top") {
+          table.changeTableSizeToTop(e);
+
+        }
+        //从左上角拖动大小
+        else if (table.dragType == "table-size-left-top") {
+          table.changeTableSizeToLeft(e);
+          table.changeTableSizeToTop(e);
+
+        }
+        //从左下角拖动大小
+        else if (table.dragType == "table-size-left-bottom") {
+          table.changeTableSizeToLeft(e);
+          table.changeTableSizeToBottom(e);
+
+        }//从右上角拖动大小
+        else if (table.dragType == "table-size-right-top") {
+          table.changeTableSizeToRight(e);
+          table.changeTableSizeToTop(e);
+
+        }
+        //从右下角拖动大小
+        else if (table.dragType == "table-size-right-bottom") {
+          table.changeTableSizeToRight(e);
+          table.changeTableSizeToBottom(e);
+
+        }
+        //拖动单元格
+        else if (table.dragType == "cell") {
+          table.dragAndSelectedCell(e);
+        } else if (table.dragType == "table") {
+          table.dragTable(e);
+        }
+      }
+    }
   }
 
   /**
    * 鼠标移动
    */
   mouseMove(evt: Event): void {
-    super.mouseMove(evt);
+    if (!this.stage.ddInstance.eventCancel) {
+      let table = this.model.table;
+      //上边线
+      if (this.isBorderOn(1, evt.offsetX, evt.offsetY)) {
+        this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'ns-resize' }, evt);
+        this.stage.ddInstance.eventCancel = true;
+        table.tempDragCell = this.model
+        table.tempDragType = "row";
+      }
+      //右边线
+      else if (this.isBorderOn(2, evt.offsetX, evt.offsetY)) {
+        this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'ew-resize' }, evt);
+        this.stage.ddInstance.eventCancel = true;
+        table.tempDragCell = this.model
+        table.tempDragType = "col";
+      }//下边线
+      else if (this.isBorderOn(3, evt.offsetX, evt.offsetY)) {
+        this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'ns-resize' }, evt);
+        this.stage.ddInstance.eventCancel = true;
+        table.tempDragCell = this.model
+        table.tempDragType = "row";
+      }//左边线
+      else if (this.isBorderOn(4, evt.offsetX, evt.offsetY)) {
+        this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'ew-resize' }, evt);
+        this.stage.ddInstance.eventCancel = true;
+        table.tempDragCell = this.model
+        table.tempDragType = "col";
+      }
+      //单元格中间部分
+      else {
+        this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'all-scroll' }, evt);
+        table.tempDragCell = this.model;
+        table.tempDragType = "cell";
+        this.stage.ddInstance.eventCancel = true;
+      }
+    }
   }
 }
 

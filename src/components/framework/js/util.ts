@@ -1,5 +1,4 @@
 import DDeiConfig from './config.js'
-import DDeiModelArrtibuteValue from './models/attribute/attribute-value.js';
 import DDeiAbstractShape from './models/shape.js';
 import { clone } from 'lodash'
 
@@ -53,20 +52,49 @@ class DDeiUtil {
    * @param model 
    */
   static getShadowControl(model: DDeiAbstractShape): DDeiAbstractShape {
-    let md = clone(model);
-    md.initRender();
-    //将当前操作控件加入临时选择控件
-    md.id = md.id + "_shadow"
-    if (md?.baseModelType == "DDeiContainer") {
-      let newModels = new Map();
-      md.models.forEach(smi => {
-        let sm = DDeiUtil.getShadowControl(smi)
-        sm.id = sm.id.substring(0, sm.id.lastIndexOf("_shadow"))
-        sm.pModel = md;
-        newModels.set(sm.id, sm)
-        sm.initRender();
-      });
-      md.models = newModels;
+    let md = null;
+    if (model?.baseModelType == "DDeiTable") {
+      md = clone(model);
+      md.id = md.id + "_shadow"
+      let rows: DDeiTableCell[][] = [];
+      let cols: DDeiTableCell[][] = [];
+      for (let i = 0; i < model.rows.length; i++) {
+        let rowObj = model.rows[i];
+        for (let j = 0; j < rowObj.length; j++) {
+          let smi = rowObj[j];
+          let sm = DDeiUtil.getShadowControl(smi)
+          sm.pModel = md;
+          if (!rows[sm.row]) {
+            rows[sm.row] = []
+          }
+          rows[sm.row][sm.col] = sm;
+          if (!cols[sm.col]) {
+            cols[sm.col] = []
+          }
+          cols[sm.col][sm.row] = sm;
+
+        }
+      }
+      md.rows = rows;
+      md.cols = cols;
+      md.initRender();
+    } else {
+      md = clone(model);
+      md.initRender();
+      //将当前操作控件加入临时选择控件
+      md.id = md.id + "_shadow"
+      if (md?.baseModelType == "DDeiContainer") {
+        let newModels = new Map();
+        md.models.forEach(smi => {
+          let sm = DDeiUtil.getShadowControl(smi)
+          sm.id = sm.id.substring(0, sm.id.lastIndexOf("_shadow"))
+          sm.pModel = md;
+          newModels.set(sm.id, sm)
+          sm.initRender();
+        });
+        md.models = newModels;
+      }
+
     }
     return md;
   }

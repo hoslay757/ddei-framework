@@ -8,6 +8,8 @@ import DDeiEnumControlState from '../enums/control-state';
 import DDei from '../ddei';
 import { clone } from 'lodash'
 import DDeiRectContainer from './rect-container';
+import DDeiSelector from './selector';
+import DDeiTableSelector from './table-selector';
 
 
 /**
@@ -56,6 +58,7 @@ class DDeiTable extends DDeiAbstractShape {
         cellObj.initRender();
       }
     }
+    this.initSelector()
   }
 
   /**
@@ -92,6 +95,26 @@ class DDeiTable extends DDeiAbstractShape {
         }
       }
     }
+  }
+
+  /**
+   * 初始化选择器
+   */
+  initSelector(): void {
+    if (!this.selector) {
+      //创建选择框控件
+      this.selector = DDeiTableSelector.initByJSON({
+        id: this.id + "_table_selector",
+        border: DDeiConfig.TABLE.selector.border,
+        fill: { default: {}, selected: {} }
+      });
+
+      this.selector.stage = this.stage
+      DDeiConfig.bindRender(this.selector);
+      this.selector.initRender();
+      this.selector.resetState();
+    }
+
   }
 
   /**
@@ -742,8 +765,8 @@ class DDeiTable extends DDeiAbstractShape {
   }
 
   /**
-     * 根据表格内坐标获取单元格
-     */
+   * 根据表格内坐标获取单元格,TODO 旋转后用向量点来判断
+   */
   getCellByTablePosition(x: number, y: number): DDeiTableCell {
     let cellRow = -1;
     //判断属于哪一行
@@ -1330,54 +1353,55 @@ class DDeiTable extends DDeiAbstractShape {
   }
 
   /**
-   * TODO 拖拽并且选中单元格
-   * @param e 
+   * 拖拽时选中单元格
+   * @param x
+   * @param y
    */
-  dragAndSelectedCell(e): void {
+  dragAndSelectedCell(x: number, y: number): void {
     //取得当前列对象
     let cell = this.dragCell;
     let table = this;
-    if (!window.tempUpCel) {
-      window.tempUpCel = cell;
+    //记录上一次拖动的单元格，用于选取两个单元格
+    if (!table.tempUpCel) {
+      table.tempUpCel = cell;
     }
-    //取得当前所在的单元格
-    if (e.target.model && e.target.model.modelType == "PDCell") {
-      if (window.tempUpCel != e.target.model) {
-        //取消之前的选中状态
-        let minMax = table.getMinMaxRowAndCol([cell, window.tempUpCel]);
-        for (let i = minMax.minRow; i <= minMax.maxRow; i++) {
-          for (let j = minMax.minCol; j <= minMax.maxCol; j++) {
-            table.rows[i][j].selected = false;
-            table.rows[i][j].updateByStyle();
-          }
-        }
-        //设置新的选中状态
-        window.tempUpCel = e.target.model;
+    let tableAbsPos = table.getAbsPosition();
+    //获取当前鼠标落点的单元格
+    let targetCell = table.getCellByTablePosition(x - tableAbsPos.x, y - tableAbsPos.y);
 
-        minMax = table.getMinMaxRowAndCol([cell, window.tempUpCel]);
-        for (let i = minMax.minRow; i <= minMax.maxRow; i++) {
-          for (let j = minMax.minCol; j <= minMax.maxCol; j++) {
-            table.rows[i][j].selected = true;
-            table.rows[i][j].updateByStyle();
-          }
+    if (targetCell && table.tempUpCel != targetCell) {
+      //取消之前的选中状态
+      let minMax = table.getMinMaxRowAndCol([cell, table.tempUpCel]);
+      for (let i = minMax.minRow; i <= minMax.maxRow; i++) {
+        for (let j = minMax.minCol; j <= minMax.maxCol; j++) {
+          table.rows[i][j].state = DDeiEnumControlState.DEFAULT
         }
-        let rect = table.getCellPositionRect(minMax.minRow, minMax.minCol, minMax.maxRow, minMax.maxCol);
-        //设置选中区域
-        table.curCellShape.style.width = rect.width + 1 + "px";
-        table.curCellShape.style.height = rect.height + 1 + "px";
-        table.curCellShape.style.left = PDSetting.DEFAULT_TABLE_BORDER_PADDING + rect.x - 1 + "px";
-        table.curCellShape.style.top = PDSetting.DEFAULT_TABLE_BORDER_PADDING + rect.y - 1 + "px";
-        table.curCellShape.style.display = "block";
-        table.curCellShape.children[0].value = "";
       }
+      //设置新的选中状态
+      table.tempUpCel = targetCell;
+
+      minMax = table.getMinMaxRowAndCol([cell, table.tempUpCel]);
+      for (let i = minMax.minRow; i <= minMax.maxRow; i++) {
+        for (let j = minMax.minCol; j <= minMax.maxCol; j++) {
+          table.rows[i][j].state = DDeiEnumControlState.SELECTED
+        }
+      }
+      //设置选中区域
+      let rect = table.getCellPositionRect(minMax.minRow, minMax.minCol, minMax.maxRow, minMax.maxCol);
+      let tableAbsPos = table.getAbsPosition();
+      table.selector.width = rect.width + 1
+      table.selector.height = rect.height + 1
+      table.selector.x = tableAbsPos.x + rect.x - 1
+      table.selector.y = tableAbsPos.y + rect.y - 1
     }
+
   }
 
   /**
-   * TODO 拖拽列大小
+   * 拖拽列大小
    * 该方法在拖拽过程中调用，会处理由拖拽引起的合并单元格的变动
    */
-  dragCol(e): void {
+  dragCol(x: number, y: number): void {
     //取得当前列对象
     let cell = this.dragCell;
     let table = this;
@@ -1397,16 +1421,10 @@ class DDeiTable extends DDeiAbstractShape {
       }
     }
     //拖动列只修改列大小
-    //大小变动=鼠标点击坐标-表格所在坐标-单元格所在坐标-单元格大小
-    let changeWidth = e.clientX - table.pd.getOffsetLeft(table.pd.container) + table.pd.container.scrollLeft - table.x - cell.x - (cell.width == 0 ? cell.originWidth : cell.width);
-    var mod = changeWidth % PDSetting.GLOBAL_HELP_LINE_WEIGHT
-    if (mod > PDSetting.GLOBAL_HELP_LINE_WEIGHT / 2) {
-      changeWidth = changeWidth + (PDSetting.GLOBAL_HELP_LINE_WEIGHT - mod)
-    } else {
-      changeWidth = changeWidth - mod
-    }
-    if (changeWidth != 0) {
+    let dragObj = table.stage.render.dragObj;
+    let changeWidth = x - dragObj.x;
 
+    if (changeWidth != 0) {
       //特殊拖拽，只修改本单元格大小，如果影响了合并单元格才修改合并单元格的大小
       if (this.specilDrag) {
         let pass = false;
@@ -1538,7 +1556,7 @@ class DDeiTable extends DDeiAbstractShape {
         }
       }
       //更新复制图形的区域
-      this.updateCopyShapeArea();
+      // this.updateCopyShapeArea();
     }
   }
 
@@ -1611,6 +1629,11 @@ class DDeiTable extends DDeiAbstractShape {
   initRowNum: number = 5;
   //初始列数，初始每列宽度=表格宽度/初始列数
   initColNum: number = 5;
+
+  //表格的选择器
+  selector: DDeiTableSelector | null = null;
+
+
 }
 
 

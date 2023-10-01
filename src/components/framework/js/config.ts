@@ -123,6 +123,23 @@ class DDeiConfig {
     }
   };
 
+  // 选择器的相关缺省样式属性
+  static TABLE: object = {
+    //选择器边框
+    selector: {
+      border: {
+        width: 2, color: "red", dash: [5, 3], round: 0,
+        selected: { width: 2, color: "red", dash: [5, 3], round: 0 }
+      },
+
+      //间隔宽度，根据选中单个控件、选中多个控件，间隔宽度可以有所变化
+      PADDING_WEIGHT: {
+        default: { single: 0, multiple: 0 },
+        selected: { single: 0, multiple: 0 }
+      }
+    }
+  };
+
 
   // 填充的相关缺省样式属性
   static FILL: object = {

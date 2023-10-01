@@ -31,7 +31,9 @@ class DDeiEditorUtil {
         let id = configModel.modelCode ? configModel.modelCode : configModel.id;
         //找到控件定义
         let control = controlOriginDefinies.get(id);
-        searchMap = control.attrDefineMap;
+        if (control) {
+          searchMap = control.attrDefineMap;
+        }
 
       }
       if (searchMap) {

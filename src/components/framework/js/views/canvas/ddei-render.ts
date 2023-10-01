@@ -147,6 +147,7 @@ class DDeiCanvasRender {
    * 鼠标按下事件
    */
   mouseDown(evt: Event): void {
+    this.model.eventCancel = false;
     //下发事件到stage
     this.model.stage.render.mouseDown(evt);
   }
@@ -154,6 +155,7 @@ class DDeiCanvasRender {
    * 绘制图形
    */
   mouseUp(evt: Event): void {
+    this.model.eventCancel = false;
     this.model.stage.render.mouseUp(evt);
   }
 
@@ -161,6 +163,7 @@ class DDeiCanvasRender {
    * 鼠标移动
    */
   mouseMove(evt: Event): void {
+    this.model.eventCancel = false;
     this.model.stage.render.mouseMove(evt);
   }
 }

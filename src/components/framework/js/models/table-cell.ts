@@ -19,6 +19,8 @@ class DDeiTableCell extends DDeiRectContainer {
   constructor(props: object) {
     super(props)
     this.table = props.table
+    this.row = props.row
+    this.col = props.col
     this.mergeRowNum = props.mergeRowNum;
     this.mergeColNum = props.mergeColNum;
     this.mergedCell = props.mergedCell;
@@ -84,6 +86,10 @@ class DDeiTableCell extends DDeiRectContainer {
   originWidth: number;
   //原始高度
   originHeight: number;
+  //当前单元格所在行
+  row: number;
+  //当前单元格所在列
+  col: number;
 }
 
 export default DDeiTableCell

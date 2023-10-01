@@ -88,6 +88,7 @@ class DDeiStageCanvasRender {
    */
   initSelector(): void {
     if (!this.selector) {
+
       //创建选择框控件
       this.selector = DDeiSelector.initByJSON({
         id: this.model.id + "_inner_selector",
@@ -116,14 +117,18 @@ class DDeiStageCanvasRender {
    */
   mouseDown(evt: Event): void {
     //分发到当前图层的mouseDown
-    this.model.layers[this.model.layerIndex].render.mouseDown(evt);
+    if (!this.model.ddInstance.eventCancel) {
+      this.model.layers[this.model.layerIndex].render.mouseDown(evt);
+    }
   }
   /**
    * 绘制图形
    */
   mouseUp(evt: Event): void {
     //分发到当前图层的mouseUp
-    this.model.layers[this.model.layerIndex].render.mouseUp(evt);
+    if (!this.model.ddInstance.eventCancel) {
+      this.model.layers[this.model.layerIndex].render.mouseUp(evt);
+    }
   }
 
   /**
@@ -131,7 +136,9 @@ class DDeiStageCanvasRender {
    */
   mouseMove(evt: Event): void {
     //分发到当前图层的mouseUp
-    this.model.layers[this.model.layerIndex].render.mouseMove(evt);
+    if (!this.model.ddInstance.eventCancel) {
+      this.model.layers[this.model.layerIndex].render.mouseMove(evt);
+    }
   }
 }
 

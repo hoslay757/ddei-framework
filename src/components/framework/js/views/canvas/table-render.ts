@@ -1,4 +1,6 @@
 import DDeiConfig from '../../config';
+import DDeiEnumControlState from '../../enums/control-state';
+import DDeiTable from '../../models/table';
 import DDeiUtil from '../../util';
 import DDeiRectangleCanvasRender from './rectangle-render';
 import DDeiAbstractShapeRender from './shape-render-base';
@@ -50,6 +52,7 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
     ctx.clip();
 
     this.drawCells();
+    this.model.selector.render.drawShape();
     ctx.restore();
   }
 
@@ -71,21 +74,136 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
   /**
    * 鼠标按下事件
    */
-  mouseDown(evt: Event): void {
-    super.mouseDown(evt);
+  mouseDown(e: Event): void {
+    if (!this.stage.ddInstance.eventCancel) {
+      let table = this.model;
+      for (let i = 0; i < table.rows.length; i++) {
+        let rowObj = table.rows[i]
+        for (let j = 0; j < rowObj.length; j++) {
+          let cellObj = rowObj[j];
+          if (cellObj.isInAreaLoose(e.offsetX, e.offsetY, 0)) {
+            cellObj.render.mouseDown(e);
+            if (this.stage.ddInstance.eventCancel) {
+              return;
+            }
+          }
+        }
+      }
+    }
   }
   /**
    * 绘制图形
    */
-  mouseUp(evt: Event): void {
-    super.mouseUp(evt);
+  mouseUp(e: Event): void {
+    if (!this.stage.ddInstance.eventCancel) {
+      let table = this.model;
+      if (table.dragChanging) {
+        table.dragChanging = false;
+        table.specilDrag = false;
+        table.tempDragCell = null;
+        table.tempDragType = null;
+        table.tempUpCel = null;
+        table.dragCell = null;
+        table.dragType = null;
+      } else {
+        for (let i = 0; i < table.rows.length; i++) {
+          let rowObj = table.rows[i]
+          for (let j = 0; j < rowObj.length; j++) {
+            let cellObj = rowObj[j];
+            if (cellObj.isInAreaLoose(e.offsetX, e.offsetY, 0)) {
+              cellObj.render.mouseUp(e);
+              if (this.stage.ddInstance.eventCancel) {
+                return;
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   /**
    * 鼠标移动
    */
-  mouseMove(evt: Event): void {
-    super.mouseMove(evt);
+  mouseMove(e: Event): void {
+    if (!this.stage.ddInstance.eventCancel) {
+      let table: DDeiTable = this.model;
+      if (table.dragChanging) {
+        table.state = DDeiEnumControlState.SELECTED
+        //拖动列
+        if (table.dragType == "col") {
+          table.dragCol(e.offsetX, e.offsetY);
+        }
+        //从最右边拖拽表格大小
+        else if (table.dragType == "table-size-right") {
+          table.changeTableSizeToRight(e.offsetX, e.offsetY);
+
+        }
+        //从最左边拖拽表格大小
+        else if (table.dragType == "table-size-left") {
+          table.changeTableSizeToLeft(e.offsetX, e.offsetY);
+        }
+        //拖动行
+        else if (table.dragType == "row") {
+          table.dragRow(e.offsetX, e.offsetY);
+
+        }//从最下边拖拽表格大小
+        else if (table.dragType == "table-size-bottom") {
+          table.changeTableSizeToBottom(e.offsetX, e.offsetY);
+
+        }
+        //从最上边拖拽表格大小
+        else if (table.dragType == "table-size-top") {
+          table.changeTableSizeToTop(e.offsetX, e.offsetY);
+
+        }
+        //从左上角拖动大小
+        else if (table.dragType == "table-size-left-top") {
+          table.changeTableSizeToLeft(e.offsetX, e.offsetY);
+          table.changeTableSizeToTop(e.offsetX, e.offsetY);
+
+        }
+        //从左下角拖动大小
+        else if (table.dragType == "table-size-left-bottom") {
+          table.changeTableSizeToLeft(e.offsetX, e.offsetY);
+          table.changeTableSizeToBottom(e.offsetX, e.offsetY);
+
+        }//从右上角拖动大小
+        else if (table.dragType == "table-size-right-top") {
+          table.changeTableSizeToRight(e.offsetX, e.offsetY);
+          table.changeTableSizeToTop(e.offsetX, e.offsetY);
+
+        }
+        //从右下角拖动大小
+        else if (table.dragType == "table-size-right-bottom") {
+          table.changeTableSizeToRight(e.offsetX, e.offsetY);
+          table.changeTableSizeToBottom(e.offsetX, e.offsetY);
+
+        }
+        //拖动单元格
+        else if (table.dragType == "cell") {
+          table.dragAndSelectedCell(e.offsetX, e.offsetY);
+        }
+        //拖动整个表格
+        else if (table.dragType == "table") {
+          table.dragTable(e.offsetX, e.offsetY);
+        }
+      } else {
+        for (let i = 0; i < table.rows.length; i++) {
+          let rowObj = table.rows[i]
+          for (let j = 0; j < rowObj.length; j++) {
+            let cellObj = rowObj[j];
+            if (cellObj.isInAreaLoose(e.offsetX, e.offsetY, 0)) {
+              cellObj.render.mouseMove(e);
+              if (this.stage.ddInstance.eventCancel) {
+                return;
+              }
+            }
+          }
+        }
+      }
+
+    }
   }
 }
 
