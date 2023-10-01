@@ -12,7 +12,16 @@ import DDeiModelArrtibuteValue from '../../models/attribute/attribute-value';
  * 模型应该操作渲染器，而不是操作canvas
  */
 class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
+  // ============================== 静态方法 ============================
+  // 通过一个JSON反向序列化成对象，模型数据与JSON完全一样
+  static newInstance(props: object): DDeiCircleCanvasRender {
+    return new DDeiCircleCanvasRender(props)
+  }
 
+  // ============================== 属性 ===============================
+
+  //类名，用于反射和动态加载
+  static ClsName: string = "DDeiCircleCanvasRender";
   // ============================== 方法 ===============================
 
   /**

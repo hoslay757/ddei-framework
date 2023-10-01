@@ -8,15 +8,15 @@ export default {
   'controls': [
     {
       'id': '100201',
-      'name': '容器-联动',
-      'orderNo': 1,
-    },
-    {
-      'id': '100201',
-      'name': '容器-不联动',
+      'name': '普通容器',
       'orderNo': 1,
       'linkChild': false,
       'linkSelf': false
+    },
+    {
+      'id': '100301',
+      'name': '表格',
+      'orderNo': 2,
     }
   ]
 }

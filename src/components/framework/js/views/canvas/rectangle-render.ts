@@ -23,16 +23,21 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
   constructor(props: object) {
     super(props)
   }
+  // ============================== 静态方法 ============================
+  // 通过一个JSON反向序列化成对象，模型数据与JSON完全一样
+  static newInstance(props: object): DDeiRectangleCanvasRender {
+    return new DDeiRectangleCanvasRender(props)
+  }
+
   // ============================== 属性 ===============================
 
+  //类名，用于反射和动态加载
+  static ClsName: string = "DDeiRectangleCanvasRender";
   // ============================== 方法 ===============================
   /**
    * 初始化
    */
   init(): void {
-    if (!this.model.stage) {
-      debugger
-    }
     this.ddRender = this.model.stage.ddInstance.render
     this.stage = this.model.stage
     this.stageRender = this.model.stage.render
@@ -78,19 +83,6 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
 
   }
 
-
-
-  /**
-   * 恢复滤镜
-   */
-  clearFilter(): void {
-    //如果为创建中，则设置为半透明
-    if (this.model.state == DDeiEnumControlState.CREATING) {
-      let canvas = this.ddRender.canvas;
-      let ctx = canvas.getContext('2d');
-      ctx.restore();
-    }
-  }
   /**
    * 取得边框的绘制区域
    */
@@ -186,7 +178,6 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
           }
         } else {
           if (i == 1) {
-            console.log(ratPos)
             ctx.moveTo(ratPos.x + lineOffset, ratPos.y + lineOffset);
             ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + lineOffset);
           } else if (i == 2) {

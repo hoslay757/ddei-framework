@@ -4,6 +4,7 @@ import DDeiSelector from '../../models/selector.js';
 import DDeiAbstractShape from '../../models/shape.js';
 import DDeiStage from '../../models/stage.js';
 import DDeiCanvasRender from './ddei-render.js';
+import DDeiAbstractShapeRender from './shape-render-base.js';
 
 /**
  * DDeiStage的渲染器类，用于渲染文件
@@ -18,7 +19,16 @@ class DDeiStageCanvasRender {
     this.ddRender = null;
   }
 
+  // ============================== 静态方法 ============================
+  // 通过一个JSON反向序列化成对象，模型数据与JSON完全一样
+  static newInstance(props: object): DDeiStageCanvasRender {
+    return new DDeiStageCanvasRender(props)
+  }
+
   // ============================== 属性 ===============================
+
+  //类名，用于反射和动态加载
+  static ClsName: string = "DDeiStageCanvasRender";
   /**
    * 当前对应模型
    */

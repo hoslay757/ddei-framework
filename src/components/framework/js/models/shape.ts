@@ -405,7 +405,6 @@ abstract class DDeiAbstractShape {
         if (DDeiAbstractShape.isInsidePolygon(item.getRotatedPoints(), { x: x, y: y })) {
           //如果当前控件状态为选中，且是容器，则往下寻找控件，否则返回当前控件
           if (item.state == DDeiEnumControlState.SELECTED && item.baseModelType == "DDeiContainer") {
-
             let subControls = DDeiAbstractShape.findBottomModelsByArea(item, x, y, width, height);
             if (subControls && subControls.length > 0) {
               controls = controls.concat(subControls);

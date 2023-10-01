@@ -15,8 +15,16 @@ import { clone } from 'lodash'
  * DDeiSelector的渲染器类，用于渲染选择器
  */
 class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
-  // ============================== 方法 ===============================
+  // ============================== 静态方法 ============================
+  // 通过一个JSON反向序列化成对象，模型数据与JSON完全一样
+  static newInstance(props: object): DDeiSelectorCanvasRender {
+    return new DDeiSelectorCanvasRender(props)
+  }
 
+  // ============================== 属性 ===============================
+
+  //类名，用于反射和动态加载
+  static ClsName: string = "DDeiSelectorCanvasRender";
 
   /**
    * 创建图形

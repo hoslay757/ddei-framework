@@ -12,8 +12,16 @@ class DDeiCanvasRender {
   constructor(props: object) {
     this.model = props.model;
   }
+  // ============================== 静态方法 ============================
+  // 通过一个JSON反向序列化成对象，模型数据与JSON完全一样
+  static newInstance(props: object): DDeiCanvasRender {
+    return new DDeiCanvasRender(props)
+  }
 
   // ============================== 属性 ===============================
+
+  //类名，用于反射和动态加载
+  static ClsName: string = "DDeiCanvasRender";
   /**
    * 当前对应模型
    */
