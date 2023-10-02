@@ -1,4 +1,5 @@
 import DDeiConfig from '../../config';
+import DDeiEnumBusCommandType from '../../enums/bus-command-type';
 import DDeiEnumControlState from '../../enums/control-state';
 import DDeiTable from '../../models/table';
 import DDeiUtil from '../../util';
@@ -114,6 +115,7 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
     if (!this.stage.ddInstance.eventCancel) {
       let table = this.model;
       if (table.dragChanging) {
+
         table.dragChanging = false;
         table.specilDrag = false;
         table.tempDragCell = null;
@@ -202,7 +204,17 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
         }
         //拖动整个表格
         else if (table.dragType == "table") {
-          table.dragTable(e.offsetX, e.offsetY);
+          if (this.layer.shadowControls.length == 0) {
+            let md = DDeiUtil.getShadowControl(this.stageRender.currentOperateShape);
+            this.layer.shadowControls.push(md);
+            this.stageRender.currentOperateShape = md;
+          }
+          let pushData = { x: e.offsetX, y: e.offsetY, models: this.layer.shadowControls };
+          //修改所有选中控件坐标
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangePosition, pushData, e);
+          //修改辅助线
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.SetHelpLine, { models: this.layer.shadowControls }, e);
+
         }
       } else {
         for (let i = 0; i < table.rows.length; i++) {

@@ -712,8 +712,28 @@ class DDeiLayerCanvasRender {
         //控件拖拽中
         case DDeiEnumOperateState.CONTROL_DRAGING:
           if (this.stageRender.currentOperateShape.baseModelType == "DDeiTable") {
-            let table = this.stageRender.currentOperateShape;
-            table.render.mouseUp(evt);
+            //同步影子元素的坐标大小等状态到当前模型
+            this.model.shadowControls.forEach(item => {
+              let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
+              let model = this.stage?.getModelById(id)
+              model.x = item.x
+              model.y = item.y
+              model.width = item.width
+              model.height = item.height
+              model.rotate = item.rotate
+              model.currentPointVectors = item.currentPointVectors
+              model.centerPointVector = item.centerPointVector
+
+            })
+            //调用当前表格的mouseUp方法
+            let model = this.stageRender.currentOperateShape;
+            //如果是拖拽表格，则存在shadow控件，此时还原成普通控件再执行
+            if (model.id.indexOf("_shadow") != -1) {
+              let item = this.stageRender.currentOperateShape
+              let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
+              model = this.stage?.getModelById(id)
+            }
+            model.render.mouseUp(evt);
             this.model.shadowControls = [];
             //清空临时变量
             this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
@@ -836,16 +856,18 @@ class DDeiLayerCanvasRender {
     switch (this.stageRender.operateState) {
       //控件状态确认中
       case DDeiEnumOperateState.CONTROL_CONFIRMING: {
-
         //当前操作状态：控件拖拽中
         this.stageRender.operateState = DDeiEnumOperateState.CONTROL_DRAGING
         if (this.stageRender.currentOperateShape?.baseModelType == 'DDeiTable') {
           //记录当前的拖拽的x,y,写入dragObj作为临时变量
+          //清除临时操作点
+          this.model.opPoints = [];
           let dragObj = {
             x: evt.offsetX,
             y: evt.offsetY,
             model: this.stageRender.currentOperateShape
           }
+
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
         } else {
           //清除临时操作点

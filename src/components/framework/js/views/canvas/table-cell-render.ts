@@ -80,6 +80,8 @@ class DDeiTableCellCanvasRender extends DDeiRectangleCanvasRender {
             for (let i = 0; i < table.rows.length; i++) {
               table.rows[i][col].selectCell()
             }
+          } else {
+            currentCell.selectOrCancelCell();
           }
         }
         //按下shift选中区域
@@ -97,6 +99,8 @@ class DDeiTableCellCanvasRender extends DDeiRectangleCanvasRender {
             }
             table.curRow = currentCell.row;
             table.curCol = currentCell.col;
+          } else {
+            currentCell.selectOrCancelCell();
           }
         } else {
           // 清空目前的其他选中，重新选中表格
@@ -117,21 +121,22 @@ class DDeiTableCellCanvasRender extends DDeiRectangleCanvasRender {
               table.rows[i][col].selectCell();
             }
           } else {
-
             //选中当前单元格
             currentCell.selectCell();
           }
         }
         //绘制选中的单元格框
         let minMax = table.getMinMaxRowAndCol(table.getSelectedCells());
-        let rect = table.getCellPositionRect(minMax.minRow, minMax.minCol, minMax.maxRow, minMax.maxCol);
-        let tableAbsPos = table.getAbsPosition();
-        //设置选中区域
-        table.selector.state = DDeiEnumControlState.SELECTED;
-        table.selector.x = tableAbsPos.x + rect.x;
-        table.selector.y = tableAbsPos.y + rect.y;
-        table.selector.width = rect.width;
-        table.selector.height = rect.height;
+        if (minMax) {
+          let rect = table.getCellPositionRect(minMax.minRow, minMax.minCol, minMax.maxRow, minMax.maxCol);
+          let tableAbsPos = table.getAbsPosition();
+          //设置选中区域
+          table.selector.state = DDeiEnumControlState.SELECTED;
+          table.selector.x = tableAbsPos.x + rect.x;
+          table.selector.y = tableAbsPos.y + rect.y;
+          table.selector.width = rect.width;
+          table.selector.height = rect.height;
+        }
 
 
         //如果存在临时拖拽类型，则将临时拖拽转换为正式拖拽

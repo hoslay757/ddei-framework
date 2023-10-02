@@ -56,6 +56,20 @@ class DDeiTableCell extends DDeiRectContainer {
     this.table.curRow = this.row;
     this.table.curCol = this.col;
   }
+
+  /**
+   * 选择或者取消选择当前单元格
+   */
+  selectOrCancelCell = function () {
+    if (this.state == DDeiEnumControlState.SELECTED) {
+      this.state = DDeiEnumControlState.DEFAULT;
+      this.table.curRow = -1;
+      this.table.curCol = -1;
+      this.table.state = DDeiEnumControlState.SELECTED
+    } else {
+      this.selectCell()
+    }
+  }
   // ============================ 静态方法 ============================
 
   // 通过一个JSON反向序列化成对象，模型数据与JSON完全一样

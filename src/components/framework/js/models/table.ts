@@ -885,22 +885,24 @@ class DDeiTable extends DDeiAbstractShape {
       }
     }
     //遍历整个区域，如果包含的单元格中出现了合并单元格，并且超出了这个范围，则递归调用，重新计算
-    for (let i = minRow; i <= maxRow; i++) {
-      for (let j = minCol; j <= maxCol; j++) {
-        //判断当前单元格是否为合并单元格，如果是合并单元格，则继续判断是否合并区域超出了本区域
-        if (this.rows[i][j].mergeRowNum > 1 || this.rows[i][j].mergeColNum > 1) {
-          if ((this.rows[i][j].row + this.rows[i][j].mergeRowNum - 1 > maxRow) || (this.rows[i][j].col + this.rows[i][j].mergeColNum - 1 > maxCol)) {
-            arr[arr.length] = this.rows[i][j];
-            return this.getMinMaxRowAndCol(arr);
+    if (minRow != -1 && maxRow != -1 && minCol != -1 && maxCol != -1) {
+      for (let i = minRow; i <= maxRow; i++) {
+        for (let j = minCol; j <= maxCol; j++) {
+          //判断当前单元格是否为合并单元格，如果是合并单元格，则继续判断是否合并区域超出了本区域
+          if (this.rows[i][j].mergeRowNum > 1 || this.rows[i][j].mergeColNum > 1) {
+            if ((this.rows[i][j].row + this.rows[i][j].mergeRowNum - 1 > maxRow) || (this.rows[i][j].col + this.rows[i][j].mergeColNum - 1 > maxCol)) {
+              arr[arr.length] = this.rows[i][j];
+              return this.getMinMaxRowAndCol(arr);
+            }
           }
-        }
-        //如果是被合并的单元格，则找到其合并单元格后，再判断其合并单元格
-        else if (this.rows[i][j].mergedCell != null) {
-          let mCell = this.rows[this.rows[i][j].mergedCell.row][this.rows[i][j].mergedCell.col];
-          if ((mCell.row + mCell.mergeRowNum - 1 > maxRow) || (mCell.col + mCell.mergeColNum - 1 > maxCol)
-            || (mCell.col < minCol) || (mCell.row < minRow)) {
-            arr[arr.length] = mCell;
-            return this.getMinMaxRowAndCol(arr);
+          //如果是被合并的单元格，则找到其合并单元格后，再判断其合并单元格
+          else if (this.rows[i][j].mergedCell != null) {
+            let mCell = this.rows[this.rows[i][j].mergedCell.row][this.rows[i][j].mergedCell.col];
+            if ((mCell.row + mCell.mergeRowNum - 1 > maxRow) || (mCell.col + mCell.mergeColNum - 1 > maxCol)
+              || (mCell.col < minCol) || (mCell.row < minRow)) {
+              arr[arr.length] = mCell;
+              return this.getMinMaxRowAndCol(arr);
+            }
           }
         }
       }
