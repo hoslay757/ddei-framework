@@ -1169,7 +1169,7 @@ class DDeiTable extends DDeiAbstractShape {
   }
 
   /**
-   * TODO 拖拽移动表格
+   * 拖拽移动表格
    * 该方法在拖拽过程中调用，会处理由拖拽引起的合并单元格的变动
    */
   dragTable(e): void {

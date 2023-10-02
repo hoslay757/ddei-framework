@@ -77,17 +77,33 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
   mouseDown(e: Event): void {
     if (!this.stage.ddInstance.eventCancel) {
       let table = this.model;
+
       for (let i = 0; i < table.rows.length; i++) {
         let rowObj = table.rows[i]
+        let stop = false;
         for (let j = 0; j < rowObj.length; j++) {
           let cellObj = rowObj[j];
           if (cellObj.isInAreaLoose(e.offsetX, e.offsetY, 0)) {
             cellObj.render.mouseDown(e);
             if (this.stage.ddInstance.eventCancel) {
-              return;
+              stop = true;
+              break;
             }
           }
         }
+        if (stop) {
+          break;
+        }
+
+      }
+      if (e.button == 2) {
+        table.dragChanging = false;
+        table.specilDrag = false;
+        table.tempDragCell = null;
+        table.tempDragType = null;
+        table.tempUpCel = null;
+        table.dragCell = null;
+        table.dragType = null;
       }
     }
   }

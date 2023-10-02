@@ -5,6 +5,7 @@ import DDeiRectangle from './rectangle'
 import DDeiAbstractShape from './shape';
 import DDeiRectContainer from './rect-container';
 import DDeiTable from './table';
+import DDeiEnumControlState from '../enums/control-state';
 
 /**
  * 单元格控件
@@ -41,6 +42,19 @@ class DDeiTableCell extends DDeiRectContainer {
    */
   isMergedCell(): boolean {
     return this.mergedCell != null;
+  }
+
+  /**
+   * 设置当前单元格状态为选中
+   */
+  selectCell = function () {
+    //让表格成为选中状态
+    this.table.state = DDeiEnumControlState.SELECTED
+    //让自身成为选中状态
+    this.state = DDeiEnumControlState.SELECTED
+    //标注表格中当前的单元格
+    this.table.curRow = this.row;
+    this.table.curCol = this.col;
   }
   // ============================ 静态方法 ============================
 

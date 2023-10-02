@@ -61,99 +61,100 @@ class DDeiTableCellCanvasRender extends DDeiRectangleCanvasRender {
       // 取得整个表格
       let table: DDeiTable = this.model.table;
       let currentCell: DDeiTableCell = this.model;
-      // 按下ctrl就是多选，不按下就是单选,表格的多选，选的是里面的单元格
-      if (isCtrl) {
-        //处理整行选中
-        if (table.tempDragType == 'table-row-select') {
-          let row = currentCell.row;
-          for (let i = 0; i < table.cols.length; i++) {
-            table.cols[i][row].state = DDeiEnumControlState.SELECTED
-          }
-        }
-        //处理整列选中
-        else if (table.tempDragType == 'table-col-select') {
-          let col = currentCell.col;
-          for (let i = 0; i < table.rows.length; i++) {
-            table.rows[i][col].state = DDeiEnumControlState.SELECTED
-          }
-        }
-      }
-      //按下shift选中区域
-      else if (isShift) {
-
-        //有已选单元格的情况下，选中区域，否则只选中当前单元格
-        if (table.curRow != -1 && table.curCol != -1) {
-          let minMax = table.getMinMaxRowAndCol([currentCell, table.rows[table.curRow][table.curCol]]);
-          //选中区域内所哟段元格
-          for (let x = minMax.minRow; x <= minMax.maxRow; x++) {
-            for (let y = minMax.minCol; y <= minMax.maxCol; y++) {
-              //选中所有单元格
-              table.rows[x][y].state = DDeiEnumControlState.SELECTED
+      if (e.button == 2) {
+        table.curRow = currentCell.row;
+        table.curCol = currentCell.col;
+      } else {
+        // 按下ctrl就是多选，不按下就是单选,表格的多选，选的是里面的单元格
+        if (isCtrl) {
+          //处理整行选中
+          if (table.tempDragType == 'table-row-select') {
+            let row = currentCell.row;
+            for (let i = 0; i < table.cols.length; i++) {
+              table.cols[i][row].selectCell()
             }
           }
-          table.curRow = currentCell.row;
-          table.curCol = currentCell.col;
-        }
-      } else {
-        // 清空目前的其他选中，重新选中表格
-        table.state = DDeiEnumControlState.SELECTED;
-        //清空所有选中的单元格
-        table.clearSelectionCells();
-        //处理整行选中
-        if (table.tempDragType == 'table-row-select') {
-          let row = currentCell.row;
-          for (let i = 0; i < table.cols.length; i++) {
-            table.cols[i][row].state = DDeiEnumControlState.SELECTED;
+          //处理整列选中
+          else if (table.tempDragType == 'table-col-select') {
+            let col = currentCell.col;
+            for (let i = 0; i < table.rows.length; i++) {
+              table.rows[i][col].selectCell()
+            }
           }
         }
-        //处理整列选中
-        else if (table.tempDragType == 'table-col-select') {
-          let col = currentCell.col;
-          for (let i = 0; i < table.rows.length; i++) {
-            table.rows[i][col].state = DDeiEnumControlState.SELECTED;
+        //按下shift选中区域
+        else if (isShift) {
+
+          //有已选单元格的情况下，选中区域，否则只选中当前单元格
+          if (table.curRow != -1 && table.curCol != -1) {
+            let minMax = table.getMinMaxRowAndCol([currentCell, table.rows[table.curRow][table.curCol]]);
+            //选中区域内所哟段元格
+            for (let x = minMax.minRow; x <= minMax.maxRow; x++) {
+              for (let y = minMax.minCol; y <= minMax.maxCol; y++) {
+                //选中所有单元格
+                table.rows[x][y].selectCell()
+              }
+            }
+            table.curRow = currentCell.row;
+            table.curCol = currentCell.col;
           }
         } else {
+          // 清空目前的其他选中，重新选中表格
+          table.state = DDeiEnumControlState.SELECTED;
+          //清空所有选中的单元格
+          table.clearSelectionCells();
+          //处理整行选中
+          if (table.tempDragType == 'table-row-select') {
+            let row = currentCell.row;
+            for (let i = 0; i < table.cols.length; i++) {
+              table.cols[i][row].selectCell();
+            }
+          }
+          //处理整列选中
+          else if (table.tempDragType == 'table-col-select') {
+            let col = currentCell.col;
+            for (let i = 0; i < table.rows.length; i++) {
+              table.rows[i][col].selectCell();
+            }
+          } else {
 
-          //选中当前单元格
-          currentCell.state = DDeiEnumControlState.SELECTED;
+            //选中当前单元格
+            currentCell.selectCell();
+          }
+        }
+        //绘制选中的单元格框
+        let minMax = table.getMinMaxRowAndCol(table.getSelectedCells());
+        let rect = table.getCellPositionRect(minMax.minRow, minMax.minCol, minMax.maxRow, minMax.maxCol);
+        let tableAbsPos = table.getAbsPosition();
+        //设置选中区域
+        table.selector.state = DDeiEnumControlState.SELECTED;
+        table.selector.x = tableAbsPos.x + rect.x;
+        table.selector.y = tableAbsPos.y + rect.y;
+        table.selector.width = rect.width;
+        table.selector.height = rect.height;
+
+
+        //如果存在临时拖拽类型，则将临时拖拽转换为正式拖拽
+        if (table.tempDragType) {
+          table.dragChanging = true;
+          table.dragCell = table.tempDragCell;
+          if (table.dragCell != null && table.dragCell.isMergeCell()) {
+            table.dragCell = table.rows[table.dragCell.row + table.dragCell.mergeRowNum - 1][table.dragCell.col + table.dragCell.mergeColNum - 1];
+          }
+          table.dragType = table.tempDragType;
+          if (table.dragType == 'cell' && isCtrl) {
+            table.dragType = 'table';
+          }
+        } else {
+          table.dragChanging = false;
+          table.dragCell = null;
+          table.dragType = null;
         }
       }
-      //绘制选中的单元格框
-      let minMax = table.getMinMaxRowAndCol(table.getSelectedCells());
-      let rect = table.getCellPositionRect(minMax.minRow, minMax.minCol, minMax.maxRow, minMax.maxCol);
-      let tableAbsPos = table.getAbsPosition();
-      //设置选中区域
-      table.selector.state = DDeiEnumControlState.SELECTED;
-      table.selector.x = tableAbsPos.x + rect.x;
-      table.selector.y = tableAbsPos.y + rect.y;
-      table.selector.width = rect.width;
-      table.selector.height = rect.height;
-
-
-
-      //如果存在临时拖拽类型，则将临时拖拽转换为正式拖拽
-      if (table.tempDragType) {
-        table.dragChanging = true;
-        table.dragCell = table.tempDragCell;
-        if (table.dragCell != null && table.dragCell.isMergeCell()) {
-          table.dragCell = table.rows[table.dragCell.row + table.dragCell.mergeRowNum - 1][table.dragCell.col + table.dragCell.mergeColNum - 1];
-        }
-        table.dragType = table.tempDragType;
-        if (table.dragType == 'cell' && isCtrl) {
-          table.dragType = 'table';
-        }
-      } else {
-        table.dragChanging = false;
-        table.dragCell = null;
-        table.dragType = null;
-      }
-
       this.stage.ddInstance.eventCancel = true;
     }
   }
-  /**
-   * 绘制图形
-   */
+
   mouseUp(e: Event): void {
     if (!this.stage.ddInstance.eventCancel) {
       // 取得整个表格
@@ -228,36 +229,28 @@ class DDeiTableCellCanvasRender extends DDeiRectangleCanvasRender {
       //上边线
       if (this.isBorderOn(1, evt.offsetX, evt.offsetY)) {
         this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'ns-resize' }, evt);
-        this.stage.ddInstance.eventCancel = true;
-        table.tempDragCell = this.model
         table.tempDragType = "row";
       }
       //右边线
       else if (this.isBorderOn(2, evt.offsetX, evt.offsetY)) {
         this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'ew-resize' }, evt);
-        this.stage.ddInstance.eventCancel = true;
-        table.tempDragCell = this.model
         table.tempDragType = "col";
       }//下边线
       else if (this.isBorderOn(3, evt.offsetX, evt.offsetY)) {
         this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'ns-resize' }, evt);
-        this.stage.ddInstance.eventCancel = true;
-        table.tempDragCell = this.model
         table.tempDragType = "row";
       }//左边线
       else if (this.isBorderOn(4, evt.offsetX, evt.offsetY)) {
         this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'ew-resize' }, evt);
-        this.stage.ddInstance.eventCancel = true;
-        table.tempDragCell = this.model
         table.tempDragType = "col";
       }
       //单元格中间部分
       else {
         this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'all-scroll' }, evt);
-        table.tempDragCell = this.model;
         table.tempDragType = "cell";
-        this.stage.ddInstance.eventCancel = true;
       }
+      this.stage.ddInstance.eventCancel = true;
+      table.tempDragCell = this.model
     }
   }
 }

@@ -556,63 +556,60 @@ class DDeiLayerCanvasRender {
     if (menuEle) {
       menuEle.style.display = "none";
     }
-    if (evt.button == 2) {
-
+    if (this.stageRender.selector &&
+      this.stageRender.selector.passIndex >= 1 && this.stageRender.selector.passIndex <= 9) {
+      //派发给selector的mousedown事件，在事件中对具体坐标进行判断
+      this.stageRender.selector.render.mouseDown(evt);
     } else {
-      if (this.stageRender.selector &&
-        this.stageRender.selector.passIndex >= 1 && this.stageRender.selector.passIndex <= 9) {
-        //派发给selector的mousedown事件，在事件中对具体坐标进行判断
-        this.stageRender.selector.render.mouseDown(evt);
-      } else {
-        // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
-        let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, evt.offsetX, evt.offsetY);
-        //光标所属位置是否有控件
-        //有控件：分发事件到当前控件
-        if (operateControls != null && operateControls.length > 0) {
-          //全局变量：当前操作控件=当前控件
-          let operateControl = operateControls[0];
-          this.stageRender.currentOperateShape = operateControl;
+      // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
+      let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, evt.offsetX, evt.offsetY);
+      //光标所属位置是否有控件
+      //有控件：分发事件到当前控件
+      if (operateControls != null && operateControls.length > 0) {
+        //全局变量：当前操作控件=当前控件
+        let operateControl = operateControls[0];
+        this.stageRender.currentOperateShape = operateControl;
 
-          //当前操作状态:控件状态确认中
-          this.stageRender.operateState = DDeiEnumOperateState.CONTROL_CONFIRMING
-          //分发事件到当前控件 TODO 事件分发逻辑设计
-          operateControl.render.mouseDown(evt);
+        //当前操作状态:控件状态确认中
+        this.stageRender.operateState = DDeiEnumOperateState.CONTROL_CONFIRMING
+        //分发事件到当前控件 TODO 事件分发逻辑设计
+        operateControl.render.mouseDown(evt);
 
-          //当前控件的上层控件，可能是一个layer也可能是容器
-          let pContainerModel = operateControl.pModel;
-          if (pContainerModel) {
-            //没有按下ctrl键
-            if (!isCtrl) {
-              let selectedModels = pContainerModel.getSelectedModels();
-              // 当前操作控件不在选中控件中，则清空所有当前选中控件
-              if (!selectedModels.has(operateControl.id)) {
-                //清空除了当前操作控件外所有选中状态控件
-                this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, { container: pContainerModel, curLevel: true }, evt);
-                this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ResetSelectorState, {}, evt);
-              }
+        //当前控件的上层控件，可能是一个layer也可能是容器
+        let pContainerModel = operateControl.pModel;
+        if (pContainerModel) {
+          //没有按下ctrl键
+          if (!isCtrl) {
+            let selectedModels = pContainerModel.getSelectedModels();
+            // 当前操作控件不在选中控件中，则清空所有当前选中控件
+            if (!selectedModels.has(operateControl.id)) {
+              //清空除了当前操作控件外所有选中状态控件
+              this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, { container: pContainerModel, curLevel: true }, evt);
+              this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ResetSelectorState, {}, evt);
             }
           }
         }
-        //无控件
-        else {
-          //重置选择器位置
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ResetSelectorState, { x: evt.offsetX, y: evt.offsetY }, evt);
-          //当前操作状态：选择器工作中
-          this.stageRender.operateState = DDeiEnumOperateState.SELECT_WORKING
-          //当没有按下ctrl键时，清空除了当前操作控件外所有选中状态控件
-          if (!isCtrl) {
-            //清空所有层级的已选状态
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
-          }
+      }
+      //无控件
+      else {
+        //重置选择器位置
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ResetSelectorState, { x: evt.offsetX, y: evt.offsetY }, evt);
+        //当前操作状态：选择器工作中
+        this.stageRender.operateState = DDeiEnumOperateState.SELECT_WORKING
+        //当没有按下ctrl键时，清空除了当前操作控件外所有选中状态控件
+        if (!isCtrl) {
+          //清空所有层级的已选状态
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
         }
       }
-
-      //渲染图形
-      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
-
-      //排序并执行所有action
-      this.stage?.ddInstance?.bus?.executeAll();
     }
+
+    //渲染图形
+    this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+
+    //排序并执行所有action
+    this.stage?.ddInstance?.bus?.executeAll();
+
   }
   /**
    * 绘制图形

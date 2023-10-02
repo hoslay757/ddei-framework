@@ -14,21 +14,22 @@ class MenuInsertRow {
     if (model?.baseModelType == 'DDeiTable') {
       let table: DDeiTable = model;
       //获取当前单元格
-      let cell = model.tempDragCell;
-      let row = cell.row;
-      if (row - 1 < 0) {
-        row = -1;
-      } else {
-        row = row - 1;
+      if (table.curRow != undefined && table.curCol != undefined && table.curRow != -1 && table.curCol != -1) {
+        let cell = table.rows[table.curRow][table.curCol];
+        let row = cell.row;
+        if (row - 1 < 0) {
+          row = -1;
+        } else {
+          row = row - 1;
+        }
+        if (row < 0) {
+          row = -1;
+        } else if (row > table.rows.length - 1) {
+          row = table.rows.length - 1;
+        }
+        //调用table的插入行方法插入行
+        table.insertRow(row, 1);
       }
-
-      if (row < 0) {
-        row = -1;
-      } else if (row > table.rows.length - 1) {
-        row = table.rows.length - 1;
-      }
-      //调用table的插入行方法插入行
-      table.insertRow(row, 1);
     }
   }
 
