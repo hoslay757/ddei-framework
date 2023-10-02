@@ -247,3 +247,51 @@ export const events = {
   'visiable': false,
   'order': 3
 }
+
+
+
+/**
+ * 定义组件的右键菜单
+ */
+export const menus = [
+  {
+    'code': 'insert-row',
+    'name': '插入行',
+    'orderNo': 1,
+    'button': 2,
+  },
+  {
+    'code': 'insert-col',
+    'name': '插入列',
+    'orderNo': 2,
+    'button': 2,
+  },
+  {
+    'code': 'remove-row',
+    'name': '删除行',
+    'orderNo': 3,
+    'button': 2,
+  },
+  {
+    'code': 'remove-col',
+    'name': '删除列',
+    'orderNo': 4,
+    'button': 2,
+  },
+  {
+    'code': 'split',
+  },
+  {
+    'code': 'merge-cell',
+    'name': '合并单元格',
+    'orderNo': 5,
+    'button': 2,
+  },
+  {
+    'code': 'cancel-merge-cell',
+    'name': '取消合并单元格',
+    'orderNo': 6,
+    'button': 2,
+  },
+
+]

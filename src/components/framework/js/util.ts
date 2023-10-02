@@ -11,6 +11,14 @@ class DDeiUtil {
   //钩子函数，调用外部的配置属性读取函数,由外部调用者初始化
   static getAttrValueByConfig: Function;
 
+  //钩子函数，获取菜单的函数，由外部调用者初始化
+  static getMenuConfig: Function;
+
+  //钩子函数，获取菜单的控件ID，用于显示菜单，控制样式等
+  static getMenuControlId: Function;
+  //钩子函数，设置当前右键菜单
+  static setCurrentMenu: Function;
+
 
   /**
    * 将一组控件按照从上到下从左到右的顺序进行排序，返回新的顺序

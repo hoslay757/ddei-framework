@@ -94,8 +94,8 @@ export default {
     return {
       //当前编辑器
       editor: null,
-      expandLeftImg: ICONS['icon-expand-left'].default,
-      expandRightImg: ICONS['icon-expand-right'].default,
+      expandLeftImg: ICONS['icon-expand-left'],
+      expandRightImg: ICONS['icon-expand-right'],
       //当前被选中控件的引用
       selectedModels: null,
       //属性定义的引用
@@ -196,10 +196,10 @@ export default {
         this.syncAttrsToGroup(firstControlDefine, firstControlDefine.styles);
         this.syncAttrsToGroup(firstControlDefine, firstControlDefine.datas);
         this.syncAttrsToGroup(firstControlDefine, firstControlDefine.events);
-        let layerTopGroup = { name: "图层", img: ICONS['icon-layers'].default, groups: [{}] };
-        firstControlDefine.styles.img = ICONS['icon-fill'].default;
-        firstControlDefine.datas.img = ICONS['icon-data'].default;
-        firstControlDefine.events.img = ICONS['icon-event'].default;
+        let layerTopGroup = { name: "图层", img: ICONS['icon-layers'], groups: [{}] };
+        firstControlDefine.styles.img = ICONS['icon-fill'];
+        firstControlDefine.datas.img = ICONS['icon-data'];
+        firstControlDefine.events.img = ICONS['icon-event'];
         let topGroups = [firstControlDefine?.styles, firstControlDefine?.datas, firstControlDefine?.events, layerTopGroup];
         //上一次编辑的名称
         let upName = this.currentTopGroup?.name;

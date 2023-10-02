@@ -36,9 +36,9 @@ export default {
       //当前编辑的模式，1填充，2边框，3字体
       mode: 1,
       dataSource: [
-        { value: 1, text: '填充', img: ICONS['icon-fill'].default },
-        { value: 2, text: '边框', img: ICONS['icon-style-line'].default },
-        { value: 3, text: '字体', img: ICONS['icon-font-color'].default }],
+        { value: 1, text: '填充', img: ICONS['icon-fill'] },
+        { value: 2, text: '边框', img: ICONS['icon-style-line'] },
+        { value: 3, text: '字体', img: ICONS['icon-font-color'] }],
       dialogShow: false,
       show: true
     };

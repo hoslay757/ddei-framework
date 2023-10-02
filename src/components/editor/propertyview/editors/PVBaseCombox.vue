@@ -12,7 +12,7 @@
     </div>
     <div :id="getShowDialogId(attrDefine?.code)" :class="{ 'ddei_combox_show_dialog': true }">
       <div class="ddei_combox_show_dialog_content">
-        <slot>测试</slot>
+        <slot></slot>
       </div>
     </div>
   </div>

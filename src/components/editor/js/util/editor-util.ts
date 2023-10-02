@@ -2,12 +2,36 @@ import { controlOriginDefinies } from "../../configs/toolgroup"
 import DDeiEditorArrtibute from "../attribute/editor-attribute";
 import CONFIGS from "../../js/config"
 import ICONS from "../../js/icon"
+import DDeiAbstractShape from "@/components/framework/js/models/shape";
+import DDeiEditor from "../editor";
 
 class DDeiEditorUtil {
 
   // ============================ 静态方法 ============================
 
 
+
+  /**
+   * 获取菜单控件ID
+   * @returns 控件ID
+   */
+  static getMenuControlId(): string {
+    return "ddei_editor_menu_dialog"
+  }
+
+  /**
+     * 获取菜单配置
+     * @param configModel 配置模型，如果包含了attrDefineMap等数据，则直接获取数据,如果只包含id则通过id取原始数据
+     * @param paths 属性路径,支持传入多个
+     * @return 由构成的属性的实际路径和配置中对应的值组成的Map
+     */
+  static getMenuConfig(model: object): object | null {
+    let controlDefine = controlOriginDefinies.get(model.modelCode);
+    if (controlDefine) {
+      return controlDefine.menus;
+    }
+    return null;
+  }
 
   /**
    * 从配置定义中获取属性值，优先从code中获取，其次从mapping获取

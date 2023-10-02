@@ -21,6 +21,7 @@
         <BottomMenu></BottomMenu>
       </div>
     </div>
+    <MenuDialog v-if="!refreshMenu"></MenuDialog>
   </div>
 </template>
 
@@ -45,6 +46,7 @@ import DDeiEnumBusCommandType from '../framework/js/enums/bus-command-type';
 import DDeiEditorEnumBusCommandType from './js/enums/editor-command-type';
 import DDeiFileState from './js/enums/file-state';
 import DDeiEditorCommandFileDirty from './js/bus/commands/file-dirty';
+import MenuDialog from './menus/menudialog/MenuDialog.vue';
 
 
 export default {
@@ -67,7 +69,8 @@ export default {
     PropertyView,
     OpenFilesView,
     CanvasView,
-    QuickColorView
+    QuickColorView,
+    MenuDialog
   },
   computed: {},
   watch: {},
@@ -99,8 +102,23 @@ export default {
     this.editor.bus.interceptor[DDeiEnumBusCommandType.ModelChangeRotate] = { 'after': [this.changeFileModifyDirty] };
     this.editor.bus.interceptor[DDeiEnumBusCommandType.ModelChangeValue] = { 'after': [this.changeFileModifyDirty] };
 
+    if (!DDeiUtil.setCurrentMenu) {
+      DDeiUtil.setCurrentMenu = this.setCurrentMenu;
+    }
   },
   methods: {
+
+    /**
+     * 设置当前菜单
+     * @returns 控件ID
+     */
+    setCurrentMenu(menus: object): void {
+      this.editor.currentMenuData = menus;
+      this.refreshMenu = false;
+      this.$nextTick(() => {
+        this.refreshMenu = true
+      })
+    },
 
     changeFileModifyDirty() {
       let action: DDeiEditorCommandFileDirty = DDeiEditorCommandFileDirty.newInstance();

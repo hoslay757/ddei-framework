@@ -107,6 +107,12 @@ class DDeiEditor {
         if (!DDeiUtil.getAttrValueByConfig) {
           DDeiUtil.getAttrValueByConfig = DDeiEditorUtil.getAttrValueByConfig;
         }
+        if (!DDeiUtil.getMenuConfig) {
+          DDeiUtil.getMenuConfig = DDeiEditorUtil.getMenuConfig;
+        }
+        if (!DDeiUtil.getMenuControlId) {
+          DDeiUtil.getMenuControlId = DDeiEditorUtil.getMenuControlId;
+        }
         //将DDeiEditor对象装入全局缓存
         DDeiEditor.INSTANCE_POOL[id] = editorInstance;
         if (active) {

@@ -62,7 +62,7 @@ export default {
       //创建时的图片
       creatingImg: new Image(),
       //展开的图片
-      expandLeftImg: ICONS['icon-expand-left'].default
+      expandLeftImg: ICONS['icon-expand-left']
     };
   },
   computed: {
@@ -98,7 +98,7 @@ export default {
         //处理control的图标
         item.controls.forEach(control => {
           if (control.icon) {
-            control.icon = ICONS[control.icon].default;
+            control.icon = ICONS[control.icon];
           }
         });
       });
