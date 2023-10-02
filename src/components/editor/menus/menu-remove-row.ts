@@ -1,11 +1,7 @@
-import DDeiTable from "@/components/framework/js/models/table";
-
 /**
- * 插入行菜单
+ * 删除行菜单
  */
-class MenuInsertRow {
-
-
+class MenuInsertCol {
   /**
    * 执行的方法
    */
@@ -16,19 +12,12 @@ class MenuInsertRow {
       //获取当前单元格
       let cell = model.tempDragCell;
       let row = cell.row;
-      if (row - 1 < 0) {
-        row = -1;
-      } else {
-        row = row - 1;
-      }
-
       if (row < 0) {
-        row = -1;
+        row = 0;
       } else if (row > table.rows.length - 1) {
         row = table.rows.length - 1;
       }
-      //调用table的插入行方法插入行
-      table.insertRow(row, 1);
+      table.removeRow(row);
     }
   }
 
@@ -38,11 +27,13 @@ class MenuInsertRow {
   static isVisiable(model: object): boolean {
     //当前控件为表格控件，TODO 或者布局方式为表格的容器控件
     if (model?.baseModelType == 'DDeiTable') {
-      return true
+      if (model?.rows?.length > 1) {
+        return true
+      }
     }
     return false;
   }
 
 }
 
-export default MenuInsertRow;
+export default MenuInsertCol;

@@ -4,7 +4,7 @@ export default {
   'code': 'table',
   'desc': '表格控件，可以通过插入、移动、合并单元格完成复杂的布局',
   'type': 'DDeiTable',
-  'icon': 'toolbox-shape-rect'
+  'icon': 'icon-table'
 }
 
 
@@ -257,26 +257,22 @@ export const menus = [
   {
     'code': 'insert-row',
     'name': '插入行',
-    'orderNo': 1,
-    'button': 2,
+    'icon': 'icon-insert-row',
   },
   {
     'code': 'insert-col',
     'name': '插入列',
-    'orderNo': 2,
-    'button': 2,
+    'icon': 'icon-insert-col',
   },
   {
     'code': 'remove-row',
     'name': '删除行',
-    'orderNo': 3,
-    'button': 2,
+    'icon': 'icon-delete-row',
   },
   {
     'code': 'remove-col',
     'name': '删除列',
-    'orderNo': 4,
-    'button': 2,
+    'icon': 'icon-delete-column',
   },
   {
     'code': 'split',
@@ -284,14 +280,12 @@ export const menus = [
   {
     'code': 'merge-cell',
     'name': '合并单元格',
-    'orderNo': 5,
-    'button': 2,
+    'icon': 'icon-merge-cells',
   },
   {
     'code': 'cancel-merge-cell',
     'name': '取消合并单元格',
-    'orderNo': 6,
-    'button': 2,
+    'icon': 'icon-merge-cells',
   },
 
 ]

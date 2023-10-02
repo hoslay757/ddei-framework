@@ -204,7 +204,9 @@ class DDeiTable extends DDeiAbstractShape {
 
       //同时初始化行和列的引用
       let newCell = DDeiTableCell.initByJSON(initJSON);
-
+      newCell.stage = this.stage;
+      newCell.pModel = this;
+      newCell.initRender();
       newRow[i] = newCell;
       if (i == 0) {
         addHeight = newCell.height;
@@ -225,7 +227,7 @@ class DDeiTable extends DDeiAbstractShape {
         if (corssMergeCell.indexOf(mCell) == -1) {
           corssMergeCell[corssMergeCell.length] = mCell;
           mCell.mergeRowNum = mCell.mergeRowNum + 1;
-          mCell.height = parseInt(mCell.height) + parseInt(newCell.height);
+          mCell.height = parseFloat(mCell.height) + parseFloat(newCell.height);
         }
         newCell.originWidth = newCell.width;
         newCell.originHeight = newCell.height;
@@ -336,7 +338,9 @@ class DDeiTable extends DDeiAbstractShape {
 
       //同时初始化行和列的引用
       let newCell = DDeiTableCell.initByJSON(initJSON);
-
+      newCell.stage = this.stage;
+      newCell.pModel = this;
+      newCell.initRender();
       newCol[i] = newCell;
       if (i == 0) {
         addWidth = newCell.width;
@@ -357,7 +361,7 @@ class DDeiTable extends DDeiAbstractShape {
         if (corssMergeCell.indexOf(mCell) == -1) {
           corssMergeCell[corssMergeCell.length] = mCell;
           mCell.mergeColNum = mCell.mergeColNum + 1;
-          mCell.width = parseInt(mCell.width) + parseInt(newCell.width);
+          mCell.width = parseFloat(mCell.width) + parseFloat(newCell.width);
         }
         newCell.originWidth = newCell.width;
         newCell.originHeight = newCell.height;
@@ -682,12 +686,12 @@ class DDeiTable extends DDeiAbstractShape {
         this.rows[i][j].height = 0;
         //设置合并单元格与被合并单元格的引用关系
         this.rows[i][j].mergedCell = firstCell;
-        this.rows[i][j].selected = false;
+        this.rows[i][j].state = DDeiEnumControlState.DEFAULT;
       }
     }
     firstCell.mergeRowNum = minMaxRowCol.maxRow - minMaxRowCol.minRow + 1;
     firstCell.mergeColNum = minMaxRowCol.maxCol - minMaxRowCol.minCol + 1;
-    firstCell.selected = true;
+    firstCell.state = DDeiEnumControlState.SELECTED;
 
     firstCell.width = mergeWidth;
     firstCell.height = mergeHeight;
@@ -752,7 +756,7 @@ class DDeiTable extends DDeiAbstractShape {
             cel.originWidth = null;
             cel.orignHeight = null;
             cel.mergedCell = null;
-            cel.selected = true;
+            cel.state = DDeiEnumControlState.SELECTED
           }
         }
         firstCell.mergeRowNum = null;
@@ -927,7 +931,7 @@ class DDeiTable extends DDeiAbstractShape {
         if (this.rows[i][j].mergedCell != null) {
           continue;
         }
-        if (!this.rows[i][j].selected) {
+        if (this.rows[i][j].state != DDeiEnumControlState.SELECTED) {
           return false;
         }
       }

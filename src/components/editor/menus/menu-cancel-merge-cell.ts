@@ -1,5 +1,5 @@
 /**
- * 插入列菜单
+ * 取消合并单元格菜单
  */
 class MenuInsertCol {
   /**
@@ -9,17 +9,8 @@ class MenuInsertCol {
     //当前控件为表格控件，TODO 或者布局方式为表格的容器控件
     if (model?.baseModelType == 'DDeiTable') {
       let table: DDeiTable = model;
-      //获取当前单元格
-      let cell = model.tempDragCell;
-      //model所在列
-      let col = cell.col;
-      if (col < 0) {
-        col = -1;
-      } else if (col > table.cols.length - 1) {
-        col = table.cols.length - 1;
-      }
-      //调用table的插入行方法插入行
-      table.insertCol(col, 2);
+      //执行取消合并单元格
+      table.cancelSelectedMergeCells();
     }
   }
 
@@ -29,7 +20,12 @@ class MenuInsertCol {
   static isVisiable(model: object): boolean {
     //当前控件为表格控件，TODO 或者布局方式为表格的容器控件
     if (model?.baseModelType == 'DDeiTable') {
-      return true
+      let table = model;
+      let selectedCells = table.getSelectedCells();
+      //判断当前选中的单元格是否具备取消合并单元格的条件，如果具备条件，则返回true
+      if (selectedCells.length == 1 && (selectedCells[0].mergeRowNum > 1 || selectedCells[0].mergeColNum > 1)) {
+        return true;
+      }
     }
     return false;
   }

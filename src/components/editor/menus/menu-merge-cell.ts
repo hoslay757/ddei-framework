@@ -1,5 +1,5 @@
 /**
- * 插入列菜单
+ * 合并单元格菜单
  */
 class MenuInsertCol {
   /**
@@ -9,17 +9,8 @@ class MenuInsertCol {
     //当前控件为表格控件，TODO 或者布局方式为表格的容器控件
     if (model?.baseModelType == 'DDeiTable') {
       let table: DDeiTable = model;
-      //获取当前单元格
-      let cell = model.tempDragCell;
-      //model所在列
-      let col = cell.col;
-      if (col < 0) {
-        col = -1;
-      } else if (col > table.cols.length - 1) {
-        col = table.cols.length - 1;
-      }
-      //调用table的插入行方法插入行
-      table.insertCol(col, 2);
+      //执行合并单元格
+      table.mergeSelectedCells();
     }
   }
 
@@ -29,7 +20,14 @@ class MenuInsertCol {
   static isVisiable(model: object): boolean {
     //当前控件为表格控件，TODO 或者布局方式为表格的容器控件
     if (model?.baseModelType == 'DDeiTable') {
-      return true
+      //判断是否满足合并单元格条件
+      let table = model;
+      //如果出现连续的单元格则允许合并，循环选中最大和最小区域，如果都选中，则返回true
+      let selectedCells = table.getSelectedCells();
+      if (selectedCells.length >= 2) {
+        let minMaxColRow = table.getMinMaxRowAndCol(selectedCells);
+        return table.isAllSelected(minMaxColRow.minRow, minMaxColRow.minCol, minMaxColRow.maxRow, minMaxColRow.maxCol);
+      }
     }
     return false;
   }

@@ -550,6 +550,12 @@ class DDeiLayerCanvasRender {
     //ctrl键的按下状态
     let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
     //判断当前鼠标坐标是否落在选择器控件的区域内
+    //关闭菜单
+    let menuDialogId = DDeiUtil.getMenuControlId();
+    let menuEle = document.getElementById(menuDialogId);
+    if (menuEle) {
+      menuEle.style.display = "none";
+    }
     if (evt.button == 2) {
 
     } else {
