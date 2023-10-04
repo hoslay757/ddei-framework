@@ -821,6 +821,7 @@ class DDeiLayerCanvasRender {
     let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
     let isAlt = DDei.KEY_DOWN_STATE.get("alt");
     //判断当前操作状态
+    console.log(this.stageRender.operateState)
     switch (this.stageRender.operateState) {
       //控件状态确认中
       case DDeiEnumOperateState.CONTROL_CONFIRMING: {

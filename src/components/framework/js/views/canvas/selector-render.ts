@@ -232,6 +232,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     let offsetX = evt.offsetX;
     let offsetY = evt.offsetY;
     //判断当前坐标是否位于操作按钮上
+
     if (this.isIconOn(1, offsetX, offsetY)) {
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 1 }, evt);
     }

@@ -19,6 +19,7 @@ import DDeiEditor from '../../js/editor';
 import ICONS from "../../js/icon";
 import DDeiEditorConfig from "../../js/config"
 import DDeiEnumBusCommandType from '../../../framework/js/enums/bus-command-type';
+import DDeiEnumOperateState from '../../../framework/js/enums/operate-state';
 export default {
   name: "DDei-Editor-Menu-Dialog",
   extends: null,
@@ -61,6 +62,7 @@ export default {
       //关闭dialog
       document.getElementById("ddei_editor_menu_dialog").style.display="none";
       //刷新
+      stage.render.operateState = DDeiEnumOperateState.NONE;
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
       this.editor.bus.executeAll()
     },
