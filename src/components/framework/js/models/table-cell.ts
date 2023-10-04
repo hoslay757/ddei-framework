@@ -45,6 +45,20 @@ class DDeiTableCell extends DDeiRectContainer {
   }
 
   /**
+     * 判断是否在某个边线上
+     * @param direct 1，2，3，4 上、右、下、左
+     */
+  isBorderOn(direct: number, x: number, y: number): boolean {
+    let projPoint = this.getProjPointOnLine({ x: x, y: y }
+      , { in: -3, out: 3 }, 1, direct - 1)
+    if (projPoint) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
    * 设置当前单元格状态为选中
    */
   selectCell = function () {

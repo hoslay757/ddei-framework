@@ -183,8 +183,11 @@ class DDeiTable extends DDeiAbstractShape {
 
           cellObj.x = cellObj.x * wR
           cellObj.y = cellObj.y * hR
+
           cellObj.width = cellObj.width * wR
           cellObj.height = cellObj.height * hR
+          cellObj.originWidth = cellObj.originWidth * wR
+          cellObj.originHeight = cellObj.originHeight * hR
         }
       }
     }

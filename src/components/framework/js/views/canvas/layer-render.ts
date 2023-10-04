@@ -825,40 +825,44 @@ class DDeiLayerCanvasRender {
       //控件状态确认中
       case DDeiEnumOperateState.CONTROL_CONFIRMING: {
         //如果当前未按下ctrl键，并且在表格上，则认为是表格内部的拖拽
+
+        //清除临时操作点
+        this.model.opPoints = [];
+        //中心点坐标
+        //当前控件的上层控件，可能是一个layer也可能是容器
+        let pContainerModel = this.stageRender.currentOperateShape.pModel;
+        let selectSize = pContainerModel.getSelectedModels().size;
+        let centerPointVector = null;
+        if (selectSize > 1) {
+          centerPointVector = this.stageRender.selector.centerPointVector;
+        } else {
+          centerPointVector = this.stageRender.currentOperateShape?.centerPointVector;
+        }
+        //记录当前的拖拽的x,y,写入dragObj作为临时变量
+        let dragObj = {
+          x: evt.offsetX,
+          y: evt.offsetY,
+          dx: centerPointVector.x - evt.offsetX,//鼠标在控件中心坐标的增量位置
+          dy: centerPointVector.y - evt.offsetY,
+          model: this.stageRender.currentOperateShape
+        }
+        //如果当前元素父元素不是Layer，则记录直到Layer父控件的大小，用来实现取消还原
+        let pModel = dragObj?.model?.pModel;
+        for (; pModel != null && pModel.baseModelType != 'DDeiLayer'; pModel = pModel.pModel) {
+          if (!dragObj.pms) {
+            dragObj.pms = new Map();
+          }
+          dragObj.pms.set(pModel.id, { x: pModel.x, y: pModel.y, width: pModel.width, height: pModel.height });
+        }
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
         if (this.stageRender.currentOperateShape?.baseModelType == 'DDeiTable' && !isCtrl) {
           this.stageRender.operateState = DDeiEnumOperateState.TABLE_INNER_DRAG
+          //渲染图形
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, [{ id: this.stageRender.currentOperateShape.id, value: DDeiEnumControlState.SELECTED }], evt);
         } else {
           //当前操作状态：控件拖拽中
           this.stageRender.operateState = DDeiEnumOperateState.CONTROL_DRAGING
-          //清除临时操作点
-          this.model.opPoints = [];
-          //中心点坐标
-          //当前控件的上层控件，可能是一个layer也可能是容器
-          let pContainerModel = this.stageRender.currentOperateShape.pModel;
-          let selectSize = pContainerModel.getSelectedModels().size;
-          let centerPointVector = null;
-          if (selectSize > 1) {
-            centerPointVector = this.stageRender.selector.centerPointVector;
-          } else {
-            centerPointVector = this.stageRender.currentOperateShape?.centerPointVector;
-          }
-          //记录当前的拖拽的x,y,写入dragObj作为临时变量
-          let dragObj = {
-            x: evt.offsetX,
-            y: evt.offsetY,
-            dx: centerPointVector.x - evt.offsetX,//鼠标在控件中心坐标的增量位置
-            dy: centerPointVector.y - evt.offsetY,
-            model: this.stageRender.currentOperateShape
-          }
-          //如果当前元素父元素不是Layer，则记录直到Layer父控件的大小，用来实现取消还原
-          let pModel = dragObj?.model?.pModel;
-          for (; pModel != null && pModel.baseModelType != 'DDeiLayer'; pModel = pModel.pModel) {
-            if (!dragObj.pms) {
-              dragObj.pms = new Map();
-            }
-            dragObj.pms.set(pModel.id, { x: pModel.x, y: pModel.y, width: pModel.width, height: pModel.height });
-          }
-
           //产生影子控件
           let selectedModels = pContainerModel.getSelectedModels();
           selectedModels.forEach(m => {
@@ -871,9 +875,6 @@ class DDeiLayerCanvasRender {
           }
           //将当前被拖动的控件转变为影子控件
           this.stageRender.currentOperateShape = this.model.shadowControls[this.model.shadowControls.length - 1]
-
-
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
         }
         break;
       }
@@ -922,7 +923,7 @@ class DDeiLayerCanvasRender {
       case DDeiEnumOperateState.TABLE_INNER_DRAG: {
         let table = this.stageRender.currentOperateShape;
         table.render.mouseMove(evt);
-        //渲染图形
+
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
         break;
       }
