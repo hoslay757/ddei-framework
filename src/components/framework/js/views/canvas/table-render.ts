@@ -188,32 +188,7 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
         //从最上边拖拽表格大小
         else if (table.dragType == "table-size-top") {
           table.changeTableSizeToTop(e.offsetX, e.offsetY);
-
         }
-        //从左上角拖动大小
-        else if (table.dragType == "table-size-left-top") {
-          table.changeTableSizeToLeft(e.offsetX, e.offsetY);
-          table.changeTableSizeToTop(e.offsetX, e.offsetY);
-
-        }
-        //从左下角拖动大小
-        else if (table.dragType == "table-size-left-bottom") {
-          table.changeTableSizeToLeft(e.offsetX, e.offsetY);
-          table.changeTableSizeToBottom(e.offsetX, e.offsetY);
-
-        }//从右上角拖动大小
-        else if (table.dragType == "table-size-right-top") {
-          table.changeTableSizeToRight(e.offsetX, e.offsetY);
-          table.changeTableSizeToTop(e.offsetX, e.offsetY);
-
-        }
-        //从右下角拖动大小
-        else if (table.dragType == "table-size-right-bottom") {
-          table.changeTableSizeToRight(e.offsetX, e.offsetY);
-          table.changeTableSizeToBottom(e.offsetX, e.offsetY);
-
-        }
-
       } else {
         for (let i = 0; i < table.rows.length; i++) {
           let rowObj = table.rows[i]

@@ -803,13 +803,12 @@ class DDeiLayerCanvasRender {
           this.model.shadowControls.forEach(item => {
             let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
             let model = this.stage?.getModelById(id)
-            model.x = item.x
-            model.y = item.y
-            model.width = item.width
-            model.height = item.height
-            model.rotate = item.rotate
-            model.currentPointVectors = item.currentPointVectors
-            model.centerPointVector = item.centerPointVector
+            if (model) {
+              model.setBounds(item.x, item.y, item.width, item.height)
+              model.rotate = item.rotate
+              model.currentPointVectors = item.currentPointVectors
+              model.centerPointVector = item.centerPointVector
+            }
           })
           this.model.shadowControls = [];
           //清空临时变量

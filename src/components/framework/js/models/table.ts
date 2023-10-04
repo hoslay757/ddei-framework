@@ -164,6 +164,32 @@ class DDeiTable extends DDeiAbstractShape {
     }
   }
 
+  /**
+   * 设置表格大小
+   * @param w 
+   * @param h 
+   */
+  setSize(w: number, h: number): void {
+
+    if (this.width && this.height) {
+      let wR = w / this.width;
+      let hR = h / this.height;
+      //设置所有单元格的大小，等比变化
+      //重设所有单元格的行列关系      
+      for (let i = 0; i < this.rows.length; i++) {
+        let rowObj = this.rows[i];
+        for (let j = 0; j < rowObj.length; j++) {
+          let cellObj = rowObj[j];
+
+          cellObj.x = cellObj.x * wR
+          cellObj.y = cellObj.y * hR
+          cellObj.width = cellObj.width * wR
+          cellObj.height = cellObj.height * hR
+        }
+      }
+    }
+    super.setSize(w, h);
+  }
 
   /**
    * 在第row行（下标）之下插入一个新行，插入的行的大小等于row的大小
