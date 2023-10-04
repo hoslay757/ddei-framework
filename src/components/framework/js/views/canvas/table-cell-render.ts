@@ -134,9 +134,7 @@ class DDeiTableCellCanvasRender extends DDeiRectangleCanvasRender {
             table.dragCell = table.rows[table.dragCell.row + table.dragCell.mergeRowNum - 1][table.dragCell.col + table.dragCell.mergeColNum - 1];
           }
           table.dragType = table.tempDragType;
-          if (table.dragType == 'cell' && isCtrl) {
-            table.dragType = 'table';
-          } else if (table.dragType == 'row-top') {
+          if (table.dragType == 'row-top') {
             if (table.curRow > 0) {
               table.curRow--;
               table.dragCell = table.rows[table.curRow][table.curCol];

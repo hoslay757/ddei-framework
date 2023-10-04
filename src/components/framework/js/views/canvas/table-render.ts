@@ -160,20 +160,6 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
         else if (table.dragType == "cell") {
           table.dragAndSelectedCell(e.offsetX, e.offsetY);
         }
-        //拖动整个表格
-        else if (table.dragType == "table") {
-
-          if (this.layer.shadowControls.length == 0) {
-            let md = DDeiUtil.getShadowControl(this.stageRender.currentOperateShape);
-            this.layer.shadowControls.push(md);
-            this.stageRender.currentOperateShape = md;
-          }
-          let pushData = { x: e.offsetX, y: e.offsetY, dx: this.stageRender.dragObj.dx, dy: this.stageRender.dragObj.dy, models: this.layer.shadowControls };
-          //修改所有选中控件坐标
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangePosition, pushData, e);
-          //修改辅助线
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.SetHelpLine, { models: this.layer.shadowControls }, e);
-        }
         //从最右边拖拽表格大小
         else if (table.dragType == "table-size-right") {
           table.changeTableSizeToRight(e.offsetX, e.offsetY);

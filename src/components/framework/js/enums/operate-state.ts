@@ -20,6 +20,8 @@ enum DDeiEnumOperateState {
   CONTROL_ROTATE = 5,
   //选择器工作中
   SELECT_WORKING = 10,
+  //表格内部拖拽
+  TABLE_INNER_DRAG = 11,
 }
 
 export default DDeiEnumOperateState
