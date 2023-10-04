@@ -657,41 +657,35 @@ class DDeiLayerCanvasRender {
       switch (this.stageRender.operateState) {
         //控件状态确认中
         case DDeiEnumOperateState.CONTROL_CONFIRMING:
-          if (this.stageRender.currentOperateShape.baseModelType == "DDeiTable") {
-            let table = this.stageRender.currentOperateShape;
-            table.render.mouseUp(evt);
-            this.model.shadowControls = [];
-            //清空临时变量
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
-            //渲染图形
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
-          } else {
-            //按下ctrl增加选中，或取消当前选中
-            let pContainerModel = this.stageRender.currentOperateShape.pModel;
-            //当前操作组合
-            let pushMulits = [];
-            //当前操作层级容器
-            this.stageRender.currentOperateContainer = pContainerModel;
-            if (isCtrl) {
-              //判断当前操作控件是否选中
-              if (this.stageRender.currentOperateShape.state == DDeiEnumControlState.SELECTED) {
-                pushMulits.push({ actionType: DDeiEnumBusCommandType.ModelChangeSelect, data: [{ id: this.stageRender.currentOperateShape.id, value: DDeiEnumControlState.DEFAULT }] });
-              } else {
-                //选中当前操作控件
-                pushMulits.push({ actionType: DDeiEnumBusCommandType.ModelChangeSelect, data: [{ id: this.stageRender.currentOperateShape.id, value: DDeiEnumControlState.SELECTED }] });
-              }
-            }
-            //没有按下ctrl键，取消选中非当前控件
-            else {
-              pushMulits.push({ actionType: DDeiEnumBusCommandType.CancelCurLevelSelectedModels });
+
+          this.model.shadowControls = [];
+          this.stageRender.currentOperateShape.render.mouseUp(evt);
+          //按下ctrl增加选中，或取消当前选中
+          let pContainerModel = this.stageRender.currentOperateShape.pModel;
+          //当前操作组合
+          let pushMulits = [];
+          //当前操作层级容器
+          this.stageRender.currentOperateContainer = pContainerModel;
+          if (isCtrl) {
+            //判断当前操作控件是否选中
+            if (this.stageRender.currentOperateShape.state == DDeiEnumControlState.SELECTED) {
+              pushMulits.push({ actionType: DDeiEnumBusCommandType.ModelChangeSelect, data: [{ id: this.stageRender.currentOperateShape.id, value: DDeiEnumControlState.DEFAULT }] });
+            } else {
+              //选中当前操作控件
               pushMulits.push({ actionType: DDeiEnumBusCommandType.ModelChangeSelect, data: [{ id: this.stageRender.currentOperateShape.id, value: DDeiEnumControlState.SELECTED }] });
             }
-            this.stage?.ddInstance?.bus?.pushMulit(pushMulits, evt);
-            //清空临时变量
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
-            //渲染图形
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
           }
+          //没有按下ctrl键，取消选中非当前控件
+          else {
+            pushMulits.push({ actionType: DDeiEnumBusCommandType.CancelCurLevelSelectedModels });
+            pushMulits.push({ actionType: DDeiEnumBusCommandType.ModelChangeSelect, data: [{ id: this.stageRender.currentOperateShape.id, value: DDeiEnumControlState.SELECTED }] });
+          }
+          this.stage?.ddInstance?.bus?.pushMulit(pushMulits, evt);
+          //清空临时变量
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
+          //渲染图形
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+
           break;
         //选择器工作中
         case DDeiEnumOperateState.SELECT_WORKING:
@@ -858,47 +852,36 @@ class DDeiLayerCanvasRender {
       case DDeiEnumOperateState.CONTROL_CONFIRMING: {
         //当前操作状态：控件拖拽中
         this.stageRender.operateState = DDeiEnumOperateState.CONTROL_DRAGING
-        if (this.stageRender.currentOperateShape?.baseModelType == 'DDeiTable') {
-          //记录当前的拖拽的x,y,写入dragObj作为临时变量
-          //清除临时操作点
-          this.model.opPoints = [];
-          let dragObj = {
-            x: evt.offsetX,
-            y: evt.offsetY,
-            model: this.stageRender.currentOperateShape
-          }
-
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
+        //清除临时操作点
+        this.model.opPoints = [];
+        //中心点坐标
+        //当前控件的上层控件，可能是一个layer也可能是容器
+        let pContainerModel = this.stageRender.currentOperateShape.pModel;
+        let selectSize = pContainerModel.getSelectedModels().size;
+        let centerPointVector = null;
+        if (selectSize > 1) {
+          centerPointVector = this.stageRender.selector.centerPointVector;
         } else {
-          //清除临时操作点
-          this.model.opPoints = [];
-          //中心点坐标
-          //当前控件的上层控件，可能是一个layer也可能是容器
-          let pContainerModel = this.stageRender.currentOperateShape.pModel;
-          let selectSize = pContainerModel.getSelectedModels().size;
-          let centerPointVector = null;
-          if (selectSize > 1) {
-            centerPointVector = this.stageRender.selector.centerPointVector;
-          } else {
-            centerPointVector = this.stageRender.currentOperateShape?.centerPointVector;
+          centerPointVector = this.stageRender.currentOperateShape?.centerPointVector;
+        }
+        //记录当前的拖拽的x,y,写入dragObj作为临时变量
+        let dragObj = {
+          x: evt.offsetX,
+          y: evt.offsetY,
+          dx: centerPointVector.x - evt.offsetX,//鼠标在控件中心坐标的增量位置
+          dy: centerPointVector.y - evt.offsetY,
+          model: this.stageRender.currentOperateShape
+        }
+        //如果当前元素父元素不是Layer，则记录直到Layer父控件的大小，用来实现取消还原
+        let pModel = dragObj?.model?.pModel;
+        for (; pModel != null && pModel.baseModelType != 'DDeiLayer'; pModel = pModel.pModel) {
+          if (!dragObj.pms) {
+            dragObj.pms = new Map();
           }
-          //记录当前的拖拽的x,y,写入dragObj作为临时变量
-          let dragObj = {
-            x: evt.offsetX,
-            y: evt.offsetY,
-            dx: centerPointVector.x - evt.offsetX,//鼠标在控件中心坐标的增量位置
-            dy: centerPointVector.y - evt.offsetY,
-            model: this.stageRender.currentOperateShape
-          }
-          //如果当前元素父元素不是Layer，则记录直到Layer父控件的大小，用来实现取消还原
-          let pModel = dragObj?.model?.pModel;
-          for (; pModel != null && pModel.baseModelType != 'DDeiLayer'; pModel = pModel.pModel) {
-            if (!dragObj.pms) {
-              dragObj.pms = new Map();
-            }
-            dragObj.pms.set(pModel.id, { x: pModel.x, y: pModel.y, width: pModel.width, height: pModel.height });
-          }
-          //获取当前层次选择的控件
+          dragObj.pms.set(pModel.id, { x: pModel.x, y: pModel.y, width: pModel.width, height: pModel.height });
+        }
+        if (this.stageRender.currentOperateShape?.baseModelType != 'DDeiTable') {
+          //产生影子控件
           let selectedModels = pContainerModel.getSelectedModels();
           selectedModels.forEach(m => {
             let md = DDeiUtil.getShadowControl(m);
@@ -910,9 +893,13 @@ class DDeiLayerCanvasRender {
           }
           //将当前被拖动的控件转变为影子控件
           this.stageRender.currentOperateShape = this.model.shadowControls[this.model.shadowControls.length - 1]
-
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
+        } else {
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, { container: pContainerModel, curLevel: true }, evt);
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, [{ id: this.stageRender.currentOperateShape.id, value: DDeiEnumControlState.SELECTED }], evt);
         }
+
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
+        // }
         break;
       }
       //选择器工作中

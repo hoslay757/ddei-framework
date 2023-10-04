@@ -147,7 +147,7 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
     if (!this.stage.ddInstance.eventCancel) {
       let table: DDeiTable = this.model;
       if (table.dragChanging) {
-        table.state = DDeiEnumControlState.SELECTED
+        table.setState(DDeiEnumControlState.SELECTED)
         //拖动列
         if (table.dragType == "col") {
           table.dragCol(e.offsetX, e.offsetY);
@@ -209,7 +209,7 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
             this.layer.shadowControls.push(md);
             this.stageRender.currentOperateShape = md;
           }
-          let pushData = { x: e.offsetX, y: e.offsetY, models: this.layer.shadowControls };
+          let pushData = { x: e.offsetX, y: e.offsetY, dx: this.stageRender.dragObj.dx, dy: this.stageRender.dragObj.dy, models: this.layer.shadowControls };
           //修改所有选中控件坐标
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangePosition, pushData, e);
           //修改辅助线

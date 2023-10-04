@@ -198,7 +198,7 @@ export default {
         }
       }
       let model: DDeiAbstractShape = this.controlCls[control.type].initByJSON(dataJson);
-      model.state = DDeiEnumControlState.CREATING;
+      model.setState(DDeiEnumControlState.CREATING);
 
       e.dataTransfer.setDragImage(this.creatingImg, 0, 0)
 

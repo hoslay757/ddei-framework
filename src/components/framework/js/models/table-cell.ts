@@ -48,10 +48,9 @@ class DDeiTableCell extends DDeiRectContainer {
    * 设置当前单元格状态为选中
    */
   selectCell = function () {
-    //让表格成为选中状态
-    this.table.state = DDeiEnumControlState.SELECTED
+
     //让自身成为选中状态
-    this.state = DDeiEnumControlState.SELECTED
+    this.setState(DDeiEnumControlState.SELECTED)
     //标注表格中当前的单元格
     this.table.curRow = this.row;
     this.table.curCol = this.col;
@@ -62,10 +61,9 @@ class DDeiTableCell extends DDeiRectContainer {
    */
   selectOrCancelCell = function () {
     if (this.state == DDeiEnumControlState.SELECTED) {
-      this.state = DDeiEnumControlState.DEFAULT;
+      this.setState(DDeiEnumControlState.DEFAULT);
       this.table.curRow = -1;
       this.table.curCol = -1;
-      this.table.state = DDeiEnumControlState.SELECTED
     } else {
       this.selectCell()
     }

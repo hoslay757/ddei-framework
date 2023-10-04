@@ -75,7 +75,7 @@ class DDeiSelector extends DDeiRectangle {
     this.width = 0
     this.height = 0
     this.rotate = 0
-    this.state = DDeiEnumControlState.DEFAULT;
+    this.setState(DDeiEnumControlState.DEFAULT);
   }
 
   /**
@@ -212,7 +212,7 @@ class DDeiSelector extends DDeiRectangle {
 
 
       //设置选择器状态为选中后
-      this.state = DDeiEnumControlState.SELECTED;
+      this.setState(DDeiEnumControlState.SELECTED);
     } else {
       this.resetState();
     }

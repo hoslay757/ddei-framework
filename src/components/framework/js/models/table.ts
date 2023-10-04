@@ -106,7 +106,8 @@ class DDeiTable extends DDeiAbstractShape {
       this.selector = DDeiTableSelector.initByJSON({
         id: this.id + "_table_selector",
         border: DDeiConfig.TABLE.selector.border,
-        fill: { default: {}, selected: {} }
+        fill: { default: {}, selected: {} },
+        table: this
       });
 
       this.selector.stage = this.stage
@@ -117,6 +118,7 @@ class DDeiTable extends DDeiAbstractShape {
 
   }
 
+
   /**
    * 清除所有选中的单元格，并将curRow和curCol归位
    */
@@ -126,7 +128,7 @@ class DDeiTable extends DDeiAbstractShape {
       let rowObj = this.rows[i];
       for (let j = 0; j < rowObj.length; j++) {
         let cellObj = rowObj[j];
-        cellObj.state = DDeiEnumControlState.DEFAULT
+        cellObj.setState(DDeiEnumControlState.DEFAULT)
       }
     }
     this.curRow = -1;
@@ -277,21 +279,10 @@ class DDeiTable extends DDeiAbstractShape {
       this.curRow = row + 1;
     }
     //选中当前表格与新插入的单元格
-    this.state = DDeiEnumControlState.SELECTED;
+    this.setState(DDeiEnumControlState.SELECTED);
     for (let i = 0; i < this.cols.length; i++) {
-      this.cols[i][this.curRow].state = DDeiEnumControlState.SELECTED;
+      this.cols[i][this.curRow].setState(DDeiEnumControlState.SELECTED);
     }
-
-    //TODO 刷新属性框
-
-    //更新外接选中矩形
-    let minMax = this.getMinMaxRowAndCol(this.getSelectedCells());
-    let rect = this.getCellPositionRect(minMax.minRow, minMax.minCol, minMax.maxRow, minMax.maxCol);
-    //TODO 设置选中区域样式
-
-
-    //TODO 关闭外接矩形的事件
-
   }
 
 
@@ -417,20 +408,10 @@ class DDeiTable extends DDeiAbstractShape {
       this.curCol = col + 1;
     }
     //选中当前表格与新插入的单元格
-    this.state = DDeiEnumControlState.SELECTED
+    this.setState(DDeiEnumControlState.SELECTED)
     for (let i = 0; i < this.rows.length; i++) {
-      this.rows[i][this.curCol].state = DDeiEnumControlState.SELECTED
+      this.rows[i][this.curCol].setState(DDeiEnumControlState.SELECTED)
     }
-
-
-    //TODO 刷新属性框
-
-    //更新外接选中矩形
-    let minMax = this.getMinMaxRowAndCol(this.getSelectedCells());
-    let rect = this.getCellPositionRect(minMax.minRow, minMax.minCol, minMax.maxRow, minMax.maxCol);
-    //TODO 设置选中区域样式
-
-    //TODO 关闭外接矩形的事件
   }
 
   /**
@@ -686,12 +667,12 @@ class DDeiTable extends DDeiAbstractShape {
         this.rows[i][j].height = 0;
         //设置合并单元格与被合并单元格的引用关系
         this.rows[i][j].mergedCell = firstCell;
-        this.rows[i][j].state = DDeiEnumControlState.DEFAULT;
+        this.rows[i][j].setState(DDeiEnumControlState.DEFAULT);
       }
     }
     firstCell.mergeRowNum = minMaxRowCol.maxRow - minMaxRowCol.minRow + 1;
     firstCell.mergeColNum = minMaxRowCol.maxCol - minMaxRowCol.minCol + 1;
-    firstCell.state = DDeiEnumControlState.SELECTED;
+    firstCell.setState(DDeiEnumControlState.SELECTED);
 
     firstCell.width = mergeWidth;
     firstCell.height = mergeHeight;
@@ -756,7 +737,7 @@ class DDeiTable extends DDeiAbstractShape {
             cel.originWidth = null;
             cel.orignHeight = null;
             cel.mergedCell = null;
-            cel.state = DDeiEnumControlState.SELECTED
+            cel.setState(DDeiEnumControlState.SELECTED)
           }
         }
         firstCell.mergeRowNum = null;
@@ -1170,25 +1151,6 @@ class DDeiTable extends DDeiAbstractShape {
     }
   }
 
-  /**
-   * 拖拽移动表格
-   * 该方法在拖拽过程中调用，会处理由拖拽引起的合并单元格的变动
-   */
-  dragTable(e): void {
-    if (!window.createHelpLines) {
-      this.pd.createHelpLines()
-      window.createHelpLines = true
-    }
-    // 同步修改图形的模型坐标
-    // 更新辅助线以及图标
-    var absPos = this.pd.updateHelpLines(null, e)
-    this.x = absPos.x
-    this.y = absPos.y
-    //更新auxRect的坐标
-    if (PDSetting.SHOW_AUX_RECT) {
-      this.pd.auxRect.setPosition({ x: absPos.x - 2, y: absPos.y - 2 });
-    }
-  }
 
   /**
    * TODO 拖拽行大小
@@ -1380,7 +1342,7 @@ class DDeiTable extends DDeiAbstractShape {
       let minMax = table.getMinMaxRowAndCol([cell, table.tempUpCel]);
       for (let i = minMax.minRow; i <= minMax.maxRow; i++) {
         for (let j = minMax.minCol; j <= minMax.maxCol; j++) {
-          table.rows[i][j].state = DDeiEnumControlState.DEFAULT
+          table.rows[i][j].setState(DDeiEnumControlState.DEFAULT)
         }
       }
       //设置新的选中状态
@@ -1389,16 +1351,10 @@ class DDeiTable extends DDeiAbstractShape {
       minMax = table.getMinMaxRowAndCol([cell, table.tempUpCel]);
       for (let i = minMax.minRow; i <= minMax.maxRow; i++) {
         for (let j = minMax.minCol; j <= minMax.maxCol; j++) {
-          table.rows[i][j].state = DDeiEnumControlState.SELECTED
+          table.rows[i][j].setState(DDeiEnumControlState.SELECTED)
         }
       }
-      //设置选中区域
-      let rect = table.getCellPositionRect(minMax.minRow, minMax.minCol, minMax.maxRow, minMax.maxCol);
-      let tableAbsPos = table.getAbsPosition();
-      table.selector.width = rect.width + 1
-      table.selector.height = rect.height + 1
-      table.selector.x = tableAbsPos.x + rect.x - 1
-      table.selector.y = tableAbsPos.y + rect.y - 1
+
     }
 
   }

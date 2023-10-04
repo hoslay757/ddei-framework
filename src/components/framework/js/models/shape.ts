@@ -608,6 +608,13 @@ abstract class DDeiAbstractShape {
 
 
   /**
+   * 修改自身状态
+   */
+  setState(state: DDeiEnumControlState) {
+    this.state = state
+  }
+
+  /**
    * 判断图形是否在一个区域内，采用宽松的判定模式，允许传入一个大小值
    * @param x
    * @param y

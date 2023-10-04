@@ -246,7 +246,7 @@ class DDeiLayer {
       models = Array.from(this.models.values());
     }
     models.forEach(item => {
-      item.state = DDeiEnumControlState.DEFAULT
+      item.setState(DDeiEnumControlState.DEFAULT)
     });
   }
 
@@ -255,7 +255,7 @@ class DDeiLayer {
    */
   cancelAllLevelSelectModels(): void {
     this.models.forEach(item => {
-      item.state = DDeiEnumControlState.DEFAULT
+      item.setState(DDeiEnumControlState.DEFAULT)
       if (item.baseModelType == "DDeiContainer") {
         item.cancelAllLevelSelectModels();
       }

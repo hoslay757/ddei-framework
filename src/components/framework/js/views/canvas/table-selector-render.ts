@@ -20,6 +20,7 @@ class DDeiTableSelectorCanvasRender extends DDeiSelectorCanvasRender {
    * 创建图形
    */
   drawShape(): void {
+    this.model.updatedBounds();
     //绘制边框
     this.drawBorder();
   }

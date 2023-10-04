@@ -7,6 +7,7 @@ import DDeiAbstractShape from './shape';
 import _, { cloneDeep } from 'lodash'
 import { Matrix3, Vector3 } from 'three';
 import DDeiSelector from './selector';
+import DDeiTable from './table';
 
 /**
  * 表格的选择器，用来选择界面上的控件，选择器不是一个实体控件,不会被序列化
@@ -17,7 +18,40 @@ import DDeiSelector from './selector';
  */
 class DDeiTableSelector extends DDeiSelector {
   // ============================ 构造函数 ============================
+  constructor(props: object) {
+    super(props);
+    this.table = props.table;
+  }
 
+  // ============================ 方法 ===============================
+
+  /**
+  * 根据已选择的表格单元格，更新自身的大小以及位置
+  */
+  updatedBounds(): void {
+    if (this.table.state == DDeiEnumControlState.DEFAULT) {
+      this.width = 0
+      this.height = 0
+      this.x = 0
+      this.y = 0
+    } else {
+      //设置选中区域
+      let minMax = this.table.getMinMaxRowAndCol(this.table.getSelectedCells());
+      if (minMax) {
+        let rect = this.table.getCellPositionRect(minMax.minRow, minMax.minCol, minMax.maxRow, minMax.maxCol);
+        let tableAbsPos = this.table.getAbsPosition();
+        this.width = rect.width
+        this.height = rect.height
+        this.x = tableAbsPos.x + rect.x
+        this.y = tableAbsPos.y + rect.y
+      } else {
+        this.width = 0
+        this.height = 0
+        this.x = 0
+        this.y = 0
+      }
+    }
+  }
   // ============================ 静态变量 ============================
   // ============================ 静态方法 ============================
 
@@ -35,7 +69,8 @@ class DDeiTableSelector extends DDeiSelector {
   // 本模型的基础图形
   baseModelType: string = 'DDeiSelector';
 
-
+  //当前选择器所在的表格
+  table: DDeiTable;
   // ============================ 方法 ===============================
 }
 

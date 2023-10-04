@@ -103,8 +103,6 @@ class DDeiTableCellCanvasRender extends DDeiRectangleCanvasRender {
             currentCell.selectOrCancelCell();
           }
         } else {
-          // 清空目前的其他选中，重新选中表格
-          table.state = DDeiEnumControlState.SELECTED;
           //清空所有选中的单元格
           table.clearSelectionCells();
           //处理整行选中
@@ -125,18 +123,7 @@ class DDeiTableCellCanvasRender extends DDeiRectangleCanvasRender {
             currentCell.selectCell();
           }
         }
-        //绘制选中的单元格框
-        let minMax = table.getMinMaxRowAndCol(table.getSelectedCells());
-        if (minMax) {
-          let rect = table.getCellPositionRect(minMax.minRow, minMax.minCol, minMax.maxRow, minMax.maxCol);
-          let tableAbsPos = table.getAbsPosition();
-          //设置选中区域
-          table.selector.state = DDeiEnumControlState.SELECTED;
-          table.selector.x = tableAbsPos.x + rect.x;
-          table.selector.y = tableAbsPos.y + rect.y;
-          table.selector.width = rect.width;
-          table.selector.height = rect.height;
-        }
+
 
 
         //如果存在临时拖拽类型，则将临时拖拽转换为正式拖拽
@@ -163,7 +150,7 @@ class DDeiTableCellCanvasRender extends DDeiRectangleCanvasRender {
   mouseUp(e: Event): void {
     if (!this.stage.ddInstance.eventCancel) {
       // 取得整个表格
-      let table = this.model.table;
+      let table: DDeiTable = this.model.table;
       if (table.dragChanging) {
         //拖动列
         if (table.dragType == "col") {
@@ -218,8 +205,6 @@ class DDeiTableCellCanvasRender extends DDeiRectangleCanvasRender {
         //拖动单元格
         else if (table.dragType == "cell") {
           table.dragAndSelectedCell(e);
-        } else if (table.dragType == "table") {
-          table.dragTable(e);
         }
       }
     }
