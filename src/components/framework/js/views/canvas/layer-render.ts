@@ -953,10 +953,8 @@ class DDeiLayerCanvasRender {
 
         //得到改变后的新坐标以及大小，按下ctrl则等比放大缩小
         let movedBounds = this.stageRender.selector.render.getMovedBounds(evt.offsetX, evt.offsetY, isCtrl);
-
         if (movedBounds) {
           let selector = this.stageRender.selector;
-
           let pushData = { x: evt.offsetX, y: evt.offsetY, dx: this.stageRender.dragObj.dx, dy: this.stageRender.dragObj.dy, deltaX: movedBounds.x - selector.x, deltaY: movedBounds.y - selector.y, deltaWidth: movedBounds.width - selector.width, deltaHeight: movedBounds.height - selector.height, selector: selector, models: this.model.shadowControls };
           this.model.opPoints = [];
           //更新dragObj临时变量中的数值,确保坐标对应关系一致

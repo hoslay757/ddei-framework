@@ -136,6 +136,34 @@ class DDeiTableCellCanvasRender extends DDeiRectangleCanvasRender {
           table.dragType = table.tempDragType;
           if (table.dragType == 'cell' && isCtrl) {
             table.dragType = 'table';
+          } else if (table.dragType == 'row-top') {
+            if (table.curRow > 0) {
+              table.curRow--;
+              table.dragCell = table.rows[table.curRow][table.curCol];
+              table.dragType = "row"
+            } else {
+              table.dragType = "table-size-top";
+            }
+          } else if (table.dragType == 'row-bottom') {
+            if (table.curRow < table.rows.length - 1) {
+              table.dragType = "row"
+            } else {
+              table.dragType = "table-size-bottom";
+            }
+          } else if (table.dragType == 'col-left') {
+            if (table.curCol > 0) {
+              table.curCol--;
+              table.dragCell = table.rows[table.curRow][table.curCol];
+              table.dragType = "col"
+            } else {
+              table.dragType = "table-size-left";
+            }
+          } else if (table.dragType == 'col-right') {
+            if (table.curCol < table.cols.length - 1) {
+              table.dragType = "col"
+            } else {
+              table.dragType = "table-size-right";
+            }
           }
         } else {
           table.dragChanging = false;
@@ -149,64 +177,7 @@ class DDeiTableCellCanvasRender extends DDeiRectangleCanvasRender {
 
   mouseUp(e: Event): void {
     if (!this.stage.ddInstance.eventCancel) {
-      // 取得整个表格
-      let table: DDeiTable = this.model.table;
-      if (table.dragChanging) {
-        //拖动列
-        if (table.dragType == "col") {
-          table.dragCol(e);
-        }
-        //从最右边拖拽表格大小
-        else if (table.dragType == "table-size-right") {
-          table.changeTableSizeToRight(e);
 
-        }
-        //从最左边拖拽表格大小
-        else if (table.dragType == "table-size-left") {
-          table.changeTableSizeToLeft(e);
-        }
-        //拖动行
-        else if (table.dragType == "row") {
-          table.dragRow(e);
-
-        }//从最下边拖拽表格大小
-        else if (table.dragType == "table-size-bottom") {
-          table.changeTableSizeToBottom(e);
-
-        }
-        //从最上边拖拽表格大小
-        else if (table.dragType == "table-size-top") {
-          table.changeTableSizeToTop(e);
-
-        }
-        //从左上角拖动大小
-        else if (table.dragType == "table-size-left-top") {
-          table.changeTableSizeToLeft(e);
-          table.changeTableSizeToTop(e);
-
-        }
-        //从左下角拖动大小
-        else if (table.dragType == "table-size-left-bottom") {
-          table.changeTableSizeToLeft(e);
-          table.changeTableSizeToBottom(e);
-
-        }//从右上角拖动大小
-        else if (table.dragType == "table-size-right-top") {
-          table.changeTableSizeToRight(e);
-          table.changeTableSizeToTop(e);
-
-        }
-        //从右下角拖动大小
-        else if (table.dragType == "table-size-right-bottom") {
-          table.changeTableSizeToRight(e);
-          table.changeTableSizeToBottom(e);
-
-        }
-        //拖动单元格
-        else if (table.dragType == "cell") {
-          table.dragAndSelectedCell(e);
-        }
-      }
     }
   }
 
@@ -219,20 +190,20 @@ class DDeiTableCellCanvasRender extends DDeiRectangleCanvasRender {
       //上边线
       if (this.isBorderOn(1, evt.offsetX, evt.offsetY)) {
         this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'ns-resize' }, evt);
-        table.tempDragType = "row";
+        table.tempDragType = "row-top";
       }
       //右边线
       else if (this.isBorderOn(2, evt.offsetX, evt.offsetY)) {
         this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'ew-resize' }, evt);
-        table.tempDragType = "col";
+        table.tempDragType = "col-right";
       }//下边线
       else if (this.isBorderOn(3, evt.offsetX, evt.offsetY)) {
         this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'ns-resize' }, evt);
-        table.tempDragType = "row";
+        table.tempDragType = "row-bottom";
       }//左边线
       else if (this.isBorderOn(4, evt.offsetX, evt.offsetY)) {
         this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'ew-resize' }, evt);
-        table.tempDragType = "col";
+        table.tempDragType = "col-left";
       }
       //单元格中间部分
       else {

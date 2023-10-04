@@ -152,23 +152,38 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
         if (table.dragType == "col") {
           table.dragCol(e.offsetX, e.offsetY);
         }
+        //拖动行
+        else if (table.dragType == "row") {
+          table.dragRow(e.offsetX, e.offsetY);
+        }
+        //拖动单元格
+        else if (table.dragType == "cell") {
+          table.dragAndSelectedCell(e.offsetX, e.offsetY);
+        }
+        //拖动整个表格
+        else if (table.dragType == "table") {
+          if (this.layer.shadowControls.length == 0) {
+            let md = DDeiUtil.getShadowControl(this.stageRender.currentOperateShape);
+            this.layer.shadowControls.push(md);
+            this.stageRender.currentOperateShape = md;
+          }
+          let pushData = { x: e.offsetX, y: e.offsetY, dx: this.stageRender.dragObj.dx, dy: this.stageRender.dragObj.dy, models: this.layer.shadowControls };
+          //修改所有选中控件坐标
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangePosition, pushData, e);
+          //修改辅助线
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.SetHelpLine, { models: this.layer.shadowControls }, e);
+        }
         //从最右边拖拽表格大小
         else if (table.dragType == "table-size-right") {
           table.changeTableSizeToRight(e.offsetX, e.offsetY);
-
         }
         //从最左边拖拽表格大小
         else if (table.dragType == "table-size-left") {
           table.changeTableSizeToLeft(e.offsetX, e.offsetY);
         }
-        //拖动行
-        else if (table.dragType == "row") {
-          table.dragRow(e.offsetX, e.offsetY);
-
-        }//从最下边拖拽表格大小
+        //从最下边拖拽表格大小
         else if (table.dragType == "table-size-bottom") {
           table.changeTableSizeToBottom(e.offsetX, e.offsetY);
-
         }
         //从最上边拖拽表格大小
         else if (table.dragType == "table-size-top") {
@@ -198,24 +213,7 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
           table.changeTableSizeToBottom(e.offsetX, e.offsetY);
 
         }
-        //拖动单元格
-        else if (table.dragType == "cell") {
-          table.dragAndSelectedCell(e.offsetX, e.offsetY);
-        }
-        //拖动整个表格
-        else if (table.dragType == "table") {
-          if (this.layer.shadowControls.length == 0) {
-            let md = DDeiUtil.getShadowControl(this.stageRender.currentOperateShape);
-            this.layer.shadowControls.push(md);
-            this.stageRender.currentOperateShape = md;
-          }
-          let pushData = { x: e.offsetX, y: e.offsetY, dx: this.stageRender.dragObj.dx, dy: this.stageRender.dragObj.dy, models: this.layer.shadowControls };
-          //修改所有选中控件坐标
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangePosition, pushData, e);
-          //修改辅助线
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.SetHelpLine, { models: this.layer.shadowControls }, e);
 
-        }
       } else {
         for (let i = 0; i < table.rows.length; i++) {
           let rowObj = table.rows[i]

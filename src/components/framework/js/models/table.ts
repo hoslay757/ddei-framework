@@ -923,19 +923,16 @@ class DDeiTable extends DDeiAbstractShape {
   }
 
   /**
-   * TODO 从上边调整表格的大小
+   * 从上边调整表格的大小
    * 该方法在拖拽过程中调用，会处理由拖拽引起的合并单元格的变动
    */
-  changeTableSizeToTop(e): void {
+  changeTableSizeToTop(x: number, y: number): void {
     //取得当前列对象
     let table = this;
-    let changeHeight = -(e.clientY - table.pd.getOffsetTop(table.pd.container) + table.pd.container.scrollTop - table.y);
-    var mod = changeHeight % PDSetting.GLOBAL_HELP_LINE_WEIGHT
-    if (mod > PDSetting.GLOBAL_HELP_LINE_WEIGHT / 2) {
-      changeHeight = changeHeight + (PDSetting.GLOBAL_HELP_LINE_WEIGHT - mod)
-    } else {
-      changeHeight = changeHeight - mod
-    }
+    //拖动行只修改行大小
+    let dragObj = table.stage.render.dragObj;
+    let changeHeight = dragObj.y - y
+    dragObj.y = dragObj.y - changeHeight
     if (changeHeight != 0) {
       let processedCells = [];
       //执行前置校验，如果改变后的单元格大小或者原始大小小于5，则不允许拖拽
@@ -980,19 +977,16 @@ class DDeiTable extends DDeiAbstractShape {
   }
 
   /**
-   * TODO 从下边调整表格的大小
+   * 从下边调整表格的大小
    * 该方法在拖拽过程中调用，会处理由拖拽引起的合并单元格的变动
    */
-  changeTableSizeToBottom(e): void {
+  changeTableSizeToBottom(x: number, y: number): void {
     //取得当前列对象
     let table = this;
-    let changeHeight = e.clientY - table.pd.getOffsetTop(table.pd.container) + table.pd.container.scrollTop - table.y - table.height;
-    var mod = changeHeight % PDSetting.GLOBAL_HELP_LINE_WEIGHT
-    if (mod > PDSetting.GLOBAL_HELP_LINE_WEIGHT / 2) {
-      changeHeight = changeHeight + (PDSetting.GLOBAL_HELP_LINE_WEIGHT - mod)
-    } else {
-      changeHeight = changeHeight - mod
-    }
+    //拖动行只修改行大小
+    let dragObj = table.stage.render.dragObj;
+    let changeHeight = y - dragObj.y;
+    dragObj.y = dragObj.y + changeHeight
     if (changeHeight != 0) {
       let processedCells = [];
       //执行前置校验，如果改变后的单元格大小或者原始大小小于5，则不允许拖拽
@@ -1037,19 +1031,16 @@ class DDeiTable extends DDeiAbstractShape {
     }
   }
   /**
-   * TODO 从左边调整表格的大小
+   * 从左边调整表格的大小
    * 该方法在拖拽过程中调用，会处理由拖拽引起的合并单元格的变动
    */
-  changeTableSizeToLeft(e): void {
+  changeTableSizeToLeft(x: number, y: number): void {
     //取得当前列对象
     let table = this;
-    let changeWidth = -(e.clientX - table.pd.getOffsetLeft(table.pd.container) + table.pd.container.scrollLeft - table.x);
-    var mod = changeWidth % PDSetting.GLOBAL_HELP_LINE_WEIGHT
-    if (mod > PDSetting.GLOBAL_HELP_LINE_WEIGHT / 2) {
-      changeWidth = changeWidth + (PDSetting.GLOBAL_HELP_LINE_WEIGHT - mod)
-    } else {
-      changeWidth = changeWidth - mod
-    }
+    //拖动列只修改列大小
+    let dragObj = table.stage.render.dragObj;
+    let changeWidth = dragObj.x - x;
+    dragObj.x = dragObj.x - changeWidth
     if (changeWidth != 0) {
       let processedCells = [];
       //执行前置校验，如果改变后的单元格大小或者原始大小小于5，则不允许拖拽
@@ -1093,20 +1084,16 @@ class DDeiTable extends DDeiAbstractShape {
     }
   }
   /**
-   * TODO 从右边调整表格的大小
+   * 从右边调整表格的大小
    * 该方法在拖拽过程中调用，会处理由拖拽引起的合并单元格的变动
    */
-  changeTableSizeToRight(e): void {
+  changeTableSizeToRight(x: number, y: number): void {
     //取得当前列对象
     let table = this;
-    //大小变动=鼠标点击坐标-表格所在坐标-单元格所在坐标-单元格大小
-    let changeWidth = e.clientX - table.pd.getOffsetLeft(table.pd.container) + table.pd.container.scrollLeft - table.x - table.width;
-    var mod = changeWidth % PDSetting.GLOBAL_HELP_LINE_WEIGHT
-    if (mod > PDSetting.GLOBAL_HELP_LINE_WEIGHT / 2) {
-      changeWidth = changeWidth + (PDSetting.GLOBAL_HELP_LINE_WEIGHT - mod)
-    } else {
-      changeWidth = changeWidth - mod
-    }
+    //拖动列只修改列大小
+    let dragObj = table.stage.render.dragObj;
+    let changeWidth = x - dragObj.x;
+    dragObj.x = dragObj.x + changeWidth
     if (changeWidth != 0) {
       let processedCells = [];
       //执行前置校验，如果改变后的单元格大小或者原始大小小于5，则不允许拖拽
@@ -1153,10 +1140,10 @@ class DDeiTable extends DDeiAbstractShape {
 
 
   /**
-   * TODO 拖拽行大小
+   * 拖拽行大小
    * 该方法在拖拽过程中调用，会处理由拖拽引起的合并单元格的变动
    */
-  dragRow(e): void {
+  dragRow(x: number, y: number): void {
     //取得当前行对象
     let cell = this.dragCell;
     let table = this;
@@ -1178,14 +1165,9 @@ class DDeiTable extends DDeiAbstractShape {
       }
     }
     //拖动行只修改行大小
-    //大小变动=鼠标点击坐标-表格所在坐标-单元格所在坐标-单元格大小
-    let changeHeight = e.clientY - table.pd.getOffsetTop(table.pd.container) + table.pd.container.scrollTop - table.y - cell.y - (cell.height == 0 ? cell.originHeight : cell.height);
-    var mod = changeHeight % PDSetting.GLOBAL_HELP_LINE_WEIGHT
-    if (mod > PDSetting.GLOBAL_HELP_LINE_WEIGHT / 2) {
-      changeHeight = changeHeight + (PDSetting.GLOBAL_HELP_LINE_WEIGHT - mod)
-    } else {
-      changeHeight = changeHeight - mod
-    }
+    let dragObj = table.stage.render.dragObj;
+    let changeHeight = y - dragObj.y;
+    dragObj.y = dragObj.y + changeHeight
     if (changeHeight != 0) {
       //特殊拖拽，只修改本单元格大小，如果影响了合并单元格才修改合并单元格的大小
       if (this.specilDrag) {
@@ -1385,7 +1367,7 @@ class DDeiTable extends DDeiAbstractShape {
     //拖动列只修改列大小
     let dragObj = table.stage.render.dragObj;
     let changeWidth = x - dragObj.x;
-
+    dragObj.x = dragObj.x + changeWidth
     if (changeWidth != 0) {
       //特殊拖拽，只修改本单元格大小，如果影响了合并单元格才修改合并单元格的大小
       if (this.specilDrag) {
