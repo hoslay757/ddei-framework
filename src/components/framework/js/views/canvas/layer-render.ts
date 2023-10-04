@@ -556,8 +556,8 @@ class DDeiLayerCanvasRender {
     if (menuEle) {
       menuEle.style.display = "none";
     }
-    if (this.stageRender.selector &&
-      this.stageRender.selector.passIndex >= 1 && this.stageRender.selector.passIndex <= 9) {
+    if (this.stageRender.selector && this.stageRender.selector.isInAreaLoose(evt.offsetX, evt.offsetY, DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2) &&
+      ((this.stageRender.selector.passIndex >= 1 && this.stageRender.selector.passIndex <= 9) || this.stageRender.selector.passIndex == 13)) {
       //派发给selector的mousedown事件，在事件中对具体坐标进行判断
       this.stageRender.selector.render.mouseDown(evt);
     } else {
@@ -705,7 +705,7 @@ class DDeiLayerCanvasRender {
           break;
         //控件拖拽中
         case DDeiEnumOperateState.CONTROL_DRAGING:
-          if (this.stageRender.currentOperateShape.baseModelType == "DDeiTable") {
+          if (this.stageRender.currentOperateShape?.baseModelType == "DDeiTable") {
             //同步影子元素的坐标大小等状态到当前模型
             this.model.shadowControls.forEach(item => {
               let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
@@ -763,10 +763,11 @@ class DDeiLayerCanvasRender {
                   }
                 }
               }
+              let selectedModels = pContainerModel.getSelectedModels();
               //如果最小层容器不是当前容器，执行的移动容器操作
               if (lastOnContainer.id != pContainerModel.id) {
                 //构造移动容器action数据
-                let selectedModels = pContainerModel.getSelectedModels();
+
                 if (this.stageRender.currentOperateShape?.id.indexOf("_shadow") != -1) {
                   let id = this.stageRender.currentOperateShape.id;
                   id = id.substring(0, id.lastIndexOf("_shadow"));
@@ -898,7 +899,6 @@ class DDeiLayerCanvasRender {
         }
 
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
-        // }
         break;
       }
       //选择器工作中

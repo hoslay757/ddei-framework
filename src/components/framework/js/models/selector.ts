@@ -75,6 +75,10 @@ class DDeiSelector extends DDeiRectangle {
     this.width = 0
     this.height = 0
     this.rotate = 0
+    this.currentPointVectors = null;
+    this.pointVectors = null;
+    this.centerPointVector = null;
+    this.currentOPVS = null;
     this.setState(DDeiEnumControlState.DEFAULT);
   }
 
@@ -302,20 +306,44 @@ class DDeiSelector extends DDeiRectangle {
       } else if (v1.x >= 0 && v1.y <= 0) {
         angle = ((- angle1) * DDeiConfig.ROTATE_UNIT).toFixed(4);
       }
-      angle = (90 * DDeiConfig.ROTATE_UNIT).toFixed(4) - angle
+      let angleR1 = (90 * DDeiConfig.ROTATE_UNIT).toFixed(4) - angle
       v1 = new Vector3(20, 0, 1)
 
       let rotateMatrix = new Matrix3(
-        Math.cos(angle), Math.sin(angle), 0,
-        -Math.sin(angle), Math.cos(angle), 0,
+        Math.cos(angleR1), Math.sin(angleR1), 0,
+        -Math.sin(angleR1), Math.cos(angleR1), 0,
         0, 0, 1);
       v1.applyMatrix3(rotateMatrix);
+
+
       let removeMatrix = new Matrix3(
         1, 0, (pvs[0].x + pvs[1].x) / 2,
         0, 1, (pvs[0].y + pvs[1].y) / 2,
         0, 0, 1);
+
+
       v1.applyMatrix3(removeMatrix);
       opvs[9] = v1;
+
+      let v2 = new Vector3(25, 0, 1)
+      let angleR2 = (135 * DDeiConfig.ROTATE_UNIT).toFixed(4) - angle
+      let rotateMatrix2 = new Matrix3(
+        Math.cos(angleR2), Math.sin(angleR2), 0,
+        -Math.sin(angleR2), Math.cos(angleR2), 0,
+        0, 0, 1);
+      v2.applyMatrix3(rotateMatrix2);
+
+      let removeMatrix2 = new Matrix3(
+        1, 0, pvs[0].x,
+        0, 1, pvs[0].y,
+        0, 0, 1);
+
+
+      v2.applyMatrix3(removeMatrix2);
+      opvs[10] = v2;
+
+
+
       this.currentOPVS = opvs;
     }
   }

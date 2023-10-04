@@ -162,6 +162,7 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
         }
         //拖动整个表格
         else if (table.dragType == "table") {
+
           if (this.layer.shadowControls.length == 0) {
             let md = DDeiUtil.getShadowControl(this.stageRender.currentOperateShape);
             this.layer.shadowControls.push(md);
