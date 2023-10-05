@@ -25,6 +25,111 @@ abstract class DDeiAbstractShape {
   // ============================ 静态方法 ============================
 
   /**
+   * 得到点在图形某条线上的投射点
+   * @param point 测试点
+   * @param distance 内外部判定区间的距离
+   * @param direct 方向，1外部，2内部 默认1
+   * @param index 线开始点向量的下标
+   * @returns 投影点的坐标
+   */
+  getProjPointOnLine(point: { x: number, y: number }
+    , distance: { in: number, out: number } = { in: -5, out: 15 }, direct: number = 1, index: number): { x: number, y: number } | null {
+    let x0 = point.x;
+    let y0 = point.y;
+    //判断鼠标是否在某个控件的范围内
+    if (this?.currentPointVectors?.length > index) {
+      let st, en;
+      //点到直线的距离
+      let plLength = Infinity;
+      if (index == this.currentPointVectors.length - 1) {
+        st = index;
+        en = 0;
+      } else {
+        st = index;
+        en = index + 1;
+      }
+      let x1 = this.currentPointVectors[st].x;
+      let y1 = this.currentPointVectors[st].y;
+      let x2 = this.currentPointVectors[en].x;
+      let y2 = this.currentPointVectors[en].y;
+      //获取控件所有向量
+      if (x1 == x2 && y1 == y2) {
+        plLength = Math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0))
+      } else {
+        //根据向量外积计算面积
+        let s = (x0 - x1) * (y2 - y1) - (y0 - y1) * (x2 - x1)
+        //计算直线上两点之间的距离
+        let d = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+        plLength = s / d
+      }
+      let flag = false;
+      //plLength > 0时，方向向外,满足内外部条件
+      if (direct == 1) {
+        if (plLength >= distance.in && plLength <= distance.out) {
+          flag = true;
+        }
+      } else if (direct == 2) {
+        if (plLength <= distance.in && plLength >= distance.out) {
+          flag = true;
+        }
+      }
+      //进一步判断：1.点的投影是否在线段中间，2.点的投影的坐标位置
+      if (flag) {
+        //A.求得线向量与直角坐标系的夹角
+        let lineV = new Vector3(x2, y2, 1);
+        let pointV = new Vector3(x0, y0, 1);
+        let toZeroMatrix = new Matrix3(
+          1, 0, -x1,
+          0, 1, -y1,
+          0, 0, 1);
+        //归到原点，求夹角
+        lineV.applyMatrix3(toZeroMatrix)
+        pointV.applyMatrix3(toZeroMatrix)
+        let lineAngle = (new Vector3(1, 0, 0).angleTo(new Vector3(lineV.x, lineV.y, 0)) * 180 / Math.PI).toFixed(4);
+        //判断移动后的线属于第几象限
+        //B.构建旋转矩阵。旋转linvV和pointV
+        let angle = 0;
+        if (lineV.x >= 0 && lineV.y >= 0) {
+          angle = (lineAngle * DDeiConfig.ROTATE_UNIT).toFixed(4);
+        } else if (lineV.x <= 0 && lineV.y >= 0) {
+          angle = (lineAngle * DDeiConfig.ROTATE_UNIT).toFixed(4);
+        } else if (lineV.x <= 0 && lineV.y <= 0) {
+          angle = (- lineAngle * DDeiConfig.ROTATE_UNIT).toFixed(4);
+        } else if (lineV.x >= 0 && lineV.y <= 0) {
+          angle = (- lineAngle * DDeiConfig.ROTATE_UNIT).toFixed(4);
+        }
+        let rotateMatrix = new Matrix3(
+          Math.cos(angle), Math.sin(angle), 0,
+          -Math.sin(angle), Math.cos(angle), 0,
+          0, 0, 1);
+        lineV.applyMatrix3(rotateMatrix);
+        pointV.applyMatrix3(rotateMatrix);
+
+        //C.判断两个向量的关系，pointV.x必须大于0，且小于lineV.x
+        if (pointV.x >= 0 && pointV.x <= lineV.x) {
+          //D.投影点=（pointV.x,0)，通过旋转+位移到达目标点
+          let v1 = new Vector3(pointV.x, 0, 1);
+          angle = -angle;
+          let rotateMatrix = new Matrix3(
+            Math.cos(angle), Math.sin(angle), 0,
+            -Math.sin(angle), Math.cos(angle), 0,
+            0, 0, 1);
+          v1.applyMatrix3(rotateMatrix);
+          let removeMatrix = new Matrix3(
+            1, 0, x1,
+            0, 1, y1,
+            0, 0, 1);
+          v1.applyMatrix3(removeMatrix);
+          //返回投影点
+          return v1;
+        }
+      }
+
+    }
+    return null;
+  }
+
+  /**
    * 得到点在图形连接线上的投射点
    * @param point 测试点
    * @param distance 内外部判定区间的距离
@@ -147,35 +252,6 @@ abstract class DDeiAbstractShape {
       }
     }
     return inside;
-  }
-
-  /**
-   * 获取旋转后的点集合
-   * @param model 模型
-   * @param rotate 旋转角度
-   * @param looseWeight 宽松判定区域
-   */
-  static getRotatedPoints(model: object, rotate: number = 0, looseWeight: number = 0): object[] {
-    let ps = [];
-    ps.push({ x: model.x - looseWeight, y: model.y - looseWeight });
-    ps.push({ x: model.x + model.width + 2 * looseWeight, y: model.y - looseWeight });
-    ps.push({ x: model.x + model.width + 2 * looseWeight, y: model.y + model.height + 2 * looseWeight });
-    ps.push({ x: model.x - looseWeight, y: model.y + model.height + 2 * looseWeight });
-
-    if (rotate && rotate != 0) {
-      let points = [];
-      let occ = { x: model.x + model.width * 0.5 + looseWeight, y: model.y + model.height * 0.5 + looseWeight }
-      //按圆心进行旋转rotate度，得到绘制出来的点位
-      ps.forEach(oldPoint => {
-        //已知圆心位置、起始点位置和旋转角度，求终点的坐标位置
-        let newPoint = DDeiUtil.computePosition(occ, oldPoint, rotate);
-        points.push(newPoint);
-      })
-      return points;
-    } else {
-      return ps;
-    }
-
   }
 
   /**
@@ -405,7 +481,6 @@ abstract class DDeiAbstractShape {
         if (DDeiAbstractShape.isInsidePolygon(item.getRotatedPoints(), { x: x, y: y })) {
           //如果当前控件状态为选中，且是容器，则往下寻找控件，否则返回当前控件
           if (item.state == DDeiEnumControlState.SELECTED && item.baseModelType == "DDeiContainer") {
-
             let subControls = DDeiAbstractShape.findBottomModelsByArea(item, x, y, width, height);
             if (subControls && subControls.length > 0) {
               controls = controls.concat(subControls);
@@ -504,6 +579,13 @@ abstract class DDeiAbstractShape {
 
 
   /**
+   * 修改自身状态
+   */
+  setState(state: DDeiEnumControlState) {
+    this.state = state
+  }
+
+  /**
    * 判断图形是否在一个区域内，采用宽松的判定模式，允许传入一个大小值
    * @param x
    * @param y
@@ -514,7 +596,7 @@ abstract class DDeiAbstractShape {
     if (x === undefined || y === undefined) {
       return false
     }
-    let ps = this.getRotatedPoints(looseWeight);
+    let ps = this.getRotatedPoints(looseWeight > 0);
 
     let mx: number = Infinity, my: number = Infinity, mx1: number = 0, my1: number = 0;
     //找到最大、最小的x和y
@@ -616,11 +698,14 @@ abstract class DDeiAbstractShape {
    * 获取旋转后的点集合
    * @param looseWeight 宽松的判断矩阵
    */
-  getRotatedPoints(looseWeight: number = 0): object[] {
+  getRotatedPoints(loose: boolean = false): object[] {
     //对当前图形，按照rotate进行旋转，求得新的四个点的位置
     let ps = null;
     //对当前图形，按照rotate进行旋转，求得新的四个点的位置
-    if (this.currentPointVectors?.length > 0) {
+    if (loose && this.currentLoosePointVectors?.length > 0) {
+      ps = cloneDeep(this.currentLoosePointVectors);
+    }
+    else if (this.currentPointVectors?.length > 0) {
       ps = cloneDeep(this.currentPointVectors);
     } else {
       ps = this.getPoints(looseWeight);
@@ -680,9 +765,12 @@ abstract class DDeiAbstractShape {
   calRotatePointVectors(): void {
 
     let pointVectors = [];
+    let loosePointVectors = [];
     let centerPointVector = null;
     let halfWidth = this.width * 0.5;
     let halfHeight = this.height * 0.5;
+    //宽松判定区域的宽度
+    let looseWeight = 10;
 
     if (!this.pointVectors || this.pointVectors?.length == 0) {
       let absBoundsOrigin = this.getAbsBounds();
@@ -697,11 +785,20 @@ abstract class DDeiAbstractShape {
       pointVectors.push(pv2)
       pointVectors.push(pv3)
       pointVectors.push(pv4)
+      //记录宽松判定区域的点
+      loosePointVectors.push(new Vector3(pv1.x - looseWeight, pv1.y - looseWeight, pv1.z))
+      loosePointVectors.push(new Vector3(pv2.x + looseWeight, pv2.y - looseWeight, pv2.z))
+      loosePointVectors.push(new Vector3(pv3.x + looseWeight, pv3.y + looseWeight, pv3.z))
+      loosePointVectors.push(new Vector3(pv4.x - looseWeight, pv4.y + looseWeight, pv4.z))
+
+
       this.pointVectors = pointVectors;
+      this.loosePointVectors = loosePointVectors;
       this.centerPointVector = centerPointVector;
     }
     pointVectors = this.pointVectors;
     centerPointVector = this.centerPointVector;
+    loosePointVectors = this.loosePointVectors;
 
     //执行旋转
     //合并旋转矩阵
@@ -721,6 +818,10 @@ abstract class DDeiAbstractShape {
     let m1 = new Matrix3().premultiply(moveMatrix).premultiply(rotateMatrix).premultiply(removeMatrix);
     this.rotateMatrix = m1;
     pointVectors.forEach(pv => {
+      pv.applyMatrix3(m1);
+    });
+
+    loosePointVectors.forEach(pv => {
       pv.applyMatrix3(m1);
     });
   }

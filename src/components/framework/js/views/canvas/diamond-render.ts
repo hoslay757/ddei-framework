@@ -12,7 +12,16 @@ import DDeiModelArrtibuteValue from '../../models/attribute/attribute-value';
  * 模型应该操作渲染器，而不是操作canvas
  */
 class DDeiDiamondCanvasRender extends DDeiRectangleCanvasRender {
+  // ============================== 静态方法 ============================
+  // 通过一个JSON反向序列化成对象，模型数据与JSON完全一样
+  static newInstance(props: object): DDeiDiamondCanvasRender {
+    return new DDeiDiamondCanvasRender(props)
+  }
 
+  // ============================== 属性 ===============================
+
+  //类名，用于反射和动态加载
+  static ClsName: string = "DDeiDiamondCanvasRender";
   // ============================== 方法 ===============================
 
 
@@ -36,6 +45,8 @@ class DDeiDiamondCanvasRender extends DDeiRectangleCanvasRender {
     //清空旋转矩阵
     this.model.currentPointVectors = this.model.pointVectors;
     this.model.pointVectors = null;
+    this.model.currentLoosePointVectors = this.model.loosePointVectors;
+    this.model.loosePointVectors = null;
   }
 
   /**

@@ -150,7 +150,7 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
       })
 
       //如果移动过程中需要改变容器，一般用于拖拽时的逻辑
-      if (stage.render.selector.passIndex == 10 || stage.render.selector.passIndex == 11) {
+      if (stage.render.selector.passIndex == 10 || stage.render.selector.passIndex == 13 || stage.render.selector.passIndex == 11) {
         if (!changeContainer) {
           //同步更新上层容器其大小和坐标
           parentContainer.changeParentsBounds()

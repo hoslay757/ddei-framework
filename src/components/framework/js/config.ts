@@ -10,6 +10,46 @@ import DDei from "./ddei"
 import DDeiRectContainerCanvasRender from "./views/canvas/rect-container-render"
 import DDeiAbstractShape from "./models/shape"
 import loadCommands from "./config/command"
+import DDeiAbstractShapeRender from "./views/canvas/shape-render-base"
+
+/**
+ * 组件的定义，用于根据名称找到组件类型
+ */
+const MODEL_CLS = {}
+
+/**
+ * 组件渲染器的定义，用于根据名称找到渲染器
+ */
+const RENDER_CLS = {}
+
+
+//动态加载控件
+const control_ctx = import.meta.glob('./models/*.ts')
+for (let path in control_ctx) {
+  control_ctx[path]().then(module => {
+    let cls = module.default;
+    MODEL_CLS[cls.ClsName] = cls
+  });
+}
+
+//动态加载渲染器
+const render_ctx = import.meta.glob('./views/canvas/*.ts', { eager: true });
+for (let i in render_ctx) {
+  let cls = render_ctx[i].default;
+  RENDER_CLS[cls.ClsName] = cls;
+}
+const render_ctx1 = import.meta.glob('./views/svg/*.ts', { eager: true });
+for (let i in render_ctx1) {
+  let cls = render_ctx1[i].default;
+  RENDER_CLS[cls.ClsName] = cls;
+}
+
+const render_ctx2 = import.meta.glob('./views/webgl/*.ts', { eager: true });
+for (let i in render_ctx2) {
+  let cls = render_ctx2[i].default;
+  RENDER_CLS[cls.ClsName] = cls;
+}
+
 /**
  * DDei的配置文件
  * 提供了全局参数与缺省值的设置
@@ -19,24 +59,9 @@ class DDeiConfig {
   static {
     //加载配置
     loadCommands();
-
-    //动态加载控件
-    const control_ctx = import.meta.glob('./models/*.ts')
-    for (const path in control_ctx) {
-      control_ctx[path]().then(module => {
-        let cls = module.default;
-        if (!DDeiConfig.MODEL_CLS) {
-          DDeiConfig.MODEL_CLS = {};
-        }
-        DDeiConfig.MODEL_CLS[cls.ClsName] = cls
-      });
-    }
   }
 
-  /**
-   * 组件的定义，用于根据名称找到组件类型
-   */
-  static MODEL_CLS: {}
+
 
   //保存时的key
   static STORE_KEY: string = "DDEI";
@@ -45,7 +70,7 @@ class DDeiConfig {
   static ROTATE_UNIT = Math.PI / 180;
   // ============================ 静态变量 ============================
   //当前采用的渲染器类型，暂时只支持canvas
-  static RENDER_TYPE: string = "CANVAS";
+  static RENDER_TYPE: string = "Canvas";
 
   // 是否打开辅助线功能
   static GLOBAL_HELP_LINE_ENABLE: boolean = true;
@@ -63,8 +88,8 @@ class DDeiConfig {
     "DDei": { "TOJSON": ["stage"], "SKIP": ["bus", "render", "unicode"] },
     "DDeiStage": { "TOJSON": ["layers"], "SKIP": ["ddInstance", "selectedModels", "render", "unicode"] },
     "DDeiLayer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "render", "unicode", "opPoints", "dragInPoints", "dragOutPoints", "shadowControls"] },
-    "DDeiContainer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "pointVectors", "currentPointVectors", "centerPointVector", "layoutManager"] },
-    "AbstractShape": { "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "pointVectors", "currentPointVectors", "centerPointVector"] },
+    "DDeiContainer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "pointVectors", "currentPointVectors", "centerPointVector", "layoutManager", "loosePointVectors"] },
+    "AbstractShape": { "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "pointVectors", "currentPointVectors", "centerPointVector", "loosePointVectors"] },
   }
 
   // 边框的相关缺省样式属性
@@ -95,6 +120,23 @@ class DDeiConfig {
     PADDING_WEIGHT: {
       default: { single: 0, multiple: 0 },
       selected: { single: 0, multiple: 10 }
+    }
+  };
+
+  // 选择器的相关缺省样式属性
+  static TABLE: object = {
+    //选择器边框
+    selector: {
+      border: {
+        width: 2, color: "red", dash: [5, 3], round: 0,
+        selected: { width: 2, color: "red", dash: [5, 3], round: 0 }
+      },
+
+      //间隔宽度，根据选中单个控件、选中多个控件，间隔宽度可以有所变化
+      PADDING_WEIGHT: {
+        default: { single: 0, multiple: 0 },
+        selected: { single: 0, multiple: 0 }
+      }
     }
   };
 
@@ -384,28 +426,9 @@ class DDeiConfig {
   * 根据配置文件的配置，将模型与渲染器绑定
   * @param  model  模型
   */
-  static bindRender(model: any): void {
-    if (this.RENDER_TYPE == "CANVAS") {
-      if (model.modelType == "DDei") {
-        model.render = new DDeiCanvasRender({ model: model });
-      } else if (model.modelType == "DDeiStage") {
-        model.render = new DDeiStageCanvasRender({ model: model });
-      } else if (model.modelType == "DDeiLayer") {
-        model.render = new DDeiLayerCanvasRender({ model: model });
-      } else if (model.modelType == "DDeiRectangle") {
-        model.render = new DDeiRectangleCanvasRender({ model: model });
-      } else if (model.modelType == "DDeiCircle") {
-        model.render = new DDeiCircleCanvasRender({ model: model });
-      } else if (model.modelType == "DDeiDiamond") {
-        model.render = new DDeiDiamondCanvasRender({ model: model });
-      } else if (model.modelType == "DDeiSelector") {
-        model.render = new DDeiSelectorCanvasRender({ model: model });
-      } else if (model.modelType == "DDeiRectContainer") {
-        model.render = new DDeiRectContainerCanvasRender({ model: model });
-      }
-    } else if (this.RENDER_TYPE == "SVG") {
-      //TODO 
-    }
+  static bindRender(model: DDeiAbstractShape): any {
+    let clsName = model.modelType + this.RENDER_TYPE + "Render";
+    model.render = RENDER_CLS[clsName].newInstance({ model: model })
   }
 
 
@@ -413,3 +436,4 @@ class DDeiConfig {
 }
 
 export default DDeiConfig
+export { MODEL_CLS, RENDER_CLS, DDeiConfig }

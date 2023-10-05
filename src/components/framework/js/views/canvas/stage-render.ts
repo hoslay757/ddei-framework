@@ -4,6 +4,7 @@ import DDeiSelector from '../../models/selector.js';
 import DDeiAbstractShape from '../../models/shape.js';
 import DDeiStage from '../../models/stage.js';
 import DDeiCanvasRender from './ddei-render.js';
+import DDeiAbstractShapeRender from './shape-render-base.js';
 
 /**
  * DDeiStage的渲染器类，用于渲染文件
@@ -18,7 +19,16 @@ class DDeiStageCanvasRender {
     this.ddRender = null;
   }
 
+  // ============================== 静态方法 ============================
+  // 通过一个JSON反向序列化成对象，模型数据与JSON完全一样
+  static newInstance(props: object): DDeiStageCanvasRender {
+    return new DDeiStageCanvasRender(props)
+  }
+
   // ============================== 属性 ===============================
+
+  //类名，用于反射和动态加载
+  static ClsName: string = "DDeiStageCanvasRender";
   /**
    * 当前对应模型
    */
@@ -78,6 +88,7 @@ class DDeiStageCanvasRender {
    */
   initSelector(): void {
     if (!this.selector) {
+
       //创建选择框控件
       this.selector = DDeiSelector.initByJSON({
         id: this.model.id + "_inner_selector",
@@ -106,14 +117,18 @@ class DDeiStageCanvasRender {
    */
   mouseDown(evt: Event): void {
     //分发到当前图层的mouseDown
-    this.model.layers[this.model.layerIndex].render.mouseDown(evt);
+    if (!this.model.ddInstance.eventCancel) {
+      this.model.layers[this.model.layerIndex].render.mouseDown(evt);
+    }
   }
   /**
    * 绘制图形
    */
   mouseUp(evt: Event): void {
     //分发到当前图层的mouseUp
-    this.model.layers[this.model.layerIndex].render.mouseUp(evt);
+    if (!this.model.ddInstance.eventCancel) {
+      this.model.layers[this.model.layerIndex].render.mouseUp(evt);
+    }
   }
 
   /**
@@ -121,7 +136,9 @@ class DDeiStageCanvasRender {
    */
   mouseMove(evt: Event): void {
     //分发到当前图层的mouseUp
-    this.model.layers[this.model.layerIndex].render.mouseMove(evt);
+    if (!this.model.ddInstance.eventCancel) {
+      this.model.layers[this.model.layerIndex].render.mouseMove(evt);
+    }
   }
 }
 

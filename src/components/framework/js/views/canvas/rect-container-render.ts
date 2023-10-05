@@ -8,6 +8,17 @@ import DDeiRectangleCanvasRender from './rectangle-render';
  * 模型应该操作渲染器，而不是操作canvas
  */
 class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
+
+  // ============================== 静态方法 ============================
+  // 通过一个JSON反向序列化成对象，模型数据与JSON完全一样
+  static newInstance(props: object): DDeiRectContainerCanvasRender {
+    return new DDeiRectContainerCanvasRender(props)
+  }
+
+  // ============================== 属性 ===============================
+
+  //类名，用于反射和动态加载
+  static ClsName: string = "DDeiRectContainerCanvasRender";
   // ============================== 方法 ===============================
   /**
      * 创建图形
@@ -60,29 +71,36 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
    * 鼠标按下事件
    */
   mouseDown(evt: Event): void {
-    super.mouseDown(evt);
+    if (!this.stage.ddInstance.eventCancel) {
+      super.mouseDown(evt);
+    }
   }
   /**
    * 绘制图形
    */
   mouseUp(evt: Event): void {
-    super.mouseUp(evt);
+    if (!this.stage.ddInstance.eventCancel) {
+      super.mouseUp(evt);
+    }
   }
 
   /**
    * 鼠标移动
    */
   mouseMove(evt: Event): void {
-    super.mouseMove(evt);
-    if (this.model.models) {
-      //遍历子元素，绘制子元素
-      this.model.midList.forEach(key => {
-        let model = this.model.models.get(key);
-        if (model && model.isInAreaLoose(evt.offsetX, evt.offsetY, DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2)) {
-          model.render.mouseMove(evt);
-        }
-      });
+    if (!this.stage.ddInstance.eventCancel) {
+      super.mouseMove(evt);
+      if (this.model.models) {
+        //遍历子元素，绘制子元素
+        this.model.midList.forEach(key => {
+          let model = this.model.models.get(key);
+          if (model && model.isInAreaLoose(evt.offsetX, evt.offsetY, DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2)) {
+            model.render.mouseMove(evt);
+          }
+        });
+      }
     }
+
   }
 }
 

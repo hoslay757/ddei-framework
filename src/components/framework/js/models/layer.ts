@@ -1,4 +1,4 @@
-import DDeiConfig from '../config'
+import DDeiConfig, { MODEL_CLS } from '../config'
 import DDeiEnumControlState from '../enums/control-state';
 import DDeiUtil from '../util';
 import DDeiAbstractShape from './shape';
@@ -33,7 +33,7 @@ class DDeiLayer {
     let models: Map<String, DDeiAbstractShape> = new Map<String, DDeiAbstractShape>();
     for (let key in json.models) {
       let item = json.models[key];
-      let model = DDeiConfig.MODEL_CLS[item.modelType].loadFromJSON(item, tempData);
+      let model = MODEL_CLS[item.modelType].loadFromJSON(item, tempData);
       models.set(key, model)
     }
     tempData['currentLayer'] = null;
@@ -246,7 +246,7 @@ class DDeiLayer {
       models = Array.from(this.models.values());
     }
     models.forEach(item => {
-      item.state = DDeiEnumControlState.DEFAULT
+      item.setState(DDeiEnumControlState.DEFAULT)
     });
   }
 
@@ -255,7 +255,7 @@ class DDeiLayer {
    */
   cancelAllLevelSelectModels(): void {
     this.models.forEach(item => {
-      item.state = DDeiEnumControlState.DEFAULT
+      item.setState(DDeiEnumControlState.DEFAULT)
       if (item.baseModelType == "DDeiContainer") {
         item.cancelAllLevelSelectModels();
       }

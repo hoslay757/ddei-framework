@@ -15,8 +15,16 @@ import { clone } from 'lodash'
  * DDeiSelector的渲染器类，用于渲染选择器
  */
 class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
-  // ============================== 方法 ===============================
+  // ============================== 静态方法 ============================
+  // 通过一个JSON反向序列化成对象，模型数据与JSON完全一样
+  static newInstance(props: object): DDeiSelectorCanvasRender {
+    return new DDeiSelectorCanvasRender(props)
+  }
 
+  // ============================== 属性 ===============================
+
+  //类名，用于反射和动态加载
+  static ClsName: string = "DDeiSelectorCanvasRender";
 
   /**
    * 创建图形
@@ -62,78 +70,88 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     //操作图标的宽度
     let width = DDeiConfig.SELECTOR.OPERATE_ICON.weight * ratio;
     let halfWidth = width * 0.5;
-    for (let i = 1; i <= 9; i++) {
-      //如果被选中，使用选中的边框，否则使用缺省边框
-      let disabled = null;
-      let color = null;
-      let opacity = null;
-      let bWidth = null;
-      if (i <= 2 || i == 9) {
-        disabled = this.getBorderInfo(tempBorder, 1, "disabled");
-        color = this.getBorderInfo(tempBorder, 1, "color");
-        opacity = this.getBorderInfo(tempBorder, 1, "opacity");
-        bWidth = this.getBorderInfo(tempBorder, 1, "width");
-      } else if (i <= 4) {
-        disabled = this.getBorderInfo(tempBorder, 2, "disabled");
-        color = this.getBorderInfo(tempBorder, 2, "color");
-        opacity = this.getBorderInfo(tempBorder, 2, "opacity");
-        bWidth = this.getBorderInfo(tempBorder, 2, "width");
-      } else if (i <= 6) {
-        disabled = this.getBorderInfo(tempBorder, 3, "disabled");
-        color = this.getBorderInfo(tempBorder, 3, "color");
-        opacity = this.getBorderInfo(tempBorder, 3, "opacity");
-        bWidth = this.getBorderInfo(tempBorder, 3, "width");
-      } else if (i <= 8) {
-        disabled = this.getBorderInfo(tempBorder, 4, "disabled");
-        color = this.getBorderInfo(tempBorder, 4, "color");
-        opacity = this.getBorderInfo(tempBorder, 4, "opacity");
-        bWidth = this.getBorderInfo(tempBorder, 4, "width");
-      }
-
-      //如果边框未被disabled，则绘制边框
-      if (!disabled && color && (!opacity || opacity > 0) && bWidth > 0) {
-
-        //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
-        let lineOffset = bWidth * ratio / 2;
-        ctx.lineWidth = bWidth * ratio;
-        ctx.beginPath();
-
-        //透明度
-        if (opacity != null && opacity != undefined) {
-          ctx.globalAlpha = opacity
+    let selectedModels = this.stage?.selectedModels;
+    if (selectedModels?.size > 0) {
+      let firstModel = Array.from(selectedModels?.values())[0];
+      for (let i = 1; i <= 10; i++) {
+        //如果被选中，使用选中的边框，否则使用缺省边框
+        let disabled = null;
+        let color = null;
+        let opacity = null;
+        let bWidth = null;
+        if (i <= 2 || i >= 9) {
+          disabled = this.getBorderInfo(tempBorder, 1, "disabled");
+          color = this.getBorderInfo(tempBorder, 1, "color");
+          opacity = this.getBorderInfo(tempBorder, 1, "opacity");
+          bWidth = this.getBorderInfo(tempBorder, 1, "width");
+        } else if (i <= 4) {
+          disabled = this.getBorderInfo(tempBorder, 2, "disabled");
+          color = this.getBorderInfo(tempBorder, 2, "color");
+          opacity = this.getBorderInfo(tempBorder, 2, "opacity");
+          bWidth = this.getBorderInfo(tempBorder, 2, "width");
+        } else if (i <= 6) {
+          disabled = this.getBorderInfo(tempBorder, 3, "disabled");
+          color = this.getBorderInfo(tempBorder, 3, "color");
+          opacity = this.getBorderInfo(tempBorder, 3, "opacity");
+          bWidth = this.getBorderInfo(tempBorder, 3, "width");
+        } else if (i <= 8) {
+          disabled = this.getBorderInfo(tempBorder, 4, "disabled");
+          color = this.getBorderInfo(tempBorder, 4, "color");
+          opacity = this.getBorderInfo(tempBorder, 4, "opacity");
+          bWidth = this.getBorderInfo(tempBorder, 4, "width");
         }
-        //颜色
-        ctx.strokeStyle = DDeiUtil.getColor(color);
-        //填充操作图标的颜色
-        let defaultFillColor = DDeiUtil.getColor(DDeiConfig.SELECTOR.OPERATE_ICON.FILL.default);
-        ctx.fillStyle = defaultFillColor;
+
+        //如果边框未被disabled，则绘制边框
+        if (!disabled && color && (!opacity || opacity > 0) && bWidth > 0) {
+
+          //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
+          let lineOffset = bWidth * ratio / 2;
+          ctx.lineWidth = bWidth * ratio;
+          ctx.beginPath();
+
+          //透明度
+          if (opacity != null && opacity != undefined) {
+            ctx.globalAlpha = opacity
+          }
+          //颜色
+          ctx.strokeStyle = DDeiUtil.getColor(color);
+          //填充操作图标的颜色
+          let defaultFillColor = DDeiUtil.getColor(DDeiConfig.SELECTOR.OPERATE_ICON.FILL.default);
+          ctx.fillStyle = defaultFillColor;
 
 
-        //设置填充样式
-        if (this.model.passIndex == i) {
-          ctx.fillStyle = DDeiUtil.getColor(DDeiConfig.SELECTOR.OPERATE_ICON.FILL.pass);
-        }
-        let opvs = this.model?.currentOPVS;
-        if (opvs?.length > 0) {
+          //设置填充样式
+          if (this.model.passIndex == i) {
+            ctx.fillStyle = DDeiUtil.getColor(DDeiConfig.SELECTOR.OPERATE_ICON.FILL.pass);
+          }
+          let opvs = this.model?.currentOPVS;
+          if (opvs?.length > 0) {
 
-          if (i >= 1 <= 8) {
-            ctx.ellipse(opvs[i].x * ratio + lineOffset, opvs[i].y * ratio + lineOffset, halfWidth, halfWidth, 0, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.stroke();
-          } else {
-            if (this.model.passIndex == i) {
-              //填充一个圆形
-              ctx.ellipse(opvs[9].x * ratio + lineOffset, opvs[9].y * ratio + lineOffset, halfWidth, halfWidth, 0, 0, Math.PI * 2)
+            if (i >= 1 && i <= 8) {
+              ctx.ellipse(opvs[i].x * ratio + lineOffset, opvs[i].y * ratio + lineOffset, halfWidth, halfWidth, 0, 0, Math.PI * 2);
               ctx.fill();
-            } else {
-              //绘制旋转按钮
-              ctx.arc(opvs[9].x * ratio + lineOffset, opvs[9].y * ratio + lineOffset, halfWidth, 50, Math.PI * 1.6)
-              ctx.stroke()
+              ctx.stroke();
+            } else if (i == 9) {
+              if (this.model.passIndex == i) {
+                //填充一个圆形
+                ctx.ellipse(opvs[9].x * ratio + lineOffset, opvs[9].y * ratio + lineOffset, halfWidth, halfWidth, 0, 0, Math.PI * 2)
+                ctx.fill();
+              } else {
+                //绘制旋转按钮
+                ctx.arc(opvs[9].x * ratio + lineOffset, opvs[9].y * ratio + lineOffset, halfWidth, 50, Math.PI * 1.6)
+                ctx.stroke()
+              }
+            } else if (i == 10 && selectedModels.size == 1 && (firstModel.baseModelType == 'DDeiContainer' || firstModel.baseModelType == 'DDeiTable')) {
+
+              ctx.fillStyle = DDeiUtil.getColor(color);
+              //填充一个圆形
+              ctx.ellipse(opvs[10].x * ratio + lineOffset, opvs[10].y * ratio + lineOffset, halfWidth, halfWidth, 0, 0, Math.PI * 2)
+              ctx.fill();
             }
           }
+
+
         }
-
-
       }
     }
     //恢复状态
@@ -194,7 +212,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     if (this.model.state == DDeiEnumControlState.DEFAULT) {
       includedModels = this.model.getIncludedModels();
     } else if (this.model.state == DDeiEnumControlState.SELECTED) {
-      includedModels = this.stage.layers[this.stage.layerIndex].getSelectedModels();
+      includedModels = this.stage?.selectedModels
       selectNumber = 1
     }
     if (includedModels && includedModels.size > selectNumber) {
@@ -214,6 +232,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     let offsetX = evt.offsetX;
     let offsetY = evt.offsetY;
     //判断当前坐标是否位于操作按钮上
+
     if (this.isIconOn(1, offsetX, offsetY)) {
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 1 }, evt);
     }
@@ -248,6 +267,10 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     //旋转
     else if (this.isIconOn(9, offsetX, offsetY)) {
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 9 }, evt);
+    }
+    //拖拽点
+    else if (this.isIconOn(10, offsetX, offsetY)) {
+      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 13 }, evt);
     } else {
       //判断是否在某个具体选中的控件上，如果是则分发事件
       let models = this.stage?.layers[this.stage?.layerIndex].findModelsByArea(offsetX, offsetY);
@@ -267,7 +290,6 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
   */
   mouseDown(evt: Event): void {
     //判断当前坐标是否位于操作按钮上,如果是则改变状态为响应状态
-
     if (this.model.passIndex >= 1 && this.model.passIndex <= 8) {
       let dragObj = {
         x: evt.offsetX,
@@ -298,6 +320,37 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
       //当前操作状态：改变控件大小中
       this.stageRender.operateState = DDeiEnumOperateState.CONTROL_ROTATE
+    }
+    //拖拽移动
+    else if (this.model.passIndex == 13) {
+      let selectedModels = this.stage?.selectedModels;
+      //当前操作状态：控件拖拽中
+      this.stageRender.operateState = DDeiEnumOperateState.CONTROL_DRAGING
+
+      let layer = Array.from(selectedModels?.values())[0].layer;
+      //清除临时操作点
+      layer.opPoints = [];
+      //中心点坐标
+      //当前控件的上层控件，可能是一个layer也可能是容器
+      let centerPointVector = this.model.centerPointVector;
+      //记录当前的拖拽的x,y,写入dragObj作为临时变量
+      let dragObj = {
+        x: evt.offsetX,
+        y: evt.offsetY,
+        dx: centerPointVector.x - evt.offsetX,//鼠标在控件中心坐标的增量位置
+        dy: centerPointVector.y - evt.offsetY,
+      }
+
+      //产生影子控件
+      selectedModels.forEach(m => {
+        let md = DDeiUtil.getShadowControl(m);
+        layer.shadowControls.push(md);
+        if (!this.stageRender.currentOperateShape) {
+          this.stageRender.currentOperateShape = md;
+        }
+      });
+      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, [{ id: this.stageRender.currentOperateShape.id, value: DDeiEnumControlState.SELECTED }], evt);
+      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
     }
     //记录当前拖拽状态
     if (this.model.passIndex != -1) {

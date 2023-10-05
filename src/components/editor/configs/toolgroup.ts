@@ -22,6 +22,7 @@ const loadToolGroups = async function () {
       controlDefine.styles = item.styles;
       controlDefine.datas = item.datas;
       controlDefine.events = item.events;
+      controlDefine.menus = item.menus;
       // 排序属性
       if (controlDefine?.styles?.children) {
         parseAttrsToGroup(controlDefine, controlDefine.styles, DDeiEnumAttributeType.GRAPHICS);

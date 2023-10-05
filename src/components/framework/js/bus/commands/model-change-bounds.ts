@@ -120,18 +120,19 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
       //获取模型在原始模型中的位置比例
       for (let i = 0; i < models.length; i++) {
         let item = models[i]
-
-        originPosMap.set(item.id, {
+        let id = item.id;
+        if (item.id.indexOf("_shadow") != -1) {
+          item = stage?.getModelById(item.id.substring(0, item.id.lastIndexOf("_shadow")));
+        }
+        originPosMap.set(id, {
           xR: ((item.x - originRect.x) / originRect.width),
           yR: ((item.y - originRect.y) / originRect.height),
           wR: (item.width / originRect.width),
           hR: (item.height / originRect.height)
         });
       }
-
       //考虑paddingWeight，计算预先实际移动后的区域
       let movedBounds = { x: originRect.x + deltaX, y: originRect.y + deltaY, width: originRect.width + deltaWidth, height: originRect.height + deltaHeight }
-
       models.forEach(item => {
         let originBound = { x: item.x, y: item.y, width: item.width, height: item.height };
         item.x = parseFloat((movedBounds.x + movedBounds.width * originPosMap.get(item.id).xR).toFixed(4))
@@ -145,6 +146,8 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
           //清空旋转矩阵
           item.currentPointVectors = item.pointVectors;
           item.pointVectors = null;
+          item.currentLoosePointVectors = item.loosePointVectors;
+          item.loosePointVectors = null;
         }
 
         //如果当前是修改坐标，并且不改变容器大小，则按照容器比例更新子元素的大小
@@ -171,8 +174,8 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
    */
   after(data: object, bus: DDeiBus, evt: Event): boolean {
     //更新选择器
-    let stage = bus.ddInstance.stage;
-    bus?.insert(DDeiEnumBusCommandType.UpdateSelectorBounds, { models: stage?.layers[stage?.layerIndex]?.shadowControls }, evt);
+    // let stage = bus.ddInstance.stage;
+    // bus?.insert(DDeiEnumBusCommandType.UpdateSelectorBounds, { models: stage?.layers[stage?.layerIndex]?.shadowControls }, evt);
     return true;
   }
 

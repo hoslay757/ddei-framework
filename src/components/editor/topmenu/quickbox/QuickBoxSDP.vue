@@ -58,7 +58,7 @@ export default {
   mounted() {
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     for (let i in ICONS) {
-      this.icons[i] = ICONS[i].default;
+      this.icons[i] = ICONS[i];
     }
   },
   methods: {

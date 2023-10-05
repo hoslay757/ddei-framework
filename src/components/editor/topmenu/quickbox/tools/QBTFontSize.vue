@@ -40,7 +40,7 @@ export default {
     return {
       //当前编辑器
       editor: null,
-      toolboxExpandedIcon: ICONS['toolbox-expanded'].default,
+      toolboxExpandedIcon: ICONS['toolbox-expanded'],
       controlDefine: null,
       attrDefine: null,
       dataSource: null,

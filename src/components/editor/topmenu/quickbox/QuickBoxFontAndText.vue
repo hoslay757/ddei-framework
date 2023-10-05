@@ -82,7 +82,7 @@ export default {
   created() { },
   mounted() {
     for(let i in ICONS){
-      this.icons[i] = ICONS[i].default;
+      this.icons[i] = ICONS[i];
     }
   },
 };

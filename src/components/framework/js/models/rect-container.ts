@@ -1,4 +1,4 @@
-import DDeiConfig from '../config';
+import DDeiConfig, { MODEL_CLS } from '../config';
 import DDeiEnumControlState from '../enums/control-state';
 import DDeiRectangle from './rectangle'
 import DDeiAbstractShape from './shape';
@@ -40,7 +40,7 @@ class DDeiRectContainer extends DDeiRectangle {
     for (let key in json.models) {
       tempData['currentContainer'] = container;
       let item = json.models[key];
-      let model = DDeiConfig.MODEL_CLS[item.modelType].loadFromJSON(item, tempData);
+      let model = MODEL_CLS[item.modelType].loadFromJSON(item, tempData);
       models.set(key, model)
       tempData['currentContainer'] = null;
     }
@@ -269,7 +269,7 @@ class DDeiRectContainer extends DDeiRectangle {
       models = Array.from(this.models.values());
     }
     models.forEach(item => {
-      item.state = DDeiEnumControlState.DEFAULT
+      item.setState(DDeiEnumControlState.DEFAULT)
     });
   }
 
@@ -278,7 +278,7 @@ class DDeiRectContainer extends DDeiRectangle {
    */
   cancelAllLevelSelectModels(): void {
     this.models.forEach(item => {
-      item.state = DDeiEnumControlState.DEFAULT
+      item.setState(DDeiEnumControlState.DEFAULT)
       if (item.baseModelType == "DDeiContainer") {
         item.cancelAllLevelSelectModels();
       }

@@ -34,7 +34,7 @@
 import DDeiEditor from "../js/editor";
 import DDeiConfig from "@/components/framework/js/config";
 import DDei from "@/components/framework/js/ddei";
-import { loadToolGroups } from "../configs/toolgroup"
+import { loadToolGroups, controlOriginDefinies } from "../configs/toolgroup"
 import DDeiEditorState from '../js/enums/editor-state';
 import { cloneDeep, trim } from 'lodash';
 import DDeiAbstractShape from "@/components/framework/js/models/shape";
@@ -62,7 +62,7 @@ export default {
       //创建时的图片
       creatingImg: new Image(),
       //展开的图片
-      expandLeftImg: ICONS['icon-expand-left'].default
+      expandLeftImg: ICONS['icon-expand-left']
     };
   },
   computed: {
@@ -98,7 +98,7 @@ export default {
         //处理control的图标
         item.controls.forEach(control => {
           if (control.icon) {
-            control.icon = ICONS[control.icon].default;
+            control.icon = ICONS[control.icon];
           }
         });
       });
@@ -168,7 +168,7 @@ export default {
       //获取当前实例
       let ddInstance: DDei = this.editor.ddInstance;
       //根据control的定义，初始化临时控件，并推送至上层Editor
-      let searchPaths = ["width", "height", "img", "text", "linkChild", "linkSelf"];
+      let searchPaths = ["width", "height", "img", "text", "linkChild", "linkSelf","subcontrol"];
       let configAtrs = DDeiEditorUtil.getAttrValueByConfig(control, searchPaths);
       let dataJson = {
         id: control.code + "_" + ddInstance.stage.idIdx,
@@ -185,8 +185,20 @@ export default {
           dataJson[key] = control[key];
         }
       });
+      //如果存在初始化子控件的json，则记录在类变量上
+      if(dataJson["subcontrol"]){
+        //获取控件JSON
+        let controlDefine = controlOriginDefinies.get(dataJson["subcontrol"]);
+        if(controlDefine){
+          let subControlJSON = {
+            modelCode: controlDefine.id,
+          }
+          this.controlCls[control.type].initSubControlJson = subControlJSON;
+          dataJson["subcontrol"] = null;
+        }
+      }
       let model: DDeiAbstractShape = this.controlCls[control.type].initByJSON(dataJson);
-      model.state = DDeiEnumControlState.CREATING;
+      model.setState(DDeiEnumControlState.CREATING);
 
       e.dataTransfer.setDragImage(this.creatingImg, 0, 0)
 
