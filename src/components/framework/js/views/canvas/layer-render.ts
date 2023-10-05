@@ -1003,7 +1003,9 @@ class DDeiLayerCanvasRender {
             }
           }
         }
-
+        if (this.tempLooseControl == null) {
+          this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
+        }
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
         break;
       }

@@ -127,7 +127,7 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
                   }
                   isOk = true;
                 } else {
-                  if (currentCell.isInAreaLoose(e.offsetX, e.offsetY, 0)) {
+                  if (currentCell.row == table.rows.length - 1 || currentCell.col == table.cols.length - 1 || currentCell.isInAreaLoose(e.offsetX, e.offsetY, 0)) {
                     if (!isCtrl) {
                       //选中当前单元格
                       currentCell.selectCell();
