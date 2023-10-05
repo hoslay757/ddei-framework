@@ -255,35 +255,6 @@ abstract class DDeiAbstractShape {
   }
 
   /**
-   * 获取旋转后的点集合
-   * @param model 模型
-   * @param rotate 旋转角度
-   * @param looseWeight 宽松判定区域
-   */
-  static getRotatedPoints(model: object, rotate: number = 0, looseWeight: number = 0): object[] {
-    let ps = [];
-    ps.push({ x: model.x - looseWeight, y: model.y - looseWeight });
-    ps.push({ x: model.x + model.width + 2 * looseWeight, y: model.y - looseWeight });
-    ps.push({ x: model.x + model.width + 2 * looseWeight, y: model.y + model.height + 2 * looseWeight });
-    ps.push({ x: model.x - looseWeight, y: model.y + model.height + 2 * looseWeight });
-
-    if (rotate && rotate != 0) {
-      let points = [];
-      let occ = { x: model.x + model.width * 0.5 + looseWeight, y: model.y + model.height * 0.5 + looseWeight }
-      //按圆心进行旋转rotate度，得到绘制出来的点位
-      ps.forEach(oldPoint => {
-        //已知圆心位置、起始点位置和旋转角度，求终点的坐标位置
-        let newPoint = DDeiUtil.computePosition(occ, oldPoint, rotate);
-        points.push(newPoint);
-      })
-      return points;
-    } else {
-      return ps;
-    }
-
-  }
-
-  /**
      * 是否左对齐
      * 源图形的左上顶点与图形的左边线或右边线处于一个x
      * @param {*} sourceP 源图形位置 { x }
@@ -625,7 +596,7 @@ abstract class DDeiAbstractShape {
     if (x === undefined || y === undefined) {
       return false
     }
-    let ps = this.getRotatedPoints(looseWeight);
+    let ps = this.getRotatedPoints(looseWeight > 0);
 
     let mx: number = Infinity, my: number = Infinity, mx1: number = 0, my1: number = 0;
     //找到最大、最小的x和y
@@ -727,11 +698,14 @@ abstract class DDeiAbstractShape {
    * 获取旋转后的点集合
    * @param looseWeight 宽松的判断矩阵
    */
-  getRotatedPoints(looseWeight: number = 0): object[] {
+  getRotatedPoints(loose: boolean = false): object[] {
     //对当前图形，按照rotate进行旋转，求得新的四个点的位置
     let ps = null;
     //对当前图形，按照rotate进行旋转，求得新的四个点的位置
-    if (this.currentPointVectors?.length > 0) {
+    if (loose && this.currentLoosePointVectors?.length > 0) {
+      ps = cloneDeep(this.currentLoosePointVectors);
+    }
+    else if (this.currentPointVectors?.length > 0) {
       ps = cloneDeep(this.currentPointVectors);
     } else {
       ps = this.getPoints(looseWeight);
@@ -791,9 +765,12 @@ abstract class DDeiAbstractShape {
   calRotatePointVectors(): void {
 
     let pointVectors = [];
+    let loosePointVectors = [];
     let centerPointVector = null;
     let halfWidth = this.width * 0.5;
     let halfHeight = this.height * 0.5;
+    //宽松判定区域的宽度
+    let looseWeight = 10;
 
     if (!this.pointVectors || this.pointVectors?.length == 0) {
       let absBoundsOrigin = this.getAbsBounds();
@@ -808,11 +785,20 @@ abstract class DDeiAbstractShape {
       pointVectors.push(pv2)
       pointVectors.push(pv3)
       pointVectors.push(pv4)
+      //记录宽松判定区域的点
+      loosePointVectors.push(new Vector3(pv1.x - looseWeight, pv1.y - looseWeight, pv1.z))
+      loosePointVectors.push(new Vector3(pv2.x + looseWeight, pv2.y - looseWeight, pv2.z))
+      loosePointVectors.push(new Vector3(pv3.x + looseWeight, pv3.y + looseWeight, pv3.z))
+      loosePointVectors.push(new Vector3(pv4.x - looseWeight, pv4.y + looseWeight, pv4.z))
+
+
       this.pointVectors = pointVectors;
+      this.loosePointVectors = loosePointVectors;
       this.centerPointVector = centerPointVector;
     }
     pointVectors = this.pointVectors;
     centerPointVector = this.centerPointVector;
+    loosePointVectors = this.loosePointVectors;
 
     //执行旋转
     //合并旋转矩阵
@@ -832,6 +818,10 @@ abstract class DDeiAbstractShape {
     let m1 = new Matrix3().premultiply(moveMatrix).premultiply(rotateMatrix).premultiply(removeMatrix);
     this.rotateMatrix = m1;
     pointVectors.forEach(pv => {
+      pv.applyMatrix3(m1);
+    });
+
+    loosePointVectors.forEach(pv => {
       pv.applyMatrix3(m1);
     });
   }

@@ -45,6 +45,8 @@ class DDeiDiamondCanvasRender extends DDeiRectangleCanvasRender {
     //清空旋转矩阵
     this.model.currentPointVectors = this.model.pointVectors;
     this.model.pointVectors = null;
+    this.model.currentLoosePointVectors = this.model.loosePointVectors;
+    this.model.loosePointVectors = null;
   }
 
   /**

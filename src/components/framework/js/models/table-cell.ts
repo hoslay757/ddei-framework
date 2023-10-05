@@ -48,9 +48,9 @@ class DDeiTableCell extends DDeiRectContainer {
      * 判断是否在某个边线上
      * @param direct 1，2，3，4 上、右、下、左
      */
-  isBorderOn(direct: number, x: number, y: number): boolean {
+  isBorderOn(direct: number, x: number, y: number, inWeight: number = -3, outWeight: number = 3): boolean {
     let projPoint = this.getProjPointOnLine({ x: x, y: y }
-      , { in: -3, out: 3 }, 1, direct - 1)
+      , { in: inWeight, out: outWeight }, 1, direct - 1)
     if (projPoint) {
       return true;
     } else {

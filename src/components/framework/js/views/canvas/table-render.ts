@@ -86,32 +86,14 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
         let stop = false;
         for (let j = 0; j < rowObj.length; j++) {
           let currentCell: DDeiTableCell = rowObj[j];
-          if (currentCell.isInAreaLoose(e.offsetX, e.offsetY, 0)) {
+          if (currentCell.isInAreaLoose(e.offsetX, e.offsetY, 10)) {
+            let isOk = false;
             if (e.button == 2) {
               table.curRow = currentCell.row;
               table.curCol = currentCell.col;
             } else {
-              // 按下ctrl就是多选，不按下就是单选,表格的多选，选的是里面的单元格
-              if (isCtrl) {
-                //处理整行选中
-                if (table.tempDragType == 'table-row-select') {
-                  let row = currentCell.row;
-                  for (let i = 0; i < table.cols.length; i++) {
-                    table.cols[i][row].selectCell()
-                  }
-                }
-                //处理整列选中
-                else if (table.tempDragType == 'table-col-select') {
-                  let col = currentCell.col;
-                  for (let i = 0; i < table.rows.length; i++) {
-                    table.rows[i][col].selectCell()
-                  }
-                } else {
-                  currentCell.selectOrCancelCell();
-                }
-              }
               //按下shift选中区域
-              else if (isShift) {
+              if (isShift) {
                 //有已选单元格的情况下，选中区域，否则只选中当前单元格
                 if (table.curRow != -1 && table.curCol != -1) {
                   let minMax = table.getMinMaxRowAndCol([currentCell, table.rows[table.curRow][table.curCol]]);
@@ -128,24 +110,34 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
                   currentCell.selectOrCancelCell();
                 }
               } else {
-                //清空所有选中的单元格
-                table.clearSelectionCells();
-                //处理整行选中
-                if (table.tempDragType == 'table-row-select') {
-                  let row = currentCell.row;
-                  for (let i = 0; i < table.cols.length; i++) {
-                    table.cols[i][row].selectCell();
-                  }
+                if (!isCtrl) {
+                  //清空所有选中的单元格
+                  table.clearSelectionCells();
                 }
-                //处理整列选中
-                else if (table.tempDragType == 'table-col-select') {
+                if (currentCell.row == 0 && currentCell.isBorderOn(1, e.offsetX, e.offsetY, 4, 10)) {
                   let col = currentCell.col;
                   for (let i = 0; i < table.rows.length; i++) {
-                    table.rows[i][col].selectCell();
+                    table.rows[i][col].selectCell()
                   }
+                  isOk = true;
+                } else if (currentCell.col == 0 && currentCell.isBorderOn(4, e.offsetX, e.offsetY, 4, 10)) {
+                  let row = currentCell.row;
+                  for (let i = 0; i < table.cols.length; i++) {
+                    table.cols[i][row].selectCell()
+                  }
+                  isOk = true;
                 } else {
-                  //选中当前单元格
-                  currentCell.selectCell();
+                  if (currentCell.isInAreaLoose(e.offsetX, e.offsetY, 0)) {
+                    if (!isCtrl) {
+                      //选中当前单元格
+                      currentCell.selectCell();
+                    } else {
+                      //选中当前单元格
+                      currentCell.selectOrCancelCell();
+                    }
+                    isOk = true;
+                  }
+
                 }
               }
               //如果存在临时拖拽类型，则将临时拖拽转换为正式拖拽
@@ -192,10 +184,13 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
                 table.dragCell = null;
                 table.dragType = null;
               }
+
             }
-            currentCell.render.mouseDown(e);
-            stop = true;
-            break;
+            if (isOk) {
+              currentCell.render.mouseDown(e);
+              stop = true;
+              break;
+            }
           }
         }
         if (stop) {
@@ -251,6 +246,7 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
    */
   mouseMove(e: Event): void {
     if (!this.stage.ddInstance.eventCancel) {
+      super.mouseMove(e);
       let table: DDeiTable = this.model;
       if (table.dragChanging) {
         table.setState(DDeiEnumControlState.SELECTED)
@@ -287,33 +283,51 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
           let rowObj = table.rows[i]
           for (let j = 0; j < rowObj.length; j++) {
             let cellObj = rowObj[j];
-            if (cellObj.isInAreaLoose(e.offsetX, e.offsetY, 0)) {
+            if (cellObj.isInAreaLoose(e.offsetX, e.offsetY, 10)) {
+              let isDrag = false;
               //上边线
               if (cellObj.isBorderOn(1, e.offsetX, e.offsetY)) {
                 this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'ns-resize' }, e);
                 table.tempDragType = "row-top";
+                isDrag = true
+              }
+              //上边线靠外部
+              else if (cellObj.row == 0 && cellObj.isBorderOn(1, e.offsetX, e.offsetY, 4, 10)) {
+                this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 's-resize' }, e);
+                isDrag = true;
               }
               //右边线
               else if (cellObj.isBorderOn(2, e.offsetX, e.offsetY)) {
                 this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'ew-resize' }, e);
                 table.tempDragType = "col-right";
+                isDrag = true;
               }//下边线
               else if (cellObj.isBorderOn(3, e.offsetX, e.offsetY)) {
                 this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'ns-resize' }, e);
                 table.tempDragType = "row-bottom";
+                isDrag = true;
               }//左边线
               else if (cellObj.isBorderOn(4, e.offsetX, e.offsetY)) {
                 this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'ew-resize' }, e);
                 table.tempDragType = "col-left";
+                isDrag = true;
+              }
+              //左边线靠外部
+              else if (cellObj.col == 0 && cellObj.isBorderOn(4, e.offsetX, e.offsetY, 4, 10)) {
+                this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'e-resize' }, e);
+                isDrag = true;
               }
               //单元格中间部分
-              else {
+              else if (cellObj.isInAreaLoose(e.offsetX, e.offsetY, 0)) {
                 this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'all-scroll' }, e);
                 table.tempDragType = "cell";
+                isDrag = true;
               }
-              table.tempDragCell = cellObj
-              cellObj.render.mouseMove(e);
-              return;
+              if (isDrag) {
+                table.tempDragCell = cellObj
+                cellObj.render.mouseMove(e);
+                return;
+              }
             }
           }
         }

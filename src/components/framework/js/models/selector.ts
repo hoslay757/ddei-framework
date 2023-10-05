@@ -76,6 +76,7 @@ class DDeiSelector extends DDeiRectangle {
     this.height = 0
     this.rotate = 0
     this.currentPointVectors = null;
+    this.currentLoosePointVectors = null;
     this.pointVectors = null;
     this.centerPointVector = null;
     this.currentOPVS = null;

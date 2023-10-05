@@ -146,6 +146,8 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
           //清空旋转矩阵
           item.currentPointVectors = item.pointVectors;
           item.pointVectors = null;
+          item.currentLoosePointVectors = item.loosePointVectors;
+          item.loosePointVectors = null;
         }
 
         //如果当前是修改坐标，并且不改变容器大小，则按照容器比例更新子元素的大小

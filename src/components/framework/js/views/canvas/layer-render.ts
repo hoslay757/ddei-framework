@@ -560,7 +560,12 @@ class DDeiLayerCanvasRender {
       this.stageRender.selector.render.mouseDown(evt);
     } else {
       // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
-      let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, evt.offsetX, evt.offsetY);
+      let operateControls = null;
+      if (this.tempLooseControl?.baseModelType == "DDeiTable") {
+        operateControls = [this.tempLooseControl];
+      } else {
+        operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, evt.offsetX, evt.offsetY);
+      }
       //光标所属位置是否有控件
       //有控件：分发事件到当前控件
       if (operateControls != null && operateControls.length > 0) {
@@ -630,7 +635,12 @@ class DDeiLayerCanvasRender {
     if (evt.button == 2) {
       //在鼠标位置显示菜单
       // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
-      let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, evt.offsetX, evt.offsetY);
+      let operateControls = null;
+      if (this.tempLooseControl?.baseModelType == "DDeiTable") {
+        operateControls = [this.tempLooseControl];
+      } else {
+        operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, evt.offsetX, evt.offsetY);
+      }
       //显示当前控件的
       if (operateControls != null && operateControls.length > 0) {
         //全局变量：当前操作控件=当前控件
@@ -766,6 +776,10 @@ class DDeiLayerCanvasRender {
         case DDeiEnumOperateState.TABLE_INNER_DRAG:
           let table = this.stageRender.currentOperateShape
           table?.render?.mouseUp(evt)
+          //清空临时变量
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
+          //渲染图形
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
           break;
         case DDeiEnumOperateState.CONTROL_ROTATE:
           //清空临时变量
@@ -821,7 +835,6 @@ class DDeiLayerCanvasRender {
     let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
     let isAlt = DDei.KEY_DOWN_STATE.get("alt");
     //判断当前操作状态
-    console.log(this.stageRender.operateState)
     switch (this.stageRender.operateState) {
       //控件状态确认中
       case DDeiEnumOperateState.CONTROL_CONFIRMING: {
@@ -922,6 +935,7 @@ class DDeiLayerCanvasRender {
       }
       //表格内部拖拽中
       case DDeiEnumOperateState.TABLE_INNER_DRAG: {
+        this.model.opPoints = []
         let table = this.stageRender.currentOperateShape;
         table.render.mouseMove(evt);
 
@@ -971,7 +985,7 @@ class DDeiLayerCanvasRender {
       default: {
         //清空当前opPoints
         this.model.opPoints = [];
-
+        this.tempLooseControl = null;
         //判断当前鼠标坐标是否落在选择器控件的区域内
         if (this.stageRender.selector &&
           this.stageRender.selector.isInAreaLoose(evt.offsetX, evt.offsetY, DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2)) {
@@ -983,6 +997,8 @@ class DDeiLayerCanvasRender {
           if (!this.stage.ddInstance.eventCancel) {
             let model = this.model.models.get(this.model.midList[i]);
             if (model && model.isInAreaLoose(evt.offsetX, evt.offsetY, DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2)) {
+              //记录经过宽松判定的控件，在点击时，此类控件具备优先级，如表格
+              this.tempLooseControl = model;
               model.render.mouseMove(evt);
             }
           }
