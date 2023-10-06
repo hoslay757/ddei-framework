@@ -141,8 +141,14 @@ export default {
       //显示隐藏其他属性
       if (value == '0') {
         DDeiEditorArrtibute.hiddenAttributesByCode(this.controlDefine.styles, "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound");
+        if(this.controlDefine.subStyles){
+          DDeiEditorArrtibute.hiddenAttributesByCode(this.controlDefine.subStyles, "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound");
+        }
       } else if (value == '1') {
         DDeiEditorArrtibute.showAttributesByCode(this.controlDefine.styles, "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound");
+        if (this.controlDefine.subStyles) {
+          DDeiEditorArrtibute.showAttributesByCode(this.controlDefine.subStyles, "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound");
+        }
       }
       //设置当前编辑器控件的临时属性值
       this.editor.ddInstance.stage.selectedModels.forEach(element => {
@@ -155,7 +161,7 @@ export default {
         //处理实线
         else if (value == '1') {
           //推送信息进入总线
-          this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: false }, evt, true);
+          this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: false , attrDefine: this.attrDefine }, evt, true);
           //根据code以及mapping设置属性值
           DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, false)
         }

@@ -141,8 +141,14 @@ export default {
       //显示隐藏其他属性
       if (value == '0') {
         DDeiEditorArrtibute.hiddenAttributesByCode(this.controlDefine.styles, "fill.color", "fill.opacity");
+        if(this.controlDefine.subStyles){
+          DDeiEditorArrtibute.hiddenAttributesByCode(this.controlDefine.subStyles, "fill.color", "fill.opacity");
+        }
       }else if (value == '1') {
         DDeiEditorArrtibute.showAttributesByCode(this.controlDefine.styles, "fill.color", "fill.opacity");
+        if (this.controlDefine.subStyles) {
+          DDeiEditorArrtibute.showAttributesByCode(this.controlDefine.subStyles, "fill.color", "fill.opacity");
+        }
       }     
       //设置当前编辑器控件的临时属性值
       this.editor.ddInstance.stage.selectedModels.forEach(element => {
