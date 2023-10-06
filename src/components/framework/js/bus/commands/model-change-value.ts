@@ -41,6 +41,8 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
       let paths = data.paths;
       //值
       let value = data.value;
+      //属性定义
+      let attrDefine = data.attrDefine;
       if (data?.paths?.indexOf('layout') != -1) {
 
       } else {
@@ -49,8 +51,23 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
             //从bus中获取实际控件
             let model = stage?.getModelById(modelId);
             if (model) {
-              //根据code以及mapping设置属性值
-              DDeiUtil.setAttrValueByPath(model, paths, value)
+              //表格是修改里面的选中单元格
+              if (model.baseModelType == 'DDeiTable') {
+                if (attrDefine.modelCode == 'DDeiTable') {
+                  //根据code以及mapping设置属性值
+                  DDeiUtil.setAttrValueByPath(model, paths, value)
+                } else {
+                  let cells = model.getSelectedCells();
+                  cells.forEach(cell => {
+                    //根据code以及mapping设置属性值
+                    DDeiUtil.setAttrValueByPath(cell, paths, value)
+                  });
+                }
+
+              } else {
+                //根据code以及mapping设置属性值
+                DDeiUtil.setAttrValueByPath(model, paths, value)
+              }
             }
           }
         });

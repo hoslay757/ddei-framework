@@ -148,7 +148,7 @@ export default {
       this.editor.ddInstance.stage.selectedModels.forEach(element => {
         if (value == '0') {
           //推送信息进入总线
-          this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: true }, evt, true);
+          this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: true, attrDefine: this.attrDefine }, evt, true);
           //根据code以及mapping设置属性值
           DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, true)
         }

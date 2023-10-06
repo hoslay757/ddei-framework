@@ -685,7 +685,7 @@ class DDeiLayerCanvasRender {
           }
           //没有按下ctrl键，取消选中非当前控件
           else {
-            pushMulits.push({ actionType: DDeiEnumBusCommandType.CancelCurLevelSelectedModels });
+            pushMulits.push({ actionType: DDeiEnumBusCommandType.CancelCurLevelSelectedModels, data: { ignoreModels: [this.stageRender.currentOperateShape] } });
             pushMulits.push({ actionType: DDeiEnumBusCommandType.ModelChangeSelect, data: [{ id: this.stageRender.currentOperateShape.id, value: DDeiEnumControlState.SELECTED }] });
           }
           this.stage?.ddInstance?.bus?.pushMulit(pushMulits, evt);
@@ -872,7 +872,8 @@ class DDeiLayerCanvasRender {
         if (this.stageRender.currentOperateShape?.baseModelType == 'DDeiTable' && !isCtrl) {
           this.stageRender.operateState = DDeiEnumOperateState.TABLE_INNER_DRAG
           //渲染图形
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
+          console.log(4)
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, { ignoreModels: [this.stageRender.currentOperateShape] }, evt);
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, [{ id: this.stageRender.currentOperateShape.id, value: DDeiEnumControlState.SELECTED }], evt);
         } else {
           //当前操作状态：控件拖拽中

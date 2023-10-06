@@ -1,4 +1,5 @@
 import DDeiConfig, { MODEL_CLS } from '../config'
+import DDei from '../ddei';
 import DDeiEnumControlState from '../enums/control-state';
 import DDeiUtil from '../util';
 import DDeiAbstractShape from './shape';
@@ -241,24 +242,29 @@ class DDeiLayer {
   /**
    * 取消选择控件,默认取消所有
    */
-  cancelSelectModels(models: DDeiAbstractShape[] | undefined): void {
+  cancelSelectModels(models: DDeiAbstractShape[] | undefined, ignoreModels: DDeiAbstractShape[] | undefined): void {
     if (!models) {
       models = Array.from(this.models.values());
     }
     models.forEach(item => {
-      item.setState(DDeiEnumControlState.DEFAULT)
+      if (!ignoreModels || ignoreModels?.indexOf(item) == -1) {
+        item.setState(DDeiEnumControlState.DEFAULT)
+      }
     });
   }
 
   /**
    * 取消选择控件,默认取消所有
    */
-  cancelAllLevelSelectModels(): void {
+  cancelAllLevelSelectModels(ignoreModels: DDeiAbstractShape[] | undefined): void {
     this.models.forEach(item => {
-      item.setState(DDeiEnumControlState.DEFAULT)
-      if (item.baseModelType == "DDeiContainer") {
-        item.cancelAllLevelSelectModels();
+      if (!ignoreModels || ignoreModels?.indexOf(item) == -1) {
+        item.setState(DDeiEnumControlState.DEFAULT)
       }
+      if (item.baseModelType == "DDeiContainer") {
+        item.cancelAllLevelSelectModels(ignoreModels);
+      }
+
     });
   }
 

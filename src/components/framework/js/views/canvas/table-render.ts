@@ -127,7 +127,7 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
                   }
                   isOk = true;
                 } else {
-                  if (currentCell.row == table.rows.length - 1 || currentCell.col == table.cols.length - 1 || currentCell.isInAreaLoose(e.offsetX, e.offsetY, 0)) {
+                  if (currentCell.isInAreaLoose(e.offsetX, e.offsetY, 0)) {
                     if (!isCtrl) {
                       //选中当前单元格
                       currentCell.selectCell();
@@ -297,12 +297,12 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
                 isDrag = true;
               }
               //右边线
-              else if (cellObj.isBorderOn(2, e.offsetX, e.offsetY)) {
+              else if ((cellObj.col == table.cols.length - 2 && cellObj.isBorderOn(2, e.offsetX, e.offsetY, -3, -1)) || (cellObj.col != table.cols.length - 2 && cellObj.isBorderOn(2, e.offsetX, e.offsetY))) {
                 this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'ew-resize' }, e);
                 table.tempDragType = "col-right";
                 isDrag = true;
               }//下边线
-              else if (cellObj.isBorderOn(3, e.offsetX, e.offsetY)) {
+              else if ((cellObj.row == table.rows.length - 2 && cellObj.isBorderOn(3, e.offsetX, e.offsetY, -3, -1)) || (cellObj.row != table.rows.length - 2 && cellObj.isBorderOn(3, e.offsetX, e.offsetY))) {
                 this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'ns-resize' }, e);
                 table.tempDragType = "row-bottom";
                 isDrag = true;

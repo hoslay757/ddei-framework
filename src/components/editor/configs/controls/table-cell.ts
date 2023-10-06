@@ -453,18 +453,6 @@ export const datas = {
       'visiable': false
     },
     {
-      'id': '100302402',
-      'code': 'code',
-      'name': '编码',
-      'desc': '控件在业务上的唯一编码，缺省和控件ID一致',
-      'group': '基础信息',
-      'controlType': 'text',
-      'dataType': 'string',
-      'defaultValue': '编码001',
-      'orderNo': 2,
-      'visiable': true
-    },
-    {
       'id': '100302403',
       'code': 'text',
       'name': '文本',
