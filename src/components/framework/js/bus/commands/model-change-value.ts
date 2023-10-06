@@ -41,6 +41,8 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
       let paths = data.paths;
       //值
       let value = data.value;
+      //属性定义
+      let attrDefine = data.attrDefine;
       if (data?.paths?.indexOf('layout') != -1) {
 
       } else {
@@ -49,8 +51,44 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
             //从bus中获取实际控件
             let model = stage?.getModelById(modelId);
             if (model) {
-              //根据code以及mapping设置属性值
-              DDeiUtil.setAttrValueByPath(model, paths, value)
+              //表格是修改里面的选中单元格
+              if (model.baseModelType == 'DDeiTable') {
+                if (attrDefine.modelCode == 'DDeiTable') {
+                  //根据code以及mapping设置属性值
+                  DDeiUtil.setAttrValueByPath(model, paths, value)
+                } else {
+                  let cells = model.getSelectedCells();
+
+                  cells.forEach(cell => {
+
+                    paths.forEach(path => {
+                      //如果是border的相关属性，则同步修改后面的单元格，以确保边框显示正常
+                      if (path.indexOf("border.bottom") != -1) {
+                        //根据code以及mapping设置属性值
+                        DDeiUtil.setAttrValueByPath(cell, [path], value)
+                        if (cell.row < model.rows.length - 1) {
+                          DDeiUtil.setAttrValueByPath(model.rows[cell.row + 1][cell.col], [path.replace("bottom", "top")], value)
+                        }
+                      } else if (path.indexOf("border.right") != -1) {
+                        //根据code以及mapping设置属性值
+                        DDeiUtil.setAttrValueByPath(cell, [path], value)
+                        if (cell.col < model.cols.length - 1) {
+                          DDeiUtil.setAttrValueByPath(model.cols[cell.col + 1][cell.row], [path.replace("right", "left")], value)
+                        }
+                      } else {
+                        //根据code以及mapping设置属性值
+                        DDeiUtil.setAttrValueByPath(cell, [path], value)
+                      }
+                    });
+
+
+                  });
+                }
+
+              } else {
+                //根据code以及mapping设置属性值
+                DDeiUtil.setAttrValueByPath(model, paths, value)
+              }
             }
           }
         });

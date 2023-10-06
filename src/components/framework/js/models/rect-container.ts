@@ -264,23 +264,27 @@ class DDeiRectContainer extends DDeiRectangle {
   /**
    * 取消选择控件,默认取消所有
    */
-  cancelSelectModels(models: DDeiAbstractShape[] | undefined): void {
+  cancelSelectModels(models: DDeiAbstractShape[] | undefined, ignoreModels: DDeiAbstractShape[] | undefined): void {
     if (!models) {
       models = Array.from(this.models.values());
     }
     models.forEach(item => {
-      item.setState(DDeiEnumControlState.DEFAULT)
+      if (!ignoreModels || ignoreModels?.indexOf(item) == -1) {
+        item.setState(DDeiEnumControlState.DEFAULT)
+      }
     });
   }
 
   /**
    * 取消选择控件,默认取消所有
    */
-  cancelAllLevelSelectModels(): void {
+  cancelAllLevelSelectModels(ignoreModels: DDeiAbstractShape[] | undefined): void {
     this.models.forEach(item => {
-      item.setState(DDeiEnumControlState.DEFAULT)
+      if (!ignoreModels || ignoreModels?.indexOf(item) == -1) {
+        item.setState(DDeiEnumControlState.DEFAULT)
+      }
       if (item.baseModelType == "DDeiContainer") {
-        item.cancelAllLevelSelectModels();
+        item.cancelAllLevelSelectModels(ignoreModels);
       }
     });
   }
@@ -377,19 +381,22 @@ class DDeiRectContainer extends DDeiRectangle {
   calChildrenRotatePointVectors(rotateMatrix): void {
     if (this.models) {
       let parentCenterPointVector = this.centerPointVector;
+      //宽松判定区域的宽度
+      let looseWeight = 10;
       this.midList.forEach(key => {
         let item = this.models.get(key);
         let halfWidth = item.width * 0.5;
         let halfHeight = item.height * 0.5;
         if (parentCenterPointVector) {
           let vc, vc1, vc2, vc3, vc4;
-
+          let loosePointVectors = null;
           if (item.pointVectors?.length > 0) {
             vc = item.centerPointVector;
             vc1 = item.pointVectors[0];
             vc2 = item.pointVectors[1];
             vc3 = item.pointVectors[2];
             vc4 = item.pointVectors[3];
+            loosePointVectors = item.loosePointVectors
           } else {
             item.pointVectors = []
             let absBoundsOrigin = item.getAbsBounds()
@@ -403,12 +410,22 @@ class DDeiRectContainer extends DDeiRectangle {
             item.pointVectors.push(vc3)
             item.pointVectors.push(vc4)
             item.centerPointVector = vc;
+            loosePointVectors = []
+            //记录宽松判定区域的点
+            loosePointVectors.push(new Vector3(vc1.x - looseWeight, vc1.y - looseWeight, vc1.z))
+            loosePointVectors.push(new Vector3(vc2.x + looseWeight, vc2.y - looseWeight, vc2.z))
+            loosePointVectors.push(new Vector3(vc3.x + looseWeight, vc3.y + looseWeight, vc3.z))
+            loosePointVectors.push(new Vector3(vc4.x - looseWeight, vc4.y + looseWeight, vc4.z))
+            item.loosePointVectors = loosePointVectors;
           }
           vc1.applyMatrix3(rotateMatrix);
           vc2.applyMatrix3(rotateMatrix);
           vc3.applyMatrix3(rotateMatrix);
           vc4.applyMatrix3(rotateMatrix);
           vc.applyMatrix3(rotateMatrix);
+          loosePointVectors?.forEach(pv => {
+            pv.applyMatrix3(rotateMatrix);
+          });
         }
         if (item.baseModelType == "DDeiContainer") {
           item.calChildrenRotatePointVectors(rotateMatrix);

@@ -19,14 +19,14 @@
       <div class="ddei_editor_pv_subgroup_view_tab_title">
         <div
           :class="currentTopGroup?.groups.length > 1 && subGroup.selected ? 'ddei_editor_pv_subgroup_view_tab_title_item_selected' : 'ddei_editor_pv_subgroup_view_tab_title_item'"
-          v-for="subGroup in currentTopGroup?.groups" :title="subGroup.name" @mouseup="changeSubGroup(subGroup)">{{
+          v-show="!subGroup.empty" v-for="subGroup in currentTopGroup?.groups" :title="subGroup.name" @mouseup="changeSubGroup(subGroup)">{{
             subGroup.name }}</div>
       </div>
       <div class="ddei_editor_pv_subgroup_view_tab_panel"
         :style="{ height: 'calc(100vh - ' + (editor?.topHeight + editor?.bottomHeight + 40) + 'px' }">
         <div
           :class="{ 'ddei_editor_pv_subgroup_view_tab_panel_editors_column': attrDefine.display == 'column', 'ddei_editor_pv_subgroup_view_tab_panel_editors_row': attrDefine.display != 'column', 'empty_value': attrDefine.value ? false : true }"
-          v-for="attrDefine in currentSubGroup?.children" :title="attrDefine.desc">
+          v-for="attrDefine in currentSubGroup?.children" :title="attrDefine.desc" >
           <div class="title" v-if="!attrDefine.hiddenTitle && attrDefine?.visiable != false">{{ attrDefine.name }}<span
               v-if="attrDefine.notNull">*</span>：
           </div>
@@ -179,6 +179,7 @@ export default {
               if (i == 0) {
                 firstAttrDefine.value = DDeiUtil.getDataByPathList(firstModel, curAttrDefine.code, curAttrDefine.mapping);
                 firstAttrDefine.model = firstModel;
+            
               }
               //根据属性定义，从model获取值
               let curAttrValue = DDeiUtil.getDataByPathList(curModel, curAttrDefine.code, curAttrDefine.mapping);
@@ -192,15 +193,60 @@ export default {
         }
         //清除不同的属性
         this.deleteAttrDefineByKeys(firstControlDefine, removeKeys);
-        //同步引用关系
-        this.syncAttrsToGroup(firstControlDefine, firstControlDefine.styles);
-        this.syncAttrsToGroup(firstControlDefine, firstControlDefine.datas);
-        this.syncAttrsToGroup(firstControlDefine, firstControlDefine.events);
+        let topGroups = null;
         let layerTopGroup = { name: "图层", img: ICONS['icon-layers'], groups: [{}] };
-        firstControlDefine.styles.img = ICONS['icon-fill'];
-        firstControlDefine.datas.img = ICONS['icon-data'];
-        firstControlDefine.events.img = ICONS['icon-event'];
-        let topGroups = [firstControlDefine?.styles, firstControlDefine?.datas, firstControlDefine?.events, layerTopGroup];
+        //对table的包含属性进行特殊处理
+        if (firstControlDefine.type == 'DDeiTable') {
+          if (firstControlDefine.subcontrol) {
+            //获取单元格子控件信息，叠加到当前控件定义中
+            let subControlDefine = cloneDeep(controlOriginDefinies.get(firstControlDefine.subcontrol));
+            if (subControlDefine) {
+               //同步引用关系
+              firstControlDefine.styles.img = ICONS['icon-table'];
+              firstControlDefine.styles.name = '表格'
+              this.syncAttrsToGroup(firstControlDefine, firstControlDefine.styles);
+              topGroups = []
+              
+              if(firstModel.curRow > -1 && firstModel.curCol > -1){
+                let selectedCell = firstModel.rows[firstModel.curRow][firstModel.curCol];
+                if(selectedCell){
+                  subControlDefine.attrDefineMap.forEach((attrDefine, attrKey) => {
+                    //当前属性的定义
+                    let curAttrDefine = subControlDefine.attrDefineMap.get(attrKey)
+                    attrDefine.value = DDeiUtil.getDataByPathList(selectedCell, curAttrDefine.code, curAttrDefine.mapping);
+                    attrDefine.model = selectedCell;
+                  });
+                  this.syncAttrsToGroup(subControlDefine, subControlDefine.styles);
+                  this.syncAttrsToGroup(subControlDefine, subControlDefine.datas);
+                  this.syncAttrsToGroup(subControlDefine, subControlDefine.events);
+                  firstControlDefine.subStyles = subControlDefine.styles
+                  firstControlDefine.datas = subControlDefine.datas
+                  firstControlDefine.events = subControlDefine.events
+                  firstControlDefine.subStyles.img = ICONS['icon-fill'];
+                  firstControlDefine.datas.img = ICONS['icon-data'];
+                  firstControlDefine.events.img = ICONS['icon-event'];
+                  topGroups.push(firstControlDefine.subStyles)
+                  topGroups.push(firstControlDefine.datas)
+                  topGroups.push(firstControlDefine.events)
+                }
+              }
+
+              topGroups.push(firstControlDefine.styles)
+              topGroups.push(layerTopGroup)
+             
+            }
+          }
+
+        }else{
+          //同步引用关系
+          this.syncAttrsToGroup(firstControlDefine, firstControlDefine.styles);
+          this.syncAttrsToGroup(firstControlDefine, firstControlDefine.datas);
+          this.syncAttrsToGroup(firstControlDefine, firstControlDefine.events);
+          firstControlDefine.styles.img = ICONS['icon-fill'];
+          firstControlDefine.datas.img = ICONS['icon-data'];
+          firstControlDefine.events.img = ICONS['icon-event'];
+          topGroups = [firstControlDefine?.styles, firstControlDefine?.datas, firstControlDefine?.events, layerTopGroup];
+        }
         //上一次编辑的名称
         let upName = this.currentTopGroup?.name;
         let currentTopGroup = null;
@@ -208,7 +254,12 @@ export default {
           if (!firstControlDefine?.styles?.empty && upName == firstControlDefine?.styles?.name) {
             firstControlDefine.styles.selected = true;
             currentTopGroup = firstControlDefine.styles
-          } else if (!firstControlDefine?.datas?.empty && upName == firstControlDefine?.datas?.name) {
+          }
+           else if (!firstControlDefine?.subStyles?.empty && upName == firstControlDefine?.subStyles?.name) {
+            firstControlDefine.subStyles.selected = true;
+            currentTopGroup = firstControlDefine.subStyles
+          }
+          else if (!firstControlDefine?.datas?.empty && upName == firstControlDefine?.datas?.name) {
             firstControlDefine.datas.selected = true;
             currentTopGroup = firstControlDefine.datas
           } else if (!firstControlDefine?.events?.empty && upName == firstControlDefine?.events?.name) {
@@ -262,8 +313,14 @@ export default {
         //清除信息
         this.controlDefine = null;
         this.topGroups = null;
-        this.currentTopGroup = null;
-        this.currentSubGroup = null;
+        if(this.currentTopGroup){
+          this.currentTopGroup.groups = null;
+          this.currentTopGroup.children = null;
+        }
+        if (this.currentSubGroup) {
+          this.currentSubGroup.groups = null;
+          this.currentSubGroup.children = null;
+        }
         this.editor.currentControlDefine = null;
       }
     },
@@ -374,7 +431,8 @@ export default {
           let newGroupChildren = [];
           group.children?.forEach((curAttr: DDeiEditorArrtibute) => {
             let mapObj = firstControlDefine?.attrDefineMap?.get(curAttr.code)
-            if (mapObj) {
+            if (mapObj && mapObj.visiable != false) {
+              mapObj.modelCode = firstControlDefine.type;
               newGroupChildren.push(mapObj);
               newChildren.push(mapObj);
             }
@@ -487,6 +545,7 @@ export default {
   padding: 4px 4px;
   margin-top: 2px;
   margin-left: 3px;
+  filter: brightness(50%);
 }
 
 .ddei_editor_pv_group_view_items_item_selected {

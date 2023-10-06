@@ -235,9 +235,9 @@ class DDeiStage {
   /**
    * 全部取消所有已选控件
    */
-  cancelSelectModels(): void {
+  cancelSelectModels(models: DDeiAbstractShape[] | undefined, ignoreModels: DDeiAbstractShape[] | undefined): void {
     for (let i = 0; i < this.layers.length; i++) {
-      this.layers[i].cancelSelectModels();
+      this.layers[i].cancelSelectModels(models, ignoreModels);
     }
   }
 

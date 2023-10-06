@@ -102,7 +102,7 @@ export default {
       DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, value)
       this.editor.ddInstance.stage.selectedModels.forEach(element => {
         //推送信息进入总线
-        this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: value }, evt, true);
+        this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: value, attrDefine: this.attrDefine }, evt, true);
       });
       this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, null, evt);
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);

@@ -796,6 +796,7 @@ abstract class DDeiAbstractShape {
       this.loosePointVectors = loosePointVectors;
       this.centerPointVector = centerPointVector;
     }
+
     pointVectors = this.pointVectors;
     centerPointVector = this.centerPointVector;
     loosePointVectors = this.loosePointVectors;
@@ -821,7 +822,7 @@ abstract class DDeiAbstractShape {
       pv.applyMatrix3(m1);
     });
 
-    loosePointVectors.forEach(pv => {
+    loosePointVectors?.forEach(pv => {
       pv.applyMatrix3(m1);
     });
   }
