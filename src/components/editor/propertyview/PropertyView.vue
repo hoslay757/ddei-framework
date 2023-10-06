@@ -32,8 +32,11 @@
           </div>
           <div class="editor" v-if="attrDefine.visiable != false">
             <PVTextEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
-              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'text'">
+                v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'text'">
             </PVTextEditor>
+            <PVTextAreaEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'textarea'">
+            </PVTextAreaEditor>
             <PVRangeEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
               v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'range'"></PVRangeEditor>
             <PVColorEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
@@ -75,6 +78,7 @@ import DDeiAbstractShape from '../../framework/js/models/shape';
 import DDeiEditorArrtibute from '../js/attribute/editor-attribute'
 import DDeiEditorState from '../js/enums/editor-state';
 import PVTextEditor from './editors/PVTextEditor.vue'
+import PVTextAreaEditor from './editors/PVTextAreaEditor.vue'
 import PVRangeEditor from './editors/PVRangeEditor.vue'
 import PVColorEditor from './editors/PVColorEditor.vue'
 import PVRadioEditor from './editors/PVRadioEditor.vue'
@@ -128,7 +132,8 @@ export default {
     PVComboxEditor,
     PVBorderTypeEditor,
     PVFillTypeEditor,
-    PVExCheckboxEditor
+    PVExCheckboxEditor,
+    PVTextAreaEditor
   },
   created() {
     // 监听obj对象中prop属性的变化

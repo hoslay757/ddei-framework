@@ -62,8 +62,10 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
       }
     } else if (oldLayout == 'full') {
       //将控件按照从上到下，从左到右的顺序排列
-      let model = Array.from(this.container.models.values())[0];
-      this.container.layoutData.nine[model.id] = { 'row': 1, 'col': 1 }
+      if (this.container.models?.size > 0) {
+        let model = Array.from(this.container.models.values())[0];
+        this.container.layoutData.nine[model.id] = { 'row': 1, 'col': 1 }
+      }
     } else if (oldLayout == 'table') {
 
     } else if (oldLayout == 'cc') {

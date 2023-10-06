@@ -29,24 +29,47 @@ class DDeiBusCommandChangeLayout extends DDeiBusCommand {
       let mids = data.mids;
       //值
       let value = data.value;
-      for (let i = 0; i < mids.length; i++) {
-        let modelId = mids[i]
-        if (modelId) {
-          //从bus中获取实际控件
-          let model = stage?.getModelById(modelId);
-          if (model) {
+      //属性定义
+      let attrDefine = data.attrDefine;
+      if (attrDefine.modelCode == 'DDeiTableCell') {
+        let modelId = mids[0];
+        let table = stage?.getModelById(modelId);
+        if (table) {
+          let cells = table.getSelectedCells();
+          for (let i = 0; i < cells.length; i++) {
+            let cell = cells[i];
             //设置layoutmanager并重新布局
-            let oldLayout = model.layout;
+            let oldLayout = cell.layout;
             let newLayoutManager = DDeiLayoutManagerFactory.getLayoutInstance(value);
-            newLayoutManager.container = model;
+            newLayoutManager.container = cell;
             //执行新旧两个布局之间的转换
             let canConvert = newLayoutManager.canConvertLayout(oldLayout);
             if (!canConvert) {
               return false;
             }
-          }
+
+          };
         }
-      };
+      } else {
+        for (let i = 0; i < mids.length; i++) {
+          let modelId = mids[i]
+          if (modelId) {
+            //从bus中获取实际控件
+            let model = stage?.getModelById(modelId);
+            if (model) {
+              //设置layoutmanager并重新布局
+              let oldLayout = model.layout;
+              let newLayoutManager = DDeiLayoutManagerFactory.getLayoutInstance(value);
+              newLayoutManager.container = model;
+              //执行新旧两个布局之间的转换
+              let canConvert = newLayoutManager.canConvertLayout(oldLayout);
+              if (!canConvert) {
+                return false;
+              }
+            }
+          }
+        };
+      }
       return true;
     }
   }
@@ -64,23 +87,46 @@ class DDeiBusCommandChangeLayout extends DDeiBusCommand {
       let mids = data.mids;
       //值
       let value = data.value;
-      mids.forEach(modelId => {
-        if (modelId) {
-          //从bus中获取实际控件
-          let model = stage?.getModelById(modelId);
-          if (model) {
+      //属性定义
+      let attrDefine = data.attrDefine;
+      if (attrDefine.modelCode == 'DDeiTableCell') {
+        let modelId = mids[0];
+        let table = stage?.getModelById(modelId);
+        if (table) {
+          let cells = table.getSelectedCells();
+          for (let i = 0; i < cells.length; i++) {
+            let cell = cells[i];
             //设置layoutmanager并重新布局
-            let oldLayout = model.layout;
-            model.layout = value;
-            model.layoutManager = DDeiLayoutManagerFactory.getLayoutInstance(value);
-            model.layoutManager.container = model;
+            let oldLayout = cell.layout;
+            cell.layout = value;
+            cell.layoutManager = DDeiLayoutManagerFactory.getLayoutInstance(value);
+            cell.layoutManager.container = cell;
             //执行新旧两个布局之间的转换
-            model.layoutManager.convertLayout(oldLayout);
+            cell.layoutManager.convertLayout(oldLayout);
             //重新布局
-            model.layoutManager.changeSubModelBounds();
-          }
+            cell.layoutManager.changeSubModelBounds();
+
+          };
         }
-      });
+      } else {
+        mids.forEach(modelId => {
+          if (modelId) {
+            //从bus中获取实际控件
+            let model = stage?.getModelById(modelId);
+            if (model) {
+              //设置layoutmanager并重新布局
+              let oldLayout = model.layout;
+              model.layout = value;
+              model.layoutManager = DDeiLayoutManagerFactory.getLayoutInstance(value);
+              model.layoutManager.container = model;
+              //执行新旧两个布局之间的转换
+              model.layoutManager.convertLayout(oldLayout);
+              //重新布局
+              model.layoutManager.changeSubModelBounds();
+            }
+          }
+        });
+      }
       return true;
     }
     return false;
