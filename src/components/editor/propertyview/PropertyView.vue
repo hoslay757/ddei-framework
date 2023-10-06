@@ -179,6 +179,7 @@ export default {
               if (i == 0) {
                 firstAttrDefine.value = DDeiUtil.getDataByPathList(firstModel, curAttrDefine.code, curAttrDefine.mapping);
                 firstAttrDefine.model = firstModel;
+            
               }
               //根据属性定义，从model获取值
               let curAttrValue = DDeiUtil.getDataByPathList(curModel, curAttrDefine.code, curAttrDefine.mapping);
@@ -193,44 +194,46 @@ export default {
         //清除不同的属性
         this.deleteAttrDefineByKeys(firstControlDefine, removeKeys);
         let topGroups = null;
-         let layerTopGroup = { name: "图层", img: ICONS['icon-layers'], groups: [{}] };
+        let layerTopGroup = { name: "图层", img: ICONS['icon-layers'], groups: [{}] };
         //对table的包含属性进行特殊处理
-        
         if (firstControlDefine.type == 'DDeiTable') {
-          let subControlId = null;
-          firstControlDefine.datas.children.forEach(data => {
-            if (data.code == 'subcontrol') {
-              subControlId = data.defaultValue;
-            }
-          });
-          
-          if (subControlId) {
+          if (firstControlDefine.subcontrol) {
             //获取单元格子控件信息，叠加到当前控件定义中
-            let subControlDefine = cloneDeep(controlOriginDefinies.get(subControlId));
+            let subControlDefine = cloneDeep(controlOriginDefinies.get(firstControlDefine.subcontrol));
             if (subControlDefine) {
-             
-              //同步引用关系
-              
+               //同步引用关系
               firstControlDefine.styles.img = ICONS['icon-table'];
               firstControlDefine.styles.name = '表格'
-   
               this.syncAttrsToGroup(firstControlDefine, firstControlDefine.styles);
-              this.syncAttrsToGroup(subControlDefine, subControlDefine.styles);
-              this.syncAttrsToGroup(subControlDefine, subControlDefine.datas);
-              this.syncAttrsToGroup(subControlDefine, subControlDefine.events);
-               firstControlDefine.subStyles = subControlDefine.styles
-              firstControlDefine.datas = subControlDefine.datas
-              firstControlDefine.events = subControlDefine.events
-              firstControlDefine.subStyles.img = ICONS['icon-fill'];
-              firstControlDefine.datas.img = ICONS['icon-data'];
-              firstControlDefine.events.img = ICONS['icon-event'];
-           
               topGroups = []
+              
+              if(firstModel.curRow > -1 && firstModel.curCol > -1){
+                let selectedCell = firstModel.rows[firstModel.curRow][firstModel.curCol];
+                if(selectedCell){
+                  subControlDefine.attrDefineMap.forEach((attrDefine, attrKey) => {
+                    //当前属性的定义
+                    let curAttrDefine = subControlDefine.attrDefineMap.get(attrKey)
+                    attrDefine.value = DDeiUtil.getDataByPathList(selectedCell, curAttrDefine.code, curAttrDefine.mapping);
+                    attrDefine.model = selectedCell;
+                  });
+                  this.syncAttrsToGroup(subControlDefine, subControlDefine.styles);
+                  this.syncAttrsToGroup(subControlDefine, subControlDefine.datas);
+                  this.syncAttrsToGroup(subControlDefine, subControlDefine.events);
+                  firstControlDefine.subStyles = subControlDefine.styles
+                  firstControlDefine.datas = subControlDefine.datas
+                  firstControlDefine.events = subControlDefine.events
+                  firstControlDefine.subStyles.img = ICONS['icon-fill'];
+                  firstControlDefine.datas.img = ICONS['icon-data'];
+                  firstControlDefine.events.img = ICONS['icon-event'];
+                  topGroups.push(firstControlDefine.subStyles)
+                  topGroups.push(firstControlDefine.datas)
+                  topGroups.push(firstControlDefine.events)
+                }
+              }
+
               topGroups.push(firstControlDefine.styles)
-              topGroups.push(firstControlDefine.subStyles)
-              topGroups.push(firstControlDefine.datas)
-              topGroups.push(firstControlDefine.events)
               topGroups.push(layerTopGroup)
+             
             }
           }
 
@@ -542,6 +545,7 @@ export default {
   padding: 4px 4px;
   margin-top: 2px;
   margin-left: 3px;
+  filter: brightness(50%);
 }
 
 .ddei_editor_pv_group_view_items_item_selected {

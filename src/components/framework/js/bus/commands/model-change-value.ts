@@ -58,9 +58,30 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
                   DDeiUtil.setAttrValueByPath(model, paths, value)
                 } else {
                   let cells = model.getSelectedCells();
+
                   cells.forEach(cell => {
-                    //根据code以及mapping设置属性值
-                    DDeiUtil.setAttrValueByPath(cell, paths, value)
+
+                    paths.forEach(path => {
+                      //如果是border的相关属性，则同步修改后面的单元格，以确保边框显示正常
+                      if (path.indexOf("border.bottom") != -1) {
+                        //根据code以及mapping设置属性值
+                        DDeiUtil.setAttrValueByPath(cell, [path], value)
+                        if (cell.row < model.rows.length - 1) {
+                          DDeiUtil.setAttrValueByPath(model.rows[cell.row + 1][cell.col], [path.replace("bottom", "top")], value)
+                        }
+                      } else if (path.indexOf("border.right") != -1) {
+                        //根据code以及mapping设置属性值
+                        DDeiUtil.setAttrValueByPath(cell, [path], value)
+                        if (cell.col < model.cols.length - 1) {
+                          DDeiUtil.setAttrValueByPath(model.cols[cell.col + 1][cell.row], [path.replace("right", "left")], value)
+                        }
+                      } else {
+                        //根据code以及mapping设置属性值
+                        DDeiUtil.setAttrValueByPath(cell, [path], value)
+                      }
+                    });
+
+
                   });
                 }
 

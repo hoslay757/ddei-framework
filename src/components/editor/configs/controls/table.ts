@@ -4,7 +4,8 @@ export default {
   'code': 'table',
   'desc': '表格控件，可以通过插入、移动、合并单元格完成复杂的布局',
   'type': 'DDeiTable',
-  'icon': 'icon-table'
+  'icon': 'icon-table',
+  'subcontrol': '100302'
 }
 
 
@@ -218,18 +219,7 @@ export const datas = {
       'orderNo': 2,
       'visiable': true
     },
-    {
-      'id': '100301403',
-      'code': 'subcontrol',
-      'name': '子控件类型',
-      'desc': '当前控件所包含的字控件的类型，指向控件定义中的编号，表格控件的子控件为单元格控件（编号：100302）',
-      'group': '基础信息',
-      'controlType': 'text',
-      'dataType': 'string',
-      'defaultValue': '100302',
-      'orderNo': 3,
-      'visiable': false
-    },
+
   ],
   'visiable': true,
   'order': 1

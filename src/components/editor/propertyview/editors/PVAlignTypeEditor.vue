@@ -117,6 +117,7 @@ export default {
 
     getTypeValue() {
       //通过解析器获取有效值
+      console.log(this.attrDefine)
       let align = DDeiUtil.getDataByPathList(this.attrDefine.model, "textStyle.align");
       let valign = DDeiUtil.getDataByPathList(this.attrDefine.model, "textStyle.valign");
       if (align == 1 && valign == 1) {
