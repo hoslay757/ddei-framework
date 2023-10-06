@@ -45,7 +45,19 @@ export default {
   created() {
     // 监听obj对象中prop属性的变化
     this.$watch('attrDefine.value', function (newVal, oldVal) {
-      this.valueChange();
+      //控制帧率
+      let isExec = true;
+      let dt = new Date().getTime();
+      if (!window.upTime) {
+        window.upTime = dt;
+      } else if (dt - window.upTime > 40) {
+        window.upTime = dt;
+      } else {
+        isExec = false;
+      }
+      if(isExec){
+       this.valueChange();
+      }
     });
   },
   mounted() {
