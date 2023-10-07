@@ -10,6 +10,27 @@ class DDeiEditorUtil {
   // ============================ 静态方法 ============================
 
 
+  /**
+   * 获取子元素定义的json信息
+   */
+  static getSubControlJSON(modelCode: string): object {
+    //如果存在初始化子控件的json，则记录在类变量上
+    let controlDefine = controlOriginDefinies.get(modelCode);
+    if (controlDefine.subcontrol) {
+      let subControlDefine = controlOriginDefinies.get(controlDefine.subcontrol);
+      let configAtrs = DDeiEditorUtil.getAttrValueByConfig(subControlDefine, [
+        "layout",
+      ]);
+      if (subControlDefine) {
+        let subControlJSON = {
+          modelCode: subControlDefine.id,
+          layout: configAtrs.get("layout")?.data,
+        };
+        return subControlJSON;
+      }
+    }
+
+  }
 
   /**
    * 获取菜单控件ID

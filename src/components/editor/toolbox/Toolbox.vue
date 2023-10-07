@@ -224,23 +224,6 @@ export default {
           dataJson[key] = control[key];
         }
       });
-      //如果存在初始化子控件的json，则记录在类变量上
-      if (dataJson["subcontrol"]) {
-        //获取控件JSON
-        let controlDefine = controlOriginDefinies.get(dataJson["subcontrol"]);
-        let configAtrs = DDeiEditorUtil.getAttrValueByConfig(controlDefine, [
-          "layout",
-        ]);
-
-        if (controlDefine) {
-          let subControlJSON = {
-            modelCode: controlDefine.id,
-            layout: configAtrs.get("layout")?.data,
-          };
-          this.controlCls[control.type].initSubControlJson = subControlJSON;
-          dataJson["subcontrol"] = null;
-        }
-      }
       let model: DDeiAbstractShape =
         this.controlCls[control.type].initByJSON(dataJson);
       model.setState(DDeiEnumControlState.CREATING);

@@ -2,8 +2,8 @@ import DDeiConfig from '../config'
 import DDeiAbstractShape from './shape';
 import DDeiTableCell from './table-cell';
 import DDeiEnumControlState from '../enums/control-state';
-import { clone } from 'lodash'
 import DDeiTableSelector from './table-selector';
+import DDeiUtil from '../util';
 
 
 /**
@@ -72,7 +72,7 @@ class DDeiTable extends DDeiAbstractShape {
           if (i == 0) {
             this.cols[j] = [];
           }
-          let initJSON = clone(DDeiTable.initSubControlJson);
+          let initJSON = DDeiUtil.getSubControlJSON(this.modelCode);
           initJSON.id = this.id + "_c_" + i + "_" + j
           initJSON.x = j * initWidth
           initJSON.y = i * initHeight
@@ -221,7 +221,7 @@ class DDeiTable extends DDeiAbstractShape {
         newWidth = oldCell.width;
         newHeight = oldCell.height;
       }
-      let initJSON = clone(DDeiTable.initSubControlJson);
+      let initJSON = DDeiUtil.getSubControlJSON(this.modelCode);
       initJSON.width = newWidth
       initJSON.height = newHeight
       initJSON.table = this
@@ -305,6 +305,7 @@ class DDeiTable extends DDeiAbstractShape {
     for (let i = 0; i < this.cols.length; i++) {
       this.cols[i][this.curRow].setState(DDeiEnumControlState.SELECTED);
     }
+    this.changeChildrenBounds();
   }
 
 
@@ -365,7 +366,7 @@ class DDeiTable extends DDeiAbstractShape {
         newHeight = oldCell.height;
       }
 
-      let initJSON = clone(DDeiTable.initSubControlJson);
+      let initJSON = DDeiUtil.getSubControlJSON(this.modelCode);
       initJSON.width = newWidth
       initJSON.height = newHeight
       initJSON.table = this
@@ -455,6 +456,7 @@ class DDeiTable extends DDeiAbstractShape {
     for (let i = 0; i < this.rows.length; i++) {
       this.rows[i][this.curCol].setState(DDeiEnumControlState.SELECTED)
     }
+    this.changeChildrenBounds();
   }
 
   /**
