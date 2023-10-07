@@ -475,7 +475,7 @@ export const datas = {
       'group': '布局与文本',
       'controlType': 'radio',
       'dataSource': [
-        { 'text': '文本内容', 'value': null },
+        { 'text': '文本', 'value': null },
         { 'text': '自由布局', 'value': 'free' },
         { 'text': '完全填充', 'value': 'full' },
         { 'text': '九宫格', 'value': 'nine' },

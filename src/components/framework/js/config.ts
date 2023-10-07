@@ -88,8 +88,10 @@ class DDeiConfig {
     "DDei": { "TOJSON": ["stage"], "SKIP": ["bus", "render", "unicode"] },
     "DDeiStage": { "TOJSON": ["layers"], "SKIP": ["ddInstance", "selectedModels", "render", "unicode"] },
     "DDeiLayer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "render", "unicode", "opPoints", "dragInPoints", "dragOutPoints", "shadowControls"] },
-    "DDeiContainer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "pointVectors", "currentPointVectors", "centerPointVector", "layoutManager", "loosePointVectors"] },
-    "AbstractShape": { "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "pointVectors", "currentPointVectors", "centerPointVector", "loosePointVectors"] },
+    "DDeiContainer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "pointVectors", "currentPointVectors", "centerPointVector", "layoutManager", "loosePointVectors", "currentLoosePointVectors", "rotateMatrix"] },
+    "AbstractShape": { "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "pointVectors", "currentPointVectors", "centerPointVector", "loosePointVectors", "currentLoosePointVectors", "rotateMatrix"] },
+    "DDeiTable": { "TOJSON": ["rows"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "pointVectors", "currentPointVectors", "centerPointVector", "loosePointVectors", "cols", "selector", "currentLoosePointVectors", "initColNum", "initRowNum", "rotateMatrix", "tempDragCell", "tempDragType"] },
+    "DDeiTableCell": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "pointVectors", "currentPointVectors", "centerPointVector", "loosePointVectors", "layoutManager", "currentLoosePointVectors", "rotateMatrix", "id", "table"] },
   }
 
   // 边框的相关缺省样式属性

@@ -36,7 +36,6 @@ class DDeiRectContainer extends DDeiRectangle {
     }
     tempData[container.id] = container;
     let models: Map<String, DDeiAbstractShape> = new Map<String, DDeiAbstractShape>();
-
     for (let key in json.models) {
       tempData['currentContainer'] = container;
       let item = json.models[key];

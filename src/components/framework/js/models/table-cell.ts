@@ -61,7 +61,7 @@ class DDeiTableCell extends DDeiRectContainer {
   /**
    * 设置当前单元格状态为选中
    */
-  selectCell = function () {
+  selectCell(): void {
 
     //让自身成为选中状态
     this.setState(DDeiEnumControlState.SELECTED)
@@ -73,7 +73,7 @@ class DDeiTableCell extends DDeiRectContainer {
   /**
    * 选择或者取消选择当前单元格
    */
-  selectOrCancelCell = function () {
+  selectOrCancelCell(): void {
     if (this.state == DDeiEnumControlState.SELECTED) {
       this.setState(DDeiEnumControlState.DEFAULT);
       this.table.curRow = -1;

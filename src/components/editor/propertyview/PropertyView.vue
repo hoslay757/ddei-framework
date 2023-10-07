@@ -230,8 +230,8 @@ export default {
                   firstControlDefine.subStyles.img = ICONS['icon-fill'];
                   firstControlDefine.datas.img = ICONS['icon-data'];
                   firstControlDefine.events.img = ICONS['icon-event'];
-                  topGroups.push(firstControlDefine.subStyles)
                   topGroups.push(firstControlDefine.datas)
+                  topGroups.push(firstControlDefine.subStyles)
                   topGroups.push(firstControlDefine.events)
                 }
               }

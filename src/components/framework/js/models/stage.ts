@@ -373,7 +373,18 @@ class DDeiStage {
           if (Array.isArray(this[i])) {
             let array = [];
             this[i].forEach(element => {
-              if (element?.toJSON) {
+              if (Array.isArray(element)) {
+                let subArray = [];
+                element.forEach(subEle => {
+
+                  if (subEle?.toJSON) {
+                    subArray.push(subEle.toJSON());
+                  } else {
+                    subArray.push(subEle);
+                  }
+                })
+                array.push(subArray);
+              } else if (element?.toJSON) {
                 array.push(element.toJSON());
               } else {
                 array.push(element);

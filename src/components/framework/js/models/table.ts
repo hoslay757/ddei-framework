@@ -787,11 +787,22 @@ class DDeiTable extends DDeiAbstractShape {
     for (let i = 0; i < this.rows.length; i++) {
       let cell = this.rows[i][0];
       if (cell.isMergedCell()) {
+        //合并单元格的开始单元格
         cell = this.rows[cell.mergedCell.row][cell.mergedCell.col];
+        //找到所属于合并单元格中的哪个真实的行
+        for (let j = 0; j < cell.mergeRowNum; j++) {
+          let subCell = this.rows[cell.row + j][cell.col];
+          if (subCell.y <= y && y <= subCell.y + subCell.originHeight) {
+            cellRow = subCell.row;
+            break;
+          }
+        }
       }
-      if (cell.y <= y && y <= cell.y + cell.height) {
-        cellRow = cell.row;
-        break;
+      if (cellRow == -1) {
+        if (cell.y <= y && y <= cell.y + cell.height) {
+          cellRow = cell.row;
+          break;
+        }
       }
     }
     //判断属于哪一列
@@ -800,6 +811,7 @@ class DDeiTable extends DDeiAbstractShape {
         let cell = this.cols[i][cellRow];
         if (cell.isMergedCell()) {
           cell = this.rows[cell.mergedCell.row][cell.mergedCell.col];
+
         }
         if (cell.x <= x && x <= cell.x + cell.width) {
           return cell;
@@ -1572,6 +1584,21 @@ class DDeiTable extends DDeiAbstractShape {
       model.pModel = model.layer;
     }
     tempData[model.id] = model;
+    //恢复rows属性
+    let rows: DDeiTableCell[][] = [];
+    for (let key in json.models) {
+      tempData['currentContainer'] = container;
+      let item = json.models[key];
+      let model = MODEL_CLS[item.modelType].loadFromJSON(item, tempData);
+      models.set(key, model)
+      tempData['currentContainer'] = null;
+    }
+    //重建cols属性关系
+
+    container.models = models;
+    container.initRender();
+
+
     model.initRender();
     return model;
   }

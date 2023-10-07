@@ -854,14 +854,24 @@ abstract class DDeiAbstractShape {
     if (!(toJSONFields?.length > 0)) {
       toJSONFields = DDeiConfig.SERI_FIELDS["AbstractShape"]?.TOJSON;
     }
-
     for (let i in this) {
       if ((!skipFields || skipFields?.indexOf(i) == -1)) {
         if (toJSONFields && toJSONFields.indexOf(i) != -1 && this[i]) {
           if (Array.isArray(this[i])) {
             let array = [];
             this[i].forEach(element => {
-              if (element?.toJSON) {
+              if (Array.isArray(element)) {
+                let subArray = [];
+                element.forEach(subEle => {
+
+                  if (subEle?.toJSON) {
+                    subArray.push(subEle.toJSON());
+                  } else {
+                    subArray.push(subEle);
+                  }
+                })
+                array.push(subArray);
+              } else if (element?.toJSON) {
                 array.push(element.toJSON());
               } else {
                 array.push(element);
