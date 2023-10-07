@@ -152,7 +152,8 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
 
         //如果当前是修改坐标，并且不改变容器大小，则按照容器比例更新子元素的大小
         if (stage.render.selector.passIndex != 10 && stage.render.selector.passIndex != 11) {
-          if (item.baseModelType == "DDeiContainer") {
+          //获取真实的容器控件
+          if (item.baseModelType == "DDeiContainer" || item.baseModelType == "DDeiTable") {
             let changedBound = { x: item.x, y: item.y, width: item.width, height: item.height };
             item.changeChildrenBounds(originBound, changedBound)
             item.changeParentsBounds();

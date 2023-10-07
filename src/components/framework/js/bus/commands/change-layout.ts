@@ -40,14 +40,15 @@ class DDeiBusCommandChangeLayout extends DDeiBusCommand {
             let cell = cells[i];
             //设置layoutmanager并重新布局
             let oldLayout = cell.layout;
-            let newLayoutManager = DDeiLayoutManagerFactory.getLayoutInstance(value);
-            newLayoutManager.container = cell;
-            //执行新旧两个布局之间的转换
-            let canConvert = newLayoutManager.canConvertLayout(oldLayout);
-            if (!canConvert) {
-              return false;
+            if (value != oldLayout) {
+              let newLayoutManager = DDeiLayoutManagerFactory.getLayoutInstance(value);
+              newLayoutManager.container = cell;
+              //执行新旧两个布局之间的转换
+              let canConvert = newLayoutManager.canConvertLayout(oldLayout);
+              if (!canConvert) {
+                return false;
+              }
             }
-
           };
         }
       } else {
@@ -59,12 +60,14 @@ class DDeiBusCommandChangeLayout extends DDeiBusCommand {
             if (model) {
               //设置layoutmanager并重新布局
               let oldLayout = model.layout;
-              let newLayoutManager = DDeiLayoutManagerFactory.getLayoutInstance(value);
-              newLayoutManager.container = model;
-              //执行新旧两个布局之间的转换
-              let canConvert = newLayoutManager.canConvertLayout(oldLayout);
-              if (!canConvert) {
-                return false;
+              if (value != oldLayout) {
+                let newLayoutManager = DDeiLayoutManagerFactory.getLayoutInstance(value);
+                newLayoutManager.container = model;
+                //执行新旧两个布局之间的转换
+                let canConvert = newLayoutManager.canConvertLayout(oldLayout);
+                if (!canConvert) {
+                  return false;
+                }
               }
             }
           }
@@ -98,11 +101,13 @@ class DDeiBusCommandChangeLayout extends DDeiBusCommand {
             let cell = cells[i];
             //设置layoutmanager并重新布局
             let oldLayout = cell.layout;
-            cell.layout = value;
-            cell.layoutManager = DDeiLayoutManagerFactory.getLayoutInstance(value);
-            cell.layoutManager.container = cell;
-            //执行新旧两个布局之间的转换
-            cell.layoutManager.convertLayout(oldLayout);
+            if (value != oldLayout) {
+              cell.layout = value;
+              cell.layoutManager = DDeiLayoutManagerFactory.getLayoutInstance(value);
+              cell.layoutManager.container = cell;
+              //执行新旧两个布局之间的转换
+              cell.layoutManager.convertLayout(oldLayout);
+            }
             //重新布局
             cell.layoutManager.changeSubModelBounds();
 
@@ -116,11 +121,13 @@ class DDeiBusCommandChangeLayout extends DDeiBusCommand {
             if (model) {
               //设置layoutmanager并重新布局
               let oldLayout = model.layout;
-              model.layout = value;
-              model.layoutManager = DDeiLayoutManagerFactory.getLayoutInstance(value);
-              model.layoutManager.container = model;
-              //执行新旧两个布局之间的转换
-              model.layoutManager.convertLayout(oldLayout);
+              if (value != oldLayout) {
+                model.layout = value;
+                model.layoutManager = DDeiLayoutManagerFactory.getLayoutInstance(value);
+                model.layoutManager.container = model;
+                //执行新旧两个布局之间的转换
+                model.layoutManager.convertLayout(oldLayout);
+              }
               //重新布局
               model.layoutManager.changeSubModelBounds();
             }

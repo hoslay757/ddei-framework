@@ -308,7 +308,28 @@ class DDeiTable extends DDeiAbstractShape {
   }
 
 
-
+  /**
+   * 修改上层模型大小
+   */
+  changeParentsBounds(): boolean {
+    if (this.pModel) {
+      this.pModel.changeParentsBounds();
+    }
+    return true;
+  }
+  /**
+     * 修改子元素大小
+     */
+  changeChildrenBounds(originRect, newRect): boolean {
+    for (let i = 0; i < this.rows.length; i++) {
+      let rowObj = this.rows[i];
+      for (let j = 0; j < rowObj.length; j++) {
+        let cell = rowObj[j]
+        cell?.layoutManager?.changeSubModelBounds();
+      }
+    }
+    return true;
+  }
   /**
    * 在第col列（下标）之下插入一个新列，插入的列的大小等于col的大小
    * 插入后会重新维护所有行列关系
@@ -694,13 +715,14 @@ class DDeiTable extends DDeiAbstractShape {
     }
     firstCell.mergeRowNum = minMaxRowCol.maxRow - minMaxRowCol.minRow + 1;
     firstCell.mergeColNum = minMaxRowCol.maxCol - minMaxRowCol.minCol + 1;
-    firstCell.setState(DDeiEnumControlState.SELECTED);
 
     firstCell.width = mergeWidth;
     firstCell.height = mergeHeight;
+    firstCell.setState(DDeiEnumControlState.SELECTED);
     //修改当前的选中单元格为合并后的单元格
     this.curRow = firstCell.row;
     this.curCol = firstCell.col;
+    this.changeChildrenBounds();
   }
 
   /**
@@ -760,6 +782,7 @@ class DDeiTable extends DDeiAbstractShape {
             cel.originHeight = null;
             cel.mergedCell = null;
             cel.setState(DDeiEnumControlState.SELECTED)
+
           }
         }
         firstCell.mergeRowNum = null;
@@ -768,6 +791,7 @@ class DDeiTable extends DDeiAbstractShape {
         this.curRow = firstCell.row;
         this.curCol = firstCell.col;
       }
+      this.changeChildrenBounds();
     }
   }
 
@@ -1026,6 +1050,8 @@ class DDeiTable extends DDeiAbstractShape {
       table.y = table.y - changeHeight;
       //更新复制图形的区域
       this.updateCopyShapeArea();
+      //更新表格布局子组件
+      this.changeChildrenBounds();
     }
   }
 
@@ -1081,6 +1107,8 @@ class DDeiTable extends DDeiAbstractShape {
       table.height = table.height + changeHeight;
       //更新复制图形的区域
       this.updateCopyShapeArea();
+      //更新表格布局子组件
+      this.changeChildrenBounds();
     }
   }
   /**
@@ -1134,6 +1162,8 @@ class DDeiTable extends DDeiAbstractShape {
       table.x = table.x - changeWidth;
       //更新复制图形的区域
       this.updateCopyShapeArea();
+      //更新表格布局子组件
+      this.changeChildrenBounds();
     }
   }
   /**
@@ -1188,6 +1218,8 @@ class DDeiTable extends DDeiAbstractShape {
       table.width = table.width + changeWidth;
       //更新复制图形的区域
       this.updateCopyShapeArea();
+      //更新表格布局子组件
+      this.changeChildrenBounds();
     }
   }
 
@@ -1352,6 +1384,8 @@ class DDeiTable extends DDeiAbstractShape {
       }
       //更新复制图形的区域
       this.updateCopyShapeArea();
+      //更新表格布局子组件
+      this.changeChildrenBounds();
     }
   }
 
@@ -1553,7 +1587,9 @@ class DDeiTable extends DDeiAbstractShape {
         }
       }
       //更新复制图形的区域
-      // this.updateCopyShapeArea();
+      this.updateCopyShapeArea();
+      //更新表格布局子组件
+      this.changeChildrenBounds();
     }
   }
 

@@ -725,6 +725,7 @@ class DDeiLayerCanvasRender {
             model.rotate = item.rotate
             model.currentPointVectors = item.currentPointVectors
             model.centerPointVector = item.centerPointVector
+
           })
 
           //如果按下了ctrl键，则需要修改容器的关系并更新样式
@@ -797,6 +798,7 @@ class DDeiLayerCanvasRender {
               model.rotate = item.rotate
               model.currentPointVectors = item.currentPointVectors
               model.centerPointVector = item.centerPointVector
+              model.changeChildrenBounds();
             }
           })
           this.model.shadowControls = [];
