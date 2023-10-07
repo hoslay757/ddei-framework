@@ -24,6 +24,16 @@ abstract class DDeiAbstractShape {
   }
   // ============================ 静态方法 ============================
 
+
+  /**
+   * 获取实际的内部容器控件
+   * @param x 相对路径坐标
+   * @param y 相对路径坐标
+   * @return 容器控件根据布局的模式不同返回不同的内部控件，普通控件返回null
+   */
+  getAccuContainer(x: number, y: number): DDeiAbstractShape {
+    return null;
+  }
   /**
    * 得到点在图形某条线上的投射点
    * @param point 测试点
@@ -504,20 +514,21 @@ abstract class DDeiAbstractShape {
    * @param area 选中区域
    * @returns 
    */
-  static findBottomContainersByArea(container, x = undefined, y = undefined, width = 0, height = 0): DDeiAbstractShape[] | null {
+  static findBottomContainersByArea(container, x = undefined, y = undefined): DDeiAbstractShape[] | null {
     let controls = [];
     if (container) {
       for (let mg = container.midList.length - 1; mg >= 0; mg--) {
         let item = container.models.get(container.midList[mg]);
         //如果射线相交，则视为选中
         if (DDeiAbstractShape.isInsidePolygon(item.getRotatedPoints(), { x: x, y: y })) {
-          //如果当前控件状态为选中，且是容器，则往下寻找控件，否则返回当前控件
-          if (item.baseModelType == "DDeiContainer") {
-            let subControls = DDeiAbstractShape.findBottomContainersByArea(item, x - item.x, y - item.y, width, height);
+          //获取真实的容器控件
+          let accuContainer = item.getAccuContainer(x, y);
+          if (accuContainer) {
+            let subControls = DDeiAbstractShape.findBottomContainersByArea(accuContainer, x, y);
             if (subControls && subControls.length > 0) {
               controls = controls.concat(subControls);
             } else {
-              controls.push(item);
+              controls.push(accuContainer);
             }
           }
         }

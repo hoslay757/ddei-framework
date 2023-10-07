@@ -1,26 +1,9 @@
-import DDeiConfig from '../../config.js'
-import DDei from '../../ddei.js';
-import DDeiEnumControlState from '../../enums/control-state.js';
-import DDeiModelArrtibuteValue from '../../models/attribute/attribute-value.js';
-import DDeiLayer from '../../models/layer.js';
-import DDeiRectangle from '../../models/rectangle.js';
-import DDeiAbstractShape from '../../models/shape.js';
-import DDeiStage from '../../models/stage.js';
-import DDeiUtil from '../../util.js'
-import DDeiCanvasRender from './ddei-render.js';
-import DDeiLayerCanvasRender from './layer-render.js';
-import DDeiAbstractShapeRender from './shape-render-base.js';
-import DDeiStageCanvasRender from './stage-render.js';
-import { cloneDeep } from 'lodash'
-import DDeiRectangleCanvasRender from './rectangle-render.js';
-import DDeiEnumBusCommandType from '../../enums/bus-command-type.js';
-import DDeiTable from '../../models/table.js';
-import DDeiTableCell from '../../models/table-cell.js';
+import DDeiRectContainerCanvasRender from './rect-container-render.js';
 
 /**
  * 表格单元格的渲染器
  */
-class DDeiTableCellCanvasRender extends DDeiRectangleCanvasRender {
+class DDeiTableCellCanvasRender extends DDeiRectContainerCanvasRender {
   // ============================ 构造函数 ============================
   constructor(props: object) {
     super(props)

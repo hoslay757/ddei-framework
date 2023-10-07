@@ -1,14 +1,8 @@
 import DDeiConfig from '../config'
-import DDeiStage from './stage'
-import DDeiLayer from './layer'
-import DDeiRectangle from './rectangle'
 import DDeiAbstractShape from './shape';
 import DDeiTableCell from './table-cell';
 import DDeiEnumControlState from '../enums/control-state';
-import DDei from '../ddei';
 import { clone } from 'lodash'
-import DDeiRectContainer from './rect-container';
-import DDeiSelector from './selector';
 import DDeiTableSelector from './table-selector';
 
 
@@ -833,6 +827,25 @@ class DDeiTable extends DDeiAbstractShape {
     return arr;
   }
 
+  /**
+   * 获取实际的内部容器控件
+   * @param x 相对路径坐标
+   * @param y 相对路径坐标
+   * @return 容器控件根据布局的模式不同返回不同的内部控件，普通控件返回null
+   */
+  getAccuContainer(x: number, y: number): DDeiAbstractShape {
+    //找到点所在的单元格
+    for (let i = 0; i < this.rows.length; i++) {
+      let rowObj = this.rows[i];
+      for (let j = 0; j < rowObj.length; j++) {
+        let cell = rowObj[j];
+        if (cell.isInAreaLoose(x, y)) {
+          return cell;
+        }
+      }
+    }
+    return null;
+  }
 
   // 判断两个区域是否有重合
   isOverlap(rect1: { minRow: number, minCol: number, maxRow: number, maxCol: number },
@@ -1605,7 +1618,6 @@ class DDeiTable extends DDeiAbstractShape {
       for (let j = 0; j < cols.length; j++) {
         let cellJSON = json.rows[i][j];
         if (cellJSON.mergeRowNum > 1 || cellJSON.mergeColNum > 1) {
-          debugger
           let mergedCell = rows[i][j];
           for (let mr = 0; mr < cellJSON.mergeRowNum; mr++) {
             for (let mj = 0; mj < cellJSON.mergeColNum; mj++) {

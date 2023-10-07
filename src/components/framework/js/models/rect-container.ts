@@ -5,6 +5,7 @@ import DDeiAbstractShape from './shape';
 import { Matrix3, Vector3 } from 'three';
 import DDeiLayoutManager from '../layout/layout-manager';
 import DDeiLayoutManagerFactory from '../layout/layout-manager-factory';
+import DDei from '../ddei';
 
 /**
  * 普通容器是一个矩形，能包含其他容器
@@ -133,6 +134,16 @@ class DDeiRectContainer extends DDeiRectangle {
     model.stage = null;
     model.render = null;
     this.resortModelByZIndex();
+  }
+
+  /**
+   * 获取实际的内部容器控件
+   * @param x 相对路径坐标
+   * @param y 相对路径坐标
+   * @return 容器控件根据布局的模式不同返回不同的内部控件，普通控件返回null
+   */
+  getAccuContainer(x: number, y: number): DDeiAbstractShape {
+    return this.layoutManager ? this.layoutManager.getAccuContainer(x, y) : this;
   }
 
   /**

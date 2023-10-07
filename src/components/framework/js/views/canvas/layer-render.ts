@@ -872,7 +872,6 @@ class DDeiLayerCanvasRender {
         if (this.stageRender.currentOperateShape?.baseModelType == 'DDeiTable' && !isCtrl) {
           this.stageRender.operateState = DDeiEnumOperateState.TABLE_INNER_DRAG
           //渲染图形
-          console.log(4)
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, { ignoreModels: [this.stageRender.currentOperateShape] }, evt);
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, [{ id: this.stageRender.currentOperateShape.id, value: DDeiEnumControlState.SELECTED }], evt);
         } else {

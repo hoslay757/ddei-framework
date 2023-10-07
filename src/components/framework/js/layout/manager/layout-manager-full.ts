@@ -50,6 +50,8 @@ class DDeiLayoutManagerFull extends DDeiLayoutManager {
 
 
   updateLayout(x: number, y: number, models: DDeiAbstractShape[], isAlt: boolean = false): void {
+    //刷新子元素位置
+    this.changeSubModelBounds();
   }
 
   canChangePosition(x: number, y: number, models: DDeiAbstractShape[], isAlt: boolean = false): boolean {
