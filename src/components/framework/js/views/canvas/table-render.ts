@@ -127,7 +127,7 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
                   }
                   isOk = true;
                 } else {
-                  if (currentCell.isInAreaLoose(e.offsetX, e.offsetY, 0)) {
+                  if (currentCell.isInAreaLoose(e.offsetX, e.offsetY, 0) || (currentCell.row == table.rows.length - 1 && currentCell.isBorderOn(3, e.offsetX, e.offsetY, 0, 10)) || (currentCell.col == table.cols.length - 1 && currentCell.isBorderOn(2, e.offsetX, e.offsetY, 0, 10))) {
                     if (!isCtrl) {
                       //选中当前单元格
                       currentCell.selectCell();
@@ -141,6 +141,7 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
                 }
               }
               //如果存在临时拖拽类型，则将临时拖拽转换为正式拖拽
+              console.log(table.tempDragType)
               if (table.tempDragType) {
                 if (!isCtrl) {
                   table.dragChanging = true;
