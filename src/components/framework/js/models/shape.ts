@@ -856,6 +856,7 @@ abstract class DDeiAbstractShape {
     }
     for (let i in this) {
       if ((!skipFields || skipFields?.indexOf(i) == -1)) {
+
         if (toJSONFields && toJSONFields.indexOf(i) != -1 && this[i]) {
           if (Array.isArray(this[i])) {
             let array = [];
@@ -877,8 +878,10 @@ abstract class DDeiAbstractShape {
                 array.push(element);
               }
             });
-            json[i] = array;
-          } else if (this[i].set) {
+            if (array.length > 0) {
+              json[i] = array;
+            }
+          } else if (this[i]?.set) {
             let map = {};
             this[i].forEach((element, key) => {
               if (element?.toJSON) {
@@ -887,14 +890,55 @@ abstract class DDeiAbstractShape {
                 map[key] = element;
               }
             });
-            json[i] = map;
-          } else if (this[i].toJSON) {
+            if (JSON.stringify(map) != "{}") {
+              json[i] = map;
+            }
+          } else if (this[i]?.toJSON) {
             json[i] = this[i].toJSON();
-          } else {
+          } else if (this[i] || this[i] == 0) {
             json[i] = this[i];
           }
         } else {
-          json[i] = this[i];
+          if (Array.isArray(this[i])) {
+            let array = [];
+            this[i].forEach(element => {
+              if (Array.isArray(element)) {
+                let subArray = [];
+                element.forEach(subEle => {
+
+                  if (subEle?.toJSON) {
+                    subArray.push(subEle.toJSON());
+                  } else {
+                    subArray.push(subEle);
+                  }
+                })
+                array.push(subArray);
+              } else if (element?.toJSON) {
+                array.push(element.toJSON());
+              } else {
+                array.push(element);
+              }
+            });
+            if (array.length > 0) {
+              json[i] = array;
+            }
+          } else if (this[i]?.set) {
+            let map = {};
+            this[i].forEach((element, key) => {
+              if (element?.toJSON) {
+                map[key] = element.toJSON();
+              } else {
+                map[key] = element;
+              }
+            });
+            if (JSON.stringify(map) != "{}") {
+              json[i] = map;
+            }
+          } else if (this[i]?.toJSON) {
+            json[i] = this[i].toJSON();
+          } else if (this[i] || this[i] == 0) {
+            json[i] = this[i];
+          }
         }
       }
     }

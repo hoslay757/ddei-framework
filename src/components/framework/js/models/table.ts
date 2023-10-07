@@ -32,8 +32,7 @@ class DDeiTable extends DDeiAbstractShape {
 
     this.initColNum = props.initColNum ? props.initColNum : 5;
 
-    //初始化表格
-    this.initTable();
+
   }
 
   // ============================ 方法 ===============================
@@ -764,7 +763,7 @@ class DDeiTable extends DDeiAbstractShape {
             cel.width = cel.originWidth;
             cel.height = cel.originHeight;
             cel.originWidth = null;
-            cel.orignHeight = null;
+            cel.originHeight = null;
             cel.mergedCell = null;
             cel.setState(DDeiEnumControlState.SELECTED)
           }
@@ -1584,19 +1583,41 @@ class DDeiTable extends DDeiAbstractShape {
       model.pModel = model.layer;
     }
     tempData[model.id] = model;
-    //恢复rows属性
-    let rows: DDeiTableCell[][] = [];
-    for (let key in json.models) {
-      tempData['currentContainer'] = container;
-      let item = json.models[key];
-      let model = MODEL_CLS[item.modelType].loadFromJSON(item, tempData);
-      models.set(key, model)
-      tempData['currentContainer'] = null;
-    }
-    //重建cols属性关系
 
-    container.models = models;
-    container.initRender();
+    //循环初始化表格的单元格
+    let rows = [];
+    let cols = [];
+    for (let i = 0; i < json.rows.length; i++) {
+      let rowJSON = json.rows[i];
+      rows[i] = [];
+      for (let j = 0; j < rowJSON.length; j++) {
+        if (i == 0) {
+          cols[j] = [];
+        }
+        let cell = DDeiTableCell.loadFromJSON(rowJSON[j], tempData);
+        cell.table = model;
+        rows[i][j] = cell;
+        cols[j][i] = cell;
+      }
+    }
+    //重设合并关系
+    for (let i = 0; i < rows.length; i++) {
+      for (let j = 0; j < cols.length; j++) {
+        let cellJSON = json.rows[i][j];
+        if (cellJSON.mergeRowNum > 1 || cellJSON.mergeColNum > 1) {
+          debugger
+          let mergedCell = rows[i][j];
+          for (let mr = 0; mr < cellJSON.mergeRowNum; mr++) {
+            for (let mj = 0; mj < cellJSON.mergeColNum; mj++) {
+              let mergeCell = rows[i + mr][j + mj];
+              mergeCell.mergedCell = mergedCell;
+            }
+          }
+        }
+      }
+    }
+    model.rows = rows;
+    model.cols = cols;
 
 
     model.initRender();
@@ -1605,6 +1626,8 @@ class DDeiTable extends DDeiAbstractShape {
   // 通过JSON初始化对象，数据未传入时将初始化数据
   static initByJSON(json): DDeiTable {
     let shape = new DDeiTable(json);
+    //初始化表格
+    shape.initTable();
     return shape;
   }
 
