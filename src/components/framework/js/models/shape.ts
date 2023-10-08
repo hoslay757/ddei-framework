@@ -502,7 +502,7 @@ abstract class DDeiAbstractShape {
       for (let mg = container.midList.length - 1; mg >= 0; mg--) {
         let item = container.models.get(container.midList[mg]);
         //如果射线相交，则视为选中
-        if (DDeiAbstractShape.isInsidePolygon(item.getRotatedPoints(), { x: x, y: y })) {
+        if (item.isInAreaLoose(x, y, looseWeight)) {
           //如果当前控件状态为选中，且是容器，则往下寻找控件，否则返回当前控件
           if (item.state == DDeiEnumControlState.SELECTED && item.baseModelType == "DDeiContainer") {
             let subControls = DDeiAbstractShape.findBottomModelsByArea(item, x, y, looseWeight);
@@ -649,12 +649,19 @@ abstract class DDeiAbstractShape {
         my1 = Math.max(Math.floor(p.y), my1)
       }
     })
+    // return DDeiAbstractShape.isInsidePolygon(
+    //   [
+    //     { x: mx - looseWeight, y: my - looseWeight },
+    //     { x: mx1 + looseWeight, y: my - looseWeight },
+    //     { x: mx1 + looseWeight, y: my1 + looseWeight },
+    //     { x: mx - looseWeight, y: my1 + looseWeight },
+    //   ], { x: x, y: y });
     return DDeiAbstractShape.isInsidePolygon(
       [
-        { x: mx - looseWeight, y: my - looseWeight },
-        { x: mx1 + looseWeight, y: my - looseWeight },
-        { x: mx1 + looseWeight, y: my1 + looseWeight },
-        { x: mx - looseWeight, y: my1 + looseWeight },
+        { x: mx, y: my },
+        { x: mx1, y: my },
+        { x: mx1, y: my1 },
+        { x: mx, y: my1 },
       ], { x: x, y: y });
   }
 

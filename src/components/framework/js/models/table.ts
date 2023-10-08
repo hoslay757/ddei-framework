@@ -1177,7 +1177,7 @@ class DDeiTable extends DDeiAbstractShape {
             beforeCell.originHeight = beforeCell.originHeight + changeHeight;
             if (processedCells.indexOf(mCell) == -1) {
               processedCells[processedCells.length] = mCell;
-              mCellsetSize(undefined, mCell.height + changeHeight);
+              mCell.setSize(undefined, mCell.height + changeHeight);
             }
             processedCells[processedCells.length] = beforeCell;
           }

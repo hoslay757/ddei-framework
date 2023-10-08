@@ -91,7 +91,6 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
         table.dragType = table.tempDragType
         table.dragChanging = true;
         table.dragCell = table.tempDragCell;
-        console.log(table.dragCell?.row + " .  " + table.dragCell?.col)
         //选中整列
         if (table.dragType == "table-select-col") {
           //清空所有选中的单元格

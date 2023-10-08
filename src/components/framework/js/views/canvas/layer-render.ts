@@ -560,15 +560,11 @@ class DDeiLayerCanvasRender {
       this.stageRender.selector.render.mouseDown(evt);
     } else {
       // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
-      let operateControls = null;
-      // if (this.tempLooseControl?.baseModelType == "DDeiTable") {
-      //   operateControls = [this.tempLooseControl];
-      // } else {
-      operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, evt.offsetX, evt.offsetY);
-      // }
+      let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, evt.offsetX, evt.offsetY, DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2);
       //光标所属位置是否有控件
       //有控件：分发事件到当前控件
       if (operateControls != null && operateControls.length > 0) {
+        console.log(operateControls)
         //全局变量：当前操作控件=当前控件
         let operateControl = operateControls[0];
         this.stageRender.currentOperateShape = operateControl;
@@ -635,12 +631,7 @@ class DDeiLayerCanvasRender {
     if (evt.button == 2) {
       //在鼠标位置显示菜单
       // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
-      let operateControls = null;
-      if (this.tempLooseControl?.baseModelType == "DDeiTable") {
-        operateControls = [this.tempLooseControl];
-      } else {
-        operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, evt.offsetX, evt.offsetY);
-      }
+      let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, evt.offsetX, evt.offsetY);
       //显示当前控件的
       if (operateControls != null && operateControls.length > 0) {
         //全局变量：当前操作控件=当前控件
@@ -661,6 +652,7 @@ class DDeiLayerCanvasRender {
         }
       }
     } else {
+      console.log(this.stageRender.operateState)
       //判断当前操作状态
       switch (this.stageRender.operateState) {
         //控件状态确认中
@@ -713,7 +705,7 @@ class DDeiLayerCanvasRender {
           break;
         //控件拖拽中
         case DDeiEnumOperateState.CONTROL_DRAGING:
-
+          let operateModels = []
           //同步影子元素的坐标大小等状态到当前模型
           this.model.shadowControls.forEach(item => {
             let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
@@ -722,47 +714,37 @@ class DDeiLayerCanvasRender {
             model.setBounds(item.x, item.y, item.width, item.height)
             model.currentPointVectors = item.currentPointVectors
             model.centerPointVector = item.centerPointVector
-
+            operateModels.push(model)
           })
-
-          //如果按下了ctrl键，则需要修改容器的关系并更新样式
-          if (isAlt) {
-            //寻找鼠标落点当前所在的容器
-            let mouseOnContainers: DDeiAbstractShape[] = DDeiAbstractShape.findBottomContainersByArea(this.model, evt.offsetX, evt.offsetY);
-            let lastOnContainer = this.model;
-            let pContainerModel = this.stageRender.currentOperateShape.pModel;
-            //移除当前元素
-            if (mouseOnContainers && mouseOnContainers.length > 0) {
-              //获取最下层容器
-              for (let k = mouseOnContainers.length - 1; k >= 0; k--) {
-                if (mouseOnContainers[k].id != this.stageRender.currentOperateShape.id) {
-                  lastOnContainer = mouseOnContainers[k]
-                  break;
+          if (operateModels?.length > 0) {
+            //如果按下了ctrl键，则需要修改容器的关系并更新样式
+            if (isAlt) {
+              //寻找鼠标落点当前所在的容器
+              let mouseOnContainers: DDeiAbstractShape[] = DDeiAbstractShape.findBottomContainersByArea(this.model, evt.offsetX, evt.offsetY);
+              let lastOnContainer = this.model;
+              let pContainerModel = this.stageRender.currentOperateShape.pModel;
+              //移除当前元素
+              if (mouseOnContainers && mouseOnContainers.length > 0) {
+                //获取最下层容器
+                for (let k = mouseOnContainers.length - 1; k >= 0; k--) {
+                  if (mouseOnContainers[k].id != this.stageRender.currentOperateShape.id) {
+                    lastOnContainer = mouseOnContainers[k]
+                    break;
+                  }
                 }
               }
-            }
-            let selectedModels = pContainerModel.getSelectedModels();
-            //如果最小层容器不是当前容器，执行的移动容器操作
-            if (lastOnContainer.id != pContainerModel.id) {
-              //构造移动容器action数据
 
-              if (this.stageRender.currentOperateShape?.id.indexOf("_shadow") != -1) {
-                let id = this.stageRender.currentOperateShape.id;
-                id = id.substring(0, id.lastIndexOf("_shadow"));
-                selectedModels.set(id, this.stage?.getModelById(id))
+              //如果最小层容器不是当前容器，执行的移动容器操作
+              if (lastOnContainer.id != pContainerModel.id) {
+                //构造移动容器action数据
+                this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeContainer, { oldContainer: pContainerModel, newContainer: lastOnContainer, models: operateModels }, evt);
               } else {
-                selectedModels.set(this.stageRender.currentOperateShape?.id, this.stageRender.currentOperateShape)
+                pContainerModel?.layoutManager?.updateLayout(evt.offsetX, evt.offsetY, operateModels);
               }
-              this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeContainer, { oldContainer: pContainerModel, newContainer: lastOnContainer, models: Array.from(selectedModels.values()) }, evt);
             } else {
-              pContainerModel?.layoutManager?.updateLayout(evt.offsetX, evt.offsetY, Array.from(selectedModels.values()));
+              let pContainerModel = operateModels[0].pModel;
+              pContainerModel?.layoutManager?.updateLayout(evt.offsetX, evt.offsetY, operateModels);
             }
-          } else {
-            let pContainerModel = this.stageRender.currentOperateShape.pModel;
-            //构造移动容器action数据
-            let selectedModels = pContainerModel.getSelectedModels();
-            selectedModels.set(this.stageRender.currentOperateShape?.id, this.stageRender.currentOperateShape)
-            pContainerModel?.layoutManager?.updateLayout(evt.offsetX, evt.offsetY, Array.from(selectedModels.values()));
           }
           this.model.shadowControls = [];
           //清空临时变量
@@ -836,7 +818,7 @@ class DDeiLayerCanvasRender {
     //控制帧率
     if (!window.upTime) {
       window.upTime = dt;
-    } else if (dt - window.upTime > 20) {
+    } else if (dt - window.upTime > 30) {
       window.upTime = dt;
     } else {
       return;
@@ -871,15 +853,6 @@ class DDeiLayerCanvasRender {
           dy: centerPointVector.y - evt.offsetY,
           model: this.stageRender.currentOperateShape
         }
-
-        //如果当前元素父元素不是Layer，则记录直到Layer父控件的大小，用来实现取消还原
-        // let pModel = dragObj?.model?.pModel;
-        // for (; pModel != null && pModel.baseModelType != 'DDeiLayer'; pModel = pModel.pModel) {
-        //   if (!dragObj.pms) {
-        //     dragObj.pms = new Map();
-        //   }
-        //   dragObj.pms.set(pModel.id, { x: pModel.x, y: pModel.y, width: pModel.width, height: pModel.height });
-        // }
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
 
         if (this.stageRender.currentOperateShape?.baseModelType == 'DDeiTable' && !isCtrl) {

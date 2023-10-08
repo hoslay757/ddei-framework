@@ -170,7 +170,6 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
     } else if (this.container.isInAreaLoose(x, y, 0)) {
       return true;
     }
-
     return false;
   }
 

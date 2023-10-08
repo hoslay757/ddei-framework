@@ -1,10 +1,8 @@
 import DDeiConfig from '../../config';
 import DDeiEnumBusCommandType from '../../enums/bus-command-type';
-import DDeiEnumOperateState from '../../enums/operate-state';
 import DDeiAbstractShape from '../../models/shape';
 import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
-import { Matrix3, Vector3 } from 'three';
 /**
  * 改变模型坐标以及大小的总线Command
  */
