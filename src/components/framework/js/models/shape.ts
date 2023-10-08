@@ -140,6 +140,20 @@ abstract class DDeiAbstractShape {
   }
 
   /**
+    * 判断是否在某个边线上
+    * @param direct 1，2，3，4 上、右、下、左
+    */
+  isBorderOn(direct: number, x: number, y: number, inWeight: number = -3, outWeight: number = 3): boolean {
+    let projPoint = this.getProjPointOnLine({ x: x, y: y }
+      , { in: inWeight, out: outWeight }, 1, direct - 1)
+    if (projPoint) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
    * 得到点在图形连接线上的投射点
    * @param point 测试点
    * @param distance 内外部判定区间的距离

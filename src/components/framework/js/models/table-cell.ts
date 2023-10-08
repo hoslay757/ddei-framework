@@ -41,19 +41,7 @@ class DDeiTableCell extends DDeiRectContainer {
     return this.mergedCell != null;
   }
 
-  /**
-     * 判断是否在某个边线上
-     * @param direct 1，2，3，4 上、右、下、左
-     */
-  isBorderOn(direct: number, x: number, y: number, inWeight: number = -3, outWeight: number = 3): boolean {
-    let projPoint = this.getProjPointOnLine({ x: x, y: y }
-      , { in: inWeight, out: outWeight }, 1, direct - 1)
-    if (projPoint) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+
 
   /**
    * 设置当前单元格状态为选中
