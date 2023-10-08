@@ -1,7 +1,4 @@
-import DDeiConfig from '../config'
-import DDeiStage from './stage'
-import DDeiLayer from './layer'
-import DDeiRectangle from './rectangle'
+import { MODEL_CLS } from '../config';
 import DDeiAbstractShape from './shape';
 import DDeiRectContainer from './rect-container';
 import DDeiTable from './table';
@@ -44,24 +41,12 @@ class DDeiTableCell extends DDeiRectContainer {
     return this.mergedCell != null;
   }
 
-  /**
-     * 判断是否在某个边线上
-     * @param direct 1，2，3，4 上、右、下、左
-     */
-  isBorderOn(direct: number, x: number, y: number, inWeight: number = -3, outWeight: number = 3): boolean {
-    let projPoint = this.getProjPointOnLine({ x: x, y: y }
-      , { in: inWeight, out: outWeight }, 1, direct - 1)
-    if (projPoint) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+
 
   /**
    * 设置当前单元格状态为选中
    */
-  selectCell = function () {
+  selectCell(): void {
 
     //让自身成为选中状态
     this.setState(DDeiEnumControlState.SELECTED)
@@ -73,7 +58,7 @@ class DDeiTableCell extends DDeiRectContainer {
   /**
    * 选择或者取消选择当前单元格
    */
-  selectOrCancelCell = function () {
+  selectOrCancelCell(): void {
     if (this.state == DDeiEnumControlState.SELECTED) {
       this.setState(DDeiEnumControlState.DEFAULT);
       this.table.curRow = -1;
@@ -86,16 +71,27 @@ class DDeiTableCell extends DDeiRectContainer {
 
   // 通过一个JSON反向序列化成对象，模型数据与JSON完全一样
   static loadFromJSON(json, tempData: object = {}): any {
-    let model = new DDeiTableCell(json);
-    model.layer = tempData['currentLayer']
-    model.stage = tempData['currentStage']
-    model.pModel = tempData['currentContainer']
-    if (!model.pModel) {
-      model.pModel = model.layer;
+    let container = new DDeiTableCell(json);
+
+    container.layer = tempData['currentLayer']
+    container.stage = tempData['currentStage']
+    container.pModel = tempData['currentContainer']
+    if (!container.pModel) {
+      container.pModel = container.layer;
     }
-    tempData[model.id] = model;
-    model.initRender();
-    return model;
+    tempData[container.id] = container;
+    let models: Map<String, DDeiAbstractShape> = new Map<String, DDeiAbstractShape>();
+    for (let key in json.models) {
+      tempData['currentContainer'] = container;
+      let item = json.models[key];
+      let model = MODEL_CLS[item.modelType].loadFromJSON(item, tempData);
+      models.set(key, model)
+      tempData['currentContainer'] = null;
+    }
+
+    container.models = models;
+    container.initRender();
+    return container;
   }
 
   // 通过JSON初始化对象，数据未传入时将初始化数据

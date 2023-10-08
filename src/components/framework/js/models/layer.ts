@@ -21,6 +21,7 @@ class DDeiLayer {
     this.background = props.background ? props.background : null;
     this.display = props.display ? props.display : 1;
     this.unicode = props.unicode ? props.unicode : DDeiUtil.getUniqueCode()
+
   }
 
   // ============================ 静态变量 ============================
@@ -81,7 +82,8 @@ class DDeiLayer {
   //操作点对象，用于显示操作点，操作点点击后，会进行不同的操作，操作点临时存在，不满足出现条件时就会删除，操作点不会序列化
   opPoints: object[] = [];
 
-
+  //布局管理器
+  layoutManager: object;
   //因容器拖入操作而产生的向量
   dragInPoints: object[] = [];
 
@@ -307,6 +309,16 @@ class DDeiLayer {
   }
 
   /**
+   * 获取实际的内部容器控件
+   * @param x 相对路径坐标
+   * @param y 相对路径坐标
+   * @return 容器控件根据布局的模式不同返回不同的内部控件，普通控件返回null
+   */
+  getAccuContainer(x: number, y: number): DDeiLayer {
+    return this;
+  }
+
+  /**
    * 获取选中状态的所有控件
    * @returns 
    */
@@ -332,7 +344,7 @@ class DDeiLayer {
       } else {
         //遍历所有容器
         this.models.forEach(item => {
-          if (item.baseModelType == "DDeiContainer") {
+          if (item.baseModelType == "DDeiContainer" || item.baseModelType == "DDeiTable") {
             let rm = item.getModelById(id);
             if (rm) {
               reutrnModel = rm;

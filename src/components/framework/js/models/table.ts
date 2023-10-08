@@ -1,15 +1,10 @@
 import DDeiConfig from '../config'
-import DDeiStage from './stage'
-import DDeiLayer from './layer'
-import DDeiRectangle from './rectangle'
 import DDeiAbstractShape from './shape';
 import DDeiTableCell from './table-cell';
 import DDeiEnumControlState from '../enums/control-state';
-import DDei from '../ddei';
-import { clone } from 'lodash'
-import DDeiRectContainer from './rect-container';
-import DDeiSelector from './selector';
 import DDeiTableSelector from './table-selector';
+import DDeiUtil from '../util';
+import { Matrix3, Vector3 } from 'three';
 
 
 /**
@@ -32,8 +27,7 @@ class DDeiTable extends DDeiAbstractShape {
 
     this.initColNum = props.initColNum ? props.initColNum : 5;
 
-    //初始化表格
-    this.initTable();
+
   }
 
   // ============================ 方法 ===============================
@@ -79,7 +73,7 @@ class DDeiTable extends DDeiAbstractShape {
           if (i == 0) {
             this.cols[j] = [];
           }
-          let initJSON = clone(DDeiTable.initSubControlJson);
+          let initJSON = DDeiUtil.getSubControlJSON(this.modelCode);
           initJSON.id = this.id + "_c_" + i + "_" + j
           initJSON.x = j * initWidth
           initJSON.y = i * initHeight
@@ -146,8 +140,7 @@ class DDeiTable extends DDeiAbstractShape {
         let cellObj = rowObj[j];
         cellObj.row = i;
         cellObj.col = j;
-        cellObj.x = tmpX;
-        cellObj.y = tmpY;
+        cellObj.setPosition(tmpX, tmpY)
         if (cellObj.mergedCell != null || cellObj.mergeRowNum > 1 || cellObj.mergeColNum > 1) {
           tmpX = tmpX + cellObj.originWidth;
         } else {
@@ -180,12 +173,7 @@ class DDeiTable extends DDeiAbstractShape {
         let rowObj = this.rows[i];
         for (let j = 0; j < rowObj.length; j++) {
           let cellObj = rowObj[j];
-
-          cellObj.x = cellObj.x * wR
-          cellObj.y = cellObj.y * hR
-
-          cellObj.width = cellObj.width * wR
-          cellObj.height = cellObj.height * hR
+          cellObj.setBounds(cellObj.x * wR, cellObj.y * hR, cellObj.width * wR, cellObj.height * hR)
           cellObj.originWidth = cellObj.originWidth * wR
           cellObj.originHeight = cellObj.originHeight * hR
         }
@@ -228,7 +216,7 @@ class DDeiTable extends DDeiAbstractShape {
         newWidth = oldCell.width;
         newHeight = oldCell.height;
       }
-      let initJSON = clone(DDeiTable.initSubControlJson);
+      let initJSON = DDeiUtil.getSubControlJSON(this.modelCode);
       initJSON.width = newWidth
       initJSON.height = newHeight
       initJSON.table = this
@@ -258,7 +246,7 @@ class DDeiTable extends DDeiAbstractShape {
         if (corssMergeCell.indexOf(mCell) == -1) {
           corssMergeCell[corssMergeCell.length] = mCell;
           mCell.mergeRowNum = mCell.mergeRowNum + 1;
-          mCell.height = parseFloat(mCell.height) + parseFloat(newCell.height);
+          mCell.setSize(undefined, parseFloat(mCell.height) + parseFloat(newCell.height));
         }
         newCell.originWidth = newCell.width;
         newCell.originHeight = newCell.height;
@@ -268,7 +256,7 @@ class DDeiTable extends DDeiAbstractShape {
     }
     //设置表格的高度
     this.height = this.height + addHeight;
-
+    this.modelChanged = true;
     //循环列，维护列的关系
     for (let i = 0; i < this.cols.length; i++) {
       let currentCol = this.cols[i];
@@ -312,10 +300,99 @@ class DDeiTable extends DDeiAbstractShape {
     for (let i = 0; i < this.cols.length; i++) {
       this.cols[i][this.curRow].setState(DDeiEnumControlState.SELECTED);
     }
+    this.changeChildrenBounds();
+  }
+
+  /**
+    * 计算当前图形旋转后的顶点，根据位移以及层次管理
+    */
+  calRotatePointVectors(): void {
+    super.calRotatePointVectors();
+    this.calCellsRotatePointVectors(this.rotateMatrix)
   }
 
 
+  /**
+   * 计算单元格的点旋转后的坐标
+   * @param rotateMatrix 旋转矩阵 
+   */
+  calCellsRotatePointVectors(rotateMatrix): void {
+    //宽松判定区域的宽度
+    let looseWeight = 10;
+    for (let i = 0; i < this.rows.length; i++) {
+      let rowObj = this.rows[i];
+      for (let j = 0; j < rowObj.length; j++) {
+        let item = rowObj[j]
+        let parentCenterPointVector = this.centerPointVector;
+        let halfWidth = item.width * 0.5;
+        let halfHeight = item.height * 0.5;
+        if (parentCenterPointVector) {
+          let vc, vc1, vc2, vc3, vc4;
+          let loosePointVectors = null;
+          if (item.pointVectors?.length > 0) {
+            vc = item.centerPointVector;
+            vc1 = item.pointVectors[0];
+            vc2 = item.pointVectors[1];
+            vc3 = item.pointVectors[2];
+            vc4 = item.pointVectors[3];
+            loosePointVectors = item.loosePointVectors
+          } else {
+            item.pointVectors = []
+            let absBoundsOrigin = item.getAbsBounds()
+            vc = new Vector3(absBoundsOrigin.x + halfWidth, absBoundsOrigin.y + halfHeight, 1);
+            vc1 = new Vector3(vc.x - halfWidth, vc.y - halfHeight, 1);
+            vc2 = new Vector3(vc.x + halfWidth, vc.y - halfHeight, 1);
+            vc3 = new Vector3(vc.x + halfWidth, vc.y + halfHeight, 1);
+            vc4 = new Vector3(vc.x - halfWidth, vc.y + halfHeight, 1);
+            item.pointVectors.push(vc1)
+            item.pointVectors.push(vc2)
+            item.pointVectors.push(vc3)
+            item.pointVectors.push(vc4)
+            item.centerPointVector = vc;
+            loosePointVectors = []
+            //记录宽松判定区域的点
+            loosePointVectors.push(new Vector3(vc1.x - looseWeight, vc1.y - looseWeight, vc1.z))
+            loosePointVectors.push(new Vector3(vc2.x + looseWeight, vc2.y - looseWeight, vc2.z))
+            loosePointVectors.push(new Vector3(vc3.x + looseWeight, vc3.y + looseWeight, vc3.z))
+            loosePointVectors.push(new Vector3(vc4.x - looseWeight, vc4.y + looseWeight, vc4.z))
+            item.loosePointVectors = loosePointVectors;
+          }
+          vc1.applyMatrix3(rotateMatrix);
+          vc2.applyMatrix3(rotateMatrix);
+          vc3.applyMatrix3(rotateMatrix);
+          vc4.applyMatrix3(rotateMatrix);
+          vc.applyMatrix3(rotateMatrix);
+          loosePointVectors?.forEach(pv => {
+            pv.applyMatrix3(rotateMatrix);
+          });
+        }
+        item.calChildrenRotatePointVectors(rotateMatrix);
+      }
+    }
+  }
 
+  /**
+   * 修改上层模型大小
+   */
+  changeParentsBounds(): boolean {
+    if (this.pModel) {
+      this.pModel.changeParentsBounds();
+    }
+    return true;
+  }
+  /**
+     * 修改子元素大小
+     */
+  changeChildrenBounds(originRect, newRect): boolean {
+    for (let i = 0; i < this.rows.length; i++) {
+      let rowObj = this.rows[i];
+      for (let j = 0; j < rowObj.length; j++) {
+        let cell = rowObj[j]
+        cell?.layoutManager?.changeSubModelBounds();
+      }
+    }
+    return true;
+  }
   /**
    * 在第col列（下标）之下插入一个新列，插入的列的大小等于col的大小
    * 插入后会重新维护所有行列关系
@@ -351,7 +428,7 @@ class DDeiTable extends DDeiAbstractShape {
         newHeight = oldCell.height;
       }
 
-      let initJSON = clone(DDeiTable.initSubControlJson);
+      let initJSON = DDeiUtil.getSubControlJSON(this.modelCode);
       initJSON.width = newWidth
       initJSON.height = newHeight
       initJSON.table = this
@@ -381,7 +458,7 @@ class DDeiTable extends DDeiAbstractShape {
         if (corssMergeCell.indexOf(mCell) == -1) {
           corssMergeCell[corssMergeCell.length] = mCell;
           mCell.mergeColNum = mCell.mergeColNum + 1;
-          mCell.width = parseFloat(mCell.width) + parseFloat(newCell.width);
+          mCell?.setSize(parseFloat(mCell.width) + parseFloat(newCell.width));
         }
         newCell.originWidth = newCell.width;
         newCell.originHeight = newCell.height;
@@ -392,6 +469,7 @@ class DDeiTable extends DDeiAbstractShape {
     }
     //设置表格的高度
     this.width = this.width + addWidth;
+    this.modelChanged = true;
     //循环行，维护行的关系
     for (let i = 0; i < this.rows.length; i++) {
       let currentRow = this.rows[i];
@@ -441,6 +519,7 @@ class DDeiTable extends DDeiAbstractShape {
     for (let i = 0; i < this.rows.length; i++) {
       this.rows[i][this.curCol].setState(DDeiEnumControlState.SELECTED)
     }
+    this.changeChildrenBounds();
   }
 
   /**
@@ -482,8 +561,7 @@ class DDeiTable extends DDeiAbstractShape {
         //将合并单元格下移
         mCell = this.rows[removeCell.row + 1][x];
         //重新设置依赖关系
-        mCell.width = removeCell.width;
-        mCell.height = removeCell.height;
+        mCell.setSize(removeCell.width, removeCell.height)
         mCell.mergeRowNum = removeCell.mergeRowNum;
         mCell.mergeColNum = removeCell.mergeColNum;
 
@@ -505,7 +583,7 @@ class DDeiTable extends DDeiAbstractShape {
         if (corssMergeCell.indexOf(mCell) == -1) {
           corssMergeCell[corssMergeCell.length] = mCell;
           mCell.mergeRowNum = mCell.mergeRowNum - 1;
-          mCell.height = parseInt(mCell.height) - removeHeight;
+          mCell.setSize(mCell.width, parseInt(mCell.height) - removeHeight);
         }
       }
     }
@@ -517,6 +595,7 @@ class DDeiTable extends DDeiAbstractShape {
     }
     //设置表格的高度
     this.height = this.height - removeHeight;
+    this.modelChanged = true;
     //循环列，维护列的关系
     for (let i = 0; i < this.cols.length; i++) {
       let currentCol = this.cols[i];
@@ -578,8 +657,7 @@ class DDeiTable extends DDeiAbstractShape {
         //将合并单元格右移
         mCell = this.rows[x][removeCell.col + 1];
         //重新设置依赖关系
-        mCell.width = removeCell.width;
-        mCell.height = removeCell.height;
+        mCell.setSize(removeCell.width, removeCell.height)
         mCell.mergeRowNum = removeCell.mergeRowNum;
         mCell.mergeColNum = removeCell.mergeColNum;
 
@@ -601,15 +679,15 @@ class DDeiTable extends DDeiAbstractShape {
         if (corssMergeCell.indexOf(mCell) == -1) {
           corssMergeCell[corssMergeCell.length] = mCell;
           mCell.mergeColNum = mCell.mergeColNum - 1;
-          mCell.width = parseInt(mCell.width) - removeWidth;
+          mCell.setSize(parseInt(mCell.width) - removeWidth, mCell.height)
         }
       }
     }
 
 
     //设置表格的宽度
-    this.width = this.width - removeWidth;
-
+    this.width = this.width - removeWidth
+    this.modelChanged = true;
 
     if (firstRemove) {
       this.cols.splice(0, 1);
@@ -692,8 +770,7 @@ class DDeiTable extends DDeiAbstractShape {
         //记录合并前的大小
         this.rows[i][j].originWidth = this.rows[i][j].width;
         this.rows[i][j].originHeight = this.rows[i][j].height;
-        this.rows[i][j].width = 0;
-        this.rows[i][j].height = 0;
+        this.rows[i][j].setSize(0, 0)
         //设置合并单元格与被合并单元格的引用关系
         this.rows[i][j].mergedCell = firstCell;
         this.rows[i][j].setState(DDeiEnumControlState.DEFAULT);
@@ -701,13 +778,13 @@ class DDeiTable extends DDeiAbstractShape {
     }
     firstCell.mergeRowNum = minMaxRowCol.maxRow - minMaxRowCol.minRow + 1;
     firstCell.mergeColNum = minMaxRowCol.maxCol - minMaxRowCol.minCol + 1;
-    firstCell.setState(DDeiEnumControlState.SELECTED);
 
-    firstCell.width = mergeWidth;
-    firstCell.height = mergeHeight;
+    firstCell.setSize(mergeWidth, mergeHeight)
+    firstCell.setState(DDeiEnumControlState.SELECTED);
     //修改当前的选中单元格为合并后的单元格
     this.curRow = firstCell.row;
     this.curCol = firstCell.col;
+    this.changeChildrenBounds();
   }
 
   /**
@@ -761,12 +838,12 @@ class DDeiTable extends DDeiAbstractShape {
         for (let i = firstCell.row; i < firstCell.row + firstCell.mergeRowNum; i++) {
           for (let j = firstCell.col; j < firstCell.col + firstCell.mergeColNum; j++) {
             let cel = this.rows[i][j];
-            cel.width = cel.originWidth;
-            cel.height = cel.originHeight;
+            cel.setSize(cel.originWidth, cel.originHeight)
             cel.originWidth = null;
-            cel.orignHeight = null;
+            cel.originHeight = null;
             cel.mergedCell = null;
             cel.setState(DDeiEnumControlState.SELECTED)
+
           }
         }
         firstCell.mergeRowNum = null;
@@ -775,6 +852,7 @@ class DDeiTable extends DDeiAbstractShape {
         this.curRow = firstCell.row;
         this.curCol = firstCell.col;
       }
+      this.changeChildrenBounds();
     }
   }
 
@@ -787,11 +865,22 @@ class DDeiTable extends DDeiAbstractShape {
     for (let i = 0; i < this.rows.length; i++) {
       let cell = this.rows[i][0];
       if (cell.isMergedCell()) {
+        //合并单元格的开始单元格
         cell = this.rows[cell.mergedCell.row][cell.mergedCell.col];
+        //找到所属于合并单元格中的哪个真实的行
+        for (let j = 0; j < cell.mergeRowNum; j++) {
+          let subCell = this.rows[cell.row + j][cell.col];
+          if (subCell.y <= y && y <= subCell.y + subCell.originHeight) {
+            cellRow = subCell.row;
+            break;
+          }
+        }
       }
-      if (cell.y <= y && y <= cell.y + cell.height) {
-        cellRow = cell.row;
-        break;
+      if (cellRow == -1) {
+        if (cell.y <= y && y <= cell.y + cell.height) {
+          cellRow = cell.row;
+          break;
+        }
       }
     }
     //判断属于哪一列
@@ -800,6 +889,7 @@ class DDeiTable extends DDeiAbstractShape {
         let cell = this.cols[i][cellRow];
         if (cell.isMergedCell()) {
           cell = this.rows[cell.mergedCell.row][cell.mergedCell.col];
+
         }
         if (cell.x <= x && x <= cell.x + cell.width) {
           return cell;
@@ -822,6 +912,43 @@ class DDeiTable extends DDeiAbstractShape {
     return arr;
   }
 
+  /**
+   * 根据ID获取模型
+   * @param id 模型id
+   */
+  getModelById(id: string): DDeiAbstractShape | null {
+    //找到点所在的单元格
+    for (let i = 0; i < this.rows.length; i++) {
+      let rowObj = this.rows[i];
+      for (let j = 0; j < rowObj.length; j++) {
+        let cell = rowObj[j];
+        let returnModel = cell.getModelById(id);
+        if (returnModel) {
+          return returnModel;
+        }
+      }
+    }
+  }
+
+  /**
+   * 获取实际的内部容器控件
+   * @param x 相对路径坐标
+   * @param y 相对路径坐标
+   * @return 容器控件根据布局的模式不同返回不同的内部控件，普通控件返回null
+   */
+  getAccuContainer(x: number, y: number): DDeiAbstractShape {
+    //找到点所在的单元格
+    for (let i = 0; i < this.rows.length; i++) {
+      let rowObj = this.rows[i];
+      for (let j = 0; j < rowObj.length; j++) {
+        let cell = rowObj[j];
+        if (cell.isInAreaLoose(x, y)) {
+          return cell;
+        }
+      }
+    }
+    return null;
+  }
 
   // 判断两个区域是否有重合
   isOverlap(rect1: { minRow: number, minCol: number, maxRow: number, maxCol: number },
@@ -978,14 +1105,14 @@ class DDeiTable extends DDeiAbstractShape {
         if (processedCells.indexOf(afterCell) == -1) {
           //普通单元格
           if (!afterCell.isMergedCell() && !afterCell.isMergeCell()) {
-            afterCell.height = afterCell.height + changeHeight;
+            afterCell.setSize(undefined, afterCell.height + changeHeight);
             processedCells[processedCells.length] = afterCell;
           }
           //合并单元格
           else if (afterCell.isMergeCell()) {
             let mCell = afterCell;
             mCell.originHeight = mCell.originHeight + changeHeight;
-            mCell.height = mCell.height + changeHeight;
+            mCell.setSize(undefined, mCell.height + changeHeight);
             processedCells[processedCells.length] = mCell;
           }
           //被合并单元格
@@ -995,13 +1122,15 @@ class DDeiTable extends DDeiAbstractShape {
           }
         }
         for (let j = 1; j < rowObj.length; j++) {
-          rowObj[j].y = rowObj[j].y + changeHeight;
+          rowObj[j].setPosition(undefined, rowObj[j].y + changeHeight);
         }
       }
       table.height = table.height + changeHeight;
-      table.y = table.y - changeHeight;
+      table.setPosition(undefined, table.y - changeHeight);
       //更新复制图形的区域
       this.updateCopyShapeArea();
+      //更新表格布局子组件
+      this.changeChildrenBounds();
     }
   }
 
@@ -1032,13 +1161,13 @@ class DDeiTable extends DDeiAbstractShape {
         if (processedCells.indexOf(beforeCell) == -1) {
           //普通单元格
           if (!beforeCell.isMergedCell() && !beforeCell.isMergeCell()) {
-            beforeCell.height = beforeCell.height + changeHeight;
+            beforeCell.setSize(undefined, beforeCell.height + changeHeight);
             processedCells[processedCells.length] = beforeCell;
           }
           //合并单元格
           else if (beforeCell.isMergeCell()) {
             beforeCell.originHeight = beforeCell.originHeight + changeHeight;
-            beforeCell.height = beforeCell.height + changeHeight;
+            beforeCell.setSize(undefined, beforeCell.height + changeHeight);
             processedCells[processedCells.length] = beforeCell;
           }
           //被合并单元格
@@ -1048,15 +1177,18 @@ class DDeiTable extends DDeiAbstractShape {
             beforeCell.originHeight = beforeCell.originHeight + changeHeight;
             if (processedCells.indexOf(mCell) == -1) {
               processedCells[processedCells.length] = mCell;
-              mCell.height = mCell.height + changeHeight;
+              mCell.setSize(undefined, mCell.height + changeHeight);
             }
             processedCells[processedCells.length] = beforeCell;
           }
         }
       }
       table.height = table.height + changeHeight;
+      table.modelChanged = true;
       //更新复制图形的区域
       this.updateCopyShapeArea();
+      //更新表格布局子组件
+      this.changeChildrenBounds();
     }
   }
   /**
@@ -1086,14 +1218,14 @@ class DDeiTable extends DDeiAbstractShape {
         if (processedCells.indexOf(afterCell) == -1) {
           //普通单元格
           if (!afterCell.isMergedCell() && !afterCell.isMergeCell()) {
-            afterCell.width = afterCell.width + changeWidth;
+            afterCell.setSize(afterCell.width + changeWidth)
             processedCells[processedCells.length] = afterCell;
           }
           //合并单元格
           else if (afterCell.isMergeCell()) {
             let mCell = afterCell;
             mCell.originWidth = mCell.originWidth + changeWidth;
-            mCell.width = mCell.width + changeWidth;
+            mCell.setSize(mCell.width + changeWidth)
             processedCells[processedCells.length] = mCell;
           }
           //被合并单元格
@@ -1103,13 +1235,15 @@ class DDeiTable extends DDeiAbstractShape {
           }
         }
         for (let j = 1; j < rowObj.length; j++) {
-          rowObj[j].x = rowObj[j].x + changeWidth;
+          rowObj[j].setPosition(rowObj[j].x + changeWidth)
         }
       }
-      table.width = table.width + changeWidth;
-      table.x = table.x - changeWidth;
+      table.width = table.width + changeWidth
+      table.setPosition(table.x - changeWidth)
       //更新复制图形的区域
       this.updateCopyShapeArea();
+      //更新表格布局子组件
+      this.changeChildrenBounds();
     }
   }
   /**
@@ -1139,13 +1273,13 @@ class DDeiTable extends DDeiAbstractShape {
         if (processedCells.indexOf(beforeCell) == -1) {
           //普通单元格
           if (!beforeCell.isMergedCell() && !beforeCell.isMergeCell()) {
-            beforeCell.width = beforeCell.width + changeWidth;
+            beforeCell.setSize(beforeCell.width + changeWidth)
             processedCells[processedCells.length] = beforeCell;
           }
           //合并单元格
           else if (beforeCell.isMergeCell()) {
             beforeCell.originWidth = beforeCell.originWidth + changeWidth;
-            beforeCell.width = beforeCell.width + changeWidth;
+            beforeCell.setSize(beforeCell.width + changeWidth)
             processedCells[processedCells.length] = beforeCell;
           }
           //被合并单元格
@@ -1155,15 +1289,18 @@ class DDeiTable extends DDeiAbstractShape {
             beforeCell.originWidth = beforeCell.originWidth + changeWidth;
             if (processedCells.indexOf(mCell) == -1) {
               processedCells[processedCells.length] = mCell;
-              mCell.width = mCell.width + changeWidth;
+              mCell.setSize(mCell.width + changeWidth);
             }
             processedCells[processedCells.length] = beforeCell;
           }
         }
       }
-      table.width = table.width + changeWidth;
+      table.width = table.width + changeWidth
+      table.modelChanged = true;
       //更新复制图形的区域
       this.updateCopyShapeArea();
+      //更新表格布局子组件
+      this.changeChildrenBounds();
     }
   }
 
@@ -1213,9 +1350,9 @@ class DDeiTable extends DDeiAbstractShape {
         }
         if (!pass) {
           //修改当前单元格和后续单元格大小
-          cell.height = cell.height + changeHeight;
-          table.cols[cell.col][cell.row + 1].height = table.cols[cell.col][cell.row + 1].height - changeHeight;
-          table.cols[cell.col][cell.row + 1].y = table.cols[cell.col][cell.row + 1].y + changeHeight;
+          cell.setSize(undefined, cell.height + changeHeight);
+          table.cols[cell.col][cell.row + 1].setSize(undefined, table.cols[cell.col][cell.row + 1].height - changeHeight);
+          table.cols[cell.col][cell.row + 1].setPosition(undefined, table.cols[cell.col][cell.row + 1].y + changeHeight);
           //将当前行所有单元格打上标识，为特殊拖动单元格
           for (let i = 0; i < table.rows.length; i++) {
             table.cols[cell.col][i].specilCol = true;
@@ -1242,7 +1379,7 @@ class DDeiTable extends DDeiAbstractShape {
         if (processedCells.indexOf(beforeCell) == -1 && !beforeCell.specilCol) {
           //普通单元格
           if (!beforeCell.isMergedCell() && !beforeCell.isMergeCell()) {
-            beforeCell.height = beforeCell.height + changeHeight;
+            beforeCell.setSize(undefined, beforeCell.height + changeHeight);
             processedCells[processedCells.length] = beforeCell;
           }
           //合并单元格
@@ -1251,7 +1388,7 @@ class DDeiTable extends DDeiAbstractShape {
             //长度为1的合并单元格
             if (mCell.mergeRowNum == 1) {
               beforeCell.originHeight = beforeCell.originHeight + changeHeight;
-              beforeCell.height = beforeCell.height + changeHeight;
+              beforeCell.setSize(undefined, beforeCell.height + changeHeight);
               processedCells[processedCells.length] = beforeCell;
             }
             //长度大于1的合并单元格
@@ -1268,7 +1405,7 @@ class DDeiTable extends DDeiAbstractShape {
               beforeCell.originHeight = beforeCell.originHeight + changeHeight;
               if (processedCells.indexOf(mCell) == -1) {
                 processedCells[processedCells.length] = mCell;
-                mCell.height = mCell.height + changeHeight;
+                mCell.setSize(undefined, mCell.height + changeHeight);
               }
               processedCells[processedCells.length] = beforeCell;
             }
@@ -1284,22 +1421,22 @@ class DDeiTable extends DDeiAbstractShape {
         if (processedCells.indexOf(afterCell) == -1 && !afterCell.specilCol) {
           //普通单元格
           if (!afterCell.isMergedCell() && !afterCell.isMergeCell()) {
-            afterCell.height = afterCell.height - changeHeight;
-            afterCell.y = afterCell.y + changeHeight;
+            afterCell.setSize(undefined, afterCell.height - changeHeight);
+            afterCell.setPosition(undefined, afterCell.y + changeHeight);
             processedCells[processedCells.length] = afterCell;
           }
           //合并单元格
           else if (afterCell.isMergeCell()) {
             let mCell = afterCell;
             mCell.originHeight = mCell.originHeight - changeHeight;
-            mCell.height = mCell.height - changeHeight;
-            mCell.y = mCell.y + changeHeight;
+            mCell.setSize(undefined, mCell.height - changeHeight);
+            mCell.setPosition(undefined, mCell.y + changeHeight);
             processedCells[processedCells.length] = mCell;
             //处理涉及的被合并单元格,调整坐标显示以及原始大小
             for (let x = mCell.col + 1; x < mCell.col + mCell.mergeColNum; x++) {
               if (!table.cols[x][mCell.row].specilCol) {
                 table.cols[x][mCell.row].originHeight = table.cols[x][mCell.row].originHeight - changeHeight;
-                table.cols[x][mCell.row].y = table.cols[x][mCell.row].y + changeHeight;
+                table.cols[x][mCell.row].setPosition(undefined, table.cols[x][mCell.row].y + changeHeight);
                 processedCells[processedCells.length] = table.cols[x][mCell.row];
               }
             }
@@ -1311,7 +1448,7 @@ class DDeiTable extends DDeiAbstractShape {
             if (mCell.row + mCell.mergeRowNum == afterCell.row) {
               afterCell.originHeight = afterCell.originHeight - changeHeight;
               if (processedCells.indexOf(mCell) == -1) {
-                mCell.height = mCell.height - changeHeight;
+                mCell.setSize(undefined, mCell.height - changeHeight);
                 processedCells[processedCells.length] = mCell;
               }
               processedCells[processedCells.length] = afterCell;
@@ -1319,7 +1456,7 @@ class DDeiTable extends DDeiAbstractShape {
             //中间的合并单元格
             else {
               afterCell.originHeight = afterCell.originHeight - changeHeight;
-              afterCell.y = afterCell.y + changeHeight;
+              afterCell.setPosition(undefined, afterCell.y + changeHeight);
               processedCells[processedCells.length] = afterCell;
             }
           }
@@ -1328,6 +1465,8 @@ class DDeiTable extends DDeiAbstractShape {
       }
       //更新复制图形的区域
       this.updateCopyShapeArea();
+      //更新表格布局子组件
+      this.changeChildrenBounds();
     }
   }
 
@@ -1413,9 +1552,9 @@ class DDeiTable extends DDeiAbstractShape {
         }
         if (!pass) {
           //修改当前单元格和后续单元格大小
-          cell.width = cell.width + changeWidth;
-          table.rows[cell.row][cell.col + 1].width = table.rows[cell.row][cell.col + 1].width - changeWidth;
-          table.rows[cell.row][cell.col + 1].x = table.rows[cell.row][cell.col + 1].x + changeWidth;
+          cell.setSize(cell.width + changeWidth)
+          table.rows[cell.row][cell.col + 1].setSize(table.rows[cell.row][cell.col + 1].width - changeWidth)
+          table.rows[cell.row][cell.col + 1].setPosition(table.rows[cell.row][cell.col + 1].x + changeWidth);
           //将当前行所有单元格打上标识，为特殊拖动单元格
           for (let i = 0; i < table.cols.length; i++) {
             table.rows[cell.row][i].specilRow = true;
@@ -1444,7 +1583,7 @@ class DDeiTable extends DDeiAbstractShape {
         if (processedCells.indexOf(beforeCell) == -1 && !beforeCell.specilRow) {
           //普通单元格
           if (!beforeCell.isMergedCell() && !beforeCell.isMergeCell()) {
-            beforeCell.width = beforeCell.width + changeWidth;
+            beforeCell.setSize(beforeCell.width + changeWidth);
             processedCells[processedCells.length] = beforeCell;
           }
           //合并单元格
@@ -1453,7 +1592,7 @@ class DDeiTable extends DDeiAbstractShape {
             //长度为1的合并单元格
             if (mCell.mergeColNum == 1) {
               beforeCell.originWidth = beforeCell.originWidth + changeWidth;
-              beforeCell.width = beforeCell.width + changeWidth;
+              beforeCell.setSize(beforeCell.width + changeWidth);
               processedCells[processedCells.length] = beforeCell;
             }
             //长度大于1的合并单元格
@@ -1470,7 +1609,7 @@ class DDeiTable extends DDeiAbstractShape {
               beforeCell.originWidth = beforeCell.originWidth + changeWidth;
               if (processedCells.indexOf(mCell) == -1) {
                 processedCells[processedCells.length] = mCell;
-                mCell.width = mCell.width + changeWidth;
+                mCell.setSize(mCell.width + changeWidth);
               }
               processedCells[processedCells.length] = beforeCell;
             }
@@ -1486,22 +1625,22 @@ class DDeiTable extends DDeiAbstractShape {
         if (processedCells.indexOf(afterCell) == -1 && !afterCell.specilRow) {
           //普通单元格
           if (!afterCell.isMergedCell() && !afterCell.isMergeCell()) {
-            afterCell.width = afterCell.width - changeWidth;
-            afterCell.x = afterCell.x + changeWidth;
+            afterCell.setSize(afterCell.width - changeWidth);
+            afterCell.setPosition(afterCell.x + changeWidth);
             processedCells[processedCells.length] = afterCell;
           }
           //合并单元格
           else if (afterCell.isMergeCell()) {
             let mCell = afterCell;
             mCell.originWidth = mCell.originWidth - changeWidth;
-            mCell.width = mCell.width - changeWidth;
-            mCell.x = mCell.x + changeWidth;
+            mCell.setSize(mCell.width - changeWidth);
+            mCell.setPosition(mCell.x + changeWidth);
             processedCells[processedCells.length] = mCell;
             //处理涉及的被合并单元格,调整坐标显示以及原始大小
             for (let x = mCell.row + 1; x < mCell.row + mCell.mergeRowNum; x++) {
               if (!table.rows[x][mCell.col].specilRow) {
                 table.rows[x][mCell.col].originWidth = table.rows[x][mCell.col].originWidth - changeWidth;
-                table.rows[x][mCell.col].x = table.rows[x][mCell.col].x + changeWidth;
+                table.rows[x][mCell.col].setPosition(table.rows[x][mCell.col].x + changeWidth);
                 processedCells[processedCells.length] = table.rows[x][mCell.col];
               }
             }
@@ -1514,7 +1653,7 @@ class DDeiTable extends DDeiAbstractShape {
             if (mCell.col + mCell.mergeColNum == afterCell.col) {
               afterCell.originWidth = afterCell.originWidth - changeWidth;
               if (processedCells.indexOf(mCell) == -1) {
-                mCell.width = mCell.width - changeWidth;
+                mCell.setSize(mCell.width - changeWidth);
                 processedCells[processedCells.length] = mCell;
               }
               processedCells[processedCells.length] = afterCell;
@@ -1522,14 +1661,16 @@ class DDeiTable extends DDeiAbstractShape {
             //中间的合并单元格
             else {
               afterCell.originWidth = afterCell.originWidth - changeWidth;
-              afterCell.x = afterCell.x + changeWidth;
+              afterCell.setPosition(afterCell.x + changeWidth);
               processedCells[processedCells.length] = afterCell;
             }
           }
         }
       }
       //更新复制图形的区域
-      // this.updateCopyShapeArea();
+      this.updateCopyShapeArea();
+      //更新表格布局子组件
+      this.changeChildrenBounds();
     }
   }
 
@@ -1572,12 +1713,50 @@ class DDeiTable extends DDeiAbstractShape {
       model.pModel = model.layer;
     }
     tempData[model.id] = model;
+
+    //循环初始化表格的单元格
+    let rows = [];
+    let cols = [];
+    for (let i = 0; i < json.rows.length; i++) {
+      let rowJSON = json.rows[i];
+      rows[i] = [];
+      for (let j = 0; j < rowJSON.length; j++) {
+        if (i == 0) {
+          cols[j] = [];
+        }
+        let cell = DDeiTableCell.loadFromJSON(rowJSON[j], tempData);
+        cell.table = model;
+        rows[i][j] = cell;
+        cols[j][i] = cell;
+      }
+    }
+    //重设合并关系
+    for (let i = 0; i < rows.length; i++) {
+      for (let j = 0; j < cols.length; j++) {
+        let cellJSON = json.rows[i][j];
+        if (cellJSON.mergeRowNum > 1 || cellJSON.mergeColNum > 1) {
+          let mergedCell = rows[i][j];
+          for (let mr = 0; mr < cellJSON.mergeRowNum; mr++) {
+            for (let mj = 0; mj < cellJSON.mergeColNum; mj++) {
+              let mergeCell = rows[i + mr][j + mj];
+              mergeCell.mergedCell = mergedCell;
+            }
+          }
+        }
+      }
+    }
+    model.rows = rows;
+    model.cols = cols;
+
+
     model.initRender();
     return model;
   }
   // 通过JSON初始化对象，数据未传入时将初始化数据
   static initByJSON(json): DDeiTable {
     let shape = new DDeiTable(json);
+    //初始化表格
+    shape.initTable();
     return shape;
   }
 

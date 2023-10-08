@@ -62,7 +62,7 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
       y = y + dy;
       let cx = 0;
       let cy = 0;
-      if (parentContainer.baseModelType == "DDeiContainer") {
+      if (parentContainer && parentContainer.baseModelType != "DDeiLayer") {
         cx = parentContainer.currentPointVectors[0].x;
         cy = parentContainer.currentPointVectors[0].y;
       }
@@ -132,10 +132,12 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
 
       models.forEach(item => {
         let originBound = { x: item.x, y: item.y, width: item.width, height: item.height };
-        item.x = parseFloat((movedBounds.x - cx + movedBounds.width * originPosMap.get(item.id).xR).toFixed(4))
-        item.width = parseFloat((movedBounds.width * originPosMap.get(item.id).wR).toFixed(4))
-        item.y = parseFloat((movedBounds.y - cy + movedBounds.height * originPosMap.get(item.id).yR).toFixed(4))
-        item.height = parseFloat((movedBounds.height * originPosMap.get(item.id).hR).toFixed(4))
+
+        let x = parseFloat((movedBounds.x - cx + movedBounds.width * originPosMap.get(item.id).xR).toFixed(4))
+        let width = parseFloat((movedBounds.width * originPosMap.get(item.id).wR).toFixed(4))
+        let y = parseFloat((movedBounds.y - cy + movedBounds.height * originPosMap.get(item.id).yR).toFixed(4))
+        let height = parseFloat((movedBounds.height * originPosMap.get(item.id).hR).toFixed(4))
+        item.setBounds(x, y, width, height)
         //如果当前是修改坐标，并且不改变容器大小，则按照容器比例更新子元素的大小
         if (!changeContainer && stage.render.selector.passIndex != 10 && stage.render.selector.passIndex != 11) {
           if (item.baseModelType == "DDeiContainer") {

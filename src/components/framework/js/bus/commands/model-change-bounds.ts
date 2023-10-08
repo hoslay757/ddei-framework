@@ -1,10 +1,8 @@
 import DDeiConfig from '../../config';
 import DDeiEnumBusCommandType from '../../enums/bus-command-type';
-import DDeiEnumOperateState from '../../enums/operate-state';
 import DDeiAbstractShape from '../../models/shape';
 import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
-import { Matrix3, Vector3 } from 'three';
 /**
  * 改变模型坐标以及大小的总线Command
  */
@@ -90,7 +88,7 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
       //如果当前控件的父控件存在旋转，则需要换算成未旋转时的移动量
       let cx = 0;
       let cy = 0;
-      if (parentContainer.baseModelType == "DDeiContainer") {
+      if (parentContainer.baseModelType != "DDeiLayer") {
         cx = parentContainer.currentPointVectors[0].x;
         cy = parentContainer.currentPointVectors[0].y;
       }
@@ -135,11 +133,11 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
       let movedBounds = { x: originRect.x + deltaX, y: originRect.y + deltaY, width: originRect.width + deltaWidth, height: originRect.height + deltaHeight }
       models.forEach(item => {
         let originBound = { x: item.x, y: item.y, width: item.width, height: item.height };
-        item.x = parseFloat((movedBounds.x + movedBounds.width * originPosMap.get(item.id).xR).toFixed(4))
-        item.width = parseFloat((movedBounds.width * originPosMap.get(item.id).wR).toFixed(4))
-        item.y = parseFloat((movedBounds.y + movedBounds.height * originPosMap.get(item.id).yR).toFixed(4))
-        item.height = parseFloat((movedBounds.height * originPosMap.get(item.id).hR).toFixed(4))
-
+        let x = parseFloat((movedBounds.x + movedBounds.width * originPosMap.get(item.id).xR).toFixed(4))
+        let width = parseFloat((movedBounds.width * originPosMap.get(item.id).wR).toFixed(4))
+        let y = parseFloat((movedBounds.y + movedBounds.height * originPosMap.get(item.id).yR).toFixed(4))
+        let height = parseFloat((movedBounds.height * originPosMap.get(item.id).hR).toFixed(4))
+        item.setBounds(x, y, width, height)
         if (models.length > 1) {
           //去掉这一句后，多个控件拖拽时坐标会出现问题，加上则会导致旋转后嵌套容器显示不正常,因此控制一下，只在多个控件时才这样处理
           item.calRotatePointVectors();
@@ -152,13 +150,15 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
 
         //如果当前是修改坐标，并且不改变容器大小，则按照容器比例更新子元素的大小
         if (stage.render.selector.passIndex != 10 && stage.render.selector.passIndex != 11) {
-          if (item.baseModelType == "DDeiContainer") {
+          //获取真实的容器控件
+          if (item.baseModelType == "DDeiContainer" || item.baseModelType == "DDeiTable") {
             let changedBound = { x: item.x, y: item.y, width: item.width, height: item.height };
             item.changeChildrenBounds(originBound, changedBound)
             item.changeParentsBounds();
           };
           //pContainerModel修改上层容器直至layer的大小
           parentContainer.changeParentsBounds()
+          parentContainer.modelChanged = true;
         }
       })
       return true;

@@ -15,10 +15,6 @@ abstract class DDeiLayoutManager {
   //容器
   container: DDeiAbstractShape | null
   // ============================ 方法 ===============================
-  /**
-  * 校验控件是否可以进入容器
-  */
-  abstract valid(): boolean
 
   /**
    * 修改模型的位置和大小
@@ -56,9 +52,18 @@ abstract class DDeiLayoutManager {
    * @param x 
    * @param y 
    * @param models 
-   * @param isAlt 
    */
-  abstract updateLayout(x: number, y: number, models: DDeiAbstractShape[], isAlt: boolean): void;
+  abstract updateLayout(x: number, y: number, models: DDeiAbstractShape[]): void;
+
+
+  /**
+   * 新控件移入
+   * @param x 移入的坐标
+   * @param y 移入的坐标
+   * @param models 移入的控件
+   * @return 是否成功移入
+   */
+  abstract append(x: number, y: number, models: DDeiAbstractShape[]): boolean;
 
   /**
   * 计算时拖入待确认时的显示图形的向量
@@ -67,19 +72,29 @@ abstract class DDeiLayoutManager {
     //获取向量
     if (this.container.layer) {
       let pvs = this.container.currentPointVectors;
-
       this.container.layer.dragInPoints = pvs;
     }
   }
 
   /**
-  * 计算时拖入出确认时的显示图形的向量
+  * 计算时拖出确认时的显示图形的向量
   */
   calDragOutPVS(x: number, y: number, models: DDeiAbstractShape[]): void {
     if (this.container.layer) {
       let pvs = this.container.currentPointVectors;
       this.container.layer.dragOutPoints = pvs;
     }
+
+  }
+
+  /**
+   * 获取实际的内部容器控件
+   * @param x 相对路径坐标
+   * @param y 相对路径坐标
+   * @return 容器控件根据布局的模式不同返回不同的内部控件，普通控件返回null
+   */
+  getAccuContainer(x: number, y: number): DDeiAbstractShape {
+    return this.container;
   }
 
 }

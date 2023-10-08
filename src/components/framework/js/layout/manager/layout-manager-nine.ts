@@ -62,8 +62,10 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
       }
     } else if (oldLayout == 'full') {
       //将控件按照从上到下，从左到右的顺序排列
-      let model = Array.from(this.container.models.values())[0];
-      this.container.layoutData.nine[model.id] = { 'row': 1, 'col': 1 }
+      if (this.container.models?.size > 0) {
+        let model = Array.from(this.container.models.values())[0];
+        this.container.layoutData.nine[model.id] = { 'row': 1, 'col': 1 }
+      }
     } else if (oldLayout == 'table') {
 
     } else if (oldLayout == 'cc') {
@@ -85,19 +87,43 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
       let model = this.container.models.get(key);
       let data = layoutData[key];
       if (model) {
-        model.y = data.row * unitHeight;
-        model.x = data.col * unitWidth;
-        model.width = unitWidth;
-        model.height = unitHeight;
+        model.setBounds(data.col * unitWidth, data.row * unitHeight, unitWidth, unitHeight)
+        if (model.changeChildrenBounds) {
+          model.changeChildrenBounds();
+        }
       }
     }
+  }
+
+  append(x: number, y: number, models: DDeiAbstractShape[]): boolean {
+    if (models?.length >= 1 && models?.length <= 9 - this.container.models.size) {
+      models.forEach(item => {
+        let oldContainer = item.pModel;
+        let newContainer = this.container;
+        //转换坐标，获取最外层的坐标
+        let itemAbsPos = item.getAbsPosition();
+        let itemAbsRotate = item.getAbsRotate();
+        //将元素从就容器移出
+        if (oldContainer) {
+          oldContainer.removeModel(item);
+        }
+        let loAbsPos = newContainer.getAbsPosition();
+        let loAbsRotate = newContainer.getAbsRotate();
+        item.setPosition(itemAbsPos.x - loAbsPos.x, itemAbsPos.y - loAbsPos.y)
+        item.rotate = itemAbsRotate - loAbsRotate
+        newContainer.addModel(item);
+        //绑定并初始化渲染器
+        item.initRender();
+      })
+      return true;
+    }
+    return false;
   }
 
   /**
    * 修改布局信息
    */
-  updateLayout(x: number, y: number, models: DDeiAbstractShape[], isAlt: boolean = false): void {
-
+  updateLayout(x: number, y: number, models: DDeiAbstractShape[]): void {
     //计算鼠标移入的区域  TODO 旋转的情况
     if (this?.container?.layoutData?.nine && models?.length > 0) {
       let layoutData = this.container.layoutData.nine
@@ -168,7 +194,6 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
     } else if (this.container.isInAreaLoose(x, y, 0)) {
       return true;
     }
-
     return false;
   }
 

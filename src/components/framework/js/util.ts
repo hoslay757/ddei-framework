@@ -18,7 +18,8 @@ class DDeiUtil {
   static getMenuControlId: Function;
   //钩子函数，设置当前右键菜单
   static setCurrentMenu: Function;
-
+  //钩子函数，返回控件的子控件定义，用于创建控件时自动创建子控件
+  static getSubControlJSON: Function;
 
   /**
    * 将一组控件按照从上到下从左到右的顺序进行排序，返回新的顺序

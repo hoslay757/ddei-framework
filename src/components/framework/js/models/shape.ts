@@ -24,6 +24,16 @@ abstract class DDeiAbstractShape {
   }
   // ============================ 静态方法 ============================
 
+
+  /**
+   * 获取实际的内部容器控件
+   * @param x 相对路径坐标
+   * @param y 相对路径坐标
+   * @return 容器控件根据布局的模式不同返回不同的内部控件，普通控件返回null
+   */
+  getAccuContainer(x: number, y: number): DDeiAbstractShape {
+    return null;
+  }
   /**
    * 得到点在图形某条线上的投射点
    * @param point 测试点
@@ -127,6 +137,20 @@ abstract class DDeiAbstractShape {
 
     }
     return null;
+  }
+
+  /**
+    * 判断是否在某个边线上
+    * @param direct 1，2，3，4 上、右、下、左
+    */
+  isBorderOn(direct: number, x: number, y: number, inWeight: number = -3, outWeight: number = 3): boolean {
+    let projPoint = this.getProjPointOnLine({ x: x, y: y }
+      , { in: inWeight, out: outWeight }, 1, direct - 1)
+    if (projPoint) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /**
@@ -472,27 +496,40 @@ abstract class DDeiAbstractShape {
    * @param area 选中区域
    * @returns 
    */
-  static findBottomModelsByArea(container, x = undefined, y = undefined, width = 0, height = 0): DDeiAbstractShape[] | null {
+  static findBottomModelsByArea(container, x = undefined, y = undefined, looseWeight: number = 0): DDeiAbstractShape[] | null {
     let controls = [];
     if (container) {
       for (let mg = container.midList.length - 1; mg >= 0; mg--) {
         let item = container.models.get(container.midList[mg]);
         //如果射线相交，则视为选中
-        if (DDeiAbstractShape.isInsidePolygon(item.getRotatedPoints(), { x: x, y: y })) {
+        if (item.isInAreaLoose(x, y, looseWeight)) {
           //如果当前控件状态为选中，且是容器，则往下寻找控件，否则返回当前控件
           if (item.state == DDeiEnumControlState.SELECTED && item.baseModelType == "DDeiContainer") {
-            let subControls = DDeiAbstractShape.findBottomModelsByArea(item, x, y, width, height);
+            let subControls = DDeiAbstractShape.findBottomModelsByArea(item, x, y, looseWeight);
             if (subControls && subControls.length > 0) {
               controls = controls.concat(subControls);
             } else {
               controls.push(item);
             }
+          } else if (item.state == DDeiEnumControlState.SELECTED && item.baseModelType == "DDeiTable") {
+            //判断表格当前的单元格是否是选中的单元格，如果是则分发事件
+            let currentCell = item.getAccuContainer(x, y);
+            if (currentCell?.state == DDeiEnumControlState.SELECTED) {
+              let subControls = DDeiAbstractShape.findBottomModelsByArea(currentCell, x, y, looseWeight);
+              if (subControls && subControls.length > 0) {
+                controls = controls.concat(subControls);
+              } else {
+                controls.push(item);
+              }
+            } else {
+              controls.push(item);
+            }
+
           } else {
             controls.push(item);
           }
         }
       }
-      // });
     }
     //TODO 对控件进行排序，按照zIndex > 添加顺序
     return controls;
@@ -504,20 +541,21 @@ abstract class DDeiAbstractShape {
    * @param area 选中区域
    * @returns 
    */
-  static findBottomContainersByArea(container, x = undefined, y = undefined, width = 0, height = 0): DDeiAbstractShape[] | null {
+  static findBottomContainersByArea(container, x = undefined, y = undefined): DDeiAbstractShape[] | null {
     let controls = [];
     if (container) {
       for (let mg = container.midList.length - 1; mg >= 0; mg--) {
         let item = container.models.get(container.midList[mg]);
         //如果射线相交，则视为选中
         if (DDeiAbstractShape.isInsidePolygon(item.getRotatedPoints(), { x: x, y: y })) {
-          //如果当前控件状态为选中，且是容器，则往下寻找控件，否则返回当前控件
-          if (item.baseModelType == "DDeiContainer") {
-            let subControls = DDeiAbstractShape.findBottomContainersByArea(item, x - item.x, y - item.y, width, height);
+          //获取真实的容器控件
+          let accuContainer = item.getAccuContainer(x, y);
+          if (accuContainer) {
+            let subControls = DDeiAbstractShape.findBottomContainersByArea(accuContainer, x, y);
             if (subControls && subControls.length > 0) {
               controls = controls.concat(subControls);
             } else {
-              controls.push(item);
+              controls.push(accuContainer);
             }
           }
         }
@@ -575,6 +613,9 @@ abstract class DDeiAbstractShape {
 
   //唯一表示码，运行时临时生成
   unicode: string;
+
+  //模型是否发生改变，当移动、改变大小、旋转、修改文本等操作会引起改变
+  modelChanged: boolean = true;
   // ============================ 方法 ===============================
 
 
@@ -608,12 +649,19 @@ abstract class DDeiAbstractShape {
         my1 = Math.max(Math.floor(p.y), my1)
       }
     })
+    // return DDeiAbstractShape.isInsidePolygon(
+    //   [
+    //     { x: mx - looseWeight, y: my - looseWeight },
+    //     { x: mx1 + looseWeight, y: my - looseWeight },
+    //     { x: mx1 + looseWeight, y: my1 + looseWeight },
+    //     { x: mx - looseWeight, y: my1 + looseWeight },
+    //   ], { x: x, y: y });
     return DDeiAbstractShape.isInsidePolygon(
       [
-        { x: mx - looseWeight, y: my - looseWeight },
-        { x: mx1 + looseWeight, y: my - looseWeight },
-        { x: mx1 + looseWeight, y: my1 + looseWeight },
-        { x: mx - looseWeight, y: my1 + looseWeight },
+        { x: mx, y: my },
+        { x: mx1, y: my },
+        { x: mx1, y: my1 },
+        { x: mx, y: my1 },
       ], { x: x, y: y });
   }
 
@@ -629,6 +677,7 @@ abstract class DDeiAbstractShape {
     if (y !== undefined) {
       this.y = y
     }
+    this.modelChanged = true;
   }
 
   /**
@@ -637,12 +686,15 @@ abstract class DDeiAbstractShape {
    * @param h
    */
   setSize(w: number, h: number) {
+
     if (w !== undefined) {
       this.width = w
     }
+
     if (h !== undefined) {
       this.height = h
     }
+    this.modelChanged = true;
   }
 
   /**
@@ -708,7 +760,7 @@ abstract class DDeiAbstractShape {
     else if (this.currentPointVectors?.length > 0) {
       ps = cloneDeep(this.currentPointVectors);
     } else {
-      ps = this.getPoints(looseWeight);
+      ps = this.getPoints(loose);
     }
     return ps;
   }
@@ -854,21 +906,34 @@ abstract class DDeiAbstractShape {
     if (!(toJSONFields?.length > 0)) {
       toJSONFields = DDeiConfig.SERI_FIELDS["AbstractShape"]?.TOJSON;
     }
-
     for (let i in this) {
       if ((!skipFields || skipFields?.indexOf(i) == -1)) {
+
         if (toJSONFields && toJSONFields.indexOf(i) != -1 && this[i]) {
           if (Array.isArray(this[i])) {
             let array = [];
             this[i].forEach(element => {
-              if (element?.toJSON) {
+              if (Array.isArray(element)) {
+                let subArray = [];
+                element.forEach(subEle => {
+
+                  if (subEle?.toJSON) {
+                    subArray.push(subEle.toJSON());
+                  } else {
+                    subArray.push(subEle);
+                  }
+                })
+                array.push(subArray);
+              } else if (element?.toJSON) {
                 array.push(element.toJSON());
               } else {
                 array.push(element);
               }
             });
-            json[i] = array;
-          } else if (this[i].set) {
+            if (array.length > 0) {
+              json[i] = array;
+            }
+          } else if (this[i]?.set) {
             let map = {};
             this[i].forEach((element, key) => {
               if (element?.toJSON) {
@@ -877,14 +942,55 @@ abstract class DDeiAbstractShape {
                 map[key] = element;
               }
             });
-            json[i] = map;
-          } else if (this[i].toJSON) {
+            if (JSON.stringify(map) != "{}") {
+              json[i] = map;
+            }
+          } else if (this[i]?.toJSON) {
             json[i] = this[i].toJSON();
-          } else {
+          } else if (this[i] || this[i] == 0) {
             json[i] = this[i];
           }
         } else {
-          json[i] = this[i];
+          if (Array.isArray(this[i])) {
+            let array = [];
+            this[i].forEach(element => {
+              if (Array.isArray(element)) {
+                let subArray = [];
+                element.forEach(subEle => {
+
+                  if (subEle?.toJSON) {
+                    subArray.push(subEle.toJSON());
+                  } else {
+                    subArray.push(subEle);
+                  }
+                })
+                array.push(subArray);
+              } else if (element?.toJSON) {
+                array.push(element.toJSON());
+              } else {
+                array.push(element);
+              }
+            });
+            if (array.length > 0) {
+              json[i] = array;
+            }
+          } else if (this[i]?.set) {
+            let map = {};
+            this[i].forEach((element, key) => {
+              if (element?.toJSON) {
+                map[key] = element.toJSON();
+              } else {
+                map[key] = element;
+              }
+            });
+            if (JSON.stringify(map) != "{}") {
+              json[i] = map;
+            }
+          } else if (this[i]?.toJSON) {
+            json[i] = this[i].toJSON();
+          } else if (this[i] || this[i] == 0) {
+            json[i] = this[i];
+          }
         }
       }
     }

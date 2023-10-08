@@ -1,5 +1,6 @@
 import DDei from "../ddei";
 import { COMMANDS } from "../config/command"
+import DDeiEnumBusCommandType from "../enums/bus-command-type";
 
 /**
  * DDeiBus图形框架的交换类，用于和其他外部应用进行数据交换
@@ -20,8 +21,8 @@ class DDeiBus {
   ddInstance: DDei;
   // ddei的外部调用者
   invoker: object;
-  // TODO 渲染数据队列，属于图形的事件会进入渲染队列，渲染队列会确保唯一，并且会确保普通queue完成后才执行
-  // drawQueue: object[] = [];
+  //渲染数据队列，属于图形的事件会进入渲染队列，渲染队列会确保唯一，并且会确保普通queue完成后才执行
+  drawQueue: object[] = [];
   // 普通队列，普通queue完成后才执行drawQueue
   queue: object[] = [];
 
@@ -105,8 +106,10 @@ class DDeiBus {
         result = this.execute();
       }
     }
-    if (!result) {
-      console.log("中断")
+
+    if (this?.drawQueue?.length > 0 && result) {
+      result = this.executeDraw();
+      this.drawQueue = [];
     }
   }
 
@@ -116,11 +119,77 @@ class DDeiBus {
    */
   execute(command: any): boolean {
     if (this.queue && this.queue.length > 0) {
-
       let firstActionData = null;
       if (!command) {
         firstActionData = this.queue[0];
         this.queue.splice(0, 1);
+      } else {
+        firstActionData = command;
+      }
+      let action = null;
+      if (firstActionData) {
+        if (firstActionData.type == DDeiEnumBusCommandType.RefreshShape) {
+          this.drawQueue.push(firstActionData)
+          return true;
+        }
+        action = COMMANDS.get(firstActionData.type);
+        //执行action逻辑
+        if (action) {
+          if (this.interceptor[firstActionData.type]?.before) {
+            let interActions = this.interceptor[firstActionData.type]?.before
+            for (let ii = 0; ii < interActions.length; ii++) {
+              let result = interActions[ii](firstActionData.data, this, firstActionData.evt);
+              if (!result) {
+                return false;
+              }
+            }
+          }
+          let validResult = action.before(firstActionData.data, this, firstActionData.evt);
+          if (validResult) {
+            if (this.interceptor[firstActionData.type]?.execute) {
+              let interActions = this.interceptor[firstActionData.type]?.execute
+              for (let ii = 0; ii < interActions.length; ii++) {
+                let result = interActions[ii](firstActionData.data, this, firstActionData.evt);
+                if (!result) {
+                  return false;
+                }
+              }
+            }
+            let actionResult = action.action(firstActionData.data, this, firstActionData.evt);
+            if (actionResult) {
+              if (this.interceptor[firstActionData.type]?.after) {
+                let interActions = this.interceptor[firstActionData.type]?.after
+                for (let ii = 0; ii < interActions.length; ii++) {
+                  let result = interActions[ii](firstActionData.data, this, firstActionData.evt);
+                  if (!result) {
+                    return false;
+                  }
+                }
+              }
+              return action.after(firstActionData.data, this, firstActionData.evt);
+            } else {
+              return false;
+            }
+          } else {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  }
+
+  /**
+   * 执行绘图队列
+   * @param command 
+   * @returns 
+   */
+  executeDraw(command: any): boolean {
+    if (this.drawQueue && this.drawQueue.length > 0) {
+      let firstActionData = null;
+      if (!command) {
+        firstActionData = this.drawQueue[0];
+        this.drawQueue.splice(0, 1);
       } else {
         firstActionData = command;
       }
@@ -172,7 +241,6 @@ class DDeiBus {
     }
     return true;
   }
-
 
 }
 

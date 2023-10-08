@@ -5,6 +5,7 @@ import DDeiAbstractShape from './shape';
 import { Matrix3, Vector3 } from 'three';
 import DDeiLayoutManager from '../layout/layout-manager';
 import DDeiLayoutManagerFactory from '../layout/layout-manager-factory';
+import DDei from '../ddei';
 
 /**
  * 普通容器是一个矩形，能包含其他容器
@@ -36,7 +37,6 @@ class DDeiRectContainer extends DDeiRectangle {
     }
     tempData[container.id] = container;
     let models: Map<String, DDeiAbstractShape> = new Map<String, DDeiAbstractShape>();
-
     for (let key in json.models) {
       tempData['currentContainer'] = container;
       let item = json.models[key];
@@ -134,6 +134,16 @@ class DDeiRectContainer extends DDeiRectangle {
     model.stage = null;
     model.render = null;
     this.resortModelByZIndex();
+  }
+
+  /**
+   * 获取实际的内部容器控件
+   * @param x 相对路径坐标
+   * @param y 相对路径坐标
+   * @return 容器控件根据布局的模式不同返回不同的内部控件，普通控件返回null
+   */
+  getAccuContainer(x: number, y: number): DDeiAbstractShape {
+    return this.layoutManager ? this.layoutManager.getAccuContainer(x, y) : this;
   }
 
   /**
@@ -245,6 +255,7 @@ class DDeiRectContainer extends DDeiRectangle {
       si.x = si.x - this.x
       si.y = si.y - this.y
     });
+    this.modelChanged = true;
   }
 
   /**
@@ -352,10 +363,11 @@ class DDeiRectContainer extends DDeiRectangle {
       //同步多个模型到等比缩放状态
       models.forEach(item => {
         let originBound = { x: item.x, y: item.y, width: item.width, height: item.height };
-        item.x = newRect.width * originPosMap.get(item.id).xR
-        item.width = newRect.width * originPosMap.get(item.id).wR
-        item.y = newRect.height * originPosMap.get(item.id).yR
-        item.height = newRect.height * originPosMap.get(item.id).hR
+        let x = newRect.width * originPosMap.get(item.id).xR
+        let width = newRect.width * originPosMap.get(item.id).wR
+        let y = newRect.height * originPosMap.get(item.id).yR
+        let height = newRect.height * originPosMap.get(item.id).hR
+        item.setBounds(x, y, width, height)
         //如果当前模型是容器，则按照容器比例更新子元素的大小
         if (item.baseModelType == "DDeiContainer") {
           let changedBound = { x: item.x, y: item.y, width: item.width, height: item.height };
