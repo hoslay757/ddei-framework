@@ -155,6 +155,7 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
               //选中当前单元格
               currentCell.selectOrCancelCell();
             }
+            currentCell.render.mouseDown(e)
           }
         }
         if (!isCtrl) {
