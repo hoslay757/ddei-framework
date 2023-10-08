@@ -90,7 +90,7 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
       //如果当前控件的父控件存在旋转，则需要换算成未旋转时的移动量
       let cx = 0;
       let cy = 0;
-      if (parentContainer.baseModelType == "DDeiContainer") {
+      if (parentContainer.baseModelType != "DDeiLayer") {
         cx = parentContainer.currentPointVectors[0].x;
         cy = parentContainer.currentPointVectors[0].y;
       }

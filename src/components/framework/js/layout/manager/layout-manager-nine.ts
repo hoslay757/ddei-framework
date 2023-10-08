@@ -87,10 +87,10 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
       let model = this.container.models.get(key);
       let data = layoutData[key];
       if (model) {
-        model.y = data.row * unitHeight;
-        model.x = data.col * unitWidth;
-        model.width = unitWidth;
-        model.height = unitHeight;
+        model.setBounds(data.col * unitWidth, data.row * unitHeight, unitWidth, unitHeight)
+        if (model.changeChildrenBounds) {
+          model.changeChildrenBounds();
+        }
       }
     }
   }

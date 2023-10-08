@@ -29,7 +29,6 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
    * 绘制图形
    */
   drawShape(): void {
-
     let canvas = this.ddRender.canvas;
     let ctx = canvas.getContext('2d');
     //转换为缩放后的坐标
@@ -96,6 +95,7 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
         table.dragType = table.tempDragType
         table.dragChanging = true;
         table.dragCell = table.tempDragCell;
+        console.log(table.dragCell?.row + " .  " + table.dragCell?.col)
         //选中整列
         if (table.dragType == "table-select-col") {
           //清空所有选中的单元格
@@ -200,6 +200,9 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
 
       let table = this.model;
       if (table.dragChanging) {
+        if (table.dragType == "cell") {
+          table.dragCell?.render?.mouseUp(e);
+        }
         table.dragChanging = false;
         table.specilDrag = false;
         // table.tempDragCell = null;
@@ -207,19 +210,6 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
         table.tempUpCel = null;
         table.dragCell = null;
         table.dragType = null;
-      } else {
-        for (let i = 0; i < table.rows.length; i++) {
-          let rowObj = table.rows[i]
-          for (let j = 0; j < rowObj.length; j++) {
-            let cellObj = rowObj[j];
-            if (cellObj.isInAreaLoose(e.offsetX, e.offsetY, 0)) {
-              cellObj.render.mouseUp(e);
-              if (this.stage.ddInstance.eventCancel) {
-                return;
-              }
-            }
-          }
-        }
       }
     }
   }
@@ -231,6 +221,7 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
     if (!this.stage.ddInstance.eventCancel) {
       super.mouseMove(e);
       let table: DDeiTable = this.model;
+
       if (table.dragChanging) {
         table.setState(DDeiEnumControlState.SELECTED)
         //拖动列
@@ -299,6 +290,9 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
             for (let j = 0; j < rowObj.length; j++) {
               let cellObj = rowObj[j];
               let isDrag = false;
+              if (cellObj.width <= 0 || cellObj.height <= 0) {
+                continue;
+              }
               //上边线
               if (cellObj.isBorderOn(1, e.offsetX, e.offsetY, -3, 0)) {
                 this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'ns-resize' }, e);
@@ -327,6 +321,7 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
                 table.tempDragType = "cell";
                 isDrag = true;
               }
+
               if (isDrag) {
                 table.tempDragCell = cellObj
                 cellObj.render.mouseMove(e);

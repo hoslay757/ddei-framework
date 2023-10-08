@@ -561,11 +561,11 @@ class DDeiLayerCanvasRender {
     } else {
       // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
       let operateControls = null;
-      if (this.tempLooseControl?.baseModelType == "DDeiTable") {
-        operateControls = [this.tempLooseControl];
-      } else {
-        operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, evt.offsetX, evt.offsetY);
-      }
+      // if (this.tempLooseControl?.baseModelType == "DDeiTable") {
+      //   operateControls = [this.tempLooseControl];
+      // } else {
+      operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, evt.offsetX, evt.offsetY);
+      // }
       //光标所属位置是否有控件
       //有控件：分发事件到当前控件
       if (operateControls != null && operateControls.length > 0) {
@@ -798,7 +798,9 @@ class DDeiLayerCanvasRender {
               model.rotate = item.rotate
               model.currentPointVectors = item.currentPointVectors
               model.centerPointVector = item.centerPointVector
-              model.changeChildrenBounds();
+              if (model.changeChildrenBounds) {
+                model.changeChildrenBounds();
+              }
             }
           })
           this.model.shadowControls = [];
@@ -833,6 +835,15 @@ class DDeiLayerCanvasRender {
     if (!this.model.display) {
       return;
     }
+    let dt = new Date().getTime();
+    //控制帧率
+    if (!window.upTime) {
+      window.upTime = dt;
+    } else if (dt - window.upTime > 20) {
+      window.upTime = dt;
+    } else {
+      return;
+    }
     //ctrl、alt键的按下状态
     let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
     let isAlt = DDei.KEY_DOWN_STATE.get("alt");
@@ -854,6 +865,7 @@ class DDeiLayerCanvasRender {
         } else {
           centerPointVector = this.stageRender.currentOperateShape?.centerPointVector;
         }
+
         //记录当前的拖拽的x,y,写入dragObj作为临时变量
         let dragObj = {
           x: evt.offsetX,
@@ -862,15 +874,17 @@ class DDeiLayerCanvasRender {
           dy: centerPointVector.y - evt.offsetY,
           model: this.stageRender.currentOperateShape
         }
+
         //如果当前元素父元素不是Layer，则记录直到Layer父控件的大小，用来实现取消还原
-        let pModel = dragObj?.model?.pModel;
-        for (; pModel != null && pModel.baseModelType != 'DDeiLayer'; pModel = pModel.pModel) {
-          if (!dragObj.pms) {
-            dragObj.pms = new Map();
-          }
-          dragObj.pms.set(pModel.id, { x: pModel.x, y: pModel.y, width: pModel.width, height: pModel.height });
-        }
+        // let pModel = dragObj?.model?.pModel;
+        // for (; pModel != null && pModel.baseModelType != 'DDeiLayer'; pModel = pModel.pModel) {
+        //   if (!dragObj.pms) {
+        //     dragObj.pms = new Map();
+        //   }
+        //   dragObj.pms.set(pModel.id, { x: pModel.x, y: pModel.y, width: pModel.width, height: pModel.height });
+        // }
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
+
         if (this.stageRender.currentOperateShape?.baseModelType == 'DDeiTable' && !isCtrl) {
           this.stageRender.operateState = DDeiEnumOperateState.TABLE_INNER_DRAG
           //渲染图形
@@ -940,7 +954,6 @@ class DDeiLayerCanvasRender {
         this.model.opPoints = []
         let table = this.stageRender.currentOperateShape;
         table.render.mouseMove(evt);
-
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
         break;
       }
@@ -994,17 +1007,28 @@ class DDeiLayerCanvasRender {
           //派发给selector的mousemove事件，在事件中对具体坐标进行判断
           this.stageRender.selector.render.mouseMove(evt);
         }
-        //下发事件到当前层级每个控件
-        for (let i = 0; i < this.model.midList.length; i++) {
-          if (!this.stage.ddInstance.eventCancel) {
-            let model = this.model.models.get(this.model.midList[i]);
-            if (model && model.isInAreaLoose(evt.offsetX, evt.offsetY, DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2)) {
-              //记录经过宽松判定的控件，在点击时，此类控件具备优先级，如表格
-              this.tempLooseControl = model;
-              model.render.mouseMove(evt);
-            }
-          }
+        // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
+        let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, evt.offsetX, evt.offsetY, DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2);
+
+        //光标所属位置是否有控件
+        //有控件：分发事件到当前控件
+        if (operateControls != null && operateControls.length > 0) {
+          this.tempLooseControl = operateControls[0]
+          operateControls[0].render.mouseMove(evt);
         }
+        // //下发事件到当前层级每个控件
+        // for (let i = 0; i < this.model.midList.length; i++) {
+        //   if (!this.stage.ddInstance.eventCancel) {
+        //     let model = this.model.models.get(this.model.midList[i]);
+        //     if (model && model.isInAreaLoose(evt.offsetX, evt.offsetY, DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2)) {
+        //       //记录经过宽松判定的控件，在点击时，此类控件具备优先级，如表格
+        //       this.tempLooseControl = model;
+        //       model.render.mouseMove(evt);
+        //     }
+        //   } else {
+        //     break;
+        //   }
+        // }
         if (this.tempLooseControl == null) {
           this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
         }

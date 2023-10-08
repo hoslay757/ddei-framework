@@ -1,3 +1,4 @@
+import DDeiEnumControlState from '../../enums/control-state.js';
 import DDeiRectContainerCanvasRender from './rect-container-render.js';
 
 /**
@@ -8,6 +9,8 @@ class DDeiTableCellCanvasRender extends DDeiRectContainerCanvasRender {
   constructor(props: object) {
     super(props)
   }
+
+
   // ============================== 静态方法 ============================
   // 通过一个JSON反向序列化成对象，模型数据与JSON完全一样
   static newInstance(props: object): DDeiTableCellCanvasRender {

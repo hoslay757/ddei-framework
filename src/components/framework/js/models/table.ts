@@ -4,6 +4,7 @@ import DDeiTableCell from './table-cell';
 import DDeiEnumControlState from '../enums/control-state';
 import DDeiTableSelector from './table-selector';
 import DDeiUtil from '../util';
+import { Matrix3, Vector3 } from 'three';
 
 
 /**
@@ -308,6 +309,73 @@ class DDeiTable extends DDeiAbstractShape {
     this.changeChildrenBounds();
   }
 
+  /**
+    * 计算当前图形旋转后的顶点，根据位移以及层次管理
+    */
+  calRotatePointVectors(): void {
+    super.calRotatePointVectors();
+    this.calCellsRotatePointVectors(this.rotateMatrix)
+  }
+
+
+  /**
+   * 计算单元格的点旋转后的坐标
+   * @param rotateMatrix 旋转矩阵 
+   */
+  calCellsRotatePointVectors(rotateMatrix): void {
+    //宽松判定区域的宽度
+    let looseWeight = 10;
+    for (let i = 0; i < this.rows.length; i++) {
+      let rowObj = this.rows[i];
+      for (let j = 0; j < rowObj.length; j++) {
+        let item = rowObj[j]
+        let parentCenterPointVector = this.centerPointVector;
+        let halfWidth = item.width * 0.5;
+        let halfHeight = item.height * 0.5;
+        if (parentCenterPointVector) {
+          let vc, vc1, vc2, vc3, vc4;
+          let loosePointVectors = null;
+          if (item.pointVectors?.length > 0) {
+            vc = item.centerPointVector;
+            vc1 = item.pointVectors[0];
+            vc2 = item.pointVectors[1];
+            vc3 = item.pointVectors[2];
+            vc4 = item.pointVectors[3];
+            loosePointVectors = item.loosePointVectors
+          } else {
+            item.pointVectors = []
+            let absBoundsOrigin = item.getAbsBounds()
+            vc = new Vector3(absBoundsOrigin.x + halfWidth, absBoundsOrigin.y + halfHeight, 1);
+            vc1 = new Vector3(vc.x - halfWidth, vc.y - halfHeight, 1);
+            vc2 = new Vector3(vc.x + halfWidth, vc.y - halfHeight, 1);
+            vc3 = new Vector3(vc.x + halfWidth, vc.y + halfHeight, 1);
+            vc4 = new Vector3(vc.x - halfWidth, vc.y + halfHeight, 1);
+            item.pointVectors.push(vc1)
+            item.pointVectors.push(vc2)
+            item.pointVectors.push(vc3)
+            item.pointVectors.push(vc4)
+            item.centerPointVector = vc;
+            loosePointVectors = []
+            //记录宽松判定区域的点
+            loosePointVectors.push(new Vector3(vc1.x - looseWeight, vc1.y - looseWeight, vc1.z))
+            loosePointVectors.push(new Vector3(vc2.x + looseWeight, vc2.y - looseWeight, vc2.z))
+            loosePointVectors.push(new Vector3(vc3.x + looseWeight, vc3.y + looseWeight, vc3.z))
+            loosePointVectors.push(new Vector3(vc4.x - looseWeight, vc4.y + looseWeight, vc4.z))
+            item.loosePointVectors = loosePointVectors;
+          }
+          vc1.applyMatrix3(rotateMatrix);
+          vc2.applyMatrix3(rotateMatrix);
+          vc3.applyMatrix3(rotateMatrix);
+          vc4.applyMatrix3(rotateMatrix);
+          vc.applyMatrix3(rotateMatrix);
+          loosePointVectors?.forEach(pv => {
+            pv.applyMatrix3(rotateMatrix);
+          });
+        }
+        item.calChildrenRotatePointVectors(rotateMatrix);
+      }
+    }
+  }
 
   /**
    * 修改上层模型大小
@@ -851,6 +919,24 @@ class DDeiTable extends DDeiAbstractShape {
       }
     }
     return arr;
+  }
+
+  /**
+   * 根据ID获取模型
+   * @param id 模型id
+   */
+  getModelById(id: string): DDeiAbstractShape | null {
+    //找到点所在的单元格
+    for (let i = 0; i < this.rows.length; i++) {
+      let rowObj = this.rows[i];
+      for (let j = 0; j < rowObj.length; j++) {
+        let cell = rowObj[j];
+        let returnModel = cell.getModelById(id);
+        if (returnModel) {
+          return returnModel;
+        }
+      }
+    }
   }
 
   /**

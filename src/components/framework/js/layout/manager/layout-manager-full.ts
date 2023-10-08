@@ -27,11 +27,10 @@ class DDeiLayoutManagerFull extends DDeiLayoutManager {
   changeSubModelBounds(): void {
     if (this.container.models.size == 1) {
       let model = Array.from(this.container.models.values())[0];
-      model.x = 0;
-      model.y = 0;
-      model.width = this.container.width
-      model.height = this.container.height
-      model.rotate = 0
+      model.setBounds(0, 0, this.container.width, this.container.height)
+      if (model.changeChildrenBounds) {
+        model.changeChildrenBounds();
+      }
     }
   }
 

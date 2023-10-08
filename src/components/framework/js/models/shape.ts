@@ -496,7 +496,7 @@ abstract class DDeiAbstractShape {
    * @param area 选中区域
    * @returns 
    */
-  static findBottomModelsByArea(container, x = undefined, y = undefined, width = 0, height = 0): DDeiAbstractShape[] | null {
+  static findBottomModelsByArea(container, x = undefined, y = undefined, looseWeight: number = 0): DDeiAbstractShape[] | null {
     let controls = [];
     if (container) {
       for (let mg = container.midList.length - 1; mg >= 0; mg--) {
@@ -505,18 +505,31 @@ abstract class DDeiAbstractShape {
         if (DDeiAbstractShape.isInsidePolygon(item.getRotatedPoints(), { x: x, y: y })) {
           //如果当前控件状态为选中，且是容器，则往下寻找控件，否则返回当前控件
           if (item.state == DDeiEnumControlState.SELECTED && item.baseModelType == "DDeiContainer") {
-            let subControls = DDeiAbstractShape.findBottomModelsByArea(item, x, y, width, height);
+            let subControls = DDeiAbstractShape.findBottomModelsByArea(item, x, y, looseWeight);
             if (subControls && subControls.length > 0) {
               controls = controls.concat(subControls);
             } else {
               controls.push(item);
             }
+          } else if (item.state == DDeiEnumControlState.SELECTED && item.baseModelType == "DDeiTable") {
+            //判断表格当前的单元格是否是选中的单元格，如果是则分发事件
+            let currentCell = item.getAccuContainer(x, y);
+            if (currentCell?.state == DDeiEnumControlState.SELECTED) {
+              let subControls = DDeiAbstractShape.findBottomModelsByArea(currentCell, x, y, looseWeight);
+              if (subControls && subControls.length > 0) {
+                controls = controls.concat(subControls);
+              } else {
+                controls.push(item);
+              }
+            } else {
+              controls.push(item);
+            }
+
           } else {
             controls.push(item);
           }
         }
       }
-      // });
     }
     //TODO 对控件进行排序，按照zIndex > 添加顺序
     return controls;

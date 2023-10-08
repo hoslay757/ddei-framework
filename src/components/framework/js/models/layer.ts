@@ -307,6 +307,16 @@ class DDeiLayer {
   }
 
   /**
+   * 获取实际的内部容器控件
+   * @param x 相对路径坐标
+   * @param y 相对路径坐标
+   * @return 容器控件根据布局的模式不同返回不同的内部控件，普通控件返回null
+   */
+  getAccuContainer(x: number, y: number): DDeiLayer {
+    return this;
+  }
+
+  /**
    * 获取选中状态的所有控件
    * @returns 
    */
@@ -332,7 +342,7 @@ class DDeiLayer {
       } else {
         //遍历所有容器
         this.models.forEach(item => {
-          if (item.baseModelType == "DDeiContainer") {
+          if (item.baseModelType == "DDeiContainer" || item.baseModelType == "DDeiTable") {
             let rm = item.getModelById(id);
             if (rm) {
               reutrnModel = rm;
