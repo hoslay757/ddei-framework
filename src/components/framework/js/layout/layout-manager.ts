@@ -15,10 +15,6 @@ abstract class DDeiLayoutManager {
   //容器
   container: DDeiAbstractShape | null
   // ============================ 方法 ===============================
-  /**
-  * 校验控件是否可以进入容器
-  */
-  abstract valid(): boolean
 
   /**
    * 修改模型的位置和大小
@@ -56,9 +52,18 @@ abstract class DDeiLayoutManager {
    * @param x 
    * @param y 
    * @param models 
-   * @param isAlt 
    */
-  abstract updateLayout(x: number, y: number, models: DDeiAbstractShape[], isAlt: boolean): void;
+  abstract updateLayout(x: number, y: number, models: DDeiAbstractShape[]): void;
+
+
+  /**
+   * 新控件移入
+   * @param x 移入的坐标
+   * @param y 移入的坐标
+   * @param models 移入的控件
+   * @return 是否成功移入
+   */
+  abstract append(x: number, y: number, models: DDeiAbstractShape[]): boolean;
 
   /**
   * 计算时拖入待确认时的显示图形的向量

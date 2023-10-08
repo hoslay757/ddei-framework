@@ -20,6 +20,29 @@ class DDeiLayoutManagerFree extends DDeiLayoutManager {
 
   }
 
+  append(x: number, y: number, models: DDeiAbstractShape[]): boolean {
+    models.forEach(item => {
+      let oldContainer = item.pModel;
+      let newContainer = this.container;
+      //转换坐标，获取最外层的坐标
+      let itemAbsPos = item.getAbsPosition();
+      let itemAbsRotate = item.getAbsRotate();
+      if (oldContainer) {
+        //将元素从旧容器移出
+        oldContainer.removeModel(item);
+      }
+      let loAbsPos = newContainer.getAbsPosition();
+      let loAbsRotate = newContainer.getAbsRotate();
+      item.setPosition(itemAbsPos.x - loAbsPos.x, itemAbsPos.y - loAbsPos.y)
+      item.rotate = itemAbsRotate - loAbsRotate
+      newContainer.addModel(item);
+      //绑定并初始化渲染器
+      item.initRender();
+    })
+
+    return true;
+  }
+
   /**
    * 修改布局信息
    */

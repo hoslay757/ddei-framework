@@ -21,6 +21,7 @@ class DDeiLayer {
     this.background = props.background ? props.background : null;
     this.display = props.display ? props.display : 1;
     this.unicode = props.unicode ? props.unicode : DDeiUtil.getUniqueCode()
+
   }
 
   // ============================ 静态变量 ============================
@@ -81,7 +82,8 @@ class DDeiLayer {
   //操作点对象，用于显示操作点，操作点点击后，会进行不同的操作，操作点临时存在，不满足出现条件时就会删除，操作点不会序列化
   opPoints: object[] = [];
 
-
+  //布局管理器
+  layoutManager: object;
   //因容器拖入操作而产生的向量
   dragInPoints: object[] = [];
 

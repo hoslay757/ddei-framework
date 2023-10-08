@@ -53,8 +53,52 @@ class DDeiLayoutManagerFull extends DDeiLayoutManager {
     this.changeSubModelBounds();
   }
 
-  canChangePosition(x: number, y: number, models: DDeiAbstractShape[], isAlt: boolean = false): boolean {
+
+  append(x: number, y: number, models: DDeiAbstractShape[]): boolean {
+    if (models?.length == 1) {
+      let item = models[0];
+      let oldModel = null;
+      let itemOriginPosition = null;
+      if (this.container.models.size == 1) {
+        oldModel = Array.from(this.container.models.values())[0];
+        itemOriginPosition = item.getPosition();
+      }
+      let oldContainer = item.pModel;
+      let newContainer = this.container;
+      //转换坐标，获取最外层的坐标
+      let itemAbsPos = item.getAbsPosition();
+      let itemAbsRotate = item.getAbsRotate();
+      //将元素从就容器移出
+      oldContainer.removeModel(item);
+      let loAbsPos = newContainer.getAbsPosition();
+      let loAbsRotate = newContainer.getAbsRotate();
+      item.setPosition(itemAbsPos.x - loAbsPos.x, itemAbsPos.y - loAbsPos.y)
+      item.rotate = itemAbsRotate - loAbsRotate
+      newContainer.addModel(item);
+      //绑定并初始化渲染器
+      item.initRender();
+      //如果已有控件，则交换两个控件的位置
+      if (oldModel) {
+        newContainer.removeModel(oldModel);
+        //坐标为移入控件的坐标
+        oldModel.setPosition(itemOriginPosition?.x, itemOriginPosition?.y);
+        //交换
+        oldContainer.addModel(oldModel);
+        //绑定并初始化渲染器
+        oldModel.initRender();
+        let oldAbsPos = oldContainer.getAbsPosition();
+        oldContainer.layoutManager?.updateLayout(oldAbsPos.x, oldAbsPos.y, [oldModel]);
+      }
+      return true;
+    }
     return false;
+  }
+
+  canChangePosition(x: number, y: number, models: DDeiAbstractShape[], isAlt: boolean = false): boolean {
+    if (isAlt) {
+      return true;
+    }
+    return false
   }
 
   canChangeSize(x: number, y: number, models: DDeiAbstractShape[]): boolean {

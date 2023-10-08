@@ -652,7 +652,6 @@ class DDeiLayerCanvasRender {
         }
       }
     } else {
-      console.log(this.stageRender.operateState)
       //判断当前操作状态
       switch (this.stageRender.operateState) {
         //控件状态确认中
@@ -735,7 +734,7 @@ class DDeiLayerCanvasRender {
               }
 
               //如果最小层容器不是当前容器，执行的移动容器操作
-              if (lastOnContainer.id != pContainerModel.id) {
+              if (lastOnContainer.id != pContainerModel.id || lastOnContainer.unicode != pContainerModel.unicode) {
                 //构造移动容器action数据
                 this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeContainer, { oldContainer: pContainerModel, newContainer: lastOnContainer, models: operateModels }, evt);
               } else {

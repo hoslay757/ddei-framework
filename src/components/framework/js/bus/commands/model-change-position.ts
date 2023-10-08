@@ -62,7 +62,7 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
       y = y + dy;
       let cx = 0;
       let cy = 0;
-      if (parentContainer.baseModelType != "DDeiLayer") {
+      if (parentContainer && parentContainer.baseModelType != "DDeiLayer") {
         cx = parentContainer.currentPointVectors[0].x;
         cy = parentContainer.currentPointVectors[0].y;
       }
