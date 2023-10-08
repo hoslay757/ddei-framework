@@ -613,6 +613,9 @@ abstract class DDeiAbstractShape {
 
   //唯一表示码，运行时临时生成
   unicode: string;
+
+  //模型是否发生改变，当移动、改变大小、旋转、修改文本等操作会引起改变
+  modelChanged: boolean = true;
   // ============================ 方法 ===============================
 
 
@@ -667,6 +670,7 @@ abstract class DDeiAbstractShape {
     if (y !== undefined) {
       this.y = y
     }
+    this.modelChanged = true;
   }
 
   /**
@@ -675,12 +679,15 @@ abstract class DDeiAbstractShape {
    * @param h
    */
   setSize(w: number, h: number) {
+
     if (w !== undefined) {
       this.width = w
     }
+
     if (h !== undefined) {
       this.height = h
     }
+    this.modelChanged = true;
   }
 
   /**
@@ -746,7 +753,7 @@ abstract class DDeiAbstractShape {
     else if (this.currentPointVectors?.length > 0) {
       ps = cloneDeep(this.currentPointVectors);
     } else {
-      ps = this.getPoints(looseWeight);
+      ps = this.getPoints(loose);
     }
     return ps;
   }

@@ -135,11 +135,11 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
       let movedBounds = { x: originRect.x + deltaX, y: originRect.y + deltaY, width: originRect.width + deltaWidth, height: originRect.height + deltaHeight }
       models.forEach(item => {
         let originBound = { x: item.x, y: item.y, width: item.width, height: item.height };
-        item.x = parseFloat((movedBounds.x + movedBounds.width * originPosMap.get(item.id).xR).toFixed(4))
-        item.width = parseFloat((movedBounds.width * originPosMap.get(item.id).wR).toFixed(4))
-        item.y = parseFloat((movedBounds.y + movedBounds.height * originPosMap.get(item.id).yR).toFixed(4))
-        item.height = parseFloat((movedBounds.height * originPosMap.get(item.id).hR).toFixed(4))
-
+        let x = parseFloat((movedBounds.x + movedBounds.width * originPosMap.get(item.id).xR).toFixed(4))
+        let width = parseFloat((movedBounds.width * originPosMap.get(item.id).wR).toFixed(4))
+        let y = parseFloat((movedBounds.y + movedBounds.height * originPosMap.get(item.id).yR).toFixed(4))
+        let height = parseFloat((movedBounds.height * originPosMap.get(item.id).hR).toFixed(4))
+        item.setBounds(x, y, width, height)
         if (models.length > 1) {
           //去掉这一句后，多个控件拖拽时坐标会出现问题，加上则会导致旋转后嵌套容器显示不正常,因此控制一下，只在多个控件时才这样处理
           item.calRotatePointVectors();
@@ -160,6 +160,7 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
           };
           //pContainerModel修改上层容器直至layer的大小
           parentContainer.changeParentsBounds()
+          parentContainer.modelChanged = true;
         }
       })
       return true;

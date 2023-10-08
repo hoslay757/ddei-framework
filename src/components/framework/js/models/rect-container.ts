@@ -255,6 +255,7 @@ class DDeiRectContainer extends DDeiRectangle {
       si.x = si.x - this.x
       si.y = si.y - this.y
     });
+    this.modelChanged = true;
   }
 
   /**
@@ -362,10 +363,11 @@ class DDeiRectContainer extends DDeiRectangle {
       //同步多个模型到等比缩放状态
       models.forEach(item => {
         let originBound = { x: item.x, y: item.y, width: item.width, height: item.height };
-        item.x = newRect.width * originPosMap.get(item.id).xR
-        item.width = newRect.width * originPosMap.get(item.id).wR
-        item.y = newRect.height * originPosMap.get(item.id).yR
-        item.height = newRect.height * originPosMap.get(item.id).hR
+        let x = newRect.width * originPosMap.get(item.id).xR
+        let width = newRect.width * originPosMap.get(item.id).wR
+        let y = newRect.height * originPosMap.get(item.id).yR
+        let height = newRect.height * originPosMap.get(item.id).hR
+        item.setBounds(x, y, width, height)
         //如果当前模型是容器，则按照容器比例更新子元素的大小
         if (item.baseModelType == "DDeiContainer") {
           let changedBound = { x: item.x, y: item.y, width: item.width, height: item.height };

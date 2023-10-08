@@ -718,11 +718,8 @@ class DDeiLayerCanvasRender {
           this.model.shadowControls.forEach(item => {
             let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
             let model = this.stage?.getModelById(id)
-            model.x = item.x
-            model.y = item.y
-            model.width = item.width
-            model.height = item.height
             model.rotate = item.rotate
+            model.setBounds(item.x, item.y, item.width, item.height)
             model.currentPointVectors = item.currentPointVectors
             model.centerPointVector = item.centerPointVector
 
@@ -998,7 +995,7 @@ class DDeiLayerCanvasRender {
       }
       //默认缺省状态
       default: {
-        //清空当前opPoints
+        // //清空当前opPoints
         this.model.opPoints = [];
         this.tempLooseControl = null;
         //判断当前鼠标坐标是否落在选择器控件的区域内

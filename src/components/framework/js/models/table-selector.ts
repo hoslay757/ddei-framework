@@ -30,25 +30,16 @@ class DDeiTableSelector extends DDeiSelector {
   */
   updatedBounds(): void {
     if (this.table.state == DDeiEnumControlState.DEFAULT) {
-      this.width = 0
-      this.height = 0
-      this.x = 0
-      this.y = 0
+      this.setBounds(0, 0, 0, 0)
     } else {
       //设置选中区域
       let minMax = this.table.getMinMaxRowAndCol(this.table.getSelectedCells());
       if (minMax) {
         let rect = this.table.getCellPositionRect(minMax.minRow, minMax.minCol, minMax.maxRow, minMax.maxCol);
         let tableAbsPos = this.table.getAbsPosition();
-        this.width = rect.width
-        this.height = rect.height
-        this.x = tableAbsPos.x + rect.x
-        this.y = tableAbsPos.y + rect.y
+        this.setBounds(tableAbsPos.x + rect.x, tableAbsPos.y + rect.y, rect.width, rect.height)
       } else {
-        this.width = 0
-        this.height = 0
-        this.x = 0
-        this.y = 0
+        this.setBounds(0, 0, 0, 0)
       }
     }
   }

@@ -54,8 +54,7 @@ class DDeiBusCommandModelChangeContainer extends DDeiBusCommand {
             loAbsPos = newContainer.getAbsPosition();
             loAbsRotate = newContainer.getAbsRotate();
           }
-          item.x = itemAbsPos.x - loAbsPos.x
-          item.y = itemAbsPos.y - loAbsPos.y
+          item.setPosition(itemAbsPos.x - loAbsPos.x, itemAbsPos.y - loAbsPos.y)
           item.rotate = itemAbsRotate - loAbsRotate
           newContainer.addModel(item);
           //绑定并初始化渲染器

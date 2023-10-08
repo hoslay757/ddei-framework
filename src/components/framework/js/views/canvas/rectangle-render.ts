@@ -61,9 +61,9 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
    * 创建图形
    */
   drawShape(): void {
-
-    this.model.calRotatePointVectors();
-
+    if (this.model.modelChanged) {
+      this.model.calRotatePointVectors();
+    }
     //绘制边框
     this.drawBorder();
 
@@ -76,12 +76,14 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     //绘制文本
     this.drawText();
 
-
-    //清空旋转矩阵
-    this.model.currentPointVectors = this.model.pointVectors;
-    this.model.pointVectors = null;
-    this.model.currentLoosePointVectors = this.model.loosePointVectors;
-    this.model.loosePointVectors = null;
+    if (this.model.modelChanged) {
+      //清空旋转矩阵
+      this.model.currentPointVectors = this.model.pointVectors;
+      this.model.pointVectors = null;
+      this.model.currentLoosePointVectors = this.model.loosePointVectors;
+      this.model.loosePointVectors = null;
+      this.model.modelChanged = false;
+    }
 
   }
 

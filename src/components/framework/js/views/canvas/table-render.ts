@@ -1,12 +1,9 @@
-import DDeiConfig from '../../config';
 import DDei from '../../ddei';
 import DDeiEnumBusCommandType from '../../enums/bus-command-type';
 import DDeiEnumControlState from '../../enums/control-state';
 import DDeiTable from '../../models/table';
 import DDeiUtil from '../../util';
 import DDeiRectangleCanvasRender from './rectangle-render';
-import DDeiAbstractShapeRender from './shape-render-base';
-
 /**
  * 表格控件的渲染器
  */
@@ -33,7 +30,6 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
     let ctx = canvas.getContext('2d');
     //转换为缩放后的坐标
     let ratPos = this.getBorderRatPos();
-
 
     super.drawShape();
     //保存状态
