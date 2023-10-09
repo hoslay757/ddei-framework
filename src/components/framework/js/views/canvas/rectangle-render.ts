@@ -156,8 +156,9 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
 
 
         //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
-        let lineOffset = width * ratio / 2;
-        ctx.lineWidth = width * ratio;
+        let lineOffset = 1 * ratio / 2;
+        let lineWidth = width * ratio;
+        ctx.lineWidth = lineWidth;
         ctx.beginPath();
         //线段、虚线样式
         if (dash) {
@@ -173,26 +174,32 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
           let pvs = this.model.currentPointVectors;
           if (pvs?.length > 0) {
             if (i == 4) {
-              ctx.moveTo(pvs[i - 1].x * ratio + lineOffset, pvs[i - 1].y * ratio + lineOffset);
-              ctx.lineTo(pvs[0].x * ratio + lineOffset, pvs[0].y * ratio + lineOffset);
-            } else {
-              ctx.moveTo(pvs[i - 1].x * ratio + lineOffset, pvs[i - 1].y * ratio + lineOffset);
-              ctx.lineTo(pvs[i].x * ratio + lineOffset, pvs[i].y * ratio + lineOffset);
+              ctx.moveTo(pvs[i - 1].x * ratio + lineOffset + lineWidth / 2, pvs[i - 1].y * ratio + lineOffset);
+              ctx.lineTo(pvs[0].x * ratio + lineOffset + lineWidth / 2, pvs[0].y * ratio + lineOffset);
+            } else if (i == 1) {
+              ctx.moveTo(pvs[i - 1].x * ratio + lineWidth + lineOffset, pvs[i - 1].y * ratio + lineWidth / 2 + lineOffset);
+              ctx.lineTo(pvs[i].x * ratio + lineOffset, pvs[i].y * ratio + lineWidth / 2 + lineOffset);
+            } else if (i == 2) {
+              ctx.moveTo(pvs[i - 1].x * ratio + lineOffset - lineWidth / 2, pvs[i - 1].y * ratio + lineOffset);
+              ctx.lineTo(pvs[i].x * ratio + lineOffset - lineWidth / 2, pvs[i].y * ratio + lineOffset);
+            } else if (i == 3) {
+              ctx.moveTo(pvs[i - 1].x * ratio + lineOffset, pvs[i - 1].y * ratio + lineOffset - lineWidth / 2);
+              ctx.lineTo(pvs[i].x * ratio + lineOffset, pvs[i].y * ratio + lineOffset - lineWidth / 2);
             }
           }
         } else {
           if (i == 1) {
-            ctx.moveTo(ratPos.x + lineOffset, ratPos.y + lineOffset);
-            ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + lineOffset);
+            ctx.moveTo(ratPos.x + lineOffset, ratPos.y + lineWidth / 2 + lineOffset);
+            ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + lineWidth / 2 + lineOffset);
           } else if (i == 2) {
-            ctx.moveTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + lineOffset);
-            ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + ratPos.height + lineOffset);
+            ctx.moveTo(ratPos.x + ratPos.width + lineOffset - lineWidth / 2, ratPos.y + lineOffset);
+            ctx.lineTo(ratPos.x + ratPos.width + lineOffset - lineWidth / 2, ratPos.y + ratPos.height + lineOffset);
           } else if (i == 3) {
-            ctx.moveTo(ratPos.x + lineOffset, ratPos.y + ratPos.height + lineOffset);
-            ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + ratPos.height + lineOffset);
+            ctx.moveTo(ratPos.x + lineOffset, ratPos.y + ratPos.height + lineOffset - lineWidth / 2);
+            ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + ratPos.height + lineOffset - lineWidth / 2);
           } else if (i == 4) {
-            ctx.moveTo(ratPos.x + lineOffset, ratPos.y + lineOffset);
-            ctx.lineTo(ratPos.x + lineOffset, ratPos.y + ratPos.height + lineOffset);
+            ctx.moveTo(ratPos.x + lineWidth / 2 + lineOffset, ratPos.y + lineOffset);
+            ctx.lineTo(ratPos.x + lineWidth / 2 + lineOffset, ratPos.y + ratPos.height + lineOffset);
           }
         }
         ctx.stroke();
@@ -232,7 +239,8 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       if (imgFillInfo) {
         ctx.globalAlpha = imgFillInfo
       }
-      ctx.drawImage(this.imgObj, ratPos.x, ratPos.y, ratPos.width, ratPos.height);
+      let lineOffset = 1 * ratio / 2;
+      ctx.drawImage(this.imgObj, ratPos.x + lineOffset, ratPos.y + lineOffset, ratPos.width, ratPos.height);
 
       //恢复状态
       ctx.restore();
@@ -269,8 +277,9 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       if (fillOpacity != null && !fillOpacity != undefined) {
         ctx.globalAlpha = fillOpacity
       }
+      let lineOffset = 1 * ratio / 2;
       //填充矩形
-      ctx.fillRect(ratPos.x, ratPos.y, ratPos.width, ratPos.height);
+      ctx.fillRect(ratPos.x + lineOffset, ratPos.y + lineOffset, ratPos.width, ratPos.height);
     }
 
     //恢复状态

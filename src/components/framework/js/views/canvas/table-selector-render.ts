@@ -46,6 +46,7 @@ class DDeiTableSelectorCanvasRender extends DDeiSelectorCanvasRender {
     ctx.fillStyle = DDeiUtil.getColor("rgb(210,210,210)")
     ctx.globalAlpha = 0.5
     let rect = this.model.getBounds();
+    let oriRect = { x: rect.x, y: rect.y, width: rect.width, height: rect.height }
     //转换为缩放后的坐标
     let ratPos = DDeiUtil.getRatioPosition(rect, ratio);
     //设置旋转角度
@@ -62,9 +63,9 @@ class DDeiTableSelectorCanvasRender extends DDeiSelectorCanvasRender {
         if (rect.y - cellBounds.y == 0 && rect.x - cellBounds.x == 0) {
           rect1 = {
             x: rect.x,
-            y: rect.y + cellBounds.height,
+            y: rect.y + cellBounds.height - this.model.border.width,
             width: rect.width,
-            height: rect.height - cellBounds.height
+            height: rect.height - cellBounds.height + this.model.border.width
           }
           rect = {
             x: rect.x + cellBounds.width,
@@ -77,9 +78,9 @@ class DDeiTableSelectorCanvasRender extends DDeiSelectorCanvasRender {
         else if (rect.y - cellBounds.y == 0 && rect.x + rect.width - cellBounds.x - cellBounds.width == 0) {
           rect1 = {
             x: rect.x,
-            y: rect.y + cellBounds.height,
+            y: rect.y + cellBounds.height - this.model.border.width,
             width: rect.width,
-            height: rect.height - cellBounds.height
+            height: rect.height - cellBounds.height + this.model.border.width,
           }
           rect = {
             x: rect.x,
@@ -92,9 +93,9 @@ class DDeiTableSelectorCanvasRender extends DDeiSelectorCanvasRender {
         else if (rect.y + rect.height - cellBounds.y - cellBounds.height == 0 && rect.x - cellBounds.x == 0) {
           rect1 = {
             x: rect.x + cellBounds.width,
-            y: cellBounds.y,
+            y: cellBounds.y - this.model.border.width,
             width: rect.width - cellBounds.width,
-            height: cellBounds.height
+            height: cellBounds.height + this.model.border.width,
           }
           rect = {
             x: rect.x,
@@ -107,9 +108,9 @@ class DDeiTableSelectorCanvasRender extends DDeiSelectorCanvasRender {
         else if (rect.y + rect.height - cellBounds.y - cellBounds.height == 0 && rect.x + rect.width - cellBounds.x - cellBounds.width == 0) {
           rect1 = {
             x: rect.x,
-            y: cellBounds.y,
+            y: cellBounds.y - this.model.border.width,
             width: rect.width - cellBounds.width,
-            height: cellBounds.height
+            height: cellBounds.height + this.model.border.width
           }
           rect = {
             x: rect.x,
