@@ -95,29 +95,112 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
     }
   }
 
-  append(x: number, y: number, models: DDeiAbstractShape[]): boolean {
-    if (models?.length >= 1 && models?.length <= 9 - this.container.models.size) {
-      models.forEach(item => {
-        let oldContainer = item.pModel;
-        let newContainer = this.container;
-        //转换坐标，获取最外层的坐标
-        let itemAbsPos = item.getAbsPosition();
-        let itemAbsRotate = item.getAbsRotate();
-        //将元素从就容器移出
-        if (oldContainer) {
-          oldContainer.removeModel(item);
+
+  canAppend(x: number, y: number, models: DDeiAbstractShape[]): boolean {
+    if (models?.length == 1 || models?.length <= 9 - this.container.models.size) {
+      //检测，拖入对象不能为自身容器以及自身容器子控件
+      for (let i = 0; i < models.length; i++) {
+        if (models[i] == this.container) {
+          return false;
         }
-        let loAbsPos = newContainer.getAbsPosition();
-        let loAbsRotate = newContainer.getAbsRotate();
-        item.setPosition(itemAbsPos.x - loAbsPos.x, itemAbsPos.y - loAbsPos.y)
-        item.rotate = itemAbsRotate - loAbsRotate
-        newContainer.addModel(item);
-        //绑定并初始化渲染器
-        item.initRender();
-      })
+      }
       return true;
     }
     return false;
+  }
+
+  append(x: number, y: number, models: DDeiAbstractShape[]): boolean {
+
+    let layoutData = null;
+    if (this?.container?.layoutData?.nine) {
+      layoutData = this.container.layoutData.nine
+    }
+    //获取鼠标在九宫格的位置
+    let layoutIndex = this.getLayoutIndex(x, y);
+    //获取鼠标落点是否存在已有控件
+    let indexModel = null;
+    //预先计算空位
+    let emptyAreas = [
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0],
+    ]
+    for (let key in layoutData) {
+      let data = layoutData[key];
+      if (data.row == layoutIndex.row && data.col == layoutIndex.col) {
+        indexModel = this.container.models.get(key);
+      }
+      emptyAreas[data.row][data.col] = 1;
+    }
+    let newContainer = this.container;
+    for (let i = 0; i < models.length; i++) {
+      let item = models[i]
+      let oldContainer = item.pModel;
+
+      //转换坐标，获取最外层的坐标
+      let itemAbsPos = item.getAbsPosition();
+      let itemAbsRotate = item.getAbsRotate();
+      //将元素从就容器移出
+      if (oldContainer) {
+        oldContainer.removeModel(item);
+      }
+      let loAbsPos = newContainer.getAbsPosition();
+      let loAbsRotate = newContainer.getAbsRotate();
+      item.setPosition(itemAbsPos.x - loAbsPos.x, itemAbsPos.y - loAbsPos.y)
+      item.rotate = itemAbsRotate - loAbsRotate
+      newContainer.addModel(item);
+      //绑定并初始化渲染器
+      item.initRender();
+      //如果操作的只有一个元素，就在空位插入元素，
+      if (models.length == 1) {
+        layoutData[item.id] = { row: layoutIndex.row, col: layoutIndex.col }
+        //如果已存在元素，则交换
+        if (indexModel) {
+
+          let oldAbsPos = indexModel.getAbsPosition();
+          newContainer.removeModel(indexModel);
+          //坐标为移入控件的坐标
+          if (item.dragOriginX || item.dragOriginX == 0) {
+            indexModel.setBounds(item.dragOriginX, item.dragOriginY, item.dragOriginWidth, item.dragOriginHeight);
+            item.dragOriginX = null;
+            item.dragOriginY = null;
+            item.dragOriginWidth = null;
+            item.dragOriginHeight = null;
+          }
+          //如果也为九宫格布局，则交换宫格
+          if (oldContainer.layout == 'nine') {
+            let oldLayoutData = oldContainer?.layoutData?.nine;
+            let oldLayoutInfo = oldLayoutData[item.id]
+            if (oldLayoutInfo) {
+              delete oldLayoutData[item.id]
+              oldLayoutData[indexModel.id] = oldLayoutInfo;
+            }
+          }
+          //交换
+          oldContainer.addModel(indexModel);
+          //绑定并初始化渲染器
+          indexModel.initRender();
+          oldContainer.layoutManager?.updateLayout(oldAbsPos.x, oldAbsPos.y, [indexModel]);
+        }
+      } else {
+        //如果有多个元素，则从头开始在空位插入元素
+        for (let sr = 0; sr < 3; sr++) {
+          let has = false;
+          for (let sc = 0; sc < 3; sc++) {
+            if (emptyAreas[sr][sc] == 0) {
+              layoutData[item.id] = { row: sr, col: sc }
+              emptyAreas[sr][sc] = 1;
+              has = true;
+              break;
+            }
+          }
+          if (has) {
+            break;
+          }
+        }
+      }
+    }
+    return true
   }
 
   /**
@@ -127,28 +210,9 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
     //计算鼠标移入的区域  TODO 旋转的情况
     if (this?.container?.layoutData?.nine && models?.length > 0) {
       let layoutData = this.container.layoutData.nine
-      let unitWidth = this.container.width / 3;
-      let unitHeight = this.container.height / 3;
-      let absPosition = this.container?.getAbsPosition();
-      let px = x - absPosition.x;
-      let py = y - absPosition.y;
-      let row = -1;
-      let col = -1;
-      if (px >= 0 && px < unitWidth) {
-        col = 0
-      } else if (px >= unitWidth && px < 2 * unitWidth) {
-        col = 1
-      } else if (px >= 2 * unitWidth && px < this.container.width) {
-        col = 2
-      }
-      if (py >= 0 && py < unitHeight) {
-        row = 0
-      } else if (py >= unitHeight && py < 2 * unitHeight) {
-        row = 1
-      } else if (py >= 2 * unitHeight && py < this.container.height) {
-        row = 2
-      }
-      if (col != -1 && row != -1) {
+      //获取鼠标在九宫格的位置
+      let layoutIndex = this.getLayoutIndex(x, y);
+      if (layoutIndex.row != -1 && layoutIndex.col != -1) {
         let oldRow = -1;
         let oldCol = -1;
         //获取当前元素的老位置
@@ -160,7 +224,7 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
         let oldModel = null;
         for (let key in layoutData) {
           let data = layoutData[key];
-          if (data.row == row && data.col == col) {
+          if (data.row == layoutIndex.row && data.col == layoutIndex.col) {
             oldModel = this.container.models.get(key);
             break;
           }
@@ -171,12 +235,12 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
         }
         //存在老位置，新位置有元素,交换
         else if (oldRow != -1 && oldModel) {
-          layoutData[models[0].id] = { row: row, col: col }
+          layoutData[models[0].id] = { row: layoutIndex.row, col: layoutIndex.col }
           layoutData[oldModel.id] = { row: oldRow, col: oldCol }
         }
         //新位置无元素，允许移入
         else if (!oldModel) {
-          layoutData[models[0].id] = { row: row, col: col }
+          layoutData[models[0].id] = { row: layoutIndex.row, col: layoutIndex.col }
         }
 
 
@@ -255,7 +319,37 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
     }
   }
 
-
+  /**
+     * 获取落入的布局行列
+     * @param x 
+     * @param y 
+     * @returns 
+     */
+  private getLayoutIndex(x: number, y: number): object {
+    //计算鼠标落点在哪个位置
+    let unitWidth = this.container.width / 3;
+    let unitHeight = this.container.height / 3;
+    let absPosition = this.container?.getAbsPosition();
+    let px = x - absPosition.x;
+    let py = y - absPosition.y;
+    let row = -1;
+    let col = -1;
+    if (px >= 0 && px < unitWidth) {
+      col = 0
+    } else if (px >= unitWidth && px < 2 * unitWidth) {
+      col = 1
+    } else if (px >= 2 * unitWidth && px < this.container.width) {
+      col = 2
+    }
+    if (py >= 0 && py < unitHeight) {
+      row = 0
+    } else if (py >= unitHeight && py < 2 * unitHeight) {
+      row = 1
+    } else if (py >= 2 * unitHeight && py < this.container.height) {
+      row = 2
+    }
+    return { row: row, col: col }
+  }
   // ============================ 静态方法 ============================
   /**
    * 返回当前实例

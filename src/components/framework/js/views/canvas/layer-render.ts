@@ -710,6 +710,10 @@ class DDeiLayerCanvasRender {
             let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
             let model = this.stage?.getModelById(id)
             model.rotate = item.rotate
+            model.dragOriginWidth = model.width;
+            model.dragOriginHeight = model.height;
+            model.dragOriginX = model.x;
+            model.dragOriginY = model.y;
             model.setBounds(item.x, item.y, item.width, item.height)
             model.currentPointVectors = item.currentPointVectors
             model.centerPointVector = item.centerPointVector
@@ -969,7 +973,6 @@ class DDeiLayerCanvasRender {
       default: {
         // //清空当前opPoints
         this.model.opPoints = [];
-        this.tempLooseControl = null;
         //判断当前鼠标坐标是否落在选择器控件的区域内
         if (this.stageRender.selector &&
           this.stageRender.selector.isInAreaLoose(evt.offsetX, evt.offsetY, DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2)) {
@@ -982,23 +985,8 @@ class DDeiLayerCanvasRender {
         //光标所属位置是否有控件
         //有控件：分发事件到当前控件
         if (operateControls != null && operateControls.length > 0) {
-          this.tempLooseControl = operateControls[0]
           operateControls[0].render.mouseMove(evt);
-        }
-        // //下发事件到当前层级每个控件
-        // for (let i = 0; i < this.model.midList.length; i++) {
-        //   if (!this.stage.ddInstance.eventCancel) {
-        //     let model = this.model.models.get(this.model.midList[i]);
-        //     if (model && model.isInAreaLoose(evt.offsetX, evt.offsetY, DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2)) {
-        //       //记录经过宽松判定的控件，在点击时，此类控件具备优先级，如表格
-        //       this.tempLooseControl = model;
-        //       model.render.mouseMove(evt);
-        //     }
-        //   } else {
-        //     break;
-        //   }
-        // }
-        if (this.tempLooseControl == null) {
+        } else if (this.stageRender.selector.passIndex == -1) {
           this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
         }
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);

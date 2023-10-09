@@ -55,17 +55,19 @@ class DDeiBusCommandModelChangeContainer extends DDeiBusCommand {
             freeLayoutManager.container = newContainer;
             newContainer.layoutManager = freeLayoutManager;
           }
-          //交由新容器的布局管理器进行控件移入或交换
-          let successAppend = newContainer.layoutManager?.append(evt.offsetX, evt.offsetY, operateModels);
-          if (successAppend) {
-            if (oldContainer) {
-              //更新老容器大小
-              oldContainer.changeParentsBounds();
+          if (newContainer.layoutManager?.canAppend(evt.offsetX, evt.offsetY, operateModels)) {
+            //交由新容器的布局管理器进行控件移入或交换
+            let successAppend = newContainer.layoutManager?.append(evt.offsetX, evt.offsetY, operateModels);
+            if (successAppend) {
+              if (oldContainer) {
+                //更新老容器大小
+                oldContainer.changeParentsBounds();
+              }
+              //更新新容器大小
+              newContainer?.changeParentsBounds()
+              //重新设置布局
+              newContainer?.layoutManager?.updateLayout(evt.offsetX, evt.offsetY, operateModels);
             }
-            //更新新容器大小
-            newContainer?.changeParentsBounds()
-            //重新设置布局
-            newContainer?.layoutManager?.updateLayout(evt.offsetX, evt.offsetY, operateModels);
           }
         }
 

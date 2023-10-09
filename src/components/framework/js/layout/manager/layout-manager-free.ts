@@ -19,6 +19,9 @@ class DDeiLayoutManagerFree extends DDeiLayoutManager {
   changeSubModelBounds(): void {
 
   }
+  canAppend(x: number, y: number, models: DDeiAbstractShape[]): boolean {
+    return true;
+  }
 
   append(x: number, y: number, models: DDeiAbstractShape[]): boolean {
     models.forEach(item => {
