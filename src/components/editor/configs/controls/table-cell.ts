@@ -72,7 +72,7 @@ export const styles = {
       'controlType': 'color',
       'mapping': ["border.top.color", "border.right.color", "border.bottom.color", "border.left.color"],
       'dataType': 'string',
-      'defaultValue': 'black',
+      'defaultValue': 'rgb(219,219,233)',
       'orderNo': 2,
       'visiable': true
     },
@@ -386,48 +386,6 @@ export const styles = {
       'defaultValue': 2,
       'visiable': false
     },
-    {
-      'id': '100302305',
-      'code': 'borderCreatingOpacity',
-      'name': '透明度',
-      'desc': '图形的边框的透明度，0完全透明~1完全不透明',
-      'group': '边框',
-      'controlType': 'text',
-      'mapping': ["border.creating.top.opacity", "border.creating.right.opacity", "border.creating.bottom.opacity", "border.creating.left.opacity"],
-      'dataType': 'float',
-      'defaultValue': 0.5,
-      'display': 'column',
-      'orderNo': 3,
-      'visiable': false
-    },
-    {
-      'id': '100302306',
-      'code': 'fillCreatingOpacity',
-      'name': '透明度',
-      'desc': '图形的填充的透明度，0完全透明~1完全不透明',
-      'group': '填充',
-      'controlType': 'text',
-      'mapping': ["fill.creating.opacity"],
-      'dataType': 'float',
-      'defaultValue': 0.5,
-      'display': 'column',
-      'orderNo': 3,
-      'visiable': false
-    },
-    {
-      'id': '100302307',
-      'code': 'imageCreatingOpacity',
-      'name': '透明度',
-      'desc': '图形的填充图片的透明度，0完全透明~1完全不透明',
-      'group': '填充',
-      'controlType': 'text',
-      'mapping': ["image.creating.opacity"],
-      'dataType': 'float',
-      'defaultValue': 0.5,
-      'display': 'column',
-      'orderNo': 3,
-      'visiable': false
-    }
   ],
   'visiable': false,
   'order': 1

@@ -1781,6 +1781,9 @@ class DDeiTable extends DDeiAbstractShape {
   initRowNum: number = 5;
   //初始列数，初始每列宽度=表格宽度/初始列数
   initColNum: number = 5;
+  //当前行列号
+  curCol: number = -1;
+  curRow: number = -1;
 
   //表格的选择器
   selector: DDeiTableSelector | null = null;
