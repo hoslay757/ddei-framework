@@ -58,13 +58,21 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
    */
   drawCells(): void {
     //更新所有单元格     
+    let mergeCells = [];
     for (let i = 0; i < this.model.rows.length; i++) {
       let rowObj = this.model.rows[i];
       for (let j = 0; j < rowObj.length; j++) {
         let cellObj = rowObj[j];
-        cellObj.render.drawShape();
+        if (cellObj.isMergeCell()) {
+          mergeCells.push(cellObj)
+        } else if (!cellObj.isMergedCell()) {
+          cellObj.render.drawShape();
+        }
       }
     }
+    mergeCells.forEach(item => {
+      item.render.drawShape()
+    })
   }
 
   // ============================== 事件 ===============================
