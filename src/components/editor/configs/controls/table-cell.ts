@@ -72,7 +72,7 @@ export const styles = {
       'controlType': 'color',
       'mapping': ["border.top.color", "border.right.color", "border.bottom.color", "border.left.color"],
       'dataType': 'string',
-      'defaultValue': 'red',
+      'defaultValue': 'rgb(219,219,233)',
       'orderNo': 2,
       'visiable': true
     },
@@ -178,7 +178,7 @@ export const styles = {
       'group': '填充',
       'controlType': 'color',
       'dataType': 'string',
-      'defaultValue': 'blue',
+      'defaultValue': 'white',
       'orderNo': 2,
       'visiable': true
     },

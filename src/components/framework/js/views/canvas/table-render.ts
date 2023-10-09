@@ -45,7 +45,8 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
     //转换为缩放后的坐标
     ratPos = DDeiUtil.getRatioPosition(fillAreaE, ratio);
     //剪切当前区域
-    ctx.rect(ratPos.x, ratPos.y, ratPos.width, ratPos.height);
+    let lineOffset = 1 * ratio / 2;
+    ctx.rect(ratPos.x + lineOffset, ratPos.y + lineOffset, ratPos.width, ratPos.height);
     ctx.clip();
 
     this.drawCells();
