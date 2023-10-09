@@ -731,6 +731,18 @@ abstract class DDeiAbstractShape {
     return returnVal;
   }
 
+  /**
+   * 获取当前图形的除layer的所有父节点对象
+   */
+  getParents(): DDeiAbstractShape[] {
+    let pModel = this.pModel;
+    let returnControls = [];
+    while (pModel?.baseModelType != "DDeiLayer") {
+      returnControls.push(pModel);
+      pModel = pModel.pModel;
+    }
+    return returnControls;
+  }
 
   /**
    * 获取当前图形的绝对旋转坐标值

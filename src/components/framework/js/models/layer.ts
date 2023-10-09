@@ -145,7 +145,12 @@ class DDeiLayer {
     this.resortModelByZIndex();
   }
 
-
+  /**
+     * 获取当前图形的除layer的所有父节点对象
+     */
+  getParents(): DDeiAbstractShape[] {
+    return []
+  }
   /**
   * 将控件设置到顶层
   */

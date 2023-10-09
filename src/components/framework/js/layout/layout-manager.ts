@@ -57,6 +57,14 @@ abstract class DDeiLayoutManager {
 
 
   /**
+   * 是否允许新控件移入
+   * @param x 移入的坐标
+   * @param y 移入的坐标
+   * @param models 移入的控件
+   * @return 是否允许移入
+   */
+  abstract canAppend(x: number, y: number, models: DDeiAbstractShape[]): boolean;
+  /**
    * 新控件移入
    * @param x 移入的坐标
    * @param y 移入的坐标

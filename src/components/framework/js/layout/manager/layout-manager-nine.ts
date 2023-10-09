@@ -98,9 +98,18 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
 
   canAppend(x: number, y: number, models: DDeiAbstractShape[]): boolean {
     if (models?.length == 1 || models?.length <= 9 - this.container.models.size) {
+      //获取当前容器的上级，形成链路，直到layer
+      let parentControls = this.container.getParents();
       //检测，拖入对象不能为自身容器以及自身容器子控件
       for (let i = 0; i < models.length; i++) {
-        if (models[i] == this.container) {
+        let model = models[i];
+        if (model.id.indexOf("_shadow") != -1) {
+          let id = model.id.substring(model.id, model.id.lastIndexOf("_shadow"))
+          model = this.container.stage?.getModelById(id)
+        }
+        if (model == this.container) {
+          return false;
+        } else if (parentControls.indexOf(model) != -1) {
           return false;
         }
       }

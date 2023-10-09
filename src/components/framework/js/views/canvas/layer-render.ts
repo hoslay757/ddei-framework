@@ -704,51 +704,70 @@ class DDeiLayerCanvasRender {
           break;
         //控件拖拽中
         case DDeiEnumOperateState.CONTROL_DRAGING:
-          let operateModels = []
-          //同步影子元素的坐标大小等状态到当前模型
-          this.model.shadowControls.forEach(item => {
-            let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
-            let model = this.stage?.getModelById(id)
-            model.rotate = item.rotate
-            model.dragOriginWidth = model.width;
-            model.dragOriginHeight = model.height;
-            model.dragOriginX = model.x;
-            model.dragOriginY = model.y;
-            model.setBounds(item.x, item.y, item.width, item.height)
-            model.currentPointVectors = item.currentPointVectors
-            model.centerPointVector = item.centerPointVector
-            operateModels.push(model)
-          })
-          if (operateModels?.length > 0) {
-            //如果按下了ctrl键，则需要修改容器的关系并更新样式
-            if (isAlt) {
-              //寻找鼠标落点当前所在的容器
-              let mouseOnContainers: DDeiAbstractShape[] = DDeiAbstractShape.findBottomContainersByArea(this.model, evt.offsetX, evt.offsetY);
-              let lastOnContainer = this.model;
-              let pContainerModel = this.stageRender.currentOperateShape.pModel;
-              //移除当前元素
-              if (mouseOnContainers && mouseOnContainers.length > 0) {
-                //获取最下层容器
-                for (let k = mouseOnContainers.length - 1; k >= 0; k--) {
-                  if (mouseOnContainers[k].id != this.stageRender.currentOperateShape.id) {
-                    lastOnContainer = mouseOnContainers[k]
-                    break;
-                  }
+
+          let isStop = false;
+          //如果按下了ctrl键，则需要修改容器的关系并更新样式
+          if (isAlt) {
+            //寻找鼠标落点当前所在的容器
+            let mouseOnContainers: DDeiAbstractShape[] = DDeiAbstractShape.findBottomContainersByArea(this.model, evt.offsetX, evt.offsetY);
+            let lastOnContainer = this.model;
+            let pContainerModel = this.stageRender.currentOperateShape.pModel;
+            if (mouseOnContainers && mouseOnContainers.length > 0) {
+              //获取最下层容器
+              for (let k = mouseOnContainers.length - 1; k >= 0; k--) {
+                if (mouseOnContainers[k].id != this.stageRender.currentOperateShape.id) {
+                  lastOnContainer = mouseOnContainers[k]
+                  break;
                 }
               }
+            }
 
-              //如果最小层容器不是当前容器，执行的移动容器操作
-              if (lastOnContainer.id != pContainerModel.id || lastOnContainer.unicode != pContainerModel.unicode) {
+            //如果最小层容器不是当前容器，执行的移动容器操作
+            if (lastOnContainer.id != pContainerModel.id || lastOnContainer.unicode != pContainerModel.unicode) {
+              if (!lastOnContainer.layoutManager || lastOnContainer.layoutManager.canAppend(evt.offsetX, evt.offsetY, this.model.shadowControls)) {
+                let operateModels = []
+                //同步影子元素的坐标大小等状态到当前模型
+                this.model.shadowControls.forEach(item => {
+                  let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
+                  let model = this.stage?.getModelById(id)
+                  model.rotate = item.rotate
+                  model.dragOriginWidth = model.width;
+                  model.dragOriginHeight = model.height;
+                  model.dragOriginX = model.x;
+                  model.dragOriginY = model.y;
+                  model.setBounds(item.x, item.y, item.width, item.height)
+                  model.currentPointVectors = item.currentPointVectors
+                  model.centerPointVector = item.centerPointVector
+                  operateModels.push(model)
+                })
                 //构造移动容器action数据
                 this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeContainer, { oldContainer: pContainerModel, newContainer: lastOnContainer, models: operateModels }, evt);
-              } else {
-                pContainerModel?.layoutManager?.updateLayout(evt.offsetX, evt.offsetY, operateModels);
               }
-            } else {
-              let pContainerModel = operateModels[0].pModel;
+              isStop = true;
+            }
+          }
+          if (!isStop) {
+            let pContainerModel = this.stageRender.currentOperateShape.pModel;
+            if (!pContainerModel.layoutManager || pContainerModel.layoutManager.canChangePosition(evt.offsetX, evt.offsetY, this.model.shadowControls)) {
+              let operateModels = []
+              //同步影子元素的坐标大小等状态到当前模型
+              this.model.shadowControls.forEach(item => {
+                let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
+                let model = this.stage?.getModelById(id)
+                model.rotate = item.rotate
+                model.dragOriginWidth = model.width;
+                model.dragOriginHeight = model.height;
+                model.dragOriginX = model.x;
+                model.dragOriginY = model.y;
+                model.setBounds(item.x, item.y, item.width, item.height)
+                model.currentPointVectors = item.currentPointVectors
+                model.centerPointVector = item.centerPointVector
+                operateModels.push(model)
+              })
               pContainerModel?.layoutManager?.updateLayout(evt.offsetX, evt.offsetY, operateModels);
             }
           }
+
           this.model.shadowControls = [];
           //清空临时变量
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
@@ -790,7 +809,6 @@ class DDeiLayerCanvasRender {
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
           //渲染图形
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
-
           break;
         //默认缺省状态
         default:

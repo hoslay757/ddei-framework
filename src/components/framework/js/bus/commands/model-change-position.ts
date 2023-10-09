@@ -134,8 +134,10 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
 
       models.forEach(item => {
         let x = parseFloat((movedBounds.x - cx + movedBounds.width * originPosMap.get(item.id).xR).toFixed(4))
+        let width = parseFloat((movedBounds.width * originPosMap.get(item.id).wR).toFixed(4))
         let y = parseFloat((movedBounds.y - cy + movedBounds.height * originPosMap.get(item.id).yR).toFixed(4))
-        item.setPosition(x, y)
+        let height = parseFloat((movedBounds.height * originPosMap.get(item.id).hR).toFixed(4))
+        item.setBounds(x, y, width, height)
       })
 
       //如果移动过程中需要改变容器，一般用于拖拽时的逻辑
