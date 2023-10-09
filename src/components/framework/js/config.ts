@@ -87,7 +87,7 @@ class DDeiConfig {
   static SERI_FIELDS: object = {
     "DDei": { "TOJSON": ["stage"], "SKIP": ["bus", "render", "unicode"] },
     "DDeiStage": { "TOJSON": ["layers"], "SKIP": ["ddInstance", "selectedModels", "render", "unicode"] },
-    "DDeiLayer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "render", "unicode", "opPoints", "dragInPoints", "dragOutPoints", "shadowControls"] },
+    "DDeiLayer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "render", "unicode", "opPoints", "dragInPoints", "dragOutPoints", "shadowControls", "layoutManager"] },
     "DDeiContainer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "pointVectors", "currentPointVectors", "centerPointVector", "layoutManager", "loosePointVectors", "currentLoosePointVectors", "rotateMatrix"] },
     "AbstractShape": { "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "pointVectors", "currentPointVectors", "centerPointVector", "loosePointVectors", "currentLoosePointVectors", "rotateMatrix"] },
     "DDeiTable": { "TOJSON": ["rows"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "pointVectors", "currentPointVectors", "centerPointVector", "loosePointVectors", "cols", "selector", "currentLoosePointVectors", "initColNum", "initRowNum", "rotateMatrix", "tempDragCell", "tempDragType", "curCol", "curRow", "specilDrag", "tempUpCel", "dragChanging", "dragType", "dragCell"] },
@@ -130,8 +130,8 @@ class DDeiConfig {
     //选择器边框
     selector: {
       border: {
-        width: 2, color: "red", dash: [5, 3], round: 0,
-        selected: { width: 2, color: "red", dash: [5, 3], round: 0 }
+        width: 2, color: "rgb(31,187,125)", dash: null, round: 0,
+        selected: { width: 2, color: "rgb(31,187,125)", dash: null, round: 0 }
       },
 
       //间隔宽度，根据选中单个控件、选中多个控件，间隔宽度可以有所变化

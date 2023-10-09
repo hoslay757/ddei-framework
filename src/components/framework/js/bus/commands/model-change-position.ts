@@ -5,6 +5,7 @@ import DDeiAbstractShape from '../../models/shape';
 import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
 import { Matrix3, Vector3 } from 'three';
+import DDeiLayoutManagerFactory from '../../layout/layout-manager-factory';
 /**
  * 改变模型坐标的总线Command
  */
@@ -29,6 +30,7 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
         let parentContainer = data?.models[i].pModel;
         if (parentContainer?.layoutManager) {
           if (!parentContainer.layoutManager.canChangePosition(data.x, data.y, models, data.isAlt)) {
+            bus?.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'not-allowed' }, evt);
             return false;
           }
         }
@@ -131,39 +133,33 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
       let movedBounds = { x: x - originRect.width / 2, y: y - originRect.height / 2, width: originRect.width, height: originRect.height }
 
       models.forEach(item => {
-        let originBound = { x: item.x, y: item.y, width: item.width, height: item.height };
-
         let x = parseFloat((movedBounds.x - cx + movedBounds.width * originPosMap.get(item.id).xR).toFixed(4))
         let width = parseFloat((movedBounds.width * originPosMap.get(item.id).wR).toFixed(4))
         let y = parseFloat((movedBounds.y - cy + movedBounds.height * originPosMap.get(item.id).yR).toFixed(4))
         let height = parseFloat((movedBounds.height * originPosMap.get(item.id).hR).toFixed(4))
         item.setBounds(x, y, width, height)
-        //如果当前是修改坐标，并且不改变容器大小，则按照容器比例更新子元素的大小
-        if (!changeContainer && stage.render.selector.passIndex != 10 && stage.render.selector.passIndex != 11) {
-          if (item.baseModelType == "DDeiContainer") {
-            let changedBound = { x: item.x, y: item.y, width: item.width, height: item.height };
-            item.changeChildrenBounds(originBound, changedBound)
-            item.changeParentsBounds();
-          };
-          //pContainerModel修改上层容器直至layer的大小
-          parentContainer.changeParentsBounds()
-        }
-
       })
 
       //如果移动过程中需要改变容器，一般用于拖拽时的逻辑
       if (stage.render.selector.passIndex == 10 || stage.render.selector.passIndex == 13 || stage.render.selector.passIndex == 11) {
-        if (!changeContainer) {
-          //同步更新上层容器其大小和坐标
-          parentContainer.changeParentsBounds()
-        } else {
+        if (changeContainer) {
+          if (newContainer.baseModelType == "DDeiLayer" && !newContainer.layoutManager) {
+            let freeLayoutManager = DDeiLayoutManagerFactory.getLayoutInstance("free");
+            freeLayoutManager.container = newContainer;
+            newContainer.layoutManager = freeLayoutManager;
+          }
           //如果最小层容器不是当前容器，则修改鼠标样式，代表可能要移入
           if (newContainer.id != parentContainer.id) {
-
-            bus?.insert(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 11 }, evt);
+            if (newContainer?.layoutManager?.canAppend(data.x, data.y, models)) {
+              bus?.insert(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 11 }, evt);
+            } else {
+              bus?.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'not-allowed' }, evt);
+            }
           } else {
             bus?.insert(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 10 }, evt);
           }
+        } else {
+          bus?.insert(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: stage.render.selector.passIndex }, evt);
         }
       }
 

@@ -23,8 +23,123 @@ class DDeiTableSelectorCanvasRender extends DDeiSelectorCanvasRender {
     this.model.updatedBounds();
     //绘制边框
     this.drawBorder();
+    //填充选择的单元格
+    this.fillSelectedCell();
   }
 
+
+  /**
+   * 填充选中单元格
+   */
+  fillSelectedCell(): void {
+    let table = this.model.table;
+    //如果拥有填充色，则使用填充色
+    //获得 2d 上下文对象
+    let canvas = this.ddRender.canvas;
+    let ctx = canvas.getContext('2d');
+    //获取全局缩放比例
+    let ratio = this.ddRender.ratio;
+
+    //缩放填充区域
+    //保存状态
+    ctx.save();
+    ctx.fillStyle = DDeiUtil.getColor("rgb(210,210,210)")
+    ctx.globalAlpha = 0.5
+    let rect = this.model.getBounds();
+    let oriRect = { x: rect.x, y: rect.y, width: rect.width, height: rect.height }
+    //转换为缩放后的坐标
+    let ratPos = DDeiUtil.getRatioPosition(rect, ratio);
+    //设置旋转角度
+    this.doRotate(ctx, ratPos);
+
+
+    let rect1 = null;
+    //切割矩形区域
+    if (table.curRow != -1 && table.curCol != -1) {
+      let curCell = table.rows[table.curRow][table.curCol]
+      if (curCell) {
+        let cellBounds = curCell.getAbsBounds();
+        //左上角
+        if (rect.y - cellBounds.y == 0 && rect.x - cellBounds.x == 0) {
+          rect1 = {
+            x: rect.x,
+            y: rect.y + cellBounds.height - this.model.border.width,
+            width: rect.width,
+            height: rect.height - cellBounds.height + this.model.border.width
+          }
+          rect = {
+            x: rect.x + cellBounds.width,
+            y: rect.y,
+            width: rect.width - cellBounds.width,
+            height: cellBounds.height
+          }
+        }
+        //右上角
+        else if (rect.y - cellBounds.y == 0 && rect.x + rect.width - cellBounds.x - cellBounds.width == 0) {
+          rect1 = {
+            x: rect.x,
+            y: rect.y + cellBounds.height - this.model.border.width,
+            width: rect.width,
+            height: rect.height - cellBounds.height + this.model.border.width,
+          }
+          rect = {
+            x: rect.x,
+            y: rect.y,
+            width: rect.width - cellBounds.width,
+            height: cellBounds.height
+          }
+        }
+        //左下角
+        else if (rect.y + rect.height - cellBounds.y - cellBounds.height == 0 && rect.x - cellBounds.x == 0) {
+          rect1 = {
+            x: rect.x + cellBounds.width,
+            y: cellBounds.y - this.model.border.width,
+            width: rect.width - cellBounds.width,
+            height: cellBounds.height + this.model.border.width,
+          }
+          rect = {
+            x: rect.x,
+            y: rect.y,
+            width: rect.width,
+            height: rect.height - cellBounds.height
+          }
+        }
+        //右下角
+        else if (rect.y + rect.height - cellBounds.y - cellBounds.height == 0 && rect.x + rect.width - cellBounds.x - cellBounds.width == 0) {
+          rect1 = {
+            x: rect.x,
+            y: cellBounds.y - this.model.border.width,
+            width: rect.width - cellBounds.width,
+            height: cellBounds.height + this.model.border.width
+          }
+          rect = {
+            x: rect.x,
+            y: rect.y,
+            width: rect.width,
+            height: rect.height - cellBounds.height
+          }
+        }
+      }
+    }
+    rect.x += this.model.border.width;
+    rect.y += this.model.border.width;
+    rect.width -= this.model.border.width;
+    rect.height -= this.model.border.width;
+    ratPos = DDeiUtil.getRatioPosition(rect, ratio);
+    ctx.fillRect(ratPos.x, ratPos.y, ratPos.width, ratPos.height);
+    if (rect1?.width > 0 && rect1?.height > 0) {
+      rect1.x += this.model.border.width;
+      rect1.y += this.model.border.width;
+      rect1.width -= this.model.border.width;
+      rect1.height -= this.model.border.width;
+      ratPos = DDeiUtil.getRatioPosition(rect1, ratio);
+      ctx.fillRect(ratPos.x, ratPos.y, ratPos.width, ratPos.height);
+    }
+    //恢复状态
+    ctx.restore();
+
+
+  }
   /**
    * 绘制边框
    * @param tempBorder 临时边框，优先级最高

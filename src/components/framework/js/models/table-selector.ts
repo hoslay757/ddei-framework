@@ -37,6 +37,7 @@ class DDeiTableSelector extends DDeiSelector {
       if (minMax) {
         let rect = this.table.getCellPositionRect(minMax.minRow, minMax.minCol, minMax.maxRow, minMax.maxCol);
         let tableAbsPos = this.table.getAbsPosition();
+
         this.setBounds(tableAbsPos.x + rect.x, tableAbsPos.y + rect.y, rect.width, rect.height)
       } else {
         this.setBounds(0, 0, 0, 0)
