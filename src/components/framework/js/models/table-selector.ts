@@ -1,11 +1,4 @@
-import DDeiConfig from '../config';
-import DDei from '../ddei';
 import DDeiEnumControlState from '../enums/control-state';
-import DDeiUtil from '../util';
-import DDeiRectangle from './rectangle';
-import DDeiAbstractShape from './shape';
-import _, { cloneDeep } from 'lodash'
-import { Matrix3, Vector3 } from 'three';
 import DDeiSelector from './selector';
 import DDeiTable from './table';
 

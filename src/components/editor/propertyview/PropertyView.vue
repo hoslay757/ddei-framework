@@ -19,20 +19,21 @@
       <div class="ddei_editor_pv_subgroup_view_tab_title">
         <div
           :class="currentTopGroup?.groups.length > 1 && subGroup.selected ? 'ddei_editor_pv_subgroup_view_tab_title_item_selected' : 'ddei_editor_pv_subgroup_view_tab_title_item'"
-          v-show="!subGroup.empty" v-for="subGroup in currentTopGroup?.groups" :title="subGroup.name" @mouseup="changeSubGroup(subGroup)">{{
+          v-show="!subGroup.empty" v-for="subGroup in currentTopGroup?.groups" :title="subGroup.name"
+          @mouseup="changeSubGroup(subGroup)">{{
             subGroup.name }}</div>
       </div>
       <div class="ddei_editor_pv_subgroup_view_tab_panel"
         :style="{ height: 'calc(100vh - ' + (editor?.topHeight + editor?.bottomHeight + 40) + 'px' }">
         <div
           :class="{ 'ddei_editor_pv_subgroup_view_tab_panel_editors_column': attrDefine.display == 'column', 'ddei_editor_pv_subgroup_view_tab_panel_editors_row': attrDefine.display != 'column', 'empty_value': attrDefine.value ? false : true }"
-          v-for="attrDefine in currentSubGroup?.children" :title="attrDefine.desc" >
+          v-for="attrDefine in currentSubGroup?.children" :title="attrDefine.desc">
           <div class="title" v-if="!attrDefine.hiddenTitle && attrDefine?.visiable != false">{{ attrDefine.name }}<span
               v-if="attrDefine.notNull">*</span>：
           </div>
           <div class="editor" v-if="attrDefine.visiable != false">
             <PVTextEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
-                v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'text'">
+              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'text'">
             </PVTextEditor>
             <PVTextAreaEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
               v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'textarea'">
@@ -151,7 +152,7 @@ export default {
       if (this.selectedModels?.size > 0) {
         //获取当前所有组件的公共属性定义
         models = Array.from(this.selectedModels.values());
-        firstModel = cloneDeep(models[0]);
+        firstModel = models[0];
       } else {
         //获取当前所有组件的公共属性定义
         models = [this.editor.ddInstance.stage];
@@ -184,7 +185,7 @@ export default {
               if (i == 0) {
                 firstAttrDefine.value = DDeiUtil.getDataByPathList(firstModel, curAttrDefine.code, curAttrDefine.mapping);
                 firstAttrDefine.model = firstModel;
-            
+
               }
               //根据属性定义，从model获取值
               let curAttrValue = DDeiUtil.getDataByPathList(curModel, curAttrDefine.code, curAttrDefine.mapping);
@@ -206,15 +207,15 @@ export default {
             //获取单元格子控件信息，叠加到当前控件定义中
             let subControlDefine = cloneDeep(controlOriginDefinies.get(firstControlDefine.subcontrol));
             if (subControlDefine) {
-               //同步引用关系
+              //同步引用关系
               firstControlDefine.styles.img = ICONS['icon-table'];
               firstControlDefine.styles.name = '表格'
               this.syncAttrsToGroup(firstControlDefine, firstControlDefine.styles);
               topGroups = []
-              
-              if(firstModel.curRow > -1 && firstModel.curCol > -1){
+
+              if (firstModel.curRow > -1 && firstModel.curCol > -1) {
                 let selectedCell = firstModel.rows[firstModel.curRow][firstModel.curCol];
-                if(selectedCell){
+                if (selectedCell) {
                   subControlDefine.attrDefineMap.forEach((attrDefine, attrKey) => {
                     //当前属性的定义
                     let curAttrDefine = subControlDefine.attrDefineMap.get(attrKey)
@@ -238,11 +239,11 @@ export default {
 
               topGroups.push(firstControlDefine.styles)
               topGroups.push(layerTopGroup)
-             
+
             }
           }
 
-        }else{
+        } else {
           //同步引用关系
           this.syncAttrsToGroup(firstControlDefine, firstControlDefine.styles);
           this.syncAttrsToGroup(firstControlDefine, firstControlDefine.datas);
@@ -260,7 +261,7 @@ export default {
             firstControlDefine.styles.selected = true;
             currentTopGroup = firstControlDefine.styles
           }
-           else if (!firstControlDefine?.subStyles?.empty && upName == firstControlDefine?.subStyles?.name) {
+          else if (!firstControlDefine?.subStyles?.empty && upName == firstControlDefine?.subStyles?.name) {
             firstControlDefine.subStyles.selected = true;
             currentTopGroup = firstControlDefine.subStyles
           }
@@ -318,7 +319,7 @@ export default {
         //清除信息
         this.controlDefine = null;
         this.topGroups = null;
-        if(this.currentTopGroup){
+        if (this.currentTopGroup) {
           this.currentTopGroup.groups = null;
           this.currentTopGroup.children = null;
         }

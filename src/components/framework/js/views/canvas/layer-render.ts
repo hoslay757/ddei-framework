@@ -839,7 +839,7 @@ class DDeiLayerCanvasRender {
     //控制帧率
     if (!window.upTime) {
       window.upTime = dt;
-    } else if (dt - window.upTime > 30) {
+    } else if (dt - window.upTime > 20) {
       window.upTime = dt;
     } else {
       return;

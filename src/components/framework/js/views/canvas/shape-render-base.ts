@@ -10,7 +10,6 @@ import DDeiUtil from '../../util.js'
 import DDeiCanvasRender from './ddei-render.js';
 import DDeiLayerCanvasRender from './layer-render.js';
 import DDeiStageCanvasRender from './stage-render.js';
-import { cloneDeep } from 'lodash'
 
 /**
  * 缺省的图形渲染器，默认实现的了监听等方法
@@ -50,6 +49,26 @@ class DDeiAbstractShapeRender {
   * 当前的layer渲染器
   */
   layerRender: DDeiLayerCanvasRender | null;
+
+  /**
+   * 用于绘图时缓存属性等信息
+   */
+  renderCacheData: Map<string, object> = new Map();
+
+
+  /**
+   * 获取缓存的渲染数据
+   */
+  getCachedValue(attrPath: string): object | null {
+    let returnValue: object | null = null;
+    if (!this.renderCacheData.has(attrPath)) {
+      returnValue = DDeiModelArrtibuteValue.getAttrValueByState(this.model, attrPath, true);
+      this.renderCacheData.set(attrPath, returnValue)
+    } else {
+      returnValue = this.renderCacheData.get(attrPath)
+    }
+    return returnValue;
+  }
 
   // ============================== 事件 ===============================
   /**

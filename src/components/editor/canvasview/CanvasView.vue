@@ -118,7 +118,7 @@ export default {
               // control.calRotatePointVectors();
               // //中心点坐标
               // let centerPointVector = control.centerPointVector;
-              
+
               //记录当前的拖拽的x,y,写入dragObj作为临时变量
               let dragObj = {
                 x: e.offsetX,
@@ -142,11 +142,11 @@ export default {
                 window.upTime = dt;
               } else if (dt - window.upTime > 20) {
                 window.upTime = dt;
-              } else{
+              } else {
                 isExec = false;
               }
-              if(isExec){
-                this.editor.bus.push(DDeiEnumBusCommandType.ModelChangePosition, { models: [control], x: e.offsetX, y: e.offsetY, dx: 0, dy:0 }, e);
+              if (isExec) {
+                this.editor.bus.push(DDeiEnumBusCommandType.ModelChangePosition, { models: [control], x: e.offsetX, y: e.offsetY, dx: 0, dy: 0 }, e);
                 let isAlt = DDeiEditor.KEY_DOWN_STATE.get("alt");
                 this.editor.bus.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 10 }, e);
                 let lastOnContainer = layer;
@@ -174,7 +174,7 @@ export default {
             }
             this.editor.bus.executeAll();
             e.preventDefault();
-          
+
           }
         }
       }
