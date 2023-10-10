@@ -330,14 +330,16 @@ class DDeiTable extends DDeiAbstractShape {
   calCellsRotatePointVectors(rotateMatrix): void {
     //宽松判定区域的宽度
     let looseWeight = 10;
-    for (let i = 0; i < this.rows.length; i++) {
-      let rowObj = this.rows[i];
-      for (let j = 0; j < rowObj.length; j++) {
-        let item = rowObj[j]
-        let parentCenterPointVector = this.centerPointVector;
-        let halfWidth = item.width * 0.5;
-        let halfHeight = item.height * 0.5;
-        if (parentCenterPointVector) {
+    let parentCenterPointVector = this.centerPointVector;
+    if (parentCenterPointVector) {
+      for (let i = 0; i < this.rows.length; i++) {
+        let rowObj = this.rows[i];
+        for (let j = 0; j < rowObj.length; j++) {
+          let item = rowObj[j]
+
+          let halfWidth = item.width * 0.5;
+          let halfHeight = item.height * 0.5;
+
           let vc, vc1, vc2, vc3, vc4;
           let loosePointVectors = null;
           if (item.pointVectors?.length > 0) {
@@ -360,6 +362,7 @@ class DDeiTable extends DDeiAbstractShape {
             item.pointVectors.push(vc3)
             item.pointVectors.push(vc4)
             item.centerPointVector = vc;
+
             loosePointVectors = []
             //记录宽松判定区域的点
             loosePointVectors.push(new Vector3(vc1.x - looseWeight, vc1.y - looseWeight, vc1.z))
@@ -376,8 +379,9 @@ class DDeiTable extends DDeiAbstractShape {
           loosePointVectors?.forEach(pv => {
             pv.applyMatrix3(rotateMatrix);
           });
+          item.calChildrenRotatePointVectors(rotateMatrix);
         }
-        item.calChildrenRotatePointVectors(rotateMatrix);
+
       }
     }
   }

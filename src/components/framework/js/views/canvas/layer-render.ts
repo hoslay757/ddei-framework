@@ -565,7 +565,6 @@ class DDeiLayerCanvasRender {
       //光标所属位置是否有控件
       //有控件：分发事件到当前控件
       if (operateControls != null && operateControls.length > 0) {
-        console.log(operateControls)
         //全局变量：当前操作控件=当前控件
         let operateControl = operateControls[0];
         this.stageRender.currentOperateShape = operateControl;

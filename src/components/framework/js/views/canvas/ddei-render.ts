@@ -49,7 +49,7 @@ class DDeiCanvasRender {
         //检测是否支持离屏渲染特性
         try {
           if (OffscreenCanvas) {
-            this.isSupportOffScreen = true;
+            this.isSupportOffScreen = false;
           }
         } catch (e) { }
         if (this.isSupportOffScreen) {
@@ -116,6 +116,7 @@ class DDeiCanvasRender {
           let ctx = this.realCanvas.getContext('2d');
           ctx.drawImage(imageBitmap, 0, 0);
         }
+        this.model.stage.drawing = false;
         this.model.stage.render.refresh = false;
       }
     } else {
@@ -128,8 +129,11 @@ class DDeiCanvasRender {
    */
   bindEvent(): void {
     setInterval(() => {
+      let s1 = new Date().getTime();
+      this.model.stage.drawing = true;
       this.drawShape();
-    }, 10)
+      console.log(new Date().getTime() - s1)
+    }, 20)
     // //绑定鼠标按下事件
     // this.canvas.addEventListener('mousedown', (evt: Event) => {
     //   this.mouseDown(evt)

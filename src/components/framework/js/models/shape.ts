@@ -662,31 +662,8 @@ abstract class DDeiAbstractShape {
       return false
     }
     let ps = this.getRotatedPoints(looseWeight > 0);
-
-    let mx: number = Infinity, my: number = Infinity, mx1: number = 0, my1: number = 0;
-    //找到最大、最小的x和y
-    ps.forEach(p => {
-      if (p) {
-        mx = Math.min(Math.floor(p.x), mx)
-        mx1 = Math.max(Math.floor(p.x), mx1)
-        my = Math.min(Math.floor(p.y), my)
-        my1 = Math.max(Math.floor(p.y), my1)
-      }
-    })
-    // return DDeiAbstractShape.isInsidePolygon(
-    //   [
-    //     { x: mx - looseWeight, y: my - looseWeight },
-    //     { x: mx1 + looseWeight, y: my - looseWeight },
-    //     { x: mx1 + looseWeight, y: my1 + looseWeight },
-    //     { x: mx - looseWeight, y: my1 + looseWeight },
-    //   ], { x: x, y: y });
     return DDeiAbstractShape.isInsidePolygon(
-      [
-        { x: mx, y: my },
-        { x: mx1, y: my },
-        { x: mx1, y: my1 },
-        { x: mx, y: my1 },
-      ], { x: x, y: y });
+      ps, { x: x, y: y });
   }
 
   /**
