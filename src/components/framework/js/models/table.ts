@@ -112,34 +112,6 @@ class DDeiTable extends DDeiAbstractShape {
 
   }
 
-  /**
-  * 设置当前模型为被修改状态
-  */
-  setModelChanged(): void {
-    super.setModelChanged();
-    //重设所有单元格的行列关系      
-    for (let i = 0; i < this.rows.length; i++) {
-      let rowObj = this.rows[i];
-      for (let j = 0; j < rowObj.length; j++) {
-        let cellObj = rowObj[j];
-        cellObj.setModelChanged();
-      }
-    }
-  }
-  /**
-     * 清空向量
-     */
-  clearVectorPoints(): void {
-    super.clearVectorPoints();
-    //重设所有单元格的行列关系      
-    for (let i = 0; i < this.rows.length; i++) {
-      let rowObj = this.rows[i];
-      for (let j = 0; j < rowObj.length; j++) {
-        let cellObj = rowObj[j];
-        cellObj.clearVectorPoints();
-      }
-    }
-  }
 
   /**
    * 清除所有选中的单元格，并将curRow和curCol归位
@@ -329,6 +301,17 @@ class DDeiTable extends DDeiAbstractShape {
       this.cols[i][this.curRow].setState(DDeiEnumControlState.SELECTED);
     }
     this.changeChildrenBounds();
+  }
+
+  /**
+   * 修改自身状态
+   */
+  setState(state: DDeiEnumControlState) {
+    super.setState(state);
+    if (this.state == DDeiEnumControlState.DEFAULT) {
+      //设置清空子控件的选中状态
+      this.selector.resetState();
+    }
   }
 
   /**

@@ -24,44 +24,20 @@ abstract class DDeiAbstractShape {
   }
   // ============================ 方法 ============================
 
-  /**
-   * 清空向量
-   */
-  clearVectorPoints(): void {
-    //清空旋转矩阵
-    this.currentPointVectors = null;
-    this.pointVectors = null;
-    this.currentLoosePointVectors = null;
-    this.loosePointVectors = null;
-    this.centerPointVectors = null;
-  }
+
 
   /**
    * 设置当前模型为被修改状态
    */
   setModelChanged(): void {
-    let searchModel = this
-    while (searchModel && searchModel.baseModelType != 'DDeiLayer') {
-      searchModel.modelChanged = true
-      searchModel.clearVectorPoints();
-      if (searchModel.id?.indexOf("_shadow") != -1) {
-        break;
-      }
-      searchModel = searchModel.pModel
-    }
+    this.layer?.setModelChanged();
   }
+
   /**
    * 判断当前模型是否已被修改
    */
   isModelChanged(): boolean {
-    let searchModel = this
-    while (searchModel && searchModel.baseModelType != 'DDeiLayer') {
-      if (searchModel.modelChanged) {
-        return true;
-      }
-      searchModel = searchModel.pModel
-    }
-    return false;
+    return this.layer?.isModelChanged();
   }
   /**
    * 获取实际的内部容器控件
@@ -661,8 +637,6 @@ abstract class DDeiAbstractShape {
   //唯一表示码，运行时临时生成
   unicode: string;
 
-  //模型是否发生改变，当移动、改变大小、旋转、修改文本等操作会引起改变
-  modelChanged: boolean = true;
   // ============================ 方法 ===============================
 
 

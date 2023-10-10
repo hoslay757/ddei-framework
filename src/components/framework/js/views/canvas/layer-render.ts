@@ -98,6 +98,7 @@ class DDeiLayerCanvasRender {
         this.helpLines = null
       }
 
+      this.modelChanged = false;
     }
   }
 

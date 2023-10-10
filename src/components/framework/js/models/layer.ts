@@ -92,6 +92,10 @@ class DDeiLayer {
 
   //拖拽时的影子控件，拖拽完成或取消后会销毁
   shadowControls: DDeiAbstractShape[] = []
+
+  //模型是否发生改变，当移动、改变大小、旋转、修改文本等操作会引起改变
+  modelChanged: boolean = true;
+
   // ============================ 方法 ===============================
   /**
   * 初始化渲染器
@@ -351,14 +355,17 @@ class DDeiLayer {
    * 设置当前模型为被修改状态
    */
   setModelChanged(): void {
-
+    this.modelChanged = true;
   }
 
   /**
-     * 清空向量
-     */
-  clearVectorPoints(): void {
+  * 判断当前模型是否已被修改
+  */
+  isModelChanged(): boolean {
+    return this.modelChanged;
   }
+
+
 
   /**
    * 根据ID获取模型

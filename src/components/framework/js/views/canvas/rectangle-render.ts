@@ -63,13 +63,8 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
 
     let modelChanged = this.model.isModelChanged();
     if (modelChanged) {
-      if (this.model.id && this.model.id.indexOf("_shadow") == -1) {
-        console.log(this.model.id + " .  重新计算向量")
-      }
       //计算旋转矩阵
       this.model.calRotatePointVectors();
-    } else if (this.model.text == "长方形") {
-      console.log(this.model.id + " .  未能重新计算向量")
     }
     //绘制边框
     this.drawBorder();
@@ -89,7 +84,6 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       this.model.pointVectors = null;
       this.model.currentLoosePointVectors = this.model.loosePointVectors;
       this.model.loosePointVectors = null;
-      this.model.modelChanged = false;
     }
 
   }

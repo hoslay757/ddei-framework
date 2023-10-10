@@ -246,30 +246,7 @@ class DDeiRectContainer extends DDeiRectangle {
     this.midList = newMidList.concat(hadZIndexList);
   }
 
-  /**
-   * 设置当前模型为被修改状态
-   */
-  setModelChanged(): void {
-    super.setModelChanged();
-    this.midList.forEach(key => {
-      let item = this.models.get(key);
-      if (item) {
-        item.setModelChanged();
-      }
-    })
-  }
-  /**
-     * 清空向量
-     */
-  clearVectorPoints(): void {
-    super.clearVectorPoints();
-    this.midList.forEach(key => {
-      let item = this.models.get(key);
-      if (item) {
-        item.clearVectorPoints();
-      }
-    })
-  }
+
 
   /**
    * 通过下层模型更新本层模型的信息

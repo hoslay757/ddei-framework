@@ -49,7 +49,6 @@ class DDeiDiamondCanvasRender extends DDeiRectangleCanvasRender {
       this.model.pointVectors = null;
       this.model.currentLoosePointVectors = this.model.loosePointVectors;
       this.model.loosePointVectors = null;
-      this.model.modelChanged = false;
     }
   }
 
