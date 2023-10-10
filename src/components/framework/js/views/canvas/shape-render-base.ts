@@ -87,6 +87,15 @@ class DDeiAbstractShapeRender {
   }
 
   // ============================== 事件 ===============================
+
+  /**
+   * 拖拽本控件结束
+   * @param evt 
+   */
+  controlDragEnd(evt: Event): void {
+
+  }
+
   /**
    * 鼠标按下事件
    */

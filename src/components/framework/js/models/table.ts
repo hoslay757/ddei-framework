@@ -1514,6 +1514,7 @@ class DDeiTable extends DDeiAbstractShape {
           table.rows[i][j].setState(DDeiEnumControlState.DEFAULT)
         }
       }
+
       //设置新的选中状态
       table.tempUpCel = targetCell;
 

@@ -196,6 +196,20 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
       }
     }
   }
+
+
+  controlDragEnd(e: Event): void {
+    if (!this.stage.ddInstance.eventCancel) {
+      let table = this.model;
+      table.dragChanging = false;
+      table.specilDrag = false;
+      table.tempDragCell = null;
+      table.tempDragType = null;
+      table.tempUpCel = null;
+      table.dragCell = null;
+      table.dragType = null;
+    }
+  }
   /**
    * 绘制图形
    */
@@ -205,6 +219,7 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
       let table = this.model;
       if (table.dragChanging) {
         if (table.dragType == "cell") {
+
           table.dragCell?.render?.mouseUp(e);
         }
         table.dragChanging = false;

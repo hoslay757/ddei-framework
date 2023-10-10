@@ -776,6 +776,9 @@ class DDeiLayerCanvasRender {
                 operateModels.push(model)
               })
               pContainerModel?.layoutManager?.updateLayout(evt.offsetX, evt.offsetY, operateModels);
+              operateModels?.forEach(item => {
+                item.render?.controlDragEnd(evt)
+              })
             }
           }
 
