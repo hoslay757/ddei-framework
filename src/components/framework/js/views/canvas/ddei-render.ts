@@ -109,11 +109,14 @@ class DDeiCanvasRender {
    */
   drawShape(): void {
     if (this.model.stage) {
-      this.model.stage.render.drawShape();
-      if (this.isSupportOffScreen) {
-        const imageBitmap = this.canvas.transferToImageBitmap();
-        let ctx = this.realCanvas.getContext('2d');
-        ctx.drawImage(imageBitmap, 0, 0);
+      if (this.model.stage.render?.refresh) {
+        this.model.stage.render.drawShape();
+        if (this.isSupportOffScreen) {
+          const imageBitmap = this.canvas.transferToImageBitmap();
+          let ctx = this.realCanvas.getContext('2d');
+          ctx.drawImage(imageBitmap, 0, 0);
+        }
+        this.model.stage.render.refresh = false;
       }
     } else {
       throw new Error("当前实例未加载舞台模型，无法渲染图形");
@@ -124,7 +127,9 @@ class DDeiCanvasRender {
    * 绑定事件
    */
   bindEvent(): void {
-
+    setInterval(() => {
+      this.drawShape();
+    }, 10)
     // //绑定鼠标按下事件
     // this.canvas.addEventListener('mousedown', (evt: Event) => {
     //   this.mouseDown(evt)

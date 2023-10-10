@@ -53,6 +53,11 @@ class DDeiStageCanvasRender {
    * 选择框控件模型
    */
   selector: DDeiSelector;
+
+  /**
+   * 刷新，如果为true则会绘制图形
+   */
+  refresh: boolean = true;
   // ============================== 方法 ===============================
   /**
    * 初始化

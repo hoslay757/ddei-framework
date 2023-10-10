@@ -34,7 +34,8 @@ class DDeiBusCommandRefreshShape extends DDeiBusCommand {
 
     let stage = bus.ddInstance.stage;
     if (stage) {
-      stage.ddInstance.render.drawShape();
+      stage.render.refresh = true;
+      // stage.ddInstance.render.drawShape();
       return true;
     } else {
       return false;
