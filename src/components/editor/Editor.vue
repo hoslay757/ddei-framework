@@ -201,6 +201,15 @@ export default {
      * 判断是否移动到拖拽区
      */
     mouseMove(e: Event) {
+      let dt = new Date().getTime();
+      //控制帧率
+      if (!window.upTime) {
+        window.upTime = dt;
+      } else if (dt - window.upTime > 20) {
+        window.upTime = dt;
+      } else {
+        return;
+      }
       //判断落点是否在某个区域的拖拽区附近
       let frameLeftElement = document.getElementById("ddei_editor_frame_left");
       let frameRightElement = document.getElementById(

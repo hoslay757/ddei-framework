@@ -63,6 +63,7 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
                     paths.forEach(path => {
                       //根据code以及mapping设置属性值
                       DDeiUtil.setAttrValueByPath(cell, [path], value)
+                      cell.render?.setCachedValue(path, value)
                     });
 
 
@@ -72,6 +73,7 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
               } else {
                 //根据code以及mapping设置属性值
                 DDeiUtil.setAttrValueByPath(model, paths, value)
+                model.render?.setCachedValue(paths, value)
               }
             }
           }

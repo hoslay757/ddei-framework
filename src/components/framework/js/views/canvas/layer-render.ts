@@ -835,15 +835,7 @@ class DDeiLayerCanvasRender {
     if (!this.model.display) {
       return;
     }
-    let dt = new Date().getTime();
-    //控制帧率
-    if (!window.upTime) {
-      window.upTime = dt;
-    } else if (dt - window.upTime > 20) {
-      window.upTime = dt;
-    } else {
-      return;
-    }
+
     //ctrl、alt键的按下状态
     let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
     let isAlt = DDei.KEY_DOWN_STATE.get("alt");

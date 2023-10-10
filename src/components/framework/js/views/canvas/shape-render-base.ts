@@ -70,6 +70,21 @@ class DDeiAbstractShapeRender {
     return returnValue;
   }
 
+  /**
+  * 设置渲染缓存数据
+  */
+  setCachedValue(attrPath: string | string[], value: any): void {
+    if (attrPath) {
+      if (Array.isArray(attrPath)) {
+        attrPath.forEach(item => {
+          this.renderCacheData.set(item, value);
+        })
+      } else {
+        this.renderCacheData.set(attrPath, value);
+      }
+    }
+  }
+
   // ============================== 事件 ===============================
   /**
    * 鼠标按下事件
