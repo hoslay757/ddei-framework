@@ -310,9 +310,17 @@ class DDeiStage {
       if (souceModels.set) {
         souceModels = Array.from(souceModels.values());
       }
-      if (souceModels.indexOf(model) != -1) {
-        return
+      let find = false;
+      for (let k = 0; k < souceModels.length; k++) {
+        if (souceModels[k]?.id == model.id) {
+          find = true;
+          break;
+        }
       }
+      if (find) {
+        return;
+      }
+
       distP = { x: model.x, y: model.y, width: model.width, height: model.height }
       if (DDeiAbstractShape.isLeftAlign(sourceP, distP)) {
         models.leftAlignModels.push(model)

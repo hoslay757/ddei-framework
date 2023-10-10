@@ -651,6 +651,9 @@ class DDeiLayerCanvasRender {
           }
         }
       }
+      //清除临时操作点
+      this.model.opPoints = [];
+      this.model.shadowControls = [];
     } else {
       //判断当前操作状态
       switch (this.stageRender.operateState) {
@@ -680,11 +683,6 @@ class DDeiLayerCanvasRender {
             pushMulits.push({ actionType: DDeiEnumBusCommandType.ModelChangeSelect, data: [{ id: this.stageRender.currentOperateShape.id, value: DDeiEnumControlState.SELECTED }] });
           }
           this.stage?.ddInstance?.bus?.pushMulit(pushMulits, evt);
-          //清空临时变量
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
-          //渲染图形
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
-
           break;
         //选择器工作中
         case DDeiEnumOperateState.SELECT_WORKING:
@@ -697,10 +695,6 @@ class DDeiLayerCanvasRender {
             pushDatas[pushDatas.length] = { id: model.id, value: DDeiEnumControlState.SELECTED };
           });
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, pushDatas, evt);
-          //清空临时变量
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
-          //渲染图形
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
           break;
         //控件拖拽中
         case DDeiEnumOperateState.CONTROL_DRAGING:
@@ -769,25 +763,16 @@ class DDeiLayerCanvasRender {
           }
 
           this.model.shadowControls = [];
-          //清空临时变量
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
-          //渲染图形
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+
           break;
         //表格内部拖拽中
         case DDeiEnumOperateState.TABLE_INNER_DRAG:
           let table = this.stageRender.currentOperateShape
           table?.render?.mouseUp(evt)
-          //清空临时变量
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
-          //渲染图形
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+
           break;
         case DDeiEnumOperateState.CONTROL_ROTATE:
-          //清空临时变量
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
-          //渲染图形
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+
           break;
         case DDeiEnumOperateState.CONTROL_CHANGING_BOUND:
           //同步影子元素的坐标大小等状态到当前模型
@@ -805,19 +790,20 @@ class DDeiLayerCanvasRender {
             }
           })
           this.model.shadowControls = [];
-          //清空临时变量
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
-          //渲染图形
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+
           break;
         //默认缺省状态
         default:
           break;
       }
 
-      //排序并执行所有action
-      this.stage?.ddInstance?.bus?.executeAll();
     }
+    //清空临时变量
+    this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
+    //渲染图形
+    this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+    //排序并执行所有action
+    this.stage?.ddInstance?.bus?.executeAll();
   }
 
   /**

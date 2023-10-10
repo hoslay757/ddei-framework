@@ -31,33 +31,45 @@ class DDeiBusCommandSetHelpLine extends DDeiBusCommand {
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
     let stage = bus.ddInstance.stage;
-    if (stage && (data?.models?.length > 0 || data?.models?.size > 0 || data?.container)) {
-
+    if (stage) {
       let layer = data.layer;
       if (!layer) {
         layer = stage.layers[stage.layerIndex];
       }
-      let models = data?.models;
+      if (data?.models?.length > 0 || data?.models?.size > 0 || data?.container) {
 
-      if (!models && data?.container) {
-        models = data?.container.getSelectedModels();
-      }
-      if (models.set) {
-        models = Array.from(models.values());
-      }
-      if (models?.length > 0) {
-        let control = data?.control;
-        if (!control) {
-          control = stage.render.currentOperateShape;
+        let models = data?.models;
+
+
+        if (!models && data?.container) {
+          models = data?.container.getSelectedModels();
         }
-        if (!control) {
-          control = Array.from(models.values())[0];
+        if (models.set) {
+          models = Array.from(models.values());
         }
-        //显示辅助对齐线、坐标文本等图形
-        layer.render.helpLines = {
-          "bounds": control?.getAbsBounds(),
-          models: data?.models
-        };
+        if (models?.length > 0) {
+
+          let control = data?.control;
+          if (!control) {
+            control = stage.render.currentOperateShape;
+          }
+          if (!control) {
+            control = Array.from(models.values())[0];
+          }
+          //显示辅助对齐线、坐标文本等图形
+          layer.render.helpLines = {
+            "bounds": control?.getAbsBounds(),
+            models: data?.models
+          };
+          return true;
+        } else {
+          //隐藏辅助对齐线、坐标文本等图形
+          layer.render.helpLines = null;
+          return true;
+        }
+      } else {
+        //隐藏辅助对齐线、坐标文本等图形
+        layer.render.helpLines = null;
         return true;
       }
     }
