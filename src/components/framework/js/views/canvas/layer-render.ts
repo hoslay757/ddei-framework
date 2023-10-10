@@ -720,6 +720,8 @@ class DDeiLayerCanvasRender {
             if (lastOnContainer.id != pContainerModel.id || lastOnContainer.unicode != pContainerModel.unicode) {
               if (!lastOnContainer.layoutManager || lastOnContainer.layoutManager.canAppend(evt.offsetX, evt.offsetY, this.model.shadowControls)) {
                 let operateModels = []
+                let selMods = []
+
                 //同步影子元素的坐标大小等状态到当前模型
                 this.model.shadowControls.forEach(item => {
                   let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
@@ -733,9 +735,24 @@ class DDeiLayerCanvasRender {
                   model.currentPointVectors = item.currentPointVectors
                   model.centerPointVector = item.centerPointVector
                   operateModels.push(model)
+                  selMods.push({ id: model?.id, value: DDeiEnumControlState.SELECTED })
                 })
+                //判断是否需要取消选中表格
+                if (pContainerModel.baseModelType == 'DDeiTableCell') {
+                  selMods.push({ id: pContainerModel.pModel?.id, value: DDeiEnumControlState.DEFAULT })
+                } else {
+                  selMods.push({ id: pContainerModel.id, value: DDeiEnumControlState.DEFAULT })
+                }
+                if (lastOnContainer?.baseModelType == 'DDeiTableCell') {
+                  selMods.push({ id: lastOnContainer.pModel?.id, value: DDeiEnumControlState.SELECTED })
+                } else {
+                  selMods.push({ id: lastOnContainer?.id, value: DDeiEnumControlState.SELECTED })
+                }
+
+
                 //构造移动容器action数据
                 this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeContainer, { oldContainer: pContainerModel, newContainer: lastOnContainer, models: operateModels }, evt);
+                this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, selMods, evt);
               }
               isStop = true;
             }
