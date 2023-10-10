@@ -60,8 +60,16 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
    * 创建图形
    */
   drawShape(): void {
-    if (this.model.modelChanged) {
+
+    let modelChanged = this.model.isModelChanged();
+    if (modelChanged) {
+      if (this.model.id && this.model.id.indexOf("_shadow") == -1) {
+        console.log(this.model.id + " .  重新计算向量")
+      }
+      //计算旋转矩阵
       this.model.calRotatePointVectors();
+    } else if (this.model.text == "长方形") {
+      console.log(this.model.id + " .  未能重新计算向量")
     }
     //绘制边框
     this.drawBorder();
@@ -75,7 +83,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     //绘制文本
     this.drawText();
 
-    if (this.model.modelChanged) {
+    if (modelChanged) {
       //清空旋转矩阵
       this.model.currentPointVectors = this.model.pointVectors;
       this.model.pointVectors = null;

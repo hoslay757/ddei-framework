@@ -659,7 +659,6 @@ class DDeiLayerCanvasRender {
       switch (this.stageRender.operateState) {
         //控件状态确认中
         case DDeiEnumOperateState.CONTROL_CONFIRMING:
-
           this.model.shadowControls = [];
           this.stageRender.currentOperateShape.render.mouseUp(evt);
           //按下ctrl增加选中，或取消当前选中

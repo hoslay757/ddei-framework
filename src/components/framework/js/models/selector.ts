@@ -63,6 +63,9 @@ class DDeiSelector extends DDeiRectangle {
       this.passChange = true;
     }
   }
+
+
+
   /**
    * 重制状态
    */
@@ -75,7 +78,7 @@ class DDeiSelector extends DDeiRectangle {
     this.width = 0
     this.height = 0
     this.rotate = 0
-    this.modelChanged = true
+    this.setModelChanged()
     this.currentPointVectors = null;
     this.currentLoosePointVectors = null;
     this.pointVectors = null;
@@ -161,7 +164,7 @@ class DDeiSelector extends DDeiRectangle {
    * 根据已选择的控件更新坐标和状态
    * @param pContainerModel 上层容器控件
    */
-  updatedBoundsByModels(models: Map<string, DDeiAbstractShape> | Array<DDeiAbstractShape>): void {
+  updateBoundsByModels(models: Map<string, DDeiAbstractShape> | Array<DDeiAbstractShape>): void {
     if (!models) {
       models = this.stage?.selectedModels;
     }

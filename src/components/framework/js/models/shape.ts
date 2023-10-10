@@ -22,8 +22,54 @@ abstract class DDeiAbstractShape {
     this.modelCode = props.modelCode ? props.modelCode : null
     this.unicode = props.unicode ? props.unicode : DDeiUtil.getUniqueCode()
   }
-  // ============================ 静态方法 ============================
+  // ============================ 方法 ============================
 
+  /**
+   * 清空向量
+   */
+  clearVectorPoints(): void {
+    //清空旋转矩阵
+    this.currentPointVectors = null;
+    this.pointVectors = null;
+    this.currentLoosePointVectors = null;
+    this.loosePointVectors = null;
+    this.centerPointVectors = null;
+  }
+
+  /**
+   * 设置当前模型为被修改状态
+   */
+  setModelChanged(): void {
+    let searchModel = this
+    while (searchModel && searchModel.baseModelType != 'DDeiLayer') {
+      searchModel.modelChanged = true
+      searchModel.clearVectorPoints();
+      if (searchModel.id?.indexOf("_shadow") != -1) {
+        break;
+      }
+      searchModel = searchModel.pModel
+    }
+  }
+  /**
+   * 判断当前模型是否已被修改
+   */
+  isModelChanged(): boolean {
+    let searchModel = this
+    while (searchModel && searchModel.baseModelType != 'DDeiLayer') {
+      if (searchModel.modelChanged) {
+        return true;
+      }
+      searchModel = searchModel.pModel
+    }
+    return false;
+  }
+  /**
+   * 获取实际的内部容器控件
+   * @return 容器控件根据布局的模式不同返回不同的内部控件，普通控件返回null
+   */
+  getAccuContainer(): DDeiAbstractShape {
+    return null;
+  }
 
   /**
    * 获取实际的内部容器控件
@@ -31,9 +77,10 @@ abstract class DDeiAbstractShape {
    * @param y 相对路径坐标
    * @return 容器控件根据布局的模式不同返回不同的内部控件，普通控件返回null
    */
-  getAccuContainer(x: number, y: number): DDeiAbstractShape {
+  getAccuContainerByPos(x: number, y: number): DDeiAbstractShape {
     return null;
   }
+
   /**
    * 得到点在图形某条线上的投射点
    * @param point 测试点
@@ -513,7 +560,7 @@ abstract class DDeiAbstractShape {
             }
           } else if (item.state == DDeiEnumControlState.SELECTED && item.baseModelType == "DDeiTable") {
             //判断表格当前的单元格是否是选中的单元格，如果是则分发事件
-            let currentCell = item.getAccuContainer(x, y);
+            let currentCell = item.getAccuContainerByPos(x, y);
             if (currentCell?.state == DDeiEnumControlState.SELECTED) {
               let subControls = DDeiAbstractShape.findBottomModelsByArea(currentCell, x, y, looseWeight);
               if (subControls && subControls.length > 0) {
@@ -549,7 +596,7 @@ abstract class DDeiAbstractShape {
         //如果射线相交，则视为选中
         if (DDeiAbstractShape.isInsidePolygon(item.getRotatedPoints(), { x: x, y: y })) {
           //获取真实的容器控件
-          let accuContainer = item.getAccuContainer(x, y);
+          let accuContainer = item.getAccuContainerByPos(x, y);
           if (accuContainer) {
             let subControls = DDeiAbstractShape.findBottomContainersByArea(accuContainer, x, y);
             if (subControls && subControls.length > 0) {
@@ -680,7 +727,7 @@ abstract class DDeiAbstractShape {
     if (y !== undefined) {
       this.y = y
     }
-    this.modelChanged = true;
+    this.setModelChanged()
   }
 
   /**
@@ -697,7 +744,7 @@ abstract class DDeiAbstractShape {
     if (h !== undefined) {
       this.height = h
     }
-    this.modelChanged = true;
+    this.setModelChanged()
   }
 
   /**

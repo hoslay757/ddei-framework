@@ -112,6 +112,34 @@ class DDeiTable extends DDeiAbstractShape {
 
   }
 
+  /**
+  * 设置当前模型为被修改状态
+  */
+  setModelChanged(): void {
+    super.setModelChanged();
+    //重设所有单元格的行列关系      
+    for (let i = 0; i < this.rows.length; i++) {
+      let rowObj = this.rows[i];
+      for (let j = 0; j < rowObj.length; j++) {
+        let cellObj = rowObj[j];
+        cellObj.setModelChanged();
+      }
+    }
+  }
+  /**
+     * 清空向量
+     */
+  clearVectorPoints(): void {
+    super.clearVectorPoints();
+    //重设所有单元格的行列关系      
+    for (let i = 0; i < this.rows.length; i++) {
+      let rowObj = this.rows[i];
+      for (let j = 0; j < rowObj.length; j++) {
+        let cellObj = rowObj[j];
+        cellObj.clearVectorPoints();
+      }
+    }
+  }
 
   /**
    * 清除所有选中的单元格，并将curRow和curCol归位
@@ -256,7 +284,7 @@ class DDeiTable extends DDeiAbstractShape {
     }
     //设置表格的高度
     this.height = this.height + addHeight;
-    this.modelChanged = true;
+    this.setModelChanged()
     //循环列，维护列的关系
     for (let i = 0; i < this.cols.length; i++) {
       let currentCol = this.cols[i];
@@ -469,7 +497,7 @@ class DDeiTable extends DDeiAbstractShape {
     }
     //设置表格的高度
     this.width = this.width + addWidth;
-    this.modelChanged = true;
+    this.setModelChanged()
     //循环行，维护行的关系
     for (let i = 0; i < this.rows.length; i++) {
       let currentRow = this.rows[i];
@@ -595,7 +623,7 @@ class DDeiTable extends DDeiAbstractShape {
     }
     //设置表格的高度
     this.height = this.height - removeHeight;
-    this.modelChanged = true;
+    this.setModelChanged()
     //循环列，维护列的关系
     for (let i = 0; i < this.cols.length; i++) {
       let currentCol = this.cols[i];
@@ -687,7 +715,7 @@ class DDeiTable extends DDeiAbstractShape {
 
     //设置表格的宽度
     this.width = this.width - removeWidth
-    this.modelChanged = true;
+    this.setModelChanged()
 
     if (firstRemove) {
       this.cols.splice(0, 1);
@@ -932,11 +960,19 @@ class DDeiTable extends DDeiAbstractShape {
 
   /**
    * 获取实际的内部容器控件
+   * @return 容器控件根据布局的模式不同返回不同的内部控件，普通控件返回null
+   */
+  getAccuContainer(): DDeiAbstractShape {
+    return this;
+  }
+
+  /**
+   * 获取实际的内部容器控件
    * @param x 相对路径坐标
    * @param y 相对路径坐标
    * @return 容器控件根据布局的模式不同返回不同的内部控件，普通控件返回null
    */
-  getAccuContainer(x: number, y: number): DDeiAbstractShape {
+  getAccuContainerByPos(x: number, y: number): DDeiAbstractShape {
     //找到点所在的单元格
     for (let i = 0; i < this.rows.length; i++) {
       let rowObj = this.rows[i];
@@ -1184,7 +1220,7 @@ class DDeiTable extends DDeiAbstractShape {
         }
       }
       table.height = table.height + changeHeight;
-      table.modelChanged = true;
+      table.setModelChanged()
       //更新复制图形的区域
       this.updateCopyShapeArea();
       //更新表格布局子组件
@@ -1296,7 +1332,7 @@ class DDeiTable extends DDeiAbstractShape {
         }
       }
       table.width = table.width + changeWidth
-      table.modelChanged = true;
+      table.setModelChanged()
       //更新复制图形的区域
       this.updateCopyShapeArea();
       //更新表格布局子组件

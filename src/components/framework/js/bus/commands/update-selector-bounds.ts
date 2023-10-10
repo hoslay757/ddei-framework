@@ -65,7 +65,7 @@ class DDeiBusCommandUpdateSelectorBounds extends DDeiBusCommand {
             if (!models?.length > 0 && !models?.size > 0) {
               models = optContainer.getSelectedModels();
             }
-            selector.updatedBoundsByModels(models);
+            selector.updateBoundsByModels(models);
           }
         }
       }

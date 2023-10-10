@@ -138,12 +138,20 @@ class DDeiRectContainer extends DDeiRectangle {
 
   /**
    * 获取实际的内部容器控件
+   * @return 容器控件根据布局的模式不同返回不同的内部控件，普通控件返回null
+   */
+  getAccuContainer(): DDeiAbstractShape {
+    return this.layoutManager ? this.layoutManager.getAccuContainer() : this;
+  }
+
+  /**
+   * 获取实际的内部容器控件
    * @param x 相对路径坐标
    * @param y 相对路径坐标
    * @return 容器控件根据布局的模式不同返回不同的内部控件，普通控件返回null
    */
-  getAccuContainer(x: number, y: number): DDeiAbstractShape {
-    return this.layoutManager ? this.layoutManager.getAccuContainer(x, y) : this;
+  getAccuContainerByPos(x: number, y: number): DDeiAbstractShape {
+    return this.layoutManager ? this.layoutManager.getAccuContainerByPos(x, y) : this;
   }
 
   /**
@@ -239,6 +247,31 @@ class DDeiRectContainer extends DDeiRectangle {
   }
 
   /**
+   * 设置当前模型为被修改状态
+   */
+  setModelChanged(): void {
+    super.setModelChanged();
+    this.midList.forEach(key => {
+      let item = this.models.get(key);
+      if (item) {
+        item.setModelChanged();
+      }
+    })
+  }
+  /**
+     * 清空向量
+     */
+  clearVectorPoints(): void {
+    super.clearVectorPoints();
+    this.midList.forEach(key => {
+      let item = this.models.get(key);
+      if (item) {
+        item.clearVectorPoints();
+      }
+    })
+  }
+
+  /**
    * 通过下层模型更新本层模型的信息
    */
   updateBoundsByModels(): void {
@@ -255,7 +288,7 @@ class DDeiRectContainer extends DDeiRectangle {
       si.x = si.x - this.x
       si.y = si.y - this.y
     });
-    this.modelChanged = true;
+    this.setModelChanged()
   }
 
   /**
@@ -312,8 +345,9 @@ class DDeiRectContainer extends DDeiRectangle {
       } else {
         //遍历所有容器
         this.models.forEach(item => {
-          if (item.baseModelType == "DDeiContainer") {
-            let rm = item.getModelById(id);
+          let container = item.getAccuContainer()
+          if (container) {
+            let rm = container.getModelById(id);
             if (rm) {
               reutrnModel = rm;
             }
@@ -439,7 +473,9 @@ class DDeiRectContainer extends DDeiRectangle {
             pv.applyMatrix3(rotateMatrix);
           });
         }
-        if (item.baseModelType == "DDeiContainer") {
+        if (item.baseModelType == "DDeiTable") {
+          item.calCellsRotatePointVectors(rotateMatrix);
+        } else if (item.baseModelType == "DDeiContainer") {
           item.calChildrenRotatePointVectors(rotateMatrix);
         }
       });

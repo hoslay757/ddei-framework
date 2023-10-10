@@ -313,13 +313,24 @@ class DDeiLayer {
     return true;
   }
 
+
   /**
    * 获取实际的内部容器控件
    * @param x 相对路径坐标
    * @param y 相对路径坐标
    * @return 容器控件根据布局的模式不同返回不同的内部控件，普通控件返回null
    */
-  getAccuContainer(x: number, y: number): DDeiLayer {
+  getAccuContainer(): DDeiAbstractShape {
+    return this;
+  }
+
+  /**
+   * 获取实际的内部容器控件
+   * @param x 相对路径坐标
+   * @param y 相对路径坐标
+   * @return 容器控件根据布局的模式不同返回不同的内部控件，普通控件返回null
+   */
+  getAccuContainerByPos(x: number, y: number): DDeiLayer {
     return this;
   }
 
@@ -336,6 +347,18 @@ class DDeiLayer {
     });
     return controls;
   }
+  /**
+   * 设置当前模型为被修改状态
+   */
+  setModelChanged(): void {
+
+  }
+
+  /**
+     * 清空向量
+     */
+  clearVectorPoints(): void {
+  }
 
   /**
    * 根据ID获取模型
@@ -349,8 +372,9 @@ class DDeiLayer {
       } else {
         //遍历所有容器
         this.models.forEach(item => {
-          if (item.baseModelType == "DDeiContainer" || item.baseModelType == "DDeiTable") {
-            let rm = item.getModelById(id);
+          let container = item.getAccuContainer()
+          if (container) {
+            let rm = container.getModelById(id);
             if (rm) {
               reutrnModel = rm;
             }

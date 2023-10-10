@@ -158,7 +158,7 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
           };
           //pContainerModel修改上层容器直至layer的大小
           parentContainer.changeParentsBounds()
-          parentContainer.modelChanged = true;
+          parentContainer.setModelChanged()
         }
       })
       return true;

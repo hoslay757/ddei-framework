@@ -92,7 +92,14 @@ abstract class DDeiLayoutManager {
       let pvs = this.container.currentPointVectors;
       this.container.layer.dragOutPoints = pvs;
     }
+  }
 
+  /**
+     * 获取实际的内部容器控件
+     * @return 容器控件根据布局的模式不同返回不同的内部控件，普通控件返回null
+     */
+  getAccuContainer(): DDeiAbstractShape {
+    return this.container;
   }
 
   /**
@@ -101,7 +108,7 @@ abstract class DDeiLayoutManager {
    * @param y 相对路径坐标
    * @return 容器控件根据布局的模式不同返回不同的内部控件，普通控件返回null
    */
-  getAccuContainer(x: number, y: number): DDeiAbstractShape {
+  getAccuContainerByPos(x: number, y: number): DDeiAbstractShape {
     return this.container;
   }
 

@@ -29,7 +29,8 @@ class DDeiDiamondCanvasRender extends DDeiRectangleCanvasRender {
   * 创建图形
   */
   drawShape(): void {
-    if (this.model.modelChanged) {
+    let modelChanged = this.model.isModelChanged();
+    if (modelChanged) {
       //计算旋转矩阵
       this.model.calRotatePointVectors();
     }
@@ -42,7 +43,7 @@ class DDeiDiamondCanvasRender extends DDeiRectangleCanvasRender {
     //绘制文本
     this.drawText();
 
-    if (this.model.modelChanged) {
+    if (modelChanged) {
       //清空旋转矩阵
       this.model.currentPointVectors = this.model.pointVectors;
       this.model.pointVectors = null;
