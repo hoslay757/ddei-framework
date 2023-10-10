@@ -61,6 +61,7 @@ class DDeiAbstractShapeRender {
    */
   getCachedValue(attrPath: string): object | null {
     let returnValue: object | null = null;
+
     if (!this.renderCacheData.has(attrPath)) {
       returnValue = DDeiModelArrtibuteValue.getAttrValueByState(this.model, attrPath, true);
       this.renderCacheData.set(attrPath, returnValue)

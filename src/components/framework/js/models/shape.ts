@@ -623,7 +623,10 @@ abstract class DDeiAbstractShape {
    * 修改自身状态
    */
   setState(state: DDeiEnumControlState) {
-    this.state = state
+    if (this.state != state) {
+      this.state = state
+      this.render?.renderCacheData.clear();
+    }
   }
 
   /**
