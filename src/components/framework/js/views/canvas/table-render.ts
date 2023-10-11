@@ -307,9 +307,7 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
           for (let i = 0; i < table.rows.length; i++) {
             let rowObj = table.rows[i]
             for (let j = 0; j < rowObj.length; j++) {
-
               let cellObj = rowObj[j];
-
               let isDrag = false;
               if (cellObj.width <= 0 || cellObj.height <= 0) {
                 continue;
@@ -344,11 +342,7 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
               }
 
               if (isDrag) {
-                this.layer?.opPoints.push(cellObj.centerPointVector)
-                this.layer?.opPoints.push(cellObj.currentPointVectors[0])
-                this.layer?.opPoints.push(cellObj.currentPointVectors[1])
-                this.layer?.opPoints.push(cellObj.currentPointVectors[2])
-                this.layer?.opPoints.push(cellObj.currentPointVectors[3])
+
                 table.tempDragCell = cellObj
                 cellObj.render.mouseMove(e);
                 return;

@@ -5,6 +5,8 @@ import DDeiEnumControlState from '../enums/control-state';
 import DDeiTableSelector from './table-selector';
 import DDeiUtil from '../util';
 import { Matrix3, Vector3 } from 'three';
+import { first } from 'lodash';
+import DDeiEnumBusCommandType from '../enums/bus-command-type';
 
 
 /**
@@ -788,6 +790,16 @@ class DDeiTable extends DDeiAbstractShape {
         this.rows[i][j].setSize(0, 0)
         //设置合并单元格与被合并单元格的引用关系
         this.rows[i][j].mergedCell = firstCell;
+        //如果第一个单元格没有内容，则把内容移动到第一个单元格
+        if ((!firstCell.text || firstCell.text.trim() == "")
+          && firstCell.midList.length == 0) {
+          if (this.rows[i][j].midList.length > 0) {
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeContainer, { oldContainer: this.rows[i][j], newContainer: firstCell, models: Array.from(this.rows[i][j].models.values()) }, { offsetX: 0, offsetY: 0 });
+          } else if (this.rows[i][j].text && this.rows[i][j].text.trim() != "") {
+            firstCell.text = this.rows[i][j].text
+            this.rows[i][j].text = "";
+          }
+        }
         this.rows[i][j].setState(DDeiEnumControlState.DEFAULT);
       }
     }

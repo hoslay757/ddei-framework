@@ -45,7 +45,7 @@ abstract class DDeiLayoutManager {
   /**
   * 是否可以自由旋转
   */
-  abstract canChangeRoate(): boolean
+  abstract canChangeRotate(): boolean
 
   /**
    * 改变布局信息

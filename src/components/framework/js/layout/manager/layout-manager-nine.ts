@@ -1,6 +1,8 @@
 import DDeiAbstractShape from "../../models/shape";
 import DDeiUtil from "../../util";
 import DDeiLayoutManager from "../layout-manager";
+import { Matrix3, Vector3 } from 'three';
+import DDeiConfig from "../../config";
 
 /**
  * 九宫格布局
@@ -8,21 +10,11 @@ import DDeiLayoutManager from "../layout-manager";
 class DDeiLayoutManagerNine extends DDeiLayoutManager {
 
   // ============================ 方法 ===============================
-  /**
-  * 校验控件是否可以进入容器
-  */
-  valid(): boolean {
-    if (this.container.models.size <= 9) {
-      return true
-    } else {
-      return false
-    }
-  }
 
   /**
-    * 是否可以从其他布局转换到当前布局的方法
-    * @return true可以转换，false不可以转换
-    */
+   * 是否可以从其他布局转换到当前布局的方法
+   * @return true可以转换，false不可以转换
+   */
   canConvertLayout(oldLayout: string): boolean {
     if (oldLayout == 'free' || !oldLayout) {
       if (this.container.models.size <= 9) {
@@ -40,8 +32,8 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
     return false;
   }
   /**
-    * 从其他布局转换到当前布局的方法
-    */
+   * 从其他布局转换到当前布局的方法
+   */
   convertLayout(oldLayout: string): void {
     //创建并初始化布局数据layoutData
     if (!this.container.layoutData) {
@@ -275,9 +267,85 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
   }
 
   canChangeRotate(): boolean {
-    return false;
+    return true;
   }
 
+  /**
+   * 获取切分区域的点，超出区域的范围不会显示内容
+   */
+  getAreasPVS() {
+    let absPos = this.container?.getAbsBounds();
+    let vc1 = new Vector3(absPos.x, absPos.y, 1);
+    let vc2 = new Vector3(absPos.x1, absPos.y, 1);
+    let vc3 = new Vector3(absPos.x1, absPos.y1, 1);
+    let vc4 = new Vector3(absPos.x, absPos.y1, 1);
+    let centerPoint = this.container.centerPointVector;
+    let absRotate = this.container?.getAbsRotate();
+    let unitWidth = this.container.width / 3;
+    let unitHeight = this.container.height / 3;
+    //计算外部的点
+    let p11 = new Vector3(vc1.x, vc1.y, 1);
+    let p12 = new Vector3(vc1.x + unitWidth, vc1.y, 1)
+    let p13 = new Vector3(vc1.x + unitWidth * 2, vc1.y, 1)
+    let p14 = new Vector3(vc2.x, vc2.y, 1);
+
+    let p21 = new Vector3(vc1.x, vc1.y + unitHeight, 1);
+    let p22 = new Vector3(vc1.x + unitWidth, vc1.y + unitHeight, 1)
+    let p23 = new Vector3(vc1.x + unitWidth * 2, vc1.y + unitHeight, 1)
+    let p24 = new Vector3(vc2.x, vc1.y + unitHeight, 1);
+
+    let p31 = new Vector3(vc1.x, vc1.y + unitHeight * 2, 1);
+    let p32 = new Vector3(vc1.x + unitWidth, vc1.y + unitHeight * 2, 1)
+    let p33 = new Vector3(vc1.x + unitWidth * 2, vc1.y + unitHeight * 2, 1)
+    let p34 = new Vector3(vc2.x, vc1.y + unitHeight * 2, 1);
+
+    let p41 = new Vector3(vc4.x, vc4.y, 1);
+    let p42 = new Vector3(vc4.x + unitWidth, vc4.y, 1)
+    let p43 = new Vector3(vc4.x + unitWidth * 2, vc4.y, 1)
+    let p44 = new Vector3(vc3.x, vc4.y, 1);
+
+
+    let move1Matrix = new Matrix3(
+      1, 0, -centerPoint.x,
+      0, 1, -centerPoint.y,
+      0, 0, 1);
+    let angle = -(absRotate ? absRotate : 0) * DDeiConfig.ROTATE_UNIT
+    let rotateMatrix = new Matrix3(
+      Math.cos(angle), Math.sin(angle), 0,
+      -Math.sin(angle), Math.cos(angle), 0,
+      0, 0, 1);
+    let move2Matrix = new Matrix3(
+      1, 0, centerPoint.x,
+      0, 1, centerPoint.y,
+      0, 0, 1);
+    let m1 = new Matrix3().premultiply(move1Matrix).premultiply(rotateMatrix).premultiply(move2Matrix);
+
+    p11.applyMatrix3(m1);
+    p12.applyMatrix3(m1);
+    p13.applyMatrix3(m1);
+    p14.applyMatrix3(m1);
+    p21.applyMatrix3(m1);
+    p22.applyMatrix3(m1);
+    p23.applyMatrix3(m1);
+    p24.applyMatrix3(m1);
+    p31.applyMatrix3(m1);
+    p32.applyMatrix3(m1);
+    p33.applyMatrix3(m1);
+    p34.applyMatrix3(m1);
+    p41.applyMatrix3(m1);
+    p42.applyMatrix3(m1);
+    p43.applyMatrix3(m1);
+    p44.applyMatrix3(m1);
+    //构造九个数组返回
+    let returnArray = [
+      [p11, p12, p22, p21], [p12, p13, p23, p22], [p13, p14, p24, p23],
+      [p21, p22, p32, p31], [p22, p23, p33, p32], [p23, p24, p34, p33],
+      [p31, p32, p42, p41], [p32, p33, p43, p42], [p33, p34, p44, p43]
+    ]
+
+
+    return returnArray;
+  }
 
   /**
   * 计算时拖入待确认时的显示图形的向量
@@ -285,35 +353,14 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
   calDragInPVS(x: number, y: number, models: DDeiAbstractShape[]): void {
     //获取向量
     if (this.container.layer) {
-      //计算鼠标移入的区域  TODO 旋转的情况
-      let unitWidth = this.container.width / 3;
-      let unitHeight = this.container.height / 3;
-      let absPosition = this.container?.getAbsPosition();
-      let px = x - absPosition.x;
-      let py = y - absPosition.y;
-      let row = -1;
-      let col = -1;
-      if (px >= 0 && px < unitWidth) {
-        col = 0
-      } else if (px >= unitWidth && px < 2 * unitWidth) {
-        col = 1
-      } else if (px >= 2 * unitWidth && px < this.container.width) {
-        col = 2
-      }
-      if (py >= 0 && py < unitHeight) {
-        row = 0
-      } else if (py >= unitHeight && py < 2 * unitHeight) {
-        row = 1
-      } else if (py >= 2 * unitHeight && py < this.container.height) {
-        row = 2
-      }
-      if (col != -1 && row != -1) {
-        this.container.layer.dragInPoints = [
-          { x: absPosition.x + col * unitWidth, y: absPosition.y + row * unitHeight },
-          { x: absPosition.x + col * unitWidth + unitWidth, y: absPosition.y + row * unitHeight },
-          { x: absPosition.x + col * unitWidth + unitWidth, y: absPosition.y + row * unitHeight + unitHeight },
-          { x: absPosition.x + col * unitWidth, y: absPosition.y + row * unitHeight + unitHeight },
-        ]
+      let areasPVS = this.getAreasPVS();
+      for (let i = 0; i < areasPVS.length; i++) {
+        let inArea = DDeiAbstractShape.isInsidePolygon(
+          areasPVS[i], { x: x, y: y });
+        if (inArea) {
+          this.container.layer.dragInPoints = areasPVS[i];
+          return;
+        }
       }
     }
   }
@@ -323,8 +370,19 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
   */
   calDragOutPVS(x: number, y: number, models: DDeiAbstractShape[]): void {
     if (this.container.layer && models.length > 0) {
-      let pvs = models[0].currentPointVectors;
-      this.container.layer.dragOutPoints = pvs;
+      let model = models[0]
+      if (model.id.indexOf("_shadow") != -1) {
+        model = this.container?.stage?.getModelById(model.id.substring(0, model.id.lastIndexOf("_shadow")));
+      }
+      let areasPVS = this.getAreasPVS();
+      for (let i = 0; i < areasPVS.length; i++) {
+        let inArea = DDeiAbstractShape.isInsidePolygon(
+          areasPVS[i], { x: model.centerPointVector.x, y: model.centerPointVector.y });
+        if (inArea) {
+          this.container.layer.dragOutPoints = areasPVS[i];
+          return;
+        }
+      }
     }
   }
 
@@ -335,29 +393,20 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
      * @returns 
      */
   private getLayoutIndex(x: number, y: number): object {
-    //计算鼠标落点在哪个位置
-    let unitWidth = this.container.width / 3;
-    let unitHeight = this.container.height / 3;
-    let absPosition = this.container?.getAbsPosition();
-    let px = x - absPosition.x;
-    let py = y - absPosition.y;
-    let row = -1;
-    let col = -1;
-    if (px >= 0 && px < unitWidth) {
-      col = 0
-    } else if (px >= unitWidth && px < 2 * unitWidth) {
-      col = 1
-    } else if (px >= 2 * unitWidth && px < this.container.width) {
-      col = 2
+    //获取向量
+    if (this.container.layer) {
+      let areasPVS = this.getAreasPVS();
+      for (let i = 0; i < areasPVS.length; i++) {
+        let inArea = DDeiAbstractShape.isInsidePolygon(
+          areasPVS[i], { x: x, y: y });
+        if (inArea) {
+          let row = parseInt(i / 3)
+          let col = parseInt(i % 3)
+          return { row: row, col: col }
+        }
+      }
     }
-    if (py >= 0 && py < unitHeight) {
-      row = 0
-    } else if (py >= unitHeight && py < 2 * unitHeight) {
-      row = 1
-    } else if (py >= 2 * unitHeight && py < this.container.height) {
-      row = 2
-    }
-    return { row: row, col: col }
+    return { row: -1, col: -1 }
   }
   // ============================ 静态方法 ============================
   /**

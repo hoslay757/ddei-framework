@@ -7,19 +7,6 @@ import DDeiLayoutManager from "../layout-manager";
 class DDeiLayoutManagerFull extends DDeiLayoutManager {
 
   // ============================ 方法 ===============================
-  /**
-  * 校验控件是否可以进入容器
-  */
-  valid(): boolean {
-    //填充布局，只允许一个元素
-    if (this.container.models.size == 0) {
-      return true
-    } else {
-      return false
-    }
-  }
-
-
 
   /**
    * 修改模型的位置和大小
@@ -131,9 +118,15 @@ class DDeiLayoutManagerFull extends DDeiLayoutManager {
   }
 
   canChangeRotate(): boolean {
-    return false;
+    return true;
   }
 
+  /**
+   * 获取切分区域的点，超出区域的范围不会显示内容
+   */
+  getAreasPVS() {
+    return [this.container.currentPointVectors];
+  }
 
   // ============================ 静态方法 ============================
   /**
