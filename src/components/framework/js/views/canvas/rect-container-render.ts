@@ -30,14 +30,11 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
     let ctx = canvas.getContext('2d');
     //转换为缩放后的坐标
     let ratPos = this.getBorderRatPos();
-
-
     super.drawShape();
     //保存状态
     ctx.save();
     //获取全局缩放比例
     let ratio = this.ddRender.ratio;
-    let lineOffset = 1 * ratio / 2;
 
     //设置旋转，以确保子图形元素都被旋转
     this.doRotate(ctx, ratPos);
@@ -58,7 +55,9 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
    * 绘制子元素
    */
   drawChildrenShapes(): void {
-    if (this.model.models) {
+
+    if (this.model.models?.size > 0) {
+
       let canvas = this.ddRender.canvas;
       let ctx = canvas.getContext('2d');
       //获取全局缩放比例
@@ -66,13 +65,11 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
       let lineOffset = 1 * ratio / 2;
       let areaPVSNoRotated = this.model.layoutManager.getAreasPVS(false);
       let areaPVS = this.model.layoutManager.getAreasPVS();
-      debugger
       let usedMidIds = [];
       for (let n = 0; n < areaPVSNoRotated.length; n++) {
         let pvsN = areaPVSNoRotated[n]
         let pvs = areaPVS[n]
-        //保存状态
-        ctx.save();
+
         //遍历子元素，绘制子元素
 
         for (let m = 0; m < this.model.midList?.length; m++) {
@@ -81,6 +78,8 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
           if (usedMidIds.indexOf(item.id) == -1 && pvs?.length > 0 && DDeiAbstractShape.isInsidePolygon(
             pvs, { x: item.centerPointVector.x, y: item.centerPointVector.y })) {
             usedMidIds.push(item.id)
+            //保存状态
+            ctx.save();
             ctx.beginPath();
             for (let i = 0; i < pvsN.length; i++) {
               if (i == pvsN.length - 1) {
@@ -95,11 +94,12 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
             ctx.closePath();
             ctx.clip();
             item.render.drawShape();
+            //恢复
+            ctx.restore();
           }
         }
 
-        //恢复
-        ctx.restore();
+
       }
     }
   }
