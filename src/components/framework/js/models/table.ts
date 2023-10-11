@@ -884,41 +884,18 @@ class DDeiTable extends DDeiAbstractShape {
   }
 
   /**
-   * 根据表格内坐标获取单元格,TODO 旋转后用向量点来判断
+   * 根据表格内坐标获取单元格
    */
   getCellByTablePosition(x: number, y: number): DDeiTableCell {
-    let cellRow = -1;
     //判断属于哪一行
     for (let i = 0; i < this.rows.length; i++) {
-      let cell = this.rows[i][0];
-      if (cell.isMergedCell()) {
-        //合并单元格的开始单元格
-        cell = this.rows[cell.mergedCell.row][cell.mergedCell.col];
-        //找到所属于合并单元格中的哪个真实的行
-        for (let j = 0; j < cell.mergeRowNum; j++) {
-          let subCell = this.rows[cell.row + j][cell.col];
-          if (subCell.y <= y && y <= subCell.y + subCell.originHeight) {
-            cellRow = subCell.row;
-            break;
-          }
+      let rowObj = this.rows[i];
+      for (let j = 0; j < rowObj.length; j++) {
+        let cell = rowObj[j];
+        if (cell.width <= 0 || cell.height <= 0) {
+          continue;
         }
-      }
-      if (cellRow == -1) {
-        if (cell.y <= y && y <= cell.y + cell.height) {
-          cellRow = cell.row;
-          break;
-        }
-      }
-    }
-    //判断属于哪一列
-    if (cellRow != -1) {
-      for (let i = 0; i < this.cols.length; i++) {
-        let cell = this.cols[i][cellRow];
-        if (cell.isMergedCell()) {
-          cell = this.rows[cell.mergedCell.row][cell.mergedCell.col];
-
-        }
-        if (cell.x <= x && x <= cell.x + cell.width) {
+        if (cell.isInAreaLoose(x, y)) {
           return cell;
         }
       }
@@ -977,6 +954,9 @@ class DDeiTable extends DDeiAbstractShape {
       let rowObj = this.rows[i];
       for (let j = 0; j < rowObj.length; j++) {
         let cell = rowObj[j];
+        if (cell.width <= 0 || cell.height <= 0) {
+          continue;
+        }
         if (cell.isInAreaLoose(x, y)) {
           return cell;
         }
@@ -1518,9 +1498,8 @@ class DDeiTable extends DDeiAbstractShape {
     if (!table.tempUpCel) {
       table.tempUpCel = cell;
     }
-    let tableAbsPos = table.getAbsPosition();
     //获取当前鼠标落点的单元格
-    let targetCell = table.getCellByTablePosition(x - tableAbsPos.x, y - tableAbsPos.y);
+    let targetCell = table.getCellByTablePosition(x, y);
 
     if (targetCell && table.tempUpCel != targetCell) {
       //取消之前的选中状态

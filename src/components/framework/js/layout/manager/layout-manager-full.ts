@@ -121,12 +121,7 @@ class DDeiLayoutManagerFull extends DDeiLayoutManager {
     return true;
   }
 
-  /**
-   * 获取切分区域的点，超出区域的范围不会显示内容
-   */
-  getAreasPVS() {
-    return [this.container.currentPointVectors];
-  }
+
 
   // ============================ 静态方法 ============================
   /**

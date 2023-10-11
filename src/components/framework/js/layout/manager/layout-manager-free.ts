@@ -6,12 +6,6 @@ import DDeiLayoutManager from "../layout-manager";
 class DDeiLayoutManagerFree extends DDeiLayoutManager {
 
   // ============================ 方法 ===============================
-  /**
-  * 校验控件是否可以进入容器
-  */
-  valid(): boolean {
-    return true;
-  }
 
   /**
    * 修改模型的位置和大小
@@ -60,6 +54,7 @@ class DDeiLayoutManagerFree extends DDeiLayoutManager {
 
     return true;
   }
+
 
   /**
    * 修改布局信息

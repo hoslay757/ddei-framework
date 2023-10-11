@@ -1,5 +1,6 @@
 import DDeiRectContainer from "../models/rect-container";
 import DDeiAbstractShape from "../models/shape"
+import { Matrix3, Vector3 } from 'three';
 
 /**
  * 定义了布局管理器的接口
@@ -110,6 +111,22 @@ abstract class DDeiLayoutManager {
    */
   getAccuContainerByPos(x: number, y: number): DDeiAbstractShape {
     return this.container;
+  }
+
+  /**
+   * 获取切分区域的点，超出区域的范围不会显示内容
+   */
+  getAreasPVS(rotated: boolean = true): object[][] {
+    if (rotated) {
+      return [this.container.currentPointVectors];
+    } else {
+      let absPos = this.container?.getAbsBounds();
+      let vc1 = new Vector3(absPos.x, absPos.y, 1);
+      let vc2 = new Vector3(absPos.x1, absPos.y, 1);
+      let vc3 = new Vector3(absPos.x1, absPos.y1, 1);
+      let vc4 = new Vector3(absPos.x, absPos.y1, 1);
+      return [[vc1, vc2, vc3, vc4]]
+    }
   }
 
 }

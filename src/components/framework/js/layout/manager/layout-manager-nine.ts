@@ -270,17 +270,18 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
     return true;
   }
 
+
+
   /**
    * 获取切分区域的点，超出区域的范围不会显示内容
    */
-  getAreasPVS() {
+  getAreasPVS(rotated: boolean = true): object[][] {
     let absPos = this.container?.getAbsBounds();
     let vc1 = new Vector3(absPos.x, absPos.y, 1);
     let vc2 = new Vector3(absPos.x1, absPos.y, 1);
     let vc3 = new Vector3(absPos.x1, absPos.y1, 1);
     let vc4 = new Vector3(absPos.x, absPos.y1, 1);
-    let centerPoint = this.container.centerPointVector;
-    let absRotate = this.container?.getAbsRotate();
+
     let unitWidth = this.container.width / 3;
     let unitHeight = this.container.height / 3;
     //计算外部的点
@@ -303,39 +304,41 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
     let p42 = new Vector3(vc4.x + unitWidth, vc4.y, 1)
     let p43 = new Vector3(vc4.x + unitWidth * 2, vc4.y, 1)
     let p44 = new Vector3(vc3.x, vc4.y, 1);
+    if (rotated) {
+      let centerPoint = this.container.centerPointVector;
+      let absRotate = this.container?.getAbsRotate();
+      let move1Matrix = new Matrix3(
+        1, 0, -centerPoint.x,
+        0, 1, -centerPoint.y,
+        0, 0, 1);
+      let angle = -(absRotate ? absRotate : 0) * DDeiConfig.ROTATE_UNIT
+      let rotateMatrix = new Matrix3(
+        Math.cos(angle), Math.sin(angle), 0,
+        -Math.sin(angle), Math.cos(angle), 0,
+        0, 0, 1);
+      let move2Matrix = new Matrix3(
+        1, 0, centerPoint.x,
+        0, 1, centerPoint.y,
+        0, 0, 1);
+      let m1 = new Matrix3().premultiply(move1Matrix).premultiply(rotateMatrix).premultiply(move2Matrix);
 
-
-    let move1Matrix = new Matrix3(
-      1, 0, -centerPoint.x,
-      0, 1, -centerPoint.y,
-      0, 0, 1);
-    let angle = -(absRotate ? absRotate : 0) * DDeiConfig.ROTATE_UNIT
-    let rotateMatrix = new Matrix3(
-      Math.cos(angle), Math.sin(angle), 0,
-      -Math.sin(angle), Math.cos(angle), 0,
-      0, 0, 1);
-    let move2Matrix = new Matrix3(
-      1, 0, centerPoint.x,
-      0, 1, centerPoint.y,
-      0, 0, 1);
-    let m1 = new Matrix3().premultiply(move1Matrix).premultiply(rotateMatrix).premultiply(move2Matrix);
-
-    p11.applyMatrix3(m1);
-    p12.applyMatrix3(m1);
-    p13.applyMatrix3(m1);
-    p14.applyMatrix3(m1);
-    p21.applyMatrix3(m1);
-    p22.applyMatrix3(m1);
-    p23.applyMatrix3(m1);
-    p24.applyMatrix3(m1);
-    p31.applyMatrix3(m1);
-    p32.applyMatrix3(m1);
-    p33.applyMatrix3(m1);
-    p34.applyMatrix3(m1);
-    p41.applyMatrix3(m1);
-    p42.applyMatrix3(m1);
-    p43.applyMatrix3(m1);
-    p44.applyMatrix3(m1);
+      p11.applyMatrix3(m1);
+      p12.applyMatrix3(m1);
+      p13.applyMatrix3(m1);
+      p14.applyMatrix3(m1);
+      p21.applyMatrix3(m1);
+      p22.applyMatrix3(m1);
+      p23.applyMatrix3(m1);
+      p24.applyMatrix3(m1);
+      p31.applyMatrix3(m1);
+      p32.applyMatrix3(m1);
+      p33.applyMatrix3(m1);
+      p34.applyMatrix3(m1);
+      p41.applyMatrix3(m1);
+      p42.applyMatrix3(m1);
+      p43.applyMatrix3(m1);
+      p44.applyMatrix3(m1);
+    }
     //构造九个数组返回
     let returnArray = [
       [p11, p12, p22, p21], [p12, p13, p23, p22], [p13, p14, p24, p23],
