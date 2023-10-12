@@ -26,6 +26,14 @@ class DDeiCanvasRender {
    * 当前对应模型
    */
   model: DDei;
+  /**
+   * 当前画布
+   */
+  canvas: object | null = null;
+  /**
+   * 当前临时画布
+   */
+  tempCanvas: object | null = null;
 
   // ============================== 方法 ===============================
   /**
@@ -71,6 +79,15 @@ class DDeiCanvasRender {
     }
   }
 
+  /**
+   * 获取当前画布
+   */
+  getCanvas(): object {
+    if (this.tempCanvas) {
+      return this.tempCanvas;
+    }
+    return this.canvas;
+  }
   /**
    * 显示
    */
@@ -129,15 +146,9 @@ class DDeiCanvasRender {
    */
   bindEvent(): void {
     setInterval(() => {
-      let s1 = new Date().getTime();
       this.model.stage.drawing = true;
       this.drawShape();
-      console.log(new Date().getTime() - s1)
     }, 20)
-    // //绑定鼠标按下事件
-    // this.canvas.addEventListener('mousedown', (evt: Event) => {
-    //   this.mouseDown(evt)
-    // });
 
     // //绑定鼠标弹起事件
     // this.canvas.addEventListener('mouseup', (evt: Event) => {
@@ -172,9 +183,11 @@ class DDeiCanvasRender {
    * 鼠标移动
    */
   mouseMove(evt: Event): void {
+    DDeiUtil.setMousePosition(evt.offsetX, evt.offsetY, evt.screenX, evt.screenY);
     this.model.eventCancel = false;
     this.model.stage.render.mouseMove(evt);
   }
+
 }
 
 export default DDeiCanvasRender

@@ -26,7 +26,7 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
    * 绘制图形
    */
   drawShape(): void {
-    let canvas = this.ddRender.canvas;
+    let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
     //转换为缩放后的坐标
     let ratPos = this.getBorderRatPos();

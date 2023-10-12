@@ -8,6 +8,8 @@ import DDeiKeyActionCancelSelect from "../hotkeys/key-action-cancel-select";
 import DDeiKeyActionCompose from "../hotkeys/key-action-compose";
 import DDeiKeyActionCancelCompose from "../hotkeys/key-action-cancel-compose";
 import DDeiKeyActionPushModels from "../hotkeys/key-action-push-models";
+import DDeiKeyActionPaste from "../hotkeys/key-action-paste";
+import DDeiKeyActionCopy from "../hotkeys/key-action-copy";
 
 /**
  * 所有key实例的枚举
@@ -28,7 +30,9 @@ enum DDeiEnumKeyActionInst {
   PushUpModels = new DDeiKeyActionPushModels({ code: "key-action-push-up-models", name: "置于上层", desc: "将选中图形置于上层" }),
   PushDownModels = new DDeiKeyActionPushModels({ code: "key-action-push-down-models", name: "置于下层", desc: "将选中图形置于下层" }),
   PushTopModels = new DDeiKeyActionPushModels({ code: "key-action-push-top-models", name: "置于顶层", desc: "将选中图形置于顶层" }),
-  PushBottomModels = new DDeiKeyActionPushModels({ code: "key-action-push-bottom-models", name: "置于底层", desc: "将选中图形置于底层" })
+  PushBottomModels = new DDeiKeyActionPushModels({ code: "key-action-push-bottom-models", name: "置于底层", desc: "将选中图形置于底层" }),
+  Copy = new DDeiKeyActionCopy({ code: "key-action-push-top-models", name: "复制", desc: "复制选中图形到剪切板" }),
+  Paste = new DDeiKeyActionPaste({ code: "key-action-push-bottom-models", name: "粘贴", desc: "粘贴剪切板内容到当前图层" }),
 }
 
 export default DDeiEnumKeyActionInst

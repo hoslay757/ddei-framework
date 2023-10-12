@@ -1,6 +1,7 @@
 import DDeiConfig from './config.js'
 import DDeiAbstractShape from './models/shape.js';
 import { clone } from 'lodash'
+import DDei from './ddei.js';
 
 class DDeiUtil {
 
@@ -20,6 +21,48 @@ class DDeiUtil {
   static setCurrentMenu: Function;
   //钩子函数，返回控件的子控件定义，用于创建控件时自动创建子控件
   static getSubControlJSON: Function;
+
+  static offsetX: number;
+  static offsetY: number;
+  static screenX: number;
+  static screenY: number;
+  /**
+   * 记录鼠标位置
+   * @param offsetX 
+   * @param offsetY 
+   * @param screenX 
+   * @param screenY 
+   */
+  static setMousePosition(offsetX: number, offsetY: number, screenX: number, screenY: number): void {
+    DDeiUtil.offsetX = offsetX
+    DDeiUtil.offsetY = offsetY
+    DDeiUtil.screenX = screenX
+    DDeiUtil.screenY = screenY
+  }
+
+  /**
+   * 计算文字的高度和宽度
+   */
+  static measureTextSize(ddInstance, text, fontFamily, fontSize): object {
+    let canvas = ddInstance.render.getCanvas()
+    //获得 2d 上下文对象
+    let ctx = canvas.getContext('2d');
+    ctx.save()
+    ctx.font = fontSize + "px " + fontFamily;
+    let textArray = text.split('\n');
+    let maxWidth = 0;
+    let height = textArray.length * fontSize
+    textArray.forEach(t => {
+      let width = ctx.measureText(t).width;
+      if (width > maxWidth) {
+        maxWidth = width
+      }
+    });
+
+
+    ctx.restore();
+    return { width: maxWidth, height: height }
+  }
 
   /**
    * 将一组控件按照从上到下从左到右的顺序进行排序，返回新的顺序
