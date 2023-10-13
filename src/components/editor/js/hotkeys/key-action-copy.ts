@@ -26,22 +26,25 @@ class DDeiKeyActionCopy extends DDeiKeyAction {
         if (models.length == 1) {
           let model = models[0]
           //复制的html
-          let copyHtml = model.render.getHTML();
+          let innerHTML = model.render.getHTML();
+          let copyHtml = '<html><head>';
+          copyHtml += '<ddei>###'
+          let json = model.toJSON();
+          copyHtml += JSON.stringify(json)
+          copyHtml += '###</ddei>'
+          copyHtml += '</head><body>' + innerHTML + '</body></html>'
+          let blob = new Blob([copyHtml], {
+            type: 'text/html'
+          })
+          console.log(copyHtml)
+          let writeDatas = [new ClipboardItem({ "text/html": blob })]
+          cbData.write(writeDatas).then(function () {
+            console.log("复制成功");
+          }, function (e) {
+            console.error("复制失败" + e);
+          });
+          isCopy = true;
 
-          if (copyHtml) {
-            copyHtml = '<html><head></head><body>' + copyHtml + '</body></html>'
-            let blob = new Blob([copyHtml], {
-              type: 'text/html'
-            })
-            console.log(copyHtml)
-            let writeDatas = [new ClipboardItem({ "text/html": blob })]
-            cbData.write(writeDatas).then(function () {
-              console.log("复制成功");
-            }, function (e) {
-              console.error("复制失败" + e);
-            });
-            isCopy = true;
-          }
         }
 
         //当前面没有复制内容才复制图片，复制图片可以得到完整的精确度
@@ -69,9 +72,13 @@ class DDeiKeyActionCopy extends DDeiKeyAction {
       y2 = Math.max(item.y + item.height, y2)
     })
     let lineOffset = 1 * ratio / 2;
+    let addWidth = lineOffset
+    if (models.length > 1) {
+      addWidth = lineOffset * 2
+    }
     canvas.setAttribute("style", "-moz-transform-origin:left top;-moz-transform:scale(" + (1 / ratio) + ");display:block;zoom:" + (1 / ratio));
-    canvas.setAttribute("width", Math.abs(x2 - x1) * ratio + lineOffset)
-    canvas.setAttribute("height", Math.abs(y2 - y1) * ratio + lineOffset)
+    canvas.setAttribute("width", Math.abs(x2 - x1) * ratio + addWidth)
+    canvas.setAttribute("height", Math.abs(y2 - y1) * ratio + addWidth)
     ctx.translate(-x1 * ratio - lineOffset, -y1 * ratio - lineOffset)
     models.forEach(item => {
       item.render.drawShape();
