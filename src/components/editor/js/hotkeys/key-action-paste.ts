@@ -155,10 +155,11 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
     let offsetY = DDeiUtil.offsetY;
     //识别粘贴的内容来自于外部还是内部
     let ddeiJson = null;
-    let searchText = '<ddei>###';
+
+    let searchText = '<meta source="ddei">';
     if (textData.indexOf(searchText) != -1) {
       let startIndex = textData.indexOf(searchText) + searchText.length;
-      let endIndex = textData.indexOf("###</ddei>")
+      let endIndex = textData.indexOf('<meta source="ddeiend">')
       let ddeiJsonStr = textData.substring(startIndex, endIndex);
       ddeiJson = JSON.parse(ddeiJsonStr);
     }
