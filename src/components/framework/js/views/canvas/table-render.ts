@@ -23,10 +23,34 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
   // ============================== 方法 ===============================
 
   /**
+   * 获取html
+   */
+  getHTML(): string {
+    let selectedCells = this.model.getSelectedCells();
+    if (selectedCells?.length > 0) {
+      let html = '';
+      html += '<table>'
+      let minMax = this.model.getMinMaxRowAndCol(selectedCells);
+      //选中区域内所哟段元格
+      for (let x = minMax.minRow; x <= minMax.maxRow; x++) {
+        html += '<tr>'
+        for (let y = minMax.minCol; y <= minMax.maxCol; y++) {
+          //选中所有单元格
+          html += this.model.rows[x][y].render.getHTML();
+        }
+        html += '</tr>'
+      }
+      html += '</table>'
+      return html;
+    } else {
+      return null;
+    }
+  }
+  /**
    * 绘制图形
    */
   drawShape(): void {
-    let canvas = this.ddRender.canvas;
+    let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
     //转换为缩放后的坐标
     let ratPos = this.getBorderRatPos();

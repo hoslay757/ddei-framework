@@ -30,7 +30,7 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
    */
   drawBorder(tempBorder: object | null): void {
     //获得 2d 上下文对象
-    let canvas = this.ddRender.canvas;
+    let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
     let ratio = this.ddRender.ratio;
@@ -98,7 +98,7 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
    */
   drawFill(): void {
     //获得 2d 上下文对象
-    let canvas = this.ddRender.canvas;
+    let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
     let ratio = this.ddRender.ratio;
@@ -139,7 +139,7 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
     //如果有图片，则绘制
     if (this.model.img && this.imgObj) {
       //获得 2d 上下文对象
-      let canvas = this.ddRender.canvas;
+      let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
       //获取全局缩放比例
       let ratio = this.ddRender.ratio;
@@ -173,7 +173,7 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
    */
   drawText(): void {
     //获得 2d 上下文对象
-    let canvas = this.ddRender.canvas;
+    let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
     let ratio = this.ddRender.ratio;

@@ -26,7 +26,7 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
      */
   drawShape(): void {
 
-    let canvas = this.ddRender.canvas;
+    let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
     //转换为缩放后的坐标
     let ratPos = this.getBorderRatPos();
@@ -58,7 +58,7 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
 
     if (this.model.models?.size > 0) {
 
-      let canvas = this.ddRender.canvas;
+      let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
       //获取全局缩放比例
       let ratio = this.ddRender.ratio;

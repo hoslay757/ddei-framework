@@ -110,7 +110,7 @@ class DDeiLayerCanvasRender {
    */
   drawBackground(): void {
     //获得 2d 上下文对象
-    let canvas = this.ddRender.canvas;
+    let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
     let ratio = this.ddRender.ratio;
@@ -193,7 +193,7 @@ class DDeiLayerCanvasRender {
   drawShadowControls(): void {
     if (this.model.shadowControls?.length > 0) {
       //获得 2d 上下文对象
-      let canvas = this.ddRender.canvas;
+      let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
       //获取全局缩放比例
       let ratio = this.ddRender.ratio;
@@ -257,7 +257,7 @@ class DDeiLayerCanvasRender {
   drawOpPoints(): void {
     if (this.model?.opPoints?.length > 0) {
       //获得 2d 上下文对象
-      let canvas = this.ddRender.canvas;
+      let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
       //获取全局缩放比例
       let ratio = this.ddRender.ratio;
@@ -287,7 +287,7 @@ class DDeiLayerCanvasRender {
 
     if (this.model?.dragInPoints?.length > 0 || this.model?.dragOutPoints?.length > 0) {
       //获得 2d 上下文对象
-      let canvas = this.ddRender.canvas;
+      let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
       //获取全局缩放比例
       let ratio = this.ddRender.ratio;
@@ -399,7 +399,7 @@ class DDeiLayerCanvasRender {
     // 未开启主线提示，则不再计算辅助线提示定位
     if (DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
       //获得 2d 上下文对象
-      let canvas = this.ddRender.canvas;
+      let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
       //获取全局缩放比例
       let ratio = this.ddRender.ratio;

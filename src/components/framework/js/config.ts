@@ -89,7 +89,7 @@ class DDeiConfig {
     "DDeiStage": { "TOJSON": ["layers"], "SKIP": ["ddInstance", "selectedModels", "render", "unicode"] },
     "DDeiLayer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "render", "unicode", "opPoints", "dragInPoints", "dragOutPoints", "shadowControls", "layoutManager"] },
     "DDeiContainer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "pointVectors", "currentPointVectors", "centerPointVector", "layoutManager", "loosePointVectors", "currentLoosePointVectors", "rotateMatrix"] },
-    "AbstractShape": { "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "pointVectors", "currentPointVectors", "centerPointVector", "loosePointVectors", "currentLoosePointVectors", "rotateMatrix"] },
+    "AbstractShape": { "SKIP": ["ddInstance", "stage", "layer", "pModel", "state", "render", "unicode", "pointVectors", "currentPointVectors", "centerPointVector", "loosePointVectors", "currentLoosePointVectors", "rotateMatrix"] },
     "DDeiTable": { "TOJSON": ["rows"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "pointVectors", "currentPointVectors", "centerPointVector", "loosePointVectors", "cols", "selector", "currentLoosePointVectors", "initColNum", "initRowNum", "rotateMatrix", "tempDragCell", "tempDragType", "curCol", "curRow", "specilDrag", "tempUpCel", "dragChanging", "dragType", "dragCell"] },
     "DDeiTableCell": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "pointVectors", "currentPointVectors", "centerPointVector", "loosePointVectors", "layoutManager", "currentLoosePointVectors", "rotateMatrix", "id", "table", "mergedCell"] },
   }
