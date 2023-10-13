@@ -43,9 +43,7 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
           }
           //剪切板中是图片
           else if (type == 'image/png') {
-            (new Response(itemData)).text().then(dataText => {
-              console.log("图片：" + dataText)
-            });
+            this.imagePaste(evt, ddInstance.stage, itemData);
           }
           //剪切板中是HTML
           else if (type == 'text/html') {
@@ -58,6 +56,90 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
         });
 
       });
+    }
+  }
+
+
+  /**
+   * 粘贴图片
+   */
+  imagePaste(evt: Event, stage: DDeiStage, blobData: object) {
+
+    //将二进制转换为图片
+    let reader = new FileReader();
+    reader.readAsDataURL(blobData);
+    reader.onload = function (e) {
+      let image = new Image();
+      image.src = e.target.result
+      image.onload = function () {
+
+        let imgBase64 = e.target.result
+        //当前激活的图层
+        let layer = stage.layers[stage.layerIndex];
+        //获取当前的鼠标落点
+        let offsetX = DDeiUtil.offsetX;
+        let offsetY = DDeiUtil.offsetY;
+        //当前选中控件是否为1且有表格，且选中表格的单元格，则作为表格单元格的内容粘贴
+        let createControl = true;
+        if (stage.selectedModels?.size == 1) {
+          let table = Array.from(stage.selectedModels.values())[0]
+          if (table.baseModelType == 'DDeiTable') {
+            //TODO 粘贴到表格单元格
+            let cells = table.getSelectedCells();
+            if (cells.length > 0) {
+              cells.forEach(cell => {
+
+              })
+              createControl = false
+            }
+          }
+        } else if (stage.selectedModels?.size > 1) {
+          let isSimpleControl = true
+          stage.selectedModels?.forEach(item => {
+            if (isSimpleControl && (item.baseModelType == 'DDeiTable' || item.baseModelType == 'DDeiContainer')) {
+              isSimpleControl = false;
+            }
+          })
+          //TODO 如果都是简单控件，则允许粘贴
+          if (isSimpleControl) {
+            createControl = false;
+            stage.selectedModels?.forEach(item => {
+
+            })
+          }
+
+        }
+
+
+
+        //如果没有粘贴到表格在最外层容器的鼠标位置，创建rectangle控件
+        if (createControl) {
+          stage.idIdx++
+
+          //根据control的定义，初始化临时控件，并推送至上层Editor
+          stage.idIdx++
+
+          //获取文本高度宽度
+          let dataJson = {
+            id: "rectangle_" + stage.idIdx,
+            modelCode: "100002",
+            x: offsetX - image.width / 2,
+            y: offsetY - image.height / 2,
+            width: image.width,
+            height: image.height,
+            border: { top: { disabled: true }, bottom: { disabled: true }, left: { disabled: true }, right: { disabled: true } },
+            fill: { disable: true }
+          };
+          let model: DDeiAbstractShape = DDeiRectangle.initByJSON(dataJson);
+          model.imgBase64 = imgBase64
+          stage.ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeContainer, { newContainer: layer, models: [model] }, evt);
+          stage.ddInstance.bus.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
+          stage.ddInstance.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, { models: [model], value: DDeiEnumControlState.SELECTED }, evt);
+        }
+        stage.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+        stage.ddInstance.bus?.executeAll();
+      }
+
     }
   }
 
