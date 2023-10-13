@@ -26,7 +26,7 @@ class DDeiTableCellCanvasRender extends DDeiRectContainerCanvasRender {
 
   getHTML(): string {
     let cell = this.model;
-    if (cell.width == 0 || cell.height == 0) {
+    if (cell.isMergedCell() && !cell.isMergeCell()) {
       return '';
     }
     let fiFamily = this.getCachedValue("font.family");
