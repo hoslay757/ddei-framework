@@ -33,6 +33,9 @@ class DDeiKeyActionCopy extends DDeiKeyAction {
               if (html) {
                 innerHTML += html
               }
+            } else {
+              let json = model.toJSON();
+              jsonStr += JSON.stringify(json) + ","
             }
           } else {
             let json = model.toJSON();
