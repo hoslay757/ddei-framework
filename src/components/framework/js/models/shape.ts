@@ -24,7 +24,18 @@ abstract class DDeiAbstractShape {
   }
   // ============================ 方法 ============================
 
+  /**
+   * 设置当前图片base64
+   * @param base64 
+   */
+  setImgBase64(base64): void {
+    this.imgBase64 = base64;
+    if (this.render) {
+      this.render.imgObj = null;
+      this.render.initImage();
+    }
 
+  }
 
   /**
    * 设置当前模型为被修改状态

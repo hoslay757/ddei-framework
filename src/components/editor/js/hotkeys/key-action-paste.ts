@@ -64,7 +64,7 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
    * 粘贴图片
    */
   imagePaste(evt: Event, stage: DDeiStage, blobData: object) {
-
+    let that = this;
     //将二进制转换为图片
     let reader = new FileReader();
     reader.readAsDataURL(blobData);
@@ -84,14 +84,17 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
         if (stage.selectedModels?.size == 1) {
           let table = Array.from(stage.selectedModels.values())[0]
           if (table.baseModelType == 'DDeiTable') {
-            //TODO 粘贴到表格单元格
+            //粘贴到表格单元格
             let cells = table.getSelectedCells();
             if (cells.length > 0) {
               cells.forEach(cell => {
-
+                cell.setImgBase64(imgBase64);
               })
               createControl = false
             }
+          } else {
+            table.setImgBase64(imgBase64);
+            createControl = false
           }
         } else if (stage.selectedModels?.size > 1) {
           let isSimpleControl = true
@@ -100,11 +103,11 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
               isSimpleControl = false;
             }
           })
-          //TODO 如果都是简单控件，则允许粘贴
+          //如果都是简单控件，则允许粘贴
           if (isSimpleControl) {
             createControl = false;
             stage.selectedModels?.forEach(item => {
-
+              item.setImgBase64(imgBase64);
             })
           }
 
@@ -114,33 +117,33 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
 
         //如果没有粘贴到表格在最外层容器的鼠标位置，创建rectangle控件
         if (createControl) {
-          stage.idIdx++
-
-          //根据control的定义，初始化临时控件，并推送至上层Editor
-          stage.idIdx++
-
-          //获取文本高度宽度
-          let dataJson = {
-            id: "rectangle_" + stage.idIdx,
-            modelCode: "100002",
-            x: offsetX - image.width / 2,
-            y: offsetY - image.height / 2,
-            width: image.width,
-            height: image.height,
-            border: { top: { disabled: true }, bottom: { disabled: true }, left: { disabled: true }, right: { disabled: true } },
-            fill: { disable: true }
-          };
-          let model: DDeiAbstractShape = DDeiRectangle.initByJSON(dataJson);
-          model.imgBase64 = imgBase64
-          stage.ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeContainer, { newContainer: layer, models: [model] }, evt);
-          stage.ddInstance.bus.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
-          stage.ddInstance.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, { models: [model], value: DDeiEnumControlState.SELECTED }, evt);
+          that.createNewImage(image, imgBase64, offsetX, offsetY, stage, layer, evt)
         }
         stage.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
         stage.ddInstance.bus?.executeAll();
       }
 
     }
+  }
+
+  //创建新的图片控件
+  createNewImage(image: Image, imgBase64: string, x: number, y: number, stage: DDeiStage, container: object, evt: Event): void {
+    stage.idIdx++
+    let dataJson = {
+      id: "img_" + stage.idIdx,
+      modelCode: "100002",
+      x: x - image.width / 2,
+      y: y - image.height / 2,
+      width: image.width,
+      height: image.height,
+      border: { top: { disabled: true }, bottom: { disabled: true }, left: { disabled: true }, right: { disabled: true } },
+      fill: { disable: true }
+    };
+    let model: DDeiAbstractShape = DDeiRectangle.initByJSON(dataJson);
+    model.setImgBase64(imgBase64);
+    stage.ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeContainer, { newContainer: container, models: [model] }, evt);
+    stage.ddInstance.bus.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
+    stage.ddInstance.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, { models: [model], value: DDeiEnumControlState.SELECTED }, evt);
   }
 
   /**
@@ -165,6 +168,9 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
           })
           createControl = false
         }
+      } else if (table.baseModelType != 'DDeiContainer') {
+        table.text = textData
+        createControl = false
       }
     } else if (stage.selectedModels?.size > 1) {
       let isSimpleControl = true

@@ -45,6 +45,11 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       this.layer = this.model.layer
       this.layerRender = this.model.layer.render
     }
+    this.initImage();
+  }
+
+
+  initImage(): void {
     //加载图片
     let that = this;
     //加载base64图片
@@ -67,7 +72,6 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     }
 
   }
-
   /**
    * 创建图形
    */
