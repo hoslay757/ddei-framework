@@ -1,20 +1,33 @@
 <template>
   <div class="ddei_editor_sdp">
-    <div class="ddei_editor_sdp_item" style="grid-row:1/3">
-      <div class="ddei_editor_sdp_item_box" @click="newFile">
-        <img width="16px" height="16px" :src="icons['icon-file']" />
+    <div class="ddei_editor_sdp_item"
+         style="grid-row:1/3">
+      <div class="ddei_editor_sdp_item_box"
+           @click="newFile">
+        <img width="16px"
+             height="16px"
+             :src="icons['icon-file']" />
         <div>新建</div>
       </div>
-      <div class="ddei_editor_sdp_item_box" @click="save">
-        <img width="16px" height="16px" :src="icons['icon-save']" />
+      <div class="ddei_editor_sdp_item_box"
+           @click="save">
+        <img width="16px"
+             height="16px"
+             :src="icons['icon-save']" />
         <div>保存</div>
       </div>
-      <div class="ddei_editor_sdp_item_box" @click="openFile">
-        <img width="16px" height="16px" :src="icons['icon-open']" />
+      <div class="ddei_editor_sdp_item_box"
+           @click="openFile">
+        <img width="16px"
+             height="16px"
+             :src="icons['icon-open']" />
         <div>打开</div>
       </div>
-      <div class="ddei_editor_sdp_item_box" @click="download">
-        <img width="16px" height="16px" :src="icons['icon-download']" />
+      <div class="ddei_editor_sdp_item_box"
+           @click="download">
+        <img width="16px"
+             height="16px"
+             :src="icons['icon-download']" />
         <div>下载</div>
       </div>
     </div>
@@ -29,17 +42,15 @@
   </div>
 </template>
 <script lang="ts">
-import DDeiStoreLocal from '@/components/framework/js/store/local-store';
-import DDeiEditor from '../../js/editor';
-import ICONS from '../../js/icon';
-import DDei from '../../../framework/js/ddei';
-import DDeiStage from '../../../framework/js/models/stage';
-import DDeiActiveType from '../../js/enums/active-type';
-import DDeiFile from '../../js/file';
-import DDeiSheet from '../../js/sheet';
-import DDeiFileState from '../../js/enums/file-state';
-
-
+import DDeiStoreLocal from "@/components/framework/js/store/local-store";
+import DDeiEditor from "../../js/editor";
+import ICONS from "../../js/icon";
+import DDei from "../../../framework/js/ddei";
+import DDeiStage from "../../../framework/js/models/stage";
+import DDeiActiveType from "../../js/enums/active-type";
+import DDeiFile from "../../js/file";
+import DDeiSheet from "../../js/sheet";
+import DDeiFileState from "../../js/enums/file-state";
 
 export default {
   name: "DDei-Editor-Quick-SDP",
@@ -49,12 +60,12 @@ export default {
   data() {
     return {
       editor: null,
-      icons: {}
+      icons: {},
     };
   },
   computed: {},
   watch: {},
-  created() { },
+  created() {},
   mounted() {
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     for (let i in ICONS) {
@@ -62,24 +73,35 @@ export default {
     }
   },
   methods: {
-
     /**
      * 新建文件
-     * @param evt 
+     * @param evt
      */
     newFile(evt) {
       if (this.editor?.ddInstance) {
         let ddInstance = this.editor.ddInstance;
-        let file = DDeiFile.loadFromJSON({
-          name: "新建文件_NEW", path: "/新建文件_NEW",
-          sheets: [new DDeiSheet({ name: "页面-1", desc: "页面-1", stage: DDeiStage.initByJSON({ id: "stage_1" }), active: DDeiActiveType.ACTIVE })],
-          currentSheetIndex: 0,
-          state: DDeiFileState.NEW,
-          active: DDeiActiveType.ACTIVE
-        }, { currentDdInstance: ddInstance });
+        let file = DDeiFile.loadFromJSON(
+          {
+            name: "新建文件_NEW",
+            path: "/新建文件_NEW",
+            sheets: [
+              new DDeiSheet({
+                name: "页面-1",
+                desc: "页面-1",
+                stage: DDeiStage.initByJSON({ id: "stage_1" }),
+                active: DDeiActiveType.ACTIVE,
+              }),
+            ],
+            currentSheetIndex: 0,
+            state: DDeiFileState.NEW,
+            active: DDeiActiveType.ACTIVE,
+          },
+          { currentDdInstance: ddInstance }
+        );
         //添加文件
         if (this.editor.currentFileIndex != -1) {
-          this.editor.files[this.editor.currentFileIndex].active = DDeiActiveType.NONE;
+          this.editor.files[this.editor.currentFileIndex].active =
+            DDeiActiveType.NONE;
         }
         this.editor.addFile(file);
         this.editor.currentFileIndex = this.editor.files.length - 1;
@@ -100,7 +122,7 @@ export default {
 
     /**
      * 保存
-     * @param evt 
+     * @param evt
      */
     save(evt) {
       if (this.editor?.files) {
@@ -120,9 +142,7 @@ export default {
               file.state = DDeiFileState.NONE;
             });
           }
-
         }
-
       }
     },
 
@@ -137,11 +157,11 @@ export default {
           let json = file.toJSON();
           if (json) {
             // 创建隐藏的可下载链接
-            var eleLink = document.createElement('a');
+            let eleLink = document.createElement("a");
             eleLink.download = file.name + ".dei";
-            eleLink.style.display = 'none';
+            eleLink.style.display = "none";
             // 字符内容转变成blob地址
-            var blob = new Blob([JSON.stringify(json)]);
+            let blob = new Blob([JSON.stringify(json)]);
             eleLink.href = URL.createObjectURL(blob);
             // 触发点击
             document.body.appendChild(eleLink);
@@ -155,7 +175,7 @@ export default {
 
     /**
      * 打开文件
-     * @param evt 
+     * @param evt
      */
     openFile(evt) {
       //执行保存
@@ -167,7 +187,7 @@ export default {
             let finded = false;
             for (let j = 0; j < this.editor.files.length; j++) {
               if (this.editor.files[j].id == datas[i].id) {
-                finded = true
+                finded = true;
                 break;
               }
             }
@@ -178,7 +198,9 @@ export default {
                 //存在数据，执行修改
                 if (rowData) {
                   let ddInstance = this.editor?.ddInstance;
-                  let file = DDeiFile.loadFromJSON(JSON.parse(rowData.data), { currentDdInstance: ddInstance });
+                  let file = DDeiFile.loadFromJSON(JSON.parse(rowData.data), {
+                    currentDdInstance: ddInstance,
+                  });
                   this.editor.addFile(file);
                   for (let x = 0; x < this.editor.files.length; x++) {
                     this.editor.files[x].active = DDeiActiveType.NONE;
@@ -190,7 +212,8 @@ export default {
 
                   if (file && sheets && ddInstance) {
                     for (let i = 0; i < sheets.length; i++) {
-                      sheets[i].active = (i == 0 ? DDeiActiveType.ACTIVE : DDeiActiveType.NONE)
+                      sheets[i].active =
+                        i == 0 ? DDeiActiveType.ACTIVE : DDeiActiveType.NONE;
                     }
                     let stage = sheets[0].stage;
                     stage.ddInstance = ddInstance;
@@ -208,10 +231,9 @@ export default {
             }
           }
         }
-
       });
     },
-  }
+  },
 };
 </script>
 
@@ -232,7 +254,6 @@ export default {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 4px;
-
 }
 
 .ddei_editor_sdp_item_text {
@@ -240,10 +261,8 @@ export default {
   font-family: "Microsoft YaHei";
   font-size: 12px;
   grid-column: 1/5;
-  color: rgb(120, 120, 120)
+  color: rgb(120, 120, 120);
 }
-
-
 
 .ddei_editor_sdp_item_box {
   width: 30px;
@@ -258,7 +277,6 @@ export default {
 
 .ddei_editor_sdp_item_box div {
   margin: auto;
-
 }
 
 .ddei_editor_sdp_item_box img {
@@ -267,7 +285,6 @@ export default {
   height: 16px;
   margin: auto;
 }
-
 
 .ddei_editor_sdp_item_box:hover {
   background-color: rgb(233, 233, 238);

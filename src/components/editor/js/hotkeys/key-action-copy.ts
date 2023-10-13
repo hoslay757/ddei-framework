@@ -34,17 +34,16 @@ class DDeiKeyActionCopy extends DDeiKeyAction {
           y2 = Math.max(item.y + item.height, y2)
         })
         let lineOffset = 1 * ratio / 2;
-
+        canvas.setAttribute("style", "-moz-transform-origin:left top;-moz-transform:scale(" + (1 / ratio) + ");display:block;zoom:" + (1 / ratio));
         canvas.setAttribute("width", Math.abs(x2 - x1) * ratio + lineOffset)
         canvas.setAttribute("height", Math.abs(y2 - y1) * ratio + lineOffset)
         ctx.translate(-x1 * ratio - lineOffset, -y1 * ratio - lineOffset)
         models.forEach(item => {
           item.render.drawShape();
         })
-        canvas.toBlob(function (blob) {
+        canvas.toBlob(blob => {
           //得到blob对象
           let writeData = [new ClipboardItem({ "image/png": Promise.resolve(blob) })];
-
           cbData.write(writeData).then(function () {
             console.log("复制成功");
             //清空临时canvas
