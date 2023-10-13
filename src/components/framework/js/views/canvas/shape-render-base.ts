@@ -57,6 +57,12 @@ class DDeiAbstractShapeRender {
 
 
   /**
+   * 获取html
+   */
+  getHTML(): string {
+    return null;
+  }
+  /**
    * 获取缓存的渲染数据
    */
   getCachedValue(attrPath: string): object | null {
