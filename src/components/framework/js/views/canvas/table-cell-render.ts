@@ -26,6 +26,9 @@ class DDeiTableCellCanvasRender extends DDeiRectContainerCanvasRender {
 
   getHTML(): string {
     let cell = this.model;
+    if (cell.width == 0 || cell.height == 0) {
+      return '';
+    }
     let fiFamily = this.getCachedValue("font.family");
     let fiSize = this.getCachedValue("font.size");
     let fiColor = this.getCachedValue("font.color");
@@ -128,21 +131,21 @@ class DDeiTableCellCanvasRender extends DDeiRectContainerCanvasRender {
     }
     if (!bottomDisabled && bottomColor && (!bottomOpac || bottomOpac > 0) && bottomWidth > 0) {
       let dash = 'solid'
-      if (topDash && topDash.length > 0) {
+      if (bottomDash && bottomDash.length > 0) {
         dash = "dashed"
       }
       html += 'border-bottom: ' + bottomWidth + 'px ' + dash + ' ' + bottomColor + ';'
     }
     if (!leftDisabled && leftColor && (!leftOpac || leftOpac > 0) && leftWidth > 0) {
       let dash = 'solid'
-      if (topDash && topDash.length > 0) {
+      if (leftDash && leftDash.length > 0) {
         dash = "dashed"
       }
       html += 'border-left: ' + leftWidth + 'px ' + dash + ' ' + leftColor + ';'
     }
     if (!rightDisabled && rightColor && (!rightOpac || rightOpac > 0) && rightWidth > 0) {
       let dash = 'solid'
-      if (topDash && topDash.length > 0) {
+      if (rightDash && rightDash.length > 0) {
         dash = "dashed"
       }
       html += 'border-right: ' + rightWidth + 'px ' + dash + ' ' + rightColor + ';'
@@ -150,6 +153,8 @@ class DDeiTableCellCanvasRender extends DDeiRectContainerCanvasRender {
     if (!fillDisabled && fillColor && (!fillOpacity || fillOpacity > 0)) {
       html += 'background-color: ' + fillColor + ';'
     }
+    html += 'width: ' + cell.width + ';'
+    html += 'height: ' + cell.height + ';'
     html += '"'
     if (cell.isMergeCell()) {
       html += ' rowspan="' + cell.mergeRowNum + '"'
