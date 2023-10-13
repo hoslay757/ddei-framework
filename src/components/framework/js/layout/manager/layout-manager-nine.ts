@@ -153,7 +153,7 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
       //绑定并初始化渲染器
       item.initRender();
       //如果操作的只有一个元素，就在空位插入元素，
-      if (models.length == 1) {
+      if (models.length == 1 && layoutIndex.row != -1 && layoutIndex.col != -1) {
         layoutData[item.id] = { row: layoutIndex.row, col: layoutIndex.col }
         //如果已存在元素，则交换
         if (indexModel) {
