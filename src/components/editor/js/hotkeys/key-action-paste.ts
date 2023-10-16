@@ -281,7 +281,8 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
       if (stage.selectedModels?.size == 1) {
         let model = Array.from(stage.selectedModels.values())[0]
         if (model.baseModelType == 'DDeiTable') {
-          //TODO 复制表格内容到表格
+          //复制表格内容到表格
+          this.copyTableToTableCell(model, tableJson);
           createControl = false
         }
         //添加表格到容器
@@ -296,6 +297,96 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
       }
       stage.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
       stage.ddInstance.bus?.executeAll();
+    }
+  }
+
+  /**
+   * 复制表格内容到另外一个表格的单元格中
+   * @param table 表格
+   * @param tableJson 表格单元格
+   */
+  copyTableToTableCell(table: DDeiTable, tableJson: object): void {
+    //取得当前表格的当前选中单元格
+    let distCells = table.getSelectedCells();
+    //校验目标区域和当前源区域是否能够满足粘贴条件
+    if (distCells && distCells.length > 0 && tableJson) {
+      let sourceTable = tableJson;
+      let distTable = table;
+      let sourceMinMaxRow = { minRow: 0, minCol: 0, maxRow: sourceTable.rows.length - 1, maxCol: sourceTable.rows[0].length - 1 }
+      //校验1:目标是否为一个连续的选中区域
+      let distMinMaxRow = distTable.getMinMaxRowAndCol(distCells);
+      let distAreaAllSelected = distTable.isAllSelected(distMinMaxRow.minRow, distMinMaxRow.minCol, distMinMaxRow.maxRow, distMinMaxRow.maxCol);
+
+      if (!distAreaAllSelected) {
+        console.log("表格粘贴目标不是一个有效的连续区域");
+        return;
+      }
+      //计算粘贴后的区域大小
+      let rowNum = 1;
+      let colNum = 1;
+      let sourceRowNum = sourceMinMaxRow.maxRow - sourceMinMaxRow.minRow + 1;
+      let distRowNum = distMinMaxRow.maxRow - distMinMaxRow.minRow + 1;
+      let sourceColNum = sourceMinMaxRow.maxCol - sourceMinMaxRow.minCol + 1;
+      let distColNum = distMinMaxRow.maxCol - distMinMaxRow.minCol + 1;
+      //如果目标区域的行数/列数=1，则粘贴后的目标行数=源行数/列数=源列数，如果不是，则取得能够整除的区域
+      if (distRowNum == sourceRowNum) {
+        rowNum = sourceRowNum;
+      } else if (distRowNum > sourceRowNum) {
+        rowNum = distRowNum - (distRowNum % sourceRowNum);
+      } else if (distRowNum < sourceRowNum) {
+        rowNum = sourceRowNum;
+      }
+      if (distColNum == sourceColNum) {
+        colNum = sourceColNum;
+      } else if (distColNum > sourceColNum) {
+        colNum = distColNum - (distColNum % sourceColNum);
+      } else if (distColNum < sourceColNum) {
+        colNum = sourceColNum;
+      }
+
+      //校验2：粘贴区域内存在合并单元格
+      if (distTable.hasMergeCell(distMinMaxRow.minRow, distMinMaxRow.minCol, distMinMaxRow.minRow + rowNum - 1, distMinMaxRow.minCol + colNum - 1)) {
+        console.log("表格粘贴区域存在合并单元格");
+        return;
+      }
+
+      //校验3：粘贴后超出表格所在最大区域
+      if (distTable.rows.length <= distMinMaxRow.minRow + rowNum - 1 || distTable.cols.length <= distMinMaxRow.minCol + colNum - 1) {
+        console.log("表格粘贴区域超出表格所在最大区域");
+        return;
+      }
+      //执行复制
+      let mergeCells = [];
+      for (let i = 0; i < rowNum && distMinMaxRow.minRow + i < distTable.rows.length; i++) {
+        let offsetI = i % sourceRowNum;
+        for (let j = 0; j < colNum && distMinMaxRow.minCol + j < distTable.cols.length; j++) {
+          //获取要复制的单元格
+          let offsetJ = j % sourceColNum;
+          let sourceCell = sourceTable.rows[sourceMinMaxRow.minRow + offsetI][sourceMinMaxRow.minCol + offsetJ];
+          //取得目标单元格
+          let targetCell = distTable.rows[distMinMaxRow.minRow + i][distMinMaxRow.minCol + j];
+          //文本
+          targetCell.text = sourceCell.text;
+          //样式
+          targetCell.textStyle = sourceCell.textStyle;
+          targetCell.font = sourceCell.font
+          targetCell.border = sourceCell.border;
+          //记录合并单元格
+          if (sourceCell.mergeRowNum > 1 || sourceCell.mergeColNum > 1) {
+            targetCell.mergeRowNum = sourceCell.mergeRowNum;
+            targetCell.mergeColNum = sourceCell.mergeColNum;
+            mergeCells[mergeCells.length] = targetCell;
+          }
+          targetCell.render?.renderCacheData?.clear();
+        }
+      }
+      //执行合并单元格
+      for (let i = 0; i < mergeCells.length; i++) {
+        let mc = mergeCells[i];
+        //合并单元格
+        let cells = distTable.getCellsByRect(mc.row, mc.col, mc.row + mc.mergeRowNum - 1, mc.col + mc.mergeColNum - 1);
+        distTable.mergeCells(cells);
+      }
     }
   }
 
@@ -316,12 +407,12 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
       let tableWidth = 0;
       //解析行列
       let eleRows = tableEle.rows;
-      let mergeApendCells = []
+      //合并区域的定义
+      let mergeAreas = []
       let colSize = {}
       let rowSize = {}
       for (let i = 0; i < eleRows.length; i++) {
         let eleCells = eleRows[i].cells;
-
         if (!tableJson.rows[i]) {
           tableJson.rows[i] = []
         }
@@ -330,13 +421,9 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
           let cellEle = eleCells[j]
           //获取样式以及合并单元格信息
           //合并单元格信息
-          let cellJson = null;
-          if (mergeApendCells.indexOf(i + "-" + j) == -1) {
-            cellJson = { modelCode: '100302', row: i, col: j, text: cellEle.innerHTML }
-            rowJson.push(cellJson)
-          } else {
-            cellJson = rowJson[j]
-          }
+          let cellJson = { modelCode: '100302', row: i, col: j, text: cellEle.innerHTML, domRow: i, domCol: j }
+          rowJson.push(cellJson)
+
 
           if (cellEle.rowSpan > 1) {
             cellJson.mergeRowNum = parseInt(cellEle.rowSpan)
@@ -344,53 +431,18 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
           if (cellEle.colSpan > 1) {
             cellJson.mergeColNum = parseInt(cellEle.colSpan)
           }
-          //当出现合并单元格时，创建空的格子区域
+
+          //记录合并单元格区域
           if (cellJson.mergeRowNum > 1 || cellJson.mergeColNum > 1) {
-            for (let mi = 0; mi < cellJson.mergeRowNum; mi++) {
-              for (let mj = 0; mj < cellJson.mergeColNum; mj++) {
-                if (!(mi == 0 && mj == 0)) {
-                  if (!tableJson.rows[i + mi]) {
-                    tableJson.rows[i + mi] = []
-                  }
-                  let curAppendRow = tableJson.rows[i + mi]
-                  //补列
-                  if (!curAppendRow[j]) {
-                    for (let bj = 0; bj < j; bj++) {
-                      curAppendRow[bj] = { row: i + mi, col: bj, width: 0, height: 0 }
-                      mergeApendCells.push(curAppendRow[bj].row + "-" + curAppendRow[bj].col)
-                    }
-
-                  }
-                  //创建区域的行列
-                  let appendCellJson = { row: i + mi, col: j + mj, width: 0, height: 0 }
-                  curAppendRow.push(appendCellJson)
-                }
-              }
+            if (!cellJson.mergeRowNum) {
+              cellJson.mergeRowNum = 1;
             }
+            if (!cellJson.mergeColNum) {
+              cellJson.mergeColNum = 1;
+            }
+            mergeAreas.push(cellJson);
           }
 
-          let rowHeight = null;
-          if (rowSize["" + i]) {
-            rowHeight = rowSize["" + i]
-          } else {
-            rowHeight = parseFloat(eleRows[i].getAttribute("height"));
-            tableHeight += rowHeight
-            if (rowHeight != NaN) {
-              rowSize["" + i] = rowHeight;
-            }
-          }
-          let colWidth = null;
-          if (colSize["" + j]) {
-            colWidth = colSize["" + j]
-          } else {
-            colWidth = parseFloat(cellEle.getAttribute("width"));
-            tableWidth += colWidth;
-            if (colWidth != NaN) {
-              colSize["" + j] = colWidth;
-            }
-          }
-          cellJson.width = colWidth
-          cellJson.height = rowHeight
           //字体样式信息
           cellJson.font = {}
           if (cellEle.style.fontSize) {
@@ -523,13 +575,193 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
           }
         }
       }
+      //处理合并单元格区域
+      mergeAreas.forEach(mergeCell => {
+        //向右下方扩展表格区域
+        for (let i = 1; i <= mergeCell.mergeRowNum; i++) {
+          for (let j = 1; j <= mergeCell.mergeColNum; j++) {
+            //自身单元格不用扩展
+            if (!(i == 1 && j == 1)) {
+              tableJson.rows[mergeCell.row + i - 1].splice(mergeCell.col + j - 1, 0, { width: 0, height: 0, modelCode: '100302', mCell: mergeCell });
+              //重新设置关系
+              for (let k = 0; k < tableJson.rows.length; k++) {
+                let rowObj = tableJson.rows[k];
+                for (let l = 0; l < rowObj.length; l++) {
+                  rowObj[l].row = k;
+                  rowObj[l].col = l;
+                }
+              }
+            }
+          }
+        }
+      });
+
+      //计算每一行列的大小以及合并单元格的大小
+      for (let k = 0; k < tableJson.rows.length; k++) {
+        let rowObj = tableJson.rows[k];
+        for (let l = 0; l < rowObj.length; l++) {
+          if ((rowObj[l].domRow || rowObj[l].domRow == 0)
+            && (!rowObj[l].mergeRowNum || rowObj[l].mergeRowNum <= 1) && (!rowObj[l].mergeColNum <= 1 || rowObj[l].mergeColNum <= 1)) {
+            let rowHeight = null;
+            let domRowEle = tableEle.rows[rowObj[l].domRow];
+            let domCellEle = tableEle.rows[rowObj[l].domRow].cells[rowObj[l].domCol];
+            if (!rowSize["" + k]) {
+              if (domRowEle.style.height) {
+                rowHeight = parseFloat(domRowEle.style.height);
+              } else {
+                rowHeight = parseFloat(domRowEle.getAttribute("height"));
+              }
+              if (!isNaN(rowHeight)) {
+                rowSize["" + k] = rowHeight;
+              }
+            }
+            let colWidth = null;
+            if (!colSize["" + l]) {
+              if (domCellEle.style.width) {
+                colWidth = parseFloat(domCellEle.style.width);
+              } else {
+                colWidth = parseFloat(domCellEle.getAttribute("width"));
+              }
+              if (!isNaN(colWidth)) {
+                colSize["" + l] = colWidth;
+              }
+            }
+          }
+        }
+      }
+      //补全行列大小
+      for (let k = 0; k < tableJson.rows.length; k++) {
+        //可能存在合并单元格，
+        if (!rowSize[k]) {
+          //寻找非合并单元格，填充大小，如果找不到则用合并单元格大小的平均数
+          let mCell = null;
+          let rowObj = tableJson.rows[k];
+          for (let l = 0; l < rowObj.length; l++) {
+            if (rowObj[l].domRow || rowObj[l].domRow == 0) {
+              let domCellEle = tableEle.rows[rowObj[l].domRow].cells[rowObj[l].domCol];
+              if (rowObj[l].mergeRowNum > 1 || rowObj[l].mergeColNum > 1) {
+                mCell = rowObj[l];
+              } else if (!mCell && rowObj[l].mCell) {
+                mCell = rowObj[l].mCell;
+              } else if (!rowObj[l].mCell) {
+                let rowHeight = 0;
+                if (domCellEle.style.height) {
+                  rowHeight = parseFloat(domCellEle.style.height);
+                } else {
+                  rowHeight = parseFloat(domCellEle.getAttribute("height"));
+                }
+                if (!isNaN(rowHeight)) {
+                  rowSize["" + k] = rowHeight;
+                }
+                break;
+              }
+            }
+          }
+          if (!rowSize[k] && mCell) {
+            let domCellEle = tableEle.rows[mCell.domRow].cells[mCell.domCol];
+            let rowHeight = 0;
+            if (domCellEle.style.height) {
+              rowHeight = parseFloat(domCellEle.style.height);
+            } else {
+              rowHeight = parseFloat(domCellEle.getAttribute("height"));
+            }
+            if (!isNaN(rowHeight)) {
+              rowSize[k] = rowHeight / mCell.mergeRowNum
+            }
+          }
+        }
+      }
+      for (let l = 0; l < tableJson.rows[0].length; l++) {
+        //可能存在合并单元格，
+        if (!colSize[l]) {
+          //寻找非合并单元格，填充大小，如果找不到则用合并单元格大小的平均数
+          let mCell = null;
+
+          for (let k = 0; k < tableJson.rows.length; k++) {
+            if (tableJson.rows[k][l].domRow || tableJson.rows[k][l].domRow == 0) {
+              let domCellEle = tableEle.rows[tableJson.rows[k][l].domRow].cells[tableJson.rows[k][l].domCol];
+              if (tableJson.rows[k][l].mergeRowNum > 1 || tableJson.rows[k][l].mergeColNum > 1) {
+                mCell = tableJson.rows[k][l];
+              } else if (!mCell && tableJson.rows[k][l].mCell) {
+                mCell = tableJson.rows[k][l].mCell;
+              } else if (!tableJson.rows[k][l].mCell) {
+                let colWidth = 0;
+                if (domCellEle.style.width) {
+                  colWidth = parseFloat(domCellEle.style.width);
+                } else {
+                  colWidth = parseFloat(domCellEle.getAttribute("width"));
+                }
+                if (!isNaN(colWidth)) {
+                  colSize["" + l] = colWidth;
+                }
+                break;
+              }
+            }
+          }
+          if (!colSize[l] && mCell) {
+            let domCellEle = tableEle.rows[mCell.domRow].cells[mCell.domCol];
+            let colWidth = 0;
+            if (domCellEle.style.width) {
+              colWidth = parseFloat(domCellEle.style.width);
+            } else {
+              colWidth = parseFloat(domCellEle.getAttribute("width"));
+            }
+            if (!isNaN(colWidth)) {
+              colSize[l] = colWidth / mCell.mergeColNum
+            }
+          }
+        }
+      }
+      //写入单元格大小
+      for (let k = 0; k < tableJson.rows.length; k++) {
+        let rowObj = tableJson.rows[k];
+        for (let l = 0; l < rowObj.length; l++) {
+          if (k == 0) {
+            tableWidth += colSize["" + l];
+          }
+          if (l == 0) {
+            tableHeight += rowSize["" + k];
+          }
+          //如果是合并单元格
+          if (rowObj[l].mergeRowNum > 1 || rowObj[l].mergeColNum > 1) {
+            //计算高度和宽度
+            let mHeight = 0
+            let mWidth = 0
+            for (let ki = 1; ki <= rowObj[l].mergeRowNum; ki++) {
+              mHeight += rowSize["" + (k + ki - 1)];
+            }
+            for (let ki = 1; ki <= rowObj[l].mergeColNum; ki++) {
+              mWidth += colSize["" + (l + ki - 1)];
+            }
+            rowObj[l].height = mHeight;
+            rowObj[l].width = mWidth;
+            rowObj[l].originWidth = colSize["" + l];
+            rowObj[l].originHeight = rowSize["" + k];
+            delete rowObj[l].domRow
+            delete rowObj[l].domCol
+          }
+          //如果不是合并单元格但是属于合并单元格区域，则属于被合并单元格
+          else if (rowObj[l].mCell) {
+            rowObj[l].originWidth = colSize["" + l];
+            rowObj[l].originHeight = rowSize["" + k];
+            delete rowObj[l].mCell
+            delete rowObj[l].domRow
+            delete rowObj[l].domCol
+          }
+          //普通单元格
+          else {
+            rowObj[l].width = colSize["" + l];
+            rowObj[l].height = rowSize["" + k];
+            delete rowObj[l].domRow
+            delete rowObj[l].domCol
+          }
+        }
+      }
       tableJson.height = tableHeight
-      tableJson.width = tableWidth;
+      tableJson.width = tableWidth
       console.log(tableJson)
       return tableJson
     }
-
-
   }
 
   //创建新的表格

@@ -210,7 +210,7 @@ export default {
         searchPaths
       );
       let dataJson = {
-        id: control.code + "_" + ddInstance.stage.idIdx,
+        id: control.code + "_" + (ddInstance.stage.idIdx + 1),
         modelCode: control.id,
         x: 0,
         y: 0,
