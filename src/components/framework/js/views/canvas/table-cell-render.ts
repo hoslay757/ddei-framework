@@ -85,10 +85,10 @@ class DDeiTableCellCanvasRender extends DDeiRectContainerCanvasRender {
     if (fiSize) {
       html += 'color:' + fiColor + ';'
     }
-    if (bold) {
+    if (bold == '1') {
       html += 'font-weight:bold;'
     }
-    if (italic) {
+    if (italic == '1') {
       html += 'font-style:italic;'
     }
     if (align) {
@@ -120,7 +120,7 @@ class DDeiTableCellCanvasRender extends DDeiRectContainerCanvasRender {
     if (underline == "1") {
       html += 'text-decoration: underline;'
     } else if (deleteline == "1") {
-      html += 'text-decoration: line-through'
+      html += 'text-decoration: line-through;'
     }
     if (!topDisabled && topColor && (!topOpac || topOpac > 0) && topWidth > 0) {
       let dash = 'solid'
@@ -153,13 +153,15 @@ class DDeiTableCellCanvasRender extends DDeiRectContainerCanvasRender {
     if (!fillDisabled && fillColor && (!fillOpacity || fillOpacity > 0)) {
       html += 'background-color: ' + fillColor + ';'
     }
-    html += 'width: ' + cell.width + ';'
-    html += 'height: ' + cell.height + ';'
+    html += 'width: ' + cell.width + 'px;'
+    html += 'height: ' + cell.height + 'px;'
     html += '"'
     if (cell.isMergeCell()) {
       html += ' rowspan="' + cell.mergeRowNum + '"'
       html += ' colspan="' + cell.mergeColNum + '"'
     }
+    html += ' width="' + cell.width + '"'
+    html += ' height="' + cell.height + '"'
     html += '>'
     if (cell.text) {
       html += cell.text

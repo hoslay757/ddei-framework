@@ -8,6 +8,8 @@ import DDeiStage from "@/components/framework/js/models/stage";
 import DDeiRectangle from "@/components/framework/js/models/rectangle";
 import { MODEL_CLS, RENDER_CLS } from "@/components/framework/js/config";
 import DDeiAbstractShape from "@/components/framework/js/models/shape";
+import table from "../../configs/controls/table";
+import DDeiTable from "@/components/framework/js/models/table";
 
 /**
  * 键行为:粘贴
@@ -273,9 +275,279 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
     }
     //外部复制
     else {
-
+      //只考虑从excel粘贴的情况，识别为一个table
+      let tableJson = this.parseDomToJson(textData);
+      let createControl = true;
+      if (stage.selectedModels?.size == 1) {
+        let model = Array.from(stage.selectedModels.values())[0]
+        if (model.baseModelType == 'DDeiTable') {
+          //TODO 复制表格内容到表格
+          createControl = false
+        }
+        //添加表格到容器
+        else if (model.baseModelType == 'DDeiContainer') {
+          this.createTable(tableJson, offsetX, offsetY, stage, model, evt)
+          createControl = false
+        }
+      }
+      //如果没有粘贴到表格在最外层容器的鼠标位置，反序列化控件，重新设置ID，其他信息保留
+      if (createControl) {
+        this.createTable(tableJson, offsetX, offsetY, stage, layer, evt)
+      }
+      stage.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+      stage.ddInstance.bus?.executeAll();
     }
   }
+
+  /**
+   * 解析dom文本到json
+   * @param textData 文本
+   * @returns json
+   */
+  parseDomToJson(textData): string {
+    let tableJson = { rows: [], modelCode: "100301" }
+    let parser = new DOMParser();
+    let doc = parser.parseFromString(textData, "text/html");
+    //解析table，获取基本的行列定义
+    if (doc) {
+      let tableEle = doc.body.children[0];
+      let tableHeight = 0;
+      tableJson.id = 'copytable'
+      let tableWidth = 0;
+      //解析行列
+      let eleRows = tableEle.rows;
+      let mergeApendCells = []
+      let colSize = {}
+      let rowSize = {}
+      for (let i = 0; i < eleRows.length; i++) {
+        let eleCells = eleRows[i].cells;
+
+        if (!tableJson.rows[i]) {
+          tableJson.rows[i] = []
+        }
+        let rowJson = tableJson.rows[i]
+        for (let j = 0; j < eleCells.length; j++) {
+          let cellEle = eleCells[j]
+          //获取样式以及合并单元格信息
+          //合并单元格信息
+          let cellJson = null;
+          if (mergeApendCells.indexOf(i + "-" + j) == -1) {
+            cellJson = { modelCode: '100302', row: i, col: j, text: cellEle.innerHTML }
+            rowJson.push(cellJson)
+          } else {
+            cellJson = rowJson[j]
+          }
+
+          if (cellEle.rowSpan > 1) {
+            cellJson.mergeRowNum = parseInt(cellEle.rowSpan)
+          }
+          if (cellEle.colSpan > 1) {
+            cellJson.mergeColNum = parseInt(cellEle.colSpan)
+          }
+          //当出现合并单元格时，创建空的格子区域
+          if (cellJson.mergeRowNum > 1 || cellJson.mergeColNum > 1) {
+            for (let mi = 0; mi < cellJson.mergeRowNum; mi++) {
+              for (let mj = 0; mj < cellJson.mergeColNum; mj++) {
+                if (!(mi == 0 && mj == 0)) {
+                  if (!tableJson.rows[i + mi]) {
+                    tableJson.rows[i + mi] = []
+                  }
+                  let curAppendRow = tableJson.rows[i + mi]
+                  //补列
+                  if (!curAppendRow[j]) {
+                    for (let bj = 0; bj < j; bj++) {
+                      curAppendRow[bj] = { row: i + mi, col: bj, width: 0, height: 0 }
+                      mergeApendCells.push(curAppendRow[bj].row + "-" + curAppendRow[bj].col)
+                    }
+
+                  }
+                  //创建区域的行列
+                  let appendCellJson = { row: i + mi, col: j + mj, width: 0, height: 0 }
+                  curAppendRow.push(appendCellJson)
+                }
+              }
+            }
+          }
+
+          let rowHeight = null;
+          if (rowSize["" + i]) {
+            rowHeight = rowSize["" + i]
+          } else {
+            rowHeight = parseFloat(eleRows[i].getAttribute("height"));
+            tableHeight += rowHeight
+            if (rowHeight != NaN) {
+              rowSize["" + i] = rowHeight;
+            }
+          }
+          let colWidth = null;
+          if (colSize["" + j]) {
+            colWidth = colSize["" + j]
+          } else {
+            colWidth = parseFloat(cellEle.getAttribute("width"));
+            tableWidth += colWidth;
+            if (colWidth != NaN) {
+              colSize["" + j] = colWidth;
+            }
+          }
+          cellJson.width = colWidth
+          cellJson.height = rowHeight
+          //字体样式信息
+          cellJson.font = {}
+          if (cellEle.style.fontSize) {
+            cellJson.font.size = parseFloat(cellEle.style.fontSize)
+          }
+          if (cellEle.style.color) {
+            cellJson.font.color = DDeiUtil.getColor(cellEle.style.color)
+          }
+          if (cellEle.style.fontFamily) {
+            cellJson.font.family = cellEle.style.fontFamily
+          }
+          cellJson.border = {}
+          cellJson.border.top = {}
+          cellJson.border.bottom = {}
+          cellJson.border.left = {}
+          cellJson.border.right = {}
+          if (cellEle.style.borderTopColor) {
+            cellJson.border.top.color = cellEle.style.borderTopColor
+            if (cellJson.border.top.color == 'initial') {
+              delete cellJson.border.top.color
+            }
+          }
+          if (cellEle.style.borderTopWidth) {
+            cellJson.border.top.width = parseFloat(cellEle.style.borderTopWidth)
+            if (isNaN(cellJson.border.top.width) || cellJson.border.top.width == 'initial') {
+              delete cellJson.border.top.width
+            }
+          }
+          if (cellEle.style.borderTopStyle) {
+            cellJson.border.top.style = cellEle.style.borderTopStyle
+          }
+
+
+
+          if (cellEle.style.borderBottomColor) {
+            cellJson.border.bottom.color = cellEle.style.borderBottomColor
+            if (cellJson.border.bottom.color == 'initial') {
+              delete cellJson.border.bottom.color;
+            }
+          }
+          if (cellEle.style.borderBottomWidth) {
+            cellJson.border.bottom.width = parseFloat(cellEle.style.borderBottomWidth)
+            if (isNaN(cellJson.border.bottom.width) || cellJson.border.bottom.width == 'initial') {
+              delete cellJson.border.bottom.width
+            }
+          }
+          if (cellEle.style.borderBottomStyle) {
+            cellJson.border.bottom.style = cellEle.style.borderBottomStyle
+          }
+
+
+          if (cellEle.style.borderLeftColor) {
+            cellJson.border.left.color = cellEle.style.borderLeftColor
+            if (cellJson.border.left.color == 'initial') {
+              delete cellJson.border.left.color
+            }
+          }
+          if (cellEle.style.borderLeftWidth) {
+            cellJson.border.left.width = parseFloat(cellEle.style.borderLeftWidth)
+            if (isNaN(cellJson.border.left.width) || cellJson.border.left.width == 'initial') {
+              delete cellJson.border.left.width
+            }
+          }
+          if (cellEle.style.borderLeftStyle) {
+            cellJson.border.left.style = cellEle.style.borderLeftStyle
+          }
+
+          if (cellEle.style.borderRightColor) {
+            cellJson.border.right.color = cellEle.style.borderRightColor
+            if (cellJson.border.right.color == 'initial') {
+              delete cellJson.border.right.color
+            }
+          }
+          if (cellEle.style.borderRightWidth) {
+            cellJson.border.right.width = parseFloat(cellEle.style.borderRightWidth)
+            if (isNaN(cellJson.border.right.width) || cellJson.border.right.width == 'initial') {
+              delete cellJson.border.right.width
+            }
+          }
+          if (cellEle.style.borderRightStyle) {
+            cellJson.border.right.style = cellEle.style.borderRightStyle
+          }
+
+          //填充信息
+          cellJson.fill = {};
+          if (cellEle.style.backgroundColor) {
+            cellJson.fill.color = cellEle.style.backgroundColor
+          }
+          //对齐
+          cellJson.textStyle = {}
+          if (cellEle.style.textAlign) {
+            if (cellEle.style.textAlign == "left") {
+              cellJson.textStyle.align = 1
+            } else if (cellEle.style.textAlign == "center") {
+              cellJson.textStyle.align = 2
+            } else if (cellEle.style.textAlign == "right") {
+              cellJson.textStyle.align = 3
+            }
+          }
+          if (cellEle.style.verticalAlign) {
+            if (cellEle.style.verticalAlign == "top") {
+              cellJson.textStyle.valign = 1
+            } else if (cellEle.style.verticalAlign == "middle") {
+              cellJson.textStyle.valign = 2
+            } else if (cellEle.style.verticalAlign == "bottom") {
+              cellJson.textStyle.valign = 3
+            }
+          }
+          if (cellEle.style.textDecoration == "underline") {
+            cellJson.textStyle.underline = "1"
+          }
+          if (cellEle.style.textDecoration == "line-through") {
+            cellJson.textStyle.deleteline = "1"
+          }
+          if (cellEle.style.whiteSpace == "nowrap") {
+            cellJson.textStyle.feed = "0"
+          } else {
+            cellJson.textStyle.feed = "1"
+          }
+
+          if (cellEle.style.fontStyle == "italic") {
+            cellJson.textStyle.italic = "1"
+          }
+          if (cellEle.style.fontWeight) {
+            if (cellEle.style.fontWeight == 'bold') {
+              cellJson.textStyle.bold = "1"
+            }
+            else if (parseInt(cellEle.style.fontWeight) > 400)
+              cellJson.textStyle.bold = "1"
+          }
+        }
+      }
+      tableJson.height = tableHeight
+      tableJson.width = tableWidth;
+      console.log(tableJson)
+      return tableJson
+    }
+
+
+  }
+
+  //创建新的表格
+  createTable(tableJson: object, x: number, y: number, stage: DDeiStage, container: object, evt: Event): void {
+    //当前激活的图层
+    let layer = stage.layers[stage.layerIndex];
+    let tableModel = DDeiTable.loadFromJSON(tableJson, { currentDdInstance: stage.ddInstance, currentStage: stage, currentLayer: layer, currentContainer: container });
+    stage.idIdx++
+    let newId = "table_" + stage.idIdx;
+    tableModel.id = newId
+    tableModel.x = x - tableModel.width / 2;
+    tableModel.y = y - tableModel.height / 2;
+    tableModel.resetCellData();
+    stage.ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeContainer, { newContainer: container, models: [tableModel] }, evt);
+    stage.ddInstance.bus.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
+    stage.ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeSelect, { models: [tableModel], value: DDeiEnumControlState.SELECTED }, evt);
+  }
+
 
   //创建新的控件
   createControl(jsonArray: [], x: number, y: number, stage: DDeiStage, container: object, evt: Event): void {
