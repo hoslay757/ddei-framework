@@ -62,8 +62,14 @@ class DDeiEditor {
     { keys: "27", times: 2, interval: 500, editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.CancelSelect },
     //删除
     { keys: "8", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.RemoveModels },
-    //F2
+    //F2快捷编辑
     { keys: "113", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.StartQuickEdit },
+    //ESC取消快捷编辑
+    { keys: "27", editorState: DDeiEditorState.QUICK_EDITING, action: DDeiEnumKeyActionInst.CancelQuickEdit },
+    //Enter确定快捷编辑
+    { keys: "13", editorState: DDeiEditorState.QUICK_EDITING, action: DDeiEnumKeyActionInst.EnterQuickEdit },
+    //Enter新行
+    { keys: "13", alt: true, editorState: DDeiEditorState.QUICK_EDITING, action: DDeiEnumKeyActionInst.NewRowQuickEdit },
     //上
     { shift: 2, keys: "38", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.UpMoveModels },
     //下

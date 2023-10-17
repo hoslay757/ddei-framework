@@ -3,18 +3,19 @@ import DDeiEditor from "../editor";
 import DDeiKeyAction from "./key-action";
 
 /**
- * 键行为:确认快捷编辑
+ * 键行为:新行
  * 确认快捷编辑
  */
-class DDeiKeyActionEnterQuickEdit extends DDeiKeyAction {
+class DDeiKeyActionNewRowQuickEdit extends DDeiKeyAction {
 
   // ============================ 方法 ===============================
   action(evt: Event, ddInstance: DDei): void {
     let editor = DDeiEditor.ACTIVE_INSTANCE;
-    editor.quickEditorInput?.blur();
+    editor.quickEditorInput.value += '\n'
+    editor.quickEditorInput.selectionEnd = editor.quickEditorInput.value.length
   }
 
 }
 
 
-export default DDeiKeyActionEnterQuickEdit
+export default DDeiKeyActionNewRowQuickEdit

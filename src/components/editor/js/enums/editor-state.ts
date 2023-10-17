@@ -7,6 +7,8 @@ enum DDeiEditorState {
   DESIGNING = "designing",
   //编辑属性中
   PROPERTY_EDITING = "property_editing",
+  //快捷编辑中
+  QUICK_EDITING = "quick_editing",
   //控件创建中
   CONTROL_CREATING = "control_creating",
   //工具栏控件激活中

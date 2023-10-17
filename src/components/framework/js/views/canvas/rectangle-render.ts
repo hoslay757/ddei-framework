@@ -33,6 +33,11 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
 
   //类名，用于反射和动态加载
   static ClsName: string = "DDeiRectangleCanvasRender";
+
+  /**
+   * 用于绘图时缓存属性等信息
+   */
+  textUsedArea: object[] = [];
   // ============================== 方法 ===============================
   /**
    * 初始化
@@ -538,12 +543,15 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
             y1 = y + rRect.height * tci
             x2 = x1 + rRect.width;
           }
+
           if (hollow == '1') {
             ctx.strokeStyle = fiColor;
             ctx.strokeText(rRect.text, x1, y1)
           } else {
             ctx.fillText(rRect.text, x1, y1)
           }
+          textContainer[tci].x = x1;
+          textContainer[tci].y = y1;
           if (underline == '1') {
             ctx.beginPath();
             ctx.strokeStyle = fiColor;
@@ -572,6 +580,8 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       }
       //如果不换行，则输出第一行内容,直接对整理进行坐标对齐
       else {
+        textContainer[0].x = x;
+        textContainer[0].y = y;
         //处理镂空样式
         if (hollow == 1) {
           ctx.strokeStyle = fiColor;
@@ -605,6 +615,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
         }
 
       }
+      this.textUsedArea = textContainer;
     }
 
     //恢复状态

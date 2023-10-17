@@ -34,26 +34,60 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
     let stage = bus.ddInstance.stage;
-    if (stage && data?.mids?.length > 0 && data?.paths?.length > 0) {
+    if (stage && (data?.mids?.length > 0 || data?.models?.length > 0) && data?.paths?.length > 0) {
       //模型Id
       let mids = data.mids;
+      //模型
+      let models = data.models;
       //属性
       let paths = data.paths;
       //值
       let value = data.value;
       //属性定义
       let attrDefine = data.attrDefine;
+
       if (data?.paths?.indexOf('layout') != -1) {
 
       } else {
-        mids.forEach(modelId => {
-          if (modelId) {
-            //从bus中获取实际控件
-            let model = stage?.getModelById(modelId);
+        if (mids?.length > 0) {
+          mids.forEach(modelId => {
+            if (modelId) {
+              //从bus中获取实际控件
+              let model = stage?.getModelById(modelId);
+              if (model) {
+                //表格是修改里面的选中单元格
+                if (model.baseModelType == 'DDeiTable') {
+                  if (attrDefine?.modelCode == 'DDeiTable') {
+                    //根据code以及mapping设置属性值
+                    DDeiUtil.setAttrValueByPath(model, paths, value)
+                  } else {
+                    let cells = model.getSelectedCells();
+
+                    cells.forEach(cell => {
+                      paths.forEach(path => {
+                        //根据code以及mapping设置属性值
+                        DDeiUtil.setAttrValueByPath(cell, [path], value)
+                        cell.render?.setCachedValue(path, value)
+                      });
+
+
+                    });
+                  }
+
+                } else {
+                  //根据code以及mapping设置属性值
+                  DDeiUtil.setAttrValueByPath(model, paths, value)
+                  model.render?.setCachedValue(paths, value)
+                }
+              }
+            }
+          });
+        } else if (models?.length > 0) {
+          models.forEach(model => {
             if (model) {
               //表格是修改里面的选中单元格
               if (model.baseModelType == 'DDeiTable') {
-                if (attrDefine.modelCode == 'DDeiTable') {
+                if (attrDefine?.modelCode == 'DDeiTable') {
                   //根据code以及mapping设置属性值
                   DDeiUtil.setAttrValueByPath(model, paths, value)
                 } else {
@@ -75,9 +109,11 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
                 DDeiUtil.setAttrValueByPath(model, paths, value)
                 model.render?.setCachedValue(paths, value)
               }
+
             }
-          }
-        });
+          });
+        }
+
       }
       return true;
     }
