@@ -54,8 +54,7 @@ class DDeiKeyActionCopy extends DDeiKeyAction {
         if (jsonStr.length > 1) {
           jsonStr = jsonStr.substring(0, jsonStr.length - 1)
           jsonStr += ']'
-          let editor = DDeiEditor.ACTIVE_INSTANCE;
-          editor.copyMode = this.mode
+          ddInstance.stage.copyMode = this.mode
           jsonStr = '{"mode":"' + this.mode + '","data":' + jsonStr + '}'
         } else {
           jsonStr = "";

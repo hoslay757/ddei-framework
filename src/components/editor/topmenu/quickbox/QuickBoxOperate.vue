@@ -3,7 +3,7 @@
     <div class="ddei_editor_quick_operate_item"
          title="剪切"
          @click="editor?.ddInstance?.stage?.selectedModels?.size > 0 && execShearAction($event)">
-      <div :class="{'ddei_editor_quick_operate_item_box_selected':editor?.copyMode == 'cut','ddei_editor_quick_operate_item_box':editor?.ddInstance?.stage?.selectedModels?.size > 0 ,'ddei_editor_quick_operate_item_box_disabled':editor?.ddInstance?.stage?.selectedModels?.size == 0 || !editor?.ddInstance?.stage?.selectedModels}">
+      <div :class="{'ddei_editor_quick_operate_item_box_selected':editor?.ddInstance?.stage?.copyMode == 'cut','ddei_editor_quick_operate_item_box':editor?.ddInstance?.stage?.selectedModels?.size > 0 ,'ddei_editor_quick_operate_item_box_disabled':editor?.ddInstance?.stage?.selectedModels?.size == 0 || !editor?.ddInstance?.stage?.selectedModels}">
         <img :src="iconShear" />
       </div>
     </div>
@@ -17,7 +17,7 @@
     <div class="ddei_editor_quick_operate_item"
          title="复制"
          @click="editor?.ddInstance?.stage?.selectedModels?.size > 0 && execCopyAction($event)">
-      <div :class="{'ddei_editor_quick_operate_item_box':editor?.ddInstance?.stage?.selectedModels?.size > 0 ,'ddei_editor_quick_operate_item_box_disabled':editor?.ddInstance?.stage?.selectedModels?.size == 0 || !editor?.ddInstance?.stage?.selectedModels}">
+      <div :class="{'ddei_editor_quick_operate_item_box_selected':editor?.ddInstance?.stage?.copyMode == 'copy','ddei_editor_quick_operate_item_box':editor?.ddInstance?.stage?.selectedModels?.size > 0 ,'ddei_editor_quick_operate_item_box_disabled':editor?.ddInstance?.stage?.selectedModels?.size == 0 || !editor?.ddInstance?.stage?.selectedModels}">
         <img :src="iconCopy" />
       </div>
     </div>
@@ -111,7 +111,7 @@ export default {
      */
     hasClipboard() {
       this.hasClipData = false;
-      if (this.editor?.copyMode) {
+      if (this.editor?.ddInstance?.stage?.copyMode) {
         this.hasClipData = true;
       } else {
         let cbData = navigator.clipboard;
