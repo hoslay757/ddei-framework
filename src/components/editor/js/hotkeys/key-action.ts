@@ -73,7 +73,6 @@ abstract class DDeiKeyAction {
     if (evt.keyCode != 93 && evt.keyCode != 18 && evt.keyCode != 16 && evt.keyCode != 17) {
       m1Str += evt.keyCode
     }
-    console.log(m1Str)
 
     //执行下发逻
     for (let it = 0; it < DDeiEditor.HOT_KEY_MAPPING.length; it++) {
