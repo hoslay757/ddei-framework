@@ -19,6 +19,8 @@ class DDeiStage {
     this.layerIndex = props.layerIndex != undefined && props.layerIndex != null && props.layerIndex >= 0 ? props.layerIndex : -1;
     this.idIdx = props.idIdx ? props.idIdx : 0;
     this.unicode = props.unicode ? props.unicode : DDeiUtil.getUniqueCode()
+    this.histroy = props.histroy ? props.histroy : [];
+    this.histroyIdx = props.histroyIdx || props.histroyIdx == 0 ? props.histroyIdx : -1;
   }
 
   // ============================ 静态变量 ============================
@@ -81,6 +83,10 @@ class DDeiStage {
   // 当前画布、当前layer选中的图形，切换画布layerIndex后会变化
   selectedModels: Map<string, DDeiAbstractShape> | null = null;
 
+  //操作日志，用于保存、撤销和恢复
+  histroy: object[] = []
+  histroyIdx: number = -1;
+
   unicode: string;
   // ============================ 方法 ===============================
   /**
@@ -135,6 +141,8 @@ class DDeiStage {
   changeLayer(layerIndex: number) {
     this.layerIndex = layerIndex;
   }
+
+
 
 
   /**
@@ -420,6 +428,44 @@ class DDeiStage {
       }
     }
     return json;
+  }
+
+  /**
+   * 记录日志
+   * @param layerIndex 图层下标
+   */
+  addHistroy(data: object) {
+    //抛弃后面的记录
+    if (this.histroyIdx != -1) {
+      this.histroy = this.histroy.slice(0, this.histroyIdx)
+    }
+    //插入新纪录，并设置下标到最后
+    this.histroy.push(data);
+    this.histroyIdx = this.histroy.length - 1;
+  }
+
+  /**
+   * 返回上一个历史数据，并将下标-1
+   * @param layerIndex 图层下标
+   */
+  revokeHistroyData() {
+    //抛弃后面的记录
+    if (this.histroyIdx != -1) {
+      this.histroyIdx--;
+      return this.histroy[this.histroyIdx + 1];
+    }
+  }
+
+  /**
+   * 撤销上一次撤销并将下标+1
+   * @param layerIndex 图层下标
+   */
+  reRevokeHistroyData() {
+    //抛弃后面的记录
+    if (this.histroyIdx < this.histroy.length - 1) {
+      this.histroyIdx++;
+      return this.histroy[this.histroyIdx];
+    }
   }
 
 }

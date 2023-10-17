@@ -728,7 +728,6 @@ class DDeiLayerCanvasRender {
               if (!lastOnContainer.layoutManager || lastOnContainer.layoutManager.canAppend(evt.offsetX, evt.offsetY, this.model.shadowControls)) {
                 let operateModels = []
                 let selMods = []
-
                 //同步影子元素的坐标大小等状态到当前模型
                 this.model.shadowControls.forEach(item => {
                   let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
