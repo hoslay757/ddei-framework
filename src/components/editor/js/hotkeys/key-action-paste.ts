@@ -717,20 +717,33 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
         let rowObj = tableJson.rows[k];
         for (let l = 0; l < rowObj.length; l++) {
           if (k == 0) {
+            if (isNaN(colSize["" + l])) {
+              colSize["" + l] = 40
+            }
             tableWidth += colSize["" + l];
           }
           if (l == 0) {
+            if (isNaN(rowSize["" + k])) {
+              rowSize["" + k] = 20
+            }
             tableHeight += rowSize["" + k];
           }
+
           //如果是合并单元格
           if (rowObj[l].mergeRowNum > 1 || rowObj[l].mergeColNum > 1) {
             //计算高度和宽度
             let mHeight = 0
             let mWidth = 0
             for (let ki = 1; ki <= rowObj[l].mergeRowNum; ki++) {
+              if (isNaN(rowSize["" + (k + ki - 1)])) {
+                rowSize["" + (k + ki - 1)] = 20
+              }
               mHeight += rowSize["" + (k + ki - 1)];
             }
             for (let ki = 1; ki <= rowObj[l].mergeColNum; ki++) {
+              if (isNaN(colSize["" + (l + ki - 1)])) {
+                colSize["" + (l + ki - 1)] = 40
+              }
               mWidth += colSize["" + (l + ki - 1)];
             }
             rowObj[l].height = mHeight;
