@@ -102,6 +102,10 @@ class DDeiEditor {
     { ctrl: 1, keys: "73", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.CopyImage },
     //粘贴
     { ctrl: 1, keys: "86", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.Paste },
+    //格式刷
+    { ctrl: 1, shift: 1, keys: "67", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.BrushData },
+    //清除格式刷
+    { keys: "27", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.ClearBrushData },
 
   ];
 
@@ -224,6 +228,7 @@ class DDeiEditor {
       evt.preventDefault()
     });
   }
+
 
   /**
    * 改变编辑器状态

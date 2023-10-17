@@ -591,6 +591,10 @@ class DDeiLayerCanvasRender {
       }
       //无控件
       else {
+        if (this.stage?.brushData) {
+          this.stage.brushData = null;
+          this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
+        }
         //重置选择器位置
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ResetSelectorState, { x: evt.offsetX, y: evt.offsetY }, evt);
         //当前操作状态：选择器工作中
@@ -680,6 +684,10 @@ class DDeiLayerCanvasRender {
           else {
             pushMulits.push({ actionType: DDeiEnumBusCommandType.CancelCurLevelSelectedModels, data: { ignoreModels: [this.stageRender.currentOperateShape] } });
             pushMulits.push({ actionType: DDeiEnumBusCommandType.ModelChangeSelect, data: [{ id: this.stageRender.currentOperateShape.id, value: DDeiEnumControlState.SELECTED }] });
+          }
+          //如果有格式刷
+          if (this.stage?.brushData) {
+            pushMulits.push({ actionType: DDeiEnumBusCommandType.CopyStyle, data: { models: [this.stageRender.currentOperateShape], brushData: this.stage.brushData } });
           }
           this.stage?.ddInstance?.bus?.pushMulit(pushMulits, evt);
           break;
@@ -788,7 +796,7 @@ class DDeiLayerCanvasRender {
         case DDeiEnumOperateState.TABLE_INNER_DRAG:
           let table = this.stageRender.currentOperateShape
           table?.render?.mouseUp(evt)
-
+          this.stage?.ddInstance?.bus.push(DDeiEnumBusCommandType.CopyStyle, { models: [table], brushData: this.stage.brushData });
           break;
         case DDeiEnumOperateState.CONTROL_ROTATE:
 
@@ -1003,6 +1011,9 @@ class DDeiLayerCanvasRender {
           operateControls[0].render.mouseMove(evt);
         } else if (this.stageRender.selector.passIndex == -1) {
           this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
+        }
+        if (this.stage?.brushData) {
+          this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { image: 'cursor-brush' }, evt);
         }
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
         break;

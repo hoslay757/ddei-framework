@@ -1,5 +1,6 @@
 import DDei from "@/components/framework/js/ddei";
 import DDeiUtil from "@/components/framework/js/util";
+import DDeiEditor from "../editor";
 import DDeiKeyAction from "./key-action";
 
 /**
@@ -53,6 +54,8 @@ class DDeiKeyActionCopy extends DDeiKeyAction {
         if (jsonStr.length > 1) {
           jsonStr = jsonStr.substring(0, jsonStr.length - 1)
           jsonStr += ']'
+          let editor = DDeiEditor.ACTIVE_INSTANCE;
+          editor.copyMode = this.mode
           jsonStr = '{"mode":"' + this.mode + '","data":' + jsonStr + '}'
         } else {
           jsonStr = "";

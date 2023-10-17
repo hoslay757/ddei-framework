@@ -14,6 +14,8 @@ import DDeiKeyActionCopyImage from "../hotkeys/key-action-copy-image";
 import DDeiKeyActionNewRowQuickEdit from "../hotkeys/key-action-quick-editor-newrow";
 import DDeiKeyActionTableNextRow from "../hotkeys/key-action-table-next-row";
 import DDeiKeyActionTableNextCol from "../hotkeys/key-action-table-next-col";
+import DDeiKeyActionBrushData from "../hotkeys/key-action-brushdata";
+import DDeiKeyActionClearBrushData from "../hotkeys/key-action-clear-brushdata";
 
 /**
  * 所有key实例的枚举
@@ -42,6 +44,8 @@ enum DDeiEnumKeyActionInst {
   Paste = new DDeiKeyActionPaste({ code: "key-action-paste", name: "粘贴", desc: "粘贴剪切板内容到当前图层" }),
   TableNextRow = new DDeiKeyActionTableNextRow({ code: "key-action-table-next-row", name: "移动到下一行", desc: "移动到表格下一行" }),
   TableNextCol = new DDeiKeyActionTableNextCol({ code: "key-action-table-next-col", name: "移动到下一列", desc: "移动到表格下一列" }),
+  BrushData = new DDeiKeyActionBrushData({ code: "key-action-brushdata", name: "格式刷", desc: "将当前样式记录到刷中" }),
+  ClearBrushData = new DDeiKeyActionClearBrushData({ code: "key-action-clear-brushdata", name: "清除格式刷", desc: "将当前的格式刷清空" }),
 
 }
 

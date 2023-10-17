@@ -3,6 +3,7 @@ import DDeiEnumState from '../../enums/ddei-state';
 import DDeiEnumOperateState from '../../enums/operate-state';
 import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
+import ICONS from '@/components/editor/js/icon';
 /**
  * 改变光标总线Command
  */
@@ -31,7 +32,10 @@ class DDeiBusCommandChangeCursor extends DDeiBusCommand {
    * @param evt 事件对象引用
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
-    if (data?.passIndex || data?.cursor) {
+    if (data?.passIndex || data?.cursor || data?.image) {
+      if (data.image) {
+        document.body.style.cursor = "url(" + ICONS[data.image] + "),auto"
+      }
       if (data.cursor) {
         document.body.style.cursor = data.cursor;
       } else if (data.passIndex) {
