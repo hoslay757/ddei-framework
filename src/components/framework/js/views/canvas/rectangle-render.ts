@@ -1,5 +1,6 @@
 import DDeiConfig from '../../config.js'
 import DDei from '../../ddei.js';
+import DDeiEnumBusCommandType from '../../enums/bus-command-type.js';
 import DDeiEnumControlState from '../../enums/control-state.js';
 import DDeiModelArrtibuteValue from '../../models/attribute/attribute-value.js';
 import DDeiLayer from '../../models/layer.js';
@@ -44,18 +45,33 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       this.layer = this.model.layer
       this.layerRender = this.model.layer.render
     }
+    this.initImage();
+  }
+
+
+  initImage(): void {
     //加载图片
-    if (this.model.img && !this.imgObj) {
+    let that = this;
+    //加载base64图片
+    if (this.model.imgBase64 && !this.imgObj) {
       let img = new Image();   // 创建一个<img>元素
-      let that = this;
       img.onload = function () {
         that.imgObj = img;
-        that.ddInstance.render.drawShape()//绘制图片
+        that.model.stage.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, null);
+        that.model.stage.ddInstance.bus.executeAll()
+      }
+      img.src = this.model.imgBase64;
+    } else if (this.model.img && !this.imgObj) {
+      let img = new Image();   // 创建一个<img>元素
+      img.onload = function () {
+        that.imgObj = img;
+        that.model.stage.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, null);
+        that.model.stage.ddInstance.bus.executeAll()
       }
       img.src = this.model.img;
     }
-  }
 
+  }
   /**
    * 创建图形
    */
@@ -221,7 +237,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
    */
   drawImage(): void {
     //如果有图片，则绘制
-    if (this.model.img && this.imgObj) {
+    if (this.imgObj) {
       //获得 2d 上下文对象
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');

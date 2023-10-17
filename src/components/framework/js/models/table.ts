@@ -225,6 +225,7 @@ class DDeiTable extends DDeiAbstractShape {
 
       //同时初始化行和列的引用
       let newCell = DDeiTableCell.initByJSON(initJSON);
+      newCell.layer = this.layer;
       newCell.stage = this.stage;
       newCell.pModel = this;
       newCell.initRender();
@@ -337,6 +338,7 @@ class DDeiTable extends DDeiAbstractShape {
       for (let i = 0; i < this.rows.length; i++) {
         let rowObj = this.rows[i];
         for (let j = 0; j < rowObj.length; j++) {
+
           let item = rowObj[j]
 
           let halfWidth = item.width * 0.5;
@@ -381,6 +383,7 @@ class DDeiTable extends DDeiAbstractShape {
           loosePointVectors?.forEach(pv => {
             pv.applyMatrix3(rotateMatrix);
           });
+
           item.calChildrenRotatePointVectors(rotateMatrix);
         }
 
@@ -452,6 +455,7 @@ class DDeiTable extends DDeiAbstractShape {
 
       //同时初始化行和列的引用
       let newCell = DDeiTableCell.initByJSON(initJSON);
+      newCell.layer = this.layer
       newCell.stage = this.stage;
       newCell.pModel = this;
       newCell.initRender();

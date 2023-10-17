@@ -139,6 +139,36 @@ class DDeiConfig {
         default: { single: 0, multiple: 0 },
         selected: { single: 0, multiple: 0 }
       }
+    },
+    CELL: {
+      border: {
+        top: {
+          width: 1, color: "black", dash: null, round: 0, disabled: false
+        },
+        right: {
+          width: 1, color: "black", dash: null, round: 0
+        },
+        bottom: {
+          width: 1, color: "black", dash: null, round: 0, opacity: 1
+        },
+        left: {
+          width: 1, color: "black", dash: null, round: 0, opacity: 1
+        },
+        selected: {
+          top: {
+            width: 1, color: "black", dash: null, round: 0
+          },
+          right: {
+            width: 1, color: "black", dash: null, round: 0
+          },
+          bottom: {
+            width: 1, color: "black", dash: null, round: 0
+          },
+          left: {
+            width: 1, color: "black", dash: null, round: 0
+          }
+        }
+      },
     }
   };
 
@@ -411,6 +441,10 @@ class DDeiConfig {
       } else {
         return DDeiConfig.LAYER;
       }
+    } else if (model.modelType == "DDeiTable") {
+      return DDeiConfig.TABLE;
+    } else if (model.modelType == "DDeiTableCell") {
+      return DDeiConfig.TABLE.CELL;
     } else if (model.modelType == "DDeiRectangle") {
       return DDeiConfig.RECTANGLE;
     } else if (model.modelType == "DDeiCircle") {

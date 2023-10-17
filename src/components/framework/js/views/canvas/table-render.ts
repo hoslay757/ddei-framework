@@ -29,11 +29,22 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
     let selectedCells = this.model.getSelectedCells();
     if (selectedCells?.length > 0) {
       let html = '';
-      html += '<table>'
+      html += '<table'
+      html += ' width="' + this.model.width + '"'
+      html += ' height="' + this.model.width + '"'
+      html += '>'
+
       let minMax = this.model.getMinMaxRowAndCol(selectedCells);
       //选中区域内所哟段元格
       for (let x = minMax.minRow; x <= minMax.maxRow; x++) {
-        html += '<tr>'
+
+        html += '<tr'
+        if (this.model.rows[x][0].isMergedCell()) {
+          html += ' height="' + this.model.rows[x][0].originHeight + '"'
+        } else {
+          html += ' height="' + this.model.rows[x][0].height + '"'
+        }
+        html += '>'
         for (let y = minMax.minCol; y <= minMax.maxCol; y++) {
           //选中所有单元格
           html += this.model.rows[x][y].render.getHTML();
@@ -366,7 +377,6 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
               }
 
               if (isDrag) {
-
                 table.tempDragCell = cellObj
                 cellObj.render.mouseMove(e);
                 return;

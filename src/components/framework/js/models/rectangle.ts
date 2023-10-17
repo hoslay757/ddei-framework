@@ -22,6 +22,8 @@ class DDeiRectangle extends DDeiAbstractShape {
     this.text = props.text ? props.text : "";
     //图片路径
     this.img = props.img ? props.img : "";
+    //图片base64
+    this.imgBase64 = props.imgBase64 ? props.imgBase64 : "";
 
     //文本样式（除字体外），包含了横纵对齐、文字方向、镂空、换行、缩小字体填充等文本相关内容
     this.textStyle = props.textStyle ? props.textStyle : null;
@@ -61,6 +63,8 @@ class DDeiRectangle extends DDeiAbstractShape {
   font: any;
   //图片背景
   img: string;
+  //图片base64
+  imgBase64: string;
   //文本内容
   text: string;
   //文本样式（除字体外），包含了横纵对齐、文字方向、镂空、换行、缩小字体填充等文本相关内容
@@ -80,6 +84,8 @@ class DDeiRectangle extends DDeiAbstractShape {
     DDeiConfig.bindRender(this);
     this.render.init();
   }
+
+
 
 
 }

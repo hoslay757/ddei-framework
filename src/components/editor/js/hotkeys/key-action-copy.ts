@@ -8,6 +8,14 @@ import DDeiKeyAction from "./key-action";
  */
 class DDeiKeyActionCopy extends DDeiKeyAction {
 
+  constructor(props: object) {
+    super(props)
+    this.mode = props.mode
+  }
+
+  //模式：copy和cut
+  mode: string;
+
   // ============================ 方法 ===============================
   action(evt: Event, ddInstance: DDei): void {
     //修改当前操作控件坐标
@@ -45,6 +53,7 @@ class DDeiKeyActionCopy extends DDeiKeyAction {
         if (jsonStr.length > 1) {
           jsonStr = jsonStr.substring(0, jsonStr.length - 1)
           jsonStr += ']'
+          jsonStr = '{"mode":"' + this.mode + '","data":' + jsonStr + '}'
         } else {
           jsonStr = "";
         }
@@ -53,7 +62,6 @@ class DDeiKeyActionCopy extends DDeiKeyAction {
         let blob = new Blob([copyHtml], {
           type: 'text/html'
         })
-        console.log(copyHtml)
         let writeDatas = [new ClipboardItem({ "text/html": blob })]
         cbData.write(writeDatas).then(function () {
           console.log("复制成功");

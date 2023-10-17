@@ -137,7 +137,7 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
    */
   drawImage(): void {
     //如果有图片，则绘制
-    if (this.model.img && this.imgObj) {
+    if (this.imgObj) {
       //获得 2d 上下文对象
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
