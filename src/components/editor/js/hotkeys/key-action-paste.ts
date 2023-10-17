@@ -2,13 +2,11 @@ import DDei from "@/components/framework/js/ddei";
 import DDeiEnumControlState from "@/components/framework/js/enums/control-state";
 import DDeiKeyAction from "./key-action";
 import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type";
-import DDeiLayer from "@/components/framework/js/models/layer";
 import DDeiUtil from "@/components/framework/js/util";
 import DDeiStage from "@/components/framework/js/models/stage";
 import DDeiRectangle from "@/components/framework/js/models/rectangle";
-import { MODEL_CLS, RENDER_CLS } from "@/components/framework/js/config";
+import { MODEL_CLS } from "@/components/framework/js/config";
 import DDeiAbstractShape from "@/components/framework/js/models/shape";
-import table from "../../configs/controls/table";
 import DDeiTable from "@/components/framework/js/models/table";
 
 /**
@@ -227,6 +225,7 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
     let offsetY = DDeiUtil.offsetY;
     //识别粘贴的内容来自于外部还是内部
     let ddeiJson = null;
+
     try {
       let searchText = '<meta source="ddei">';
       if (textData.indexOf(searchText) != -1) {
@@ -238,13 +237,13 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
         }
       }
     } catch (e) { }
-
     //内部复制
     if (ddeiJson) {
       //对内部复制的对象进行反序列化处理
-      let jsonArray = ddeiJson
-      if (!Array.isArray(ddeiJson)) {
-        jsonArray = [ddeiJson]
+      let mode = ddeiJson.mode
+      let jsonArray = ddeiJson.data
+      if (!Array.isArray(jsonArray)) {
+        jsonArray = [jsonArray]
       }
       //当前选中控件是否为1且有表格，且选中表格的单元格，则作为表格单元格的内容粘贴
       let createControl = true;
@@ -255,21 +254,22 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
           let cells = model.getSelectedCells();
           if (cells.length > 0) {
             cells.forEach(cell => {
-              this.createControl(jsonArray, offsetX, offsetY, stage, cell, evt)
+              this.createControl(jsonArray, offsetX, offsetY, stage, cell, mode, evt)
             })
             createControl = false
           }
         }
         //添加到容器
         else if (model.baseModelType == 'DDeiContainer') {
-          this.createControl(jsonArray, offsetX, offsetY, stage, model, evt)
+          this.createControl(jsonArray, offsetX, offsetY, stage, model, mode, evt)
           createControl = false
         }
       }
       //如果没有粘贴到表格在最外层容器的鼠标位置，反序列化控件，重新设置ID，其他信息保留
       if (createControl) {
-        this.createControl(jsonArray, offsetX, offsetY, stage, layer, evt)
+        this.createControl(jsonArray, offsetX, offsetY, stage, layer, mode, evt)
       }
+
       stage.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
       stage.ddInstance.bus?.executeAll();
     }
@@ -421,7 +421,7 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
           let cellEle = eleCells[j]
           //获取样式以及合并单元格信息
           //合并单元格信息
-          let cellJson = { modelCode: '100302', row: i, col: j, text: cellEle.innerHTML, domRow: i, domCol: j }
+          let cellJson = { modelCode: '100302', row: i, col: j, text: cellEle.innerText, domRow: i, domCol: j }
           rowJson.push(cellJson)
 
 
@@ -795,26 +795,33 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
 
 
   //创建新的控件
-  createControl(jsonArray: [], x: number, y: number, stage: DDeiStage, container: object, evt: Event): void {
+  createControl(jsonArray: [], x: number, y: number, stage: DDeiStage, container: object, mode: string, evt: Event): void {
     //当前激活的图层
     let layer = stage.layers[stage.layerIndex];
     let models: DDeiAbstractShape[] = []
     jsonArray.forEach(json => {
-      let copyModel = MODEL_CLS[json.modelType].loadFromJSON(json, { currentDdInstance: stage.ddInstance, currentStage: stage, currentLayer: layer, currentContainer: container });
-      models.push(copyModel);
+      if (mode == 'copy') {
+        let copyModel = MODEL_CLS[json.modelType].loadFromJSON(json, { currentDdInstance: stage.ddInstance, currentStage: stage, currentLayer: layer, currentContainer: container });
+        models.push(copyModel);
+      } else if (mode == 'cut') {
+        let model = stage.getModelById(json.id);
+        models.push(model);
+      }
     });
     //重新计算坐标，基于粘贴的中心点
     let outRect = DDeiAbstractShape.getOutRect(models);
     outRect = { x: outRect.x + outRect.width / 2, y: outRect.y + outRect.height / 2 }
     models.forEach(item => {
-      stage.idIdx++
-      let newId = ""
-      if (item.id.indexOf("_") != -1) {
-        newId = item.id.substring(0, item.id.indexOf("_")) + "_" + stage.idIdx;
-      } else {
-        newId = item.id + "_cp_" + stage.idIdx;
+      if (mode == 'copy') {
+        stage.idIdx++
+        let newId = ""
+        if (item.id.indexOf("_") != -1) {
+          newId = item.id.substring(0, item.id.indexOf("_")) + "_" + stage.idIdx;
+        } else {
+          newId = item.id + "_cp_" + stage.idIdx;
+        }
+        item.id = newId
       }
-      item.id = newId
       let dx = outRect.x - item.x;
       let dy = outRect.y - item.y;
       item.x = x - dx;
