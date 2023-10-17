@@ -22,7 +22,8 @@ enum DDeiEnumBusCommandType {
   ModelPush = "model-push",
   ModelChangeValue = "model-change-value",
   ChangeLayout = "change-layout",
-  CopyStyle = "copy-style"
+  CopyStyle = "copy-style",
+  AddHistroy = "add-histroy"
 }
 
 export default DDeiEnumBusCommandType

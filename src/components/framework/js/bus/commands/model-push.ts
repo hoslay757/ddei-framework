@@ -40,14 +40,23 @@ class DDeiBusCommandModelPush extends DDeiBusCommand {
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
     let selectedModels = data?.container.getSelectedModels();
+    let hasChange = false;
     if (data?.type == "top") {
       data.container.pushTop(Array.from(selectedModels.values()));
+      hasChange = true
     } else if (data?.type == "bottom") {
       data.container.pushBottom(Array.from(selectedModels.values()));
+      hasChange = true
     } else if (data?.type == "up") {
       data.container.pushUp(Array.from(selectedModels.values()));
+      hasChange = true
     } else if (data?.type == "down") {
       data.container.pushDown(Array.from(selectedModels.values()));
+      hasChange = true
+    }
+    if (hasChange) {
+      bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
+      bus.executeAll();
     }
     return true;
   }

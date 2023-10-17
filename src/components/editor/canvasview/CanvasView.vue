@@ -1,12 +1,6 @@
 <template>
-  <div :id="id"
-       class="ddei_editor_canvasview"
-       @mousedown="mouseDown($event)"
-       ondragstart="return false;"
-       @dragover="createControlOver"
-       @drop="createControlDrop"
-       @dragleave="createControlCancel"
-       @contextmenu.prevent>
+  <div :id="id" class="ddei_editor_canvasview" @mousedown="mouseDown($event)" ondragstart="return false;"
+    @dragover="createControlOver" @drop="createControlDrop" @dragleave="createControlCancel" @contextmenu.prevent>
   </div>
 </template>
 
@@ -310,9 +304,15 @@ export default {
             ],
             e
           );
+
           //清除临时变量
           this.editor.bus.push(
             DDeiEnumBusCommandType.ClearTemplateVars,
+            null,
+            e
+          );
+          this.editor.bus.push(
+            DDeiEnumBusCommandType.AddHistroy,
             null,
             e
           );
@@ -331,6 +331,7 @@ export default {
      * 拖拽元素离开，清空元素
      */
     createControlCancel(e) {
+      debugger
       if (this.editor.state == DDeiEditorState.CONTROL_CREATING) {
         if (this.editor.creatingControl) {
           let ddInstance: DDei = this.editor.ddInstance;

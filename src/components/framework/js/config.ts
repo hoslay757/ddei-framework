@@ -86,7 +86,7 @@ class DDeiConfig {
   //不需要序列化的字段
   static SERI_FIELDS: object = {
     "DDei": { "TOJSON": ["stage"], "SKIP": ["bus", "render", "unicode"] },
-    "DDeiStage": { "TOJSON": ["layers"], "SKIP": ["ddInstance", "selectedModels", "render", "unicode"] },
+    "DDeiStage": { "TOJSON": ["layers"], "SKIP": ["ddInstance", "selectedModels", "render", "unicode", "histroy", 'histroyIdx'] },
     "DDeiLayer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "render", "unicode", "opPoints", "dragInPoints", "dragOutPoints", "shadowControls", "layoutManager"] },
     "DDeiContainer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "pointVectors", "currentPointVectors", "centerPointVector", "layoutManager", "loosePointVectors", "currentLoosePointVectors", "rotateMatrix"] },
     "AbstractShape": { "SKIP": ["ddInstance", "stage", "layer", "pModel", "state", "render", "unicode", "pointVectors", "currentPointVectors", "centerPointVector", "loosePointVectors", "currentLoosePointVectors", "rotateMatrix"] },

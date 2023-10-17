@@ -1,3 +1,4 @@
+import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type";
 import DDeiTable from "@/components/framework/js/models/table";
 
 /**
@@ -29,6 +30,8 @@ class MenuInsertRow {
         }
         //调用table的插入行方法插入行
         table.insertRow(row, 1);
+        model.stage.ddInstance.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
+        model.stage.ddInstance.bus.executeAll();
       }
     }
   }

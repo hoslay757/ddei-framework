@@ -47,18 +47,17 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
           inputEle.onblur = function () {
             //设置属性值
             let editor = DDeiEditor.ACTIVE_INSTANCE;
-            if (editor?.state == DDeiEditorState.QUICK_EDITING) {
-              if (editor.quickEditorModel) {
-                editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { models: [editor.quickEditorModel], paths: ["text"], value: inputEle.value }, evt, true);
-                editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt, true);
-              }
-              inputEle.style.display = "none";
-              inputEle.style.left = "0px";
-              inputEle.style.top = "0px";
-              inputEle.value = "";
-              editor.bus?.executeAll();
-              editor.changeState(DDeiEditorState.DESIGNING);
+            if (editor.quickEditorModel) {
+              editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { models: [editor.quickEditorModel], paths: ["text"], value: inputEle.value }, evt, true);
+              editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt, true);
+              editor.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt, true);
             }
+            inputEle.style.display = "none";
+            inputEle.style.left = "0px";
+            inputEle.style.top = "0px";
+            inputEle.value = "";
+            editor.bus?.executeAll();
+            editor.changeState(DDeiEditorState.DESIGNING);
           }
         }
         inputEle.value = model.text ? model.text : ''

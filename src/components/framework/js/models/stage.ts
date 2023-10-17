@@ -436,11 +436,13 @@ class DDeiStage {
    */
   addHistroy(data: object) {
     //抛弃后面的记录
-    if (this.histroyIdx != -1) {
-      this.histroy = this.histroy.slice(0, this.histroyIdx)
+    if (this.histroyIdx == -1) {
+      this.histroy = this.histroy.slice(0, 1)
+    } else {
+      this.histroy = this.histroy.slice(0, this.histroyIdx + 1)
     }
     //插入新纪录，并设置下标到最后
-    this.histroy.push(data);
+    this.histroy.push({ time: new Date().getTime(), data: data });
     this.histroyIdx = this.histroy.length - 1;
   }
 
@@ -452,7 +454,11 @@ class DDeiStage {
     //抛弃后面的记录
     if (this.histroyIdx != -1) {
       this.histroyIdx--;
-      return this.histroy[this.histroyIdx + 1];
+      if (this.histroyIdx == -1) {
+        return this.histroy[0];
+      } else {
+        return this.histroy[this.histroyIdx];
+      }
     }
   }
 

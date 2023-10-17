@@ -19,7 +19,7 @@ class DDeiKeyActionRemoveModels extends DDeiKeyAction {
         let selectedModels = optContainer.getSelectedModels();
 
         ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeContainer, { oldContainer: optContainer, models: Array.from(selectedModels.values()) }, evt);
-
+        ddInstance.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
         //渲染图形
         ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
 

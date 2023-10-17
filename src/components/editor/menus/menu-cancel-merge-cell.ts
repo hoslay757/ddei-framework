@@ -1,3 +1,5 @@
+import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type";
+
 /**
  * 取消合并单元格菜单
  */
@@ -11,6 +13,8 @@ class MenuInsertCol {
       let table: DDeiTable = model;
       //执行取消合并单元格
       table.cancelSelectedMergeCells();
+      model.stage.ddInstance.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
+      model.stage.ddInstance.bus.executeAll();
     }
   }
 

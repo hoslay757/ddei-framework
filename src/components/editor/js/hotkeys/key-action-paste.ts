@@ -8,6 +8,7 @@ import DDeiRectangle from "@/components/framework/js/models/rectangle";
 import { MODEL_CLS } from "@/components/framework/js/config";
 import DDeiAbstractShape from "@/components/framework/js/models/shape";
 import DDeiTable from "@/components/framework/js/models/table";
+import { has } from "lodash";
 
 /**
  * 键行为:粘贴
@@ -81,6 +82,7 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
         let offsetY = DDeiUtil.offsetY;
         //当前选中控件是否为1且有表格，且选中表格的单元格，则作为表格单元格的内容粘贴
         let createControl = true;
+        let hasChange = false;
         if (stage.selectedModels?.size == 1) {
           let table = Array.from(stage.selectedModels.values())[0]
           if (table.baseModelType == 'DDeiTable') {
@@ -90,10 +92,12 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
               cells.forEach(cell => {
                 cell.setImgBase64(imgBase64);
               })
+              hasChange = true;
               createControl = false
             }
           } else {
             table.setImgBase64(imgBase64);
+            hasChange = true;
             createControl = false
           }
         } else if (stage.selectedModels?.size > 1) {
@@ -109,7 +113,9 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
             stage.selectedModels?.forEach(item => {
               item.setImgBase64(imgBase64);
             })
+            hasChange = true;
           }
+
 
         }
 
@@ -118,6 +124,10 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
         //如果没有粘贴到表格在最外层容器的鼠标位置，创建rectangle控件
         if (createControl) {
           that.createNewImage(image, imgBase64, offsetX, offsetY, stage, layer, evt)
+          hasChange = true;
+        }
+        if (hasChange) {
+          stage.ddInstance.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
         }
         stage.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
         stage.ddInstance.bus?.executeAll();
@@ -139,6 +149,7 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
     let offsetY = DDeiUtil.offsetY;
     //当前选中控件是否为1且有表格，且选中表格的单元格，则作为表格单元格的内容粘贴
     let createControl = true;
+    let hasChange = false;
     if (stage.selectedModels?.size == 1) {
       let table = Array.from(stage.selectedModels.values())[0]
       if (table.baseModelType == 'DDeiTable') {
@@ -148,10 +159,12 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
           cells.forEach(cell => {
             cell.text = textData
           })
+          hasChange = true
           createControl = false
         }
       } else if (table.baseModelType != 'DDeiContainer') {
         table.text = textData
+        hasChange = true
         createControl = false
       }
     } else if (stage.selectedModels?.size > 1) {
@@ -167,6 +180,7 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
         stage.selectedModels?.forEach(item => {
           item.text = textData
         })
+        hasChange = true;
       }
 
     }
@@ -176,7 +190,7 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
     //如果没有粘贴到表格在最外层容器的鼠标位置，创建rectangle控件
     if (createControl) {
       stage.idIdx++
-
+      hasChange = true;
       //根据control的定义，初始化临时控件，并推送至上层Editor
       let searchPaths = [
         "font.size",
@@ -208,6 +222,10 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
       stage.ddInstance.bus.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
       stage.ddInstance.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, { models: [model], value: DDeiEnumControlState.SELECTED }, evt);
     }
+    if (hasChange) {
+      stage.ddInstance.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
+    }
+
     stage.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
     stage.ddInstance.bus?.executeAll();
 
@@ -238,6 +256,7 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
       }
     } catch (e) { }
     //内部复制
+    let hasChange = false;
     if (ddeiJson) {
       //对内部复制的对象进行反序列化处理
       let mode = ddeiJson.mode
@@ -256,6 +275,7 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
             cells.forEach(cell => {
               this.createControl(jsonArray, offsetX, offsetY, stage, cell, mode, evt)
             })
+            hasChange = true;
             createControl = false
           }
         }
@@ -263,13 +283,17 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
         else if (model.baseModelType == 'DDeiContainer') {
           this.createControl(jsonArray, offsetX, offsetY, stage, model, mode, evt)
           createControl = false
+          hasChange = true;
         }
       }
       //如果没有粘贴到表格在最外层容器的鼠标位置，反序列化控件，重新设置ID，其他信息保留
       if (createControl) {
         this.createControl(jsonArray, offsetX, offsetY, stage, layer, mode, evt)
+        hasChange = true;
       }
-
+      if (hasChange) {
+        stage.ddInstance.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
+      }
       stage.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
       stage.ddInstance.bus?.executeAll();
     }
@@ -284,16 +308,22 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
           //复制表格内容到表格
           this.copyTableToTableCell(model, tableJson);
           createControl = false
+          hasChange = true;
         }
         //添加表格到容器
         else if (model.baseModelType == 'DDeiContainer') {
           this.createTable(tableJson, offsetX, offsetY, stage, model, evt)
           createControl = false
+          hasChange = true;
         }
       }
       //如果没有粘贴到表格在最外层容器的鼠标位置，反序列化控件，重新设置ID，其他信息保留
       if (createControl) {
         this.createTable(tableJson, offsetX, offsetY, stage, layer, evt)
+        hasChange = true;
+      }
+      if (hasChange) {
+        stage.ddInstance.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
       }
       stage.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
       stage.ddInstance.bus?.executeAll();

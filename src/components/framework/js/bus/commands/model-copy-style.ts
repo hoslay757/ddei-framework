@@ -43,6 +43,7 @@ class DDeiBusCommandModelCopyStyle extends DDeiBusCommand {
 
         models.forEach(model => {
           if (model) {
+            let hasChange = false;
             //表格是修改里面的选中单元格
             if (model.baseModelType == 'DDeiTable') {
               //判断复制源的类型，如果有且仅有一个元素，并且是一维数组，则来源为普通控件
@@ -52,19 +53,27 @@ class DDeiBusCommandModelCopyStyle extends DDeiBusCommand {
                   // //根据code以及mapping设置属性值
                   this.cloneStyle(cell, data.brushData[0])
                   cell.render?.renderCacheData.clear();
+                  hasChange = true;
                 });
               }
               //判断复制源的类型，如果有是一个二唯数，则当作表格处理
               else if (Array.isArray(data.brushData) && Array.isArray(data.brushData[0])) {
                 this.copyTableStyleToTableCell(model, data.brushData)
+                hasChange = true;
               }
             } else {
               if (Array.isArray(data.brushData) && !Array.isArray(data.brushData[0]) && data.brushData.length == 1) {
                 this.cloneStyle(model, data.brushData[0])
+                hasChange = true;
               } else if (Array.isArray(data.brushData) && Array.isArray(data.brushData[0])) {
                 this.cloneStyle(model, data.brushData[0][0])
+                hasChange = true;
               }
 
+            }
+            if (hasChange) {
+              bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
+              bus.executeAll();
             }
           }
         });

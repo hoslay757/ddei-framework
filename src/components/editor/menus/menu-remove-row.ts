@@ -1,3 +1,5 @@
+import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type";
+
 /**
  * 删除行菜单
  */
@@ -19,6 +21,8 @@ class MenuInsertCol {
           row = table.rows.length - 1;
         }
         table.removeRow(row);
+        model.stage.ddInstance.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
+        model.stage.ddInstance.bus.executeAll();
       }
     }
   }

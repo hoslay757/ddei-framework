@@ -1,3 +1,5 @@
+import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type";
+
 /**
  * 插入列菜单
  */
@@ -21,6 +23,8 @@ class MenuInsertCol {
         }
         //调用table的插入行方法插入行
         table.insertCol(col, 2);
+        model.stage.ddInstance.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
+        model.stage.ddInstance.bus.executeAll();
       }
     }
   }

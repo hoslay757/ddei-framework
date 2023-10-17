@@ -80,8 +80,11 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
                   model.render?.setCachedValue(paths, value)
                 }
               }
+
             }
           });
+          bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
+          bus.executeAll();
         } else if (models?.length > 0) {
           models.forEach(model => {
             if (model) {
@@ -112,6 +115,8 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
 
             }
           });
+          bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
+          bus.executeAll();
         }
 
       }

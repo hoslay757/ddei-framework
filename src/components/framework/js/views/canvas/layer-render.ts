@@ -707,6 +707,7 @@ class DDeiLayerCanvasRender {
         case DDeiEnumOperateState.CONTROL_DRAGING:
 
           let isStop = false;
+          let hasChange = false;
           //如果按下了ctrl键，则需要修改容器的关系并更新样式
           if (isAlt) {
             //寻找鼠标落点当前所在的容器
@@ -741,6 +742,7 @@ class DDeiLayerCanvasRender {
                   model.currentPointVectors = item.currentPointVectors
                   model.centerPointVector = item.centerPointVector
                   operateModels.push(model)
+
                   selMods.push({ id: model?.id, value: DDeiEnumControlState.SELECTED })
                 })
                 //判断是否需要取消选中表格
@@ -759,6 +761,7 @@ class DDeiLayerCanvasRender {
                 //构造移动容器action数据
                 this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeContainer, { oldContainer: pContainerModel, newContainer: lastOnContainer, models: operateModels }, evt);
                 this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, selMods, evt);
+                this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
               }
               isStop = true;
             }
@@ -779,17 +782,19 @@ class DDeiLayerCanvasRender {
                 model.setBounds(item.x, item.y, item.width, item.height)
                 model.currentPointVectors = item.currentPointVectors
                 model.centerPointVector = item.centerPointVector
+                hasChange = true;
                 operateModels.push(model)
               })
+
               pContainerModel?.layoutManager?.updateLayout(evt.offsetX, evt.offsetY, operateModels);
               operateModels?.forEach(item => {
                 item.render?.controlDragEnd(evt)
               })
+              this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
             }
           }
 
           this.model.shadowControls = [];
-
           break;
         //表格内部拖拽中
         case DDeiEnumOperateState.TABLE_INNER_DRAG:
@@ -798,7 +803,7 @@ class DDeiLayerCanvasRender {
           this.stage?.ddInstance?.bus.push(DDeiEnumBusCommandType.CopyStyle, { models: [table], brushData: this.stage.brushData });
           break;
         case DDeiEnumOperateState.CONTROL_ROTATE:
-
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
           break;
         case DDeiEnumOperateState.CONTROL_CHANGING_BOUND:
           //同步影子元素的坐标大小等状态到当前模型
@@ -813,6 +818,7 @@ class DDeiLayerCanvasRender {
               if (model.changeChildrenBounds) {
                 model.changeChildrenBounds();
               }
+              this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
             }
           })
           this.model.shadowControls = [];

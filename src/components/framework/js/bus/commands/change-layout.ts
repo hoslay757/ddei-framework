@@ -113,6 +113,8 @@ class DDeiBusCommandChangeLayout extends DDeiBusCommand {
             cell.layoutManager.changeSubModelBounds();
 
           };
+          bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
+          bus.executeAll();
         }
       } else {
         mids.forEach(modelId => {
@@ -135,6 +137,8 @@ class DDeiBusCommandChangeLayout extends DDeiBusCommand {
             }
           }
         });
+        bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
+        bus.executeAll();
       }
       return true;
     }

@@ -34,6 +34,7 @@ class DDeiKeyActionCancelCompose extends DDeiKeyAction {
           }
         });
         ddInstance.bus.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
+        ddInstance.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
         //渲染图形
         ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
         ddInstance.bus.executeAll();
