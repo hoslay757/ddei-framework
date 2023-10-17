@@ -16,6 +16,8 @@ import DDeiKeyActionTableNextRow from "../hotkeys/key-action-table-next-row";
 import DDeiKeyActionTableNextCol from "../hotkeys/key-action-table-next-col";
 import DDeiKeyActionBrushData from "../hotkeys/key-action-brushdata";
 import DDeiKeyActionClearBrushData from "../hotkeys/key-action-clear-brushdata";
+import DDeiKeyActionRevoke from "../hotkeys/key-action-revoke";
+import DDeiKeyActionReRevoke from "../hotkeys/key-action-rerevoke";
 
 /**
  * 所有key实例的枚举
@@ -46,7 +48,8 @@ enum DDeiEnumKeyActionInst {
   TableNextCol = new DDeiKeyActionTableNextCol({ code: "key-action-table-next-col", name: "移动到下一列", desc: "移动到表格下一列" }),
   BrushData = new DDeiKeyActionBrushData({ code: "key-action-brushdata", name: "格式刷", desc: "将当前样式记录到刷中" }),
   ClearBrushData = new DDeiKeyActionClearBrushData({ code: "key-action-clear-brushdata", name: "清除格式刷", desc: "将当前的格式刷清空" }),
-
+  Revoke = new DDeiKeyActionRevoke({ code: "key-action-revoke", name: "撤销", desc: "撤销上一步操作" }),
+  ReRevoke = new DDeiKeyActionReRevoke({ code: "key-action-rerevokea", name: "反撤销", desc: "撤销前一次撤销操作" }),
 }
 
 export default DDeiEnumKeyActionInst
