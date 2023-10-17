@@ -53,6 +53,8 @@ abstract class DDeiKeyAction {
     if (!editor || !editor.ddInstance) {
       return;
     }
+
+
     //获取实例
     let ddInstance: DDei = editor.ddInstance;
     //获取是否按下ctrl、command、alt、shift等键
@@ -60,6 +62,12 @@ abstract class DDeiKeyAction {
     let shift = evt.shiftKey;
     let alt = evt.altKey
     DDeiKeyAction.updateKeyState(evt);
+    //唯一选择控件
+    let onlySelectModel = null;
+    let selectedModels = editor.ddInstance.stage?.selectedModels;
+    if (selectedModels?.size == 1) {
+      onlySelectModel = Array.from(selectedModels.values())[0]
+    }
     let m1Str = editor.state + "_";
     if (ctrl == true) {
       m1Str += "ctrl_"
@@ -73,7 +81,7 @@ abstract class DDeiKeyAction {
     if (evt.keyCode != 93 && evt.keyCode != 18 && evt.keyCode != 16 && evt.keyCode != 17) {
       m1Str += evt.keyCode
     }
-    console.log(m1Str)
+    console.log(m1Str + " .   only:" + onlySelectModel?.baseModelType)
 
     //执行下发逻
     for (let it = 0; it < DDeiEditor.HOT_KEY_MAPPING.length; it++) {
@@ -107,36 +115,38 @@ abstract class DDeiKeyAction {
       //如果匹配则下发
       if (m1Str == matchStr) {
         //处理计数器,如果设置了计数器，则必须满足计数器触发条件
-        if (item.times && item.times > 1 && item.interval && item.interval > 0) {
-          if (!DDeiEditor.KEY_DOWN_TIMES.has(m1Str)) {
-            //记录开始次数1
-            DDeiEditor.KEY_DOWN_TIMES.set(m1Str, 1)
-            //记录开始时间
-            DDeiEditor.KEY_DOWN_INTERVAL.set(m1Str, Date.now())
-          } else {
-            //开始时间
-            let startTime = DDeiEditor.KEY_DOWN_INTERVAL.get(m1Str);
-            let nowTime = Date.now()
-            //已达到的次数，不算当次
-            let times = DDeiEditor.KEY_DOWN_TIMES.get(m1Str);
-            //如果在时间差内达到了次数，则触发，否则丢弃，并重新计算
-            if (nowTime - startTime <= item.interval && times + 1 >= item.times) {
-              item.action.action(evt, ddInstance);
-              //清空记录
-              DDeiEditor.KEY_DOWN_TIMES.delete(m1Str)
-              //记录开始时间
-              DDeiEditor.KEY_DOWN_INTERVAL.delete(m1Str)
-              break;
-            } else {
+        if (!item.modelType || (item.modelType && item.modelType == onlySelectModel?.baseModelType)) {
+          if (item.times && item.times > 1 && item.interval && item.interval > 0) {
+            if (!DDeiEditor.KEY_DOWN_TIMES.has(m1Str)) {
               //记录开始次数1
               DDeiEditor.KEY_DOWN_TIMES.set(m1Str, 1)
               //记录开始时间
-              DDeiEditor.KEY_DOWN_INTERVAL.set(m1Str, nowTime)
+              DDeiEditor.KEY_DOWN_INTERVAL.set(m1Str, Date.now())
+            } else {
+              //开始时间
+              let startTime = DDeiEditor.KEY_DOWN_INTERVAL.get(m1Str);
+              let nowTime = Date.now()
+              //已达到的次数，不算当次
+              let times = DDeiEditor.KEY_DOWN_TIMES.get(m1Str);
+              //如果在时间差内达到了次数，则触发，否则丢弃，并重新计算
+              if (nowTime - startTime <= item.interval && times + 1 >= item.times) {
+                item.action.action(evt, ddInstance);
+                //清空记录
+                DDeiEditor.KEY_DOWN_TIMES.delete(m1Str)
+                //记录开始时间
+                DDeiEditor.KEY_DOWN_INTERVAL.delete(m1Str)
+                break;
+              } else {
+                //记录开始次数1
+                DDeiEditor.KEY_DOWN_TIMES.set(m1Str, 1)
+                //记录开始时间
+                DDeiEditor.KEY_DOWN_INTERVAL.set(m1Str, nowTime)
+              }
             }
+          } else {
+            item.action.action(evt, ddInstance);
+            return true;
           }
-        } else {
-          item.action.action(evt, ddInstance);
-          return true;
         }
       }
     }

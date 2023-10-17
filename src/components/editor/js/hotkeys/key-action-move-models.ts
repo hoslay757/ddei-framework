@@ -18,12 +18,13 @@ class DDeiKeyActionDownMoveModels extends DDeiKeyAction {
       let selectedModels = ddInstance.stage.selectedModels;
       let models = Array.from(selectedModels.values());
       if (models.length == 1 && models[0].baseModelType == 'DDeiTable' && models[0].curRow != -1 && models[0].curCol != -1) {
-        if (models[0].tempDragCell) {
-          models[0].tempDragCell.setState(DDeiEnumControlState.DEFAULT)
-        }
+
         //上
         if (evt.keyCode == 38) {
           if (models[0].curRow > 0) {
+            if (models[0].tempDragCell) {
+              models[0].tempDragCell.setState(DDeiEnumControlState.DEFAULT)
+            }
             models[0].curRow--;
             models[0].tempDragCell = models[0].rows[models[0].curRow][models[0].curCol]
             models[0].tempDragCell.setState(DDeiEnumControlState.SELECTED)
@@ -31,6 +32,9 @@ class DDeiKeyActionDownMoveModels extends DDeiKeyAction {
         }//下
         else if (evt.keyCode == 40) {
           if (models[0].curRow < models[0].rows.length - 1) {
+            if (models[0].tempDragCell) {
+              models[0].tempDragCell.setState(DDeiEnumControlState.DEFAULT)
+            }
             models[0].curRow++;
             models[0].tempDragCell = models[0].rows[models[0].curRow][models[0].curCol]
             models[0].tempDragCell.setState(DDeiEnumControlState.SELECTED)
@@ -38,6 +42,9 @@ class DDeiKeyActionDownMoveModels extends DDeiKeyAction {
         }//左
         else if (evt.keyCode == 37) {
           if (models[0].curCol > 0) {
+            if (models[0].tempDragCell) {
+              models[0].tempDragCell.setState(DDeiEnumControlState.DEFAULT)
+            }
             models[0].curCol--;
             models[0].tempDragCell = models[0].rows[models[0].curRow][models[0].curCol]
             models[0].tempDragCell.setState(DDeiEnumControlState.SELECTED)
@@ -45,6 +52,9 @@ class DDeiKeyActionDownMoveModels extends DDeiKeyAction {
         }//右
         else if (evt.keyCode == 39) {
           if (models[0].curCol < models[0].cols.length - 1) {
+            if (models[0].tempDragCell) {
+              models[0].tempDragCell.setState(DDeiEnumControlState.DEFAULT)
+            }
             models[0].curCol++;
             models[0].tempDragCell = models[0].rows[models[0].curRow][models[0].curCol]
             models[0].tempDragCell.setState(DDeiEnumControlState.SELECTED)

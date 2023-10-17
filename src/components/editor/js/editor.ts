@@ -70,6 +70,10 @@ class DDeiEditor {
     { keys: "13", editorState: DDeiEditorState.QUICK_EDITING, action: DDeiEnumKeyActionInst.EnterQuickEdit },
     //Enter新行
     { keys: "13", alt: true, editorState: DDeiEditorState.QUICK_EDITING, action: DDeiEnumKeyActionInst.NewRowQuickEdit },
+    //表格内部回车，往下一行
+    { keys: "13", modelType: 'DDeiTable', editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.TableNextRow },
+    //表格内部tab，往下一列
+    { keys: "9", modelType: 'DDeiTable', editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.TableNextCol },
     //上
     { shift: 2, keys: "38", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.UpMoveModels },
     //下

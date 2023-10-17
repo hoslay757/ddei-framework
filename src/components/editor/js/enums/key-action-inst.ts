@@ -12,6 +12,8 @@ import DDeiKeyActionPaste from "../hotkeys/key-action-paste";
 import DDeiKeyActionCopy from "../hotkeys/key-action-copy";
 import DDeiKeyActionCopyImage from "../hotkeys/key-action-copy-image";
 import DDeiKeyActionNewRowQuickEdit from "../hotkeys/key-action-quick-editor-newrow";
+import DDeiKeyActionTableNextRow from "../hotkeys/key-action-table-next-row";
+import DDeiKeyActionTableNextCol from "../hotkeys/key-action-table-next-col";
 
 /**
  * 所有key实例的枚举
@@ -38,6 +40,8 @@ enum DDeiEnumKeyActionInst {
   CUT = new DDeiKeyActionCopy({ code: "key-action-cut", name: "剪切", desc: "剪切选中图形到剪切板", mode: 'cut' }),
   CopyImage = new DDeiKeyActionCopyImage({ code: "key-action-copy-image", name: "复制为图片", desc: "复制选中图形到剪切板" }),
   Paste = new DDeiKeyActionPaste({ code: "key-action-paste", name: "粘贴", desc: "粘贴剪切板内容到当前图层" }),
+  TableNextRow = new DDeiKeyActionTableNextRow({ code: "key-action-table-next-row", name: "移动到下一行", desc: "移动到表格下一行" }),
+  TableNextCol = new DDeiKeyActionTableNextCol({ code: "key-action-table-next-col", name: "移动到下一列", desc: "移动到表格下一列" }),
 
 }
 
