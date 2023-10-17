@@ -78,10 +78,6 @@ class DDeiEditor {
     { shift: 2, keys: "37", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.LeftMoveModels },
     //右
     { shift: 2, keys: "39", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.RightMoveModels },
-    //回车
-    { keys: "13", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.EnterQuickEdit },
-    //取消
-    { keys: "27", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.CancelQuickEdit },
     //组合
     { keys: "71", ctrl: 1, editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.MakeCompose },
     //取消组合
