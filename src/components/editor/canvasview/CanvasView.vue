@@ -1,6 +1,12 @@
 <template>
-  <div :id="id" class="ddei_editor_canvasview" @mousedown="mouseDown($event)" ondragstart="return false;"
-    @dragover="createControlOver" @drop="createControlDrop" @dragleave="createControlCancel" @contextmenu.prevent>
+  <div :id="id"
+       class="ddei_editor_canvasview"
+       @mousedown="mouseDown($event)"
+       ondragstart="return false;"
+       @dragover="createControlOver"
+       @drop="createControlDrop"
+       @dragleave="createControlCancel"
+       @contextmenu.prevent>
   </div>
 </template>
 
@@ -81,6 +87,8 @@ export default {
       file.sheets[file.currentSheetIndex].stage
     );
     file.sheets[file.currentSheetIndex].stage = this.editor.ddInstance.stage;
+    //记录文件初始日志
+    file.initHistroy();
     this.editor.ddInstance.bus.invoker = this.editor;
     this.editor.bus = this.editor.ddInstance.bus;
   },
@@ -311,11 +319,7 @@ export default {
             null,
             e
           );
-          this.editor.bus.push(
-            DDeiEnumBusCommandType.AddHistroy,
-            null,
-            e
-          );
+          this.editor.bus.push(DDeiEnumBusCommandType.AddHistroy, null, e);
           this.editor?.bus?.push(DDeiEnumBusCommandType.SetHelpLine, {}, e);
           //渲染图形
           this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, e);
@@ -331,7 +335,6 @@ export default {
      * 拖拽元素离开，清空元素
      */
     createControlCancel(e) {
-      debugger
       if (this.editor.state == DDeiEditorState.CONTROL_CREATING) {
         if (this.editor.creatingControl) {
           let ddInstance: DDei = this.editor.ddInstance;

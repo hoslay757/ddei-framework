@@ -42,6 +42,7 @@ class DDeiStage {
       layers.push(model);
     })
     stage.layers = layers
+    stage.initHistroy();
     stage.initRender();
     return stage;
   }
@@ -62,6 +63,8 @@ class DDeiStage {
     stage.layers[0] = dDeiLayer1;
     stage.layers[1] = dDeiLayer2;
     stage.layerIndex = 0;
+
+    stage.initHistroy();
     return stage;
   }
 
@@ -431,6 +434,15 @@ class DDeiStage {
   }
 
   /**
+   * 初始化日志，记录初始化状态
+   */
+  initHistroy() {
+    if (this.histroy.length == 0 && this.histroyIdx == -1) {
+      this.histroy.push({ time: new Date().getTime(), data: JSON.stringify(this.toJSON()) })
+      this.histroyIdx = 0
+    }
+  }
+  /**
    * 记录日志
    * @param layerIndex 图层下标
    */
@@ -438,6 +450,7 @@ class DDeiStage {
     //抛弃后面的记录
     if (this.histroyIdx == -1) {
       this.histroy = this.histroy.slice(0, 1)
+      this.histroyIdx = 0
     } else {
       this.histroy = this.histroy.slice(0, this.histroyIdx + 1)
     }
@@ -455,6 +468,7 @@ class DDeiStage {
     if (this.histroyIdx != -1) {
       this.histroyIdx--;
       if (this.histroyIdx == -1) {
+        this.histroyIdx = 0
         return this.histroy[0];
       } else {
         return this.histroy[this.histroyIdx];

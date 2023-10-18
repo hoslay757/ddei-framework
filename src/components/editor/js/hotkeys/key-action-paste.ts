@@ -802,7 +802,6 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
       }
       tableJson.height = tableHeight
       tableJson.width = tableWidth
-      console.log(tableJson)
       return tableJson
     }
   }

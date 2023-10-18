@@ -30,6 +30,11 @@ class DDeiEditor {
   static INSTANCE_POOL: Map<string, DDeiEditor> = new Map();
 
   /**
+   * 日志的级别，file：记录整个文件的变化，stage：只记录stage的变化
+   */
+  static HISTROY_LEVEL: string = 'file'
+
+  /**
    * 当前活动的实例
    */
   static ACTIVE_INSTANCE: DDeiEditor | null = null;
@@ -183,6 +188,8 @@ class DDeiEditor {
 
   //当前bus
   bus: DDeiBus | null = null;
+
+  viewEditor: object | null = null;
 
   // ============================ 方法 ============================
   /**

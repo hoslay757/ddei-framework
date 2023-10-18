@@ -1,8 +1,11 @@
 <template>
-  <div id="ddei_editor_bottommenu" class="ddei_editor_bottommenu">
+  <div id="ddei_editor_bottommenu"
+       class="ddei_editor_bottommenu">
     <div class="ddei_editor_bottommenu_preview">
       <div>
-        <img width="25px" height="25px" src="../icons/icon-view.png" />
+        <img width="25px"
+             height="25px"
+             src="../icons/icon-view.png" />
       </div>
     </div>
     <div class="ddei_editor_bottommenu_pagepreview">
@@ -10,27 +13,35 @@
         <span>
           页-1
         </span>
-        <img width="8px" height="8px" src="../icons/toolbox-expanded.png" />
+        <img width="8px"
+             height="8px"
+             src="../icons/toolbox-expanded.png" />
       </div>
     </div>
 
-    <div class="ddei_editor_bottommenu_addpage" @click="newSheet">
+    <div class="ddei_editor_bottommenu_addpage"
+         @click="newSheet">
       <div>
         <img src="../icons/icon-add.png" />
       </div>
     </div>
     <div class="ddei_editor_bottommenu_pages">
-      <div @click="changeSheet(index)" v-show="index >= openIndex && index < openIndex + maxOpenSize"
-        :class="{ 'ddei_editor_bottommenu_page': sheet.active == 0, 'ddei_editor_bottommenu_page_selected': sheet.active == 1 }"
-        :title="sheet.desc" v-for="(sheet, index) in  editor?.files[editor?.currentFileIndex]?.sheets ">
+      <div @click="changeSheet(index)"
+           v-show="index >= openIndex && index < openIndex + maxOpenSize"
+           :class="{ 'ddei_editor_bottommenu_page': sheet.active == 0, 'ddei_editor_bottommenu_page_selected': sheet.active == 1 }"
+           :title="sheet.desc"
+           v-for="(sheet, index) in  editor?.files[editor?.currentFileIndex]?.sheets ">
         {{ sheet.name }}
       </div>
+
       <div class="ddei_editor_bottommenu_pages_movebox"
-        v-show="editor?.files[editor?.currentFileIndex]?.sheets?.length > maxOpenSize" @click="moveItem(-1)">
+           v-show="editor?.files[editor?.currentFileIndex]?.sheets?.length > maxOpenSize"
+           @click="moveItem(-1)">
         <img src="../icons/icon-left.png" />
       </div>
       <div class="ddei_editor_bottommenu_pages_movebox"
-        v-show="editor?.files[editor?.currentFileIndex]?.sheets?.length > maxOpenSize" @click="moveItem(1)">
+           v-show="editor?.files[editor?.currentFileIndex]?.sheets?.length > maxOpenSize"
+           @click="moveItem(1)">
         <img src="../icons/icon-right.png" />
       </div>
     </div>
@@ -55,13 +66,18 @@
           <span>
             100%
           </span>
-          <img style="width:8px;height:8px;margin-top:9px;" width="8px" height="8px"
-            src="../icons/toolbox-expanded.png" />
+          <img style="width:8px;height:8px;margin-top:9px;"
+               width="8px"
+               height="8px"
+               src="../icons/toolbox-expanded.png" />
         </div>
         <div>
           <img src="../icons/icon-reduce.png" />
         </div>
-        <input type="range" min="0" max="400" value="100" />
+        <input type="range"
+               min="0"
+               max="400"
+               value="100" />
         <div>
           <img src="../icons/icon-add.png" />
         </div>
@@ -77,10 +93,11 @@
 </template>
 
 <script lang="ts">
-import DDeiStage from '@/components/framework/js/models/stage';
-import DDeiEditor from '../js/editor';
-import DDeiActiveType from '../js/enums/active-type';
-import DDeiSheet from '../js/sheet';
+import DDeiStage from "@/components/framework/js/models/stage";
+import DDeiEditor from "../js/editor";
+import DDeiSheet from "../js/sheet";
+import DDeiEnumBusCommandType from "../../framework/js/enums/bus-command-type";
+import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
 
 export default {
   name: "DDei-Editor-BottomMenu",
@@ -100,7 +117,7 @@ export default {
   watch: {},
   created() {
     // 监听obj对象中prop属性的变化
-    this.$watch('editor.middleWidth', function (newVal, oldVal) {
+    this.$watch("editor.middleWidth", function (newVal, oldVal) {
       let size = parseInt((document.body.offsetWidth - 770) / 67);
       if (size > this.maxOpenSize && this.openIndex > 0) {
         this.openIndex--;
@@ -111,21 +128,20 @@ export default {
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
-
   },
   methods: {
     /**
-   * 在存在显示隐藏的情况下移动tab
-   */
+     * 在存在显示隐藏的情况下移动tab
+     */
     moveItem(index: number = 0) {
       if (index != 0) {
         let file = this.editor?.files[this.editor?.currentFileIndex];
         let sheets = file?.sheets;
-        this.openIndex += index
+        this.openIndex += index;
         if (this.openIndex > sheets.length - this.maxOpenSize) {
-          this.openIndex = sheets.length - this.maxOpenSize
+          this.openIndex = sheets.length - this.maxOpenSize;
         } else if (this.openIndex < 0) {
-          this.openIndex = 0
+          this.openIndex = 0;
         }
       }
     },
@@ -139,20 +155,35 @@ export default {
       let ddInstance = this.editor?.ddInstance;
       if (file && sheets && ddInstance) {
         let i = sheets.length + 1;
-        sheets.forEach(sheet => {
-          sheet.active = DDeiActiveType.NONE;
-        });
-        let stage = DDeiStage.initByJSON({ id: 'stage' }, { currentDdInstance: ddInstance });
-        sheets.push(new DDeiSheet({ name: "页面-" + i, desc: "页面-" + i, stage: stage, active: DDeiActiveType.ACTIVE }));
+
+        let stage = DDeiStage.initByJSON(
+          { id: "stage" },
+          { currentDdInstance: ddInstance }
+        );
+        sheets.push(
+          new DDeiSheet({
+            name: "页面-" + i,
+            desc: "页面-" + i,
+            stage: stage,
+          })
+        );
+        file.changeSheet(sheets.length - 1);
         //刷新页面
         ddInstance.stage = stage;
         //加载场景渲染器
         stage.initRender();
-        ddInstance.render.drawShape();
+
+        ddInstance?.bus?.push(
+          DDeiEditorEnumBusCommandType.AddFileHistroy,
+          null,
+          null
+        );
+        ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, null);
+        ddInstance?.bus?.executeAll();
 
         //打开新文件
         let activeIndex = sheets.length - 1;
-        this.openIndex = activeIndex + 1 - this.maxOpenSize
+        this.openIndex = activeIndex + 1 - this.maxOpenSize;
         if (this.openIndex < 0) {
           this.openIndex = 0;
         }
@@ -163,22 +194,24 @@ export default {
       let file = this.editor?.files[this.editor?.currentFileIndex];
       let sheets = file?.sheets;
       let ddInstance = this.editor?.ddInstance;
-      if (file && sheets && ddInstance && (index >= 0 || index < sheets.length)) {
-        for (let i = 0; i < sheets.length; i++) {
-          sheets[i].active = (i == index ? DDeiActiveType.ACTIVE : DDeiActiveType.NONE)
-        }
-        let stage = sheets[index].stage;//DDeiStage.loadFromJSON(sheets[index].stage, { currentDdInstance: ddInstance });
+      if (
+        file &&
+        sheets &&
+        ddInstance &&
+        (index >= 0 || index < sheets.length)
+      ) {
+        file.changeSheet(index);
+        let stage = sheets[index].stage;
         stage.ddInstance = ddInstance;
         //刷新页面
         ddInstance.stage = stage;
         //加载场景渲染器
         stage.initRender();
-        setTimeout(() => {
-          ddInstance.render.drawShape();
-        }, 100);
+        ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, null);
+        ddInstance?.bus?.executeAll();
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -189,20 +222,17 @@ export default {
   color: black;
 }
 
-
 .ddei_editor_bottommenu_preview {
   flex: 0 0 40px;
   height: 35px;
   padding-top: 5px;
 }
 
-
-
 .ddei_editor_bottommenu_preview div {
   height: 24px;
   margin-left: 15px;
   padding-right: 5px;
-  border-right: 1px solid rgb(235, 235, 235)
+  border-right: 1px solid rgb(235, 235, 235);
 }
 
 .ddei_editor_bottommenu_preview img:hover {
@@ -215,12 +245,10 @@ export default {
   height: 24px;
 }
 
-
 .ddei_editor_bottommenu_pagepreview {
   flex: 0 0 120px;
   height: 35px;
   padding-top: 5px;
-
 }
 
 .ddei_editor_bottommenu_pagepreview div {
@@ -230,12 +258,10 @@ export default {
   padding-right: 5px;
   color: black;
   float: left;
-  border-right: 1px solid rgb(235, 235, 235)
+  border-right: 1px solid rgb(235, 235, 235);
 }
 
-
 .ddei_editor_bottommenu_pagepreview span {
-
   padding-right: 5px;
   color: black;
   float: left;
@@ -255,22 +281,17 @@ export default {
   margin-top: 9px;
 }
 
-
-
-
 .ddei_editor_bottommenu_addpage {
   flex: 0 0 40px;
   height: 35px;
   padding-top: 5px;
 }
 
-
-
 .ddei_editor_bottommenu_addpage div {
   height: 24px;
   margin-left: 12px;
   padding-right: 5px;
-  border-right: 1px solid rgb(235, 235, 235)
+  border-right: 1px solid rgb(235, 235, 235);
 }
 
 .ddei_editor_bottommenu_addpage img:hover {
@@ -312,7 +333,6 @@ export default {
   width: 16px;
   height: 16px;
 }
-
 
 .ddei_editor_bottommenu_page {
   float: left;
@@ -365,20 +385,17 @@ export default {
   border-left: 1px solid rgb(235, 235, 235);
 }
 
-
 .ddei_editor_bottommenu_layers {
   flex: 0 0 35px;
   height: 35px;
   padding-top: 5px;
 }
 
-
-
 .ddei_editor_bottommenu_layers div {
   height: 24px;
   margin-left: 5px;
   padding-right: 5px;
-  border-right: 1px solid rgb(235, 235, 235)
+  border-right: 1px solid rgb(235, 235, 235);
 }
 
 .ddei_editor_bottommenu_layers img:hover {
@@ -391,7 +408,6 @@ export default {
   width: 22px;
   height: 22px;
 }
-
 
 .ddei_editor_bottommenu_other {
   flex: 0 0 330px;
@@ -417,15 +433,11 @@ export default {
   cursor: pointer;
 }
 
-
-
 .ddei_editor_bottommenu_other_play img {
   filter: brightness(40%);
   width: 20px;
   height: 20px;
 }
-
-
 
 .ddei_editor_bottommenu_other_changesize {
   float: left;

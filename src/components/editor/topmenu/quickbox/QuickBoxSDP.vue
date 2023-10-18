@@ -51,6 +51,7 @@ import DDeiActiveType from "../../js/enums/active-type";
 import DDeiFile from "../../js/file";
 import DDeiSheet from "../../js/sheet";
 import DDeiFileState from "../../js/enums/file-state";
+import DDeiEnumBusCommandType from "../../../framework/js/enums/bus-command-type";
 
 export default {
   name: "DDei-Editor-Quick-SDP",
@@ -111,11 +112,16 @@ export default {
           stage.ddInstance = ddInstance;
           //刷新页面
           ddInstance.stage = stage;
+          //记录文件初始日志
+          file.initHistroy();
           //加载场景渲染器
           stage.initRender();
-          setTimeout(() => {
-            ddInstance.render.drawShape();
-          }, 10);
+          ddInstance?.bus?.push(
+            DDeiEnumBusCommandType.RefreshShape,
+            null,
+            null
+          );
+          ddInstance?.bus?.executeAll();
         }
       }
     },
@@ -217,13 +223,18 @@ export default {
                     }
                     let stage = sheets[0].stage;
                     stage.ddInstance = ddInstance;
+                    //记录文件初始日志
+                    file.initHistroy();
                     //刷新页面
                     ddInstance.stage = stage;
                     //加载场景渲染器
                     stage.initRender();
-                    setTimeout(() => {
-                      ddInstance.render.drawShape();
-                    }, 10);
+                    ddInstance?.bus?.push(
+                      DDeiEnumBusCommandType.RefreshShape,
+                      null,
+                      null
+                    );
+                    ddInstance?.bus?.executeAll();
                   }
                 }
               });

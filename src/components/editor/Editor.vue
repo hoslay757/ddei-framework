@@ -30,7 +30,7 @@
       <div style="flex: 0 0 35px;"
            class="bottom"
            id="ddei_editor_frame_bottom">
-        <BottomMenu></BottomMenu>
+        <BottomMenu v-if="refreshBottomMenu"></BottomMenu>
       </div>
     </div>
     <MenuDialog v-if="!refreshMenu"></MenuDialog>
@@ -58,6 +58,7 @@ import DDeiEnumBusCommandType from "../framework/js/enums/bus-command-type";
 import DDeiEditorEnumBusCommandType from "./js/enums/editor-command-type";
 import DDeiFileState from "./js/enums/file-state";
 import DDeiEditorCommandFileDirty from "./js/bus/commands/file-dirty";
+import DDeiEditorCommandAddHistroy from "./js/bus/commands/add-histroy";
 import MenuDialog from "./menus/menudialog/MenuDialog.vue";
 
 export default {
@@ -70,6 +71,7 @@ export default {
       editor: DDeiEditor.newInstance("ddei_editor_ins", "ddei_editor"),
       dragObj: null,
       changeIndex: -1,
+      refreshBottomMenu: true,
     };
   },
   //注册组件
@@ -90,6 +92,7 @@ export default {
   },
   mounted() {
     loadEditorCommands();
+    this.editor.viewEditor = this;
     this.editor.bindEvent();
     let frameLeftElement = document.getElementById("ddei_editor_frame_left");
     let frameRightElement = document.getElementById("ddei_editor_frame_right");
@@ -123,12 +126,23 @@ export default {
     this.editor.bus.interceptor[DDeiEnumBusCommandType.ModelChangeValue] = {
       after: [this.changeFileModifyDirty],
     };
-
+    if (DDeiEditor.HISTROY_LEVEL == "file") {
+      this.editor.bus.interceptor[DDeiEnumBusCommandType.AddHistroy] = {
+        action: [this.addFileHistroy],
+      };
+    }
     if (!DDeiUtil.setCurrentMenu) {
       DDeiUtil.setCurrentMenu = this.setCurrentMenu;
     }
   },
   methods: {
+    forceRefreshBottomMenu() {
+      this.refreshBottomMenu = false;
+      this.$nextTick(() => {
+        this.refreshBottomMenu = true;
+      });
+    },
+
     /**
      * 设置当前菜单
      * @returns 控件ID
@@ -149,6 +163,13 @@ export default {
         this.editor.bus,
         null
       );
+    },
+
+    //记录文件的histroy
+    addFileHistroy() {
+      let action: DDeiEditorCommandAddHistroy =
+        DDeiEditorCommandAddHistroy.newInstance();
+      return action.action({}, this.editor.bus, null);
     },
 
     resetSize(evt, a, b) {

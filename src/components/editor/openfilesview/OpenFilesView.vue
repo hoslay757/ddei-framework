@@ -1,53 +1,74 @@
 <template>
-  <div id="ddei_editor_ofsview" class="ddei_editor_ofsview">
-    <div v-show="this.editor?.leftWidth == 0" class="ddei_editor_ofsview_expandbox" @click="expandToolBox">
-      <img width="25" height="16" src="../icons/icon-expand-right.png" />
+  <div id="ddei_editor_ofsview"
+       class="ddei_editor_ofsview">
+    <div v-show="this.editor?.leftWidth == 0"
+         class="ddei_editor_ofsview_expandbox"
+         @click="expandToolBox">
+      <img width="25"
+           height="16"
+           src="../icons/icon-expand-right.png" />
     </div>
-    <div
-      :class="item.active == 1 ? 'ddei_editor_ofsview_item ddei_editor_ofsview_item_selected' : 'ddei_editor_ofsview_item'"
-      @click="changeFile(item)" v-for="(item, i) in editor?.files"
-      v-show="i >= openIndex && ((i - openIndex + 1) * 160 + 40) <= editor?.middleWidth" :title="item.name">
+    <div :class="item.active == 1 ? 'ddei_editor_ofsview_item ddei_editor_ofsview_item_selected' : 'ddei_editor_ofsview_item'"
+         @click="changeFile(item)"
+         v-for="(item, i) in editor?.files"
+         v-show="i >= openIndex && ((i - openIndex + 1) * 160 + 40) <= editor?.middleWidth"
+         :title="item.name">
       <img src="../icons/icon-file.png" />
       <span>
         <div class="text">{{ item.name }}</div>
-        <div class="dirty" v-show="item.state != 0">ꔷ</div>
+        <div class="dirty"
+             v-show="item.state != 0">ꔷ</div>
       </span>
       <div @click.prevent.stop="closeFile(item, $event)">
         <img src="../icons/toolbox-close.png" />
       </div>
     </div>
     <div style="flex:1 1 1px"></div>
-    <div class="ddei_editor_ofsview_movebox" v-show="editor?.files?.length > maxOpenSize" @click="moveItem(-1)">
-      <img width="16" height="16" src="../icons/icon-left.png" />
+    <div class="ddei_editor_ofsview_movebox"
+         v-show="editor?.files?.length > maxOpenSize"
+         @click="moveItem(-1)">
+      <img width="16"
+           height="16"
+           src="../icons/icon-left.png" />
     </div>
-    <div class="ddei_editor_ofsview_movebox" v-show="editor?.files?.length > maxOpenSize" @click="moveItem(1)">
-      <img width="16" height="16" src="../icons/icon-right.png" />
+    <div class="ddei_editor_ofsview_movebox"
+         v-show="editor?.files?.length > maxOpenSize"
+         @click="moveItem(1)">
+      <img width="16"
+           height="16"
+           src="../icons/icon-right.png" />
     </div>
-    <div id="close_file_confirm_dialog" class="close_file_confirm_dialog">
+    <div id="close_file_confirm_dialog"
+         class="close_file_confirm_dialog">
       <div class="close_file_confirm_dialog_content">
         当前文件已经被修改，是否保存？
       </div>
       <div class="close_file_confirm_dialog_button">
-        <div class="button" style="color:white;background-color: #017fff;" @click="saveAndCloseFileConfirmDialog">保 存
+        <div class="button"
+             style="color:white;background-color: #017fff;"
+             @click="saveAndCloseFileConfirmDialog">保 存
         </div>
-        <div class="button" style="border-left:0.1px solid grey;border-right:0.1px solid grey;"
-          @click="abortAndCloseFileConfirmDialog">放 弃
+        <div class="button"
+             style="border-left:0.1px solid grey;border-right:0.1px solid grey;"
+             @click="abortAndCloseFileConfirmDialog">放 弃
         </div>
-        <div class="button" @click="cancelCloseFileConfirmDialog">取 消</div>
+        <div class="button"
+             @click="cancelCloseFileConfirmDialog">取 消</div>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import DDeiUtil from '@/components/framework/js/util';
-import DDeiEditor from '../js/editor';
-import DDeiActiveType from '../js/enums/active-type';
-import DDeiEditorState from '../js/enums/editor-state';
-import DDeiFileState from '../js/enums/file-state';
-import DDeiFile from '../js/file';
-import DDeiEditorUtil from '../js/util/editor-util';
-import DDeiStoreLocal from '@/components/framework/js/store/local-store';
+import DDeiUtil from "@/components/framework/js/util";
+import DDeiEditor from "../js/editor";
+import DDeiActiveType from "../js/enums/active-type";
+import DDeiEditorState from "../js/enums/editor-state";
+import DDeiFileState from "../js/enums/file-state";
+import DDeiFile from "../js/file";
+import DDeiEditorUtil from "../js/util/editor-util";
+import DDeiStoreLocal from "@/components/framework/js/store/local-store";
+import DDeiEnumBusCommandType from "../../framework/js/enums/bus-command-type";
 
 export default {
   name: "DDei-Editor-OpenFielsView",
@@ -66,12 +87,10 @@ export default {
     };
   },
   computed: {},
-  watch: {
-
-  },
+  watch: {},
   created() {
     // 监听obj对象中prop属性的变化
-    this.$watch('editor.middleWidth', function (newVal, oldVal) {
+    this.$watch("editor.middleWidth", function (newVal, oldVal) {
       let size = parseInt((newVal - 40) / 160);
       if (size > this.maxOpenSize && this.openIndex > 0) {
         this.openIndex--;
@@ -79,7 +98,7 @@ export default {
       this.maxOpenSize = size;
     });
     // 监听文件列表大小变化
-    this.$watch('editor.files.length', function (newVal, oldVal) {
+    this.$watch("editor.files.length", function (newVal, oldVal) {
       //打开新文件
       let activeIndex = -1;
       for (let i = 0; i < this.editor.files.length; i++) {
@@ -87,13 +106,11 @@ export default {
           activeIndex = i;
           break;
         }
-
       }
-      this.openIndex = activeIndex + 1 - this.maxOpenSize
+      this.openIndex = activeIndex + 1 - this.maxOpenSize;
       if (this.openIndex < 0) {
         this.openIndex = 0;
       }
-
     });
   },
   mounted() {
@@ -101,16 +118,15 @@ export default {
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
   },
   methods: {
-
     /**
      * 变更实例
-     * @param instance 
+     * @param instance
      */
     changeFile(file) {
-      this.editor.files.forEach(item => {
-        item.active = DDeiActiveType.NONE
+      this.editor.files.forEach((item) => {
+        item.active = DDeiActiveType.NONE;
       });
-      file.active = DDeiActiveType.ACTIVE
+      file.active = DDeiActiveType.ACTIVE;
       //刷新画布
       this.editor.currentFileIndex = this.editor?.files?.indexOf(file);
       let sheets = file?.sheets;
@@ -122,9 +138,8 @@ export default {
         ddInstance.stage = stage;
         //加载场景渲染器
         stage.initRender();
-        setTimeout(() => {
-          ddInstance.render.drawShape();
-        }, 10);
+        ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, null);
+        ddInstance?.bus?.executeAll();
       }
     },
 
@@ -136,7 +151,6 @@ export default {
       confirmDialog.style.display = "none";
     },
 
-
     /**
      * 放弃并关闭确认弹框
      */
@@ -144,12 +158,12 @@ export default {
       this.tempFile.state = DDeiFileState.NONE;
       let confirmDialog = document.getElementById("close_file_confirm_dialog");
       confirmDialog.style.display = "none";
-      this.closeFile(this.tempFile)
+      this.closeFile(this.tempFile);
     },
 
     /**
      * 保存
-     * @param evt 
+     * @param evt
      */
     saveAndCloseFileConfirmDialog() {
       if (this.tempFile) {
@@ -165,30 +179,35 @@ export default {
               //回写ID
               file.id = data;
               file.state = DDeiFileState.NONE;
-              let confirmDialog = document.getElementById("close_file_confirm_dialog");
+              let confirmDialog = document.getElementById(
+                "close_file_confirm_dialog"
+              );
               confirmDialog.style.display = "none";
-              this.closeFile(this.tempFile)
+              this.closeFile(this.tempFile);
             });
           }
-
         }
-
       }
     },
 
     /**
      * 关闭文件
-     * @param instance 
+     * @param instance
      */
     closeFile(file, evt) {
       //如果文件为脏状态，询问是否保存，放弃，或取消
-      if (file.state == DDeiFileState.NEW || file.state == DDeiFileState.MODIFY) {
-        let confirmDialog = document.getElementById("close_file_confirm_dialog");
+      if (
+        file.state == DDeiFileState.NEW ||
+        file.state == DDeiFileState.MODIFY
+      ) {
+        let confirmDialog = document.getElementById(
+          "close_file_confirm_dialog"
+        );
         confirmDialog.style.display = "block";
 
         let pos = DDeiUtil.getDomAbsPosition(evt.target);
-        confirmDialog.style.left = (pos.left + 5) + "px";
-        confirmDialog.style.top = (pos.top + 15) + "px";
+        confirmDialog.style.left = pos.left + 5 + "px";
+        confirmDialog.style.top = pos.top + 15 + "px";
         this.tempFile = file;
       } else {
         //刷新画布
@@ -198,18 +217,20 @@ export default {
           this.editor.currentFileIndex--;
         } else if (index == this.editor.currentFileIndex) {
           if (index > 0) {
-            this.changeFile(this.editor.files[this.editor.currentFileIndex - 1]);
+            this.changeFile(
+              this.editor.files[this.editor.currentFileIndex - 1]
+            );
           } else if (this.editor.files.length > 0) {
             this.changeFile(this.editor.files[0]);
           }
         }
-        if(this.editor.files.length == 0){
-           this.editor.currentFileIndex = -1;
+        if (this.editor.files.length == 0) {
+          this.editor.currentFileIndex = -1;
         }
         if (index > this.openIndex) {
           this.openIndex--;
           if (this.openIndex < 0) {
-            this.openIndex = 0
+            this.openIndex = 0;
           }
         }
       }
@@ -219,11 +240,11 @@ export default {
      */
     moveItem(index: number = 0) {
       if (index != 0) {
-        this.openIndex += index
+        this.openIndex += index;
         if (this.openIndex > this.editor.files.length - this.maxOpenSize) {
-          this.openIndex = this.editor.files.length - this.maxOpenSize
+          this.openIndex = this.editor.files.length - this.maxOpenSize;
         } else if (this.openIndex < 0) {
-          this.openIndex = 0
+          this.openIndex = 0;
         }
       }
     },
@@ -238,8 +259,13 @@ export default {
       frameLeftElement.style.flexBasis = "220px";
       //重新设置画布大小
       this.editor.middleWidth -= deltaX;
-      this.editor.ddInstance.render.setSize(this.editor.middleWidth, this.editor.middleHeight, 0, 0)
-      this.editor.ddInstance.render.drawShape()
+      this.editor.ddInstance.render.setSize(
+        this.editor.middleWidth,
+        this.editor.middleHeight,
+        0,
+        0
+      );
+      this.editor.ddInstance.render.drawShape();
     },
     /**
      * 焦点进入当前区域
@@ -247,8 +273,7 @@ export default {
     changeEditorFocus() {
       this.editor.changeState(DDeiEditorState.DESIGNING);
     },
-
-  }
+  },
 };
 </script>
 
@@ -262,7 +287,6 @@ export default {
   display: flex;
   user-select: none;
 }
-
 
 .ddei_editor_ofsview_expandbox {
   flex: 0 0 30px;
@@ -301,8 +325,6 @@ export default {
   height: 25px;
   display: flex;
 }
-
-
 
 .ddei_editor_ofsview_item img {
   padding: 3px;
@@ -356,7 +378,6 @@ export default {
   background: rgb(247, 247, 247);
 }
 
-
 .ddei_editor_ofsview_item_selected span .text {
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -374,7 +395,6 @@ export default {
   margin-top: -2.5px;
 }
 
-
 /**以下为询问框的样式 */
 .close_file_confirm_dialog {
   width: 250px;
@@ -386,7 +406,6 @@ export default {
   border-radius: 6px;
   overflow: hidden;
 }
-
 
 .close_file_confirm_dialog_content {
   width: 100%;

@@ -7,6 +7,7 @@ enum DDeiEditorEnumBusCommandType {
   RefreshEditorParts = "refresh-editor-parts",//刷新编辑器部件
   FileDirty = "file-dirty",//文状态改为dirty
   SaveFile = "save-file",
+  AddFileHistroy = 'add-file-histroy',
 }
 
 export default DDeiEditorEnumBusCommandType

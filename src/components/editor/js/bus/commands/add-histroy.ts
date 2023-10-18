@@ -1,11 +1,12 @@
-import DDeiEnumBusCommandType from '../../enums/bus-command-type';
-import DDeiEnumOperateState from '../../enums/operate-state';
-import DDeiBus from '../bus';
-import DDeiBusCommand from '../bus-command';
+
+import type DDeiBus from '@/components/framework/js/bus/bus';
+import DDeiEditorEnumBusCommandType from '../../enums/editor-command-type';
+import DDeiBusCommand from '@/components/framework/js/bus/bus-command';
+import DDeiActiveType from '../../enums/active-type';
 /**
  * 记录当前快照的总线Command
  */
-class DDeiBusCommandAddHistroy extends DDeiBusCommand {
+class DDeiEditorCommandAddHistroy extends DDeiBusCommand {
   // ============================ 构造函数 ============================
 
   // ============================ 静态方法 ============================
@@ -30,14 +31,14 @@ class DDeiBusCommandAddHistroy extends DDeiBusCommand {
    * @param evt 事件对象引用
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
-    let stage = bus.ddInstance.stage;
-    if (stage) {
-      console.log("stage-histroy")
-      stage.addHistroy(JSON.stringify(stage.toJSON()))
-      return true;
-    } else {
-      return false;
+    let editor = bus.invoker;
+    if (editor?.files.length > 0 && (editor.currentFileIndex == 0 || editor.currentFileIndex)) {
+      let file = editor?.files[editor.currentFileIndex]
+      if (file?.active == DDeiActiveType.ACTIVE) {
+        file.addHistroy(JSON.stringify(file.toJSON()))
+      }
     }
+    return true;
 
   }
 
@@ -56,9 +57,9 @@ class DDeiBusCommandAddHistroy extends DDeiBusCommand {
    * @returns 
    */
   static newInstance(): DDeiBusCommand {
-    return new DDeiBusCommandAddHistroy({ code: DDeiEnumBusCommandType.AddHistroy, name: "", desc: "" })
+    return new DDeiEditorCommandAddHistroy({ code: DDeiEditorEnumBusCommandType.AddFileHistroy, name: "", desc: "" })
   }
 }
 
 
-export default DDeiBusCommandAddHistroy
+export default DDeiEditorCommandAddHistroy
