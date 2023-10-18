@@ -35,13 +35,13 @@ class DDeiBusCommandStageChangeSelectModels extends DDeiBusCommand {
       //获取当前选中控件
       //当前激活的图层
       let optContainer = stage.render.currentOperateContainer;
-      if (optContainer) {
-        let selectedModels = optContainer.getSelectedModels();
-        stage.changeSelecetdModels(selectedModels);
-        return true;
+      if (!optContainer) {
+        optContainer = stage.layers[stage.layerIndex]
       }
+      let selectedModels = optContainer.getSelectedModels();
+      stage.changeSelecetdModels(selectedModels);
+      return true;
     }
-    return false;
   }
 
   /**

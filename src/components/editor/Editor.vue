@@ -130,7 +130,7 @@ export default {
     };
     if (DDeiEditor.HISTROY_LEVEL == "file") {
       this.editor.bus.interceptor[DDeiEnumBusCommandType.AddHistroy] = {
-        action: [this.addFileHistroy],
+        execute: [this.addFileHistroy],
       };
     }
     if (!DDeiUtil.setCurrentMenu) {

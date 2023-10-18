@@ -144,30 +144,21 @@ class DDeiBus {
               }
             }
           }
-          if (this.interceptor[firstActionData.type]?.action) {
-            let interActions = this.interceptor[firstActionData.type]?.action
-            for (let ii = 0; ii < interActions.length; ii++) {
-              let result = interActions[ii](firstActionData.data, this, firstActionData.evt);
-              if (!result) {
-                return false;
-              } else {
-                if (this.interceptor[firstActionData.type]?.after) {
-                  let interActions = this.interceptor[firstActionData.type]?.after
-                  for (let ii = 0; ii < interActions.length; ii++) {
-                    let result = interActions[ii](firstActionData.data, this, firstActionData.evt);
-                    if (!result) {
-                      return false;
-                    }
-                  }
+          let validResult = action.before(firstActionData.data, this, firstActionData.evt);
+          if (validResult) {
+            if (this.interceptor[firstActionData.type]?.execute) {
+              let interActions = this.interceptor[firstActionData.type]?.execute
+              for (let ii = 0; ii < interActions.length; ii++) {
+                let result = interActions[ii](firstActionData.data, this, firstActionData.evt);
+                if (!result) {
+                  return false;
                 }
-                return action.after(firstActionData.data, this, firstActionData.evt);
               }
             }
-          } else {
-            let validResult = action.before(firstActionData.data, this, firstActionData.evt);
-            if (validResult) {
-              if (this.interceptor[firstActionData.type]?.execute) {
-                let interActions = this.interceptor[firstActionData.type]?.execute
+            let actionResult = action.action(firstActionData.data, this, firstActionData.evt);
+            if (actionResult) {
+              if (this.interceptor[firstActionData.type]?.after) {
+                let interActions = this.interceptor[firstActionData.type]?.after
                 for (let ii = 0; ii < interActions.length; ii++) {
                   let result = interActions[ii](firstActionData.data, this, firstActionData.evt);
                   if (!result) {
@@ -175,24 +166,12 @@ class DDeiBus {
                   }
                 }
               }
-              let actionResult = action.action(firstActionData.data, this, firstActionData.evt);
-              if (actionResult) {
-                if (this.interceptor[firstActionData.type]?.after) {
-                  let interActions = this.interceptor[firstActionData.type]?.after
-                  for (let ii = 0; ii < interActions.length; ii++) {
-                    let result = interActions[ii](firstActionData.data, this, firstActionData.evt);
-                    if (!result) {
-                      return false;
-                    }
-                  }
-                }
-                return action.after(firstActionData.data, this, firstActionData.evt);
-              } else {
-                return false;
-              }
+              return action.after(firstActionData.data, this, firstActionData.evt);
             } else {
               return false;
             }
+          } else {
+            return false;
           }
         }
       }

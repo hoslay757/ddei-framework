@@ -761,7 +761,7 @@ class DDeiLayerCanvasRender {
                 //构造移动容器action数据
                 this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeContainer, { oldContainer: pContainerModel, newContainer: lastOnContainer, models: operateModels }, evt);
                 this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, selMods, evt);
-                this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
+                hasChange = true;
               }
               isStop = true;
             }
@@ -785,13 +785,15 @@ class DDeiLayerCanvasRender {
                 hasChange = true;
                 operateModels.push(model)
               })
-
               pContainerModel?.layoutManager?.updateLayout(evt.offsetX, evt.offsetY, operateModels);
               operateModels?.forEach(item => {
                 item.render?.controlDragEnd(evt)
               })
-              this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
+
             }
+          }
+          if (hasChange) {
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
           }
 
           this.model.shadowControls = [];
