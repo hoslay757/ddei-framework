@@ -5,6 +5,7 @@ import DDeiBusCommand from '@/components/framework/js/bus/bus-command';
 import DDeiActiveType from '../../enums/active-type';
 import DDeiStoreLocal from '@/components/framework/js/store/local-store';
 import DDeiFileState from '../../enums/file-state';
+import DDeiEditor from '../../editor';
 /**
  * 保存文件的总线Command
  */
@@ -49,6 +50,24 @@ class DDeiEditorCommandSaveFile extends DDeiBusCommand {
               file.id = data;
             }
             file.state = DDeiFileState.NONE;
+            //遍历histroy，修改当前的histroy记录为最新状态，去掉其它最新状态标记
+            if (DDeiEditor.HISTROY_LEVEL == 'file') {
+              file.histroy.forEach(his => {
+                if (his.isNew == true) {
+                  delete his.isNew
+                }
+              });
+              //将当前的设置
+              file.histroy[file.histroyIdx].isNew = true;
+            } else if (DDeiEditor.HISTROY_LEVEL == 'stage') {
+              file.histroy.forEach(his => {
+                if (his.isNew == true) {
+                  delete his.isNew
+                }
+              });
+              //将当前的设置
+              file.histroy[file.histroyIdx].isNew = true;
+            }
             editor?.viewEditor?.forceRefreshOpenFilesView();
           });
         }

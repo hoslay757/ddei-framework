@@ -30,8 +30,11 @@ class DDeiKeyActionReRevoke extends DDeiKeyAction {
               let hisFile = DDeiFile.loadFromJSON(jsonData, {
                 currentDdInstance: ddInstance,
               });
-
-              file.state = DDeiFileState.NONE;
+              if (hisData.isNew == true) {
+                file.state = DDeiFileState.NONE;
+              } else {
+                file.state = DDeiFileState.MODIFY
+              }
               file.sheets = hisFile?.sheets;
               if (file && file.sheets && ddInstance) {
                 file.changeSheet(hisFile.currentSheetIndex);
@@ -45,6 +48,7 @@ class DDeiKeyActionReRevoke extends DDeiKeyAction {
                 ddInstance?.bus?.executeAll();
                 editor?.viewEditor.forceRefreshBottomMenu();
                 editor?.viewEditor.forcePropertyView();
+                editor?.viewEditor.forceRefreshOpenFilesView();
               }
             }
           }
@@ -73,6 +77,7 @@ class DDeiKeyActionReRevoke extends DDeiKeyAction {
             let editor = DDeiEditor.ACTIVE_INSTANCE;
             editor?.viewEditor?.forceRefreshBottomMenu();
             editor?.viewEditor?.forcePropertyView();
+            editor?.viewEditor?.forceRefreshOpenFilesView();
           }
         }
 
