@@ -55,8 +55,7 @@ class DDeiBusCommandModelPush extends DDeiBusCommand {
       hasChange = true
     }
     if (hasChange) {
-      bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
-      bus.executeAll();
+      bus.insert(DDeiEnumBusCommandType.AddHistroy, null, evt);
     }
     return true;
   }

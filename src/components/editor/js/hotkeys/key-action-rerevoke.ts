@@ -43,8 +43,8 @@ class DDeiKeyActionReRevoke extends DDeiKeyAction {
                 stage.initRender();
                 ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
                 ddInstance?.bus?.executeAll();
-
                 editor?.viewEditor.forceRefreshBottomMenu();
+                editor?.viewEditor.forcePropertyView();
               }
             }
           }
@@ -70,6 +70,9 @@ class DDeiKeyActionReRevoke extends DDeiKeyAction {
             //渲染图形
             ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
             ddInstance?.bus?.executeAll();
+            let editor = DDeiEditor.ACTIVE_INSTANCE;
+            editor?.viewEditor?.forceRefreshBottomMenu();
+            editor?.viewEditor?.forcePropertyView();
           }
         }
 

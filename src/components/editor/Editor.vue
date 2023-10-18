@@ -24,7 +24,7 @@
         <div style="flex:0 0 330px"
              class="right"
              id="ddei_editor_frame_right">
-          <PropertyView></PropertyView>
+          <PropertyView v-if="refreshPropertyView"></PropertyView>
         </div>
       </div>
       <div style="flex: 0 0 35px;"
@@ -73,6 +73,7 @@ export default {
       changeIndex: -1,
       refreshBottomMenu: true,
       refreshOpenFilesView: true,
+      refreshPropertyView: true,
     };
   },
   //注册组件
@@ -141,6 +142,13 @@ export default {
       this.refreshBottomMenu = false;
       this.$nextTick(() => {
         this.refreshBottomMenu = true;
+      });
+    },
+
+    forcePropertyView() {
+      this.refreshPropertyView = false;
+      this.$nextTick(() => {
+        this.refreshPropertyView = true;
       });
     },
 

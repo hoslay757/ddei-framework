@@ -72,8 +72,7 @@ class DDeiBusCommandModelCopyStyle extends DDeiBusCommand {
 
             }
             if (hasChange) {
-              bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
-              bus.executeAll();
+              bus.insert(DDeiEnumBusCommandType.AddHistroy, null, evt);
             }
           }
         });
