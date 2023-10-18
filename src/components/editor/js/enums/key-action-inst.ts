@@ -18,6 +18,7 @@ import DDeiKeyActionBrushData from "../hotkeys/key-action-brushdata";
 import DDeiKeyActionClearBrushData from "../hotkeys/key-action-clear-brushdata";
 import DDeiKeyActionRevoke from "../hotkeys/key-action-revoke";
 import DDeiKeyActionReRevoke from "../hotkeys/key-action-rerevoke";
+import DDeiKeyActionSaveFile from "../hotkeys/key-action-save-file";
 
 /**
  * 所有key实例的枚举
@@ -50,6 +51,7 @@ enum DDeiEnumKeyActionInst {
   ClearBrushData = new DDeiKeyActionClearBrushData({ code: "key-action-clear-brushdata", name: "清除格式刷", desc: "将当前的格式刷清空" }),
   Revoke = new DDeiKeyActionRevoke({ code: "key-action-revoke", name: "撤销", desc: "撤销上一步操作" }),
   ReRevoke = new DDeiKeyActionReRevoke({ code: "key-action-rerevokea", name: "反撤销", desc: "撤销前一次撤销操作" }),
+  SaveFile = new DDeiKeyActionSaveFile({ code: "key-action-save-file", name: "保存", desc: "保存当前文件至存储，根据配置和扩展可以保存到本地、服务端等" }),
 }
 
 export default DDeiEnumKeyActionInst

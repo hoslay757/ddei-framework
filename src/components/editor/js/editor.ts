@@ -119,6 +119,9 @@ class DDeiEditor {
     { ctrl: 1, keys: "89", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.ReRevoke },
     { ctrl: 1, shift: 1, keys: "90", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.ReRevoke },
 
+    //保存
+    { ctrl: 1, keys: "83", action: DDeiEnumKeyActionInst.SaveFile },
+
   ];
 
 

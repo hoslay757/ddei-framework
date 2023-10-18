@@ -17,7 +17,7 @@
         </div>
         <div class="middle"
              id="ddei_editor_frame_middle">
-          <OpenFilesView></OpenFilesView>
+          <OpenFilesView v-if="refreshOpenFilesView"></OpenFilesView>
           <CanvasView id="ddei_editor_canvasview"></CanvasView>
           <QuickColorView></QuickColorView>
         </div>
@@ -72,6 +72,7 @@ export default {
       dragObj: null,
       changeIndex: -1,
       refreshBottomMenu: true,
+      refreshOpenFilesView: true,
     };
   },
   //注册组件
@@ -143,6 +144,12 @@ export default {
       });
     },
 
+    forceRefreshOpenFilesView() {
+      this.refreshOpenFilesView = false;
+      this.$nextTick(() => {
+        this.refreshOpenFilesView = true;
+      });
+    },
     /**
      * 设置当前菜单
      * @returns 控件ID

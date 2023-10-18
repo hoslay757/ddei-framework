@@ -52,6 +52,7 @@ import DDeiFile from "../../js/file";
 import DDeiSheet from "../../js/sheet";
 import DDeiFileState from "../../js/enums/file-state";
 import DDeiEnumBusCommandType from "../../../framework/js/enums/bus-command-type";
+import DDeiEditorEnumBusCommandType from "../../js/enums/editor-command-type";
 
 export default {
   name: "DDei-Editor-Quick-SDP",
@@ -131,25 +132,8 @@ export default {
      * @param evt
      */
     save(evt) {
-      if (this.editor?.files) {
-        //获取json信息
-        let file = this.editor?.files[this.editor?.currentFileIndex];
-        if (file) {
-          let json = file.toJSON();
-          if (json) {
-            //执行保存
-            let storeIns = new DDeiStoreLocal();
-            json.state = DDeiFileState.NONE;
-            storeIns.save(file.id, json).then((data) => {
-              //回写ID
-              if (!file.id) {
-                file.id = data;
-              }
-              file.state = DDeiFileState.NONE;
-            });
-          }
-        }
-      }
+      this.editor.bus?.push(DDeiEditorEnumBusCommandType.SaveFile, {}, evt);
+      this.editor.bus?.executeAll();
     },
 
     /**
