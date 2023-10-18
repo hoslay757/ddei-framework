@@ -201,11 +201,9 @@ export default {
                   let sheets = file?.sheets;
 
                   if (file && sheets && ddInstance) {
-                    for (let i = 0; i < sheets.length; i++) {
-                      sheets[i].active =
-                        i == 0 ? DDeiActiveType.ACTIVE : DDeiActiveType.NONE;
-                    }
-                    let stage = sheets[0].stage;
+                    file.changeSheet(file.currentSheetIndex);
+
+                    let stage = sheets[file.currentSheetIndex].stage;
                     stage.ddInstance = ddInstance;
                     //记录文件初始日志
                     file.initHistroy();
