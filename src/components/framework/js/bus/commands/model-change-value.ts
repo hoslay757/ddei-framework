@@ -112,10 +112,8 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
                 DDeiUtil.setAttrValueByPath(model, paths, value)
                 model.render?.setCachedValue(paths, value)
               }
-
             }
           });
-          bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
           bus.executeAll();
         }
 
@@ -136,6 +134,8 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
     if (data?.paths?.indexOf('layout') != -1) {
       //更新选择器
       bus?.insert(DDeiEnumBusCommandType.ChangeLayout, data, evt);
+    } else {
+      bus.insert(DDeiEnumBusCommandType.AddHistroy, null, evt);
     }
     return true;
   }

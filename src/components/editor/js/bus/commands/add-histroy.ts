@@ -3,10 +3,16 @@ import type DDeiBus from '@/components/framework/js/bus/bus';
 import DDeiEditorEnumBusCommandType from '../../enums/editor-command-type';
 import DDeiBusCommand from '@/components/framework/js/bus/bus-command';
 import DDeiActiveType from '../../enums/active-type';
+import { debounce } from 'lodash';
+import DDeiFile from '../../file';
 /**
  * 记录当前快照的总线Command
  */
 class DDeiEditorCommandAddHistroy extends DDeiBusCommand {
+
+  static {
+    DDeiEditorCommandAddHistroy.addHistroy = debounce(DDeiEditorCommandAddHistroy.addHistroy, 200, { trailing: true, leading: false });
+  }
   // ============================ 构造函数 ============================
 
   // ============================ 静态方法 ============================
@@ -35,12 +41,22 @@ class DDeiEditorCommandAddHistroy extends DDeiBusCommand {
     if (editor?.files.length > 0 && (editor.currentFileIndex == 0 || editor.currentFileIndex)) {
       let file = editor?.files[editor.currentFileIndex]
       if (file?.active == DDeiActiveType.ACTIVE) {
-        file.addHistroy(JSON.stringify(file.toJSON()))
+        let data = JSON.stringify(file.toJSON());
+        let lastData = null;
+        if (file.histroyIdx != -1) {
+          lastData = file.histroy[file.histroyIdx]
+        }
+        if (data != lastData) {
+          DDeiEditorCommandAddHistroy.addHistroy(file, data)
+        }
+
       }
     }
     return true;
 
   }
+
+
 
   /**
    * 后置行为，分发，修改当前editor的状态
@@ -58,6 +74,11 @@ class DDeiEditorCommandAddHistroy extends DDeiBusCommand {
    */
   static newInstance(): DDeiBusCommand {
     return new DDeiEditorCommandAddHistroy({ code: DDeiEditorEnumBusCommandType.AddFileHistroy, name: "", desc: "" })
+  }
+
+
+  static addHistroy(file: DDeiFile, data: object) {
+    file.addHistroy(data)
   }
 }
 

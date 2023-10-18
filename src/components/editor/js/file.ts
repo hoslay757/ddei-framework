@@ -3,7 +3,7 @@ import DDeiUtil from "@/components/framework/js/util";
 import DDeiActiveType from "./enums/active-type";
 import DDeiFileState from "./enums/file-state";
 import DDeiSheet from "./sheet";
-
+import { debounce } from "lodash";
 /**
  * DDei文件，文件包含了多个页签
  */
@@ -88,6 +88,7 @@ class DDeiFile {
    * @param layerIndex 图层下标
    */
   addHistroy(data: object) {
+    console.log(this.histroy.length)
     //抛弃后面的记录
     if (this.histroyIdx == -1) {
       this.histroy = this.histroy.slice(0, 1)

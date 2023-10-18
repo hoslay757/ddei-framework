@@ -1,11 +1,17 @@
 import DDeiEnumBusCommandType from '../../enums/bus-command-type';
-import DDeiEnumOperateState from '../../enums/operate-state';
+import { debounce } from 'lodash';
 import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
+import DDeiStage from '../../models/stage';
 /**
  * 记录当前快照的总线Command
  */
 class DDeiBusCommandAddHistroy extends DDeiBusCommand {
+
+
+  static {
+    DDeiBusCommandAddHistroy.addHistroy = debounce(DDeiBusCommandAddHistroy.addHistroy, 200, { trailing: true, leading: false });
+  }
   // ============================ 构造函数 ============================
 
   // ============================ 静态方法 ============================
@@ -32,8 +38,14 @@ class DDeiBusCommandAddHistroy extends DDeiBusCommand {
   action(data: object, bus: DDeiBus, evt: Event): boolean {
     let stage = bus.ddInstance.stage;
     if (stage) {
-      console.log("stage-histroy")
-      stage.addHistroy(JSON.stringify(stage.toJSON()))
+      let data = JSON.stringify(stage.toJSON());
+      let lastData = null;
+      if (stage.histroyIdx != -1) {
+        lastData = stage.histroy[stage.histroyIdx]
+      }
+      if (data != lastData) {
+        DDeiBusCommandAddHistroy.addHistroy(stage, data)
+      }
       return true;
     } else {
       return false;
@@ -57,6 +69,10 @@ class DDeiBusCommandAddHistroy extends DDeiBusCommand {
    */
   static newInstance(): DDeiBusCommand {
     return new DDeiBusCommandAddHistroy({ code: DDeiEnumBusCommandType.AddHistroy, name: "", desc: "" })
+  }
+
+  static addHistroy(stage: DDeiStage, data: object) {
+    stage.addHistroy(data)
   }
 }
 
