@@ -1,51 +1,81 @@
 <template>
   <div class="ddei_editor_quick_fat">
 
-    <div class="ddei_editor_quick_fat_item" style="grid-column:1/7;">
+    <div class="ddei_editor_quick_fat_item"
+         style="grid-column:1/6;">
       <QBTFontFamily></QBTFontFamily>
     </div>
-    <div class="ddei_editor_quick_fat_item" style="grid-column:7/10;">
-       <QBTFontSize></QBTFontSize>
+    <div class="ddei_editor_quick_fat_item"
+         style="grid-column:6/8;">
+      <QBTFontSize></QBTFontSize>
+    </div>
+    <div class="ddei_editor_quick_fat_item">
+      <QBTEditBox selectedValue="1"
+                  attrCode="textStyle.align"
+                  :img="icons['text-align-left']"></QBTEditBox>
+    </div>
+    <div class="ddei_editor_quick_fat_item">
+      <QBTEditBox selectedValue="2"
+                  attrCode="textStyle.align"
+                  :img="icons['text-align-center']"></QBTEditBox>
+    </div>
+    <div class="ddei_editor_quick_fat_item">
+      <QBTEditBox selectedValue="3"
+                  attrCode="textStyle.align"
+                  :img="icons['text-align-right']"></QBTEditBox>
     </div>
 
     <div class="ddei_editor_quick_fat_item">
-      <div class="ddei_editor_quick_fat_item_box" style="margin-top:1px;">
-        <img width="13px" height="13px" :src="icons['icon-align-left']" />
-      </div>
-    </div>
-
-    <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="1" attrCode="textStyle.bold" :img="icons['icon-font-bold']"></QBTEditBox>
+      <QBTEditBox selectedValue="1"
+                  attrCode="textStyle.bold"
+                  :img="icons['icon-font-bold']"></QBTEditBox>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="1" attrCode="textStyle.italic" :img="icons['icon-font-italic']"></QBTEditBox>
+      <QBTEditBox selectedValue="1"
+                  attrCode="textStyle.italic"
+                  :img="icons['icon-font-italic']"></QBTEditBox>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="1" attrCode="textStyle.underline" :img="icons['icon-text-underline']"></QBTEditBox>
+      <QBTEditBox selectedValue="1"
+                  attrCode="textStyle.underline"
+                  :img="icons['icon-text-underline']"></QBTEditBox>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="1" attrCode="textStyle.deleteline" :img="icons['icon-text-deleteline']"></QBTEditBox>
+      <QBTEditBox selectedValue="1"
+                  attrCode="textStyle.deleteline"
+                  :img="icons['icon-text-deleteline']"></QBTEditBox>
     </div>
     <div class="ddei_editor_quick_fat_item">
-       <QBTEditColor attrCode="textStyle.superscript" :img="icons['icon-text-superscript']"></QBTEditColor>
+      <QBTEditAddFontSize :addValue="1"
+                          attrCode="font.size"
+                          :img="icons['icon-font-up']"></QBTEditAddFontSize>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <QBTEditColor attrCode="textStyle.subscript" :img="icons['icon-text-subscript']"></QBTEditColor>
+      <QBTEditAddFontSize :addValue="-1"
+                          attrCode="font.size"
+                          :img="icons['icon-font-down']"></QBTEditAddFontSize>
     </div>
     <div class="ddei_editor_quick_fat_item">
-       <QBTEditAddFontSize :addValue="1" attrCode="font.size" :img="icons['icon-font-up']"></QBTEditAddFontSize>
+      <QBTEditColor attrCode="font.color"
+                    :img="icons['icon-font-color']"></QBTEditColor>
     </div>
     <div class="ddei_editor_quick_fat_item">
-       <QBTEditAddFontSize :addValue="-1" attrCode="font.size" :img="icons['icon-font-down']"></QBTEditAddFontSize>
+      <QBTEditBox selectedValue="1"
+                  attrCode="textStyle.valign"
+                  :img="icons['text-valign-top']"></QBTEditBox>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <QBTEditColor attrCode="font.bgcolor" :img="icons['icon-font-bgcolor']"></QBTEditColor>
+      <QBTEditBox selectedValue="2"
+                  attrCode="textStyle.valign"
+                  :img="icons['text-valign-middle']"></QBTEditBox>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <QBTEditColor attrCode="font.color" :img="icons['icon-font-color']"></QBTEditColor>
+      <QBTEditBox selectedValue="3"
+                  attrCode="textStyle.valign"
+                  :img="icons['text-valign-bottom']"></QBTEditBox>
     </div>
-
-    <div class="ddei_editor_quick_fat_item" style="grid-column:1/11;">
+    <div class="ddei_editor_quick_fat_item"
+         style="grid-column:1/11;">
       <div class="ddei_editor_quick_fat_item_text">
         字体和段落
       </div>
@@ -53,12 +83,12 @@
   </div>
 </template>
 <script lang="ts">
-import ICONS from "../../js/icon"
-import QBTFontFamily from './tools/QBTFontFamily.vue';
-import QBTFontSize from './tools/QBTFontSize.vue';
-import QBTEditBox from './tools/QBTEditBox.vue';
-import QBTEditAddFontSize from './tools/QBTEditAddFontSize.vue';
-import QBTEditColor from './tools/QBTEditColor.vue';
+import ICONS from "../../js/icon";
+import QBTFontFamily from "./tools/QBTFontFamily.vue";
+import QBTFontSize from "./tools/QBTFontSize.vue";
+import QBTEditBox from "./tools/QBTEditBox.vue";
+import QBTEditAddFontSize from "./tools/QBTEditAddFontSize.vue";
+import QBTEditColor from "./tools/QBTEditColor.vue";
 
 export default {
   name: "DDei-Editor-Quick-FontAndText",
@@ -67,21 +97,21 @@ export default {
   props: {},
   data() {
     return {
-      icons:{}
+      icons: {},
     };
   },
   computed: {},
-  components:{
+  components: {
     QBTFontSize,
     QBTFontFamily,
     QBTEditBox,
     QBTEditAddFontSize,
-    QBTEditColor
+    QBTEditColor,
   },
   watch: {},
-  created() { },
+  created() {},
   mounted() {
-    for(let i in ICONS){
+    for (let i in ICONS) {
       this.icons[i] = ICONS[i];
     }
   },
@@ -90,7 +120,6 @@ export default {
 
 <style scoped>
 .ddei_editor_quick_fat {
-
   height: 90px;
   border-right: 1px solid rgb(224, 224, 224);
   grid-template-rows: 30px 30px 20px;
@@ -112,11 +141,9 @@ export default {
   margin-top: -3px;
 }
 
-
 /*字体大小设置框 */
 
 .ddei_editor_quick_fat_item_fontsize {
-
   background-color: white;
   border-radius: 4px;
   height: 24px;
@@ -146,12 +173,6 @@ export default {
   float: left;
 }
 
-
-
-
-
-
-
 .ddei_editor_quick_fat_item_box {
   width: 25px;
   height: 25px;
@@ -175,7 +196,6 @@ export default {
   margin-top: 4px;
   filter: brightness(40%) drop-shadow(0.3px 0px 0.3px #000);
 }
-
 
 .ddei_editor_quick_fat_item_box:hover {
   background-color: rgb(233, 233, 238);

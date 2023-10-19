@@ -1,123 +1,141 @@
 <template>
-  <div :class="{'ddei_editor_quick_fat_item_box':true,'ddei_editor_quick_fat_item_box_selected':value, 'ddei_editor_quick_fat_item_box_disabled': !attrDefine }" @click="attrDefine && valueChange($event)">
-    <img style="width:13px;height:13px" :src="img" />
+  <div :class="{'ddei_editor_quick_fat_item_box':true,'ddei_editor_quick_fat_item_box_selected':value, 'ddei_editor_quick_fat_item_box_disabled': !attrDefine }"
+       @click="attrDefine && valueChange($event)">
+    <img style="width:13px;height:13px"
+         :src="img" />
   </div>
 </template>
 
 <script lang="ts">
-import DDeiEditor from '../../../js/editor';
-import DDeiUtil from '../../../../framework/js/util';
-import DDeiEnumBusCommandType from '../../../../framework/js/enums/bus-command-type';
+import DDeiEditor from "../../../js/editor";
+import DDeiUtil from "../../../../framework/js/util";
+import DDeiEnumBusCommandType from "../../../../framework/js/enums/bus-command-type";
 
 export default {
   name: "DDei-Editor-QBT-EditBox",
   extends: null,
   mixins: [],
-  components:{
-  },
+  components: {},
   props: {
-    attrCode:{
-      type:String,
-      default:null
+    attrCode: {
+      type: String,
+      default: null,
     },
     unSelectValue: {
       type: Object,
-      default:null
+      default: null,
     },
     selectedValue: {
-    
-      default: null
+      default: null,
     },
     img: {
       type: String,
-      default: null
-    }
+      default: null,
+    },
   },
   data() {
     return {
       //当前编辑器
       editor: null,
-      controlDefine:null,
-      attrDefine:null,
-      value:false
-      
+      controlDefine: null,
+      attrDefine: null,
+      value: false,
     };
   },
   computed: {},
-  watch: {
-
-  },
-  created() {
-    
-  },
+  watch: {},
+  created() {},
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     this.value = false;
-    if(this.editor?.currentControlDefine){
+    if (this.editor?.currentControlDefine) {
       this.controlDefine = this.editor.currentControlDefine;
       if (this.controlDefine) {
-        this.attrDefine = this.controlDefine.attrDefineMap.get(this.attrCode);
+        this.attrDefine = this.controlDefine.attrDefineMapAll.get(
+          this.attrCode
+        );
+        if (this.attrCode == "textStyle.align") {
+          debugger;
+        }
         let valueDefine = this.getDataValue();
-        if(valueDefine && !valueDefine.isDefault && (valueDefine.value+"") == (this.selectedValue+"")){
+        if (
+          valueDefine &&
+          !valueDefine.isDefault &&
+          valueDefine.value + "" == this.selectedValue + ""
+        ) {
           this.value = true;
         }
       } else {
-        this.attrDefine = null
+        this.attrDefine = null;
       }
     }
   },
   methods: {
-
     //获取数据值
     getDataValue() {
       if (this.attrDefine) {
         let dataValue = this.attrDefine.value;
         if (!dataValue) {
-          dataValue = DDeiUtil.getDataByPathList(this.attrDefine.model, this.attrDefine.code, this.attrDefine.mapping);
+          dataValue = DDeiUtil.getDataByPathList(
+            this.attrDefine.model,
+            this.attrDefine.code,
+            this.attrDefine.mapping
+          );
         }
         if (dataValue) {
-          return { value: dataValue }
+          return { value: dataValue };
         }
       }
       //通过解析器获取有效值
-      return { isDefault: true, value: this.attrDefine?.getParser().getDefaultValue() };
+      return {
+        isDefault: true,
+        value: this.attrDefine?.getParser().getDefaultValue(),
+      };
     },
 
-
     valueChange(evt) {
-      if(this.value == true){
-        this.value = false
-      }else{
-        this.value = true
+      if (this.value == true) {
+        this.value = false;
+      } else {
+        this.value = true;
       }
       let value = this.unSelectValue;
-      if(this.value == true){
+      if (this.value == true) {
         value = this.selectedValue;
       }
-      
+
       this.attrDefine.value = value;
-      
+
       //通过解析器获取有效值
       let parser: DDeiAbstractArrtibuteParser = this.attrDefine.getParser();
       //属性值
       let parsedValue = parser.parseValue(value);
       //获取属性路径
       let paths = [];
-      this.attrDefine?.mapping?.forEach(element => {
+      this.attrDefine?.mapping?.forEach((element) => {
         paths.push(element);
       });
       if (!(paths?.length > 0)) {
-        paths = [this.attrDefine.code]
+        paths = [this.attrDefine.code];
       }
-      this.editor.ddInstance.stage.selectedModels.forEach(element => {
-        this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: parsedValue }, evt, true);
+      this.editor.ddInstance.stage.selectedModels.forEach((element) => {
+        this.editor.bus.push(
+          DDeiEnumBusCommandType.ModelChangeValue,
+          { mids: [element.id], paths: paths, value: parsedValue },
+          evt,
+          true
+        );
       });
-      this.editor.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels, null, evt);
+      this.editor.bus.push(
+        DDeiEnumBusCommandType.StageChangeSelectModels,
+        null,
+        evt
+      );
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
       this.editor.bus.executeAll();
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -133,15 +151,14 @@ export default {
   filter: brightness(40%) drop-shadow(0.3px 0px 0.3px #000);
 }
 
-
 .ddei_editor_quick_fat_item_box_disabled {
   color: rgb(228, 228, 232);
   filter: brightness(200%) !important;
 }
 
 .ddei_editor_quick_fat_item_box_disabled:hover {
-  background-color:transparent !important;
-  cursor:not-allowed;
+  background-color: transparent !important;
+  cursor: not-allowed;
 }
 
 .ddei_editor_quick_fat_item_box_selected {
@@ -156,7 +173,6 @@ export default {
   margin-top: 4px;
   filter: brightness(40%) drop-shadow(0.3px 0px 0.3px #000);
 }
-
 
 .ddei_editor_quick_fat_item_box:hover {
   background-color: rgb(233, 233, 238);
