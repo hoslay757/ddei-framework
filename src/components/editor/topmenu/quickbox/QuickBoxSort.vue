@@ -83,6 +83,20 @@
         </div>
       </div>
     </div>
+    <hr />
+    <div class="ddei_editor_quick_sort_align_dialog_group">
+      <div class="ddei_editor_quick_sort_align_dialog_group_title">等距分布:</div>
+      <div class="ddei_editor_quick_sort_align_dialog_group_content">
+        <div class="ddei_editor_quick_sort_align_dialog_group_content_item"
+             @click="doAutoPos(2)">
+          <img src="../../icons/control-auto-pos-1.png" />
+        </div>
+        <div class="ddei_editor_quick_sort_align_dialog_group_content_item"
+             @click="doAutoPos(1)">
+          <img src="../../icons/control-auto-pos-2.png" />
+        </div>
+      </div>
+    </div>
 
   </div>
   <div id="ddei_editor_quick_sort_merge_dialog"
@@ -286,6 +300,23 @@ export default {
         });
         //渲染图形
         this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
+        this.editor.bus.executeAll();
+      }
+    },
+
+    /**
+     * 自动分布
+     */
+    doAutoPos(type) {
+      //获取当前选择控件
+      let file = this.editor.files[this.editor.currentFileIndex];
+      let sheet = file?.sheets[file?.currentSheetIndex];
+      let stage = sheet?.stage;
+      if (stage?.selectedModels?.size > 0) {
+        this.editor.bus.push(DDeiEnumBusCommandType.ModelAutoPos, {
+          models: Array.from(stage.selectedModels.values()),
+          value: type,
+        });
         this.editor.bus.executeAll();
       }
     },
@@ -494,12 +525,12 @@ export default {
   width: 30px;
   height: 30px;
   padding: 5px;
+  cursor: pointer;
 }
 .ddei_editor_quick_sort_align_dialog_group_content_item img {
   width: 24px;
   height: 24px;
   filter: brightness(50%);
-  cursor: pointer;
 }
 
 .ddei_editor_quick_sort_align_dialog_group_content_item:hover {

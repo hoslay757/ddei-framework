@@ -26,7 +26,8 @@ enum DDeiEnumBusCommandType {
   AddHistroy = "add-histroy",
   ModelAlign = "model-align",
   ModelMerge = "model-merge",
-  ModelCancelMerge = "model-cancel-merge"
+  ModelCancelMerge = "model-cancel-merge",
+  ModelAutoPos = "model-auto-pos",
 }
 
 export default DDeiEnumBusCommandType
