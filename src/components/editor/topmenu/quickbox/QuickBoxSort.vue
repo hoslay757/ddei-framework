@@ -21,8 +21,8 @@
       </div>
     </div>
     <div class="ddei_editor_quick_sort_item">
-      <div :class="{'ddei_editor_quick_sort_item_box_disabled':!isButtonEnable(),'ddei_editor_quick_sort_item_box_selected':isButtonEnable() && dialogShow == 'ddei_editor_quick_sort_align_dialog','ddei_editor_quick_sort_item_box':isButtonEnable() && dialogShow != 'ddei_editor_quick_sort_align_dialog'}"
-           @click="isButtonEnable() && showDialog('ddei_editor_quick_sort_align_dialog',$event)">
+      <div :class="{'ddei_editor_quick_sort_item_box_disabled':!isButtonEnable(2),'ddei_editor_quick_sort_item_box_selected':isButtonEnable(2) && dialogShow == 'ddei_editor_quick_sort_align_dialog','ddei_editor_quick_sort_item_box':isButtonEnable(2) && dialogShow != 'ddei_editor_quick_sort_align_dialog'}"
+           @click="isButtonEnable(2) && showDialog('ddei_editor_quick_sort_align_dialog',$event)">
         <img style="width:24px;height:24px;margin-top:0px;margin-left:-2px"
              src="../../icons/control-align-left.png" />
         <div>对齐</div>
@@ -105,23 +105,23 @@
        v-show="dialogShow == 'ddei_editor_quick_sort_position_dialog'">
     <div class="ddei_editor_quick_sort_position_dialog_title">位置</div>
     <hr />
-    <div :class="{'ddei_editor_quick_sort_position_dialog_item_disabled':!canPushTop(),'ddei_editor_quick_sort_position_dialog_item':canPushTop()}"
-         @click="canPushTop() && doPushTop()">
+    <div :class="{'ddei_editor_quick_sort_position_dialog_item_disabled':!canPush('top'),'ddei_editor_quick_sort_position_dialog_item':canPush('top')}"
+         @click="canPush('top') && doPush('top')">
       <img src="../../icons/control-push-top.png" />
       <div>置于顶层</div>
     </div>
-    <div :class="{'ddei_editor_quick_sort_position_dialog_item_disabled':!canPushBottom(),'ddei_editor_quick_sort_position_dialog_item':canPushBottom()}"
-         @click="canPushBottom() && doPushBottom()">
+    <div :class="{'ddei_editor_quick_sort_position_dialog_item_disabled':!canPush('bottom'),'ddei_editor_quick_sort_position_dialog_item':canPush('bottom')}"
+         @click="canPush('top') && doPush('bottom')">
       <img src="../../icons/control-push-bottom.png" />
       <div>置于底层</div>
     </div>
-    <div :class="{'ddei_editor_quick_sort_position_dialog_item_disabled':!canPushUp(),'ddei_editor_quick_sort_position_dialog_item':canPushUp()}"
-         @click="canPushUp() && doPushUp()">
+    <div :class="{'ddei_editor_quick_sort_position_dialog_item_disabled':!canPush('up'),'ddei_editor_quick_sort_position_dialog_item':canPush('up')}"
+         @click="canPush('up') && doPush('up')">
       <img src="../../icons/control-push-up.png" />
       <div>上移一层</div>
     </div>
-    <div :class="{'ddei_editor_quick_sort_position_dialog_item_disabled':!canPushDown(),'ddei_editor_quick_sort_position_dialog_item':canPushDown()}"
-         @click="canPushDown() && doPushDown()">
+    <div :class="{'ddei_editor_quick_sort_position_dialog_item_disabled':!canPush('down'),'ddei_editor_quick_sort_position_dialog_item':canPush('down')}"
+         @click="canPush('down') && doPush('down')">
       <img src="../../icons/control-push-down.png" />
       <div>下移一层</div>
     </div>
@@ -209,11 +209,11 @@ export default {
     /**
      * 对齐按钮是否显示
      */
-    isButtonEnable() {
+    isButtonEnable(num: number = 1) {
       let file = this.editor?.files[this.editor.currentFileIndex];
       let sheet = file?.sheets[file?.currentSheetIndex];
       let stage = sheet?.stage;
-      if (stage?.selectedModels?.size > 0) {
+      if (stage?.selectedModels?.size >= num) {
         return true;
       }
       return false;
@@ -223,42 +223,17 @@ export default {
      * 修改对齐方式
      */
     changeAlign(v) {
-      let value = null;
-      let path = "";
-      if (v == "left") {
-        path = "textStyle.align";
-        value = 1;
-      } else if (v == "center") {
-        path = "textStyle.align";
-        value = 2;
-      } else if (v == "right") {
-        path = "textStyle.align";
-        value = 3;
-      } else if (v == "top") {
-        path = "textStyle.valign";
-        value = 1;
-      } else if (v == "middle") {
-        path = "textStyle.valign";
-        value = 2;
-      } else if (v == "bottom") {
-        path = "textStyle.valign";
-        value = 3;
-      }
-      if (path && value) {
-        //获取当前选择控件
-
-        let file = this.editor.files[this.editor.currentFileIndex];
-        let sheet = file?.sheets[file?.currentSheetIndex];
-        let stage = sheet?.stage;
-        if (stage?.selectedModels?.size > 0) {
-          this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, {
-            models: Array.from(stage.selectedModels.values()),
-            paths: [path],
-            value: value,
-          });
-          this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
-          this.editor.bus.executeAll();
-        }
+      //获取当前选择控件
+      let file = this.editor.files[this.editor.currentFileIndex];
+      let sheet = file?.sheets[file?.currentSheetIndex];
+      let stage = sheet?.stage;
+      if (stage?.selectedModels?.size > 0) {
+        this.editor.bus.push(DDeiEnumBusCommandType.ModelAlign, {
+          models: Array.from(stage.selectedModels.values()),
+          value: v,
+        });
+        this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
+        this.editor.bus.executeAll();
       }
     },
 
@@ -291,52 +266,28 @@ export default {
       return false;
     },
 
-    //是否置于顶层
-    canPushTop() {
-      //获取当前选择控件
-      let file = this.editor?.files[this.editor.currentFileIndex];
-      let sheet = file?.sheets[file?.currentSheetIndex];
-      let stage = sheet?.stage;
-      if (stage?.selectedModels?.size > 1) {
-        return true;
-      }
-      return false;
-    },
-
-    //是否置于底层
-    canPushBottom() {
-      //获取当前选择控件
-      let file = this.editor?.files[this.editor.currentFileIndex];
-      let sheet = file?.sheets[file?.currentSheetIndex];
-      let stage = sheet?.stage;
-      if (stage?.selectedModels?.size > 1) {
-        return true;
-      }
-      return false;
-    },
-
     //是否置于上层
-    canPushUp() {
-      //获取当前选择控件
-      let file = this.editor?.files[this.editor.currentFileIndex];
-      let sheet = file?.sheets[file?.currentSheetIndex];
-      let stage = sheet?.stage;
-      if (stage?.selectedModels?.size > 1) {
-        return true;
-      }
-      return false;
+    canPush(type) {
+      return true;
     },
 
-    //是否置于下层
-    canPushDown() {
+    //修改图形层次
+    doPush(v) {
       //获取当前选择控件
       let file = this.editor?.files[this.editor.currentFileIndex];
       let sheet = file?.sheets[file?.currentSheetIndex];
       let stage = sheet?.stage;
-      if (stage?.selectedModels?.size > 1) {
-        return true;
+      let stageRender = stage?.render;
+      let optContainer = stageRender?.currentOperateContainer;
+      if (optContainer) {
+        this.editor.bus.push(DDeiEnumBusCommandType.ModelPush, {
+          container: optContainer,
+          type: v,
+        });
+        //渲染图形
+        this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
+        this.editor.bus.executeAll();
       }
-      return false;
     },
 
     doRotate(rotate) {
@@ -370,7 +321,7 @@ export default {
       let sheet = file?.sheets[file?.currentSheetIndex];
       let stage = sheet?.stage;
       if (stage?.selectedModels?.size > 1) {
-        this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
+        this.editor.bus.push(DDeiEnumBusCommandType.ModelMerge);
         this.editor.bus.executeAll();
       }
     },
@@ -383,8 +334,8 @@ export default {
       let file = this.editor?.files[this.editor.currentFileIndex];
       let sheet = file?.sheets[file?.currentSheetIndex];
       let stage = sheet?.stage;
-      if (stage?.selectedModels?.size > 1) {
-        this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
+      if (stage?.selectedModels?.size > 0) {
+        this.editor.bus.push(DDeiEnumBusCommandType.ModelCancelMerge);
         this.editor.bus.executeAll();
       }
     },
@@ -661,7 +612,7 @@ export default {
   margin-left: 20px;
   width: 18px;
   height: 18px;
-  filter: brightness(40%) drop-shadow(0.2px 0px 0.2px #000);
+  filter: brightness(20%);
 }
 
 .ddei_editor_quick_sort_position_dialog_item div {

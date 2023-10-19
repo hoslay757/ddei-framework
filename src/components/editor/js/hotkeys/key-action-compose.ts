@@ -16,40 +16,11 @@ class DDeiKeyActionCompose extends DDeiKeyAction {
   // ============================ 方法 ===============================
   action(evt: Event, ddInstance: DDei): void {
     //修改当前操作控件坐标
-    if (ddInstance && ddInstance.stage) {
+    if (ddInstance) {
       //当前激活的图层
-      let layer = ddInstance.stage.layers[ddInstance.stage.layerIndex]
-      let selectedModels = layer.getSelectedModels();
-      if (selectedModels.size > 1) {
-        let models = Array.from(selectedModels.values());
+      ddInstance.bus.push(DDeiEnumBusCommandType.ModelMerge, null, evt);
+      ddInstance.bus.executeAll();
 
-        //获取选中图形的外接矩形
-        let outRect = DDeiAbstractShape.getOutRect(models);
-        //创建一个容器，添加到画布,其坐标等于外接矩形
-        let container: DDeiRectContainer = DDeiRectContainer.initByJSON({
-          id: "container_" + ddInstance.stage.idIdx,
-          x: outRect.x,
-          y: outRect.y,
-          modelCode: "100201",
-          width: outRect.width,
-          height: outRect.height,
-          linkChild: true,
-          linkSelf: true
-        });
-        //下标自增1
-        ddInstance.stage.idIdx++;
-
-        ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeContainer, { newContainer: ddInstance.stage.layers[ddInstance.stage.layerIndex], models: [container] }, evt);
-        ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeContainer, { newContainer: container, oldContainer: layer, models: models }, evt);
-        ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeSelect, { models: [container], value: DDeiEnumControlState.SELECTED }, evt);
-        ddInstance.bus.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
-        ddInstance.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
-        //渲染图形
-        ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
-        ddInstance.bus.executeAll();
-      } else {
-        console.warn("组合操作至少需要两个图形")
-      }
     }
   }
 

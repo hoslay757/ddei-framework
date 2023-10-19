@@ -23,7 +23,10 @@ enum DDeiEnumBusCommandType {
   ModelChangeValue = "model-change-value",
   ChangeLayout = "change-layout",
   CopyStyle = "copy-style",
-  AddHistroy = "add-histroy"
+  AddHistroy = "add-histroy",
+  ModelAlign = "model-align",
+  ModelMerge = "model-merge",
+  ModelCancelMerge = "model-cancel-merge"
 }
 
 export default DDeiEnumBusCommandType
