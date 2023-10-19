@@ -1,34 +1,38 @@
 <template>
   <div class="ddei_editor_quick_tool">
     <div class="ddei_editor_quick_tool_item">
-      <div class="ddei_editor_quick_tool_item_box_selected">
-        <img width="20px" height="20px" src="../../icons/icon-cursor.png" />
-        <div>选择</div>
-        <img width="6px" height="6px" style="margin-left:5px;margin-top:10px" src="../../icons/toolbox-expanded.png" />
+      <div :class="{'ddei_editor_quick_tool_item_box_selected':editor?.editMode == 1,'ddei_editor_quick_tool_item_box':editor?.editMode != 1}"
+           @click="changeEditMode(1)">
+        <img style="width:20px;height:20px;"
+             src="../../icons/icon-cursor.png" />
       </div>
     </div>
     <div class="ddei_editor_quick_tool_item">
-      <div class="ddei_editor_quick_tool_item_box">
-        <img width="20px" height="20px" src="../../icons/toolbox-shape-rect.png" />
-        <div>形状</div>
-        <img width="6px" height="6px" style="margin-left:5px;margin-top:10px" src="../../icons/toolbox-expanded.png" />
+      <div :class="{'ddei_editor_quick_tool_item_box_selected':editor?.editMode == 2,'ddei_editor_quick_tool_item_box':editor?.editMode != 2}"
+           @click="changeEditMode(2)">
+        <img style="width:20px;height:20px;"
+             src="../../icons/icon-hand.png" />
       </div>
     </div>
     <div class="ddei_editor_quick_tool_item">
-      <div class="ddei_editor_quick_tool_item_box">
-        <img width="20px" height="20px" src="../../icons/icon-text.png" />
-        <div>文本</div>
-        <img width="6px" height="6px" style="margin-left:5px;margin-top:10px" src="../../icons/toolbox-expanded.png" />
+      <div :class="{'ddei_editor_quick_tool_item_box_selected':editor?.editMode == 3,'ddei_editor_quick_tool_item_box':editor?.editMode != 3}"
+           @click="changeEditMode(3)">
+        <img style="width:20px;height:20px;"
+             src="../../icons/icon-text.png" />
       </div>
     </div>
     <div class="ddei_editor_quick_tool_item">
-      <div class="ddei_editor_quick_tool_item_box">
-        <img width="20px" height="20px" src="../../icons/icon-line-fold.png" />
-        <div>线段</div>
-        <img width="6px" height="6px" style="margin-left:5px;margin-top:10px" src="../../icons/toolbox-expanded.png" />
+      <div :class="{'ddei_editor_quick_tool_item_box_selected':editor?.editMode == 4,'ddei_editor_quick_tool_item_box':editor?.editMode != 4}"
+           style="width:33px">
+        <img style="width:20px;height:20px;"
+             @click="changeEditMode(4)"
+             src="../../icons/icon-line-fold.png" />
+        <img style="margin-top:10px;width:6px;height:6px;"
+             src="../../icons/toolbox-expanded.png" />
       </div>
     </div>
-    <div class="ddei_editor_quick_tool_item" style="grid-column:1/3;">
+    <div class="ddei_editor_quick_tool_item"
+         style="grid-column:1/3;">
       <div class="ddei_editor_quick_tool_item_text">
         工具
       </div>
@@ -36,28 +40,37 @@
   </div>
 </template>
 <script lang="ts">
-
-
+import DDeiEditor from "../../js/editor";
 export default {
   name: "DDei-Editor-Quick-Tool",
   extends: null,
   mixins: [],
   props: {},
   data() {
-    return {};
+    return {
+      editor: null,
+    };
   },
   computed: {},
   watch: {},
-  created() { },
+  created() {},
   mounted() {
-
+    this.editor = DDeiEditor.ACTIVE_INSTANCE;
+  },
+  methods: {
+    /**
+     * 修改当前编辑器的编辑模式
+     */
+    changeEditMode(mode) {
+      this.editor.changeEditMode(mode);
+    },
   },
 };
 </script>
 
 <style scoped>
 .ddei_editor_quick_tool {
-  width: 180px;
+  width: 70px;
   height: 90px;
   border-right: 1px solid rgb(224, 224, 224);
   grid-template-rows: 30px 30px 20px;
@@ -70,20 +83,17 @@ export default {
 
 .ddei_editor_quick_tool_item {
   margin: auto;
-
 }
 
 .ddei_editor_quick_tool_item_text {
   text-align: center;
   font-family: "Microsoft YaHei";
   font-size: 12px;
-  color: rgb(120, 120, 120)
+  color: rgb(120, 120, 120);
 }
 
-
-
 .ddei_editor_quick_tool_item_box {
-  width: 70px;
+  width: 25px;
   height: 25px;
   color: black;
   text-align: center;
@@ -95,7 +105,6 @@ export default {
   float: left;
   margin-left: 2px;
   margin-top: 1px;
-
 }
 
 .ddei_editor_quick_tool_item_box img {
@@ -106,7 +115,7 @@ export default {
 }
 
 .ddei_editor_quick_tool_item_box_selected {
-  width: 70px;
+  width: 25px;
   height: 25px;
   text-align: center;
   background-color: rgb(228, 228, 232);
@@ -127,7 +136,6 @@ export default {
   float: left;
   margin-top: 2px;
 }
-
 
 .ddei_editor_quick_tool_item_box:hover {
   background-color: rgb(233, 233, 238);
