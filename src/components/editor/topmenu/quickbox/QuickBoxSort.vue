@@ -478,7 +478,7 @@ export default {
   width: 160px;
   position: absolute;
   background-color: white;
-  height: 120px;
+  height: 180px;
   border-radius: 4px;
   border: 0.5px solid rgb(220, 220, 220);
   z-index: 999;
@@ -520,6 +520,7 @@ export default {
   grid-template-rows: 50% 50%;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 4px;
+  margin-bottom: 10px;
 }
 .ddei_editor_quick_sort_align_dialog_group_content_item {
   width: 30px;
@@ -531,6 +532,8 @@ export default {
   width: 24px;
   height: 24px;
   filter: brightness(50%);
+  margin-left: -2px;
+  margin-top: -2px;
 }
 
 .ddei_editor_quick_sort_align_dialog_group_content_item:hover {
