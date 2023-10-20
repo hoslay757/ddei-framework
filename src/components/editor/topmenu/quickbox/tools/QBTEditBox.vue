@@ -55,9 +55,6 @@ export default {
         this.attrDefine = this.controlDefine.attrDefineMapAll.get(
           this.attrCode
         );
-        if (this.attrCode == "textStyle.align") {
-          debugger;
-        }
         let valueDefine = this.getDataValue();
         if (
           valueDefine &&

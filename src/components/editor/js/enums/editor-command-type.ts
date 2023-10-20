@@ -8,6 +8,7 @@ enum DDeiEditorEnumBusCommandType {
   FileDirty = "file-dirty",//文状态改为dirty
   SaveFile = "save-file",
   AddFileHistroy = 'add-file-histroy',
+  ChangeEditMode = 'editor-change-edit-mode',
 }
 
 export default DDeiEditorEnumBusCommandType

@@ -597,8 +597,14 @@ class DDeiLayerCanvasRender {
         }
         //重置选择器位置
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ResetSelectorState, { x: evt.offsetX, y: evt.offsetY }, evt);
-        //当前操作状态：选择器工作中
-        this.stageRender.operateState = DDeiEnumOperateState.SELECT_WORKING
+        if (this.stage.ddInstance?.editMode == 1) {
+          //当前操作状态：选择器工作中
+          this.stageRender.operateState = DDeiEnumOperateState.SELECT_WORKING
+        } else if (this.stage.ddInstance?.editMode == 2) {
+          //当前操作状态：抓手工作中
+          this.stageRender.operateState = DDeiEnumOperateState.GRAB_WORKING
+        }
+
         //当没有按下ctrl键时，清空除了当前操作控件外所有选中状态控件
         if (!isCtrl) {
           //清空所有层级的已选状态
@@ -702,6 +708,9 @@ class DDeiLayerCanvasRender {
             pushDatas[pushDatas.length] = { id: model.id, value: DDeiEnumControlState.SELECTED };
           });
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, pushDatas, evt);
+          break;
+        //抓手工作中
+        case DDeiEnumOperateState.GRAB_WORKING:
           break;
         //控件拖拽中
         case DDeiEnumOperateState.CONTROL_DRAGING:
@@ -919,6 +928,14 @@ class DDeiLayerCanvasRender {
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
         break;
       }
+      //抓手工作中
+      case DDeiEnumOperateState.GRAB_WORKING: {
+        console.log("抓手移动")
+        this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'grabbing' }, evt);
+        //渲染图形
+        this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
+        break;
+      }
       //控件拖拽中
       case DDeiEnumOperateState.CONTROL_DRAGING: {
 
@@ -1017,7 +1034,11 @@ class DDeiLayerCanvasRender {
         if (operateControls != null && operateControls.length > 0) {
           operateControls[0].render.mouseMove(evt);
         } else if (this.stageRender.selector.passIndex == -1) {
-          this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
+          if (this.stage.ddInstance?.editMode == 1) {
+            this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
+          } else if (this.stage.ddInstance?.editMode == 2) {
+            this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'grab' }, evt);
+          }
         }
         if (this.stage?.brushData) {
           this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { image: 'cursor-brush' }, evt);

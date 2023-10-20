@@ -41,6 +41,7 @@
 </template>
 <script lang="ts">
 import DDeiEditor from "../../js/editor";
+import DDeiEditorEnumBusCommandType from "../../js/enums/editor-command-type";
 export default {
   name: "DDei-Editor-Quick-Tool",
   extends: null,
@@ -62,7 +63,10 @@ export default {
      * 修改当前编辑器的编辑模式
      */
     changeEditMode(mode) {
-      this.editor.changeEditMode(mode);
+      this.editor.bus.push(DDeiEditorEnumBusCommandType.ChangeEditMode, {
+        mode: mode,
+      });
+      this.editor.bus.executeAll();
     },
   },
 };

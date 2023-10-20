@@ -93,6 +93,9 @@ class DDei {
   //当前bus
   bus: DDeiBus | null = null;
 
+  //当前编辑模式，1：指针，2：手，3:文本创建，4:线段创建
+  editMode: number = 1;
+
   // ============================ 方法 ============================
   /**
    * 初始化渲染器
@@ -103,6 +106,16 @@ class DDei {
     this.render.init();
     //加载场景渲染器
     this.stage.initRender();
+  }
+
+  /**
+   * 修改当前编辑模式
+   * @param mode 编辑模式
+   */
+  changeEditMode(mode): void {
+    if (this.editMode != mode) {
+      this.editMode = mode
+    }
   }
 
 

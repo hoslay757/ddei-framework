@@ -22,6 +22,8 @@ enum DDeiEnumOperateState {
   SELECT_WORKING = 10,
   //表格内部拖拽
   TABLE_INNER_DRAG = 11,
+  //抓手工作中
+  GRAB_WORKING = 20,
 }
 
 export default DDeiEnumOperateState
