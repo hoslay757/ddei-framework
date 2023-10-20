@@ -62,7 +62,8 @@
         </div>
       </div>
       <div class="ddei_editor_bottommenu_other_changesize">
-        <div class="ddei_editor_bottommenu_other_changesize_combox">
+        <div class="ddei_editor_bottommenu_other_changesize_combox"
+             @click="showDialog('ddei_editor_bottommenu_other_changesize_dialog',$event)">
           <span>
             {{parseInt(currentStage?.ratio * 100)}}%
           </span>
@@ -71,7 +72,7 @@
                height="8px"
                src="../icons/toolbox-expanded.png" />
         </div>
-        <div>
+        <div @click="addRatio(-0.05)">
           <img src="../icons/icon-reduce.png" />
         </div>
         <input type="range"
@@ -80,13 +81,66 @@
                step="0.1"
                v-model="currentStage.ratio" />
         <div>
-          <img src="../icons/icon-add.png" />
+          <img src="../icons/icon-add.png"
+               @click="addRatio(0.05)" />
         </div>
         <div>
           <img src="../icons/icon-screen-full.png" />
         </div>
         <div>
           <img src="../icons/icon-screen-width.png" />
+        </div>
+      </div>
+    </div>
+    <div id="ddei_editor_bottommenu_other_changesize_dialog"
+         class="ddei_editor_bottommenu_other_changesize_dialog"
+         v-show="dialogShow == 'ddei_editor_bottommenu_other_changesize_dialog'">
+      <div class="ddei_editor_bottommenu_other_changesize_dialog_title">缩放</div>
+      <hr />
+      <div class="ddei_editor_bottommenu_other_changesize_dialog_group">
+        <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content">
+          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item"
+               @click="setRatio(4)">
+            400%
+          </div>
+          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item"
+               @click="setRatio(2)">
+            200%
+          </div>
+          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item"
+               @click="setRatio(1.5)">
+            150%
+          </div>
+
+          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item"
+               @click="setRatio(1.25)">
+            125%
+          </div>
+          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item"
+               @click="setRatio(1)">
+            100%
+          </div>
+          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item"
+               @click="setRatio(0.75)">
+            75%
+          </div>
+          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item"
+               @click="setRatio(0.5)">
+            50%
+          </div>
+          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item"
+               @click="setRatio(0.25)">
+            25%
+          </div>
+          <hr />
+          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item">
+            百分比：<input type="number"
+                   min="1"
+                   max="1000"
+                   v-model="ratioInputValue"
+                   @blur="showDialog('ddei_editor_bottommenu_other_changesize_dialog')"
+                   @input="ratioInputChange">%
+          </div>
         </div>
       </div>
     </div>
@@ -99,6 +153,8 @@ import DDeiEditor from "../js/editor";
 import DDeiSheet from "../js/sheet";
 import DDeiEnumBusCommandType from "../../framework/js/enums/bus-command-type";
 import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
+import DDeiUtil from "../../framework/js/util";
+import DDeiEditorState from "../js/enums/editor-state";
 
 export default {
   name: "DDei-Editor-BottomMenu",
@@ -114,6 +170,8 @@ export default {
       maxOpenSize: 1,
       //当前stage
       currentStage: {},
+      dialogShow: "",
+      ratioInputValue: 0,
     };
   },
   computed: {},
@@ -129,6 +187,7 @@ export default {
     });
     // 监听obj对象中prop属性的变化
     this.$watch("currentStage.ratio", function (newVal, oldVal) {
+      this.ratioInputValue = parseFloat(newVal) * 100;
       this.changeRatio();
     });
   },
@@ -148,6 +207,29 @@ export default {
         this.editor?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, null);
         this.editor?.bus?.executeAll();
       }
+    },
+
+    /**
+     * 增加缩放比率
+     */
+    addRatio(deltaRatio: number) {
+      let ratio = this.currentStage.getStageRatio();
+      this.currentStage.ratio = parseFloat((ratio + deltaRatio).toFixed(2));
+    },
+
+    /**
+     * 设置缩放比率
+     */
+    setRatio(ratio: number) {
+      this.currentStage.ratio = ratio;
+      this.dialogShow = "";
+    },
+
+    ratioInputChange(evt: Event) {
+      if (this.ratioInputValue >= 1000) {
+        this.ratioInputValue = 1000;
+      }
+      this.currentStage.ratio = this.ratioInputValue / 100;
     },
 
     /**
@@ -231,6 +313,28 @@ export default {
         stage.initRender();
         ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, null);
         ddInstance?.bus?.executeAll();
+      }
+    },
+
+    /**
+     * 显示弹出框
+     */
+    showDialog(id, evt: Event) {
+      if (this.dialogShow == id) {
+        this.dialogShow = "";
+        this.editor.changeState(DDeiEditorState.DESIGNING);
+      } else {
+        this.dialogShow = id;
+        let dialogEle = document.getElementById(id);
+        let srcElement = evt.target;
+        if (srcElement.className != "ddei_editor_quick_sort_item_box") {
+          srcElement = srcElement.parentElement;
+        }
+        //获取绝对坐标
+        let absPos = DDeiUtil.getDomAbsPosition(srcElement);
+        dialogEle.style.left = absPos.left - srcElement.offsetWidth + "px";
+        dialogEle.style.bottom = "35px";
+        this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
       }
     },
   },
@@ -505,5 +609,67 @@ export default {
 .ddei_editor_bottommenu_other_changesize img:hover {
   filter: brightness(20%);
   cursor: pointer;
+}
+
+/**以下是翻转按钮的弹出框 */
+.ddei_editor_bottommenu_other_changesize_dialog {
+  width: 170px;
+  position: absolute;
+  background-color: white;
+  height: 310px;
+  border-radius: 4px;
+  border: 0.5px solid rgb(220, 220, 220);
+  z-index: 999;
+  box-shadow: 3px 3px 3px hsl(0deg 0% 0% /0.25);
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+}
+
+.ddei_editor_bottommenu_other_changesize_dialog_title {
+  color: black;
+  font-weight: bold;
+  flex: 0 0 30px;
+  padding-top: 5px;
+  padding-left: 7px;
+}
+
+.ddei_editor_bottommenu_other_changesize_dialog hr {
+  border: 0.5px solid rgb(240, 240, 240);
+  flex: 0 0 1px;
+}
+
+.ddei_editor_bottommenu_other_changesize_dialog_group {
+  color: black;
+  flex: 1 1 40px;
+  padding-left: 5px;
+}
+
+.ddei_editor_bottommenu_other_changesize_dialog_group_title {
+  padding-left: 10px;
+}
+
+.ddei_editor_bottommenu_other_changesize_dialog_group_content {
+  width: 100%;
+  height: 280px;
+  display: flex;
+  padding-left: 15px;
+  padding-right: 15px;
+  flex-direction: column;
+}
+.ddei_editor_bottommenu_other_changesize_dialog_group_content_item {
+  flex: 0 0 30px;
+  padding-top: 5px;
+  cursor: pointer;
+}
+
+.ddei_editor_bottommenu_other_changesize_dialog_group_content_item input {
+  border: none;
+  outline: none;
+}
+
+.ddei_editor_bottommenu_other_changesize_dialog_group_content_item:hover {
+  border-radius: 4px;
+  background-color: rgb(233, 233, 238);
 }
 </style>

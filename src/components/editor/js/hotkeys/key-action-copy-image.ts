@@ -43,10 +43,10 @@ class DDeiKeyActionCopyImage extends DDeiKeyAction {
     if (models.length > 1) {
       addWidth = lineOffset * 2
     }
-    canvas.setAttribute("style", "-moz-transform-origin:left top;-moz-transform:scale(" + (1 / ratio) + ");display:block;zoom:" + (1 / ratio));
-    canvas.setAttribute("width", Math.abs(x2 - x1) * ratio + addWidth)
-    canvas.setAttribute("height", Math.abs(y2 - y1) * ratio + addWidth)
-    ctx.translate(-x1 * ratio - lineOffset, -y1 * ratio - lineOffset)
+    let stageRatio = ddInstance.stage.getStageRatio()
+    canvas.setAttribute("width", Math.abs(x2 - x1) * ratio * stageRatio + addWidth)
+    canvas.setAttribute("height", Math.abs(y2 - y1) * ratio * stageRatio + addWidth)
+    ctx.translate(-x1 * ratio * stageRatio - lineOffset, -y1 * ratio * stageRatio - lineOffset)
     models.forEach(item => {
       item.render.drawShape();
     })

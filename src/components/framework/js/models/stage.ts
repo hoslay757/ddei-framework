@@ -155,7 +155,7 @@ class DDeiStage {
      * 获取画布缩放比率
      */
   getStageRatio(): number {
-    let stageRatio = parseFloat(this.ratio) ? this.ratio : 1.0
+    let stageRatio = parseFloat(this.ratio) ? parseFloat(this.ratio) : 1.0
     if (!stageRatio || isNaN(stageRatio)) {
       stageRatio = 1.0
     }

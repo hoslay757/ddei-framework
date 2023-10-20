@@ -1,22 +1,31 @@
 <template>
-  <div id="ddei_editor_topmenu" class="ddei_editor_topmenu" @mousedown="changeEditorFocus">
-    <div id="ddei_editor_topmenu_quickbox" class="ddei_editor_topmenu_quickbox">
-      <div class="ddei_editor_topmenu_quickbox_group" v-show="editor?.maxWidth >= 130">
+  <div id="ddei_editor_topmenu"
+       class="ddei_editor_topmenu"
+       @mousedown="changeEditorFocus">
+    <div id="ddei_editor_topmenu_quickbox"
+         class="ddei_editor_topmenu_quickbox">
+      <div class="ddei_editor_topmenu_quickbox_group"
+           v-show="editor?.maxWidth >= 130">
         <QuickBoxOperate v-if="reFresh"></QuickBoxOperate>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group" v-show="editor?.maxWidth >= 500">
+      <div class="ddei_editor_topmenu_quickbox_group"
+           v-show="editor?.maxWidth >= 500">
         <QuickBoxFontAndText v-if="reFresh"></QuickBoxFontAndText>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group" v-show="editor?.maxWidth >= 700">
+      <div class="ddei_editor_topmenu_quickbox_group"
+           v-show="editor?.maxWidth >= 700">
         <QuickBoxTool v-if="reFresh"></QuickBoxTool>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group" v-show="editor?.maxWidth >= 1000">
+      <div class="ddei_editor_topmenu_quickbox_group"
+           v-show="editor?.maxWidth >= 1000">
         <QuickBoxStyle v-if="reFresh"></QuickBoxStyle>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group" v-show="editor?.maxWidth >= 1300">
+      <div class="ddei_editor_topmenu_quickbox_group"
+           v-show="editor?.maxWidth >= 1300">
         <QuickBoxSort v-if="reFresh"></QuickBoxSort>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group" v-show="editor?.maxWidth >= 1400">
+      <div class="ddei_editor_topmenu_quickbox_group"
+           v-show="editor?.maxWidth >= 1400">
         <QuickBoxChangeShape v-if="reFresh"></QuickBoxChangeShape>
       </div>
       <div class="ddei_editor_topmenu_quickbox_group">
@@ -27,15 +36,15 @@
   </div>
 </template>
 <script lang="ts">
-import QuickBoxOperate from './quickbox/QuickBoxOperate.vue';
-import QuickBoxFontAndText from './quickbox/QuickBoxFontAndText.vue';
-import QuickBoxTool from './quickbox/QuickBoxTool.vue';
-import QuickBoxStyle from './quickbox/QuickBoxStyle.vue';
-import QuickBoxSort from './quickbox/QuickBoxSort.vue';
-import QuickBoxChangeShape from './quickbox/QuickBoxChangeShape.vue';
-import QuickBoxSDP from './quickbox/QuickBoxSDP.vue';
-import DDeiEditor from '../js/editor';
-import DDeiEditorState from '../js/enums/editor-state';
+import QuickBoxOperate from "./quickbox/QuickBoxOperate.vue";
+import QuickBoxFontAndText from "./quickbox/QuickBoxFontAndText.vue";
+import QuickBoxTool from "./quickbox/QuickBoxTool.vue";
+import QuickBoxStyle from "./quickbox/QuickBoxStyle.vue";
+import QuickBoxSort from "./quickbox/QuickBoxSort.vue";
+import QuickBoxChangeShape from "./quickbox/QuickBoxChangeShape.vue";
+import QuickBoxSDP from "./quickbox/QuickBoxSDP.vue";
+import DDeiEditor from "../js/editor";
+import DDeiEditorState from "../js/enums/editor-state";
 
 export default {
   name: "DDei-Editor-TopMenu",
@@ -45,7 +54,7 @@ export default {
   data() {
     return {
       editor: null,
-      reFresh: true
+      reFresh: true,
     };
   },
   //注册组件
@@ -56,37 +65,34 @@ export default {
     QuickBoxStyle,
     QuickBoxSort,
     QuickBoxChangeShape,
-    QuickBoxSDP
+    QuickBoxSDP,
   },
   computed: {},
-  watch: {
-
-  },
+  watch: {},
   created() {
     // 监听obj对象中prop属性的变化
-    this.$watch('editor.currentControlDefine', this.forceRefresh);
+    this.$watch("editor.currentControlDefine", this.forceRefresh);
 
     // 监听obj对象中prop属性的变化
-    this.$watch('editor.refresh', this.forceRefresh);
+    this.$watch("editor.refresh", this.forceRefresh);
   },
   mounted() {
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
   },
   methods: {
-
     forceRefresh(newVal, oldVal) {
-      this.reFresh = false
+      this.reFresh = false;
       this.$nextTick(() => {
-        this.reFresh = true
-      })
+        this.reFresh = true;
+      });
     },
     /**
-    * 焦点进入当前区域
-    */
+     * 焦点进入当前区域
+     */
     changeEditorFocus() {
       this.editor.changeState(DDeiEditorState.TOP_MENU_OPERATING);
     },
-  }
+  },
 };
 </script>
 
@@ -96,7 +102,7 @@ export default {
 }
 
 .ddei_editor_topmenu_quickbox {
-  background-color: #F2F2F7;
+  background-color: #f2f2f7;
   width: 100%;
   height: 100px;
   display: flex;
