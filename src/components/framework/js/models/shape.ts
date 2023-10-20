@@ -458,10 +458,10 @@ abstract class DDeiAbstractShape {
     let x: number = Infinity, y: number = Infinity, x1: number = 0, y1: number = 0;
     //找到最大、最小的x和y
     points.forEach(p => {
-      x = Math.min(Math.floor(p.x), x)
-      x1 = Math.max(Math.floor(p.x), x1)
-      y = Math.min(Math.floor(p.y), y)
-      y1 = Math.max(Math.floor(p.y), y1)
+      x = Math.min(p.x, x)
+      x1 = Math.max(p.x, x1)
+      y = Math.min(p.y, y)
+      y1 = Math.max(p.y, y1)
     })
     return {
       x: x, y: y, width: x1 - x, height: y1 - y, x1: x1, y1: y1
@@ -650,6 +650,20 @@ abstract class DDeiAbstractShape {
 
   // ============================ 方法 ===============================
 
+  /**
+   * 获取画布缩放比率
+   */
+  getStageRatio(): number {
+    if (this.stage) {
+      let stageRatio = parseFloat(this.stage.ratio) ? this.stage.ratio : 1.0
+      if (!stageRatio || isNaN(stageRatio)) {
+        stageRatio = 1.0
+      }
+      return stageRatio
+    } else {
+      return 1.0
+    }
+  }
 
   /**
    * 修改自身状态
@@ -861,11 +875,24 @@ abstract class DDeiAbstractShape {
       pointVectors.push(pv2)
       pointVectors.push(pv3)
       pointVectors.push(pv4)
+
+      //stage级全局缩放
+      let stageRatio = this.getStageRatio();
+      let globalScaleMatrix = new Matrix3(
+        stageRatio, 0, 0,
+        0, stageRatio, 0,
+        0, 0, 1);
+      centerPointVector.applyMatrix3(globalScaleMatrix);
+      pointVectors.forEach(pv => {
+        pv.applyMatrix3(globalScaleMatrix);
+      });
       //记录宽松判定区域的点
       loosePointVectors.push(new Vector3(pv1.x - looseWeight, pv1.y - looseWeight, pv1.z))
       loosePointVectors.push(new Vector3(pv2.x + looseWeight, pv2.y - looseWeight, pv2.z))
       loosePointVectors.push(new Vector3(pv3.x + looseWeight, pv3.y + looseWeight, pv3.z))
       loosePointVectors.push(new Vector3(pv4.x - looseWeight, pv4.y + looseWeight, pv4.z))
+
+
 
 
       this.pointVectors = pointVectors;

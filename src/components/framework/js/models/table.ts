@@ -366,7 +366,17 @@ class DDeiTable extends DDeiAbstractShape {
             item.pointVectors.push(vc3)
             item.pointVectors.push(vc4)
             item.centerPointVector = vc;
-
+            //stage级全局缩放
+            //全局缩放
+            let stageRatio = item.getStageRatio();
+            let globalScaleMatrix = new Matrix3(
+              stageRatio, 0, 0,
+              0, stageRatio, 0,
+              0, 0, 1);
+            item.centerPointVector.applyMatrix3(globalScaleMatrix);
+            item.pointVectors.forEach(pv => {
+              pv.applyMatrix3(globalScaleMatrix);
+            });
             loosePointVectors = []
             //记录宽松判定区域的点
             loosePointVectors.push(new Vector3(vc1.x - looseWeight, vc1.y - looseWeight, vc1.z))

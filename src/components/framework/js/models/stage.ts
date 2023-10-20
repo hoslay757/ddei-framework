@@ -9,7 +9,7 @@ import DDeiUtil from '../util';
  * Stage(舞台),代表一张完整的图像。
  * 每个Stage包含多个Layer（图层），图层上才会承载图像
  */
-//TODO 批量修改模型属性的方法
+//批量修改模型属性的方法
 class DDeiStage {
 
   // ============================ 构造函数 ============================
@@ -21,6 +21,7 @@ class DDeiStage {
     this.unicode = props.unicode ? props.unicode : DDeiUtil.getUniqueCode()
     this.histroy = props.histroy ? props.histroy : [];
     this.histroyIdx = props.histroyIdx || props.histroyIdx == 0 ? props.histroyIdx : -1;
+    this.ratio = props.ratio ? props.ratio : 1.0;
   }
 
   // ============================ 静态变量 ============================
@@ -89,8 +90,12 @@ class DDeiStage {
   //操作日志，用于保存、撤销和恢复
   histroy: object[] = []
   histroyIdx: number = -1;
-
+  //运行时的唯一标识，不会序列化
   unicode: string;
+
+  //当前stage的缩放比率，默认1.0
+  ratio: number = 1.0;
+
   // ============================ 方法 ===============================
   /**
    * 初始化渲染器
@@ -146,6 +151,16 @@ class DDeiStage {
   }
 
 
+  /**
+     * 获取画布缩放比率
+     */
+  getStageRatio(): number {
+    let stageRatio = parseFloat(this.ratio) ? this.ratio : 1.0
+    if (!stageRatio || isNaN(stageRatio)) {
+      stageRatio = 1.0
+    }
+    return stageRatio
+  }
 
 
   /**

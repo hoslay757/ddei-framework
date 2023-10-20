@@ -215,6 +215,7 @@ export default {
         x: 0,
         y: 0,
       };
+
       //设置配置的属性值
       searchPaths.forEach((key) => {
         if (configAtrs.get(key)) {

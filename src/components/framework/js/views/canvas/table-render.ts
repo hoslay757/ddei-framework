@@ -74,7 +74,8 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
 
 
     //获取全局缩放比例
-    let ratio = this.ddRender.ratio;
+    let stageRatio = this.model.getStageRatio()
+    let ratio = this.ddRender.ratio * stageRatio;
     //计算填充的原始区域
     let fillAreaE = this.getFillArea();
     //转换为缩放后的坐标

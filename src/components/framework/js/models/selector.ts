@@ -124,6 +124,12 @@ class DDeiSelector extends DDeiRectangle {
     }
     return ps;
   }
+  /**
+  * 获取画布缩放比率
+  */
+  getStageRatio(): number {
+    return 1.0
+  }
 
   /**
    * 判断图形是否在一个区域内，采用宽松的判定模式，允许传入一个大小值
@@ -188,6 +194,7 @@ class DDeiSelector extends DDeiRectangle {
 
       let pvs = null;
       if (models.length == 1 && models[0].currentPointVectors?.length > 0) {
+
         pvs = cloneDeep(models[0].currentPointVectors);
         this.centerPointVector = models[0].centerPointVector
         this.setBounds(models[0].x, models[0].y, models[0].width, models[0].height);
@@ -215,6 +222,7 @@ class DDeiSelector extends DDeiRectangle {
         this.rotate = 0;
       }
 
+      console.log(this.id + "选择器：" + this.centerPointVector.x + " .  " + pvs[0].x)
       this.currentPointVectors = pvs;
       this.calRotateOperateVectors();
 

@@ -114,7 +114,8 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
    */
   getBorderRatPos() {
     //获取全局缩放比例
-    let ratio = this.ddRender.ratio;
+    let stageRatio = this.model.getStageRatio()
+    let ratio = this.ddRender.ratio * stageRatio;
     let absBounds = this.model.getAbsBounds();
     return DDeiUtil.getRatioPosition(absBounds, ratio);
   }
@@ -158,7 +159,8 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
-    let ratio = this.ddRender.ratio;
+    let stageRatio = this.model.getStageRatio()
+    let ratio = this.ddRender.ratio * stageRatio;
     //转换为缩放后的坐标
     let ratPos = this.getBorderRatPos();
 
@@ -247,7 +249,11 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
       //获取全局缩放比例
-      let ratio = this.ddRender.ratio;
+      let stageRatio = parseFloat(this.stage.ratio) ? this.stage.ratio : 1.0
+      if (!stageRatio || isNaN(stageRatio)) {
+        stageRatio = 1.0
+      }
+      let ratio = this.ddRender.ratio * stageRatio;
       //计算填充的原始区域
       let fillAreaE = this.getFillArea();
       //转换为缩放后的坐标
@@ -280,7 +286,8 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
-    let ratio = this.ddRender.ratio;
+    let stageRatio = this.model.getStageRatio()
+    let ratio = this.ddRender.ratio * stageRatio;
     //计算填充的原始区域
     let fillAreaE = this.getFillArea();
     //转换为缩放后的坐标
@@ -320,7 +327,8 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
-    let ratio = this.ddRender.ratio;
+    let stageRatio = this.model.getStageRatio()
+    let ratio = this.ddRender.ratio * stageRatio;
     //计算填充的原始区域
     let fillAreaE = this.getFillArea();
     //转换为缩放后的坐标

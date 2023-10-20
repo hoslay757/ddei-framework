@@ -64,7 +64,7 @@
       <div class="ddei_editor_bottommenu_other_changesize">
         <div class="ddei_editor_bottommenu_other_changesize_combox">
           <span>
-            100%
+            {{parseInt(currentStage?.ratio * 100)}}%
           </span>
           <img style="width:8px;height:8px;margin-top:9px;"
                width="8px"
@@ -75,9 +75,10 @@
           <img src="../icons/icon-reduce.png" />
         </div>
         <input type="range"
-               min="0"
-               max="400"
-               value="100" />
+               min="0.1"
+               max="4"
+               step="0.1"
+               v-model="currentStage.ratio" />
         <div>
           <img src="../icons/icon-add.png" />
         </div>
@@ -111,6 +112,8 @@ export default {
       openIndex: 0,
       //最大可以打开的数量
       maxOpenSize: 1,
+      //当前stage
+      currentStage: {},
     };
   },
   computed: {},
@@ -124,12 +127,29 @@ export default {
       }
       this.maxOpenSize = size;
     });
+    // 监听obj对象中prop属性的变化
+    this.$watch("currentStage.ratio", function (newVal, oldVal) {
+      this.changeRatio();
+    });
   },
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
+    let file = this.editor?.files[this.editor?.currentFileIndex];
+    let sheet = file?.sheets[file?.currentSheetIndex];
+    this.currentStage = sheet.stage;
   },
   methods: {
+    /**
+     * 修改当前的全局缩放比率
+     */
+    changeRatio() {
+      if (this.currentStage.ratio || this.currentStage.ratio == 0) {
+        this.editor?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, null);
+        this.editor?.bus?.executeAll();
+      }
+    },
+
     /**
      * 在存在显示隐藏的情况下移动tab
      */
@@ -170,6 +190,7 @@ export default {
         file.changeSheet(sheets.length - 1);
         //刷新页面
         ddInstance.stage = stage;
+        this.currentStage = stage;
         //加载场景渲染器
         stage.initRender();
 
@@ -205,6 +226,7 @@ export default {
         stage.ddInstance = ddInstance;
         //刷新页面
         ddInstance.stage = stage;
+        this.currentStage = stage;
         //加载场景渲染器
         stage.initRender();
         ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, null);
@@ -453,9 +475,13 @@ export default {
   padding-right: 5px;
 }
 
+.ddei_editor_bottommenu_other_changesize_combox {
+  width: 60px;
+}
 .ddei_editor_bottommenu_other_changesize_combox:hover {
   background-color: rgb(235, 235, 235);
   float: left;
+
   padding-left: 5px;
   padding-right: 5px;
   cursor: pointer;

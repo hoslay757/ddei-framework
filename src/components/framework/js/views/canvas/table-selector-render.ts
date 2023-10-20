@@ -38,7 +38,8 @@ class DDeiTableSelectorCanvasRender extends DDeiSelectorCanvasRender {
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
-    let ratio = this.ddRender.ratio;
+    let stageRatio = this.model.getStageRatio()
+    let ratio = this.ddRender.ratio * stageRatio;
 
     //缩放填充区域
     //保存状态
@@ -149,7 +150,8 @@ class DDeiTableSelectorCanvasRender extends DDeiSelectorCanvasRender {
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
-    let ratio = this.ddRender.ratio;
+    let stageRatio = this.model.getStageRatio()
+    let ratio = this.ddRender.ratio * stageRatio;
     //转换为缩放后的坐标
     let ratPos = this.getBorderRatPos();
 

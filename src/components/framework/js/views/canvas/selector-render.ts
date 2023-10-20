@@ -63,6 +63,10 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
+    let stageRatio = parseFloat(this.stage.ratio) ? this.stage.ratio : 1.0
+    if (!stageRatio || isNaN(stageRatio)) {
+      stageRatio = 1.0
+    }
     let ratio = this.ddRender.ratio;
     //保存状态
     ctx.save();

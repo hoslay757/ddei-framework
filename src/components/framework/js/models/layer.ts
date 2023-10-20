@@ -1,5 +1,4 @@
 import DDeiConfig, { MODEL_CLS } from '../config'
-import DDei from '../ddei';
 import DDeiEnumControlState from '../enums/control-state';
 import DDeiUtil from '../util';
 import DDeiAbstractShape from './shape';
@@ -109,6 +108,21 @@ class DDeiLayer {
     this.models.forEach((item, key) => {
       item.initRender()
     });
+  }
+
+  /**
+   * 获取画布缩放比率
+   */
+  getStageRatio(): number {
+    if (this.stage) {
+      let stageRatio = parseFloat(this.stage.ratio) ? this.stage.ratio : 1.0
+      if (!stageRatio || isNaN(stageRatio)) {
+        stageRatio = 1.0
+      }
+      return stageRatio
+    } else {
+      return 1.0
+    }
   }
 
   /**

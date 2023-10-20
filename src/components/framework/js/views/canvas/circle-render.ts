@@ -33,7 +33,8 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
-    let ratio = this.ddRender.ratio;
+    let stageRatio = this.model.getStageRatio()
+    let ratio = this.ddRender.ratio * stageRatio;
     //转换为缩放后的坐标
     let ratPos = this.getBorderRatPos();
 
@@ -93,6 +94,7 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
 
 
 
+
   /**
    * 绘制填充
    */
@@ -101,7 +103,8 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
-    let ratio = this.ddRender.ratio;
+    let stageRatio = this.model.getStageRatio()
+    let ratio = this.ddRender.ratio * stageRatio;
     //计算填充的原始区域
     let fillAreaE = this.getFillArea();
     //转换为缩放后的坐标
@@ -142,7 +145,8 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
       //获取全局缩放比例
-      let ratio = this.ddRender.ratio;
+      let stageRatio = this.model.getStageRatio()
+      let ratio = this.ddRender.ratio * stageRatio;
       //计算填充的原始区域
       let fillAreaE = this.getFillArea();
       //转换为缩放后的坐标
@@ -176,7 +180,8 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
-    let ratio = this.ddRender.ratio;
+    let stageRatio = this.model.getStageRatio()
+    let ratio = this.ddRender.ratio * stageRatio;
     //计算填充的原始区域
     let fillAreaE = this.getFillArea();
     //转换为缩放后的坐标
@@ -433,7 +438,8 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
    */
   getTextArea(fillArea: object | null, fInfo: object | null): object {
     //获取全局缩放比例
-    let ratio = this.ddRender.ratio;
+    let stageRatio = this.model.getStageRatio()
+    let ratio = this.ddRender.ratio * stageRatio;
     if (!fillArea) {
       fillArea = this.getFillArea();
       fillArea = DDeiUtil.getRatioPosition(fillArea, ratio);

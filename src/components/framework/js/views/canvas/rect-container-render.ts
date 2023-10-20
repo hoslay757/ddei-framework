@@ -34,7 +34,8 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
     //保存状态
     ctx.save();
     //获取全局缩放比例
-    let ratio = this.ddRender.ratio;
+    let stageRatio = this.model.getStageRatio()
+    let ratio = this.ddRender.ratio * stageRatio;
 
     //设置旋转，以确保子图形元素都被旋转
     this.doRotate(ctx, ratPos);
@@ -61,7 +62,11 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
       //获取全局缩放比例
-      let ratio = this.ddRender.ratio;
+      let stageRatio = parseFloat(this.stage.ratio) ? this.stage.ratio : 1.0
+      if (!stageRatio || isNaN(stageRatio)) {
+        stageRatio = 1.0
+      }
+      let ratio = this.ddRender.ratio * stageRatio;
       let lineOffset = 1 * ratio / 2;
       let areaPVSNoRotated = this.model.layoutManager.getAreasPVS(false);
       let areaPVS = this.model.layoutManager.getAreasPVS();

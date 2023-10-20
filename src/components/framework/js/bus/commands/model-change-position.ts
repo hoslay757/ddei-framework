@@ -59,7 +59,8 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
       let models = data.models;
       let parentContainer = data?.models[0].pModel;
       let stage = bus.ddInstance.stage;
-      //如果当前控件的父控件存在旋转，则需要换算成未旋转时的移动量
+      //全局缩放
+      let stageRatio = parseFloat(stage.getStageRatio())
       x = x + dx;
       y = y + dy;
       let cx = 0;
@@ -96,8 +97,9 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
         parentContainer?.layoutManager?.calDragOutPVS(data.x, data.y, models);
         parentContainer?.layoutManager?.calDragInPVS(data.x, data.y, models);
       }
-      //计算外接矩形
+      //计算外接矩形,未缩放的量和缩放的量
       let originRect: object = null;
+      let originRectScale: object = null;
       if (selector) {
         originRect = selector.getAbsBounds();
         let paddingWeightInfo = selector.paddingWeight?.selected ? selector.paddingWeight.selected : DDeiConfig.SELECTOR.PADDING_WEIGHT.selected;
@@ -113,6 +115,8 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
         originRect.height = originRect.height - 2 * paddingWeight;
       } else {
         originRect = DDeiAbstractShape.getOutRect(models);
+        //通过向量获取的是缩放后的量，通过坐标获取的是未缩放的量
+        originRectScale = DDeiAbstractShape.getOutRectByPV(models)
       }
 
       //记录每一个图形在原始矩形中的比例
@@ -130,13 +134,14 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
       }
 
       //考虑paddingWeight，计算预先实际移动后的区域
-      let movedBounds = { x: x - originRect.width / 2, y: y - originRect.height / 2, width: originRect.width, height: originRect.height }
-
+      let movedBounds = { x: x - originRectScale.width / 2, y: y - originRectScale.height / 2, width: originRectScale.width, height: originRectScale.height }
+      console.log("origin坐标：" + " .  " + originRect.x + " .  " + originRect.width + " .  scale坐标：" + " .  " + originRectScale.x + " .  " + originRectScale.width)
+      console.log("鼠标坐标：" + x + " .  移动后：" + movedBounds.x + " .  " + movedBounds.width + " .  cx:" + cx)
       models.forEach(item => {
-        let x = parseFloat((movedBounds.x - cx + movedBounds.width * originPosMap.get(item.id).xR).toFixed(4))
-        let width = parseFloat((movedBounds.width * originPosMap.get(item.id).wR).toFixed(4))
-        let y = parseFloat((movedBounds.y - cy + movedBounds.height * originPosMap.get(item.id).yR).toFixed(4))
-        let height = parseFloat((movedBounds.height * originPosMap.get(item.id).hR).toFixed(4))
+        let x = parseFloat(((movedBounds.x - cx + movedBounds.width * originPosMap.get(item.id).xR) / stageRatio).toFixed(4))
+        let width = parseFloat(((movedBounds.width * originPosMap.get(item.id).wR) / stageRatio).toFixed(4))
+        let y = parseFloat(((movedBounds.y - cy + movedBounds.height * originPosMap.get(item.id).yR) / stageRatio).toFixed(4))
+        let height = parseFloat(((movedBounds.height * originPosMap.get(item.id).hR) / stageRatio).toFixed(4))
         item.setBounds(x, y, width, height)
       })
 

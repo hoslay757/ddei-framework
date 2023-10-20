@@ -113,7 +113,8 @@ class DDeiLayerCanvasRender {
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
-    let ratio = this.ddRender.ratio;
+    let stageRatio = this.model.getStageRatio()
+    let ratio = this.ddRender.ratio * stageRatio;
     //保存状态
     ctx.save();
 
@@ -259,7 +260,7 @@ class DDeiLayerCanvasRender {
       //获得 2d 上下文对象
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
-      //获取全局缩放比例
+
       let ratio = this.ddRender.ratio;
       //保存状态
       ctx.save();
@@ -289,7 +290,6 @@ class DDeiLayerCanvasRender {
       //获得 2d 上下文对象
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
-      //获取全局缩放比例
       let ratio = this.ddRender.ratio;
       //保存状态
       ctx.save();
@@ -402,7 +402,11 @@ class DDeiLayerCanvasRender {
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
       //获取全局缩放比例
-      let ratio = this.ddRender.ratio;
+      let stageRatio = parseFloat(this.stage.ratio) ? this.stage.ratio : 1.0
+      if (!stageRatio || isNaN(stageRatio)) {
+        stageRatio = 1.0
+      }
+      let ratio = this.ddRender.ratio * stageRatio;
       //保存状态
       ctx.save();
       //绘制提示文本
@@ -886,7 +890,7 @@ class DDeiLayerCanvasRender {
         } else {
           centerPointVector = this.stageRender.currentOperateShape?.centerPointVector;
         }
-
+        let stageRatio = this.model.getStageRatio();
         //记录当前的拖拽的x,y,写入dragObj作为临时变量
         let dragObj = {
           x: evt.offsetX,
