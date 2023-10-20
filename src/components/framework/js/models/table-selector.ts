@@ -57,6 +57,21 @@ class DDeiTableSelector extends DDeiSelector {
   //当前选择器所在的表格
   table: DDeiTable;
   // ============================ 方法 ===============================
+
+  /**
+   * 获取画布缩放比率
+   */
+  getStageRatio(): number {
+    if (this.stage) {
+      let stageRatio = parseFloat(this.stage.ratio) ? this.stage.ratio : 1.0
+      if (!stageRatio || isNaN(stageRatio)) {
+        stageRatio = 1.0
+      }
+      return stageRatio
+    } else {
+      return 1.0
+    }
+  }
 }
 
 
