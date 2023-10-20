@@ -1,7 +1,8 @@
+import DDeiConfig from "@/components/framework/js/config";
 import DDei from "@/components/framework/js/ddei";
 import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type";
 import DDeiUtil from "@/components/framework/js/util";
-import { styles } from "../../configs/controls/circle";
+import { Matrix3, Vector3 } from 'three';
 import DDeiEditor from "../editor";
 import DDeiEditorState from "../enums/editor-state";
 import DDeiKeyAction from "./key-action";
@@ -55,18 +56,50 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
             inputEle.style.display = "none";
             inputEle.style.left = "0px";
             inputEle.style.top = "0px";
+            inputEle.style.transform = "";
             inputEle.value = "";
             editor.bus?.executeAll();
             editor.changeState(DDeiEditorState.DESIGNING);
           }
         }
+        let rotate = model.getAbsRotate()
+        let stageRatio = ddInstance.stage.getStageRatio();
+        let pos = new Vector3(fillArea.x * stageRatio, fillArea.y * stageRatio, 1)
+        if (rotate != 0) {
+          let pv1Pos = model.currentPointVectors[0];
+          let modelAbsPos = model.getAbsPosition()
+          let dx = (fillArea.x - modelAbsPos.x) * stageRatio
+          let dy = (fillArea.y - modelAbsPos.y) * stageRatio
+          pos.x = pv1Pos.x + dx
+          pos.y = pv1Pos.y + dy
+          let pvc = new Vector3(model.centerPointVector.x + dx, model.centerPointVector.y + dy, 1);
+          let angle = (rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+          //计算input的正确打开位置，由节点0
+          let move1Matrix = new Matrix3(
+            1, 0, -pvc.x,
+            0, 1, -pvc.y,
+            0, 0, 1);
+          let rotateMatrix = new Matrix3(
+            Math.cos(angle), Math.sin(angle), 0,
+            -Math.sin(angle), Math.cos(angle), 0,
+            0, 0, 1);
+          let move2Matrix = new Matrix3(
+            1, 0, pvc.x,
+            0, 1, pvc.y,
+            0, 0, 1);
+          let m1 = new Matrix3().premultiply(move1Matrix).premultiply(rotateMatrix).premultiply(move2Matrix);
+          pos.applyMatrix3(m1)
+        }
+
         inputEle.value = model.text ? model.text : ''
-        inputEle.style.fontSize = model.render.getCachedValue("font.size") + "px"
+        inputEle.style.fontSize = (model.render.getCachedValue("font.size") * stageRatio) + "px"
         inputEle.style.color = DDeiUtil.getColor(model.render.getCachedValue("font.color"))
-        inputEle.style.width = fillArea.width - 1 + "px";
-        inputEle.style.height = fillArea.height - 1 + "px";
-        inputEle.style.left = canvasPos.left + fillArea.x + 1 + "px";
-        inputEle.style.top = canvasPos.top + fillArea.y + 1 + "px";
+        inputEle.style.width = (fillArea.width - 1) * stageRatio + "px";
+        inputEle.style.height = (fillArea.height - 1) * stageRatio + "px";
+        inputEle.style.left = canvasPos.left + pos.x + 1 + "px";
+        inputEle.style.top = canvasPos.top + pos.y + 1 + "px";
+        inputEle.style.transform = "rotate(" + rotate + "deg)";
+        inputEle.style.backgroundColor = "red"
         inputEle.style.display = "block";
         inputEle.focus()
 
