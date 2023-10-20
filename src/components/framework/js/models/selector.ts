@@ -94,19 +94,29 @@ class DDeiSelector extends DDeiRectangle {
   getIncludedModels(): Map<string, DDeiAbstractShape> {
     //选中选择器区域内控件
     let selectBounds = this.getBounds();
+    let looseWeight = 2;
+    selectBounds.x -= looseWeight
+    selectBounds.y -= looseWeight
+    selectBounds.x1 += 2 * looseWeight
+    selectBounds.y1 += 2 * looseWeight
     let models = new Map();
     this.stage.layers[this.stage.layerIndex].models.forEach((item, key) => {
       //实际区域减小一定百分比，宽松选择
-      let curModel = item;
-      if (curModel.id != this.id) {
-        let x = curModel.x + curModel.width * 0.1;
-        let y = curModel.y + curModel.height * 0.1;
-        let x1 = curModel.x + curModel.width * 0.9;
-        let y1 = curModel.y + curModel.height * 0.9;
-        //如果控件在选择区域内，选中控件
-        if (selectBounds.x <= x && selectBounds.y < y
-          && selectBounds.x1 >= x1 && selectBounds.y1 >= y1) {
-          models.set(curModel.id, curModel);
+      if (item.id != this.id) {
+        let pvs = item.currentPointVectors;
+        //在框内的向量点数量
+        let inRectNum = 0;
+        pvs.forEach(pv => {
+          //如果控件在选择区域内，选中控件
+          if (selectBounds.x <= pv.x && selectBounds.y < pv.y
+            && selectBounds.x1 >= pv.x && selectBounds.y1 >= pv.y) {
+            inRectNum++
+          }
+        });
+        if (pvs.length > 3 && inRectNum >= pvs.length - 1) {
+          models.set(item.id, item)
+        } else if (inRectNum == pvs.length) {
+          models.set(item.id, item)
         }
       }
     });
