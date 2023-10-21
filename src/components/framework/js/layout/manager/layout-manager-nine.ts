@@ -276,14 +276,15 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
    * 获取切分区域的点，超出区域的范围不会显示内容
    */
   getAreasPVS(rotated: boolean = true): object[][] {
+    let stageRatio = this.container?.getStageRatio();
     let absPos = this.container?.getAbsBounds();
-    let vc1 = new Vector3(absPos.x, absPos.y, 1);
-    let vc2 = new Vector3(absPos.x1, absPos.y, 1);
-    let vc3 = new Vector3(absPos.x1, absPos.y1, 1);
-    let vc4 = new Vector3(absPos.x, absPos.y1, 1);
+    let vc1 = new Vector3(absPos.x * stageRatio, absPos.y * stageRatio, 1);
+    let vc2 = new Vector3(absPos.x1 * stageRatio, absPos.y * stageRatio, 1);
+    let vc3 = new Vector3(absPos.x1 * stageRatio, absPos.y1 * stageRatio, 1);
+    let vc4 = new Vector3(absPos.x * stageRatio, absPos.y1 * stageRatio, 1);
 
-    let unitWidth = this.container.width / 3;
-    let unitHeight = this.container.height / 3;
+    let unitWidth = this.container.width * stageRatio / 3;
+    let unitHeight = this.container.height * stageRatio / 3;
     //计算外部的点
     let p11 = new Vector3(vc1.x, vc1.y, 1);
     let p12 = new Vector3(vc1.x + unitWidth, vc1.y, 1)

@@ -120,11 +120,12 @@ abstract class DDeiLayoutManager {
     if (rotated) {
       return [this.container.currentPointVectors];
     } else {
+      let stageRatio = this.container?.getStageRatio();
       let absPos = this.container?.getAbsBounds();
-      let vc1 = new Vector3(absPos.x, absPos.y, 1);
-      let vc2 = new Vector3(absPos.x1, absPos.y, 1);
-      let vc3 = new Vector3(absPos.x1, absPos.y1, 1);
-      let vc4 = new Vector3(absPos.x, absPos.y1, 1);
+      let vc1 = new Vector3(absPos.x * stageRatio, absPos.y * stageRatio, 1);
+      let vc2 = new Vector3(absPos.x1 * stageRatio, absPos.y * stageRatio, 1);
+      let vc3 = new Vector3(absPos.x1 * stageRatio, absPos.y1 * stageRatio, 1);
+      let vc4 = new Vector3(absPos.x * stageRatio, absPos.y1 * stageRatio, 1);
       return [[vc1, vc2, vc3, vc4]]
     }
   }

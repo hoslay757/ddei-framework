@@ -62,11 +62,7 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
       //获取全局缩放比例
-      let stageRatio = parseFloat(this.stage.ratio) ? this.stage.ratio : 1.0
-      if (!stageRatio || isNaN(stageRatio)) {
-        stageRatio = 1.0
-      }
-      let ratio = this.ddRender.ratio * stageRatio;
+      let ratio = this.ddRender.ratio;
       let lineOffset = 1 * ratio / 2;
       let areaPVSNoRotated = this.model.layoutManager.getAreasPVS(false);
       let areaPVS = this.model.layoutManager.getAreasPVS();
