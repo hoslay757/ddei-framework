@@ -988,7 +988,10 @@ class DDeiLayerCanvasRender {
         let movedBounds = this.stageRender.selector.render.getMovedBounds(evt.offsetX, evt.offsetY, isCtrl);
         if (movedBounds) {
           let selector = this.stageRender.selector;
-          let pushData = { x: evt.offsetX, y: evt.offsetY, dx: this.stageRender.dragObj.dx, dy: this.stageRender.dragObj.dy, deltaX: movedBounds.x - selector.x, deltaY: movedBounds.y - selector.y, deltaWidth: movedBounds.width - selector.width, deltaHeight: movedBounds.height - selector.height, selector: selector, models: this.model.shadowControls };
+          //除以缩放比例
+          let stageRatio = this.stage.getStageRatio()
+
+          let pushData = { x: evt.offsetX, y: evt.offsetY, deltaX: movedBounds.x - selector.x * stageRatio, deltaY: movedBounds.y - selector.y * stageRatio, deltaWidth: movedBounds.width - selector.width * stageRatio, deltaHeight: movedBounds.height - selector.height * stageRatio, selector: selector, models: this.model.shadowControls };
           this.model.opPoints = [];
           //更新dragObj临时变量中的数值,确保坐标对应关系一致
           //修改所有选中控件坐标

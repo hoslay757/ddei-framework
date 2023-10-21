@@ -201,34 +201,28 @@ class DDeiSelector extends DDeiRectangle {
         paddingWeight = paddingWeightInfo.single;
       }
       //计算多个图形的顶点最大范围，根据顶点范围构建一个最大的外接矩形，规则的外接矩形，可以看作由4个顶点构成的图形
-
       let pvs = null;
       if (models.length == 1 && models[0].currentPointVectors?.length > 0) {
-
         pvs = cloneDeep(models[0].currentPointVectors);
         this.centerPointVector = models[0].centerPointVector
+        //大小为0时，直接采用model的大小，因此不考虑缩放
         this.setBounds(models[0].x, models[0].y, models[0].width, models[0].height);
         this.rotate = models[0].getAbsRotate();
       } else {
+        //控件大小大大于0时，由于通过向量获取大小，因此需要还原缩放
         let outRectBounds = DDeiAbstractShape.getOutRectByPV(models);
         pvs = DDeiAbstractShape.getOutPV(models);
-        let paddingWeight = 0;
-        let paddingWeightInfo = this.paddingWeight?.selected ? this.paddingWeight.selected : DDeiConfig.SELECTOR.PADDING_WEIGHT.selected;
-        if (models.length > 1) {
-          paddingWeight = paddingWeightInfo.multiple;
-        } else {
-          paddingWeight = paddingWeightInfo.single;
-        }
-        pvs[0].x -= paddingWeight
-        pvs[0].y -= paddingWeight
-        pvs[1].x += paddingWeight
-        pvs[1].y -= paddingWeight
-        pvs[2].x += paddingWeight
-        pvs[2].y += paddingWeight
-        pvs[3].x -= paddingWeight
-        pvs[3].y += paddingWeight
+        let stageRatio = this.stage.getStageRatio()
+        pvs[0].x -= paddingWeight * stageRatio
+        pvs[0].y -= paddingWeight * stageRatio
+        pvs[1].x += paddingWeight * stageRatio
+        pvs[1].y -= paddingWeight * stageRatio
+        pvs[2].x += paddingWeight * stageRatio
+        pvs[2].y += paddingWeight * stageRatio
+        pvs[3].x -= paddingWeight * stageRatio
+        pvs[3].y += paddingWeight * stageRatio
         this.centerPointVector = { x: outRectBounds.x + outRectBounds.width / 2, y: outRectBounds.y + outRectBounds.height / 2, z: 1 };
-        this.setBounds(outRectBounds.x - paddingWeight, outRectBounds.y - paddingWeight, outRectBounds.width + 2 * paddingWeight, outRectBounds.height + 2 * paddingWeight);
+        this.setBounds(outRectBounds.x / stageRatio - paddingWeight, outRectBounds.y / stageRatio - paddingWeight, outRectBounds.width / stageRatio + 2 * paddingWeight, outRectBounds.height / stageRatio + 2 * paddingWeight);
         this.rotate = 0;
       }
 

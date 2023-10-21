@@ -370,7 +370,8 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
   * @param er 是否等比
   */
   getMovedBounds(x: number, y: number, er: boolean = false): object {
-    let returnBounds = { x: this.model.x, y: this.model.y, width: this.model.width, height: this.model.height }
+    let stageRatio = this.stage?.getStageRatio();
+    let returnBounds = { x: this.model.x * stageRatio, y: this.model.y * stageRatio, width: this.model.width * stageRatio, height: this.model.height * stageRatio }
     //中心点
     let centerPointVector = this.model.centerPointVector;
     //旋转角度
@@ -402,6 +403,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       case 3: {
         let dx = x - centerPointVector.x - returnBounds.width / 2
         returnBounds.width = returnBounds.width + dx
+
         if (er) {
           returnBounds.y = returnBounds.y - (dx / wbh / 2)
           returnBounds.height = returnBounds.height + (dx / wbh)

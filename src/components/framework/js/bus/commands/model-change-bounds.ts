@@ -85,6 +85,12 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
       let models = data.models;
       let parentContainer = data?.models[0].pModel;
       let stage = bus.ddInstance.stage;
+      //除以缩放比例
+      let stageRatio = stage?.getStageRatio()
+      deltaWidth = deltaWidth / stageRatio
+      deltaHeight = deltaHeight / stageRatio
+      deltaX = deltaX / stageRatio
+      deltaY = deltaY / stageRatio
       //如果当前控件的父控件存在旋转，则需要换算成未旋转时的移动量
       let cx = 0;
       let cy = 0;
@@ -95,7 +101,6 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
 
       //计算外接矩形
       let originRect: object = null;
-
       if (selector) {
         originRect = selector.getAbsBounds();
         let paddingWeightInfo = selector.paddingWeight?.selected ? selector.paddingWeight.selected : DDeiConfig.SELECTOR.PADDING_WEIGHT.selected;
@@ -105,6 +110,7 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
         } else {
           paddingWeight = paddingWeightInfo.single;
         }
+        //当存在多个控件选中时，采用去掉selector周围多出来的空间，再进行计算
         originRect.x = originRect.x + paddingWeight;
         originRect.y = originRect.y + paddingWeight;
         originRect.width = originRect.width - 2 * paddingWeight;
@@ -122,6 +128,7 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
         if (item.id.indexOf("_shadow") != -1) {
           item = stage?.getModelById(item.id.substring(0, item.id.lastIndexOf("_shadow")));
         }
+
         originPosMap.set(id, {
           xR: ((item.x - originRect.x) / originRect.width),
           yR: ((item.y - originRect.y) / originRect.height),
@@ -130,6 +137,8 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
         });
       }
       //考虑paddingWeight，计算预先实际移动后的区域
+
+      console.log(models[0].x + " .  " + originRect.x + " .  " + originPosMap.get(models[0].id).xR)
       let movedBounds = { x: originRect.x + deltaX, y: originRect.y + deltaY, width: originRect.width + deltaWidth, height: originRect.height + deltaHeight }
       models.forEach(item => {
         let originBound = { x: item.x, y: item.y, width: item.width, height: item.height };

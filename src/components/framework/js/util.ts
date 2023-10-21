@@ -398,6 +398,16 @@ class DDeiUtil {
   }
 
   /**
+   * 四舍五入保留小数
+   * @param number 原始数字
+   * @param pos 小数位数
+   */
+  static round(number: number, pos: number = 0): number {
+    let n = number.toFixed(pos)
+    return parseFloat(n);
+  }
+
+  /**
    * 对坐标以及大小进行缩放，并返回新的坐标
    * @param pos 原始位置
    * @param ratio 缩放比率
