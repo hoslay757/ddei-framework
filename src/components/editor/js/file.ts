@@ -88,7 +88,6 @@ class DDeiFile {
    * @param layerIndex 图层下标
    */
   addHistroy(data: object) {
-    console.log(this.histroy.length)
     //抛弃后面的记录
     if (this.histroyIdx == -1) {
       this.histroy = this.histroy.slice(0, 1)

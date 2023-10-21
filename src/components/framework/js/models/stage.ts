@@ -328,26 +328,25 @@ class DDeiStage {
       verticalCenterAlignModels: []
     }
 
+    // 排除源模型
+    if (souceModels.set) {
+      souceModels = Array.from(souceModels.values());
+    }
+    let sourceModelKeys = [];
+    for (let k = 0; k < souceModels.length; k++) {
+      sourceModelKeys.push(souceModels[k].id)
+    }
     // 计算每个模型与位置的关系
     let sourceP = bounds;
     let distP
+
     this.getLayerModels().forEach(model => {
-      // 排除源模型
-      if (souceModels.set) {
-        souceModels = Array.from(souceModels.values());
-      }
-      let find = false;
-      for (let k = 0; k < souceModels.length; k++) {
-        if (souceModels[k]?.id == model.id) {
-          find = true;
-          break;
-        }
-      }
-      if (find) {
+      //在源控件中存在就推出不作判断
+      if (sourceModelKeys.indexOf(model.id) != -1) {
         return;
       }
-
       distP = { x: model.x, y: model.y, width: model.width, height: model.height }
+
       if (DDeiAbstractShape.isLeftAlign(sourceP, distP)) {
         models.leftAlignModels.push(model)
       }

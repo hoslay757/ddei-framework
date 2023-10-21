@@ -135,8 +135,6 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
 
       //考虑paddingWeight，计算预先实际移动后的区域
       let movedBounds = { x: x - originRectScale.width / 2, y: y - originRectScale.height / 2, width: originRectScale.width, height: originRectScale.height }
-      console.log("origin坐标：" + " .  " + originRect.x + " .  " + originRect.width + " .  scale坐标：" + " .  " + originRectScale.x + " .  " + originRectScale.width)
-      console.log("鼠标坐标：" + x + " .  移动后：" + movedBounds.x + " .  " + movedBounds.width + " .  cx:" + cx)
       models.forEach(item => {
         let x = parseFloat(((movedBounds.x - cx + movedBounds.width * originPosMap.get(item.id).xR) / stageRatio).toFixed(4))
         let width = parseFloat(((movedBounds.width * originPosMap.get(item.id).wR) / stageRatio).toFixed(4))

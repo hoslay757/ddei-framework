@@ -320,7 +320,7 @@ abstract class DDeiAbstractShape {
      * @returns
      */
   static isLeftAlign(sourceP, distP): boolean {
-    return sourceP.x === distP.x || sourceP.x === distP.x + distP.width
+    return Math.floor(sourceP.x) === Math.floor(distP.x) || Math.floor(sourceP.x) === Math.floor(distP.x + distP.width)
   }
 
   /**
@@ -331,7 +331,7 @@ abstract class DDeiAbstractShape {
    * @returns
    */
   static isRightAlign(sourceP, distP): boolean {
-    return sourceP.x + sourceP.width === distP.x || sourceP.x + sourceP.width === distP.x + distP.width
+    return Math.floor(sourceP.x + sourceP.width) === Math.floor(distP.x) || Math.floor(sourceP.x + sourceP.width) === Math.floor(distP.x + distP.width)
   }
 
   /**
@@ -342,7 +342,7 @@ abstract class DDeiAbstractShape {
    * @returns
    */
   static isTopAlign(sourceP, distP): boolean {
-    return sourceP.y === distP.y || sourceP.y === distP.y + distP.height
+    return Math.floor(sourceP.y) === Math.floor(distP.y) || Math.floor(sourceP.y) === Math.floor(distP.y + distP.height)
   }
 
   /**
@@ -353,7 +353,7 @@ abstract class DDeiAbstractShape {
    * @returns
    */
   static isBottomAlign(sourceP, distP): boolean {
-    return sourceP.y + sourceP.height === distP.y || sourceP.y + sourceP.height === distP.y + distP.height
+    return Math.floor(sourceP.y + sourceP.height) === Math.floor(distP.y) || Math.floor(sourceP.y + sourceP.height) === Math.floor(distP.y + distP.height)
   }
 
   /**
@@ -363,7 +363,7 @@ abstract class DDeiAbstractShape {
    * @returns true/false
    */
   static isHorizontalCenterAlign(sourceP, distP): boolean {
-    return sourceP.y + sourceP.height / 2 === distP.y + distP.height / 2
+    return Math.floor(sourceP.y + sourceP.height / 2) === Math.floor(distP.y + distP.height / 2)
   }
 
   /**

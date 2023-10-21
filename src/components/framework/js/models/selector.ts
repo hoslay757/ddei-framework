@@ -232,7 +232,6 @@ class DDeiSelector extends DDeiRectangle {
         this.rotate = 0;
       }
 
-      console.log(this.id + "选择器：" + this.centerPointVector.x + " .  " + pvs[0].x)
       this.currentPointVectors = pvs;
       this.calRotateOperateVectors();
 
