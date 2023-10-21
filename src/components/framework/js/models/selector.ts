@@ -209,6 +209,7 @@ class DDeiSelector extends DDeiRectangle {
         this.setBounds(models[0].x, models[0].y, models[0].width, models[0].height);
         this.rotate = models[0].getAbsRotate();
       } else {
+        let parentAbs = models[0].pModel.getAbsPosition()
         //控件大小大大于0时，由于通过向量获取大小，因此需要还原缩放
         let outRectBounds = DDeiAbstractShape.getOutRectByPV(models);
         pvs = DDeiAbstractShape.getOutPV(models);
@@ -222,7 +223,7 @@ class DDeiSelector extends DDeiRectangle {
         pvs[3].x -= paddingWeight * stageRatio
         pvs[3].y += paddingWeight * stageRatio
         this.centerPointVector = { x: outRectBounds.x + outRectBounds.width / 2, y: outRectBounds.y + outRectBounds.height / 2, z: 1 };
-        this.setBounds(outRectBounds.x / stageRatio - paddingWeight, outRectBounds.y / stageRatio - paddingWeight, outRectBounds.width / stageRatio + 2 * paddingWeight, outRectBounds.height / stageRatio + 2 * paddingWeight);
+        this.setBounds(outRectBounds.x / stageRatio - parentAbs.x - paddingWeight, outRectBounds.y / stageRatio - parentAbs.y - paddingWeight, outRectBounds.width / stageRatio + 2 * paddingWeight, outRectBounds.height / stageRatio + 2 * paddingWeight);
         this.rotate = 0;
       }
 

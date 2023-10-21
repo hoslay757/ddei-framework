@@ -67,7 +67,7 @@ class DDeiBusCommandModelChangeRotate extends DDeiBusCommand {
         selector.rotate = 0;
       }
       //计算旋转角度
-      let angle = movedNumber * 0.5;
+      let angle = movedNumber * 0.75;
       let models: DDeiAbstractShape[] = Array.from(selectedModels.values());
       //获取当前选择控件外接矩形
       let originRect: object = DDeiAbstractShape.getOutRect(models);

@@ -100,24 +100,19 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
       }
 
       //计算外接矩形
-      let originRect: object = null;
-      if (selector) {
-        originRect = selector.getAbsBounds();
-        let paddingWeightInfo = selector.paddingWeight?.selected ? selector.paddingWeight.selected : DDeiConfig.SELECTOR.PADDING_WEIGHT.selected;
-        let paddingWeight = 0;
-        if (models.length > 1) {
-          paddingWeight = paddingWeightInfo.multiple;
-        } else {
-          paddingWeight = paddingWeightInfo.single;
-        }
-        //当存在多个控件选中时，采用去掉selector周围多出来的空间，再进行计算
-        originRect.x = originRect.x + paddingWeight;
-        originRect.y = originRect.y + paddingWeight;
-        originRect.width = originRect.width - 2 * paddingWeight;
-        originRect.height = originRect.height - 2 * paddingWeight;
+      let originRect: object = selector.getAbsBounds();
+      let paddingWeightInfo = selector.paddingWeight?.selected ? selector.paddingWeight.selected : DDeiConfig.SELECTOR.PADDING_WEIGHT.selected;
+      let paddingWeight = 0;
+      if (models.length > 1) {
+        paddingWeight = paddingWeightInfo.multiple;
       } else {
-        originRect = DDeiAbstractShape.getOutRect(models);
+        paddingWeight = paddingWeightInfo.single;
       }
+      //当存在多个控件选中时，采用去掉selector周围多出来的空间，再进行计算
+      originRect.x = originRect.x + paddingWeight;
+      originRect.y = originRect.y + paddingWeight;
+      originRect.width = originRect.width - 2 * paddingWeight;
+      originRect.height = originRect.height - 2 * paddingWeight;
 
       //记录每一个图形在原始矩形中的比例
       let originPosMap: Map<string, object> = new Map();
@@ -128,7 +123,6 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
         if (item.id.indexOf("_shadow") != -1) {
           item = stage?.getModelById(item.id.substring(0, item.id.lastIndexOf("_shadow")));
         }
-
         originPosMap.set(id, {
           xR: ((item.x - originRect.x) / originRect.width),
           yR: ((item.y - originRect.y) / originRect.height),
@@ -138,7 +132,6 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
       }
       //考虑paddingWeight，计算预先实际移动后的区域
 
-      console.log(models[0].x + " .  " + originRect.x + " .  " + originPosMap.get(models[0].id).xR)
       let movedBounds = { x: originRect.x + deltaX, y: originRect.y + deltaY, width: originRect.width + deltaWidth, height: originRect.height + deltaHeight }
       models.forEach(item => {
         let originBound = { x: item.x, y: item.y, width: item.width, height: item.height };

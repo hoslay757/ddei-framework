@@ -153,8 +153,9 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
   /**
    * 绘制边框
    * @param tempBorder 临时边框，优先级最高
+   * @param usePV 是否采用向量输出
    */
-  drawBorder(tempBorder: object | null): void {
+  drawBorder(tempBorder: object | null, usePV: boolean = false): void {
     //获得 2d 上下文对象
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
@@ -179,8 +180,9 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
         //保存状态
         ctx.save();
         //设置旋转
-        this.doRotate(ctx, ratPos);
-
+        if (!usePV) {
+          this.doRotate(ctx, ratPos);
+        }
 
         //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
         let lineOffset = 1 * ratio / 2;
@@ -197,26 +199,28 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
         }
         //颜色
         ctx.strokeStyle = DDeiUtil.getColor(color);
-        if (this.stage?.selectedModels?.size > 0 && this.model.baseModelType == "DDeiSelector") {
+
+        if (usePV) {
           let pvs = this.model.currentPointVectors;
           if (pvs?.length > 0) {
+            let rat1 = this.ddRender.ratio;
             if (i == 4) {
-              ctx.moveTo(pvs[i - 1].x * ratio + lineOffset + lineWidth / 2, pvs[i - 1].y * ratio + lineOffset);
-              ctx.lineTo(pvs[0].x * ratio + lineOffset + lineWidth / 2, pvs[0].y * ratio + lineOffset);
+              ctx.moveTo(pvs[i - 1].x * rat1 + lineOffset + lineWidth / 2, pvs[i - 1].y * rat1 + lineOffset);
+              ctx.lineTo(pvs[0].x * rat1 + lineOffset + lineWidth / 2, pvs[0].y * rat1 + lineOffset);
             } else if (i == 1) {
-              ctx.moveTo(pvs[i - 1].x * ratio + lineWidth + lineOffset, pvs[i - 1].y * ratio + lineWidth / 2 + lineOffset);
-              ctx.lineTo(pvs[i].x * ratio + lineOffset, pvs[i].y * ratio + lineWidth / 2 + lineOffset);
+              ctx.moveTo(pvs[i - 1].x * rat1 + lineWidth + lineOffset, pvs[i - 1].y * rat1 + lineWidth / 2 + lineOffset);
+              ctx.lineTo(pvs[i].x * rat1 + lineOffset, pvs[i].y * rat1 + lineWidth / 2 + lineOffset);
             } else if (i == 2) {
-              ctx.moveTo(pvs[i - 1].x * ratio + lineOffset - lineWidth / 2, pvs[i - 1].y * ratio + lineOffset);
-              ctx.lineTo(pvs[i].x * ratio + lineOffset - lineWidth / 2, pvs[i].y * ratio + lineOffset);
+              ctx.moveTo(pvs[i - 1].x * rat1 + lineOffset - lineWidth / 2, pvs[i - 1].y * rat1 + lineOffset);
+              ctx.lineTo(pvs[i].x * rat1 + lineOffset - lineWidth / 2, pvs[i].y * rat1 + lineOffset);
             } else if (i == 3) {
-              ctx.moveTo(pvs[i - 1].x * ratio + lineOffset, pvs[i - 1].y * ratio + lineOffset - lineWidth / 2);
-              ctx.lineTo(pvs[i].x * ratio + lineOffset, pvs[i].y * ratio + lineOffset - lineWidth / 2);
+              ctx.moveTo(pvs[i - 1].x * rat1 + lineOffset, pvs[i - 1].y * rat1 + lineOffset - lineWidth / 2);
+              ctx.lineTo(pvs[i].x * rat1 + lineOffset, pvs[i].y * rat1 + lineOffset - lineWidth / 2);
             }
           }
         } else {
           if (i == 1) {
-            ctx.moveTo(ratPos.x + lineOffset, ratPos.y + lineWidth / 2 + lineOffset);
+            ctx.moveTo(ratPos.x + lineWidth + lineOffset, ratPos.y + lineWidth / 2 + lineOffset);
             ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + lineWidth / 2 + lineOffset);
           } else if (i == 2) {
             ctx.moveTo(ratPos.x + ratPos.width + lineOffset - lineWidth / 2, ratPos.y + lineOffset);
