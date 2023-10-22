@@ -1,6 +1,6 @@
 import DDeiConfig from './config.js'
 import DDeiAbstractShape from './models/shape.js';
-import { clone } from 'lodash'
+import { clone, cloneDeep } from 'lodash'
 import DDei from './ddei.js';
 
 class DDeiUtil {
@@ -106,7 +106,7 @@ class DDeiUtil {
   static getShadowControl(model: DDeiAbstractShape): DDeiAbstractShape {
     let md = null;
     if (model?.baseModelType == "DDeiTable") {
-      md = clone(model);
+      md = cloneDeep(model);
       md.id = md.id + "_shadow"
       let rows: DDeiTableCell[][] = [];
       let cols: DDeiTableCell[][] = [];
@@ -131,7 +131,7 @@ class DDeiUtil {
       md.cols = cols;
       md.initRender();
     } else {
-      md = clone(model);
+      md = cloneDeep(model);
       md.initRender();
       //将当前操作控件加入临时选择控件
       md.id = md.id + "_shadow"

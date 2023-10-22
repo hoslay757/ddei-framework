@@ -50,98 +50,115 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
 
       let x = data.x ? data.x : 0;
       let y = data.y ? data.y : 0;
-      let dx = data.dx ? data.dx : 0;
-      let dy = data.dy ? data.dy : 0;
-
+      let dragObj = data.dragObj;
       let changeContainer = data.changeContainer ? data.changeContainer : false;
       let newContainer = data.newContainer;
-      let selector = data.selector;
       let models = data.models;
-      let parentContainer = data?.models[0].pModel;
-      let stage = bus.ddInstance.stage;
-      //全局缩放
-      let stageRatio = parseFloat(stage.getStageRatio())
-      x = x + dx;
-      y = y + dy;
-      let cx = 0;
-      let cy = 0;
-      if (parentContainer && parentContainer.baseModelType != "DDeiLayer") {
-        cx = parentContainer.currentPointVectors[0].x;
-        cy = parentContainer.currentPointVectors[0].y;
-      }
 
-      if (parentContainer) {
-        //绝对旋转量，构建旋转矩阵
-        let parentAbsRotate = parentContainer.getAbsRotate();
-        //变换坐标系，将最外部的坐标系，变换到容器坐标系，目前x和y都是相对于外部坐标的坐标
-        //注意由于外部容器存在旋转，因此减去的是外部容器的第一个点
-        let angle = (parentAbsRotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
-        let rotateMatrix = new Matrix3(
-          Math.cos(angle), Math.sin(angle), 0,
-          -Math.sin(angle), Math.cos(angle), 0,
-          0, 0, 1);
-        let vc1 = new Vector3(x - cx, y - cy, 1);
-        vc1.applyMatrix3(rotateMatrix)
-        x = parseFloat(vc1.x.toFixed(4))
-        y = parseFloat(vc1.y.toFixed(4))
-      }
-      //清空移入移出向量效果
-
-      models[0].layer.dragInPoints = []
-      models[0].layer.dragOutPoints = []
-      //设置移入移出效果的向量
-      if (parentContainer && newContainer && parentContainer != newContainer) {
-        parentContainer?.layoutManager?.calDragOutPVS(data.x, data.y, models);
-        newContainer?.layoutManager?.calDragInPVS(data.x, data.y, models);
-      } else if (parentContainer) {
-        parentContainer?.layoutManager?.calDragOutPVS(data.x, data.y, models);
-        parentContainer?.layoutManager?.calDragInPVS(data.x, data.y, models);
-      }
-      //计算外接矩形,未缩放的量和缩放的量
-      let originRect: object = null;
-      let originRectScale: object = null;
-      if (selector) {
-        originRect = selector.getAbsBounds();
-        let paddingWeightInfo = selector.paddingWeight?.selected ? selector.paddingWeight.selected : DDeiConfig.SELECTOR.PADDING_WEIGHT.selected;
-        let paddingWeight = 0;
-        if (models.length > 1) {
-          paddingWeight = paddingWeightInfo.multiple;
-        } else {
-          paddingWeight = paddingWeightInfo.single;
+      models.forEach(model => {
+        let dx = 0
+        let dy = 0
+        if (dragObj && dragObj[model.id]) {
+          dx = dragObj[model.id]?.dx ? dragObj[model.id]?.dx : 0;
+          dy = dragObj[model.id]?.dy ? dragObj[model.id]?.dy : 0
         }
-        originRect.x = originRect.x + paddingWeight;
-        originRect.y = originRect.y + paddingWeight;
-        originRect.width = originRect.width - 2 * paddingWeight;
-        originRect.height = originRect.height - 2 * paddingWeight;
-      } else {
-        originRect = DDeiAbstractShape.getOutRect(models);
-        //通过向量获取的是缩放后的量，通过坐标获取的是未缩放的量
-        originRectScale = DDeiAbstractShape.getOutRectByPV(models)
-      }
-
-      //记录每一个图形在原始矩形中的比例
-      let originPosMap: Map<string, object> = new Map();
-      //获取模型在原始模型中的位置比例
-      for (let i = 0; i < models.length; i++) {
-        let item = models[i]
-
-        originPosMap.set(item.id, {
-          xR: ((item.x + cx - originRect.x) / originRect.width),
-          yR: ((item.y + cy - originRect.y) / originRect.height),
-          wR: (item.width / originRect.width),
-          hR: (item.height / originRect.height)
+        let moveMatrix = new Matrix3(
+          1, 0, x - model.cpv.x + dx,
+          0, 1, y - model.cpv.y + dy,
+          0, 0, 1,
+        );
+        model.cpv?.applyMatrix3(moveMatrix);
+        model.pvs?.forEach(pv => {
+          pv.applyMatrix3(moveMatrix)
         });
-      }
+
+        model.calLoosePVS();
+      });
+      // let parentContainer = data?.models[0].pModel;
+      let stage = bus.ddInstance.stage;
+      // //全局缩放
+      // let stageRatio = parseFloat(stage.getStageRatio())
+      // x = x + dx;
+      // y = y + dy;
+      // let cx = 0;
+      // let cy = 0;
+      // if (parentContainer && parentContainer.baseModelType != "DDeiLayer") {
+      //   cx = parentContainer.currentPointVectors[0].x;
+      //   cy = parentContainer.currentPointVectors[0].y;
+      // }
+
+      // if (parentContainer) {
+      //   //绝对旋转量，构建旋转矩阵
+      //   let parentAbsRotate = parentContainer.getAbsRotate();
+      //   //变换坐标系，将最外部的坐标系，变换到容器坐标系，目前x和y都是相对于外部坐标的坐标
+      //   //注意由于外部容器存在旋转，因此减去的是外部容器的第一个点
+      //   let angle = (parentAbsRotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      //   let rotateMatrix = new Matrix3(
+      //     Math.cos(angle), Math.sin(angle), 0,
+      //     -Math.sin(angle), Math.cos(angle), 0,
+      //     0, 0, 1);
+      //   let vc1 = new Vector3(x - cx, y - cy, 1);
+      //   vc1.applyMatrix3(rotateMatrix)
+      //   x = parseFloat(vc1.x.toFixed(4))
+      //   y = parseFloat(vc1.y.toFixed(4))
+      // }
+      // //清空移入移出向量效果
+
+      // models[0].layer.dragInPoints = []
+      // models[0].layer.dragOutPoints = []
+      // //设置移入移出效果的向量
+      // if (parentContainer && newContainer && parentContainer != newContainer) {
+      //   parentContainer?.layoutManager?.calDragOutPVS(data.x, data.y, models);
+      //   newContainer?.layoutManager?.calDragInPVS(data.x, data.y, models);
+      // } else if (parentContainer) {
+      //   parentContainer?.layoutManager?.calDragOutPVS(data.x, data.y, models);
+      //   parentContainer?.layoutManager?.calDragInPVS(data.x, data.y, models);
+      // }
+      // //计算外接矩形,未缩放的量和缩放的量
+      // let originRect: object = null;
+      // let originRectScale: object = null;
+      // if (selector) {
+      //   originRect = selector.getAbsBounds();
+      //   let paddingWeightInfo = selector.paddingWeight?.selected ? selector.paddingWeight.selected : DDeiConfig.SELECTOR.PADDING_WEIGHT.selected;
+      //   let paddingWeight = 0;
+      //   if (models.length > 1) {
+      //     paddingWeight = paddingWeightInfo.multiple;
+      //   } else {
+      //     paddingWeight = paddingWeightInfo.single;
+      //   }
+      //   originRect.x = originRect.x + paddingWeight;
+      //   originRect.y = originRect.y + paddingWeight;
+      //   originRect.width = originRect.width - 2 * paddingWeight;
+      //   originRect.height = originRect.height - 2 * paddingWeight;
+      // } else {
+      //   originRect = DDeiAbstractShape.getOutRect(models);
+      //   //通过向量获取的是缩放后的量，通过坐标获取的是未缩放的量
+      //   originRectScale = DDeiAbstractShape.getOutRectByPV(models)
+      // }
+
+      // //记录每一个图形在原始矩形中的比例
+      // let originPosMap: Map<string, object> = new Map();
+      // //获取模型在原始模型中的位置比例
+      // for (let i = 0; i < models.length; i++) {
+      //   let item = models[i]
+
+      //   originPosMap.set(item.id, {
+      //     xR: ((item.x + cx - originRect.x) / originRect.width),
+      //     yR: ((item.y + cy - originRect.y) / originRect.height),
+      //     wR: (item.width / originRect.width),
+      //     hR: (item.height / originRect.height)
+      //   });
+      // }
 
       //考虑paddingWeight，计算预先实际移动后的区域
-      let movedBounds = { x: x - originRectScale.width / 2, y: y - originRectScale.height / 2, width: originRectScale.width, height: originRectScale.height }
-      models.forEach(item => {
-        let x = parseFloat(((movedBounds.x - cx + movedBounds.width * originPosMap.get(item.id).xR) / stageRatio).toFixed(4))
-        let width = parseFloat(((movedBounds.width * originPosMap.get(item.id).wR) / stageRatio).toFixed(4))
-        let y = parseFloat(((movedBounds.y - cy + movedBounds.height * originPosMap.get(item.id).yR) / stageRatio).toFixed(4))
-        let height = parseFloat(((movedBounds.height * originPosMap.get(item.id).hR) / stageRatio).toFixed(4))
-        item.setBounds(x, y, width, height)
-      })
+      // let movedBounds = { x: x - originRectScale.width / 2, y: y - originRectScale.height / 2, width: originRectScale.width, height: originRectScale.height }
+      // models.forEach(item => {
+      //   let x = parseFloat(((movedBounds.x - cx + movedBounds.width * originPosMap.get(item.id).xR) / stageRatio).toFixed(4))
+      //   let width = parseFloat(((movedBounds.width * originPosMap.get(item.id).wR) / stageRatio).toFixed(4))
+      //   let y = parseFloat(((movedBounds.y - cy + movedBounds.height * originPosMap.get(item.id).yR) / stageRatio).toFixed(4))
+      //   let height = parseFloat(((movedBounds.height * originPosMap.get(item.id).hR) / stageRatio).toFixed(4))
+      //   item.setBounds(x, y, width, height)
+      // })
 
       //如果移动过程中需要改变容器，一般用于拖拽时的逻辑
       if (stage.render.selector.passIndex == 10 || stage.render.selector.passIndex == 13 || stage.render.selector.passIndex == 11) {

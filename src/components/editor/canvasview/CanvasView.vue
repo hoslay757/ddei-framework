@@ -137,9 +137,9 @@ export default {
                 e
               );
               //给control设置stage，确保在初始化计算向量点时，可以获取当前stage的缩放因子
-              control.stage = ddInstance.stage;
+              // control.stage = ddInstance.stage;
               // //计算向量点
-              control.calRotatePointVectors();
+              // control.calRotatePointVectors();
 
               //记录当前的拖拽的x,y,写入dragObj作为临时变量
               let dragObj = {
@@ -172,8 +172,7 @@ export default {
                 DDeiEnumBusCommandType.ModelChangePosition,
                 {
                   models: [control],
-                  deltaX: e.offsetX - control.width * 0.5,
-                  deltaY: e.offsetY - control.height * 0.5,
+                  dragObj: dragObj,
                 },
                 e
               );

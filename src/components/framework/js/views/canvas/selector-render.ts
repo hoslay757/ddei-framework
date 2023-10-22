@@ -30,9 +30,9 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
    * 创建图形
    */
   drawShape(): void {
-    if (this.model.state != DDeiEnumControlState.DEFAULT) {
-      this.model.updateBoundsByModels();
-    }
+    // if (this.model.state != DDeiEnumControlState.DEFAULT) {
+    //   this.model.updateBoundsByModels();
+    // }
     //绘制边框
     this.drawBorder();
 
@@ -40,7 +40,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     this.drawOperatorShape();
 
     //绘制选中控件特效
-    this.drawIncludedStyle();
+    // this.drawIncludedStyle();
 
   }
 
@@ -55,89 +55,89 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
    * 绘制边框
    * @param tempBorder 临时边框，优先级最高
    */
-  drawBorder(tempBorder: object | null): void {
-    //获得 2d 上下文对象
-    let canvas = this.ddRender.getCanvas();
-    let ctx = canvas.getContext('2d');
-    //获取全局缩放比例
-    let stageRatio = this.model.getStageRatio()
-    let ratio = this.ddRender.ratio * stageRatio;
-    //转换为缩放后的坐标
-    let ratPos = this.getBorderRatPos();
+  // drawBorder(tempBorder: object | null): void {
+  //   //获得 2d 上下文对象
+  //   let canvas = this.ddRender.getCanvas();
+  //   let ctx = canvas.getContext('2d');
+  //   //获取全局缩放比例
+  //   let stageRatio = this.model.getStageRatio()
+  //   let ratio = this.ddRender.ratio * stageRatio;
+  //   //转换为缩放后的坐标
+  //   let ratPos = this.getBorderRatPos();
 
-    //1,2,3,4 上，右，下，左
-    for (let i = 1; i <= 4; i++) {
-      //如果被选中，使用选中的边框，否则使用缺省边框
-      let disabled = this.getBorderInfo(tempBorder, i, "disabled");
-      let color = this.getBorderInfo(tempBorder, i, "color");
-      let opacity = this.getBorderInfo(tempBorder, i, "opacity");
-      let width = this.getBorderInfo(tempBorder, i, "width");
-      let dash = this.getBorderInfo(tempBorder, i, "dash");
+  //   //1,2,3,4 上，右，下，左
+  //   for (let i = 1; i <= 4; i++) {
+  //     //如果被选中，使用选中的边框，否则使用缺省边框
+  //     let disabled = this.getBorderInfo(tempBorder, i, "disabled");
+  //     let color = this.getBorderInfo(tempBorder, i, "color");
+  //     let opacity = this.getBorderInfo(tempBorder, i, "opacity");
+  //     let width = this.getBorderInfo(tempBorder, i, "width");
+  //     let dash = this.getBorderInfo(tempBorder, i, "dash");
 
-      //绘制四个方向的边框
-      //如果边框未被disabled，则绘制边框
-      if (!disabled && color && (!opacity || opacity > 0) && width > 0) {
-        //保存状态
-        ctx.save();
-        //设置旋转
-        this.doRotate(ctx, ratPos);
+  //     //绘制四个方向的边框
+  //     //如果边框未被disabled，则绘制边框
+  //     if (!disabled && color && (!opacity || opacity > 0) && width > 0) {
+  //       //保存状态
+  //       ctx.save();
+  //       //设置旋转
+  //       this.doRotate(ctx, ratPos);
 
 
-        //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
-        let lineOffset = 1 * ratio / 2;
-        let lineWidth = width * ratio;
-        ctx.lineWidth = lineWidth;
-        ctx.beginPath();
-        //线段、虚线样式
-        if (dash) {
-          ctx.setLineDash(dash);
-        }
-        //透明度
-        if (opacity != null && opacity != undefined) {
-          ctx.globalAlpha = opacity
-        }
-        //颜色
-        ctx.strokeStyle = DDeiUtil.getColor(color);
-        if (this.model.state == DDeiEnumControlState.DEFAULT) {
-          if (i == 1) {
-            ctx.moveTo(ratPos.x + lineOffset, ratPos.y + lineWidth / 2 + lineOffset);
-            ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + lineWidth / 2 + lineOffset);
-          } else if (i == 2) {
-            ctx.moveTo(ratPos.x + ratPos.width + lineOffset - lineWidth / 2, ratPos.y + lineOffset);
-            ctx.lineTo(ratPos.x + ratPos.width + lineOffset - lineWidth / 2, ratPos.y + ratPos.height + lineOffset);
-          } else if (i == 3) {
-            ctx.moveTo(ratPos.x + lineOffset, ratPos.y + ratPos.height + lineOffset - lineWidth / 2);
-            ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + ratPos.height + lineOffset - lineWidth / 2);
-          } else if (i == 4) {
-            ctx.moveTo(ratPos.x + lineWidth / 2 + lineOffset, ratPos.y + lineOffset);
-            ctx.lineTo(ratPos.x + lineWidth / 2 + lineOffset, ratPos.y + ratPos.height + lineOffset);
-          }
-        } else {
-          let pvs = this.model.currentPointVectors;
-          if (pvs?.length > 0) {
-            if (i == 4) {
-              ctx.moveTo(pvs[i - 1].x * ratio + lineOffset + lineWidth / 2, pvs[i - 1].y * ratio + lineOffset);
-              ctx.lineTo(pvs[0].x * ratio + lineOffset + lineWidth / 2, pvs[0].y * ratio + lineOffset);
-            } else if (i == 1) {
-              ctx.moveTo(pvs[i - 1].x * ratio + lineWidth + lineOffset, pvs[i - 1].y * ratio + lineWidth / 2 + lineOffset);
-              ctx.lineTo(pvs[i].x * ratio + lineOffset, pvs[i].y * ratio + lineWidth / 2 + lineOffset);
-            } else if (i == 2) {
-              ctx.moveTo(pvs[i - 1].x * ratio + lineOffset - lineWidth / 2, pvs[i - 1].y * ratio + lineOffset);
-              ctx.lineTo(pvs[i].x * ratio + lineOffset - lineWidth / 2, pvs[i].y * ratio + lineOffset);
-            } else if (i == 3) {
-              ctx.moveTo(pvs[i - 1].x * ratio + lineOffset, pvs[i - 1].y * ratio + lineOffset - lineWidth / 2);
-              ctx.lineTo(pvs[i].x * ratio + lineOffset, pvs[i].y * ratio + lineOffset - lineWidth / 2);
-            }
-          }
-        }
+  //       //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
+  //       let lineOffset = 1 * ratio / 2;
+  //       let lineWidth = width * ratio;
+  //       ctx.lineWidth = lineWidth;
+  //       ctx.beginPath();
+  //       //线段、虚线样式
+  //       if (dash) {
+  //         ctx.setLineDash(dash);
+  //       }
+  //       //透明度
+  //       if (opacity != null && opacity != undefined) {
+  //         ctx.globalAlpha = opacity
+  //       }
+  //       //颜色
+  //       ctx.strokeStyle = DDeiUtil.getColor(color);
+  //       if (this.model.state == DDeiEnumControlState.DEFAULT) {
+  //         if (i == 1) {
+  //           ctx.moveTo(ratPos.x + lineOffset, ratPos.y + lineWidth / 2 + lineOffset);
+  //           ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + lineWidth / 2 + lineOffset);
+  //         } else if (i == 2) {
+  //           ctx.moveTo(ratPos.x + ratPos.width + lineOffset - lineWidth / 2, ratPos.y + lineOffset);
+  //           ctx.lineTo(ratPos.x + ratPos.width + lineOffset - lineWidth / 2, ratPos.y + ratPos.height + lineOffset);
+  //         } else if (i == 3) {
+  //           ctx.moveTo(ratPos.x + lineOffset, ratPos.y + ratPos.height + lineOffset - lineWidth / 2);
+  //           ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + ratPos.height + lineOffset - lineWidth / 2);
+  //         } else if (i == 4) {
+  //           ctx.moveTo(ratPos.x + lineWidth / 2 + lineOffset, ratPos.y + lineOffset);
+  //           ctx.lineTo(ratPos.x + lineWidth / 2 + lineOffset, ratPos.y + ratPos.height + lineOffset);
+  //         }
+  //       } else {
+  //         let pvs = this.model.currentPointVectors;
+  //         if (pvs?.length > 0) {
+  //           if (i == 4) {
+  //             ctx.moveTo(pvs[i - 1].x * ratio + lineOffset + lineWidth / 2, pvs[i - 1].y * ratio + lineOffset);
+  //             ctx.lineTo(pvs[0].x * ratio + lineOffset + lineWidth / 2, pvs[0].y * ratio + lineOffset);
+  //           } else if (i == 1) {
+  //             ctx.moveTo(pvs[i - 1].x * ratio + lineWidth + lineOffset, pvs[i - 1].y * ratio + lineWidth / 2 + lineOffset);
+  //             ctx.lineTo(pvs[i].x * ratio + lineOffset, pvs[i].y * ratio + lineWidth / 2 + lineOffset);
+  //           } else if (i == 2) {
+  //             ctx.moveTo(pvs[i - 1].x * ratio + lineOffset - lineWidth / 2, pvs[i - 1].y * ratio + lineOffset);
+  //             ctx.lineTo(pvs[i].x * ratio + lineOffset - lineWidth / 2, pvs[i].y * ratio + lineOffset);
+  //           } else if (i == 3) {
+  //             ctx.moveTo(pvs[i - 1].x * ratio + lineOffset, pvs[i - 1].y * ratio + lineOffset - lineWidth / 2);
+  //             ctx.lineTo(pvs[i].x * ratio + lineOffset, pvs[i].y * ratio + lineOffset - lineWidth / 2);
+  //           }
+  //         }
+  //       }
 
-        ctx.stroke();
-        //恢复状态
-        ctx.restore();
-      }
+  //       ctx.stroke();
+  //       //恢复状态
+  //       ctx.restore();
+  //     }
 
-    }
-  }
+  //   }
+  // }
 
 
   /**
@@ -217,7 +217,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
           if (this.model.passIndex == i) {
             ctx.fillStyle = DDeiUtil.getColor(DDeiConfig.SELECTOR.OPERATE_ICON.FILL.pass);
           }
-          let opvs = this.model?.currentOPVS;
+          let opvs = this.model.opvs;
           if (opvs?.length > 0) {
 
             if (i >= 1 && i <= 8) {
@@ -325,43 +325,43 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     let offsetY = evt.offsetY;
     //判断当前坐标是否位于操作按钮上
 
-    if (this.isIconOn(1, offsetX, offsetY)) {
+    if (this.model.isOpvOn(1, offsetX, offsetY)) {
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 1 }, evt);
     }
     //右上
-    else if (this.isIconOn(2, offsetX, offsetY)) {
+    else if (this.model.isOpvOn(2, offsetX, offsetY)) {
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 2 }, evt);
     }
     //右中
-    else if (this.isIconOn(3, offsetX, offsetY)) {
+    else if (this.model.isOpvOn(3, offsetX, offsetY)) {
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 3 }, evt);
     }
     //右下
-    else if (this.isIconOn(4, offsetX, offsetY)) {
+    else if (this.model.isOpvOn(4, offsetX, offsetY)) {
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 4 }, evt);
     }
     //中下
-    else if (this.isIconOn(5, offsetX, offsetY)) {
+    else if (this.model.isOpvOn(5, offsetX, offsetY)) {
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 5 }, evt);
     }
     //左下
-    else if (this.isIconOn(6, offsetX, offsetY)) {
+    else if (this.model.isOpvOn(6, offsetX, offsetY)) {
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 6 }, evt);
     }
     //左中
-    else if (this.isIconOn(7, offsetX, offsetY)) {
+    else if (this.model.isOpvOn(7, offsetX, offsetY)) {
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 7 }, evt);
     }
     //左上
-    else if (this.isIconOn(8, offsetX, offsetY)) {
+    else if (this.model.isOpvOn(8, offsetX, offsetY)) {
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 8 }, evt);
     }
     //旋转
-    else if (this.isIconOn(9, offsetX, offsetY)) {
+    else if (this.model.isOpvOn(9, offsetX, offsetY)) {
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 9 }, evt);
     }
     //拖拽点
-    else if (this.isIconOn(10, offsetX, offsetY)) {
+    else if (this.model.isOpvOn(10, offsetX, offsetY)) {
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 13 }, evt);
     } else {
       //判断是否在某个具体选中的控件上，如果是则分发事件
@@ -553,30 +553,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     return returnBounds;
   }
 
-  /**
-   * 判断是否在某个图标上
-   * @param direct 
-   */
-  isIconOn(direct: number, x: number, y: number): boolean {
-    if (this.model?.currentOPVS[direct]) {
-      let pv = this.model.currentOPVS[direct];
-      if (pv) {
-        //操作图标的宽度
-        //获取全局缩放比例
-        let width = DDeiConfig.SELECTOR.OPERATE_ICON.weight;
-        let halfWidth = width * 0.5;
-        return DDeiAbstractShape.isInsidePolygon(
-          [
-            { x: pv.x - halfWidth, y: pv.y - halfWidth },
-            { x: pv.x + halfWidth, y: pv.y - halfWidth },
-            { x: pv.x + halfWidth, y: pv.y + halfWidth },
-            { x: pv.x - halfWidth, y: pv.y + halfWidth }
-          ]
-          , { x: x, y: y });
-      }
-    }
-    return false;
-  }
+
 }
 
 export default DDeiSelectorCanvasRender

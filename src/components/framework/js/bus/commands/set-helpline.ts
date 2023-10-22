@@ -57,10 +57,10 @@ class DDeiBusCommandSetHelpLine extends DDeiBusCommand {
             control = Array.from(models.values())[0];
           }
           //显示辅助对齐线、坐标文本等图形
-          layer.render.helpLines = {
-            "bounds": control?.getAbsBounds(),
-            models: data?.models
-          };
+          // layer.render.helpLines = {
+          //   "bounds": control?.getAbsBounds(),
+          //   models: data?.models
+          // };
           return true;
         } else {
           //隐藏辅助对齐线、坐标文本等图形

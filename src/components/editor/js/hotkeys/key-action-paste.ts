@@ -8,7 +8,6 @@ import DDeiRectangle from "@/components/framework/js/models/rectangle";
 import { MODEL_CLS } from "@/components/framework/js/config";
 import DDeiAbstractShape from "@/components/framework/js/models/shape";
 import DDeiTable from "@/components/framework/js/models/table";
-import { has } from "lodash";
 
 /**
  * 键行为:粘贴
@@ -838,7 +837,7 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
       }
     });
     //重新计算坐标，基于粘贴的中心点
-    let outRect = DDeiAbstractShape.getOutRect(models);
+    let outRect = DDeiAbstractShape.getOutRectByPV(models);
     outRect = { x: outRect.x + outRect.width / 2, y: outRect.y + outRect.height / 2 }
     models.forEach(item => {
       if (mode == 'copy') {

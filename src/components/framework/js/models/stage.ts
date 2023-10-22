@@ -424,7 +424,7 @@ class DDeiStage {
               }
             });
             json[i] = array;
-          } else if (this[i].set) {
+          } else if (this[i].set && this[i].has) {
             let map = {};
             this[i].forEach((element, key) => {
               if (element?.toJSON) {

@@ -178,7 +178,7 @@ export const styles = {
       'group': '填充',
       'controlType': 'color',
       'dataType': 'string',
-      'defaultValue': 'white',
+      'defaultValue': 'red',
       'orderNo': 2,
       'visiable': true
     },

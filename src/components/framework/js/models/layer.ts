@@ -315,7 +315,7 @@ class DDeiLayer {
     let controls = [];
     this.models.forEach((item) => {
       //如果射线相交，则视为选中
-      if (DDeiAbstractShape.isInsidePolygon(item.getRotatedPoints(), { x: x, y: y })) {
+      if (DDeiAbstractShape.isInsidePolygon(item.pvs, { x: x, y: y })) {
         controls.push(item);
       }
     });
@@ -442,7 +442,7 @@ class DDeiLayer {
               }
             });
             json[i] = array;
-          } else if (this[i].set) {
+          } else if (this[i].set && this[i].has) {
             let map = {};
             this[i].forEach((element, key) => {
               if (element?.toJSON) {

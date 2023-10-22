@@ -216,8 +216,7 @@ class DDeiLayerCanvasRender {
         })
 
         item.render.drawShape();
-        let pvs = item.currentPointVectors;
-        item.pointVectors = null;
+        let pvs = item.pvs;
         ctx.globalAlpha = 0.7
         //设置字体颜色
         ctx.fillStyle = DDeiUtil.getColor("#017fff");
@@ -559,13 +558,13 @@ class DDeiLayerCanvasRender {
     if (menuEle) {
       menuEle.style.display = "none";
     }
-    if (this.stageRender.selector && this.stageRender.selector.isInAreaLoose(evt.offsetX, evt.offsetY, DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2) &&
+    if (this.stageRender.selector && this.stageRender.selector.isInAreaLoose(evt.offsetX, evt.offsetY, true) &&
       ((this.stageRender.selector.passIndex >= 1 && this.stageRender.selector.passIndex <= 9) || this.stageRender.selector.passIndex == 13)) {
       //派发给selector的mousedown事件，在事件中对具体坐标进行判断
       this.stageRender.selector.render.mouseDown(evt);
     } else {
       // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
-      let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, evt.offsetX, evt.offsetY, DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2);
+      let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, evt.offsetX, evt.offsetY, true);
       //光标所属位置是否有控件
       //有控件：分发事件到当前控件
       if (operateControls != null && operateControls.length > 0) {
@@ -599,6 +598,7 @@ class DDeiLayerCanvasRender {
           this.stage.brushData = null;
           this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
         }
+
         //重置选择器位置
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ResetSelectorState, { x: evt.offsetX, y: evt.offsetY }, evt);
         if (this.stage.ddInstance?.editMode == 1) {
@@ -746,14 +746,11 @@ class DDeiLayerCanvasRender {
                 this.model.shadowControls.forEach(item => {
                   let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
                   let model = this.stage?.getModelById(id)
-                  model.rotate = item.rotate
-                  model.dragOriginWidth = model.width;
-                  model.dragOriginHeight = model.height;
-                  model.dragOriginX = model.x;
-                  model.dragOriginY = model.y;
-                  model.setBounds(item.x, item.y, item.width, item.height)
-                  model.currentPointVectors = item.currentPointVectors
-                  model.centerPointVector = item.centerPointVector
+                  model.pvs = item.pvs
+                  model.cpv = item.cpv
+                  model.initHPV()
+                  model.calRotate();
+                  model.calLoosePVS();
                   operateModels.push(model)
 
                   selMods.push({ id: model?.id, value: DDeiEnumControlState.SELECTED })
@@ -787,14 +784,11 @@ class DDeiLayerCanvasRender {
               this.model.shadowControls.forEach(item => {
                 let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
                 let model = this.stage?.getModelById(id)
-                model.rotate = item.rotate
-                model.dragOriginWidth = model.width;
-                model.dragOriginHeight = model.height;
-                model.dragOriginX = model.x;
-                model.dragOriginY = model.y;
-                model.setBounds(item.x, item.y, item.width, item.height)
-                model.currentPointVectors = item.currentPointVectors
-                model.centerPointVector = item.centerPointVector
+                model.pvs = item.pvs
+                model.cpv = item.cpv
+                model.initHPV()
+                model.calRotate();
+                model.calLoosePVS();
                 hasChange = true;
                 operateModels.push(model)
               })
@@ -802,10 +796,10 @@ class DDeiLayerCanvasRender {
               operateModels?.forEach(item => {
                 item.render?.controlDragEnd(evt)
               })
-
             }
           }
           if (hasChange) {
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
             this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
           }
 
@@ -884,23 +878,15 @@ class DDeiLayerCanvasRender {
         //当前控件的上层控件，可能是一个layer也可能是容器
         let pContainerModel = this.stageRender.currentOperateShape.pModel;
         let selectSize = pContainerModel.getSelectedModels().size;
-        let centerPointVector = null;
-        if (selectSize > 1) {
-          centerPointVector = this.stageRender.selector.centerPointVector;
-        } else {
-          centerPointVector = this.stageRender.currentOperateShape?.centerPointVector;
-        }
-        let stageRatio = this.model.getStageRatio();
+
+
         //记录当前的拖拽的x,y,写入dragObj作为临时变量
         let dragObj = {
           x: evt.offsetX,
           y: evt.offsetY,
-          dx: centerPointVector.x - evt.offsetX,//鼠标在控件中心坐标的增量位置
-          dy: centerPointVector.y - evt.offsetY,
           model: this.stageRender.currentOperateShape
         }
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
-
         if (this.stageRender.currentOperateShape?.baseModelType == 'DDeiTable' && !isCtrl) {
           this.stageRender.operateState = DDeiEnumOperateState.TABLE_INNER_DRAG
           //渲染图形
@@ -913,10 +899,12 @@ class DDeiLayerCanvasRender {
           let selectedModels = pContainerModel.getSelectedModels();
           selectedModels.forEach(m => {
             let md = DDeiUtil.getShadowControl(m);
+            dragObj[md.id] = { dx: md.cpv.x - evt.offsetX, dy: md.cpv.y - evt.offsetY }
             this.model.shadowControls.push(md);
           });
           if (!selectedModels.has(this.stageRender.currentOperateShape?.id)) {
             let md = DDeiUtil.getShadowControl(this.stageRender.currentOperateShape)
+            dragObj[md.id] = { dx: md.cpv.x - evt.offsetX, dy: md.cpv.y - evt.offsetY }
             this.model.shadowControls.push(md);
           }
           //将当前被拖动的控件转变为影子控件
@@ -946,7 +934,7 @@ class DDeiLayerCanvasRender {
         //当前控件的上层控件
         let pContainerModel = this.stageRender.currentOperateShape.pModel;
         if (pContainerModel) {
-          let pushData = { x: evt.offsetX, y: evt.offsetY, dx: this.stageRender.dragObj.dx, dy: this.stageRender.dragObj.dy, models: this.model.shadowControls, changeContainer: isAlt };
+          let pushData = { x: evt.offsetX, y: evt.offsetY, dragObj: this.stageRender.dragObj, models: this.model.shadowControls, changeContainer: isAlt };
           if (isAlt) {
             //寻找鼠标落点当前所在的容器
             let mouseOnContainers = DDeiAbstractShape.findBottomContainersByArea(this.model, evt.offsetX, evt.offsetY);
@@ -1029,12 +1017,12 @@ class DDeiLayerCanvasRender {
         this.model.opPoints = [];
         //判断当前鼠标坐标是否落在选择器控件的区域内
         if (this.stageRender.selector &&
-          this.stageRender.selector.isInAreaLoose(evt.offsetX, evt.offsetY, DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2)) {
+          this.stageRender.selector.isInAreaLoose(evt.offsetX, evt.offsetY, true)) {
           //派发给selector的mousemove事件，在事件中对具体坐标进行判断
           this.stageRender.selector.render.mouseMove(evt);
         }
         // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
-        let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, evt.offsetX, evt.offsetY, DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2);
+        let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, evt.offsetX, evt.offsetY, true);
 
         //光标所属位置是否有控件
         //有控件：分发事件到当前控件
