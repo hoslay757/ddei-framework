@@ -63,11 +63,6 @@ class DDeiBusCommandModelChangeRotate extends DDeiBusCommand {
       let pContainerModel = data.container;
       let selectedModels = pContainerModel.getSelectedModels();
 
-      //计算当前角度旋转器角度
-      if (!selector.rotate) {
-        selector.calRotate()
-      }
-
       let models: DDeiAbstractShape[] = Array.from(selectedModels.values());
       //获取当前选择控件外接矩形
       let originRect: object = DDeiAbstractShape.getOutRectByPV(models);
@@ -77,7 +72,6 @@ class DDeiBusCommandModelChangeRotate extends DDeiBusCommand {
       //计算旋转角度
       let rotate = movedNumber * 0.75;
       let angle = -(rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
-      //计算input的正确打开位置，由节点0
       let move1Matrix = new Matrix3(
         1, 0, -occ.x,
         0, 1, -occ.y,
@@ -94,13 +88,9 @@ class DDeiBusCommandModelChangeRotate extends DDeiBusCommand {
       //对所有选中图形进行位移并旋转
       for (let i = 0; i < models.length; i++) {
         let item = models[i]
-        item.cpv.applyMatrix3(m1)
-        item.pvs.forEach(pv => {
-          pv.applyMatrix3(m1)
-        });
-        item.calRotate();
-        item.calLoosePVS();
+        item.transVectors(m1)
       }
+      selector.transVectors(m1)
 
 
 

@@ -202,19 +202,6 @@ class DDeiLayerCanvasRender {
       this.model.shadowControls.forEach(item => {
         //保存状态
         ctx.save();
-        //找到实际图形的旋转关系，进行旋转变换，然后再进行绘制
-        let pModelList = []
-        //转换为缩放后的坐标
-        let lm = item.pModel
-        while (lm && lm.modelType != 'DDeiLayer') {
-          pModelList.push(lm)
-          lm = lm.pModel;
-        }
-        pModelList.forEach(pm => {
-          let ratPos = pm.render.getBorderRatPos();
-          pm.render.doRotate(ctx, ratPos)
-        })
-
         item.render.drawShape();
         let pvs = item.pvs;
         ctx.globalAlpha = 0.7
@@ -746,11 +733,7 @@ class DDeiLayerCanvasRender {
                 this.model.shadowControls.forEach(item => {
                   let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
                   let model = this.stage?.getModelById(id)
-                  model.pvs = item.pvs
-                  model.cpv = item.cpv
-                  model.initHPV()
-                  model.calRotate();
-                  model.calLoosePVS();
+                  model.syncVectors(item)
                   operateModels.push(model)
 
                   selMods.push({ id: model?.id, value: DDeiEnumControlState.SELECTED })
@@ -784,11 +767,7 @@ class DDeiLayerCanvasRender {
               this.model.shadowControls.forEach(item => {
                 let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
                 let model = this.stage?.getModelById(id)
-                model.pvs = item.pvs
-                model.cpv = item.cpv
-                model.initHPV()
-                model.calRotate();
-                model.calLoosePVS();
+                model.syncVectors(item)
                 hasChange = true;
                 operateModels.push(model)
               })
@@ -800,7 +779,7 @@ class DDeiLayerCanvasRender {
           }
           if (hasChange) {
             this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy);
           }
 
           this.model.shadowControls = [];
@@ -950,6 +929,7 @@ class DDeiLayerCanvasRender {
             }
             pushData.isAlt = true;
             pushData.newContainer = lastOnContainer
+            pushData.oldContainer = pContainerModel
           }
           //修改所有选中控件坐标
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangePosition, pushData, evt);

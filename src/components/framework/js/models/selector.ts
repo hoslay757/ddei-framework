@@ -227,6 +227,7 @@ class DDeiSelector extends DDeiRectangle {
         pvs[3].y += paddingWeight * stageRatio
         this.cpv = new Vector3(outRectBounds.x + outRectBounds.width / 2, outRectBounds.y + outRectBounds.height / 2, 1);
       }
+      debugger
       this.pvs = pvs;
       this.initHPV()
       this.calRotate();
@@ -237,6 +238,22 @@ class DDeiSelector extends DDeiRectangle {
     } else {
       this.resetState();
     }
+  }
+
+
+  /**
+   * 变换向量
+   */
+  transVectors(matrix: Matrix3): void {
+    this.cpv.applyMatrix3(matrix);
+    this.pvs.forEach(pv => {
+      pv.applyMatrix3(matrix)
+    });
+    this.initHPV();
+    this.calRotate()
+    this.calOPVS()
+    this.calLoosePVS();
+
   }
 
 

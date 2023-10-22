@@ -51,9 +51,14 @@ class DDeiRectContainer extends DDeiRectangle {
   }
 
   // 通过JSON初始化对象，数据未传入时将初始化数据
-  static initByJSON(json): DDeiRectContainer {
-    let container = new DDeiRectContainer(json);
-    return container;
+  static initByJSON(json, tempData: object = {}): DDeiRectContainer {
+    let model = new DDeiRectContainer(json);
+    model.layer = tempData['currentLayer']
+    model.stage = tempData['currentStage']
+    model.pModel = tempData['currentContainer']
+    //基于初始化的宽度、高度，构建向量
+    model.initPVS();
+    return model;
   }
 
   //类名，用于反射和动态加载
@@ -134,6 +139,29 @@ class DDeiRectContainer extends DDeiRectangle {
     model.stage = null;
     model.render = null;
     this.resortModelByZIndex();
+  }
+
+  /**
+  * 变换向量
+  */
+  transVectors(matrix: Matrix3): void {
+    super.transVectors(matrix)
+    this.midList.forEach(key => {
+      let item = this.models.get(key);
+      item.transVectors(matrix)
+    });
+  }
+
+  /**
+  * 变换向量,只能用于两个结构和数据相同的变量进行交换，如影子控件
+  */
+  syncVectors(source: Matrix3): void {
+    super.syncVectors(source)
+    this.midList.forEach(key => {
+      let itemDist: DDeiAbstractShape = this.models.get(key);
+      let itemSource: DDeiAbstractShape = source.models.get(key);
+      itemDist.syncVectors(itemSource)
+    });
   }
 
   /**

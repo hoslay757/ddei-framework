@@ -53,7 +53,9 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
       let dragObj = data.dragObj;
       let changeContainer = data.changeContainer ? data.changeContainer : false;
       let newContainer = data.newContainer;
+      let oldContainer = data.oldContainer;
       let models = data.models;
+      let stage = bus.ddInstance.stage;
 
       models.forEach(model => {
         let dx = 0
@@ -67,15 +69,10 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
           0, 1, y - model.cpv.y + dy,
           0, 0, 1,
         );
-        model.cpv?.applyMatrix3(moveMatrix);
-        model.pvs?.forEach(pv => {
-          pv.applyMatrix3(moveMatrix)
-        });
-
-        model.calLoosePVS();
+        model.transVectors(moveMatrix);
       });
       // let parentContainer = data?.models[0].pModel;
-      let stage = bus.ddInstance.stage;
+
       // //全局缩放
       // let stageRatio = parseFloat(stage.getStageRatio())
       // x = x + dx;
@@ -169,7 +166,7 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
             newContainer.layoutManager = freeLayoutManager;
           }
           //如果最小层容器不是当前容器，则修改鼠标样式，代表可能要移入
-          if (newContainer.id != parentContainer.id) {
+          if (newContainer.id != oldContainer.id) {
             if (newContainer?.layoutManager?.canAppend(data.x, data.y, models)) {
               bus?.insert(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 11 }, evt);
             } else {

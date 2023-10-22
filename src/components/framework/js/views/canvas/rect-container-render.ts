@@ -28,26 +28,30 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
 
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
-    //转换为缩放后的坐标
-    let ratPos = this.getBorderRatPos();
     super.drawShape();
     //保存状态
     ctx.save();
     //获取全局缩放比例
+    let rat1 = this.ddRender.ratio;
     let stageRatio = this.model.getStageRatio()
-    let ratio = this.ddRender.ratio * stageRatio;
-
-    //设置旋转，以确保子图形元素都被旋转
-    this.doRotate(ctx, ratPos);
-
-
-
+    let ratio = rat1 * stageRatio;
     //计算填充的原始区域
-    let fillAreaE = this.getFillArea();
-    //转换为缩放后的坐标
-    ratPos = DDeiUtil.getRatioPosition(fillAreaE, ratio);
+    let fillPVS = this.getFillAreaPVS();
     //剪切当前区域
-    ctx.rect(ratPos.x, ratPos.y, ratPos.width, ratPos.height);
+    ctx.beginPath();
+    let lineOffset = 1 * ratio / 2;
+    for (let i = 0; i < fillPVS.length; i++) {
+      if (i == fillPVS.length - 1) {
+        ctx.lineTo(fillPVS[i].x * rat1 + lineOffset, fillPVS[i].y * rat1 + lineOffset);
+        ctx.lineTo(fillPVS[0].x * rat1 + lineOffset, fillPVS[0].y * rat1 + lineOffset);
+      } else if (i == 0) {
+        ctx.moveTo(fillPVS[i].x * rat1 + lineOffset, fillPVS[i].y * rat1 + lineOffset);
+      } else {
+        ctx.lineTo(fillPVS[i].x * rat1 + lineOffset, fillPVS[i].y * rat1 + lineOffset);
+      }
+    }
+    ctx.closePath();
+    //填充矩形
     ctx.clip();
     this.drawChildrenShapes();
     ctx.restore();
@@ -77,7 +81,7 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
           let key = this.model.midList[m];
           let item = this.model.models.get(key);
           if (usedMidIds.indexOf(item.id) == -1 && pvs?.length > 0 && DDeiAbstractShape.isInsidePolygon(
-            pvs, { x: item.centerPointVector.x, y: item.centerPointVector.y })) {
+            pvs, { x: item.cpv.x, y: item.cpv.y })) {
             usedMidIds.push(item.id)
             //保存状态
             ctx.save();

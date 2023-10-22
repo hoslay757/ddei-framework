@@ -697,7 +697,6 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       fillPVS.forEach(fpv => {
         fpv.applyMatrix3(rotateMatrix)
       });
-      debugger
     }
     //计算减去border的区域，得到新的点坐标
     fillPVS[1].x -= rightWidth

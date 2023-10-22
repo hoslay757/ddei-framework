@@ -68,6 +68,7 @@ abstract class DDeiAbstractShape {
    * 初始化向量，基于width和height构建向量，默认中心点在0，0的位置
    */
   initPVS() {
+
     //全局缩放因子
     let stageRatio = this.getStageRatio();
     if (!this.cpv) {
@@ -85,6 +86,23 @@ abstract class DDeiAbstractShape {
 
     this.calLoosePVS();
   }
+
+  /**
+   * 变换向量
+   */
+  transVectors(matrix: Matrix3): void {
+    this.cpv.applyMatrix3(matrix);
+    this.pvs.forEach(pv => {
+      pv.applyMatrix3(matrix)
+    });
+    this.initHPV();
+    this.calRotate()
+    this.calLoosePVS();
+  }
+
+
+
+
 
   /**
    * 设置当前最新的hpv
@@ -145,7 +163,16 @@ abstract class DDeiAbstractShape {
     }
   }
 
-
+  /**
+   * 同步向量
+   */
+  syncVectors(source: DDeiAbstractShape): void {
+    this.pvs = source.pvs
+    this.cpv = source.cpv
+    this.initHPV()
+    this.calRotate();
+    this.calLoosePVS();
+  }
 
   /**
    * 计算旋转角度，基于隐藏点与坐标系的夹角
@@ -794,6 +821,10 @@ abstract class DDeiAbstractShape {
   }
 
   // ============================ 静态方法 ============================
+
+
+
+
   /**
    * 通过射线法判断点是否在图形内部
    * @param pps 多边形顶点 
@@ -957,10 +988,10 @@ abstract class DDeiAbstractShape {
   static getOutPV(models: Array<DDeiAbstractShape>): object {
     let o = DDeiAbstractShape.getOutRectByPV(models);
     return [
-      { x: o.x, y: o.y },
-      { x: o.x1, y: o.y },
-      { x: o.x1, y: o.y1 },
-      { x: o.x, y: o.y1 },
+      new Vector3(o.x, o.y, 1),
+      new Vector3(o.x1, o.y, 1),
+      new Vector3(o.x1, o.y1, 1),
+      new Vector3(o.x, o.y1, 1)
     ]
   }
 
