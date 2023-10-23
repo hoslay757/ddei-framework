@@ -8,7 +8,7 @@ import DDeiRectangle from "@/components/framework/js/models/rectangle";
 import { MODEL_CLS } from "@/components/framework/js/config";
 import DDeiAbstractShape from "@/components/framework/js/models/shape";
 import DDeiTable from "@/components/framework/js/models/table";
-
+import { Matrix3, Vector3 } from 'three';
 /**
  * 键行为:粘贴
  * 粘贴剪切板内容
@@ -203,13 +203,13 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
         { modelCode: "100002" },
         searchPaths
       );
+      let stageRatio = stage.getStageRatio()
       //获取文本高度宽度
-      let size = DDeiUtil.measureTextSize(stage.ddInstance, textData, configAtrs.get('font.family').data, configAtrs.get('font.size').data)
+      let size = DDeiUtil.measureTextSize(stage.ddInstance, textData, configAtrs.get('font.family').data, configAtrs.get('font.size').data * stageRatio)
+
       let dataJson = {
         id: "rectangle_" + stage.idIdx,
         modelCode: "100002",
-        x: offsetX - size.width / 2,
-        y: offsetY - size.height / 2,
         text: textData,
         width: size.width,
         height: size.height,
@@ -217,6 +217,13 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
         fill: { disable: true }
       };
       let model: DDeiAbstractShape = DDeiRectangle.initByJSON(dataJson);
+      model.cpv.x += offsetX
+      model.cpv.y += offsetY
+      model.pvs.forEach(pv => {
+        pv.x += offsetX
+        pv.y += offsetY
+      });
+      model.calLoosePVS()
       stage.ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeContainer, { newContainer: layer, models: [model] }, evt);
       stage.ddInstance.bus.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
       stage.ddInstance.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, { models: [model], value: DDeiEnumControlState.SELECTED }, evt);
@@ -838,6 +845,7 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
     });
     //重新计算坐标，基于粘贴的中心点
     let outRect = DDeiAbstractShape.getOutRectByPV(models);
+
     outRect = { x: outRect.x + outRect.width / 2, y: outRect.y + outRect.height / 2 }
     models.forEach(item => {
       if (mode == 'copy') {
@@ -850,11 +858,18 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
         }
         item.id = newId
       }
-      let dx = outRect.x - item.x;
-      let dy = outRect.y - item.y;
-      item.x = x - dx;
-      item.y = y - dy;
+      let cpx = item.cpv.x;
+      let cpy = item.cpv.y;
+      let dx = outRect.x - cpx;
+      let dy = outRect.y - cpy;
+      let moveMatrix = new Matrix3(
+        1, 0, x - dx - cpx,
+        0, 1, y - dy - cpy,
+        0, 0, 1
+      )
+      item.transVectors(moveMatrix)
     })
+
     stage.ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeContainer, { newContainer: container, models: models }, evt);
     stage.ddInstance.bus.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
     stage.ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeSelect, { models: models, value: DDeiEnumControlState.SELECTED }, evt);
@@ -863,17 +878,24 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
   //创建新的图片控件
   createNewImage(image: Image, imgBase64: string, x: number, y: number, stage: DDeiStage, container: object, evt: Event): void {
     stage.idIdx++
+    let rat1 = stage.ddInstance.render.ratio;
+    let stageRatio = stage.getStageRatio()
     let dataJson = {
       id: "img_" + stage.idIdx,
       modelCode: "100002",
-      x: x - image.width / 2,
-      y: y - image.height / 2,
-      width: image.width,
-      height: image.height,
+      width: image.width * stageRatio / rat1,
+      height: image.height * stageRatio / rat1,
       border: { top: { disabled: true }, bottom: { disabled: true }, left: { disabled: true }, right: { disabled: true } },
       fill: { disable: true }
     };
+
     let model: DDeiAbstractShape = DDeiRectangle.initByJSON(dataJson);
+    model.cpv.x += x
+    model.cpv.y += y
+    model.pvs.forEach(pv => {
+      pv.x += x
+      pv.y += y
+    });
     model.setImgBase64(imgBase64);
     stage.ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeContainer, { newContainer: container, models: [model] }, evt);
     stage.ddInstance.bus.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);

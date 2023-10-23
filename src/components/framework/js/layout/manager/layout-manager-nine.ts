@@ -380,7 +380,7 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
       let areasPVS = this.getAreasPVS();
       for (let i = 0; i < areasPVS.length; i++) {
         let inArea = DDeiAbstractShape.isInsidePolygon(
-          areasPVS[i], { x: model.centerPointVector.x, y: model.centerPointVector.y });
+          areasPVS[i], { x: model.cpv.x, y: model.cpv.y });
         if (inArea) {
           this.container.layer.dragOutPoints = areasPVS[i];
           return;

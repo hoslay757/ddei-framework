@@ -139,7 +139,7 @@ class DDeiTable extends DDeiAbstractShape {
     this.curCol = -1;
   }
 
-  //重设所有单元格的行列关系
+  //重设所有单元格的行列关系,以及对应的坐标、向量等
   resetCellData(): void {
     //重新计算坐标和行列数
     let tmpY = 0;

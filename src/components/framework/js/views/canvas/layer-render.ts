@@ -76,6 +76,7 @@ class DDeiLayerCanvasRender {
   drawShape(): void {
     //只有当显示时才绘制图层
     if (this.model.display) {
+
       //绘制背景
       this.drawBackground();
       //绘制子元素
@@ -657,7 +658,7 @@ class DDeiLayerCanvasRender {
           let includedModels: Map<string, DDeiAbstractShape> = this.stageRender.selector.getIncludedModels();
           this.stageRender.currentOperateContainer = this.model;
           includedModels.forEach((model, key) => {
-            pushDatas[pushDatas.length] = { id: model.id, value: DDeiEnumControlState.SELECTED };
+            pushDatas.push({ id: model.id, value: DDeiEnumControlState.SELECTED });
           });
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, pushDatas, evt);
           break;
@@ -817,9 +818,6 @@ class DDeiLayerCanvasRender {
         //中心点坐标
         //当前控件的上层控件，可能是一个layer也可能是容器
         let pContainerModel = this.stageRender.currentOperateShape.pModel;
-        let selectSize = pContainerModel.getSelectedModels().size;
-
-
         //记录当前的拖拽的x,y,写入dragObj作为临时变量
         let dragObj = {
           x: evt.offsetX,
@@ -870,11 +868,18 @@ class DDeiLayerCanvasRender {
       }
       //控件拖拽中
       case DDeiEnumOperateState.CONTROL_DRAGING: {
-
+        let pContainerModel = null;
         //当前控件的上层控件
-        let pContainerModel = this.stageRender.currentOperateShape.pModel;
+        if (this.stageRender.currentOperateShape.id.indexOf("_shadow") != -1) {
+          let id = this.stageRender.currentOperateShape.id.substring(this.stageRender.currentOperateShape.id, this.stageRender.currentOperateShape.id.lastIndexOf("_shadow"))
+          let model = this.stage?.getModelById(id)
+          pContainerModel = model.pModel;
+        } else {
+          pContainerModel = this.stageRender.currentOperateShape.pModel;
+        }
         if (pContainerModel) {
           let pushData = { x: evt.offsetX, y: evt.offsetY, dragObj: this.stageRender.dragObj, models: this.model.shadowControls, changeContainer: isAlt };
+          pushData.oldContainer = pContainerModel
           if (isAlt) {
             //寻找鼠标落点当前所在的容器
             let mouseOnContainers = DDeiAbstractShape.findBottomContainersByArea(this.model, evt.offsetX, evt.offsetY);
@@ -890,14 +895,14 @@ class DDeiLayerCanvasRender {
             }
             pushData.isAlt = true;
             pushData.newContainer = lastOnContainer
-            pushData.oldContainer = pContainerModel
           }
+
           //修改所有选中控件坐标
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangePosition, pushData, evt);
           //修改辅助线
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.SetHelpLine, { models: this.model.shadowControls }, evt);
           //渲染图形
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
         }
 
         break;
@@ -918,7 +923,6 @@ class DDeiLayerCanvasRender {
         if (movedBounds) {
           let selector = this.stageRender.selector;
           let stageRatio = this.model.getStageRatio()
-          console.log(movedBounds.width + " . " + selector.width * stageRatio)
           let pushData = { x: evt.offsetX, y: evt.offsetY, deltaX: movedBounds.x - selector.x * stageRatio, deltaY: movedBounds.y - selector.y * stageRatio, deltaWidth: movedBounds.width - selector.width * stageRatio, deltaHeight: movedBounds.height - selector.height * stageRatio, selector: selector, models: this.model.shadowControls };
           this.model.opPoints = [];
           //更新dragObj临时变量中的数值,确保坐标对应关系一致

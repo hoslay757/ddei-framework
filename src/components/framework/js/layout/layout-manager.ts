@@ -80,7 +80,7 @@ abstract class DDeiLayoutManager {
   calDragInPVS(x: number, y: number, models: DDeiAbstractShape[]): void {
     //获取向量
     if (this.container.layer) {
-      let pvs = this.container.currentPointVectors;
+      let pvs = this.container.pvs;
       this.container.layer.dragInPoints = pvs;
     }
   }
@@ -90,7 +90,7 @@ abstract class DDeiLayoutManager {
   */
   calDragOutPVS(x: number, y: number, models: DDeiAbstractShape[]): void {
     if (this.container.layer) {
-      let pvs = this.container.currentPointVectors;
+      let pvs = this.container.pvs;
       this.container.layer.dragOutPoints = pvs;
     }
   }

@@ -77,17 +77,7 @@ class DDeiSelector extends DDeiRectangle {
     //重置选择器状态
     this.startX = x
     this.startY = y
-    this.x = x
-    this.y = y
-    this.width = 0
-    this.height = 0
-    this.rotate = 0
-    this.setModelChanged()
-    this.currentPointVectors = null;
-    this.currentLoosePointVectors = null;
-    this.pointVectors = null;
-    this.centerPointVector = null;
-    this.currentOPVS = null;
+    this.updatePVSByRect(0, 0, 0, 0);
     this.setState(DDeiEnumControlState.DEFAULT);
   }
 

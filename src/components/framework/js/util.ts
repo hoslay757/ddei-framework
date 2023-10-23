@@ -1,6 +1,6 @@
 import DDeiConfig from './config.js'
 import DDeiAbstractShape from './models/shape.js';
-import { clone, cloneDeep } from 'lodash'
+import { clone, cloneDeep, cloneDeepWith } from 'lodash'
 import DDei from './ddei.js';
 
 class DDeiUtil {
