@@ -45,12 +45,13 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
       let stage = bus.ddInstance.stage;
       //除以缩放比例
       let stageRatio = stage?.getStageRatio()
-      deltaWidth = deltaWidth / stageRatio
-      deltaHeight = deltaHeight / stageRatio
-      deltaX = deltaX / stageRatio
-      deltaY = deltaY / stageRatio
+      deltaWidth = deltaWidth
+      deltaHeight = deltaHeight
+      deltaX = deltaX
+      deltaY = deltaY
 
       //计算外接矩形
+
       let originRect: object = {
         x: selector.x, y: selector.y, width: selector.width, height: selector.height
       }
@@ -62,14 +63,14 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
         paddingWeight = paddingWeightInfo.single;
       }
       //当存在多个控件选中时，采用去掉selector周围多出来的空间，再进行计算
-      originRect.x = originRect.x + paddingWeight;
-      originRect.y = originRect.y + paddingWeight;
-      originRect.width = originRect.width - 2 * paddingWeight;
-      originRect.height = originRect.height - 2 * paddingWeight;
+      originRect.x = (originRect.x + paddingWeight) * stageRatio;
+      originRect.y = (originRect.y + paddingWeight) * stageRatio;
+      originRect.width = (originRect.width - 2 * paddingWeight) * stageRatio;
+      originRect.height = (originRect.height - 2 * paddingWeight) * stageRatio;
 
       //计算预先实际移动后的区域
-      let movedBounds = { x: originRect.x + deltaX, y: originRect.y + deltaY, width: originRect.width + deltaWidth, height: originRect.height + deltaHeight }
 
+      let movedBounds = { x: originRect.x + deltaX, y: originRect.y + deltaY, width: originRect.width + deltaWidth, height: originRect.height + deltaHeight }
       //记录每一个图形的向量在原始矩形中的比例
       let originPosMap: Map<string, object> = new Map();
       //获取模型在原始模型中的位置比例
@@ -117,7 +118,6 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
         });
         originPosMap.set(id, { cpvR: cpvR, pvsR: pvsR });
       }
-
       //计算好原始比例后，按照增量扩展控件大小，并按照其旋转数字施加一个变换
       models.forEach(item => {
         item.cpv.x = parseFloat((movedBounds.x + movedBounds.width * originPosMap.get(item.id).cpvR.xR).toFixed(4))

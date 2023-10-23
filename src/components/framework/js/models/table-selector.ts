@@ -1,3 +1,4 @@
+import DDeiConfig from '../config';
 import DDeiEnumControlState from '../enums/control-state';
 import DDeiSelector from './selector';
 import DDeiTable from './table';
@@ -70,7 +71,7 @@ class DDeiTableSelector extends DDeiSelector {
     if (this.stage) {
       let stageRatio = parseFloat(this.stage.ratio) ? this.stage.ratio : 1.0
       if (!stageRatio || isNaN(stageRatio)) {
-        stageRatio = 1.0
+        stageRatio = DDeiConfig.STAGE_RATIO
       }
       return stageRatio
     } else {

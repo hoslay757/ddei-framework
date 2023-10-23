@@ -21,7 +21,7 @@ class DDeiStage {
     this.unicode = props.unicode ? props.unicode : DDeiUtil.getUniqueCode()
     this.histroy = props.histroy ? props.histroy : [];
     this.histroyIdx = props.histroyIdx || props.histroyIdx == 0 ? props.histroyIdx : -1;
-    this.ratio = props.ratio ? props.ratio : 1.0;
+    this.ratio = props.ratio ? props.ratio : DDeiConfig.STAGE_RATIO;
   }
 
   // ============================ 静态变量 ============================
@@ -157,7 +157,7 @@ class DDeiStage {
   getStageRatio(): number {
     let stageRatio = parseFloat(this.ratio) ? parseFloat(this.ratio) : 1.0
     if (!stageRatio || isNaN(stageRatio)) {
-      stageRatio = 1.0
+      stageRatio = DDeiConfig.STAGE_RATIO
     }
     return stageRatio
   }

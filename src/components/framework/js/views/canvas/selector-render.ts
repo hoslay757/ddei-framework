@@ -460,6 +460,29 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     let returnBounds = { x: this.model.x * stageRatio, y: this.model.y * stageRatio, width: this.model.width * stageRatio, height: this.model.height * stageRatio }
     //中心点
     let centerPointVector = this.model.cpv;
+    //如果选择器存在旋转，则变换x，y到未旋转的预期位置上
+    if (this.model.rotate) {
+      let tempPV = new Vector3(x, y, 1)
+      //计算input的正确打开位置，由节点0
+      let move1Matrix = new Matrix3(
+        1, 0, -centerPointVector.x,
+        0, 1, -centerPointVector.y,
+        0, 0, 1);
+      let angle = (this.model.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      let rotateMatrix = new Matrix3(
+        Math.cos(angle), Math.sin(angle), 0,
+        -Math.sin(angle), Math.cos(angle), 0,
+        0, 0, 1);
+      let move2Matrix = new Matrix3(
+        1, 0, centerPointVector.x,
+        0, 1, centerPointVector.y,
+        0, 0, 1);
+      let m1 = new Matrix3().premultiply(move1Matrix).premultiply(rotateMatrix).premultiply(move2Matrix);
+      tempPV.applyMatrix3(m1)
+      x = tempPV.x;
+      y = tempPV.y
+    }
+
     let wbh = returnBounds.width / returnBounds.height;
     switch (this.model.passIndex) {
       //上中

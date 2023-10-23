@@ -493,7 +493,7 @@ abstract class DDeiAbstractShape {
     if (this.stage) {
       let stageRatio = parseFloat(this.stage.ratio) ? parseFloat(this.stage.ratio) : 1.0
       if (!stageRatio || isNaN(stageRatio)) {
-        stageRatio = 1.0
+        stageRatio = DDeiConfig.STAGE_RATIO
       }
       return stageRatio
     } else {
