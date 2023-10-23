@@ -162,6 +162,18 @@ class DDeiStage {
     return stageRatio
   }
 
+  /**
+   * 设置全局缩放比率
+   */
+  setStageRatio(newValue: number = 1.0): void {
+    if (newValue != this.ratio) {
+      if (this.ratio || this.ratio == 0) {
+        this.oldRatio = this.ratio
+      }
+      this.ratio = newValue;
+    }
+  }
+
 
   /**
    * 隐藏图层

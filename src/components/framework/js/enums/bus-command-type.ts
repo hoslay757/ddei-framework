@@ -29,6 +29,7 @@ enum DDeiEnumBusCommandType {
   ModelCancelMerge = "model-cancel-merge",
   ModelAutoPos = "model-auto-pos",
   ChangeEditMode = "change-edit-mode",
+  ChangeStageRatio = "change-stage-ratio",
 }
 
 export default DDeiEnumBusCommandType
