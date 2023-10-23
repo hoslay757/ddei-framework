@@ -19,8 +19,15 @@ abstract class DDeiAbstractShape {
     this.rotate = props.rotate ? props.rotate : null
     this.modelCode = props.modelCode ? props.modelCode : null
     this.unicode = props.unicode ? props.unicode : DDeiUtil.getUniqueCode()
-    this.cpv = props.cpv;
-    this.pvs = props.pvs;
+    if (props.cpv) {
+      this.cpv = new Vector3(props.cpv.x, props.cpv.y, props.cpv.z);
+    }
+    if (props.pvs) {
+      this.pvs = [];
+      props.pvs.forEach(pv => {
+        this.pvs.push(new Vector3(pv.x, pv.y, pv.z));
+      });
+    }
     this.hpv = props.hpv ? props.hpv : [];
 
   }
@@ -69,12 +76,13 @@ abstract class DDeiAbstractShape {
    */
   initPVS() {
 
-    //全局缩放因子
-    let stageRatio = this.getStageRatio();
+
     if (!this.cpv) {
       this.cpv = new Vector3(0, 0, 1)
     }
     if (!this.pvs || this.pvs.length == 0) {
+      //全局缩放因子
+      let stageRatio = this.getStageRatio();
       this.pvs = [];
       this.pvs[0] = new Vector3(-this.width * stageRatio / 2, -this.height * stageRatio / 2, 1)
       this.pvs[1] = new Vector3(this.width * stageRatio / 2, -this.height * stageRatio / 2, 1)

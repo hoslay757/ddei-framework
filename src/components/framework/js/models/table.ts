@@ -1806,7 +1806,8 @@ class DDeiTable extends DDeiAbstractShape {
     model.rows = rows;
     model.cols = cols;
 
-
+    //基于初始化的宽度、高度，构建向量
+    model.initPVS();
     model.initRender();
     return model;
   }

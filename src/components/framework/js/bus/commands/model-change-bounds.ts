@@ -156,19 +156,6 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
 
         item.calRotate()
         item.calLoosePVS();
-
-        //如果当前是修改坐标，并且不改变容器大小，则按照容器比例更新子元素的大小
-        if (stage.render.selector.passIndex != 10 && stage.render.selector.passIndex != 11) {
-          //获取真实的容器控件
-          if (item.baseModelType == "DDeiContainer" || item.baseModelType == "DDeiTable") {
-            let changedBound = { x: item.x, y: item.y, width: item.width, height: item.height };
-            item.changeChildrenBounds(originBound, changedBound)
-            item.changeParentsBounds();
-          };
-          //pContainerModel修改上层容器直至layer的大小
-          parentContainer.changeParentsBounds()
-          parentContainer.setModelChanged()
-        }
       })
       return true;
     }

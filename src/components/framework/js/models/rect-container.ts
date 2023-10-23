@@ -46,6 +46,7 @@ class DDeiRectContainer extends DDeiRectangle {
     }
 
     container.models = models;
+    container.initPVS();
     container.initRender();
     return container;
   }

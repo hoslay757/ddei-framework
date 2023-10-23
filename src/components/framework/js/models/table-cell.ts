@@ -90,6 +90,7 @@ class DDeiTableCell extends DDeiRectContainer {
     }
 
     container.models = models;
+    container.initPVS();
     container.initRender();
     return container;
   }

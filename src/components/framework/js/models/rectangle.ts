@@ -42,6 +42,8 @@ class DDeiRectangle extends DDeiAbstractShape {
       model.pModel = model.layer;
     }
     tempData[model.id] = model;
+    //基于初始化的宽度、高度，构建向量
+    model.initPVS();
     model.initRender();
     return model;
   }
