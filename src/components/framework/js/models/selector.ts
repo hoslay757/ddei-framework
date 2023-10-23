@@ -227,7 +227,6 @@ class DDeiSelector extends DDeiRectangle {
         pvs[3].y += paddingWeight * stageRatio
         this.cpv = new Vector3(outRectBounds.x + outRectBounds.width / 2, outRectBounds.y + outRectBounds.height / 2, 1);
       }
-      debugger
       this.pvs = pvs;
       this.initHPV()
       this.calRotate();
@@ -309,26 +308,36 @@ class DDeiSelector extends DDeiRectangle {
    * 基于当前向量计算宽松判定向量
    */
   calLoosePVS(): void {
+    let stageRatio = this.stage?.getStageRatio();
     //宽松判定区域的宽度
     let looseWeight = DDeiConfig.SELECTOR.OPERATE_ICON.weight / 2;
     //复制当前向量
     let tempPVS = cloneDeep(this.pvs)
+    let move1Matrix = new Matrix3(
+      1, 0, -this.cpv.x,
+      0, 1, -this.cpv.y,
+      0, 0, 1);
+    tempPVS.forEach(fpv => {
+      fpv.applyMatrix3(move1Matrix)
+    });
     //获取旋转角度
     if (this.rotate && this.rotate != 0) {
       let angle = (this.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
-      let move1Matrix = new Matrix3(
-        1, 0, -this.cpv.x,
-        0, 1, -this.cpv.y,
-        0, 0, 1);
       let rotateMatrix = new Matrix3(
         Math.cos(angle), Math.sin(angle), 0,
         -Math.sin(angle), Math.cos(angle), 0,
         0, 0, 1);
       tempPVS.forEach(fpv => {
-        fpv.applyMatrix3(move1Matrix)
         fpv.applyMatrix3(rotateMatrix)
       });
     }
+    //计算宽、高信息，该值为不考虑缩放的大小
+    this.x = tempPVS[0].x / stageRatio
+    this.y = tempPVS[0].y / stageRatio
+    this.width = (tempPVS[1].x - tempPVS[0].x) / stageRatio
+    this.height = (tempPVS[3].y - tempPVS[0].y) / stageRatio
+
+
     this.loosePVS = []
     this.loosePVS[0] = new Vector3(tempPVS[0].x - looseWeight, tempPVS[0].y - looseWeight, 1)
     this.loosePVS[1] = new Vector3(tempPVS[0].x + (tempPVS[1].x - tempPVS[0].x) / 2 - looseWeight, tempPVS[0].y - looseWeight, 1)
@@ -346,15 +355,19 @@ class DDeiSelector extends DDeiRectangle {
         Math.cos(angle), Math.sin(angle), 0,
         -Math.sin(angle), Math.cos(angle), 0,
         0, 0, 1);
-      let move2Matrix = new Matrix3(
-        1, 0, this.cpv.x,
-        0, 1, this.cpv.y,
-        0, 0, 1);
       this.loosePVS.forEach(fpv => {
         fpv.applyMatrix3(rotateMatrix)
-        fpv.applyMatrix3(move2Matrix)
       });
     }
+    let move2Matrix = new Matrix3(
+      1, 0, this.cpv.x,
+      0, 1, this.cpv.y,
+      0, 0, 1);
+    this.loosePVS.forEach(fpv => {
+      fpv.applyMatrix3(move2Matrix)
+    });
+    this.x += this.cpv.x / stageRatio
+    this.y += this.cpv.y / stageRatio
   }
 
   /**

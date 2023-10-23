@@ -385,9 +385,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     if (this.model.passIndex >= 1 && this.model.passIndex <= 8) {
       let dragObj = {
         x: evt.offsetX,
-        y: evt.offsetY,
-        dx: this.model.centerPointVector.x - evt.offsetX,//鼠标在控件中心坐标的增量位置
-        dy: this.model.centerPointVector.y - evt.offsetY,
+        y: evt.offsetY
       }
       //获取当前层次选择的控件
       //计算移动后的坐标以及大小
@@ -461,10 +459,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     let stageRatio = this.stage?.getStageRatio();
     let returnBounds = { x: this.model.x * stageRatio, y: this.model.y * stageRatio, width: this.model.width * stageRatio, height: this.model.height * stageRatio }
     //中心点
-    let centerPointVector = this.model.centerPointVector;
-    //旋转角度
-    let rotate = this.model.rotate;
-    //高度和宽度的比例
+    let centerPointVector = this.model.cpv;
     let wbh = returnBounds.width / returnBounds.height;
     switch (this.model.passIndex) {
       //上中

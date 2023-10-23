@@ -322,45 +322,6 @@ class DDeiLayerCanvasRender {
     this.model.dragOutPoints = []
   }
 
-
-  /**
-   * 获取控件移动后的区域
-   * 考虑最小移动像素
-   * @param e 事件
-   * @param control 当前控件模型
-   * @returns 计算的坐标
-   */
-  getMovedBounds(evt, control: DDeiAbstractShape): object {
-    //获取移动后的坐标
-    let movedBounds = {
-      x: evt.offsetX + this.stageRender.dragObj.x,
-      y: evt.offsetY + this.stageRender.dragObj.y,
-      width: control.width,
-      height: control.height
-    }
-
-
-    // 计算图形拖拽后将要到达的坐标
-    if (DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
-      //辅助对齐线宽度
-      let helpLineWeight = DDeiConfig.GLOBAL_HELP_LINE_WEIGHT;
-
-      var mod = movedBounds.x % helpLineWeight
-      if (mod > helpLineWeight * 0.5) {
-        movedBounds.x = movedBounds.x + (helpLineWeight - mod)
-      } else {
-        movedBounds.x = movedBounds.x - mod
-      }
-      mod = movedBounds.y % helpLineWeight
-      if (mod > helpLineWeight * 0.5) {
-        movedBounds.y = movedBounds.y + (helpLineWeight - mod)
-      } else {
-        movedBounds.y = movedBounds.y - mod
-      }
-    }
-    return movedBounds
-  }
-
   /**
    * 获取单个点移动后的坐标增量
    * 考虑最小移动像素
@@ -794,21 +755,21 @@ class DDeiLayerCanvasRender {
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
           break;
         case DDeiEnumOperateState.CONTROL_CHANGING_BOUND:
+          let operateModels = []
           //同步影子元素的坐标大小等状态到当前模型
           this.model.shadowControls.forEach(item => {
             let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
             let model = this.stage?.getModelById(id)
             if (model) {
-              model.setBounds(item.x, item.y, item.width, item.height)
-              model.rotate = item.rotate
-              model.currentPointVectors = item.currentPointVectors
-              model.centerPointVector = item.centerPointVector
+              model.syncVectors(item)
               if (model.changeChildrenBounds) {
                 model.changeChildrenBounds();
               }
-              this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
+              operateModels.push(model)
             }
           })
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
+          this.stageRender.selector.updatePVSByModels(operateModels)
           this.model.shadowControls = [];
 
           break;
@@ -956,9 +917,7 @@ class DDeiLayerCanvasRender {
         let movedBounds = this.stageRender.selector.render.getMovedBounds(evt.offsetX, evt.offsetY, isCtrl);
         if (movedBounds) {
           let selector = this.stageRender.selector;
-          //除以缩放比例
-          let stageRatio = this.stage.getStageRatio()
-
+          let stageRatio = this.model.getStageRatio()
           let pushData = { x: evt.offsetX, y: evt.offsetY, deltaX: movedBounds.x - selector.x * stageRatio, deltaY: movedBounds.y - selector.y * stageRatio, deltaWidth: movedBounds.width - selector.width * stageRatio, deltaHeight: movedBounds.height - selector.height * stageRatio, selector: selector, models: this.model.shadowControls };
           this.model.opPoints = [];
           //更新dragObj临时变量中的数值,确保坐标对应关系一致

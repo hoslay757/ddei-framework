@@ -116,26 +116,35 @@ abstract class DDeiAbstractShape {
    * 基于当前向量计算宽松判定向量
    */
   calLoosePVS(): void {
+    let stageRatio = this.stage?.getStageRatio();
     //宽松判定区域的宽度
     let looseWeight = 10;
     //复制当前向量
     this.loosePVS = cloneDeep(this.pvs)
+    let move1Matrix = new Matrix3(
+      1, 0, -this.cpv.x,
+      0, 1, -this.cpv.y,
+      0, 0, 1);
+    this.loosePVS.forEach(fpv => {
+      fpv.applyMatrix3(move1Matrix)
+    });
     //获取旋转角度
     if (this.rotate && this.rotate != 0) {
       let angle = (this.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
-      let move1Matrix = new Matrix3(
-        1, 0, -this.cpv.x,
-        0, 1, -this.cpv.y,
-        0, 0, 1);
       let rotateMatrix = new Matrix3(
         Math.cos(angle), Math.sin(angle), 0,
         -Math.sin(angle), Math.cos(angle), 0,
         0, 0, 1);
       this.loosePVS.forEach(fpv => {
-        fpv.applyMatrix3(move1Matrix)
         fpv.applyMatrix3(rotateMatrix)
       });
     }
+    //计算宽、高信息，该值为不考虑缩放的大小
+    this.x = this.loosePVS[0].x / stageRatio
+    this.y = this.loosePVS[0].y / stageRatio
+    this.width = (this.loosePVS[1].x - this.loosePVS[0].x) / stageRatio
+    this.height = (this.loosePVS[3].y - this.loosePVS[0].y) / stageRatio
+
     this.loosePVS[0].x -= looseWeight;
     this.loosePVS[0].y -= looseWeight;
     this.loosePVS[1].x += looseWeight;
@@ -152,15 +161,20 @@ abstract class DDeiAbstractShape {
         Math.cos(angle), Math.sin(angle), 0,
         -Math.sin(angle), Math.cos(angle), 0,
         0, 0, 1);
-      let move2Matrix = new Matrix3(
-        1, 0, this.cpv.x,
-        0, 1, this.cpv.y,
-        0, 0, 1);
       this.loosePVS.forEach(fpv => {
         fpv.applyMatrix3(rotateMatrix)
-        fpv.applyMatrix3(move2Matrix)
       });
     }
+    let move2Matrix = new Matrix3(
+      1, 0, this.cpv.x,
+      0, 1, this.cpv.y,
+      0, 0, 1);
+    this.loosePVS.forEach(fpv => {
+      fpv.applyMatrix3(move2Matrix)
+    });
+    //计算宽、高信息，该值为不考虑缩放的大小
+    this.x += this.cpv.x / stageRatio
+    this.y += this.cpv.y / stageRatio
   }
 
   /**
@@ -195,7 +209,6 @@ abstract class DDeiAbstractShape {
       angle = -angle
     }
     this.rotate = angle;
-    console.log(this.id + "  " + this.rotate)
   }
 
   /**
