@@ -225,8 +225,10 @@ export default {
         }
       });
 
-      let model: DDeiAbstractShape =
-        this.controlCls[control.type].initByJSON(dataJson);
+      let model: DDeiAbstractShape = this.controlCls[control.type].initByJSON(
+        dataJson,
+        { currentStage: ddInstance.stage }
+      );
       model.setState(DDeiEnumControlState.CREATING);
 
       e.dataTransfer.setDragImage(this.creatingImg, 0, 0);

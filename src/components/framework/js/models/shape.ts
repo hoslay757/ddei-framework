@@ -480,6 +480,13 @@ abstract class DDeiAbstractShape {
   }
 
   /**
+   * 返回计算后的坐标、大小
+   */
+  getBounds(): object {
+    return { x: this.x, y: this.y, width: this.width, height: this.height, x1: this.x + this.width, y1: this.y + this.height }
+  }
+
+  /**
    * 获取画布缩放比率
    */
   getStageRatio(): number {

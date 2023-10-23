@@ -95,9 +95,14 @@ class DDeiTableCell extends DDeiRectContainer {
   }
 
   // 通过JSON初始化对象，数据未传入时将初始化数据
-  static initByJSON(json): DDeiTableCell {
-    let shape = new DDeiTableCell(json);
-    return shape;
+  static initByJSON(json, tempData: object = {}): DDeiTableCell {
+    let model = new DDeiTableCell(json);
+    model.layer = tempData['currentLayer']
+    model.stage = tempData['currentStage']
+    model.pModel = tempData['currentContainer']
+    //基于初始化的宽度、高度，构建向量
+    model.initPVS();
+    return model;
   }
 
   //类名，用于反射和动态加载
