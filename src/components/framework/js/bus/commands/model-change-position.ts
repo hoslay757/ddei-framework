@@ -6,6 +6,7 @@ import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
 import { Matrix3, Vector3 } from 'three';
 import DDeiLayoutManagerFactory from '../../layout/layout-manager-factory';
+import { has } from 'lodash';
 /**
  * 改变模型坐标的总线Command
  */
@@ -57,7 +58,16 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
 
       let models = data.models;
       let stage = bus.ddInstance.stage;
+      let fModel = null
+      if (models[0].id.lastIndexOf("_shadow") != -1) {
+        fModel = stage?.getModelById(models[0].id.substring(models[0].id, models[0].id.lastIndexOf("_shadow")))
+      } else {
+        fModel = models[0];
+      }
 
+      //横纵吸附
+      let hAds = fModel.layer.render.helpLines?.hAds || fModel.layer.render.helpLines?.hAds == 0 ? fModel.layer.render.helpLines?.hAds : Infinity
+      let vAds = fModel.layer.render.helpLines?.vAds || fModel.layer.render.helpLines?.vAds == 0 ? fModel.layer.render.helpLines?.vAds : Infinity
       models.forEach(model => {
         let dx = 0
         let dy = 0
@@ -65,14 +75,53 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
           dx = dragObj[model.id]?.dx ? dragObj[model.id]?.dx : 0;
           dy = dragObj[model.id]?.dy ? dragObj[model.id]?.dy : 0
         }
+        let xm = x - model.cpv.x + dx;
+        let ym = y - model.cpv.y + dy;
+        if (hAds != Infinity) {
+          //退出吸附状态
+          if (stage.render.isHAds && Math.abs(stage.render.hAdsY - y) > DDeiConfig.GLOBAL_ADV_WEIGHT) {
+            stage.render.isHAds = false
+            stage.render.hAdsY = Infinity
+          }
+          //持续吸附状态
+          else if (stage.render.isHAds) {
+            ym = 0
+          }
+          //进入吸附状态
+          else {
+            stage.render.isHAds = true
+            ym = -hAds
+            stage.render.hAdsY = y
+          }
+        }
+        if (vAds != Infinity) {
+          //退出吸附状态
+          if (stage.render.isVAds && Math.abs(stage.render.vAdsX - x) > DDeiConfig.GLOBAL_ADV_WEIGHT) {
+            stage.render.isVAds = false
+            stage.render.vAdsX = Infinity
+          }
+          //持续吸附状态
+          else if (stage.render.isVAds) {
+            xm = 0
+          }
+          //进入吸附状态
+          else {
+            stage.render.isVAds = true
+            xm = -vAds
+            stage.render.vAdsX = x
+          }
+        } else {
+          stage.render.isVAds = false
+        }
+
         let moveMatrix = new Matrix3(
-          1, 0, x - model.cpv.x + dx,
-          0, 1, y - model.cpv.y + dy,
+          1, 0, xm,
+          0, 1, ym,
           0, 0, 1,
         );
+
         model.transVectors(moveMatrix);
       });
-
       models[0].layer.dragInPoints = []
       models[0].layer.dragOutPoints = []
       //设置移入移出效果的向量

@@ -58,11 +58,15 @@ class DDeiBusCommandSetHelpLine extends DDeiBusCommand {
             centerPV = stage.render.selector.cpv
             rotate = stage.render.selector.rotate
           }
-
-          //显示辅助对齐线、坐标文本等图形
+          // 获取计算并获取对齐的点
+          let { hpoint, vpoint, hAds, vAds } = stage.getAlignData({ pvs: outPVS, cpv: centerPV, rotate: rotate }, data?.models)
           layer.render.helpLines = {
-            data: { pvs: outPVS, cpv: centerPV, rotate: rotate },
-            models: data?.models
+            hpoint: hpoint,
+            vpoint: vpoint,
+            pvs: outPVS,
+            cpv: centerPV,
+            hAds: hAds,
+            vAds: vAds
           };
           return true;
         } else {

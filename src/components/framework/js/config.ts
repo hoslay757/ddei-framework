@@ -86,6 +86,9 @@ class DDeiConfig {
   // 缺省辅助线宽度
   static GLOBAL_HELP_LINE_WEIGHT: number = 10;
 
+  // 缺省吸附效果宽度，小于0时没有吸附效果
+  static GLOBAL_ADV_WEIGHT: number = 4;
+
   //不需要序列化的字段
   static SERI_FIELDS: object = {
     "DDei": { "TOJSON": ["stage"], "SKIP": ["bus", "render", "unicode", "editMode"] },

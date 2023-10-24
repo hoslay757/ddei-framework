@@ -328,13 +328,16 @@ class DDeiStage {
    * @param souceModels 源模型,可能包含多个
    * @returns 
    */
-  getAlignModels(data: object, souceModels: Map<string, DDeiAbstractShape> | Array<DDeiAbstractShape>): object {
+  getAlignData(data: object, souceModels: Map<string, DDeiAbstractShape> | Array<DDeiAbstractShape>): object {
     //若干条横线和竖线
 
     let hpoint = {}
     let vpoint = {}
     let hasH = false
     let hasV = false
+    //吸附
+    let hAds = Infinity;
+    let vAds = Infinity;
 
     // 排除源模型
     if (souceModels.set) {
@@ -378,6 +381,9 @@ class DDeiStage {
               hpoint[pvy].ex = Math.max(hpoint[pvy].sx, pvx, mpvx)
             }
           }
+          if (hAds == Infinity && Math.abs(pvy - mpvy) <= DDeiConfig.GLOBAL_ADV_WEIGHT) {
+            hAds = pvy - mpvy;
+          }
           //纵向相等
           if (pvx == mpvx) {
             hasV = true;
@@ -388,11 +394,14 @@ class DDeiStage {
               vpoint[pvx].ey = Math.max(vpoint[pvx].sy, pvy, mpvy)
             }
           }
+          if (vAds == Infinity && Math.abs(pvx - mpvx) <= DDeiConfig.GLOBAL_ADV_WEIGHT) {
+            vAds = pvx - mpvx;
+          }
         });
       });
     })
-
-    return { hpoint: hasH ? hpoint : null, vpoint: hasV ? vpoint : null }
+    console.log(hAds)
+    return { hpoint: hasH ? hpoint : null, vpoint: hasV ? vpoint : null, hAds: hAds, vAds: vAds }
   }
 
   /**

@@ -94,11 +94,7 @@ class DDeiLayerCanvasRender {
 
 
       //绘制辅助线
-      if (this.helpLines && this.helpLines.data && this.helpLines.models) {
-        this.drawHelpLines()
-        this.helpLines = null
-      }
-
+      this.drawHelpLines()
       this.modelChanged = false;
     }
   }
@@ -345,9 +341,15 @@ class DDeiLayerCanvasRender {
   */
   drawHelpLines(): void {
     // 未开启主线提示，则不再计算辅助线提示定位
-    if (DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
-      let data = this.helpLines.data;
-      let models = this.helpLines.models;
+    if (DDeiConfig.GLOBAL_HELP_LINE_ENABLE && this.helpLines) {
+      let hpoint = this.helpLines.hpoint;
+      let vpoint = this.helpLines.vpoint;
+      let pvs = this.helpLines.pvs;
+      let cpv = this.helpLines.cpv;
+      let textPV = cpv;
+      if (pvs?.length > 0) {
+        textPV = pvs[0];
+      }
 
       //获得 2d 上下文对象
       let canvas = this.ddRender.getCanvas();
@@ -367,11 +369,11 @@ class DDeiLayerCanvasRender {
       //设置字体颜色
       ctx.fillStyle = "red"
       //执行绘制
-      ctx.fillText(data.pvs[0].x.toFixed(0) + "," + data.pvs[0].y.toFixed(0), data.pvs[0].x * rat1 - 30, data.pvs[0].y * rat1 - 30);
+      if (textPV) {
+        ctx.fillText(textPV.x.toFixed(0) + "," + textPV.y.toFixed(0), textPV.x * rat1 - 30, textPV.y * rat1 - 30);
+      }
       // 计算对齐辅助线
       if (DDeiConfig.GLOBAL_HELP_LINE_ALIGN_ENABLE) {
-        // 获取对齐的模型
-        let { hpoint, vpoint } = this.stage.getAlignModels(data, models)
 
         //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
         let lineOffset = 1 * ratio / 2;
@@ -404,6 +406,7 @@ class DDeiLayerCanvasRender {
 
       //恢复状态
       ctx.restore();
+      this.helpLines = null;
     }
   }
   // ============================== 事件 ===============================
@@ -822,10 +825,10 @@ class DDeiLayerCanvasRender {
             pushData.newContainer = lastOnContainer
           }
 
+          //设置辅助线
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.SetHelpLine, { models: this.model.shadowControls }, evt);
           //修改所有选中控件坐标
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangePosition, pushData, evt);
-          //修改辅助线
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.SetHelpLine, { models: this.model.shadowControls }, evt);
           //渲染图形
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
         }
