@@ -849,14 +849,7 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
     outRect = { x: outRect.x + outRect.width / 2, y: outRect.y + outRect.height / 2 }
     models.forEach(item => {
       if (mode == 'copy') {
-        stage.idIdx++
-        let newId = ""
-        if (item.id.indexOf("_") != -1) {
-          newId = item.id.substring(0, item.id.indexOf("_")) + "_" + stage.idIdx;
-        } else {
-          newId = item.id + "_cp_" + stage.idIdx;
-        }
-        item.id = newId
+        this.changeModelId(stage, item)
       }
       let cpx = item.cpv.x;
       let cpy = item.cpv.y;
@@ -873,6 +866,54 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
     stage.ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeContainer, { newContainer: container, models: models }, evt);
     stage.ddInstance.bus.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
     stage.ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeSelect, { models: models, value: DDeiEnumControlState.SELECTED }, evt);
+  }
+
+  /**
+   * 修改模型ID
+   * @param stage 舞台
+   * @param item 控件
+   * @return 新的ID
+   */
+  changeModelId(stage: DDeiStage, item: DDeiAbstractShape): string {
+    stage.idIdx++
+    let newId = ""
+    if (item.id.indexOf("_") != -1) {
+      newId = item.id.substring(0, item.id.lastIndexOf("_")) + "_" + stage.idIdx;
+    } else {
+      newId = item.id + "_cp_" + stage.idIdx;
+    }
+    item.id = newId
+    let accuContainer = item.getAccuContainer()
+    if (accuContainer?.baseModelType == 'DDeiContainer') {
+      let midList: string = []
+      let models: Map<string, DDeiAbstractShape> = new Map<string, DDeiAbstractShape>();
+      accuContainer.midList.forEach(mid => {
+        let model = accuContainer.models.get(mid);
+        let modelNewId = this.changeModelId(stage, model)
+        models.set(modelNewId, model)
+        midList.push(modelNewId)
+      })
+      accuContainer.models = models
+      accuContainer.midList = midList
+    } else if (accuContainer?.baseModelType == 'DDeiTable') {
+      for (let i = 0; i < accuContainer.rows; i++) {
+        let rowObj = accuContainer.rows[i];
+        for (let j = 0; j < rowObj.length; j++) {
+          let accuContainer = rowObj[j].getAccuContainer()
+          let midList: string[] = []
+          let models: Map<string, DDeiAbstractShape> = new Map<string, DDeiAbstractShape>();
+          accuContainer.midList.forEach(mid => {
+            let model = accuContainer.models.get(mid);
+            let modelNewId = this.changeModelId(stage, model)
+            models.set(modelNewId, model)
+            midList.push(modelNewId)
+          })
+          accuContainer.models = models
+          accuContainer.midList = midList
+        }
+      }
+    }
+    return newId;
   }
 
   //创建新的图片控件
