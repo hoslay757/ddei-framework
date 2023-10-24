@@ -1,5 +1,7 @@
 import DDeiAbstractShape from "../../models/shape";
 import DDeiLayoutManager from "../layout-manager";
+import { Matrix3, Vector3 } from 'three';
+import DDeiConfig from "../../config";
 
 /**
  * 填充布局
@@ -14,10 +16,47 @@ class DDeiLayoutManagerFull extends DDeiLayoutManager {
   changeSubModelBounds(): void {
     if (this.container.models.size == 1) {
       let model = Array.from(this.container.models.values())[0];
-      model.setBounds(0, 0, this.container.width, this.container.height)
-      if (model.changeChildrenBounds) {
-        model.changeChildrenBounds();
+      //基于当前容器构建缩放矩阵，将内部控件的向量，缩放到当前容器的大小，再位移到容器中心
+      let m1 = new Matrix3()
+      //移动到原点
+      let moveZeroMatrix = new Matrix3(
+        1, 0, - model.cpv.x,
+        0, 1, - model.cpv.y,
+        0, 0, 1);
+      m1.premultiply(moveZeroMatrix)
+      //旋转到0度
+      if (model.rotate) {
+        let angle = (model.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+        let rotateMatrix = new Matrix3(
+          Math.cos(angle), Math.sin(angle), 0,
+          -Math.sin(angle), Math.cos(angle), 0,
+          0, 0, 1);
+        m1.premultiply(rotateMatrix)
       }
+      //构建缩放矩阵
+      let scaleMatrix = new Matrix3(
+        this.container.width / model.width, 0, 0,
+        0, this.container.height / model.height, 0,
+        0, 0, 1);
+      m1.premultiply(scaleMatrix)
+      //旋转到回原始角度
+      if (model.rotate) {
+        let angle = -(model.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+        let rotateMatrix = new Matrix3(
+          Math.cos(angle), Math.sin(angle), 0,
+          -Math.sin(angle), Math.cos(angle), 0,
+          0, 0, 1);
+        m1.premultiply(rotateMatrix)
+      }
+      //位移到contain点
+      let moveContainerMatrix = new Matrix3(
+        1, 0, this.container.cpv.x,
+        0, 1, this.container.cpv.y,
+        0, 0, 1);
+      m1.premultiply(moveContainerMatrix)
+      //应用变换
+      model.transVectors(m1)
+
     }
   }
 
@@ -61,45 +100,40 @@ class DDeiLayoutManagerFull extends DDeiLayoutManager {
   }
 
   append(x: number, y: number, models: DDeiAbstractShape[]): boolean {
-
     let item = models[0];
     let oldModel = null;
-    let itemOriginPosition = null;
     if (this.container.models.size == 1) {
       oldModel = Array.from(this.container.models.values())[0];
     }
     let oldContainer = item.pModel;
     let newContainer = this.container;
-    //转换坐标，获取最外层的坐标
-    let itemAbsPos = item.getAbsPosition();
-    let itemAbsRotate = item.getAbsRotate();
     //将元素从就容器移出
     oldContainer.removeModel(item);
-    let loAbsPos = newContainer.getAbsPosition();
-    let loAbsRotate = newContainer.getAbsRotate();
-    item.setPosition(itemAbsPos.x - loAbsPos.x, itemAbsPos.y - loAbsPos.y)
-    item.rotate = itemAbsRotate - loAbsRotate
     newContainer.addModel(item);
     //绑定并初始化渲染器
     item.initRender();
     //如果已有控件，则交换两个控件的位置
     if (oldModel) {
       newContainer.removeModel(oldModel);
-      //坐标为移入控件的坐标
-      if (item.dragOriginX || item.dragOriginX == 0) {
-        oldModel.setBounds(item.dragOriginX, item.dragOriginY, item.dragOriginWidth, item.dragOriginHeight);
-        item.dragOriginX = null;
-        item.dragOriginY = null;
-        item.dragOriginWidth = null;
-        item.dragOriginHeight = null;
-      } else if (itemOriginPosition) {
-        oldModel.setPosition(itemOriginPosition.x, itemOriginPosition.y);
-      }
 
       //交换
       oldContainer.addModel(oldModel);
+      //坐标为移入控件的坐标
+      if (item.originCPV && item.originPVS) {
+        oldModel.cpv = item.originCPV
+        oldModel.pvs = item.originPVS
+        let rotate = oldModel.rotate
+        oldModel.initPVS();
+        oldModel.setRotate(rotate)
+        item.originCPV = null;
+        item.originPVS = null;
+
+      } else {
+        oldModel.syncVectors(item, true)
+      }
       //绑定并初始化渲染器
       oldModel.initRender();
+
       let oldAbsPos = oldContainer.getAbsPosition();
       oldContainer.layoutManager?.updateLayout(oldAbsPos.x, oldAbsPos.y, [oldModel]);
     }

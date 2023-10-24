@@ -46,14 +46,20 @@ class DDeiRectContainer extends DDeiRectangle {
     }
 
     container.models = models;
+    container.initPVS();
     container.initRender();
     return container;
   }
 
   // 通过JSON初始化对象，数据未传入时将初始化数据
-  static initByJSON(json): DDeiRectContainer {
-    let container = new DDeiRectContainer(json);
-    return container;
+  static initByJSON(json, tempData: object = {}): DDeiRectContainer {
+    let model = new DDeiRectContainer(json);
+    model.layer = tempData['currentLayer']
+    model.stage = tempData['currentStage']
+    model.pModel = tempData['currentContainer']
+    //基于初始化的宽度、高度，构建向量
+    model.initPVS();
+    return model;
   }
 
   //类名，用于反射和动态加载
@@ -137,6 +143,29 @@ class DDeiRectContainer extends DDeiRectangle {
   }
 
   /**
+  * 变换向量
+  */
+  transVectors(matrix: Matrix3): void {
+    super.transVectors(matrix)
+    this.midList.forEach(key => {
+      let item = this.models.get(key);
+      item.transVectors(matrix)
+    });
+  }
+
+  /**
+  * 变换向量,只能用于两个结构和数据相同的变量进行交换，如影子控件
+  */
+  syncVectors(source: Matrix3): void {
+    super.syncVectors(source)
+    this.midList.forEach(key => {
+      let itemDist: DDeiAbstractShape = this.models.get(key);
+      let itemSource: DDeiAbstractShape = source.models.get(key);
+      itemDist.syncVectors(itemSource)
+    });
+  }
+
+  /**
    * 获取实际的内部容器控件
    * @return 容器控件根据布局的模式不同返回不同的内部控件，普通控件返回null
    */
@@ -152,6 +181,22 @@ class DDeiRectContainer extends DDeiRectangle {
    */
   getAccuContainerByPos(x: number, y: number): DDeiAbstractShape {
     return this.layoutManager ? this.layoutManager.getAccuContainerByPos(x, y) : this;
+  }
+
+  /**
+   * 获取子模型
+   */
+  getSubModels(): DDeiAbstractShape[] {
+    let models: DDeiAbstractShape[] = [];
+    this.midList.forEach(mid => {
+      let subModel = this.models.get(mid)
+      if (subModel.getSubModels) {
+        let subModels = subModel.getSubModels();
+        models = models.concat(subModels)
+      }
+      models.push(subModel);
+    })
+    return models;
   }
 
   /**

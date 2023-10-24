@@ -1,11 +1,12 @@
+
+import type DDeiBus from '@/components/framework/js/bus/bus';
+import DDeiBusCommand from '@/components/framework/js/bus/bus-command';
 import DDeiEnumBusCommandType from '../../enums/bus-command-type';
-import DDeiEnumOperateState from '../../enums/operate-state';
-import DDeiBus from '../bus';
-import DDeiBusCommand from '../bus-command';
 /**
- * 清空临时变量的总线Command
+ * 用于通知变化的总线Command
+ * 在变化后发出通知，让外部拦截器捕获
  */
-class DDeiBusCommandClearTemplateVars extends DDeiBusCommand {
+class DDeiCommandChangeNodifyChange extends DDeiBusCommand {
   // ============================ 构造函数 ============================
 
   // ============================ 静态方法 ============================
@@ -31,22 +32,6 @@ class DDeiBusCommandClearTemplateVars extends DDeiBusCommand {
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
 
-    let stage = bus.ddInstance.stage;
-    if (stage) {
-      //当前操作控件：无
-      stage.render.currentOperateShape = null;
-      //当前操作状态:无
-      stage.render.operateState = DDeiEnumOperateState.NONE;
-      //渲染图形
-      stage.render.dragObj = null
-
-      //吸附状态
-      stage.render.isHAds = false;
-      stage.render.isVAds = false;
-
-      //清除作为临时变量dragX、dargY、dragObj
-      stage.render.selector.setPassIndex(-1);
-    }
     return true;
 
   }
@@ -67,10 +52,10 @@ class DDeiBusCommandClearTemplateVars extends DDeiBusCommand {
    * @returns 
    */
   static newInstance(): DDeiBusCommand {
-    return new DDeiBusCommandClearTemplateVars({ code: DDeiEnumBusCommandType.ClearTemplateVars, name: "", desc: "" })
+    return new DDeiCommandChangeNodifyChange({ code: DDeiEnumBusCommandType.NodifyChange, name: "", desc: "" })
   }
 
 }
 
 
-export default DDeiBusCommandClearTemplateVars
+export default DDeiCommandChangeNodifyChange

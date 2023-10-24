@@ -115,14 +115,31 @@ class DDeiLayer {
    */
   getStageRatio(): number {
     if (this.stage) {
-      let stageRatio = parseFloat(this.stage.ratio) ? this.stage.ratio : 1.0
+      let stageRatio = parseFloat(this.stage.ratio) ? parseFloat(this.stage.ratio) : 1.0
       if (!stageRatio || isNaN(stageRatio)) {
-        stageRatio = 1.0
+        stageRatio = DDeiConfig.STAGE_RATIO
       }
       return stageRatio
     } else {
       return 1.0
     }
+  }
+
+
+  /**
+   * 获取子模型
+   */
+  getSubModels(): DDeiAbstractShape[] {
+    let models: DDeiAbstractShape[] = [];
+    this.midList.forEach(mid => {
+      let subModel = this.models.get(mid)
+      if (subModel.getSubModels) {
+        let subModels = subModel.getSubModels();
+        models = models.concat(subModels)
+      }
+      models.push(subModel);
+    })
+    return models;
   }
 
   /**
@@ -315,7 +332,7 @@ class DDeiLayer {
     let controls = [];
     this.models.forEach((item) => {
       //如果射线相交，则视为选中
-      if (DDeiAbstractShape.isInsidePolygon(item.getRotatedPoints(), { x: x, y: y })) {
+      if (DDeiAbstractShape.isInsidePolygon(item.pvs, { x: x, y: y })) {
         controls.push(item);
       }
     });
@@ -442,7 +459,7 @@ class DDeiLayer {
               }
             });
             json[i] = array;
-          } else if (this[i].set) {
+          } else if (this[i].set && this[i].has) {
             let map = {};
             this[i].forEach((element, key) => {
               if (element?.toJSON) {

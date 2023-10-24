@@ -12,6 +12,9 @@ import DDeiCanvasRender from './ddei-render.js';
 import DDeiLayerCanvasRender from './layer-render.js';
 import DDeiAbstractShapeRender from './shape-render-base.js';
 import DDeiStageCanvasRender from './stage-render.js';
+import { cloneDeep } from 'lodash'
+import { Matrix3, Vector3 } from 'three';
+
 
 /**
  * DDeiRectangle的渲染器类，用于渲染矩形
@@ -83,30 +86,32 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
   drawShape(): void {
 
     let modelChanged = this.model.isModelChanged();
-    if (modelChanged) {
-      //计算旋转矩阵
-      this.model.calRotatePointVectors();
-    }
+    // if (modelChanged) {
+    //   //计算旋转矩阵
+    //   this.model.calRotatePointVectors();
+    // }
     //绘制边框
     this.drawBorder();
 
     //绘制填充
     this.drawFill();
 
-    //绘制图片
+    // //绘制图片
     this.drawImage();
 
-    //绘制文本
+    // //绘制文本
     this.drawText();
 
-    if (modelChanged) {
-      //清空旋转矩阵
-      this.model.currentPointVectors = this.model.pointVectors;
-      this.model.pointVectors = null;
-      this.model.currentLoosePointVectors = this.model.loosePointVectors;
-      this.model.loosePointVectors = null;
-    }
+    // if (modelChanged) {
+    //   //清空旋转矩阵
+    //   this.model.currentPointVectors = this.model.pointVectors;
+    //   this.model.pointVectors = null;
+    //   this.model.currentLoosePointVectors = this.model.loosePointVectors;
+    //   this.model.loosePointVectors = null;
+    // }
 
+    //清空绘图时计算的临时变量
+    this.tempFillAreaRect = null
   }
 
   /**
@@ -155,15 +160,13 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
    * @param tempBorder 临时边框，优先级最高
    * @param usePV 是否采用向量输出
    */
-  drawBorder(tempBorder: object | null, usePV: boolean = false): void {
+  drawBorder(tempBorder: object | null): void {
     //获得 2d 上下文对象
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
     let stageRatio = this.model.getStageRatio()
     let ratio = this.ddRender.ratio * stageRatio;
-    //转换为缩放后的坐标
-    let ratPos = this.getBorderRatPos();
 
     //1,2,3,4 上，右，下，左
     for (let i = 1; i <= 4; i++) {
@@ -179,10 +182,6 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       if (!disabled && color && (!opacity || opacity > 0) && width > 0) {
         //保存状态
         ctx.save();
-        //设置旋转
-        if (!usePV) {
-          this.doRotate(ctx, ratPos);
-        }
 
         //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
         let lineOffset = 1 * ratio / 2;
@@ -200,39 +199,24 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
         //颜色
         ctx.strokeStyle = DDeiUtil.getColor(color);
 
-        if (usePV) {
-          let pvs = this.model.currentPointVectors;
-          if (pvs?.length > 0) {
-            let rat1 = this.ddRender.ratio;
-            if (i == 4) {
-              ctx.moveTo(pvs[i - 1].x * rat1 + lineOffset + lineWidth / 2, pvs[i - 1].y * rat1 + lineOffset);
-              ctx.lineTo(pvs[0].x * rat1 + lineOffset + lineWidth / 2, pvs[0].y * rat1 + lineOffset);
-            } else if (i == 1) {
-              ctx.moveTo(pvs[i - 1].x * rat1 + lineWidth + lineOffset, pvs[i - 1].y * rat1 + lineWidth / 2 + lineOffset);
-              ctx.lineTo(pvs[i].x * rat1 + lineOffset, pvs[i].y * rat1 + lineWidth / 2 + lineOffset);
-            } else if (i == 2) {
-              ctx.moveTo(pvs[i - 1].x * rat1 + lineOffset - lineWidth / 2, pvs[i - 1].y * rat1 + lineOffset);
-              ctx.lineTo(pvs[i].x * rat1 + lineOffset - lineWidth / 2, pvs[i].y * rat1 + lineOffset);
-            } else if (i == 3) {
-              ctx.moveTo(pvs[i - 1].x * rat1 + lineOffset, pvs[i - 1].y * rat1 + lineOffset - lineWidth / 2);
-              ctx.lineTo(pvs[i].x * rat1 + lineOffset, pvs[i].y * rat1 + lineOffset - lineWidth / 2);
-            }
-          }
-        } else {
-          if (i == 1) {
-            ctx.moveTo(ratPos.x + lineWidth + lineOffset, ratPos.y + lineWidth / 2 + lineOffset);
-            ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + lineWidth / 2 + lineOffset);
+        let pvs = this.model.pvs;
+        if (pvs?.length > 0) {
+          let rat1 = this.ddRender.ratio;
+          if (i == 4) {
+            ctx.moveTo(pvs[i - 1].x * rat1 + lineOffset + lineWidth / 2, pvs[i - 1].y * rat1 + lineOffset);
+            ctx.lineTo(pvs[0].x * rat1 + lineOffset + lineWidth / 2, pvs[0].y * rat1 + lineOffset);
+          } else if (i == 1) {
+            ctx.moveTo(pvs[i - 1].x * rat1 + lineWidth + lineOffset, pvs[i - 1].y * rat1 + lineWidth / 2 + lineOffset);
+            ctx.lineTo(pvs[i].x * rat1 + lineOffset, pvs[i].y * rat1 + lineWidth / 2 + lineOffset);
           } else if (i == 2) {
-            ctx.moveTo(ratPos.x + ratPos.width + lineOffset - lineWidth / 2, ratPos.y + lineOffset);
-            ctx.lineTo(ratPos.x + ratPos.width + lineOffset - lineWidth / 2, ratPos.y + ratPos.height + lineOffset);
+            ctx.moveTo(pvs[i - 1].x * rat1 + lineOffset - lineWidth / 2, pvs[i - 1].y * rat1 + lineOffset);
+            ctx.lineTo(pvs[i].x * rat1 + lineOffset - lineWidth / 2, pvs[i].y * rat1 + lineOffset);
           } else if (i == 3) {
-            ctx.moveTo(ratPos.x + lineOffset, ratPos.y + ratPos.height + lineOffset - lineWidth / 2);
-            ctx.lineTo(ratPos.x + ratPos.width + lineOffset, ratPos.y + ratPos.height + lineOffset - lineWidth / 2);
-          } else if (i == 4) {
-            ctx.moveTo(ratPos.x + lineWidth / 2 + lineOffset, ratPos.y + lineOffset);
-            ctx.lineTo(ratPos.x + lineWidth / 2 + lineOffset, ratPos.y + ratPos.height + lineOffset);
+            ctx.moveTo(pvs[i - 1].x * rat1 + lineOffset, pvs[i - 1].y * rat1 + lineOffset - lineWidth / 2);
+            ctx.lineTo(pvs[i].x * rat1 + lineOffset, pvs[i].y * rat1 + lineOffset - lineWidth / 2);
           }
         }
+
         ctx.stroke();
         //恢复状态
         ctx.restore();
@@ -253,20 +237,13 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
       //获取全局缩放比例
-      let stageRatio = parseFloat(this.stage.ratio) ? this.stage.ratio : 1.0
-      if (!stageRatio || isNaN(stageRatio)) {
-        stageRatio = 1.0
-      }
-      let ratio = this.ddRender.ratio * stageRatio;
-      //计算填充的原始区域
-      let fillAreaE = this.getFillArea();
-      //转换为缩放后的坐标
-      let ratPos = DDeiUtil.getRatioPosition(fillAreaE, ratio);
+      let stageRatio = this.model.getStageRatio()
+      let rat1 = this.ddRender.ratio;
+      let ratio = rat1 * stageRatio;
+      let fillRect = this.tempFillAreaRect;
       //缩放填充区域
       //保存状态
       ctx.save();
-      //设置旋转角度
-      this.doRotate(ctx, ratPos);
 
       //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
       let imgFillInfo = this.getCachedValue("image.opacity");
@@ -275,7 +252,11 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
         ctx.globalAlpha = imgFillInfo
       }
       let lineOffset = 1 * ratio / 2;
-      ctx.drawImage(this.imgObj, ratPos.x + lineOffset, ratPos.y + lineOffset, ratPos.width, ratPos.height);
+      ctx.translate(this.model.cpv.x * rat1, this.model.cpv.y * rat1)
+      ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
+      ctx.translate(-this.model.cpv.x * rat1, -this.model.cpv.y * rat1)
+      //绘制图片
+      ctx.drawImage(this.imgObj, (this.model.cpv.x - fillRect.width / 2) * rat1 + lineOffset, (this.model.cpv.y - fillRect.height / 2) * rat1 + lineOffset, fillRect.width * rat1, fillRect.height * rat1);
 
       //恢复状态
       ctx.restore();
@@ -289,33 +270,40 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     //获得 2d 上下文对象
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
+    //计算填充的原始区域
+    let fillPVS = this.getFillAreaPVS();
     //获取全局缩放比例
     let stageRatio = this.model.getStageRatio()
-    let ratio = this.ddRender.ratio * stageRatio;
-    //计算填充的原始区域
-    let fillAreaE = this.getFillArea();
-    //转换为缩放后的坐标
-    let ratPos = DDeiUtil.getRatioPosition(fillAreaE, ratio);
-    //缩放填充区域
+    let rat1 = this.ddRender.ratio;
+    let ratio = rat1 * stageRatio;
     //保存状态
     ctx.save();
-    //设置旋转角度
-    this.doRotate(ctx, ratPos);
     //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
     let fillColor = this.getCachedValue("fill.color");
     let fillOpacity = this.getCachedValue("fill.opacity");
     let fillDisabled = this.getCachedValue("fill.disabled");
     //如果拥有填充色，则使用填充色
-
     if (!fillDisabled && fillColor && (!fillOpacity || fillOpacity > 0)) {
       ctx.fillStyle = DDeiUtil.getColor(fillColor);
       //透明度
       if (fillOpacity != null && !fillOpacity != undefined) {
         ctx.globalAlpha = fillOpacity
       }
+      ctx.beginPath();
       let lineOffset = 1 * ratio / 2;
+      for (let i = 0; i < fillPVS.length; i++) {
+        if (i == fillPVS.length - 1) {
+          ctx.lineTo(fillPVS[i].x * rat1 + lineOffset, fillPVS[i].y * rat1 + lineOffset);
+          ctx.lineTo(fillPVS[0].x * rat1 + lineOffset, fillPVS[0].y * rat1 + lineOffset);
+        } else if (i == 0) {
+          ctx.moveTo(fillPVS[i].x * rat1 + lineOffset, fillPVS[i].y * rat1 + lineOffset);
+        } else {
+          ctx.lineTo(fillPVS[i].x * rat1 + lineOffset, fillPVS[i].y * rat1 + lineOffset);
+        }
+      }
+      ctx.closePath();
       //填充矩形
-      ctx.fillRect(ratPos.x + lineOffset, ratPos.y + lineOffset, ratPos.width, ratPos.height);
+      ctx.fill();
     }
 
     //恢复状态
@@ -332,11 +320,11 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
     let stageRatio = this.model.getStageRatio()
-    let ratio = this.ddRender.ratio * stageRatio;
+    let rat1 = this.ddRender.ratio;
+    let ratio = rat1 * stageRatio;
     //计算填充的原始区域
-    let fillAreaE = this.getFillArea();
-    //转换为缩放后的坐标
-    let ratPos = DDeiUtil.getRatioPosition(fillAreaE, ratio);
+    let fillRect = this.tempFillAreaRect;
+    let ratPos = DDeiUtil.getRatioPosition(fillRect, rat1)
 
     //设置所有文本的对齐方式，以便于后续所有的对齐都采用程序计算
     ctx.textAlign = "left";
@@ -394,8 +382,9 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     }
     //保存状态
     ctx.save();
-    //设置旋转
-    this.doRotate(ctx, ratPos);
+    ctx.translate(this.model.cpv.x * rat1, this.model.cpv.y * rat1)
+    ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
+
 
     //循环进行分段输出,整体容器，代表了一个整体的文本大小区域
     let textContainer = []
@@ -404,11 +393,8 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     let loop = true;
     let fontSize = fiSize * ratio;
 
-    // TODO 如果有金额大小写转换选项，则执行大小写转换
     let cText = this.model.text;
-    // if (this.convertToRMBY == 2 || this.convertToRMBY == '2') {
-    //   cText = PDSetting.dealBigMoney(this.text);
-    // }
+
     if (cText) {
       cText = "" + cText;
       let contentWidth = ratPos.width;
@@ -561,6 +547,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
             ctx.strokeText(rRect.text, x1, y1)
           } else {
             ctx.fillText(rRect.text, x1, y1)
+
           }
           textContainer[tci].x = x1;
           textContainer[tci].y = y1;
@@ -635,22 +622,22 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
 
   }
 
-  /**
-   * 根据模型的值，设置旋转
-   */
-  doRotate(ctx, ratPos): void {
-    //设置旋转角度
-    if (this.model.rotate) {
-      ctx.translate(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5)
-      ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
-      ctx.translate(-ratPos.x - ratPos.width * 0.5, -ratPos.y - ratPos.height * 0.5)
-    }
-  }
+  // /**
+  //  * 根据模型的值，设置旋转
+  //  */
+  // doRotate(ctx, ratPos): void {
+  //   //设置旋转角度
+  //   if (this.model.rotate) {
+  //     ctx.translate(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5)
+  //     ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
+  //     ctx.translate(-ratPos.x - ratPos.width * 0.5, -ratPos.y - ratPos.height * 0.5)
+  //   }
+  // }
 
   /**
    * 计算除边框外的填充区域，用于填充颜色和字体
    */
-  getFillArea(): object {
+  getFillAreaPVS(): object {
     //获取边框区域，实际填充区域=坐标-边框区域
     let topDisabled = this.getCachedValue("border.top.disabled");
     let topColor = this.getCachedValue("border.top.color");
@@ -682,15 +669,68 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     if (!(!bottomDisabled && bottomColor && (!bottomOpac || bottomOpac > 0) && bottomWidth > 0)) {
       bottomWidth = 0
     }
-    let absBounds = this.model.getAbsBounds();
-    let fillAreaE = {
-      x: absBounds.x + leftWidth,
-      y: absBounds.y + topWidth,
-      width: absBounds.width - leftWidth - rightWidth,
-      height: absBounds.height - topWidth - bottomWidth
+    //获取全局缩放比例,计算缩放后边框的所占位置，得到实际可用的填充区域
+    let stageRatio = this.model.getStageRatio()
+    topWidth = topWidth * stageRatio
+    bottomWidth = bottomWidth * stageRatio
+    leftWidth = leftWidth * stageRatio
+    rightWidth = rightWidth * stageRatio
+
+
+    //用于基于基础向量，计算填充的区域向量
+    let fillPVS = cloneDeep(this.model.pvs)
+    let move1Matrix = new Matrix3(
+      1, 0, -this.model.cpv.x,
+      0, 1, -this.model.cpv.y,
+      0, 0, 1);
+    fillPVS.forEach(fpv => {
+      fpv.applyMatrix3(move1Matrix)
+    });
+
+    //根据旋转角度还原向量到未旋转状态，再计算区域坐标
+    if (this.model.rotate && this.model.rotate != 0) {
+      let angle = (this.model.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      let rotateMatrix = new Matrix3(
+        Math.cos(angle), Math.sin(angle), 0,
+        -Math.sin(angle), Math.cos(angle), 0,
+        0, 0, 1);
+      fillPVS.forEach(fpv => {
+        fpv.applyMatrix3(rotateMatrix)
+      });
     }
-    return fillAreaE;
+    //计算减去border的区域，得到新的点坐标
+    fillPVS[1].x -= rightWidth
+    fillPVS[0].y += topWidth
+    fillPVS[2].x -= rightWidth
+    fillPVS[1].y += topWidth
+    fillPVS[2].y -= bottomWidth
+    fillPVS[3].y -= bottomWidth
+    fillPVS[0].x += leftWidth
+    fillPVS[3].x += leftWidth
+    this.tempFillAreaRect = { x: fillPVS[0].x, y: fillPVS[0].y, width: fillPVS[1].x - fillPVS[0].x, height: fillPVS[3].y - fillPVS[0].y }
+    //旋转并位移回去
+    if (this.model.rotate && this.model.rotate != 0) {
+      let angle = -(this.model.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      let rotateMatrix = new Matrix3(
+        Math.cos(angle), Math.sin(angle), 0,
+        -Math.sin(angle), Math.cos(angle), 0,
+        0, 0, 1);
+
+      fillPVS.forEach(fpv => {
+        fpv.applyMatrix3(rotateMatrix)
+      });
+    }
+    let move2Matrix = new Matrix3(
+      1, 0, this.model.cpv.x,
+      0, 1, this.model.cpv.y,
+      0, 0, 1);
+    fillPVS.forEach(fpv => {
+      fpv.applyMatrix3(move2Matrix)
+    });
+
+    return fillPVS;
   }
+
 
 
   // ============================== 事件 ===============================

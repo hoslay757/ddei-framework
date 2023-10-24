@@ -209,11 +209,10 @@ export default {
         control,
         searchPaths
       );
+
       let dataJson = {
         id: control.code + "_" + (ddInstance.stage.idIdx + 1),
         modelCode: control.id,
-        x: 0,
-        y: 0,
       };
 
       //设置配置的属性值
@@ -225,8 +224,11 @@ export default {
           dataJson[key] = control[key];
         }
       });
-      let model: DDeiAbstractShape =
-        this.controlCls[control.type].initByJSON(dataJson);
+
+      let model: DDeiAbstractShape = this.controlCls[control.type].initByJSON(
+        dataJson,
+        { currentStage: ddInstance.stage }
+      );
       model.setState(DDeiEnumControlState.CREATING);
 
       e.dataTransfer.setDragImage(this.creatingImg, 0, 0);

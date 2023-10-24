@@ -1,5 +1,6 @@
 import DDeiEnumBusCommandType from '../../enums/bus-command-type';
 import DDeiEnumOperateState from '../../enums/operate-state';
+import DDeiAbstractShape from '../../models/shape';
 import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
 /**
@@ -37,10 +38,7 @@ class DDeiBusCommandSetHelpLine extends DDeiBusCommand {
         layer = stage.layers[stage.layerIndex];
       }
       if (data?.models?.length > 0 || data?.models?.size > 0 || data?.container) {
-
         let models = data?.models;
-
-
         if (!models && data?.container) {
           models = data?.container.getSelectedModels();
         }
@@ -48,18 +46,27 @@ class DDeiBusCommandSetHelpLine extends DDeiBusCommand {
           models = Array.from(models.values());
         }
         if (models?.length > 0) {
-
-          let control = data?.control;
-          if (!control) {
-            control = stage.render.currentOperateShape;
+          let outPVS = null;
+          let centerPV = null;
+          let rotate = null;
+          if (models.length == 1) {
+            outPVS = models[0].pvs
+            centerPV = models[0].cpv
+            rotate = centerPV.rotate
+          } else {
+            outPVS = DDeiAbstractShape.getOutPV(models);
+            centerPV = stage.render.selector.cpv
+            rotate = stage.render.selector.rotate
           }
-          if (!control) {
-            control = Array.from(models.values())[0];
-          }
-          //显示辅助对齐线、坐标文本等图形
+          // 获取计算并获取对齐的点
+          let { hpoint, vpoint, hAds, vAds } = stage.getAlignData({ pvs: outPVS, cpv: centerPV, rotate: rotate }, data?.models)
           layer.render.helpLines = {
-            "bounds": control?.getAbsBounds(),
-            models: data?.models
+            hpoint: hpoint,
+            vpoint: vpoint,
+            pvs: outPVS,
+            cpv: centerPV,
+            hAds: hAds,
+            vAds: vAds
           };
           return true;
         } else {

@@ -4,7 +4,7 @@ import DDeiLayer from './layer'
 import DDeiEnumControlState from '../enums/control-state'
 import DDeiUtil from '../util'
 import { Matrix3, Vector3 } from 'three';
-import { cloneDeep } from 'lodash'
+import { clone, cloneDeep } from 'lodash'
 /**
  * 抽象的图形类，定义了大多数图形都有的属性和方法
  */
@@ -12,17 +12,269 @@ abstract class DDeiAbstractShape {
   // ============================ 构造函数 ============================
   constructor(props: object) {
     this.id = props.id
-    //坐标与宽高，实际的图形区域，根据这四个属性用来绘制图形
-    this.x = props.x ? props.x : 0
-    this.y = props.y ? props.y : 0
+    //宽度与高度，会换算为点向量，参与运算
     this.width = props.width ? props.width : 0
     this.height = props.height ? props.height : 0
     this.zIndex = props.zIndex ? props.zIndex : null
     this.rotate = props.rotate ? props.rotate : null
     this.modelCode = props.modelCode ? props.modelCode : null
     this.unicode = props.unicode ? props.unicode : DDeiUtil.getUniqueCode()
+    if (props.cpv) {
+      this.cpv = new Vector3(props.cpv.x, props.cpv.y, props.cpv.z);
+    }
+    if (props.pvs) {
+      this.pvs = [];
+      props.pvs.forEach(pv => {
+        this.pvs.push(new Vector3(pv.x, pv.y, pv.z));
+      });
+    }
+    this.hpv = props.hpv ? props.hpv : [];
+
   }
+
+
+  // ============================ 属性 ===============================
+  id: string;
+  //宽度与高度，会换算为点向量，参与运算
+  width: number;
+  height: number;
+  // 本模型的编码,用来却分modelType相同，但业务含义不同的模型
+  modelCode: string;
+  // 本模型的唯一名称
+  modelType: string = 'AbstractShape';
+  // 本模型的基础图形
+  baseModelType: string = 'AbstractShape';
+  // 当前控件的状态
+  state: DDeiEnumControlState = DDeiEnumControlState.DEFAULT;
+  // 当前模型所在的layer
+  layer: DDeiLayer | null;
+  // 当前模型所在的父模型
+  pModel: any = null;
+  // 当前模型所在的stage
+  stage: DDeiStage | null;
+  // 当前图形在当前图层的层次
+  zIndex: number | null;
+  // 旋转,0/null 不旋转，默认0
+  rotate: number | null;
+
+  //中心点向量
+  cpv: Vector3;
+
+  //隐藏平行线点，形成一条平行于x轴的直线，用于在旋转后，通过其与坐标轴的夹角求真实的旋转角度
+  //一般多边形的
+  hpv: Vector3[];
+
+  //周围点向量
+  pvs: Vector3;
+
+  //唯一表示码，运行时临时生成
+  unicode: string;
   // ============================ 方法 ============================
+
+  /**
+   * 初始化向量，基于width和height构建向量，默认中心点在0，0的位置
+   */
+  initPVS() {
+
+
+    if (!this.cpv) {
+      this.cpv = new Vector3(0, 0, 1)
+    }
+    if (!this.pvs || this.pvs.length == 0) {
+      //全局缩放因子
+      let stageRatio = this.getStageRatio();
+      this.pvs = [];
+      this.pvs[0] = new Vector3(-this.width * stageRatio / 2, -this.height * stageRatio / 2, 1)
+      this.pvs[1] = new Vector3(this.width * stageRatio / 2, -this.height * stageRatio / 2, 1)
+      this.pvs[2] = new Vector3(this.width * stageRatio / 2, this.height * stageRatio / 2, 1)
+      this.pvs[3] = new Vector3(-this.width * stageRatio / 2, this.height * stageRatio / 2, 1)
+    }
+    this.initHPV();
+    //计算宽松判定矩阵
+    this.calRotate();
+    this.calLoosePVS();
+  }
+
+  /**
+   * 变换向量
+   */
+  transVectors(matrix: Matrix3): void {
+    this.cpv.applyMatrix3(matrix);
+    this.pvs.forEach(pv => {
+      pv.applyMatrix3(matrix)
+    });
+    this.initHPV();
+    this.calRotate()
+    this.calLoosePVS();
+  }
+
+
+
+
+
+  /**
+   * 设置当前最新的hpv
+   */
+  initHPV(): void {
+    this.hpv[0] = this.pvs[0]
+    this.hpv[1] = this.pvs[1]
+  }
+
+  /**
+   * 基于当前向量计算宽松判定向量
+   */
+  calLoosePVS(): void {
+    let stageRatio = this.stage?.getStageRatio();
+    //宽松判定区域的宽度
+    let looseWeight = 10;
+    //复制当前向量
+    this.loosePVS = cloneDeep(this.pvs)
+    let move1Matrix = new Matrix3(
+      1, 0, -this.cpv.x,
+      0, 1, -this.cpv.y,
+      0, 0, 1);
+    this.loosePVS.forEach(fpv => {
+      fpv.applyMatrix3(move1Matrix)
+    });
+    //获取旋转角度
+    if (this.rotate && this.rotate != 0) {
+      let angle = (this.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      let rotateMatrix = new Matrix3(
+        Math.cos(angle), Math.sin(angle), 0,
+        -Math.sin(angle), Math.cos(angle), 0,
+        0, 0, 1);
+      this.loosePVS.forEach(fpv => {
+        fpv.applyMatrix3(rotateMatrix)
+      });
+    }
+    //计算宽、高信息，该值为不考虑缩放的大小
+    this.x = this.loosePVS[0].x / stageRatio
+    this.y = this.loosePVS[0].y / stageRatio
+    this.width = (this.loosePVS[1].x - this.loosePVS[0].x) / stageRatio
+    this.height = (this.loosePVS[3].y - this.loosePVS[0].y) / stageRatio
+
+    this.loosePVS[0].x -= looseWeight;
+    this.loosePVS[0].y -= looseWeight;
+    this.loosePVS[1].x += looseWeight;
+    this.loosePVS[1].y -= looseWeight;
+    this.loosePVS[2].x += looseWeight;
+    this.loosePVS[2].y += looseWeight;
+    this.loosePVS[3].x -= looseWeight;
+    this.loosePVS[3].y += looseWeight;
+
+    //旋转并位移回去
+    if (this.rotate && this.rotate != 0) {
+      let angle = -(this.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      let rotateMatrix = new Matrix3(
+        Math.cos(angle), Math.sin(angle), 0,
+        -Math.sin(angle), Math.cos(angle), 0,
+        0, 0, 1);
+      this.loosePVS.forEach(fpv => {
+        fpv.applyMatrix3(rotateMatrix)
+      });
+    }
+    let move2Matrix = new Matrix3(
+      1, 0, this.cpv.x,
+      0, 1, this.cpv.y,
+      0, 0, 1);
+    this.loosePVS.forEach(fpv => {
+      fpv.applyMatrix3(move2Matrix)
+    });
+    //计算宽、高信息，该值为不考虑缩放的大小
+    this.x += this.cpv.x / stageRatio
+    this.y += this.cpv.y / stageRatio
+  }
+
+  /**
+   * 同步向量
+   * @param source 源模型
+   * @param cloneVP 是否克隆向量，默认false
+   */
+  syncVectors(source: DDeiAbstractShape, clonePV: boolean = false): void {
+    if (clonePV) {
+      this.pvs = cloneDeep(source.pvs)
+      this.cpv = cloneDeep(source.cpv)
+    } else {
+      this.pvs = source.pvs
+      this.cpv = source.cpv
+    }
+    this.initHPV()
+    this.calRotate();
+    this.calLoosePVS();
+  }
+
+  /**
+   * 设置旋转角度
+   */
+  setRotate(rotate: number = 0): void {
+
+    if (this.rotate != rotate) {
+      //求得线向量与直角坐标系的夹角
+      let m1 = new Matrix3();
+      //归0
+      let toZeroMatrix = new Matrix3(
+        1, 0, -this.cpv.x,
+        0, 1, -this.cpv.y,
+        0, 0, 1);
+      m1.premultiply(toZeroMatrix);
+
+      if (this.rotate) {
+        //还原到未旋转状态
+        let angle = (this.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+        //计算input的正确打开位置，由节点0
+        let rotateMatrix = new Matrix3(
+          Math.cos(angle), Math.sin(angle), 0,
+          -Math.sin(angle), Math.cos(angle), 0,
+          0, 0, 1);
+        m1.premultiply(rotateMatrix);
+      }
+      if (rotate) {
+        //还原到未旋转状态
+        let angle = -(rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+        //计算input的正确打开位置，由节点0
+        let rotateMatrix = new Matrix3(
+          Math.cos(angle), Math.sin(angle), 0,
+          -Math.sin(angle), Math.cos(angle), 0,
+          0, 0, 1);
+        m1.premultiply(rotateMatrix);
+      }
+
+      //还原
+      let restoreMatrix = new Matrix3(
+        1, 0, this.cpv.x,
+        0, 1, this.cpv.y,
+        0, 0, 1);
+      m1.premultiply(restoreMatrix);
+
+      //执行旋转
+      this.transVectors(m1)
+
+      this.rotate = rotate;
+    }
+  }
+
+  /**
+   * 计算旋转角度，基于隐藏点与坐标系的夹角
+   */
+  calRotate(): void {
+    //求得线向量与直角坐标系的夹角
+    let lineV = new Vector3(this.hpv[1].x, this.hpv[1].y, 1);
+    let toZeroMatrix = new Matrix3(
+      1, 0, -this.hpv[0].x,
+      0, 1, -this.hpv[0].y,
+      0, 0, 1);
+    //归到原点，求夹角
+    lineV.applyMatrix3(toZeroMatrix)
+    let angle = (new Vector3(1, 0, 0).angleTo(new Vector3(lineV.x, lineV.y, 0)) * 180 / Math.PI).toFixed(4);
+    if (lineV.x >= 0 && lineV.y >= 0) {
+    } else if (lineV.x <= 0 && lineV.y >= 0) {
+    } else if (lineV.x <= 0 && lineV.y <= 0) {
+      angle = -angle
+    } else if (lineV.x >= 0 && lineV.y <= 0) {
+      angle = -angle
+    }
+    this.rotate = parseFloat(angle);
+  }
 
   /**
    * 设置当前图片base64
@@ -81,21 +333,21 @@ abstract class DDeiAbstractShape {
     let x0 = point.x;
     let y0 = point.y;
     //判断鼠标是否在某个控件的范围内
-    if (this?.currentPointVectors?.length > index) {
+    if (this.pvs?.length > index) {
       let st, en;
       //点到直线的距离
       let plLength = Infinity;
-      if (index == this.currentPointVectors.length - 1) {
+      if (index == this.pvs.length - 1) {
         st = index;
         en = 0;
       } else {
         st = index;
         en = index + 1;
       }
-      let x1 = this.currentPointVectors[st].x;
-      let y1 = this.currentPointVectors[st].y;
-      let x2 = this.currentPointVectors[en].x;
-      let y2 = this.currentPointVectors[en].y;
+      let x1 = this.pvs[st].x;
+      let y1 = this.pvs[st].y;
+      let x2 = this.pvs[en].x;
+      let y2 = this.pvs[en].y;
       //获取控件所有向量
       if (x1 == x2 && y1 == y2) {
         plLength = Math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0))
@@ -199,22 +451,22 @@ abstract class DDeiAbstractShape {
     let x0 = point.x;
     let y0 = point.y;
     //判断鼠标是否在某个控件的范围内
-    if (this?.currentPointVectors?.length > 0) {
+    if (this.pvs?.length > 0) {
       let st, en;
-      for (let j = 0; j < this.currentPointVectors.length; j++) {
+      for (let j = 0; j < this.pvs.length; j++) {
         //点到直线的距离
         let plLength = Infinity;
-        if (j == this.currentPointVectors.length - 1) {
+        if (j == this.pvs.length - 1) {
           st = j;
           en = 0;
         } else {
           st = j;
           en = j + 1;
         }
-        let x1 = this.currentPointVectors[st].x;
-        let y1 = this.currentPointVectors[st].y;
-        let x2 = this.currentPointVectors[en].x;
-        let y2 = this.currentPointVectors[en].y;
+        let x1 = this.pvs[st].x;
+        let y1 = this.pvs[st].y;
+        let x2 = this.pvs[en].x;
+        let y2 = this.pvs[en].y;
         //获取控件所有向量
         if (x1 == x2 && y1 == y2) {
           plLength = Math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0))
@@ -293,371 +545,20 @@ abstract class DDeiAbstractShape {
   }
 
   /**
-    * 通过射线法判断点是否在图形内部
-    * @param pps 多边形顶点 
-    * @param point 测试点
-    * @returns
-    */
-  static isInsidePolygon(polygon: object[], point: { x: number, y: number }): boolean {
-    let x = point.x, y = point.y;
-    let inside = false;
-    for (var i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-      var xi = polygon[i].x, yi = polygon[i].y;
-      var xj = polygon[j].x, yj = polygon[j].y;
-      var intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-      if (intersect) {
-        inside = !inside;
-      }
-    }
-    return inside;
-  }
-
-  /**
-     * 是否左对齐
-     * 源图形的左上顶点与图形的左边线或右边线处于一个x
-     * @param {*} sourceP 源图形位置 { x }
-     * @param {*} distP 目标图形位置 { x, width }
-     * @returns
-     */
-  static isLeftAlign(sourceP, distP): boolean {
-    return Math.floor(sourceP.x) === Math.floor(distP.x) || Math.floor(sourceP.x) === Math.floor(distP.x + distP.width)
-  }
-
-  /**
-   * 是否右对齐
-   * 源图形的右上顶点与图形的左边线或右边线处于一个x
-   * @param {*} sourceP 源图形位置 { x, width }
-   * @param {*} distP 目标图形位置 { x, width }
-   * @returns
+   * 返回计算后的坐标、大小
    */
-  static isRightAlign(sourceP, distP): boolean {
-    return Math.floor(sourceP.x + sourceP.width) === Math.floor(distP.x) || Math.floor(sourceP.x + sourceP.width) === Math.floor(distP.x + distP.width)
+  getBounds(): object {
+    return { x: this.x, y: this.y, width: this.width, height: this.height, x1: this.x + this.width, y1: this.y + this.height }
   }
-
-  /**
-   * 是否顶部对齐
-   * 源图形的右上顶点与图形的上边线或下边线处于一个y
-   * @param {*} sourceP 源图形位置 { y }
-   * @param {*} distP 目标图形位置 { y, height }
-   * @returns
-   */
-  static isTopAlign(sourceP, distP): boolean {
-    return Math.floor(sourceP.y) === Math.floor(distP.y) || Math.floor(sourceP.y) === Math.floor(distP.y + distP.height)
-  }
-
-  /**
-   * 是否低部对齐
-   * 源图形的右上顶点与图形的上边线或下边线处于一个y
-   * @param {*} sourceP 源图形位置 { y, height }
-   * @param {*} distP 目标图形位置 { y, height }
-   * @returns
-   */
-  static isBottomAlign(sourceP, distP): boolean {
-    return Math.floor(sourceP.y + sourceP.height) === Math.floor(distP.y) || Math.floor(sourceP.y + sourceP.height) === Math.floor(distP.y + distP.height)
-  }
-
-  /**
-   * 水平居中对齐
-   * @param {*} sourceP 源图形位置 { y, height }
-   * @param {*} distP 目标图形位置 { y, height }
-   * @returns true/false
-   */
-  static isHorizontalCenterAlign(sourceP, distP): boolean {
-    return Math.floor(sourceP.y + sourceP.height / 2) === Math.floor(distP.y + distP.height / 2)
-  }
-
-  /**
-   * 垂直居中对齐
-   * @param {*} sourceP 源图形位置 { x, width }
-   * @param {*} distP 目标图形位置 { x, width }
-   * @returns true/false
-   */
-  static isVerticalCenterAlign(sourceP, distP): boolean {
-    return sourceP.x + sourceP.width / 2 === distP.x + distP.width / 2
-  }
-
-  /**
-   * 获取一组图形模型的宽高
-   * @param models
-   */
-  static getModelsPosition(...models): object {
-    models = models.filter(item => !!item)
-    if (!models.length) {
-      return { x: 0, y: 0, width: 0, height: 0 }
-    }
-    let x = Infinity
-    let y = Infinity
-    let width = 0
-    let height = 0
-    models.forEach(item => {
-      x = Math.min(+item.x, x)
-      y = Math.min(+item.y, y)
-    })
-    models.forEach(item => {
-      width = Math.max(Math.floor(+item.x + +item.width - x), width)
-      height = Math.max(Math.floor(+item.y + +item.height - y), height)
-    })
-    return { x, y, width, height, x1: x + width, y1: y + height }
-  }
-
-
-  /**
-   * 判断一组模型的旋转值是否相等
-   * @param models
-   */
-  static isSameRotate(models: Array<DDeiAbstractShape>): boolean {
-    if (!models || models.length < 1) {
-      return true;
-    }
-    let upValues = models[0].rotate
-    if (!upValues) {
-      upValues = 0;
-    }
-    for (let i = 1; i < models.length; i++) {
-      let r = models[i].rotate;
-      if (!r) {
-        r = 0
-      }
-      if (upValues != r) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-
-  /**
-   * 获取一组图形模型的宽高
-   * @param models
-   */
-  static getOutRect(models: Array<DDeiAbstractShape>): object {
-    models = models.filter(item => !!item)
-    if (!models.length) {
-      return { x: 0, y: 0, width: 0, height: 0 }
-    }
-
-    //按照rotate对图形进行旋转，求的旋转后的四个点坐标
-    //遍历所有点，求得最大、最小的x、y
-    let points: object[] = [];
-    models.forEach(item => {
-      //对当前图形，按照rotate进行旋转，求得新的四个点的位置
-      let ps = item.getPoints();
-      //按圆心进行旋转rotate度，得到绘制出来的点位
-      if (item.rotate && item.rotate != 0) {
-        //当前item的圆心
-        let occ = { x: item.x + item.width * 0.5, y: item.y + item.height * 0.5 };
-        ps.forEach(oldPoint => {
-          //已知圆心位置、起始点位置和旋转角度，求终点的坐标位置
-          let newPoint = DDeiUtil.computePosition(occ, oldPoint, item.rotate);
-          points.push(newPoint);
-        })
-      } else {
-        points = points.concat(ps)
-      }
-    })
-    let x: number = Infinity, y: number = Infinity, x1: number = 0, y1: number = 0;
-    //找到最大、最小的x和y
-    points.forEach(p => {
-      x = Math.min(p.x, x)
-      x1 = Math.max(p.x, x1)
-      y = Math.min(p.y, y)
-      y1 = Math.max(p.y, y1)
-    })
-    return {
-      x: x, y: y, width: x1 - x, height: y1 - y, x1: x1, y1: y1
-    }
-  }
-
-
-
-
-  /**
-  * 基于向量点获取一组图形模型的宽高
-  * @param models
-  */
-  static getOutRectByPV(models: Array<DDeiAbstractShape>): object {
-    models = models.filter(item => !!item)
-    if (!models.length) {
-      return { x: 0, y: 0, width: 0, height: 0 }
-    }
-
-    //按照rotate对图形进行旋转，求的旋转后的四个点坐标
-    //遍历所有点，求得最大、最小的x、y
-    let points: object[] = [];
-    models.forEach(item => {
-      let ps = null;
-      //对当前图形，按照rotate进行旋转，求得新的四个点的位置
-      if (item.currentPointVectors?.length > 0) {
-        ps = cloneDeep(item.currentPointVectors);
-      } else {
-        ps = item.getPoints();
-      }
-      //按圆心进行旋转rotate度，得到绘制出来的点位
-      points = points.concat(ps)
-    })
-    let x: number = Infinity, y: number = Infinity, x1: number = 0, y1: number = 0;
-    //找到最大、最小的x和y
-    points.forEach(p => {
-      x = Math.min(Math.floor(p.x), x)
-      x1 = Math.max(Math.floor(p.x), x1)
-      y = Math.min(Math.floor(p.y), y)
-      y1 = Math.max(Math.floor(p.y), y1)
-    })
-    return {
-      x: x, y: y, width: x1 - x, height: y1 - y, x1: x1, y1: y1
-    }
-  }
-
-
-  /**
-  * 获取最靠外部的一组pv
-  * @param models
-  */
-  static getOutPV(models: Array<DDeiAbstractShape>): object {
-    let o = DDeiAbstractShape.getOutRectByPV(models);
-    return [
-      { x: o.x, y: o.y },
-      { x: o.x1, y: o.y },
-      { x: o.x1, y: o.y1 },
-      { x: o.x, y: o.y1 },
-    ]
-  }
-
-
-
-  /**
-   * 获取某个容器下选中区域的所有控件,如果控件已被选中，且是一个容器，则继续向下直到最底层
-   * @param area 选中区域
-   * @returns 
-   */
-  static findBottomModelsByArea(container, x = undefined, y = undefined, looseWeight: number = 0): DDeiAbstractShape[] | null {
-    let controls = [];
-    if (container) {
-      for (let mg = container.midList.length - 1; mg >= 0; mg--) {
-        let item = container.models.get(container.midList[mg]);
-        //如果射线相交，则视为选中
-        if (item.isInAreaLoose(x, y, looseWeight)) {
-          //如果当前控件状态为选中，且是容器，则往下寻找控件，否则返回当前控件
-          if (item.state == DDeiEnumControlState.SELECTED && item.baseModelType == "DDeiContainer") {
-            let subControls = DDeiAbstractShape.findBottomModelsByArea(item, x, y, looseWeight);
-            if (subControls && subControls.length > 0) {
-              controls = controls.concat(subControls);
-            } else {
-              controls.push(item);
-            }
-          } else if (item.state == DDeiEnumControlState.SELECTED && item.baseModelType == "DDeiTable") {
-            //判断表格当前的单元格是否是选中的单元格，如果是则分发事件
-            let currentCell = item.getAccuContainerByPos(x, y);
-            if (currentCell?.state == DDeiEnumControlState.SELECTED) {
-              let subControls = DDeiAbstractShape.findBottomModelsByArea(currentCell, x, y, looseWeight);
-              if (subControls && subControls.length > 0) {
-                controls = controls.concat(subControls);
-              } else {
-                controls.push(item);
-              }
-            } else {
-              controls.push(item);
-            }
-
-          } else {
-            controls.push(item);
-          }
-        }
-      }
-    }
-    //TODO 对控件进行排序，按照zIndex > 添加顺序
-    return controls;
-  }
-
-
-  /**
-   * 获取某个容器下选中区域的最底层容器
-   * @param area 选中区域
-   * @returns 
-   */
-  static findBottomContainersByArea(container, x = undefined, y = undefined): DDeiAbstractShape[] | null {
-    let controls = [];
-    if (container) {
-      for (let mg = container.midList.length - 1; mg >= 0; mg--) {
-        let item = container.models.get(container.midList[mg]);
-        //如果射线相交，则视为选中
-        if (DDeiAbstractShape.isInsidePolygon(item.getRotatedPoints(), { x: x, y: y })) {
-          //获取真实的容器控件
-          let accuContainer = item.getAccuContainerByPos(x, y);
-          if (accuContainer) {
-            let subControls = DDeiAbstractShape.findBottomContainersByArea(accuContainer, x, y);
-            if (subControls && subControls.length > 0) {
-              controls = controls.concat(subControls);
-            } else {
-              controls.push(accuContainer);
-            }
-          }
-        }
-      }
-    }
-    return controls;
-  }
-
-  /**
-   * 判断图形是否在一个区域内
-   * @param area 矩形区域
-   * @returns 是否在区域内
-   */
-  static isInArea(x: number, y: number, area: object): boolean {
-    if (x === undefined || y === undefined || area === undefined) {
-      return false
-    }
-    // 对角判断
-    let modelX = area.x
-    let modelX1 = area.x + area.width
-    let modelY = area.y
-    let modelY1 = area.y + area.height
-    return modelX <= x &&
-      modelY <= y &&
-      modelX1 >= x &&
-      modelY1 >= y
-  }
-
-
-  // ============================ 属性 ===============================
-  id: string;
-  //坐标与宽高，实际的图形区域，根据这四个属性用来绘制图形
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  // 本模型的编码,用来却分modelType相同，但业务含义不同的模型
-  modelCode: string;
-  // 本模型的唯一名称
-  modelType: string = 'AbstractShape';
-  // 本模型的基础图形
-  baseModelType: string = 'AbstractShape';
-  // 当前控件的状态
-  state: DDeiEnumControlState = DDeiEnumControlState.DEFAULT;
-  // 当前模型所在的layer
-  layer: DDeiLayer | null;
-  // 当前模型所在的父模型
-  pModel: any = null;
-  // 当前模型所在的stage
-  stage: DDeiStage | null;
-  // 当前图形在当前图层的层次
-  zIndex: number | null;
-  // 旋转,0/null 不旋转，默认0
-  rotate: number | null;
-
-  //唯一表示码，运行时临时生成
-  unicode: string;
-
-  // ============================ 方法 ===============================
 
   /**
    * 获取画布缩放比率
    */
   getStageRatio(): number {
     if (this.stage) {
-      let stageRatio = parseFloat(this.stage.ratio) ? this.stage.ratio : 1.0
+      let stageRatio = parseFloat(this.stage.ratio) ? parseFloat(this.stage.ratio) : 1.0
       if (!stageRatio || isNaN(stageRatio)) {
-        stageRatio = 1.0
+        stageRatio = DDeiConfig.STAGE_RATIO
       }
       return stageRatio
     } else {
@@ -679,16 +580,26 @@ abstract class DDeiAbstractShape {
    * 判断图形是否在一个区域内，采用宽松的判定模式，允许传入一个大小值
    * @param x
    * @param y
-   * @param looseWeight 宽松判定的宽度，默认0
+   * @param loose 宽松判定,默认false
    * @returns 是否在区域内
    */
-  isInAreaLoose(x: number | undefined = undefined, y: number | undefined = undefined, looseWeight: number = 0): boolean {
+  isInAreaLoose(x: number | undefined = undefined, y: number | undefined = undefined, loose: boolean = false): boolean {
     if (x === undefined || y === undefined) {
       return false
     }
-    let ps = this.getRotatedPoints(looseWeight > 0);
-    return DDeiAbstractShape.isInsidePolygon(
-      ps, { x: x, y: y });
+    let ps = null;
+    //对当前图形，按照rotate进行旋转，求得新的四个点的位置
+    if (loose && this.loosePVS?.length > 0) {
+      ps = this.loosePVS;
+    }
+    else if (this.pvs?.length > 0) {
+      ps = this.pvs;
+    }
+    if (ps?.length > 0) {
+      return DDeiAbstractShape.isInsidePolygon(
+        ps, { x: x, y: y });
+    }
+    return false;
   }
 
   /**
@@ -697,12 +608,7 @@ abstract class DDeiAbstractShape {
    * @param y 
    */
   setPosition(x: number, y: number) {
-    if (x !== undefined) {
-      this.x = x
-    }
-    if (y !== undefined) {
-      this.y = y
-    }
+    console.warn("改成向量")
     this.setModelChanged()
   }
 
@@ -713,13 +619,7 @@ abstract class DDeiAbstractShape {
    */
   setSize(w: number, h: number) {
 
-    if (w !== undefined) {
-      this.width = w
-    }
-
-    if (h !== undefined) {
-      this.height = h
-    }
+    console.warn("改成向量")
     this.setModelChanged()
   }
 
@@ -733,29 +633,7 @@ abstract class DDeiAbstractShape {
     this.setSize(w, h)
   }
 
-  /**
-   * 获取控件坐标以及位置
-   */
-  getBounds() {
-    return {
-      x: this.x, y: this.y, width: this.width, height: this.height,
-      x1: this.x + this.width, y1: this.y + this.height
-    }
-  }
 
-  /**
-   * 获取图形上所有的点
-   * @param looseWeight 宽松判定区域
-   */
-  getPoints(looseWeight: number = 0): object[] {
-    let returnVal = []
-    let bounds = this.getBounds();
-    returnVal.push({ x: bounds.x - looseWeight, y: bounds.y - looseWeight });
-    returnVal.push({ x: bounds.x1 + 2 * looseWeight, y: bounds.y - looseWeight });
-    returnVal.push({ x: bounds.x1 + 2 * looseWeight, y: bounds.y1 + 2 * looseWeight });
-    returnVal.push({ x: bounds.x - looseWeight, y: bounds.y1 + 2 * looseWeight });
-    return returnVal;
-  }
 
   /**
    * 获取当前图形的除layer的所有父节点对象
@@ -770,38 +648,7 @@ abstract class DDeiAbstractShape {
     return returnControls;
   }
 
-  /**
-   * 获取当前图形的绝对旋转坐标值
-   */
-  getAbsRotate(): number {
-    let rotate = 0;
-    if (this.rotate) {
-      rotate += this.rotate
-    }
-    if (this.pModel && this.pModel.baseModelType != "DDeiLayer") {
-      rotate += this.pModel.getAbsRotate();
-    }
-    return rotate;
-  }
 
-  /**
-   * 获取旋转后的点集合
-   * @param looseWeight 宽松的判断矩阵
-   */
-  getRotatedPoints(loose: boolean = false): object[] {
-    //对当前图形，按照rotate进行旋转，求得新的四个点的位置
-    let ps = null;
-    //对当前图形，按照rotate进行旋转，求得新的四个点的位置
-    if (loose && this.currentLoosePointVectors?.length > 0) {
-      ps = cloneDeep(this.currentLoosePointVectors);
-    }
-    else if (this.currentPointVectors?.length > 0) {
-      ps = cloneDeep(this.currentPointVectors);
-    } else {
-      ps = this.getPoints(loose);
-    }
-    return ps;
-  }
 
   /**
    * 获取控件坐标
@@ -810,44 +657,6 @@ abstract class DDeiAbstractShape {
     return { x: this.x, y: this.y }
   }
 
-  /**
-   * 获取绝对的控件坐标
-   */
-  getAbsPosition(pm): object {
-    if (!pm) {
-      pm = this;
-    }
-    let rp = pm.getPosition();
-    if (!pm.pModel || pm.pModel.modelType == "DDeiLayer") {
-      return rp;
-    } else {
-      let mp = pm.getAbsPosition(pm.pModel);
-      rp.x = rp.x + mp.x
-      rp.y = rp.y + mp.y
-      return rp;
-    }
-  }
-
-
-  /**
-   * 获取绝对的bounds
-   */
-  getAbsBounds(pm): object {
-    if (!pm) {
-      pm = this;
-    }
-    let rp = pm.getBounds();
-    if (!pm.pModel || pm.pModel.modelType == "DDeiLayer") {
-      return rp;
-    } else {
-      let mp = pm.getAbsPosition(pm.pModel);
-      rp.x = rp.x + mp.x
-      rp.y = rp.y + mp.y
-      rp.x1 = rp.x1 + mp.x
-      rp.y1 = rp.y1 + mp.y
-      return rp;
-    }
-  }
 
   /**
    * 计算当前图形旋转后的顶点，根据位移以及层次管理
@@ -931,13 +740,6 @@ abstract class DDeiAbstractShape {
   }
 
   /**
-   * 获取控件大小
-   */
-  getSize() {
-    return { width: this.width, height: this.height }
-  }
-
-  /**
      * 将模型转换为JSON
      */
   toJSON(): Object {
@@ -984,7 +786,7 @@ abstract class DDeiAbstractShape {
             if (array.length > 0) {
               json[i] = array;
             }
-          } else if (this[i]?.set) {
+          } else if (this[i]?.set && this[i]?.has) {
             let map = {};
             this[i].forEach((element, key) => {
               if (element?.toJSON) {
@@ -1025,7 +827,7 @@ abstract class DDeiAbstractShape {
             if (array.length > 0) {
               json[i] = array;
             }
-          } else if (this[i]?.set) {
+          } else if (this[i]?.set && this[i]?.has) {
             let map = {};
             this[i].forEach((element, key) => {
               if (element?.toJSON) {
@@ -1047,6 +849,212 @@ abstract class DDeiAbstractShape {
     }
     return json;
   }
+
+  // ============================ 静态方法 ============================
+
+
+
+
+  /**
+   * 通过射线法判断点是否在图形内部
+   * @param pps 多边形顶点 
+   * @param point 测试点
+   * @returns
+   */
+  static isInsidePolygon(polygon: object[], point: { x: number, y: number }): boolean {
+    let x = point.x, y = point.y;
+    let inside = false;
+    for (var i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+      var xi = polygon[i].x, yi = polygon[i].y;
+      var xj = polygon[j].x, yj = polygon[j].y;
+      var intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+      if (intersect) {
+        inside = !inside;
+      }
+    }
+    return inside;
+  }
+
+  /**
+   * 获取一组图形模型的宽高
+   * @param models
+   */
+  static getModelsPosition(...models): object {
+    models = models.filter(item => !!item)
+    if (!models.length) {
+      return { x: 0, y: 0, width: 0, height: 0 }
+    }
+    let x = Infinity
+    let y = Infinity
+    let width = 0
+    let height = 0
+    models.forEach(item => {
+      x = Math.min(+item.x, x)
+      y = Math.min(+item.y, y)
+    })
+    models.forEach(item => {
+      width = Math.max(Math.floor(+item.x + +item.width - x), width)
+      height = Math.max(Math.floor(+item.y + +item.height - y), height)
+    })
+    return { x, y, width, height, x1: x + width, y1: y + height }
+  }
+
+
+  /**
+   * 判断一组模型的旋转值是否相等
+   * @param models
+   */
+  static isSameRotate(models: Array<DDeiAbstractShape>): boolean {
+    if (!models || models.length < 1) {
+      return true;
+    }
+    let upValues = models[0].rotate
+    if (!upValues) {
+      upValues = 0;
+    }
+    for (let i = 1; i < models.length; i++) {
+      let r = models[i].rotate;
+      if (!r) {
+        r = 0
+      }
+      if (upValues != r) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+  * 基于向量点获取一组图形模型的宽高
+  * @param models
+  */
+  static getOutRectByPV(models: Array<DDeiAbstractShape>): object {
+    models = models.filter(item => !!item)
+    if (!models.length) {
+      return { x: 0, y: 0, width: 0, height: 0 }
+    }
+
+    //按照rotate对图形进行旋转，求的旋转后的四个点坐标
+    //遍历所有点，求得最大、最小的x、y
+    let points: object[] = [];
+    models.forEach(item => {
+      let ps = cloneDeep(item.pvs);
+      //按圆心进行旋转rotate度，得到绘制出来的点位
+      points = points.concat(ps)
+    })
+
+    return DDeiAbstractShape.pvsToOutRect(points);
+  }
+
+
+  /**
+  * 获取最靠外部的一组向量
+  * @param models
+  */
+  static getOutPV(models: Array<DDeiAbstractShape>): object {
+    let o = DDeiAbstractShape.getOutRectByPV(models);
+    return [
+      new Vector3(o.x, o.y, 1),
+      new Vector3(o.x1, o.y, 1),
+      new Vector3(o.x1, o.y1, 1),
+      new Vector3(o.x, o.y1, 1)
+    ]
+  }
+
+  /**
+   * 返回点集合的外接矩形
+   */
+  static pvsToOutRect(points: object[]): object {
+    let x: number = Infinity, y: number = Infinity, x1: number = 0, y1: number = 0;
+    //找到最大、最小的x和y
+    points.forEach(p => {
+      x = Math.min(Math.floor(p.x), x)
+      x1 = Math.max(Math.floor(p.x), x1)
+      y = Math.min(Math.floor(p.y), y)
+      y1 = Math.max(Math.floor(p.y), y1)
+    })
+    return {
+      x: x, y: y, width: x1 - x, height: y1 - y, x1: x1, y1: y1
+    }
+  }
+
+
+
+
+
+  /**
+   * 获取某个容器下选中区域的所有控件,如果控件已被选中，且是一个容器，则继续向下直到最底层
+   * @param area 选中区域
+   * @returns 
+   */
+  static findBottomModelsByArea(container, x = undefined, y = undefined, loose: boolean = false): DDeiAbstractShape[] | null {
+    let controls = [];
+    if (container) {
+      for (let mg = container.midList.length - 1; mg >= 0; mg--) {
+        let item = container.models.get(container.midList[mg]);
+        //如果射线相交，则视为选中
+        if (item.isInAreaLoose(x, y, loose)) {
+          //如果当前控件状态为选中，且是容器，则往下寻找控件，否则返回当前控件
+          if (item.state == DDeiEnumControlState.SELECTED && item.baseModelType == "DDeiContainer") {
+            let subControls = DDeiAbstractShape.findBottomModelsByArea(item, x, y, loose);
+            if (subControls && subControls.length > 0) {
+              controls = controls.concat(subControls);
+            } else {
+              controls.push(item);
+            }
+          } else if (item.state == DDeiEnumControlState.SELECTED && item.baseModelType == "DDeiTable") {
+            //判断表格当前的单元格是否是选中的单元格，如果是则分发事件
+            let currentCell = item.getAccuContainerByPos(x, y);
+            if (currentCell?.state == DDeiEnumControlState.SELECTED) {
+              let subControls = DDeiAbstractShape.findBottomModelsByArea(currentCell, x, y, loose);
+              if (subControls && subControls.length > 0) {
+                controls = controls.concat(subControls);
+              } else {
+                controls.push(item);
+              }
+            } else {
+              controls.push(item);
+            }
+
+          } else {
+            controls.push(item);
+          }
+        }
+      }
+    }
+    //TODO 对控件进行排序，按照zIndex > 添加顺序
+    return controls;
+  }
+
+
+  /**
+   * 获取某个容器下选中区域的最底层容器
+   * @param area 选中区域
+   * @returns 
+   */
+  static findBottomContainersByArea(container, x = undefined, y = undefined): DDeiAbstractShape[] | null {
+    let controls = [];
+    if (container) {
+      for (let mg = container.midList.length - 1; mg >= 0; mg--) {
+        let item = container.models.get(container.midList[mg]);
+        //如果射线相交，则视为选中
+        if (DDeiAbstractShape.isInsidePolygon(item.pvs, { x: x, y: y })) {
+          //获取真实的容器控件
+          let accuContainer = item.getAccuContainerByPos(x, y);
+          if (accuContainer) {
+            let subControls = DDeiAbstractShape.findBottomContainersByArea(accuContainer, x, y);
+            if (subControls && subControls.length > 0) {
+              controls = controls.concat(subControls);
+            } else {
+              controls.push(accuContainer);
+            }
+          }
+        }
+      }
+    }
+    return controls;
+  }
+
 
 }
 

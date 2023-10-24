@@ -136,11 +136,6 @@ export default {
                 { newContainer: layer, models: [control] },
                 e
               );
-              //给control设置stage，确保在初始化计算向量点时，可以获取当前stage的缩放因子
-              control.stage = ddInstance.stage;
-              // //计算向量点
-              control.calRotatePointVectors();
-
               //记录当前的拖拽的x,y,写入dragObj作为临时变量
               let dragObj = {
                 x: e.offsetX,
@@ -172,8 +167,7 @@ export default {
                 DDeiEnumBusCommandType.ModelChangePosition,
                 {
                   models: [control],
-                  deltaX: e.offsetX - control.width * 0.5,
-                  deltaY: e.offsetY - control.height * 0.5,
+                  dragObj: dragObj,
                 },
                 e
               );
@@ -194,6 +188,17 @@ export default {
                 isExec = false;
               }
               if (isExec) {
+                //显示辅助对齐线、坐标文本等图形
+                let selectedModels: Map<string, DDeiAbstractShape> = new Map();
+                selectedModels.set(control.id, control);
+
+                //修改辅助线
+                this.editor?.bus?.push(
+                  DDeiEnumBusCommandType.SetHelpLine,
+                  { models: selectedModels },
+                  e
+                );
+
                 this.editor.bus.push(
                   DDeiEnumBusCommandType.ModelChangePosition,
                   {
@@ -234,16 +239,6 @@ export default {
                   }
                 }
 
-                //显示辅助对齐线、坐标文本等图形
-                let selectedModels: Map<string, DDeiAbstractShape> = new Map();
-                selectedModels.set(control.id, control);
-
-                //修改辅助线
-                this.editor?.bus?.push(
-                  DDeiEnumBusCommandType.SetHelpLine,
-                  { models: selectedModels },
-                  e
-                );
                 //渲染图形
                 this.editor?.bus?.push(
                   DDeiEnumBusCommandType.RefreshShape,
@@ -319,10 +314,11 @@ export default {
             null,
             e
           );
-          this.editor.bus.push(DDeiEnumBusCommandType.AddHistroy, null, e);
-          this.editor?.bus?.push(DDeiEnumBusCommandType.SetHelpLine, {}, e);
+          this.editor.bus.push(DDeiEnumBusCommandType.NodifyChange);
+          this.editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
+          this.editor.bus.push(DDeiEnumBusCommandType.SetHelpLine);
           //渲染图形
-          this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, e);
+          this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
           this.editor.creatingControl = null;
           //切换到设计器
           this.editor.state = DDeiEditorState.DESIGNING;
@@ -340,11 +336,8 @@ export default {
           let ddInstance: DDei = this.editor.ddInstance;
           let layer = ddInstance.stage.layers[ddInstance.stage.layerIndex];
           //从layer中移除控件
-          this.editor.bus.push(
-            DDeiEnumBusCommandType.ModelChangeContainer,
-            { oldContainer: layer, models: [this.editor.creatingControl] },
-            e
-          );
+          layer.removeModel(this.editor.creatingControl);
+
           //清除临时变量
           this.editor.bus.push(
             DDeiEnumBusCommandType.ClearTemplateVars,

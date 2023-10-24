@@ -5,6 +5,7 @@ import DDeiAbstractShape from '../../models/shape';
 import DDeiUtil from '../../util';
 import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
+import { Matrix3, Vector3 } from 'three';
 /**
  * 改变模型旋转的总线Command
  */
@@ -62,42 +63,45 @@ class DDeiBusCommandModelChangeRotate extends DDeiBusCommand {
       let pContainerModel = data.container;
       let selectedModels = pContainerModel.getSelectedModels();
 
-      //更新旋转器角度
-      if (!selector.rotate) {
-        selector.rotate = 0;
-      }
-      //计算旋转角度
-      let angle = movedNumber * 0.75;
       let models: DDeiAbstractShape[] = Array.from(selectedModels.values());
       //获取当前选择控件外接矩形
-      let originRect: object = DDeiAbstractShape.getOutRect(models);
-      //外接矩形的圆心x0和y0
+      let originRect: object = DDeiAbstractShape.getOutRectByPV(models);
+      //外接矩形的中心occ
       let occ = { x: originRect.x + originRect.width * 0.5, y: originRect.y + originRect.height * 0.5 };
+      //基于中心构建旋转矩阵，旋转所有向量点
+      //计算旋转角度
+      let rotate = movedNumber * 0.75;
+      let angle = -(rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      let move1Matrix = new Matrix3(
+        1, 0, -occ.x,
+        0, 1, -occ.y,
+        0, 0, 1);
+      let rotateMatrix = new Matrix3(
+        Math.cos(angle), Math.sin(angle), 0,
+        -Math.sin(angle), Math.cos(angle), 0,
+        0, 0, 1);
+      let move2Matrix = new Matrix3(
+        1, 0, occ.x,
+        0, 1, occ.y,
+        0, 0, 1);
+      let m1 = new Matrix3().premultiply(move1Matrix).premultiply(rotateMatrix).premultiply(move2Matrix);
       //对所有选中图形进行位移并旋转
       for (let i = 0; i < models.length; i++) {
         let item = models[i]
-        if (!item.rotate) {
-          item.rotate = 0;
-        }
-        //当前图形的圆心x1和y1
-        let rcc = { x: item.x + item.width * 0.5, y: item.y + item.height * 0.5 };
-        //已知圆心位置、起始点位置和旋转角度，求终点的坐标位置，坐标系为笛卡尔坐标系，计算机中y要反转计算
-        let dcc = DDeiUtil.computePosition(occ, rcc, angle);
-        //修改坐标与旋转角度
-        item.setPosition(dcc.x - item.width * 0.5, dcc.y - item.height * 0.5)
-        item.rotate = item.rotate + angle
+        item.transVectors(m1)
       }
+      selector.transVectors(m1)
 
 
 
-      selector.rotate = selector.rotate + angle
-      selector.calRotatePointVectors();
-      //清空旋转矩阵
-      selector.currentPointVectors = selector.pointVectors;
-      selector.pointVectors = null;
-      selector.currentLoosePointVectors = selector.loosePointVectors;
-      selector.loosePointVectors = null;
-      selector.calRotateOperateVectors();
+      // selector.rotate = selector.rotate + angle
+      // selector.calRotatePointVectors();
+      // //清空旋转矩阵
+      // selector.currentPointVectors = selector.pointVectors;
+      // selector.pointVectors = null;
+      // selector.currentLoosePointVectors = selector.loosePointVectors;
+      // selector.loosePointVectors = null;
+      // selector.calRotateOperateVectors();
 
 
 

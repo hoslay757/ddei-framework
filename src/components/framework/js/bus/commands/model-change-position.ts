@@ -6,6 +6,7 @@ import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
 import { Matrix3, Vector3 } from 'three';
 import DDeiLayoutManagerFactory from '../../layout/layout-manager-factory';
+import { has } from 'lodash';
 /**
  * 改变模型坐标的总线Command
  */
@@ -50,99 +51,94 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
 
       let x = data.x ? data.x : 0;
       let y = data.y ? data.y : 0;
-      let dx = data.dx ? data.dx : 0;
-      let dy = data.dy ? data.dy : 0;
-
+      let dragObj = data.dragObj;
       let changeContainer = data.changeContainer ? data.changeContainer : false;
       let newContainer = data.newContainer;
-      let selector = data.selector;
+      let oldContainer = data.oldContainer;
+
       let models = data.models;
-      let parentContainer = data?.models[0].pModel;
       let stage = bus.ddInstance.stage;
-      //全局缩放
-      let stageRatio = parseFloat(stage.getStageRatio())
-      x = x + dx;
-      y = y + dy;
-      let cx = 0;
-      let cy = 0;
-      if (parentContainer && parentContainer.baseModelType != "DDeiLayer") {
-        cx = parentContainer.currentPointVectors[0].x;
-        cy = parentContainer.currentPointVectors[0].y;
+      let fModel = null
+      if (models[0].id.lastIndexOf("_shadow") != -1) {
+        fModel = stage?.getModelById(models[0].id.substring(models[0].id, models[0].id.lastIndexOf("_shadow")))
+      } else {
+        fModel = models[0];
       }
 
-      if (parentContainer) {
-        //绝对旋转量，构建旋转矩阵
-        let parentAbsRotate = parentContainer.getAbsRotate();
-        //变换坐标系，将最外部的坐标系，变换到容器坐标系，目前x和y都是相对于外部坐标的坐标
-        //注意由于外部容器存在旋转，因此减去的是外部容器的第一个点
-        let angle = (parentAbsRotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
-        let rotateMatrix = new Matrix3(
-          Math.cos(angle), Math.sin(angle), 0,
-          -Math.sin(angle), Math.cos(angle), 0,
-          0, 0, 1);
-        let vc1 = new Vector3(x - cx, y - cy, 1);
-        vc1.applyMatrix3(rotateMatrix)
-        x = parseFloat(vc1.x.toFixed(4))
-        y = parseFloat(vc1.y.toFixed(4))
+      //横纵吸附
+      let hAds = fModel.layer.render.helpLines?.hAds || fModel.layer.render.helpLines?.hAds == 0 ? fModel.layer.render.helpLines?.hAds : Infinity
+      let vAds = fModel.layer.render.helpLines?.vAds || fModel.layer.render.helpLines?.vAds == 0 ? fModel.layer.render.helpLines?.vAds : Infinity
+      let hAdsValue = Infinity;
+      let vAdsValue = Infinity;
+      if (hAds != Infinity) {
+        //退出吸附状态
+        if (stage.render.isHAds && Math.abs(stage.render.hAdsY - y) > DDeiConfig.GLOBAL_ADV_WEIGHT) {
+          stage.render.isHAds = false
+          stage.render.hAdsY = Infinity
+        }
+        //持续吸附状态
+        else if (stage.render.isHAds) {
+          hAdsValue = 0
+        }
+        //进入吸附状态
+        else {
+          stage.render.isHAds = true
+          hAdsValue = -hAds
+          stage.render.hAdsY = y
+        }
       }
-      //清空移入移出向量效果
+      if (vAds != Infinity) {
+        //退出吸附状态
+        if (stage.render.isVAds && Math.abs(stage.render.vAdsX - x) > DDeiConfig.GLOBAL_ADV_WEIGHT) {
+          stage.render.isVAds = false
+          stage.render.vAdsX = Infinity
+        }
+        //持续吸附状态
+        else if (stage.render.isVAds) {
+          vAdsValue = 0;
+        }
+        //进入吸附状态
+        else {
+          stage.render.isVAds = true
+          vAdsValue = -vAds
+          stage.render.vAdsX = x
+        }
+      }
 
+      models.forEach(model => {
+        let dx = 0
+        let dy = 0
+        if (dragObj && dragObj[model.id]) {
+          dx = dragObj[model.id]?.dx ? dragObj[model.id]?.dx : 0;
+          dy = dragObj[model.id]?.dy ? dragObj[model.id]?.dy : 0
+        }
+        let xm = x - model.cpv.x + dx;
+        let ym = y - model.cpv.y + dy;
+        if (hAdsValue != Infinity) {
+          ym = hAdsValue
+        }
+        if (vAdsValue != Infinity) {
+          xm = vAdsValue
+        }
+
+        let moveMatrix = new Matrix3(
+          1, 0, xm,
+          0, 1, ym,
+          0, 0, 1,
+        );
+
+        model.transVectors(moveMatrix);
+      });
       models[0].layer.dragInPoints = []
       models[0].layer.dragOutPoints = []
       //设置移入移出效果的向量
-      if (parentContainer && newContainer && parentContainer != newContainer) {
-        parentContainer?.layoutManager?.calDragOutPVS(data.x, data.y, models);
+      if (oldContainer && newContainer && oldContainer != newContainer) {
+        oldContainer?.layoutManager?.calDragOutPVS(data.x, data.y, models);
         newContainer?.layoutManager?.calDragInPVS(data.x, data.y, models);
-      } else if (parentContainer) {
-        parentContainer?.layoutManager?.calDragOutPVS(data.x, data.y, models);
-        parentContainer?.layoutManager?.calDragInPVS(data.x, data.y, models);
+      } else if (oldContainer) {
+        oldContainer?.layoutManager?.calDragOutPVS(data.x, data.y, models);
+        oldContainer?.layoutManager?.calDragInPVS(data.x, data.y, models);
       }
-      //计算外接矩形,未缩放的量和缩放的量
-      let originRect: object = null;
-      let originRectScale: object = null;
-      if (selector) {
-        originRect = selector.getAbsBounds();
-        let paddingWeightInfo = selector.paddingWeight?.selected ? selector.paddingWeight.selected : DDeiConfig.SELECTOR.PADDING_WEIGHT.selected;
-        let paddingWeight = 0;
-        if (models.length > 1) {
-          paddingWeight = paddingWeightInfo.multiple;
-        } else {
-          paddingWeight = paddingWeightInfo.single;
-        }
-        originRect.x = originRect.x + paddingWeight;
-        originRect.y = originRect.y + paddingWeight;
-        originRect.width = originRect.width - 2 * paddingWeight;
-        originRect.height = originRect.height - 2 * paddingWeight;
-      } else {
-        originRect = DDeiAbstractShape.getOutRect(models);
-        //通过向量获取的是缩放后的量，通过坐标获取的是未缩放的量
-        originRectScale = DDeiAbstractShape.getOutRectByPV(models)
-      }
-
-      //记录每一个图形在原始矩形中的比例
-      let originPosMap: Map<string, object> = new Map();
-      //获取模型在原始模型中的位置比例
-      for (let i = 0; i < models.length; i++) {
-        let item = models[i]
-
-        originPosMap.set(item.id, {
-          xR: ((item.x + cx - originRect.x) / originRect.width),
-          yR: ((item.y + cy - originRect.y) / originRect.height),
-          wR: (item.width / originRect.width),
-          hR: (item.height / originRect.height)
-        });
-      }
-
-      //考虑paddingWeight，计算预先实际移动后的区域
-      let movedBounds = { x: x - originRectScale.width / 2, y: y - originRectScale.height / 2, width: originRectScale.width, height: originRectScale.height }
-      models.forEach(item => {
-        let x = parseFloat(((movedBounds.x - cx + movedBounds.width * originPosMap.get(item.id).xR) / stageRatio).toFixed(4))
-        let width = parseFloat(((movedBounds.width * originPosMap.get(item.id).wR) / stageRatio).toFixed(4))
-        let y = parseFloat(((movedBounds.y - cy + movedBounds.height * originPosMap.get(item.id).yR) / stageRatio).toFixed(4))
-        let height = parseFloat(((movedBounds.height * originPosMap.get(item.id).hR) / stageRatio).toFixed(4))
-        item.setBounds(x, y, width, height)
-      })
-
       //如果移动过程中需要改变容器，一般用于拖拽时的逻辑
       if (stage.render.selector.passIndex == 10 || stage.render.selector.passIndex == 13 || stage.render.selector.passIndex == 11) {
         if (changeContainer) {
@@ -152,7 +148,7 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
             newContainer.layoutManager = freeLayoutManager;
           }
           //如果最小层容器不是当前容器，则修改鼠标样式，代表可能要移入
-          if (newContainer.id != parentContainer.id) {
+          if (newContainer.id != oldContainer.id) {
             if (newContainer?.layoutManager?.canAppend(data.x, data.y, models)) {
               bus?.insert(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 11 }, evt);
             } else {
@@ -165,7 +161,6 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
           bus?.insert(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: stage.render.selector.passIndex }, evt);
         }
       }
-
       return true;
     }
     return false;

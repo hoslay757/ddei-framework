@@ -56,7 +56,7 @@ class DDeiBusCommandUpdateSelectorBounds extends DDeiBusCommand {
             } else {
               height = evt.offsetY - y
             }
-            selector.setBounds(x, y, width, height);
+            selector.updatePVSByRect(x, y, width, height);
           } else {
             let models = data?.models;
             if (!models?.length > 0 && !models?.size > 0) {
@@ -65,7 +65,7 @@ class DDeiBusCommandUpdateSelectorBounds extends DDeiBusCommand {
             if (!models?.length > 0 && !models?.size > 0) {
               models = optContainer.getSelectedModels();
             }
-            selector.updateBoundsByModels(models);
+            selector.updatePVSByModels(models);
           }
         }
       }

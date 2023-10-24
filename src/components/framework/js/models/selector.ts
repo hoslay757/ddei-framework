@@ -4,7 +4,7 @@ import DDeiEnumControlState from '../enums/control-state';
 import DDeiUtil from '../util';
 import DDeiRectangle from './rectangle';
 import DDeiAbstractShape from './shape';
-import _, { cloneDeep } from 'lodash'
+import { clone, cloneDeep } from 'lodash'
 import { Matrix3, Vector3 } from 'three';
 
 /**
@@ -66,6 +66,10 @@ class DDeiSelector extends DDeiRectangle {
 
 
 
+
+
+
+
   /**
    * 重制状态
    */
@@ -73,17 +77,7 @@ class DDeiSelector extends DDeiRectangle {
     //重置选择器状态
     this.startX = x
     this.startY = y
-    this.x = x
-    this.y = y
-    this.width = 0
-    this.height = 0
-    this.rotate = 0
-    this.setModelChanged()
-    this.currentPointVectors = null;
-    this.currentLoosePointVectors = null;
-    this.pointVectors = null;
-    this.centerPointVector = null;
-    this.currentOPVS = null;
+    this.updatePVSByRect(0, 0, 0, 0);
     this.setState(DDeiEnumControlState.DEFAULT);
   }
 
@@ -93,7 +87,9 @@ class DDeiSelector extends DDeiRectangle {
    */
   getIncludedModels(): Map<string, DDeiAbstractShape> {
     //选中选择器区域内控件
-    let selectBounds = this.getBounds();
+    let rectPVS = this.pvs;
+    let selectBounds = DDeiAbstractShape.pvsToOutRect(rectPVS);
+
     let looseWeight = 2;
     selectBounds.x -= looseWeight
     selectBounds.y -= looseWeight
@@ -103,7 +99,7 @@ class DDeiSelector extends DDeiRectangle {
     this.stage.layers[this.stage.layerIndex].models.forEach((item, key) => {
       //实际区域减小一定百分比，宽松选择
       if (item.id != this.id) {
-        let pvs = item.currentPointVectors;
+        let pvs = item.pvs;
         //在框内的向量点数量
         let inRectNum = 0;
         pvs.forEach(pv => {
@@ -124,63 +120,65 @@ class DDeiSelector extends DDeiRectangle {
   }
 
   /**
-   * 获取旋转后的点集合
-   * @param looseWeight 宽松的判断矩阵
-   */
-  getRotatedPoints(looseWeight: number = 0): object[] {
-    let ps = null;
-    if (this.currentPointVectors?.length > 0) {
-      ps = [this.currentPointVectors[0], this.currentOPVS[9], this.currentPointVectors[1], this.currentPointVectors[2], this.currentPointVectors[3]]
-    }
-    return ps;
-  }
-  /**
   * 获取画布缩放比率
   */
   getStageRatio(): number {
-    return 1.0
+    return DDeiConfig.STAGE_RATIO
   }
 
-  /**
-   * 判断图形是否在一个区域内，采用宽松的判定模式，允许传入一个大小值
-   * @param x0
-   * @param y0
-   * @param looseWeight 宽松判定的宽度，默认0
-   * @returns 是否在区域内
-   */
-  isInAreaLoose(x0: number | undefined = undefined, y0: number | undefined = undefined, looseWeight: number = 0): boolean {
-    if (x0 === undefined || y0 === undefined) {
-      return false
-    }    //遍历所有点，求得最大、最小的x、y
-    if (this.currentOPVS?.length > 0) {
-      let x: number = Infinity, y: number = Infinity, x1: number = 0, y1: number = 0;
-      //找到最大、最小的x和y
-      this.currentOPVS.forEach(p => {
-        if (p) {
-          x = Math.min(Math.floor(p.x), x)
-          x1 = Math.max(Math.floor(p.x), x1)
-          y = Math.min(Math.floor(p.y), y)
-          y1 = Math.max(Math.floor(p.y), y1)
-        }
-      })
-      return DDeiAbstractShape.isInsidePolygon(
-        [
-          { x: x - looseWeight, y: y - looseWeight },
-          { x: x1 + looseWeight, y: y - looseWeight },
-          { x: x1 + looseWeight, y: y1 + looseWeight },
-          { x: x - looseWeight, y: y1 + looseWeight },
-        ], { x: x0, y: y0 });
-    }
+  // /**
+  //  * 判断图形是否在一个区域内，采用宽松的判定模式，允许传入一个大小值
+  //  * @param x0
+  //  * @param y0
+  //  * @param loose 宽松判定
+  //  * @returns 是否在区域内
+  //  */
+  // isInAreaLoose(x0: number | undefined = undefined, y0: number | undefined = undefined, loose: boolean = false): boolean {
+  //   if (x0 === undefined || y0 === undefined) {
+  //     return false
+  //   }    //遍历所有点，求得最大、最小的x、y
+  //   if (this.currentOPVS?.length > 0) {
+  //     let x: number = Infinity, y: number = Infinity, x1: number = 0, y1: number = 0;
+  //     //找到最大、最小的x和y
+  //     this.currentOPVS.forEach(p => {
+  //       if (p) {
+  //         x = Math.min(Math.floor(p.x), x)
+  //         x1 = Math.max(Math.floor(p.x), x1)
+  //         y = Math.min(Math.floor(p.y), y)
+  //         y1 = Math.max(Math.floor(p.y), y1)
+  //       }
+  //     })
+  //     return DDeiAbstractShape.isInsidePolygon(
+  //       [
+  //         { x: x - looseWeight, y: y - looseWeight },
+  //         { x: x1 + looseWeight, y: y - looseWeight },
+  //         { x: x1 + looseWeight, y: y1 + looseWeight },
+  //         { x: x - looseWeight, y: y1 + looseWeight },
+  //       ], { x: x0, y: y0 });
+  //   }
 
 
-    return false;
+  //   return false;
+  // }
+
+  updatePVSByRect(x: number, y: number, w: number, h: number): void {
+    let pvs = [];
+    pvs.push(new Vector3(x, y, 1))
+    pvs.push(new Vector3(x + w, y, 1))
+    pvs.push(new Vector3(x + w, y + h, 1))
+    pvs.push(new Vector3(x, y + h, 1))
+    this.cpv = this.cpv = new Vector3(x + w / 2, y + h / 2, 1);
+    this.pvs = pvs;
+    this.initHPV()
+    this.calRotate();
+    this.calOPVS();
+    this.calLoosePVS();
   }
-
   /**
-   * 根据已选择的控件更新坐标和状态
+   * 根据已选择的控件更新向量信息
    * @param pContainerModel 上层容器控件
    */
-  updateBoundsByModels(models: Map<string, DDeiAbstractShape> | Array<DDeiAbstractShape>): void {
+  updatePVSByModels(models: Map<string, DDeiAbstractShape> | Array<DDeiAbstractShape>): void {
     if (!models) {
       models = this.stage?.selectedModels;
     }
@@ -202,15 +200,10 @@ class DDeiSelector extends DDeiRectangle {
       }
       //计算多个图形的顶点最大范围，根据顶点范围构建一个最大的外接矩形，规则的外接矩形，可以看作由4个顶点构成的图形
       let pvs = null;
-      if (models.length == 1 && models[0].currentPointVectors?.length > 0) {
-        pvs = cloneDeep(models[0].currentPointVectors);
-        this.centerPointVector = models[0].centerPointVector
-        //大小为0时，直接采用model的大小，因此不考虑缩放
-        this.setBounds(models[0].x, models[0].y, models[0].width, models[0].height);
-        this.rotate = models[0].getAbsRotate();
+      if (models.length == 1) {
+        pvs = cloneDeep(models[0].pvs);
+        this.cpv = cloneDeep(models[0].cpv)
       } else {
-        let parentAbs = models[0].pModel.getAbsPosition()
-        //控件大小大大于0时，由于通过向量获取大小，因此需要还原缩放
         let outRectBounds = DDeiAbstractShape.getOutRectByPV(models);
         pvs = DDeiAbstractShape.getOutPV(models);
         let stageRatio = this.stage.getStageRatio()
@@ -222,21 +215,34 @@ class DDeiSelector extends DDeiRectangle {
         pvs[2].y += paddingWeight * stageRatio
         pvs[3].x -= paddingWeight * stageRatio
         pvs[3].y += paddingWeight * stageRatio
-        this.centerPointVector = { x: outRectBounds.x + outRectBounds.width / 2, y: outRectBounds.y + outRectBounds.height / 2, z: 1 };
-        this.setBounds(outRectBounds.x / stageRatio - parentAbs.x - paddingWeight, outRectBounds.y / stageRatio - parentAbs.y - paddingWeight, outRectBounds.width / stageRatio + 2 * paddingWeight, outRectBounds.height / stageRatio + 2 * paddingWeight);
-        this.rotate = 0;
+        this.cpv = new Vector3(outRectBounds.x + outRectBounds.width / 2, outRectBounds.y + outRectBounds.height / 2, 1);
       }
-
-      this.currentPointVectors = pvs;
-      this.calRotateOperateVectors();
-
-
-
+      this.pvs = pvs;
+      this.initHPV()
+      this.calRotate();
+      this.calOPVS();
+      this.calLoosePVS();
       //设置选择器状态为选中后
       this.setState(DDeiEnumControlState.SELECTED);
     } else {
       this.resetState();
     }
+  }
+
+
+  /**
+   * 变换向量
+   */
+  transVectors(matrix: Matrix3): void {
+    this.cpv.applyMatrix3(matrix);
+    this.pvs.forEach(pv => {
+      pv.applyMatrix3(matrix)
+    });
+    this.initHPV();
+    this.calRotate()
+    this.calOPVS()
+    this.calLoosePVS();
+
   }
 
 
@@ -288,9 +294,77 @@ class DDeiSelector extends DDeiRectangle {
     });
   }
 
+  /**
+   * 基于当前向量计算宽松判定向量
+   */
+  calLoosePVS(): void {
+    let stageRatio = this.stage?.getStageRatio();
+    //宽松判定区域的宽度
+    let looseWeight = DDeiConfig.SELECTOR.OPERATE_ICON.weight / 2;
+    //复制当前向量
+    let tempPVS = cloneDeep(this.pvs)
+    let move1Matrix = new Matrix3(
+      1, 0, -this.cpv.x,
+      0, 1, -this.cpv.y,
+      0, 0, 1);
+    tempPVS.forEach(fpv => {
+      fpv.applyMatrix3(move1Matrix)
+    });
+    //获取旋转角度
+    if (this.rotate && this.rotate != 0) {
+      let angle = (this.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      let rotateMatrix = new Matrix3(
+        Math.cos(angle), Math.sin(angle), 0,
+        -Math.sin(angle), Math.cos(angle), 0,
+        0, 0, 1);
+      tempPVS.forEach(fpv => {
+        fpv.applyMatrix3(rotateMatrix)
+      });
+    }
+    //计算宽、高信息，该值为不考虑缩放的大小
+    this.x = tempPVS[0].x / stageRatio
+    this.y = tempPVS[0].y / stageRatio
+    this.width = (tempPVS[1].x - tempPVS[0].x) / stageRatio
+    this.height = (tempPVS[3].y - tempPVS[0].y) / stageRatio
 
-  calRotateOperateVectors(): void {
-    let pvs = this.currentPointVectors;
+
+    this.loosePVS = []
+    this.loosePVS[0] = new Vector3(tempPVS[0].x - looseWeight, tempPVS[0].y - looseWeight, 1)
+    this.loosePVS[1] = new Vector3(tempPVS[0].x + (tempPVS[1].x - tempPVS[0].x) / 2 - looseWeight, tempPVS[0].y - looseWeight, 1)
+    this.loosePVS[2] = new Vector3(this.loosePVS[1].x, this.loosePVS[1].y - 40, 1)
+    this.loosePVS[3] = new Vector3(this.loosePVS[2].x + 2 * looseWeight, this.loosePVS[2].y, 1)
+    this.loosePVS[4] = new Vector3(this.loosePVS[3].x, this.loosePVS[3].y - 40, 1)
+    this.loosePVS[5] = new Vector3(tempPVS[1].x + looseWeight, tempPVS[1].y - looseWeight, 1)
+    this.loosePVS[6] = new Vector3(this.loosePVS[5].x, tempPVS[2].y + looseWeight, 1)
+    this.loosePVS[7] = new Vector3(tempPVS[3].x - looseWeight, this.loosePVS[6].y, 1)
+
+    //旋转并位移回去
+    if (this.rotate && this.rotate != 0) {
+      let angle = -(this.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      let rotateMatrix = new Matrix3(
+        Math.cos(angle), Math.sin(angle), 0,
+        -Math.sin(angle), Math.cos(angle), 0,
+        0, 0, 1);
+      this.loosePVS.forEach(fpv => {
+        fpv.applyMatrix3(rotateMatrix)
+      });
+    }
+    let move2Matrix = new Matrix3(
+      1, 0, this.cpv.x,
+      0, 1, this.cpv.y,
+      0, 0, 1);
+    this.loosePVS.forEach(fpv => {
+      fpv.applyMatrix3(move2Matrix)
+    });
+    this.x += this.cpv.x / stageRatio
+    this.y += this.cpv.y / stageRatio
+  }
+
+  /**
+   * 根据向量点计算操作图标的向量点
+   */
+  calOPVS(): void {
+    let pvs = this.pvs;
     let opvs = [];
     if (pvs?.length > 0) {
       opvs[1] = { x: (pvs[0].x + pvs[1].x) / 2, y: (pvs[0].y + pvs[1].y) / 2 };
@@ -358,11 +432,35 @@ class DDeiSelector extends DDeiRectangle {
 
       v2.applyMatrix3(removeMatrix2);
       opvs[10] = v2;
-
-
-
-      this.currentOPVS = opvs;
+      this.opvs = opvs;
     }
+  }
+
+
+  /**
+   * 判断是否在某个操作点上
+   * @param direct 操作点下标
+   * @param x 
+   * @param y
+   */
+  isOpvOn(direct: number, x: number, y: number): boolean {
+    if (this.opvs[direct]) {
+      let pv = this.opvs[direct];
+      if (pv) {
+        //操作图标的宽度
+        let width = DDeiConfig.SELECTOR.OPERATE_ICON.weight;
+        let halfWidth = width * 0.5;
+        return DDeiAbstractShape.isInsidePolygon(
+          [
+            { x: pv.x - halfWidth, y: pv.y - halfWidth },
+            { x: pv.x + halfWidth, y: pv.y - halfWidth },
+            { x: pv.x + halfWidth, y: pv.y + halfWidth },
+            { x: pv.x - halfWidth, y: pv.y + halfWidth }
+          ]
+          , { x: x, y: y });
+      }
+    }
+    return false;
   }
 
 }

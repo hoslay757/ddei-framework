@@ -123,6 +123,7 @@ export default {
             null
           );
           ddInstance?.bus?.executeAll();
+          this.editor.viewEditor?.forceRefreshBottomMenu();
         }
       }
     },

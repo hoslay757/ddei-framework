@@ -61,30 +61,35 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
    * 绘制图形
    */
   drawShape(): void {
+
+    //转换为缩放后的坐标
+    super.drawShape();
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
-    //转换为缩放后的坐标
-    let ratPos = this.getBorderRatPos();
-
-    super.drawShape();
     //保存状态
     ctx.save();
-    //设置旋转，以确保子图形元素都被旋转
-    this.doRotate(ctx, ratPos);
-
-
     //获取全局缩放比例
+    let rat1 = this.ddRender.ratio;
     let stageRatio = this.model.getStageRatio()
-    let ratio = this.ddRender.ratio * stageRatio;
+    let ratio = rat1 * stageRatio;
     //计算填充的原始区域
-    let fillAreaE = this.getFillArea();
-    //转换为缩放后的坐标
-    ratPos = DDeiUtil.getRatioPosition(fillAreaE, ratio);
+    let fillPVS = this.getFillAreaPVS();
     //剪切当前区域
+    ctx.beginPath();
     let lineOffset = 1 * ratio / 2;
-    ctx.rect(ratPos.x + lineOffset, ratPos.y + lineOffset, ratPos.width, ratPos.height);
+    for (let i = 0; i < fillPVS.length; i++) {
+      if (i == fillPVS.length - 1) {
+        ctx.lineTo(fillPVS[i].x * rat1 + lineOffset, fillPVS[i].y * rat1 + lineOffset);
+        ctx.lineTo(fillPVS[0].x * rat1 + lineOffset, fillPVS[0].y * rat1 + lineOffset);
+      } else if (i == 0) {
+        ctx.moveTo(fillPVS[i].x * rat1 + lineOffset, fillPVS[i].y * rat1 + lineOffset);
+      } else {
+        ctx.lineTo(fillPVS[i].x * rat1 + lineOffset, fillPVS[i].y * rat1 + lineOffset);
+      }
+    }
+    ctx.closePath();
     ctx.clip();
-
+    //绘制单元格
     this.drawCells();
     this.model.selector.render.drawShape();
     ctx.restore();

@@ -30,6 +30,7 @@ class MenuInsertRow {
         }
         //调用table的插入行方法插入行
         table.insertRow(row, 1);
+        model.stage.ddInstance.bus.push(DDeiEnumBusCommandType.NodifyChange);
         model.stage.ddInstance.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
         model.stage.ddInstance.bus.executeAll();
       }

@@ -79,7 +79,7 @@
                min="0.1"
                max="4"
                step="0.1"
-               v-model="currentStage.ratio" />
+               v-model="stageRatio" />
         <div>
           <img src="../icons/icon-add.png"
                @click="addRatio(0.05)" />
@@ -138,8 +138,7 @@
                    min="1"
                    max="1000"
                    v-model="ratioInputValue"
-                   @blur="showDialog('ddei_editor_bottommenu_other_changesize_dialog')"
-                   @input="ratioInputChange">%
+                   @blur="ratioInputChange() && showDialog('ddei_editor_bottommenu_other_changesize_dialog')" />%
           </div>
         </div>
       </div>
@@ -172,6 +171,7 @@ export default {
       currentStage: {},
       dialogShow: "",
       ratioInputValue: 0,
+      stageRatio: 1,
     };
   },
   computed: {},
@@ -190,6 +190,9 @@ export default {
       this.ratioInputValue = parseFloat(newVal) * 100;
       this.changeRatio();
     });
+    this.$watch("stageRatio", function (newVal, oldVal) {
+      this.setRatio(newVal);
+    });
   },
   mounted() {
     //获取编辑器
@@ -204,8 +207,22 @@ export default {
      */
     changeRatio() {
       if (this.currentStage.ratio || this.currentStage.ratio == 0) {
-        this.editor?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, null);
-        this.editor?.bus?.executeAll();
+        if (this.currentStage.oldRatio || this.currentStage.oldRatio == 0) {
+          this.editor?.bus?.push(
+            DDeiEnumBusCommandType.ChangeStageRatio,
+            {
+              oldValue: this.currentStage.oldRatio,
+              newValue: this.currentStage.ratio,
+            },
+            null
+          );
+          this.editor?.bus?.push(
+            DDeiEnumBusCommandType.RefreshShape,
+            null,
+            null
+          );
+          this.editor?.bus?.executeAll();
+        }
       }
     },
 
@@ -214,22 +231,27 @@ export default {
      */
     addRatio(deltaRatio: number) {
       let ratio = this.currentStage.getStageRatio();
-      this.currentStage.ratio = parseFloat((ratio + deltaRatio).toFixed(2));
+      this.currentStage.setStageRatio(
+        parseFloat((ratio + deltaRatio).toFixed(2))
+      );
+      this.stageRatio = this.currentStage.ratio;
     },
 
     /**
      * 设置缩放比率
      */
     setRatio(ratio: number) {
-      this.currentStage.ratio = ratio;
+      this.currentStage.setStageRatio(ratio);
       this.dialogShow = "";
+      this.stageRatio = this.currentStage.ratio;
     },
 
     ratioInputChange(evt: Event) {
       if (this.ratioInputValue >= 1000) {
         this.ratioInputValue = 1000;
       }
-      this.currentStage.ratio = this.ratioInputValue / 100;
+      this.currentStage.setStageRatio(this.ratioInputValue / 100);
+      this.stageRatio = this.currentStage.ratio;
     },
 
     /**

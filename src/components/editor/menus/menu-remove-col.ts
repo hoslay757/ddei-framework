@@ -21,6 +21,7 @@ class MenuInsertCol {
           col = table.cols.length - 1;
         }
         table.removeCol(col);
+        model.stage.ddInstance.bus.push(DDeiEnumBusCommandType.NodifyChange);
         model.stage.ddInstance.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
         model.stage.ddInstance.bus.executeAll();
       }

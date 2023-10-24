@@ -72,6 +72,9 @@ class DDeiConfig {
   //当前采用的渲染器类型，暂时只支持canvas
   static RENDER_TYPE: string = "Canvas";
 
+  //缺省缩放比例
+  static STAGE_RATIO: number = 1.2;
+
   // 是否打开辅助线功能
   static GLOBAL_HELP_LINE_ENABLE: boolean = true;
   // 是否打开辅助对齐线
@@ -83,15 +86,18 @@ class DDeiConfig {
   // 缺省辅助线宽度
   static GLOBAL_HELP_LINE_WEIGHT: number = 10;
 
+  // 缺省吸附效果宽度，小于0时没有吸附效果
+  static GLOBAL_ADV_WEIGHT: number = 5;
+
   //不需要序列化的字段
   static SERI_FIELDS: object = {
     "DDei": { "TOJSON": ["stage"], "SKIP": ["bus", "render", "unicode", "editMode"] },
     "DDeiStage": { "TOJSON": ["layers"], "SKIP": ["ddInstance", "selectedModels", "render", "unicode", "histroy", 'histroyIdx'] },
     "DDeiLayer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "render", "unicode", "opPoints", "dragInPoints", "dragOutPoints", "shadowControls", "layoutManager"] },
-    "DDeiContainer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "pointVectors", "currentPointVectors", "centerPointVector", "layoutManager", "loosePointVectors", "currentLoosePointVectors", "rotateMatrix"] },
-    "AbstractShape": { "SKIP": ["ddInstance", "stage", "layer", "pModel", "state", "render", "unicode", "pointVectors", "currentPointVectors", "centerPointVector", "loosePointVectors", "currentLoosePointVectors", "rotateMatrix"] },
-    "DDeiTable": { "TOJSON": ["rows"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "pointVectors", "currentPointVectors", "centerPointVector", "loosePointVectors", "cols", "selector", "currentLoosePointVectors", "initColNum", "initRowNum", "rotateMatrix", "tempDragCell", "tempDragType", "curCol", "curRow", "specilDrag", "tempUpCel", "dragChanging", "dragType", "dragCell"] },
-    "DDeiTableCell": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "pointVectors", "currentPointVectors", "centerPointVector", "loosePointVectors", "layoutManager", "currentLoosePointVectors", "rotateMatrix", "id", "table", "mergedCell"] },
+    "DDeiContainer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "hpv", "loosePVS", "x", "y", "width", "height", "layoutManager"] },
+    "AbstractShape": { "SKIP": ["ddInstance", "stage", "layer", "pModel", "state", "render", "unicode", "hpv", "loosePVS", "x", "y", "width", "height"] },
+    "DDeiTable": { "TOJSON": ["rows"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "hpv", "loosePVS", "x", "y", "width", "height", "cols", "selector", "initColNum", "initRowNum", "tempDragCell", "tempDragType", "curCol", "curRow", "specilDrag", "tempUpCel", "dragChanging", "dragType", "dragCell"] },
+    "DDeiTableCell": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "hpv", "loosePVS", "x", "y", "width", "height", "layoutManager", "id", "table", "mergedCell"] },
   }
 
   // 边框的相关缺省样式属性

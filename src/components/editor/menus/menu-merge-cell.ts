@@ -13,6 +13,7 @@ class MenuInsertCol {
       let table: DDeiTable = model;
       //执行合并单元格
       table.mergeSelectedCells();
+      model.stage.ddInstance.bus.push(DDeiEnumBusCommandType.NodifyChange);
       model.stage.ddInstance.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
       model.stage.ddInstance.bus.executeAll();
     }

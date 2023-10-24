@@ -1,11 +1,14 @@
+import { MODEL_CLS } from '../../config';
 import DDeiEnumBusCommandType from '../../enums/bus-command-type';
 import DDeiEnumOperateState from '../../enums/operate-state';
 import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
+import { Matrix3, Vector3 } from 'three';
 /**
- * 清空临时变量的总线Command
+ * 缩放画布总线Command
+ * 图形类Command一般在普通Command之后执行
  */
-class DDeiBusCommandClearTemplateVars extends DDeiBusCommand {
+class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
   // ============================ 构造函数 ============================
 
   // ============================ 静态方法 ============================
@@ -14,7 +17,7 @@ class DDeiBusCommandClearTemplateVars extends DDeiBusCommand {
 
   // ============================ 方法 ===============================
   /**
-   * 前置行为
+   * 前置行为，用于校验,本Command无需校验
    * @param data bus分发后，当前承载的数据
    * @param bus 总线对象引用
    * @param evt 事件对象引用
@@ -24,7 +27,7 @@ class DDeiBusCommandClearTemplateVars extends DDeiBusCommand {
   }
 
   /**
-   * 具体行为
+   * 具体行为，重绘所有图形
    * @param data bus分发后，当前承载的数据
    * @param bus 总线对象引用
    * @param evt 事件对象引用
@@ -32,33 +35,34 @@ class DDeiBusCommandClearTemplateVars extends DDeiBusCommand {
   action(data: object, bus: DDeiBus, evt: Event): boolean {
 
     let stage = bus.ddInstance.stage;
-    if (stage) {
-      //当前操作控件：无
-      stage.render.currentOperateShape = null;
-      //当前操作状态:无
-      stage.render.operateState = DDeiEnumOperateState.NONE;
-      //渲染图形
-      stage.render.dragObj = null
+    if (stage && data.oldValue && data.newValue && data.oldValue != data.newValue) {
+      //缩放矩阵
+      let scaleMatrix = new Matrix3(
+        data.newValue / data.oldValue, 0, 0,
+        0, data.newValue / data.oldValue, 0,
+        0, 0, 1);
 
-      //吸附状态
-      stage.render.isHAds = false;
-      stage.render.isVAds = false;
-
-      //清除作为临时变量dragX、dargY、dragObj
-      stage.render.selector.setPassIndex(-1);
+      stage.layers.forEach(layer => {
+        layer.midList.forEach(mid => {
+          let model = layer.models.get(mid);
+          model.transVectors(scaleMatrix)
+        })
+      });
+      return true;
+    } else {
+      return false;
     }
-    return true;
 
   }
 
   /**
-   * 后置行为，分发
+   * 后置行为，分发，修改当前editor的状态
    * @param data bus分发后，当前承载的数据
    * @param bus 总线对象引用
    * @param evt 事件对象引用
    */
   after(data: object, bus: DDeiBus, evt: Event): boolean {
-
+    bus.insert(DDeiEnumBusCommandType.UpdateSelectorBounds)
     return true;
   }
 
@@ -67,10 +71,10 @@ class DDeiBusCommandClearTemplateVars extends DDeiBusCommand {
    * @returns 
    */
   static newInstance(): DDeiBusCommand {
-    return new DDeiBusCommandClearTemplateVars({ code: DDeiEnumBusCommandType.ClearTemplateVars, name: "", desc: "" })
+    return new DDeiBusCommandChangeStageRatio({ code: DDeiEnumBusCommandType.ChangeStageRatio, name: "", desc: "" })
   }
 
 }
 
 
-export default DDeiBusCommandClearTemplateVars
+export default DDeiBusCommandChangeStageRatio

@@ -77,19 +77,27 @@ class DDeiTable extends DDeiAbstractShape {
           }
           let initJSON = DDeiUtil.getSubControlJSON(this.modelCode);
           initJSON.id = this.id + "_c_" + i + "_" + j
-          initJSON.x = j * initWidth
-          initJSON.y = i * initHeight
+          let x = (j + 0.5) * initWidth
+          let y = (i + 0.5) * initHeight
           initJSON.row = i
           initJSON.col = j
           initJSON.width = initWidth
           initJSON.height = initHeight
           initJSON.table = this
-
           //同时初始化行和列的引用
-          this.rows[i][j] = DDeiTableCell.initByJSON(initJSON);
+          this.rows[i][j] = DDeiTableCell.initByJSON(initJSON, { currentStage: this.stage });
+          this.rows[i][j].cpv.x += this.x + x
+          this.rows[i][j].cpv.y += this.y + y
+          this.rows[i][j].pvs.forEach(pv => {
+            pv.x += this.x + x
+            pv.y += this.y + y
+          });
+
+          this.rows[i][j].calLoosePVS()
           this.cols[j][i] = this.rows[i][j];
         }
       }
+      console.log(this.rows[0][0].pvs[0].x + " .  " + this.rows[0][0].pvs[0].y)
     }
   }
 
@@ -131,7 +139,7 @@ class DDeiTable extends DDeiAbstractShape {
     this.curCol = -1;
   }
 
-  //重设所有单元格的行列关系
+  //重设所有单元格的行列关系,以及对应的坐标、向量等
   resetCellData(): void {
     //重新计算坐标和行列数
     let tmpY = 0;
@@ -158,6 +166,24 @@ class DDeiTable extends DDeiAbstractShape {
       }
     }
   }
+
+
+
+  /**
+   * 获取子模型
+   */
+  getSubModels(): DDeiAbstractShape[] {
+    let models: DDeiAbstractShape[] = [];
+    for (let i = 0; i < this.rows.length; i++) {
+      let rowObj = this.rows[i];
+      for (let j = 0; j < rowObj.length; j++) {
+        let subModels = rowObj[j].getSubModels()
+        models = models.concat(subModels);
+      }
+    }
+    return models;
+  }
+
 
   /**
    * 设置表格大小
@@ -224,7 +250,14 @@ class DDeiTable extends DDeiAbstractShape {
       initJSON.table = this
 
       //同时初始化行和列的引用
-      let newCell = DDeiTableCell.initByJSON(initJSON);
+      let newCell = DDeiTableCell.initByJSON(initJSON, { currentStage: this.stage });
+      newCell.cpv.x += x
+      newCell.cpv.y += y
+      newCell.pvs.forEach(pv => {
+        pv.x += x
+        pv.y += y
+      });
+      newCell.calLoosePVS()
       newCell.layer = this.layer;
       newCell.stage = this.stage;
       newCell.pModel = this;
@@ -1729,6 +1762,20 @@ class DDeiTable extends DDeiAbstractShape {
     }
   }
 
+  /**
+  * 变换向量
+  */
+  transVectors(matrix: Matrix3): void {
+    super.transVectors(matrix)
+    for (let i = 0; i < this.rows.length; i++) {
+      let rowObj = this.rows[i];
+      for (let j = 0; j < rowObj.length; j++) {
+        let cellObj = rowObj[j];
+        cellObj.transVectors(matrix)
+      }
+    }
+  }
+
   // ============================ 静态方法 ============================
 
 
@@ -1777,16 +1824,22 @@ class DDeiTable extends DDeiAbstractShape {
     model.rows = rows;
     model.cols = cols;
 
-
+    //基于初始化的宽度、高度，构建向量
+    model.initPVS();
     model.initRender();
     return model;
   }
   // 通过JSON初始化对象，数据未传入时将初始化数据
-  static initByJSON(json): DDeiTable {
-    let shape = new DDeiTable(json);
+  static initByJSON(json, tempData: object = {}): DDeiTable {
+    let model = new DDeiTable(json);
+    model.layer = tempData['currentLayer']
+    model.stage = tempData['currentStage']
+    model.pModel = tempData['currentContainer']
+    //基于初始化的宽度、高度，构建向量
+    model.initPVS();
     //初始化表格
-    shape.initTable();
-    return shape;
+    model.initTable();
+    return model;
   }
 
   //类名，用于反射和动态加载
