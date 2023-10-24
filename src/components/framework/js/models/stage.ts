@@ -317,79 +317,82 @@ class DDeiStage {
   getLayerModels(): DDeiAbstractShape[] {
     let models: DDeiAbstractShape[] = [];
     for (let i = 0; i < this.layers.length; i++) {
-      this.layers[i].models.forEach((item, key) => {
-        models.push(item);
-      });
+      let subModels = this.layers[i].getSubModels()
+      models = models.concat(subModels);
     }
     return models;
   }
   /**
    * 获取多个图层之间的所有对齐模型
-   * @param bounds 坐标
+   * @param data 判定的数据
    * @param souceModels 源模型,可能包含多个
-   * @param ignoreModels 忽略判断的模型
    * @returns 
    */
-  getAlignModels(bounds: object, souceModels: Map<string, DDeiAbstractShape> | Array<DDeiAbstractShape>): object {
-    let models = {
-      leftAlignModels: [],
-      rightAlignModels: [],
-      topAlignModels: [],
-      bottomAlignModels: [],
-      horizontalCenterAlignModels: [],
-      verticalCenterAlignModels: []
-    }
+  getAlignModels(data: object, souceModels: Map<string, DDeiAbstractShape> | Array<DDeiAbstractShape>): object {
+    //若干条横线和竖线
+
+    let hpoint = {}
+    let vpoint = {}
+    let hasH = false
+    let hasV = false
 
     // 排除源模型
     if (souceModels.set) {
       souceModels = Array.from(souceModels.values());
     }
+    let fModel = null
     let sourceModelKeys = [];
     for (let k = 0; k < souceModels.length; k++) {
-      sourceModelKeys.push(souceModels[k].id)
+      let item = souceModels[k]
+      let id = item.id;
+      if (id.lastIndexOf("_shadow") != -1) {
+        id = id.substring(id, id.lastIndexOf("_shadow"))
+      }
+      sourceModelKeys.push(id)
+      if (!fModel) {
+        fModel = this.getModelById(id);
+      }
     }
-    // 计算每个模型与位置的关系
-    let sourceP = bounds;
-    let distP
 
-    this.getLayerModels().forEach(model => {
+    //当前层级的所有控件
+    let curLevelModels = fModel.pModel.getSubModels();
+    curLevelModels.forEach(model => {
       //在源控件中存在就推出不作判断
       if (sourceModelKeys.indexOf(model.id) != -1) {
         return;
       }
-      distP = { x: model.x, y: model.y, width: model.width, height: model.height }
-
-      if (DDeiAbstractShape.isLeftAlign(sourceP, distP)) {
-        models.leftAlignModels.push(model)
-      }
-      if (DDeiAbstractShape.isRightAlign(sourceP, distP)) {
-        models.rightAlignModels.push(model)
-      }
-      if (DDeiAbstractShape.isTopAlign(sourceP, distP)) {
-        models.topAlignModels.push(model)
-      }
-      if (DDeiAbstractShape.isBottomAlign(sourceP, distP)) {
-        models.bottomAlignModels.push(model)
-      }
-      if (DDeiAbstractShape.isHorizontalCenterAlign(sourceP, distP)) {
-        models.horizontalCenterAlignModels.push(model)
-      }
-      if (DDeiAbstractShape.isVerticalCenterAlign(sourceP, distP)) {
-        models.verticalCenterAlignModels.push(model)
-      }
+      //判定每一个点以及中心点
+      data.pvs.concat(data.cpv).forEach(pv => {
+        model.pvs.concat(model.cpv).forEach(mpv => {
+          //横向相等
+          let pvy = Math.floor(pv.y)
+          let pvx = Math.floor(pv.x)
+          let mpvy = Math.floor(mpv.y)
+          let mpvx = Math.floor(mpv.x)
+          if (pvy == mpvy) {
+            hasH = true;
+            if (!hpoint[pvy]) {
+              hpoint[pvy] = { sx: Math.min(pvx, mpvx), ex: Math.max(pvx, mpvx) }
+            } else {
+              hpoint[pvy].sx = Math.min(hpoint[pvy].sx, pvx, mpvx)
+              hpoint[pvy].ex = Math.max(hpoint[pvy].sx, pvx, mpvx)
+            }
+          }
+          //纵向相等
+          if (pvx == mpvx) {
+            hasV = true;
+            if (!vpoint[pvx]) {
+              vpoint[pvx] = { sy: Math.min(pvy, mpvy), ey: Math.max(pvy, mpvy) }
+            } else {
+              vpoint[pvx].sy = Math.min(vpoint[pvx].sy, pvy, mpvy)
+              vpoint[pvx].ey = Math.max(vpoint[pvx].sy, pvy, mpvy)
+            }
+          }
+        });
+      });
     })
-    // 按照远近关系排序
-    let sortFunc = function (aModel, bModel) {
-      let xr = aModel.x - bModel.x
-      if (xr !== 0) {
-        return xr
-      }
-      return aModel.y - bModel.y
-    }
-    for (let key in models) {
-      models[key].sort(sortFunc)
-    }
-    return models
+
+    return { hpoint: hasH ? hpoint : null, vpoint: hasV ? vpoint : null }
   }
 
   /**

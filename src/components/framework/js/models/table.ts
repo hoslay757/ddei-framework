@@ -167,6 +167,24 @@ class DDeiTable extends DDeiAbstractShape {
     }
   }
 
+
+
+  /**
+   * 获取子模型
+   */
+  getSubModels(): DDeiAbstractShape[] {
+    let models: DDeiAbstractShape[] = [];
+    for (let i = 0; i < this.rows.length; i++) {
+      let rowObj = this.rows[i];
+      for (let j = 0; j < rowObj.length; j++) {
+        let subModels = rowObj[j].getSubModels()
+        models = models.concat(subModels);
+      }
+    }
+    return models;
+  }
+
+
   /**
    * 设置表格大小
    * @param w 

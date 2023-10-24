@@ -94,8 +94,8 @@ class DDeiLayerCanvasRender {
 
 
       //绘制辅助线
-      if (this.helpLines && this.helpLines.bounds && this.helpLines.models) {
-        this.drawHelpLines(this.helpLines.bounds, this.helpLines.models)
+      if (this.helpLines && this.helpLines.data && this.helpLines.models) {
+        this.drawHelpLines()
         this.helpLines = null
       }
 
@@ -343,18 +343,19 @@ class DDeiLayerCanvasRender {
   * 显示辅助对齐线以及文本
   * @param bounds 当前碰撞边框
   */
-  drawHelpLines(bounds, models): void {
+  drawHelpLines(): void {
     // 未开启主线提示，则不再计算辅助线提示定位
     if (DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
+      let data = this.helpLines.data;
+      let models = this.helpLines.models;
+
       //获得 2d 上下文对象
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
       //获取全局缩放比例
-      let stageRatio = parseFloat(this.stage.ratio) ? this.stage.ratio : 1.0
-      if (!stageRatio || isNaN(stageRatio)) {
-        stageRatio = 1.0
-      }
-      let ratio = this.ddRender.ratio * stageRatio;
+      let rat1 = this.ddRender.ratio
+      let stageRatio = this.stage.getStageRatio()
+      let ratio = rat1 * stageRatio;
       //保存状态
       ctx.save();
       //绘制提示文本
@@ -366,13 +367,12 @@ class DDeiLayerCanvasRender {
       //设置字体颜色
       ctx.fillStyle = "red"
       //执行绘制
-      ctx.fillText(bounds.x.toFixed(0) + "," + bounds.y.toFixed(0), bounds.x.toFixed(0) * ratio - 30, bounds.y.toFixed(0) * ratio - 30);
+      ctx.fillText(data.pvs[0].x.toFixed(0) + "," + data.pvs[0].y.toFixed(0), data.pvs[0].x * rat1 - 30, data.pvs[0].y * rat1 - 30);
       // 计算对齐辅助线
       if (DDeiConfig.GLOBAL_HELP_LINE_ALIGN_ENABLE) {
         // 获取对齐的模型
-        const { leftAlignModels, rightAlignModels, topAlignModels,
-          bottomAlignModels, horizontalCenterAlignModels,
-          verticalCenterAlignModels } = this.stage.getAlignModels(bounds, models)
+        let { hpoint, vpoint } = this.stage.getAlignModels(data, models)
+
         //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
         let lineOffset = 1 * ratio / 2;
         ctx.lineWidth = 1 * ratio;
@@ -380,102 +380,25 @@ class DDeiLayerCanvasRender {
         ctx.setLineDash([0, 1 * ratio, 1 * ratio]);
         //颜色
         ctx.strokeStyle = DDeiUtil.getColor(DDeiConfig.GLOBAL_HELP_LINE_ALIGN_COLOR);
-        if (leftAlignModels && leftAlignModels.length > 0) {
-          // 显示左侧对齐线
-          ctx.beginPath();
-          let mp = DDeiAbstractShape.getModelsPosition(bounds, ...leftAlignModels);
-          let startY, endY;
-          if (mp.y < bounds.y) {
-            startY = mp.y - 50
-            endY = bounds.y + bounds.height + 50
-          } else {
-            startY = bounds.y - 50
-            endY = mp.y + mp.height + 50
-          }
-          ctx.moveTo(bounds.x * ratio, startY * ratio + lineOffset);
-          ctx.lineTo(bounds.x * ratio, endY * ratio + lineOffset);
-          ctx.stroke();
+        if (hpoint) {
+          for (let y in hpoint) {
+            //画横线
+            ctx.beginPath();
+            ctx.moveTo(hpoint[y].sx * rat1 - 100, y * rat1 + lineOffset);
+            ctx.lineTo(hpoint[y].ex * rat1 + 100, y * rat1 + lineOffset);
+            ctx.stroke();
+          };
         }
-        if (rightAlignModels && rightAlignModels.length > 0) {
-          // 显示右侧对齐线
-          ctx.beginPath();
-          let mp = DDeiAbstractShape.getModelsPosition(bounds, ...rightAlignModels);
-          let startY, endY;
-          if (mp.y < bounds.y) {
-            startY = mp.y - 50
-            endY = bounds.y + bounds.height + 50
-          } else {
-            startY = bounds.y - 50
-            endY = mp.y + mp.height + 50
-          }
-          ctx.moveTo((bounds.x + bounds.width) * ratio, startY * ratio + lineOffset);
-          ctx.lineTo((bounds.x + bounds.width) * ratio, endY * ratio + lineOffset);
-          ctx.stroke();
+        if (vpoint) {
+          for (let x in vpoint) {
+            //画竖线
+            ctx.beginPath();
+            ctx.moveTo(x * rat1 + lineOffset, vpoint[x].sy * rat1 - 100);
+            ctx.lineTo(x * rat1 + lineOffset, vpoint[x].ey * rat1 + 100);
+            ctx.stroke();
+          };
         }
-        if (topAlignModels && topAlignModels.length > 0) {
-          // 显示上侧对齐线
-          ctx.beginPath();
-          let mp = DDeiAbstractShape.getModelsPosition(bounds, ...topAlignModels);
-          let startX, endX;
-          if (mp.x < bounds.x) {
-            startX = mp.x - 50
-            endX = bounds.x + bounds.width + 50
-          } else {
-            startX = bounds.x - 50
-            endX = mp.x + mp.width + 50
-          }
-          ctx.moveTo(startX * ratio + lineOffset, bounds.y * ratio);
-          ctx.lineTo(endX * ratio + lineOffset, bounds.y * ratio);
-          ctx.stroke();
-        }
-        if (bottomAlignModels && bottomAlignModels.length > 0) {
-          // 显示下侧对齐线
-          ctx.beginPath();
-          let mp = DDeiAbstractShape.getModelsPosition(bounds, ...bottomAlignModels);
-          let startX, endX;
-          if (mp.x < bounds.x) {
-            startX = mp.x - 50
-            endX = bounds.x + bounds.width + 50
-          } else {
-            startX = bounds.x - 50
-            endX = mp.x + mp.width + 50
-          }
-          ctx.moveTo(startX * ratio + lineOffset, (bounds.y + bounds.height) * ratio);
-          ctx.lineTo(endX * ratio + lineOffset, (bounds.y + bounds.height) * ratio);
-          ctx.stroke();
-        }
-        if (horizontalCenterAlignModels && horizontalCenterAlignModels.length > 0) {
-          // 显示水平居中对齐的线
-          ctx.beginPath();
-          let mp = DDeiAbstractShape.getModelsPosition(bounds, ...horizontalCenterAlignModels);
-          let startX, endX;
-          if (mp.x < bounds.x) {
-            startX = mp.x - 50
-            endX = bounds.x + bounds.width + 50
-          } else {
-            startX = bounds.x - 50
-            endX = mp.x + mp.width + 50
-          }
-          ctx.moveTo(startX * ratio + lineOffset, (bounds.y + bounds.height / 2) * ratio);
-          ctx.lineTo(endX * ratio + lineOffset, (bounds.y + bounds.height / 2) * ratio);
-          ctx.stroke();
-        }
-        if (verticalCenterAlignModels && verticalCenterAlignModels.length > 0) {
-          // 显示垂直居中对齐的线
-          ctx.beginPath();
-          let mp = DDeiAbstractShape.getModelsPosition(bounds, ...verticalCenterAlignModels);
-          let startY, endY;
-          if (mp.y < bounds.y) {
-            startY = mp.y - 50
-            endY = bounds.y + bounds.height + 50
-          } else {
-            startY = bounds.y - 50
-            endY = mp.y + mp.height + 50
-          }
-          ctx.moveTo((bounds.x + bounds.width / 2) * ratio, startY * ratio + lineOffset);
-          ctx.lineTo((bounds.x + bounds.width / 2) * ratio, endY * ratio + lineOffset);
-          ctx.stroke();
-        }
+
       }
 
 

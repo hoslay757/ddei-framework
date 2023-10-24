@@ -184,6 +184,22 @@ class DDeiRectContainer extends DDeiRectangle {
   }
 
   /**
+   * 获取子模型
+   */
+  getSubModels(): DDeiAbstractShape[] {
+    let models: DDeiAbstractShape[] = [];
+    this.midList.forEach(mid => {
+      let subModel = this.models.get(mid)
+      if (subModel.getSubModels) {
+        let subModels = subModel.getSubModels();
+        models = models.concat(subModels)
+      }
+      models.push(subModel);
+    })
+    return models;
+  }
+
+  /**
   * 将控件设置到顶层
   */
   pushTop(models: DDeiAbstractShape[]): void {

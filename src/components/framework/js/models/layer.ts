@@ -125,6 +125,23 @@ class DDeiLayer {
     }
   }
 
+
+  /**
+   * 获取子模型
+   */
+  getSubModels(): DDeiAbstractShape[] {
+    let models: DDeiAbstractShape[] = [];
+    this.midList.forEach(mid => {
+      let subModel = this.models.get(mid)
+      if (subModel.getSubModels) {
+        let subModels = subModel.getSubModels();
+        models = models.concat(subModels)
+      }
+      models.push(subModel);
+    })
+    return models;
+  }
+
   /**
    * 添加模型，并维护关系
    * @param model 被添加的模型
