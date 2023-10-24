@@ -140,6 +140,7 @@ export default {
         stage.initRender();
         ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, null);
         ddInstance?.bus?.executeAll();
+        this.editor.viewEditor?.forceRefreshBottomMenu();
       }
     },
 
