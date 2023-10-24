@@ -65,6 +65,7 @@ class DDeiBusCommandModelAlign extends DDeiBusCommand {
         }
 
         if (hasChange) {
+          bus.push(DDeiEnumBusCommandType.NodifyChange);
           bus.insert(DDeiEnumBusCommandType.AddHistroy);
         }
         return true;

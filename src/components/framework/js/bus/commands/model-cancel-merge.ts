@@ -63,6 +63,7 @@ class DDeiBusCommandModelCancelMerge extends DDeiBusCommand {
         insertIndex++
         ddInstance.bus.insert(DDeiEnumBusCommandType.AddHistroy, null, evt, insertIndex);
         insertIndex++
+        ddInstance.bus.push(DDeiEnumBusCommandType.NodifyChange);
         //渲染图形
         ddInstance.bus.insert(DDeiEnumBusCommandType.RefreshShape, null, evt, insertIndex);
         return true

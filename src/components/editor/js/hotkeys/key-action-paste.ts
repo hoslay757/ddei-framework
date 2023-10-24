@@ -126,6 +126,7 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
           hasChange = true;
         }
         if (hasChange) {
+          stage.ddInstance.bus.push(DDeiEnumBusCommandType.NodifyChange);
           stage.ddInstance.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
         }
         stage.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
@@ -229,6 +230,7 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
       stage.ddInstance.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, { models: [model], value: DDeiEnumControlState.SELECTED }, evt);
     }
     if (hasChange) {
+      stage.ddInstance.bus.push(DDeiEnumBusCommandType.NodifyChange);
       stage.ddInstance.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
     }
 
@@ -298,6 +300,7 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
         hasChange = true;
       }
       if (hasChange) {
+        stage.ddInstance.bus.push(DDeiEnumBusCommandType.NodifyChange);
         stage.ddInstance.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
       }
       stage.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
@@ -329,6 +332,7 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
         hasChange = true;
       }
       if (hasChange) {
+        stage.ddInstance.bus.push(DDeiEnumBusCommandType.NodifyChange);
         stage.ddInstance.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
       }
       stage.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);

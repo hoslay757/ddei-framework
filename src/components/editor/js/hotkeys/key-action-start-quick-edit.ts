@@ -50,6 +50,7 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
             let editor = DDeiEditor.ACTIVE_INSTANCE;
             if (editor.quickEditorModel) {
               editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { models: [editor.quickEditorModel], paths: ["text"], value: inputEle.value }, evt, true);
+              editor.bus.push(DDeiEnumBusCommandType.NodifyChange);
               editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt, true);
               editor.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt, true);
             }

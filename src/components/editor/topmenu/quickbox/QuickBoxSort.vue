@@ -337,6 +337,7 @@ export default {
             delete model.rotate;
           }
         });
+        this.editor.bus.push(DDeiEnumBusCommandType.NodifyChange);
         this.editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
         this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
         this.editor.bus.executeAll();

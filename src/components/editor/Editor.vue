@@ -116,15 +116,10 @@ export default {
       this.editor.leftWidth + this.editor.rightWidth + this.editor.middleWidth;
     //初始化拦截器
     //以下为拦截器的配置
-    this.editor.bus.interceptor[DDeiEnumBusCommandType.ModelChangeBounds] = {
+    this.editor.bus.interceptor[DDeiEnumBusCommandType.NodifyChange] = {
       after: [this.changeFileModifyDirty],
     };
-    this.editor.bus.interceptor[DDeiEnumBusCommandType.ModelChangeContainer] = {
-      after: [this.changeFileModifyDirty],
-    };
-    this.editor.bus.interceptor[DDeiEnumBusCommandType.ModelChangeRotate] = {
-      after: [this.changeFileModifyDirty],
-    };
+
     this.editor.bus.interceptor[DDeiEnumBusCommandType.ModelChangeValue] = {
       after: [this.changeFileModifyDirty],
     };

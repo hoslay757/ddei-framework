@@ -109,6 +109,7 @@ class DDeiKeyActionDownMoveModels extends DDeiKeyAction {
           deltaX = moveSize - mod
         }
         ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeBounds, { models: models, deltaX: deltaX, deltaY: deltaY }, evt);
+        ddInstance.editor.bus.push(DDeiEnumBusCommandType.NodifyChange);
         ddInstance.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
 
       }

@@ -669,6 +669,7 @@ class DDeiLayerCanvasRender {
           }
           if (hasChange) {
             this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.NodifyChange);
             this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy);
           }
 
@@ -681,7 +682,8 @@ class DDeiLayerCanvasRender {
           this.stage?.ddInstance?.bus.push(DDeiEnumBusCommandType.CopyStyle, { models: [table], brushData: this.stage.brushData });
           break;
         case DDeiEnumOperateState.CONTROL_ROTATE:
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.NodifyChange);
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy);
           break;
         case DDeiEnumOperateState.CONTROL_CHANGING_BOUND:
           let operateModels = []
@@ -697,6 +699,7 @@ class DDeiLayerCanvasRender {
               operateModels.push(model)
             }
           })
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.NodifyChange);
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
           this.stageRender.selector.updatePVSByModels(operateModels)
           this.model.shadowControls = [];

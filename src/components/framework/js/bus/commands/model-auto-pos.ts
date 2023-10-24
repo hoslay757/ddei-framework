@@ -68,6 +68,7 @@ class DDeiBusCommandModelAutoPos extends DDeiBusCommand {
         }
 
         if (hasChange) {
+          bus.push(DDeiEnumBusCommandType.NodifyChange);
           bus.insert(DDeiEnumBusCommandType.AddHistroy);
         }
         bus.push(DDeiEnumBusCommandType.RefreshShape);

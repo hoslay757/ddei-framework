@@ -83,6 +83,7 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
 
             }
           });
+          bus.push(DDeiEnumBusCommandType.NodifyChange);
           bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
           bus.executeAll();
         } else if (models?.length > 0) {
@@ -135,6 +136,7 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
       //更新选择器
       bus?.insert(DDeiEnumBusCommandType.ChangeLayout, data, evt);
     } else {
+      bus.push(DDeiEnumBusCommandType.NodifyChange);
       bus.insert(DDeiEnumBusCommandType.AddHistroy, null, evt);
     }
     return true;
