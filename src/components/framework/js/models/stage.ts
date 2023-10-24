@@ -402,7 +402,6 @@ class DDeiStage {
         });
       });
     })
-    console.log(hAds)
     return { hpoint: hasH ? hpoint : null, vpoint: hasV ? vpoint : null, hAds: hAds, vAds: vAds }
   }
 

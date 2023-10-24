@@ -166,6 +166,16 @@ class DDeiLayer {
   }
 
   /**
+  * 移除模型，并维护关系
+  * @param model 被移除的模型
+  */
+  removeModels(models: DDeiAbstractShape[]): void {
+    models?.forEach(model => {
+      this.removeModel(model)
+    })
+  }
+
+  /**
    * 移除模型，并维护关系
    * @param model 被移除的模型
    */

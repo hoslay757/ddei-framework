@@ -128,6 +128,16 @@ class DDeiRectContainer extends DDeiRectangle {
    * 移除模型，并维护关系
    * @param model 被移除的模型
    */
+  removeModels(models: DDeiAbstractShape[]): void {
+    models?.forEach(model => {
+      this.removeModel(model)
+    })
+  }
+
+  /**
+   * 移除模型，并维护关系
+   * @param model 被移除的模型
+   */
   removeModel(model: DDeiAbstractShape): void {
     this.models.delete(model.id);
     let idx = this.midList.indexOf(model.id);

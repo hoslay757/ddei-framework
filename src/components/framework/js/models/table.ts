@@ -97,7 +97,6 @@ class DDeiTable extends DDeiAbstractShape {
           this.cols[j][i] = this.rows[i][j];
         }
       }
-      console.log(this.rows[0][0].pvs[0].x + " .  " + this.rows[0][0].pvs[0].y)
     }
   }
 
