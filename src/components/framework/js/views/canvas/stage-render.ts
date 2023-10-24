@@ -71,6 +71,12 @@ class DDeiStageCanvasRender {
    * 创建图形
    */
   drawShape(): void {
+    //根据视窗平移
+    //获得 2d 上下文对象
+    let canvas = this.ddRender.getCanvas();
+    let ctx = canvas.getContext('2d');
+    ctx.save();
+    ctx.translate(-2 * this.model.wpv.x, -2 * this.model.wpv.y)
     //display=2的节点，最后渲染
     let topDisplayIndex = -1;
     for (let i = this.model.layers.length - 1; i >= 0; i--) {
@@ -86,6 +92,7 @@ class DDeiStageCanvasRender {
     if (this.selector) {
       this.selector.render.drawShape();
     }
+    ctx.restore();
   }
 
   /**
