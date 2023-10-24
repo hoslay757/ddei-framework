@@ -52,7 +52,7 @@ class DDeiBusCommandSetHelpLine extends DDeiBusCommand {
           if (models.length == 1) {
             outPVS = models[0].pvs
             centerPV = models[0].cpv
-            rotate = centerPV.rotate
+            rotate = models[0].rotate
           } else {
             outPVS = DDeiAbstractShape.getOutPV(models);
             centerPV = stage.render.selector.cpv

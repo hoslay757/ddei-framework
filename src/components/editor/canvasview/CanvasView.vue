@@ -1,12 +1,6 @@
 <template>
-  <div :id="id"
-       class="ddei_editor_canvasview"
-       @mousedown="mouseDown($event)"
-       ondragstart="return false;"
-       @dragover="createControlOver"
-       @drop="createControlDrop"
-       @dragleave="createControlCancel"
-       @contextmenu.prevent>
+  <div :id="id" class="ddei_editor_canvasview" @mousedown="mouseDown($event)" ondragstart="return false;"
+    @dragover="createControlOver" @drop="createControlDrop" @dragleave="createControlCancel" @contextmenu.prevent>
   </div>
 </template>
 
@@ -316,7 +310,6 @@ export default {
           );
           this.editor.bus.push(DDeiEnumBusCommandType.NodifyChange);
           this.editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
-          this.editor.bus.push(DDeiEnumBusCommandType.SetHelpLine);
           //渲染图形
           this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
           this.editor.creatingControl = null;

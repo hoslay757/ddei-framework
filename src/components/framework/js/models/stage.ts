@@ -314,10 +314,10 @@ class DDeiStage {
   /**
    * 获取所有图层的模型
    */
-  getLayerModels(): DDeiAbstractShape[] {
+  getLayerModels(ignoreModelIds: string[], level: number = 1): DDeiAbstractShape[] {
     let models: DDeiAbstractShape[] = [];
     for (let i = 0; i < this.layers.length; i++) {
-      let subModels = this.layers[i].getSubModels()
+      let subModels = this.layers[i].getSubModels(ignoreModelIds, level)
       models = models.concat(subModels);
     }
     return models;
@@ -358,15 +358,17 @@ class DDeiStage {
     }
 
     //当前层级的所有控件
-    let curLevelModels = fModel.pModel.getSubModels();
+    let curLevelModels = fModel.pModel.getSubModels(sourceModelKeys, 1);
     curLevelModels.forEach(model => {
-      //在源控件中存在就推出不作判断
-      if (sourceModelKeys.indexOf(model.id) != -1) {
-        return;
+      //判定每一个点以及中心点,如果旋转角度不同，则只判断中心点
+      let outPVS = [data.cpv]
+      let inPVS = [model.cpv]
+      if (data.rotate == model.rotate || (!data.rotate && !model.rotate)) {
+        outPVS = outPVS.concat(data.pvs)
+        inPVS = inPVS.concat(model.pvs)
       }
-      //判定每一个点以及中心点
-      data.pvs.concat(data.cpv).forEach(pv => {
-        model.pvs.concat(model.cpv).forEach(mpv => {
+      outPVS.forEach(pv => {
+        inPVS.forEach(mpv => {
           //横向相等
           let pvy = Math.floor(pv.y)
           let pvx = Math.floor(pv.x)

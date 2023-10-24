@@ -172,12 +172,12 @@ class DDeiTable extends DDeiAbstractShape {
   /**
    * 获取子模型
    */
-  getSubModels(): DDeiAbstractShape[] {
+  getSubModels(ignoreModelIds: string[], level: number = 1): DDeiAbstractShape[] {
     let models: DDeiAbstractShape[] = [];
     for (let i = 0; i < this.rows.length; i++) {
       let rowObj = this.rows[i];
       for (let j = 0; j < rowObj.length; j++) {
-        let subModels = rowObj[j].getSubModels()
+        let subModels = rowObj[j].getSubModels(ignoreModelIds, level - 1)
         models = models.concat(subModels);
       }
     }
