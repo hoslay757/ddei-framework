@@ -68,15 +68,11 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
       //获取全局缩放比例
       let ratio = this.ddRender.ratio;
       let lineOffset = 1 * ratio / 2;
-      let areaPVSNoRotated = this.model.layoutManager.getAreasPVS(false);
       let areaPVS = this.model.layoutManager.getAreasPVS();
       let usedMidIds = [];
-      for (let n = 0; n < areaPVSNoRotated.length; n++) {
-        let pvsN = areaPVSNoRotated[n]
+      for (let n = 0; n < areaPVS.length; n++) {
         let pvs = areaPVS[n]
-
         //遍历子元素，绘制子元素
-
         for (let m = 0; m < this.model.midList?.length; m++) {
           let key = this.model.midList[m];
           let item = this.model.models.get(key);
@@ -86,14 +82,14 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
             //保存状态
             ctx.save();
             ctx.beginPath();
-            for (let i = 0; i < pvsN.length; i++) {
-              if (i == pvsN.length - 1) {
-                ctx.lineTo(pvsN[0].x * ratio + lineOffset, pvsN[0].y * ratio + lineOffset);
+            for (let i = 0; i < pvs.length; i++) {
+              if (i == pvs.length - 1) {
+                ctx.lineTo(pvs[0].x * ratio + lineOffset, pvs[0].y * ratio + lineOffset);
               } else if (i == 0) {
-                ctx.moveTo(pvsN[i].x * ratio + lineOffset, pvsN[i].y * ratio + lineOffset);
-                ctx.lineTo(pvsN[i + 1].x * ratio + lineOffset, pvsN[i + 1].y * ratio + lineOffset);
+                ctx.moveTo(pvs[i].x * ratio + lineOffset, pvs[i].y * ratio + lineOffset);
+                ctx.lineTo(pvs[i + 1].x * ratio + lineOffset, pvs[i + 1].y * ratio + lineOffset);
               } else {
-                ctx.lineTo(pvsN[i + 1].x * ratio + lineOffset, pvsN[i + 1].y * ratio + lineOffset);
+                ctx.lineTo(pvs[i + 1].x * ratio + lineOffset, pvs[i + 1].y * ratio + lineOffset);
               }
             }
             ctx.closePath();

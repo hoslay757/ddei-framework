@@ -695,7 +695,9 @@ class DDeiLayerCanvasRender {
                 this.model.shadowControls.forEach(item => {
                   let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
                   let model = this.stage?.getModelById(id)
-                  model.syncVectors(item)
+                  model.originCPV = model.cpv
+                  model.originPVS = model.pvs
+                  model.syncVectors(item, true)
                   operateModels.push(model)
 
                   selMods.push({ id: model?.id, value: DDeiEnumControlState.SELECTED })

@@ -74,12 +74,58 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
     let layoutData = this.container.layoutData.nine;
     let unitWidth = this.container.width / 3;
     let unitHeight = this.container.height / 3;
+    let areasPVS = this.getAreasPVS();
     //按照布局数据，更新model的坐标和大小
     for (let key in layoutData) {
       let model = this.container.models.get(key);
       let data = layoutData[key];
       if (model) {
-        model.setBounds(data.col * unitWidth, data.row * unitHeight, unitWidth, unitHeight)
+        //基于当前容器构建缩放矩阵，将内部控件的向量，缩放到当前容器的大小，再位移到容器中心
+        let m1 = new Matrix3()
+        //移动到原点
+        let moveZeroMatrix = new Matrix3(
+          1, 0, - model.cpv.x,
+          0, 1, - model.cpv.y,
+          0, 0, 1);
+        m1.premultiply(moveZeroMatrix)
+        //旋转到0度
+        if (model.rotate) {
+          let angle = (model.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+          let rotateMatrix = new Matrix3(
+            Math.cos(angle), Math.sin(angle), 0,
+            -Math.sin(angle), Math.cos(angle), 0,
+            0, 0, 1);
+          m1.premultiply(rotateMatrix)
+        }
+        //构建缩放矩阵
+        let scaleMatrix = new Matrix3(
+          unitWidth / model.width, 0, 0,
+          0, unitHeight / model.height, 0,
+          0, 0, 1);
+        m1.premultiply(scaleMatrix)
+        //旋转到回原始角度
+        if (model.rotate) {
+          let angle = -(model.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+          let rotateMatrix = new Matrix3(
+            Math.cos(angle), Math.sin(angle), 0,
+            -Math.sin(angle), Math.cos(angle), 0,
+            0, 0, 1);
+          m1.premultiply(rotateMatrix)
+        }
+
+
+        //位移到区域中心点
+        let areaPV = areasPVS[data.row * 3 + data.col]
+        let areaPVC = { x: (areaPV[0].x + areaPV[2].x) / 2, y: (areaPV[0].y + areaPV[2].y) / 2 }
+        let moveContainerMatrix = new Matrix3(
+          1, 0, areaPVC.x,
+          0, 1, areaPVC.y,
+          0, 0, 1);
+        m1.premultiply(moveContainerMatrix)
+        //应用变换
+        model.transVectors(m1)
+
+        // model.setBounds(data.col * unitWidth, data.row * unitHeight, unitWidth, unitHeight)
         if (model.changeChildrenBounds) {
           model.changeChildrenBounds();
         }
@@ -137,18 +183,10 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
     for (let i = 0; i < models.length; i++) {
       let item = models[i]
       let oldContainer = item.pModel;
-
-      //转换坐标，获取最外层的坐标
-      let itemAbsPos = item.getAbsPosition();
-      let itemAbsRotate = item.getAbsRotate();
       //将元素从就容器移出
       if (oldContainer) {
         oldContainer.removeModel(item);
       }
-      let loAbsPos = newContainer.getAbsPosition();
-      let loAbsRotate = newContainer.getAbsRotate();
-      item.setPosition(itemAbsPos.x - loAbsPos.x, itemAbsPos.y - loAbsPos.y)
-      item.rotate = itemAbsRotate - loAbsRotate
       newContainer.addModel(item);
       //绑定并初始化渲染器
       item.initRender();
@@ -157,8 +195,6 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
         layoutData[item.id] = { row: layoutIndex.row, col: layoutIndex.col }
         //如果已存在元素，则交换
         if (indexModel) {
-
-          let oldAbsPos = indexModel.getAbsPosition();
           newContainer.removeModel(indexModel);
           //坐标为移入控件的坐标
           if (item.dragOriginX || item.dragOriginX == 0) {
@@ -208,7 +244,7 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
    * 修改布局信息
    */
   updateLayout(x: number, y: number, models: DDeiAbstractShape[]): void {
-    //计算鼠标移入的区域  TODO 旋转的情况
+    //计算鼠标移入的区域
     if (this?.container?.layoutData?.nine && models?.length > 0) {
       let layoutData = this.container.layoutData.nine
       //获取鼠标在九宫格的位置
@@ -275,43 +311,62 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
   /**
    * 获取切分区域的点，超出区域的范围不会显示内容
    */
-  getAreasPVS(rotated: boolean = true): object[][] {
+  getAreasPVS(): object[][] {
+    let stageRatio = this.container?.getStageRatio()
     let vc1 = new Vector3(this.container.pvs[0].x, this.container.pvs[0].y, 1);
     let vc2 = new Vector3(this.container.pvs[1].x, this.container.pvs[1].y, 1);
     let vc3 = new Vector3(this.container.pvs[2].x, this.container.pvs[2].y, 1);
     let vc4 = new Vector3(this.container.pvs[3].x, this.container.pvs[3].y, 1);
-    let width = vc2.x - vc1.x
-    let height = vc4.y - vc1.y
+    let width = this.container.width * stageRatio
+    let height = this.container.height * stageRatio
     let unitWidth = width / 3;
     let unitHeight = height / 3;
+    //恢复旋转进行计算，再旋转回来
+    if (this.container.rotate) {
+      let move1Matrix = new Matrix3(
+        1, 0, -this.container.cpv.x,
+        0, 1, -this.container.cpv.y,
+        0, 0, 1);
+      let angle = this.container.rotate * DDeiConfig.ROTATE_UNIT
+      let rotateMatrix = new Matrix3(
+        Math.cos(angle), Math.sin(angle), 0,
+        -Math.sin(angle), Math.cos(angle), 0,
+        0, 0, 1);
+      let move2Matrix = new Matrix3(
+        1, 0, this.container.cpv.x,
+        0, 1, this.container.cpv.y,
+        0, 0, 1);
+      let m1 = new Matrix3().premultiply(move1Matrix).premultiply(rotateMatrix).premultiply(move2Matrix);
+      vc1.applyMatrix3(m1)
+      vc2.applyMatrix3(m1)
+      vc3.applyMatrix3(m1)
+      vc4.applyMatrix3(m1)
+    }
+
     //计算外部的点
     let p11 = new Vector3(vc1.x, vc1.y, 1);
     let p12 = new Vector3(vc1.x + unitWidth, vc1.y, 1)
     let p13 = new Vector3(vc1.x + unitWidth * 2, vc1.y, 1)
     let p14 = new Vector3(vc2.x, vc2.y, 1);
-
     let p21 = new Vector3(vc1.x, vc1.y + unitHeight, 1);
     let p22 = new Vector3(vc1.x + unitWidth, vc1.y + unitHeight, 1)
     let p23 = new Vector3(vc1.x + unitWidth * 2, vc1.y + unitHeight, 1)
     let p24 = new Vector3(vc2.x, vc1.y + unitHeight, 1);
-
     let p31 = new Vector3(vc1.x, vc1.y + unitHeight * 2, 1);
     let p32 = new Vector3(vc1.x + unitWidth, vc1.y + unitHeight * 2, 1)
     let p33 = new Vector3(vc1.x + unitWidth * 2, vc1.y + unitHeight * 2, 1)
     let p34 = new Vector3(vc2.x, vc1.y + unitHeight * 2, 1);
-
     let p41 = new Vector3(vc4.x, vc4.y, 1);
     let p42 = new Vector3(vc4.x + unitWidth, vc4.y, 1)
     let p43 = new Vector3(vc4.x + unitWidth * 2, vc4.y, 1)
     let p44 = new Vector3(vc3.x, vc4.y, 1);
-    if (rotated) {
+    if (this.container.rotate) {
       let centerPoint = this.container.cpv;
-      let absRotate = this.container?.getAbsRotate();
       let move1Matrix = new Matrix3(
         1, 0, -centerPoint.x,
         0, 1, -centerPoint.y,
         0, 0, 1);
-      let angle = -(absRotate ? absRotate : 0) * DDeiConfig.ROTATE_UNIT
+      let angle = -this.container.rotate * DDeiConfig.ROTATE_UNIT
       let rotateMatrix = new Matrix3(
         Math.cos(angle), Math.sin(angle), 0,
         -Math.sin(angle), Math.cos(angle), 0,

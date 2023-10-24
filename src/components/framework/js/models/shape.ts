@@ -91,7 +91,7 @@ abstract class DDeiAbstractShape {
     }
     this.initHPV();
     //计算宽松判定矩阵
-
+    this.calRotate();
     this.calLoosePVS();
   }
 
@@ -187,13 +187,70 @@ abstract class DDeiAbstractShape {
 
   /**
    * 同步向量
+   * @param source 源模型
+   * @param cloneVP 是否克隆向量，默认false
    */
-  syncVectors(source: DDeiAbstractShape): void {
-    this.pvs = source.pvs
-    this.cpv = source.cpv
+  syncVectors(source: DDeiAbstractShape, clonePV: boolean = false): void {
+    if (clonePV) {
+      this.pvs = cloneDeep(source.pvs)
+      this.cpv = cloneDeep(source.cpv)
+    } else {
+      this.pvs = source.pvs
+      this.cpv = source.cpv
+    }
     this.initHPV()
     this.calRotate();
     this.calLoosePVS();
+  }
+
+  /**
+   * 设置旋转角度
+   */
+  setRotate(rotate: number = 0): void {
+
+    if (this.rotate != rotate) {
+      //求得线向量与直角坐标系的夹角
+      let m1 = new Matrix3();
+      //归0
+      let toZeroMatrix = new Matrix3(
+        1, 0, -this.cpv.x,
+        0, 1, -this.cpv.y,
+        0, 0, 1);
+      m1.premultiply(toZeroMatrix);
+
+      if (this.rotate) {
+        //还原到未旋转状态
+        let angle = (this.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+        //计算input的正确打开位置，由节点0
+        let rotateMatrix = new Matrix3(
+          Math.cos(angle), Math.sin(angle), 0,
+          -Math.sin(angle), Math.cos(angle), 0,
+          0, 0, 1);
+        m1.premultiply(rotateMatrix);
+      }
+      if (rotate) {
+        //还原到未旋转状态
+        let angle = -(rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+        //计算input的正确打开位置，由节点0
+        let rotateMatrix = new Matrix3(
+          Math.cos(angle), Math.sin(angle), 0,
+          -Math.sin(angle), Math.cos(angle), 0,
+          0, 0, 1);
+        m1.premultiply(rotateMatrix);
+      }
+
+      //还原
+      let restoreMatrix = new Matrix3(
+        1, 0, this.cpv.x,
+        0, 1, this.cpv.y,
+        0, 0, 1);
+      m1.premultiply(restoreMatrix);
+
+      //执行旋转
+      this.transVectors(m1)
+
+      this.rotate = rotate;
+    }
   }
 
   /**
@@ -216,7 +273,7 @@ abstract class DDeiAbstractShape {
     } else if (lineV.x >= 0 && lineV.y <= 0) {
       angle = -angle
     }
-    this.rotate = angle;
+    this.rotate = parseFloat(angle);
   }
 
   /**
@@ -591,70 +648,15 @@ abstract class DDeiAbstractShape {
     return returnControls;
   }
 
-  /**
-   * 获取当前图形的绝对旋转坐标值
-   */
-  getAbsRotate(): number {
-    let rotate = 0;
-    if (this.rotate) {
-      rotate += this.rotate
-    }
-    if (this.pModel && this.pModel.baseModelType != "DDeiLayer") {
-      rotate += this.pModel.getAbsRotate();
-    }
-    return rotate;
-  }
-
 
 
   /**
    * 获取控件坐标
    */
   getPosition() {
-    console.warn("改成向量")
     return { x: this.x, y: this.y }
   }
 
-  /**
-   * 获取绝对的控件坐标
-   */
-  getAbsPosition(pm): object {
-    console.warn("改成向量")
-    if (!pm) {
-      pm = this;
-    }
-    let rp = pm.getPosition();
-    if (!pm.pModel || pm.pModel.modelType == "DDeiLayer") {
-      return rp;
-    } else {
-      let mp = pm.getAbsPosition(pm.pModel);
-      rp.x = rp.x + mp.x
-      rp.y = rp.y + mp.y
-      return rp;
-    }
-  }
-
-
-  /**
-   * 获取绝对的bounds
-   */
-  getAbsBounds(pm): object {
-    console.warn("改成向量")
-    if (!pm) {
-      pm = this;
-    }
-    let rp = pm.getBounds();
-    if (!pm.pModel || pm.pModel.modelType == "DDeiLayer") {
-      return rp;
-    } else {
-      let mp = pm.getAbsPosition(pm.pModel);
-      rp.x = rp.x + mp.x
-      rp.y = rp.y + mp.y
-      rp.x1 = rp.x1 + mp.x
-      rp.y1 = rp.y1 + mp.y
-      return rp;
-    }
-  }
 
   /**
    * 计算当前图形旋转后的顶点，根据位移以及层次管理
