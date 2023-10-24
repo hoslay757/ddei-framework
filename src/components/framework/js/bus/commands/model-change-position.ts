@@ -68,6 +68,43 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
       //横纵吸附
       let hAds = fModel.layer.render.helpLines?.hAds || fModel.layer.render.helpLines?.hAds == 0 ? fModel.layer.render.helpLines?.hAds : Infinity
       let vAds = fModel.layer.render.helpLines?.vAds || fModel.layer.render.helpLines?.vAds == 0 ? fModel.layer.render.helpLines?.vAds : Infinity
+      let hAdsValue = Infinity;
+      let vAdsValue = Infinity;
+      if (hAds != Infinity) {
+        //退出吸附状态
+        if (stage.render.isHAds && Math.abs(stage.render.hAdsY - y) > DDeiConfig.GLOBAL_ADV_WEIGHT) {
+          stage.render.isHAds = false
+          stage.render.hAdsY = Infinity
+        }
+        //持续吸附状态
+        else if (stage.render.isHAds) {
+          hAdsValue = 0
+        }
+        //进入吸附状态
+        else {
+          stage.render.isHAds = true
+          hAdsValue = -hAds
+          stage.render.hAdsY = y
+        }
+      }
+      if (vAds != Infinity) {
+        //退出吸附状态
+        if (stage.render.isVAds && Math.abs(stage.render.vAdsX - x) > DDeiConfig.GLOBAL_ADV_WEIGHT) {
+          stage.render.isVAds = false
+          stage.render.vAdsX = Infinity
+        }
+        //持续吸附状态
+        else if (stage.render.isVAds) {
+          vAdsValue = 0;
+        }
+        //进入吸附状态
+        else {
+          stage.render.isVAds = true
+          vAdsValue = -vAds
+          stage.render.vAdsX = x
+        }
+      }
+
       models.forEach(model => {
         let dx = 0
         let dy = 0
@@ -77,41 +114,11 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
         }
         let xm = x - model.cpv.x + dx;
         let ym = y - model.cpv.y + dy;
-        if (hAds != Infinity) {
-          //退出吸附状态
-          if (stage.render.isHAds && Math.abs(stage.render.hAdsY - y) > DDeiConfig.GLOBAL_ADV_WEIGHT) {
-            stage.render.isHAds = false
-            stage.render.hAdsY = Infinity
-          }
-          //持续吸附状态
-          else if (stage.render.isHAds) {
-            ym = 0
-          }
-          //进入吸附状态
-          else {
-            stage.render.isHAds = true
-            ym = -hAds
-            stage.render.hAdsY = y
-          }
+        if (hAdsValue != Infinity) {
+          ym = hAdsValue
         }
-        if (vAds != Infinity) {
-          //退出吸附状态
-          if (stage.render.isVAds && Math.abs(stage.render.vAdsX - x) > DDeiConfig.GLOBAL_ADV_WEIGHT) {
-            stage.render.isVAds = false
-            stage.render.vAdsX = Infinity
-          }
-          //持续吸附状态
-          else if (stage.render.isVAds) {
-            xm = 0
-          }
-          //进入吸附状态
-          else {
-            stage.render.isVAds = true
-            xm = -vAds
-            stage.render.vAdsX = x
-          }
-        } else {
-          stage.render.isVAds = false
+        if (vAdsValue != Infinity) {
+          xm = vAdsValue
         }
 
         let moveMatrix = new Matrix3(
