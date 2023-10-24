@@ -87,7 +87,7 @@ class DDeiConfig {
   static GLOBAL_HELP_LINE_WEIGHT: number = 10;
 
   // 缺省吸附效果宽度，小于0时没有吸附效果
-  static GLOBAL_ADV_WEIGHT: number = 4;
+  static GLOBAL_ADV_WEIGHT: number = 5;
 
   //不需要序列化的字段
   static SERI_FIELDS: object = {
