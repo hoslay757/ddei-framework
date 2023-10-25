@@ -95,6 +95,37 @@ class DDeiLayerCanvasRender {
 
       //绘制辅助线
       this.drawHelpLines()
+
+
+      let canvas = this.ddRender.getCanvas();
+      let ctx = canvas.getContext('2d');
+      //获取全局缩放比例
+      let rat1 = this.ddRender.ratio
+      let stageRatio = this.model.getStageRatio()
+      let ratio = rat1 * stageRatio;
+      ctx.save();
+      ctx.textAlign = "left";
+      ctx.textBaseline = "top";
+      //设置字体
+      ctx.font = "bold 24px 宋体"
+      //设置字体颜色
+      ctx.fillStyle = "red"
+      ctx.strokeStyle = "red"
+      //获取全局缩放比例
+      let x = -this.stage.wpv.x * ratio;
+      let y = -this.stage.wpv.y * ratio;
+      let x1 = x + canvas.width;
+      let y1 = y + canvas.height;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x1, y);
+      ctx.lineTo(x1, y1);
+      ctx.lineTo(x, y1);
+
+      ctx.closePath();
+      ctx.stroke();
+      ctx.fillText(this.stage.wpv.x + "," + this.stage.wpv.y, -this.stage.wpv.x * ratio, -this.stage.wpv.y * ratio);
+      ctx.restore()
       this.modelChanged = false;
     }
   }
@@ -229,10 +260,14 @@ class DDeiLayerCanvasRender {
   drawChildrenShapes(): void {
     if (this.model.models) {
       let canvas = this.ddRender.getCanvas();
-      let x = -this.stage.wpv.x;
-      let y = -this.stage.wpv.y;
-      let x1 = x + canvas.width / this.ddRender.ratio;
-      let y1 = y + canvas.height / this.ddRender.ratio;
+      //获取全局缩放比例
+      let rat1 = this.ddRender.ratio
+      let stageRatio = this.stage.getStageRatio()
+      let ratio = rat1 * stageRatio;
+      let x = -this.stage.wpv.x * ratio / rat1;
+      let y = -this.stage.wpv.y * ratio / rat1;
+      let x1 = x + canvas.width / rat1;
+      let y1 = y + canvas.height / rat1;
       //遍历子元素，绘制子元素
       this.model.midList.forEach(key => {
         let item = this.model.models.get(key);
@@ -498,6 +533,12 @@ class DDeiLayerCanvasRender {
           this.stageRender.operateState = DDeiEnumOperateState.SELECT_WORKING
         } else if (this.stage.ddInstance?.editMode == 2) {
           //当前操作状态：抓手工作中
+          //记录当前的拖拽的x,y,写入dragObj作为临时变量
+          let dragObj = {
+            dx: ex,
+            dy: ey,
+          }
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
           this.stageRender.operateState = DDeiEnumOperateState.GRAB_WORKING
         }
 
@@ -611,6 +652,7 @@ class DDeiLayerCanvasRender {
           break;
         //抓手工作中
         case DDeiEnumOperateState.GRAB_WORKING:
+
           break;
         //控件拖拽中
         case DDeiEnumOperateState.CONTROL_DRAGING:
@@ -816,10 +858,7 @@ class DDeiLayerCanvasRender {
       }
       //抓手工作中
       case DDeiEnumOperateState.GRAB_WORKING: {
-        console.log("抓手移动")
-        this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'grabbing' }, evt);
-        //渲染图形
-        this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeStageWPV, { x: ex, y: ey, dragObj: this.stageRender.dragObj }, evt);
         break;
       }
       //控件拖拽中

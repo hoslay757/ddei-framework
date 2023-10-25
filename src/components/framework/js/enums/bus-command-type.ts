@@ -30,6 +30,7 @@ enum DDeiEnumBusCommandType {
   ModelAutoPos = "model-auto-pos",
   ChangeEditMode = "change-edit-mode",
   ChangeStageRatio = "change-stage-ratio",
+  ChangeStageWPV = "change-stage-wpv",
   NodifyChange = "nodify-change",
 }
 

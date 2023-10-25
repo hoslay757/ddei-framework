@@ -586,7 +586,7 @@ abstract class DDeiAbstractShape {
    * @returns 是否在区域内
    */
   isInRect(x: number, y: number, x1: number, y1: number, pointNumber: number = 1): boolean {
-    if (x === undefined || y === undefined || y1 === undefined || y1 === undefined) {
+    if (x === undefined || y === undefined || x1 === undefined || y1 === undefined) {
       return false
     }
     let len = this.pvs.length;

@@ -53,7 +53,7 @@ class DDeiBus {
    * @param data 承载数据
    * @param evt 事件
    */
-  push(actionType: string, data: object, evt: Event, parallel: boolean = false): void {
+  push(actionType: string, data: object | undefined | null, evt: Event | undefined | null, parallel: boolean = false): void {
     parallel = false;
     if (actionType) {
       this.queue.push({ type: actionType, data: data, evt: evt, parallel: parallel });

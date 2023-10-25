@@ -80,6 +80,7 @@ class DDeiStageCanvasRender {
     let ratio = rat1 * stageRatio
     ctx.save();
     ctx.translate(this.model.wpv.x * ratio, this.model.wpv.y * ratio)
+
     //display=2的节点，最后渲染
     let topDisplayIndex = -1;
     for (let i = this.model.layers.length - 1; i >= 0; i--) {
