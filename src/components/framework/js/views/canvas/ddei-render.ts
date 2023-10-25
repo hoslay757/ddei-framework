@@ -1,5 +1,6 @@
 import DDeiConfig from '../../config.js';
 import DDei from '../../ddei.js';
+import DDeiEnumBusCommandType from '../../enums/bus-command-type.js';
 import DDeiUtil from '../../util.js'
 
 /**
@@ -199,6 +200,65 @@ class DDeiCanvasRender {
     this.model.stage.render.mouseMove(evt);
   }
 
+
+  /**
+   * 鼠标滚轮或滑动事件
+   */
+  mouseWheel(evt: Event) {
+    //放大缩小
+    if (evt.wheelDeltaY == 240 || evt.wheelDeltaY == -240) {
+      this.mouseScale(evt.wheelDeltaY, evt)
+    }
+    //滚动平移
+    else if (evt.wheelDeltaX || evt.wheelDeltaY) {
+      this.mouseWPV(evt.wheelDeltaX, evt.wheelDeltaY, evt)
+    }
+
+  }
+
+
+
+  /**
+   * 通过鼠标放大或缩小
+   */
+  mouseScale(delta: number, evt: Event) {
+    let stage = this.model.stage;
+    if (stage) {
+      let ratio = stage.getStageRatio()
+      let newValue = ratio
+      if (delta > 0) {
+        newValue = ratio + 0.02
+      } else {
+        newValue = ratio - 0.02
+      }
+      stage.setStageRatio(newValue);
+    }
+  }
+
+  /**
+   * 通过鼠标平移窗体
+   */
+  mouseWPV(dx: number, dy: number, evt: Event) {
+    let stage = this.model.stage;
+    let maxMove = 50
+    if (dx > maxMove) {
+      dx = maxMove
+    } else if (dx < -maxMove) {
+      dx = -maxMove
+    }
+    if (dy > maxMove) {
+      dy = maxMove
+    } else if (dy < -maxMove) {
+      dy = -maxMove
+    }
+
+    if (stage) {
+      this.model.bus.push(DDeiEnumBusCommandType.ChangeStageWPV, {
+        dragObj: { dx: 0, dy: 0 }, x: dx, y: dy
+      })
+      this.model.bus.executeAll();
+    }
+  }
 }
 
 export default DDeiCanvasRender

@@ -36,6 +36,7 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
 
     let stage = bus.ddInstance.stage;
     if (stage && data.oldValue && data.newValue && data.oldValue != data.newValue) {
+      // stage.ratio = data.newValue
       //缩放矩阵
       let scaleMatrix = new Matrix3(
         data.newValue / data.oldValue, 0, 0,
@@ -63,6 +64,7 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
    */
   after(data: object, bus: DDeiBus, evt: Event): boolean {
     bus.insert(DDeiEnumBusCommandType.UpdateSelectorBounds, null, evt)
+    bus.push(DDeiEnumBusCommandType.RefreshShape);
     return true;
   }
 

@@ -188,6 +188,7 @@ export default {
     // 监听obj对象中prop属性的变化
     this.$watch("currentStage.ratio", function (newVal, oldVal) {
       this.ratioInputValue = parseFloat(newVal) * 100;
+      this.stageRatio = newVal;
       this.changeRatio();
     });
     this.$watch("stageRatio", function (newVal, oldVal) {
@@ -216,11 +217,7 @@ export default {
             },
             null
           );
-          this.editor?.bus?.push(
-            DDeiEnumBusCommandType.RefreshShape,
-            null,
-            null
-          );
+
           this.editor?.bus?.executeAll();
         }
       }

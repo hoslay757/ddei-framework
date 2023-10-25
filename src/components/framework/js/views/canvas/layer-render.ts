@@ -11,7 +11,6 @@ import DDeiUtil from '../../util.js'
 import DDeiCanvasRender from './ddei-render.js';
 import DDeiStageCanvasRender from './stage-render.js';
 
-
 /**
  * DDeiLayer的渲染器类，用于渲染文件
  * 渲染器必须要有模型才可以初始化

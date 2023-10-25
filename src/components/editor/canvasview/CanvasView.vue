@@ -3,6 +3,7 @@
        class="ddei_editor_canvasview"
        @mousedown="mouseDown($event)"
        ondragstart="return false;"
+       @mousewheel="mouseWheel($event)"
        @dragover="createControlOver"
        @drop="createControlDrop"
        @dragleave="createControlCancel"
@@ -26,6 +27,7 @@ import DDeiSheet from "../js/sheet";
 import DDeiStage from "@/components/framework/js/models/stage";
 import DDeiFileState from "../js/enums/file-state";
 import DDeiActiveType from "../js/enums/active-type";
+import { throttle } from "lodash";
 
 export default {
   name: "DDei-Editor-CanvasView",
@@ -56,6 +58,7 @@ export default {
     });
   },
   mounted() {
+    this.mouseWheelThrottle = throttle(this.mouseWheelThrottle, 10);
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     //TODO基于参数打开一个文件或一组文件
@@ -97,6 +100,21 @@ export default {
     changeEditorFocus() {
       this.editor.changeState(DDeiEditorState.DESIGNING);
       return true;
+    },
+
+    /**
+     * 触控板滑动事件
+     */
+    mouseWheel(evt) {
+      if (this.editor.state == DDeiEditorState.DESIGNING) {
+        this.mouseWheelThrottle(evt);
+        evt.preventDefault();
+        return false;
+      }
+    },
+
+    mouseWheelThrottle(evt) {
+      this.editor.ddInstance.render.mouseWheel(evt);
     },
 
     mouseDown(evt) {
