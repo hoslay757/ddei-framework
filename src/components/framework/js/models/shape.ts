@@ -577,6 +577,36 @@ abstract class DDeiAbstractShape {
   }
 
   /**
+   * 根据点的数量判断图形是否在一个区域内
+   * @param x
+   * @param y
+   * @param x1
+   * @param y1
+   * @param pointNumber 在区域内点的数量，达到这个数量则看作在区域内，默认1
+   * @returns 是否在区域内
+   */
+  isInRect(x: number, y: number, x1: number, y1: number, pointNumber: number = 1): boolean {
+    if (x === undefined || y === undefined || y1 === undefined || y1 === undefined) {
+      return false
+    }
+    let len = this.pvs.length;
+    let pn = 0
+    for (let i = 0; i < len; i++) {
+      let ps = this.pvs[i]
+      if (ps.x >= x && ps.y >= y && ps.x <= x1 && ps.y <= y1) {
+        pn++
+      }
+      if (pn >= pointNumber) {
+        return true;
+      }
+    }
+
+
+
+    return false;
+  }
+
+  /**
    * 判断图形是否在一个区域内，采用宽松的判定模式，允许传入一个大小值
    * @param x
    * @param y
@@ -588,7 +618,6 @@ abstract class DDeiAbstractShape {
       return false
     }
     let ps = null;
-    //对当前图形，按照rotate进行旋转，求得新的四个点的位置
     if (loose && this.loosePVS?.length > 0) {
       ps = this.loosePVS;
     }

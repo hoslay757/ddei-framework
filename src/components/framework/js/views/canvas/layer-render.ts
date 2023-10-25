@@ -228,10 +228,18 @@ class DDeiLayerCanvasRender {
    */
   drawChildrenShapes(): void {
     if (this.model.models) {
+      let canvas = this.ddRender.getCanvas();
+      let x = -this.stage.wpv.x;
+      let y = -this.stage.wpv.y;
+      let x1 = x + canvas.width / this.ddRender.ratio;
+      let y1 = y + canvas.height / this.ddRender.ratio;
       //遍历子元素，绘制子元素
       this.model.midList.forEach(key => {
         let item = this.model.models.get(key);
-        item.render.drawShape();
+        //判定控件是否在绘制区间，如果在则绘制
+        if (item?.isInRect(x, y, x1, y1)) {
+          item.render.drawShape();
+        }
       });
     }
   }

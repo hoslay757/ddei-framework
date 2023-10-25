@@ -32,10 +32,7 @@ class DDeiBusCommandUpdateSelectorBounds extends DDeiBusCommand {
   action(data: object, bus: DDeiBus, evt: Event): boolean {
     let stage = bus.ddInstance.stage;
     if (stage) {
-      let ex = evt.offsetX;
-      let ey = evt.offsetY;
-      ex -= stage.wpv.x;
-      ey -= stage.wpv.y;
+
       //获取当前选中控件
       let optContainer = stage.render.currentOperateContainer;
       if (!optContainer) {
@@ -45,6 +42,10 @@ class DDeiBusCommandUpdateSelectorBounds extends DDeiBusCommand {
         let selector = stage.render.selector;
         if (selector) {
           if (data?.operateState == DDeiEnumOperateState.SELECT_WORKING) {
+            let ex = evt.offsetX;
+            let ey = evt.offsetY;
+            ex -= stage.wpv.x;
+            ey -= stage.wpv.y;
             let x = selector.startX;
             let y = selector.startY;
             let width, height
