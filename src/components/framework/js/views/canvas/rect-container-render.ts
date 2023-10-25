@@ -133,8 +133,9 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
       if (this.model.models) {
         let ex = evt.offsetX;
         let ey = evt.offsetY;
-        ex -= this.stage.wpv.x;
-        ey -= this.stage.wpv.y;
+        let stageRatio = this.stage.getStageRatio()
+        ex -= this.stage.wpv.x * stageRatio;
+        ey -= this.stage.wpv.y * stageRatio;
         //遍历子元素，绘制子元素
         this.model.midList.forEach(key => {
           let model = this.model.models.get(key);

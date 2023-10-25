@@ -189,8 +189,9 @@ class DDeiCanvasRender {
     let sx = evt.screenX;
     let sy = evt.screenY;
     let stage = this.model.stage
-    ex -= stage.wpv.x;
-    ey -= stage.wpv.y;
+    let stageRatio = stage.getStageRatio()
+    ex -= stage.wpv.x * stageRatio;
+    ey -= stage.wpv.y * stageRatio;
     sx -= stage.wpv.x;
     sy -= stage.wpv.y;
     DDeiUtil.setMousePosition(ex, ey, sx, sy);

@@ -589,17 +589,62 @@ abstract class DDeiAbstractShape {
     if (x === undefined || y === undefined || x1 === undefined || y1 === undefined) {
       return false
     }
-    let len = this.pvs.length;
+    let pvs = this.pvs;
+    let len = pvs.length;
     let pn = 0
+    let modelLines = []
+
     for (let i = 0; i < len; i++) {
-      let ps = this.pvs[i]
+      let ps = pvs[i]
       if (ps.x >= x && ps.y >= y && ps.x <= x1 && ps.y <= y1) {
         pn++
       }
       if (pn >= pointNumber) {
         return true;
       }
+      if (i == len - 1) {
+        modelLines.push({ x1: pvs[i].x, y1: pvs[i].y, x2: pvs[0].x, y2: pvs[0].y })
+      } else {
+        modelLines.push({ x1: pvs[i].x, y1: pvs[i].y, x2: pvs[i + 1].x, y2: pvs[i + 1].y })
+      }
     }
+    //执行执行线段相交判断
+    let rectLines = [
+      { x1: x, y1: y, x2: x1, y2: y },
+      { x1: x1, y1: y, x2: x1, y2: y1 },
+      { x1: x1, y1: y1, x2: x, y2: y1 },
+      { x1: x, y1: y1, x2: x, y2: y }
+    ]
+    len = modelLines.length;
+    for (let i = 0; i < len; i++) {
+      let l1 = modelLines[i];
+      for (let j = 0; j < 4; j++) {
+        let l2 = rectLines[j];
+        //快速排斥实验
+        if ((l1.x1 > l1.x2 ? l1.x1 : l1.x2) < (l2.x1 < l2.x2 ? l2.x1 : l2.x2) ||
+          (l1.y1 > l1.y2 ? l1.y1 : l1.y2) < (l2.y1 < l2.y2 ? l2.y1 : l2.y2) ||
+          (l2.x1 > l2.x2 ? l2.x1 : l2.x2) < (l1.x1 < l1.x2 ? l1.x1 : l1.x2) ||
+          (l2.y1 > l2.y2 ? l2.y1 : l2.y2) < (l1.y1 < l1.y2 ? l1.y1 : l1.y2)) {
+          continue;
+        }
+        //跨立实验
+        if ((((l1.x1 - l2.x1) * (l2.y2 - l2.y1) - (l1.y1 - l2.y1) * (l2.x2 - l2.x1)) *
+          ((l1.x2 - l2.x1) * (l2.y2 - l2.y1) - (l1.y2 - l2.y1) * (l2.x2 - l2.x1))) > 0 ||
+          (((l2.x1 - l1.x1) * (l1.y2 - l1.y1) - (l2.y1 - l1.y1) * (l1.x2 - l1.x1)) *
+            ((l2.x2 - l1.x1) * (l1.y2 - l1.y1) - (l2.y2 - l1.y1) * (l1.x2 - l1.x1))) > 0) {
+          continue;
+        }
+        pn++;
+        if (pn >= pointNumber) {
+          return true;
+        }
+      }
+
+
+    }
+
+
+    return true;
 
 
 

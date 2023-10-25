@@ -372,8 +372,9 @@ class DDeiLayerCanvasRender {
   getMovedPositionDelta(evt): object {
     let ex = evt.offsetX;
     let ey = evt.offsetY;
-    ex -= this.stage.wpv.x;
-    ey -= this.stage.wpv.y;
+    let stageRatio = this.stage.getStageRatio()
+    ex -= this.stage.wpv.x * stageRatio;
+    ey -= this.stage.wpv.y * stageRatio;
     //获取移动后的坐标
     let movedBounds = {
       x: ex - this.stageRender.dragObj.x,
@@ -483,8 +484,9 @@ class DDeiLayerCanvasRender {
 
     let ex = evt.offsetX;
     let ey = evt.offsetY;
-    ex -= this.stage.wpv.x;
-    ey -= this.stage.wpv.y;
+    let stageRatio = this.stage.getStageRatio()
+    ex -= this.stage.wpv.x * stageRatio;
+    ey -= this.stage.wpv.y * stageRatio;
     if (this.stageRender.selector && this.stageRender.selector.isInAreaLoose(ex, ey, true) &&
       ((this.stageRender.selector.passIndex >= 1 && this.stageRender.selector.passIndex <= 9) || this.stageRender.selector.passIndex == 13)) {
       //派发给selector的mousedown事件，在事件中对具体坐标进行判断
@@ -576,8 +578,9 @@ class DDeiLayerCanvasRender {
     let isAlt = DDei.KEY_DOWN_STATE.get("alt");
     let ex = evt.offsetX;
     let ey = evt.offsetY;
-    ex -= this.stage.wpv.x;
-    ey -= this.stage.wpv.y;
+    let stageRatio = this.stage.getStageRatio()
+    ex -= this.stage.wpv.x * stageRatio;
+    ey -= this.stage.wpv.y * stageRatio;
     //鼠标右键，显示菜单
     if (evt.button == 2) {
       //在鼠标位置显示菜单
@@ -803,8 +806,9 @@ class DDeiLayerCanvasRender {
     let isAlt = DDei.KEY_DOWN_STATE.get("alt");
     let ex = evt.offsetX;
     let ey = evt.offsetY;
-    ex -= this.stage.wpv.x;
-    ey -= this.stage.wpv.y;
+    let stageRatio = this.stage.getStageRatio()
+    ex -= this.stage.wpv.x * stageRatio;
+    ey -= this.stage.wpv.y * stageRatio;
     //判断当前操作状态
     switch (this.stageRender.operateState) {
       //控件状态确认中

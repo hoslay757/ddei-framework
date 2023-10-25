@@ -121,10 +121,11 @@ export default {
 
         let ddInstance = this.editor.ddInstance;
         let stage = ddInstance.stage;
+        let stageRatio = stage.getStageRatio();
         let ex = e.offsetX;
         let ey = e.offsetY;
-        ex -= stage.wpv.x;
-        ey -= stage.wpv.y;
+        ex -= stage.wpv.x * stageRatio;
+        ey -= stage.wpv.y * stageRatio;
         if (this.editor.creatingControl) {
           //当前激活的图层
           let layer = stage.layers[stage.layerIndex];
@@ -259,8 +260,9 @@ export default {
         let stage = ddInstance.stage;
         let ex = e.offsetX;
         let ey = e.offsetY;
-        ex -= stage.wpv.x;
-        ey -= stage.wpv.y;
+        let stageRatio = stage.getStageRatio();
+        ex -= stage.wpv.x * stageRatio;
+        ey -= stage.wpv.y * stageRatio;
         if (this.editor.creatingControl) {
           let isAlt = DDeiEditor.KEY_DOWN_STATE.get("alt");
           let ddInstance: DDei = this.editor.ddInstance;
