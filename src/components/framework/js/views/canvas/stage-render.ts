@@ -58,6 +58,11 @@ class DDeiStageCanvasRender {
    * 刷新，如果为true则会绘制图形
    */
   refresh: boolean = true;
+
+
+  //横向滚动条和纵向滚动条，当需要显示时不为空
+  hScroll: object | null = null;
+  vScroll: object | null = null;
   // ============================== 方法 ===============================
   /**
    * 初始化
@@ -96,7 +101,40 @@ class DDeiStageCanvasRender {
     if (this.selector) {
       this.selector.render.drawShape();
     }
+    //绘制画布滚动条
+
     ctx.restore();
+  }
+
+
+  /**
+   * 计算滚动条信息
+   */
+  calScroll() {
+
+    let canvas = this.ddRender.getCanvas();
+    //画布的大小
+    let canvasHeight = canvas.height;
+    let canvasWidth = canvas.width;
+    //当前位置
+    let curX = this.model.wpv.x;
+    let curY = this.model.wpv.y;
+    //画布总大小
+    let maxWidth = 5000;
+    let maxHeight = 5000;
+    //计算纵向滚动条信息
+    if (maxHeight > canvasHeight) {
+      this.vScroll = { height: canvasHeight, contentHeight: canvasHeight * canvasHeight / maxHeight, y: canvasHeight * curY / maxHeight };
+    } else {
+      this.vScroll = null;
+    }
+    //计算横向滚动条信息
+    if (maxWidth > canvasWidth) {
+      this.hScroll = { width: canvasWidth, contentWidth: canvasWidth * canvasWidth / maxWidth, y: canvasWidth * curX / maxWidth };
+    } else {
+      this.hScroll = null;
+    }
+
   }
 
   /**

@@ -90,41 +90,9 @@ class DDeiLayerCanvasRender {
       //绘制拖拽影子控件
       this.drawShadowControls();
 
-
-
       //绘制辅助线
       this.drawHelpLines()
 
-
-      let canvas = this.ddRender.getCanvas();
-      let ctx = canvas.getContext('2d');
-      //获取全局缩放比例
-      let rat1 = this.ddRender.ratio
-      let stageRatio = this.model.getStageRatio()
-      let ratio = rat1 * stageRatio;
-      ctx.save();
-      ctx.textAlign = "left";
-      ctx.textBaseline = "top";
-      //设置字体
-      ctx.font = "bold 24px 宋体"
-      //设置字体颜色
-      ctx.fillStyle = "red"
-      ctx.strokeStyle = "red"
-      //获取全局缩放比例
-      let x = -this.stage.wpv.x * ratio;
-      let y = -this.stage.wpv.y * ratio;
-      let x1 = x + canvas.width;
-      let y1 = y + canvas.height;
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(x1, y);
-      ctx.lineTo(x1, y1);
-      ctx.lineTo(x, y1);
-
-      ctx.closePath();
-      ctx.stroke();
-      ctx.fillText(this.stage.wpv.x + "," + this.stage.wpv.y, -this.stage.wpv.x * ratio, -this.stage.wpv.y * ratio);
-      ctx.restore()
       this.modelChanged = false;
     }
   }
