@@ -185,15 +185,15 @@ export default {
                 e
               );
               //设置新坐标
-              //当前编辑器最外部容器的坐标 TODO 无限画布后需要转换为layer的视窗坐标
-              this.editor.bus.push(
-                DDeiEnumBusCommandType.ModelChangePosition,
-                {
-                  models: [control],
-                  dragObj: dragObj,
-                },
-                e
-              );
+              // //当前编辑器最外部容器的坐标
+              // this.editor.bus.push(
+              //   DDeiEnumBusCommandType.ModelChangePosition,
+              //   {
+              //     models: [control],
+              //     dragObj: dragObj,
+              //   },
+              //   e
+              // );
               this.editor.bus.push(
                 DDeiEnumBusCommandType.RefreshShape,
                 null,

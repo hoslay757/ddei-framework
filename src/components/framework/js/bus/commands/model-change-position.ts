@@ -104,7 +104,17 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
           stage.render.vAdsX = x
         }
       }
-
+      //移动窗口的大小
+      let exWpvX = 0;
+      let exWpvY = 0;
+      let stageRatio = stage.getStageRatio();
+      let rat1 = stage.ddInstance.render.ratio
+      let canvas = stage?.ddInstance.render.canvas;
+      let ratio = rat1 * stageRatio;
+      let wpvx = -stage.wpv.x * ratio / rat1;
+      let wpvy = -stage.wpv.y * ratio / rat1;
+      let wpvx1 = wpvx + canvas.width / rat1;
+      let wpvy1 = wpvy + canvas.height / rat1;
       models.forEach(model => {
         let dx = 0
         let dy = 0
@@ -128,7 +138,26 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
         );
 
         model.transVectors(moveMatrix);
+
+        //判断如果model的某个点到了边缘，则移动窗口视图
+        model.pvs.forEach(pv => {
+          if (pv.y >= wpvy1) {
+
+            exWpvY = Math.max(pv.y - wpvy1, exWpvY)
+          } else if (pv.y <= wpvy) {
+            exWpvY = Math.min(pv.y - wpvy, exWpvY)
+          }
+          if (pv.x >= wpvx1) {
+            exWpvX = Math.max(pv.x - wpvx1, exWpvX)
+          } else if (pv.x <= wpvx) {
+            exWpvX = Math.min(pv.x - wpvx, exWpvX)
+          }
+        });
+
       });
+      if (exWpvX || exWpvY) {
+        bus.push(DDeiEnumBusCommandType.ChangeStageWPV, { dragObj: { dx: 0, dy: 0 }, x: -exWpvX, y: -exWpvY }, evt);
+      }
       models[0].layer.dragInPoints = []
       models[0].layer.dragOutPoints = []
       //设置移入移出效果的向量

@@ -231,7 +231,15 @@ class DDeiCanvasRender {
       } else {
         newValue = ratio - 0.02
       }
-      stage.setStageRatio(newValue);
+      if (newValue < 0.1) {
+        newValue = 0.1
+      } else if (newValue > 10) {
+        newValue = 10
+      }
+      if (newValue != ratio) {
+        stage.setStageRatio(newValue);
+      }
+
     }
   }
 

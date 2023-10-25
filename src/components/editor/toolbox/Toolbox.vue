@@ -66,6 +66,7 @@ import DDeiAbstractShape from "@/components/framework/js/models/shape";
 import DDeiEditorUtil from "../js/util/editor-util";
 import DDeiEnumControlState from "../../framework/js/enums/control-state";
 import ICONS from "../js/icon";
+import { Matrix3 } from "three";
 
 export default {
   name: "DDei-Editor-Toolbox",
@@ -194,6 +195,7 @@ export default {
     createControlPrepare(control, e) {
       //获取当前实例
       let ddInstance: DDei = this.editor.ddInstance;
+      let stage = ddInstance.stage;
       //根据control的定义，初始化临时控件，并推送至上层Editor
       let searchPaths = [
         "width",
@@ -211,7 +213,7 @@ export default {
       );
 
       let dataJson = {
-        id: control.code + "_" + (ddInstance.stage.idIdx + 1),
+        id: control.code + "_" + (stage.idIdx + 1),
         modelCode: control.id,
       };
 
@@ -227,8 +229,22 @@ export default {
 
       let model: DDeiAbstractShape = this.controlCls[control.type].initByJSON(
         dataJson,
-        { currentStage: ddInstance.stage }
+        { currentStage: stage }
       );
+      let stageRatio = stage.getStageRatio();
+      let moveMatrix = new Matrix3(
+        1,
+        0,
+        -stage.wpv.x * stageRatio,
+        0,
+        1,
+        -stage.wpv.y * stageRatio,
+        0,
+        0,
+        1
+      );
+      model.transVectors(moveMatrix);
+
       model.setState(DDeiEnumControlState.CREATING);
 
       e.dataTransfer.setDragImage(this.creatingImg, 0, 0);
