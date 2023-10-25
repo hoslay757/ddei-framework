@@ -43,6 +43,8 @@ class DDeiBusCommandClearTemplateVars extends DDeiBusCommand {
       //吸附状态
       stage.render.isHAds = false;
       stage.render.isVAds = false;
+      stage.render.vAdsX = Infinity
+      stage.render.hAdsY = Infinity
 
       //清除作为临时变量dragX、dargY、dragObj
       stage.render.selector.setPassIndex(-1);
