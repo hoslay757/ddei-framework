@@ -114,7 +114,7 @@ class DDeiLayerCanvasRender {
     let ratio = this.ddRender.ratio * stageRatio;
     //保存状态
     ctx.save();
-
+    ctx.translate(-this.stage.wpv.x * ratio, -this.stage.wpv.y * ratio)
     //根据背景的设置绘制图层
     //绘制背景图层
     let bgInfo = null;
@@ -152,7 +152,8 @@ class DDeiLayerCanvasRender {
       let r20 = ratio * 20;
       let r40 = ratio * 40;
       let offsetWidth = 0.5;
-      for (let x = 0; x <= canvas.width; x = x + r20) {
+      let cwidth = canvas.width;
+      for (let x = 0; x <= cwidth; x += r20) {
 
         ctx.beginPath();
         if (x % r40 == 0) {
