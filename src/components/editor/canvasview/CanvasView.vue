@@ -1,6 +1,12 @@
 <template>
-  <div :id="id" class="ddei_editor_canvasview" @mousedown="mouseDown($event)" ondragstart="return false;"
-    @dragover="createControlOver" @drop="createControlDrop" @dragleave="createControlCancel" @contextmenu.prevent>
+  <div :id="id"
+       class="ddei_editor_canvasview"
+       @mousedown="mouseDown($event)"
+       ondragstart="return false;"
+       @dragover="createControlOver"
+       @drop="createControlDrop"
+       @dragleave="createControlCancel"
+       @contextmenu.prevent>
   </div>
 </template>
 
@@ -8,7 +14,6 @@
 import DDei from "@/components/framework/js/ddei";
 import DDeiEditor from "../js/editor";
 import DDeiEditorState from "../js/enums/editor-state";
-import DDeiConfig from "../../framework/js/config";
 import DDeiEnumControlState from "../../framework/js/enums/control-state";
 import DDeiAbstractShape from "@/components/framework/js/models/shape";
 import DDeiKeyAction from "../js/hotkeys/key-action";
@@ -21,7 +26,6 @@ import DDeiSheet from "../js/sheet";
 import DDeiStage from "@/components/framework/js/models/stage";
 import DDeiFileState from "../js/enums/file-state";
 import DDeiActiveType from "../js/enums/active-type";
-import { debounce } from "lodash";
 
 export default {
   name: "DDei-Editor-CanvasView",
@@ -114,14 +118,19 @@ export default {
     createControlOver(e) {
       if (this.editor.state == DDeiEditorState.CONTROL_CREATING) {
         DDeiKeyAction.updateKeyState(e);
+
+        let ddInstance = this.editor.ddInstance;
+        let stage = ddInstance.stage;
+        let ex = e.offsetX;
+        let ey = e.offsetY;
+        ex -= stage.wpv.x;
+        ey -= stage.wpv.y;
         if (this.editor.creatingControl) {
-          let ddInstance = this.editor.ddInstance;
           //当前激活的图层
-          let layer = ddInstance.stage.layers[ddInstance.stage.layerIndex];
+          let layer = stage.layers[stage.layerIndex];
           if (layer) {
-            ddInstance.stage.render.currentOperateContainer = layer;
-            ddInstance.stage.render.operateState =
-              DDeiEnumOperateState.CONTROL_CREATING;
+            stage.render.currentOperateContainer = layer;
+            stage.render.operateState = DDeiEnumOperateState.CONTROL_CREATING;
             let control = this.editor.creatingControl;
             //在画布上创建临时对象
             if (!layer.models.has(control.id)) {
@@ -131,9 +140,10 @@ export default {
                 e
               );
               //记录当前的拖拽的x,y,写入dragObj作为临时变量
+
               let dragObj = {
-                x: e.offsetX,
-                y: e.offsetY,
+                x: ex,
+                y: ey,
                 dx: 0, //鼠标在控件中心坐标的增量位置
                 dy: 0,
                 model: control,
@@ -148,8 +158,8 @@ export default {
                 DDeiEnumBusCommandType.ModelChangePosition,
                 {
                   models: [control],
-                  x: e.offsetX,
-                  y: e.offsetY,
+                  x: ex,
+                  y: ey,
                   dx: dragObj.dx,
                   dy: dragObj.dy,
                 },
@@ -197,8 +207,8 @@ export default {
                   DDeiEnumBusCommandType.ModelChangePosition,
                   {
                     models: [control],
-                    x: e.offsetX,
-                    y: e.offsetY,
+                    x: ex,
+                    y: ey,
                     dx: 0,
                     dy: 0,
                   },
@@ -214,11 +224,7 @@ export default {
                 if (isAlt) {
                   //寻找鼠标落点当前所在的容器
                   let mouseOnContainers =
-                    DDeiAbstractShape.findBottomContainersByArea(
-                      layer,
-                      e.offsetX,
-                      e.offsetY
-                    );
+                    DDeiAbstractShape.findBottomContainersByArea(layer, ex, ey);
                   if (mouseOnContainers && mouseOnContainers.length > 0) {
                     lastOnContainer =
                       mouseOnContainers[mouseOnContainers.length - 1];
@@ -234,11 +240,7 @@ export default {
                 }
 
                 //渲染图形
-                this.editor?.bus?.push(
-                  DDeiEnumBusCommandType.RefreshShape,
-                  null,
-                  e
-                );
+                this.editor?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
               }
             }
             this.editor.bus.executeAll();
@@ -253,6 +255,12 @@ export default {
      */
     createControlDrop(e) {
       if (this.editor.state == DDeiEditorState.CONTROL_CREATING) {
+        let ddInstance = this.editor.ddInstance;
+        let stage = ddInstance.stage;
+        let ex = e.offsetX;
+        let ey = e.offsetY;
+        ex -= stage.wpv.x;
+        ey -= stage.wpv.y;
         if (this.editor.creatingControl) {
           let isAlt = DDeiEditor.KEY_DOWN_STATE.get("alt");
           let ddInstance: DDei = this.editor.ddInstance;
@@ -262,11 +270,7 @@ export default {
           if (isAlt) {
             //寻找鼠标落点当前所在的容器
             let mouseOnContainers: DDeiAbstractShape[] =
-              DDeiAbstractShape.findBottomContainersByArea(
-                layer,
-                e.offsetX,
-                e.offsetY
-              );
+              DDeiAbstractShape.findBottomContainersByArea(layer, ex, ey);
             let lastOnContainer = layer;
             if (mouseOnContainers && mouseOnContainers.length > 0) {
               lastOnContainer = mouseOnContainers[mouseOnContainers.length - 1];

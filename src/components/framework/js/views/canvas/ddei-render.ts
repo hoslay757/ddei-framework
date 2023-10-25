@@ -184,7 +184,16 @@ class DDeiCanvasRender {
    * 鼠标移动
    */
   mouseMove(evt: Event): void {
-    DDeiUtil.setMousePosition(evt.offsetX, evt.offsetY, evt.screenX, evt.screenY);
+    let ex = evt.offsetX;
+    let ey = evt.offsetY;
+    let sx = evt.screenX;
+    let sy = evt.screenY;
+    let stage = this.model.stage
+    ex -= stage.wpv.x;
+    ey -= stage.wpv.y;
+    sx -= stage.wpv.x;
+    sy -= stage.wpv.y;
+    DDeiUtil.setMousePosition(ex, ey, sx, sy);
     this.model.eventCancel = false;
     this.model.stage.render.mouseMove(evt);
   }

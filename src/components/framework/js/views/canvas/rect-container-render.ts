@@ -131,10 +131,14 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
     if (!this.stage.ddInstance.eventCancel) {
       super.mouseMove(evt);
       if (this.model.models) {
+        let ex = evt.offsetX;
+        let ey = evt.offsetY;
+        ex -= this.stage.wpv.x;
+        ey -= this.stage.wpv.y;
         //遍历子元素，绘制子元素
         this.model.midList.forEach(key => {
           let model = this.model.models.get(key);
-          if (model && model.isInAreaLoose(evt.offsetX, evt.offsetY, DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2)) {
+          if (model && model.isInAreaLoose(ex, ey, DDeiConfig.SELECTOR.OPERATE_ICON.weight * 2)) {
             model.render.mouseMove(evt);
           }
         });

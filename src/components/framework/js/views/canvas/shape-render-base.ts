@@ -121,7 +121,11 @@ class DDeiAbstractShapeRender {
   mouseMove(evt: Event): void {
     //获取操作点，如果有则添加到其Layer
     if (this.layer) {
-      let projPoint = this.model.getProjPoint({ x: evt.offsetX, y: evt.offsetY });
+      let ex = evt.offsetX;
+      let ey = evt.offsetY;
+      ex -= this.stage.wpv.x;
+      ey -= this.stage.wpv.y;
+      let projPoint = this.model.getProjPoint({ x: ex, y: ey });
       if (projPoint) {
         this.layer.opPoints.push(projPoint);
       }

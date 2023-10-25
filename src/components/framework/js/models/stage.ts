@@ -22,7 +22,7 @@ class DDeiStage {
     this.histroy = props.histroy ? props.histroy : [];
     this.histroyIdx = props.histroyIdx || props.histroyIdx == 0 ? props.histroyIdx : -1;
     this.ratio = props.ratio ? props.ratio : DDeiConfig.STAGE_RATIO;
-    this.wpv = props.wpv ? props.wpv : { x: 300, y: 300, z: 0 };
+    this.wpv = props.wpv ? props.wpv : { x: 20, y: 20, z: 0 };
   }
 
   // ============================ 静态变量 ============================
@@ -98,7 +98,7 @@ class DDeiStage {
   ratio: number = 1.0;
 
   //当前视窗开始点，缺省为0，0, 0
-  wpv: object = { x: 300, y: 300, z: 0 }
+  wpv: object = { x: 20, y: 20, z: 0 }
 
   // ============================ 方法 ===============================
   /**

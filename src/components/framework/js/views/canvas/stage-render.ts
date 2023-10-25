@@ -75,8 +75,11 @@ class DDeiStageCanvasRender {
     //获得 2d 上下文对象
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
+    let rat1 = this.ddRender.ratio;
+    let stageRatio = this.model.getStageRatio();
+    let ratio = rat1 * stageRatio
     ctx.save();
-    ctx.translate(-2 * this.model.wpv.x, -2 * this.model.wpv.y)
+    ctx.translate(this.model.wpv.x * ratio, this.model.wpv.y * ratio)
     //display=2的节点，最后渲染
     let topDisplayIndex = -1;
     for (let i = this.model.layers.length - 1; i >= 0; i--) {
@@ -120,7 +123,7 @@ class DDeiStageCanvasRender {
    * @param evt 事件
    */
   resetSelectorState(evt: Event): void {
-    this.selector.resetState(evt.offsetX, evt.offsetY);
+    this.selector.resetState(evt.offsetX - this.model.wpv.x, evt.offsetY - this.model.wpv.y);
   }
 
   // ============================== 事件 ===============================

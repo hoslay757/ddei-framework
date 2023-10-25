@@ -321,51 +321,53 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
    * 鼠标移动事件，经由上层容器分发
    */
   mouseMove(evt: Event): void {
-    let offsetX = evt.offsetX;
-    let offsetY = evt.offsetY;
+    let ex = evt.offsetX;
+    let ey = evt.offsetY;
+    ex -= this.stage.wpv.x;
+    ey -= this.stage.wpv.y;
     //判断当前坐标是否位于操作按钮上
 
-    if (this.model.isOpvOn(1, offsetX, offsetY)) {
+    if (this.model.isOpvOn(1, ex, ey)) {
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 1 }, evt);
     }
     //右上
-    else if (this.model.isOpvOn(2, offsetX, offsetY)) {
+    else if (this.model.isOpvOn(2, ex, ey)) {
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 2 }, evt);
     }
     //右中
-    else if (this.model.isOpvOn(3, offsetX, offsetY)) {
+    else if (this.model.isOpvOn(3, ex, ey)) {
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 3 }, evt);
     }
     //右下
-    else if (this.model.isOpvOn(4, offsetX, offsetY)) {
+    else if (this.model.isOpvOn(4, ex, ey)) {
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 4 }, evt);
     }
     //中下
-    else if (this.model.isOpvOn(5, offsetX, offsetY)) {
+    else if (this.model.isOpvOn(5, ex, ey)) {
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 5 }, evt);
     }
     //左下
-    else if (this.model.isOpvOn(6, offsetX, offsetY)) {
+    else if (this.model.isOpvOn(6, ex, ey)) {
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 6 }, evt);
     }
     //左中
-    else if (this.model.isOpvOn(7, offsetX, offsetY)) {
+    else if (this.model.isOpvOn(7, ex, ey)) {
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 7 }, evt);
     }
     //左上
-    else if (this.model.isOpvOn(8, offsetX, offsetY)) {
+    else if (this.model.isOpvOn(8, ex, ey)) {
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 8 }, evt);
     }
     //旋转
-    else if (this.model.isOpvOn(9, offsetX, offsetY)) {
+    else if (this.model.isOpvOn(9, ex, ey)) {
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 9 }, evt);
     }
     //拖拽点
-    else if (this.model.isOpvOn(10, offsetX, offsetY)) {
+    else if (this.model.isOpvOn(10, ex, ey)) {
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 13 }, evt);
     } else {
       //判断是否在某个具体选中的控件上，如果是则分发事件
-      let models = this.stage?.layers[this.stage?.layerIndex].findModelsByArea(offsetX, offsetY);
+      let models = this.stage?.layers[this.stage?.layerIndex].findModelsByArea(ex, ey);
       if (models && models.length > 0) {
         //普通拖动
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 10 }, evt);
@@ -374,18 +376,22 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: -1 }, evt);
       }
     }
-    this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+    this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
   }
 
   /**
   * 鼠标按下事件，经由上层容器分发
   */
   mouseDown(evt: Event): void {
+    let ex = evt.offsetX;
+    let ey = evt.offsetY;
+    ex -= this.stage.wpv.x;
+    ey -= this.stage.wpv.y;
     //判断当前坐标是否位于操作按钮上,如果是则改变状态为响应状态
     if (this.model.passIndex >= 1 && this.model.passIndex <= 8) {
       let dragObj = {
-        x: evt.offsetX,
-        y: evt.offsetY
+        x: ex,
+        y: ey
       }
       //获取当前层次选择的控件
       //计算移动后的坐标以及大小
@@ -404,8 +410,8 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     //旋转
     else if (this.model.passIndex == 9) {
       let dragObj = {
-        x: evt.offsetX,
-        y: evt.offsetY
+        x: ex,
+        y: ey
       }
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
       //当前操作状态：改变控件大小中
@@ -422,13 +428,13 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       layer.opPoints = [];
       //中心点坐标
       //当前控件的上层控件，可能是一个layer也可能是容器
-      let centerPointVector = this.model.centerPointVector;
+      let centerPointVector = this.model.cpv;
       //记录当前的拖拽的x,y,写入dragObj作为临时变量
       let dragObj = {
-        x: evt.offsetX,
-        y: evt.offsetY,
-        dx: centerPointVector.x - evt.offsetX,//鼠标在控件中心坐标的增量位置
-        dy: centerPointVector.y - evt.offsetY,
+        x: ex,
+        y: ey,
+        dx: centerPointVector.x - ex,//鼠标在控件中心坐标的增量位置
+        dy: centerPointVector.y - ey,
       }
 
       //产生影子控件

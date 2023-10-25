@@ -32,6 +32,10 @@ class DDeiBusCommandUpdateSelectorBounds extends DDeiBusCommand {
   action(data: object, bus: DDeiBus, evt: Event): boolean {
     let stage = bus.ddInstance.stage;
     if (stage) {
+      let ex = evt.offsetX;
+      let ey = evt.offsetY;
+      ex -= stage.wpv.x;
+      ey -= stage.wpv.y;
       //获取当前选中控件
       let optContainer = stage.render.currentOperateContainer;
       if (!optContainer) {
@@ -44,17 +48,17 @@ class DDeiBusCommandUpdateSelectorBounds extends DDeiBusCommand {
             let x = selector.startX;
             let y = selector.startY;
             let width, height
-            if (evt.offsetX < x) {
-              width = x - evt.offsetX
-              x = evt.offsetX
+            if (ex < x) {
+              width = x - ex
+              x = ex
             } else {
-              width = evt.offsetX - x
+              width = ex - x
             }
-            if (evt.offsetY < y) {
-              height = y - evt.offsetY
-              y = evt.offsetY
+            if (ey < y) {
+              height = y - ey
+              y = ey
             } else {
-              height = evt.offsetY - y
+              height = ey - y
             }
             selector.updatePVSByRect(x, y, width, height);
           } else {

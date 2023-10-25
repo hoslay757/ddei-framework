@@ -73,7 +73,7 @@ class DDeiConfig {
   static RENDER_TYPE: string = "Canvas";
 
   //缺省缩放比例
-  static STAGE_RATIO: number = 1.2;
+  static STAGE_RATIO: number = 1.0;
 
   // 是否打开辅助线功能
   static GLOBAL_HELP_LINE_ENABLE: boolean = true;
