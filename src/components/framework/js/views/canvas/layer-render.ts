@@ -143,8 +143,11 @@ class DDeiLayerCanvasRender {
     //获取全局缩放比例
     let stageRatio = this.model.getStageRatio()
     let ratio = this.ddRender.ratio * stageRatio;
+    let r20 = ratio * 20;
+    let r40 = ratio * 40;
     //保存状态
     ctx.save();
+
     ctx.translate(-this.stage.wpv.x * ratio, -this.stage.wpv.y * ratio)
     //根据背景的设置绘制图层
     //绘制背景图层
@@ -177,14 +180,18 @@ class DDeiLayerCanvasRender {
       if (bgInfo.opacity != null && bgInfo.opacity != undefined) {
         ctx.globalAlpha = bgInfo.opacity
       }
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      let cwidth = canvas.width + r20;
+      let cheight = canvas.height + r20;
+      let x = -r20
+      let y = -r20
+      ctx.fillRect(x, y, cwidth, cheight)
 
       ctx.lineWidth = 1;
-      let r20 = ratio * 20;
-      let r40 = ratio * 40;
+
       let offsetWidth = 0.5;
-      let cwidth = canvas.width;
-      for (let x = 0; x <= cwidth; x += r20) {
+      let xdr = this.stage.wpv.x * ratio % r20
+      let ydr = this.stage.wpv.y * ratio % r20
+      for (; x <= cwidth; x += r20) {
 
         ctx.beginPath();
         if (x % r40 == 0) {
@@ -194,11 +201,12 @@ class DDeiLayerCanvasRender {
           ctx.setLineDash([3, 1]);
           ctx.strokeStyle = "rgb(220,220,220)";
         }
-        ctx.moveTo(x + offsetWidth, offsetWidth);
-        ctx.lineTo(x + offsetWidth, canvas.height + offsetWidth);
+        ctx.moveTo(x + offsetWidth + xdr, offsetWidth - ydr);
+        ctx.lineTo(x + offsetWidth + xdr, canvas.height + offsetWidth + ydr);
         ctx.stroke();
       }
-      for (let y = 0; y <= canvas.height; y = y + r20) {
+
+      for (; y <= cheight; y += r20) {
         ctx.beginPath();
         if (y % r40 == 0) {
           ctx.setLineDash([]);
@@ -207,8 +215,8 @@ class DDeiLayerCanvasRender {
           ctx.setLineDash([3, 1]);
           ctx.strokeStyle = "rgb(220,220,220)";
         }
-        ctx.moveTo(offsetWidth, y + offsetWidth);
-        ctx.lineTo(canvas.width + offsetWidth, y + offsetWidth);
+        ctx.moveTo(offsetWidth - xdr, y + offsetWidth + ydr);
+        ctx.lineTo(canvas.width + offsetWidth + xdr, y + offsetWidth + ydr);
         ctx.stroke();
       }
     }
