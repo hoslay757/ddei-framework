@@ -69,6 +69,14 @@ class DDei {
         ddInstance.bus = new DDeiBus({ ddInstance: ddInstance });
         //初始化渲染器
         ddInstance.initRender();
+        //设置视窗位置到中央
+        if (!ddInstance.stage.wpv) {
+          let rat1 = ddInstance.render.ratio
+          //缺省定位在画布中心点位置
+          ddInstance.stage.wpv = {
+            x: -(ddInstance.stage.width - ddInstance.render.container.clientWidth * rat1) / 2, y: -(ddInstance.stage.height - ddInstance.render.container.clientHeight * rat1) / 2, z: 0
+          };
+        }
         //通过当前装载的stage更新图形
         ddInstance.render.drawShape();
         return ddInstance;

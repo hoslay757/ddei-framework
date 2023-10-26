@@ -72,6 +72,10 @@ class DDeiConfig {
   //当前采用的渲染器类型，暂时只支持canvas
   static RENDER_TYPE: string = "Canvas";
 
+
+  //缺省画布大小
+  static STAGE_WIDTH: number = 3000;
+  static STAGE_HEIGHT: number = 3000;
   //缺省缩放比例
   static STAGE_RATIO: number = 1.0;
 

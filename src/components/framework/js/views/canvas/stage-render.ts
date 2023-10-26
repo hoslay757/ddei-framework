@@ -85,7 +85,8 @@ class DDeiStageCanvasRender {
     let ratio = rat1 * stageRatio
     ctx.save();
     ctx.translate(this.model.wpv.x * ratio, this.model.wpv.y * ratio)
-
+    //计算滚动条
+    this.calScroll();
     //display=2的节点，最后渲染
     let topDisplayIndex = -1;
     for (let i = this.model.layers.length - 1; i >= 0; i--) {
@@ -101,11 +102,54 @@ class DDeiStageCanvasRender {
     if (this.selector) {
       this.selector.render.drawShape();
     }
-    //绘制画布滚动条
-
     ctx.restore();
+    //绘制滚动条
+    this.drawScroll();
+
   }
 
+  /**
+   * 绘制滚动条
+   */
+  drawScroll() {
+    //获得 2d 上下文对象
+    let canvas = this.ddRender.getCanvas();
+    let ctx = canvas.getContext('2d');
+    let rat1 = this.ddRender.ratio;
+    ctx.save();
+
+    //获取全局缩放比例
+    let scrollWeight = rat1 * 15;
+    let cwidth = canvas.width - scrollWeight;
+    let cheight = canvas.height - scrollWeight;
+    //绘制画布滚动条
+    if (this.hScroll) {
+      ctx.fillStyle = "white"
+      ctx.strokeStyle = "rgb(220,220,220)"
+      ctx.fillRect(0, cheight, this.hScroll.width, scrollWeight)
+      ctx.strokeRect(0, cheight, this.hScroll.width, scrollWeight)
+      //绘制当前位置区域
+      ctx.fillStyle = "rgb(210,210,210)"
+      ctx.fillRect(this.hScroll.x, cheight, this.hScroll.contentWidth, scrollWeight)
+    }
+    if (this.vScroll) {
+      ctx.fillStyle = "white"
+      ctx.strokeStyle = "rgb(220,220,220)"
+      ctx.fillRect(cwidth, 0, scrollWeight, this.vScroll.height)
+      ctx.strokeRect(cwidth, 0, scrollWeight, this.vScroll.height)
+      ctx.fillStyle = "rgb(210,210,210)"
+      ctx.fillRect(cwidth, this.vScroll.y, scrollWeight, this.vScroll.contentHeight)
+      //绘制当前位置区域
+    }
+
+    //绘制缩略图图标
+    if (this.vScroll || this.hScroll) {
+      ctx.fillStyle = "blue"
+      ctx.fillRect(cwidth, cheight, scrollWeight, scrollWeight)
+
+    }
+    ctx.restore();
+  }
 
   /**
    * 计算滚动条信息
@@ -113,28 +157,32 @@ class DDeiStageCanvasRender {
   calScroll() {
 
     let canvas = this.ddRender.getCanvas();
-    //画布的大小
+    let rat1 = this.ddRender.ratio;
+    //视窗的大小
     let canvasHeight = canvas.height;
     let canvasWidth = canvas.width;
     //当前位置
-    let curX = this.model.wpv.x;
-    let curY = this.model.wpv.y;
+    let curX = -this.model.wpv.x;
+    let curY = -this.model.wpv.y;
+    //滚动条大小
+    let scrollWeight = rat1 * 15;
     //画布总大小
-    let maxWidth = 5000;
-    let maxHeight = 5000;
+    let maxWidth = this.model.width;
+    let maxHeight = this.model.height;
     //计算纵向滚动条信息
     if (maxHeight > canvasHeight) {
-      this.vScroll = { height: canvasHeight, contentHeight: canvasHeight * canvasHeight / maxHeight, y: canvasHeight * curY / maxHeight };
+      let height = canvasHeight - scrollWeight;
+      this.vScroll = { height: height, contentHeight: height * height / maxHeight, y: height * curY / maxHeight, bn: curY / maxHeight };
     } else {
       this.vScroll = null;
     }
     //计算横向滚动条信息
     if (maxWidth > canvasWidth) {
-      this.hScroll = { width: canvasWidth, contentWidth: canvasWidth * canvasWidth / maxWidth, y: canvasWidth * curX / maxWidth };
+      let width = canvasWidth - scrollWeight;
+      this.hScroll = { width: width, contentWidth: width * width / maxWidth, x: width * curX / maxWidth, bn: curX / maxWidth };
     } else {
       this.hScroll = null;
     }
-
   }
 
   /**

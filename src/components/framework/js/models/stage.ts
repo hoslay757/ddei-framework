@@ -22,7 +22,10 @@ class DDeiStage {
     this.histroy = props.histroy ? props.histroy : [];
     this.histroyIdx = props.histroyIdx || props.histroyIdx == 0 ? props.histroyIdx : -1;
     this.ratio = props.ratio ? props.ratio : DDeiConfig.STAGE_RATIO;
-    this.wpv = props.wpv ? props.wpv : { x: 0, y: 0, z: 0 };
+    this.width = props.width ? props.width : DDeiConfig.STAGE_WIDTH;
+    this.height = props.height ? props.height : DDeiConfig.STAGE_HEIGHT;
+    this.wpv = props.wpv;
+
   }
 
   // ============================ 静态变量 ============================
@@ -66,6 +69,7 @@ class DDeiStage {
     stage.layers[1] = dDeiLayer2;
     stage.layerIndex = 0;
 
+
     stage.initHistroy();
     return stage;
   }
@@ -97,8 +101,11 @@ class DDeiStage {
   //当前stage的缩放比率，默认1.0
   ratio: number = 1.2;
 
+  //默认画布为2000 * 2000
+  width: number;
+  height: number;
   //当前视窗开始点，缺省为0，0, 0
-  wpv: object = { x: 0, y: 0, z: 0 }
+  wpv: object;
 
   // ============================ 方法 ===============================
   /**

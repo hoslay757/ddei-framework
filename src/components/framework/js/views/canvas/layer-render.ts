@@ -108,10 +108,12 @@ class DDeiLayerCanvasRender {
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
+    let rat1 = this.ddRender.ratio
     let stageRatio = this.model.getStageRatio()
-    let ratio = this.ddRender.ratio * stageRatio;
+    let ratio = rat1 * stageRatio;
     let r20 = ratio * 20;
     let r40 = ratio * 40;
+
     //保存状态
     ctx.save();
 
@@ -142,6 +144,7 @@ class DDeiLayerCanvasRender {
     }
     //绘制田字背景
     else if (bgInfo.type == 3) {
+
       ctx.fillStyle = bgInfo.bgcolor
       //透明度
       if (bgInfo.opacity != null && bgInfo.opacity != undefined) {
@@ -149,6 +152,16 @@ class DDeiLayerCanvasRender {
       }
       let cwidth = canvas.width + r20;
       let cheight = canvas.height + r20;
+      // ctx.fillStyle = "white"
+      // ctx.fillRect(0, 0, cwidth, cheight)
+      let scrollWeight = rat1 * 15;
+      //判断滚动条
+      if (this.stageRender.hScroll) {
+        cheight -= scrollWeight
+      }
+      if (this.stageRender.vScroll) {
+        cwidth -= scrollWeight
+      }
       let x = -r20
       let y = -r20
       ctx.fillRect(x, y, cwidth, cheight)

@@ -36,11 +36,11 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
 
     let stage = bus.ddInstance.stage;
     if (stage && data.oldValue && data.newValue && data.oldValue != data.newValue) {
-      // stage.ratio = data.newValue
+      let scaleSize = data.newValue / data.oldValue
       //缩放矩阵
       let scaleMatrix = new Matrix3(
-        data.newValue / data.oldValue, 0, 0,
-        0, data.newValue / data.oldValue, 0,
+        scaleSize, 0, 0,
+        0, scaleSize, 0,
         0, 0, 1);
 
       stage.layers.forEach(layer => {
@@ -49,6 +49,11 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
           model.transVectors(scaleMatrix)
         })
       });
+      stage.width = stage.width * scaleSize
+      stage.height = stage.height * scaleSize
+
+      stage.wpv.x = stage.wpv.x * scaleSize
+      stage.wpv.y = stage.wpv.y * scaleSize
       return true;
     } else {
       return false;

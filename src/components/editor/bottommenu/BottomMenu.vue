@@ -294,7 +294,22 @@ export default {
         this.currentStage = stage;
         //加载场景渲染器
         stage.initRender();
-
+        //设置视窗位置到中央
+        if (!stage.wpv) {
+          let rat1 = ddInstance.render.ratio;
+          //缺省定位在画布中心点位置
+          stage.wpv = {
+            x:
+              -(stage.width - ddInstance.render.container.clientWidth * rat1) /
+              2,
+            y:
+              -(
+                stage.height -
+                ddInstance.render.container.clientHeight * rat1
+              ) / 2,
+            z: 0,
+          };
+        }
         ddInstance?.bus?.push(
           DDeiEditorEnumBusCommandType.AddFileHistroy,
           null,

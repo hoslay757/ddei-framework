@@ -248,19 +248,19 @@ class DDeiCanvasRender {
    */
   mouseWPV(dx: number, dy: number, evt: Event) {
     let stage = this.model.stage;
-    let maxMove = 50
-    if (dx > maxMove) {
-      dx = maxMove
-    } else if (dx < -maxMove) {
-      dx = -maxMove
-    }
-    if (dy > maxMove) {
-      dy = maxMove
-    } else if (dy < -maxMove) {
-      dy = -maxMove
-    }
-
     if (stage) {
+      let maxMove = 50
+      if (dx > maxMove) {
+        dx = maxMove
+      } else if (dx < -maxMove) {
+        dx = -maxMove
+      }
+      if (dy > maxMove) {
+        dy = maxMove
+      } else if (dy < -maxMove) {
+        dy = -maxMove
+      }
+
       this.model.bus.push(DDeiEnumBusCommandType.ChangeStageWPV, {
         dragObj: { dx: 0, dy: 0 }, x: dx, y: dy
       })
