@@ -76,6 +76,9 @@ class DDeiConfig {
   //缺省画布大小
   static STAGE_WIDTH: number = 3000;
   static STAGE_HEIGHT: number = 3000;
+  //自动扩展画布大小
+  static EXT_STAGE_WIDTH: boolean = true;
+  static EXT_STAGE_HEIGHT: boolean = true;
   //缺省缩放比例
   static STAGE_RATIO: number = 1.0;
 

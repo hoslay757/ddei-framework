@@ -199,7 +199,7 @@ class DDeiRectContainer extends DDeiRectangle {
   getSubModels(ignoreModelIds: string[], level: number = 1): DDeiAbstractShape[] {
     let models: DDeiAbstractShape[] = [];
     this.midList.forEach(mid => {
-      if (ignoreModelIds?.indexOf(mid) != -1) {
+      if (ignoreModelIds && ignoreModelIds?.indexOf(mid) != -1) {
         return;
       }
       let subModel = this.models.get(mid)

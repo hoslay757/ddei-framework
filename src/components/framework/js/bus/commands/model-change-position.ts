@@ -115,7 +115,9 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
       let wpvy = -stage.wpv.y * ratio / rat1;
       let wpvx1 = wpvx + canvas.width / rat1;
       let wpvy1 = wpvy + canvas.height / rat1;
+      let ignoreModelIds = [];
       models.forEach(model => {
+        ignoreModelIds.push(model.id)
         let dx = 0
         let dy = 0
         if (dragObj && dragObj[model.id]) {
@@ -142,7 +144,6 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
         //判断如果model的某个点到了边缘，则移动窗口视图
         model.pvs.forEach(pv => {
           if (pv.y >= wpvy1) {
-
             exWpvY = Math.max(pv.y - wpvy1, exWpvY)
           } else if (pv.y <= wpvy) {
             exWpvY = Math.min(pv.y - wpvy, exWpvY)
@@ -155,8 +156,63 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
         });
 
       });
+      //自动移动视窗以及扩展画布大小
       if (exWpvX || exWpvY) {
-        bus.push(DDeiEnumBusCommandType.ChangeStageWPV, { dragObj: { dx: 0, dy: 0 }, x: -exWpvX, y: -exWpvY }, evt);
+        let rat1 = stage.ddInstance.render.ratio
+        let stageRatio = stage.getStageRatio()
+        let ratio = rat1 * stageRatio;
+        let exr = exWpvX / ratio;
+        let eyr = exWpvY / ratio
+        stage.wpv.x -= exr
+        stage.wpv.y -= eyr
+        let extW = 0;
+        let moveW = 0;
+        let hScrollWidth = stage.render.hScroll?.width ? stage.render.hScroll?.width : 0
+        let vScrollHeight = stage.render.vScroll?.height ? stage.render.vScroll?.height : 0
+        if (stage.wpv.x > 0) {
+          if (DDeiConfig.EXT_STAGE_WIDTH) {
+            extW = stage.wpv.x
+            moveW = extW
+          }
+          stage.wpv.x = 0
+        } else if (stage.wpv.x < -stage.width + hScrollWidth) {
+          if (DDeiConfig.EXT_STAGE_WIDTH) {
+            extW = -stage.width + hScrollWidth - stage.wpv.x
+          } else {
+            stage.wpv.x = -stage.width + hScrollWidth
+          }
+        }
+        let extH = 0;
+        let moveH = 0;
+        if (stage.wpv.y > 0) {
+          if (DDeiConfig.EXT_STAGE_HEIGHT) {
+            extH = stage.wpv.y
+            moveH = extH
+          }
+          stage.wpv.y = 0
+        } else if (stage.wpv.y < -stage.height + vScrollHeight) {
+          if (DDeiConfig.EXT_STAGE_HEIGHT) {
+            extH = -stage.height + vScrollHeight - stage.wpv.y
+          } else {
+            stage.wpv.y = -stage.height + vScrollHeight
+          }
+        }
+        if (extW || extH) {
+          stage.width += extW
+          stage.height += extH
+          if (moveW || moveH) {
+            let moveMatrix = new Matrix3(
+              1, 0, extW,
+              0, 1, extH,
+              0, 0, 1,
+            );
+            let mds = stage.getLayerModels(ignoreModelIds);
+            mds.forEach(item => {
+              item.transVectors(moveMatrix)
+            });
+            stage.render.selector?.transVectors(moveMatrix)
+          }
+        }
       }
       models[0].layer.dragInPoints = []
       models[0].layer.dragOutPoints = []

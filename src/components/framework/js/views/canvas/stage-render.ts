@@ -148,6 +148,17 @@ class DDeiStageCanvasRender {
       ctx.fillRect(cwidth, cheight, scrollWeight, scrollWeight)
 
     }
+    //设置所有文本的对齐方式，以便于后续所有的对齐都采用程序计算
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+    //设置字体
+    ctx.font = "bold 24px 宋体"
+    //设置字体颜色
+    ctx.fillStyle = "red"
+    ctx.fillText(this.model.wpv.x + "," + this.model.wpv.y, 0, 0)
+    ctx.fillText(this.model.width + "," + this.model.height, 0, 20)
+    ctx.fillText(this.ddRender.container.clientWidth + "," + this.ddRender.container.clientHeight, 0, 40)
+    ctx.fillText(this.hScroll.x, 0, 60)
     ctx.restore();
   }
 
