@@ -469,10 +469,9 @@ class DDeiLayerCanvasRender {
     if (menuEle) {
       menuEle.style.display = "none";
     }
-
+    let stageRatio = this.stage.getStageRatio()
     let ex = evt.offsetX;
     let ey = evt.offsetY;
-    let stageRatio = this.stage.getStageRatio()
     ex -= this.stage.wpv.x * stageRatio;
     ey -= this.stage.wpv.y * stageRatio;
     if (this.stageRender.selector && this.stageRender.selector.isInAreaLoose(ex, ey, true) &&

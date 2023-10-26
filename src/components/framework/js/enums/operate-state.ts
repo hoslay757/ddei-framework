@@ -24,6 +24,8 @@ enum DDeiEnumOperateState {
   TABLE_INNER_DRAG = 11,
   //抓手工作中
   GRAB_WORKING = 20,
+  //画布滚动条工作中
+  STAGE_SCROLL_WORKING = 21,
 }
 
 export default DDeiEnumOperateState

@@ -60,6 +60,8 @@ import DDeiFileState from "./js/enums/file-state";
 import DDeiEditorCommandFileDirty from "./js/bus/commands/file-dirty";
 import DDeiEditorCommandAddHistroy from "./js/bus/commands/add-histroy";
 import MenuDialog from "./menus/menudialog/MenuDialog.vue";
+import { throttle } from "lodash";
+import DDeiEnumOperateState from "../framework/js/enums/operate-state";
 
 export default {
   name: "DDei-Editor",
@@ -91,6 +93,7 @@ export default {
   watch: {},
   created() {
     window.onresize = this.resetSize;
+    this.mouseMove = throttle(this.mouseMove, 20);
   },
   mounted() {
     loadEditorCommands();
@@ -232,15 +235,6 @@ export default {
      * 判断是否移动到拖拽区
      */
     mouseMove(e: Event) {
-      let dt = new Date().getTime();
-      //控制帧率
-      if (!window.upTime) {
-        window.upTime = dt;
-      } else if (dt - window.upTime > 20) {
-        window.upTime = dt;
-      } else {
-        return;
-      }
       //判断落点是否在某个区域的拖拽区附近
       let frameLeftElement = document.getElementById("ddei_editor_frame_left");
       let frameRightElement = document.getElementById(
@@ -273,18 +267,6 @@ export default {
         let deltaX = e.clientX - this.dragObj.x;
         switch (this.changeIndex) {
           case 1:
-            // if (deltaY != 0) {
-            //   if (frameTopElement.offsetHeight + deltaY <= 175 && frameTopElement.offsetHeight + deltaY >= 40) {
-            //     frameTopElement.style.flexBasis = (frameTopElement.offsetHeight + deltaY) + "px";
-            //     frameTopElement.style.flexShrink = "0";
-            //     frameTopElement.style.flexGrow = "0";
-            //     this.editor.middleHeight -= deltaY;
-            //     this.dragObj.x = e.clientX;
-            //     this.dragObj.y = e.clientY;
-            //     this.editor.ddInstance.render.setSize(this.editor.middleWidth, this.editor.middleHeight, 0, 0)
-            //     this.editor.ddInstance.render.drawShape()
-            //   }
-            // }
             break;
           case 2:
             if (deltaX != 0) {
@@ -343,8 +325,15 @@ export default {
         this.editor.topHeight = frameTopElement.offsetHeight;
         this.editor.bottomHeight = frameBottomElement.offsetHeight;
       } else {
-        //判断鼠标落点是否在框架上
+        //如果正在拖拽内部画布的滚动条
         if (
+          this.editor.ddInstance.stage.render.operateState ==
+          DDeiEnumOperateState.STAGE_SCROLL_WORKING
+        ) {
+          this.editor.ddInstance.render.mouseMove(e);
+        }
+        //判断鼠标落点是否在框架上
+        else if (
           frameLeftElement.offsetTop <= e.clientY &&
           frameLeftElement.offsetTop + frameLeftElement.offsetHeight >=
             e.clientY &&
@@ -364,11 +353,7 @@ export default {
           if (frameRightElement.offsetWidth > 38) {
             document.body.style.cursor = "col-resize";
           }
-        }
-        // else if (Math.abs(e.clientY - (frameTopElement.offsetTop + frameTopElement.offsetHeight)) <= 5) {
-        //   document.body.style.cursor = 'row-resize';
-        // }
-        else if (
+        } else if (
           middleCanvasPos.top <= e.clientY &&
           middleCanvasPos.left <= e.clientX &&
           middleCanvasPos.top + middleCanvas.offsetHeight >= e.clientY &&

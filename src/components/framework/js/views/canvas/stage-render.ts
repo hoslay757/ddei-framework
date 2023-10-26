@@ -1,8 +1,10 @@
 import DDeiConfig from '../../config.js'
+import DDeiEnumBusCommandType from '../../enums/bus-command-type.js';
 import DDeiEnumOperateState from '../../enums/operate-state.js';
 import DDeiSelector from '../../models/selector.js';
 import DDeiAbstractShape from '../../models/shape.js';
 import DDeiStage from '../../models/stage.js';
+import DDeiUtil from '../../util.js';
 import DDeiCanvasRender from './ddei-render.js';
 import DDeiAbstractShapeRender from './shape-render-base.js';
 
@@ -63,6 +65,9 @@ class DDeiStageCanvasRender {
   //横向滚动条和纵向滚动条，当需要显示时不为空
   hScroll: object | null = null;
   vScroll: object | null = null;
+
+  //缩略图，用来快速定位
+  thumbnail: Image | null = null;
   // ============================== 方法 ===============================
   /**
    * 初始化
@@ -130,6 +135,9 @@ class DDeiStageCanvasRender {
       ctx.strokeRect(0, cheight, this.hScroll.width, scrollWeight)
       //绘制当前位置区域
       ctx.fillStyle = "rgb(210,210,210)"
+      if (this.operateState == DDeiEnumOperateState.STAGE_SCROLL_WORKING && this.dragObj?.scroll == 1) {
+        ctx.fillStyle = "rgb(200,200,200)"
+      }
       ctx.fillRect(this.hScroll.x, cheight, this.hScroll.contentWidth, scrollWeight)
     }
     if (this.vScroll) {
@@ -138,6 +146,9 @@ class DDeiStageCanvasRender {
       ctx.fillRect(cwidth, 0, scrollWeight, this.vScroll.height)
       ctx.strokeRect(cwidth, 0, scrollWeight, this.vScroll.height)
       ctx.fillStyle = "rgb(210,210,210)"
+      if (this.operateState == DDeiEnumOperateState.STAGE_SCROLL_WORKING && this.dragObj?.scroll == 2) {
+        ctx.fillStyle = "rgb(200,200,200)"
+      }
       ctx.fillRect(cwidth, this.vScroll.y, scrollWeight, this.vScroll.contentHeight)
       //绘制当前位置区域
     }
@@ -158,7 +169,7 @@ class DDeiStageCanvasRender {
     ctx.fillText(this.model.wpv.x + "," + this.model.wpv.y, 0, 0)
     ctx.fillText(this.model.width + "," + this.model.height, 0, 20)
     ctx.fillText(this.ddRender.container.clientWidth + "," + this.ddRender.container.clientHeight, 0, 40)
-    ctx.fillText(this.hScroll.x, 0, 60)
+    ctx.fillText(this.hScroll?.x + "", 0, 60)
     ctx.restore();
   }
 
@@ -231,7 +242,29 @@ class DDeiStageCanvasRender {
   mouseDown(evt: Event): void {
     //分发到当前图层的mouseDown
     if (!this.model.ddInstance.eventCancel) {
-      this.model.layers[this.model.layerIndex].render.mouseDown(evt);
+      let canvas = this.ddRender.getCanvas();
+      let rat1 = this.ddRender.ratio;
+      let ex = evt.offsetX;
+      let ey = evt.offsetY;
+      //判断是否在滚动条区间
+      let scrollWeight = rat1 * 15;
+      let cwidth = canvas.width / rat1 - scrollWeight;
+      let cheight = canvas.height / rat1 - scrollWeight;
+      if (this.vScroll && ex > cwidth && ey * rat1 >= this.vScroll.y && (ey * rat1) <= (this.vScroll.y + this.vScroll.contentHeight)) {
+        this.dragObj = {
+          dy: ey * rat1 - this.vScroll.y,
+          scroll: 2
+        }
+        this.operateState = DDeiEnumOperateState.STAGE_SCROLL_WORKING;
+      } else if (this.hScroll && ey > cheight && ex * rat1 >= this.hScroll.x && (ex * rat1) <= (this.hScroll.x + this.hScroll.contentWidth)) {
+        this.dragObj = {
+          dx: ex * rat1 - this.hScroll.x,
+          scroll: 1
+        }
+        this.operateState = DDeiEnumOperateState.STAGE_SCROLL_WORKING;
+      } else {
+        this.model.layers[this.model.layerIndex].render.mouseDown(evt);
+      }
     }
   }
   /**
@@ -240,7 +273,12 @@ class DDeiStageCanvasRender {
   mouseUp(evt: Event): void {
     //分发到当前图层的mouseUp
     if (!this.model.ddInstance.eventCancel) {
-      this.model.layers[this.model.layerIndex].render.mouseUp(evt);
+      if (this.operateState == DDeiEnumOperateState.STAGE_SCROLL_WORKING) {
+        this.dragObj = null;
+        this.operateState = DDeiEnumOperateState.NONE;
+      } else {
+        this.model.layers[this.model.layerIndex].render.mouseUp(evt);
+      }
     }
   }
 
@@ -250,7 +288,41 @@ class DDeiStageCanvasRender {
   mouseMove(evt: Event): void {
     //分发到当前图层的mouseUp
     if (!this.model.ddInstance.eventCancel) {
-      this.model.layers[this.model.layerIndex].render.mouseMove(evt);
+      if (this.operateState == DDeiEnumOperateState.STAGE_SCROLL_WORKING) {
+        let rat1 = this.ddRender.ratio;
+        let canvasPos = DDeiUtil.getDomAbsPosition(this.ddRender?.canvas)
+        let ex = evt.clientX - canvasPos.left;
+        let ey = evt.clientY - canvasPos.top;
+        if (this.dragObj?.scroll == 1) {
+          let width = this.hScroll.width;
+          //原始鼠标位置在操作区域的位置
+          //当前鼠标位置在滚动条的比例位置
+          let posRat = (ex * rat1 - this.dragObj.dx) / width;
+          this.model.wpv.x = -this.model.width * posRat;
+          let hScrollWidth = this.hScroll?.width ? this.hScroll?.width : 0
+          if (this.model.wpv.x > 0) {
+            this.model.wpv.x = 0
+          } else if (this.model.wpv.x < -this.model.width + hScrollWidth) {
+            this.model.wpv.x = -this.model.width + hScrollWidth
+          }
+        } else if (this.dragObj?.scroll == 2) {
+          let height = this.vScroll.height;
+          //原始鼠标位置在操作区域的位置
+          //当前鼠标位置在滚动条的比例位置
+          let posRat = (ey * rat1 - this.dragObj.dy) / height;
+          this.model.wpv.y = -this.model.height * posRat;
+          let vScrollHeight = this.vScroll?.height ? this.vScroll?.height : 0
+          if (this.model.wpv.y > 0) {
+            this.model.wpv.y = 0
+          } else if (this.model.wpv.y < -this.model.height + vScrollHeight) {
+            this.model.wpv.y = -this.model.height + vScrollHeight
+          }
+        }
+        this.model.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
+        this.model.ddInstance?.bus?.executeAll()
+      } else {
+        this.model.layers[this.model.layerIndex].render.mouseMove(evt);
+      }
     }
   }
 }
