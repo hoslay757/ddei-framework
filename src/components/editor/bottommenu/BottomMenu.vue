@@ -1,11 +1,8 @@
 <template>
-  <div id="ddei_editor_bottommenu"
-       class="ddei_editor_bottommenu">
+  <div id="ddei_editor_bottommenu" class="ddei_editor_bottommenu">
     <div class="ddei_editor_bottommenu_preview">
       <div>
-        <img width="25px"
-             height="25px"
-             src="../icons/icon-view.png" />
+        <img width="25px" height="25px" src="../icons/icon-view.png" />
       </div>
     </div>
     <div class="ddei_editor_bottommenu_pagepreview">
@@ -13,35 +10,28 @@
         <span>
           页-1
         </span>
-        <img width="8px"
-             height="8px"
-             src="../icons/toolbox-expanded.png" />
+        <img width="8px" height="8px" src="../icons/toolbox-expanded.png" />
       </div>
     </div>
 
-    <div class="ddei_editor_bottommenu_addpage"
-         @click="newSheet">
+    <div class="ddei_editor_bottommenu_addpage" @click="newSheet">
       <div>
         <img src="../icons/icon-add.png" />
       </div>
     </div>
     <div class="ddei_editor_bottommenu_pages">
-      <div @click="changeSheet(index)"
-           v-show="index >= openIndex && index < openIndex + maxOpenSize"
-           :class="{ 'ddei_editor_bottommenu_page': sheet.active == 0, 'ddei_editor_bottommenu_page_selected': sheet.active == 1 }"
-           :title="sheet.desc"
-           v-for="(sheet, index) in  editor?.files[editor?.currentFileIndex]?.sheets ">
+      <div @click="changeSheet(index)" v-show="index >= openIndex && index < openIndex + maxOpenSize"
+        :class="{ 'ddei_editor_bottommenu_page': sheet.active == 0, 'ddei_editor_bottommenu_page_selected': sheet.active == 1 }"
+        :title="sheet.desc" v-for="(sheet, index) in  editor?.files[editor?.currentFileIndex]?.sheets ">
         {{ sheet.name }}
       </div>
 
       <div class="ddei_editor_bottommenu_pages_movebox"
-           v-show="editor?.files[editor?.currentFileIndex]?.sheets?.length > maxOpenSize"
-           @click="moveItem(-1)">
+        v-show="editor?.files[editor?.currentFileIndex]?.sheets?.length > maxOpenSize" @click="moveItem(-1)">
         <img src="../icons/icon-left.png" />
       </div>
       <div class="ddei_editor_bottommenu_pages_movebox"
-           v-show="editor?.files[editor?.currentFileIndex]?.sheets?.length > maxOpenSize"
-           @click="moveItem(1)">
+        v-show="editor?.files[editor?.currentFileIndex]?.sheets?.length > maxOpenSize" @click="moveItem(1)">
         <img src="../icons/icon-right.png" />
       </div>
     </div>
@@ -63,26 +53,19 @@
       </div>
       <div class="ddei_editor_bottommenu_other_changesize">
         <div class="ddei_editor_bottommenu_other_changesize_combox"
-             @click="showDialog('ddei_editor_bottommenu_other_changesize_dialog',$event)">
+          @click="showDialog('ddei_editor_bottommenu_other_changesize_dialog', $event)">
           <span>
-            {{parseInt(currentStage?.ratio * 100)}}%
+            {{ parseInt(currentStage?.ratio * 100) }}%
           </span>
-          <img style="width:8px;height:8px;margin-top:9px;"
-               width="8px"
-               height="8px"
-               src="../icons/toolbox-expanded.png" />
+          <img style="width:8px;height:8px;margin-top:9px;" width="8px" height="8px"
+            src="../icons/toolbox-expanded.png" />
         </div>
         <div @click="addRatio(-0.05)">
           <img src="../icons/icon-reduce.png" />
         </div>
-        <input type="range"
-               min="0.1"
-               max="4"
-               step="0.1"
-               v-model="stageRatio" />
+        <input type="range" min="0.1" max="4" step="0.1" v-model="stageRatio" />
         <div>
-          <img src="../icons/icon-add.png"
-               @click="addRatio(0.05)" />
+          <img src="../icons/icon-add.png" @click="addRatio(0.05)" />
         </div>
         <div>
           <img src="../icons/icon-screen-full.png" />
@@ -92,53 +75,41 @@
         </div>
       </div>
     </div>
-    <div id="ddei_editor_bottommenu_other_changesize_dialog"
-         class="ddei_editor_bottommenu_other_changesize_dialog"
-         v-show="dialogShow == 'ddei_editor_bottommenu_other_changesize_dialog'">
+    <div id="ddei_editor_bottommenu_other_changesize_dialog" class="ddei_editor_bottommenu_other_changesize_dialog"
+      v-show="dialogShow == 'ddei_editor_bottommenu_other_changesize_dialog'">
       <div class="ddei_editor_bottommenu_other_changesize_dialog_title">缩放</div>
       <hr />
       <div class="ddei_editor_bottommenu_other_changesize_dialog_group">
         <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content">
-          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item"
-               @click="setRatio(4)">
+          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item" @click="setRatio(4)">
             400%
           </div>
-          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item"
-               @click="setRatio(2)">
+          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item" @click="setRatio(2)">
             200%
           </div>
-          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item"
-               @click="setRatio(1.5)">
+          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item" @click="setRatio(1.5)">
             150%
           </div>
 
-          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item"
-               @click="setRatio(1.25)">
+          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item" @click="setRatio(1.25)">
             125%
           </div>
-          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item"
-               @click="setRatio(1)">
+          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item" @click="setRatio(1)">
             100%
           </div>
-          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item"
-               @click="setRatio(0.75)">
+          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item" @click="setRatio(0.75)">
             75%
           </div>
-          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item"
-               @click="setRatio(0.5)">
+          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item" @click="setRatio(0.5)">
             50%
           </div>
-          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item"
-               @click="setRatio(0.25)">
+          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item" @click="setRatio(0.25)">
             25%
           </div>
           <hr />
           <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item">
-            百分比：<input type="number"
-                   min="1"
-                   max="1000"
-                   v-model="ratioInputValue"
-                   @blur="ratioInputChange() && showDialog('ddei_editor_bottommenu_other_changesize_dialog')" />%
+            百分比：<input type="number" min="1" max="1000" v-model="ratioInputValue"
+              @blur="ratioInputChange() && showDialog('ddei_editor_bottommenu_other_changesize_dialog')" />%
           </div>
         </div>
       </div>
@@ -296,16 +267,15 @@ export default {
         stage.initRender();
         //设置视窗位置到中央
         if (!stage.wpv) {
-          let rat1 = ddInstance.render.ratio;
           //缺省定位在画布中心点位置
           stage.wpv = {
             x:
-              -(stage.width - ddInstance.render.container.clientWidth * rat1) /
+              -(stage.width - ddInstance.render.container.clientWidth) /
               2,
             y:
               -(
                 stage.height -
-                ddInstance.render.container.clientHeight * rat1
+                ddInstance.render.container.clientHeight
               ) / 2,
             z: 0,
           };
@@ -616,6 +586,7 @@ export default {
 .ddei_editor_bottommenu_other_changesize_combox {
   width: 60px;
 }
+
 .ddei_editor_bottommenu_other_changesize_combox:hover {
   background-color: rgb(235, 235, 235);
   float: left;
@@ -691,6 +662,7 @@ export default {
   padding-right: 15px;
   flex-direction: column;
 }
+
 .ddei_editor_bottommenu_other_changesize_dialog_group_content_item {
   flex: 0 0 30px;
   padding-top: 5px;

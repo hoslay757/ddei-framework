@@ -1,33 +1,20 @@
 <template>
   <div class="ddei_editor_sdp">
-    <div class="ddei_editor_sdp_item"
-         style="grid-row:1/3">
-      <div class="ddei_editor_sdp_item_box"
-           @click="newFile">
-        <img width="16px"
-             height="16px"
-             :src="icons['icon-file']" />
+    <div class="ddei_editor_sdp_item" style="grid-row:1/3">
+      <div class="ddei_editor_sdp_item_box" @click="newFile">
+        <img width="16px" height="16px" :src="icons['icon-file']" />
         <div>新建</div>
       </div>
-      <div class="ddei_editor_sdp_item_box"
-           @click="save">
-        <img width="16px"
-             height="16px"
-             :src="icons['icon-save']" />
+      <div class="ddei_editor_sdp_item_box" @click="save">
+        <img width="16px" height="16px" :src="icons['icon-save']" />
         <div>保存</div>
       </div>
-      <div class="ddei_editor_sdp_item_box"
-           @click="openFile">
-        <img width="16px"
-             height="16px"
-             :src="icons['icon-open']" />
+      <div class="ddei_editor_sdp_item_box" @click="openFile">
+        <img width="16px" height="16px" :src="icons['icon-open']" />
         <div>打开</div>
       </div>
-      <div class="ddei_editor_sdp_item_box"
-           @click="download">
-        <img width="16px"
-             height="16px"
-             :src="icons['icon-download']" />
+      <div class="ddei_editor_sdp_item_box" @click="download">
+        <img width="16px" height="16px" :src="icons['icon-download']" />
         <div>下载</div>
       </div>
     </div>
@@ -67,7 +54,7 @@ export default {
   },
   computed: {},
   watch: {},
-  created() {},
+  created() { },
   mounted() {
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     for (let i in ICONS) {
@@ -117,18 +104,17 @@ export default {
           file.initHistroy();
           //设置视窗位置到中央
           if (!stage.wpv) {
-            let rat1 = ddInstance.render.ratio;
             //缺省定位在画布中心点位置
             stage.wpv = {
               x:
                 -(
                   stage.width -
-                  ddInstance.render.container.clientWidth * rat1
+                  ddInstance.render.container.clientWidth
                 ) / 2,
               y:
                 -(
                   stage.height -
-                  ddInstance.render.container.clientHeight * rat1
+                  ddInstance.render.container.clientHeight
                 ) / 2,
               z: 0,
             };
@@ -232,18 +218,17 @@ export default {
                     stage.initRender();
                     //设置视窗位置到中央
                     if (!stage.wpv) {
-                      let rat1 = ddInstance.render.ratio;
                       //缺省定位在画布中心点位置
                       stage.wpv = {
                         x:
                           -(
                             stage.width -
-                            ddInstance.render.container.clientWidth * rat1
+                            ddInstance.render.container.clientWidth
                           ) / 2,
                         y:
                           -(
                             stage.height -
-                            ddInstance.render.container.clientHeight * rat1
+                            ddInstance.render.container.clientHeight
                           ) / 2,
                         z: 0,
                       };

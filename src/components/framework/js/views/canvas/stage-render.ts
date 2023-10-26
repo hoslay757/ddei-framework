@@ -131,25 +131,25 @@ class DDeiStageCanvasRender {
     if (this.hScroll) {
       ctx.fillStyle = "white"
       ctx.strokeStyle = "rgb(220,220,220)"
-      ctx.fillRect(0, cheight, this.hScroll.width, scrollWeight)
-      ctx.strokeRect(0, cheight, this.hScroll.width, scrollWeight)
+      ctx.fillRect(0, cheight, this.hScroll.width * rat1, scrollWeight)
+      ctx.strokeRect(0, cheight, this.hScroll.width * rat1, scrollWeight)
       //绘制当前位置区域
       ctx.fillStyle = "rgb(210,210,210)"
       if (this.operateState == DDeiEnumOperateState.STAGE_SCROLL_WORKING && this.dragObj?.scroll == 1) {
         ctx.fillStyle = "rgb(200,200,200)"
       }
-      ctx.fillRect(this.hScroll.x, cheight, this.hScroll.contentWidth, scrollWeight)
+      ctx.fillRect(this.hScroll.x * rat1, cheight, this.hScroll.contentWidth * rat1, scrollWeight)
     }
     if (this.vScroll) {
       ctx.fillStyle = "white"
       ctx.strokeStyle = "rgb(220,220,220)"
-      ctx.fillRect(cwidth, 0, scrollWeight, this.vScroll.height)
-      ctx.strokeRect(cwidth, 0, scrollWeight, this.vScroll.height)
+      ctx.fillRect(cwidth, 0, scrollWeight, this.vScroll.height * rat1)
+      ctx.strokeRect(cwidth, 0, scrollWeight, this.vScroll.height * rat1)
       ctx.fillStyle = "rgb(210,210,210)"
       if (this.operateState == DDeiEnumOperateState.STAGE_SCROLL_WORKING && this.dragObj?.scroll == 2) {
         ctx.fillStyle = "rgb(200,200,200)"
       }
-      ctx.fillRect(cwidth, this.vScroll.y, scrollWeight, this.vScroll.contentHeight)
+      ctx.fillRect(cwidth, this.vScroll.y * rat1, scrollWeight, this.vScroll.contentHeight * rat1)
       //绘制当前位置区域
     }
 
@@ -157,7 +157,6 @@ class DDeiStageCanvasRender {
     if (this.vScroll || this.hScroll) {
       ctx.fillStyle = "blue"
       ctx.fillRect(cwidth, cheight, scrollWeight, scrollWeight)
-
     }
     //设置所有文本的对齐方式，以便于后续所有的对齐都采用程序计算
     ctx.textAlign = "left";
@@ -181,15 +180,15 @@ class DDeiStageCanvasRender {
     let canvas = this.ddRender.getCanvas();
     let rat1 = this.ddRender.ratio;
     //视窗的大小
-    let canvasHeight = canvas.height;
-    let canvasWidth = canvas.width;
+    let canvasHeight = canvas.height / rat1;
+    let canvasWidth = canvas.width / rat1;
     //当前位置
     let curX = -this.model.wpv.x;
     let curY = -this.model.wpv.y;
     //滚动条大小
-    let scrollWeight = rat1 * 15;
+    let scrollWeight = 15;
     //画布总大小
-    let maxWidth = this.model.width;
+    let maxWidth = this.model.width
     let maxHeight = this.model.height;
     //计算纵向滚动条信息
     if (maxHeight > canvasHeight) {
@@ -247,18 +246,18 @@ class DDeiStageCanvasRender {
       let ex = evt.offsetX;
       let ey = evt.offsetY;
       //判断是否在滚动条区间
-      let scrollWeight = rat1 * 15;
+      let scrollWeight = 15;
       let cwidth = canvas.width / rat1 - scrollWeight;
       let cheight = canvas.height / rat1 - scrollWeight;
-      if (this.vScroll && ex > cwidth && ey * rat1 >= this.vScroll.y && (ey * rat1) <= (this.vScroll.y + this.vScroll.contentHeight)) {
+      if (this.vScroll && ex > cwidth && ey >= this.vScroll.y && (ey) <= (this.vScroll.y + this.vScroll.contentHeight)) {
         this.dragObj = {
-          dy: ey * rat1 - this.vScroll.y,
+          dy: ey - this.vScroll.y,
           scroll: 2
         }
         this.operateState = DDeiEnumOperateState.STAGE_SCROLL_WORKING;
-      } else if (this.hScroll && ey > cheight && ex * rat1 >= this.hScroll.x && (ex * rat1) <= (this.hScroll.x + this.hScroll.contentWidth)) {
+      } else if (this.hScroll && ey > cheight && ex >= this.hScroll.x && (ex) <= (this.hScroll.x + this.hScroll.contentWidth)) {
         this.dragObj = {
-          dx: ex * rat1 - this.hScroll.x,
+          dx: ex - this.hScroll.x,
           scroll: 1
         }
         this.operateState = DDeiEnumOperateState.STAGE_SCROLL_WORKING;
@@ -289,7 +288,6 @@ class DDeiStageCanvasRender {
     //分发到当前图层的mouseUp
     if (!this.model.ddInstance.eventCancel) {
       if (this.operateState == DDeiEnumOperateState.STAGE_SCROLL_WORKING) {
-        let rat1 = this.ddRender.ratio;
         let canvasPos = DDeiUtil.getDomAbsPosition(this.ddRender?.canvas)
         let ex = evt.clientX - canvasPos.left;
         let ey = evt.clientY - canvasPos.top;
@@ -297,7 +295,7 @@ class DDeiStageCanvasRender {
           let width = this.hScroll.width;
           //原始鼠标位置在操作区域的位置
           //当前鼠标位置在滚动条的比例位置
-          let posRat = (ex * rat1 - this.dragObj.dx) / width;
+          let posRat = (ex - this.dragObj.dx) / width;
           this.model.wpv.x = -this.model.width * posRat;
           let hScrollWidth = this.hScroll?.width ? this.hScroll?.width : 0
           if (this.model.wpv.x > 0) {
@@ -309,7 +307,7 @@ class DDeiStageCanvasRender {
           let height = this.vScroll.height;
           //原始鼠标位置在操作区域的位置
           //当前鼠标位置在滚动条的比例位置
-          let posRat = (ey * rat1 - this.dragObj.dy) / height;
+          let posRat = (ey - this.dragObj.dy) / height;
           this.model.wpv.y = -this.model.height * posRat;
           let vScrollHeight = this.vScroll?.height ? this.vScroll?.height : 0
           if (this.model.wpv.y > 0) {
