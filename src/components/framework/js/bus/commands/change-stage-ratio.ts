@@ -49,11 +49,16 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
           model.transVectors(scaleMatrix)
         })
       });
+      let vbn = stage.wpv.y / stage.height;
+      let hbn = stage.wpv.x / stage.width;
       stage.width = stage.width * scaleSize
       stage.height = stage.height * scaleSize
+      //计算位置比例,保持位置比例
+      stage.wpv.y = stage.height * vbn
+      stage.wpv.x = stage.width * hbn
 
-      stage.wpv.x = stage.wpv.x * scaleSize
-      stage.wpv.y = stage.wpv.y * scaleSize
+
+
       return true;
     } else {
       return false;

@@ -86,8 +86,6 @@ class DDeiStageCanvasRender {
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
     let rat1 = this.ddRender.ratio;
-    let stageRatio = this.model.getStageRatio();
-    let ratio = rat1 * stageRatio
     ctx.save();
     ctx.translate(this.model.wpv.x * rat1, this.model.wpv.y * rat1)
     //计算滚动条
@@ -179,8 +177,6 @@ class DDeiStageCanvasRender {
 
     let canvas = this.ddRender.getCanvas();
     let rat1 = this.ddRender.ratio;
-    let stageRatio = this.model.getStageRatio();
-    let ratio = rat1 * stageRatio
     //视窗的大小
     let canvasHeight = canvas.height / rat1;
     let canvasWidth = canvas.width / rat1;
