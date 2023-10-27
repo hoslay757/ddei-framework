@@ -124,8 +124,8 @@ class DDeiAbstractShapeRender {
       let ex = evt.offsetX;
       let ey = evt.offsetY;
       let stageRatio = this.stage.getStageRatio()
-      ex -= this.stage.wpv.x * stageRatio;
-      ey -= this.stage.wpv.y * stageRatio;
+      ex -= this.stage.wpv.x;
+      ey -= this.stage.wpv.y
       let projPoint = this.model.getProjPoint({ x: ex, y: ey });
       if (projPoint) {
         this.layer.opPoints.push(projPoint);

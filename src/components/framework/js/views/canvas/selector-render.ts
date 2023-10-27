@@ -324,8 +324,8 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     let ex = evt.offsetX;
     let ey = evt.offsetY;
     let stageRatio = this.stage.getStageRatio()
-    ex -= this.stage.wpv.x * stageRatio;
-    ey -= this.stage.wpv.y * stageRatio;
+    ex -= this.stage.wpv.x;
+    ey -= this.stage.wpv.y
     //判断当前坐标是否位于操作按钮上
 
     if (this.model.isOpvOn(1, ex, ey)) {
@@ -387,8 +387,8 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     let ex = evt.offsetX;
     let ey = evt.offsetY;
     let stageRatio = this.stage.getStageRatio()
-    ex -= this.stage.wpv.x * stageRatio;
-    ey -= this.stage.wpv.y * stageRatio;
+    ex -= this.stage.wpv.x;
+    ey -= this.stage.wpv.y
     //判断当前坐标是否位于操作按钮上,如果是则改变状态为响应状态
     if (this.model.passIndex >= 1 && this.model.passIndex <= 8) {
       let dragObj = {

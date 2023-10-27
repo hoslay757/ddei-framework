@@ -89,7 +89,7 @@ class DDeiStageCanvasRender {
     let stageRatio = this.model.getStageRatio();
     let ratio = rat1 * stageRatio
     ctx.save();
-    ctx.translate(this.model.wpv.x * ratio, this.model.wpv.y * ratio)
+    ctx.translate(this.model.wpv.x * rat1, this.model.wpv.y * rat1)
     //计算滚动条
     this.calScroll();
     //display=2的节点，最后渲染
@@ -168,7 +168,7 @@ class DDeiStageCanvasRender {
     ctx.fillText(this.model.wpv.x + "," + this.model.wpv.y, 0, 0)
     ctx.fillText(this.model.width + "," + this.model.height, 0, 20)
     ctx.fillText(this.ddRender.container.clientWidth + "," + this.ddRender.container.clientHeight, 0, 40)
-    ctx.fillText(this.hScroll?.x + "", 0, 60)
+    ctx.fillText(this.vScroll?.y + "", 0, 60)
     ctx.restore();
   }
 
@@ -179,6 +179,8 @@ class DDeiStageCanvasRender {
 
     let canvas = this.ddRender.getCanvas();
     let rat1 = this.ddRender.ratio;
+    let stageRatio = this.model.getStageRatio();
+    let ratio = rat1 * stageRatio
     //视窗的大小
     let canvasHeight = canvas.height / rat1;
     let canvasWidth = canvas.width / rat1;

@@ -111,8 +111,8 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
       let rat1 = stage.ddInstance.render.ratio
       let canvas = stage?.ddInstance.render.canvas;
       let ratio = rat1 * stageRatio;
-      let wpvx = -stage.wpv.x * ratio / rat1;
-      let wpvy = -stage.wpv.y * ratio / rat1;
+      let wpvx = -stage.wpv.x;
+      let wpvy = -stage.wpv.y;
       let wpvx1 = wpvx + canvas.width / rat1;
       let wpvy1 = wpvy + canvas.height / rat1;
       let ignoreModelIds = [];
@@ -158,11 +158,9 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
       });
       //自动移动视窗以及扩展画布大小
       if (exWpvX || exWpvY) {
-        let rat1 = stage.ddInstance.render.ratio
-        let stageRatio = stage.getStageRatio()
-        let ratio = rat1 * stageRatio;
-        let exr = exWpvX / ratio;
-        let eyr = exWpvY / ratio
+
+        let exr = exWpvX
+        let eyr = exWpvY
         stage.wpv.x -= exr
         stage.wpv.y -= eyr
         let extW = 0;
