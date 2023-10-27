@@ -65,9 +65,6 @@ class DDeiStageCanvasRender {
   //横向滚动条和纵向滚动条，当需要显示时不为空
   hScroll: object | null = null;
   vScroll: object | null = null;
-
-  //缩略图，用来快速定位
-  thumbnail: Image | null = null;
   // ============================== 方法 ===============================
   /**
    * 初始化
@@ -121,8 +118,12 @@ class DDeiStageCanvasRender {
     let rat1 = this.ddRender.ratio;
     ctx.save();
 
-    //获取全局缩放比例
     let scrollWeight = rat1 * 15;
+
+
+    //获取全局缩放比例
+
+
     let cwidth = canvas.width - scrollWeight;
     let cheight = canvas.height - scrollWeight;
     //绘制画布滚动条
@@ -150,24 +151,27 @@ class DDeiStageCanvasRender {
       ctx.fillRect(cwidth, this.vScroll.y * rat1, scrollWeight, this.vScroll.contentHeight * rat1)
       //绘制当前位置区域
     }
-
-    //绘制缩略图图标
     if (this.vScroll || this.hScroll) {
-      ctx.fillStyle = "blue"
+      ctx.strokeStyle = "rgb(220,220,220)"
+      ctx.fillStyle = "white"
       ctx.fillRect(cwidth, cheight, scrollWeight, scrollWeight)
+      ctx.strokeRect(cwidth, cheight, scrollWeight, scrollWeight)
     }
+
+
+
     //设置所有文本的对齐方式，以便于后续所有的对齐都采用程序计算
-    ctx.textAlign = "left";
-    ctx.textBaseline = "top";
-    //设置字体
-    ctx.font = "bold 24px 宋体"
-    //设置字体颜色
-    ctx.fillStyle = "red"
-    ctx.fillText(this.model.wpv.x + "," + this.model.wpv.y, 0, 0)
-    ctx.fillText(this.model.width + "," + this.model.height, 0, 20)
-    ctx.fillText(this.ddRender.container.clientWidth + "," + this.ddRender.container.clientHeight, 0, 40)
-    ctx.fillText(this.vScroll?.y + "", 0, 60)
-    ctx.restore();
+    // ctx.textAlign = "left";
+    // ctx.textBaseline = "top";
+    // //设置字体
+    // ctx.font = "bold 24px 宋体"
+    // //设置字体颜色
+    // ctx.fillStyle = "red"
+    // ctx.fillText(this.model.wpv.x + "," + this.model.wpv.y, 0, 0)
+    // ctx.fillText(this.model.width + "," + this.model.height, 0, 20)
+    // ctx.fillText(this.ddRender.container.clientWidth + "," + this.ddRender.container.clientHeight, 0, 40)
+    // ctx.fillText(this.vScroll?.y + "", 0, 60)
+    // ctx.restore();
   }
 
   /**
@@ -185,6 +189,7 @@ class DDeiStageCanvasRender {
     let curY = -this.model.wpv.y;
     //滚动条大小
     let scrollWeight = 15;
+
     //画布总大小
     let maxWidth = this.model.width
     let maxHeight = this.model.height;
@@ -259,14 +264,16 @@ class DDeiStageCanvasRender {
           scroll: 1
         }
         this.operateState = DDeiEnumOperateState.STAGE_SCROLL_WORKING;
-      } else {
+      }
+      else {
         this.model.layers[this.model.layerIndex].render.mouseDown(evt);
       }
     }
   }
-  /**
-   * 绘制图形
-   */
+
+
+
+
   mouseUp(evt: Event): void {
     //分发到当前图层的mouseUp
     if (!this.model.ddInstance.eventCancel) {

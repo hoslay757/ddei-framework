@@ -111,8 +111,8 @@ class DDeiLayerCanvasRender {
     let rat1 = this.ddRender.ratio
     let stageRatio = this.model.getStageRatio()
     let ratio = rat1 * stageRatio;
-    let r20 = ratio * 20;
-    let r40 = ratio * 40;
+    let r20 = rat1 * 20;
+    let r40 = rat1 * 40;
 
     //保存状态
     ctx.save();
@@ -152,9 +152,8 @@ class DDeiLayerCanvasRender {
       }
       let cwidth = canvas.width + r20;
       let cheight = canvas.height + r20;
-      // ctx.fillStyle = "white"
-      // ctx.fillRect(0, 0, cwidth, cheight)
       let scrollWeight = rat1 * 15;
+
       //判断滚动条
       if (this.stageRender.hScroll) {
         cheight -= scrollWeight
@@ -169,8 +168,9 @@ class DDeiLayerCanvasRender {
       ctx.lineWidth = 1;
 
       let offsetWidth = 0.5;
-      let xdr = this.stage.wpv.x * ratio % r20
-      let ydr = this.stage.wpv.y * ratio % r20
+      let xdr = this.stage.wpv.x * rat1 % r20
+      let ydr = this.stage.wpv.y * rat1 % r20
+      //绘制竖线
       for (; x <= cwidth; x += r20) {
 
         ctx.beginPath();
@@ -181,11 +181,12 @@ class DDeiLayerCanvasRender {
           ctx.setLineDash([3, 1]);
           ctx.strokeStyle = "rgb(220,220,220)";
         }
-        ctx.moveTo(x + offsetWidth + xdr, offsetWidth - ydr);
+        ctx.moveTo(x + offsetWidth + xdr, offsetWidth + ydr);
         ctx.lineTo(x + offsetWidth + xdr, canvas.height + offsetWidth + ydr);
         ctx.stroke();
       }
 
+      //绘制横线
       for (; y <= cheight; y += r20) {
         ctx.beginPath();
         if (y % r40 == 0) {
@@ -195,7 +196,7 @@ class DDeiLayerCanvasRender {
           ctx.setLineDash([3, 1]);
           ctx.strokeStyle = "rgb(220,220,220)";
         }
-        ctx.moveTo(offsetWidth - xdr, y + offsetWidth + ydr);
+        ctx.moveTo(offsetWidth + xdr, y + offsetWidth + ydr);
         ctx.lineTo(canvas.width + offsetWidth + xdr, y + offsetWidth + ydr);
         ctx.stroke();
       }
@@ -469,7 +470,6 @@ class DDeiLayerCanvasRender {
     if (menuEle) {
       menuEle.style.display = "none";
     }
-    let stageRatio = this.stage.getStageRatio()
     let ex = evt.offsetX;
     let ey = evt.offsetY;
     ex -= this.stage.wpv.x;

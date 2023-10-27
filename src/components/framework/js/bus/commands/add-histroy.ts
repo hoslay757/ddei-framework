@@ -3,6 +3,7 @@ import { debounce } from 'lodash';
 import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
 import DDeiStage from '../../models/stage';
+import DDeiUtil from '../../util';
 /**
  * 记录当前快照的总线Command
  */
@@ -45,6 +46,9 @@ class DDeiBusCommandAddHistroy extends DDeiBusCommand {
       }
       if (data != lastData) {
         DDeiBusCommandAddHistroy.addHistroy(stage, data)
+
+
+
       }
       return true;
     } else {
@@ -52,6 +56,8 @@ class DDeiBusCommandAddHistroy extends DDeiBusCommand {
     }
 
   }
+
+
 
   /**
    * 后置行为，分发，修改当前editor的状态
