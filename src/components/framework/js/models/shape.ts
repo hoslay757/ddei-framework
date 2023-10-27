@@ -147,11 +147,15 @@ abstract class DDeiAbstractShape {
         fpv.applyMatrix3(rotateMatrix)
       });
     }
+
+
     //计算宽、高信息，该值为不考虑缩放的大小
     this.x = this.loosePVS[0].x / stageRatio
     this.y = this.loosePVS[0].y / stageRatio
     this.width = (this.loosePVS[1].x - this.loosePVS[0].x) / stageRatio
     this.height = (this.loosePVS[3].y - this.loosePVS[0].y) / stageRatio
+    //记录缩放后的大小以及坐标
+    this.essBounds = { x: this.loosePVS[0].x, y: this.loosePVS[0].y, width: this.loosePVS[1].x - this.loosePVS[0].x, height: this.loosePVS[3].y - this.loosePVS[0].y }
 
     this.loosePVS[0].x -= looseWeight;
     this.loosePVS[0].y -= looseWeight;
@@ -180,9 +184,12 @@ abstract class DDeiAbstractShape {
     this.loosePVS.forEach(fpv => {
       fpv.applyMatrix3(move2Matrix)
     });
-    //计算宽、高信息，该值为不考虑缩放的大小
     this.x += this.cpv.x / stageRatio
     this.y += this.cpv.y / stageRatio
+    //记录缩放后的大小以及坐标
+    this.essBounds.x += this.cpv.x
+    this.essBounds.y += this.cpv.y
+
   }
 
   /**
@@ -731,87 +738,6 @@ abstract class DDeiAbstractShape {
     return { x: this.x, y: this.y }
   }
 
-
-  /**
-   * 计算当前图形旋转后的顶点，根据位移以及层次管理
-   */
-  calRotatePointVectors(): void {
-
-    let pointVectors = [];
-    let loosePointVectors = [];
-    let centerPointVector = null;
-    let halfWidth = this.width * 0.5;
-    let halfHeight = this.height * 0.5;
-    //宽松判定区域的宽度
-    let looseWeight = 10;
-
-    if (!this.pointVectors || this.pointVectors?.length == 0) {
-      let absBoundsOrigin = this.getAbsBounds();
-      //顺序中心、上右下左,记录的是PC坐标
-      centerPointVector = new Vector3(absBoundsOrigin.x + this.width * 0.5, absBoundsOrigin.y + this.height * 0.5, 1);
-      let pv1 = new Vector3(centerPointVector.x - halfWidth, centerPointVector.y - halfHeight, 1);
-      let pv2 = new Vector3(centerPointVector.x + halfWidth, centerPointVector.y - halfHeight, 1);
-      let pv3 = new Vector3(centerPointVector.x + halfWidth, centerPointVector.y + halfHeight, 1);
-      let pv4 = new Vector3(centerPointVector.x - halfWidth, centerPointVector.y + halfHeight, 1);
-
-      pointVectors.push(pv1)
-      pointVectors.push(pv2)
-      pointVectors.push(pv3)
-      pointVectors.push(pv4)
-
-      //stage级全局缩放
-      let stageRatio = this.getStageRatio();
-      let globalScaleMatrix = new Matrix3(
-        stageRatio, 0, 0,
-        0, stageRatio, 0,
-        0, 0, 1);
-      centerPointVector.applyMatrix3(globalScaleMatrix);
-      pointVectors.forEach(pv => {
-        pv.applyMatrix3(globalScaleMatrix);
-      });
-      //记录宽松判定区域的点
-      loosePointVectors.push(new Vector3(pv1.x - looseWeight, pv1.y - looseWeight, pv1.z))
-      loosePointVectors.push(new Vector3(pv2.x + looseWeight, pv2.y - looseWeight, pv2.z))
-      loosePointVectors.push(new Vector3(pv3.x + looseWeight, pv3.y + looseWeight, pv3.z))
-      loosePointVectors.push(new Vector3(pv4.x - looseWeight, pv4.y + looseWeight, pv4.z))
-
-
-
-
-      this.pointVectors = pointVectors;
-      this.loosePointVectors = loosePointVectors;
-      this.centerPointVector = centerPointVector;
-    }
-
-    pointVectors = this.pointVectors;
-    centerPointVector = this.centerPointVector;
-    loosePointVectors = this.loosePointVectors;
-
-    //执行旋转
-    //合并旋转矩阵
-    let moveMatrix = new Matrix3(
-      1, 0, -centerPointVector.x,
-      0, 1, -centerPointVector.y,
-      0, 0, 1);
-    let angle = -(this.rotate ? this.rotate : 0) * DDeiConfig.ROTATE_UNIT
-    let rotateMatrix = new Matrix3(
-      Math.cos(angle), Math.sin(angle), 0,
-      -Math.sin(angle), Math.cos(angle), 0,
-      0, 0, 1);
-    let removeMatrix = new Matrix3(
-      1, 0, centerPointVector.x,
-      0, 1, centerPointVector.y,
-      0, 0, 1);
-    let m1 = new Matrix3().premultiply(moveMatrix).premultiply(rotateMatrix).premultiply(removeMatrix);
-    this.rotateMatrix = m1;
-    pointVectors.forEach(pv => {
-      pv.applyMatrix3(m1);
-    });
-
-    loosePointVectors?.forEach(pv => {
-      pv.applyMatrix3(m1);
-    });
-  }
 
   /**
      * 将模型转换为JSON

@@ -92,20 +92,6 @@ class DDeiBusCommandModelChangeRotate extends DDeiBusCommand {
       }
       selector.transVectors(m1)
 
-
-
-      // selector.rotate = selector.rotate + angle
-      // selector.calRotatePointVectors();
-      // //清空旋转矩阵
-      // selector.currentPointVectors = selector.pointVectors;
-      // selector.pointVectors = null;
-      // selector.currentLoosePointVectors = selector.loosePointVectors;
-      // selector.loosePointVectors = null;
-      // selector.calRotateOperateVectors();
-
-
-
-
       //同步更新上层容器其大小和坐标
       pContainerModel.changeParentsBounds()
       return true

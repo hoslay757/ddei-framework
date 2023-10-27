@@ -447,13 +447,6 @@ class DDeiRectContainer extends DDeiRectangle {
     return true;
   }
 
-  /**
-    * 计算当前图形旋转后的顶点，根据位移以及层次管理
-    */
-  calRotatePointVectors(): void {
-    super.calRotatePointVectors();
-    this.calChildrenRotatePointVectors(this.rotateMatrix)
-  }
 
   /**
    * 计算子元素的点旋转后的坐标

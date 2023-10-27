@@ -247,54 +247,6 @@ class DDeiSelector extends DDeiRectangle {
 
 
   /**
-   * 计算当前图形旋转后的顶点，根据位移以及层次管理
-   */
-  calRotatePointVectors(): void {
-
-    let pointVectors = [];
-    let centerPointVector = this.centerPointVector;
-    let halfWidth = this.width * 0.5;
-    let halfHeight = this.height * 0.5;
-
-    if (!this.pointVectors || this.pointVectors?.length == 0) {
-      //顺序中心、上右下左,记录的是PC坐标
-      let pv1 = new Vector3(centerPointVector.x - halfWidth, centerPointVector.y - halfHeight, 1);
-      let pv2 = new Vector3(centerPointVector.x + halfWidth, centerPointVector.y - halfHeight, 1);
-      let pv3 = new Vector3(centerPointVector.x + halfWidth, centerPointVector.y + halfHeight, 1);
-      let pv4 = new Vector3(centerPointVector.x - halfWidth, centerPointVector.y + halfHeight, 1);
-
-      pointVectors.push(pv1)
-      pointVectors.push(pv2)
-      pointVectors.push(pv3)
-      pointVectors.push(pv4)
-      this.pointVectors = pointVectors;
-    }
-    pointVectors = this.pointVectors;
-    centerPointVector = this.centerPointVector;
-
-    //执行旋转
-    //合并旋转矩阵
-    let moveMatrix = new Matrix3(
-      1, 0, -centerPointVector.x,
-      0, 1, -centerPointVector.y,
-      0, 0, 1);
-    let angle = -(this.rotate ? this.rotate : 0) * DDeiConfig.ROTATE_UNIT
-    let rotateMatrix = new Matrix3(
-      Math.cos(angle), Math.sin(angle), 0,
-      -Math.sin(angle), Math.cos(angle), 0,
-      0, 0, 1);
-    let removeMatrix = new Matrix3(
-      1, 0, centerPointVector.x,
-      0, 1, centerPointVector.y,
-      0, 0, 1);
-    let m1 = new Matrix3().premultiply(moveMatrix).premultiply(rotateMatrix).premultiply(removeMatrix);
-    this.rotateMatrix = m1;
-    pointVectors.forEach(pv => {
-      pv.applyMatrix3(m1);
-    });
-  }
-
-  /**
    * 基于当前向量计算宽松判定向量
    */
   calLoosePVS(): void {
@@ -326,6 +278,8 @@ class DDeiSelector extends DDeiRectangle {
     this.y = tempPVS[0].y / stageRatio
     this.width = (tempPVS[1].x - tempPVS[0].x) / stageRatio
     this.height = (tempPVS[3].y - tempPVS[0].y) / stageRatio
+    //记录缩放后的大小以及坐标
+    this.essBounds = { x: tempPVS[0].x, y: tempPVS[0].y, width: tempPVS[1].x - tempPVS[0].x, height: tempPVS[3].y - tempPVS[0].y }
 
 
     this.loosePVS = []
@@ -358,6 +312,9 @@ class DDeiSelector extends DDeiRectangle {
     });
     this.x += this.cpv.x / stageRatio
     this.y += this.cpv.y / stageRatio
+    //记录缩放后的大小以及坐标
+    this.essBounds.x += this.cpv.x
+    this.essBounds.y += this.cpv.y
   }
 
   /**

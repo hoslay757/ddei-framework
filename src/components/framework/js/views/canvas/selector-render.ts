@@ -15,6 +15,10 @@ import { clone } from 'lodash'
  * DDeiSelector的渲染器类，用于渲染选择器
  */
 class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
+  constructor(props: object) {
+    super(props)
+    this.clip = false;
+  }
   // ============================== 静态方法 ============================
   // 通过一个JSON反向序列化成对象，模型数据与JSON完全一样
   static newInstance(props: object): DDeiSelectorCanvasRender {
@@ -30,9 +34,6 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
    * 创建图形
    */
   drawShape(): void {
-    // if (this.model.state != DDeiEnumControlState.DEFAULT) {
-    //   this.model.updateBoundsByModels();
-    // }
     //绘制边框
     this.drawBorder();
 

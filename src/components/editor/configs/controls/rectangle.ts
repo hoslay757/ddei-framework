@@ -147,7 +147,7 @@ export const styles = {
       'controlType': 'range',
       'mapping': ["border.top.round", "border.right.round", "border.bottom.round", "border.left.round"],
       'min': 0,
-      'max': 100,
+      'max': 30,
       'step': 1,
       'defaultValue': 0,
       'dataType': 'integer',

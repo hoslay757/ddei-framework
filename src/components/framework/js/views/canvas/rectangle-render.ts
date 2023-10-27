@@ -41,6 +41,9 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
    * 用于绘图时缓存属性等信息
    */
   textUsedArea: object[] = [];
+
+  //是否生成剪切区域
+  clip: boolean = true;
   // ============================== 方法 ===============================
   /**
    * 初始化
@@ -84,36 +87,99 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
    * 创建图形
    */
   drawShape(): void {
-
-    let modelChanged = this.model.isModelChanged();
-    // if (modelChanged) {
-    //   //计算旋转矩阵
-    //   this.model.calRotatePointVectors();
-    // }
+    //获得 2d 上下文对象
+    let canvas = this.ddRender.getCanvas();
+    let ctx = canvas.getContext('2d');
+    ctx.save();
     //绘制边框
     this.drawBorder();
 
     //绘制填充
     this.drawFill();
 
-    // //绘制图片
+    // // //绘制图片
     this.drawImage();
 
     // //绘制文本
     this.drawText();
 
-    // if (modelChanged) {
-    //   //清空旋转矩阵
-    //   this.model.currentPointVectors = this.model.pointVectors;
-    //   this.model.pointVectors = null;
-    //   this.model.currentLoosePointVectors = this.model.loosePointVectors;
-    //   this.model.loosePointVectors = null;
-    // }
-
     //清空绘图时计算的临时变量
     this.tempFillAreaRect = null
+
+    ctx.restore();
   }
 
+
+  /**
+   * 生成边框的区域向量
+   */
+  getBorderPVS(tempBorder) {
+    let topRound = this.getBorderInfo(tempBorder, 1, "round");
+    let rightRound = this.getBorderInfo(tempBorder, 2, "round");
+    let bottomRound = this.getBorderInfo(tempBorder, 3, "round");
+    let leftRound = this.getBorderInfo(tempBorder, 4, "round");
+    let topDisabled = this.getBorderInfo(tempBorder, 1, "disabled");
+    let topWidth = this.getBorderInfo(tempBorder, 1, "width");
+    let rightDisabled = this.getBorderInfo(tempBorder, 2, "disabled");
+    let rightWidth = this.getBorderInfo(tempBorder, 2, "width");
+    let bottomDisabled = this.getBorderInfo(tempBorder, 3, "disabled");
+    let bottomWidth = this.getBorderInfo(tempBorder, 3, "width");
+    let leftDisabled = this.getBorderInfo(tempBorder, 4, "disabled");
+    let leftWidth = this.getBorderInfo(tempBorder, 4, "width");
+    if (topDisabled) {
+      topWidth = 0
+    }
+    if (rightDisabled) {
+      rightWidth = 0
+    }
+    if (bottomDisabled) {
+      bottomWidth = 0
+    }
+    if (leftDisabled) {
+      leftWidth = 0
+    }
+    let borderPVS = []
+    let essBounds = this.model.essBounds;
+
+    borderPVS[0] = new Vector3(essBounds.x + leftRound, essBounds.y + topWidth, 1);
+    borderPVS[1] = new Vector3(essBounds.x + essBounds.width - topRound, essBounds.y + topWidth, 1);
+    borderPVS[2] = new Vector3(essBounds.x + essBounds.width - rightWidth, essBounds.y + topRound, 1);
+    borderPVS[3] = new Vector3(essBounds.x + essBounds.width - rightWidth, essBounds.y + essBounds.height - rightRound, 1);
+    borderPVS[4] = new Vector3(essBounds.x + essBounds.width - rightRound, essBounds.y + essBounds.height - bottomWidth, 1);
+    borderPVS[5] = new Vector3(essBounds.x + bottomRound, essBounds.y + essBounds.height - bottomWidth, 1);
+    borderPVS[6] = new Vector3(essBounds.x + leftWidth, essBounds.y + essBounds.height - bottomRound, 1);
+    borderPVS[7] = new Vector3(essBounds.x + leftWidth, essBounds.y + leftRound, 1);
+    //四个角的点，考虑边框的位置也要响应变小
+    borderPVS[8] = new Vector3(essBounds.x + leftWidth, essBounds.y + topWidth, 1);
+    borderPVS[9] = new Vector3(essBounds.x + essBounds.width - rightWidth, essBounds.y + topWidth, 1);
+    borderPVS[10] = new Vector3(essBounds.x + essBounds.width - rightWidth, essBounds.y + essBounds.height - bottomWidth, 1);
+    borderPVS[11] = new Vector3(essBounds.x + leftWidth, essBounds.y + essBounds.height - bottomWidth, 1);
+    //执行旋转
+    //旋转并位移回去
+    if (this.model.rotate && this.model.rotate != 0) {
+      let m1 = new Matrix3();
+      let move1Matrix = new Matrix3(
+        1, 0, -this.model.cpv.x,
+        0, 1, -this.model.cpv.y,
+        0, 0, 1);
+      m1.premultiply(move1Matrix)
+      let angle = -(this.model.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      let rotateMatrix = new Matrix3(
+        Math.cos(angle), Math.sin(angle), 0,
+        -Math.sin(angle), Math.cos(angle), 0,
+        0, 0, 1);
+      m1.premultiply(rotateMatrix)
+      let move2Matrix = new Matrix3(
+        1, 0, this.model.cpv.x,
+        0, 1, this.model.cpv.y,
+        0, 0, 1);
+      m1.premultiply(move2Matrix)
+      borderPVS.forEach(fpv => {
+        fpv.applyMatrix3(m1)
+      });
+    }
+    this.borderPVS = borderPVS;
+  }
   /**
    * 取得边框的绘制区域
    */
@@ -161,13 +227,15 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
    * @param usePV 是否采用向量输出
    */
   drawBorder(tempBorder: object | null): void {
+    //加载边框的矩阵
+    this.getBorderPVS();
     //获得 2d 上下文对象
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
     let stageRatio = this.model.getStageRatio()
-    let ratio = this.ddRender.ratio * stageRatio;
-
+    let rat1 = this.ddRender.ratio;
+    let ratio = rat1 * stageRatio;
     //1,2,3,4 上，右，下，左
     for (let i = 1; i <= 4; i++) {
       //如果被选中，使用选中的边框，否则使用缺省边框
@@ -176,6 +244,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       let opacity = this.getBorderInfo(tempBorder, i, "opacity");
       let width = this.getBorderInfo(tempBorder, i, "width");
       let dash = this.getBorderInfo(tempBorder, i, "dash");
+      let round = this.getBorderInfo(tempBorder, i, "round");
 
       //绘制四个方向的边框
       //如果边框未被disabled，则绘制边框
@@ -199,29 +268,107 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
         //颜色
         ctx.strokeStyle = DDeiUtil.getColor(color);
 
-        let pvs = this.model.pvs;
+        let pvs = this.borderPVS;
         if (pvs?.length > 0) {
-          let rat1 = this.ddRender.ratio;
-          if (i == 4) {
-            ctx.moveTo(pvs[i - 1].x * rat1 + lineOffset + lineWidth / 2, pvs[i - 1].y * rat1 + lineOffset);
-            ctx.lineTo(pvs[0].x * rat1 + lineOffset + lineWidth / 2, pvs[0].y * rat1 + lineOffset);
-          } else if (i == 1) {
-            ctx.moveTo(pvs[i - 1].x * rat1 + lineWidth + lineOffset, pvs[i - 1].y * rat1 + lineWidth / 2 + lineOffset);
-            ctx.lineTo(pvs[i].x * rat1 + lineOffset, pvs[i].y * rat1 + lineWidth / 2 + lineOffset);
-          } else if (i == 2) {
-            ctx.moveTo(pvs[i - 1].x * rat1 + lineOffset - lineWidth / 2, pvs[i - 1].y * rat1 + lineOffset);
-            ctx.lineTo(pvs[i].x * rat1 + lineOffset - lineWidth / 2, pvs[i].y * rat1 + lineOffset);
-          } else if (i == 3) {
-            ctx.moveTo(pvs[i - 1].x * rat1 + lineOffset, pvs[i - 1].y * rat1 + lineOffset - lineWidth / 2);
-            ctx.lineTo(pvs[i].x * rat1 + lineOffset, pvs[i].y * rat1 + lineOffset - lineWidth / 2);
+          switch (i) {
+            case 1: {
+              ctx.moveTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset);
+              ctx.lineTo(pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset);
+              if (round && round > 0) {
+                ctx.arcTo(pvs[9].x * rat1 + lineOffset, pvs[9].y * rat1 + lineOffset, pvs[2].x * rat1 + lineOffset, pvs[2].y * rat1 + lineOffset, round * rat1);
+              }
+              break;
+            }
+            case 2: {
+              ctx.moveTo(pvs[2].x * rat1 + lineOffset, pvs[2].y * rat1 + lineOffset)
+              ctx.lineTo(pvs[3].x * rat1 + lineOffset, pvs[3].y * rat1 + lineOffset);
+              if (round && round > 0) {
+                ctx.arcTo(pvs[10].x * rat1 + lineOffset, pvs[10].y * rat1 + lineOffset, pvs[4].x * rat1 + lineOffset, pvs[4].y * rat1 + lineOffset, round * rat1);
+              }
+              break;
+            }
+            case 3: {
+              ctx.moveTo(pvs[4].x * rat1 + lineOffset, pvs[4].y * rat1 + lineOffset)
+              ctx.lineTo(pvs[5].x * rat1 + lineOffset, pvs[5].y * rat1 + lineOffset);
+              if (round && round > 0) {
+                ctx.arcTo(pvs[11].x * rat1 + lineOffset, pvs[11].y * rat1 + lineOffset, pvs[6].x * rat1 + lineOffset, pvs[6].y * rat1 + lineOffset, round * rat1);
+              }
+              break;
+            }
+            case 4: {
+              ctx.moveTo(pvs[6].x * rat1 + lineOffset, pvs[6].y * rat1 + lineOffset)
+              ctx.lineTo(pvs[7].x * rat1 + lineOffset, pvs[7].y * rat1 + lineOffset);
+              if (round && round > 0) {
+                ctx.arcTo(pvs[8].x * rat1 + lineOffset, pvs[8].y * rat1 + lineOffset, pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset, round * rat1);
+              }
+              break;
+            }
+          }
+
+          ctx.stroke();
+          //恢复状态
+          ctx.restore();
+        }
+      }
+
+    }
+
+    if (this.clip) {
+      //生成剪切区域
+      ctx.beginPath();
+      for (let i = 1; i <= 4; i++) {
+        //如果被选中，使用选中的边框，否则使用缺省边框
+        let disabled = this.getBorderInfo(tempBorder, i, "disabled");
+        let width = this.getBorderInfo(tempBorder, i, "width");
+        let round = this.getBorderInfo(tempBorder, i, "round");
+        //绘制四个方向的边框
+        if (!disabled && width > 0) {
+          //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
+          let lineOffset = 1 * ratio / 2;
+          let lineWidth = width * ratio;
+          ctx.lineWidth = lineWidth;
+
+          let pvs = this.borderPVS;
+          if (pvs?.length > 0) {
+            switch (i) {
+              case 1: {
+                ctx.moveTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset);
+                ctx.lineTo(pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset);
+                if (round && round > 0) {
+                  ctx.arcTo(this.model.pvs[1].x * rat1 + lineOffset, this.model.pvs[1].y * rat1 + lineOffset, pvs[2].x * rat1 + lineOffset, pvs[2].y * rat1 + lineOffset, round * rat1);
+                }
+                break;
+              }
+              case 2: {
+                ctx.lineTo(pvs[3].x * rat1 + lineOffset, pvs[3].y * rat1 + lineOffset);
+                if (round && round > 0) {
+                  ctx.arcTo(this.model.pvs[2].x * rat1 + lineOffset, this.model.pvs[2].y * rat1 + lineOffset, pvs[4].x * rat1 + lineOffset, pvs[4].y * rat1 + lineOffset, round * rat1);
+                }
+                break;
+              }
+              case 3: {
+                ctx.lineTo(pvs[5].x * rat1 + lineOffset, pvs[5].y * rat1 + lineOffset);
+                if (round && round > 0) {
+                  ctx.arcTo(this.model.pvs[3].x * rat1 + lineOffset, this.model.pvs[3].y * rat1 + lineOffset, pvs[6].x * rat1 + lineOffset, pvs[6].y * rat1 + lineOffset, round * rat1);
+                }
+                break;
+              }
+              case 4: {
+                ctx.lineTo(pvs[7].x * rat1 + lineOffset, pvs[7].y * rat1 + lineOffset);
+                if (round && round > 0) {
+                  ctx.arcTo(this.model.pvs[0].x * rat1 + lineOffset, this.model.pvs[0].y * rat1 + lineOffset, pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset, round * rat1);
+                }
+                break;
+              }
+            }
+
+
           }
         }
 
-        ctx.stroke();
-        //恢复状态
-        ctx.restore();
       }
-
+      ctx.closePath();
+      ctx.clip();
     }
   }
 

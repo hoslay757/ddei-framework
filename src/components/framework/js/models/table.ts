@@ -349,13 +349,6 @@ class DDeiTable extends DDeiAbstractShape {
     }
   }
 
-  /**
-    * 计算当前图形旋转后的顶点，根据位移以及层次管理
-    */
-  calRotatePointVectors(): void {
-    super.calRotatePointVectors();
-    this.calCellsRotatePointVectors(this.rotateMatrix)
-  }
 
 
   /**
