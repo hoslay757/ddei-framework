@@ -107,10 +107,8 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
       //移动窗口的大小
       let exWpvX = 0;
       let exWpvY = 0;
-      let stageRatio = stage.getStageRatio();
       let rat1 = stage.ddInstance.render.ratio
       let canvas = stage?.ddInstance.render.canvas;
-      let ratio = rat1 * stageRatio;
       let wpvx = -stage.wpv.x;
       let wpvy = -stage.wpv.y;
       let wpvx1 = wpvx + canvas.width / rat1;
