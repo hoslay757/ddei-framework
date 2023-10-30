@@ -34,6 +34,11 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
    * 创建图形
    */
   drawShape(): void {
+    //获得 2d 上下文对象
+    let canvas = this.ddRender.getCanvas();
+    let ctx = canvas.getContext('2d');
+    //保存状态
+    ctx.save();
     //绘制边框
     this.drawBorder();
 
@@ -42,6 +47,8 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
 
     //绘制选中控件特效
     this.drawIncludedStyle();
+
+    ctx.restore();
 
   }
 
@@ -207,6 +214,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
    * 绘制选中图形特效
    */
   drawIncludedStyle(): void {
+
     //选中被选择器包含的控件
     let includedModels: Map<string, DDeiAbstractShape> | null = null;
     let selectNumber = 0
@@ -218,8 +226,14 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     }
     if (includedModels && includedModels.size > selectNumber) {
       includedModels.forEach((model, key) => {
+        //获得 2d 上下文对象
+        let canvas = this.ddRender.getCanvas();
+        let ctx = canvas.getContext('2d');
+        //保存状态
+        ctx.save();
         //绘制临时Border
-        model.render.drawBorder({ width: 1, color: "red" }, true);
+        model.render.drawBorder({ width: 1, color: "red" });
+        ctx.restore()
       });
     }
 

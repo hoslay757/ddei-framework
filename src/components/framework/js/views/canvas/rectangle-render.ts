@@ -229,18 +229,19 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     //获得 2d 上下文对象
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
+
     //获取全局缩放比例
     let stageRatio = this.model.getStageRatio()
     let rat1 = this.ddRender.ratio;
     let ratio = rat1 * stageRatio;
     //1,2,3,4 上，右，下，左
     //如果被选中，使用选中的边框，否则使用缺省边框
-    let disabled = this.getBorderInfo(tempBorder, 1, "disabled");
+    let disabled = this.getBorderInfo(null, 1, "disabled");
     let color = this.getBorderInfo(tempBorder, 1, "color");
     let opacity = this.getBorderInfo(tempBorder, 1, "opacity");
     let width = this.getBorderInfo(tempBorder, 1, "width");
     let dash = this.getBorderInfo(tempBorder, 1, "dash");
-    let round = this.getBorderInfo(tempBorder, 1, "round");
+    let round = this.getBorderInfo(null, 1, "round");
 
     //绘制四个方向的边框
     //如果边框未被disabled，则绘制边框
@@ -290,6 +291,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       ctx.globalAlpha = 1
       ctx.lineWidth = 1
       ctx.lineColor = "black"
+      ctx.setLineDash([])
     }
   }
 
