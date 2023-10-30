@@ -29,6 +29,7 @@ class DDeiStage {
     this.paper = props.paper;
     this.ruler = props.ruler;
     this.grid = props.grid;
+
   }
 
   // ============================ 静态变量 ============================
@@ -138,6 +139,8 @@ class DDeiStage {
    * 网格线的尺寸随缩放大小而改变
    */
   grid: any;
+
+  modelCode: string = "DDeiStage"
 
 
   // ============================ 方法 ===============================

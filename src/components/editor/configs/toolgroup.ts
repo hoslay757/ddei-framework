@@ -16,6 +16,14 @@ const loadToolGroups = async function () {
   for (const path in control_ctx) {
     loadArray.push(control_ctx[path]());
   }
+  let stage_ctx = import.meta.glob('./stage.ts')
+  for (let path in stage_ctx) {
+    loadArray.push(stage_ctx[path]());
+  }
+  let layer_ctx = import.meta.glob('./layer.ts')
+  for (let path in layer_ctx) {
+    loadArray.push(layer_ctx[path]());
+  }
   await Promise.all(loadArray).then(modules => {
     modules.forEach(item => {
       let controlDefine = item.default;
@@ -38,8 +46,8 @@ const loadToolGroups = async function () {
   })
   loadArray = [];
   //加载toolbox定义信息
-  const ctx = import.meta.glob('./toolgroups/*.ts')
-  for (const path in ctx) {
+  let ctx = import.meta.glob('./toolgroups/*.ts')
+  for (let path in ctx) {
     loadArray.push(ctx[path]());
   }
 

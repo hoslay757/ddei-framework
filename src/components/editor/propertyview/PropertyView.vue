@@ -240,8 +240,43 @@ export default {
           img: ICONS["icon-layers"],
           groups: [{}],
         };
+
+        if (firstControlDefine.type == "DDeiStage") {
+          //加载layer的配置
+          let layerControlDefine = cloneDeep(
+            controlOriginDefinies.get("DDeiLayer")
+          );
+          let layer = firstModel.layers[firstModel.layerIndex];
+          layerControlDefine.attrDefineMap.forEach((attrDefine, attrKey) => {
+            //当前属性的定义
+            attrDefine.value = DDeiUtil.getDataByPathList(
+              layer,
+              attrDefine.code,
+              attrDefine.mapping
+            );
+            attrDefine.model = layer;
+          });
+          this.syncAttrsToGroup(layerControlDefine, layerControlDefine.styles);
+          //同步引用关系
+          this.syncAttrsToGroup(firstControlDefine, firstControlDefine.styles);
+          this.syncAttrsToGroup(firstControlDefine, firstControlDefine.datas);
+          this.syncAttrsToGroup(firstControlDefine, firstControlDefine.events);
+          firstControlDefine.styles.img = ICONS["icon-config"];
+          firstControlDefine.datas.img = ICONS["icon-data"];
+          firstControlDefine.events.img = ICONS["icon-event"];
+
+          firstControlDefine.layerStyles = layerControlDefine.styles;
+          layerTopGroup = layerControlDefine.styles;
+          layerTopGroup.img = ICONS["icon-layers"];
+          topGroups = [
+            layerTopGroup,
+            firstControlDefine?.styles,
+            firstControlDefine?.datas,
+            firstControlDefine?.events,
+          ];
+        }
         //对table的包含属性进行特殊处理
-        if (firstControlDefine.type == "DDeiTable") {
+        else if (firstControlDefine.type == "DDeiTable") {
           if (firstControlDefine.subcontrol) {
             //获取单元格子控件信息，叠加到当前控件定义中
             let subControlDefine = cloneDeep(
@@ -299,7 +334,6 @@ export default {
               }
 
               topGroups.push(firstControlDefine.styles);
-              topGroups.push(layerTopGroup);
             }
           }
         } else {
@@ -314,14 +348,16 @@ export default {
             firstControlDefine?.styles,
             firstControlDefine?.datas,
             firstControlDefine?.events,
-            layerTopGroup,
           ];
         }
         //上一次编辑的名称
         let upName = this.currentTopGroup?.name;
         let currentTopGroup = null;
         if (upName) {
-          if (
+          if (!layerTopGroup?.empty && upName == layerTopGroup?.name) {
+            layerTopGroup.selected = true;
+            currentTopGroup = layerTopGroup;
+          } else if (
             !firstControlDefine?.styles?.empty &&
             upName == firstControlDefine?.styles?.name
           ) {
@@ -345,13 +381,13 @@ export default {
           ) {
             firstControlDefine.events.selected = true;
             currentTopGroup = firstControlDefine.events;
-          } else if (!layerTopGroup?.empty && upName == layerTopGroup?.name) {
-            layerTopGroup.selected = true;
-            currentTopGroup = layerTopGroup;
           }
         }
         if (!currentTopGroup) {
-          if (!firstControlDefine?.styles?.empty) {
+          if (!layerTopGroup.empty) {
+            layerTopGroup.selected = true;
+            currentTopGroup = layerTopGroup;
+          } else if (!firstControlDefine?.styles?.empty) {
             firstControlDefine.styles.selected = true;
             currentTopGroup = firstControlDefine.styles;
           } else if (!firstControlDefine?.datas?.empty) {
@@ -360,9 +396,6 @@ export default {
           } else if (!firstControlDefine?.events?.empty) {
             firstControlDefine.events.selected = true;
             currentTopGroup = firstControlDefine.events;
-          } else if (!layerTopGroup.empty) {
-            layerTopGroup.selected = true;
-            currentTopGroup = layerTopGroup;
           }
         }
         this.currentTopGroup = currentTopGroup;

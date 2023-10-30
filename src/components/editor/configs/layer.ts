@@ -1,5 +1,5 @@
 export default {
-  'id': '999002',
+  'id': 'DDeiLayer',
   'name': '图层',
   'code': 'layer',
   'desc': '整体图层的属性',
