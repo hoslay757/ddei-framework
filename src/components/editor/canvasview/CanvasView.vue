@@ -166,6 +166,7 @@ export default {
                 dx: 0, //鼠标在控件中心坐标的增量位置
                 dy: 0,
                 model: control,
+                num: 0,
               };
               this.editor.bus.push(
                 DDeiEnumBusCommandType.UpdateDragObj,
@@ -181,19 +182,10 @@ export default {
                   y: ey,
                   dx: dragObj.dx,
                   dy: dragObj.dy,
+                  dragObj: dragObj,
                 },
                 e
               );
-              //设置新坐标
-              // //当前编辑器最外部容器的坐标
-              // this.editor.bus.push(
-              //   DDeiEnumBusCommandType.ModelChangePosition,
-              //   {
-              //     models: [control],
-              //     dragObj: dragObj,
-              //   },
-              //   e
-              // );
               this.editor.bus.push(
                 DDeiEnumBusCommandType.RefreshShape,
                 null,
@@ -230,6 +222,7 @@ export default {
                     y: ey,
                     dx: 0,
                     dy: 0,
+                    dragObj: ddInstance.stage.render.dragObj,
                   },
                   e
                 );
