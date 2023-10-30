@@ -156,7 +156,6 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
       });
       //自动移动视窗以及扩展画布大小
       //如果是创建中，且第一次触碰边缘，则不会触发
-      debugger
       if (stage.render.operateState == DDeiEnumOperateState.CONTROL_CREATING && !(dragObj.num > 10)) {
         exWpvX = 0
         exWpvY = 0

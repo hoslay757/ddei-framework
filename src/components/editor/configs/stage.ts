@@ -20,35 +20,7 @@ export default {
 export const styles = {
   'name': '样式',
   'children': [
-    {
-      'id': '999001301',
-      'code': 'ruler.unit',
-      'name': '标尺单位',
-      'desc': '用来设置标尺单位样式',
-      'group': '功能',
-      'controlType': 'combox',
-      'dataType': 'string',
-      'dataSource': [{ 'text': '无', 'value': '' }, { 'text': '毫米', 'value': 'mm' }, { 'text': '厘米', 'value': 'cm' }, { 'text': '米', 'value': 'm' }, { 'text': '英寸', 'value': 'inch' }, { 'text': '像素', 'value': 'px' }],
-      'itemStyle': { width: 80, height: 25, col: 2, row: 0, imgWidth: 20, imgHeight: 20 },
-      'defaultValue': '',
-      'type': 1,
-      'orderNo': 1,
-      'visiable': true
-    },
-    {
-      'id': '999001302',
-      'code': 'grid',
-      'name': '网格线',
-      'desc': '设置是否显示网格线',
-      'group': '功能',
-      'controlType': 'radio',
-      'dataSource': [{ 'text': '显示', 'value': 1 }, { 'text': '隐藏', 'value': 0 }],
-      'dataType': 'integer',
-      'defaultValue': 1,
-      'type': 1,
-      'orderNo': 2,
-      'visiable': true
-    },
+
     {
       'id': '999001201',
       'code': 'paper.type',
@@ -188,8 +160,50 @@ export const styles = {
       'orderNo': 7,
       'visiable': true
     },
-
-
+    {
+      'id': '999001301',
+      'code': 'ruler.display',
+      'name': '标尺',
+      'desc': '是否显示标尺',
+      'group': '辅助功能',
+      'controlType': 'radio',
+      'dataType': 'string',
+      'dataSource': [{ 'text': '显示', 'value': 1 }, { 'text': '隐藏', 'value': 0 }],
+      'defaultValue': 1,
+      'display': 'column',
+      'type': 1,
+      'orderNo': 1,
+      'visiable': true
+    },
+    {
+      'id': '999001302',
+      'code': 'ruler.unit',
+      'name': '单位',
+      'desc': '用来设置标尺单位样式',
+      'group': '辅助功能',
+      'controlType': 'combox',
+      'dataType': 'string',
+      'dataSource': [{ 'text': '毫米', 'value': 'mm' }, { 'text': '厘米', 'value': 'cm' }, { 'text': '米', 'value': 'm' }, { 'text': '英寸', 'value': 'inch' }, { 'text': '像素', 'value': 'px' }],
+      'itemStyle': { width: 80, height: 25, col: 2, row: 0, imgWidth: 20, imgHeight: 20 },
+      'defaultValue': 'mm',
+      'type': 1,
+      'orderNo': 1,
+      'visiable': true
+    },
+    {
+      'id': '999001303',
+      'code': 'grid',
+      'name': '网格线',
+      'desc': '设置是否显示网格线',
+      'group': '辅助功能',
+      'controlType': 'radio',
+      'dataSource': [{ 'text': '显示', 'value': 1 }, { 'text': '隐藏', 'value': 0 }],
+      'dataType': 'integer',
+      'defaultValue': 1,
+      'type': 1,
+      'orderNo': 2,
+      'visiable': true
+    },
 
   ],
   'visiable': false,
