@@ -25,7 +25,10 @@ class DDeiStage {
     this.width = props.width ? props.width : DDeiConfig.STAGE_WIDTH;
     this.height = props.height ? props.height : DDeiConfig.STAGE_HEIGHT;
     this.wpv = props.wpv;
-
+    this.mark = props.mark;
+    this.paper = props.paper;
+    this.ruler = props.ruler;
+    this.grid = props.grid;
   }
 
   // ============================ 静态变量 ============================
@@ -106,6 +109,36 @@ class DDeiStage {
   height: number;
   //当前视窗开始点，缺省为0，0, 0
   wpv: object;
+
+  /**
+   * 水印依附于stage存在，每个stage都可以有自己的水印
+   * 水印可以控制大小，方向，透明度,字体，颜色等信息。可以是图片或文字
+   * 可以经由外部动态传入
+   */
+  mark: any;
+
+  /**
+   * 纸张依附于stage存在，每种纸张都有自己的尺寸大小，方向
+   * 大小以1.0缩放为基准
+   * 一个画布上可以同时并排多张纸，也可以不设纸张，采用自动扩展的方式增加纸张
+   */
+  paper: any;
+
+  /**
+   * 标尺,可以控制标尺是否显示
+   * 大小以1.0缩放为基准
+   * 可以调整标尺的显示单位
+   * 标尺的刻度随缩放大小而改变
+   */
+  ruler: any;
+
+  /**
+   * 网格线，可以调整是否显示网格线
+   * 大小以1.0缩放为基准
+   * 网格线的尺寸随缩放大小而改变
+   */
+  grid: any;
+
 
   // ============================ 方法 ===============================
   /**
