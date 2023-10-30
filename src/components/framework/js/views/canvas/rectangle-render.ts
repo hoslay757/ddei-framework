@@ -115,9 +115,9 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
    */
   getBorderPVS(tempBorder) {
     let topRound = this.getBorderInfo(tempBorder, 1, "round");
-    let rightRound = this.getBorderInfo(tempBorder, 2, "round");
-    let bottomRound = this.getBorderInfo(tempBorder, 3, "round");
-    let leftRound = this.getBorderInfo(tempBorder, 4, "round");
+    // let rightRound = this.getBorderInfo(tempBorder, 2, "round");
+    // let bottomRound = this.getBorderInfo(tempBorder, 3, "round");
+    // let leftRound = this.getBorderInfo(tempBorder, 4, "round");
     let topDisabled = this.getBorderInfo(tempBorder, 1, "disabled");
     let topWidth = this.getBorderInfo(tempBorder, 1, "width");
     let rightDisabled = this.getBorderInfo(tempBorder, 2, "disabled");
@@ -138,22 +138,20 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     if (leftDisabled) {
       leftWidth = 0
     }
+    leftWidth = leftWidth / 2
+    rightWidth = rightWidth / 2
+    bottomWidth = bottomWidth / 2
+    topWidth = topWidth / 2
+
     let borderPVS = []
     let essBounds = this.model.essBounds;
 
-    borderPVS[0] = new Vector3(essBounds.x + leftRound, essBounds.y + topWidth, 1);
-    borderPVS[1] = new Vector3(essBounds.x + essBounds.width - topRound, essBounds.y + topWidth, 1);
-    borderPVS[2] = new Vector3(essBounds.x + essBounds.width - rightWidth, essBounds.y + topRound, 1);
-    borderPVS[3] = new Vector3(essBounds.x + essBounds.width - rightWidth, essBounds.y + essBounds.height - rightRound, 1);
-    borderPVS[4] = new Vector3(essBounds.x + essBounds.width - rightRound, essBounds.y + essBounds.height - bottomWidth, 1);
-    borderPVS[5] = new Vector3(essBounds.x + bottomRound, essBounds.y + essBounds.height - bottomWidth, 1);
-    borderPVS[6] = new Vector3(essBounds.x + leftWidth, essBounds.y + essBounds.height - bottomRound, 1);
-    borderPVS[7] = new Vector3(essBounds.x + leftWidth, essBounds.y + leftRound, 1);
+    borderPVS[0] = new Vector3(essBounds.x + topRound, essBounds.y + topWidth, 1);
     //四个角的点，考虑边框的位置也要响应变小
-    borderPVS[8] = new Vector3(essBounds.x + leftWidth, essBounds.y + topWidth, 1);
-    borderPVS[9] = new Vector3(essBounds.x + essBounds.width - rightWidth, essBounds.y + topWidth, 1);
-    borderPVS[10] = new Vector3(essBounds.x + essBounds.width - rightWidth, essBounds.y + essBounds.height - bottomWidth, 1);
-    borderPVS[11] = new Vector3(essBounds.x + leftWidth, essBounds.y + essBounds.height - bottomWidth, 1);
+    borderPVS[4] = new Vector3(essBounds.x + leftWidth, essBounds.y + topWidth, 1);
+    borderPVS[1] = new Vector3(essBounds.x + essBounds.width - rightWidth, essBounds.y + topWidth, 1);
+    borderPVS[2] = new Vector3(essBounds.x + essBounds.width - rightWidth, essBounds.y + essBounds.height - bottomWidth, 1);
+    borderPVS[3] = new Vector3(essBounds.x + leftWidth, essBounds.y + essBounds.height - bottomWidth, 1);
     //执行旋转
     //旋转并位移回去
     if (this.model.rotate && this.model.rotate != 0) {
@@ -227,8 +225,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
    * @param usePV 是否采用向量输出
    */
   drawBorder(tempBorder: object | null): void {
-    //加载边框的矩阵
-    this.getBorderPVS();
+
     //获得 2d 上下文对象
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
@@ -237,138 +234,62 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     let rat1 = this.ddRender.ratio;
     let ratio = rat1 * stageRatio;
     //1,2,3,4 上，右，下，左
-    for (let i = 1; i <= 4; i++) {
-      //如果被选中，使用选中的边框，否则使用缺省边框
-      let disabled = this.getBorderInfo(tempBorder, i, "disabled");
-      let color = this.getBorderInfo(tempBorder, i, "color");
-      let opacity = this.getBorderInfo(tempBorder, i, "opacity");
-      let width = this.getBorderInfo(tempBorder, i, "width");
-      let dash = this.getBorderInfo(tempBorder, i, "dash");
-      let round = this.getBorderInfo(tempBorder, i, "round");
+    //如果被选中，使用选中的边框，否则使用缺省边框
+    let disabled = this.getBorderInfo(tempBorder, 1, "disabled");
+    let color = this.getBorderInfo(tempBorder, 1, "color");
+    let opacity = this.getBorderInfo(tempBorder, 1, "opacity");
+    let width = this.getBorderInfo(tempBorder, 1, "width");
+    let dash = this.getBorderInfo(tempBorder, 1, "dash");
+    let round = this.getBorderInfo(tempBorder, 1, "round");
 
-      //绘制四个方向的边框
-      //如果边框未被disabled，则绘制边框
-      if (!disabled && color && (!opacity || opacity > 0) && width > 0) {
-        //保存状态
-        ctx.save();
+    //绘制四个方向的边框
+    //如果边框未被disabled，则绘制边框
+    if (!disabled && color && (!opacity || opacity > 0) && width > 0) {
 
-        //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
-        let lineOffset = 1 * ratio / 2;
-        let lineWidth = width * ratio;
-        ctx.lineWidth = lineWidth;
-        ctx.beginPath();
-        //线段、虚线样式
-        if (dash) {
-          ctx.setLineDash(dash);
-        }
-        //透明度
-        if (opacity != null && opacity != undefined) {
-          ctx.globalAlpha = opacity
-        }
-        //颜色
-        ctx.strokeStyle = DDeiUtil.getColor(color);
-
+      //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
+      let lineOffset = 1 * ratio / 2;
+      let lineWidth = width * ratio;
+      ctx.lineWidth = lineWidth;
+      ctx.beginPath();
+      //线段、虚线样式
+      if (dash) {
+        ctx.setLineDash(dash);
+      }
+      //透明度
+      if (opacity != null && opacity != undefined) {
+        ctx.globalAlpha = opacity
+      }
+      //颜色
+      ctx.strokeStyle = DDeiUtil.getColor(color);
+      if (ctx.roundRect) {
+        ctx.translate(this.model.cpv.x * rat1, this.model.cpv.y * rat1)
+        ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
+        ctx.translate(-this.model.cpv.x * rat1, -this.model.cpv.y * rat1)
+        //绘制图片
+        let essBounds = this.model.essBounds;
+        ctx.roundRect((essBounds.x + width / 2) * rat1, (essBounds.y + width / 2) * rat1, (essBounds.width - width) * rat1, (essBounds.height - width) * rat1, round * rat1);
+        ctx.translate(this.model.cpv.x * rat1, this.model.cpv.y * rat1)
+        ctx.rotate(-this.model.rotate * DDeiConfig.ROTATE_UNIT);
+        ctx.translate(-this.model.cpv.x * rat1, -this.model.cpv.y * rat1)
+      } else {
+        //加载边框的矩阵
+        this.getBorderPVS(tempBorder);
         let pvs = this.borderPVS;
         if (pvs?.length > 0) {
-          switch (i) {
-            case 1: {
-              ctx.moveTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset);
-              ctx.lineTo(pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset);
-              if (round && round > 0) {
-                ctx.arcTo(pvs[9].x * rat1 + lineOffset, pvs[9].y * rat1 + lineOffset, pvs[2].x * rat1 + lineOffset, pvs[2].y * rat1 + lineOffset, round * rat1);
-              }
-              break;
-            }
-            case 2: {
-              ctx.moveTo(pvs[2].x * rat1 + lineOffset, pvs[2].y * rat1 + lineOffset)
-              ctx.lineTo(pvs[3].x * rat1 + lineOffset, pvs[3].y * rat1 + lineOffset);
-              if (round && round > 0) {
-                ctx.arcTo(pvs[10].x * rat1 + lineOffset, pvs[10].y * rat1 + lineOffset, pvs[4].x * rat1 + lineOffset, pvs[4].y * rat1 + lineOffset, round * rat1);
-              }
-              break;
-            }
-            case 3: {
-              ctx.moveTo(pvs[4].x * rat1 + lineOffset, pvs[4].y * rat1 + lineOffset)
-              ctx.lineTo(pvs[5].x * rat1 + lineOffset, pvs[5].y * rat1 + lineOffset);
-              if (round && round > 0) {
-                ctx.arcTo(pvs[11].x * rat1 + lineOffset, pvs[11].y * rat1 + lineOffset, pvs[6].x * rat1 + lineOffset, pvs[6].y * rat1 + lineOffset, round * rat1);
-              }
-              break;
-            }
-            case 4: {
-              ctx.moveTo(pvs[6].x * rat1 + lineOffset, pvs[6].y * rat1 + lineOffset)
-              ctx.lineTo(pvs[7].x * rat1 + lineOffset, pvs[7].y * rat1 + lineOffset);
-              if (round && round > 0) {
-                ctx.arcTo(pvs[8].x * rat1 + lineOffset, pvs[8].y * rat1 + lineOffset, pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset, round * rat1);
-              }
-              break;
-            }
-          }
-
-          ctx.stroke();
-          //恢复状态
-          ctx.restore();
+          ctx.moveTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset);
+          ctx.arcTo(pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset, pvs[2].x * rat1 + lineOffset, pvs[2].y * rat1 + lineOffset, round * rat1);
+          ctx.arcTo(pvs[2].x * rat1 + lineOffset, pvs[2].y * rat1 + lineOffset, pvs[3].x * rat1 + lineOffset, pvs[3].y * rat1 + lineOffset, round * rat1);
+          ctx.arcTo(pvs[3].x * rat1 + lineOffset, pvs[3].y * rat1 + lineOffset, pvs[4].x * rat1 + lineOffset, pvs[4].y * rat1 + lineOffset, round * rat1);
+          ctx.arcTo(pvs[4].x * rat1 + lineOffset, pvs[4].y * rat1 + lineOffset, pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset, round * rat1);
         }
       }
-
-    }
-
-    if (this.clip) {
-      //生成剪切区域
-      ctx.beginPath();
-      for (let i = 1; i <= 4; i++) {
-        //如果被选中，使用选中的边框，否则使用缺省边框
-        let disabled = this.getBorderInfo(tempBorder, i, "disabled");
-        let width = this.getBorderInfo(tempBorder, i, "width");
-        let round = this.getBorderInfo(tempBorder, i, "round");
-        //绘制四个方向的边框
-        if (!disabled && width > 0) {
-          //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
-          let lineOffset = 1 * ratio / 2;
-          let lineWidth = width * ratio;
-          ctx.lineWidth = lineWidth;
-
-          let pvs = this.borderPVS;
-          if (pvs?.length > 0) {
-            switch (i) {
-              case 1: {
-                ctx.moveTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset);
-                ctx.lineTo(pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset);
-                if (round && round > 0) {
-                  ctx.arcTo(this.model.pvs[1].x * rat1 + lineOffset, this.model.pvs[1].y * rat1 + lineOffset, pvs[2].x * rat1 + lineOffset, pvs[2].y * rat1 + lineOffset, round * rat1);
-                }
-                break;
-              }
-              case 2: {
-                ctx.lineTo(pvs[3].x * rat1 + lineOffset, pvs[3].y * rat1 + lineOffset);
-                if (round && round > 0) {
-                  ctx.arcTo(this.model.pvs[2].x * rat1 + lineOffset, this.model.pvs[2].y * rat1 + lineOffset, pvs[4].x * rat1 + lineOffset, pvs[4].y * rat1 + lineOffset, round * rat1);
-                }
-                break;
-              }
-              case 3: {
-                ctx.lineTo(pvs[5].x * rat1 + lineOffset, pvs[5].y * rat1 + lineOffset);
-                if (round && round > 0) {
-                  ctx.arcTo(this.model.pvs[3].x * rat1 + lineOffset, this.model.pvs[3].y * rat1 + lineOffset, pvs[6].x * rat1 + lineOffset, pvs[6].y * rat1 + lineOffset, round * rat1);
-                }
-                break;
-              }
-              case 4: {
-                ctx.lineTo(pvs[7].x * rat1 + lineOffset, pvs[7].y * rat1 + lineOffset);
-                if (round && round > 0) {
-                  ctx.arcTo(this.model.pvs[0].x * rat1 + lineOffset, this.model.pvs[0].y * rat1 + lineOffset, pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset, round * rat1);
-                }
-                break;
-              }
-            }
-
-
-          }
-        }
-
+      ctx.stroke();
+      if (this.clip) {
+        ctx.clip();
       }
-      ctx.closePath();
-      ctx.clip();
+      ctx.globalAlpha = 1
+      ctx.lineWidth = 1
+      ctx.lineColor = "black"
     }
   }
 
@@ -420,9 +341,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     //计算填充的原始区域
     let fillPVS = this.getFillAreaPVS();
     //获取全局缩放比例
-    let stageRatio = this.model.getStageRatio()
     let rat1 = this.ddRender.ratio;
-    let ratio = rat1 * stageRatio;
     //保存状态
     ctx.save();
     //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
@@ -437,15 +356,14 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
         ctx.globalAlpha = fillOpacity
       }
       ctx.beginPath();
-      let lineOffset = 1 * ratio / 2;
       for (let i = 0; i < fillPVS.length; i++) {
         if (i == fillPVS.length - 1) {
-          ctx.lineTo(fillPVS[i].x * rat1 + lineOffset, fillPVS[i].y * rat1 + lineOffset);
-          ctx.lineTo(fillPVS[0].x * rat1 + lineOffset, fillPVS[0].y * rat1 + lineOffset);
+          ctx.lineTo(fillPVS[i].x * rat1, fillPVS[i].y * rat1);
+          ctx.lineTo(fillPVS[0].x * rat1, fillPVS[0].y * rat1);
         } else if (i == 0) {
-          ctx.moveTo(fillPVS[i].x * rat1 + lineOffset, fillPVS[i].y * rat1 + lineOffset);
+          ctx.moveTo(fillPVS[i].x * rat1, fillPVS[i].y * rat1);
         } else {
-          ctx.lineTo(fillPVS[i].x * rat1 + lineOffset, fillPVS[i].y * rat1 + lineOffset);
+          ctx.lineTo(fillPVS[i].x * rat1, fillPVS[i].y * rat1);
         }
       }
       ctx.closePath();
@@ -769,18 +687,6 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
 
   }
 
-  // /**
-  //  * 根据模型的值，设置旋转
-  //  */
-  // doRotate(ctx, ratPos): void {
-  //   //设置旋转角度
-  //   if (this.model.rotate) {
-  //     ctx.translate(ratPos.x + ratPos.width * 0.5, ratPos.y + ratPos.height * 0.5)
-  //     ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
-  //     ctx.translate(-ratPos.x - ratPos.width * 0.5, -ratPos.y - ratPos.height * 0.5)
-  //   }
-  // }
-
   /**
    * 计算除边框外的填充区域，用于填充颜色和字体
    */
@@ -817,11 +723,10 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       bottomWidth = 0
     }
     //获取全局缩放比例,计算缩放后边框的所占位置，得到实际可用的填充区域
-    let stageRatio = this.model.getStageRatio()
-    topWidth = topWidth * stageRatio
-    bottomWidth = bottomWidth * stageRatio
-    leftWidth = leftWidth * stageRatio
-    rightWidth = rightWidth * stageRatio
+    topWidth = topWidth / 2
+    bottomWidth = bottomWidth / 2
+    leftWidth = leftWidth / 2
+    rightWidth = rightWidth / 2
 
 
     //用于基于基础向量，计算填充的区域向量

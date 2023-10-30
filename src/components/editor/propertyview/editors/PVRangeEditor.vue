@@ -1,23 +1,33 @@
 <template>
   <div :class="{ 'ddei_pv_editor_range': true, 'ddei_pv_editor_range_disabled': attrDefine.readonly }">
-    <input type="range" :step="attrDefine.step" class="range" :min="attrDefine.min" :max="attrDefine.max"
-      v-model="attrDefine.value" :disabled="attrDefine.readonly" />
+    <input type="range"
+           :step="attrDefine.step"
+           class="range"
+           :min="attrDefine.min"
+           :max="attrDefine.max"
+           v-model="attrDefine.value"
+           :disabled="attrDefine.readonly" />
     <div class="textinput">
-      <input type="number" :step="attrDefine.step" :min="attrDefine.min" :max="attrDefine.max" v-model="attrDefine.value"
-        :disabled="attrDefine.readonly" :placeholder="attrDefine.defaultValue" />
+      <input type="number"
+             :step="attrDefine.step"
+             :min="attrDefine.min"
+             :max="attrDefine.max"
+             v-model="attrDefine.value"
+             :disabled="attrDefine.readonly"
+             :placeholder="attrDefine.defaultValue" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { debounce } from 'lodash';
-import DDeiEditorArrtibute from '../../js/attribute/editor-attribute';
-import DDeiEditor from '../../js/editor';
-import DDeiEnumBusCommandType from '../../../framework/js/enums/bus-command-type';
-import DDeiAbstractArrtibuteParser from '../../../framework/js/models/attribute/parser/attribute-parser';
-import DDeiEditorEnumBusCommandType from '../../js/enums/editor-command-type';
-import DDeiUtil from '../../../framework/js/util';
-
+import { debounce } from "lodash";
+import DDeiEditorArrtibute from "../../js/attribute/editor-attribute";
+import DDeiEditor from "../../js/editor";
+import DDeiEnumBusCommandType from "../../../framework/js/enums/bus-command-type";
+import DDeiAbstractArrtibuteParser from "../../../framework/js/models/attribute/parser/attribute-parser";
+import DDeiEditorEnumBusCommandType from "../../js/enums/editor-command-type";
+import DDeiUtil from "../../../framework/js/util";
+import { throttle } from "lodash";
 export default {
   name: "DDei-Editor-PV-Range-Editor",
   extends: null,
@@ -26,12 +36,12 @@ export default {
     //当前属性定义
     attrDefine: {
       type: DDeiEditorArrtibute,
-      default: null
+      default: null,
     },
     //当前控件定义
     controlDefine: {
       type: Object,
-      default: null
+      default: null,
     },
   },
   data() {
@@ -41,12 +51,11 @@ export default {
     };
   },
   computed: {},
-  watch: {
-
-  },
+  watch: {},
   created() {
+    this.valueChange = throttle(this.valueChange, 50);
     // 监听obj对象中prop属性的变化
-    this.$watch('attrDefine.value', function (newVal, oldVal) {
+    this.$watch("attrDefine.value", function (newVal, oldVal) {
       this.valueChange();
     });
   },
@@ -58,27 +67,41 @@ export default {
     valueChange(evt) {
       //获取属性路径
       let paths = [];
-      this.attrDefine?.mapping?.forEach(element => {
+      this.attrDefine?.mapping?.forEach((element) => {
         paths.push(element);
       });
       if (!(paths?.length > 0)) {
-        paths = [this.attrDefine.code]
+        paths = [this.attrDefine.code];
       }
 
       //通过解析器获取有效值
       let parser: DDeiAbstractArrtibuteParser = this.attrDefine.getParser();
       //属性值
       let value = parser.parseValue(this.attrDefine.value);
-      DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, value)
-      this.editor.ddInstance.stage.selectedModels.forEach(element => {
+      DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, value);
+      this.editor.ddInstance.stage.selectedModels.forEach((element) => {
         //推送信息进入总线
-        this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: value, attrDefine: this.attrDefine }, evt, true);
+        this.editor.bus.push(
+          DDeiEnumBusCommandType.ModelChangeValue,
+          {
+            mids: [element.id],
+            paths: paths,
+            value: value,
+            attrDefine: this.attrDefine,
+          },
+          evt,
+          true
+        );
       });
-      this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, null, evt);
+      this.editor.bus.push(
+        DDeiEditorEnumBusCommandType.RefreshEditorParts,
+        null,
+        evt
+      );
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
       this.editor.bus.executeAll();
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -140,7 +163,6 @@ export default {
   box-sizing: border-box;
 }
 
-
 .ddei_pv_editor_range .textinput input {
   width: 100%;
   border: transparent;
@@ -148,6 +170,5 @@ export default {
   font-size: 13px;
   margin: 0px 2%;
   background: transparent;
-
 }
 </style>
