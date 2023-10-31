@@ -1,6 +1,7 @@
 import DDeiConfig from '../../config.js'
 import DDeiEnumBusCommandType from '../../enums/bus-command-type.js';
 import DDeiEnumOperateState from '../../enums/operate-state.js';
+import DDeiModelArrtibuteValue from '../../models/attribute/attribute-value.js';
 import DDeiSelector from '../../models/selector.js';
 import DDeiAbstractShape from '../../models/shape.js';
 import DDeiStage from '../../models/stage.js';
@@ -85,6 +86,7 @@ class DDeiStageCanvasRender {
     let rat1 = this.ddRender.ratio;
     ctx.save();
     ctx.translate(this.model.wpv.x * rat1, this.model.wpv.y * rat1)
+
     //计算滚动条
     this.calScroll();
     //display=2的节点，最后渲染
@@ -103,8 +105,104 @@ class DDeiStageCanvasRender {
       this.selector.render.drawShape();
     }
     ctx.restore();
+
+    //绘制纸张
+    this.drawPaper();
+
+    //绘制水印
+    this.drawMark();
+
     //绘制滚动条
     this.drawScroll();
+
+  }
+
+  /**
+   * 绘制纸张
+   */
+  drawPaper() {
+
+  }
+
+  /**
+   * 绘制水印
+   */
+  drawMark() {
+    //水印的参考位置为0,0原点，按照配置进行输出
+    //文本水印
+    if (this.model.mark?.type == 1) {
+      //内容
+      let text = this.model.mark.data
+      if (text) {
+        //获得 2d 上下文对象
+        let canvas = this.ddRender.getCanvas();
+        let ctx = canvas.getContext('2d');
+        let rat1 = this.ddRender.ratio;
+        let stageRatio = this.model.getStageRatio()
+        let ratio = rat1 * stageRatio;
+        ctx.save();
+        //获取并应用设置信息
+        //获取字体信息
+        let fiFamily = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.font.family", true);
+        let fiSize = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.font.size", true);
+        let fiColor = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.font.color", true);
+        //字体缩放后的大小，用于计算
+        let fontSize = fiSize * ratio;
+        //设置字体
+        ctx.font = fontSize + "px " + fiFamily
+        //设置字体颜色
+        ctx.fillStyle = fiColor
+        //透明度
+        let opac = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.opacity", true);
+        if (opac) {
+          ctx.globalAlpha = opac
+        }
+        //方向
+        let direct = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.direct", true);
+
+        //计算文本大小
+        let textSize = DDeiUtil.measureTextSize(this.model.ddInstance, text, fiFamily, fontSize)
+        let marginWidth = textSize.width + 50 * ratio
+        let marginHeight = textSize.height + 50 * ratio
+
+        let cwidth = canvas.width + marginWidth;
+        let cheight = canvas.height + marginHeight;
+        let x = -marginWidth
+        let xdr = this.model.wpv.x * rat1 % marginWidth
+        let ydr = this.model.wpv.y * rat1 % marginHeight
+        if (direct == 1) {
+
+        } else if (direct == 2) {
+
+        }
+        for (; x <= cwidth; x += marginWidth) {
+          let y = -marginHeight
+          for (; y <= cheight; y += marginHeight) {
+            ctx.fillText(text, x + xdr, y + ydr)
+          }
+        }
+
+
+
+
+
+        ctx.restore();
+      }
+    }
+    //图片水印
+    else if (this.model.mark?.type == 2) {
+      //获得 2d 上下文对象
+      let canvas = this.ddRender.getCanvas();
+      let ctx = canvas.getContext('2d');
+      let rat1 = this.ddRender.ratio;
+      let stageRatio = this.model.getStageRatio()
+      let ratio = rat1 * stageRatio;
+      ctx.save();
+
+
+      ctx.restore();
+    }
+
 
   }
 
