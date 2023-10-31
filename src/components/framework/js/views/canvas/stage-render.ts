@@ -138,6 +138,7 @@ class DDeiStageCanvasRender {
           this.markCanvas = document.createElement("canvas");
         }
         let markCanvas = this.markCanvas;
+
         //获得 2d 上下文对象
         let canvas = this.ddRender.getCanvas();
         let ctx = canvas.getContext('2d');
@@ -158,6 +159,7 @@ class DDeiStageCanvasRender {
         markCanvas.setAttribute("width", weight);
         markCanvas.setAttribute("height", weight);
         let markCtx = markCanvas.getContext("2d");
+        markCtx.save();
         //设置字体
         markCtx.font = fontSize + "px " + fiFamily
         //设置字体颜色
@@ -194,6 +196,7 @@ class DDeiStageCanvasRender {
           }
         }
         ctx.restore();
+        markCtx.restore();
       }
     }
     //图片水印
@@ -218,7 +221,7 @@ class DDeiStageCanvasRender {
         markCanvas.setAttribute("width", weight);
         markCanvas.setAttribute("height", weight);
         let markCtx = markCanvas.getContext("2d");
-
+        markCtx.save();
         //透明度
         let opac = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.opacity", true);
         if (opac) {
@@ -251,6 +254,7 @@ class DDeiStageCanvasRender {
           }
         }
         ctx.restore();
+        markCtx.restore();
       }
     }
 
