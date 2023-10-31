@@ -32,9 +32,11 @@ export const styles = {
       'defaultValue': 0,
       'type': 1,
       'orderNo': 2,
-      'visiable': true,
+      'cascadeDisplay': { 1: { show: ['bgInfo.color'], hidden: ['bgInfo.image', 'bgInfo.imageMode', 'bgInfo.imageScale', 'bgInfo.imageAlign'] }, 2: { show: ['bgInfo.image', 'bgInfo.imageMode', 'bgInfo.imageScale', 'bgInfo.imageAlign'], hidden: ['bgInfo.color'] }, empty: { hidden: ['bgInfo.color', 'bgInfo.image', 'bgInfo.imageMode', 'bgInfo.imageScale', 'bgInfo.imageAlign'] } },
       'hiddenTitle': true,
       'display': 'column',
+      'visiable': true,
+
     },
     {
       'id': '999003103',
@@ -47,7 +49,7 @@ export const styles = {
       'defaultValue': 'white',
       'type': 1,
       'orderNo': 3,
-      'visiable': false
+      'visiable': true
     },
     {
       'id': '999003104',
@@ -60,7 +62,7 @@ export const styles = {
       'defaultValue': '',
       'type': 1,
       'orderNo': 3,
-      'visiable': false
+      'visiable': true
     },
     {
       'id': '999003106',
@@ -74,7 +76,7 @@ export const styles = {
       'defaultValue': '2',
       'type': 1,
       'orderNo': 4,
-      'visiable': false
+      'visiable': true
     },
     {
       'id': '999003107',
@@ -90,7 +92,7 @@ export const styles = {
       'defaultValue': 1,
       'type': 1,
       'orderNo': 5,
-      'visiable': false
+      'visiable': true
     },
 
     {
@@ -104,7 +106,7 @@ export const styles = {
       'dataType': 'string',
       'type': 1,
       'orderNo': 6,
-      'visiable': false
+      'visiable': true
     },
   ],
 

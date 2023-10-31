@@ -1,17 +1,24 @@
 <template>
   <div :class="{ 'ddei_pv_editor_combox': true, 'ddei_pv_editor_combox_disabled': !attrDefine || attrDefine.readonly }">
-    <PVBaseCombox :attrDefine="attrDefine" :searchMethod="doSearch" ref="combox" :canSearch="attrDefine?.canSearch">
+    <PVBaseCombox :attrDefine="attrDefine"
+                  :searchMethod="doSearch"
+                  ref="combox"
+                  :canSearch="attrDefine?.canSearch">
       <div class="itemboxs"
-        :style="{ width: width ? width + 'px' : '', height: height ? height + 'px' : '', 'grid-template-columns': gridTemplateColumns, 'grid-template-rows': gridTemplateRows }">
+           :style="{ width: width ? width + 'px' : '', height: height ? height + 'px' : '', 'grid-template-columns': gridTemplateColumns, 'grid-template-rows': gridTemplateRows }">
         <div :style="{ width: attrDefine?.itemStyle?.width + 'px', height: attrDefine?.itemStyle?.height + 'px' }"
-          :class="{ 'itembox': true, 'itembox_selected': item.value == attrDefine.value, 'itembox_deleted': item.deleted, 'itembox_disabled': item.disabled, 'itembox_underline': item.underline, 'itembox_bold': item.bold }"
-          v-for="item in dataSource" @click="!item.disabled && valueChange(item.value, $event)" :title="item.desc">
-          <div v-if="item.img" class="itembox_img">
-            <img
-              :style="{ width: attrDefine?.itemStyle?.imgWidth + 'px', height: attrDefine?.itemStyle?.imgHeight + 'px' }"
-              :src="item.img" />
+             :class="{ 'itembox': true, 'itembox_selected': item.value == attrDefine.value, 'itembox_deleted': item.deleted, 'itembox_disabled': item.disabled, 'itembox_underline': item.underline, 'itembox_bold': item.bold }"
+             v-for="item in dataSource"
+             @click="!item.disabled && valueChange(item.value, $event)"
+             :title="item.desc">
+          <div v-if="item.img"
+               class="itembox_img">
+            <img :style="{ width: attrDefine?.itemStyle?.imgWidth + 'px', height: attrDefine?.itemStyle?.imgHeight + 'px' }"
+                 :src="item.img" />
           </div>
-          <div class="itembox_text" v-if="item.text" :style="{ 'font-family': item.fontFamily }">{{ item.text }}</div>
+          <div class="itembox_text"
+               v-if="item.text"
+               :style="{ 'font-family': item.fontFamily }">{{ item.text }}</div>
         </div>
       </div>
     </PVBaseCombox>
@@ -19,14 +26,14 @@
 </template>
 
 <script lang="ts">
-import DDeiEditorArrtibute from '../../js/attribute/editor-attribute';
-import DDeiEditor from '../../js/editor';
-import DDeiEnumBusCommandType from '../../../framework/js/enums/bus-command-type';
-import DDeiAbstractArrtibuteParser from '../../../framework/js/models/attribute/parser/attribute-parser';
-import PVBaseCombox from './PVBaseCombox.vue';
-import DDeiUtil from '@/components/framework/js/util';
-import DDeiEditorUtil from '../../js/util/editor-util';
-import DDeiEditorEnumBusCommandType from '../../js/enums/editor-command-type';
+import DDeiEditorArrtibute from "../../js/attribute/editor-attribute";
+import DDeiEditor from "../../js/editor";
+import DDeiEnumBusCommandType from "../../../framework/js/enums/bus-command-type";
+import DDeiAbstractArrtibuteParser from "../../../framework/js/models/attribute/parser/attribute-parser";
+import PVBaseCombox from "./PVBaseCombox.vue";
+import DDeiUtil from "@/components/framework/js/util";
+import DDeiEditorUtil from "../../js/util/editor-util";
+import DDeiEditorEnumBusCommandType from "../../js/enums/editor-command-type";
 
 export default {
   name: "DDei-Editor-PV-Combox",
@@ -36,12 +43,12 @@ export default {
     //当前属性定义
     attrDefine: {
       type: DDeiEditorArrtibute,
-      default: null
+      default: null,
     },
     //当前控件定义
     controlDefine: {
       type: Object,
-      default: null
+      default: null,
     },
   },
   data() {
@@ -56,27 +63,31 @@ export default {
       height: 0,
       col: 1,
       gridTemplateColumns: "1fr",
-      gridTemplateRows: '',
-      searchText: ''
+      gridTemplateRows: "",
+      searchText: "",
     };
   },
   computed: {},
   components: {
-    PVBaseCombox
+    PVBaseCombox,
   },
-  watch: {
-
-  },
-  created() {
-
-  },
+  watch: {},
+  created() {},
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
-    let itemWidth = this.attrDefine?.itemStyle?.width ? this.attrDefine?.itemStyle?.width : 100;
-    let itemCols = this.attrDefine?.itemStyle?.col ? this.attrDefine?.itemStyle?.col : 1;
-    let itemHeight = this.attrDefine?.itemStyle?.height ? this.attrDefine?.itemStyle?.height : 30;
-    let itemRows = this.attrDefine?.itemStyle?.row ? this.attrDefine?.itemStyle?.row : 0;
+    let itemWidth = this.attrDefine?.itemStyle?.width
+      ? this.attrDefine?.itemStyle?.width
+      : 100;
+    let itemCols = this.attrDefine?.itemStyle?.col
+      ? this.attrDefine?.itemStyle?.col
+      : 1;
+    let itemHeight = this.attrDefine?.itemStyle?.height
+      ? this.attrDefine?.itemStyle?.height
+      : 30;
+    let itemRows = this.attrDefine?.itemStyle?.row
+      ? this.attrDefine?.itemStyle?.row
+      : 0;
     this.width = (itemWidth + 5) * itemCols + 10;
     this.col = itemCols;
     this.height = (itemHeight + 5) * itemRows;
@@ -90,11 +101,11 @@ export default {
     if (itemRows) {
       let gridTemplateRows = "";
       for (let i = 1; i <= itemRows; i++) {
-        gridTemplateRows += itemHeight + "px "
+        gridTemplateRows += itemHeight + "px ";
       }
       this.gridTemplateRows = gridTemplateRows;
     }
-    this.getDataSource(this.attrDefine)
+    this.getDataSource(this.attrDefine);
     let type = this.getDataValue();
     let define = this.getDataDefine(type.value);
     if (!type.isDefault) {
@@ -109,7 +120,7 @@ export default {
     }
     this.$refs.combox.value = type.value;
     this.value = type.value;
-
+    this.attrDefine.doCascadeDisplayByValue();
   },
   methods: {
     /**
@@ -122,7 +133,7 @@ export default {
           if (this.dataSource[i].value.toString() == value.toString()) {
             return this.dataSource[i];
           }
-        };
+        }
       }
       return { text: "" };
     },
@@ -130,29 +141,33 @@ export default {
     doSearch(text, evt) {
       //过滤dataSource，找到text
       this.searchText = text;
-      this.getDataSource(this.attrDefine)
+      this.getDataSource(this.attrDefine);
       this.$refs.combox.showDialog(true, evt);
     },
 
     //获取数据值
     getDataValue() {
-      if(this.attrDefine){
+      if (this.attrDefine) {
         let dataValue = this.attrDefine.value;
         if (!dataValue) {
-          dataValue = DDeiUtil.getDataByPathList(this.attrDefine.model, this.attrDefine.code, this.attrDefine.mapping);
+          dataValue = DDeiUtil.getDataByPathList(
+            this.attrDefine.model,
+            this.attrDefine.code,
+            this.attrDefine.mapping
+          );
         }
         if (dataValue) {
-          return { value: dataValue }
+          return { value: dataValue };
         }
       }
       //通过解析器获取有效值
-      return { isDefault: true, value: this.attrDefine?.getParser().getDefaultValue() };
+      return {
+        isDefault: true,
+        value: this.attrDefine?.getParser().getDefaultValue(),
+      };
     },
 
-
-
     valueChange(value, evt) {
-
       this.attrDefine.value = value;
       let itemDefine = this.getDataDefine(value);
       let text = itemDefine.text;
@@ -168,18 +183,32 @@ export default {
       let parsedValue = parser.parseValue(value);
       //获取属性路径
       let paths = [];
-      this.attrDefine?.mapping?.forEach(element => {
+      this.attrDefine?.mapping?.forEach((element) => {
         paths.push(element);
       });
       if (!(paths?.length > 0)) {
-        paths = [this.attrDefine.code]
+        paths = [this.attrDefine.code];
       }
-      DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, parsedValue)
-      this.editor.ddInstance.stage.selectedModels.forEach(element => {
-        this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: parsedValue , attrDefine: this.attrDefine }, evt, true);
-        
+      DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, parsedValue);
+      this.attrDefine.doCascadeDisplayByValue();
+      this.editor.ddInstance.stage.selectedModels.forEach((element) => {
+        this.editor.bus.push(
+          DDeiEnumBusCommandType.ModelChangeValue,
+          {
+            mids: [element.id],
+            paths: paths,
+            value: parsedValue,
+            attrDefine: this.attrDefine,
+          },
+          evt,
+          true
+        );
       });
-      this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, null, evt);
+      this.editor.bus.push(
+        DDeiEditorEnumBusCommandType.RefreshEditorParts,
+        null,
+        evt
+      );
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
       this.editor.bus.executeAll();
     },
@@ -187,13 +216,16 @@ export default {
      * 获取数据源数据
      */
     getDataSource(attrDefine) {
-      if(this.attrDefine){
-        let dataSources = DDeiEditorUtil.getDataSource(this.attrDefine, this.searchText);
+      if (this.attrDefine) {
+        let dataSources = DDeiEditorUtil.getDataSource(
+          this.attrDefine,
+          this.searchText
+        );
         this.dataSource = dataSources;
         return this.dataSource;
       }
     },
-  }
+  },
 };
 </script>
 
@@ -203,7 +235,8 @@ export default {
   margin-top: 4px;
 }
 
-.ddei_pv_editor_combox_disabled {}
+.ddei_pv_editor_combox_disabled {
+}
 
 .ddei_combox_show_dialog_content .itemboxs {
   border-radius: 4px;
@@ -223,8 +256,6 @@ export default {
   display: table;
   border-radius: 4px;
 }
-
-
 
 .ddei_combox_show_dialog_content .itemboxs .itembox:hover {
   background-color: rgb(245, 245, 245);
@@ -249,7 +280,6 @@ export default {
   vertical-align: middle;
 }
 
-
 .ddei_combox_show_dialog_content .itembox_selected {
   background-color: rgb(240, 240, 240) !important;
 }
@@ -261,12 +291,10 @@ export default {
 .ddei_combox_show_dialog_content .itembox_disabled {
   color: rgb(210, 210, 210);
   text-decoration: line-through;
-
 }
 
 .ddei_combox_show_dialog_content .itembox_disabled:hover {
   cursor: not-allowed !important;
-
 }
 
 .ddei_combox_show_dialog_content .itembox_underline {

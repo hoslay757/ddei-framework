@@ -19,6 +19,7 @@ class DDeiEditorArrtibute extends DDeiArrtibuteDefine {
     this.itemStyle = props.itemStyle ? props.itemStyle : null;
     this.canSearch = props.canSearch ? props.canSearch : false;
     this.exmapping = props.exmapping;
+    this.cascadeDisplay = props.cascadeDisplay;
   }
   // ============================ 属性 ===============================
   //属性所在分组
@@ -46,8 +47,43 @@ class DDeiEditorArrtibute extends DDeiArrtibuteDefine {
   canSearch: boolean = false;
   //数字框每次增加数
   step: number = 1;
+  //联动显示的配置
+  cascadeDisplay: object | null = null;
   // ============================ 方法 ===============================
 
+
+  /**
+   * 根据当前的值,更新配置信息
+   */
+  doCascadeDisplayByValue(): void {
+    let cascadeDisplayConfig = null;
+    if (this.cascadeDisplay) {
+      if (this.cascadeDisplay[this.value]) {
+        cascadeDisplayConfig = this.cascadeDisplay[this.value]
+      } else {
+        if (this.value && this.value != '' && this.value != '0' && this.value != 0) {
+          cascadeDisplayConfig = this.cascadeDisplay['notempty']
+        } else {
+          cascadeDisplayConfig = this.cascadeDisplay['empty']
+        }
+
+      }
+    }
+    //获取联动控件
+    if (cascadeDisplayConfig?.show?.length > 0) {
+      DDeiEditorArrtibute.showAttributesByCode(
+        this.topGroup,
+        cascadeDisplayConfig.show
+      );
+    }
+    if (cascadeDisplayConfig?.hidden?.length > 0) {
+      DDeiEditorArrtibute.hiddenAttributesByCode(
+        this.topGroup,
+        cascadeDisplayConfig.hidden
+      );
+    }
+
+  }
 
   /**
    * 
@@ -59,9 +95,11 @@ class DDeiEditorArrtibute extends DDeiArrtibuteDefine {
       propTopGroup.groups.forEach(topGroup => {
         if (topGroup?.children?.length > 0) {
           topGroup.children.forEach(item => {
-            if (paths.indexOf(item.code) != -1) {
-              item.visiable = false;
-            }
+            paths.forEach(path => {
+              if (path.indexOf(item.code) != -1) {
+                item.visiable = false;
+              }
+            });
           });
         }
       });
@@ -78,14 +116,20 @@ class DDeiEditorArrtibute extends DDeiArrtibuteDefine {
       propTopGroup.groups.forEach(topGroup => {
         if (topGroup?.children?.length > 0) {
           topGroup.children.forEach(item => {
-            if (paths.indexOf(item.code) != -1) {
-              item.visiable = true;
-            }
+            paths.forEach(path => {
+              if (path.indexOf(item.code) != -1) {
+                item.visiable = true;
+              }
+            });
+
           });
         }
       });
     }
   }
+
+
+
 }
 
 

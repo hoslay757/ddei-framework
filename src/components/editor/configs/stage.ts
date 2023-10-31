@@ -27,12 +27,15 @@ export const styles = {
       'name': '纸张类型',
       'desc': '用来快速选择纸张的类型，以便于套用相关的样式',
       'group': '纸张',
-      'controlType': 'combox',
+      'controlType': 'radio',
       'dataType': 'string',
       'dataSource': [{ 'text': '无', 'value': '' }, { 'text': 'Latter', 'value': 'Latter' }, { 'text': 'A3', 'value': 'A3' }, { 'text': 'A4', 'value': 'A4' }, { 'text': 'A5', 'value': 'A5' }],
       'itemStyle': { width: 120, height: 25, col: 1, row: 0, imgWidth: 20, imgHeight: 20 },
       'defaultValue': '',
+      'cascadeDisplay': { notempty: { show: ['paper.direct'] }, empty: { hidden: ['paper.direct'] } },
       'type': 1,
+      'hiddenTitle': true,
+      'display': 'column',
       'orderNo': 1,
       'visiable': true
     },
@@ -62,6 +65,7 @@ export const styles = {
       'defaultValue': 0,
       'hiddenTitle': true,
       'display': 'column',
+      'cascadeDisplay': { 1: { show: ['mark.data', 'mark.direct', 'mark.opacity', 'mark.font.family', 'mark.font.size', 'mark.font.color'] }, 2: { show: ['mark.data', 'mark.direct', 'mark.opacity'], hidden: ['mark.font.family', 'mark.font.size', 'mark.font.color'] }, empty: { hidden: ['mark.data', 'mark.direct', 'mark.opacity', 'mark.font.family', 'mark.font.size', 'mark.font.color'] } },
       'mapping': [],
       'type': 1,
       'orderNo': 1,
@@ -78,7 +82,7 @@ export const styles = {
       'defaultValue': '',
       'type': 1,
       'orderNo': 2,
-      'visiable': false
+      'visiable': true
     },
 
     {
@@ -93,7 +97,7 @@ export const styles = {
       'defaultValue': '1',
       'type': 1,
       'orderNo': 3,
-      'visiable': false
+      'visiable': true
     },
     {
       'id': '999001104',
@@ -166,13 +170,14 @@ export const styles = {
       'name': '标尺',
       'desc': '是否显示标尺',
       'group': '辅助功能',
-      'controlType': 'radio',
-      'dataType': 'string',
-      'dataSource': [{ 'text': '显示', 'value': 1 }, { 'text': '隐藏', 'value': 0 }],
+      'controlType': 'switch-checkbox',
+      'dataType': 'integer',
       'defaultValue': 1,
       'display': 'column',
+      'hiddenTitle': true,
       'type': 1,
       'orderNo': 1,
+      'cascadeDisplay': { 1: { show: ['ruler.unit'] }, empty: { hidden: ['ruler.unit'] } },
       'visiable': true
     },
     {
@@ -187,7 +192,7 @@ export const styles = {
       'itemStyle': { width: 80, height: 25, col: 2, row: 0, imgWidth: 20, imgHeight: 20 },
       'defaultValue': 'mm',
       'type': 1,
-      'orderNo': 1,
+      'orderNo': 2,
       'visiable': true
     },
     {
@@ -196,12 +201,13 @@ export const styles = {
       'name': '网格线',
       'desc': '设置是否显示网格线',
       'group': '辅助功能',
-      'controlType': 'radio',
-      'dataSource': [{ 'text': '显示', 'value': 1 }, { 'text': '隐藏', 'value': 0 }],
+      'controlType': 'switch-checkbox',
       'dataType': 'integer',
       'defaultValue': 1,
       'type': 1,
-      'orderNo': 2,
+      'orderNo': 3,
+      'display': 'column',
+      'hiddenTitle': true,
       'visiable': true
     },
 

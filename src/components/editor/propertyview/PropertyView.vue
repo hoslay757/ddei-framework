@@ -34,7 +34,8 @@
            :style="{ height: 'calc(100vh - ' + (editor?.topHeight + editor?.bottomHeight + 40) + 'px' }">
         <div :class="{ 'ddei_editor_pv_subgroup_view_tab_panel_editors_column': attrDefine.display == 'column', 'ddei_editor_pv_subgroup_view_tab_panel_editors_row': attrDefine.display != 'column', 'empty_value': attrDefine.value ? false : true }"
              v-for="attrDefine in currentSubGroup?.children"
-             :title="attrDefine.desc">
+             :title="attrDefine.desc"
+             v-show="attrDefine?.visiable">
           <div class="title"
                v-if="!attrDefine.hiddenTitle && attrDefine?.visiable != false">{{ attrDefine.name }}<span v-if="attrDefine.notNull">*</span>：
           </div>
@@ -81,7 +82,10 @@
                                 :attrDefine="attrDefine"
                                 v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'ex-checkbox'">
             </PVExCheckboxEditor>
-
+            <PVSwitchCheckboxEditor :controlDefine="controlDefine"
+                                    :attrDefine="attrDefine"
+                                    v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'switch-checkbox'">
+            </PVSwitchCheckboxEditor>
           </div>
         </div>
       </div>
@@ -108,6 +112,7 @@ import PVComboxEditor from "./editors/PVComboxEditor.vue";
 import PVBorderTypeEditor from "./editors/PVBorderTypeEditor.vue";
 import PVFillTypeEditor from "./editors/PVFillTypeEditor.vue";
 import PVExCheckboxEditor from "./editors/PVExCheckboxEditor.vue";
+import PVSwitchCheckboxEditor from "./editors/PVSwitchCheckboxEditor.vue";
 import ICONS from "../js/icon";
 export default {
   name: "DDei-Editor-PropertyView",
@@ -152,6 +157,7 @@ export default {
     PVFillTypeEditor,
     PVExCheckboxEditor,
     PVTextAreaEditor,
+    PVSwitchCheckboxEditor,
   },
   created() {
     // 监听obj对象中prop属性的变化
@@ -548,6 +554,7 @@ export default {
           group.children?.forEach((curAttr: DDeiEditorArrtibute) => {
             let mapObj = firstControlDefine?.attrDefineMap?.get(curAttr.code);
             if (mapObj && mapObj.visiable != false) {
+              mapObj.topGroup = pData;
               mapObj.modelCode = firstControlDefine.type;
               newGroupChildren.push(mapObj);
               newChildren.push(mapObj);

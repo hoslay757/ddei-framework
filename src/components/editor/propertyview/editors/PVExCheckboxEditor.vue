@@ -1,19 +1,24 @@
 <template>
   <div :class="{ 'ddei_pv_editor_excheckbox': true, 'ddei_pv_editor_excheckbox_disabled': attrDefine.readonly }">
-    <PVBaseCombox :attrDefine="attrDefine" :searchMethod="doSearch" ref="combox" :canSearch="attrDefine.canSearch">
+    <PVBaseCombox :attrDefine="attrDefine"
+                  :searchMethod="doSearch"
+                  ref="combox"
+                  :canSearch="attrDefine.canSearch">
       <div class="itemboxs"
-        :style="{ width: width ? width + 'px' : '', height: height ? height + 'px' : '', 'grid-template-columns': gridTemplateColumns, 'grid-template-rows': gridTemplateRows }">
+           :style="{ width: width ? width + 'px' : '', height: height ? height + 'px' : '', 'grid-template-columns': gridTemplateColumns, 'grid-template-rows': gridTemplateRows }">
         <div :style="{ width: attrDefine?.itemStyle?.width + 'px', height: attrDefine?.itemStyle?.height + 'px' }"
-          :class="{ 'itembox': true, 'itembox_selected': attrDefine?.value && attrDefine?.value?.indexOf(item.value) != -1, 'itembox_deleted': item.deleted, 'itembox_disabled': item.disabled || (attrDefine?.itemStyle?.maxSelect && attrDefine?.itemStyle?.maxSelect <= attrDefine?.value?.length && attrDefine?.value?.indexOf(item.value) == -1), 'itembox_underline': item.underline, 'itembox_bold': item.bold }"
-          v-for="item in dataSource"
-          @click="!item.disabled && (!attrDefine?.itemStyle?.maxSelect || attrDefine?.itemStyle?.maxSelect > attrDefine?.value?.length || attrDefine?.value?.indexOf(item.value) != -1) && valueChange(item.value, $event)"
-          :title="item.desc">
-          <div v-if="item.img" class="itembox_img">
-            <img
-              :style="{ width: attrDefine?.itemStyle?.imgWidth + 'px', height: attrDefine?.itemStyle?.imgHeight + 'px' }"
-              :src="item.img" />
+             :class="{ 'itembox': true, 'itembox_selected': attrDefine?.value && attrDefine?.value?.indexOf(item.value) != -1, 'itembox_deleted': item.deleted, 'itembox_disabled': item.disabled || (attrDefine?.itemStyle?.maxSelect && attrDefine?.itemStyle?.maxSelect <= attrDefine?.value?.length && attrDefine?.value?.indexOf(item.value) == -1), 'itembox_underline': item.underline, 'itembox_bold': item.bold }"
+             v-for="item in dataSource"
+             @click="!item.disabled && (!attrDefine?.itemStyle?.maxSelect || attrDefine?.itemStyle?.maxSelect > attrDefine?.value?.length || attrDefine?.value?.indexOf(item.value) != -1) && valueChange(item.value, $event)"
+             :title="item.desc">
+          <div v-if="item.img"
+               class="itembox_img">
+            <img :style="{ width: attrDefine?.itemStyle?.imgWidth + 'px', height: attrDefine?.itemStyle?.imgHeight + 'px' }"
+                 :src="item.img" />
           </div>
-          <div class="itembox_text" v-if="item.text" :style="{ 'font-family': item.fontFamily }">{{ item.text }}</div>
+          <div class="itembox_text"
+               v-if="item.text"
+               :style="{ 'font-family': item.fontFamily }">{{ item.text }}</div>
         </div>
       </div>
     </PVBaseCombox>
@@ -21,16 +26,16 @@
 </template>
 
 <script lang="ts">
-import DDeiEditorArrtibute from '../../js/attribute/editor-attribute';
-import DDeiEditor from '../../js/editor';
-import DDeiEnumBusCommandType from '../../../framework/js/enums/bus-command-type';
-import DDeiAbstractArrtibuteParser from '../../../framework/js/models/attribute/parser/attribute-parser';
-import PVBaseCombox from './PVBaseCombox.vue';
-import DDeiUtil from '@/components/framework/js/util';
-import CONFIGS from "../../js/config"
-import ICONS from "../../js/icon"
-import DDeiEditorUtil from '../../js/util/editor-util';
-import DDeiEditorEnumBusCommandType from '../../js/enums/editor-command-type';
+import DDeiEditorArrtibute from "../../js/attribute/editor-attribute";
+import DDeiEditor from "../../js/editor";
+import DDeiEnumBusCommandType from "../../../framework/js/enums/bus-command-type";
+import DDeiAbstractArrtibuteParser from "../../../framework/js/models/attribute/parser/attribute-parser";
+import PVBaseCombox from "./PVBaseCombox.vue";
+import DDeiUtil from "@/components/framework/js/util";
+import CONFIGS from "../../js/config";
+import ICONS from "../../js/icon";
+import DDeiEditorUtil from "../../js/util/editor-util";
+import DDeiEditorEnumBusCommandType from "../../js/enums/editor-command-type";
 
 export default {
   name: "DDei-Editor-PV-ExCheckbox",
@@ -40,12 +45,12 @@ export default {
     //当前属性定义
     attrDefine: {
       type: DDeiEditorArrtibute,
-      default: null
+      default: null,
     },
     //当前控件定义
     controlDefine: {
       type: Object,
-      default: null
+      default: null,
     },
   },
   data() {
@@ -60,27 +65,31 @@ export default {
       height: 0,
       col: 1,
       gridTemplateColumns: "1fr",
-      gridTemplateRows: '',
-      searchText: ''
+      gridTemplateRows: "",
+      searchText: "",
     };
   },
   computed: {},
   components: {
-    PVBaseCombox
+    PVBaseCombox,
   },
-  watch: {
-
-  },
-  created() {
-
-  },
+  watch: {},
+  created() {},
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
-    let itemWidth = this.attrDefine?.itemStyle?.width ? this.attrDefine?.itemStyle?.width : 100;
-    let itemCols = this.attrDefine?.itemStyle?.col ? this.attrDefine?.itemStyle?.col : 1;
-    let itemHeight = this.attrDefine?.itemStyle?.height ? this.attrDefine?.itemStyle?.height : 30;
-    let itemRows = this.attrDefine?.itemStyle?.row ? this.attrDefine?.itemStyle?.row : 0;
+    let itemWidth = this.attrDefine?.itemStyle?.width
+      ? this.attrDefine?.itemStyle?.width
+      : 100;
+    let itemCols = this.attrDefine?.itemStyle?.col
+      ? this.attrDefine?.itemStyle?.col
+      : 1;
+    let itemHeight = this.attrDefine?.itemStyle?.height
+      ? this.attrDefine?.itemStyle?.height
+      : 30;
+    let itemRows = this.attrDefine?.itemStyle?.row
+      ? this.attrDefine?.itemStyle?.row
+      : 0;
     this.width = (itemWidth + 5) * itemCols + 10;
     this.col = itemCols;
     this.height = (itemHeight + 5) * itemRows;
@@ -94,11 +103,11 @@ export default {
     if (itemRows) {
       let gridTemplateRows = "";
       for (let i = 1; i <= itemRows; i++) {
-        gridTemplateRows += itemHeight + "px "
+        gridTemplateRows += itemHeight + "px ";
       }
       this.gridTemplateRows = gridTemplateRows;
     }
-    this.getDataSource(this.attrDefine)
+    this.getDataSource(this.attrDefine);
     let type = this.getDataValue();
     let itemDefine = this.getDataDefine(type.value);
     if (itemDefine?.length > 0) {
@@ -114,7 +123,7 @@ export default {
       this.attrDefine.value = type.value;
       this.value = type.value;
     }
-
+    this.attrDefine.doCascadeDisplayByValue();
   },
   methods: {
     /**
@@ -122,7 +131,7 @@ export default {
      * @param value 值
      */
     getDataDefine(value) {
-      let returnList = []
+      let returnList = [];
       if (this.dataSource && value) {
         for (let i = 0; i < this.dataSource.length; i++) {
           for (let j = 0; j < value.length; j++) {
@@ -132,7 +141,7 @@ export default {
               }
             }
           }
-        };
+        }
       }
       return returnList;
     },
@@ -140,7 +149,7 @@ export default {
     doSearch(text, evt) {
       //过滤dataSource，找到text
       this.searchText = text;
-      this.getDataSource(this.attrDefine)
+      this.getDataSource(this.attrDefine);
       this.$refs.combox.showDialog(true, evt);
     },
 
@@ -148,16 +157,21 @@ export default {
     getDataValue() {
       let dataValue = this.attrDefine.value;
       if (!dataValue) {
-        dataValue = DDeiUtil.getDataByPathList(this.attrDefine.model, this.attrDefine.code, this.attrDefine.mapping);
+        dataValue = DDeiUtil.getDataByPathList(
+          this.attrDefine.model,
+          this.attrDefine.code,
+          this.attrDefine.mapping
+        );
       }
       if (dataValue) {
-        return { value: dataValue }
+        return { value: dataValue };
       }
       //通过解析器获取有效值
-      return { isDefault: true, value: this.attrDefine.getParser().getDefaultValue() };
+      return {
+        isDefault: true,
+        value: this.attrDefine.getParser().getDefaultValue(),
+      };
     },
-
-
 
     valueChange(value, evt) {
       if (!value) {
@@ -168,7 +182,7 @@ export default {
       }
       let strValue = "" + value;
       if (this.value.indexOf(strValue) == -1) {
-        this.value.push(strValue)
+        this.value.push(strValue);
       } else {
         let index = this.value.indexOf(strValue);
         if (index != -1) {
@@ -195,17 +209,32 @@ export default {
       let parsedValue = parser.parseValue(this.value);
       //获取属性路径
       let paths = [];
-      this.attrDefine?.mapping?.forEach(element => {
+      this.attrDefine?.mapping?.forEach((element) => {
         paths.push(element);
       });
       if (!(paths?.length > 0)) {
-        paths = [this.attrDefine.code]
+        paths = [this.attrDefine.code];
       }
-      DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, parsedValue)
-      this.editor.ddInstance.stage.selectedModels.forEach(element => {
-        this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: parsedValue , attrDefine: this.attrDefine }, evt, true);
+      DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, parsedValue);
+      this.attrDefine.doCascadeDisplayByValue();
+      this.editor.ddInstance.stage.selectedModels.forEach((element) => {
+        this.editor.bus.push(
+          DDeiEnumBusCommandType.ModelChangeValue,
+          {
+            mids: [element.id],
+            paths: paths,
+            value: parsedValue,
+            attrDefine: this.attrDefine,
+          },
+          evt,
+          true
+        );
       });
-      this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, null, evt);
+      this.editor.bus.push(
+        DDeiEditorEnumBusCommandType.RefreshEditorParts,
+        null,
+        evt
+      );
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
       this.editor.bus.executeAll();
     },
@@ -213,11 +242,14 @@ export default {
      * 获取数据源数据
      */
     getDataSource(attrDefine) {
-      let dataSources = DDeiEditorUtil.getDataSource(this.attrDefine, this.searchText);
+      let dataSources = DDeiEditorUtil.getDataSource(
+        this.attrDefine,
+        this.searchText
+      );
       this.dataSource = dataSources;
       return this.dataSource;
     },
-  }
+  },
 };
 </script>
 
@@ -227,7 +259,8 @@ export default {
   margin-top: 4px;
 }
 
-.ddei_pv_editor_excheckbox_disabled {}
+.ddei_pv_editor_excheckbox_disabled {
+}
 
 .ddei_combox_show_dialog_content .itemboxs {
   border-radius: 4px;
@@ -247,8 +280,6 @@ export default {
   display: table;
   border-radius: 4px;
 }
-
-
 
 .ddei_combox_show_dialog_content .itemboxs .itembox:hover {
   background-color: rgb(245, 245, 245);
@@ -273,7 +304,6 @@ export default {
   vertical-align: middle;
 }
 
-
 .ddei_combox_show_dialog_content .itembox_selected {
   border: 1px solid #017fff;
   overflow: hidden;
@@ -294,8 +324,6 @@ export default {
   height: 15px;
 }
 
-
-
 .ddei_combox_show_dialog_content .itembox_selected::after {
   font-size: 12px;
   line-height: 12px;
@@ -310,19 +338,16 @@ export default {
   color: #fff;
 }
 
-
 .ddei_combox_show_dialog_content .itembox_deleted {
   text-decoration: line-through;
 }
 
 .ddei_combox_show_dialog_content .itembox_disabled {
   color: rgb(210, 210, 210);
-
 }
 
 .ddei_combox_show_dialog_content .itembox_disabled:hover {
   cursor: not-allowed !important;
-
 }
 
 .ddei_combox_show_dialog_content .itembox_underline {
