@@ -110,7 +110,7 @@ export const styles = {
       'max': 1,
       'step': 0.01,
       'dataType': 'float',
-      'defaultValue': 1,
+      'defaultValue': 0.25,
       'display': 'column',
       'orderNo': 4,
       'visiable': true

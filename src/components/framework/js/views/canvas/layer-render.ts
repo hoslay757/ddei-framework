@@ -109,8 +109,6 @@ class DDeiLayerCanvasRender {
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
     let rat1 = this.ddRender.ratio
-    let stageRatio = this.model.getStageRatio()
-    let ratio = rat1 * stageRatio;
     let r20 = rat1 * 20;
     let r40 = rat1 * 40;
 

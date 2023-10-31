@@ -31,9 +31,9 @@ class DDeiModelArrtibuteValue {
       //属性详情路径code
       let detailCode = relPath.slice(1);
       //当前模型状态
-      let stateCode = model.state.toString();
+      let stateCode = model.state?.toString();
       //如果当前状态就是default，则不需要状态路径
-      if (model.state == DDeiEnumControlState.DEFAULT) {
+      if (model.state == DDeiEnumControlState.DEFAULT || !stateCode) {
         stateCode = "";
       }
       //是否复写，复写后将不会读取后续优先级更低的数据

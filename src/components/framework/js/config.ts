@@ -113,6 +113,15 @@ class DDeiConfig {
     selected: { width: 1, color: "black", dash: null, round: 0 }
   };
 
+  // 画布的设置
+  static STAGE = {
+    //水印
+    mark: {
+      font: {
+        family: "Microsoft YaHei", color: "grey", size: "16"
+      }
+    }
+  }
 
   // 选择器的相关缺省样式属性
   static SELECTOR: object = {
@@ -468,6 +477,8 @@ class DDeiConfig {
       return DDeiConfig.SELECTOR;
     } else if (model.modelType == "DDeiRectContainer") {
       return DDeiConfig.CONTAINER;
+    } else if (model.modelType == "DDeiStage") {
+      return DDeiConfig.STAGE;
     }
     return null;
   }
