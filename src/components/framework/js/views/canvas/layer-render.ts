@@ -124,6 +124,7 @@ class DDeiLayerCanvasRender {
     } else {
       bgInfo = this.model.background ? this.model.background : DDeiConfig.LAYER;
     }
+
     //绘制无背景
     if (!bgInfo || !bgInfo.type || bgInfo.type == 0) {
     }

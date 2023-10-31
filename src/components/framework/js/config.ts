@@ -123,6 +123,15 @@ class DDeiConfig {
     }
   }
 
+  // 定义了在1.0缩放的，单位尺寸设置
+  static RULER = {
+    'mm': { size: 10, part: 2 },
+    'cm': { size: 1, part: 2 },
+    'm': { size: 0.05, part: 10 },
+    'inch': { size: 1, part: 8 },
+    'pix': { size: 50, part: 5 },
+  }
+
   // 选择器的相关缺省样式属性
   static SELECTOR: object = {
     //选择器边框

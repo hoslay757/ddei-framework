@@ -36,6 +36,12 @@ class DDeiCanvasRender {
    */
   tempCanvas: object | null = null;
 
+  //屏幕缩放比例
+  ratio: number = 1.0;
+
+  //屏幕DPI
+  dpi: object | null = null;
+
   // ============================== 方法 ===============================
   /**
    * 初始化
@@ -71,6 +77,9 @@ class DDeiCanvasRender {
         this.realCanvas.setAttribute("height", this.container.clientHeight * ratio);
 
         this.ratio = ratio;
+
+        //获取dpi
+        this.dpi = DDeiUtil.getDPI();
 
         //向canvas绑定事件
         this.bindEvent();

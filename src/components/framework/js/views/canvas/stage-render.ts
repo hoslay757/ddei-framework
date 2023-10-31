@@ -112,6 +112,9 @@ class DDeiStageCanvasRender {
     //绘制水印
     this.drawMark();
 
+    //绘制标尺
+    this.drawRuler()
+
     //绘制滚动条
     this.drawScroll();
 
@@ -124,13 +127,134 @@ class DDeiStageCanvasRender {
 
   }
 
+
+  /**
+   * 绘制标尺
+   */
+  drawRuler() {
+    let ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
+    //标尺显示在上和左，根据配置输出刻度
+    if (ruleDisplay == 1 || ruleDisplay == "1") {
+      //绘制横向点
+      //获得 2d 上下文对象
+      let canvas = this.ddRender.getCanvas();
+      let ctx = canvas.getContext('2d');
+      let rat1 = this.ddRender.ratio;
+      let stageRatio = this.model.getStageRatio()
+      let ratio = rat1 * stageRatio;
+      let xDPI = this.ddRender.dpi.x;
+
+      //尺子间隔单位
+      let marginWeight = 0;
+      //标尺单位
+      let unit = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.unit", true);
+      let rulerConfig = DDeiConfig.RULER[unit]
+      let unitWeight = 0
+      switch (unit) {
+        case 'mm': {
+          unitWeight = DDeiUtil.mmToPix(rulerConfig.size, xDPI) * rat1;
+          break;
+        }
+        case 'cm': {
+          unitWeight = DDeiUtil.cmToPix(rulerConfig.size, xDPI) * rat1;
+          break;
+        }
+        case 'm': {
+          unitWeight = DDeiUtil.mToPix(rulerConfig.size, xDPI) * rat1;
+          break;
+        }
+        case 'inch': {
+          unitWeight = DDeiUtil.inchToPix(rulerConfig.size, xDPI) * rat1;
+          break;
+        }
+        case 'pix': {
+          unitWeight = rulerConfig.size * rat1;
+          break;
+        }
+      }
+
+
+      //每个部分的大小
+      marginWeight = Math.floor(unitWeight)
+
+      //标尺的固定显示大小
+      let weight = 16 * rat1;
+      ctx.save();
+      let fontSize = 11 * rat1
+      ctx.font = fontSize + "px Microsoft YaHei"
+      ctx.lineWidth = 1
+      ctx.strokeStyle = "rgb(220,220,220)"
+      ctx.fillStyle = "white"
+      let cwidth = canvas.width;
+      let cheight = canvas.height;
+      let x = 0
+      let y = 0
+      let offsetWidth = 0.5;
+      let xdr = this.model.wpv.x * rat1 % marginWeight
+      let ydr = this.model.wpv.y * rat1 % marginWeight
+      console.log(xdr)
+      //横向尺子背景
+      ctx.fillRect(0, 0, cwidth, weight)
+      ctx.strokeRect(0, 0, cwidth, weight)
+      //纵向尺子背景
+      ctx.fillRect(0, 0, weight, cheight)
+      ctx.strokeRect(0, 0, weight, cheight)
+
+
+      //绘制竖线
+      let sw = weight / 2
+      let textOffset = 1 * rat1
+      ctx.fillStyle = "rgb(220,220,220)"
+      //当前的窗口位置（乘以了窗口缩放比例）
+      let wpvX = -this.model.wpv.x * rat1
+      let wpvY = -this.model.wpv.y * rat1
+      //TODO 暂时初始位置在正中间，需要考虑纸张
+      let startRuleX = this.model.width / 2 * rat1
+      let startRuleY = this.model.height / 2 * rat1
+      for (; x <= cwidth; x += marginWeight) {
+        ctx.beginPath();
+        let posX = x + offsetWidth + xdr;
+        ctx.moveTo(posX, 0);
+        //绘制文本
+        let posText = (Math.round((wpvX - startRuleX + posX) / unitWeight) * rulerConfig.size) + ""
+        if (posText.indexOf('.') != -1) {
+          posText = parseFloat(posText).toFixed(2)
+        }
+        ctx.fillText(posText, posX + textOffset, fontSize)
+        ctx.lineTo(posX, weight);
+        ctx.stroke();
+      }
+
+      //绘制横线
+      for (; y <= cheight; y += marginWeight) {
+        ctx.beginPath();
+        let posY = y + offsetWidth + ydr;
+        ctx.moveTo(0, posY);
+        //绘制文本
+        let posText = (Math.round((wpvY - startRuleY + posY) / unitWeight) * rulerConfig.size) + ""
+        if (posText.indexOf('.') != -1) {
+          posText = parseFloat(posText).toFixed(2)
+        }
+        ctx.fillText(posText, 0, posY + textOffset)
+        ctx.lineTo(weight, posY);
+        ctx.stroke();
+      }
+
+      //左上角空白
+      ctx.fillStyle = 'white'
+      ctx.fillRect(0, 0, weight, weight)
+      ctx.strokeRect(0, 0, weight, weight)
+      ctx.restore();
+    }
+  }
   /**
    * 绘制水印
    */
   drawMark() {
     //水印的参考位置为0,0原点，按照配置进行输出
+    let markType = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.type", true);
     //文本水印
-    if (this.model.mark?.type == 1) {
+    if (markType == 1 || markType == '1') {
       //内容
       let text = this.model.mark.data
       if (text) {

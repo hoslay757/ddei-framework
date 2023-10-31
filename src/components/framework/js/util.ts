@@ -361,6 +361,46 @@ class DDeiUtil {
     return (window.devicePixelRatio || 1) / backingStore;
   }
 
+
+  //毫米转像素
+  static mmToPix(mm: number, dpi: number): number {
+    return mm / 25.4 * dpi
+  }
+
+  //厘米转像素
+  static cmToPix(cm: number, dpi: number): number {
+    return cm / 25.4 * dpi * 10
+  }
+
+  //米转像素
+  static mToPix(m: number, dpi: number): number {
+    return m / 25.4 * dpi * 1000
+  }
+
+  //英寸转像素
+  static inchToPix(inc: number, dpi: number): number {
+    return inc * dpi
+  }
+
+
+  /**
+   * 获取屏幕DPI
+   */
+  static getDPI(): object {
+    if (window.screen.deviceXDPI) {
+      return { x: window.screen.deviceXDPI, y: window.screen.deviceYDPI }
+    }
+    else {
+      let tmpNode = document.createElement("DIV");
+      tmpNode.style.cssText = "width:1in;height:1in;position:absolute;left:0px;top:0px;z-index:99;visibility:hidden";
+      document.body.appendChild(tmpNode);
+      let x = parseInt(tmpNode.offsetWidth)
+      let y = parseInt(tmpNode.offsetHeight)
+      tmpNode.parentNode.removeChild(tmpNode);
+      return { x: x, y: y }
+    }
+  }
+
   // 16进制编码转rgb
   static hex2rgb(hex: string): string {
     let hexNum = hex.substring(1);

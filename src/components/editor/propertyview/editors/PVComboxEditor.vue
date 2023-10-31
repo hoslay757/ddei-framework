@@ -191,7 +191,7 @@ export default {
       }
       DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, parsedValue);
       this.attrDefine.doCascadeDisplayByValue();
-      this.editor.ddInstance.stage.selectedModels.forEach((element) => {
+      this.editor.ddInstance.stage.selectedModels?.forEach((element) => {
         this.editor.bus.push(
           DDeiEnumBusCommandType.ModelChangeValue,
           {
