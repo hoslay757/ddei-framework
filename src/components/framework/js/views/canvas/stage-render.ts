@@ -134,6 +134,10 @@ class DDeiStageCanvasRender {
       //内容
       let text = this.model.mark.data
       if (text) {
+        if (!this.markCanvas) {
+          this.markCanvas = document.createElement("canvas");
+        }
+        let markCanvas = this.markCanvas;
         //获得 2d 上下文对象
         let canvas = this.ddRender.getCanvas();
         let ctx = canvas.getContext('2d');
@@ -148,59 +152,106 @@ class DDeiStageCanvasRender {
         let fiColor = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.font.color", true);
         //字体缩放后的大小，用于计算
         let fontSize = fiSize * ratio;
+        //计算文本大小
+        let textSize = DDeiUtil.measureTextSize(this.model.ddInstance, text, fiFamily, fontSize)
+        let weight = Math.max(textSize.width, textSize.height);
+        markCanvas.setAttribute("width", weight);
+        markCanvas.setAttribute("height", weight);
+        let markCtx = markCanvas.getContext("2d");
         //设置字体
-        ctx.font = fontSize + "px " + fiFamily
+        markCtx.font = fontSize + "px " + fiFamily
         //设置字体颜色
-        ctx.fillStyle = fiColor
+        markCtx.fillStyle = fiColor
         //透明度
         let opac = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.opacity", true);
         if (opac) {
-          ctx.globalAlpha = opac
+          markCtx.globalAlpha = opac
         }
         //方向
         let direct = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.direct", true);
-
-        //计算文本大小
-        let textSize = DDeiUtil.measureTextSize(this.model.ddInstance, text, fiFamily, fontSize)
+        if (direct == 1) {
+          markCtx.translate(markCanvas.width * 0.5, markCanvas.height * 0.5)
+          markCtx.rotate(45 * DDeiConfig.ROTATE_UNIT);
+          markCtx.translate(-markCanvas.width * 0.5, -markCanvas.height * 0.5)
+        } else if (direct == 2) {
+          markCtx.translate(markCanvas.width * 0.5, markCanvas.height * 0.5)
+          markCtx.rotate(-45 * DDeiConfig.ROTATE_UNIT);
+          markCtx.translate(-markCanvas.width * 0.5, -markCanvas.height * 0.5)
+        }
+        markCtx.clearRect(0, 0, markCanvas.width, markCanvas.height)
+        markCtx?.fillText(text, 0, (markCanvas.height - textSize.height) / 2)
         let marginWidth = textSize.width + 50 * ratio
-        let marginHeight = textSize.height + 50 * ratio
-
+        let marginHeight = textSize.height + 100 * ratio
         let cwidth = canvas.width + marginWidth;
         let cheight = canvas.height + marginHeight;
         let x = -marginWidth
         let xdr = this.model.wpv.x * rat1 % marginWidth
         let ydr = this.model.wpv.y * rat1 % marginHeight
-        if (direct == 1) {
-
-        } else if (direct == 2) {
-
-        }
         for (; x <= cwidth; x += marginWidth) {
           let y = -marginHeight
           for (; y <= cheight; y += marginHeight) {
-            ctx.fillText(text, x + xdr, y + ydr)
+            ctx.drawImage(markCanvas, x + xdr, y + ydr)
           }
         }
-
-
-
-
-
         ctx.restore();
       }
     }
     //图片水印
     else if (this.model.mark?.type == 2) {
-      //获得 2d 上下文对象
-      let canvas = this.ddRender.getCanvas();
-      let ctx = canvas.getContext('2d');
-      let rat1 = this.ddRender.ratio;
-      let stageRatio = this.model.getStageRatio()
-      let ratio = rat1 * stageRatio;
-      ctx.save();
+      //没有图片，加载图片，有图片绘制图片
+      if (!this.mark?.imgObj) {
+        this.initMarkImage();
+      } else {
+        if (!this.markCanvas) {
+          this.markCanvas = document.createElement("canvas");
+        }
+        let markCanvas = this.markCanvas;
+        //获得 2d 上下文对象
+        let canvas = this.ddRender.getCanvas();
+        let ctx = canvas.getContext('2d');
+        let rat1 = this.ddRender.ratio;
+        let stageRatio = this.model.getStageRatio()
+        let ratio = rat1 * stageRatio;
+        ctx.save();
+        //获取并应用设置信息
+        let weight = Math.max(this.mark.imgObj.width, this.mark.imgObj.height);
+        markCanvas.setAttribute("width", weight);
+        markCanvas.setAttribute("height", weight);
+        let markCtx = markCanvas.getContext("2d");
 
-
-      ctx.restore();
+        //透明度
+        let opac = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.opacity", true);
+        if (opac) {
+          markCtx.globalAlpha = opac
+        }
+        //方向
+        let direct = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.direct", true);
+        if (direct == 1) {
+          markCtx.translate(markCanvas.width * 0.5, markCanvas.height * 0.5)
+          markCtx.rotate(45 * DDeiConfig.ROTATE_UNIT);
+          markCtx.translate(-markCanvas.width * 0.5, -markCanvas.height * 0.5)
+        } else if (direct == 2) {
+          markCtx.translate(markCanvas.width * 0.5, markCanvas.height * 0.5)
+          markCtx.rotate(-45 * DDeiConfig.ROTATE_UNIT);
+          markCtx.translate(-markCanvas.width * 0.5, -markCanvas.height * 0.5)
+        }
+        markCtx.clearRect(0, 0, markCanvas.width, markCanvas.height)
+        markCtx.drawImage(this.mark.imgObj, weight - this.mark.imgObj.width, (weight - this.mark.imgObj.height) / 2)
+        let marginWidth = markCanvas.width + 50 * ratio
+        let marginHeight = markCanvas.height + 50 * ratio
+        let cwidth = canvas.width + marginWidth;
+        let cheight = canvas.height + marginHeight;
+        let x = -marginWidth
+        let xdr = this.model.wpv.x * rat1 % marginWidth
+        let ydr = this.model.wpv.y * rat1 % marginHeight
+        for (; x <= cwidth; x += marginWidth) {
+          let y = -marginHeight
+          for (; y <= cheight; y += marginHeight) {
+            ctx.drawImage(markCanvas, x + xdr, y + ydr)
+          }
+        }
+        ctx.restore();
+      }
     }
 
 
@@ -326,6 +377,27 @@ class DDeiStageCanvasRender {
     this.selector.resetState();
   }
 
+  /**
+   * 初始化水印图片
+   */
+  initMarkImage(): void {
+    //加载图片
+    let that = this;
+    //加载base64图片
+    if ((this.model.mark?.imgBase64 || this.model.mark?.data) && !this.mark?.imgObj) {
+      let img = new Image();   // 创建一个<img>元素
+      img.onload = function () {
+        if (!that.mark) {
+          that.mark = {}
+        }
+        that.mark.imgObj = img;
+        that.model.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, null);
+        that.model.ddInstance.bus.executeAll()
+      }
+      img.src = this.model.mark.imgBase64 ? this.model.mark?.imgBase64 : this.model.mark?.data;
+    }
+
+  }
 
   /**
    * 重置选择器状态
