@@ -114,6 +114,7 @@ import PVFillTypeEditor from "./editors/PVFillTypeEditor.vue";
 import PVExCheckboxEditor from "./editors/PVExCheckboxEditor.vue";
 import PVSwitchCheckboxEditor from "./editors/PVSwitchCheckboxEditor.vue";
 import ICONS from "../js/icon";
+import DDeiEnumBusCommandType from "../../framework/js/enums/bus-command-type";
 export default {
   name: "DDei-Editor-PropertyView",
   extends: null,

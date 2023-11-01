@@ -92,6 +92,8 @@ export default {
     file.initHistroy();
     this.editor.ddInstance.bus.invoker = this.editor;
     this.editor.bus = this.editor.ddInstance.bus;
+    this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
+    this.editor.bus.executeAllDelay(200);
   },
   methods: {
     /**

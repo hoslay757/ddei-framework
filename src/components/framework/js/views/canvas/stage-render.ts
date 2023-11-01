@@ -241,6 +241,7 @@ class DDeiStageCanvasRender {
    */
   drawRuler() {
     let ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
+    console.log(ruleDisplay)
     //标尺显示在上和左，根据配置输出刻度
     if (ruleDisplay == 1 || ruleDisplay == "1") {
       //绘制横向点

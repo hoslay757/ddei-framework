@@ -75,6 +75,15 @@ class DDeiBus {
   }
 
   /**
+   * 延迟执行
+   * @param time 延迟执行时间
+   */
+  executeAllDelay(time: number) {
+    setTimeout(() => {
+      this.executeAll()
+    }, time);
+  }
+  /**
    * 按照先进先出的顺序执行所有action
    */
   executeAll(): void {
