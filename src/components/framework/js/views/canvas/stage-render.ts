@@ -160,14 +160,14 @@ class DDeiStageCanvasRender {
       let offsetWidth = 0.5;
 
       //纸张的像素大小
-      let paperWidth = 0; DDeiUtil.unitToPix(paperConfig.width, paperConfig.unit, xDPI) * rat1;
-      let paperHeight = 0; DDeiUtil.unitToPix(paperConfig.height, paperConfig.unit, xDPI) * rat1;
+      let paperWidth = 0;
+      let paperHeight = 0;
       if (paperDirect == 1 || paperDirect == '1') {
-        paperWidth = DDeiUtil.unitToPix(paperConfig.width, paperConfig.unit, xDPI) * rat1;
-        paperHeight = DDeiUtil.unitToPix(paperConfig.height, paperConfig.unit, xDPI) * rat1;
+        paperWidth = DDeiUtil.unitToPix(paperConfig.width, paperConfig.unit, xDPI) * ratio;
+        paperHeight = DDeiUtil.unitToPix(paperConfig.height, paperConfig.unit, xDPI) * ratio;
       } else {
-        paperHeight = DDeiUtil.unitToPix(paperConfig.width, paperConfig.unit, xDPI) * rat1;
-        paperWidth = DDeiUtil.unitToPix(paperConfig.height, paperConfig.unit, xDPI) * rat1;
+        paperHeight = DDeiUtil.unitToPix(paperConfig.width, paperConfig.unit, xDPI) * ratio;
+        paperWidth = DDeiUtil.unitToPix(paperConfig.height, paperConfig.unit, xDPI) * ratio;
       }
 
       //第一张纸开始位置
@@ -228,7 +228,7 @@ class DDeiStageCanvasRender {
         }
       }
       ctx.setLineDash([]);
-      ctx.lineWidth = 2
+      ctx.lineWidth = 1
       ctx.strokeStyle = "black"
       ctx.strokeRect(posX + (-leftExtNum * paperWidth), posY + (-topExtNum * paperHeight), (rightExtNum + leftExtNum + 1) * paperWidth, (bottomExtNum + topExtNum + 1) * paperHeight)
       ctx.restore();
@@ -241,7 +241,6 @@ class DDeiStageCanvasRender {
    */
   drawRuler() {
     let ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
-    console.log(ruleDisplay)
     //标尺显示在上和左，根据配置输出刻度
     if (ruleDisplay == 1 || ruleDisplay == "1") {
       //绘制横向点
@@ -258,7 +257,7 @@ class DDeiStageCanvasRender {
       //标尺单位
       let unit = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.unit", true);
       let rulerConfig = DDeiConfig.RULER[unit]
-      let unitWeight = DDeiUtil.unitToPix(rulerConfig.size, unit, xDPI) * rat1;
+      let unitWeight = DDeiUtil.unitToPix(rulerConfig.size, unit, xDPI) * ratio;
       //尺子间隔单位
       let marginWeight = Math.floor(unitWeight)
 
@@ -283,20 +282,17 @@ class DDeiStageCanvasRender {
       if (paperConfig) {
         let paperDirect = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.direct", true);
         if (paperDirect == 1 || paperDirect == '1') {
-          paperWidth = DDeiUtil.unitToPix(paperConfig.width, paperConfig.unit, xDPI) * rat1;
-          paperHeight = DDeiUtil.unitToPix(paperConfig.height, paperConfig.unit, xDPI) * rat1;
+          paperWidth = DDeiUtil.unitToPix(paperConfig.width, paperConfig.unit, xDPI) * ratio;
+          paperHeight = DDeiUtil.unitToPix(paperConfig.height, paperConfig.unit, xDPI) * ratio;
         } else {
-          paperHeight = DDeiUtil.unitToPix(paperConfig.width, paperConfig.unit, xDPI) * rat1;
-          paperWidth = DDeiUtil.unitToPix(paperConfig.height, paperConfig.unit, xDPI) * rat1;
+          paperHeight = DDeiUtil.unitToPix(paperConfig.width, paperConfig.unit, xDPI) * ratio;
+          paperWidth = DDeiUtil.unitToPix(paperConfig.height, paperConfig.unit, xDPI) * ratio;
         }
       }
 
       //基准位置0刻度
-      let startBaseX = this.model.width / 2 * rat1 - paperWidth / 2
-      let startBaseY = this.model.height / 2 * rat1 - paperHeight / 2
-      let offsetWidth = 0.5;
-      let xdr = this.model.wpv.x * rat1 % marginWeight
-      let ydr = this.model.wpv.y * rat1 % marginWeight
+      let startBaseX = this.model.width / 2 * rat1 - paperWidth / 2 + 0.5
+      let startBaseY = this.model.height / 2 * rat1 - paperHeight / 2 + 0.5
       //横向尺子背景
       ctx.fillRect(0, 0, cwidth, weight)
       ctx.strokeRect(0, 0, cwidth, weight)
@@ -340,7 +336,6 @@ class DDeiStageCanvasRender {
           posText = parseFloat(posText).toFixed(2)
         }
         ctx.fillText(posText, curX + textOffset, fontSize)
-
         curX -= marginWeight;
         x--
       }

@@ -31,7 +31,7 @@ export const styles = {
       'dataType': 'string',
       'dataSource': [{ 'text': '无', 'value': '' }, { 'text': 'Letter', 'value': 'Letter' }, { 'text': 'Legal', 'value': 'Legal' }, { 'text': 'A3', 'value': 'A3' }, { 'text': 'A4', 'value': 'A4' }, { 'text': 'A5', 'value': 'A5' }],
       'itemStyle': { width: 120, height: 25, col: 1, row: 0, imgWidth: 20, imgHeight: 20 },
-      'defaultValue': '',
+      'defaultValue': 'A4',
       'cascadeDisplay': { notempty: { show: ['paper.direct'] }, empty: { hidden: ['paper.direct'] } },
       'type': 1,
       'hiddenTitle': true,
