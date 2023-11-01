@@ -175,13 +175,62 @@ class DDeiStageCanvasRender {
       let startPaperY = Math.floor(this.model.height / 2 * rat1 - paperHeight / 2)
       let posX = startPaperX - wpvX + offsetWidth;
       let posY = startPaperY - wpvY + offsetWidth;
+
+      //获取最大的有效范围，自动扩展纸张
+      let maxOutRect = DDeiAbstractShape.getOutRectByPV(this.model.getLayerModels())
+      maxOutRect.x = maxOutRect.x * rat1;
+      maxOutRect.x1 = maxOutRect.x1 * rat1;
+      maxOutRect.y = maxOutRect.y * rat1;
+      maxOutRect.y1 = maxOutRect.y1 * rat1;
+      //计算各个方向扩展的数量
+      let leftExtNum = 0, rightExtNum = 0, topExtNum = 0, bottomExtNum = 0
+      if (maxOutRect.width > 0 && maxOutRect.height > 0) {
+        if (maxOutRect.x < startPaperX) {
+          //计算要扩展的数量
+          leftExtNum = parseInt((startPaperX - maxOutRect.x) / paperWidth)
+          if ((startPaperX - maxOutRect.x) % paperWidth != 0) {
+            leftExtNum++
+          }
+        }
+        if (maxOutRect.x1 > startPaperX + paperWidth) {
+          //计算要扩展的数量
+          rightExtNum = parseInt((maxOutRect.x1 - startPaperX - paperWidth) / paperWidth)
+          if ((maxOutRect.x1 - startPaperX - paperWidth) % paperWidth != 0) {
+            rightExtNum++
+          }
+        }
+        if (maxOutRect.y < startPaperY) {
+          //计算要扩展的数量
+          topExtNum = parseInt((startPaperY - maxOutRect.y) / paperHeight)
+          if ((startPaperY - maxOutRect.y) % paperHeight != 0) {
+            topExtNum++
+          }
+        }
+        if (maxOutRect.y1 > startPaperY + paperHeight) {
+          //计算要扩展的数量
+          bottomExtNum = parseInt((maxOutRect.y1 - startPaperY - paperHeight) / paperHeight)
+          if ((maxOutRect.y1 - startPaperY - paperHeight) % paperHeight != 0) {
+            bottomExtNum++
+          }
+        }
+      }
       //绘制矩形纸张
       ctx.save();
       ctx.lineWidth = 1
-      ctx.strokeStyle = "black"
       ctx.fillStyle = "white"
-      ctx.strokeRect(posX, posY, paperWidth, paperHeight)
-      ctx.fillRect(posX, posY, paperWidth, paperHeight)
+      ctx.strokeStyle = "grey"
+      ctx.setLineDash([5, 5]);
+
+      for (let i = -leftExtNum; i <= rightExtNum; i++) {
+        for (let j = -topExtNum; j <= bottomExtNum; j++) {
+          ctx.fillRect(posX + (i * paperWidth), posY + (j * paperHeight), paperWidth, paperHeight)
+          ctx.strokeRect(posX + (i * paperWidth), posY + (j * paperHeight), paperWidth, paperHeight)
+        }
+      }
+      ctx.setLineDash([]);
+      ctx.lineWidth = 2
+      ctx.strokeStyle = "black"
+      ctx.strokeRect(posX + (-leftExtNum * paperWidth), posY + (-topExtNum * paperHeight), (rightExtNum + leftExtNum + 1) * paperWidth, (bottomExtNum + topExtNum + 1) * paperHeight)
       ctx.restore();
     }
 

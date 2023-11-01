@@ -933,14 +933,12 @@ abstract class DDeiAbstractShape {
     if (!models.length) {
       return { x: 0, y: 0, width: 0, height: 0 }
     }
-
     //按照rotate对图形进行旋转，求的旋转后的四个点坐标
     //遍历所有点，求得最大、最小的x、y
     let points: object[] = [];
     models.forEach(item => {
-      let ps = cloneDeep(item.pvs);
       //按圆心进行旋转rotate度，得到绘制出来的点位
-      points = points.concat(ps)
+      points = points.concat(item.pvs)
     })
 
     return DDeiAbstractShape.pvsToOutRect(points);
