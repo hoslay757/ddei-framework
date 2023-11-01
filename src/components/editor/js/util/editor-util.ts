@@ -4,6 +4,7 @@ import CONFIGS from "../../js/config"
 import ICONS from "../../js/icon"
 import DDeiAbstractShape from "@/components/framework/js/models/shape";
 import DDeiEditor from "../editor";
+import DDeiConfig from "@/components/framework/js/config";
 
 class DDeiEditorUtil {
 
@@ -134,6 +135,9 @@ class DDeiEditorUtil {
           dataSource = [];
           let configData = dsDefine.data;
           let data = CONFIGS[configData];
+          if (!data) {
+            data = DDeiConfig[configData]
+          }
           if (data) {
             let textKey = dsDefine.text;
             let valueKey = dsDefine.value;

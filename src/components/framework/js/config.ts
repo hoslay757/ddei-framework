@@ -134,13 +134,14 @@ class DDeiConfig {
 
   // 定义了在各种常见纸张的大小以及名称
   static PAPER = {
+    "自定义": { width: 210, height: 297, unit: 'mm', desc: '可以自由设置宽高' },
     "Letter": { width: 216, height: 279, unit: 'mm' },
     "Legal": { width: 216, height: 356, unit: 'mm' },
     "A0": { width: 841, height: 1189, unit: 'mm' },
     "A1": { width: 594, height: 841, unit: 'mm' },
     "A2": { width: 420, height: 594, unit: 'mm' },
     "A3": { width: 297, height: 420, unit: 'mm' },
-    "A4": { width: 210, height: 297, unit: 'mm' },
+    "A4": { width: 210, height: 297, unit: 'mm', desc: '常用打印纸' },
     "A5": { width: 148, height: 210, unit: 'mm' },
     "A6": { width: 105, height: 148, unit: 'mm' },
     "A7": { width: 74, height: 105, unit: 'mm' },
@@ -193,6 +194,8 @@ class DDeiConfig {
     "32开": { width: 142, height: 210, paddingLeft: 12, paddingTop: 25, unit: 'mm' },
     "64开": { width: 110, height: 142, paddingLeft: 18, paddingTop: 12, unit: 'mm' }
   }
+
+
 
   // 选择器的相关缺省样式属性
   static SELECTOR: object = {
@@ -562,7 +565,20 @@ class DDeiConfig {
     model.render = RENDER_CLS[clsName].newInstance({ model: model })
   }
 
+  static {
+    //转换配置为数组
+    DDeiConfig.PAPER_DATASOURCE = []
+    for (let i in DDeiConfig.PAPER) {
+      let data = DDeiConfig.PAPER[i];
+      data.desc = data.desc
+      if (!data.desc && data.width && data.height) {
+        data.desc = data.width + " ✖️ " + data.height + data.unit
+      }
+      data.code = i
+      DDeiConfig.PAPER_DATASOURCE.push(data)
+    }
 
+  }
 
 }
 

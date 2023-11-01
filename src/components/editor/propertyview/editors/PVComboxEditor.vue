@@ -18,7 +18,10 @@
           </div>
           <div class="itembox_text"
                v-if="item.text"
-               :style="{ 'font-family': item.fontFamily }">{{ item.text }}</div>
+               :style="{ 'font-family': item.fontFamily ,'text-align':attrDefine?.itemStyle?.align,'padding-left':attrDefine?.itemStyle?.paddingLeft}">{{ item.text }}</div>
+          <div class="itembox_desc"
+               v-if="item.desc"
+               :style="{ 'font-family': item.fontFamily ,'text-align':attrDefine?.itemStyle?.align}">{{ item.desc }}</div>
         </div>
       </div>
     </PVBaseCombox>
@@ -253,7 +256,7 @@ export default {
   font-size: 13px;
   margin: auto;
   background: transparent;
-  display: table;
+  display: flex;
   border-radius: 4px;
 }
 
@@ -276,7 +279,19 @@ export default {
 .ddei_combox_show_dialog_content .itemboxs .itembox .itembox_text {
   text-align: center;
   display: table-cell;
-  width: 100%;
+  flex: 1;
+  vertical-align: middle;
+}
+
+.ddei_combox_show_dialog_content .itemboxs .itembox .itembox_desc {
+  text-align: left;
+  display: table-cell;
+  font-size: 11px;
+  filter: brightness(60%);
+  padding-top: 2px;
+  flex: 1;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   vertical-align: middle;
 }
 
