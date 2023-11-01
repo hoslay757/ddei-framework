@@ -204,13 +204,14 @@ class DDeiStageCanvasRender {
       //绘制竖线
       let sw = weight / 2
       let textOffset = 1 * rat1
-      ctx.fillStyle = "rgb(220,220,220)"
+      ctx.fillStyle = "rgb(200,200,200)"
       //当前的窗口位置（乘以了窗口缩放比例）
       let wpvX = -this.model.wpv.x * rat1
       let wpvY = -this.model.wpv.y * rat1
       //TODO 暂时初始位置在正中间，需要考虑纸张
       let startRuleX = this.model.width / 2 * rat1
-      let startRuleY = this.model.height / 2 * rat1
+
+
       for (; x <= cwidth; x += marginWeight) {
         ctx.beginPath();
         let posX = x + offsetWidth + xdr;
@@ -225,6 +226,8 @@ class DDeiStageCanvasRender {
         ctx.stroke();
       }
 
+
+      let startRuleY = this.model.height / 2 * rat1
       //绘制横线
       for (; y <= cheight; y += marginWeight) {
         ctx.beginPath();
@@ -235,7 +238,14 @@ class DDeiStageCanvasRender {
         if (posText.indexOf('.') != -1) {
           posText = parseFloat(posText).toFixed(2)
         }
-        ctx.fillText(posText, 0, posY + textOffset)
+        ctx.save()
+        // ctx.translate(0, posY * 0.5)
+        ctx.scale(-1, 1);
+        ctx.rotate(90 * DDeiConfig.ROTATE_UNIT);
+        ctx.scale(-1, 1);
+        // ctx.translate(0, -posY * 0.5)
+        ctx.fillText(posText, -posY + textOffset, fontSize)
+        ctx.restore()
         ctx.lineTo(weight, posY);
         ctx.stroke();
       }
