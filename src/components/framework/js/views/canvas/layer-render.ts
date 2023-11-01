@@ -76,8 +76,6 @@ class DDeiLayerCanvasRender {
     //只有当显示时才绘制图层
     if (this.model.display) {
 
-      //绘制背景
-      this.drawBackground();
       //绘制子元素
       this.drawChildrenShapes();
 
@@ -104,105 +102,107 @@ class DDeiLayerCanvasRender {
    * 绘制背景
    */
   drawBackground(): void {
-    //获得 2d 上下文对象
-    let canvas = this.ddRender.getCanvas();
-    let ctx = canvas.getContext('2d');
-    //获取全局缩放比例
-    let rat1 = this.ddRender.ratio
-    let r20 = rat1 * 20;
-    let r40 = rat1 * 40;
+    if (this.model.display) {
+      //获得 2d 上下文对象
+      let canvas = this.ddRender.getCanvas();
+      let ctx = canvas.getContext('2d');
+      //获取全局缩放比例
+      let rat1 = this.ddRender.ratio
+      let r20 = rat1 * 20;
+      let r40 = rat1 * 40;
 
-    //保存状态
-    ctx.save();
+      //保存状态
+      ctx.save();
 
-    ctx.translate(-this.stage.wpv.x * rat1, -this.stage.wpv.y * rat1)
-    //根据背景的设置绘制图层
-    //绘制背景图层
-    let bgInfo = null;
-    if (this.model.type == 99) {
-      bgInfo = this.model.background ? this.model.background : DDeiConfig.BACKGROUND_LAYER;
-    } else {
-      bgInfo = this.model.background ? this.model.background : DDeiConfig.LAYER;
-    }
-
-    //绘制无背景
-    if (!bgInfo || !bgInfo.type || bgInfo.type == 0) {
-    }
-    // 绘制纯色背景
-    else if (bgInfo.type == 1) {
-      ctx.fillStyle = bgInfo.bgcolor
-      //透明度
-      if (bgInfo.opacity != null && bgInfo.opacity != undefined) {
-        ctx.globalAlpha = bgInfo.opacity
+      ctx.translate(-this.stage.wpv.x * rat1, -this.stage.wpv.y * rat1)
+      //根据背景的设置绘制图层
+      //绘制背景图层
+      let bgInfo = null;
+      if (this.model.type == 99) {
+        bgInfo = this.model.background ? this.model.background : DDeiConfig.BACKGROUND_LAYER;
+      } else {
+        bgInfo = this.model.background ? this.model.background : DDeiConfig.LAYER;
       }
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
-    }
-    //TODO 绘制图片背景类型
-    else if (bgInfo.type == 2) {
 
-    }
-    //绘制田字背景
-    else if (bgInfo.type == 3) {
-
-      ctx.fillStyle = bgInfo.bgcolor
-      //透明度
-      if (bgInfo.opacity != null && bgInfo.opacity != undefined) {
-        ctx.globalAlpha = bgInfo.opacity
+      //绘制无背景
+      if (!bgInfo || !bgInfo.type || bgInfo.type == 0) {
       }
-      let cwidth = canvas.width + r20;
-      let cheight = canvas.height + r20;
-      let scrollWeight = rat1 * 15;
-
-      //判断滚动条
-      if (this.stageRender.hScroll) {
-        cheight -= scrollWeight
-      }
-      if (this.stageRender.vScroll) {
-        cwidth -= scrollWeight
-      }
-      let x = -r20
-      let y = -r20
-      ctx.fillRect(x, y, cwidth, cheight)
-
-      ctx.lineWidth = 1;
-
-      let offsetWidth = 0.5;
-      let xdr = this.stage.wpv.x * rat1 % r20
-      let ydr = this.stage.wpv.y * rat1 % r20
-      //绘制竖线
-      for (; x <= cwidth; x += r20) {
-
-        ctx.beginPath();
-        if (x % r40 == 0) {
-          ctx.setLineDash([]);
-          ctx.strokeStyle = "rgb(210,210,210)";
-        } else {
-          ctx.setLineDash([3, 1]);
-          ctx.strokeStyle = "rgb(220,220,220)";
+      // 绘制纯色背景
+      else if (bgInfo.type == 1) {
+        ctx.fillStyle = bgInfo.bgcolor
+        //透明度
+        if (bgInfo.opacity != null && bgInfo.opacity != undefined) {
+          ctx.globalAlpha = bgInfo.opacity
         }
-        ctx.moveTo(x + offsetWidth + xdr, offsetWidth + ydr);
-        ctx.lineTo(x + offsetWidth + xdr, canvas.height + offsetWidth + ydr);
-        ctx.stroke();
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
       }
+      //TODO 绘制图片背景类型
+      else if (bgInfo.type == 2) {
 
-      //绘制横线
-      for (; y <= cheight; y += r20) {
-        ctx.beginPath();
-        if (y % r40 == 0) {
-          ctx.setLineDash([]);
-          ctx.strokeStyle = "rgb(210,210,210)";
-        } else {
-          ctx.setLineDash([3, 1]);
-          ctx.strokeStyle = "rgb(220,220,220)";
+      }
+      //绘制田字背景
+      else if (bgInfo.type == 3) {
+
+        ctx.fillStyle = DDeiUtil.getColor("rgb(240,240,240)")
+        //透明度
+        if (bgInfo.opacity != null && bgInfo.opacity != undefined) {
+          ctx.globalAlpha = bgInfo.opacity
         }
-        ctx.moveTo(offsetWidth + xdr, y + offsetWidth + ydr);
-        ctx.lineTo(canvas.width + offsetWidth + xdr, y + offsetWidth + ydr);
-        ctx.stroke();
-      }
-    }
+        let cwidth = canvas.width + r20;
+        let cheight = canvas.height + r20;
+        let scrollWeight = rat1 * 15;
 
-    //恢复状态
-    ctx.restore();
+        //判断滚动条
+        if (this.stageRender.hScroll) {
+          cheight -= scrollWeight
+        }
+        if (this.stageRender.vScroll) {
+          cwidth -= scrollWeight
+        }
+        let x = -r20
+        let y = -r20
+        ctx.fillRect(x, y, cwidth, cheight)
+
+        // ctx.lineWidth = 1;
+
+        // let offsetWidth = 0.5;
+        // let xdr = this.stage.wpv.x * rat1 % r20
+        // let ydr = this.stage.wpv.y * rat1 % r20
+        // //绘制竖线
+        // for (; x <= cwidth; x += r20) {
+
+        //   ctx.beginPath();
+        //   if (x % r40 == 0) {
+        //     ctx.setLineDash([]);
+        //     ctx.strokeStyle = "rgb(210,210,210)";
+        //   } else {
+        //     ctx.setLineDash([3, 1]);
+        //     ctx.strokeStyle = "rgb(220,220,220)";
+        //   }
+        //   ctx.moveTo(x + offsetWidth + xdr, offsetWidth + ydr);
+        //   ctx.lineTo(x + offsetWidth + xdr, canvas.height + offsetWidth + ydr);
+        //   ctx.stroke();
+        // }
+
+        // //绘制横线
+        // for (; y <= cheight; y += r20) {
+        //   ctx.beginPath();
+        //   if (y % r40 == 0) {
+        //     ctx.setLineDash([]);
+        //     ctx.strokeStyle = "rgb(210,210,210)";
+        //   } else {
+        //     ctx.setLineDash([3, 1]);
+        //     ctx.strokeStyle = "rgb(220,220,220)";
+        //   }
+        //   ctx.moveTo(offsetWidth + xdr, y + offsetWidth + ydr);
+        //   ctx.lineTo(canvas.width + offsetWidth + xdr, y + offsetWidth + ydr);
+        //   ctx.stroke();
+        // }
+      }
+
+      //恢复状态
+      ctx.restore();
+    }
   }
 
   /**

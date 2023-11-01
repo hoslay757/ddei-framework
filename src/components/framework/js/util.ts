@@ -361,6 +361,37 @@ class DDeiUtil {
     return (window.devicePixelRatio || 1) / backingStore;
   }
 
+  /**
+   * 将任意单位的长度转换为像素
+   * @param number 
+   * @param unit 
+   */
+  static unitToPix(number: number, unit: string, dpi: number): number {
+    let unitWeight = 0;
+    switch (unit) {
+      case 'mm': {
+        unitWeight = DDeiUtil.mmToPix(number, dpi);
+        break;
+      }
+      case 'cm': {
+        unitWeight = DDeiUtil.cmToPix(number, dpi);
+        break;
+      }
+      case 'm': {
+        unitWeight = DDeiUtil.mToPix(number, dpi);
+        break;
+      }
+      case 'inch': {
+        unitWeight = DDeiUtil.inchToPix(number, dpi);
+        break;
+      }
+      case 'pix': {
+        unitWeight = number
+        break;
+      }
+    }
+    return unitWeight
+  }
 
   //毫米转像素
   static mmToPix(mm: number, dpi: number): number {

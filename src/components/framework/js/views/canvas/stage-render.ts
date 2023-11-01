@@ -79,6 +79,7 @@ class DDeiStageCanvasRender {
    * 创建图形
    */
   drawShape(): void {
+
     //根据视窗平移
     //获得 2d 上下文对象
     let canvas = this.ddRender.getCanvas();
@@ -89,25 +90,42 @@ class DDeiStageCanvasRender {
 
     //计算滚动条
     this.calScroll();
-    //display=2的节点，最后渲染
+    //绘制背景
     let topDisplayIndex = -1;
     for (let i = this.model.layers.length - 1; i >= 0; i--) {
       if (this.model.layers[i].display == 1) {
-        this.model.layers[i].render.drawShape();
+        this.model.layers[i].render.drawBackground();
       } else if (this.model.layers[i].display == 2) {
         topDisplayIndex = i;
       }
     }
     if (topDisplayIndex != -1) {
+      this.model.layers[topDisplayIndex].render.drawBackground();
+    }
+    ctx.restore();
+    //绘制纸张
+    this.drawPaper();
+    //绘制图形
+    ctx.save();
+    ctx.translate(this.model.wpv.x * rat1, this.model.wpv.y * rat1)
+
+    for (let i = this.model.layers.length - 1; i >= 0; i--) {
+      if (this.model.layers[i].display == 1) {
+        this.model.layers[i].render.drawShape();
+      }
+    }
+    if (topDisplayIndex != -1) {
       this.model.layers[topDisplayIndex].render.drawShape();
     }
+
     if (this.selector) {
       this.selector.render.drawShape();
     }
     ctx.restore();
 
-    //绘制纸张
-    this.drawPaper();
+
+
+
 
     //绘制水印
     this.drawMark();
@@ -124,9 +142,50 @@ class DDeiStageCanvasRender {
    * 绘制纸张
    */
   drawPaper() {
+    let paperType = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.type", true);
+    let paperDirect = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.direct", true);
+    //获取纸张大小的定义
+    let paperConfig = DDeiConfig.PAPER[paperType];
+    if (paperConfig) {
+      //纸张从原点开始，根据配置输出和自动扩展
+      let canvas = this.ddRender.getCanvas();
+      let ctx = canvas.getContext('2d');
+      let rat1 = this.ddRender.ratio;
+      let stageRatio = this.model.getStageRatio()
+      let ratio = rat1 * stageRatio;
+      let xDPI = this.ddRender.dpi.x;
+      //当前的窗口位置（乘以了窗口缩放比例）
+      let wpvX = -this.model.wpv.x * rat1
+      let wpvY = -this.model.wpv.y * rat1
+      let offsetWidth = 0.5;
+
+      //纸张的像素大小
+      let paperWidth = 0; DDeiUtil.unitToPix(paperConfig.width, paperConfig.unit, xDPI) * rat1;
+      let paperHeight = 0; DDeiUtil.unitToPix(paperConfig.height, paperConfig.unit, xDPI) * rat1;
+      if (paperDirect == 1 || paperDirect == '1') {
+        paperWidth = DDeiUtil.unitToPix(paperConfig.width, paperConfig.unit, xDPI) * rat1;
+        paperHeight = DDeiUtil.unitToPix(paperConfig.height, paperConfig.unit, xDPI) * rat1;
+      } else {
+        paperHeight = DDeiUtil.unitToPix(paperConfig.width, paperConfig.unit, xDPI) * rat1;
+        paperWidth = DDeiUtil.unitToPix(paperConfig.height, paperConfig.unit, xDPI) * rat1;
+      }
+
+      //第一张纸开始位置
+      let startPaperX = Math.floor(this.model.width / 2 * rat1 - paperWidth / 2)
+      let startPaperY = Math.floor(this.model.height / 2 * rat1 - paperHeight / 2)
+      let posX = startPaperX - wpvX + offsetWidth;
+      let posY = startPaperY - wpvY + offsetWidth;
+      //绘制矩形纸张
+      ctx.save();
+      ctx.lineWidth = 1
+      ctx.strokeStyle = "black"
+      ctx.fillStyle = "white"
+      ctx.strokeRect(posX, posY, paperWidth, paperHeight)
+      ctx.fillRect(posX, posY, paperWidth, paperHeight)
+      ctx.restore();
+    }
 
   }
-
 
   /**
    * 绘制标尺
@@ -144,38 +203,14 @@ class DDeiStageCanvasRender {
       let ratio = rat1 * stageRatio;
       let xDPI = this.ddRender.dpi.x;
 
-      //尺子间隔单位
-      let marginWeight = 0;
+
+
       //标尺单位
       let unit = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.unit", true);
       let rulerConfig = DDeiConfig.RULER[unit]
-      let unitWeight = 0
-      switch (unit) {
-        case 'mm': {
-          unitWeight = DDeiUtil.mmToPix(rulerConfig.size, xDPI) * rat1;
-          break;
-        }
-        case 'cm': {
-          unitWeight = DDeiUtil.cmToPix(rulerConfig.size, xDPI) * rat1;
-          break;
-        }
-        case 'm': {
-          unitWeight = DDeiUtil.mToPix(rulerConfig.size, xDPI) * rat1;
-          break;
-        }
-        case 'inch': {
-          unitWeight = DDeiUtil.inchToPix(rulerConfig.size, xDPI) * rat1;
-          break;
-        }
-        case 'pix': {
-          unitWeight = rulerConfig.size * rat1;
-          break;
-        }
-      }
-
-
-      //每个部分的大小
-      marginWeight = Math.floor(unitWeight)
+      let unitWeight = DDeiUtil.unitToPix(rulerConfig.size, unit, xDPI) * rat1;
+      //尺子间隔单位
+      let marginWeight = Math.floor(unitWeight)
 
       //标尺的固定显示大小
       let weight = 16 * rat1;
@@ -187,12 +222,31 @@ class DDeiStageCanvasRender {
       ctx.fillStyle = "white"
       let cwidth = canvas.width;
       let cheight = canvas.height;
-      let x = 0
-      let y = 0
+
+      //纸张的像素大小
+      let paperWidth = 0;
+      let paperHeight = 0;
+      //获取纸张大小的定义
+      let paperType = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.type", true);
+      let paperConfig = DDeiConfig.PAPER[paperType];
+
+      if (paperConfig) {
+        let paperDirect = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.direct", true);
+        if (paperDirect == 1 || paperDirect == '1') {
+          paperWidth = DDeiUtil.unitToPix(paperConfig.width, paperConfig.unit, xDPI) * rat1;
+          paperHeight = DDeiUtil.unitToPix(paperConfig.height, paperConfig.unit, xDPI) * rat1;
+        } else {
+          paperHeight = DDeiUtil.unitToPix(paperConfig.width, paperConfig.unit, xDPI) * rat1;
+          paperWidth = DDeiUtil.unitToPix(paperConfig.height, paperConfig.unit, xDPI) * rat1;
+        }
+      }
+
+      //基准位置0刻度
+      let startBaseX = this.model.width / 2 * rat1 - paperWidth / 2
+      let startBaseY = this.model.height / 2 * rat1 - paperHeight / 2
       let offsetWidth = 0.5;
       let xdr = this.model.wpv.x * rat1 % marginWeight
       let ydr = this.model.wpv.y * rat1 % marginWeight
-      console.log(xdr)
       //横向尺子背景
       ctx.fillRect(0, 0, cwidth, weight)
       ctx.strokeRect(0, 0, cwidth, weight)
@@ -202,53 +256,122 @@ class DDeiStageCanvasRender {
 
 
       //绘制竖线
-      let sw = weight / 2
       let textOffset = 1 * rat1
       ctx.fillStyle = "rgb(200,200,200)"
       //当前的窗口位置（乘以了窗口缩放比例）
       let wpvX = -this.model.wpv.x * rat1
       let wpvY = -this.model.wpv.y * rat1
-      //TODO 暂时初始位置在正中间，需要考虑纸张
-      let startRuleX = this.model.width / 2 * rat1
-
-
-      for (; x <= cwidth; x += marginWeight) {
+      let x = 0;
+      let curX = startBaseX - wpvX
+      while (curX <= cwidth) {
         ctx.beginPath();
-        let posX = x + offsetWidth + xdr;
-        ctx.moveTo(posX, 0);
+        ctx.moveTo(curX, 0);
+        ctx.lineTo(curX, weight);
+        ctx.stroke();
         //绘制文本
-        let posText = (Math.round((wpvX - startRuleX + posX) / unitWeight) * rulerConfig.size) + ""
+        let posText = (x * rulerConfig.size) + ""
         if (posText.indexOf('.') != -1) {
           posText = parseFloat(posText).toFixed(2)
         }
-        ctx.fillText(posText, posX + textOffset, fontSize)
-        ctx.lineTo(posX, weight);
+        ctx.fillText(posText, curX + textOffset, fontSize)
+        curX += marginWeight;
+        x++
+      }
+      x = 0;
+      curX = startBaseX - wpvX
+      while (curX >= 0) {
+        ctx.beginPath();
+        ctx.moveTo(curX, 0);
+        ctx.lineTo(curX, weight);
         ctx.stroke();
+        //绘制文本
+        let posText = (x * rulerConfig.size) + ""
+        if (posText.indexOf('.') != -1) {
+          posText = parseFloat(posText).toFixed(2)
+        }
+        ctx.fillText(posText, curX + textOffset, fontSize)
+
+        curX -= marginWeight;
+        x--
       }
 
 
-      let startRuleY = this.model.height / 2 * rat1
+
+
+
+      let curY = startBaseY - wpvY
+      while (curY <= cheight) {
+        ctx.beginPath();
+        ctx.moveTo(0, curY);
+        ctx.lineTo(weight, curY);
+        ctx.stroke();
+        curY += marginWeight;
+      }
+      curY = startBaseY - wpvY
+      while (curY >= 0) {
+        ctx.beginPath();
+        ctx.moveTo(0, curY);
+        ctx.lineTo(weight, curY);
+        ctx.stroke();
+        curY -= marginWeight;
+      }
+
+      ctx.save()
+      ctx.scale(-1, 1);
+      ctx.rotate(90 * DDeiConfig.ROTATE_UNIT);
+      ctx.scale(-1, 1);
+      curY = startBaseY - wpvY
+      let y = 0;
+      while (curY <= cheight) {
+
+
+        //绘制文本
+        let posText = (y * rulerConfig.size) + ""
+        if (posText.indexOf('.') != -1) {
+          posText = parseFloat(posText).toFixed(2)
+        }
+        ctx.fillText(posText, -curY + textOffset, fontSize)
+        y++
+        curY += marginWeight;
+      }
+      curY = startBaseY - wpvY
+      y = 0
+      while (curY >= 0) {
+        //绘制文本
+        let posText = (y * rulerConfig.size) + ""
+        if (posText.indexOf('.') != -1) {
+          posText = parseFloat(posText).toFixed(2)
+        }
+        ctx.fillText(posText, -curY + textOffset, fontSize)
+        y--
+        curY -= marginWeight;
+      }
+      ctx.restore()
+
       //绘制横线
-      for (; y <= cheight; y += marginWeight) {
-        ctx.beginPath();
-        let posY = y + offsetWidth + ydr;
-        ctx.moveTo(0, posY);
-        //绘制文本
-        let posText = (Math.round((wpvY - startRuleY + posY) / unitWeight) * rulerConfig.size) + ""
-        if (posText.indexOf('.') != -1) {
-          posText = parseFloat(posText).toFixed(2)
-        }
-        ctx.save()
-        // ctx.translate(0, posY * 0.5)
-        ctx.scale(-1, 1);
-        ctx.rotate(90 * DDeiConfig.ROTATE_UNIT);
-        ctx.scale(-1, 1);
-        // ctx.translate(0, -posY * 0.5)
-        ctx.fillText(posText, -posY + textOffset, fontSize)
-        ctx.restore()
-        ctx.lineTo(weight, posY);
-        ctx.stroke();
-      }
+      // for (let y = 0; y <= cheight; y += marginWeight) {
+      //   ctx.beginPath();
+      //   let posY = y + offsetWidth + ydr;
+      //   ctx.moveTo(0, posY);
+
+      //   ctx.lineTo(weight, posY);
+      //   ctx.stroke();
+      // }
+      // ctx.save()
+      // ctx.scale(-1, 1);
+      // ctx.rotate(90 * DDeiConfig.ROTATE_UNIT);
+      // ctx.scale(-1, 1);
+      // for (let y = 0; y <= cheight; y += marginWeight) {
+      //   let posY = y + offsetWidth + ydr;
+      //   //绘制文本
+      //   let posText = (Math.round((wpvY - startRuleY + posY) / unitWeight) * rulerConfig.size) + ""
+      //   if (posText.indexOf('.') != -1) {
+      //     posText = parseFloat(posText).toFixed(2)
+      //   }
+      //   ctx.fillText(posText, -posY + textOffset, fontSize)
+      // }
+      // ctx.restore()
+
 
       //左上角空白
       ctx.fillStyle = 'white'
@@ -394,6 +517,8 @@ class DDeiStageCanvasRender {
 
 
   }
+
+
 
   /**
    * 绘制滚动条
