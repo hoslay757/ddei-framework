@@ -257,9 +257,10 @@ class DDeiStageCanvasRender {
       //标尺单位
       let unit = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.unit", true);
       let rulerConfig = DDeiConfig.RULER[unit]
-      let unitWeight = DDeiUtil.unitToPix(rulerConfig.size, unit, xDPI) * ratio;
       //尺子间隔单位
-      let marginWeight = Math.floor(unitWeight)
+      let marginWeight = DDeiUtil.unitToPix(rulerConfig.size, unit, xDPI) * ratio;
+
+
 
       //标尺的固定显示大小
       let weight = 16 * rat1;
@@ -392,31 +393,6 @@ class DDeiStageCanvasRender {
         curY -= marginWeight;
       }
       ctx.restore()
-
-      //绘制横线
-      // for (let y = 0; y <= cheight; y += marginWeight) {
-      //   ctx.beginPath();
-      //   let posY = y + offsetWidth + ydr;
-      //   ctx.moveTo(0, posY);
-
-      //   ctx.lineTo(weight, posY);
-      //   ctx.stroke();
-      // }
-      // ctx.save()
-      // ctx.scale(-1, 1);
-      // ctx.rotate(90 * DDeiConfig.ROTATE_UNIT);
-      // ctx.scale(-1, 1);
-      // for (let y = 0; y <= cheight; y += marginWeight) {
-      //   let posY = y + offsetWidth + ydr;
-      //   //绘制文本
-      //   let posText = (Math.round((wpvY - startRuleY + posY) / unitWeight) * rulerConfig.size) + ""
-      //   if (posText.indexOf('.') != -1) {
-      //     posText = parseFloat(posText).toFixed(2)
-      //   }
-      //   ctx.fillText(posText, -posY + textOffset, fontSize)
-      // }
-      // ctx.restore()
-
 
       //左上角空白
       ctx.fillStyle = 'white'
