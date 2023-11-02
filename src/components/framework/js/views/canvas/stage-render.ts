@@ -292,7 +292,7 @@ class DDeiStageCanvasRender {
       let fontSize = 11 * rat1
       ctx.font = fontSize + "px Microsoft YaHei"
       ctx.lineWidth = 1
-      ctx.strokeStyle = "rgb(220,220,220)"
+      ctx.strokeStyle = "rgb(190,190,190)"
       ctx.fillStyle = "white"
       let cwidth = canvas.width;
       let cheight = canvas.height;
@@ -338,34 +338,36 @@ class DDeiStageCanvasRender {
       let k = 0;
       let curX = startBaseX - wpvX
       while (curX <= cwidth) {
-        ctx.beginPath();
-        ctx.moveTo(curX, 0);
-        let nMod = x % splitNumber
-        let lineToNumber = 0;
-        if (ruleDisplay == 1 || ruleDisplay == "1") {
-          if (nMod != 0) {
-            ctx.moveTo(curX, 15);
-          } else {
-            //绘制文本
-            let posText = (k * rulerConfig.size) + ""
-            if (posText.indexOf('.') != -1) {
-              posText = parseFloat(posText).toFixed(2)
+        if (curX > weight) {
+          ctx.beginPath();
+          ctx.moveTo(curX, 0);
+          let nMod = x % splitNumber
+          let lineToNumber = 0;
+          if (ruleDisplay == 1 || ruleDisplay == "1") {
+            if (nMod != 0) {
+              ctx.moveTo(curX, 15);
+            } else {
+              //绘制文本
+              let posText = (k * rulerConfig.size) + ""
+              if (posText.indexOf('.') != -1) {
+                posText = parseFloat(posText).toFixed(2)
+              }
+              ctx.fillText(posText, curX + textOffset, fontSize)
             }
-            ctx.fillText(posText, curX + textOffset, fontSize)
+            lineToNumber = weight
           }
-          lineToNumber = weight
+          if (gridDisplay == 1 || gridDisplay == '1') {
+            lineToNumber = cheight
+          }
+          if (nMod != 0) {
+            ctx.strokeStyle = "rgb(230,230,230)"
+          } else {
+            ctx.strokeStyle = "rgb(220,220,220)"
+            k++
+          }
+          ctx.lineTo(curX, lineToNumber);
+          ctx.stroke()
         }
-        if (gridDisplay == 1 || gridDisplay == '1') {
-          lineToNumber = cheight
-        }
-        if (nMod != 0) {
-          ctx.strokeStyle = "rgb(230,230,230)"
-        } else {
-          ctx.strokeStyle = "rgb(220,220,220)"
-          k++
-        }
-        ctx.lineTo(curX, lineToNumber);
-        ctx.stroke()
         curX += splitedWeight;
         x++
       }
@@ -373,35 +375,37 @@ class DDeiStageCanvasRender {
       k = 0;
       curX = startBaseX - wpvX
       while (curX >= 0) {
-        ctx.beginPath();
-        ctx.moveTo(curX, 0);
-        let nMod = x % splitNumber
-        let lineToNumber = 0;
-        if (ruleDisplay == 1 || ruleDisplay == "1") {
-          if (nMod != 0) {
-            ctx.moveTo(curX, 15);
-          } else {
-            //绘制文本
-            let posText = (k * rulerConfig.size) + ""
-            if (posText.indexOf('.') != -1) {
-              posText = parseFloat(posText).toFixed(2)
+        if (curX > weight) {
+          ctx.beginPath();
+          ctx.moveTo(curX, 0);
+          let nMod = x % splitNumber
+          let lineToNumber = 0;
+          if (ruleDisplay == 1 || ruleDisplay == "1") {
+            if (nMod != 0) {
+              ctx.moveTo(curX, 15);
+            } else {
+              //绘制文本
+              let posText = (k * rulerConfig.size) + ""
+              if (posText.indexOf('.') != -1) {
+                posText = parseFloat(posText).toFixed(2)
+              }
+              ctx.fillText(posText, curX + textOffset, fontSize)
             }
-            ctx.fillText(posText, curX + textOffset, fontSize)
-          }
-          lineToNumber = weight
+            lineToNumber = weight
 
+          }
+          if (gridDisplay == 1 || gridDisplay == '1') {
+            lineToNumber = cheight
+          }
+          if (nMod != 0) {
+            ctx.strokeStyle = "rgb(230,230,230)"
+          } else {
+            ctx.strokeStyle = "rgb(220,220,220)"
+            k--
+          }
+          ctx.lineTo(curX, lineToNumber);
+          ctx.stroke()
         }
-        if (gridDisplay == 1 || gridDisplay == '1') {
-          lineToNumber = cheight
-        }
-        if (nMod != 0) {
-          ctx.strokeStyle = "rgb(230,230,230)"
-        } else {
-          ctx.strokeStyle = "rgb(220,220,220)"
-          k--
-        }
-        ctx.lineTo(curX, lineToNumber);
-        ctx.stroke()
         curX -= splitedWeight;
 
         x--
@@ -410,52 +414,56 @@ class DDeiStageCanvasRender {
       let curY = startBaseY - wpvY
       let y = 0;
       while (curY <= cheight) {
-        ctx.beginPath();
-        ctx.moveTo(0, curY);
-        let lineToNumber = 0;
-        let nMod = y % splitNumber
-        if (ruleDisplay == 1 || ruleDisplay == "1") {
-          if (nMod != 0) {
-            ctx.moveTo(15, curY);
+        if (curY > weight) {
+          ctx.beginPath();
+          ctx.moveTo(0, curY);
+          let lineToNumber = 0;
+          let nMod = y % splitNumber
+          if (ruleDisplay == 1 || ruleDisplay == "1") {
+            if (nMod != 0) {
+              ctx.moveTo(15, curY);
+            }
+            lineToNumber = weight
           }
-          lineToNumber = weight
+          if (gridDisplay == 1 || gridDisplay == '1') {
+            lineToNumber = cwidth
+          }
+          if (nMod != 0) {
+            ctx.strokeStyle = "rgb(230,230,230)"
+          } else {
+            ctx.strokeStyle = "rgb(220,220,220)"
+          }
+          ctx.lineTo(lineToNumber, curY);
+          ctx.stroke();
         }
-        if (gridDisplay == 1 || gridDisplay == '1') {
-          lineToNumber = cwidth
-        }
-        if (nMod != 0) {
-          ctx.strokeStyle = "rgb(230,230,230)"
-        } else {
-          ctx.strokeStyle = "rgb(220,220,220)"
-        }
-        ctx.lineTo(lineToNumber, curY);
-        ctx.stroke();
         curY += splitedWeight;
         y++
       }
       curY = startBaseY - wpvY
       y = 0
       while (curY >= 0) {
-        ctx.beginPath();
-        ctx.moveTo(0, curY);
-        let lineToNumber = 0;
-        let nMod = y % splitNumber
-        if (ruleDisplay == 1 || ruleDisplay == "1") {
-          if (nMod != 0) {
-            ctx.moveTo(15, curY);
+        if (curY > weight) {
+          ctx.beginPath();
+          ctx.moveTo(0, curY);
+          let lineToNumber = 0;
+          let nMod = y % splitNumber
+          if (ruleDisplay == 1 || ruleDisplay == "1") {
+            if (nMod != 0) {
+              ctx.moveTo(15, curY);
+            }
+            lineToNumber = weight
           }
-          lineToNumber = weight
+          if (gridDisplay == 1 || gridDisplay == '1') {
+            lineToNumber = cwidth
+          }
+          if (nMod != 0) {
+            ctx.strokeStyle = "rgb(230,230,230)"
+          } else {
+            ctx.strokeStyle = "rgb(220,220,220)"
+          }
+          ctx.lineTo(lineToNumber, curY);
+          ctx.stroke();
         }
-        if (gridDisplay == 1 || gridDisplay == '1') {
-          lineToNumber = cwidth
-        }
-        if (nMod != 0) {
-          ctx.strokeStyle = "rgb(230,230,230)"
-        } else {
-          ctx.strokeStyle = "rgb(220,220,220)"
-        }
-        ctx.lineTo(lineToNumber, curY);
-        ctx.stroke();
         curY -= splitedWeight;
         y--
       }
@@ -724,6 +732,11 @@ class DDeiStageCanvasRender {
     //当前位置
     let curX = -this.model.wpv.x;
     let curY = -this.model.wpv.y;
+    let ruleWeight = 0;
+    let ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
+    if (ruleDisplay == 1 || ruleDisplay == '1') {
+      ruleWeight = 16;
+    }
     //滚动条大小
     let scrollWeight = 15;
 
@@ -732,14 +745,14 @@ class DDeiStageCanvasRender {
     let maxHeight = this.model.height;
     //计算纵向滚动条信息
     if (maxHeight > canvasHeight) {
-      let height = canvasHeight - scrollWeight;
+      let height = canvasHeight - scrollWeight - ruleWeight;
       this.vScroll = { height: height, contentHeight: height * height / maxHeight, y: height * curY / maxHeight, bn: curY / maxHeight };
     } else {
       this.vScroll = null;
     }
     //计算横向滚动条信息
     if (maxWidth > canvasWidth) {
-      let width = canvasWidth - scrollWeight;
+      let width = canvasWidth - scrollWeight - ruleWeight;
       this.hScroll = { width: width, contentWidth: width * width / maxWidth, x: width * curX / maxWidth, bn: curX / maxWidth };
     } else {
       this.hScroll = null;
