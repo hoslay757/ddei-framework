@@ -567,7 +567,7 @@ class DDeiConfig {
 
   static {
     //转换配置为数组
-    DDeiConfig.PAPER_DATASOURCE = []
+    DDeiConfig.PAPER_DATASOURCE = [{ code: '无', name: '无', desc: '不显示纸张' }]
     for (let i in DDeiConfig.PAPER) {
       let data = DDeiConfig.PAPER[i];
       data.desc = data.desc
@@ -575,6 +575,7 @@ class DDeiConfig {
         data.desc = data.width + " ✖️ " + data.height + data.unit
       }
       data.code = i
+      data.name = i
       DDeiConfig.PAPER_DATASOURCE.push(data)
     }
 
