@@ -157,7 +157,7 @@ class DDeiStageCanvasRender {
       //当前的窗口位置（乘以了窗口缩放比例）
       let wpvX = -this.model.wpv.x * rat1
       let wpvY = -this.model.wpv.y * rat1
-      let offsetWidth = 0.5;
+      let offsetWidth = 1 * ratio / 2;
 
       //纸张的像素大小
       let paperWidth = 0;
@@ -188,28 +188,28 @@ class DDeiStageCanvasRender {
         if (maxOutRect.x < startPaperX) {
           //计算要扩展的数量
           leftExtNum = parseInt((startPaperX - maxOutRect.x) / paperWidth)
-          if ((startPaperX - maxOutRect.x) % paperWidth != 0) {
+          if (Math.abs((startPaperX - maxOutRect.x) % paperWidth) > 1) {
             leftExtNum++
           }
         }
         if (maxOutRect.x1 > startPaperX + paperWidth) {
           //计算要扩展的数量
           rightExtNum = parseInt((maxOutRect.x1 - startPaperX - paperWidth) / paperWidth)
-          if ((maxOutRect.x1 - startPaperX - paperWidth) % paperWidth != 0) {
+          if (Math.abs((maxOutRect.x1 - startPaperX - paperWidth) % paperWidth) > 1) {
             rightExtNum++
           }
         }
         if (maxOutRect.y < startPaperY) {
           //计算要扩展的数量
           topExtNum = parseInt((startPaperY - maxOutRect.y) / paperHeight)
-          if ((startPaperY - maxOutRect.y) % paperHeight != 0) {
+          if (Math.abs((startPaperY - maxOutRect.y) % paperHeight) > 1) {
             topExtNum++
           }
         }
         if (maxOutRect.y1 > startPaperY + paperHeight) {
           //计算要扩展的数量
           bottomExtNum = parseInt((maxOutRect.y1 - startPaperY - paperHeight) / paperHeight)
-          if ((maxOutRect.y1 - startPaperY - paperHeight) % paperHeight != 0) {
+          if (Math.abs((maxOutRect.y1 - startPaperY - paperHeight) % paperHeight) > 1) {
             bottomExtNum++
           }
         }
@@ -252,9 +252,6 @@ class DDeiStageCanvasRender {
       let stageRatio = this.model.getStageRatio()
       let ratio = rat1 * stageRatio;
       let xDPI = this.ddRender.dpi.x;
-
-
-
       //标尺单位
       let unit = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.unit", true);
       let rulerConfig = DDeiConfig.RULER[unit]
