@@ -243,7 +243,7 @@ export const styles = {
     },
     {
       'id': '999001303',
-      'code': 'grid',
+      'code': 'grid.display',
       'name': '网格线',
       'desc': '设置是否显示网格线',
       'group': '辅助功能',

@@ -131,7 +131,7 @@ class DDeiStageCanvasRender {
     this.drawMark();
 
     //绘制标尺
-    this.drawRuler()
+    this.drawRulerAndGrid()
 
     //绘制滚动条
     this.drawScroll();
@@ -239,10 +239,11 @@ class DDeiStageCanvasRender {
   /**
    * 绘制标尺
    */
-  drawRuler() {
+  drawRulerAndGrid() {
     let ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
-    //标尺显示在上和左，根据配置输出刻度
-    if (ruleDisplay == 1 || ruleDisplay == "1") {
+    let gridDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "grid.display", true);
+
+    if (ruleDisplay == 1 || ruleDisplay == "1" || gridDisplay == 1 || gridDisplay == '1') {
       //绘制横向点
       //获得 2d 上下文对象
       let canvas = this.ddRender.getCanvas();
@@ -294,12 +295,14 @@ class DDeiStageCanvasRender {
       //基准位置0刻度
       let startBaseX = this.model.width / 2 * rat1 - paperWidth / 2 + 0.5
       let startBaseY = this.model.height / 2 * rat1 - paperHeight / 2 + 0.5
-      //横向尺子背景
-      ctx.fillRect(0, 0, cwidth, weight)
-      ctx.strokeRect(0, 0, cwidth, weight)
-      //纵向尺子背景
-      ctx.fillRect(0, 0, weight, cheight)
-      ctx.strokeRect(0, 0, weight, cheight)
+      if (ruleDisplay == 1 || ruleDisplay == "1") {
+        //横向尺子背景
+        ctx.fillRect(0, 0, cwidth, weight)
+        ctx.strokeRect(0, 0, cwidth, weight)
+        //纵向尺子背景
+        ctx.fillRect(0, 0, weight, cheight)
+        ctx.strokeRect(0, 0, weight, cheight)
+      }
 
 
       //绘制竖线
@@ -313,14 +316,21 @@ class DDeiStageCanvasRender {
       while (curX <= cwidth) {
         ctx.beginPath();
         ctx.moveTo(curX, 0);
-        ctx.lineTo(curX, weight);
-        ctx.stroke();
-        //绘制文本
-        let posText = (x * rulerConfig.size) + ""
-        if (posText.indexOf('.') != -1) {
-          posText = parseFloat(posText).toFixed(2)
+        let lineToNumber = 0;
+        if (ruleDisplay == 1 || ruleDisplay == "1") {
+          lineToNumber = weight
+          //绘制文本
+          let posText = (x * rulerConfig.size) + ""
+          if (posText.indexOf('.') != -1) {
+            posText = parseFloat(posText).toFixed(2)
+          }
+          ctx.fillText(posText, curX + textOffset, fontSize)
         }
-        ctx.fillText(posText, curX + textOffset, fontSize)
+        if (gridDisplay == 1 || gridDisplay == '1') {
+          lineToNumber = cheight
+        }
+        ctx.lineTo(curX, lineToNumber);
+        ctx.stroke()
         curX += marginWeight;
         x++
       }
@@ -329,27 +339,37 @@ class DDeiStageCanvasRender {
       while (curX >= 0) {
         ctx.beginPath();
         ctx.moveTo(curX, 0);
-        ctx.lineTo(curX, weight);
-        ctx.stroke();
-        //绘制文本
-        let posText = (x * rulerConfig.size) + ""
-        if (posText.indexOf('.') != -1) {
-          posText = parseFloat(posText).toFixed(2)
+        let lineToNumber = 0;
+        if (ruleDisplay == 1 || ruleDisplay == "1") {
+          lineToNumber = weight
+          //绘制文本
+          let posText = (x * rulerConfig.size) + ""
+          if (posText.indexOf('.') != -1) {
+            posText = parseFloat(posText).toFixed(2)
+          }
+          ctx.fillText(posText, curX + textOffset, fontSize)
         }
-        ctx.fillText(posText, curX + textOffset, fontSize)
+        if (gridDisplay == 1 || gridDisplay == '1') {
+          lineToNumber = cheight
+        }
+        ctx.lineTo(curX, lineToNumber);
+        ctx.stroke()
         curX -= marginWeight;
         x--
       }
-
-
-
-
 
       let curY = startBaseY - wpvY
       while (curY <= cheight) {
         ctx.beginPath();
         ctx.moveTo(0, curY);
-        ctx.lineTo(weight, curY);
+        let lineToNumber = 0;
+        if (ruleDisplay == 1 || ruleDisplay == "1") {
+          lineToNumber = weight
+        }
+        if (gridDisplay == 1 || gridDisplay == '1') {
+          lineToNumber = cwidth
+        }
+        ctx.lineTo(lineToNumber, curY);
         ctx.stroke();
         curY += marginWeight;
       }
@@ -357,50 +377,62 @@ class DDeiStageCanvasRender {
       while (curY >= 0) {
         ctx.beginPath();
         ctx.moveTo(0, curY);
-        ctx.lineTo(weight, curY);
+        let lineToNumber = 0;
+        if (ruleDisplay == 1 || ruleDisplay == "1") {
+          lineToNumber = weight
+        }
+        if (gridDisplay == 1 || gridDisplay == '1') {
+          lineToNumber = cwidth
+        }
+        ctx.lineTo(lineToNumber, curY);
         ctx.stroke();
         curY -= marginWeight;
       }
 
-      ctx.save()
-      ctx.scale(-1, 1);
-      ctx.rotate(90 * DDeiConfig.ROTATE_UNIT);
-      ctx.scale(-1, 1);
-      curY = startBaseY - wpvY
-      let y = 0;
-      while (curY <= cheight) {
-
-
-        //绘制文本
-        let posText = (y * rulerConfig.size) + ""
-        if (posText.indexOf('.') != -1) {
-          posText = parseFloat(posText).toFixed(2)
+      //绘制文本与左上角空白
+      if (ruleDisplay == 1 || ruleDisplay == "1") {
+        ctx.save()
+        ctx.scale(-1, 1);
+        ctx.rotate(90 * DDeiConfig.ROTATE_UNIT);
+        ctx.scale(-1, 1);
+        curY = startBaseY - wpvY
+        let y = 0;
+        while (curY <= cheight) {
+          //绘制文本
+          let posText = (y * rulerConfig.size) + ""
+          if (posText.indexOf('.') != -1) {
+            posText = parseFloat(posText).toFixed(2)
+          }
+          ctx.fillText(posText, -curY + textOffset, fontSize)
+          y++
+          curY += marginWeight;
         }
-        ctx.fillText(posText, -curY + textOffset, fontSize)
-        y++
-        curY += marginWeight;
-      }
-      curY = startBaseY - wpvY
-      y = 0
-      while (curY >= 0) {
-        //绘制文本
-        let posText = (y * rulerConfig.size) + ""
-        if (posText.indexOf('.') != -1) {
-          posText = parseFloat(posText).toFixed(2)
+        curY = startBaseY - wpvY
+        y = 0
+        while (curY >= 0) {
+          //绘制文本
+          let posText = (y * rulerConfig.size) + ""
+          if (posText.indexOf('.') != -1) {
+            posText = parseFloat(posText).toFixed(2)
+          }
+          ctx.fillText(posText, -curY + textOffset, fontSize)
+          y--
+          curY -= marginWeight;
         }
-        ctx.fillText(posText, -curY + textOffset, fontSize)
-        y--
-        curY -= marginWeight;
-      }
-      ctx.restore()
+        ctx.restore()
 
-      //左上角空白
-      ctx.fillStyle = 'white'
-      ctx.fillRect(0, 0, weight, weight)
-      ctx.strokeRect(0, 0, weight, weight)
+
+
+        //左上角空白
+        ctx.fillStyle = 'white'
+        ctx.fillRect(0, 0, weight, weight)
+        ctx.strokeRect(0, 0, weight, weight)
+      }
       ctx.restore();
     }
   }
+
+
   /**
    * 绘制水印
    */
