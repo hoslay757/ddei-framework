@@ -223,7 +223,7 @@ export const styles = {
       'hiddenTitle': true,
       'type': 1,
       'orderNo': 1,
-      'cascadeDisplay': { 1: { show: ['ruler.unit'] }, empty: { hidden: ['ruler.unit'] } },
+      'cascadeDisplay': { 1: { show: ['ruler.unit'] }, default: { show: ['ruler.unit'] }, empty: { hidden: ['ruler.unit'] } },
       'visiable': true
     },
     {

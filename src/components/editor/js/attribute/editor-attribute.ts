@@ -63,6 +63,8 @@ class DDeiEditorArrtibute extends DDeiArrtibuteDefine {
       } else {
         if (this.value && this.value != '' && this.value != '0' && this.value != 0) {
           cascadeDisplayConfig = this.cascadeDisplay['notempty']
+        } else if (this.value == null && this.defaultValue) {
+          cascadeDisplayConfig = this.cascadeDisplay['default']
         } else {
           cascadeDisplayConfig = this.cascadeDisplay['empty']
         }

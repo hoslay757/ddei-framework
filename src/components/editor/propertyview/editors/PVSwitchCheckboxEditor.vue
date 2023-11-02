@@ -1,7 +1,7 @@
 <template>
   <div :class="{ 'ddei_pv_editor_switch_excheckbox': true, 'ddei_pv_editor_switch_excheckbox_disabled': attrDefine.readonly }"
        @click="doCheck(attrDefine,$event)">
-    <div :class="{'chk_state':attrDefine.value != 1,'chk_state_checked':attrDefine.value == 1}"><span>{{attrDefine.value == 1?'✓':''}}</span></div>
+    <div :class="{'chk_state':attrDefine.value != 1,'chk_state_checked':attrDefine.value == 1 || (attrDefine.value == null && attrDefine.defaultValue == 1)}"><span>{{attrDefine.value == 1 || (attrDefine.value == null && attrDefine.defaultValue == 1)?'✓':''}}</span></div>
     <div class="title">{{ attrDefine.name }}</div>
   </div>
 </template>
@@ -54,8 +54,13 @@ export default {
       if (!(paths?.length > 0)) {
         paths = [this.attrDefine.code];
       }
-
-      if (!attrDefine.value) {
+      if (attrDefine.value == null) {
+        if (attrDefine.defaultValue == 1) {
+          attrDefine.value = 0;
+        } else {
+          attrDefine.value = 1;
+        }
+      } else if (!attrDefine.value) {
         attrDefine.value = 1;
       } else {
         attrDefine.value = 0;
