@@ -335,68 +335,45 @@ class DDeiStageCanvasRender {
       let wpvX = -this.model.wpv.x * rat1
       let wpvY = -this.model.wpv.y * rat1
       let x = 0;
-      let k = 0;
       let curX = startBaseX - wpvX
       while (curX <= cwidth) {
         if (curX > weight) {
           ctx.beginPath();
           ctx.moveTo(curX, 0);
           let nMod = x % splitNumber
-          let lineToNumber = 0;
           if (nMod != 0) {
             ctx.moveTo(curX, 15);
-          } else {
-            //绘制文本
-            let posText = (k * rulerConfig.size) + ""
-            if (posText.indexOf('.') != -1) {
-              posText = parseFloat(posText).toFixed(2)
-            }
-            ctx.fillText(posText, curX + textOffset, fontSize)
           }
-          lineToNumber = weight
           if (nMod != 0) {
             ctx.strokeStyle = "rgb(230,230,230)"
           } else {
             ctx.strokeStyle = "rgb(220,220,220)"
-            k++
           }
-          ctx.lineTo(curX, lineToNumber);
+          ctx.lineTo(curX, weight);
           ctx.stroke()
         }
         curX += splitedWeight;
         x++
       }
       x = 0;
-      k = 0;
       curX = startBaseX - wpvX
       while (curX >= 0) {
         if (curX > weight) {
           ctx.beginPath();
           ctx.moveTo(curX, 0);
           let nMod = x % splitNumber
-          let lineToNumber = 0;
           if (nMod != 0) {
             ctx.moveTo(curX, 15);
-          } else {
-            //绘制文本
-            let posText = (k * rulerConfig.size) + ""
-            if (posText.indexOf('.') != -1) {
-              posText = parseFloat(posText).toFixed(2)
-            }
-            ctx.fillText(posText, curX + textOffset, fontSize)
           }
-          lineToNumber = weight
           if (nMod != 0) {
             ctx.strokeStyle = "rgb(230,230,230)"
           } else {
             ctx.strokeStyle = "rgb(220,220,220)"
-            k--
           }
-          ctx.lineTo(curX, lineToNumber);
+          ctx.lineTo(curX, weight);
           ctx.stroke()
         }
         curX -= splitedWeight;
-
         x--
       }
 
@@ -451,33 +428,77 @@ class DDeiStageCanvasRender {
         y--
       }
 
+
+
       //绘制文本与左上角空白
+      curX = startBaseX - wpvX
+      x = 0;
+      let textTime = 1;
+      if (stageRatio > 0.25 && stageRatio <= 0.5) {
+        textTime = 2;
+      } else if (stageRatio > 0 && stageRatio <= 0.25) {
+        textTime = 4;
+      }
+      while (curX <= cwidth) {
+        //绘制文本
+        if (x % textTime == 0) {
+          let posText = (x * rulerConfig.size) + ""
+
+          if (posText.indexOf('.') != -1) {
+            posText = parseFloat(posText).toFixed(2)
+          }
+
+          ctx.fillText(posText, curX + textOffset, fontSize)
+        }
+        x++
+        curX += marginWeight;
+      }
+      curX = startBaseX - wpvX
+      x = 0
+      while (curX >= 0) {
+        if (x % textTime == 0) {
+          //绘制文本
+          let posText = (x * rulerConfig.size) + ""
+          if (posText.indexOf('.') != -1) {
+            posText = parseFloat(posText).toFixed(2)
+          }
+          ctx.fillText(posText, curX + textOffset, fontSize)
+        }
+        x--
+        curX -= marginWeight;
+      }
+
       ctx.save()
       ctx.scale(-1, 1);
       ctx.rotate(90 * DDeiConfig.ROTATE_UNIT);
       ctx.scale(-1, 1);
       curY = startBaseY - wpvY
       y = 0;
+      let oneSize = DDeiUtil.measureTextSize(this.ddRender?.model, "0", 'Microsoft YaHei', fontSize).width
       while (curY <= cheight) {
-
-        //绘制文本
-        let posText = (y * rulerConfig.size) + ""
-        if (posText.indexOf('.') != -1) {
-          posText = parseFloat(posText).toFixed(2)
+        if (y % textTime == 0) {
+          //绘制文本
+          let posText = (y * rulerConfig.size) + ""
+          if (posText.indexOf('.') != -1) {
+            posText = parseFloat(posText).toFixed(2)
+          }
+          ctx.fillText(posText, -curY - textOffset - oneSize * posText.length, fontSize)
         }
-        ctx.fillText(posText, -curY + textOffset, fontSize)
         y++
         curY += marginWeight;
+
       }
       curY = startBaseY - wpvY
       y = 0
       while (curY >= 0) {
-        //绘制文本
-        let posText = (y * rulerConfig.size) + ""
-        if (posText.indexOf('.') != -1) {
-          posText = parseFloat(posText).toFixed(2)
+        if (y % textTime == 0) {
+          //绘制文本
+          let posText = (y * rulerConfig.size) + ""
+          if (posText.indexOf('.') != -1) {
+            posText = parseFloat(posText).toFixed(2)
+          }
+          ctx.fillText(posText, -curY - textOffset - oneSize * posText.length, fontSize)
         }
-        ctx.fillText(posText, -curY + textOffset, fontSize)
         y--
         curY -= marginWeight;
       }
