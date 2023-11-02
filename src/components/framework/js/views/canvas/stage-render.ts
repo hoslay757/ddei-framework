@@ -259,8 +259,34 @@ class DDeiStageCanvasRender {
       let unit = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.unit", true);
       let rulerConfig = DDeiConfig.RULER[unit]
       //尺子间隔单位
-      let marginWeight = DDeiUtil.unitToPix(rulerConfig.size, unit, xDPI) * ratio;
+      let unitWeight = DDeiUtil.unitToPix(rulerConfig.size, unit, xDPI) * rat1;
+      //根据缩放比率，对尺子间隔单位进行拆分
+      //基准每个部分的大小
+      let marginWeight = unitWeight * stageRatio
+      //找到最接近的区间
+      let timesNums = [0.25, 0.5, 1, 2, 4, 8]
+      //当前的衡量量级
+      let curTimes = 0.25;
+      for (let i = 1; i < timesNums.length; i++) {
+        if (stageRatio >= timesNums[i]) {
+          curTimes = timesNums[i]
+        }
+      }
+      let standWeight = curTimes * unitWeight;
+      //计算量级偏差与实际大小的百分比
+      let passPercent = Math.round((marginWeight - standWeight) / standWeight * 100)
+      let splitNumber = rulerConfig.parts[0];
+      if (passPercent > 0) {
+        let p = Math.round(1 / rulerConfig.parts.length * 100)
+        for (let i = 1; i < rulerConfig.parts.length; i++) {
+          if (passPercent >= i * p) {
+            splitNumber = rulerConfig.parts[i];
+          }
+        }
+      }
 
+      //切分后单个part大小
+      let splitedWeight = marginWeight / splitNumber;
 
 
       //标尺的固定显示大小
@@ -312,81 +338,129 @@ class DDeiStageCanvasRender {
       let wpvX = -this.model.wpv.x * rat1
       let wpvY = -this.model.wpv.y * rat1
       let x = 0;
+      let k = 0;
       let curX = startBaseX - wpvX
       while (curX <= cwidth) {
         ctx.beginPath();
         ctx.moveTo(curX, 0);
+        let nMod = x % splitNumber
         let lineToNumber = 0;
         if (ruleDisplay == 1 || ruleDisplay == "1") {
-          lineToNumber = weight
-          //绘制文本
-          let posText = (x * rulerConfig.size) + ""
-          if (posText.indexOf('.') != -1) {
-            posText = parseFloat(posText).toFixed(2)
+          if (nMod != 0) {
+            ctx.moveTo(curX, 15);
+          } else {
+            //绘制文本
+            let posText = (k * rulerConfig.size) + ""
+            if (posText.indexOf('.') != -1) {
+              posText = parseFloat(posText).toFixed(2)
+            }
+            ctx.fillText(posText, curX + textOffset, fontSize)
           }
-          ctx.fillText(posText, curX + textOffset, fontSize)
+          lineToNumber = weight
         }
         if (gridDisplay == 1 || gridDisplay == '1') {
           lineToNumber = cheight
         }
+        if (nMod != 0) {
+          ctx.strokeStyle = "rgb(230,230,230)"
+        } else {
+          ctx.strokeStyle = "rgb(220,220,220)"
+          k++
+        }
         ctx.lineTo(curX, lineToNumber);
         ctx.stroke()
-        curX += marginWeight;
+        curX += splitedWeight;
         x++
       }
       x = 0;
+      k = 0;
       curX = startBaseX - wpvX
       while (curX >= 0) {
         ctx.beginPath();
         ctx.moveTo(curX, 0);
+        let nMod = x % splitNumber
         let lineToNumber = 0;
         if (ruleDisplay == 1 || ruleDisplay == "1") {
-          lineToNumber = weight
-          //绘制文本
-          let posText = (x * rulerConfig.size) + ""
-          if (posText.indexOf('.') != -1) {
-            posText = parseFloat(posText).toFixed(2)
+          if (nMod != 0) {
+            ctx.moveTo(curX, 15);
+          } else {
+            //绘制文本
+            let posText = (k * rulerConfig.size) + ""
+            if (posText.indexOf('.') != -1) {
+              posText = parseFloat(posText).toFixed(2)
+            }
+            ctx.fillText(posText, curX + textOffset, fontSize)
           }
-          ctx.fillText(posText, curX + textOffset, fontSize)
+          lineToNumber = weight
+
         }
         if (gridDisplay == 1 || gridDisplay == '1') {
           lineToNumber = cheight
         }
+        if (nMod != 0) {
+          ctx.strokeStyle = "rgb(230,230,230)"
+        } else {
+          ctx.strokeStyle = "rgb(220,220,220)"
+          k--
+        }
         ctx.lineTo(curX, lineToNumber);
         ctx.stroke()
-        curX -= marginWeight;
+        curX -= splitedWeight;
+
         x--
       }
 
       let curY = startBaseY - wpvY
+      let y = 0;
       while (curY <= cheight) {
         ctx.beginPath();
         ctx.moveTo(0, curY);
         let lineToNumber = 0;
+        let nMod = y % splitNumber
         if (ruleDisplay == 1 || ruleDisplay == "1") {
+          if (nMod != 0) {
+            ctx.moveTo(15, curY);
+          }
           lineToNumber = weight
         }
         if (gridDisplay == 1 || gridDisplay == '1') {
           lineToNumber = cwidth
         }
+        if (nMod != 0) {
+          ctx.strokeStyle = "rgb(230,230,230)"
+        } else {
+          ctx.strokeStyle = "rgb(220,220,220)"
+        }
         ctx.lineTo(lineToNumber, curY);
         ctx.stroke();
-        curY += marginWeight;
+        curY += splitedWeight;
+        y++
       }
       curY = startBaseY - wpvY
+      y = 0
       while (curY >= 0) {
         ctx.beginPath();
         ctx.moveTo(0, curY);
         let lineToNumber = 0;
+        let nMod = y % splitNumber
         if (ruleDisplay == 1 || ruleDisplay == "1") {
+          if (nMod != 0) {
+            ctx.moveTo(15, curY);
+          }
           lineToNumber = weight
         }
         if (gridDisplay == 1 || gridDisplay == '1') {
           lineToNumber = cwidth
         }
+        if (nMod != 0) {
+          ctx.strokeStyle = "rgb(230,230,230)"
+        } else {
+          ctx.strokeStyle = "rgb(220,220,220)"
+        }
         ctx.lineTo(lineToNumber, curY);
         ctx.stroke();
-        curY -= marginWeight;
+        curY -= splitedWeight;
+        y--
       }
 
       //绘制文本与左上角空白
@@ -398,6 +472,7 @@ class DDeiStageCanvasRender {
         curY = startBaseY - wpvY
         let y = 0;
         while (curY <= cheight) {
+
           //绘制文本
           let posText = (y * rulerConfig.size) + ""
           if (posText.indexOf('.') != -1) {

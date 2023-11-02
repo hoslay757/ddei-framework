@@ -125,11 +125,11 @@ class DDeiConfig {
 
   // 定义了在1.0缩放的，单位尺寸设置
   static RULER = {
-    'mm': { size: 10, part: 2 },
-    'cm': { size: 1, part: 2 },
-    'm': { size: 0.05, part: 10 },
-    'inch': { size: 1, part: 8 },
-    'pix': { size: 50, part: 5 },
+    'mm': { size: 10, parts: [2, 5] },
+    'cm': { size: 1, parts: [2, 5] },
+    'm': { size: 0.05, parts: [2, 5] },
+    'inch': { size: 1, parts: [8] },
+    'pix': { size: 50, parts: [5, 10] },
   }
 
   // 定义了在各种常见纸张的大小以及名称
