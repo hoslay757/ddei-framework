@@ -105,6 +105,8 @@ class DDeiStageCanvasRender {
     ctx.restore();
     //绘制纸张
     this.drawPaper();
+    //绘制网格
+    this.drawGrid()
     //绘制图形
     ctx.save();
     ctx.translate(this.model.wpv.x * rat1, this.model.wpv.y * rat1)
@@ -125,13 +127,12 @@ class DDeiStageCanvasRender {
 
 
 
-
+    //绘制标尺
+    this.drawRuler()
 
     //绘制水印
     this.drawMark();
 
-    //绘制标尺
-    this.drawRulerAndGrid()
 
     //绘制滚动条
     this.drawScroll();
@@ -237,13 +238,12 @@ class DDeiStageCanvasRender {
   }
 
   /**
-   * 绘制标尺
+   * 标尺
    */
-  drawRulerAndGrid() {
+  drawRuler() {
     let ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
-    let gridDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "grid.display", true);
 
-    if (ruleDisplay == 1 || ruleDisplay == "1" || gridDisplay == 1 || gridDisplay == '1') {
+    if (ruleDisplay == 1 || ruleDisplay == "1") {
       //绘制横向点
       //获得 2d 上下文对象
       let canvas = this.ddRender.getCanvas();
@@ -343,22 +343,17 @@ class DDeiStageCanvasRender {
           ctx.moveTo(curX, 0);
           let nMod = x % splitNumber
           let lineToNumber = 0;
-          if (ruleDisplay == 1 || ruleDisplay == "1") {
-            if (nMod != 0) {
-              ctx.moveTo(curX, 15);
-            } else {
-              //绘制文本
-              let posText = (k * rulerConfig.size) + ""
-              if (posText.indexOf('.') != -1) {
-                posText = parseFloat(posText).toFixed(2)
-              }
-              ctx.fillText(posText, curX + textOffset, fontSize)
+          if (nMod != 0) {
+            ctx.moveTo(curX, 15);
+          } else {
+            //绘制文本
+            let posText = (k * rulerConfig.size) + ""
+            if (posText.indexOf('.') != -1) {
+              posText = parseFloat(posText).toFixed(2)
             }
-            lineToNumber = weight
+            ctx.fillText(posText, curX + textOffset, fontSize)
           }
-          if (gridDisplay == 1 || gridDisplay == '1') {
-            lineToNumber = cheight
-          }
+          lineToNumber = weight
           if (nMod != 0) {
             ctx.strokeStyle = "rgb(230,230,230)"
           } else {
@@ -380,23 +375,17 @@ class DDeiStageCanvasRender {
           ctx.moveTo(curX, 0);
           let nMod = x % splitNumber
           let lineToNumber = 0;
-          if (ruleDisplay == 1 || ruleDisplay == "1") {
-            if (nMod != 0) {
-              ctx.moveTo(curX, 15);
-            } else {
-              //绘制文本
-              let posText = (k * rulerConfig.size) + ""
-              if (posText.indexOf('.') != -1) {
-                posText = parseFloat(posText).toFixed(2)
-              }
-              ctx.fillText(posText, curX + textOffset, fontSize)
+          if (nMod != 0) {
+            ctx.moveTo(curX, 15);
+          } else {
+            //绘制文本
+            let posText = (k * rulerConfig.size) + ""
+            if (posText.indexOf('.') != -1) {
+              posText = parseFloat(posText).toFixed(2)
             }
-            lineToNumber = weight
-
+            ctx.fillText(posText, curX + textOffset, fontSize)
           }
-          if (gridDisplay == 1 || gridDisplay == '1') {
-            lineToNumber = cheight
-          }
+          lineToNumber = weight
           if (nMod != 0) {
             ctx.strokeStyle = "rgb(230,230,230)"
           } else {
@@ -419,15 +408,12 @@ class DDeiStageCanvasRender {
           ctx.moveTo(0, curY);
           let lineToNumber = 0;
           let nMod = y % splitNumber
-          if (ruleDisplay == 1 || ruleDisplay == "1") {
-            if (nMod != 0) {
-              ctx.moveTo(15, curY);
-            }
-            lineToNumber = weight
+          if (nMod != 0) {
+            ctx.moveTo(15, curY);
           }
-          if (gridDisplay == 1 || gridDisplay == '1') {
-            lineToNumber = cwidth
-          }
+          lineToNumber = weight
+
+
           if (nMod != 0) {
             ctx.strokeStyle = "rgb(230,230,230)"
           } else {
@@ -447,15 +433,12 @@ class DDeiStageCanvasRender {
           ctx.moveTo(0, curY);
           let lineToNumber = 0;
           let nMod = y % splitNumber
-          if (ruleDisplay == 1 || ruleDisplay == "1") {
-            if (nMod != 0) {
-              ctx.moveTo(15, curY);
-            }
-            lineToNumber = weight
+          if (nMod != 0) {
+            ctx.moveTo(15, curY);
           }
-          if (gridDisplay == 1 || gridDisplay == '1') {
-            lineToNumber = cwidth
-          }
+          lineToNumber = weight
+
+
           if (nMod != 0) {
             ctx.strokeStyle = "rgb(230,230,230)"
           } else {
@@ -469,44 +452,214 @@ class DDeiStageCanvasRender {
       }
 
       //绘制文本与左上角空白
-      if (ruleDisplay == 1 || ruleDisplay == "1") {
-        ctx.save()
-        ctx.scale(-1, 1);
-        ctx.rotate(90 * DDeiConfig.ROTATE_UNIT);
-        ctx.scale(-1, 1);
-        curY = startBaseY - wpvY
-        let y = 0;
-        while (curY <= cheight) {
+      ctx.save()
+      ctx.scale(-1, 1);
+      ctx.rotate(90 * DDeiConfig.ROTATE_UNIT);
+      ctx.scale(-1, 1);
+      curY = startBaseY - wpvY
+      y = 0;
+      while (curY <= cheight) {
 
-          //绘制文本
-          let posText = (y * rulerConfig.size) + ""
-          if (posText.indexOf('.') != -1) {
-            posText = parseFloat(posText).toFixed(2)
-          }
-          ctx.fillText(posText, -curY + textOffset, fontSize)
-          y++
-          curY += marginWeight;
+        //绘制文本
+        let posText = (y * rulerConfig.size) + ""
+        if (posText.indexOf('.') != -1) {
+          posText = parseFloat(posText).toFixed(2)
         }
-        curY = startBaseY - wpvY
-        y = 0
-        while (curY >= 0) {
-          //绘制文本
-          let posText = (y * rulerConfig.size) + ""
-          if (posText.indexOf('.') != -1) {
-            posText = parseFloat(posText).toFixed(2)
-          }
-          ctx.fillText(posText, -curY + textOffset, fontSize)
-          y--
-          curY -= marginWeight;
+        ctx.fillText(posText, -curY + textOffset, fontSize)
+        y++
+        curY += marginWeight;
+      }
+      curY = startBaseY - wpvY
+      y = 0
+      while (curY >= 0) {
+        //绘制文本
+        let posText = (y * rulerConfig.size) + ""
+        if (posText.indexOf('.') != -1) {
+          posText = parseFloat(posText).toFixed(2)
         }
-        ctx.restore()
+        ctx.fillText(posText, -curY + textOffset, fontSize)
+        y--
+        curY -= marginWeight;
+      }
+      ctx.restore()
 
 
 
-        //左上角空白
-        ctx.fillStyle = 'white'
-        ctx.fillRect(0, 0, weight, weight)
-        ctx.strokeRect(0, 0, weight, weight)
+      //左上角空白
+      ctx.fillStyle = 'white'
+      ctx.fillRect(0, 0, weight, weight)
+      ctx.strokeRect(0, 0, weight, weight)
+
+      ctx.restore();
+    }
+  }
+
+  /**
+  * 绘制网格
+  */
+  drawGrid() {
+    let gridDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "grid.display", true);
+    if (gridDisplay == 1 || gridDisplay == '1') {
+      //绘制横向点
+      //获得 2d 上下文对象
+      let canvas = this.ddRender.getCanvas();
+      let ctx = canvas.getContext('2d');
+      let rat1 = this.ddRender.ratio;
+      let stageRatio = this.model.getStageRatio()
+      let ratio = rat1 * stageRatio;
+      let xDPI = this.ddRender.dpi.x;
+      //标尺单位
+      let unit = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.unit", true);
+      let rulerConfig = DDeiConfig.RULER[unit]
+      //尺子间隔单位
+      let unitWeight = DDeiUtil.unitToPix(rulerConfig.size, unit, xDPI) * rat1;
+      //根据缩放比率，对尺子间隔单位进行拆分
+      //基准每个部分的大小
+      let marginWeight = unitWeight * stageRatio
+      //找到最接近的区间
+      let timesNums = [0.25, 0.5, 1, 2, 4, 8]
+      //当前的衡量量级
+      let curTimes = 0.25;
+      for (let i = 1; i < timesNums.length; i++) {
+        if (stageRatio >= timesNums[i]) {
+          curTimes = timesNums[i]
+        }
+      }
+      let standWeight = curTimes * unitWeight;
+      //计算量级偏差与实际大小的百分比
+      let passPercent = Math.round((marginWeight - standWeight) / standWeight * 100)
+      let splitNumber = rulerConfig.parts[0];
+      if (passPercent > 0) {
+        let p = Math.round(1 / rulerConfig.parts.length * 100)
+        for (let i = 1; i < rulerConfig.parts.length; i++) {
+          if (passPercent >= i * p) {
+            splitNumber = rulerConfig.parts[i];
+          }
+        }
+      }
+
+      //切分后单个part大小
+      let splitedWeight = marginWeight / splitNumber;
+      //标尺的固定显示大小
+      let weight = 16 * rat1;
+      ctx.save();
+      let fontSize = 11 * rat1
+      ctx.font = fontSize + "px Microsoft YaHei"
+      ctx.lineWidth = 1
+      ctx.strokeStyle = "rgb(190,190,190)"
+      ctx.fillStyle = "white"
+      let cwidth = canvas.width;
+      let cheight = canvas.height;
+
+      //纸张的像素大小
+      let paperWidth = 0;
+      let paperHeight = 0;
+      //获取纸张大小的定义
+      let paperType = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.type", true);
+      let paperConfig = DDeiConfig.PAPER[paperType];
+
+      if (paperConfig) {
+        let paperDirect = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.direct", true);
+        if (paperDirect == 1 || paperDirect == '1') {
+          paperWidth = DDeiUtil.unitToPix(paperConfig.width, paperConfig.unit, xDPI) * ratio;
+          paperHeight = DDeiUtil.unitToPix(paperConfig.height, paperConfig.unit, xDPI) * ratio;
+        } else {
+          paperHeight = DDeiUtil.unitToPix(paperConfig.width, paperConfig.unit, xDPI) * ratio;
+          paperWidth = DDeiUtil.unitToPix(paperConfig.height, paperConfig.unit, xDPI) * ratio;
+        }
+      }
+
+      //基准位置0刻度
+      let startBaseX = this.model.width / 2 * rat1 - paperWidth / 2 + 0.5
+      let startBaseY = this.model.height / 2 * rat1 - paperHeight / 2 + 0.5
+
+
+      //绘制竖线
+      let textOffset = 1 * rat1
+      ctx.fillStyle = "rgb(200,200,200)"
+      //当前的窗口位置（乘以了窗口缩放比例）
+      let wpvX = -this.model.wpv.x * rat1
+      let wpvY = -this.model.wpv.y * rat1
+      let x = 0;
+      let k = 0;
+      let curX = startBaseX - wpvX
+      while (curX <= cwidth) {
+        if (curX > weight) {
+          ctx.beginPath();
+          ctx.moveTo(curX, 0);
+          let nMod = x % splitNumber
+          if (nMod != 0) {
+            ctx.strokeStyle = "rgb(230,230,230)"
+          } else {
+            ctx.strokeStyle = "rgb(220,220,220)"
+            k++
+          }
+          ctx.lineTo(curX, cheight);
+          ctx.stroke()
+        }
+        curX += splitedWeight;
+        x++
+      }
+      x = 0;
+      k = 0;
+      curX = startBaseX - wpvX
+      while (curX >= 0) {
+        if (curX > weight) {
+          ctx.beginPath();
+          ctx.moveTo(curX, 0);
+          let nMod = x % splitNumber
+
+          if (nMod != 0) {
+            ctx.strokeStyle = "rgb(230,230,230)"
+          } else {
+            ctx.strokeStyle = "rgb(220,220,220)"
+            k--
+          }
+          ctx.lineTo(curX, cheight);
+          ctx.stroke()
+        }
+        curX -= splitedWeight;
+
+        x--
+      }
+
+      let curY = startBaseY - wpvY
+      let y = 0;
+      while (curY <= cheight) {
+        if (curY > weight) {
+          ctx.beginPath();
+          ctx.moveTo(0, curY);
+          let nMod = y % splitNumber
+          if (nMod != 0) {
+            ctx.strokeStyle = "rgb(230,230,230)"
+          } else {
+            ctx.strokeStyle = "rgb(220,220,220)"
+          }
+          ctx.lineTo(cwidth, curY);
+          ctx.stroke();
+        }
+        curY += splitedWeight;
+        y++
+      }
+      curY = startBaseY - wpvY
+      y = 0
+      while (curY >= 0) {
+        if (curY > weight) {
+          ctx.beginPath();
+          ctx.moveTo(0, curY);
+
+          let nMod = y % splitNumber
+
+          if (nMod != 0) {
+            ctx.strokeStyle = "rgb(230,230,230)"
+          } else {
+            ctx.strokeStyle = "rgb(220,220,220)"
+          }
+          ctx.lineTo(cwidth, curY);
+          ctx.stroke();
+        }
+        curY -= splitedWeight;
+        y--
       }
       ctx.restore();
     }
