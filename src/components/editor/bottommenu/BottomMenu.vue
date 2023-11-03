@@ -27,6 +27,7 @@
     </div>
     <div class="ddei_editor_bottommenu_pages">
       <div @click="changeSheet(index)"
+           @dblclick="startChangeSheetName(sheet,$event)"
            v-show="index >= openIndex && index < openIndex + maxOpenSize"
            :class="{ 'ddei_editor_bottommenu_page': sheet.active == 0, 'ddei_editor_bottommenu_page_selected': sheet.active == 1 }"
            :title="sheet.desc"
@@ -203,6 +204,30 @@ export default {
     this.currentStage = sheet.stage;
   },
   methods: {
+    /**
+     * 开始修改页标题
+     */
+    startChangeSheetName(sheet, evt) {
+      let ele = evt.target;
+      let domPos = DDeiUtil.getDomAbsPosition(ele);
+      let input = document.getElementById("change_sheet_name_input");
+      if (!input) {
+        input = document.createElement("input");
+        input.setAttribute("id", "change_sheet_name_input");
+        input.style.position = "absolute";
+        document.body.appendChild(input);
+      }
+      input.style.width = ele.offsetWidth + "px";
+      input.style.height = ele.offsetHeight + "px";
+      input.style.left = domPos.left + "px";
+      input.style.top = domPos.top + "px";
+      input.value = sheet.name;
+      input.style.display = "block";
+      input.selectionStart = 0; // 选中开始位置
+      input.selectionEnd = input.value.length; // 获取输入框里的长度。
+      input.focus();
+    },
+
     /**
      * 修改当前的全局缩放比率
      */
