@@ -166,7 +166,7 @@ export const styles = {
       'defaultValue': 1,
       'type': 1,
       'orderNo': 2,
-      'cascadeDisplay': { 1: { show: ['fill.color', 'fill.opacity'], hidden: ['fill.image'] }, 2: { show: ['fill.image', 'fill.opacity'], hidden: ['fill.color'] }, empty: { hidden: ['fill.color', 'fill.image', 'fill.opacity'] } },
+      'cascadeDisplay': { 1: { show: ['fill.color', 'fill.opacity'], hidden: ['fill.image'] }, 2: { show: ['fill.image', 'fill.opacity'], hidden: ['fill.color'] }, default: { show: ['fill.color', 'fill.opacity'], hidden: ['fill.image'] }, empty: { hidden: ['fill.color', 'fill.image', 'fill.opacity'] } },
       'hiddenTitle': true,
       'display': 'column',
       'visiable': true,
