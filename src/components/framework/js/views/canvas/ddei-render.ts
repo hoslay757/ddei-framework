@@ -249,6 +249,7 @@ class DDeiCanvasRender {
         stage.setStageRatio(newValue);
       }
 
+
     }
   }
 

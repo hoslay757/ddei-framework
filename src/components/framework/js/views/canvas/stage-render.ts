@@ -79,7 +79,8 @@ class DDeiStageCanvasRender {
    * 创建图形
    */
   drawShape(): void {
-
+    //计算滚动条
+    this.calScroll();
     //根据视窗平移
     //获得 2d 上下文对象
     let canvas = this.ddRender.getCanvas();
@@ -88,8 +89,6 @@ class DDeiStageCanvasRender {
     ctx.save();
     ctx.translate(this.model.wpv.x * rat1, this.model.wpv.y * rat1)
 
-    //计算滚动条
-    this.calScroll();
     //绘制背景
     let topDisplayIndex = -1;
     for (let i = this.model.layers.length - 1; i >= 0; i--) {
@@ -926,6 +925,7 @@ class DDeiStageCanvasRender {
       this.vScroll = { height: height, contentHeight: height * height / maxHeight, y: height * curY / maxHeight, bn: curY / maxHeight };
     } else {
       this.vScroll = null;
+      this.model.wpv.y = 0
     }
     //计算横向滚动条信息
     if (maxWidth > canvasWidth) {
@@ -933,6 +933,7 @@ class DDeiStageCanvasRender {
       this.hScroll = { width: width, contentWidth: width * width / maxWidth, x: width * curX / maxWidth, bn: curX / maxWidth };
     } else {
       this.hScroll = null;
+      this.model.wpv.x = 0
     }
   }
 
