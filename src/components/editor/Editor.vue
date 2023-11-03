@@ -1,23 +1,35 @@
 <template>
   <div>
-    <div id="ddei_editor" class="ddei_editor" @mouseup="mouseUp" @mousemove="mouseMove" @mousedown="mouseDown">
-      <div style="flex:0 0 100px" class="top" id="ddei_editor_frame_top">
+    <div id="ddei_editor"
+         class="ddei_editor"
+         @mouseup="mouseUp"
+         @mousemove="mouseMove"
+         @mousedown="mouseDown">
+      <div style="flex:0 0 100px"
+           class="top"
+           id="ddei_editor_frame_top">
         <TopMenu></TopMenu>
       </div>
       <div class="body">
-        <div style="flex:0 0 220px" id="ddei_editor_frame_left">
+        <div style="flex:0 0 220px"
+             id="ddei_editor_frame_left">
           <Toolbox @createControlPrepare="createControlPrepare"></Toolbox>
         </div>
-        <div class="middle" id="ddei_editor_frame_middle">
+        <div class="middle"
+             id="ddei_editor_frame_middle">
           <OpenFilesView v-if="refreshOpenFilesView"></OpenFilesView>
           <CanvasView id="ddei_editor_canvasview"></CanvasView>
           <QuickColorView></QuickColorView>
         </div>
-        <div style="flex:0 0 330px" class="right" id="ddei_editor_frame_right">
+        <div style="flex:0 0 330px"
+             class="right"
+             id="ddei_editor_frame_right">
           <PropertyView v-if="refreshPropertyView"></PropertyView>
         </div>
       </div>
-      <div style="flex: 0 0 35px;" class="bottom" id="ddei_editor_frame_bottom">
+      <div style="flex: 0 0 35px;"
+           class="bottom"
+           id="ddei_editor_frame_bottom">
         <BottomMenu v-if="refreshBottomMenu"></BottomMenu>
       </div>
     </div>
@@ -173,30 +185,46 @@ export default {
       return action.action({}, this.editor.bus, null);
     },
 
-    resetSize(evt, a, b) {
+    resetSize() {
       let width =
         window.innerWidth ||
         document.documentElement.clientWidth ||
         document.body.clientWidth;
-      if (!window.upSize) {
-        window.upSize = width;
+      let height =
+        window.innerHeight ||
+        document.documentElement.clientHeight ||
+        document.body.clientHeight;
+      if (!window.upSizeWidth || !window.upSizeHeight) {
+        window.upSizeWidth = width;
+        window.upSizeHeight = height;
       } else {
-        let deltaWidth = width - window.upSize;
+        let deltaWidth = width - window.upSizeWidth;
+        let deltaHeight = height - window.upSizeHeight;
         if (this.editor.middleWidth + deltaWidth >= 305) {
-          window.upSize = width;
+          window.upSizeWidth = width;
           this.editor.middleWidth += deltaWidth;
           this.editor.maxWidth =
             this.editor.leftWidth +
             this.editor.rightWidth +
             this.editor.middleWidth;
-          this.editor.ddInstance.render.setSize(
-            this.editor.middleWidth,
-            this.editor.middleHeight,
-            0,
-            0
-          );
-          this.editor.ddInstance.render.drawShape();
         }
+        if (this.editor.middleHeight + deltaHeight >= 305) {
+          window.upSizeHeight = height;
+          this.editor.middleHeight += deltaHeight;
+          this.editor.maxHeight =
+            this.editor.leftHeight +
+            this.editor.rightHeight +
+            this.editor.middleHeight;
+        }
+
+        this.editor.ddInstance.render.setSize(
+          this.editor.middleWidth,
+          this.editor.middleHeight,
+          0,
+          0
+        );
+        this.editor.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
+        this.editor.ddInstance.bus.executeAll();
       }
     },
     /**
@@ -324,17 +352,17 @@ export default {
         else if (
           frameLeftElement.offsetTop <= e.clientY &&
           frameLeftElement.offsetTop + frameLeftElement.offsetHeight >=
-          e.clientY &&
+            e.clientY &&
           Math.abs(
             e.clientX -
-            (frameLeftElement.offsetLeft + frameLeftElement.offsetWidth)
+              (frameLeftElement.offsetLeft + frameLeftElement.offsetWidth)
           ) <= 5
         ) {
           document.body.style.cursor = "col-resize";
         } else if (
           frameRightElement.offsetTop <= e.clientY &&
           frameRightElement.offsetTop + frameRightElement.offsetHeight >=
-          e.clientY &&
+            e.clientY &&
           e.clientX - frameRightElement.offsetLeft >= -5 &&
           e.clientX - frameRightElement.offsetLeft <= -1
         ) {
@@ -372,10 +400,10 @@ export default {
       if (
         frameLeftElement.offsetTop <= e.clientY &&
         frameLeftElement.offsetTop + frameLeftElement.offsetHeight >=
-        e.clientY &&
+          e.clientY &&
         Math.abs(
           e.clientX -
-          (frameLeftElement.offsetLeft + frameLeftElement.offsetWidth)
+            (frameLeftElement.offsetLeft + frameLeftElement.offsetWidth)
         ) <= 5
       ) {
         this.changeIndex = 4;
@@ -390,7 +418,7 @@ export default {
       } else if (
         frameRightElement.offsetTop <= e.clientY &&
         frameRightElement.offsetTop + frameRightElement.offsetHeight >=
-        e.clientY &&
+          e.clientY &&
         e.clientX - frameRightElement.offsetLeft >= -5 &&
         e.clientX - frameRightElement.offsetLeft <= -1
       ) {
