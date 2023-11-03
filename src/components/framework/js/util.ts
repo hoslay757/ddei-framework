@@ -370,22 +370,22 @@ class DDeiUtil {
     let unitWeight = 0;
     switch (unit) {
       case 'mm': {
-        unitWeight = DDeiUtil.mmToPix(number, dpi);
+        unitWeight = DDeiUtil.mmToPx(number, dpi);
         break;
       }
       case 'cm': {
-        unitWeight = DDeiUtil.cmToPix(number, dpi);
+        unitWeight = DDeiUtil.cmToPx(number, dpi);
         break;
       }
       case 'm': {
-        unitWeight = DDeiUtil.mToPix(number, dpi);
+        unitWeight = DDeiUtil.mToPx(number, dpi);
         break;
       }
       case 'inch': {
-        unitWeight = DDeiUtil.inchToPix(number, dpi);
+        unitWeight = DDeiUtil.inchToPx(number, dpi);
         break;
       }
-      case 'pix': {
+      case 'px': {
         unitWeight = number
         break;
       }
@@ -394,22 +394,22 @@ class DDeiUtil {
   }
 
   //毫米转像素
-  static mmToPix(mm: number, dpi: number): number {
+  static mmToPx(mm: number, dpi: number): number {
     return mm / 25.4 * dpi
   }
 
   //厘米转像素
-  static cmToPix(cm: number, dpi: number): number {
-    return cm / 25.4 * dpi * 10
+  static cmToPx(cm: number, dpi: number): number {
+    return cm / 2.54 * dpi
   }
 
   //米转像素
-  static mToPix(m: number, dpi: number): number {
-    return m / 25.4 * dpi * 1000
+  static mToPx(m: number, dpi: number): number {
+    return m / 0.0254 * dpi
   }
 
   //英寸转像素
-  static inchToPix(inc: number, dpi: number): number {
+  static inchToPx(inc: number, dpi: number): number {
     return inc * dpi
   }
 

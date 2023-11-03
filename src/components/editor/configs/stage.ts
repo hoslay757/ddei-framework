@@ -78,7 +78,7 @@ export const styles = {
       'group': '纸张',
       'controlType': 'radio',
       'dataType': 'string',
-      'dataSource': [{ 'text': '毫米', 'value': 'mm' }, { 'text': '厘米', 'value': 'cm' }, { 'text': '米', 'value': 'm' }, { 'text': '英寸', 'value': 'inch' }, { 'text': '像素', 'value': 'pix' }],
+      'dataSource': [{ 'text': '毫米', 'value': 'mm' }, { 'text': '厘米', 'value': 'cm' }, { 'text': '米', 'value': 'm' }, { 'text': '英寸', 'value': 'inch' }, { 'text': '像素', 'value': 'px' }],
       'defaultValue': 'mm',
       'orderNo': 5,
       'readonly': false,

@@ -129,7 +129,7 @@ class DDeiConfig {
     'cm': { size: 1, parts: [2, 5] },
     'm': { size: 0.05, parts: [2, 5] },
     'inch': { size: 1, parts: [8] },
-    'pix': { size: 50, parts: [5, 10] },
+    'px': { size: 50, parts: [5, 10] },
   }
 
   // 定义了在各种常见纸张的大小以及名称
