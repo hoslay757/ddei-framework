@@ -347,6 +347,7 @@ export default {
         this.currentStage = stage;
         //加载场景渲染器
         stage.initRender();
+        this.editor.changeState(DDeiEditorState.DESIGNING);
         ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, null);
         ddInstance?.bus?.executeAll();
       }

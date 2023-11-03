@@ -1,20 +1,33 @@
 <template>
   <div class="ddei_editor_sdp">
-    <div class="ddei_editor_sdp_item" style="grid-row:1/3">
-      <div class="ddei_editor_sdp_item_box" @click="newFile">
-        <img width="16px" height="16px" :src="icons['icon-file']" />
+    <div class="ddei_editor_sdp_item"
+         style="grid-row:1/3">
+      <div class="ddei_editor_sdp_item_box"
+           @click="newFile">
+        <img width="16px"
+             height="16px"
+             :src="icons['icon-file']" />
         <div>新建</div>
       </div>
-      <div class="ddei_editor_sdp_item_box" @click="save">
-        <img width="16px" height="16px" :src="icons['icon-save']" />
+      <div class="ddei_editor_sdp_item_box"
+           @click="save">
+        <img width="16px"
+             height="16px"
+             :src="icons['icon-save']" />
         <div>保存</div>
       </div>
-      <div class="ddei_editor_sdp_item_box" @click="openFile">
-        <img width="16px" height="16px" :src="icons['icon-open']" />
+      <div class="ddei_editor_sdp_item_box"
+           @click="openFile">
+        <img width="16px"
+             height="16px"
+             :src="icons['icon-open']" />
         <div>打开</div>
       </div>
-      <div class="ddei_editor_sdp_item_box" @click="download">
-        <img width="16px" height="16px" :src="icons['icon-download']" />
+      <div class="ddei_editor_sdp_item_box"
+           @click="download">
+        <img width="16px"
+             height="16px"
+             :src="icons['icon-download']" />
         <div>下载</div>
       </div>
     </div>
@@ -40,6 +53,7 @@ import DDeiSheet from "../../js/sheet";
 import DDeiFileState from "../../js/enums/file-state";
 import DDeiEnumBusCommandType from "../../../framework/js/enums/bus-command-type";
 import DDeiEditorEnumBusCommandType from "../../js/enums/editor-command-type";
+import DDeiEditorState from "../../js/enums/editor-state";
 
 export default {
   name: "DDei-Editor-Quick-SDP",
@@ -54,7 +68,7 @@ export default {
   },
   computed: {},
   watch: {},
-  created() { },
+  created() {},
   mounted() {
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     for (let i in ICONS) {
@@ -106,16 +120,8 @@ export default {
           if (!stage.wpv) {
             //缺省定位在画布中心点位置
             stage.wpv = {
-              x:
-                -(
-                  stage.width -
-                  ddInstance.render.container.clientWidth
-                ) / 2,
-              y:
-                -(
-                  stage.height -
-                  ddInstance.render.container.clientHeight
-                ) / 2,
+              x: -(stage.width - ddInstance.render.container.clientWidth) / 2,
+              y: -(stage.height - ddInstance.render.container.clientHeight) / 2,
               z: 0,
             };
           }
@@ -126,6 +132,7 @@ export default {
             null,
             null
           );
+          this.editor.changeState(DDeiEditorState.DESIGNING);
           ddInstance?.bus?.executeAll();
           this.editor.viewEditor?.forceRefreshBottomMenu();
         }
@@ -137,6 +144,7 @@ export default {
      * @param evt
      */
     save(evt) {
+      this.editor.changeState(DDeiEditorState.DESIGNING);
       this.editor.bus?.push(DDeiEditorEnumBusCommandType.SaveFile, {}, evt);
       this.editor.bus?.executeAll();
     },
@@ -163,6 +171,7 @@ export default {
             eleLink.click();
             // 然后移除
             document.body.removeChild(eleLink);
+            this.editor.changeState(DDeiEditorState.DESIGNING);
           }
         }
       }
@@ -233,6 +242,7 @@ export default {
                         z: 0,
                       };
                     }
+                    this.editor.changeState(DDeiEditorState.DESIGNING);
                     ddInstance?.bus?.push(
                       DDeiEnumBusCommandType.RefreshShape,
                       null,
