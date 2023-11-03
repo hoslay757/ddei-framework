@@ -109,7 +109,12 @@ class DDeiStageCanvasRender {
     this.drawGrid()
     //绘制图形
     ctx.save();
-    ctx.translate(this.model.wpv.x * rat1, this.model.wpv.y * rat1)
+    let ruleWeight = 0;
+    let ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
+    if (ruleDisplay == 1 || ruleDisplay == '1') {
+      ruleWeight = 16;
+    }
+    ctx.translate((this.model.wpv.x + ruleWeight) * rat1, (this.model.wpv.y + ruleWeight) * rat1)
 
     for (let i = this.model.layers.length - 1; i >= 0; i--) {
       if (this.model.layers[i].display == 1) {
@@ -906,11 +911,7 @@ class DDeiStageCanvasRender {
     //当前位置
     let curX = -this.model.wpv.x;
     let curY = -this.model.wpv.y;
-    let ruleWeight = 0;
-    let ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
-    if (ruleDisplay == 1 || ruleDisplay == '1') {
-      ruleWeight = 16;
-    }
+
     //滚动条大小
     let scrollWeight = 15;
 
@@ -919,14 +920,14 @@ class DDeiStageCanvasRender {
     let maxHeight = this.model.height;
     //计算纵向滚动条信息
     if (maxHeight > canvasHeight) {
-      let height = canvasHeight - scrollWeight - ruleWeight;
+      let height = canvasHeight - scrollWeight;
       this.vScroll = { height: height, contentHeight: height * height / maxHeight, y: height * curY / maxHeight, bn: curY / maxHeight };
     } else {
       this.vScroll = null;
     }
     //计算横向滚动条信息
     if (maxWidth > canvasWidth) {
-      let width = canvasWidth - scrollWeight - ruleWeight;
+      let width = canvasWidth - scrollWeight;
       this.hScroll = { width: width, contentWidth: width * width / maxWidth, x: width * curX / maxWidth, bn: curX / maxWidth };
     } else {
       this.hScroll = null;
