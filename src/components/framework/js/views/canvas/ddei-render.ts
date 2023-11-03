@@ -258,8 +258,9 @@ class DDeiCanvasRender {
    */
   mouseWPV(dx: number, dy: number, evt: Event) {
     let stage = this.model.stage;
+    let stageRatio = stage.getStageRatio();
     if (stage) {
-      let maxMove = 50
+      let maxMove = 50 * stageRatio
       if (dx > maxMove) {
         dx = maxMove
       } else if (dx < -maxMove) {
