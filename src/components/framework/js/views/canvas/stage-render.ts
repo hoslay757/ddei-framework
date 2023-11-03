@@ -290,7 +290,13 @@ class DDeiStageCanvasRender {
       //标尺的固定显示大小
       let weight = 16 * rat1;
       ctx.save();
-      let fontSize = 11 * rat1
+      let fontSize = 11
+      if (stageRatio <= 0.5) {
+        fontSize -= 1
+      } else if (stageRatio <= 0.25) {
+        fontSize -= 3
+      }
+      fontSize *= rat1
       ctx.font = fontSize + "px Microsoft YaHei"
       ctx.lineWidth = 1
       ctx.strokeStyle = "rgb(190,190,190)"
@@ -430,7 +436,7 @@ class DDeiStageCanvasRender {
       }
 
 
-
+      ctx.fillStyle = "grey"
       //绘制文本与左上角空白
       curX = startBaseX - wpvX
       x = 0;
