@@ -37,15 +37,20 @@ class DDeiBusCommandChangeStageWPV extends DDeiBusCommand {
       let rat1 = stage.ddInstance.render.ratio
       let stageRatio = stage.getStageRatio()
       let ratio = rat1 * stageRatio;
+
+      let hScrollWidth = stage.render.hScroll?.width ? stage.render.hScroll?.width : 0
+      let vScrollHeight = stage.render.vScroll?.height ? stage.render.vScroll?.height : 0
+
       //修改stage的视窗位置
       let x = data.x;
       let y = data.y;
       let dragObj = data.dragObj;
-      stage.wpv.x += (x - dragObj.dx) / ratio
-      stage.wpv.y += (y - dragObj.dy) / ratio
-
-      let hScrollWidth = stage.render.hScroll?.width ? stage.render.hScroll?.width : 0
-      let vScrollHeight = stage.render.vScroll?.height ? stage.render.vScroll?.height : 0
+      if (hScrollWidth) {
+        stage.wpv.x += (x - dragObj.dx) / ratio
+      }
+      if (vScrollHeight) {
+        stage.wpv.y += (y - dragObj.dy) / ratio
+      }
 
       if (stage.wpv.x > 0) {
         stage.wpv.x = 0

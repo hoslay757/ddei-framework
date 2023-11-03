@@ -109,12 +109,8 @@ class DDeiStageCanvasRender {
     this.drawGrid()
     //绘制图形
     ctx.save();
-    let ruleWeight = 0;
-    let ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
-    if (ruleDisplay == 1 || ruleDisplay == '1') {
-      ruleWeight = 16;
-    }
-    ctx.translate((this.model.wpv.x + ruleWeight) * rat1, (this.model.wpv.y + ruleWeight) * rat1)
+
+    ctx.translate((this.model.wpv.x) * rat1, (this.model.wpv.y) * rat1)
 
     for (let i = this.model.layers.length - 1; i >= 0; i--) {
       if (this.model.layers[i].display == 1) {
