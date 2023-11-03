@@ -156,19 +156,20 @@ export const styles = {
     },
     {
       'id': '100002101',
-      'code': 'fillType',
+      'code': 'fill.type',
       'name': '填充类型',
       'desc': '图形填充的类型快速设置',
       'group': '填充',
-      'controlType': 'fill-type',
-      'dataSource': [{ 'text': '无填充', 'value': '0' }, { 'text': '单色填充', 'value': '1' }],
-      'exmapping': ['fill.disabled'],
+      'controlType': 'radio',
       'dataType': 'string',
-      'defaultValue': '1',
+      'dataSource': [{ 'text': '无', 'value': 0 }, { 'text': '纯色', 'value': 1 }, { 'text': '图片', 'value': 2 }],
+      'defaultValue': 1,
+      'type': 1,
+      'orderNo': 2,
+      'cascadeDisplay': { 1: { show: ['fill.color', 'fill.opacity'], hidden: ['fill.image'] }, 2: { show: ['fill.image', 'fill.opacity'], hidden: ['fill.color'] }, empty: { hidden: ['fill.color', 'fill.image', 'fill.opacity'] } },
       'hiddenTitle': true,
       'display': 'column',
-      'orderNo': 1,
-      'visiable': true
+      'visiable': true,
     },
     {
       'id': '100002102',
@@ -184,6 +185,19 @@ export const styles = {
     },
     {
       'id': '100002103',
+      'code': 'fill.image',
+      'name': '图片',
+      'desc': '图形的填充图片',
+      'group': '填充',
+      'controlType': 'text',
+      'dataType': 'string',
+      'defaultValue': '',
+      'type': 1,
+      'orderNo': 3,
+      'visiable': true
+    },
+    {
+      'id': '100002104',
       'code': 'fill.opacity',
       'name': '透明度',
       'desc': '图形的填充的透明度，0完全透明~1完全不透明',
@@ -198,6 +212,8 @@ export const styles = {
       'orderNo': 3,
       'visiable': true
     },
+
+
     {
       'id': '100002201',
       'code': 'font.family',
@@ -421,7 +437,7 @@ export const styles = {
       'desc': '图形的填充图片的透明度，0完全透明~1完全不透明',
       'group': '填充',
       'controlType': 'text',
-      'mapping': ["image.creating.opacity"],
+      'mapping': ["fill.creating.opacity"],
       'dataType': 'float',
       'defaultValue': 0.5,
       'display': 'column',

@@ -56,32 +56,24 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       this.layer = this.model.layer
       this.layerRender = this.model.layer.render
     }
-    this.initImage();
   }
 
 
   initImage(): void {
     //加载图片
     let that = this;
+    let bgImage = this.getCachedValue("fill.image");
     //加载base64图片
-    if (this.model.imgBase64 && !this.imgObj) {
+    if ((this.model.bgImageBase64 || bgImage) && !this.imgObj) {
       let img = new Image();   // 创建一个<img>元素
       img.onload = function () {
         that.imgObj = img;
-        that.model.stage.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, null);
-        that.model.stage.ddInstance.bus.executeAll()
+        that.upFillImage = bgImage
+        that.ddRender.model.bus.push(DDeiEnumBusCommandType.RefreshShape, null, null);
+        that.ddRender.model.bus.executeAll()
       }
-      img.src = this.model.imgBase64;
-    } else if (this.model.img && !this.imgObj) {
-      let img = new Image();   // 创建一个<img>元素
-      img.onload = function () {
-        that.imgObj = img;
-        that.model.stage.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, null);
-        that.model.stage.ddInstance.bus.executeAll()
-      }
-      img.src = this.model.img;
+      img.src = this.model.bgImageBase64 ? this.model.bgImageBase64 : bgImage;
     }
-
   }
   /**
    * 创建图形
@@ -96,9 +88,6 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
 
     //绘制填充
     this.drawFill();
-
-    // // //绘制图片
-    this.drawImage();
 
     // //绘制文本
     this.drawText();
@@ -302,7 +291,10 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
    */
   drawImage(): void {
     //如果有图片，则绘制
-    if (this.imgObj) {
+    let bgImage = this.getCachedValue("fill.image");
+    if (!this.imgObj || bgImage != this.upFillImage) {
+      this.initImage();
+    } else {
       //获得 2d 上下文对象
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
@@ -314,13 +306,13 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       //缩放填充区域
       //保存状态
       ctx.save();
-
       //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
-      let imgFillInfo = this.getCachedValue("image.opacity");
+      let imgFillInfo = this.getCachedValue("fill.opacity");
       //透明度
       if (imgFillInfo) {
         ctx.globalAlpha = imgFillInfo
       }
+
       let lineOffset = 1 * ratio / 2;
       ctx.translate(this.model.cpv.x * rat1, this.model.cpv.y * rat1)
       ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
@@ -346,31 +338,40 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     let rat1 = this.ddRender.ratio;
     //保存状态
     ctx.save();
-    //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
-    let fillColor = this.getCachedValue("fill.color");
-    let fillOpacity = this.getCachedValue("fill.opacity");
-    let fillDisabled = this.getCachedValue("fill.disabled");
-    //如果拥有填充色，则使用填充色
-    if (!fillDisabled && fillColor && (!fillOpacity || fillOpacity > 0)) {
-      ctx.fillStyle = DDeiUtil.getColor(fillColor);
-      //透明度
-      if (fillOpacity != null && !fillOpacity != undefined) {
-        ctx.globalAlpha = fillOpacity
-      }
-      ctx.beginPath();
-      for (let i = 0; i < fillPVS.length; i++) {
-        if (i == fillPVS.length - 1) {
-          ctx.lineTo(fillPVS[i].x * rat1, fillPVS[i].y * rat1);
-          ctx.lineTo(fillPVS[0].x * rat1, fillPVS[0].y * rat1);
-        } else if (i == 0) {
-          ctx.moveTo(fillPVS[i].x * rat1, fillPVS[i].y * rat1);
-        } else {
-          ctx.lineTo(fillPVS[i].x * rat1, fillPVS[i].y * rat1);
+    let fillType = this.getCachedValue("fill.type");
+    //纯色填充
+    if (fillType == 1) {
+      //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
+      let fillColor = this.getCachedValue("fill.color");
+      let fillOpacity = this.getCachedValue("fill.opacity");
+      let fillDisabled = this.getCachedValue("fill.disabled");
+      //如果拥有填充色，则使用填充色
+      if (!fillDisabled && fillColor && (!fillOpacity || fillOpacity > 0)) {
+        ctx.fillStyle = DDeiUtil.getColor(fillColor);
+        //透明度
+        if (fillOpacity != null && !fillOpacity != undefined) {
+          ctx.globalAlpha = fillOpacity
         }
+        ctx.beginPath();
+        for (let i = 0; i < fillPVS.length; i++) {
+          if (i == fillPVS.length - 1) {
+            ctx.lineTo(fillPVS[i].x * rat1, fillPVS[i].y * rat1);
+            ctx.lineTo(fillPVS[0].x * rat1, fillPVS[0].y * rat1);
+          } else if (i == 0) {
+            ctx.moveTo(fillPVS[i].x * rat1, fillPVS[i].y * rat1);
+          } else {
+            ctx.lineTo(fillPVS[i].x * rat1, fillPVS[i].y * rat1);
+          }
+        }
+        ctx.closePath();
+        //填充矩形
+        ctx.fill();
       }
-      ctx.closePath();
-      //填充矩形
-      ctx.fill();
+
+    }
+    //图片填充
+    else if (fillType == 2) {
+      this.drawImage()
     }
 
     //恢复状态

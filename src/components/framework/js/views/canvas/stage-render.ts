@@ -742,7 +742,7 @@ class DDeiStageCanvasRender {
     //图片水印
     else if (this.model.mark?.type == 2) {
       //没有图片，加载图片，有图片绘制图片
-      if (!this.mark?.imgObj) {
+      if (!this.mark?.imgObj || this.mark.upMarkImg != this.model.mark?.data) {
         this.initMarkImage();
       } else {
         if (!this.markCanvas) {
@@ -933,12 +933,13 @@ class DDeiStageCanvasRender {
     //加载图片
     let that = this;
     //加载base64图片
-    if ((this.model.mark?.imgBase64 || this.model.mark?.data) && !this.mark?.imgObj) {
+    if ((this.model.mark?.imgBase64 || this.model.mark?.data)) {
       let img = new Image();   // 创建一个<img>元素
       img.onload = function () {
         if (!that.mark) {
           that.mark = {}
         }
+        that.mark.upMarkImg = that.model.mark.imgBase64 ? that.model.mark?.imgBase64 : that.model.mark?.data;
         that.mark.imgObj = img;
         that.model.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, null);
         that.model.ddInstance.bus.executeAll()

@@ -200,7 +200,6 @@ export default {
       let searchPaths = [
         "width",
         "height",
-        "img",
         "text",
         "linkChild",
         "linkSelf",
@@ -226,7 +225,9 @@ export default {
           dataJson[key] = control[key];
         }
       });
-
+      if (control.img) {
+        dataJson.fill = { type: 2, image: control.img };
+      }
       let model: DDeiAbstractShape = this.controlCls[control.type].initByJSON(
         dataJson,
         { currentStage: stage }

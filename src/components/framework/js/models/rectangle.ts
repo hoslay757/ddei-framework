@@ -20,8 +20,6 @@ class DDeiRectangle extends DDeiAbstractShape {
     this.font = props.font ? props.font : null;
     //文本内容
     this.text = props.text ? props.text : "";
-    //图片路径
-    this.img = props.img ? props.img : "";
     //图片base64
     this.imgBase64 = props.imgBase64 ? props.imgBase64 : "";
 
@@ -68,8 +66,6 @@ class DDeiRectangle extends DDeiAbstractShape {
   fill: any;
   //字体，包含了选中/未选中，字体的名称，大小，颜色等配置
   font: any;
-  //图片背景
-  img: string;
   //图片base64
   imgBase64: string;
   //文本内容
