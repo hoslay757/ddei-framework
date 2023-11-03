@@ -236,7 +236,7 @@ class DDeiUtil {
             pathArray = paths[ix].split(".");
             try {
               let returnJSON = DDeiUtil.getDataByPath(data, pathArray);
-              if (returnJSON?.data) {
+              if (returnJSON?.data || returnJSON?.data == 0) {
                 return returnJSON.data;
               }
             } catch (e) { }
@@ -246,7 +246,7 @@ class DDeiUtil {
                 pathArray = obj[jx].split(".");
                 try {
                   let returnJSON = DDeiUtil.getDataByPath(data, pathArray);
-                  if (returnJSON?.data) {
+                  if (returnJSON?.data || returnJSON?.data == 0) {
                     return returnJSON.data;
                   }
                 } catch (e) { }
