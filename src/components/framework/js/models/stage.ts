@@ -66,14 +66,8 @@ class DDeiStage {
     let dDeiLayer1 = DDeiLayer.initByJSON({ id: "layer_top" });
     dDeiLayer1.index = 0;
     dDeiLayer1.stage = stage;
-    let dDeiLayer2 = DDeiLayer.initByJSON({ id: "layer_background", type: 99 });
-    dDeiLayer2.index = 1;
-    dDeiLayer2.stage = stage;
     stage.layers[0] = dDeiLayer1;
-    stage.layers[1] = dDeiLayer2;
     stage.layerIndex = 0;
-
-
     stage.initHistroy();
     return stage;
   }

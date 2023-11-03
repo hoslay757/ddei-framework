@@ -4,6 +4,7 @@ import DDeiEnumBusCommandType from '../../enums/bus-command-type.js';
 import DDeiEnumControlState from '../../enums/control-state.js';
 import DDeiEnumState from '../../enums/ddei-state.js';
 import DDeiEnumOperateState from '../../enums/operate-state.js';
+import DDeiModelArrtibuteValue from '../../models/attribute/attribute-value.js';
 import DDeiLayer from '../../models/layer.js';
 import DDeiAbstractShape from '../../models/shape.js';
 import DDeiStage from '../../models/stage.js';
@@ -108,96 +109,99 @@ class DDeiLayerCanvasRender {
       let ctx = canvas.getContext('2d');
       //获取全局缩放比例
       let rat1 = this.ddRender.ratio
-      let r20 = rat1 * 20;
-      let r40 = rat1 * 40;
-
       //保存状态
       ctx.save();
-
       ctx.translate(-this.stage.wpv.x * rat1, -this.stage.wpv.y * rat1)
-      //根据背景的设置绘制图层
-      //绘制背景图层
-      let bgInfo = null;
-      if (this.model.type == 99) {
-        bgInfo = this.model.background ? this.model.background : DDeiConfig.BACKGROUND_LAYER;
-      } else {
-        bgInfo = this.model.background ? this.model.background : DDeiConfig.LAYER;
-      }
 
-      //绘制无背景
-      if (!bgInfo || !bgInfo.type || bgInfo.type == 0) {
-      }
+      //根据背景的设置绘制图层
+      //获取属性配置
+      let bgInfoType = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.type", true);
       // 绘制纯色背景
-      else if (bgInfo.type == 1) {
-        ctx.fillStyle = bgInfo.bgcolor
+      if (bgInfoType == 1) {
+        let bgInfoColor = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.color", true);
+        let bgInfoOpacity = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.opacity", true);
+        //填充色
+        ctx.fillStyle = DDeiUtil.getColor(bgInfoColor)
         //透明度
-        if (bgInfo.opacity != null && bgInfo.opacity != undefined) {
-          ctx.globalAlpha = bgInfo.opacity
+        if (bgInfoOpacity || bgInfoOpacity == 0) {
+          ctx.globalAlpha = bgInfoOpacity
         }
         ctx.fillRect(0, 0, canvas.width, canvas.height)
       }
-      //TODO 绘制图片背景类型
-      else if (bgInfo.type == 2) {
+      //绘制图片背景类型
+      else if (bgInfoType == 2) {
+        //没有图片，加载图片，有图片绘制图片
+        if (!this.bgImgObj) {
+          this.initBgImage();
+        } else {
+          let bgImgMode = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.imageMode", true);
+          let bgInfoOpacity = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.opacity", true);
+          //透明度
+          if (bgInfoOpacity || bgInfoOpacity == 0) {
+            ctx.globalAlpha = bgInfoOpacity
+          }
+          let x = 0;
+          let y = 0;
+          let w = this.bgImgObj.width;
+          let h = this.bgImgObj.height;
+          let cwidth = canvas.width
+          let cheight = canvas.height
+          let ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
+          if (ruleDisplay == 1) {
+            cwidth -= 16 * rat1;
+            cheight -= 16 * rat1;
+          }
+          let scrollWeight = rat1 * 15;
 
-      }
-      //绘制田字背景
-      else if (bgInfo.type == 3) {
-
-        ctx.fillStyle = DDeiUtil.getColor("rgb(240,240,240)")
-        //透明度
-        if (bgInfo.opacity != null && bgInfo.opacity != undefined) {
-          ctx.globalAlpha = bgInfo.opacity
+          if (this.stageRender.hScroll == 1) {
+            cheight -= scrollWeight;
+          }
+          if (this.stageRender.vScroll == 1) {
+            cwidth -= scrollWeight;
+          }
+          //填充
+          if (bgImgMode == 2) {
+            //绘制图片
+            w = cwidth;
+            h = cheight;
+          }
+          //缩放
+          else if (bgImgMode == 1) {
+            let bgImageScale = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.imageScale", true);
+            w = w * bgImageScale;
+            h = h * bgImageScale;
+          }
+          //对齐
+          if (bgImgMode != 2) {
+            let bgImageAlign = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.imageAlign", true);
+            let align = 2;
+            let valign = 2;
+            switch (bgImageAlign) {
+              case 1: align = 1; valign = 1; break;
+              case 2: align = 2; valign = 1; break;
+              case 3: align = 3; valign = 1; break;
+              case 4: align = 1; valign = 2; break;
+              case 5: align = 2; valign = 2; break;
+              case 6: align = 3; valign = 2; break;
+              case 7: align = 1; valign = 3; break;
+              case 8: align = 2; valign = 3; break;
+              case 9: align = 3; valign = 3; break;
+              default: break;
+            }
+            switch (align) {
+              case 1: x = 0; break;
+              case 2: x = (cwidth - w) / 2; break;
+              case 3: x = cwidth - w; break;
+            }
+            switch (valign) {
+              case 1: y = 0; break;
+              case 2: y = (cheight - h) / 2; break;
+              case 3: y = cheight - h; break;
+            }
+          }
+          ctx.drawImage(this.bgImgObj, x, y, w, h);
         }
-        let cwidth = canvas.width + r20;
-        let cheight = canvas.height + r20;
-        let scrollWeight = rat1 * 15;
 
-        //判断滚动条
-        if (this.stageRender.hScroll) {
-          cheight -= scrollWeight
-        }
-        if (this.stageRender.vScroll) {
-          cwidth -= scrollWeight
-        }
-        let x = -r20
-        let y = -r20
-        ctx.fillRect(x, y, cwidth, cheight)
-
-        // ctx.lineWidth = 1;
-
-        // let offsetWidth = 0.5;
-        // let xdr = this.stage.wpv.x * rat1 % r20
-        // let ydr = this.stage.wpv.y * rat1 % r20
-        // //绘制竖线
-        // for (; x <= cwidth; x += r20) {
-
-        //   ctx.beginPath();
-        //   if (x % r40 == 0) {
-        //     ctx.setLineDash([]);
-        //     ctx.strokeStyle = "rgb(210,210,210)";
-        //   } else {
-        //     ctx.setLineDash([3, 1]);
-        //     ctx.strokeStyle = "rgb(220,220,220)";
-        //   }
-        //   ctx.moveTo(x + offsetWidth + xdr, offsetWidth + ydr);
-        //   ctx.lineTo(x + offsetWidth + xdr, canvas.height + offsetWidth + ydr);
-        //   ctx.stroke();
-        // }
-
-        // //绘制横线
-        // for (; y <= cheight; y += r20) {
-        //   ctx.beginPath();
-        //   if (y % r40 == 0) {
-        //     ctx.setLineDash([]);
-        //     ctx.strokeStyle = "rgb(210,210,210)";
-        //   } else {
-        //     ctx.setLineDash([3, 1]);
-        //     ctx.strokeStyle = "rgb(220,220,220)";
-        //   }
-        //   ctx.moveTo(offsetWidth + xdr, y + offsetWidth + ydr);
-        //   ctx.lineTo(canvas.width + offsetWidth + xdr, y + offsetWidth + ydr);
-        //   ctx.stroke();
-        // }
       }
 
       //恢复状态
@@ -205,6 +209,27 @@ class DDeiLayerCanvasRender {
     }
   }
 
+  /**
+   * 初始化背景图片
+   */
+  initBgImage(): void {
+    //加载图片
+    let that = this;
+    let bgImage = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.image", true);
+    //加载base64图片
+    if ((this.model.bgImageBase64 || bgImage) && !this.bgImgObj) {
+      let img = new Image();   // 创建一个<img>元素
+      img.onload = function () {
+        if (!that.mark) {
+          that.mark = {}
+        }
+        that.bgImgObj = img;
+        that.ddRender.model.bus.push(DDeiEnumBusCommandType.RefreshShape, null, null);
+        that.ddRender.model.bus.executeAll()
+      }
+      img.src = this.model.bgImageBase64 ? this.model.bgImageBase64 : bgImage;
+    }
+  }
   /**
    * 绘制子元素
    */

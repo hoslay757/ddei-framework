@@ -253,7 +253,6 @@ export default {
           let layerControlDefine = cloneDeep(
             controlOriginDefinies.get("DDeiLayer")
           );
-          debugger;
           let layer = firstModel.layers[firstModel.layerIndex];
           layerControlDefine.attrDefineMap.forEach((attrDefine, attrKey) => {
             //当前属性的定义

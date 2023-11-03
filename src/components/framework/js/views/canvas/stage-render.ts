@@ -87,7 +87,10 @@ class DDeiStageCanvasRender {
     let ctx = canvas.getContext('2d');
     let rat1 = this.ddRender.ratio;
     ctx.save();
+    ctx.fillStyle = DDeiUtil.getColor(DDeiConfig.STAGE.NONE_BG_COLOR)
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
     ctx.translate(this.model.wpv.x * rat1, this.model.wpv.y * rat1)
+    //绘制背景，清空画布
 
     //绘制背景
     let topDisplayIndex = -1;

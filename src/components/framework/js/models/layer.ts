@@ -16,10 +16,10 @@ class DDeiLayer {
     this.midList = props.midList ? props.midList : new Array();
     this.stage = null;
     this.index = -1;
-    this.type = props.type ? props.type : 0;
     this.background = props.background ? props.background : null;
     this.display = props.display ? props.display : 1;
     this.unicode = props.unicode ? props.unicode : DDeiUtil.getUniqueCode()
+    this.bg = props.bg
 
   }
 
@@ -64,12 +64,6 @@ class DDeiLayer {
   stage: DDeiStage | null;
   // 当前layer的下标，该属性与实际的图层index保持同步
   index: number;
-  /**
-   * 图层类型：0普通图层,99背景图层，
-   * 背景图层：只有背景相关信息，没有事件等
-   * 普通图层：除了背景还能相应事件等
-   */
-  type: number;
   // 背景信息，为一个json，包含了背景的类型，以及各种类型下的详细定义
   background: any;
   // 当前图层是否显示，0不显示，1正常显示，2显示在最顶层
@@ -77,6 +71,8 @@ class DDeiLayer {
   // 当前图层是否锁定，true显示，false不显示
   lock: boolean = false;
   unicode: string;
+
+  bg: object | null;
 
   //操作点对象，用于显示操作点，操作点点击后，会进行不同的操作，操作点临时存在，不满足出现条件时就会删除，操作点不会序列化
   opPoints: object[] = [];
@@ -91,6 +87,8 @@ class DDeiLayer {
 
   //拖拽时的影子控件，拖拽完成或取消后会销毁
   shadowControls: DDeiAbstractShape[] = []
+
+  modelCode: string = "DDeiLayer"
 
   //模型是否发生改变，当移动、改变大小、旋转、修改文本等操作会引起改变
   modelChanged: boolean = true;

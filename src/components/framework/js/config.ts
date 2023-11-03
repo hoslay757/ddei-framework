@@ -121,6 +121,8 @@ class DDeiConfig {
         family: "Microsoft YaHei", color: "grey", size: "16"
       }
     }
+    //全局背景色
+    , NONE_BG_COLOR: "rgb(240,240,240)"
   }
 
   // 定义了在1.0缩放的，单位尺寸设置
@@ -282,7 +284,7 @@ class DDeiConfig {
 
   // 图层的相关缺省样式属性
   static LAYER: object = {
-    //背景的类型，0无背景，1纯色，2图片，3田字
+    //背景的类型，0无背景，1纯色，2图片
     type: 0,
     //背景色
     bgcolor: "grey",
@@ -290,15 +292,6 @@ class DDeiConfig {
     opacity: 0.5
   };
 
-  // 背景图层的相关缺省样式属性
-  static BACKGROUND_LAYER: object = {
-    //背景的类型，0无背景，1纯色，2图片，3田字
-    type: 3,
-    //背景色
-    bgcolor: "white",
-    //透明度，0完全透明~1完全不透明
-    opacity: 1
-  };
 
   // 矩形的相关缺省样式属性
   static RECTANGLE: object = {
@@ -531,30 +524,28 @@ class DDeiConfig {
    * @param model 模型
    */
   static getSysDefaultData(model: DDeiAbstractShape): object | null {
-    if (model.modelType == "DDeiLayer") {
-      if (model.type == 99) {
-        return DDeiConfig.BACKGROUND_LAYER;
-      } else {
-        return DDeiConfig.LAYER;
-      }
-    } else if (model.modelType == "DDeiTable") {
-      return DDeiConfig.TABLE;
-    } else if (model.modelType == "DDeiTableCell") {
-      return DDeiConfig.TABLE.CELL;
-    } else if (model.modelType == "DDeiRectangle") {
-      return DDeiConfig.RECTANGLE;
-    } else if (model.modelType == "DDeiCircle") {
-      return DDeiConfig.CIRCLE;
-    } else if (model.modelType == "DDeiDiamond") {
-      return DDeiConfig.DIAMOND;
-    } else if (model.modelType == "DDeiSelector") {
-      return DDeiConfig.SELECTOR;
-    } else if (model.modelType == "DDeiRectContainer") {
-      return DDeiConfig.CONTAINER;
-    } else if (model.modelType == "DDeiStage") {
-      return DDeiConfig.STAGE;
+    switch (model.modelType) {
+      case "DDeiLayer":
+        return DDeiConfig.LAYER
+      case "DDeiTable":
+        return DDeiConfig.TABLE
+      case "DDeiTableCell":
+        return DDeiConfig.TABLE.CELL
+      case "DDeiRectangle":
+        return DDeiConfig.RECTANGLE
+      case "DDeiCircle":
+        return DDeiConfig.CIRCLE
+      case "DDeiDiamond":
+        return DDeiConfig.DIAMOND
+      case "DDeiSelector":
+        return DDeiConfig.SELECTOR
+      case "DDeiRectContainer":
+        return DDeiConfig.CONTAINER
+      case "DDeiStage":
+        return DDeiConfig.STAGE
+      default:
+        return null
     }
-    return null;
   }
   /**
   * 根据配置文件的配置，将模型与渲染器绑定

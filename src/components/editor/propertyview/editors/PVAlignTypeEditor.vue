@@ -1,41 +1,52 @@
 <template>
   <div class="ddei_pv_editor_aligntype">
-    <PVBaseCombox :attrDefine="attrDefine" ref="combox" :canSearch="false">
+    <PVBaseCombox :attrDefine="attrDefine"
+                  ref="combox"
+                  :canSearch="false">
       <div class="ddei_pv_editor_aligntype_items">
         <div :class="{ 'ddei_pv_editor_aligntype_item': true, 'ddei_pv_editor_aligntype_item_selected': value == 1 }"
-          style="text-align:left" @click="valueChange(1, $event)">
+             style="text-align:left"
+             @click="valueChange(1, $event)">
           <div style="vertical-align: top;">左上</div>
         </div>
         <div :class="{ 'ddei_pv_editor_aligntype_item': true, 'ddei_pv_editor_aligntype_item_selected': value == 2 }"
-          style="text-align:center" @click="valueChange(2, $event)">
+             style="text-align:center"
+             @click="valueChange(2, $event)">
           <div style="vertical-align: top;">中上</div>
         </div>
         <div :class="{ 'ddei_pv_editor_aligntype_item': true, 'ddei_pv_editor_aligntype_item_selected': value == 3 }"
-          style="text-align:right" @click="valueChange(3, $event)">
+             style="text-align:right"
+             @click="valueChange(3, $event)">
           <div style="vertical-align: top;">右上</div>
         </div>
         <div :class="{ 'ddei_pv_editor_aligntype_item': true, 'ddei_pv_editor_aligntype_item_selected': value == 4 }"
-          style="text-align:left" @click="valueChange(4, $event)">
+             style="text-align:left"
+             @click="valueChange(4, $event)">
           <div style="vertical-align: middle;">左中</div>
         </div>
         <div :class="{ 'ddei_pv_editor_aligntype_item': true, 'ddei_pv_editor_aligntype_item_selected': value == 5 }"
-          style="text-align:center" @click="valueChange(5, $event)">
+             style="text-align:center"
+             @click="valueChange(5, $event)">
           <div style="vertical-align: middle;">正中</div>
         </div>
         <div :class="{ 'ddei_pv_editor_aligntype_item': true, 'ddei_pv_editor_aligntype_item_selected': value == 6 }"
-          style="text-align:right" @click="valueChange(6, $event)">
+             style="text-align:right"
+             @click="valueChange(6, $event)">
           <div style="vertical-align: middle;">右中</div>
         </div>
         <div :class="{ 'ddei_pv_editor_aligntype_item': true, 'ddei_pv_editor_aligntype_item_selected': value == 7 }"
-          style="text-align:left" @click="valueChange(7, $event)">
+             style="text-align:left"
+             @click="valueChange(7, $event)">
           <div style="vertical-align: bottom;">左下</div>
         </div>
         <div :class="{ 'ddei_pv_editor_aligntype_item': true, 'ddei_pv_editor_aligntype_item_selected': value == 8 }"
-          style="text-align:center" @click="valueChange(8, $event)">
+             style="text-align:center"
+             @click="valueChange(8, $event)">
           <div style="vertical-align: bottom;">中下</div>
         </div>
         <div :class="{ 'ddei_pv_editor_aligntype_item': true, 'ddei_pv_editor_aligntype_item_selected': value == 9 }"
-          style="text-align:right" @click="valueChange(9, $event)">
+             style="text-align:right"
+             @click="valueChange(9, $event)">
           <div style="vertical-align: bottom;">右下</div>
         </div>
       </div>
@@ -44,13 +55,13 @@
 </template>
 
 <script lang="ts">
-import DDeiEditorArrtibute from '../../js/attribute/editor-attribute';
-import DDeiEditor from '../../js/editor';
-import DDeiEnumBusCommandType from '../../../framework/js/enums/bus-command-type';
-import DDeiAbstractArrtibuteParser from '../../../framework/js/models/attribute/parser/attribute-parser';
-import PVBaseCombox from './PVBaseCombox.vue';
-import DDeiUtil from '@/components/framework/js/util';
-import DDeiEditorEnumBusCommandType from '../../js/enums/editor-command-type';
+import DDeiEditorArrtibute from "../../js/attribute/editor-attribute";
+import DDeiEditor from "../../js/editor";
+import DDeiEnumBusCommandType from "../../../framework/js/enums/bus-command-type";
+import DDeiAbstractArrtibuteParser from "../../../framework/js/models/attribute/parser/attribute-parser";
+import PVBaseCombox from "./PVBaseCombox.vue";
+import DDeiUtil from "@/components/framework/js/util";
+import DDeiEditorEnumBusCommandType from "../../js/enums/editor-command-type";
 
 export default {
   name: "DDei-Editor-PV-Align-Type",
@@ -60,12 +71,12 @@ export default {
     //当前属性定义
     attrDefine: {
       type: DDeiEditorArrtibute,
-      default: null
+      default: null,
     },
     //当前控件定义
     controlDefine: {
       type: Object,
-      default: null
+      default: null,
     },
   },
   data() {
@@ -78,14 +89,10 @@ export default {
   },
   computed: {},
   components: {
-    PVBaseCombox
+    PVBaseCombox,
   },
-  watch: {
-
-  },
-  created() {
-
-  },
+  watch: {},
+  created() {},
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
@@ -103,22 +110,37 @@ export default {
   methods: {
     getTypeText(type) {
       switch (type) {
-        case 1: return "左上";
-        case 2: return "中上";
-        case 3: return "右上";
-        case 4: return "左中";
-        case 5: return "正中";
-        case 6: return "右中";
-        case 7: return "右下";
-        case 8: return "中下";
-        case 9: return "右下";
+        case 1:
+          return "左上";
+        case 2:
+          return "中上";
+        case 3:
+          return "右上";
+        case 4:
+          return "左中";
+        case 5:
+          return "正中";
+        case 6:
+          return "右中";
+        case 7:
+          return "右下";
+        case 8:
+          return "中下";
+        case 9:
+          return "右下";
       }
     },
 
     getTypeValue() {
       //通过解析器获取有效值
-      let align = DDeiUtil.getDataByPathList(this.attrDefine.model, "textStyle.align");
-      let valign = DDeiUtil.getDataByPathList(this.attrDefine.model, "textStyle.valign");
+      let align = DDeiUtil.getDataByPathList(
+        this.attrDefine.model,
+        "textStyle.align"
+      );
+      let valign = DDeiUtil.getDataByPathList(
+        this.attrDefine.model,
+        "textStyle.valign"
+      );
       if (align == 1 && valign == 1) {
         return { value: 1 };
       } else if (align == 2 && valign == 1) {
@@ -141,46 +163,127 @@ export default {
       return { isDefault: true, value: 5 };
     },
 
-
-
     valueChange(type, evt) {
       let align = 2;
       let valign = 2;
       switch (type) {
-        case 1: align = 1; valign = 1; break;
-        case 2: align = 2; valign = 1; break;
-        case 3: align = 3; valign = 1; break;
-        case 4: align = 1; valign = 2; break;
-        case 5: align = 2; valign = 2; break;
-        case 6: align = 3; valign = 2; break;
-        case 7: align = 1; valign = 3; break;
-        case 8: align = 2; valign = 3; break;
-        case 9: align = 3; valign = 3; break;
+        case 1:
+          align = 1;
+          valign = 1;
+          break;
+        case 2:
+          align = 2;
+          valign = 1;
+          break;
+        case 3:
+          align = 3;
+          valign = 1;
+          break;
+        case 4:
+          align = 1;
+          valign = 2;
+          break;
+        case 5:
+          align = 2;
+          valign = 2;
+          break;
+        case 6:
+          align = 3;
+          valign = 2;
+          break;
+        case 7:
+          align = 1;
+          valign = 3;
+          break;
+        case 8:
+          align = 2;
+          valign = 3;
+          break;
+        case 9:
+          align = 3;
+          valign = 3;
+          break;
       }
       this.attrDefine.value = type;
       let text = this.getTypeText(type);
       this.$refs.combox.text = text;
       this.$refs.combox.value = type;
       this.value = type;
+      //获取属性路径
+      let paths = [];
+      this.attrDefine?.mapping?.forEach((element) => {
+        paths.push(element);
+      });
+      if (!(paths?.length > 0)) {
+        paths = [this.attrDefine.code];
+      }
       //通过解析器获取有效值
       let parser: DDeiAbstractArrtibuteParser = this.attrDefine.getParser();
       //属性值
       let alignValue = parser.parseValue(align);
       let valignValue = parser.parseValue(valign);
-      this.editor.ddInstance.stage.selectedModels.forEach(element => {
+      DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, this.value);
+      this.attrDefine.doCascadeDisplayByValue();
+      this.editor.ddInstance.stage.selectedModels.forEach((element) => {
         //推送信息进入总线
-        this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: ["textStyle.align"], value: alignValue, attrDefine: this.attrDefine }, evt, true);
-        this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: ["textStyle.valign"], value: valignValue, attrDefine: this.attrDefine }, evt, true);
+        this.editor.bus.push(
+          DDeiEnumBusCommandType.ModelChangeValue,
+          {
+            mids: [element.id],
+            paths: paths,
+            value: this.value,
+            attrDefine: this.attrDefine,
+          },
+          evt,
+          true
+        );
+        DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, this.value);
+
+        //推送信息进入总线
+        this.editor.bus.push(
+          DDeiEnumBusCommandType.ModelChangeValue,
+          {
+            mids: [element.id],
+            paths: ["textStyle.align"],
+            value: alignValue,
+            attrDefine: this.attrDefine,
+          },
+          evt,
+          true
+        );
+        this.editor.bus.push(
+          DDeiEnumBusCommandType.ModelChangeValue,
+          {
+            mids: [element.id],
+            paths: ["textStyle.valign"],
+            value: valignValue,
+            attrDefine: this.attrDefine,
+          },
+          evt,
+          true
+        );
         //根据code以及mapping设置属性值
-        DDeiUtil.setAttrValueByPath(this.attrDefine.model, ["textStyle.align"], alignValue)
+        DDeiUtil.setAttrValueByPath(
+          this.attrDefine.model,
+          ["textStyle.align"],
+          alignValue
+        );
         //根据code以及mapping设置属性值
-        DDeiUtil.setAttrValueByPath(this.attrDefine.model, ["textStyle.valign"], valignValue)
+        DDeiUtil.setAttrValueByPath(
+          this.attrDefine.model,
+          ["textStyle.valign"],
+          valignValue
+        );
       });
-      this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, null, evt);
+      this.editor.bus.push(
+        DDeiEditorEnumBusCommandType.RefreshEditorParts,
+        null,
+        evt
+      );
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
       this.editor.bus.executeAll();
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -211,7 +314,6 @@ export default {
 
 .ddei_pv_editor_aligntype_item div {
   display: table-cell;
-
 }
 
 .ddei_pv_editor_aligntype_item:hover {
