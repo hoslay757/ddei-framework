@@ -144,7 +144,6 @@ class DDeiStageCanvasRender {
    */
   drawPaper() {
     let paperType = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.type", true);
-    let paperDirect = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.direct", true);
     //获取纸张大小的定义
     let paperConfig = DDeiConfig.PAPER[paperType];
     if (paperConfig) {
@@ -154,22 +153,17 @@ class DDeiStageCanvasRender {
       let rat1 = this.ddRender.ratio;
       let stageRatio = this.model.getStageRatio()
       let ratio = rat1 * stageRatio;
-      let xDPI = this.ddRender.dpi.x;
+
       //当前的窗口位置（乘以了窗口缩放比例）
       let wpvX = -this.model.wpv.x * rat1
       let wpvY = -this.model.wpv.y * rat1
       let offsetWidth = 1 * ratio / 2;
 
       //纸张的像素大小
-      let paperWidth = 0;
-      let paperHeight = 0;
-      if (paperDirect == 1 || paperDirect == '1') {
-        paperWidth = DDeiUtil.unitToPix(paperConfig.width, paperConfig.unit, xDPI) * ratio;
-        paperHeight = DDeiUtil.unitToPix(paperConfig.height, paperConfig.unit, xDPI) * ratio;
-      } else {
-        paperHeight = DDeiUtil.unitToPix(paperConfig.width, paperConfig.unit, xDPI) * ratio;
-        paperWidth = DDeiUtil.unitToPix(paperConfig.height, paperConfig.unit, xDPI) * ratio;
-      }
+      let paperSize = this.getPaperSize()
+
+      let paperWidth = paperSize.width;
+      let paperHeight = paperSize.height;
 
       //第一张纸开始位置
       let startPaperX = Math.floor(this.model.width / 2 * rat1 - paperWidth / 2)
@@ -304,22 +298,9 @@ class DDeiStageCanvasRender {
       let cheight = canvas.height;
 
       //纸张的像素大小
-      let paperWidth = 0;
-      let paperHeight = 0;
-      //获取纸张大小的定义
-      let paperType = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.type", true);
-      let paperConfig = DDeiConfig.PAPER[paperType];
-
-      if (paperConfig) {
-        let paperDirect = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.direct", true);
-        if (paperDirect == 1 || paperDirect == '1') {
-          paperWidth = DDeiUtil.unitToPix(paperConfig.width, paperConfig.unit, xDPI) * ratio;
-          paperHeight = DDeiUtil.unitToPix(paperConfig.height, paperConfig.unit, xDPI) * ratio;
-        } else {
-          paperHeight = DDeiUtil.unitToPix(paperConfig.width, paperConfig.unit, xDPI) * ratio;
-          paperWidth = DDeiUtil.unitToPix(paperConfig.height, paperConfig.unit, xDPI) * ratio;
-        }
-      }
+      let paperSize = this.getPaperSize()
+      let paperWidth = paperSize.width;
+      let paperHeight = paperSize.height;
 
       //基准位置0刻度
       let startBaseX = this.model.width / 2 * rat1 - paperWidth / 2 + 0.5
@@ -579,23 +560,9 @@ class DDeiStageCanvasRender {
       let cheight = canvas.height;
 
       //纸张的像素大小
-      let paperWidth = 0;
-      let paperHeight = 0;
-      //获取纸张大小的定义
-      let paperType = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.type", true);
-      let paperConfig = DDeiConfig.PAPER[paperType];
-
-      if (paperConfig) {
-        let paperDirect = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.direct", true);
-        if (paperDirect == 1 || paperDirect == '1') {
-          paperWidth = DDeiUtil.unitToPix(paperConfig.width, paperConfig.unit, xDPI) * ratio;
-          paperHeight = DDeiUtil.unitToPix(paperConfig.height, paperConfig.unit, xDPI) * ratio;
-        } else {
-          paperHeight = DDeiUtil.unitToPix(paperConfig.width, paperConfig.unit, xDPI) * ratio;
-          paperWidth = DDeiUtil.unitToPix(paperConfig.height, paperConfig.unit, xDPI) * ratio;
-        }
-      }
-
+      let paperSize = this.getPaperSize()
+      let paperWidth = paperSize.width;
+      let paperHeight = paperSize.height;
       //基准位置0刻度
       let startBaseX = this.model.width / 2 * rat1 - paperWidth / 2 + 0.5
       let startBaseY = this.model.height / 2 * rat1 - paperHeight / 2 + 0.5
@@ -984,6 +951,52 @@ class DDeiStageCanvasRender {
    */
   resetSelectorState(evt: Event): void {
     this.selector.resetState(evt.offsetX - this.model.wpv.x, evt.offsetY - this.model.wpv.y);
+  }
+
+  /**
+   * 根据属性获取纸张大小
+   */
+  getPaperSize(): object {
+    //纸张的像素大小
+    let paperWidth = 0;
+    let paperHeight = 0;
+    //获取纸张大小的定义
+    let paperType = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.type", true);
+    let paperConfig = DDeiConfig.PAPER[paperType];
+    if (paperConfig) {
+      let rat1 = this.ddRender.ratio;
+      let stageRatio = this.model.getStageRatio()
+      let ratio = rat1 * stageRatio;
+      let xDPI = this.ddRender.dpi.x;
+      let paperDirect = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.direct", true);
+      let w = paperConfig.width;
+      let h = paperConfig.height;
+      let unit = paperConfig.unit;
+      if (paperType == '自定义') {
+        //获取自定义属性以及单位
+        let custWidth = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.width", true);
+        if (custWidth || custWidth == 0) {
+          w = custWidth;
+        }
+        let custHeight = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.height", true);
+        if (custHeight || custHeight == 0) {
+          h = custHeight;
+        }
+        let custUnit = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.unit", true);
+        if (custUnit) {
+          unit = custUnit;
+        }
+      }
+
+      if (paperDirect == 1 || paperDirect == '1') {
+        paperWidth = DDeiUtil.unitToPix(w, unit, xDPI) * ratio;
+        paperHeight = DDeiUtil.unitToPix(h, unit, xDPI) * ratio;
+      } else {
+        paperHeight = DDeiUtil.unitToPix(w, unit, xDPI) * ratio;
+        paperWidth = DDeiUtil.unitToPix(h, unit, xDPI) * ratio;
+      }
+    }
+    return { width: paperWidth, height: paperHeight }
   }
 
   // ============================== 事件 ===============================

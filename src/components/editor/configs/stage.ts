@@ -39,7 +39,7 @@ export const styles = {
       'canSearch': false,
       'itemStyle': { width: 170, align: 'left', paddingLeft: '10px', height: 25, col: 1, row: 8, imgWidth: 20, imgHeight: 20 },
       'defaultValue': 'A4',
-      'cascadeDisplay': { '无': { hidden: ['paper.direct', 'paper.width', 'paper.height', 'paper.unit'] }, '自定义': { show: ['paper.direct', 'paper.width', 'paper.height', 'paper.unit'] }, notempty: { show: ['paper.direct'], hidden: ['paper.width', 'paper.height', 'paper.unit'] }, empty: { hidden: ['paper.width', 'paper.height', 'paper.unit'] } },
+      'cascadeDisplay': { '无': { hidden: ['paper.direct', 'paper.width', 'paper.height', 'paper.unit'] }, '自定义': { show: ['paper.direct', 'paper.width', 'paper.height', 'paper.unit'] }, notempty: { show: ['paper.direct'], hidden: ['paper.width', 'paper.height', 'paper.unit'] }, empty: { hidden: ['paper.width', 'paper.height', 'paper.unit'] }, default: { hidden: ['paper.width', 'paper.height', 'paper.unit'] } },
       'type': 1,
       'orderNo': 1,
       'visiable': true
