@@ -15,7 +15,8 @@
          :title="item.name">
       <img src="../icons/icon-file.png" />
       <span>
-        <div class="text">{{ item.name }}</div>
+        <div class="text"
+             @dblclick="startChangeFileName(item,$event)">{{ item.name }}</div>
         <div class="dirty"
              v-show="item.state != 0">ꔷ</div>
       </span>
@@ -69,6 +70,7 @@ import DDeiFile from "../js/file";
 import DDeiEditorUtil from "../js/util/editor-util";
 import DDeiStoreLocal from "@/components/framework/js/store/local-store";
 import DDeiEnumBusCommandType from "../../framework/js/enums/bus-command-type";
+import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
 
 export default {
   name: "DDei-Editor-OpenFielsView",
@@ -118,6 +120,76 @@ export default {
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
   },
   methods: {
+    /**
+     * 修改文件标题
+     */
+    startChangeFileName(file, evt) {
+      let ele = evt.target;
+      let domPos = DDeiUtil.getDomAbsPosition(ele);
+      let input = document.getElementById("change_file_name_input");
+      if (!input) {
+        input = document.createElement("input");
+        input.setAttribute("id", "change_file_name_input");
+        input.style.position = "absolute";
+        document.body.appendChild(input);
+        input.onblur = function () {
+          //设置属性值
+          if (input.value) {
+            let editor = DDeiEditor.ACTIVE_INSTANCE;
+            let file = editor?.files[editor?.currentFileIndex];
+            if (input.value != file.name) {
+              file.name = input.value;
+              editor.viewEditor?.changeFileModifyDirty();
+              editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
+              editor.bus.executeAll();
+              editor.changeState(DDeiEditorState.DESIGNING);
+              editor.viewEditor?.forceRefreshOpenFilesView();
+            }
+            input.style.display = "none";
+            input.style.left = "0px";
+            input.style.top = "0px";
+            input.value = "";
+          }
+        };
+        input.onkeydown = function (e) {
+          //回车
+          if (e.keyCode == 13) {
+            let editor = DDeiEditor.ACTIVE_INSTANCE;
+            let file = editor?.files[editor?.currentFileIndex];
+            if (input.value != file.name) {
+              file.name = input.value;
+              editor.viewEditor?.changeFileModifyDirty();
+              editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
+              editor.bus.executeAll();
+              editor.changeState(DDeiEditorState.DESIGNING);
+              editor.viewEditor?.forceRefreshOpenFilesView();
+            }
+            input.style.display = "none";
+            input.style.left = "0px";
+            input.style.top = "0px";
+            input.value = "";
+          } else if (e.keyCode == 27) {
+            let editor = DDeiEditor.ACTIVE_INSTANCE;
+            input.style.display = "none";
+            input.style.left = "0px";
+            input.style.top = "0px";
+            input.value = "";
+            editor.changeState(DDeiEditorState.DESIGNING);
+          }
+        };
+      }
+      input.style.width = ele.offsetWidth + "px";
+      input.style.height = ele.offsetHeight + "px";
+      input.style.left = domPos.left + "px";
+      input.style.top = domPos.top + "px";
+      input.value = file.name;
+      input.style.display = "block";
+      input.selectionStart = 0; // 选中开始位置
+      input.selectionEnd = input.value.length; // 获取输入框里的长度。
+      input.focus();
+      //修改编辑器状态为快捷编辑中
+      this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
+    },
     /**
      * 变更实例
      * @param instance

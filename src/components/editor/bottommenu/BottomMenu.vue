@@ -223,14 +223,18 @@ export default {
             let editor = DDeiEditor.ACTIVE_INSTANCE;
             let file = editor?.files[editor?.currentFileIndex];
             let sheet = file?.sheets[file?.currentSheetIndex];
-            sheet.name = input.value;
+            if (input.value != sheet.name) {
+              sheet.name = input.value;
+              editor.viewEditor?.changeFileModifyDirty();
+              editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
+              editor.bus.executeAll();
+              editor.changeState(DDeiEditorState.DESIGNING);
+              editor.viewEditor?.forceRefreshBottomMenu();
+            }
             input.style.display = "none";
             input.style.left = "0px";
             input.style.top = "0px";
             input.value = "";
-            editor.viewEditor?.changeFileModifyDirty();
-            editor.changeState(DDeiEditorState.DESIGNING);
-            editor.viewEditor?.forceRefreshBottomMenu();
           }
         };
         input.onkeydown = function (e) {
@@ -239,14 +243,18 @@ export default {
             let editor = DDeiEditor.ACTIVE_INSTANCE;
             let file = editor?.files[editor?.currentFileIndex];
             let sheet = file?.sheets[file?.currentSheetIndex];
-            sheet.name = input.value;
+            if (input.value != sheet.name) {
+              sheet.name = input.value;
+              editor.viewEditor?.changeFileModifyDirty();
+              editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
+              editor.bus.executeAll();
+              editor.changeState(DDeiEditorState.DESIGNING);
+              editor.viewEditor?.forceRefreshBottomMenu();
+            }
             input.style.display = "none";
             input.style.left = "0px";
             input.style.top = "0px";
             input.value = "";
-            editor.viewEditor?.changeFileModifyDirty();
-            editor.changeState(DDeiEditorState.DESIGNING);
-            editor.viewEditor?.forceRefreshBottomMenu();
           } else if (e.keyCode == 27) {
             let editor = DDeiEditor.ACTIVE_INSTANCE;
             input.style.display = "none";
