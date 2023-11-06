@@ -76,6 +76,7 @@ export default {
       refreshBottomMenu: true,
       refreshOpenFilesView: true,
       refreshPropertyView: true,
+      refreshMenu: true,
     };
   },
   //注册组件

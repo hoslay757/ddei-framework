@@ -10,6 +10,11 @@
     </div>
     <div :class="item.active == 1 ? 'ddei_editor_ofsview_item ddei_editor_ofsview_item_selected' : 'ddei_editor_ofsview_item'"
          @click="changeFile(item)"
+         draggable="true"
+         @dragstart="fileDragStart(index, $event)"
+         @dragover="fileDragOver($event)"
+         @drop="fileDragDrop($event)"
+         @dragleave="fileDragCancel($event)"
          v-for="(item, i) in editor?.files"
          v-show="i >= openIndex && ((i - openIndex + 1) * 160 + 40) <= editor?.middleWidth"
          :title="item.name">
@@ -190,6 +195,106 @@ export default {
       //修改编辑器状态为快捷编辑中
       this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
     },
+
+    /**
+     * file开始拖拽移动
+     */
+    fileDragStart(fileEle, evt) {
+      this.dragFileEle = evt.target;
+    },
+
+    /**
+     * 拖拽元素移动
+     */
+    fileDragOver(e) {
+      if (this.dragFileEle) {
+        if (e.target.className == "text") {
+          let parentDiv = this.dragFileEle.parentElement;
+          let sourceIndex = -1;
+          let targetIndex = -1;
+          let children = parentDiv.children;
+          for (let i = 1; i < children.length - 4; i++) {
+            children[i].style.borderLeft = "";
+            children[i].style.borderRight = "";
+            if (children[i] == this.dragFileEle) {
+              sourceIndex = i;
+            } else if (e.target.parentElement.parentElement == children[i]) {
+              targetIndex = i;
+            }
+          }
+          if (sourceIndex != -1 && targetIndex != -1) {
+            this.sourceFileIndex = sourceIndex - 1;
+            if (targetIndex == children.length - 5) {
+              let pos = DDeiUtil.getDomAbsPosition(children[targetIndex]);
+              let halfPos = pos.left + children[targetIndex].offsetWidth / 2;
+              if (
+                halfPos <= e.clientX &&
+                e.clientX <= pos.left + children[targetIndex].offsetWidth
+              ) {
+                this.changeFileIndex = targetIndex;
+                children[targetIndex].style.borderRight = "2px solid #017fff";
+              } else {
+                this.changeFileIndex = targetIndex - 1;
+                children[targetIndex].style.borderLeft = "2px solid #017fff";
+              }
+            } else {
+              this.changeFileIndex = targetIndex - 1;
+              children[targetIndex].style.borderLeft = "2px solid #017fff";
+            }
+          }
+
+          e.preventDefault();
+        }
+      }
+    },
+
+    /**
+     * 拖拽元素放开
+     */
+    fileDragDrop(e) {
+      if (
+        (this.sourceFileIndex || this.sourceFileIndex == 0) &&
+        (this.changeFileIndex || this.changeFileIndex == 0)
+      ) {
+        //修改file位置
+        let files = this.editor.files;
+        let sourceFile = this.editor.files[this.sourceFileIndex];
+        let currentFile = this.editor.files[this.editor.currentFileIndex];
+        files[this.sourceFileIndex] = null;
+        files.splice(this.changeFileIndex, 0, sourceFile);
+        for (let j = files.length; j >= 0; j--) {
+          if (files[j] == null) {
+            files.splice(j, 1);
+          }
+        }
+        for (let j = files.length; j >= 0; j--) {
+          if (currentFile == files[j]) {
+            this.editor.currentFileIndex = j;
+          }
+        }
+        //刷新当前画布
+        this.dragFileEle = null;
+        this.sourceFileIndex = null;
+        this.changeFileIndex = null;
+
+        this.editor.viewEditor?.forceRefreshOpenFilesView();
+      }
+    },
+
+    /**
+     * 拖拽元素离开，清空元素
+     */
+    fileDragCancel(e) {
+      if (this.dragFileEle) {
+        let parentDiv = this.dragFileEle.parentElement;
+        let children = parentDiv.children;
+        for (let i = 1; i < children.length - 4; i++) {
+          children[i].style.borderLeft = "";
+          children[i].style.borderRight = "";
+        }
+      }
+    },
+
     /**
      * 变更实例
      * @param instance
