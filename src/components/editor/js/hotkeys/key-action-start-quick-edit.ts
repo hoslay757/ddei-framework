@@ -106,7 +106,7 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
 
         inputEle.selectionStart = 0 // 选中开始位置
         inputEle.selectionEnd = inputEle.value.length // 获取输入框里的长度。
-        //修改编辑器状态为控件创建中
+        //修改编辑器状态为快捷编辑中
         editor.changeState(DDeiEditorState.QUICK_EDITING);
       }
     }

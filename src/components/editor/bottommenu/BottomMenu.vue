@@ -216,6 +216,45 @@ export default {
         input.setAttribute("id", "change_sheet_name_input");
         input.style.position = "absolute";
         document.body.appendChild(input);
+        input.onblur = function () {
+          //设置属性值
+          if (input.value) {
+            let editor = DDeiEditor.ACTIVE_INSTANCE;
+            let file = editor?.files[editor?.currentFileIndex];
+            let sheet = file?.sheets[file?.currentSheetIndex];
+            sheet.name = input.value;
+            input.style.display = "none";
+            input.style.left = "0px";
+            input.style.top = "0px";
+            input.value = "";
+            editor.viewEditor?.changeFileModifyDirty();
+            editor.changeState(DDeiEditorState.DESIGNING);
+            editor.viewEditor?.forceRefreshBottomMenu();
+          }
+        };
+        input.onkeydown = function (e) {
+          //回车
+          if (e.keyCode == 13) {
+            let editor = DDeiEditor.ACTIVE_INSTANCE;
+            let file = editor?.files[editor?.currentFileIndex];
+            let sheet = file?.sheets[file?.currentSheetIndex];
+            sheet.name = input.value;
+            input.style.display = "none";
+            input.style.left = "0px";
+            input.style.top = "0px";
+            input.value = "";
+            editor.viewEditor?.changeFileModifyDirty();
+            editor.changeState(DDeiEditorState.DESIGNING);
+            editor.viewEditor?.forceRefreshBottomMenu();
+          } else if (e.keyCode == 27) {
+            let editor = DDeiEditor.ACTIVE_INSTANCE;
+            input.style.display = "none";
+            input.style.left = "0px";
+            input.style.top = "0px";
+            input.value = "";
+            editor.changeState(DDeiEditorState.DESIGNING);
+          }
+        };
       }
       input.style.width = ele.offsetWidth + "px";
       input.style.height = ele.offsetHeight + "px";
@@ -226,6 +265,8 @@ export default {
       input.selectionStart = 0; // 选中开始位置
       input.selectionEnd = input.value.length; // 获取输入框里的长度。
       input.focus();
+      //修改编辑器状态为快捷编辑中
+      this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
     },
 
     /**
