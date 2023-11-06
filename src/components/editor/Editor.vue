@@ -33,7 +33,7 @@
         <BottomMenu v-if="refreshBottomMenu"></BottomMenu>
       </div>
     </div>
-    <MenuDialog v-if="!refreshMenu"></MenuDialog>
+    <MenuDialog v-show="!refreshMenu"></MenuDialog>
   </div>
 </template>
 
@@ -386,6 +386,12 @@ export default {
      * 准备拖拽
      */
     mouseDown(e: Event) {
+      //关闭菜单
+      let menuDialogId = DDeiUtil.getMenuControlId();
+      let menuEle = document.getElementById(menuDialogId);
+      if (menuEle) {
+        menuEle.style.display = "none";
+      }
       //判断落点是否在某个区域的拖拽区附近
       let frameLeftElement = document.getElementById("ddei_editor_frame_left");
       let frameRightElement = document.getElementById(

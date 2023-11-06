@@ -26,11 +26,12 @@
       </div>
     </div>
     <div class="ddei_editor_bottommenu_pages">
-      <div @click="changeSheet(index)"
+      <div @click.left="changeSheet(index)"
+           @click.right="showMenu(sheet,$event)"
            @dblclick="startChangeSheetName(sheet,$event)"
            v-show="index >= openIndex && index < openIndex + maxOpenSize"
            :class="{ 'ddei_editor_bottommenu_page': sheet.active == 0, 'ddei_editor_bottommenu_page_selected': sheet.active == 1 }"
-           :title="sheet.desc"
+           :title="sheet.name"
            v-for="(sheet, index) in  editor?.files[editor?.currentFileIndex]?.sheets ">
         {{ sheet.name }}
       </div>
@@ -395,6 +396,18 @@ export default {
       }
     },
 
+    /**
+     * 切换sheet
+     */
+    showMenu(sheet, evt) {
+      DDeiUtil.showContextMenu(sheet, evt);
+      evt.preventDefault();
+      return false;
+    },
+
+    /**
+     * 切换sheet
+     */
     changeSheet(index) {
       let file = this.editor?.files[this.editor?.currentFileIndex];
       let sheets = file?.sheets;

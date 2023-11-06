@@ -147,6 +147,9 @@ class DDeiEditor {
         if (!DDeiUtil.getMenuControlId) {
           DDeiUtil.getMenuControlId = DDeiEditorUtil.getMenuControlId;
         }
+        if (!DDeiUtil.showContextMenu) {
+          DDeiUtil.showContextMenu = DDeiEditorUtil.showContextMenu;
+        }
 
         if (!DDeiUtil.getSubControlJSON) {
           DDeiUtil.getSubControlJSON = DDeiEditorUtil.getSubControlJSON;

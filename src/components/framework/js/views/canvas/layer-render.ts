@@ -490,12 +490,6 @@ class DDeiLayerCanvasRender {
     //ctrl键的按下状态
     let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
     //判断当前鼠标坐标是否落在选择器控件的区域内
-    //关闭菜单
-    let menuDialogId = DDeiUtil.getMenuControlId();
-    let menuEle = document.getElementById(menuDialogId);
-    if (menuEle) {
-      menuEle.style.display = "none";
-    }
     let ex = evt.offsetX;
     let ey = evt.offsetY;
     ex -= this.stage.wpv.x;
@@ -602,21 +596,7 @@ class DDeiLayerCanvasRender {
       //显示当前控件的
       if (operateControls != null && operateControls.length > 0) {
         //全局变量：当前操作控件=当前控件
-        let operateControl = operateControls[0];
-        let menuJSON = DDeiUtil.getMenuConfig(operateControl);
-        if (menuJSON) {
-          //记录当前控件
-          this.stageRender.currentMenuShape = operateControl;
-          //显示菜单
-          DDeiUtil.setCurrentMenu(menuJSON);
-          let menuDialogId = DDeiUtil.getMenuControlId();
-          let menuEle = document.getElementById(menuDialogId);
-          if (menuEle) {
-            menuEle.style.display = "block";
-            menuEle.style.left = evt.layerX + "px";
-            menuEle.style.top = evt.layerY + "px";
-          }
-        }
+        DDeiUtil.showContextMenu(operateControls[0], evt)
       }
       //清除临时操作点
       this.model.opPoints = [];

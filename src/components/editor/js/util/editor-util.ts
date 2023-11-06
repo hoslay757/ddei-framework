@@ -5,6 +5,7 @@ import ICONS from "../../js/icon"
 import DDeiAbstractShape from "@/components/framework/js/models/shape";
 import DDeiEditor from "../editor";
 import DDeiConfig from "@/components/framework/js/config";
+import DDeiUtil from "@/components/framework/js/util";
 
 class DDeiEditorUtil {
 
@@ -42,17 +43,72 @@ class DDeiEditorUtil {
   }
 
   /**
+   * 显示菜单
+   */
+  static showContextMenu(control: any, evt: Event): void {
+    let menuJSON = DDeiUtil.getMenuConfig(control);
+    if (menuJSON?.length > 0) {
+      //记录当前控件
+      let stage = DDeiEditor.ACTIVE_INSTANCE?.ddInstance?.stage;
+      if (stage) {
+        stage.render.currentMenuShape = control;
+        //显示菜单
+        DDeiUtil.setCurrentMenu(menuJSON);
+        let menuDialogId = DDeiUtil.getMenuControlId();
+        let menuEle = document.getElementById(menuDialogId);
+        if (menuEle) {
+          menuEle.style.display = "block";
+          if (evt.layerX + 200 > document.body.clientWidth) {
+            menuEle.style.right = "0px";
+          } else {
+            menuEle.style.left = evt.layerX + "px";
+          }
+          if (evt.layerY + menuJSON.length * 40 > document.body.clientHeight) {
+            menuEle.style.bottom = "0px";
+          } else {
+            menuEle.style.top = evt.layerY + "px";
+          }
+        }
+      }
+    }
+  }
+
+  /**
      * 获取菜单配置
      * @param configModel 配置模型，如果包含了attrDefineMap等数据，则直接获取数据,如果只包含id则通过id取原始数据
      * @param paths 属性路径,支持传入多个
      * @return 由构成的属性的实际路径和配置中对应的值组成的Map
      */
   static getMenuConfig(model: object): object | null {
-    let controlDefine = controlOriginDefinies.get(model.modelCode);
-    if (controlDefine) {
-      return controlDefine.menus;
+    switch (model?.modelType) {
+      case "DDeiFile": {
+
+        break
+      }
+      case "DDeiSheet": {
+        let menus = [
+          {
+            'code': 'copy-sheet',
+            'name': '复制',
+            'icon': 'icon-insert-row',
+          },
+          {
+            'code': 'remove-sheet',
+            'name': '删除',
+            'icon': 'icon-insert-col',
+          }
+        ]
+        return menus
+      }
+      default: {
+        let controlDefine = controlOriginDefinies.get(model.modelCode);
+        if (controlDefine) {
+          return controlDefine.menus;
+        }
+        return null;
+      }
     }
-    return null;
+
   }
 
   /**
