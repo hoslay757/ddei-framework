@@ -11,7 +11,7 @@
     <div class="ddei_editor_bottommenu_pagepreview">
       <div>
         <span>
-          页-1
+          {{ editor?.files[editor?.currentFileIndex]?.sheets[0]?.name }}
         </span>
         <img width="8px"
              height="8px"
@@ -27,7 +27,12 @@
     </div>
     <div class="ddei_editor_bottommenu_pages">
       <div @click.left="changeSheet(index)"
+           draggable="true"
+           @dragstart="sheetDragStart(index, $event)"
            @click.right="showMenu(sheet,$event)"
+           @dragover="sheetDragOver($event)"
+           @drop="sheetDragDrop($event)"
+           @dragleave="sheetDragCancel($event)"
            @dblclick="startChangeSheetName(sheet,$event)"
            v-show="index >= openIndex && index < openIndex + maxOpenSize"
            :class="{ 'ddei_editor_bottommenu_page': sheet.active == 0, 'ddei_editor_bottommenu_page_selected': sheet.active == 1 }"
@@ -205,6 +210,106 @@ export default {
     this.currentStage = sheet.stage;
   },
   methods: {
+    /**
+     * sheet开始拖拽移动
+     */
+    sheetDragStart(sheetEle, evt) {
+      this.dragSheetEle = evt.target;
+    },
+
+    /**
+     * 拖拽元素移动
+     */
+    sheetDragOver(e) {
+      if (this.dragSheetEle) {
+        if (this.dragSheetEle.innerHTML != e.target.innerHTML) {
+          //寻找当前元素在拖拽元素的位置
+          let children = this.dragSheetEle.parentElement.children;
+          for (let i = 0; i < children.length - 2; i++) {
+            children[i].style.borderLeft = "";
+            children[i].style.borderRight = "";
+          }
+          for (let i = 0; i < children.length - 2; i++) {
+            if (children[i] == e.target && i == children.length - 3) {
+              let pos = DDeiUtil.getDomAbsPosition(children[i]);
+              let halfPos = pos.left + children[i].offsetWidth / 2;
+              //最后一个元素的右半部分
+              if (
+                halfPos <= e.clientX &&
+                e.clientX <= pos.left + children[i].offsetWidth
+              ) {
+                children[i].style.borderRight = "2px solid #017fff";
+                this.changeSheetIndex = i + 1;
+              } else if (children[i - 1] != this.dragSheetEle) {
+                children[i].style.borderLeft = "2px solid #017fff";
+                this.changeSheetIndex = i;
+              }
+            } else if (
+              children[i] == e.target &&
+              children[i - 1] != this.dragSheetEle
+            ) {
+              children[i].style.borderLeft = "2px solid #017fff";
+              this.changeSheetIndex = i;
+            } else if (children[i].innerHTML == this.dragSheetEle.innerHTML) {
+              this.sourceSheetIndex = i;
+            }
+          }
+          e.preventDefault();
+        }
+      }
+    },
+
+    /**
+     * 拖拽元素放开
+     */
+    sheetDragDrop(e) {
+      if (
+        (this.sourceSheetIndex || this.sourceSheetIndex == 0) &&
+        (this.changeSheetIndex || this.changeSheetIndex == 0)
+      ) {
+        //修改sheet位置
+        let file = this.editor.files[this.editor.currentFileIndex];
+        let sheet = file.sheets[this.sourceSheetIndex];
+        let currentSheet = file.sheets[file.currentSheetIndex];
+        file.sheets[this.sourceSheetIndex] = null;
+        file.sheets.splice(this.changeSheetIndex, 0, sheet);
+        for (let j = file.sheets.length; j >= 0; j--) {
+          if (file.sheets[j] == null) {
+            file.sheets.splice(j, 1);
+          }
+        }
+        for (let j = file.sheets.length; j >= 0; j--) {
+          if (currentSheet == file.sheets[j]) {
+            file.currentSheetIndex = j;
+          }
+        }
+        //刷新当前画布
+        this.dragSheetEle = null;
+        this.sourceSheetIndex = null;
+        this.changeSheetIndex = null;
+
+        this.editor.viewEditor?.changeFileModifyDirty();
+        this.editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
+        this.editor.bus.executeAll();
+        this.editor.changeState(DDeiEditorState.DESIGNING);
+        this.editor.viewEditor?.forceRefreshBottomMenu();
+      }
+    },
+
+    /**
+     * 拖拽元素离开，清空元素
+     */
+    sheetDragCancel(e) {
+      if (this.dragSheetEle) {
+        //还原样式
+        let children = this.dragSheetEle.parentElement.children;
+        for (let i = 0; i < children.length - 2; i++) {
+          children[i].style.borderLeft = "";
+          children[i].style.borderRight = "";
+        }
+      }
+    },
+
     /**
      * 开始修改页标题
      */
