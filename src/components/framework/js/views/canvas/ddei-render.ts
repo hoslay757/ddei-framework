@@ -220,7 +220,14 @@ class DDeiCanvasRender {
     }
     //滚动平移
     else if (evt.wheelDeltaX || evt.wheelDeltaY) {
-      this.mouseWPV(evt.wheelDeltaX, evt.wheelDeltaY, evt)
+      let dx = 0
+      let dy = 0
+      if (Math.abs(evt.wheelDeltaX) > Math.abs(evt.wheelDeltaY)) {
+        dx = evt.wheelDeltaX
+      } else {
+        dy = evt.wheelDeltaY
+      }
+      this.mouseWPV(dx, dy, evt)
     }
 
   }
