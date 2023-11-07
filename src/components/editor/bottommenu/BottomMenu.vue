@@ -54,7 +54,7 @@
     </div>
     <div class="ddei_editor_bottommenu_shapecount">
       <div>
-        形状数:32
+        形状数: {{ editor?.files[editor?.currentFileIndex]?.modelNumber }}
       </div>
     </div>
     <div class="ddei_editor_bottommenu_layers">

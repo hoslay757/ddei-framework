@@ -27,6 +27,7 @@ class DDeiFile {
       sheets[i] = DDeiSheet.loadFromJSON(model.sheets[i], tempData);
     }
     model.sheets = sheets;
+    model.modelNumber = model.calModelNumber()
     return model;
   }
   // ============================ 属性 ============================
@@ -54,9 +55,25 @@ class DDeiFile {
 
   //操作日志，用于保存、撤销和恢复
   histroy: object[] = []
+
+  //当前文件的模型数量
+  modelNumber: number = 0;
   histroyIdx: number = -1;
 
   // ============================ 方法 ============================
+
+  /**
+   * 计算当前文件的模型总数量
+   */
+  calModelNumber(): number {
+    let num = 0;
+    //统计所有sheet下的所有数量
+    this.sheets.forEach(sheet => {
+      num += sheet.calModelNumber();
+    })
+    return num;
+  }
+
   /**
    * 切换sheet
    * @param index 下标

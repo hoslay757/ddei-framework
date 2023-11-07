@@ -93,7 +93,26 @@ class DDeiLayer {
   //模型是否发生改变，当移动、改变大小、旋转、修改文本等操作会引起改变
   modelChanged: boolean = true;
 
+
   // ============================ 方法 ===============================
+
+  /**
+   * 计算当前layer的模型总数量
+   */
+  calModelNumber(): number {
+    let num = 0;
+    this.midList.forEach(mid => {
+      let model = this.models.get(mid)
+      if (model?.baseModelType == 'DDeiContainer') {
+        num += model.calModelNumber()
+      } else if (model?.baseModelType == 'DDeiTable') {
+        num += model.calModelNumber()
+      } else {
+        num++
+      }
+    })
+    return num;
+  }
   /**
   * 初始化渲染器
   */

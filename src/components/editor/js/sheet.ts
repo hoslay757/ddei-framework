@@ -32,9 +32,15 @@ class DDeiSheet {
   modelType: string = "DDeiSheet";
 
 
-  // ============================ 方法 ============================
 
   // ============================ 方法 ============================
+
+  /**
+   * 计算当前sheet的模型总数量
+   */
+  calModelNumber(): number {
+    return this.stage?.calModelNumber()
+  }
   /**
      * 将模型转换为JSON
      */

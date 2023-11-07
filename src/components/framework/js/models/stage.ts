@@ -138,6 +138,18 @@ class DDeiStage {
 
 
   // ============================ 方法 ===============================
+
+  /**
+   * 计算当前stage的模型总数量
+   */
+  calModelNumber(): number {
+    let num = 0;
+    this.layers.forEach(layer => {
+      num += layer.calModelNumber()
+    })
+    return num;
+
+  }
   /**
    * 初始化渲染器
    */

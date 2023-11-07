@@ -94,6 +94,25 @@ class DDeiRectContainer extends DDeiRectangle {
 
   // ============================ 方法 ===============================
 
+
+  /**
+   * 计算当前容器的模型总数量
+   */
+  calModelNumber(): number {
+    let num = 0;
+    this.midList.forEach(mid => {
+      let model = this.models.get(mid)
+      if (model?.baseModelType == 'DDeiContainer') {
+        num += model.calModelNumber()
+      } else if (model?.baseModelType == 'DDeiTable') {
+        num += model.calModelNumber()
+      } else {
+        num++
+      }
+    })
+    return num;
+  }
+
   /**
   * 初始化渲染器
   */

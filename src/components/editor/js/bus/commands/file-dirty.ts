@@ -36,9 +36,12 @@ class DDeiEditorCommandFileDirty extends DDeiBusCommand {
     if (data?.state && editor?.files.length > 0 && (editor.currentFileIndex == 0 || editor.currentFileIndex)) {
       let file = editor?.files[editor.currentFileIndex]
       if (file?.active == DDeiActiveType.ACTIVE) {
+        //计算文件总数量
+        file.modelNumber = file.calModelNumber()
         file.state = data?.state
       }
     }
+
     return true;
 
   }
