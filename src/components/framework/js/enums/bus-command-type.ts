@@ -31,6 +31,7 @@ enum DDeiEnumBusCommandType {
   ChangeEditMode = "change-edit-mode",
   ChangeStageRatio = "change-stage-ratio",
   ChangeStageWPV = "change-stage-wpv",
+  CenterStageWPV = "center-stage-wpv",
   NodifyChange = "nodify-change",
 }
 

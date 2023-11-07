@@ -1,24 +1,6 @@
 <template>
   <div id="ddei_editor_bottommenu"
        class="ddei_editor_bottommenu">
-    <div class="ddei_editor_bottommenu_preview">
-      <div>
-        <img width="25px"
-             height="25px"
-             src="../icons/icon-view.png" />
-      </div>
-    </div>
-    <div class="ddei_editor_bottommenu_pagepreview">
-      <div>
-        <span>
-          {{ editor?.files[editor?.currentFileIndex]?.sheets[0]?.name }}
-        </span>
-        <img width="8px"
-             height="8px"
-             src="../icons/toolbox-expanded.png" />
-      </div>
-    </div>
-
     <div class="ddei_editor_bottommenu_addpage"
          @click="newSheet">
       <div>
@@ -92,10 +74,9 @@
                @click="addRatio(0.05)" />
         </div>
         <div>
-          <img src="../icons/icon-screen-full.png" />
-        </div>
-        <div>
-          <img src="../icons/icon-screen-width.png" />
+          <img src="../icons/icon-screen-width.png"
+               title="整页"
+               @click="autoRatio(1)" />
         </div>
       </div>
     </div>
@@ -142,7 +123,7 @@
           <hr />
           <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item">
             百分比：<input type="number"
-                   min="1"
+                   min="25"
                    max="1000"
                    v-model="ratioInputValue"
                    @blur="ratioInputChange() && showDialog('ddei_editor_bottommenu_other_changesize_dialog')" />%
@@ -161,6 +142,8 @@ import DDeiEnumBusCommandType from "../../framework/js/enums/bus-command-type";
 import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
 import DDeiUtil from "../../framework/js/util";
 import DDeiEditorState from "../js/enums/editor-state";
+import DDeiAbstractShape from "../../framework/js/models/shape";
+import DDeiModelArrtibuteValue from "../../framework/js/models/attribute/attribute-value";
 
 export default {
   name: "DDei-Editor-BottomMenu",
@@ -397,20 +380,71 @@ export default {
             },
             null
           );
-
           this.editor?.bus?.executeAll();
+          this.editor.changeState(DDeiEditorState.DESIGNING);
         }
       }
     },
 
+    /**
+     * 自动设置页面模式，
+     */
+    autoRatio(type: number) {
+      //整页模式，确保所有的控件都能够显示到页面上
+      if (type == 1) {
+        //所有控件的外接大小
+        let maxOutRect = DDeiAbstractShape.getOutRectByPV(
+          this.editor.ddInstance.stage.getLayerModels()
+        );
+        if (maxOutRect.width > 0 && maxOutRect.height > 0) {
+          //获取canvas窗体大小
+          let canvas = this.editor.ddInstance.render.canvas;
+          let rat1 = this.editor.ddInstance.render.ratio;
+          let stageRatio = this.currentStage.getStageRatio();
+          let hscrollWeight = 0;
+          let vscrollWeight = 0;
+          if (this.editor.ddInstance.stage.render.hScroll) {
+            hscrollWeight = 15;
+          }
+          if (this.editor.ddInstance.stage.render.vScroll) {
+            vscrollWeight = 15;
+          }
+          let ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(
+            this.editor.ddInstance.stage,
+            "ruler.display",
+            true
+          );
+          let ruleWeight = 0;
+          if (ruleDisplay == 1 || ruleDisplay == "1") {
+            ruleWeight = 16;
+          }
+          let cWidth = canvas.width / rat1 - ruleWeight - vscrollWeight;
+          let cHeight = canvas.height / rat1 - ruleWeight - hscrollWeight;
+          //比例
+          let wScale = maxOutRect.width / cWidth;
+          let hScale = maxOutRect.height / cHeight;
+          let scale = wScale;
+          if (wScale < hScale) {
+            scale = hScale;
+          }
+          let sc = stageRatio / scale;
+
+          this.setRatio(sc);
+          setTimeout(() => {
+            this.editor?.bus?.push(DDeiEnumBusCommandType.CenterStageWPV);
+            this.editor?.bus?.executeAll(100);
+          }, 10);
+        }
+      }
+    },
     /**
      * 增加缩放比率
      */
     addRatio(deltaRatio: number) {
       let ratio = this.currentStage.getStageRatio();
       let newRatio = parseFloat((ratio + deltaRatio).toFixed(2));
-      if (newRatio < 0.1) {
-        newRatio = 0.1;
+      if (newRatio < 0.25) {
+        newRatio = 0.25;
       } else if (newRatio > 10) {
         newRatio = 10;
       }
@@ -422,8 +456,8 @@ export default {
      * 设置缩放比率
      */
     setRatio(ratio: number) {
-      if (ratio < 0.1) {
-        ratio = 0.1;
+      if (ratio < 0.25) {
+        ratio = 0.25;
       } else if (ratio > 10) {
         ratio = 10;
       }
@@ -577,65 +611,6 @@ export default {
   color: black;
 }
 
-.ddei_editor_bottommenu_preview {
-  flex: 0 0 40px;
-  height: 35px;
-  padding-top: 5px;
-}
-
-.ddei_editor_bottommenu_preview div {
-  height: 24px;
-  margin-left: 15px;
-  padding-right: 5px;
-  border-right: 1px solid rgb(235, 235, 235);
-}
-
-.ddei_editor_bottommenu_preview img:hover {
-  background-color: rgb(235, 235, 235);
-  cursor: pointer;
-}
-
-.ddei_editor_bottommenu_preview img {
-  width: 24px;
-  height: 24px;
-}
-
-.ddei_editor_bottommenu_pagepreview {
-  flex: 0 0 120px;
-  height: 35px;
-  padding-top: 5px;
-}
-
-.ddei_editor_bottommenu_pagepreview div {
-  height: 24px;
-  width: 100%;
-  margin-left: 5px;
-  padding-right: 5px;
-  color: black;
-  float: left;
-  border-right: 1px solid rgb(235, 235, 235);
-}
-
-.ddei_editor_bottommenu_pagepreview span {
-  padding-right: 5px;
-  color: black;
-  float: left;
-}
-
-.ddei_editor_bottommenu_pagepreview div:hover {
-  background-color: rgb(235, 235, 235);
-  cursor: pointer;
-}
-
-.ddei_editor_bottommenu_pagepreview img {
-  float: right;
-  width: 24px;
-  height: 24px;
-  width: 6px;
-  height: 6px;
-  margin-top: 9px;
-}
-
 .ddei_editor_bottommenu_addpage {
   flex: 0 0 40px;
   height: 35px;
@@ -765,7 +740,7 @@ export default {
 }
 
 .ddei_editor_bottommenu_other {
-  flex: 0 0 330px;
+  flex: 0 0 300px;
   height: 35px;
   padding-top: 5px;
 }
