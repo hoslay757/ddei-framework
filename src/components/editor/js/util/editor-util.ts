@@ -57,7 +57,7 @@ class DDeiEditorUtil {
         let menuDialogId = DDeiUtil.getMenuControlId();
         let menuEle = document.getElementById(menuDialogId);
         if (menuEle) {
-          menuEle.style.display = "block";
+
           if (evt.layerX + 200 > document.body.clientWidth) {
             menuEle.style.right = "0px";
           } else {
@@ -68,6 +68,10 @@ class DDeiEditorUtil {
           } else {
             menuEle.style.top = evt.layerY + "px";
           }
+          setTimeout(() => {
+            menuEle.style.display = "block";
+          }, 10);
+
         }
       }
     }

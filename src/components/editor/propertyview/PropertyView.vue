@@ -243,8 +243,8 @@ export default {
         this.deleteAttrDefineByKeys(firstControlDefine, removeKeys);
         let topGroups = null;
         let layerTopGroup = {
-          name: "图层",
-          img: ICONS["icon-layers"],
+          name: "背景",
+          img: ICONS["icon-background"],
           groups: [{}],
         };
 
@@ -274,7 +274,7 @@ export default {
 
           firstControlDefine.layerStyles = layerControlDefine.styles;
           layerTopGroup = layerControlDefine.styles;
-          layerTopGroup.img = ICONS["icon-layers"];
+          layerTopGroup.img = ICONS["icon-background"];
           topGroups = [
             layerTopGroup,
             firstControlDefine?.styles,

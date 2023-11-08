@@ -184,9 +184,13 @@ export default {
         };
       }
       input.style.width = ele.offsetWidth + "px";
-      input.style.height = ele.offsetHeight + "px";
+      input.style.height = ele.offsetHeight - 3 + "px";
       input.style.left = domPos.left + "px";
       input.style.top = domPos.top + "px";
+      input.style.border = "none";
+      input.style.outline = "none";
+      input.style.borderBottom = "2px solid #017fff";
+      input.style.borderRadius = "1px";
       input.value = file.name;
       input.style.display = "block";
       input.selectionStart = 0; // 选中开始位置

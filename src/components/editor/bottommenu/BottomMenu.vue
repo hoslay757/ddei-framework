@@ -357,6 +357,9 @@ export default {
       input.style.height = ele.offsetHeight + "px";
       input.style.left = domPos.left + "px";
       input.style.top = domPos.top + "px";
+      input.style.outline = "1px solid #017fff";
+      input.style.border = "none";
+      input.style.borderRadius = "1px";
       input.value = sheet.name;
       input.style.display = "block";
       input.selectionStart = 0; // 选中开始位置
@@ -548,6 +551,7 @@ export default {
      */
     showMenu(sheet, evt) {
       DDeiUtil.showContextMenu(sheet, evt);
+
       evt.preventDefault();
       return false;
     },
