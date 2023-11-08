@@ -39,7 +39,8 @@
         形状数: {{ editor?.files[editor?.currentFileIndex]?.modelNumber }}
       </div>
     </div>
-    <div class="ddei_editor_bottommenu_layers">
+    <div class="ddei_editor_bottommenu_layers"
+         @click="showDialog('ddei_editor_bottommenu_other_layers_dialog', $event)">
       <div>
         <img src="../icons/icon-layers.png" />
       </div>
@@ -131,6 +132,53 @@
         </div>
       </div>
     </div>
+
+    <div id="ddei_editor_bottommenu_other_layers_dialog"
+         class="ddei_editor_bottommenu_other_layers_dialog"
+         v-show="dialogShow == 'ddei_editor_bottommenu_other_layers_dialog'">
+      <div class="ddei_editor_bottommenu_other_layers_dialog_title">图层</div>
+      <hr />
+      <div class="ddei_editor_bottommenu_other_layers_dialog_group">
+        <div class="ddei_editor_bottommenu_other_layers_dialog_group_content">
+          <div class="ddei_editor_bottommenu_other_layers_dialog_group_content_item"
+               style="grid-template-rows:25px"
+               @click="createNewLayer(0)">
+            <span style="grid-column:1/8;">新建图层</span>
+            <img style="margin-top:2px;width:16px;height:16px;filter:brightness(0%)"
+                 src="../icons/icon-plus-circle.png" />
+          </div>
+          <div class="ddei_editor_bottommenu_other_layers_dialog_group_content_item"
+               v-for="(layer,index) in currentStage?.layers">
+            <span style="grid-column:1/8;"
+                  @dblclick="startChangeLayerName(layer,$event)">{{layer.name?layer.name:'图层'}}</span>
+            <img class="trash"
+                 style="margin-top:2px;width:16px;height:16px;filter:brightness(0%)"
+                 src="../icons/icon-trash.png"
+                 @click="removeLayer(index)" />
+            <span style="grid-column:1/4;font-weight:normal">形状:{{layer.modelNumber}}</span>
+            <img style="margin-top:2px;width:16px;height:16px;filter:brightness(0%)"
+                 src="../icons/icon-plus-circle.png"
+                 @click="createNewLayer(index)" />
+            <img style="margin-top:2px;width:16px;height:16px;filter:brightness(0%)"
+                 :src="layer.display == 0?icons['icon-display-none']:icons['icon-display']"
+                 @click="displayOrShowLayer(layer)" />
+            <img style="margin-top:3px;width:14px;height:14px;filter:brightness(0%)"
+                 :src="layer.lock?icons['icon-lock']:icons['icon-unlock']"
+                 @click="lockOrUnLockLayer(layer)" />
+            <input type="radio"
+                   name="rdo_layers"
+                   :value="layer.id"
+                   style="width:14px;height:14px;margin-top:3px"
+                   @click="changeLayer(index)"
+                   :checked="currentStage?.layerIndex === index" />
+            <img style="margin-top:1px;width:18px;height:18px;filter:brightness(0%)"
+                 :src="layer.print?icons['icon-print']:icons['icon-not-print']"
+                 @click="printOrNoPrintLayer(layer)" />
+          </div>
+
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -144,6 +192,8 @@ import DDeiUtil from "../../framework/js/util";
 import DDeiEditorState from "../js/enums/editor-state";
 import DDeiAbstractShape from "../../framework/js/models/shape";
 import DDeiModelArrtibuteValue from "../../framework/js/models/attribute/attribute-value";
+import ICONS from "../js/icon";
+import { debounce } from "lodash";
 
 export default {
   name: "DDei-Editor-BottomMenu",
@@ -162,6 +212,7 @@ export default {
       dialogShow: "",
       ratioInputValue: 0,
       stageRatio: 1,
+      icons: ICONS,
     };
   },
   computed: {},
@@ -193,6 +244,60 @@ export default {
     this.currentStage = sheet.stage;
   },
   methods: {
+    //创建新图层
+    createNewLayer(index: number) {
+      this.currentStage.addLayer(null, index);
+      this.editor.bus.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels);
+      this.editor.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
+      this.editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
+      this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
+      this.editor.bus.executeAll();
+    },
+
+    //移除图层
+    removeLayer(index: number) {
+      this.currentStage.removeLayer(index);
+      this.editor.bus.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels);
+      this.editor.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
+      this.editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
+      this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
+      this.editor.bus.executeAll();
+    },
+
+    //设置图层显示或隐藏
+    displayOrShowLayer(layer) {
+      if (layer.display == 0) {
+        layer.display = 1;
+      } else if (layer.display == 1 || layer.display == 2) {
+        layer.display = 0;
+      }
+      this.editor.bus.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels);
+      this.editor.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
+      this.editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
+      this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
+      this.editor.bus.executeAll();
+    },
+
+    //设置图层锁定和解锁
+    lockOrUnLockLayer(layer) {
+      layer.lock = !layer.lock;
+    },
+
+    //设置图层打印或不打印
+    printOrNoPrintLayer(layer) {
+      layer.print = !layer.print;
+    },
+
+    //切换当前图层
+    changeLayer(index) {
+      this.currentStage.changeLayer(index);
+      this.currentStage.displayLayer(null, true);
+      this.editor.bus.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels);
+      this.editor.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
+      this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
+      this.editor.bus.executeAll();
+    },
+
     /**
      * sheet开始拖拽移动
      */
@@ -361,6 +466,75 @@ export default {
       input.style.border = "none";
       input.style.borderRadius = "1px";
       input.value = sheet.name;
+      input.style.display = "block";
+      input.selectionStart = 0; // 选中开始位置
+      input.selectionEnd = input.value.length; // 获取输入框里的长度。
+      input.focus();
+      //修改编辑器状态为快捷编辑中
+      this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
+    },
+
+    /**
+     * 开始修改图层名称
+     */
+    startChangeLayerName(layer, evt) {
+      let ele = evt.target;
+      let domPos = DDeiUtil.getDomAbsPosition(ele);
+      let input = document.getElementById("change_layer_name_input");
+      this.currentChangeLayer = layer;
+      if (!input) {
+        input = document.createElement("input");
+        input.setAttribute("id", "change_layer_name_input");
+        input.style.position = "absolute";
+        document.body.appendChild(input);
+        const that = this;
+        input.onblur = function () {
+          //设置属性值
+          if (input.value) {
+            let editor = DDeiEditor.ACTIVE_INSTANCE;
+            if (input.value != that.currentChangeLayer.name) {
+              that.currentChangeLayer.name = input.value;
+              editor.viewEditor?.changeFileModifyDirty();
+              editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
+              editor.bus.executeAll();
+            }
+            input.style.display = "none";
+            input.style.left = "0px";
+            input.style.top = "0px";
+            input.value = "";
+          }
+        };
+        input.onkeydown = function (e) {
+          //回车
+          if (e.keyCode == 13) {
+            let editor = DDeiEditor.ACTIVE_INSTANCE;
+            if (input.value != that.currentChangeLayer.name) {
+              that.currentChangeLayer.name = input.value;
+              editor.viewEditor?.changeFileModifyDirty();
+              editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
+              editor.bus.executeAll();
+            }
+            input.style.display = "none";
+            input.style.left = "0px";
+            input.style.top = "0px";
+            input.value = "";
+          } else if (e.keyCode == 27) {
+            input.style.display = "none";
+            input.style.left = "0px";
+            input.style.top = "0px";
+            input.value = "";
+          }
+        };
+      }
+      input.style.width = ele.offsetWidth + "px";
+      input.style.height = ele.offsetHeight + "px";
+      input.style.left = domPos.left + "px";
+      input.style.top = domPos.top + "px";
+      input.style.outline = "1px solid #017fff";
+      input.style.border = "none";
+      input.style.borderRadius = "1px";
+      input.value = layer.name;
+      input.style.zIndex = 999;
       input.style.display = "block";
       input.selectionStart = 0; // 选中开始位置
       input.selectionEnd = input.value.length; // 获取输入框里的长度。
@@ -820,7 +994,7 @@ export default {
   cursor: pointer;
 }
 
-/**以下是翻转按钮的弹出框 */
+/**以下是设置缩放比例的弹出框 */
 .ddei_editor_bottommenu_other_changesize_dialog {
   width: 170px;
   position: absolute;
@@ -881,5 +1055,84 @@ export default {
 .ddei_editor_bottommenu_other_changesize_dialog_group_content_item:hover {
   border-radius: 4px;
   background-color: rgb(233, 233, 238);
+}
+
+/**以下是编辑图层的弹出框 */
+.ddei_editor_bottommenu_other_layers_dialog {
+  width: 240px;
+  position: absolute;
+  background-color: white;
+  height: 320px;
+  border-radius: 4px;
+  border: 0.5px solid rgb(220, 220, 220);
+  z-index: 999;
+  box-shadow: 3px 3px 3px hsl(0deg 0% 0% /0.25);
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.ddei_editor_bottommenu_other_layers_dialog_title {
+  color: black;
+  font-weight: bold;
+  flex: 0 0 30px;
+  padding-top: 5px;
+  padding-left: 7px;
+}
+
+.ddei_editor_bottommenu_other_layers_dialog hr {
+  border: 0.5px solid rgb(240, 240, 240);
+  flex: 0 0 1px;
+}
+
+.ddei_editor_bottommenu_other_layers_dialog_group {
+  color: black;
+  flex: 1 1 40px;
+  padding-left: 5px;
+}
+
+.ddei_editor_bottommenu_other_layers_dialog_group_title {
+  padding-left: 10px;
+}
+
+.ddei_editor_bottommenu_other_layers_dialog_group_content {
+  width: 100%;
+  height: 280px;
+  display: flex;
+  padding-left: 5px;
+  padding-right: 5px;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.ddei_editor_bottommenu_other_layers_dialog_group_content_item {
+  flex: 0 0 30px;
+  padding-top: 5px;
+  display: grid;
+  gap: 2px;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+}
+
+.current {
+  background-color: rgb(220, 220, 220);
+  border-radius: 4px;
+}
+
+.ddei_editor_bottommenu_other_layers_dialog_group_content_item span {
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.ddei_editor_bottommenu_other_layers_dialog_group_content_item .trash {
+  display: none;
+}
+.ddei_editor_bottommenu_other_layers_dialog_group_content_item:hover {
+  border-radius: 4px;
+  background-color: rgb(233, 233, 238);
+  cursor: pointer;
+}
+.ddei_editor_bottommenu_other_layers_dialog_group_content_item:hover .trash {
+  display: block;
 }
 </style>

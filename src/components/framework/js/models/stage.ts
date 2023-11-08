@@ -63,7 +63,7 @@ class DDeiStage {
     let stage = new DDeiStage(json);
     stage.ddInstance = tempData["currentDdInstance"]
     //初始化三个Layer
-    let dDeiLayer1 = DDeiLayer.initByJSON({ id: "layer_top" });
+    let dDeiLayer1 = DDeiLayer.initByJSON({ id: "layer_default", name: "图层" });
     dDeiLayer1.index = 0;
     dDeiLayer1.stage = stage;
     stage.layers[0] = dDeiLayer1;
@@ -148,7 +148,6 @@ class DDeiStage {
       num += layer.calModelNumber()
     })
     return num;
-
   }
   /**
    * 初始化渲染器
@@ -172,7 +171,7 @@ class DDeiStage {
     //如果layer不存在，创建一个空图层，添加进去
     if (!layer) {
       let curIdx = this.idIdx++;
-      layer = DDeiLayer.initByJSON({ id: "layer_" + curIdx });
+      layer = DDeiLayer.initByJSON({ id: "layer_" + curIdx, name: "图层-" + curIdx });
       layer.stage = this;
     }
     //如果layerIndex不存在，则添加到最外层
@@ -191,7 +190,6 @@ class DDeiStage {
     }
     //设置当前图层为新建图层
     this.layerIndex = layerIndex;
-
     return layer;
   }
 

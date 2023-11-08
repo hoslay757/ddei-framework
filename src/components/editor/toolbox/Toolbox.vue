@@ -286,62 +286,6 @@ export default {
         this.groups = [gp];
       }
     },
-
-    //创建图层
-    createLayer() {
-      //获取当前实例
-      let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_editor_view"];
-      let layer = ddInstance.stage.addLayer();
-      //绑定并初始化渲染器
-      DDeiConfig.bindRender(layer);
-      layer.render.init();
-      //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
-      ddInstance.render.drawShape();
-      this.$forceUpdate();
-    },
-
-    //销毁当前图层
-    removeLayer() {
-      //获取当前实例
-      let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_editor_view"];
-      let layer = ddInstance.stage.removeLayer();
-      if (layer) {
-        //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
-        ddInstance.render.drawShape();
-        this.$forceUpdate();
-      }
-    },
-
-    //修改图层
-    changeLayer(index) {
-      let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_editor_view"];
-      ddInstance.stage.cancelSelectModels();
-      //根据选中图形的状态更新选择器
-      if (ddInstance.stage.render.selector) {
-        ddInstance.stage.render.selector.updatedBoundsBySelectedModels();
-      }
-      ddInstance.stage.changeLayer(index);
-      ddInstance.stage.displayLayer(null, true);
-
-      //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
-      ddInstance.render.drawShape();
-    },
-
-    //隐藏图层
-    hiddenLayer() {
-      let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_editor_view"];
-      ddInstance.stage.hiddenLayer();
-      //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
-      ddInstance.render.drawShape();
-    },
-
-    //显示图层
-    displayLayer() {
-      let ddInstance: DDei = DDei.INSTANCE_POOL["ddei_editor_view"];
-      ddInstance.stage.displayLayer(null, true);
-      //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
-      ddInstance.render.drawShape();
-    },
   },
 };
 </script>

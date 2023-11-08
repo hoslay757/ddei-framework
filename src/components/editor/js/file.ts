@@ -27,7 +27,7 @@ class DDeiFile {
       sheets[i] = DDeiSheet.loadFromJSON(model.sheets[i], tempData);
     }
     model.sheets = sheets;
-    model.modelNumber = model.calModelNumber()
+    model.calModelNumber()
     return model;
   }
   // ============================ 属性 ============================
@@ -71,6 +71,7 @@ class DDeiFile {
     this.sheets.forEach(sheet => {
       num += sheet.calModelNumber();
     })
+    this.modelNumber = num
     return num;
   }
 

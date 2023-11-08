@@ -12,6 +12,7 @@ class DDeiLayer {
   // ============================ 构造函数 ============================
   constructor(props: object) {
     this.id = props.id
+    this.name = props.name
     this.models = props.models ? props.models : new Map();
     this.midList = props.midList ? props.midList : new Array();
     this.stage = null;
@@ -40,6 +41,7 @@ class DDeiLayer {
     tempData['currentLayer'] = null;
     layer.models = models;
     layer.initRender();
+    layer.calModelNumber()
     return layer;
   }
 
@@ -53,6 +55,8 @@ class DDeiLayer {
   static ClsName: string = "DDeiLayer";
   // ============================ 属性 ===============================
   id: string;
+  //图层名称，主要用于显示和操作区分
+  name: string;
   // 一个图层包含多个模型，每添加一个模型，则向midList末尾添加一条数据
   models: Map<string, DDeiAbstractShape>;
   // 模型的ID按照添加顺序的索引
@@ -70,7 +74,12 @@ class DDeiLayer {
   display: number = 1;
   // 当前图层是否锁定，true显示，false不显示
   lock: boolean = false;
+
+  // 当前图层是否打印，true打印，false不打印
+  print: boolean = true;
+
   unicode: string;
+
 
   bg: object | null;
 
@@ -93,6 +102,9 @@ class DDeiLayer {
   //模型是否发生改变，当移动、改变大小、旋转、修改文本等操作会引起改变
   modelChanged: boolean = true;
 
+  //当前文件的模型数量
+  modelNumber: number = 0;
+
 
   // ============================ 方法 ===============================
 
@@ -111,6 +123,7 @@ class DDeiLayer {
         num++
       }
     })
+    this.modelNumber = num
     return num;
   }
   /**
