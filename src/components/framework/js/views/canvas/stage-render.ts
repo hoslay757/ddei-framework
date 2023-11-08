@@ -87,7 +87,6 @@ class DDeiStageCanvasRender {
     //绘制纸张，以及图层背景
     this.drawPaper();
 
-
     //绘制网格
     this.drawGrid()
     //获得 2d 上下文对象
@@ -242,6 +241,9 @@ class DDeiStageCanvasRender {
       ctx.lineWidth = 1
       ctx.strokeStyle = "black"
       ctx.strokeRect(posX + (-leftExtNum * paperWidth), posY + (-topExtNum * paperHeight), (rightExtNum + leftExtNum + 1) * paperWidth, (bottomExtNum + topExtNum + 1) * paperHeight)
+      this.paperOutRect = {
+        x: posX + (-leftExtNum * paperWidth), y: posY + (-topExtNum * paperHeight), w: (rightExtNum + leftExtNum + 1) * paperWidth, h: (bottomExtNum + topExtNum + 1) * paperHeight
+      }
       ctx.restore();
     }
 
@@ -567,6 +569,15 @@ class DDeiStageCanvasRender {
       //标尺的固定显示大小
       let weight = 16 * rat1;
       ctx.save();
+      //创建剪切区，只有在纸张范围内才显示网格线
+      ctx.beginPath();
+      ctx.moveTo(this.paperOutRect.x, this.paperOutRect.y);
+      ctx.lineTo(this.paperOutRect.x + this.paperOutRect.w, this.paperOutRect.y);
+      ctx.lineTo(this.paperOutRect.x + this.paperOutRect.w, this.paperOutRect.y + this.paperOutRect.h);
+      ctx.lineTo(this.paperOutRect.x, this.paperOutRect.y + this.paperOutRect.h);
+      ctx.stroke()
+
+      ctx.clip()
       let fontSize = 11 * rat1
       ctx.font = fontSize + "px Microsoft YaHei"
       ctx.lineWidth = 1
