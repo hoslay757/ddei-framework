@@ -165,16 +165,17 @@
                  src="../icons/icon-plus-circle.png"
                  @click="createNewLayer(index)" />
             <img style="margin-top:2px;width:16px;height:16px;filter:brightness(0%)"
-                 :src="layer.display == 0?icons['icon-display-none']:icons['icon-display']"
+                 :src="layer.display == 0 && !layer.tempDisplay ? icons['icon-display-none'] : icons['icon-display']"
                  @click="displayOrShowLayer(layer)" />
             <img style="margin-top:3px;width:14px;height:14px;filter:brightness(0%)"
                  :src="layer.lock?icons['icon-lock']:icons['icon-unlock']"
                  @click="lockOrUnLockLayer(layer)" />
             <input type="radio"
+                   :class="{'not_temp_display':!layer.tempDisplay}"
                    name="rdo_layers"
                    :value="layer.id"
                    style="width:14px;height:14px;margin-top:3px"
-                   @click="changeLayer(index)"
+                   @mousedown="changeLayer(index,$event)"
                    :checked="currentStage?.layerIndex === index" />
             <img style="margin-top:1px;width:18px;height:18px;filter:brightness(0%)"
                  :src="layer.print?icons['icon-print']:icons['icon-not-print']"
@@ -258,6 +259,8 @@ export default {
       this.editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
       this.editor.bus.executeAll();
+      this.editor.viewEditor?.changeFileModifyDirty();
+      this.editor.changeState(DDeiEditorState.DESIGNING);
     },
 
     //移除图层
@@ -268,13 +271,15 @@ export default {
       this.editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
       this.editor.bus.executeAll();
+      this.editor.viewEditor?.changeFileModifyDirty();
+      this.editor.changeState(DDeiEditorState.DESIGNING);
     },
 
     //设置图层显示或隐藏
     displayOrShowLayer(layer) {
       if (layer.display == 0) {
         layer.display = 1;
-      } else if (layer.display == 1 || layer.display == 2) {
+      } else {
         layer.display = 0;
       }
       this.editor.bus.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels);
@@ -282,6 +287,8 @@ export default {
       this.editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
       this.editor.bus.executeAll();
+      this.editor.viewEditor?.changeFileModifyDirty();
+      this.editor.changeState(DDeiEditorState.DESIGNING);
     },
 
     //设置图层锁定和解锁
@@ -295,13 +302,21 @@ export default {
     },
 
     //切换当前图层
-    changeLayer(index) {
+    changeLayer(index, evt) {
       this.currentStage.changeLayer(index);
       this.currentStage.displayLayer(null, true);
+
+      if (evt.target.className == "not_temp_display") {
+        this.currentStage.layers[index].tempDisplay = true;
+      } else {
+        this.currentStage.layers[index].tempDisplay = false;
+      }
       this.editor.bus.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels);
       this.editor.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
       this.editor.bus.executeAll();
+      this.editor.viewEditor?.changeFileModifyDirty();
+      this.editor.changeState(DDeiEditorState.DESIGNING);
     },
 
     /**
@@ -1237,6 +1252,10 @@ export default {
 .current {
   background-color: rgb(220, 220, 220);
   border-radius: 4px;
+}
+
+.not_temp_display:checked {
+  filter: opacity(10%);
 }
 
 .ddei_editor_bottommenu_other_layers_dialog_group_content_item span {

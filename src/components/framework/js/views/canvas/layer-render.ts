@@ -75,7 +75,7 @@ class DDeiLayerCanvasRender {
    */
   drawShape(): void {
     //只有当显示时才绘制图层
-    if (this.model.display) {
+    if (this.model.display || this.model.tempDisplay) {
 
       //绘制子元素
       this.drawChildrenShapes();
@@ -103,7 +103,7 @@ class DDeiLayerCanvasRender {
    * 绘制背景
    */
   drawBackground(px, py, pw, ph): void {
-    if (this.model.display) {
+    if (this.model.display || this.model.tempDisplay) {
       //获得 2d 上下文对象
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
@@ -484,7 +484,7 @@ class DDeiLayerCanvasRender {
       return;
     }
     //只有当显示时才绘制图层
-    if (!this.model.display) {
+    if (!this.model.display && !this.model.tempDisplay || this.model.lock) {
       return
     }
     //ctrl键的按下状态
@@ -577,7 +577,7 @@ class DDeiLayerCanvasRender {
       return;
     }
     //只有当显示时才绘制图层
-    if (!this.model.display) {
+    if (!this.model.display && !this.model.tempDisplay || this.model.lock) {
       return;
     }
     //ctrl、alt键的按下状态
@@ -790,7 +790,7 @@ class DDeiLayerCanvasRender {
       return;
     }
     //只有当显示时才绘制图层
-    if (!this.model.display) {
+    if (!this.model.display && !this.model.tempDisplay || this.model.lock) {
       return;
     }
 

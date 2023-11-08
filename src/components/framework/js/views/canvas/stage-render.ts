@@ -99,12 +99,14 @@ class DDeiStageCanvasRender {
     ctx.translate((this.model.wpv.x) * rat1, (this.model.wpv.y) * rat1)
     let topDisplayIndex = -1;
     for (let i = this.model.layers.length - 1; i >= 0; i--) {
-      if (this.model.layers[i].display == 1) {
-        this.model.layers[i].render.drawShape();
-      } else if (this.model.layers[i].display == 2) {
+      if (this.model.layers[i].tempDisplay) {
         topDisplayIndex = i
       }
+      else if (this.model.layers[i].display == 1) {
+        this.model.layers[i].render.drawShape();
+      }
     }
+
     if (topDisplayIndex != -1) {
       this.model.layers[topDisplayIndex].render.drawShape();
     }
@@ -225,10 +227,10 @@ class DDeiStageCanvasRender {
           //绘制当前纸张的每个图层背景
           let topDisplayIndex = -1;
           for (let l = this.model.layers.length - 1; l >= 0; l--) {
-            if (this.model.layers[l].display == 1) {
-              this.model.layers[l].render.drawBackground(posX + (i * paperWidth), posY + (j * paperHeight), paperWidth, paperHeight);
-            } else if (this.model.layers[l].display == 2) {
+            if (this.model.layers[l].tempDisplay) {
               topDisplayIndex = l;
+            } else if (this.model.layers[l].display == 1) {
+              this.model.layers[l].render.drawBackground(posX + (i * paperWidth), posY + (j * paperHeight), paperWidth, paperHeight);
             }
           }
           if (topDisplayIndex != -1) {

@@ -196,6 +196,10 @@ export default {
       //获取当前实例
       let ddInstance: DDei = this.editor.ddInstance;
       let stage = ddInstance.stage;
+      let layer = stage.layers[stage.layerIndex];
+      if ((layer.display == 0 && !layer.tempDisplay) || layer.lock) {
+        return;
+      }
       //根据control的定义，初始化临时控件，并推送至上层Editor
       let searchPaths = [
         "width",

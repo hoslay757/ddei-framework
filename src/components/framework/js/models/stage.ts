@@ -240,20 +240,17 @@ class DDeiStage {
   /**
   * 显示图层
   * @param layerIndex 图层下标，不传则为当前图层
-  * @param top 是否显示在最顶层
+  * @param temp 是否临时显示
   */
-  displayLayer(layerIndex: number, top: boolean) {
+  displayLayer(layerIndex: number, temp: boolean = false) {
     if (!layerIndex || layerIndex < 0 || layerIndex > this.layers[layerIndex].length - 1) {
       layerIndex = this.layerIndex;
     }
-    if (top) {
-      this.layers[layerIndex].display = 2
-      //将其他在顶层显示的图层改为非顶层
-      for (let i = 0; i < this.layers.length; i++) {
-        if (i != layerIndex && this.layers[i].display == 2) {
-          this.layers[i].display = 1;
-        }
-      }
+    if (temp) {
+      this.layers.forEach(layer => {
+        layer.tempDisplay = false
+      })
+      this.layers[layerIndex].tempDisplay = true
     } else {
       this.layers[layerIndex].display = 1
     }
@@ -269,7 +266,7 @@ class DDeiStage {
       return null;
     }
     //如果layerIndex不存在，创建一个空图层，添加进去
-    if (!layerIndex) {
+    if (!layerIndex && layerIndex != 0) {
       layerIndex = this.layerIndex;
     }
     //如果layerIndex小于0，则移除最外层图层
@@ -277,8 +274,8 @@ class DDeiStage {
       layerIndex = 0;
     }
     //如果下标超过了background图层，则移除background之前的一个图层
-    else if (layerIndex > this.layers.length - 2) {
-      layerIndex = this.layers.length - 2
+    else if (layerIndex > this.layers.length - 1) {
+      layerIndex = this.layers.length - 1
     }
 
     //获取要移除的图层

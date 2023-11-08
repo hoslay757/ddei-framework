@@ -18,7 +18,10 @@ class DDeiLayer {
     this.stage = null;
     this.index = -1;
     this.background = props.background ? props.background : null;
-    this.display = props.display ? props.display : 1;
+    this.display = props.display || props.display == 0 ? props.display : 1;
+    this.tempDisplay = props.tempDisplay ? props.tempDisplay : false;
+    this.lock = props.lock ? props.lock : false;
+    this.print = props.print ? props.print : false;
     this.unicode = props.unicode ? props.unicode : DDeiUtil.getUniqueCode()
     this.bg = props.bg
 
@@ -70,8 +73,10 @@ class DDeiLayer {
   index: number;
   // 背景信息，为一个json，包含了背景的类型，以及各种类型下的详细定义
   background: any;
-  // 当前图层是否显示，0不显示，1正常显示，2显示在最顶层
+  // 当前图层是否显示，0不显示，1正常显示
   display: number = 1;
+  // 当前图层是否临时显示，不临时显示，临时显示
+  tempDisplay: boolean = false;
   // 当前图层是否锁定，true显示，false不显示
   lock: boolean = false;
 
