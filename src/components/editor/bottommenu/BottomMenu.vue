@@ -147,7 +147,7 @@
             <img style="margin-top:2px;width:16px;height:16px;filter:brightness(0%)"
                  src="../icons/icon-plus-circle.png" />
           </div>
-          <div class="ddei_editor_bottommenu_other_layers_dialog_group_content_item"
+          <div :class="{'ddei_editor_bottommenu_other_layers_dialog_group_content_item':true,'current':currentStage?.layerIndex === index}"
                v-for="(layer,index) in currentStage?.layers"
                draggable="true"
                @dragstart="layerDragStart(index, $event)"

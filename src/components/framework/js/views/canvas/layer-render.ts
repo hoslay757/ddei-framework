@@ -102,7 +102,7 @@ class DDeiLayerCanvasRender {
   /**
    * 绘制背景
    */
-  drawBackground(): void {
+  drawBackground(px, py, pw, ph): void {
     if (this.model.display) {
       //获得 2d 上下文对象
       let canvas = this.ddRender.getCanvas();
@@ -111,7 +111,7 @@ class DDeiLayerCanvasRender {
       let rat1 = this.ddRender.ratio
       //保存状态
       ctx.save();
-      ctx.translate(-this.stage.wpv.x * rat1, -this.stage.wpv.y * rat1)
+
 
       //根据背景的设置绘制图层
       //获取属性配置
@@ -126,7 +126,7 @@ class DDeiLayerCanvasRender {
         if (bgInfoOpacity || bgInfoOpacity == 0) {
           ctx.globalAlpha = bgInfoOpacity
         }
-        ctx.fillRect(0, 0, canvas.width, canvas.height)
+        ctx.fillRect(px, py, pw, ph)
       }
       //绘制图片背景类型
       else if (bgInfoType == 2) {
@@ -141,12 +141,12 @@ class DDeiLayerCanvasRender {
           if (bgInfoOpacity || bgInfoOpacity == 0) {
             ctx.globalAlpha = bgInfoOpacity
           }
-          let x = 0;
-          let y = 0;
+          let x = px;
+          let y = py;
           let w = this.bgImgObj.width;
           let h = this.bgImgObj.height;
-          let cwidth = canvas.width
-          let cheight = canvas.height
+          let cwidth = pw
+          let cheight = ph
           let ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
           if (ruleDisplay == 1) {
             cwidth -= 16 * rat1;
@@ -190,14 +190,14 @@ class DDeiLayerCanvasRender {
               default: break;
             }
             switch (align) {
-              case 1: x = 0; break;
-              case 2: x = (cwidth - w) / 2; break;
-              case 3: x = cwidth - w; break;
+              case 1: x = px; break;
+              case 2: x = px + (cwidth - w) / 2; break;
+              case 3: x = px + cwidth - w; break;
             }
             switch (valign) {
-              case 1: y = 0; break;
-              case 2: y = (cheight - h) / 2; break;
-              case 3: y = cheight - h; break;
+              case 1: y = py; break;
+              case 2: y = py + (cheight - h) / 2; break;
+              case 3: y = py + cheight - h; break;
             }
           }
           ctx.drawImage(this.bgImgObj, x, y, w, h);

@@ -81,42 +81,29 @@ class DDeiStageCanvasRender {
   drawShape(): void {
     //计算滚动条
     this.calScroll();
-    //根据视窗平移
+
+    //清空画布，绘制场景大背景
+    this.clearStage();
+    //绘制纸张，以及图层背景
+    this.drawPaper();
+
+
+    //绘制网格
+    this.drawGrid()
     //获得 2d 上下文对象
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
     let rat1 = this.ddRender.ratio;
-    ctx.save();
-    ctx.fillStyle = DDeiUtil.getColor(DDeiConfig.STAGE.NONE_BG_COLOR)
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
-    ctx.translate(this.model.wpv.x * rat1, this.model.wpv.y * rat1)
-    //绘制背景，清空画布
-
-    //绘制背景
-    let topDisplayIndex = -1;
-    for (let i = this.model.layers.length - 1; i >= 0; i--) {
-      if (this.model.layers[i].display == 1) {
-        this.model.layers[i].render.drawBackground();
-      } else if (this.model.layers[i].display == 2) {
-        topDisplayIndex = i;
-      }
-    }
-    if (topDisplayIndex != -1) {
-      this.model.layers[topDisplayIndex].render.drawBackground();
-    }
-    ctx.restore();
-    //绘制纸张
-    this.drawPaper();
-    //绘制网格
-    this.drawGrid()
     //绘制图形
     ctx.save();
 
     ctx.translate((this.model.wpv.x) * rat1, (this.model.wpv.y) * rat1)
-
+    let topDisplayIndex = -1;
     for (let i = this.model.layers.length - 1; i >= 0; i--) {
       if (this.model.layers[i].display == 1) {
         this.model.layers[i].render.drawShape();
+      } else if (this.model.layers[i].display == 2) {
+        topDisplayIndex = i
       }
     }
     if (topDisplayIndex != -1) {
@@ -140,6 +127,20 @@ class DDeiStageCanvasRender {
     //绘制滚动条
     this.drawScroll();
 
+  }
+
+  /**
+   * 清空画布
+   */
+  clearStage(): void {
+    //获得 2d 上下文对象
+    let canvas = this.ddRender.getCanvas();
+    let ctx = canvas.getContext('2d');
+    ctx.save();
+    //清空画布
+    ctx.fillStyle = DDeiUtil.getColor(DDeiConfig.STAGE.NONE_BG_COLOR)
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    ctx.restore();
   }
 
   /**
@@ -222,6 +223,18 @@ class DDeiStageCanvasRender {
       for (let i = -leftExtNum; i <= rightExtNum; i++) {
         for (let j = -topExtNum; j <= bottomExtNum; j++) {
           ctx.fillRect(posX + (i * paperWidth), posY + (j * paperHeight), paperWidth, paperHeight)
+          //绘制当前纸张的每个图层背景
+          let topDisplayIndex = -1;
+          for (let l = this.model.layers.length - 1; l >= 0; l--) {
+            if (this.model.layers[l].display == 1) {
+              this.model.layers[l].render.drawBackground(posX + (i * paperWidth), posY + (j * paperHeight), paperWidth, paperHeight);
+            } else if (this.model.layers[l].display == 2) {
+              topDisplayIndex = l;
+            }
+          }
+          if (topDisplayIndex != -1) {
+            this.model.layers[topDisplayIndex].render.drawBackground(posX + (i * paperWidth), posY + (j * paperHeight), paperWidth, paperHeight);
+          }
           ctx.strokeRect(posX + (i * paperWidth), posY + (j * paperHeight), paperWidth, paperHeight)
         }
       }
