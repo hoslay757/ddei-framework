@@ -15,12 +15,18 @@ class MenuRemoveSheet {
       let file = editor?.files[editor.currentFileIndex];
       if (file.sheets.length > 1) {
         let ddInstance = model.stage.ddInstance
-        let currentIndex = file.currentSheetIndex;
+        let currentIndex = -1;
+        for (let i = 0; i < file?.sheets?.length; i++) {
+          if (file.sheets[i].unicode == model.unicode) {
+            currentIndex = i;
+            break;
+          }
+        }
+
         file.sheets.splice(currentIndex, 1);
-        if (currentIndex > 0) {
+
+        if (currentIndex <= file.currentSheetIndex) {
           file.changeSheet(file.currentSheetIndex - 1);
-        } else {
-          file.changeSheet(0);
         }
         let stage = file.sheets[file?.currentSheetIndex].stage;
         stage.ddInstance = ddInstance;

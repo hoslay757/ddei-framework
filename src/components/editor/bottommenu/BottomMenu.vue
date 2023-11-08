@@ -8,9 +8,9 @@
       </div>
     </div>
     <div class="ddei_editor_bottommenu_pages">
-      <div @click.left="changeSheet(index)"
-           draggable="true"
-           @dragstart="sheetDragStart(index, $event)"
+      <div draggable="true"
+           @dragstart="sheetDragStart(null, $event)"
+           @click.left="changeSheet(index)"
            @click.right="showMenu(sheet,$event)"
            @dragover="sheetDragOver($event)"
            @drop="sheetDragDrop($event)"
@@ -148,7 +148,12 @@
                  src="../icons/icon-plus-circle.png" />
           </div>
           <div class="ddei_editor_bottommenu_other_layers_dialog_group_content_item"
-               v-for="(layer,index) in currentStage?.layers">
+               v-for="(layer,index) in currentStage?.layers"
+               draggable="true"
+               @dragstart="layerDragStart(index, $event)"
+               @dragover="layerDragOver($event)"
+               @drop="layerDragDrop($event)"
+               @dragleave="layerDragCancel($event)">
             <span style="grid-column:1/8;"
                   @dblclick="startChangeLayerName(layer,$event)">{{layer.name?layer.name:'图层'}}</span>
             <img class="trash"
@@ -310,42 +315,41 @@ export default {
      * 拖拽元素移动
      */
     sheetDragOver(e) {
-      if (this.dragSheetEle) {
-        if (this.dragSheetEle.innerHTML != e.target.innerHTML) {
-          //寻找当前元素在拖拽元素的位置
-          let children = this.dragSheetEle.parentElement.children;
-          for (let i = 0; i < children.length - 2; i++) {
-            children[i].style.borderLeft = "";
-            children[i].style.borderRight = "";
-          }
-          for (let i = 0; i < children.length - 2; i++) {
-            if (children[i] == e.target && i == children.length - 3) {
-              let pos = DDeiUtil.getDomAbsPosition(children[i]);
-              let halfPos = pos.left + children[i].offsetWidth / 2;
-              //最后一个元素的右半部分
-              if (
-                halfPos <= e.clientX &&
-                e.clientX <= pos.left + children[i].offsetWidth
-              ) {
-                children[i].style.borderRight = "2px solid #017fff";
-                this.changeSheetIndex = i + 1;
-              } else if (children[i - 1] != this.dragSheetEle) {
-                children[i].style.borderLeft = "2px solid #017fff";
-                this.changeSheetIndex = i;
-              }
-            } else if (
-              children[i] == e.target &&
-              children[i - 1] != this.dragSheetEle
-            ) {
-              children[i].style.borderLeft = "2px solid #017fff";
-              this.changeSheetIndex = i;
-            } else if (children[i].innerHTML == this.dragSheetEle.innerHTML) {
-              this.sourceSheetIndex = i;
-            }
-          }
-          e.preventDefault();
+      let parentDiv = this.dragSheetEle.parentElement;
+      let sourceIndex = -1;
+      let targetIndex = -1;
+      let children = parentDiv.children;
+      for (let i = 0; i < children.length - 2; i++) {
+        children[i].style.borderLeft = "";
+        children[i].style.borderRight = "";
+        if (children[i] == this.dragSheetEle) {
+          sourceIndex = i;
+        } else if (e.target == children[i]) {
+          targetIndex = i;
         }
       }
+      if (sourceIndex != -1 && targetIndex != -1) {
+        this.sourceSheetIndex = sourceIndex;
+        if (targetIndex == children.length - 3) {
+          let pos = DDeiUtil.getDomAbsPosition(children[targetIndex]);
+          let halfPos = pos.left + children[targetIndex].offsetWidth / 2;
+          if (
+            halfPos <= e.clientX &&
+            e.clientX <= pos.left + children[targetIndex].offsetWidth
+          ) {
+            this.changeSheetIndex = targetIndex;
+            children[targetIndex].style.borderRight = "2px solid #017fff";
+          } else {
+            this.changeSheetIndex = targetIndex - 1;
+            children[targetIndex].style.borderLeft = "2px solid #017fff";
+          }
+        } else {
+          this.changeSheetIndex = targetIndex - 1;
+          children[targetIndex].style.borderLeft = "2px solid #017fff";
+        }
+      }
+
+      e.preventDefault();
     },
 
     /**
@@ -361,7 +365,7 @@ export default {
         let sheet = file.sheets[this.sourceSheetIndex];
         let currentSheet = file.sheets[file.currentSheetIndex];
         file.sheets[this.sourceSheetIndex] = null;
-        file.sheets.splice(this.changeSheetIndex, 0, sheet);
+        file.sheets.splice(this.changeSheetIndex + 1, 0, sheet);
         for (let j = file.sheets.length; j >= 0; j--) {
           if (file.sheets[j] == null) {
             file.sheets.splice(j, 1);
@@ -396,6 +400,120 @@ export default {
           children[i].style.borderLeft = "";
           children[i].style.borderRight = "";
         }
+        //刷新当前画布
+        this.sourceSheetIndex = null;
+        this.changeSheetIndex = null;
+      }
+    },
+
+    /**
+     * layer开始拖拽移动
+     */
+    layerDragStart(layerEle, evt) {
+      this.dragLayerEle = evt.target;
+    },
+
+    /**
+     * 拖拽layer移动
+     */
+    layerDragOver(e) {
+      if (this.dragLayerEle) {
+        let parentDiv = this.dragLayerEle.parentElement;
+        let sourceIndex = -1;
+        let targetIndex = -1;
+        let children = parentDiv.children;
+
+        for (let i = 1; i < children.length; i++) {
+          children[i].style.borderTop = "";
+          children[i].style.borderBottom = "";
+          if (children[i] == this.dragLayerEle) {
+            sourceIndex = i;
+          } else if (e.target.parentElement == children[i]) {
+            targetIndex = i;
+          }
+        }
+
+        if (sourceIndex != -1 && targetIndex != -1) {
+          this.sourceLayerIndex = sourceIndex - 1;
+          if (targetIndex == children.length - 1) {
+            let pos = DDeiUtil.getDomAbsPosition(children[targetIndex]);
+            let halfPos = pos.top + children[targetIndex].offsetHeight / 2;
+            if (
+              halfPos <= e.clientY &&
+              e.clientY <= pos.top + children[targetIndex].offsetHeight
+            ) {
+              this.changeLayerIndex = targetIndex;
+              children[targetIndex].style.borderBottom = "2px solid #017fff";
+            } else {
+              this.changeLayerIndex = targetIndex - 1;
+              children[targetIndex].style.borderTop = "2px solid #017fff";
+            }
+          } else {
+            this.changeLayerIndex = targetIndex - 1;
+            children[targetIndex].style.borderTop = "2px solid #017fff";
+          }
+        }
+
+        e.preventDefault();
+      }
+    },
+
+    /**
+     * 拖拽layer放开
+     */
+    layerDragDrop(e) {
+      if (
+        (this.sourceLayerIndex || this.sourceLayerIndex == 0) &&
+        (this.changeLayerIndex || this.changeLayerIndex == 0)
+      ) {
+        //修改layer顺序
+        let layers = this.currentStage.layers;
+        let sourceLayer = this.currentStage.layers[this.sourceLayerIndex];
+        let currentLayer =
+          this.currentStage.layers[this.currentStage.layerIndex];
+        layers[this.sourceLayerIndex] = null;
+        layers.splice(this.changeLayerIndex, 0, sourceLayer);
+        for (let j = layers.length; j >= 0; j--) {
+          if (layers[j] == null) {
+            layers.splice(j, 1);
+          }
+        }
+        for (let j = layers.length; j >= 0; j--) {
+          if (currentLayer == layers[j]) {
+            this.currentStage.layerIndex = j;
+          }
+        }
+        this.editor.viewEditor?.changeFileModifyDirty();
+        this.editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
+        this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
+        this.editor.bus.executeAll();
+        this.editor.changeState(DDeiEditorState.DESIGNING);
+      }
+      //还原样式
+      let children = this.dragLayerEle.parentElement.children;
+      for (let i = 1; i < children.length; i++) {
+        children[i].style.borderTop = "";
+        children[i].style.borderBottom = "";
+      }
+      //刷新当前画布
+      this.dragLayerEle = null;
+      this.sourceLayerIndex = null;
+      this.changeLayerIndex = null;
+    },
+
+    /**
+     * 拖拽layer离开
+     */
+    layerDragCancel(e) {
+      if (this.dragLayerEle) {
+        //还原样式
+        let children = this.dragLayerEle.parentElement.children;
+        for (let i = 1; i < children.length; i++) {
+          children[i].style.borderTop = "";
+          children[i].style.borderBottom = "";
+        }
+        this.sourceLayerIndex = null;
+        this.changeLayerIndex = null;
       }
     },
 
@@ -855,6 +973,7 @@ export default {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+  display: block;
 }
 
 .ddei_editor_bottommenu_page:hover {

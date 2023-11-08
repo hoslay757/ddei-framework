@@ -60,6 +60,8 @@ class DDeiFile {
   modelNumber: number = 0;
   histroyIdx: number = -1;
 
+  unicode: string = DDeiUtil.getUniqueCode()
+
   // ============================ 方法 ============================
 
   /**
@@ -80,6 +82,9 @@ class DDeiFile {
    * @param index 下标
    */
   changeSheet(index: number): void {
+    if (index < 0) {
+      index = 0
+    }
     for (let i = 0; i < this.sheets.length; i++) {
       let sheet = this.sheets[i]
       if (i != index) {

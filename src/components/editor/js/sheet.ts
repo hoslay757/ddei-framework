@@ -1,5 +1,6 @@
 import DDeiActiveType from "./enums/active-type";
 import DDeiStage from "@/components/framework/js/models/stage";
+import DDeiUtil from "@/components/framework/js/util";
 
 /**
  * DDei页签，文件包含了多个页签
@@ -31,7 +32,7 @@ class DDeiSheet {
   //当前模型的类型
   modelType: string = "DDeiSheet";
 
-
+  unicode: string = DDeiUtil.getUniqueCode()
 
   // ============================ 方法 ============================
 

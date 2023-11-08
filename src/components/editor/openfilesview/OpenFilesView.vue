@@ -296,6 +296,10 @@ export default {
           children[i].style.borderLeft = "";
           children[i].style.borderRight = "";
         }
+        //刷新当前画布
+        this.dragFileEle = null;
+        this.sourceFileIndex = null;
+        this.changeFileIndex = null;
       }
     },
 
