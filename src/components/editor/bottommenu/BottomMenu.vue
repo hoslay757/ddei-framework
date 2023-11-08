@@ -246,7 +246,8 @@ export default {
   methods: {
     //创建新图层
     createNewLayer(index: number) {
-      this.currentStage.addLayer(null, index);
+      let newLayer = this.currentStage.addLayer(null, index);
+      newLayer.initRender();
       this.editor.bus.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels);
       this.editor.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
       this.editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
