@@ -4,25 +4,23 @@
        @mousedown="changeEditorFocus">
     <div id="ddei_editor_topmenu_quickbox"
          class="ddei_editor_topmenu_quickbox">
-      <div class="ddei_editor_topmenu_quickbox_group"
-           v-show="editor?.maxWidth >= 130">
+      <div class="ddei_editor_topmenu_quickbox_group">
         <QuickBoxFileInfo v-if="reFresh"></QuickBoxFileInfo>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group"
-           v-show="editor?.maxWidth >= 130">
+      <div class="ddei_editor_topmenu_quickbox_group">
         <QuickBoxOperate v-if="reFresh"></QuickBoxOperate>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group"
-           v-show="editor?.maxWidth >= 500">
+      <div class="ddei_editor_topmenu_quickbox_group">
         <QuickBoxFontAndText v-if="reFresh"></QuickBoxFontAndText>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group"
-           v-show="editor?.maxWidth >= 700">
+      <div class="ddei_editor_topmenu_quickbox_group">
         <QuickBoxTool v-if="reFresh"></QuickBoxTool>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group"
-           v-show="editor?.maxWidth >= 1300">
+      <div class="ddei_editor_topmenu_quickbox_group">
         <QuickBoxSort v-if="reFresh"></QuickBoxSort>
+      </div>
+      <div class="ddei_editor_topmenu_quickbox_group_empty">
+
       </div>
       <div class="ddei_editor_topmenu_quickbox_group">
         <QuickBoxEImport v-if="reFresh"></QuickBoxEImport>
@@ -115,6 +113,11 @@ export default {
 
 .ddei_editor_topmenu_quickbox_group {
   flex: 0;
+  margin: auto 0;
+  margin-left: 5px;
+}
+.ddei_editor_topmenu_quickbox_group_empty {
+  flex: 1;
   margin: auto 0;
   margin-left: 5px;
 }

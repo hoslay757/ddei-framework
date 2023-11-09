@@ -37,7 +37,7 @@
           </div>
           <div class="ddei_editor_file_info_item_button"
                title="导入">
-            <img :src="icons['icon-download']" />
+            <img :src="icons['icon-import']" />
           </div>
           <div class="ddei_editor_file_info_item_button"
                @click="save"

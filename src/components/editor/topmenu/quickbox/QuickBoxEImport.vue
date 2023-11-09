@@ -1,35 +1,35 @@
 <template>
-  <div class="ddei_editor_sdp">
-    <div class="ddei_editor_sdp_item"
+  <div class="ddei_editor_eip">
+    <div class="ddei_editor_eip_item"
          style="grid-row:1/3">
-      <div class="ddei_editor_sdp_item_box"
+      <div class="ddei_editor_eip_item_box"
            @click="openFile">
         <img width="16px"
              height="16px"
-             :src="icons['icon-open']" />
+             :src="icons['icon-export']" />
         <div>导出</div>
       </div>
-      <div class="ddei_editor_sdp_item_box"
+      <div class="ddei_editor_eip_item_box"
            @click="download">
         <img width="16px"
              height="16px"
              :src="icons['icon-download']" />
         <div>下载</div>
       </div>
-      <div class="ddei_editor_sdp_item_box"
+      <div class="ddei_editor_eip_item_box"
            @click="download">
         <img width="16px"
              height="16px"
-             :src="icons['icon-download']" />
+             :src="icons['icon-publish-1']" />
         <div>发布</div>
       </div>
     </div>
-    <div class="ddei_editor_sdp_item">
-      <div class="ddei_editor_sdp_item_text">
+    <div class="ddei_editor_eip_item">
+      <div class="ddei_editor_eip_item_text">
         发布
       </div>
     </div>
-    <div class="ddei_editor_sdp_file_dialog">
+    <div class="ddei_editor_eip_file_dialog">
 
     </div>
   </div>
@@ -254,7 +254,7 @@ export default {
 </script>
 
 <style scoped>
-.ddei_editor_sdp {
+.ddei_editor_eip {
   width: 110px;
   height: 90px;
   border-right: 1px solid rgb(224, 224, 224);
@@ -265,14 +265,14 @@ export default {
   padding-right: 4px;
 }
 
-.ddei_editor_sdp_item {
+.ddei_editor_eip_item {
   margin: auto;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 4px;
 }
 
-.ddei_editor_sdp_item_text {
+.ddei_editor_eip_item_text {
   text-align: center;
   font-family: "Microsoft YaHei";
   font-size: 12px;
@@ -280,7 +280,7 @@ export default {
   color: rgb(120, 120, 120);
 }
 
-.ddei_editor_sdp_item_box {
+.ddei_editor_eip_item_box {
   width: 30px;
   height: 60px;
   color: black;
@@ -291,18 +291,18 @@ export default {
   grid-template-columns: 1fr;
 }
 
-.ddei_editor_sdp_item_box div {
+.ddei_editor_eip_item_box div {
   margin: auto;
 }
 
-.ddei_editor_sdp_item_box img {
+.ddei_editor_eip_item_box img {
   filter: brightness(45%) drop-shadow(0.2px 0px 0.2px #000);
   width: 16px;
   height: 16px;
   margin: auto;
 }
 
-.ddei_editor_sdp_item_box:hover {
+.ddei_editor_eip_item_box:hover {
   background-color: rgb(233, 233, 238);
   border-radius: 4px;
 }
