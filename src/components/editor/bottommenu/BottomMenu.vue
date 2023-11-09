@@ -234,9 +234,13 @@ export default {
     });
     // 监听obj对象中prop属性的变化
     this.$watch("currentStage.ratio", function (newVal, oldVal) {
-      this.ratioInputValue = parseFloat(newVal) * 100;
-      this.stageRatio = newVal;
-      this.changeRatio();
+      if (!this.changeCurrentStage) {
+        this.ratioInputValue = parseFloat(newVal) * 100;
+        this.stageRatio = newVal;
+        this.changeRatio();
+      } else {
+        this.changeCurrentStage = false;
+      }
     });
     this.$watch("stageRatio", function (newVal, oldVal) {
       this.setRatio(newVal);
@@ -247,6 +251,7 @@ export default {
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     let file = this.editor?.files[this.editor?.currentFileIndex];
     let sheet = file?.sheets[file?.currentSheetIndex];
+    this.changeCurrentStage = true;
     this.currentStage = sheet.stage;
   },
   methods: {

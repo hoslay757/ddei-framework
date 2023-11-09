@@ -34,7 +34,6 @@ class DDeiBusCommandCenterStageWPV extends DDeiBusCommand {
    * @param evt 事件对象引用
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
-
     let stage = bus.ddInstance.stage;
     if (stage) {
       let maxOutRect = DDeiAbstractShape.getOutRectByPV(
