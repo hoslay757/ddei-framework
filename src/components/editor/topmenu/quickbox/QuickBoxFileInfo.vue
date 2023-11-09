@@ -82,7 +82,7 @@
                v-if="file?.state == 4">
             正在保存
           </div>
-          <div class="ddei_editor_file_info_item_filestate_time">{{file?.lastUpdateTime}}</div>
+          <div class="ddei_editor_file_info_item_filestate_time">{{getFileLastTime()}}</div>
         </div>
       </div>
     </div>
@@ -106,6 +106,7 @@ import ICONS from "../../js/icon";
 import DDei from "../../../framework/js/ddei";
 import DDeiStage from "../../../framework/js/models/stage";
 import DDeiSheet from "../../js/sheet";
+import DDeiUtil from "../../../framework/js/util";
 
 export default {
   name: "DDei-Editor-File-Info",
@@ -130,6 +131,18 @@ export default {
     this.file = this.editor?.files[this.editor?.currentFileIndex];
   },
   methods: {
+    /**
+     * 获取文件最后更新时间
+     */
+    getFileLastTime(): string {
+      if (this.file?.lastUpdateTime) {
+        let date = new Date(this.file?.lastUpdateTime);
+        if (date) {
+          return DDeiUtil.formatDate(date, "MM-dd hh:mm:ss");
+        }
+      }
+      return "";
+    },
     /**
      * 开始编辑文件名
      */
