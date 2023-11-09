@@ -308,24 +308,30 @@ export default {
      * @param instance
      */
     changeFile(file) {
-      this.editor.files.forEach((item) => {
-        item.active = DDeiActiveType.NONE;
-      });
-      file.active = DDeiActiveType.ACTIVE;
-      //刷新画布
-      this.editor.currentFileIndex = this.editor?.files?.indexOf(file);
-      let sheets = file?.sheets;
-      let ddInstance = this.editor?.ddInstance;
-      if (file && sheets && ddInstance) {
-        let stage = sheets[file.currentSheetIndex].stage;
-        stage.ddInstance = ddInstance;
-        //刷新页面
-        ddInstance.stage = stage;
-        //加载场景渲染器
-        stage.initRender();
-        ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, null);
-        ddInstance?.bus?.executeAll();
-        this.editor.viewEditor?.forceRefreshBottomMenu();
+      if (file.active != DDeiActiveType.ACTIVE) {
+        this.editor.files.forEach((item) => {
+          item.active = DDeiActiveType.NONE;
+        });
+        file.active = DDeiActiveType.ACTIVE;
+        //刷新画布
+        this.editor.currentFileIndex = this.editor?.files?.indexOf(file);
+        let sheets = file?.sheets;
+        let ddInstance = this.editor?.ddInstance;
+        if (file && sheets && ddInstance) {
+          let stage = sheets[file.currentSheetIndex].stage;
+          stage.ddInstance = ddInstance;
+          //刷新页面
+          ddInstance.stage = stage;
+          //加载场景渲染器
+          stage.initRender();
+          ddInstance?.bus?.push(
+            DDeiEnumBusCommandType.RefreshShape,
+            null,
+            null
+          );
+          ddInstance?.bus?.executeAll();
+          this.editor.viewEditor?.forceRefreshBottomMenu();
+        }
       }
     },
 
