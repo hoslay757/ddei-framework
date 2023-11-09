@@ -17,6 +17,8 @@ class DDeiFile {
     this.currentSheetIndex = props.currentSheetIndex || props.currentSheetIndex == 0 ? props.currentSheetIndex : -1;
     this.state = props.state ? props.state : DDeiFileState.NONE
     this.active = props.active ? props.active : DDeiActiveType.NONE
+    this.lastUpdateTime = props.lastUpdateTime ? props.lastUpdateTime : new Date().getTime()
+    this.desc = props.desc ? props.desc : ""
   }
   // ============================ 静态变量 ============================
 
@@ -35,11 +37,16 @@ class DDeiFile {
   id: number;
   // 文件的名称，不包含扩展名
   name: string;
+  // 文件的描述
+  desc: string = "";
   // 当前实例的状态
   state: DDeiFileState;
 
   //激活状态
   active: DDeiActiveType;
+
+  //最后修改时间
+  lastUpdateTime: number = new Date().getTime();
 
   //文件的完整路径
   path: string;

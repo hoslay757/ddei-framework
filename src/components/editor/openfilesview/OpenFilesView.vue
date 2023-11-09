@@ -328,13 +328,10 @@ export default {
           ddInstance.stage = stage;
           //加载场景渲染器
           stage.initRender();
-          ddInstance?.bus?.push(
-            DDeiEnumBusCommandType.RefreshShape,
-            null,
-            null
-          );
+          ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
           ddInstance?.bus?.executeAll();
           this.editor.editorViewer?.forceRefreshBottomMenu();
+          this.editor.editorViewer?.forceRefreshTopMenuView();
         }
       }
     },

@@ -3,25 +3,11 @@
     <div class="ddei_editor_sdp_item"
          style="grid-row:1/3">
       <div class="ddei_editor_sdp_item_box"
-           @click="newFile">
-        <img width="16px"
-             height="16px"
-             :src="icons['icon-file']" />
-        <div>新建</div>
-      </div>
-      <div class="ddei_editor_sdp_item_box"
-           @click="save">
-        <img width="16px"
-             height="16px"
-             :src="icons['icon-save']" />
-        <div>保存</div>
-      </div>
-      <div class="ddei_editor_sdp_item_box"
            @click="openFile">
         <img width="16px"
              height="16px"
              :src="icons['icon-open']" />
-        <div>打开</div>
+        <div>导出</div>
       </div>
       <div class="ddei_editor_sdp_item_box"
            @click="download">
@@ -30,10 +16,17 @@
              :src="icons['icon-download']" />
         <div>下载</div>
       </div>
+      <div class="ddei_editor_sdp_item_box"
+           @click="download">
+        <img width="16px"
+             height="16px"
+             :src="icons['icon-download']" />
+        <div>发布</div>
+      </div>
     </div>
     <div class="ddei_editor_sdp_item">
       <div class="ddei_editor_sdp_item_text">
-        保存
+        发布
       </div>
     </div>
     <div class="ddei_editor_sdp_file_dialog">
@@ -56,14 +49,14 @@ import DDeiEditorEnumBusCommandType from "../../js/enums/editor-command-type";
 import DDeiEditorState from "../../js/enums/editor-state";
 
 export default {
-  name: "DDei-Editor-Quick-SDP",
+  name: "DDei-Editor-Quick-EImport",
   extends: null,
   mixins: [],
   props: {},
   data() {
     return {
       editor: null,
-      icons: ICONS,
+      icons: {},
     };
   },
   computed: {},
@@ -71,6 +64,9 @@ export default {
   created() {},
   mounted() {
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
+    for (let i in ICONS) {
+      this.icons[i] = ICONS[i];
+    }
   },
   methods: {
     /**
@@ -259,7 +255,7 @@ export default {
 
 <style scoped>
 .ddei_editor_sdp {
-  width: 150px;
+  width: 110px;
   height: 90px;
   border-right: 1px solid rgb(224, 224, 224);
   grid-template-rows: 30px 30px 20px;
@@ -272,7 +268,7 @@ export default {
 .ddei_editor_sdp_item {
   margin: auto;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 4px;
 }
 
@@ -280,7 +276,7 @@ export default {
   text-align: center;
   font-family: "Microsoft YaHei";
   font-size: 12px;
-  grid-column: 1/5;
+  grid-column: 1/4;
   color: rgb(120, 120, 120);
 }
 

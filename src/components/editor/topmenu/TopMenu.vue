@@ -6,6 +6,10 @@
          class="ddei_editor_topmenu_quickbox">
       <div class="ddei_editor_topmenu_quickbox_group"
            v-show="editor?.maxWidth >= 130">
+        <QuickBoxFileInfo v-if="reFresh"></QuickBoxFileInfo>
+      </div>
+      <div class="ddei_editor_topmenu_quickbox_group"
+           v-show="editor?.maxWidth >= 130">
         <QuickBoxOperate v-if="reFresh"></QuickBoxOperate>
       </div>
       <div class="ddei_editor_topmenu_quickbox_group"
@@ -17,20 +21,13 @@
         <QuickBoxTool v-if="reFresh"></QuickBoxTool>
       </div>
       <div class="ddei_editor_topmenu_quickbox_group"
-           v-show="editor?.maxWidth >= 1000">
-        <QuickBoxStyle v-if="reFresh"></QuickBoxStyle>
-      </div>
-      <div class="ddei_editor_topmenu_quickbox_group"
            v-show="editor?.maxWidth >= 1300">
         <QuickBoxSort v-if="reFresh"></QuickBoxSort>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group"
-           v-show="editor?.maxWidth >= 1400">
-        <QuickBoxChangeShape v-if="reFresh"></QuickBoxChangeShape>
-      </div>
       <div class="ddei_editor_topmenu_quickbox_group">
-        <QuickBoxSDP v-if="reFresh"></QuickBoxSDP>
+        <QuickBoxEImport v-if="reFresh"></QuickBoxEImport>
       </div>
+
     </div>
 
   </div>
@@ -42,7 +39,9 @@ import QuickBoxTool from "./quickbox/QuickBoxTool.vue";
 import QuickBoxStyle from "./quickbox/QuickBoxStyle.vue";
 import QuickBoxSort from "./quickbox/QuickBoxSort.vue";
 import QuickBoxChangeShape from "./quickbox/QuickBoxChangeShape.vue";
+import QuickBoxFileInfo from "./quickbox/QuickBoxFileInfo.vue";
 import QuickBoxSDP from "./quickbox/QuickBoxSDP.vue";
+import QuickBoxEImport from "./quickbox/QuickBoxEImport.vue";
 import DDeiEditor from "../js/editor";
 import DDeiEditorState from "../js/enums/editor-state";
 import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
@@ -67,6 +66,8 @@ export default {
     QuickBoxSort,
     QuickBoxChangeShape,
     QuickBoxSDP,
+    QuickBoxFileInfo,
+    QuickBoxEImport,
   },
   computed: {},
   watch: {},

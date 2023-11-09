@@ -35,6 +35,9 @@ class DDeiKeyActionReRevoke extends DDeiKeyAction {
               } else {
                 file.state = DDeiFileState.MODIFY
               }
+              file.name = hisFile?.name;
+              file.desc = hisFile?.desc;
+              file.lastUpdateTime = hisFile?.lastUpdateTime;
               file.sheets = hisFile?.sheets;
               if (file && file.sheets && ddInstance) {
                 file.changeSheet(hisFile.currentSheetIndex);
@@ -49,6 +52,7 @@ class DDeiKeyActionReRevoke extends DDeiKeyAction {
                 editor?.editorViewer.forceRefreshBottomMenu();
                 editor?.editorViewer.forcePropertyView();
                 editor?.editorViewer.forceRefreshOpenFilesView();
+                editor?.editorViewer.forceRefreshTopMenuView();
               }
             }
           }

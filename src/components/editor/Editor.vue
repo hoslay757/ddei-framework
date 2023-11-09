@@ -8,7 +8,7 @@
       <div style="flex:0 0 100px"
            class="top"
            id="ddei_editor_frame_top">
-        <TopMenu></TopMenu>
+        <TopMenu v-if="refreshTopMenuView"></TopMenu>
       </div>
       <div class="body">
         <div style="flex:0 0 220px"
@@ -77,6 +77,7 @@ export default {
       refreshOpenFilesView: true,
       refreshPropertyView: true,
       refreshMenu: true,
+      refreshTopMenuView: true,
     };
   },
   //注册组件
@@ -155,6 +156,13 @@ export default {
       this.refreshOpenFilesView = false;
       this.$nextTick(() => {
         this.refreshOpenFilesView = true;
+      });
+    },
+
+    forceRefreshTopMenuView() {
+      this.refreshTopMenuView = false;
+      this.$nextTick(() => {
+        this.refreshTopMenuView = true;
       });
     },
     /**

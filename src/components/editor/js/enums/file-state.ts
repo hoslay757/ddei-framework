@@ -10,6 +10,8 @@ enum DDeiFileState {
   DELETE = 3,
   //无状态，正常状态
   NONE = 0,
+  //正在修改
+  SAVING = 4,
 }
 
 export default DDeiFileState

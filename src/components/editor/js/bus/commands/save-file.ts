@@ -39,6 +39,7 @@ class DDeiEditorCommandSaveFile extends DDeiBusCommand {
       let file = editor?.files[editor.currentFileIndex]
       //从历史恢复文件
       if (file?.active == DDeiActiveType.ACTIVE) {
+        file.lastUpdateTime = new Date().getTime()
         let json = file.toJSON();
         if (json) {
           //执行保存
