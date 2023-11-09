@@ -195,7 +195,18 @@ class DDeiEditor {
   //当前bus
   bus: DDeiBus | null = null;
 
+  //编辑器UI对象
   viewEditor: object | null = null;
+  //底部菜单UI对象
+  bottomMenuViewer: object | null = null;
+  //顶部菜单UI对象
+  topMenuViewer: object | null = null;
+  //toolbarUI对象
+  toolBarViewer: object | null = null;
+  //属性栏UI对象
+  properyViewer: object | null = null;
+  //文件浏览器对象
+  openFilesViewer: object | null = null;
 
   //当前编辑模式，1：指针，2：手，3:文本创建，4:线段创建
   editMode: number = 1;
@@ -270,10 +281,9 @@ class DDeiEditor {
   changeState(state: DDeiEditorState): void {
     if (this.state != state) {
       this.state = state
-
     }
-    this.bus?.push(DDeiEditorEnumBusCommandType.ClearTemplateUI, null, null)
-    this.bus?.executeAll();
+
+
   }
 
   /**

@@ -249,6 +249,7 @@ export default {
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
+    this.editor.bottomMenuViewer = this;
     let file = this.editor?.files[this.editor?.currentFileIndex];
     let sheet = file?.sheets[file?.currentSheetIndex];
     this.changeCurrentStage = true;
@@ -264,7 +265,7 @@ export default {
       this.editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
       this.editor.bus.executeAll();
-      this.editor.viewEditor?.changeFileModifyDirty();
+      this.editor.editorViewer?.changeFileModifyDirty();
       this.editor.changeState(DDeiEditorState.DESIGNING);
     },
 
@@ -276,7 +277,7 @@ export default {
       this.editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
       this.editor.bus.executeAll();
-      this.editor.viewEditor?.changeFileModifyDirty();
+      this.editor.editorViewer?.changeFileModifyDirty();
       this.editor.changeState(DDeiEditorState.DESIGNING);
     },
 
@@ -292,7 +293,7 @@ export default {
       this.editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
       this.editor.bus.executeAll();
-      this.editor.viewEditor?.changeFileModifyDirty();
+      this.editor.editorViewer?.changeFileModifyDirty();
       this.editor.changeState(DDeiEditorState.DESIGNING);
     },
 
@@ -320,7 +321,7 @@ export default {
       this.editor.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
       this.editor.bus.executeAll();
-      this.editor.viewEditor?.changeFileModifyDirty();
+      this.editor.editorViewer?.changeFileModifyDirty();
       this.editor.changeState(DDeiEditorState.DESIGNING);
     },
 
@@ -401,11 +402,11 @@ export default {
         this.sourceSheetIndex = null;
         this.changeSheetIndex = null;
 
-        this.editor.viewEditor?.changeFileModifyDirty();
+        this.editor.editorViewer?.changeFileModifyDirty();
         this.editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
         this.editor.bus.executeAll();
         this.editor.changeState(DDeiEditorState.DESIGNING);
-        this.editor.viewEditor?.forceRefreshBottomMenu();
+        this.editor.editorViewer?.forceRefreshBottomMenu();
       }
     },
 
@@ -503,7 +504,7 @@ export default {
             this.currentStage.layerIndex = j;
           }
         }
-        this.editor.viewEditor?.changeFileModifyDirty();
+        this.editor.editorViewer?.changeFileModifyDirty();
         this.editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
         this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
         this.editor.bus.executeAll();
@@ -557,11 +558,11 @@ export default {
             let sheet = file?.sheets[file?.currentSheetIndex];
             if (input.value != sheet.name) {
               sheet.name = input.value;
-              editor.viewEditor?.changeFileModifyDirty();
+              editor.editorViewer?.changeFileModifyDirty();
               editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
               editor.bus.executeAll();
               editor.changeState(DDeiEditorState.DESIGNING);
-              editor.viewEditor?.forceRefreshBottomMenu();
+              editor.editorViewer?.forceRefreshBottomMenu();
             }
             input.style.display = "none";
             input.style.left = "0px";
@@ -577,11 +578,11 @@ export default {
             let sheet = file?.sheets[file?.currentSheetIndex];
             if (input.value != sheet.name) {
               sheet.name = input.value;
-              editor.viewEditor?.changeFileModifyDirty();
+              editor.editorViewer?.changeFileModifyDirty();
               editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
               editor.bus.executeAll();
               editor.changeState(DDeiEditorState.DESIGNING);
-              editor.viewEditor?.forceRefreshBottomMenu();
+              editor.editorViewer?.forceRefreshBottomMenu();
             }
             input.style.display = "none";
             input.style.left = "0px";
@@ -633,7 +634,7 @@ export default {
             let editor = DDeiEditor.ACTIVE_INSTANCE;
             if (input.value != that.currentChangeLayer.name) {
               that.currentChangeLayer.name = input.value;
-              editor.viewEditor?.changeFileModifyDirty();
+              editor.editorViewer?.changeFileModifyDirty();
               editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
               editor.bus.executeAll();
             }
@@ -649,7 +650,7 @@ export default {
             let editor = DDeiEditor.ACTIVE_INSTANCE;
             if (input.value != that.currentChangeLayer.name) {
               that.currentChangeLayer.name = input.value;
-              editor.viewEditor?.changeFileModifyDirty();
+              editor.editorViewer?.changeFileModifyDirty();
               editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
               editor.bus.executeAll();
             }
@@ -778,7 +779,6 @@ export default {
         ratio = 10;
       }
       this.currentStage.setStageRatio(ratio);
-      this.dialogShow = "";
       this.stageRatio = this.currentStage.ratio;
     },
 
@@ -803,6 +803,8 @@ export default {
         } else if (this.openIndex < 0) {
           this.openIndex = 0;
         }
+        this.editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+        this.editor.bus.executeAll();
       }
     },
 
@@ -842,13 +844,10 @@ export default {
             z: 0,
           };
         }
-        ddInstance?.bus?.push(
-          DDeiEditorEnumBusCommandType.AddFileHistroy,
-          null,
-          null
-        );
-        ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, null);
-        ddInstance?.bus?.executeAll();
+        ddInstance.bus?.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
+        ddInstance.bus?.push(DDeiEnumBusCommandType.RefreshShape);
+        ddInstance.bus?.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+        ddInstance.bus?.executeAll();
 
         //打开新文件
         let activeIndex = sheets.length - 1;
@@ -891,11 +890,18 @@ export default {
         //加载场景渲染器
         stage.initRender();
         this.editor.changeState(DDeiEditorState.DESIGNING);
-        ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, null);
-        ddInstance?.bus?.executeAll();
+        ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
+        ddInstance.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+        ddInstance.bus.executeAll();
       }
     },
 
+    /**
+     *  隐藏弹出框
+     */
+    hiddenDialog() {
+      this.dialogShow = "";
+    },
     /**
      * 显示弹出框
      */

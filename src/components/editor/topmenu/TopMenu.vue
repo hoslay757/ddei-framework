@@ -45,6 +45,7 @@ import QuickBoxChangeShape from "./quickbox/QuickBoxChangeShape.vue";
 import QuickBoxSDP from "./quickbox/QuickBoxSDP.vue";
 import DDeiEditor from "../js/editor";
 import DDeiEditorState from "../js/enums/editor-state";
+import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
 
 export default {
   name: "DDei-Editor-TopMenu",
@@ -78,6 +79,7 @@ export default {
   },
   mounted() {
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
+    this.editor.topMenuViewer = this;
   },
   methods: {
     forceRefresh(newVal, oldVal) {
@@ -91,6 +93,8 @@ export default {
      */
     changeEditorFocus() {
       this.editor.changeState(DDeiEditorState.TOP_MENU_OPERATING);
+      this.editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+      this.editor.bus.executeAll();
     },
   },
 };

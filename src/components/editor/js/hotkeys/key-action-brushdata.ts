@@ -5,6 +5,7 @@ import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-
 import DDeiEditor from "../editor";
 import DDeiEditorState from "../enums/editor-state";
 import DDeiEnumOperateState from "@/components/framework/js/enums/operate-state";
+import DDeiEditorEnumBusCommandType from "../enums/editor-command-type";
 
 /**
  * 键行为:记录当前控件的格式
@@ -37,13 +38,16 @@ class DDeiKeyActionBrushData extends DDeiKeyAction {
           }
           if (stage.brushData.length > 0) {
             editor.changeState(DDeiEditorState.DESIGNING)
+            editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+            editor.bus.executeAll();
           }
         } else {
           let model = models[0]
           stage.brushData = [model]
           editor.changeState(DDeiEditorState.DESIGNING)
-          editor?.bus?.push(DDeiEnumBusCommandType.ChangeCursor, { image: 'cursor-brush' })
-          editor?.bus?.executeAll();
+          editor.bus?.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+          editor.bus?.push(DDeiEnumBusCommandType.ChangeCursor, { image: 'cursor-brush' })
+          editor.bus?.executeAll();
         }
 
       }

@@ -1,5 +1,6 @@
 import DDei from "@/components/framework/js/ddei";
 import DDeiEditor from "../editor";
+import DDeiEditorEnumBusCommandType from "../enums/editor-command-type";
 import DDeiEditorState from "../enums/editor-state";
 import DDeiKeyAction from "./key-action";
 
@@ -19,6 +20,8 @@ class DDeiKeyActionCancelQuickEdit extends DDeiKeyAction {
     inputEle.value = "";
     editor.quickEditorModel = null
     editor.changeState(DDeiEditorState.DESIGNING);
+    editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+    editor.bus.executeAll();
   }
 
 }

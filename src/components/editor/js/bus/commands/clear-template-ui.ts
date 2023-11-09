@@ -2,6 +2,7 @@
 import type DDeiBus from '@/components/framework/js/bus/bus';
 import DDeiEditorEnumBusCommandType from '../../enums/editor-command-type';
 import DDeiBusCommand from '@/components/framework/js/bus/bus-command';
+import DDeiUtil from '@/components/framework/js/util';
 /**
  * 清理临时UI总线Command
  */
@@ -65,6 +66,21 @@ class DDeiEditorCommandClearTemplateUI extends DDeiBusCommand {
       dialogs.forEach(dialog => {
         dialog.style.display = "none";
       })
+    }
+
+    //清除bottom的弹框
+    {
+      bus.invoker?.bottomMenuViewer?.hiddenDialog()
+    }
+
+    //清除右键弹出框
+    {
+      //关闭菜单
+      let menuDialogId = DDeiUtil.getMenuControlId();
+      let menuEle = document.getElementById(menuDialogId);
+      if (menuEle) {
+        menuEle.style.display = "none";
+      }
     }
     return true;
 

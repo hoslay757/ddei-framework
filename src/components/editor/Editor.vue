@@ -98,7 +98,7 @@ export default {
   },
   mounted() {
     loadEditorCommands();
-    this.editor.viewEditor = this;
+    this.editor.editorViewer = this;
     this.editor.bindEvent();
     let frameLeftElement = document.getElementById("ddei_editor_frame_left");
     let frameRightElement = document.getElementById("ddei_editor_frame_right");
@@ -387,12 +387,6 @@ export default {
      * 准备拖拽
      */
     mouseDown(e: Event) {
-      //关闭菜单
-      let menuDialogId = DDeiUtil.getMenuControlId();
-      let menuEle = document.getElementById(menuDialogId);
-      if (menuEle) {
-        menuEle.style.display = "none";
-      }
       //判断落点是否在某个区域的拖拽区附近
       let frameLeftElement = document.getElementById("ddei_editor_frame_left");
       let frameRightElement = document.getElementById(
@@ -465,6 +459,8 @@ export default {
         this.editor.changeState(DDeiEditorState.CONTROL_CREATING);
         //设置正在需要创建的控件
         this.editor.creatingControl = model;
+        this.editor.bus?.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+        this.editor.bus?.executeAll();
       }
     },
   },

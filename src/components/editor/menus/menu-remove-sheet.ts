@@ -40,7 +40,7 @@ class MenuRemoveSheet {
         editor.bus.push(DDeiEnumBusCommandType.AddHistroy)
         editor.bus?.executeAll();
         //刷新下方列表
-        editor?.viewEditor?.forceRefreshBottomMenu();
+        editor?.editorViewer?.forceRefreshBottomMenu();
       }
     }
   }

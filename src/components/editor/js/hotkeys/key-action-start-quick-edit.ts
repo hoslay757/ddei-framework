@@ -4,6 +4,7 @@ import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-
 import DDeiUtil from "@/components/framework/js/util";
 import { Matrix3, Vector3 } from 'three';
 import DDeiEditor from "../editor";
+import DDeiEditorEnumBusCommandType from "../enums/editor-command-type";
 import DDeiEditorState from "../enums/editor-state";
 import DDeiKeyAction from "./key-action";
 
@@ -59,7 +60,8 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
             inputEle.style.top = "0px";
             inputEle.style.transform = "";
             inputEle.value = "";
-            editor.bus?.executeAll();
+            editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+            editor.bus.executeAll();
             editor.changeState(DDeiEditorState.DESIGNING);
           }
         }
@@ -108,6 +110,8 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
         inputEle.selectionEnd = inputEle.value.length // 获取输入框里的长度。
         //修改编辑器状态为快捷编辑中
         editor.changeState(DDeiEditorState.QUICK_EDITING);
+        editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+        editor.bus.executeAll();
       }
     }
   }

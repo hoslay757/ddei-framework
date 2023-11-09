@@ -28,6 +28,7 @@ import DDeiStage from "@/components/framework/js/models/stage";
 import DDeiFileState from "../js/enums/file-state";
 import DDeiActiveType from "../js/enums/active-type";
 import { throttle } from "lodash";
+import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
 
 export default {
   name: "DDei-Editor-CanvasView",
@@ -101,6 +102,8 @@ export default {
      */
     changeEditorFocus() {
       this.editor.changeState(DDeiEditorState.DESIGNING);
+      this.editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+      this.editor.bus.executeAll();
       return true;
     },
 

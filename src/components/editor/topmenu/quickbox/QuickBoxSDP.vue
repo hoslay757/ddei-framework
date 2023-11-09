@@ -127,14 +127,11 @@ export default {
           }
           //加载场景渲染器
           stage.initRender();
-          ddInstance?.bus?.push(
-            DDeiEnumBusCommandType.RefreshShape,
-            null,
-            null
-          );
+          ddInstance.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+          ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
           this.editor.changeState(DDeiEditorState.DESIGNING);
           ddInstance?.bus?.executeAll();
-          this.editor.viewEditor?.forceRefreshBottomMenu();
+          this.editor.editorViewer?.forceRefreshBottomMenu();
         }
       }
     },
@@ -145,8 +142,9 @@ export default {
      */
     save(evt) {
       this.editor.changeState(DDeiEditorState.DESIGNING);
-      this.editor.bus?.push(DDeiEditorEnumBusCommandType.SaveFile, {}, evt);
-      this.editor.bus?.executeAll();
+      this.editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+      this.editor.bus.push(DDeiEditorEnumBusCommandType.SaveFile, {}, evt);
+      this.editor.bus.executeAll();
     },
 
     /**
@@ -243,13 +241,12 @@ export default {
                       };
                     }
                     this.editor.changeState(DDeiEditorState.DESIGNING);
-                    ddInstance?.bus?.push(
-                      DDeiEnumBusCommandType.RefreshShape,
-                      null,
-                      null
+                    ddInstance.bus.push(
+                      DDeiEditorEnumBusCommandType.ClearTemplateUI
                     );
+                    ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
                     ddInstance?.bus?.executeAll();
-                    this.editor.viewEditor?.forceRefreshBottomMenu();
+                    this.editor.editorViewer?.forceRefreshBottomMenu();
                   }
                 }
               });

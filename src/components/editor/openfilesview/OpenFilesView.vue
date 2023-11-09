@@ -1,5 +1,6 @@
 <template>
   <div id="ddei_editor_ofsview"
+       @mousedown="changeEditorFocus()"
        class="ddei_editor_ofsview">
     <div v-show="this.editor?.leftWidth == 0"
          class="ddei_editor_ofsview_expandbox"
@@ -123,6 +124,7 @@ export default {
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
+    this.editor.openFilesViewer = this;
   },
   methods: {
     /**
@@ -144,11 +146,11 @@ export default {
             let file = editor?.files[editor?.currentFileIndex];
             if (input.value != file.name) {
               file.name = input.value;
-              editor.viewEditor?.changeFileModifyDirty();
+              editor.editorViewer?.changeFileModifyDirty();
               editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
               editor.bus.executeAll();
               editor.changeState(DDeiEditorState.DESIGNING);
-              editor.viewEditor?.forceRefreshOpenFilesView();
+              editor.editorViewer?.forceRefreshOpenFilesView();
             }
             input.style.display = "none";
             input.style.left = "0px";
@@ -163,11 +165,11 @@ export default {
             let file = editor?.files[editor?.currentFileIndex];
             if (input.value != file.name) {
               file.name = input.value;
-              editor.viewEditor?.changeFileModifyDirty();
+              editor.editorViewer?.changeFileModifyDirty();
               editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
               editor.bus.executeAll();
               editor.changeState(DDeiEditorState.DESIGNING);
-              editor.viewEditor?.forceRefreshOpenFilesView();
+              editor.editorViewer?.forceRefreshOpenFilesView();
             }
             input.style.display = "none";
             input.style.left = "0px";
@@ -197,6 +199,8 @@ export default {
       input.selectionEnd = input.value.length; // 获取输入框里的长度。
       input.focus();
       //修改编辑器状态为快捷编辑中
+      this.editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+      this.editor.bus.executeAll();
       this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
     },
 
@@ -281,7 +285,7 @@ export default {
         this.sourceFileIndex = null;
         this.changeFileIndex = null;
 
-        this.editor.viewEditor?.forceRefreshOpenFilesView();
+        this.editor.editorViewer?.forceRefreshOpenFilesView();
       }
     },
 
@@ -330,7 +334,7 @@ export default {
             null
           );
           ddInstance?.bus?.executeAll();
-          this.editor.viewEditor?.forceRefreshBottomMenu();
+          this.editor.editorViewer?.forceRefreshBottomMenu();
         }
       }
     },
@@ -464,6 +468,8 @@ export default {
      */
     changeEditorFocus() {
       this.editor.changeState(DDeiEditorState.DESIGNING);
+      this.editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+      this.editor.bus.executeAll();
     },
   },
 };

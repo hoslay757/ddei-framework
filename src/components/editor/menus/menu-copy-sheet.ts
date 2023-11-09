@@ -2,6 +2,7 @@ import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-
 import { cloneDeep, indexOf } from 'lodash'
 import DDeiEditor from "../js/editor";
 import DDeiActiveType from "../js/enums/active-type";
+import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
 import DDeiEditorState from "../js/enums/editor-state";
 import DDeiSheet from "../js/sheet";
 
@@ -30,12 +31,13 @@ class MenuCopySheet {
       //加载场景渲染器
       stage.initRender();
       editor.changeState(DDeiEditorState.DESIGNING);
+      editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
       editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, null);
       //记录日志
       editor.bus.push(DDeiEnumBusCommandType.AddHistroy)
       editor.bus?.executeAll();
       //刷新下方列表
-      editor?.viewEditor?.forceRefreshBottomMenu();
+      editor?.editorViewer?.forceRefreshBottomMenu();
     }
   }
 

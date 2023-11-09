@@ -115,6 +115,7 @@ import PVExCheckboxEditor from "./editors/PVExCheckboxEditor.vue";
 import PVSwitchCheckboxEditor from "./editors/PVSwitchCheckboxEditor.vue";
 import ICONS from "../js/icon";
 import DDeiEnumBusCommandType from "../../framework/js/enums/bus-command-type";
+import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
 export default {
   name: "DDei-Editor-PropertyView",
   extends: null,
@@ -167,6 +168,7 @@ export default {
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
+    this.editor.properyViewer = this;
   },
   methods: {
     refreshAttrs(newVal, oldVal) {
@@ -612,6 +614,8 @@ export default {
      */
     changeEditorFocus() {
       this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
+      this.editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+      this.editor.bus.executeAll();
     },
   },
 };

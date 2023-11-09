@@ -67,6 +67,7 @@ import DDeiEditorUtil from "../js/util/editor-util";
 import DDeiEnumControlState from "../../framework/js/enums/control-state";
 import ICONS from "../js/icon";
 import { Matrix3 } from "three";
+import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
 
 export default {
   name: "DDei-Editor-Toolbox",
@@ -112,6 +113,7 @@ export default {
     }
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
+    this.editor.toolBarViewer = this;
     //加载工具栏
     loadToolGroups().then((module) => {
       //遍历module，加上display、expand两个属性，来控制在本组件内是否展开、和关闭
@@ -187,6 +189,8 @@ export default {
      */
     changeEditorFocus() {
       this.editor.changeState(DDeiEditorState.TOOLBOX_ACTIVE);
+      this.editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+      this.editor.bus.executeAll();
     },
 
     /**

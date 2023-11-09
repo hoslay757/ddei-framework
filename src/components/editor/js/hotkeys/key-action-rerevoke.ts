@@ -46,9 +46,9 @@ class DDeiKeyActionReRevoke extends DDeiKeyAction {
                 stage.initRender();
                 ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
                 ddInstance?.bus?.executeAll();
-                editor?.viewEditor.forceRefreshBottomMenu();
-                editor?.viewEditor.forcePropertyView();
-                editor?.viewEditor.forceRefreshOpenFilesView();
+                editor?.editorViewer.forceRefreshBottomMenu();
+                editor?.editorViewer.forcePropertyView();
+                editor?.editorViewer.forceRefreshOpenFilesView();
               }
             }
           }
@@ -75,9 +75,9 @@ class DDeiKeyActionReRevoke extends DDeiKeyAction {
             ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
             ddInstance?.bus?.executeAll();
             let editor = DDeiEditor.ACTIVE_INSTANCE;
-            editor?.viewEditor?.forceRefreshBottomMenu();
-            editor?.viewEditor?.forcePropertyView();
-            editor?.viewEditor?.forceRefreshOpenFilesView();
+            editor?.editorViewer?.forceRefreshBottomMenu();
+            editor?.editorViewer?.forcePropertyView();
+            editor?.editorViewer?.forceRefreshOpenFilesView();
           }
         }
 

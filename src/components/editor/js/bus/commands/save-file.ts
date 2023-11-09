@@ -58,7 +58,7 @@ class DDeiEditorCommandSaveFile extends DDeiBusCommand {
             });
             //将当前的设置
             file.histroy[file.histroyIdx].isNew = true;
-            editor?.viewEditor?.forceRefreshOpenFilesView();
+            editor?.editorViewer?.forceRefreshOpenFilesView();
           });
         }
       }
