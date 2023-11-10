@@ -4,7 +4,7 @@
       <Headers />
     </div>
     <div class="ddei_home_bar">
-
+      <HomeBar />
     </div>
     <div class="ddei_home_middle">
 
@@ -23,6 +23,7 @@ import { userinfo } from "@/lib/api/login/index.js";
 import Cookies from "js-cookie";
 import Headers from "./components/Header.vue";
 import FileList from "./components/FileList.vue";
+import HomeBar from "./components/HomeBar.vue";
 
 export default {
   props: {},
@@ -33,6 +34,7 @@ export default {
   components: {
     Headers,
     FileList,
+    HomeBar,
   },
   mounted() {
     this.getUserInfo();

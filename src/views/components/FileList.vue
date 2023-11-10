@@ -166,7 +166,6 @@ export default {
   flex: 1;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-template-rows: 200px 200px 200px;
   padding: 0px 20px;
   gap: 10px;
 }
