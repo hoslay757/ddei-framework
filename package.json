@@ -39,10 +39,16 @@
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false"
   },
   "dependencies": {
+    "axios": "^1.6.1",
+    "flow": "^0.2.3",
+    "js-cookie": "^3.0.5",
+    "jsx": "^0.9.89",
+    "less": "^4.2.0",
     "lodash": "^4.17.21",
     "sass": "^1.66.1",
     "three": "^0.156.1",
     "vue": "^3.3.4",
+    "vue-router": "^4.2.5",
     "webworker": "^0.8.4"
   },
   "devDependencies": {

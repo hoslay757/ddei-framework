@@ -1,20 +1,14 @@
 <template>
-  <div>
-    <DDeiEditor></DDeiEditor>
-  </div>
+  <router-view />
 </template>
 <script lang="ts">
-import DDeiEditor from "./components/editor/Editor.vue";
-
 export default {
-  name: "APP-DDEI-EDITOR",
+  name: "APP-DDEI",
   extends: null,
   mixins: [],
   props: {},
   //注册组件
-  components: {
-    DDeiEditor,
-  },
+  components: {},
   data() {
     return {
       layers: [],
@@ -22,13 +16,9 @@ export default {
   },
   computed: {},
   watch: {},
-  created() { },
-  mounted() {
-
-  },
-  methods: {
-
-  },
+  created() {},
+  mounted() {},
+  methods: {},
 };
 </script>
 <style>
