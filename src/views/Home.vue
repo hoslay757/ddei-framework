@@ -7,9 +7,8 @@
       <HomeBar />
     </div>
     <div class="ddei_home_middle">
-
       <div class="ddei_home_middle_left">
-
+        <DirTree />
       </div>
       <div class="ddei_home_middle_right">
         <FileList />
@@ -24,6 +23,7 @@ import Cookies from "js-cookie";
 import Headers from "./components/Header.vue";
 import FileList from "./components/FileList.vue";
 import HomeBar from "./components/HomeBar.vue";
+import DirTree from "./components/DirTree.vue";
 
 export default {
   props: {},
@@ -35,6 +35,7 @@ export default {
     Headers,
     FileList,
     HomeBar,
+    DirTree,
   },
   mounted() {
     this.getUserInfo();
@@ -83,7 +84,7 @@ export default {
 
 .ddei_home_middle_left {
   flex: 0 0 300px;
-  background: white;
+  padding-left: 20px;
 }
 .ddei_home_middle_right {
   flex: 1;
