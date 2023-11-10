@@ -3,11 +3,16 @@
     <div class="ddei_home_header">
       <Headers />
     </div>
+    <div class="ddei_home_bar">
+
+    </div>
     <div class="ddei_home_middle">
+
       <div class="ddei_home_middle_left">
 
       </div>
       <div class="ddei_home_middle_right">
+        <FileList />
       </div>
     </div>
   </div>
@@ -17,6 +22,7 @@
 import { userinfo } from "@/lib/api/login/index.js";
 import Cookies from "js-cookie";
 import Headers from "./components/Header.vue";
+import FileList from "./components/FileList.vue";
 
 export default {
   props: {},
@@ -26,6 +32,7 @@ export default {
   //注册组件
   components: {
     Headers,
+    FileList,
   },
   mounted() {
     this.getUserInfo();
@@ -62,6 +69,10 @@ export default {
 .ddei_home_header {
   flex: 0 0 48px;
 }
+.ddei_home_bar {
+  flex: 0 0 48px;
+  background: #2c2c2c;
+}
 .ddei_home_middle {
   flex: 1;
   background: #2c2c2c;
@@ -74,5 +85,6 @@ export default {
 }
 .ddei_home_middle_right {
   flex: 1;
+  display: flex;
 }
 </style>
