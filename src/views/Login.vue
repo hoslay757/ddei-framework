@@ -10,14 +10,16 @@
           </div>
           <input v-model="form.username"
                  class="content_right_login_form_input"
-                 placeholder="手机号/邮箱/账号" />
+                 placeholder="手机号/邮箱/账号"
+                 autofocus />
           <div class="content_right_form_msg">
             {{form.validMsg.password}}
           </div>
           <input v-model="form.password"
                  class="content_right_login_form_input"
                  placeholder="请输入密码"
-                 type="password" />
+                 type="password"
+                 @keydown.enter="login" />
           <div class="content_right_login_form_buttons"
                style="margin-top:40px;">
             <div class="content_right_login_form_login"
@@ -271,7 +273,7 @@ export default {
 .content {
   width: 100%;
   height: calc(100vh);
-  background: url("../assets/images/login-black.jpg");
+  background: url("../assets/images/login-back.jpg");
   background-size: 100% 100%;
 }
 .content_left {

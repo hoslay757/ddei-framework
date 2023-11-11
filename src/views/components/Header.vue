@@ -9,7 +9,8 @@
     <div class="header-empty" />
     <div class="header-right">
       <div class="header-right-username">{{ form.username }}</div>
-      <div class="header-right-loginout">注销</div>
+      <div class="header-right-loginout"
+           @click="loginout">注销</div>
     </div>
   </div>
 </template>
