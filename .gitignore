@@ -20,6 +20,5 @@ node_modules
 *.sw?
 *.history
 *.zip
-lib/
 yarn.*
 package-lock.json
