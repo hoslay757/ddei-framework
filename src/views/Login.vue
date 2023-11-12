@@ -98,7 +98,7 @@
 </template>
 
 <script lang="ts">
-import { login, userinfo, register } from "@/lib/api/login/index.js";
+import { login, userinfo, register } from "@/lib/api/login";
 import Cookies from "js-cookie";
 
 export default {
