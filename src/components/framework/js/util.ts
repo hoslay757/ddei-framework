@@ -578,6 +578,36 @@ class DDeiUtil {
     }
     return fmt;
   }
+
+  /**
+   * 复制属性值，再将最终的结果返回，如果目标不存在属性，则动态创建
+   * @param source 源
+   * @param dist 目标
+   */
+  static copyJSONValue(source, dist): object {
+    let distType = typeof (dist);
+    let sourceType = typeof (source);
+    let type = distType ? distType : sourceType;
+    if (type != undefined && type != undefined) {
+      switch (type) {
+        case "string": return source;
+        case "number": return source;
+        case "bigint": return source;
+        case "boolean": return source;
+        case "function": return source;
+        case "object": {
+          if (!dist) {
+            dist = {}
+          }
+          for (let i in source) {
+            dist[i] = DDeiUtil.copyJSONValue(source[i], dist[i])
+          }
+          return dist;
+        }
+      }
+    }
+    return null;
+  }
 }
 
 export default DDeiUtil

@@ -67,7 +67,14 @@ export default {
   name: "DDei-Editor",
   extends: null,
   mixins: [],
-  props: {},
+  props: {
+    //外部配置文件的定义，当传入外部配置文件时，用外部配置文件覆盖内部配置
+    //外部配置文件包含对缺省值、快捷键、默认行为、扩展函数的配置
+    config: {
+      type: Object,
+      default: null,
+    },
+  },
   data() {
     return {
       editor: DDeiEditor.newInstance("ddei_editor_ins", "ddei_editor"),
@@ -98,9 +105,14 @@ export default {
     this.mouseMove = throttle(this.mouseMove, 20);
   },
   mounted() {
+    //加载外部配置文件
+    if (this.config) {
+      DDeiEditor.applyConfig(this.config);
+    }
     loadEditorCommands();
     this.editor.editorViewer = this;
     this.editor.bindEvent();
+
     let frameLeftElement = document.getElementById("ddei_editor_frame_left");
     let frameRightElement = document.getElementById("ddei_editor_frame_right");
     let frameTopElement = document.getElementById("ddei_editor_frame_top");

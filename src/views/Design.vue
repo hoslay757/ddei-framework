@@ -16,6 +16,7 @@ export default {
   components: {
     DDeiEditor,
   },
+  created() {},
   mounted() {
     this.getUserInfo();
   },

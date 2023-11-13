@@ -11,6 +11,7 @@ import DDeiRectContainerCanvasRender from "./views/canvas/rect-container-render"
 import DDeiAbstractShape from "./models/shape"
 import loadCommands from "./config/command"
 import DDeiAbstractShapeRender from "./views/canvas/shape-render-base"
+import DDeiUtil from "./util"
 
 /**
  * 组件的定义，用于根据名称找到组件类型
@@ -50,17 +51,16 @@ for (let i in render_ctx2) {
   RENDER_CLS[cls.ClsName] = cls;
 }
 
+
+
+
+
 /**
  * DDei的配置文件
  * 提供了全局参数与缺省值的设置
  * 提供了全局的一些重要函数
  */
 class DDeiConfig {
-  static {
-    //加载配置
-    loadCommands();
-  }
-
 
 
   //保存时的key
@@ -86,17 +86,14 @@ class DDeiConfig {
   static GLOBAL_HELP_LINE_ENABLE: boolean = true;
   // 是否打开辅助对齐线
   static GLOBAL_HELP_LINE_ALIGN_ENABLE: boolean = true;
-  // 缺省辅助线颜色
-  static GLOBAL_HELP_LINE_COLOR: string = 'grey';
+
   // 缺省辅助对齐线颜色
   static GLOBAL_HELP_LINE_ALIGN_COLOR = 'red';
-  // 缺省辅助线宽度
-  static GLOBAL_HELP_LINE_WEIGHT: number = 10;
 
   // 缺省吸附效果宽度，小于0时没有吸附效果
   static GLOBAL_ADV_WEIGHT: number = 5;
 
-  //不需要序列化的字段
+  //序列化配置
   static SERI_FIELDS: object = {
     "DDei": { "TOJSON": ["stage"], "SKIP": ["bus", "render", "unicode", "editMode"] },
     "DDeiStage": { "TOJSON": ["layers"], "SKIP": ["ddInstance", "selectedModels", "render", "unicode", "histroy", 'histroyIdx'] },
@@ -124,80 +121,6 @@ class DDeiConfig {
     //全局背景色
     , NONE_BG_COLOR: "rgb(240,240,240)"
   }
-
-  // 定义了在1.0缩放的，单位尺寸设置
-  static RULER = {
-    'mm': { size: 10, parts: [2, 5] },
-    'cm': { size: 1, parts: [2, 5] },
-    'm': { size: 0.05, parts: [2, 5] },
-    'inch': { size: 1, parts: [8] },
-    'px': { size: 50, parts: [5, 10] },
-  }
-
-  // 定义了在各种常见纸张的大小以及名称
-  static PAPER = {
-    "自定义": { width: 210, height: 297, unit: 'mm', desc: '可以自由设置宽高' },
-    "Letter": { width: 216, height: 279, unit: 'mm' },
-    "Legal": { width: 216, height: 356, unit: 'mm' },
-    "A0": { width: 841, height: 1189, unit: 'mm' },
-    "A1": { width: 594, height: 841, unit: 'mm' },
-    "A2": { width: 420, height: 594, unit: 'mm' },
-    "A3": { width: 297, height: 420, unit: 'mm' },
-    "A4": { width: 210, height: 297, unit: 'mm', desc: '常用打印纸' },
-    "A5": { width: 148, height: 210, unit: 'mm' },
-    "A6": { width: 105, height: 148, unit: 'mm' },
-    "A7": { width: 74, height: 105, unit: 'mm' },
-    "A8": { width: 52, height: 74, unit: 'mm' },
-    "A9": { width: 37, height: 52, unit: 'mm' },
-    "A10": { width: 26, height: 37, unit: 'mm' },
-    "B0": { width: 1000, height: 1414, unit: 'mm' },
-    "B1": { width: 700, height: 1000, unit: 'mm' },
-    "B2": { width: 500, height: 707, unit: 'mm' },
-    "B3": { width: 353, height: 500, unit: 'mm' },
-    "B4": { width: 250, height: 353, unit: 'mm' },
-    "B5": { width: 176, height: 250, unit: 'mm' },
-    "B6": { width: 125, height: 176, unit: 'mm' },
-    "B7": { width: 88, height: 125, unit: 'mm' },
-    "B8": { width: 62, height: 88, unit: 'mm' },
-    "B9": { width: 42, height: 62, unit: 'mm' },
-    "B10": { width: 31, height: 44, unit: 'mm' },
-    "一寸照片": { width: 2.5, height: 3.6, unit: 'cm' },
-    "二寸照片": { width: 3.5, height: 5.3, unit: 'cm' },
-    "三寸照片": { width: 5.5, height: 8.4, unit: 'cm' },
-    "五寸照片": { width: 3.5, height: 5, unit: 'cm' },
-    "六寸照片": { width: 4, height: 6, unit: 'cm' },
-    "七寸照片": { width: 5, height: 7, unit: 'cm' },
-    "八寸照片": { width: 6, height: 8, unit: 'cm' },
-    "十寸照片": { width: 8, height: 10, unit: 'cm' },
-    "十二寸照片": { width: 10, height: 12, unit: 'cm' },
-    "十四寸照片": { width: 12, height: 14, unit: 'cm' },
-    "十六寸照片": { width: 12, height: 16, unit: 'cm' },
-    "十八寸照片": { width: 12, height: 18, unit: 'cm' },
-    "名片-横版": { width: 90, height: 55, unit: 'mm' },
-    "名片-横版-欧式": { width: 85, height: 54, unit: 'mm' },
-    "名片-竖版": { width: 54, height: 85, unit: 'mm' },
-    "名片-竖版-美式": { width: 50, height: 90, unit: 'mm' },
-    "名片-方版-1": { width: 90, height: 90, unit: 'mm' },
-    "名片-方版-2": { width: 90, height: 95, unit: 'mm' },
-    "海报-1": { width: 420, height: 570, unit: 'mm' },
-    "海报-2": { width: 500, height: 700, unit: 'mm' },
-    "海报-3": { width: 570, height: 840, unit: 'mm' },
-    "海报-4": { width: 600, height: 900, unit: 'mm' },
-    "二折页": { width: 285, height: 210, unit: 'mm' },
-    "二折页-1": { width: 140, height: 105, unit: 'mm' },
-    "二折页-2": { width: 210, height: 95, unit: 'mm' },
-    "二折页-3": { width: 210, height: 140, unit: 'mm' },
-    "二折页-4": { width: 285, height: 140, unit: 'mm' },
-    "全开": { width: 889, height: 1194, paddingLeft: 102, paddingTop: 102, unit: 'mm' },
-    "对开": { width: 570, height: 840, paddingLeft: 50, paddingTop: 100, unit: 'mm' },
-    "4开": { width: 420, height: 570, paddingLeft: 50, paddingTop: 50, unit: 'mm' },
-    "8开": { width: 285, height: 420, paddingLeft: 25, paddingTop: 50, unit: 'mm' },
-    "16开": { width: 210, height: 285, paddingLeft: 25, paddingTop: 25, unit: 'mm' },
-    "32开": { width: 142, height: 210, paddingLeft: 12, paddingTop: 25, unit: 'mm' },
-    "64开": { width: 110, height: 142, paddingLeft: 18, paddingTop: 12, unit: 'mm' }
-  }
-
-
 
   // 选择器的相关缺省样式属性
   static SELECTOR: object = {
@@ -515,6 +438,119 @@ class DDeiConfig {
     }
   };
 
+
+  // 定义了在1.0缩放的，单位尺寸设置
+  static RULER = {
+    'mm': { size: 10, parts: [2, 5] },
+    'cm': { size: 1, parts: [2, 5] },
+    'm': { size: 0.05, parts: [2, 5] },
+    'inch': { size: 1, parts: [8] },
+    'px': { size: 50, parts: [5, 10] },
+  }
+
+  // 定义了在各种常见纸张的大小以及名称
+  static PAPER = {
+    "自定义": { width: 210, height: 297, unit: 'mm', desc: '可以自由设置宽高' },
+    "Letter": { width: 216, height: 279, unit: 'mm' },
+    "Legal": { width: 216, height: 356, unit: 'mm' },
+    "A0": { width: 841, height: 1189, unit: 'mm' },
+    "A1": { width: 594, height: 841, unit: 'mm' },
+    "A2": { width: 420, height: 594, unit: 'mm' },
+    "A3": { width: 297, height: 420, unit: 'mm' },
+    "A4": { width: 210, height: 297, unit: 'mm', desc: '常用打印纸' },
+    "A5": { width: 148, height: 210, unit: 'mm' },
+    "A6": { width: 105, height: 148, unit: 'mm' },
+    "A7": { width: 74, height: 105, unit: 'mm' },
+    "A8": { width: 52, height: 74, unit: 'mm' },
+    "A9": { width: 37, height: 52, unit: 'mm' },
+    "A10": { width: 26, height: 37, unit: 'mm' },
+    "B0": { width: 1000, height: 1414, unit: 'mm' },
+    "B1": { width: 700, height: 1000, unit: 'mm' },
+    "B2": { width: 500, height: 707, unit: 'mm' },
+    "B3": { width: 353, height: 500, unit: 'mm' },
+    "B4": { width: 250, height: 353, unit: 'mm' },
+    "B5": { width: 176, height: 250, unit: 'mm' },
+    "B6": { width: 125, height: 176, unit: 'mm' },
+    "B7": { width: 88, height: 125, unit: 'mm' },
+    "B8": { width: 62, height: 88, unit: 'mm' },
+    "B9": { width: 42, height: 62, unit: 'mm' },
+    "B10": { width: 31, height: 44, unit: 'mm' },
+    "一寸照片": { width: 2.5, height: 3.6, unit: 'cm' },
+    "二寸照片": { width: 3.5, height: 5.3, unit: 'cm' },
+    "三寸照片": { width: 5.5, height: 8.4, unit: 'cm' },
+    "五寸照片": { width: 3.5, height: 5, unit: 'cm' },
+    "六寸照片": { width: 4, height: 6, unit: 'cm' },
+    "七寸照片": { width: 5, height: 7, unit: 'cm' },
+    "八寸照片": { width: 6, height: 8, unit: 'cm' },
+    "十寸照片": { width: 8, height: 10, unit: 'cm' },
+    "十二寸照片": { width: 10, height: 12, unit: 'cm' },
+    "十四寸照片": { width: 12, height: 14, unit: 'cm' },
+    "十六寸照片": { width: 12, height: 16, unit: 'cm' },
+    "十八寸照片": { width: 12, height: 18, unit: 'cm' },
+    "名片-横版": { width: 90, height: 55, unit: 'mm' },
+    "名片-横版-欧式": { width: 85, height: 54, unit: 'mm' },
+    "名片-竖版": { width: 54, height: 85, unit: 'mm' },
+    "名片-竖版-美式": { width: 50, height: 90, unit: 'mm' },
+    "名片-方版-1": { width: 90, height: 90, unit: 'mm' },
+    "名片-方版-2": { width: 90, height: 95, unit: 'mm' },
+    "海报-1": { width: 420, height: 570, unit: 'mm' },
+    "海报-2": { width: 500, height: 700, unit: 'mm' },
+    "海报-3": { width: 570, height: 840, unit: 'mm' },
+    "海报-4": { width: 600, height: 900, unit: 'mm' },
+    "二折页": { width: 285, height: 210, unit: 'mm' },
+    "二折页-1": { width: 140, height: 105, unit: 'mm' },
+    "二折页-2": { width: 210, height: 95, unit: 'mm' },
+    "二折页-3": { width: 210, height: 140, unit: 'mm' },
+    "二折页-4": { width: 285, height: 140, unit: 'mm' },
+    "全开": { width: 889, height: 1194, paddingLeft: 102, paddingTop: 102, unit: 'mm' },
+    "对开": { width: 570, height: 840, paddingLeft: 50, paddingTop: 100, unit: 'mm' },
+    "4开": { width: 420, height: 570, paddingLeft: 50, paddingTop: 50, unit: 'mm' },
+    "8开": { width: 285, height: 420, paddingLeft: 25, paddingTop: 50, unit: 'mm' },
+    "16开": { width: 210, height: 285, paddingLeft: 25, paddingTop: 25, unit: 'mm' },
+    "32开": { width: 142, height: 210, paddingLeft: 12, paddingTop: 25, unit: 'mm' },
+    "64开": { width: 110, height: 142, paddingLeft: 18, paddingTop: 12, unit: 'mm' }
+  }
+  static {
+    //加载外部配置
+    const global_config_ctx = import.meta.glob('@/ddei/config', { eager: true });
+    for (let i in global_config_ctx) {
+      let configData = global_config_ctx[i].default;
+      DDeiConfig.EXT_CONFIG = configData;
+      break;
+    }
+    //载入外部配置
+    if (DDeiConfig.EXT_CONFIG) {
+      DDeiConfig.applyConfig(DDeiConfig.EXT_CONFIG)
+    }
+    //加载配置
+    loadCommands();
+
+  }
+
+  /**
+   * 应用外部配置文件，覆写配置文件内容
+   * @param config 
+   */
+  static applyConfig(config: Object): void {
+    if (config) {
+      //普通值、JSON、数组、MAP
+      for (let i in config) {
+        let outConfigValue = config[i];
+        let configValue = DDeiConfig[i];
+        if (i != "SERI_FIELDS") {
+          //深度遍历属性，然后进行设置
+          DDeiConfig[i] = DDeiUtil.copyJSONValue(outConfigValue, configValue);
+        }
+      }
+      if (config.SERI_FIELDS != undefined && config.SERI_FIELDS != null) {
+        for (let i in config.SERI_FIELDS) {
+          DDeiConfig.SERI_FIELDS.set(i, config.SERI_FIELDS[i])
+        }
+      }
+    }
+  }
+
+
   //用于存储当前浏览器下单位空格字体的大小
   static SPACE_WIDTH_MAP: any = {};
 
@@ -571,6 +607,7 @@ class DDeiConfig {
     }
 
   }
+
 
 }
 

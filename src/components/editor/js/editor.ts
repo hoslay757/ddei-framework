@@ -7,6 +7,7 @@ import DDeiUtil from "@/components/framework/js/util";
 import DDeiBus from "@/components/framework/js/bus/bus";
 import DDeiEditorEnumBusCommandType from "./enums/editor-command-type";
 import type DDeiFile from "./file";
+import DDeiConfig from "@/components/framework/js/config";
 
 /**
  * DDei图形编辑器类，用于维护编辑器实例、全局状态以及全局属性
@@ -164,6 +165,65 @@ class DDeiEditor {
       } else {
         throw new Error('实例池中已存在ID相同的实例，初始化失败')
       }
+    }
+  }
+
+
+  /**
+   * 应用外部配置文件，覆写配置文件内容
+   * @param config 
+   */
+  static applyConfig(config: Object): void {
+    if (config) {
+      //普通值、JSON、数组、MAP
+      for (let i in config) {
+        let outConfigValue = config[i];
+        let configValue = DDeiEditor[i];
+        if (i != "HOT_KEY_MAPPING") {
+          //深度遍历属性，然后进行设置
+          DDeiEditor[i] = DDeiUtil.copyJSONValue(outConfigValue, configValue);
+        }
+      }
+      if (config.HOT_KEY_MAPPING) {
+        config.HOT_KEY_MAPPING.forEach(hotkey => {
+          let ctrl = hotkey.ctrl;
+          let shift = hotkey.shift;
+          let keys = hotkey.keys;
+          let times = hotkey.times;
+          let interval = hotkey.interval;
+          let editorState = hotkey.editorState
+          //寻找是否已存在相同的键定义
+          let index = -1;
+          for (let i = 0; i < DDeiEditor.HOT_KEY_MAPPING.length; i++) {
+            let hk1 = DDeiEditor.HOT_KEY_MAPPING[i]
+            if (hk1.ctrl == ctrl && hk1.shift == shift && hk1.keys == keys && hk1.times == times && hk1.interval == interval && hk1.editorState == editorState) {
+              index = i;
+              break;
+            }
+          }
+          if (index != -1) {
+            DDeiEditor.HOT_KEY_MAPPING.splice(index, 1, hotkey);
+          } else {
+            DDeiEditor.HOT_KEY_MAPPING.push(hotkey)
+          }
+        });
+      }
+      //将配置文件传递到DDei框架
+      DDeiConfig.applyConfig(config);
+    }
+  }
+
+  static {
+    //加载外部配置
+    const global_config_ctx = import.meta.glob('@/ddei/config', { eager: true });
+    for (let i in global_config_ctx) {
+      let configData = global_config_ctx[i].default;
+      DDeiEditor.EXT_CONFIG = configData;
+      break;
+    }
+    //载入外部配置
+    if (DDeiEditor.EXT_CONFIG) {
+      DDeiEditor.applyConfig(DDeiEditor.EXT_CONFIG)
     }
   }
 
