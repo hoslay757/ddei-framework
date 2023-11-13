@@ -1,33 +1,20 @@
 <template>
   <div class="ddei_editor_sdp">
-    <div class="ddei_editor_sdp_item"
-         style="grid-row:1/3">
-      <div class="ddei_editor_sdp_item_box"
-           @click="newFile">
-        <img width="16px"
-             height="16px"
-             :src="icons['icon-file']" />
+    <div class="ddei_editor_sdp_item" style="grid-row:1/3">
+      <div class="ddei_editor_sdp_item_box" @click="newFile">
+        <img width="16px" height="16px" :src="icons['icon-file']" />
         <div>新建</div>
       </div>
-      <div class="ddei_editor_sdp_item_box"
-           @click="save">
-        <img width="16px"
-             height="16px"
-             :src="icons['icon-save']" />
+      <div class="ddei_editor_sdp_item_box" @click="save">
+        <img width="16px" height="16px" :src="icons['icon-save']" />
         <div>保存</div>
       </div>
-      <div class="ddei_editor_sdp_item_box"
-           @click="openFile">
-        <img width="16px"
-             height="16px"
-             :src="icons['icon-open']" />
+      <div class="ddei_editor_sdp_item_box" @click="openFile">
+        <img width="16px" height="16px" :src="icons['icon-open']" />
         <div>打开</div>
       </div>
-      <div class="ddei_editor_sdp_item_box"
-           @click="download">
-        <img width="16px"
-             height="16px"
-             :src="icons['icon-download']" />
+      <div class="ddei_editor_sdp_item_box" @click="download">
+        <img width="16px" height="16px" :src="icons['icon-download']" />
         <div>下载</div>
       </div>
     </div>
@@ -68,7 +55,7 @@ export default {
   },
   computed: {},
   watch: {},
-  created() {},
+  created() { },
   mounted() {
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
   },

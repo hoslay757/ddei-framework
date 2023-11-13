@@ -585,9 +585,9 @@ class DDeiUtil {
    * @param dist 目标
    */
   static copyJSONValue(source, dist): object {
-    let distType = typeof (dist);
-    let sourceType = typeof (source);
-    let type = distType ? distType : sourceType;
+    let distType = typeof dist;
+    let sourceType = typeof source;
+    let type = distType && distType != 'undefined' ? distType : sourceType;
     if (type != undefined && type != undefined) {
       switch (type) {
         case "string": return source;

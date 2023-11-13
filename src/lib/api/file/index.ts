@@ -48,3 +48,13 @@ export function copyfile(json = {}) {
   })
 }
 
+
+// 加载文件内容，包括设计信息
+export function loadfile(json = {}) {
+  return request.post('/v1/file/load', json, {
+    headers: {
+      'token': Cookies.get('token')
+    }
+  })
+}
+

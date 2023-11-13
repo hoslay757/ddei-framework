@@ -2,155 +2,118 @@
   <div class="ddei_home_fileview">
     <div class="ddei_home_fileview_files">
       <div class="ddei_home_fileview_file">
-        <div class="ddei_home_fileview_file_add"
-             @click="showFileDialog(null,1)">
+        <div class="ddei_home_fileview_file_add" @click="showFileDialog(null, 1)">
           <span style="margin-top:-5px">+</span>
         </div>
       </div>
-      <div class="ddei_home_fileview_file"
-           v-for="(file) in files">
+      <div class="ddei_home_fileview_file" v-for="(file) in files">
         <div class="ddei_home_fileview_file_info">
           <div class="ddei_home_fileview_file_icon">
             <img src="../../components/editor/icons/icon-basic-shape.png" />
           </div>
           <div class="ddei_home_fileview_file_name">
-            {{file.name}}
+            {{ file.name }}
           </div>
           <div class="ddei_home_fileview_file_version">
-            v{{file.version}}
+            v{{ file.version }}
           </div>
           <div class="ddei_home_fileview_file_code">
-            {{file.code}}
+            {{ file.code }}
           </div>
           <div class="ddei_home_fileview_file_update">
-            {{getFileLastTime(file)}}
+            {{ getFileLastTime(file) }}
           </div>
           <div class="ddei_home_fileview_file_desc">
-            {{file.desc}}
+            {{ file.desc }}
           </div>
         </div>
         <div class="ddei_home_fileview_file_buttons">
           <div class="ddei_home_fileview_file_button">
-            <img src="../../components/editor/icons/icon-file.png"
-                 @click="showFileDialog(file,2)" />
+            <img src="../../components/editor/icons/icon-file.png" @click="showFileDialog(file, 2)" />
           </div>
           <div class="ddei_home_fileview_file_button_split">
           </div>
           <div class="ddei_home_fileview_file_button">
-            <img src="../../components/editor/icons/icon-style-line.png" />
+            <img src="../../components/editor/icons/icon-style-line.png" @click="gotoDesign(file)" />
           </div>
           <div class="ddei_home_fileview_file_button_split">
           </div>
           <div class="ddei_home_fileview_file_button">
-            <img src="../../components/editor/icons/icon-copy.png"
-                 @click="showDelFileDialog(file,3)" />
+            <img src="../../components/editor/icons/icon-copy.png" @click="showDelFileDialog(file, 3)" />
           </div>
           <div class="ddei_home_fileview_file_button_split">
           </div>
           <div class="ddei_home_fileview_file_button">
-            <img src="../../components/editor/icons/icon-trash.png"
-                 @click="showDelFileDialog(file,4)" />
+            <img src="../../components/editor/icons/icon-trash.png" @click="showDelFileDialog(file, 4)" />
           </div>
         </div>
       </div>
     </div>
     <div class="ddei_home_fileview_pages">
       <div class="empty"></div>
-      <div class="up"
-           @click="page.num > 1 && listFile(page.num-1)">
-        <svg viewBox="64 64 896 896"
-             data-icon="left"
-             width="1em"
-             height="1em"
-             fill="currentColor"
-             aria-hidden="true"
-             focusable="false"
-             class="">
-          <path d="M724 218.3V141c0-6.7-7.7-10.4-12.9-6.3L260.3 486.8a31.86 31.86 0 0 0 0 50.3l450.8 352.1c5.3 4.1 12.9.4 12.9-6.3v-77.3c0-4.9-2.3-9.6-6.1-12.6l-360-281 360-281.1c3.8-3 6.1-7.7 6.1-12.6z"></path>
+      <div class="up" @click="page.num > 1 && listFile(page.num - 1)">
+        <svg viewBox="64 64 896 896" data-icon="left" width="1em" height="1em" fill="currentColor" aria-hidden="true"
+          focusable="false" class="">
+          <path
+            d="M724 218.3V141c0-6.7-7.7-10.4-12.9-6.3L260.3 486.8a31.86 31.86 0 0 0 0 50.3l450.8 352.1c5.3 4.1 12.9.4 12.9-6.3v-77.3c0-4.9-2.3-9.6-6.1-12.6l-360-281 360-281.1c3.8-3 6.1-7.7 6.1-12.6z">
+          </path>
         </svg>
       </div>
-      <div :class="{'number':pInfo.type == 1,'more':pInfo.type == 2,'current':pInfo.idx == page.num}"
-           v-for="pInfo in pages"
-           @click="pInfo.idx != page.num && listFile(pInfo.idx)">
-        {{pInfo.type == 1 ? pInfo.idx : '...'}}
+      <div :class="{ 'number': pInfo.type == 1, 'more': pInfo.type == 2, 'current': pInfo.idx == page.num }"
+        v-for="pInfo in pages" @click="pInfo.idx != page.num && listFile(pInfo.idx)">
+        {{ pInfo.type == 1 ? pInfo.idx : '...' }}
       </div>
-      <div class="next"
-           @click="page.count > page.num && listFile(page.num+1)">
-        <svg viewBox="64 64 896 896"
-             data-icon="right"
-             width="1em"
-             height="1em"
-             fill="currentColor"
-             aria-hidden="true"
-             focusable="false"
-             class="">
-          <path d="M765.7 486.8L314.9 134.7A7.97 7.97 0 0 0 302 141v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1a31.96 31.96 0 0 0 0-50.4z"></path>
+      <div class="next" @click="page.count > page.num && listFile(page.num + 1)">
+        <svg viewBox="64 64 896 896" data-icon="right" width="1em" height="1em" fill="currentColor" aria-hidden="true"
+          focusable="false" class="">
+          <path
+            d="M765.7 486.8L314.9 134.7A7.97 7.97 0 0 0 302 141v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1a31.96 31.96 0 0 0 0-50.4z">
+          </path>
         </svg>
       </div>
       <div class="empty"></div>
     </div>
   </div>
-  <div class="create_file_dialog"
-       v-show="fileDialogShow">
+  <div class="create_file_dialog" v-show="fileDialogShow">
     <div class="content">
       <div class="title">
-        {{mod == 1 ? '创建' : '修改'}}文件
+        {{ mod == 1 ? '创建' : '修改' }}文件
       </div>
       <div class="msg">
-        {{cf.validMsg?.name}}
+        {{ cf.validMsg?.name }}
       </div>
-      <input v-model="cf.name"
-             id="create_file_input_id"
-             type="text"
-             class="content_input"
-             placeholder="文件名" />
+      <input v-model="cf.name" id="create_file_input_id" type="text" class="content_input" placeholder="文件名" />
       <div class="msg">
-        {{cf.validMsg?.code}}
+        {{ cf.validMsg?.code }}
       </div>
-      <input v-model="cf.code"
-             type="text"
-             class="content_input"
-             placeholder="编码" />
+      <input v-model="cf.code" type="text" class="content_input" placeholder="编码" />
       <div class="msg">
-        {{cf.validMsg?.desc}}
+        {{ cf.validMsg?.desc }}
       </div>
-      <textarea v-model="cf.desc"
-                type="text"
-                class="content_input"
-                style="height:80px"
-                placeholder="备注"></textarea>
+      <textarea v-model="cf.desc" type="text" class="content_input" style="height:80px" placeholder="备注"></textarea>
       <div class="buttons">
-        <div class="button_ok"
-             style="margin-top:20px;"
-             @click="submitFile()">
+        <div class="button_ok" style="margin-top:20px;" @click="submitFile()">
           <span>确定</span>
         </div>
-        <div class="button_cancel"
-             style="margin-top:20px;"
-             @click="showFileDialog">
+        <div class="button_cancel" style="margin-top:20px;" @click="showFileDialog">
           <span>取消</span>
         </div>
       </div>
     </div>
   </div>
-  <div class="remove_file_dialog"
-       v-show="delFileDialogShow">
+  <div class="remove_file_dialog" v-show="delFileDialogShow">
     <div class="content">
       <div class="title">
-        {{mod == 3?'复制':'删除'}}文件
+        {{ mod == 3 ? '复制' : '删除' }}文件
       </div>
       <div style="margin-top:10px;padding:10px;">
-        是否{{mod == 3?'复制':'删除'}}：【{{curFile?.name}}】？
+        是否{{ mod == 3 ? '复制' : '删除' }}：【{{ curFile?.name }}】？
       </div>
       <div class="buttons">
-        <div class="button_ok"
-             style="margin-top:20px;"
-             @click="deleteFile()">
+        <div class="button_ok" style="margin-top:20px;" @click="deleteFile()">
           <span>确定</span>
         </div>
-        <div class="button_cancel"
-             style="margin-top:20px;"
-             @click="showDelFileDialog(null)">
+        <div class="button_cancel" style="margin-top:20px;" @click="showDelFileDialog(null)">
           <span>取消</span>
         </div>
       </div>
@@ -168,7 +131,7 @@ export default {
   props: {
 
   },
-  data () {
+  data() {
     return {
       fileDialogShow: false,
       delFileDialogShow: false,
@@ -181,13 +144,23 @@ export default {
       page: { size: 11, num: 1, total: 0 }
     }
   },
-  created () { },
-  mounted () {
+  created() { },
+  mounted() {
     this.listFile();
   },
   methods: {
 
-    async deleteFile () {
+    /**
+     * 跳转到设计页
+     */
+    gotoDesign(file) {
+      this.$router.push({
+        path: '/design/' + file.id,
+
+      });
+    },
+
+    async deleteFile() {
       if (this.curFile) {
         let fileData = null;
         if (this.mod == 3) {
@@ -211,7 +184,7 @@ export default {
     /**
     * 删除文件
     */
-    showDelFileDialog (file, mod) {
+    showDelFileDialog(file, mod) {
       this.mod = mod
       this.delFileDialogShow = !this.delFileDialogShow;
       this.curFile = file;
@@ -220,7 +193,7 @@ export default {
     /**
      * 计算分页信息
      */
-    calPages () {
+    calPages() {
       let pageCount = parseInt(this.page.total / this.page.size) + (this.page.total % this.page.size == 0 ? 0 : 1)
 
       let pages = [];
@@ -271,7 +244,7 @@ export default {
     /**
      * 加载文件
      */
-    async listFile (pageNumber) {
+    async listFile(pageNumber) {
       if (pageNumber) {
         this.page.num = pageNumber;
       } else if (pageNumber > this.page.count) {
@@ -292,7 +265,7 @@ export default {
     /**
      * 创建/更新文件
      */
-    async submitFile () {
+    async submitFile() {
       //校验
       this.cf.validMsg = {};
       if (!this.cf.name) {
@@ -334,7 +307,7 @@ export default {
     /**
     * 弹出新文件的弹出框
     */
-    showFileDialog (file, mod) {
+    showFileDialog(file, mod) {
       this.fileDialogShow = !this.fileDialogShow;
       if (mod == 1) {
         this.mod = mod
@@ -360,7 +333,7 @@ export default {
     /**
      * 获取文件最后更新时间
      */
-    getFileLastTime (file) {
+    getFileLastTime(file) {
       if (file?.last_update_time) {
         let date = file.last_update_time;
 
@@ -386,6 +359,7 @@ export default {
   display: flex;
   flex-direction: column;
 }
+
 .ddei_home_fileview_files {
   flex: 1;
   display: grid;
@@ -394,6 +368,7 @@ export default {
   padding: 0px 20px;
   gap: 10px;
 }
+
 .ddei_home_fileview_file {
   width: 280px;
   height: 180px;
@@ -477,11 +452,13 @@ export default {
   padding-top: 5px;
   display: flex;
 }
+
 .ddei_home_fileview_file_button_split {
   flex: 0 0 1px;
   height: 22px;
   background-color: #5c5c5c;
 }
+
 .ddei_home_fileview_file_button {
   flex: 1;
   margin-top: 2px;
@@ -501,43 +478,53 @@ export default {
 .ddei_home_fileview_pages {
   flex: 0 0 50px;
   display: flex;
+
   .current {
     cursor: default !important;
     color: #1890ff !important;
   }
-  > div {
+
+  >div {
     height: 32px;
     flex: 0 0 32px;
     border: none;
     background: #212121;
     color: #fff;
     text-align: center;
+
     &:hover {
       cursor: pointer;
       color: #1890ff;
     }
+
     user-select: none;
   }
+
   .empty {
     height: 32px;
     flex: 1 !important;
     background: none !important;
   }
+
   .number {
     margin-right: 10px;
     padding-top: 4px;
   }
+
   .more {
     margin-right: 10px;
+
     &:hover {
       cursor: default !important;
       color: white !important;
     }
   }
+
   .up {
     margin-right: 10px;
     padding-top: 6px !important;
   }
+
   .next {
     padding-top: 6px !important;
   }
@@ -551,6 +538,7 @@ export default {
   top: 0px;
   width: 100%;
   height: calc(100vh);
+
   .content {
     position: absolute;
     width: 300px;
@@ -562,6 +550,7 @@ export default {
     text-align: center;
     font-size: 17px;
     color: black;
+
     .title {
       width: 100%;
       font-size: 20px;
@@ -569,11 +558,13 @@ export default {
       text-align: center;
       margin-top: 15px;
     }
+
     .content_input {
       width: 80%;
       height: 30px;
       font-size: 18px;
     }
+
     .msg {
       width: 100%;
       height: 20px;
@@ -582,11 +573,13 @@ export default {
       text-align: right;
       padding-right: 30px;
     }
+
     .buttons {
       width: 80%;
       display: block;
       margin: auto;
-      > div {
+
+      >div {
         width: 45%;
         height: 40px;
         cursor: pointer;
@@ -594,13 +587,15 @@ export default {
         border-radius: 2px;
         text-align: center;
         padding-top: 6px;
-        > span {
+
+        >span {
           font-size: 15px;
           color: white;
           text-align: center;
           pointer-events: none;
         }
       }
+
       .button_ok {
         background-color: #3662ec;
         border-color: #3662ec;
@@ -624,6 +619,7 @@ export default {
   top: 0px;
   width: 100%;
   height: calc(100vh);
+
   .content {
     position: absolute;
     width: 300px;
@@ -635,6 +631,7 @@ export default {
     text-align: center;
     font-size: 17px;
     color: black;
+
     .title {
       width: 100%;
       font-size: 20px;
@@ -642,11 +639,13 @@ export default {
       text-align: center;
       margin-top: 15px;
     }
+
     .content_input {
       width: 80%;
       height: 30px;
       font-size: 18px;
     }
+
     .msg {
       width: 100%;
       height: 20px;
@@ -655,11 +654,13 @@ export default {
       text-align: right;
       padding-right: 30px;
     }
+
     .buttons {
       width: 80%;
       display: block;
       margin: auto;
-      > div {
+
+      >div {
         width: 45%;
         height: 40px;
         cursor: pointer;
@@ -667,13 +668,15 @@ export default {
         border-radius: 2px;
         text-align: center;
         padding-top: 6px;
-        > span {
+
+        >span {
           font-size: 15px;
           color: white;
           text-align: center;
           pointer-events: none;
         }
       }
+
       .button_ok {
         background-color: #3662ec;
         border-color: #3662ec;

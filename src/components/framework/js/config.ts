@@ -1,16 +1,5 @@
-import DDeiCanvasRender from "./views/canvas/ddei-render"
-import DDeiStageCanvasRender from "./views/canvas/stage-render"
-import DDeiLayerCanvasRender from "./views/canvas/layer-render"
-import DDeiRectangleCanvasRender from "./views/canvas/rectangle-render"
-import DDeiCircleCanvasRender from "./views/canvas/circle-render"
-import DDeiSelectorCanvasRender from "./views/canvas/selector-render"
-import DDeiEnumKeyActionInst from "../../editor/js/enums/key-action-inst"
-import DDeiDiamondCanvasRender from "./views/canvas/diamond-render"
-import DDei from "./ddei"
-import DDeiRectContainerCanvasRender from "./views/canvas/rect-container-render"
 import DDeiAbstractShape from "./models/shape"
 import loadCommands from "./config/command"
-import DDeiAbstractShapeRender from "./views/canvas/shape-render-base"
 import DDeiUtil from "./util"
 
 /**
@@ -583,6 +572,20 @@ class DDeiConfig {
         return null
     }
   }
+
+  /**
+   * 加载文件的函数，加载后的文件会进入文件列表，此方法为外部传入的勾子函数，由外部对文件进行加载
+   * 必须为一个async函数
+   */
+  static loadFile: Function;
+
+  /**
+   * 保存文件的函数，保存后文件会从dirty状态变为普通状态，此方法为外部传入的勾子函数，由外部对文件进行保存和存储
+   * 必须为一个async函数
+   */
+  static saveFile: Function;
+
+
   /**
   * 根据配置文件的配置，将模型与渲染器绑定
   * @param  model  模型

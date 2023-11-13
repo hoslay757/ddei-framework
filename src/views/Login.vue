@@ -6,89 +6,61 @@
         <div class="content_right_login_form">
           <div class="content_right_login_form_title">中天规则引擎</div>
           <div class="content_right_form_msg">
-            {{form.validMsg.username}}
+            {{ form.validMsg.username }}
           </div>
-          <input v-model="form.username"
-                 class="content_right_login_form_input"
-                 placeholder="手机号/邮箱/账号"
-                 autofocus />
+          <input v-model="form.username" class="content_right_login_form_input" placeholder="手机号/邮箱/账号" autofocus />
           <div class="content_right_form_msg">
-            {{form.validMsg.password}}
+            {{ form.validMsg.password }}
           </div>
-          <input v-model="form.password"
-                 class="content_right_login_form_input"
-                 placeholder="请输入密码"
-                 type="password"
-                 @keydown.enter="login" />
-          <div class="content_right_login_form_buttons"
-               style="margin-top:40px;">
-            <div class="content_right_login_form_login"
-                 @click="login">
+          <input v-model="form.password" class="content_right_login_form_input" placeholder="请输入密码" type="password"
+            @keydown.enter="login" />
+          <div class="content_right_login_form_buttons" style="margin-top:40px;">
+            <div class="content_right_login_form_login" @click="login">
               <span>登录</span>
             </div>
-            <div class="content_right_login_form_register"
-                 @click="showRegDialog">
+            <div class="content_right_login_form_register" @click="showRegDialog">
               <span>注册</span>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="register_dialog"
-         v-show="regDialogShow">
+    <div class="register_dialog" v-show="regDialogShow">
       <div class="register_dialog_layer" />
       <div class="register_dialog_content">
         <div class="content_right_reg_form_title">
           新用户注册
         </div>
         <div class="content_right_form_msg">
-          {{reg.validMsg.mobile}}
+          {{ reg.validMsg.mobile }}
         </div>
-        <input v-model="reg.mobile"
-               id="reg_input_id"
-               type="mobile"
-               class="content_right_reg_form_input"
-               placeholder="手机号" />
+        <input v-model="reg.mobile" id="reg_input_id" type="mobile" class="content_right_reg_form_input"
+          placeholder="手机号" />
         <span class="content_right_reg_form_input_required">*</span>
         <div class="content_right_form_msg">
-          {{reg.validMsg.username}}
+          {{ reg.validMsg.username }}
         </div>
-        <input v-model="reg.username"
-               class="content_right_reg_form_input"
-               placeholder="用户名,6-30位中文、英文、数字、下划线组合" />
+        <input v-model="reg.username" class="content_right_reg_form_input" placeholder="用户名,6-30位中文、英文、数字、下划线组合" />
         <span class="content_right_reg_form_input_required">*</span>
         <div class="content_right_form_msg">
-          {{reg.validMsg.email}}
+          {{ reg.validMsg.email }}
         </div>
-        <input v-model="reg.email"
-               class="content_right_reg_form_input"
-               placeholder="邮箱地址"
-               type="email" />
+        <input v-model="reg.email" class="content_right_reg_form_input" placeholder="邮箱地址" type="email" />
         <div class="content_right_form_msg">
-          {{reg.validMsg.password}}
+          {{ reg.validMsg.password }}
         </div>
-        <input v-model="reg.password"
-               type="password"
-               class="content_right_reg_form_input"
-               placeholder="密码" />
+        <input v-model="reg.password" type="password" class="content_right_reg_form_input" placeholder="密码" />
         <span class="content_right_reg_form_input_required">*</span>
         <div class="content_right_form_msg">
-          {{reg.validMsg.password1}}
+          {{ reg.validMsg.password1 }}
         </div>
-        <input v-model="reg.password1"
-               type="password"
-               class="content_right_reg_form_input"
-               placeholder="确认密码" />
+        <input v-model="reg.password1" type="password" class="content_right_reg_form_input" placeholder="确认密码" />
         <span class="content_right_reg_form_input_required">*</span>
         <div class="content_right_login_form_buttons">
-          <div class="content_right_login_form_login"
-               style="margin-top:20px;"
-               @click="userRegister">
+          <div class="content_right_login_form_login" style="margin-top:20px;" @click="userRegister">
             <span>注册并登陆</span>
           </div>
-          <div class="content_right_login_form_register"
-               style="margin-top:20px;"
-               @click="showRegDialog">
+          <div class="content_right_login_form_register" style="margin-top:20px;" @click="showRegDialog">
             <span>取消</span>
           </div>
         </div>
@@ -270,12 +242,14 @@ export default {
   width: 100%;
   height: calc(100vh);
 }
+
 .content {
   width: 100%;
   height: calc(100vh);
   background: url("../assets/images/login-back.jpg");
   background-size: 100% 100%;
 }
+
 .content_left {
   width: 60%;
   height: calc(100vh);
@@ -293,12 +267,14 @@ export default {
 
 .content_right_login_form {
   width: 70%;
+  max-width: 500px;
   height: 450px;
   background: #fff;
   margin-right: 139px;
   border-radius: 10px;
   text-align: center;
 }
+
 .content_right_login_form_title {
   margin: 37px 0 17px 0;
   font-size: 36px;
@@ -351,6 +327,7 @@ export default {
   float: right;
   padding-top: 15px;
 }
+
 .content_right_login_form_register span {
   font-size: 19px;
   color: black;
@@ -394,12 +371,14 @@ export default {
   margin-right: 139px;
   border-radius: 10px;
 }
+
 .content_right_reg_form_input_required {
   font-size: 19px;
   color: red;
   text-align: center;
   pointer-events: none;
 }
+
 .content_right_reg_form_title {
   width: 80%;
   height: 40px;

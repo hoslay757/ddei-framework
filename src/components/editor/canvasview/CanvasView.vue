@@ -1,13 +1,7 @@
 <template>
-  <div :id="id"
-       class="ddei_editor_canvasview"
-       @mousedown="mouseDown($event)"
-       ondragstart="return false;"
-       @mousewheel="mouseWheel($event)"
-       @dragover="createControlOver"
-       @drop="createControlDrop"
-       @dragleave="createControlCancel"
-       @contextmenu.prevent>
+  <div :id="id" class="ddei_editor_canvasview" @mousedown="mouseDown($event)" ondragstart="return false;"
+    @mousewheel="mouseWheel($event)" @dragover="createControlOver" @drop="createControlDrop"
+    @dragleave="createControlCancel" @contextmenu.prevent>
   </div>
 </template>
 
@@ -57,44 +51,55 @@ export default {
         this.editor.ddInstance.render.show();
       }
     });
+    this.mouseWheelThrottle = throttle(this.mouseWheelThrottle, 10);
   },
   mounted() {
-    this.mouseWheelThrottle = throttle(this.mouseWheelThrottle, 10);
+
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
-    //TODO基于参数打开一个文件或一组文件
-    //创建一个新的文件
-    let file = new DDeiFile({
-      name: "新建文件",
-      path: "/新建文件",
-      sheets: [
-        new DDeiSheet({
-          name: "新建页面",
-          desc: "新建页面",
-          stage: DDeiStage.initByJSON({ id: "stage_1" }),
-          active: DDeiActiveType.ACTIVE,
-        }),
-      ],
-      currentSheetIndex: 0,
-      state: DDeiFileState.NEW,
-      active: DDeiActiveType.ACTIVE,
-    });
-    //添加文件
-    this.editor.addFile(file);
-    this.editor.currentFileIndex = 0;
-    //初始化ddInstance,
+    //初始化ddInstance
     this.editor.ddInstance = DDei.newInstance(
       "ddei_editor_view",
-      "ddei_editor_canvasview",
-      file.sheets[file.currentSheetIndex].stage
+      "ddei_editor_canvasview"
     );
-    file.sheets[file.currentSheetIndex].stage = this.editor.ddInstance.stage;
-    //记录文件初始日志
-    file.initHistroy();
+    //初始化编辑器bus
     this.editor.ddInstance.bus.invoker = this.editor;
     this.editor.bus = this.editor.ddInstance.bus;
-    this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
-    this.editor.bus.executeAllDelay(200);
+
+
+    //基于参数打开一个文件或一组文件
+    DDeiEditor.loadFile().then(fileData => {
+      //创建一个新的文件
+      let file = new DDeiFile({
+        name: fileData.name,
+        path: fileData.path,
+        desc: fileData.desc,
+        sheets: [
+          new DDeiSheet({
+            name: "新建页面",
+            desc: "新建页面",
+            stage: DDeiStage.initByJSON({ id: "stage_1" }),
+            active: DDeiActiveType.ACTIVE,
+          }),
+        ],
+        currentSheetIndex: 0,
+        state: DDeiFileState.NEW,
+        active: DDeiActiveType.ACTIVE,
+      });
+      //添加文件
+      this.editor.addFile(file);
+      this.editor.currentFileIndex = 0;
+      file.sheets[file.currentSheetIndex].stage = this.editor.ddInstance.stage;
+      //记录文件初始日志
+      file.initHistroy();
+      this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
+      this.editor.bus.executeAllDelay(200);
+      this.editor?.editorViewer?.forceRefreshBottomMenu()
+      this.editor?.editorViewer?.forceRefreshOpenFilesView()
+      this.editor?.editorViewer?.forceRefreshTopMenu()
+      this.editor?.editorViewer?.forcePropertyView()
+    })
+
   },
   methods: {
     /**

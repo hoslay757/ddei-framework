@@ -10,7 +10,7 @@ export const routes = [
     component: () => import('@/views/Login.vue')
   },
   {
-    path: '/design',
+    path: '/design/:id',
     name: 'Design',
     component: () => import('@/views/Design.vue')
   },

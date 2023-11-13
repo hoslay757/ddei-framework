@@ -1,21 +1,15 @@
 <template>
-  <div id="ddei_editor_menu_dialog"
-       class="ddei_editor_menu_dialog">
+  <div id="ddei_editor_menu_dialog" class="ddei_editor_menu_dialog">
     <div v-show="isVisiable(menu)"
-         :class="{ 'ddei_editor_menu_dialog_hr': menu.code == 'split', 'ddei_editor_menu_dialog_item': menu.code != 'split' }"
-         v-for="menu in editor?.currentMenuData"
-         @click="execMenuAction(menu,$event)">
-      <div v-if="menu.code != 'split'"
-           class="ddei_editor_menu_dialog_item_icon">
-        <img v-if="menu.icon"
-             :src="icons[menu.icon]" />
+      :class="{ 'ddei_editor_menu_dialog_hr': menu.code == 'split', 'ddei_editor_menu_dialog_item': menu.code != 'split' }"
+      v-for="menu in editor?.currentMenuData" @click="execMenuAction(menu, $event)">
+      <div v-if="menu.code != 'split'" class="ddei_editor_menu_dialog_item_icon">
+        <img v-if="menu.icon" :src="icons[menu.icon]" />
       </div>
-      <div v-if="menu.code != 'split'"
-           class="ddei_editor_menu_dialog_item_content">
+      <div v-if="menu.code != 'split'" class="ddei_editor_menu_dialog_item_content">
         {{ menu.name }}
       </div>
-      <div v-if="menu.code != 'split'"
-           class="ddei_editor_menu_dialog_item_desc">
+      <div v-if="menu.code != 'split'" class="ddei_editor_menu_dialog_item_desc">
         {{ menu.desc }}
       </div>
     </div>
@@ -25,7 +19,7 @@
 <script lang="ts">
 import DDeiEditor from "../../js/editor";
 import ICONS from "../../js/icon";
-import DDeiEditorConfig from "../../js/config";
+import DDeiEditorConfig from "../../js/resource";
 import DDeiEnumBusCommandType from "../../../framework/js/enums/bus-command-type";
 import DDeiEnumOperateState from "../../../framework/js/enums/operate-state";
 export default {
@@ -43,7 +37,7 @@ export default {
   computed: {},
   components: {},
   watch: {},
-  created() {},
+  created() { },
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
@@ -117,6 +111,7 @@ export default {
 .ddei_editor_menu_dialog_item_icon {
   flex: 0 0 34px;
 }
+
 .ddei_editor_menu_dialog_item_icon img {
   width: 24px;
   height: 24px;

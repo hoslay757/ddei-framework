@@ -1,6 +1,6 @@
 import { controlOriginDefinies } from "../../configs/toolgroup"
 import DDeiEditorArrtibute from "../attribute/editor-attribute";
-import CONFIGS from "../../js/config"
+import CONFIGS from "../resource"
 import ICONS from "../../js/icon"
 import DDeiAbstractShape from "@/components/framework/js/models/shape";
 import DDeiEditor from "../editor";

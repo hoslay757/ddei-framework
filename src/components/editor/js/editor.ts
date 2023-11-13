@@ -125,6 +125,18 @@ class DDeiEditor {
 
   ];
 
+  /**
+   * 加载文件的函数，加载后的文件会进入文件列表，此方法为外部传入的勾子函数，由外部对文件进行加载
+   * 必须为一个async函数
+   */
+  static loadFile: Function;
+
+  /**
+   * 保存文件的函数，保存后文件会从dirty状态变为普通状态，此方法为外部传入的勾子函数，由外部对文件进行保存和存储
+   * 必须为一个async函数
+   */
+  static saveFile: Function;
+
 
   // ============================ 静态方法 ============================
   /**
@@ -177,6 +189,7 @@ class DDeiEditor {
     if (config) {
       //普通值、JSON、数组、MAP
       for (let i in config) {
+
         let outConfigValue = config[i];
         let configValue = DDeiEditor[i];
         if (i != "HOT_KEY_MAPPING") {

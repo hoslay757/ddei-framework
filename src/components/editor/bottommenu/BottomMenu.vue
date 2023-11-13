@@ -1,36 +1,26 @@
 <template>
-  <div id="ddei_editor_bottommenu"
-       class="ddei_editor_bottommenu">
-    <div class="ddei_editor_bottommenu_addpage"
-         @click="newSheet">
+  <div id="ddei_editor_bottommenu" class="ddei_editor_bottommenu">
+    <div class="ddei_editor_bottommenu_addpage" @click="newSheet">
       <div>
         <img src="../icons/icon-add.png" />
       </div>
     </div>
     <div class="ddei_editor_bottommenu_pages">
-      <div draggable="true"
-           @dragstart="sheetDragStart(null, $event)"
-           @click.left="changeSheet(index)"
-           @click.right="showMenu(sheet,$event)"
-           @dragover="sheetDragOver($event)"
-           @drop="sheetDragDrop($event)"
-           @dragleave="sheetDragCancel($event)"
-           @dblclick="startChangeSheetName(sheet,$event)"
-           v-show="index >= openIndex && index < openIndex + maxOpenSize"
-           :class="{ 'ddei_editor_bottommenu_page': sheet.active == 0, 'ddei_editor_bottommenu_page_selected': sheet.active == 1 }"
-           :title="sheet.name"
-           v-for="(sheet, index) in  editor?.files[editor?.currentFileIndex]?.sheets ">
+      <div draggable="true" @dragstart="sheetDragStart(null, $event)" @click.left="changeSheet(index)"
+        @click.right="showMenu(sheet, $event)" @dragover="sheetDragOver($event)" @drop="sheetDragDrop($event)"
+        @dragleave="sheetDragCancel($event)" @dblclick="startChangeSheetName(sheet, $event)"
+        v-show="index >= openIndex && index < openIndex + maxOpenSize"
+        :class="{ 'ddei_editor_bottommenu_page': sheet.active == 0, 'ddei_editor_bottommenu_page_selected': sheet.active == 1 }"
+        :title="sheet.name" v-for="(sheet, index) in  editor?.files[editor?.currentFileIndex]?.sheets ">
         {{ sheet.name }}
       </div>
 
       <div class="ddei_editor_bottommenu_pages_movebox"
-           v-show="editor?.files[editor?.currentFileIndex]?.sheets?.length > maxOpenSize"
-           @click="moveItem(-1)">
+        v-show="editor?.files[editor?.currentFileIndex]?.sheets?.length > maxOpenSize" @click="moveItem(-1)">
         <img src="../icons/icon-left.png" />
       </div>
       <div class="ddei_editor_bottommenu_pages_movebox"
-           v-show="editor?.files[editor?.currentFileIndex]?.sheets?.length > maxOpenSize"
-           @click="moveItem(1)">
+        v-show="editor?.files[editor?.currentFileIndex]?.sheets?.length > maxOpenSize" @click="moveItem(1)">
         <img src="../icons/icon-right.png" />
       </div>
     </div>
@@ -39,8 +29,7 @@
         形状数: {{ editor?.files[editor?.currentFileIndex]?.modelNumber }}
       </div>
     </div>
-    <div class="ddei_editor_bottommenu_layers"
-         @click="showDialog('ddei_editor_bottommenu_other_layers_dialog', $event)">
+    <div class="ddei_editor_bottommenu_layers" @click="showDialog('ddei_editor_bottommenu_other_layers_dialog', $event)">
       <div>
         <img src="../icons/icon-layers.png" />
       </div>
@@ -53,133 +42,98 @@
       </div>
       <div class="ddei_editor_bottommenu_other_changesize">
         <div class="ddei_editor_bottommenu_other_changesize_combox"
-             @click="showDialog('ddei_editor_bottommenu_other_changesize_dialog', $event)">
+          @click="showDialog('ddei_editor_bottommenu_other_changesize_dialog', $event)">
           <span>
             {{ parseInt(currentStage?.ratio * 100) }}%
           </span>
-          <img style="width:8px;height:8px;margin-top:9px;"
-               width="8px"
-               height="8px"
-               src="../icons/toolbox-expanded.png" />
+          <img style="width:8px;height:8px;margin-top:9px;" width="8px" height="8px"
+            src="../icons/toolbox-expanded.png" />
         </div>
         <div @click="addRatio(-0.05)">
           <img src="../icons/icon-reduce.png" />
         </div>
-        <input type="range"
-               min="0.1"
-               max="4"
-               step="0.1"
-               v-model="stageRatio" />
+        <input type="range" min="0.1" max="4" step="0.1" v-model="stageRatio" />
         <div>
-          <img src="../icons/icon-add.png"
-               @click="addRatio(0.05)" />
+          <img src="../icons/icon-add.png" @click="addRatio(0.05)" />
         </div>
         <div>
-          <img src="../icons/icon-screen-width.png"
-               title="整页"
-               @click="autoRatio(1)" />
+          <img src="../icons/icon-screen-width.png" title="整页" @click="autoRatio(1)" />
         </div>
       </div>
     </div>
-    <div id="ddei_editor_bottommenu_other_changesize_dialog"
-         class="ddei_editor_bottommenu_other_changesize_dialog"
-         v-show="dialogShow == 'ddei_editor_bottommenu_other_changesize_dialog'">
+    <div id="ddei_editor_bottommenu_other_changesize_dialog" class="ddei_editor_bottommenu_other_changesize_dialog"
+      v-show="dialogShow == 'ddei_editor_bottommenu_other_changesize_dialog'">
       <div class="ddei_editor_bottommenu_other_changesize_dialog_title">缩放</div>
       <hr />
       <div class="ddei_editor_bottommenu_other_changesize_dialog_group">
         <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content">
-          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item"
-               @click="setRatio(4)">
+          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item" @click="setRatio(4)">
             400%
           </div>
-          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item"
-               @click="setRatio(2)">
+          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item" @click="setRatio(2)">
             200%
           </div>
-          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item"
-               @click="setRatio(1.5)">
+          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item" @click="setRatio(1.5)">
             150%
           </div>
 
-          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item"
-               @click="setRatio(1.25)">
+          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item" @click="setRatio(1.25)">
             125%
           </div>
-          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item"
-               @click="setRatio(1)">
+          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item" @click="setRatio(1)">
             100%
           </div>
-          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item"
-               @click="setRatio(0.75)">
+          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item" @click="setRatio(0.75)">
             75%
           </div>
-          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item"
-               @click="setRatio(0.5)">
+          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item" @click="setRatio(0.5)">
             50%
           </div>
-          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item"
-               @click="setRatio(0.25)">
+          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item" @click="setRatio(0.25)">
             25%
           </div>
           <hr />
           <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item">
-            百分比：<input type="number"
-                   min="25"
-                   max="1000"
-                   v-model="ratioInputValue"
-                   @blur="ratioInputChange() && showDialog('ddei_editor_bottommenu_other_changesize_dialog')" />%
+            百分比：<input type="number" min="25" max="1000" v-model="ratioInputValue"
+              @blur="ratioInputChange() && showDialog('ddei_editor_bottommenu_other_changesize_dialog')" />%
           </div>
         </div>
       </div>
     </div>
 
-    <div id="ddei_editor_bottommenu_other_layers_dialog"
-         class="ddei_editor_bottommenu_other_layers_dialog"
-         v-show="dialogShow == 'ddei_editor_bottommenu_other_layers_dialog'">
+    <div id="ddei_editor_bottommenu_other_layers_dialog" class="ddei_editor_bottommenu_other_layers_dialog"
+      v-show="dialogShow == 'ddei_editor_bottommenu_other_layers_dialog'">
       <div class="ddei_editor_bottommenu_other_layers_dialog_title">图层</div>
       <hr />
       <div class="ddei_editor_bottommenu_other_layers_dialog_group">
         <div class="ddei_editor_bottommenu_other_layers_dialog_group_content">
-          <div class="ddei_editor_bottommenu_other_layers_dialog_group_content_item"
-               style="grid-template-rows:25px"
-               @click="createNewLayer(0)">
+          <div class="ddei_editor_bottommenu_other_layers_dialog_group_content_item" style="grid-template-rows:25px"
+            @click="createNewLayer(0)">
             <span style="grid-column:1/8;">新建图层</span>
             <img style="margin-top:2px;width:16px;height:16px;filter:brightness(0%)"
-                 src="../icons/icon-plus-circle.png" />
+              src="../icons/icon-plus-circle.png" />
           </div>
-          <div :class="{'ddei_editor_bottommenu_other_layers_dialog_group_content_item':true,'current':currentStage?.layerIndex === index}"
-               v-for="(layer,index) in currentStage?.layers"
-               draggable="true"
-               @dragstart="layerDragStart(index, $event)"
-               @dragover="layerDragOver($event)"
-               @drop="layerDragDrop($event)"
-               @dragleave="layerDragCancel($event)">
-            <span style="grid-column:1/8;"
-                  @dblclick="startChangeLayerName(layer,$event)">{{layer.name?layer.name:'图层'}}</span>
-            <img class="trash"
-                 style="margin-top:2px;width:16px;height:16px;filter:brightness(0%)"
-                 src="../icons/icon-trash.png"
-                 @click="removeLayer(index)" />
-            <span style="grid-column:1/4;font-weight:normal">形状:{{layer.modelNumber}}</span>
+          <div
+            :class="{ 'ddei_editor_bottommenu_other_layers_dialog_group_content_item': true, 'current': currentStage?.layerIndex === index }"
+            v-for="(layer, index) in currentStage?.layers" draggable="true" @dragstart="layerDragStart(index, $event)"
+            @dragover="layerDragOver($event)" @drop="layerDragDrop($event)" @dragleave="layerDragCancel($event)">
+            <span style="grid-column:1/8;" @dblclick="startChangeLayerName(layer, $event)">{{ layer.name ? layer.name :
+              '图层' }}</span>
+            <img class="trash" style="margin-top:2px;width:16px;height:16px;filter:brightness(0%)"
+              src="../icons/icon-trash.png" @click="removeLayer(index)" />
+            <span style="grid-column:1/4;font-weight:normal">形状:{{ layer.modelNumber }}</span>
+            <img style="margin-top:2px;width:16px;height:16px;filter:brightness(0%)" src="../icons/icon-plus-circle.png"
+              @click="createNewLayer(index)" />
             <img style="margin-top:2px;width:16px;height:16px;filter:brightness(0%)"
-                 src="../icons/icon-plus-circle.png"
-                 @click="createNewLayer(index)" />
-            <img style="margin-top:2px;width:16px;height:16px;filter:brightness(0%)"
-                 :src="layer.display == 0 && !layer.tempDisplay ? icons['icon-display-none'] : icons['icon-display']"
-                 @click="displayOrShowLayer(layer)" />
+              :src="layer.display == 0 && !layer.tempDisplay ? icons['icon-display-none'] : icons['icon-display']"
+              @click="displayOrShowLayer(layer)" />
             <img style="margin-top:3px;width:14px;height:14px;filter:brightness(0%)"
-                 :src="layer.lock?icons['icon-lock']:icons['icon-unlock']"
-                 @click="lockOrUnLockLayer(layer)" />
-            <input type="radio"
-                   :class="{'not_temp_display':!layer.tempDisplay}"
-                   name="rdo_layers"
-                   :value="layer.id"
-                   style="width:14px;height:14px;margin-top:3px"
-                   @mousedown="changeLayer(index,$event)"
-                   :checked="currentStage?.layerIndex === index" />
+              :src="layer.lock ? icons['icon-lock'] : icons['icon-unlock']" @click="lockOrUnLockLayer(layer)" />
+            <input type="radio" :class="{ 'not_temp_display': !layer.tempDisplay }" name="rdo_layers" :value="layer.id"
+              style="width:14px;height:14px;margin-top:3px" @mousedown="changeLayer(index, $event)"
+              :checked="currentStage?.layerIndex === index" />
             <img style="margin-top:1px;width:18px;height:18px;filter:brightness(0%)"
-                 :src="layer.print?icons['icon-print']:icons['icon-not-print']"
-                 @click="printOrNoPrintLayer(layer)" />
+              :src="layer.print ? icons['icon-print'] : icons['icon-not-print']" @click="printOrNoPrintLayer(layer)" />
           </div>
 
         </div>
@@ -253,7 +207,7 @@ export default {
     let file = this.editor?.files[this.editor?.currentFileIndex];
     let sheet = file?.sheets[file?.currentSheetIndex];
     this.changeCurrentStage = true;
-    this.currentStage = sheet.stage;
+    this.currentStage = sheet?.stage;
   },
   methods: {
     //创建新图层
@@ -1277,11 +1231,13 @@ export default {
 .ddei_editor_bottommenu_other_layers_dialog_group_content_item .trash {
   display: none;
 }
+
 .ddei_editor_bottommenu_other_layers_dialog_group_content_item:hover {
   border-radius: 4px;
   background-color: rgb(233, 233, 238);
   cursor: pointer;
 }
+
 .ddei_editor_bottommenu_other_layers_dialog_group_content_item:hover .trash {
   display: block;
 }
