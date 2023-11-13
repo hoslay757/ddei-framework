@@ -1,7 +1,9 @@
 <template>
   <div class="ddei_home_bar_content">
     <div class="ddei_home_bar_content_search">
-      <input class="ddei_home_bar_content_search_input"
+      <input v-model="queryText"
+             @keydown.enter="doQuery"
+             class="ddei_home_bar_content_search_input"
              placeholder="名称/编码/备注">
       <img src="../../components/editor/icons/icon-search.png" />
     </div>
@@ -16,16 +18,22 @@ export default {
   },
   data () {
     return {
-
+      queryText: ""
     }
   },
-  created () { },
+  created () {
+
+  },
   mounted () {
 
   },
   methods: {
+    doQuery () {
+      this.$parent.$refs["fileList"].queryText = this.queryText;
+      this.$parent.$refs["fileList"].listFile(1)
+    }
+  },
 
-  }
 }
 </script>
 

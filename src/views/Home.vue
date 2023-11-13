@@ -4,14 +4,15 @@
       <Headers />
     </div>
     <div class="ddei_home_bar">
-      <HomeBar />
+      <HomeBar ref="homeBar" />
     </div>
     <div class="ddei_home_middle">
       <div class="ddei_home_middle_left">
-        <DirTree />
+        <DirTree ref="dirTree" />
       </div>
       <div class="ddei_home_middle_right">
-        <FileList />
+        <FileList v-if="refreshFileList"
+                  ref="fileList" />
       </div>
     </div>
   </div>
@@ -28,7 +29,9 @@ import DirTree from "./components/DirTree.vue";
 export default {
   props: {},
   data() {
-    return {};
+    return {
+      refreshFileList: true,
+    };
   },
   //注册组件
   components: {
@@ -41,6 +44,13 @@ export default {
     this.getUserInfo();
   },
   methods: {
+    forceRefreshFileList() {
+      this.refreshFileList = false;
+      this.$nextTick(() => {
+        this.refreshFileList = true;
+      });
+    },
+
     /**
      * 获取登录用户信息
      */

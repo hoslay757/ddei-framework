@@ -32,7 +32,7 @@
        v-show="folderDialogShow">
     <div class="content">
       <div class="title">
-        创建目录
+        {{mod == 1 ? '创建' : '修改'}}目录
       </div>
       <div class="msg">
         {{cf.validMsg?.name}}
@@ -137,6 +137,16 @@ export default {
 
     },
 
+    getCurrentFolder () {
+      let folder = null
+      this.folders.forEach(f => {
+        if (f.isCurrent) {
+          folder = f
+        }
+      })
+      return folder
+    },
+
     /**
      * 设置当前目录
      */
@@ -145,6 +155,7 @@ export default {
         f.isCurrent = false
       })
       folder.isCurrent = true
+      this.$parent.forceRefreshFileList();
     },
 
     /**
@@ -425,7 +436,7 @@ export default {
         cursor: pointer;
         border-radius: 2px;
         text-align: center;
-        padding-top: 8px;
+        padding-top: 6px;
         > span {
           font-size: 15px;
           color: white;
