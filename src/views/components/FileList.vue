@@ -516,6 +516,7 @@ export default {
       cursor: pointer;
       color: #1890ff;
     }
+    user-select: none;
   }
   .empty {
     height: 32px;
