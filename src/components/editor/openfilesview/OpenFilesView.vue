@@ -108,18 +108,19 @@ export default {
     // 监听文件列表大小变化
     this.$watch("editor.files.length", function (newVal, oldVal) {
       //打开新文件
-      let activeIndex = -1;
-      for (let i = 0; i < this.editor.files.length; i++) {
-        if (this.editor.files[i].active == DDeiActiveType.ACTIVE) {
-          activeIndex = i;
-          break;
+      setTimeout(() => {
+        let activeIndex = -1;
+        for (let i = 0; i < this.editor.files.length; i++) {
+          if (this.editor.files[i].active == DDeiActiveType.ACTIVE) {
+            activeIndex = i;
+            break;
+          }
         }
-      }
-
-      this.openIndex = activeIndex + 1 - this.maxOpenSize;
-      if (this.openIndex < 0) {
-        this.openIndex = 0;
-      }
+        this.openIndex = activeIndex + 1 - this.maxOpenSize;
+        if (this.openIndex < 0) {
+          this.openIndex = 0;
+        }
+      }, 10);
     });
   },
   mounted() {
