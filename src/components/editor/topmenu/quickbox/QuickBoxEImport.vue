@@ -17,7 +17,7 @@
         <div>下载</div>
       </div>
       <div class="ddei_editor_eip_item_box"
-           @click="download">
+           @click="publish">
         <img width="16px"
              height="16px"
              :src="icons['icon-publish-1']" />
@@ -70,76 +70,17 @@ export default {
   },
   methods: {
     /**
-     * 新建文件
+     * 发布
      * @param evt
      */
-    newFile(evt) {
-      if (this.editor?.ddInstance) {
-        let ddInstance = this.editor.ddInstance;
-        let file = DDeiFile.loadFromJSON(
-          {
-            name: "新建文件_NEW",
-            path: "/新建文件_NEW",
-            sheets: [
-              new DDeiSheet({
-                name: "页面-1",
-                desc: "页面-1",
-                stage: DDeiStage.initByJSON({ id: "stage_1" }),
-                active: DDeiActiveType.ACTIVE,
-              }),
-            ],
-            currentSheetIndex: 0,
-            state: DDeiFileState.NEW,
-            active: DDeiActiveType.ACTIVE,
-          },
-          { currentDdInstance: ddInstance }
-        );
-        //添加文件
-        if (this.editor.currentFileIndex != -1) {
-          this.editor.files[this.editor.currentFileIndex].active =
-            DDeiActiveType.NONE;
-        }
-        this.editor.addFile(file);
-        this.editor.currentFileIndex = this.editor.files.length - 1;
-        let sheets = file?.sheets;
-        if (file && sheets && ddInstance) {
-          let stage = sheets[0].stage;
-          stage.ddInstance = ddInstance;
-          //刷新页面
-          ddInstance.stage = stage;
-          //记录文件初始日志
-          file.initHistroy();
-          //设置视窗位置到中央
-          if (!stage.wpv) {
-            //缺省定位在画布中心点位置
-            stage.wpv = {
-              x: -(stage.width - ddInstance.render.container.clientWidth) / 2,
-              y: -(stage.height - ddInstance.render.container.clientHeight) / 2,
-              z: 0,
-            };
-          }
-          //加载场景渲染器
-          stage.initRender();
-          ddInstance.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
-          ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
-          this.editor.changeState(DDeiEditorState.DESIGNING);
-          ddInstance?.bus?.executeAll();
-          this.editor.editorViewer?.forceRefreshBottomMenu();
-        }
-      }
-    },
-
-    /**
-     * 保存
-     * @param evt
-     */
-    save(evt) {
+    publish(evt) {
       this.editor.changeState(DDeiEditorState.DESIGNING);
       this.editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
-      this.editor.bus.push(DDeiEditorEnumBusCommandType.SaveFile, {}, evt);
+      this.editor.bus.push(DDeiEditorEnumBusCommandType.SaveFile, {
+        publish: 1,
+      });
       this.editor.bus.executeAll();
     },
-
     /**
      * 下载文件
      */
@@ -166,88 +107,6 @@ export default {
           }
         }
       }
-    },
-
-    /**
-     * 打开文件
-     * @param evt
-     */
-    openFile(evt) {
-      //执行保存
-      let storeIns = new DDeiStoreLocal();
-      storeIns.find("").then((datas) => {
-        //找到第一个没有打开的文件，执行打开 TODO
-        if (datas) {
-          for (let i = 0; i < datas.length; i++) {
-            let finded = false;
-            for (let j = 0; j < this.editor.files.length; j++) {
-              if (this.editor.files[j].id == datas[i].id) {
-                finded = true;
-                break;
-              }
-            }
-            if (!finded) {
-              let storeIns = new DDeiStoreLocal();
-
-              storeIns.load(datas[i].id).then((rowData) => {
-                //存在数据，执行修改
-                if (rowData) {
-                  let ddInstance = this.editor?.ddInstance;
-                  let file = DDeiFile.loadFromJSON(JSON.parse(rowData.data), {
-                    currentDdInstance: ddInstance,
-                  });
-                  this.editor.addFile(file);
-                  for (let x = 0; x < this.editor.files.length; x++) {
-                    this.editor.files[x].active = DDeiActiveType.NONE;
-                  }
-                  this.editor.currentFileIndex = this.editor.files.length - 1;
-                  file.state = DDeiFileState.NONE;
-                  file.active = DDeiActiveType.ACTIVE;
-                  let sheets = file?.sheets;
-
-                  if (file && sheets && ddInstance) {
-                    file.changeSheet(file.currentSheetIndex);
-
-                    let stage = sheets[file.currentSheetIndex].stage;
-                    stage.ddInstance = ddInstance;
-                    //记录文件初始日志
-                    file.initHistroy();
-                    //刷新页面
-                    ddInstance.stage = stage;
-                    //加载场景渲染器
-                    stage.initRender();
-                    //设置视窗位置到中央
-                    if (!stage.wpv) {
-                      //缺省定位在画布中心点位置
-                      stage.wpv = {
-                        x:
-                          -(
-                            stage.width -
-                            ddInstance.render.container.clientWidth
-                          ) / 2,
-                        y:
-                          -(
-                            stage.height -
-                            ddInstance.render.container.clientHeight
-                          ) / 2,
-                        z: 0,
-                      };
-                    }
-                    this.editor.changeState(DDeiEditorState.DESIGNING);
-                    ddInstance.bus.push(
-                      DDeiEditorEnumBusCommandType.ClearTemplateUI
-                    );
-                    ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
-                    ddInstance?.bus?.executeAll();
-                    this.editor.editorViewer?.forceRefreshBottomMenu();
-                  }
-                }
-              });
-              return;
-            }
-          }
-        }
-      });
     },
   },
 };

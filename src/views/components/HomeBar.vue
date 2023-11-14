@@ -5,7 +5,8 @@
              @keydown.enter="doQuery"
              class="ddei_home_bar_content_search_input"
              placeholder="名称/编码/备注">
-      <img src="../../components/editor/icons/icon-search.png" />
+      <img src="../../components/editor/icons/icon-search.png"
+           @click="doQuery" />
     </div>
   </div>
 </template>

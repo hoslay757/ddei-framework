@@ -69,7 +69,7 @@
           </div>
           <div class="ddei_editor_file_info_item_filestate_msg"
                v-if="file?.state == 0">
-            已保存
+            {{file.publish == 1 ? '已发布' : '已保存'}}
           </div>
           <div class="ddei_editor_file_info_item_filestate_msg"
                v-if="file?.state == 2">

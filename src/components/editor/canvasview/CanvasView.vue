@@ -90,12 +90,14 @@ export default {
             currentDdInstance: this.editor.ddInstance,
           });
           file.id = fileData.id;
+          file.publish = fileData.publish;
           file.name = fileData.name;
           file.path = fileData.path;
           file.desc = fileData.desc;
         } else {
           file = new DDeiFile({
             id: fileData.id,
+            publish: fileData.publish,
             name: fileData.name,
             path: fileData.path,
             desc: fileData.desc,

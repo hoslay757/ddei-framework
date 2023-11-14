@@ -586,6 +586,12 @@ class DDeiConfig {
    */
   static saveFile: Function;
 
+  /**
+  * 发布文件的函数，发布后文件从业务上转变为正式文件，此方法为外部传入的勾子函数，由外部对文件状态进行控制
+  * 必须为一个async函数
+  */
+  static publishFile: Function;
+
 
   /**
   * 根据配置文件的配置，将模型与渲染器绑定

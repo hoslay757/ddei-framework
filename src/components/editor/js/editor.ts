@@ -152,6 +152,12 @@ class DDeiEditor {
   static saveFile: Function;
 
   /**
+ * 发布文件的函数，发布后文件从业务上转变为正式文件，此方法为外部传入的勾子函数，由外部对文件状态进行控制
+ * 必须为一个async函数
+ */
+  static publishFile: Function;
+
+  /**
    * 返回文件列表，此方法为外部传入的勾子函数
    */
   static goBackFileList: Function;
@@ -376,8 +382,10 @@ class DDeiEditor {
    * 键盘按下
    */
   keyDown(evt: Event): void {
-    DDeiKeyAction.route(evt)
-    evt.preventDefault()
+    if (DDeiKeyAction.route(evt)) {
+      evt.preventDefault()
+    }
+
   }
 
   /**
@@ -385,7 +393,6 @@ class DDeiEditor {
    */
   keyUp(evt: Event): void {
     DDeiKeyAction.updateKeyState(evt);
-    evt.preventDefault()
   }
 }
 

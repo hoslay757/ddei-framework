@@ -4,7 +4,7 @@
 
 <script lang="ts">
 import { userinfo } from "@/lib/api/login/index.js";
-import { loadfile, savefile } from "@/lib/api/file";
+import { loadfile, savefile, publishfile } from "@/lib/api/file";
 import Cookies from "js-cookie";
 import DDeiEditor from "../components/editor/Editor.vue";
 
@@ -16,6 +16,7 @@ export default {
         loadFile: this.openFile,
         saveFile: this.saveFile,
         goBackFileList: this.goBackFileList,
+        publishFile: this.publishFile,
       }),
     };
   },
@@ -57,6 +58,28 @@ export default {
           content: JSON.stringify(designdata),
         };
         let fileData = await savefile(postData);
+        if (fileData.status == 200) {
+          if (fileData.data.code == 0) {
+            return fileData.data.data;
+          }
+        }
+      }
+    },
+
+    /**
+     * 保存文件以及设计并发布文件
+     */
+    async publishFile(designdata) {
+      //根据ID获取文件的设计以及文件的信息
+      if (designdata) {
+        let postData = {
+          id: designdata.id,
+          name: designdata.name,
+          code: designdata.code,
+          desc: designdata.desc,
+          content: JSON.stringify(designdata),
+        };
+        let fileData = await publishfile(postData);
         if (fileData.status == 200) {
           if (fileData.data.code == 0) {
             return fileData.data.data;

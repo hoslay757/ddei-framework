@@ -49,7 +49,7 @@ abstract class DDeiKeyAction {
    * 根据快捷键配置以及当前操作的上下文环境
    * 路由到合理的键行为实例上
    */
-  static route(evt: Event): void {
+  static route(evt: Event): boolean {
 
     let editor = DDeiEditor.ACTIVE_INSTANCE;
     //获取实例
@@ -146,6 +146,7 @@ abstract class DDeiKeyAction {
         }
       }
     }
+    return false
   }
 
   // ============================ 属性 ===============================

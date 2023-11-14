@@ -18,6 +18,7 @@ class DDeiFile {
     this.state = props.state ? props.state : DDeiFileState.NONE
     this.active = props.active ? props.active : DDeiActiveType.NONE
     this.lastUpdateTime = props.lastUpdateTime ? props.lastUpdateTime : new Date().getTime()
+    this.publish = props.publish ? props.publish : "0"
     this.desc = props.desc ? props.desc : ""
   }
   // ============================ 静态变量 ============================
@@ -44,6 +45,9 @@ class DDeiFile {
 
   //激活状态
   active: DDeiActiveType;
+
+  //发布状态
+  publish: string = "0";
 
   //最后修改时间
   lastUpdateTime: number = new Date().getTime();

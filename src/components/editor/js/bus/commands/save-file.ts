@@ -45,12 +45,22 @@ class DDeiEditorCommandSaveFile extends DDeiBusCommand {
           file.lastUpdateTime = new Date().getTime()
           let json = file.toJSON();
           json.state = DDeiFileState.NONE;
-          //调用SPI进行保存
-          if (DDeiConfig.saveFile) {
-            DDeiConfig.saveFile(json).then(data => {
-              file.state = DDeiFileState.NONE;
-            });
+          if (data.publish == 1) {
+            //调用SPI进行发布
+            if (DDeiConfig.publishFile) {
+              DDeiConfig.publishFile(json).then(data => {
+                file.state = DDeiFileState.NONE;
+              });
+            }
+          } else {
+            //调用SPI进行保存
+            if (DDeiConfig.saveFile) {
+              DDeiConfig.saveFile(json).then(data => {
+                file.state = DDeiFileState.NONE;
+              });
+            }
           }
+
 
           // if (json) {
           //   //执行保存

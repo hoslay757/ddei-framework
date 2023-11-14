@@ -69,3 +69,12 @@ export function savefile(json = {}) {
   })
 }
 
+// 保存文件内容，包括设计信息，然后发布文件
+export function publishfile(json = {}) {
+  return request.post('/v1/file/publish', json, {
+    headers: {
+      'token': Cookies.get('token')
+    }
+  })
+}
+
