@@ -14,12 +14,10 @@ const RENDER_CLS = {}
 
 
 //动态加载控件
-const control_ctx = import.meta.glob('./models/*.ts')
-for (let path in control_ctx) {
-  control_ctx[path]().then(module => {
-    let cls = module.default;
-    MODEL_CLS[cls.ClsName] = cls
-  });
+const control_ctx = import.meta.glob('./models/*.ts', { eager: true })
+for (let i in control_ctx) {
+  let cls = control_ctx[i].default;
+  MODEL_CLS[cls.ClsName] = cls;
 }
 
 //动态加载渲染器

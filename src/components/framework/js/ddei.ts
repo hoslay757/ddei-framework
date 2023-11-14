@@ -80,7 +80,10 @@ class DDei {
         ddInstance.render.drawShape();
         return ddInstance;
       } else {
-        throw new Error('实例池中已存在ID相同的实例，初始化失败')
+        let ddInstance = DDei.INSTANCE_POOL[id];
+        ddInstance.initRender();
+        ddInstance.render.drawShape();
+        return ddInstance;
       }
     }
   }

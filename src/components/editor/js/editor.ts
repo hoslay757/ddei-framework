@@ -137,6 +137,11 @@ class DDeiEditor {
    */
   static saveFile: Function;
 
+  /**
+   * 返回文件列表，此方法为外部传入的勾子函数
+   */
+  static goBackFileList: Function;
+
 
   // ============================ 静态方法 ============================
   /**

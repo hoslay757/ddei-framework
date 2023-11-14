@@ -185,6 +185,7 @@ export default {
         firstModel = models[0];
         this.selectedModels = models;
       }
+
       let firstControlDefine = cloneDeep(
         controlOriginDefinies.get(firstModel?.modelCode)
       );

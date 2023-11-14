@@ -10,22 +10,25 @@ const controlOriginDefinies = new Map();
 
 
 const loadToolGroups = async function () {
-  //加载控件定义
-  const control_ctx = import.meta.glob('./controls/*.ts')
-  let loadArray = [];
-  for (const path in control_ctx) {
-    loadArray.push(control_ctx[path]());
-  }
-  let stage_ctx = import.meta.glob('./stage.ts')
-  for (let path in stage_ctx) {
-    loadArray.push(stage_ctx[path]());
-  }
-  let layer_ctx = import.meta.glob('./layer.ts')
-  for (let path in layer_ctx) {
-    loadArray.push(layer_ctx[path]());
-  }
-  await Promise.all(loadArray).then(modules => {
-    modules.forEach(item => {
+  if (groupOriginDefinies.length == 0) {
+    //加载控件定义
+    const control_ctx = import.meta.glob('./controls/*.ts', { eager: true })
+    let loadArray = [];
+    for (let i in control_ctx) {
+      let cls = control_ctx[i];
+      loadArray.push(cls);
+    }
+    let stage_ctx = import.meta.glob('./stage.ts', { eager: true })
+    for (let i in stage_ctx) {
+      let cls = stage_ctx[i];
+      loadArray.push(cls);
+    }
+    let layer_ctx = import.meta.glob('./layer.ts', { eager: true })
+    for (let i in layer_ctx) {
+      let cls = layer_ctx[i];
+      loadArray.push(cls);
+    }
+    loadArray.forEach(item => {
       let controlDefine = item.default;
       controlDefine.styles = item.styles;
       controlDefine.datas = item.datas;
@@ -42,18 +45,16 @@ const loadToolGroups = async function () {
         parseAttrsToGroup(controlDefine, controlDefine.events, DDeiEnumAttributeType.EVENT);
       }
       controlOriginDefinies.set(controlDefine.id, controlDefine);
-    });
-  })
-  loadArray = [];
-  //加载toolbox定义信息
-  let ctx = import.meta.glob('./toolgroups/*.ts')
-  for (let path in ctx) {
-    loadArray.push(ctx[path]());
-  }
+    })
+    loadArray = [];
+    //加载toolbox定义信息
+    let ctx = import.meta.glob('./toolgroups/*.ts', { eager: true })
+    for (let path in ctx) {
+      loadArray.push(ctx[path]);
+    }
 
-  //组的定义
-  await Promise.all(loadArray).then(modules => {
-    modules.forEach(item => {
+    //组的定义
+    loadArray.forEach(item => {
       let group = item.default;
       //读取控件的信息,将实际的控件读取进到group中
       if (group.controls) {
@@ -81,12 +82,12 @@ const loadToolGroups = async function () {
         group.controls = cos;
       }
       groupOriginDefinies.push(group)
+    });
+    //对分组进行排序
+    groupOriginDefinies.sort((a, b) => {
+      return a.orderNo - b.orderNo
     })
-  });
-  //对分组进行排序
-  groupOriginDefinies.sort((a, b) => {
-    return a.orderNo - b.orderNo
-  })
+  }
   //返回克隆后的数据
   return cloneDeep(groupOriginDefinies);
 }

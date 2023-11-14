@@ -7,6 +7,7 @@ import DDeiStoreLocal from '@/components/framework/js/store/local-store';
 import DDeiFileState from '../../enums/file-state';
 import DDeiEditor from '../../editor';
 import DDeiFile from '../../file';
+import DDeiConfig from '@/components/framework/js/config';
 /**
  * 保存文件的总线Command
  */
@@ -38,33 +39,40 @@ class DDeiEditorCommandSaveFile extends DDeiBusCommand {
     let editor = bus.invoker;
     if (editor?.files.length > 0 && (editor.currentFileIndex == 0 || editor.currentFileIndex)) {
       let file = editor?.files[editor.currentFileIndex]
-      //从历史恢复文件
       if (file?.active == DDeiActiveType.ACTIVE) {
         if (file?.state == DDeiFileState.NEW || file?.state == DDeiFileState.MODIFY) {
           file.state = DDeiFileState.SAVING
           file.lastUpdateTime = new Date().getTime()
           let json = file.toJSON();
-          if (json) {
-            //执行保存
-            let storeIns = new DDeiStoreLocal();
-            json.state = DDeiFileState.NONE;
-            storeIns.save(file.id, json).then((data) => {
-              //回写ID
-              if (!file.id) {
-                file.id = data;
-              }
+          json.state = DDeiFileState.NONE;
+          //调用SPI进行保存
+          if (DDeiConfig.saveFile) {
+            DDeiConfig.saveFile(json).then(data => {
               file.state = DDeiFileState.NONE;
-              //遍历histroy，修改当前的histroy记录为最新状态，去掉其它最新状态标记
-              file.histroy.forEach(his => {
-                if (his.isNew == true) {
-                  delete his.isNew
-                }
-              });
-              //将当前的设置
-              file.histroy[file.histroyIdx].isNew = true;
-              editor?.editorViewer?.forceRefreshOpenFilesView();
             });
           }
+
+          // if (json) {
+          //   //执行保存
+          //   let storeIns = new DDeiStoreLocal();
+          //   json.state = DDeiFileState.NONE;
+          //   storeIns.save(file.id, json).then((data) => {
+          //     //回写ID
+          //     if (!file.id) {
+          //       file.id = data;
+          //     }
+          //     file.state = DDeiFileState.NONE;
+          //     //遍历histroy，修改当前的histroy记录为最新状态，去掉其它最新状态标记
+          //     file.histroy.forEach(his => {
+          //       if (his.isNew == true) {
+          //         delete his.isNew
+          //       }
+          //     });
+          //     //将当前的设置
+          //     file.histroy[file.histroyIdx].isNew = true;
+          //     editor?.editorViewer?.forceRefreshOpenFilesView();
+          //   });
+          // }
         }
       }
     }

@@ -4,7 +4,7 @@
 
 <script lang="ts">
 import { userinfo } from "@/lib/api/login/index.js";
-import { loadfile } from "@/lib/api/file";
+import { loadfile, savefile } from "@/lib/api/file";
 import Cookies from "js-cookie";
 import DDeiEditor from "../components/editor/Editor.vue";
 
@@ -14,20 +14,20 @@ export default {
     return {
       ddeiConfig: Object.freeze({
         loadFile: this.openFile,
-        saveFile: this.saveFile
-      })
+        saveFile: this.saveFile,
+        goBackFileList: this.goBackFileList,
+      }),
     };
   },
   //注册组件
   components: {
     DDeiEditor,
   },
-  created() { },
+  created() {},
   mounted() {
     this.getUserInfo();
   },
   methods: {
-
     /**
      * 打开文件
      */
@@ -46,8 +46,32 @@ export default {
     /**
      * 保存文件以及设计
      */
-    async saveFile() {
+    async saveFile(designdata) {
+      //根据ID获取文件的设计以及文件的信息
+      if (designdata) {
+        let postData = {
+          id: designdata.id,
+          name: designdata.name,
+          code: designdata.code,
+          desc: designdata.desc,
+          content: JSON.stringify(designdata),
+        };
+        let fileData = await savefile(postData);
+        if (fileData.status == 200) {
+          if (fileData.data.code == 0) {
+            return fileData.data.data;
+          }
+        }
+      }
+    },
 
+    /**
+     * 返回文件列表页
+     */
+    goBackFileList() {
+      this.$router.push({
+        path: "/",
+      });
     },
 
     /**

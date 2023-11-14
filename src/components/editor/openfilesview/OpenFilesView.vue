@@ -600,6 +600,7 @@ export default {
   border: 1px solid #017fff;
   border-radius: 6px;
   overflow: hidden;
+  z-index: 999;
 }
 
 .close_file_confirm_dialog_content {

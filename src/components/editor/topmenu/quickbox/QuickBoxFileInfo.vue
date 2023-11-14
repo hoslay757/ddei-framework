@@ -2,7 +2,8 @@
   <div class="ddei_editor_file_info">
     <div class="ddei_editor_file_info_content">
       <div class="ddei_editor_file_info_gohome">
-        <img :src="icons['icon-go-left']">
+        <img :src="icons['icon-go-left']"
+             @click="goBackFileList">
       </div>
       <div class="ddei_editor_file_info_icon">
         <img :src="icons['icon-basic-shape']">
@@ -131,6 +132,11 @@ export default {
     this.file = this.editor?.files[this.editor?.currentFileIndex];
   },
   methods: {
+    goBackFileList() {
+      if (DDeiEditor.goBackFileList) {
+        DDeiEditor.goBackFileList();
+      }
+    },
     /**
      * 获取文件最后更新时间
      */
