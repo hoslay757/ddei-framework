@@ -160,18 +160,6 @@ class DDeiCanvasRender {
       this.model.stage.drawing = true;
       this.drawShape();
     }, 20)
-
-    // //绑定鼠标弹起事件
-    // this.canvas.addEventListener('mouseup', (evt: Event) => {
-    //   this.mouseUp(evt)
-    // });
-
-    // //绑定鼠标移动事件
-    // this.canvas.addEventListener('mousemove', (evt: Event) => {
-    //   this.mouseMove(evt)
-    // });
-
-
   }
 
   /**

@@ -339,16 +339,10 @@ class DDeiEditor {
    * 绑定事件
    */
   bindEvent(): void {
-    //绑定键盘事件
-    document.addEventListener('keydown', (evt: Event) => {
-      if (this.keyDown(evt)) {
-        evt.preventDefault()
-      }
-    });
-    document.addEventListener('keyup', (evt: Event) => {
-      this.keyUp(evt)
-      evt.preventDefault()
-    });
+    document.removeEventListener('keydown', this.keyDown);
+    document.removeEventListener('keyup', this.keyUp);
+    document.addEventListener('keydown', this.keyDown);
+    document.addEventListener('keyup', this.keyUp);
   }
 
 
@@ -364,11 +358,13 @@ class DDeiEditor {
 
   }
 
+
   /**
    * 键盘按下
    */
   keyDown(evt: Event): void {
-    return DDeiKeyAction.route(evt, this)
+    DDeiKeyAction.route(evt)
+    evt.preventDefault()
   }
 
   /**
@@ -376,6 +372,7 @@ class DDeiEditor {
    */
   keyUp(evt: Event): void {
     DDeiKeyAction.updateKeyState(evt);
+    evt.preventDefault()
   }
 }
 

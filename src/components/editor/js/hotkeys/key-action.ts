@@ -49,12 +49,9 @@ abstract class DDeiKeyAction {
    * 根据快捷键配置以及当前操作的上下文环境
    * 路由到合理的键行为实例上
    */
-  static route(evt: Event, editor: DDeiEditor): void {
-    if (!editor || !editor.ddInstance) {
-      return;
-    }
+  static route(evt: Event): void {
 
-
+    let editor = DDeiEditor.ACTIVE_INSTANCE;
     //获取实例
     let ddInstance: DDei = editor.ddInstance;
     //获取是否按下ctrl、command、alt、shift等键
