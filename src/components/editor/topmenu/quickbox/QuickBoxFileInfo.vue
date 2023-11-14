@@ -81,7 +81,11 @@
           </div>
           <div class="ddei_editor_file_info_item_filestate_msg"
                v-if="file?.state == 4">
-            正在保存
+            保存中...
+          </div>
+          <div class="ddei_editor_file_info_item_filestate_msg"
+               v-if="file?.state == 5">
+            发布中...
           </div>
           <div class="ddei_editor_file_info_item_filestate_time">{{getFileLastTime()}}</div>
         </div>

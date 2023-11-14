@@ -41,22 +41,32 @@ class DDeiEditorCommandSaveFile extends DDeiBusCommand {
       let file = editor?.files[editor.currentFileIndex]
       if (file?.active == DDeiActiveType.ACTIVE) {
         if (file?.state == DDeiFileState.NEW || file?.state == DDeiFileState.MODIFY) {
-          file.state = DDeiFileState.SAVING
+          let oldState = file.state;
           file.lastUpdateTime = new Date().getTime()
           let json = file.toJSON();
           json.state = DDeiFileState.NONE;
           if (data.publish == 1) {
+            file.state = DDeiFileState.PUBLISHING
             //调用SPI进行发布
             if (DDeiConfig.publishFile) {
               DDeiConfig.publishFile(json).then(data => {
-                file.state = DDeiFileState.NONE;
+                if (data.result == 1) {
+                  file.state = DDeiFileState.NONE;
+                } else if (data.result != 4) {
+                  file.state = oldState
+                }
               });
             }
           } else {
+            file.state = DDeiFileState.SAVING
             //调用SPI进行保存
             if (DDeiConfig.saveFile) {
               DDeiConfig.saveFile(json).then(data => {
-                file.state = DDeiFileState.NONE;
+                if (data.result == 1) {
+                  file.state = DDeiFileState.NONE;
+                } else if (data.result != 4) {
+                  file.state = oldState
+                }
               });
             }
           }

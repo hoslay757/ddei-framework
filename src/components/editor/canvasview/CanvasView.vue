@@ -94,6 +94,7 @@ export default {
           file.name = fileData.name;
           file.path = fileData.path;
           file.desc = fileData.desc;
+          file.version = fileData.version;
         } else {
           file = new DDeiFile({
             id: fileData.id,
@@ -101,6 +102,7 @@ export default {
             name: fileData.name,
             path: fileData.path,
             desc: fileData.desc,
+            version: fileData.version,
             sheets: [
               new DDeiSheet({
                 name: "新建页面",

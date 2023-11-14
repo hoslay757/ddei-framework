@@ -1,5 +1,29 @@
 <template>
   <DDeiEditor :config="ddeiConfig"></DDeiEditor>
+
+  <div class="publish_file_dialog"
+       v-show="publishFileDialogShow">
+    <div class="content">
+      <div class="title">
+        发布文件
+      </div>
+      <div style="margin-top:10px;padding:10px;">
+        是否发布：【{{ publishPostData?.name+" V"+publishPostData?.version }}】？
+      </div>
+      <div class="buttons">
+        <div class="button_ok"
+             style="margin-top:20px;"
+             @click="submitPublishFile()">
+          <span>确定</span>
+        </div>
+        <div class="button_cancel"
+             style="margin-top:20px;"
+             @click="showPublishFileDialog()">
+          <span>取消</span>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -12,6 +36,7 @@ export default {
   props: {},
   data() {
     return {
+      publishFileDialogShow: false,
       ddeiConfig: Object.freeze({
         loadFile: this.openFile,
         saveFile: this.saveFile,
@@ -60,7 +85,9 @@ export default {
         let fileData = await savefile(postData);
         if (fileData.status == 200) {
           if (fileData.data.code == 0) {
-            return fileData.data.data;
+            return { result: 1, msg: "" };
+          } else {
+            return { result: 2, msg: "保存失败" };
           }
         }
       }
@@ -71,21 +98,55 @@ export default {
      */
     async publishFile(designdata) {
       //根据ID获取文件的设计以及文件的信息
+      this.publishPostData = null;
       if (designdata) {
         let postData = {
           id: designdata.id,
           name: designdata.name,
           code: designdata.code,
           desc: designdata.desc,
+          version: designdata.version,
           content: JSON.stringify(designdata),
         };
-        let fileData = await publishfile(postData);
-        if (fileData.status == 200) {
-          if (fileData.data.code == 0) {
-            return fileData.data.data;
+        this.publishPostData = Object.freeze(postData);
+        //缓存数据，弹出确认框进行确认
+        this.showPublishFileDialog();
+        //等待弹出框确认
+        let dialogResult = await this.waitingPublishDialog();
+        if (dialogResult == 1) {
+          if (this.publishPostData) {
+            let fileData = await publishfile(this.publishPostData);
+            if (fileData.status == 200) {
+              if (fileData.data.code == 0) {
+                this.showPublishFileDialog();
+                return { result: 1, msg: "" };
+              } else {
+                return { result: 2, msg: "发布失败" };
+              }
+            }
           }
+        } else {
+          return { result: 3, msg: "发布取消" };
         }
       }
+    },
+
+    /**
+     * 等待弹框确认
+     */
+    async waitingPublishDialog() {
+      this.publishDialogState = 0;
+      while (this.publishDialogState == 0) {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      }
+      return this.publishDialogState;
+    },
+
+    /**
+     * 确认发布文件
+     */
+    submitPublishFile() {
+      this.publishDialogState = 1;
     },
 
     /**
@@ -97,6 +158,16 @@ export default {
       });
     },
 
+    /**
+     * 弹出发布文件弹出框
+     */
+    showPublishFileDialog() {
+      this.publishFileDialogShow = !this.publishFileDialogShow;
+      if (!this.publishFileDialogShow) {
+        this.publishPostData = null;
+        this.publishDialogState = -1;
+      }
+    },
     /**
      * 获取登录用户信息
      */
@@ -117,3 +188,85 @@ export default {
   },
 };
 </script>
+<style lang="less" scoped>
+/* .删除文件弹框 */
+.publish_file_dialog {
+  z-index: 99;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: calc(100vh);
+
+  .content {
+    position: absolute;
+    width: 300px;
+    height: 180px;
+    left: calc(50% - 150px);
+    top: calc(50% - 90px);
+    background: #fff;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 17px;
+    color: black;
+
+    .title {
+      width: 100%;
+      font-size: 20px;
+      color: #3662ec;
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .content_input {
+      width: 80%;
+      height: 30px;
+      font-size: 18px;
+    }
+
+    .msg {
+      width: 100%;
+      height: 20px;
+      font-size: 12px;
+      color: red;
+      text-align: right;
+      padding-right: 30px;
+    }
+
+    .buttons {
+      width: 80%;
+      display: block;
+      margin: auto;
+
+      > div {
+        width: 45%;
+        height: 40px;
+        cursor: pointer;
+        cursor: pointer;
+        border-radius: 2px;
+        text-align: center;
+        padding-top: 6px;
+
+        > span {
+          font-size: 15px;
+          color: white;
+          text-align: center;
+          pointer-events: none;
+        }
+      }
+
+      .button_ok {
+        background-color: #3662ec;
+        border-color: #3662ec;
+        float: left;
+      }
+
+      .button_cancel {
+        background-color: rgb(210, 210, 210);
+        border-color: rgb(210, 210, 210);
+        float: right;
+      }
+    }
+  }
+}
+</style>
