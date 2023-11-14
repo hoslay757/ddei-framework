@@ -43,6 +43,20 @@ class DDeiEditor {
   // 键盘对齐,开启后允许通过上下左右来改变控件位置,每次改变位置的大小为GLOBAL_HELP_LINE_WEIGHT
   static GLOBAL_KEYBOARD_ALIGN_ENABLE: boolean = true;
 
+  //是否允许同时打开多个文件，开启后展示多文件列表，并可以切换
+  static GLOBAL_ALLOW_OPEN_MULT_FILES: boolean = true;
+
+  //是否允许同时打开多个Sheet，开启后展示多Sheet，并可以切换
+  static GLOBAL_ALLOW_OPEN_MULT_SHEETS: boolean = true;
+
+  //是否允许同时打开多个图层，开启后展示图层切换按钮
+  static GLOBAL_ALLOW_OPEN_MULT_LAYERS: boolean = true;
+
+  //是否允许快捷编辑颜色
+  static GLOBAL_ALLOW_QUICK_COLOR: boolean = true;
+
+
+
   /**
   * 所有特殊按键的按下状态，当键盘按下时会触发事件，并修改当前全局状态
   * 通过全局状态可以判断一些键鼠组合操作，如按下ctrl和鼠标左键时追加选择
@@ -194,7 +208,6 @@ class DDeiEditor {
     if (config) {
       //普通值、JSON、数组、MAP
       for (let i in config) {
-
         let outConfigValue = config[i];
         let configValue = DDeiEditor[i];
         if (i != "HOT_KEY_MAPPING") {

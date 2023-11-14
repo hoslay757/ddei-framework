@@ -1,4 +1,4 @@
-import { MODEL_CLS } from '../../config';
+import DDeiConfig, { MODEL_CLS } from '../../config';
 import DDeiEnumBusCommandType from '../../enums/bus-command-type';
 import DDeiEnumOperateState from '../../enums/operate-state';
 import DDeiBus from '../bus';
@@ -33,36 +33,33 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
    * @param evt 事件对象引用
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
+    if (DDeiConfig.GLOBAL_ALLOW_STAGE_RATIO) {
+      let stage = bus.ddInstance.stage;
+      if (stage && data.oldValue && data.newValue && data.oldValue != data.newValue) {
+        let scaleSize = data.newValue / data.oldValue
+        //缩放矩阵
+        let scaleMatrix = new Matrix3(
+          scaleSize, 0, 0,
+          0, scaleSize, 0,
+          0, 0, 1);
 
-    let stage = bus.ddInstance.stage;
-    if (stage && data.oldValue && data.newValue && data.oldValue != data.newValue) {
-      let scaleSize = data.newValue / data.oldValue
-      //缩放矩阵
-      let scaleMatrix = new Matrix3(
-        scaleSize, 0, 0,
-        0, scaleSize, 0,
-        0, 0, 1);
-
-      stage.layers.forEach(layer => {
-        layer.midList.forEach(mid => {
-          let model = layer.models.get(mid);
-          model.transVectors(scaleMatrix)
-        })
-      });
-      let vbn = stage.wpv.y / stage.height;
-      let hbn = stage.wpv.x / stage.width;
-      stage.width = stage.width * scaleSize
-      stage.height = stage.height * scaleSize
-      //计算位置比例,保持位置比例
-      stage.wpv.y = stage.height * vbn
-      stage.wpv.x = stage.width * hbn
-
-
-
-      return true;
-    } else {
-      return false;
+        stage.layers.forEach(layer => {
+          layer.midList.forEach(mid => {
+            let model = layer.models.get(mid);
+            model.transVectors(scaleMatrix)
+          })
+        });
+        let vbn = stage.wpv.y / stage.height;
+        let hbn = stage.wpv.x / stage.width;
+        stage.width = stage.width * scaleSize
+        stage.height = stage.height * scaleSize
+        //计算位置比例,保持位置比例
+        stage.wpv.y = stage.height * vbn
+        stage.wpv.x = stage.width * hbn
+        return true;
+      }
     }
+    return false
 
   }
 

@@ -203,8 +203,10 @@ class DDeiCanvasRender {
    */
   mouseWheel(evt: Event) {
     //放大缩小
-    if (evt.wheelDeltaY == 240 || evt.wheelDeltaY == -240) {
-      this.mouseScale(evt.wheelDeltaY, evt)
+    if ((evt.wheelDeltaY == 240 || evt.wheelDeltaY == -240)) {
+      if (DDeiConfig.GLOBAL_ALLOW_STAGE_RATIO) {
+        this.mouseScale(evt.wheelDeltaY, evt)
+      }
     }
     //滚动平移
     else if (evt.wheelDeltaX || evt.wheelDeltaY) {

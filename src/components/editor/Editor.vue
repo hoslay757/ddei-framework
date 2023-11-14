@@ -17,9 +17,9 @@
         </div>
         <div class="middle"
              id="ddei_editor_frame_middle">
-          <OpenFilesView v-if="refreshOpenFilesView"></OpenFilesView>
+          <OpenFilesView v-if="allowOpenMultFiles && refreshOpenFilesView"></OpenFilesView>
           <CanvasView id="ddei_editor_canvasview"></CanvasView>
-          <QuickColorView></QuickColorView>
+          <QuickColorView v-if="allowQuickColor"></QuickColorView>
         </div>
         <div style="flex:0 0 330px"
              class="right"
@@ -85,6 +85,8 @@ export default {
       refreshPropertyView: true,
       refreshMenu: true,
       refreshTopMenuView: true,
+      allowOpenMultFiles: true,
+      allowQuickColor: true,
     };
   },
   //注册组件
@@ -111,6 +113,8 @@ export default {
     } else {
       this.editor = DDeiEditor.newInstance("ddei_editor_ins", "ddei_editor");
     }
+    this.allowOpenMultFiles = DDeiEditor.GLOBAL_ALLOW_OPEN_MULT_FILES;
+    this.allowQuickColor = DDeiEditor.GLOBAL_ALLOW_QUICK_COLOR;
   },
   mounted() {
     //加载外部配置文件
