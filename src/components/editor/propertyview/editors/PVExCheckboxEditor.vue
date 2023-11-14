@@ -1,24 +1,19 @@
 <template>
   <div :class="{ 'ddei_pv_editor_excheckbox': true, 'ddei_pv_editor_excheckbox_disabled': attrDefine.readonly }">
-    <PVBaseCombox :attrDefine="attrDefine"
-                  :searchMethod="doSearch"
-                  ref="combox"
-                  :canSearch="attrDefine.canSearch">
+    <PVBaseCombox :attrDefine="attrDefine" :searchMethod="doSearch" ref="combox" :canSearch="attrDefine.canSearch">
       <div class="itemboxs"
-           :style="{ width: width ? width + 'px' : '', height: height ? height + 'px' : '', 'grid-template-columns': gridTemplateColumns, 'grid-template-rows': gridTemplateRows }">
+        :style="{ width: width ? width + 'px' : '', height: height ? height + 'px' : '', 'grid-template-columns': gridTemplateColumns, 'grid-template-rows': gridTemplateRows }">
         <div :style="{ width: attrDefine?.itemStyle?.width + 'px', height: attrDefine?.itemStyle?.height + 'px' }"
-             :class="{ 'itembox': true, 'itembox_selected': attrDefine?.value && attrDefine?.value?.indexOf(item.value) != -1, 'itembox_deleted': item.deleted, 'itembox_disabled': item.disabled || (attrDefine?.itemStyle?.maxSelect && attrDefine?.itemStyle?.maxSelect <= attrDefine?.value?.length && attrDefine?.value?.indexOf(item.value) == -1), 'itembox_underline': item.underline, 'itembox_bold': item.bold }"
-             v-for="item in dataSource"
-             @click="!item.disabled && (!attrDefine?.itemStyle?.maxSelect || attrDefine?.itemStyle?.maxSelect > attrDefine?.value?.length || attrDefine?.value?.indexOf(item.value) != -1) && valueChange(item.value, $event)"
-             :title="item.desc">
-          <div v-if="item.img"
-               class="itembox_img">
-            <img :style="{ width: attrDefine?.itemStyle?.imgWidth + 'px', height: attrDefine?.itemStyle?.imgHeight + 'px' }"
-                 :src="item.img" />
+          :class="{ 'itembox': true, 'itembox_selected': attrDefine?.value && attrDefine?.value?.indexOf(item.value) != -1, 'itembox_deleted': item.deleted, 'itembox_disabled': item.disabled || (attrDefine?.itemStyle?.maxSelect && attrDefine?.itemStyle?.maxSelect <= attrDefine?.value?.length && attrDefine?.value?.indexOf(item.value) == -1), 'itembox_underline': item.underline, 'itembox_bold': item.bold }"
+          v-for="item in dataSource"
+          @click="!item.disabled && (!attrDefine?.itemStyle?.maxSelect || attrDefine?.itemStyle?.maxSelect > attrDefine?.value?.length || attrDefine?.value?.indexOf(item.value) != -1) && valueChange(item.value, $event)"
+          :title="item.desc">
+          <div v-if="item.img" class="itembox_img">
+            <img
+              :style="{ width: attrDefine?.itemStyle?.imgWidth + 'px', height: attrDefine?.itemStyle?.imgHeight + 'px' }"
+              :src="item.img" />
           </div>
-          <div class="itembox_text"
-               v-if="item.text"
-               :style="{ 'font-family': item.fontFamily }">{{ item.text }}</div>
+          <div class="itembox_text" v-if="item.text" :style="{ 'font-family': item.fontFamily }">{{ item.text }}</div>
         </div>
       </div>
     </PVBaseCombox>
@@ -32,8 +27,6 @@ import DDeiEnumBusCommandType from "../../../framework/js/enums/bus-command-type
 import DDeiAbstractArrtibuteParser from "../../../framework/js/models/attribute/parser/attribute-parser";
 import PVBaseCombox from "./PVBaseCombox.vue";
 import DDeiUtil from "@/components/framework/js/util";
-import CONFIGS from "../../js/config";
-import ICONS from "../../js/icon";
 import DDeiEditorUtil from "../../js/util/editor-util";
 import DDeiEditorEnumBusCommandType from "../../js/enums/editor-command-type";
 
@@ -74,7 +67,7 @@ export default {
     PVBaseCombox,
   },
   watch: {},
-  created() {},
+  created() { },
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
@@ -259,8 +252,7 @@ export default {
   margin-top: 4px;
 }
 
-.ddei_pv_editor_excheckbox_disabled {
-}
+.ddei_pv_editor_excheckbox_disabled {}
 
 .ddei_combox_show_dialog_content .itemboxs {
   border-radius: 4px;
