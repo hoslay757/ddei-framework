@@ -118,7 +118,7 @@ export default {
         this.editor.addFile(file);
         file.state = DDeiFileState.NONE;
       }
-      this.editor.currentFileIndex = this.editor.files.length - 1;
+      this.editor.currentFileIndex = this.editor.files.indexOf(file);
       file.active = DDeiActiveType.ACTIVE;
       let sheets = file?.sheets;
 
