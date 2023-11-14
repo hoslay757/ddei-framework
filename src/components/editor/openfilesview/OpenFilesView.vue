@@ -115,6 +115,7 @@ export default {
           break;
         }
       }
+
       this.openIndex = activeIndex + 1 - this.maxOpenSize;
       if (this.openIndex < 0) {
         this.openIndex = 0;

@@ -121,7 +121,6 @@ export default {
       this.editor.currentFileIndex = this.editor.files.indexOf(file);
       file.active = DDeiActiveType.ACTIVE;
       let sheets = file?.sheets;
-
       if (file && sheets && ddInstance) {
         file.changeSheet(file.currentSheetIndex);
 
@@ -147,6 +146,7 @@ export default {
         ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
         ddInstance.bus.executeAll();
         this.editor.editorViewer?.forceRefreshBottomMenu();
+        this.editor.editorViewer?.forceRefreshOpenFilesView();
         this.editor.editorViewer?.forceRefreshTopMenuView();
         this.editor.editorViewer?.forcePropertyView();
       }
