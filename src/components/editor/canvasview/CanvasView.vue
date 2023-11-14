@@ -1,13 +1,7 @@
 <template>
-  <div :id="id"
-       class="ddei_editor_canvasview"
-       @mousedown="mouseDown($event)"
-       ondragstart="return false;"
-       @mousewheel="mouseWheel($event)"
-       @dragover="createControlOver"
-       @drop="createControlDrop"
-       @dragleave="createControlCancel"
-       @contextmenu.prevent>
+  <div :id="id" class="ddei_editor_canvasview" @mousedown="mouseDown($event)" ondragstart="return false;"
+    @mousewheel="mouseWheel($event)" @dragover="createControlOver" @drop="createControlDrop"
+    @dragleave="createControlCancel" @contextmenu.prevent>
   </div>
 </template>
 
@@ -29,6 +23,7 @@ import DDeiFileState from "../js/enums/file-state";
 import DDeiActiveType from "../js/enums/active-type";
 import { throttle } from "lodash";
 import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
+import DDeiStage from "@/components/framework/js/models/stage";
 
 export default {
   name: "DDei-Editor-CanvasView",
@@ -107,7 +102,7 @@ export default {
               new DDeiSheet({
                 name: "新建页面",
                 desc: "新建页面",
-                stage: ddInstance.stage,
+                stage: DDeiStage.initByJSON({ id: "stage_1" }, { currentDdInstance: ddInstance }),
                 active: DDeiActiveType.ACTIVE,
               }),
             ],
