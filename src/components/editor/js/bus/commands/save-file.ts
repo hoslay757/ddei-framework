@@ -40,7 +40,7 @@ class DDeiEditorCommandSaveFile extends DDeiBusCommand {
     if (editor?.files.length > 0 && (editor.currentFileIndex == 0 || editor.currentFileIndex)) {
       let file = editor?.files[editor.currentFileIndex]
       if (file?.active == DDeiActiveType.ACTIVE) {
-        if (file?.state == DDeiFileState.NEW || file?.state == DDeiFileState.MODIFY) {
+        if (file?.state == DDeiFileState.NEW || file?.state == DDeiFileState.MODIFY || data.publish == 1) {
           let oldState = file.state;
           file.lastUpdateTime = new Date().getTime()
           let json = file.toJSON();
