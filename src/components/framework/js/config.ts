@@ -626,6 +626,16 @@ class DDeiConfig {
    */
   static EVENT_CONTROL_DRAG_AFTER: Function;
 
+  /**
+   * 控件删除前，此方法为外部传入的勾子函数
+   */
+  static EVENT_CONTROL_DEL_BEFORE: Function;
+
+  /**
+   * 控件删除后，此方法为外部传入的勾子函数
+   */
+  static EVENT_CONTROL_DEL_AFTER: Function;
+
 
   /**
   * 根据配置文件的配置，将模型与渲染器绑定

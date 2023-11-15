@@ -119,6 +119,8 @@ class DDei {
     DDeiConfig.EVENT_CONTROL_SELECT_BEFORE = DDei.beforeOperateValid
     DDeiConfig.EVENT_CONTROL_CREATE_BEFORE = DDei.beforeOperateValid
     DDeiConfig.EVENT_CONTROL_DRAG_BEFORE = DDei.beforeOperateValid
+    DDeiConfig.EVENT_CONTROL_DEL_BEFORE = DDei.beforeOperateValid
+
   }
 
   // ============================ 属性 ============================

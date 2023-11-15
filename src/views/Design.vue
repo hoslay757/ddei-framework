@@ -46,13 +46,15 @@ export default {
         // AC_DESIGN_SELECT: false,
         // AC_DESIGN_DRAG: false,
         AC_DESIGN_CREATE_DDeiRectangle: false,
-        AC_DESIGN_SELECT_DDeiRectangle: false,
+        AC_DESIGN_SELECT_DDeiRectangle: true,
         AC_DESIGN_DRAG_DDeiRectangle: false,
+        AC_DESIGN_DEL_DDeiRectContainer: false,
         // EVENT_CONTROL_SELECT_BEFORE: this.selectBefore,
         EVENT_CONTROL_SELECT_AFTER: this.selectAfter,
         // EVENT_CONTROL_CREATE_BEFORE: this.createBefore,
         EVENT_CONTROL_CREATE_AFTER: this.createAfter,
         EVENT_CONTROL_DRAG_AFTER: this.dragAfter,
+        EVENT_CONTROL_DEL_AFTER: this.removeAfter,
       }),
     };
   },
@@ -65,6 +67,14 @@ export default {
     this.getUserInfo();
   },
   methods: {
+    /**
+     * 删除后
+     */
+    removeAfter(operate, models, ddInstance, evt) {
+      models.forEach((model) => {
+        console.log("删除:" + model.id);
+      });
+    },
     /**
      * 拖拽后
      */
