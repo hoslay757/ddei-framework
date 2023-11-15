@@ -2,6 +2,8 @@ import DDei from "@/components/framework/js/ddei";
 import DDeiEnumControlState from "@/components/framework/js/enums/control-state";
 import DDeiKeyAction from "./key-action";
 import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type";
+import DDeiUtil from "@/components/framework/js/util";
+import DDeiEnumOperateType from "@/components/framework/js/enums/operate-type";
 
 /**
  * 键行为:全选
@@ -25,8 +27,15 @@ class DDeiKeyActionAllSelect extends DDeiKeyAction {
       } else {
         //当前激活的图层
         let layer = ddInstance.stage.layers[ddInstance.stage.layerIndex]
+        //加载事件的配置
+        let selectBefore = DDeiUtil.getConfigValue(
+          "EVENT_CONTROL_SELECT_BEFORE",
+          ddInstance
+        );
 
-        ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, { models: layer.models, value: DDeiEnumControlState.SELECTED }, evt);
+        if (!selectBefore || selectBefore(DDeiEnumOperateType.SELECT, Array.from(layer.models.values()), ddInstance, evt)) {
+          ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, { models: layer.models, value: DDeiEnumControlState.SELECTED }, evt);
+        }
       }
       //渲染图形
       ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);

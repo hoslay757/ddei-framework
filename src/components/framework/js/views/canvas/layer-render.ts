@@ -620,11 +620,23 @@ class DDeiLayerCanvasRender {
           //当前操作数据
           let pushDatas = [];
           let includedModels: Map<string, DDeiAbstractShape> = this.stageRender.selector.getIncludedModels();
-          this.stageRender.currentOperateContainer = this.model;
-          includedModels.forEach((model, key) => {
-            pushDatas.push({ id: model.id, value: DDeiEnumControlState.SELECTED });
-          });
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, pushDatas, evt);
+
+          //加载事件的配置
+          let selectBefore = DDeiUtil.getConfigValue(
+            "EVENT_CONTROL_SELECT_BEFORE",
+            this.stage?.ddInstance
+          );
+
+          if (!selectBefore || selectBefore(DDeiEnumOperateType.SELECT, Array.from(includedModels.values()), this.stage?.ddInstance, evt)) {
+            this.stageRender.currentOperateContainer = this.model;
+            includedModels.forEach((model, key) => {
+              pushDatas.push({ id: model.id, value: DDeiEnumControlState.SELECTED });
+            });
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, pushDatas, evt);
+          } else {
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
+            this.stageRender.operateState = DDeiEnumOperateState.NONE
+          }
           break;
         //抓手工作中
         case DDeiEnumOperateState.GRAB_WORKING:

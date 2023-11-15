@@ -46,7 +46,7 @@ export default {
         // AC_DESIGN_SELECT: false,
         // AC_DESIGN_DRAG: false,
         AC_DESIGN_CREATE_DDeiRectangle: false,
-        AC_DESIGN_SELECT_DDeiRectangle: true,
+        AC_DESIGN_SELECT_DDeiRectangle: false,
         AC_DESIGN_DRAG_DDeiRectangle: false,
         // EVENT_CONTROL_SELECT_BEFORE: this.selectBefore,
         EVENT_CONTROL_SELECT_AFTER: this.selectAfter,
