@@ -855,10 +855,17 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
       "EVENT_CONTROL_CREATE_BEFORE",
       stage.ddInstance
     );
+    let dragBefore = DDeiUtil.getConfigValue(
+      "EVENT_CONTROL_DRAG_BEFORE",
+      stage.ddInstance
+    );
     //选中前
-    if (mode == 'cut' ||
-      !createBefore ||
-      createBefore(DDeiEnumOperateType.CREATE, models, stage.ddInstance)
+    if ((mode == 'copy' &&
+      (!createBefore ||
+        createBefore(DDeiEnumOperateType.CREATE, models, stage.ddInstance))) ||
+      (mode == 'cut' &&
+        (!dragBefore ||
+          dragBefore(DDeiEnumOperateType.DRAG, models, stage.ddInstance)))
     ) {
       //重新计算坐标，基于粘贴的中心点
       let outRect = DDeiAbstractShape.getOutRectByPV(models);
@@ -883,9 +890,19 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
       stage.ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeContainer, { newContainer: container, models: models }, evt);
       stage.ddInstance.bus.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
       stage.ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeSelect, { models: models, value: DDeiEnumControlState.SELECTED }, evt);
-      stage.ddInstance.bus.push(DDeiEnumBusCommandType.NodifyControlCreated, {
-        models: models,
-      });
+      if (mode == 'copy') {
+        stage.ddInstance.bus.push(DDeiEnumBusCommandType.NodifyControlCreated, {
+          models: models,
+        });
+      } else if (mode == 'cut') {
+        let dragAfter = DDeiUtil.getConfigValue(
+          "EVENT_CONTROL_DRAG_AFTER",
+          stage.ddInstance
+        );
+        if (dragAfter) {
+          dragAfter(DDeiEnumOperateType.DRAG, models, stage.ddInstance, evt)
+        }
+      }
     }
   }
 
