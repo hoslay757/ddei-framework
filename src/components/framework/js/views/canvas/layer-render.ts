@@ -581,7 +581,7 @@ class DDeiLayerCanvasRender {
       return;
     }
     //ctrl、alt键的按下状态
-    let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
+
     let isAlt = DDei.KEY_DOWN_STATE.get("alt");
     let ex = evt.offsetX;
     let ey = evt.offsetY;
@@ -608,31 +608,10 @@ class DDeiLayerCanvasRender {
         case DDeiEnumOperateState.CONTROL_CONFIRMING:
           this.model.shadowControls = [];
           this.stageRender.currentOperateShape.render.mouseUp(evt);
-          //按下ctrl增加选中，或取消当前选中
-          let pContainerModel = this.stageRender.currentOperateShape.pModel;
-          //当前操作组合
-          let pushMulits = [];
-          //当前操作层级容器
-          this.stageRender.currentOperateContainer = pContainerModel;
-          if (isCtrl) {
-            //判断当前操作控件是否选中
-            if (this.stageRender.currentOperateShape.state == DDeiEnumControlState.SELECTED) {
-              pushMulits.push({ actionType: DDeiEnumBusCommandType.ModelChangeSelect, data: [{ id: this.stageRender.currentOperateShape.id, value: DDeiEnumControlState.DEFAULT }] });
-            } else {
-              //选中当前操作控件
-              pushMulits.push({ actionType: DDeiEnumBusCommandType.ModelChangeSelect, data: [{ id: this.stageRender.currentOperateShape.id, value: DDeiEnumControlState.SELECTED }] });
-            }
-          }
-          //没有按下ctrl键，取消选中非当前控件
-          else {
-            pushMulits.push({ actionType: DDeiEnumBusCommandType.CancelCurLevelSelectedModels, data: { ignoreModels: [this.stageRender.currentOperateShape] } });
-            pushMulits.push({ actionType: DDeiEnumBusCommandType.ModelChangeSelect, data: [{ id: this.stageRender.currentOperateShape.id, value: DDeiEnumControlState.SELECTED }] });
-          }
           //如果有格式刷
           if (this.stage?.brushData) {
-            pushMulits.push({ actionType: DDeiEnumBusCommandType.CopyStyle, data: { models: [this.stageRender.currentOperateShape], brushData: this.stage.brushData } });
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CopyStyle, { models: [this.stageRender.currentOperateShape], brushData: this.stage.brushData }, evt)
           }
-          this.stage?.ddInstance?.bus?.pushMulit(pushMulits, evt);
           break;
         //选择器工作中
         case DDeiEnumOperateState.SELECT_WORKING:

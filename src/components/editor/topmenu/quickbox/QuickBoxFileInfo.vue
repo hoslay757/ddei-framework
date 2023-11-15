@@ -113,6 +113,7 @@ import DDei from "../../../framework/js/ddei";
 import DDeiStage from "../../../framework/js/models/stage";
 import DDeiSheet from "../../js/sheet";
 import DDeiUtil from "../../../framework/js/util";
+import DDeiEditorUtil from "../../js/util/editor-util";
 
 export default {
   name: "DDei-Editor-File-Info",
@@ -138,8 +139,13 @@ export default {
   },
   methods: {
     goBackFileList() {
-      if (this.editor?.goBackFileList) {
-        this.editor?.goBackFileList();
+      //调用SPI进行保存
+      let goBackFileList = DDeiEditorUtil.getConfigValue(
+        "EVENT_GOBACK_FILE_LIST",
+        this.editor
+      );
+      if (goBackFileList) {
+        goBackFileList();
       }
     },
     /**

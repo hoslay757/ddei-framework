@@ -31,6 +31,7 @@ import { userinfo } from "@/lib/api/login/index.js";
 import { loadfile, savefile, publishfile } from "@/lib/api/file";
 import Cookies from "js-cookie";
 import DDeiEditor from "../components/editor/Editor.vue";
+import DDeiEnumOperateType from "../components/framework/js/enums/operate-type";
 
 export default {
   props: {},
@@ -38,11 +39,16 @@ export default {
     return {
       publishFileDialogShow: false,
       ddeiConfig: Object.freeze({
-        loadFile: this.openFile,
-        saveFile: this.saveFile,
-        goBackFileList: this.goBackFileList,
-        publishFile: this.publishFile,
-        AC_DESIGN_CREATE_DDeiLayer: false,
+        EVENT_LOAD_FILE: this.openFile,
+        EVENT_SAVE_FILE: this.saveFile,
+        EVENT_GOBACK_FILE_LIST: this.goBackFileList,
+        EVENT_PUBLISH_FILE: this.publishFile,
+        AC_DESIGN_SELECT: false,
+        AC_DESIGN_CREATE_DDeiRectangle: false,
+        EVENT_CONTROL_SELECT_BEFORE: this.selectBefore,
+        EVENT_CONTROL_SELECT_AFTER: this.selectAfter,
+        EVENT_CONTROL_CREATE_BEFORE: this.createBefore,
+        EVENT_CONTROL_CREATE_AFTER: this.createAfter,
       }),
     };
   },
@@ -55,6 +61,35 @@ export default {
     this.getUserInfo();
   },
   methods: {
+    /**
+     * 创建后
+     */
+    createAfter(operate, models, ddInstance, evt) {
+      models.forEach((model) => {
+        console.log("创建后:" + model.id);
+      });
+    },
+    /**
+     * 创建前
+     */
+    createBefore() {
+      console.log("创建前");
+      return true;
+    },
+    /**
+     * 选择前
+     */
+    selectBefore() {
+      console.log("选择前");
+      return true;
+    },
+
+    /**
+     * 选择后
+     */
+    selectAfter() {
+      console.log("选择后");
+    },
     /**
      * 打开文件
      */

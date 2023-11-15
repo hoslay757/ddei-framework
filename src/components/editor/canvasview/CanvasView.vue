@@ -30,6 +30,7 @@ import DDeiActiveType from "../js/enums/active-type";
 import { throttle } from "lodash";
 import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
 import DDeiStage from "@/components/framework/js/models/stage";
+import DDeiEditorUtil from "../js/util/editor-util";
 
 export default {
   name: "DDei-Editor-CanvasView",
@@ -74,7 +75,11 @@ export default {
     ddInstance.bus.invoker = this.editor;
     this.editor.bus = ddInstance.bus;
     //基于参数打开一个文件或一组文件
-    this.editor.loadFile().then((fileData) => {
+    let loadFile = DDeiEditorUtil.getConfigValue(
+      "EVENT_LOAD_FILE",
+      this.editor
+    );
+    loadFile().then((fileData) => {
       //当前已打开的文件
       let file = null;
       //查看当前file是否已打开
@@ -371,35 +376,28 @@ export default {
                   newContainer: lastOnContainer,
                   oldContainer: layer,
                   models: [this.editor.creatingControl],
-                },
-                e
+                }
               );
             }
           }
           //移除其他选中
           this.editor.bus.push(
             DDeiEnumBusCommandType.CancelCurLevelSelectedModels,
-            { container: layer, curLevel: true },
-            e
+            { container: layer, curLevel: true }
           );
 
-          this.editor.bus.push(
-            DDeiEnumBusCommandType.ModelChangeSelect,
-            [
-              {
-                id: this.editor.creatingControl.id,
-                value: DDeiEnumControlState.SELECTED,
-              },
-            ],
-            e
-          );
+          this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeSelect, [
+            {
+              id: this.editor.creatingControl.id,
+              value: DDeiEnumControlState.SELECTED,
+            },
+          ]);
 
+          this.editor.bus.push(DDeiEnumBusCommandType.NodifyControlCreated, {
+            models: [this.editor.creatingControl],
+          });
           //清除临时变量
-          this.editor.bus.push(
-            DDeiEnumBusCommandType.ClearTemplateVars,
-            null,
-            e
-          );
+          this.editor.bus.push(DDeiEnumBusCommandType.ClearTemplateVars);
           this.editor.bus.push(DDeiEnumBusCommandType.NodifyChange);
           this.editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
           //渲染图形

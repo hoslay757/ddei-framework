@@ -1,6 +1,8 @@
 import DDeiBus from './bus/bus'
 import DDeiConfig from './config'
 import DDeiEnumState from './enums/ddei-state'
+import DDeiEnumOperateType from './enums/operate-type'
+import DDeiAbstractShape from './models/shape'
 import DDeiStage from './models/stage'
 import DDeiUtil from './util'
 
@@ -30,6 +32,10 @@ class DDei {
   */
   static KEY_DOWN_STATE: Map<string, boolean> = new Map();
 
+
+
+  // ============================ 静态方法 ============================
+
   /**
    * 同步KEY_DOWN_STATE状态
    * @param stateMap 状态
@@ -43,7 +49,27 @@ class DDei {
     }
   }
 
-  // ============================ 静态方法 ============================
+  /**
+   * 选中前，一般用于校验，默认根据权限配置参数进行校验
+   */
+  static beforeOperateValid(operate: DDeiEnumOperateType, models: DDeiAbstractShape[], ddInstance: DDei, evt: Event): boolean {
+    //获取权限
+    let modeName = DDeiUtil.getConfigValue("MODE_NAME", ddInstance);
+    for (let i = 0; i < models.length; i++) {
+      let access = DDeiUtil.isAccess(
+        operate,
+        models[i],
+        modeName,
+        ddInstance
+      );
+      if (!access) {
+        return false
+      }
+    }
+    return true;
+  }
+
+
   /**
    * 给予container构建一个DDei实例
    * 每一个DDei至少包含1个文件
@@ -87,6 +113,11 @@ class DDei {
         return ddInstance;
       }
     }
+  }
+
+  static {
+    DDeiConfig.EVENT_CONTROL_SELECT_BEFORE = DDei.beforeOperateValid
+    DDeiConfig.EVENT_CONTROL_CREATE_BEFORE = DDei.beforeOperateValid
   }
 
   // ============================ 属性 ============================

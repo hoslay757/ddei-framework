@@ -142,24 +142,34 @@ class DDeiEditor {
    * 加载文件的函数，加载后的文件会进入文件列表，此方法为外部传入的勾子函数，由外部对文件进行加载
    * 必须为一个async函数
    */
-  static loadFile: Function;
+  static EVENT_LOAD_FILE: Function;
 
   /**
    * 保存文件的函数，保存后文件会从dirty状态变为普通状态，此方法为外部传入的勾子函数，由外部对文件进行保存和存储
    * 必须为一个async函数
    */
-  static saveFile: Function;
+  static EVENT_SAVE_FILE: Function;
 
   /**
  * 发布文件的函数，发布后文件从业务上转变为正式文件，此方法为外部传入的勾子函数，由外部对文件状态进行控制
  * 必须为一个async函数
  */
-  static publishFile: Function;
+  static EVENT_PUBLISH_FILE: Function;
 
   /**
    * 返回文件列表，此方法为外部传入的勾子函数
    */
-  static goBackFileList: Function;
+  static EVENT_GOBACK_FILE_LIST: Function;
+
+  /**
+   * 控件选择前，此方法为外部传入的勾子函数
+   */
+  static EVENT_CONTROL_SELECT_BEFORE: Function;
+
+  /**
+   * 控件选择后，此方法为外部传入的勾子函数
+   */
+  static EVENT_CONTROL_SELECT_AFTER: Function;
 
 
   // ============================ 静态方法 ============================

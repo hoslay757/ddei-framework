@@ -33,6 +33,7 @@ enum DDeiEnumBusCommandType {
   ChangeStageWPV = "change-stage-wpv",
   CenterStageWPV = "center-stage-wpv",
   NodifyChange = "nodify-change",
+  NodifyControlCreated = "nodify-control-created",
 }
 
 export default DDeiEnumBusCommandType

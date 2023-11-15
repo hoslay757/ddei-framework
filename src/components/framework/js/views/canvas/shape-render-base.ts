@@ -1,6 +1,8 @@
 import DDeiConfig from '../../config.js'
 import DDei from '../../ddei.js';
+import DDeiEnumBusCommandType from '../../enums/bus-command-type.js';
 import DDeiEnumControlState from '../../enums/control-state.js';
+import DDeiEnumOperateType from '../../enums/operate-type.js';
 import DDeiModelArrtibuteValue from '../../models/attribute/attribute-value.js';
 import DDeiLayer from '../../models/layer.js';
 import DDeiRectangle from '../../models/rectangle.js';
@@ -112,8 +114,53 @@ class DDeiAbstractShapeRender {
    * 绘制图形
    */
   mouseUp(evt: Event): void {
-
+    //加载事件的配置
+    let selectBefore = DDeiUtil.getConfigValue("EVENT_CONTROL_SELECT_BEFORE", this.stage.ddInstance);
+    //选中前
+    if (!selectBefore || selectBefore(DDeiEnumOperateType.SELECT, [this.model], this.stage.ddInstance, evt)) {
+      if (this.controlSelect()) {
+        let selectAfter = DDeiUtil.getConfigValue("EVENT_CONTROL_SELECT_AFTER", this.stage.ddInstance);
+        if (selectAfter) {
+          selectAfter(DDeiEnumOperateType.SELECT, [this.model], this.stage.ddInstance, evt);
+        }
+      }
+    }
   }
+
+
+
+
+  /**
+   * 选中
+   */
+  controlSelect(evt: Event): boolean {
+    //按下ctrl增加选中，或取消当前选中
+    let pContainerModel = this.model.pModel;
+    //当前操作组合
+    let pushMulits = [];
+    //当前操作层级容器
+    this.stageRender.currentOperateContainer = pContainerModel;
+    let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
+    if (isCtrl) {
+      //判断当前操作控件是否选中
+      if (this.stageRender.currentOperateShape.state == DDeiEnumControlState.SELECTED) {
+        pushMulits.push({ actionType: DDeiEnumBusCommandType.ModelChangeSelect, data: [{ id: this.model.id, value: DDeiEnumControlState.DEFAULT }] });
+      } else {
+        //选中当前操作控件
+        pushMulits.push({ actionType: DDeiEnumBusCommandType.ModelChangeSelect, data: [{ id: this.model.id, value: DDeiEnumControlState.SELECTED }] });
+      }
+    }
+    //没有按下ctrl键，取消选中非当前控件
+    else {
+      pushMulits.push({ actionType: DDeiEnumBusCommandType.CancelCurLevelSelectedModels, data: { ignoreModels: [this.model] } });
+      pushMulits.push({ actionType: DDeiEnumBusCommandType.ModelChangeSelect, data: [{ id: this.model.id, value: DDeiEnumControlState.SELECTED }] });
+    }
+    this.stage?.ddInstance?.bus?.pushMulit(pushMulits, evt);
+    this.stage?.ddInstance?.bus?.executeAll()
+    return true;
+  }
+
+
 
   /**
    * 鼠标移动

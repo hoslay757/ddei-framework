@@ -243,14 +243,16 @@ export default {
         dataJson,
         { currentStage: stage }
       );
-      //获取权限
-      let createAccess = DDeiUtil.isAccess(
-        DDeiEnumOperateType.CREATE,
-        model,
-        DDeiUtil.getConfigValue("MODE_NAME", ddInstance),
+      //加载事件的配置
+      let createBefore = DDeiUtil.getConfigValue(
+        "EVENT_CONTROL_CREATE_BEFORE",
         ddInstance
       );
-      if (createAccess) {
+      //选中前
+      if (
+        !createBefore ||
+        createBefore(DDeiEnumOperateType.CREATE, [model], ddInstance)
+      ) {
         let stageRatio = stage.getStageRatio();
         let moveMatrix = new Matrix3(
           1,

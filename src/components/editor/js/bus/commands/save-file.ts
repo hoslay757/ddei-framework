@@ -8,6 +8,7 @@ import DDeiFileState from '../../enums/file-state';
 import DDeiEditor from '../../editor';
 import DDeiFile from '../../file';
 import DDeiConfig from '@/components/framework/js/config';
+import DDeiEditorUtil from '../../util/editor-util';
 /**
  * 保存文件的总线Command
  */
@@ -48,8 +49,12 @@ class DDeiEditorCommandSaveFile extends DDeiBusCommand {
           if (data.publish == 1) {
             file.state = DDeiFileState.PUBLISHING
             //调用SPI进行发布
-            if (editor?.publishFile) {
-              editor.publishFile(json).then(data => {
+            let publishFile = DDeiEditorUtil.getConfigValue(
+              "EVENT_PUBLISH_FILE",
+              editor
+            );
+            if (publishFile) {
+              publishFile(json).then(data => {
                 if (data.result == 1) {
                   file.state = DDeiFileState.NONE;
                 } else if (data.result != 4) {
@@ -60,8 +65,12 @@ class DDeiEditorCommandSaveFile extends DDeiBusCommand {
           } else {
             file.state = DDeiFileState.SAVING
             //调用SPI进行保存
-            if (editor.saveFile) {
-              editor.saveFile(json).then(data => {
+            let saveFile = DDeiEditorUtil.getConfigValue(
+              "EVENT_SAVE_FILE",
+              editor
+            );
+            if (saveFile) {
+              saveFile(json).then(data => {
                 if (data.result == 1) {
                   file.state = DDeiFileState.NONE;
                 } else if (data.result != 4) {

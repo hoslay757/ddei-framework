@@ -842,44 +842,51 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
     jsonArray.forEach(json => {
       if (mode == 'copy') {
         let copyModel = MODEL_CLS[json.modelType].loadFromJSON(json, { currentDdInstance: stage.ddInstance, currentStage: stage, currentLayer: layer, currentContainer: container });
-        //获取权限
-        let createAccess = DDeiUtil.isAccess(
-          DDeiEnumOperateType.CREATE,
-          copyModel,
-          DDeiUtil.getConfigValue("MODE_NAME", stage.ddInstance),
-          stage.ddInstance
-        );
-        if (createAccess) {
-          models.push(copyModel);
-        }
+
+        models.push(copyModel);
+
       } else if (mode == 'cut') {
         let model = stage.getModelById(json.id);
         models.push(model);
       }
     });
-    //重新计算坐标，基于粘贴的中心点
-    let outRect = DDeiAbstractShape.getOutRectByPV(models);
+    //加载事件的配置
+    let createBefore = DDeiUtil.getConfigValue(
+      "EVENT_CONTROL_CREATE_BEFORE",
+      stage.ddInstance
+    );
+    //选中前
+    if (mode == 'cut' ||
+      !createBefore ||
+      createBefore(DDeiEnumOperateType.CREATE, models, stage.ddInstance)
+    ) {
+      //重新计算坐标，基于粘贴的中心点
+      let outRect = DDeiAbstractShape.getOutRectByPV(models);
 
-    outRect = { x: outRect.x + outRect.width / 2, y: outRect.y + outRect.height / 2 }
-    models.forEach(item => {
-      if (mode == 'copy') {
-        this.changeModelId(stage, item)
-      }
-      let cpx = item.cpv.x;
-      let cpy = item.cpv.y;
-      let dx = outRect.x - cpx;
-      let dy = outRect.y - cpy;
-      let moveMatrix = new Matrix3(
-        1, 0, x - dx - cpx,
-        0, 1, y - dy - cpy,
-        0, 0, 1
-      )
-      item.transVectors(moveMatrix)
-    })
+      outRect = { x: outRect.x + outRect.width / 2, y: outRect.y + outRect.height / 2 }
+      models.forEach(item => {
+        if (mode == 'copy') {
+          this.changeModelId(stage, item)
+        }
+        let cpx = item.cpv.x;
+        let cpy = item.cpv.y;
+        let dx = outRect.x - cpx;
+        let dy = outRect.y - cpy;
+        let moveMatrix = new Matrix3(
+          1, 0, x - dx - cpx,
+          0, 1, y - dy - cpy,
+          0, 0, 1
+        )
+        item.transVectors(moveMatrix)
+      })
 
-    stage.ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeContainer, { newContainer: container, models: models }, evt);
-    stage.ddInstance.bus.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
-    stage.ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeSelect, { models: models, value: DDeiEnumControlState.SELECTED }, evt);
+      stage.ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeContainer, { newContainer: container, models: models }, evt);
+      stage.ddInstance.bus.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
+      stage.ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeSelect, { models: models, value: DDeiEnumControlState.SELECTED }, evt);
+      stage.ddInstance.bus.push(DDeiEnumBusCommandType.NodifyControlCreated, {
+        models: models,
+      });
+    }
   }
 
   /**
