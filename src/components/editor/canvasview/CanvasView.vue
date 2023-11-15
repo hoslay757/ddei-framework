@@ -1,7 +1,13 @@
 <template>
-  <div :id="id" class="ddei_editor_canvasview" @mousedown="mouseDown($event)" ondragstart="return false;"
-    @mousewheel="mouseWheel($event)" @dragover="createControlOver" @drop="createControlDrop"
-    @dragleave="createControlCancel" @contextmenu.prevent>
+  <div :id="id"
+       class="ddei_editor_canvasview"
+       @mousedown="mouseDown($event)"
+       ondragstart="return false;"
+       @mousewheel="mouseWheel($event)"
+       @dragover="createControlOver"
+       @drop="createControlDrop"
+       @dragleave="createControlCancel"
+       @contextmenu.prevent>
   </div>
 </template>
 
@@ -63,12 +69,12 @@ export default {
       "ddei_editor_canvasview"
     );
     this.editor.ddInstance = ddInstance;
+    ddInstance.applyConfig(this.editor.extConfig);
     //初始化编辑器bus
     ddInstance.bus.invoker = this.editor;
     this.editor.bus = ddInstance.bus;
     //基于参数打开一个文件或一组文件
-
-    DDeiEditor.loadFile().then((fileData) => {
+    this.editor.loadFile().then((fileData) => {
       //当前已打开的文件
       let file = null;
       //查看当前file是否已打开
@@ -102,7 +108,10 @@ export default {
               new DDeiSheet({
                 name: "新建页面",
                 desc: "新建页面",
-                stage: DDeiStage.initByJSON({ id: "stage_1" }, { currentDdInstance: ddInstance }),
+                stage: DDeiStage.initByJSON(
+                  { id: "stage_1" },
+                  { currentDdInstance: ddInstance }
+                ),
                 active: DDeiActiveType.ACTIVE,
               }),
             ],
@@ -133,8 +142,16 @@ export default {
         if (!stage.wpv) {
           //缺省定位在画布中心点位置
           stage.wpv = {
-            x: -(stage.width - ddInstance.render.container.clientWidth) / 2,
-            y: -(stage.height - ddInstance.render.container.clientHeight) / 2,
+            x:
+              -(
+                stage.width -
+                ddInstance.render.canvas.width / ddInstance.render.ratio
+              ) / 2,
+            y:
+              -(
+                stage.height -
+                ddInstance.render.canvas.height / ddInstance.render.ratio
+              ) / 2,
             z: 0,
           };
         }

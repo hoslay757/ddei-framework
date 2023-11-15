@@ -608,6 +608,17 @@ class DDeiUtil {
     }
     return null;
   }
+
+  /**
+   * 判断是否具备某种权限
+   * @operate 操作
+   * @control 控件
+   * @mode 模式
+   */
+  static isAccess(operate: string, control: DDeiAbstractShape, mode: string): boolean {
+
+    return false;
+  }
 }
 
 export default DDeiUtil

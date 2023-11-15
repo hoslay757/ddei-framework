@@ -2,6 +2,7 @@ import DDeiBus from './bus/bus'
 import DDeiConfig from './config'
 import DDeiEnumState from './enums/ddei-state'
 import DDeiStage from './models/stage'
+import DDeiUtil from './util'
 
 /**
  * DDei图形框架的基础类，通过此类对图形框架进行初始化
@@ -128,6 +129,23 @@ class DDei {
     }
   }
 
+  /**
+  * 应用外部配置文件，覆写配置文件内容
+  * @param config 
+  */
+  applyConfig(config: Object): void {
+    if (config) {
+      //普通值、JSON、数组、MAP
+      for (let i in config) {
+        let outConfigValue = config[i];
+        let configValue = this[i];
+        if (i != "SERI_FIELDS") {
+          //深度遍历属性，然后进行设置
+          this[i] = DDeiUtil.copyJSONValue(outConfigValue, configValue);
+        }
+      }
+    }
+  }
 
   /**
      * 将模型转换为JSON

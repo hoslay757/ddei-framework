@@ -5,7 +5,6 @@ import DDei from "@/components/framework/js/ddei";
 import DDeiEditorUtil from "./util/editor-util";
 import DDeiUtil from "@/components/framework/js/util";
 import DDeiBus from "@/components/framework/js/bus/bus";
-import DDeiEditorEnumBusCommandType from "./enums/editor-command-type";
 import type DDeiFile from "./file";
 import DDeiConfig from "@/components/framework/js/config";
 
@@ -211,6 +210,7 @@ class DDeiEditor {
    * @param config 
    */
   static applyConfig(config: Object): void {
+
     if (config) {
       //普通值、JSON、数组、MAP
       for (let i in config) {
@@ -250,18 +250,49 @@ class DDeiEditor {
     }
   }
 
+  /**
+   * 应用外部配置文件
+   * @param config 
+   */
+  applyConfig(config: Object): void {
+    if (config) {
+      if (!this.extConfig) {
+        this.extConfig = {}
+      }
+      //普通值、JSON、数组、MAP
+      for (let i in config) {
+        let outConfigValue = config[i];
+        let configValue = this[i];
+        if (i != "HOT_KEY_MAPPING") {
+          //深度遍历属性，然后进行设置
+          this[i] = DDeiUtil.copyJSONValue(outConfigValue, configValue);
+          this.extConfig[i] = this[i]
+        }
+      }
+      if (config.HOT_KEY_MAPPING) {
+        this.HOT_KEY_MAPPING = []
+        config.HOT_KEY_MAPPING.forEach(hotkey => {
+          //寻找是否已存在相同的键定义
+          this.HOT_KEY_MAPPING.push(hotkey)
+        });
+        this.extConfig["HOT_KEY_MAPPING"] = this.HOT_KEY_MAPPING
+      }
+    }
+  }
+
   static {
     //加载外部配置
     const global_config_ctx = import.meta.glob('@/ddei/config', { eager: true });
     for (let i in global_config_ctx) {
       let configData = global_config_ctx[i].default;
-      DDeiEditor.EXT_CONFIG = configData;
+      //载入外部配置
+      if (configData) {
+        DDeiEditor.applyConfig(configData)
+        DDeiEditor.extConfig = configData
+      }
       break;
     }
-    //载入外部配置
-    if (DDeiEditor.EXT_CONFIG) {
-      DDeiEditor.applyConfig(DDeiEditor.EXT_CONFIG)
-    }
+
   }
 
   // ============================ 属性 ============================

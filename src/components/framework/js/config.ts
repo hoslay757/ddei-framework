@@ -505,13 +505,12 @@ class DDeiConfig {
     const global_config_ctx = import.meta.glob('@/ddei/config', { eager: true });
     for (let i in global_config_ctx) {
       let configData = global_config_ctx[i].default;
-      DDeiConfig.EXT_CONFIG = configData;
-      break;
+      if (configData) {
+        DDeiConfig.applyConfig(configData)
+        break;
+      }
     }
-    //载入外部配置
-    if (DDeiConfig.EXT_CONFIG) {
-      DDeiConfig.applyConfig(DDeiConfig.EXT_CONFIG)
-    }
+
     //加载配置
     loadCommands();
 

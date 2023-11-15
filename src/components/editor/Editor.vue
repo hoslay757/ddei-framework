@@ -105,14 +105,15 @@ export default {
   created() {
     window.onresize = this.resetSize;
     this.mouseMove = throttle(this.mouseMove, 20);
-    if (this.config) {
-      DDeiEditor.applyConfig(this.config);
-    }
     if (DDeiEditor.ACTIVE_INSTANCE) {
       this.editor = DDeiEditor.ACTIVE_INSTANCE;
     } else {
       this.editor = DDeiEditor.newInstance("ddei_editor_ins", "ddei_editor");
     }
+    //载入全局配置
+    this.editor.applyConfig(DDeiEditor.extConfig);
+    //载入局部配置
+    this.editor.applyConfig(this.config);
     this.allowOpenMultFiles = DDeiEditor.GLOBAL_ALLOW_OPEN_MULT_FILES;
     this.allowQuickColor = DDeiEditor.GLOBAL_ALLOW_QUICK_COLOR;
   },
