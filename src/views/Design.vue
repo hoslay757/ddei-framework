@@ -43,12 +43,16 @@ export default {
         EVENT_SAVE_FILE: this.saveFile,
         EVENT_GOBACK_FILE_LIST: this.goBackFileList,
         EVENT_PUBLISH_FILE: this.publishFile,
-        AC_DESIGN_SELECT: false,
+        // AC_DESIGN_SELECT: false,
+        // AC_DESIGN_DRAG: false,
         AC_DESIGN_CREATE_DDeiRectangle: false,
-        EVENT_CONTROL_SELECT_BEFORE: this.selectBefore,
+        AC_DESIGN_SELECT_DDeiRectangle: true,
+        AC_DESIGN_DRAG_DDeiRectangle: false,
+        // EVENT_CONTROL_SELECT_BEFORE: this.selectBefore,
         EVENT_CONTROL_SELECT_AFTER: this.selectAfter,
-        EVENT_CONTROL_CREATE_BEFORE: this.createBefore,
+        // EVENT_CONTROL_CREATE_BEFORE: this.createBefore,
         EVENT_CONTROL_CREATE_AFTER: this.createAfter,
+        EVENT_CONTROL_DRAG_AFTER: this.dragAfter,
       }),
     };
   },
@@ -61,6 +65,15 @@ export default {
     this.getUserInfo();
   },
   methods: {
+    /**
+     * 拖拽后
+     */
+    dragAfter(operate, models, ddInstance, evt) {
+      models.forEach((model) => {
+        console.log("拖拽:" + model.id);
+      });
+    },
+
     /**
      * 创建后
      */

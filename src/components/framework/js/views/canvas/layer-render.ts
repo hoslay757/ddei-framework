@@ -4,6 +4,7 @@ import DDeiEnumBusCommandType from '../../enums/bus-command-type.js';
 import DDeiEnumControlState from '../../enums/control-state.js';
 import DDeiEnumState from '../../enums/ddei-state.js';
 import DDeiEnumOperateState from '../../enums/operate-state.js';
+import DDeiEnumOperateType from '../../enums/operate-type.js';
 import DDeiModelArrtibuteValue from '../../models/attribute/attribute-value.js';
 import DDeiLayer from '../../models/layer.js';
 import DDeiAbstractShape from '../../models/shape.js';
@@ -703,10 +704,18 @@ class DDeiLayerCanvasRender {
               operateModels?.forEach(item => {
                 item.render?.controlDragEnd(evt)
               })
+              //加载事件的配置
+              let dragAfter = DDeiUtil.getConfigValue(
+                "EVENT_CONTROL_DRAG_AFTER",
+                this.stage?.ddInstance
+              );
+              if (dragAfter) {
+                dragAfter(DDeiEnumOperateType.DRAG, operateModels, this.stage?.ddInstance, evt)
+              }
             }
           }
           if (hasChange) {
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateSelectorBounds, null, evt);
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
             this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.NodifyChange);
             this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy);
           }
@@ -805,22 +814,32 @@ class DDeiLayerCanvasRender {
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, { ignoreModels: [this.stageRender.currentOperateShape] }, evt);
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, [{ id: this.stageRender.currentOperateShape.id, value: DDeiEnumControlState.SELECTED }], evt);
         } else {
-          //当前操作状态：控件拖拽中
-          this.stageRender.operateState = DDeiEnumOperateState.CONTROL_DRAGING
-          //产生影子控件
+
+          //加载事件的配置
+          let dragBefore = DDeiUtil.getConfigValue(
+            "EVENT_CONTROL_DRAG_BEFORE",
+            this.stage?.ddInstance
+          );
+
           let selectedModels = pContainerModel.getSelectedModels();
-          selectedModels.forEach(m => {
-            let md = DDeiUtil.getShadowControl(m);
-            dragObj[md.id] = { dx: md.cpv.x - ex, dy: md.cpv.y - ey }
-            this.model.shadowControls.push(md);
-          });
-          if (!selectedModels.has(this.stageRender.currentOperateShape?.id)) {
-            let md = DDeiUtil.getShadowControl(this.stageRender.currentOperateShape)
-            dragObj[md.id] = { dx: md.cpv.x - ex, dy: md.cpv.y - ey }
-            this.model.shadowControls.push(md);
+          let sms = Array.from(selectedModels.values())
+          if (sms.indexOf(this.stageRender.currentOperateShape) == -1) {
+            sms.push(this.stageRender.currentOperateShape)
           }
-          //将当前被拖动的控件转变为影子控件
-          this.stageRender.currentOperateShape = this.model.shadowControls[this.model.shadowControls.length - 1]
+          if (!dragBefore || dragBefore(DDeiEnumOperateType.DRAG, sms, this.stage?.ddInstance, evt)) {
+            //当前操作状态：控件拖拽中
+            this.stageRender.operateState = DDeiEnumOperateState.CONTROL_DRAGING
+            //产生影子控件
+            sms.forEach(m => {
+              let md = DDeiUtil.getShadowControl(m);
+              dragObj[md.id] = { dx: md.cpv.x - ex, dy: md.cpv.y - ey }
+              this.model.shadowControls.push(md);
+            });
+            //将当前被拖动的控件转变为影子控件
+            this.stageRender.currentOperateShape = this.model.shadowControls[this.model.shadowControls.length - 1]
+          } else {
+            this.stageRender.operateState = DDeiEnumOperateState.NONE
+          }
         }
         break;
       }
