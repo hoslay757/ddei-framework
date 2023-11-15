@@ -9,6 +9,7 @@ import { MODEL_CLS } from "@/components/framework/js/config";
 import DDeiAbstractShape from "@/components/framework/js/models/shape";
 import DDeiTable from "@/components/framework/js/models/table";
 import { Matrix3, Vector3 } from 'three';
+import DDeiEnumOperateType from "@/components/framework/js/enums/operate-type";
 /**
  * 键行为:粘贴
  * 粘贴剪切板内容
@@ -841,7 +842,16 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
     jsonArray.forEach(json => {
       if (mode == 'copy') {
         let copyModel = MODEL_CLS[json.modelType].loadFromJSON(json, { currentDdInstance: stage.ddInstance, currentStage: stage, currentLayer: layer, currentContainer: container });
-        models.push(copyModel);
+        //获取权限
+        let createAccess = DDeiUtil.isAccess(
+          DDeiEnumOperateType.CREATE,
+          copyModel,
+          DDeiUtil.getConfigValue("MODE_NAME", stage.ddInstance),
+          stage.ddInstance
+        );
+        if (createAccess) {
+          models.push(copyModel);
+        }
       } else if (mode == 'cut') {
         let model = stage.getModelById(json.id);
         models.push(model);

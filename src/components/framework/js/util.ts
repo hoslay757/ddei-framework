@@ -615,9 +615,36 @@ class DDeiUtil {
    * @control 控件
    * @mode 模式
    */
-  static isAccess(operate: string, control: DDeiAbstractShape, mode: string): boolean {
-    debugger
-    return false;
+  static isAccess(operate: string, control: DDeiAbstractShape, mode: string, ddInstance: DDei): boolean {
+    //按照优先级获取属性权限值，如果获取不到，默认返回true
+    let strkey = "AC_" + mode + "_" + operate
+    if (control) {
+      //控件ID
+      let accessValue = DDeiUtil.getConfigValue(strkey + "_" + control.id, ddInstance)
+      if (accessValue || accessValue == false) {
+        return accessValue;
+      } else {
+        accessValue = DDeiUtil.getConfigValue(strkey + "_" + control.code, ddInstance)
+        if (accessValue || accessValue == false) {
+          return accessValue;
+        } else {
+          accessValue = DDeiUtil.getConfigValue(strkey + "_" + control.modelCode, ddInstance)
+          if (accessValue || accessValue == false) {
+            return accessValue;
+          } else {
+            accessValue = DDeiUtil.getConfigValue(strkey + "_" + control.modelType, ddInstance)
+            if (accessValue || accessValue == false) {
+              return accessValue;
+            }
+          }
+        }
+      }
+    }
+    let accessValue = DDeiUtil.getConfigValue(strkey, ddInstance)
+    if (accessValue || accessValue == false) {
+      return accessValue;
+    }
+    return true;
   }
 
   /**

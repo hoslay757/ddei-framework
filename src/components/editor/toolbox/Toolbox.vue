@@ -57,7 +57,7 @@
 
 <script lang="ts">
 import DDeiEditor from "../js/editor";
-import DDeiConfig from "@/components/framework/js/config";
+import DDeiEnumOperateType from "@/components/framework/js/enums/operate-type";
 import DDei from "@/components/framework/js/ddei";
 import { loadToolGroups, controlOriginDefinies } from "../configs/toolgroup";
 import DDeiEditorState from "../js/enums/editor-state";
@@ -68,6 +68,7 @@ import DDeiEnumControlState from "../../framework/js/enums/control-state";
 import ICONS from "../js/icon";
 import { Matrix3 } from "three";
 import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
+import DDeiUtil from "../../framework/js/util";
 
 export default {
   name: "DDei-Editor-Toolbox",
@@ -199,6 +200,7 @@ export default {
     createControlPrepare(control, e) {
       //获取当前实例
       let ddInstance: DDei = this.editor.ddInstance;
+
       let stage = ddInstance.stage;
       let layer = stage.layers[stage.layerIndex];
       if ((layer.display == 0 && !layer.tempDisplay) || layer.lock) {
@@ -236,29 +238,39 @@ export default {
       if (control.img) {
         dataJson.fill = { type: 2, image: control.img };
       }
+
       let model: DDeiAbstractShape = this.controlCls[control.type].initByJSON(
         dataJson,
         { currentStage: stage }
       );
-      let stageRatio = stage.getStageRatio();
-      let moveMatrix = new Matrix3(
-        1,
-        0,
-        -stage.wpv.x * stageRatio,
-        0,
-        1,
-        -stage.wpv.y * stageRatio,
-        0,
-        0,
-        1
+      //获取权限
+      let createAccess = DDeiUtil.isAccess(
+        DDeiEnumOperateType.CREATE,
+        model,
+        DDeiUtil.getConfigValue("MODE_NAME", ddInstance),
+        ddInstance
       );
-      model.transVectors(moveMatrix);
+      if (createAccess) {
+        let stageRatio = stage.getStageRatio();
+        let moveMatrix = new Matrix3(
+          1,
+          0,
+          -stage.wpv.x * stageRatio,
+          0,
+          1,
+          -stage.wpv.y * stageRatio,
+          0,
+          0,
+          1
+        );
+        model.transVectors(moveMatrix);
 
-      model.setState(DDeiEnumControlState.CREATING);
+        model.setState(DDeiEnumControlState.CREATING);
 
-      e.dataTransfer.setDragImage(this.creatingImg, 0, 0);
+        e.dataTransfer.setDragImage(this.creatingImg, 0, 0);
 
-      this.$emit("createControlPrepare", model);
+        this.$emit("createControlPrepare", model);
+      }
     },
 
     /**

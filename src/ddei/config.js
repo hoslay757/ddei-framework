@@ -19,8 +19,8 @@ const config = {
   //允许快捷编辑颜色
   GLOBAL_ALLOW_QUICK_COLOR: true,
 
-  //默认模式标识，模式标识对应以ac_开头的访问权限配置
-  GLOBAL_DEFAULT_MODE_NAME: "DESIGN",
+  //模式标识，模式标识对应以ac_开头的访问权限配置
+  MODE_NAME: "DESIGN",
 
   /**
    * 全局权限配置，按照配置自动读取规则

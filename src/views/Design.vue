@@ -42,6 +42,7 @@ export default {
         saveFile: this.saveFile,
         goBackFileList: this.goBackFileList,
         publishFile: this.publishFile,
+        AC_DESIGN_CREATE_DDeiLayer: false,
       }),
     };
   },

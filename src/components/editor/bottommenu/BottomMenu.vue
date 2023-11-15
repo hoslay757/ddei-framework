@@ -148,7 +148,8 @@
         <div class="ddei_editor_bottommenu_other_layers_dialog_group_content">
           <div class="ddei_editor_bottommenu_other_layers_dialog_group_content_item"
                style="grid-template-rows:25px"
-               @click="createNewLayer(0)">
+               @click="createNewLayer(0)"
+               v-show="allowAddLayer">
             <span style="grid-column:1/8;">新建图层</span>
             <img style="margin-top:2px;width:16px;height:16px;filter:brightness(0%)"
                  src="../icons/icon-plus-circle.png" />
@@ -170,7 +171,8 @@
             <span style="grid-column:1/4;font-weight:normal">形状:{{ layer.modelNumber }}</span>
             <img style="margin-top:2px;width:16px;height:16px;filter:brightness(0%)"
                  src="../icons/icon-plus-circle.png"
-                 @click="createNewLayer(index)" />
+                 @click="createNewLayer(index)"
+                 v-show="allowAddLayer" />
             <img style="margin-top:2px;width:16px;height:16px;filter:brightness(0%)"
                  :src="layer.display == 0 && !layer.tempDisplay ? icons['icon-display-none'] : icons['icon-display']"
                  @click="displayOrShowLayer(layer)" />
@@ -207,7 +209,7 @@ import DDeiAbstractShape from "../../framework/js/models/shape";
 import DDeiModelArrtibuteValue from "../../framework/js/models/attribute/attribute-value";
 import ICONS from "../js/icon";
 import { debounce } from "lodash";
-import DDeiConfig from "../../framework/js/config";
+import DDeiEnumOperateType from "../../framework/js/enums/operate-type";
 import DDeiEditorUtil from "../js/util/editor-util";
 
 export default {
@@ -231,6 +233,7 @@ export default {
       allowOpenMultSheets: true,
       allowOpenMultLayers: true,
       allowStageRatio: true,
+      allowAddLayer: true,
     };
   },
   computed: {},
@@ -283,6 +286,14 @@ export default {
       "GLOBAL_ALLOW_OPEN_MULT_LAYERS",
       this.editor
     );
+
+    //获取权限
+    this.allowAddLayer = DDeiUtil.isAccess(
+      DDeiEnumOperateType.CREATE,
+      { modelType: "DDeiLayer" },
+      DDeiUtil.getConfigValue("MODE_NAME", this.editor.ddInstance),
+      this.editor.ddInstance
+    );
     this.allowStageRatio = DDeiEditorUtil.getConfigValue(
       "GLOBAL_ALLOW_STAGE_RATIO",
       this.editor
@@ -291,15 +302,19 @@ export default {
   methods: {
     //创建新图层
     createNewLayer(index: number) {
-      let newLayer = this.currentStage.addLayer(null, index);
-      newLayer.initRender();
-      this.editor.bus.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels);
-      this.editor.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
-      this.editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
-      this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
-      this.editor.bus.executeAll();
-      this.editor.editorViewer?.changeFileModifyDirty();
-      this.editor.changeState(DDeiEditorState.DESIGNING);
+      if (this.allowAddLayer) {
+        let newLayer = this.currentStage.addLayer(null, index);
+        newLayer.initRender();
+        this.editor.bus.push(
+          DDeiEnumBusCommandType.CancelCurLevelSelectedModels
+        );
+        this.editor.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
+        this.editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
+        this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
+        this.editor.bus.executeAll();
+        this.editor.editorViewer?.changeFileModifyDirty();
+        this.editor.changeState(DDeiEditorState.DESIGNING);
+      }
     },
 
     //移除图层
