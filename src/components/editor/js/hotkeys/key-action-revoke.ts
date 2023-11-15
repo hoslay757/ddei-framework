@@ -8,6 +8,7 @@ import DDeiEditor from "../editor";
 import DDeiActiveType from "../enums/active-type";
 import DDeiFile from "../file";
 import DDeiFileState from "../enums/file-state";
+import DDeiEditorUtil from "../util/editor-util";
 
 /**
  * 键行为:撤销
@@ -17,7 +18,9 @@ class DDeiKeyActionRevoke extends DDeiKeyAction {
 
   // ============================ 方法 ===============================
   action(evt: Event, ddInstance: DDei): void {
-    if (DDeiEditor.HISTROY_LEVEL == 'file') {
+    let editor = DDeiEditor.ACTIVE_INSTANCE;
+    let histype = DDeiEditorUtil.getConfigValue("HISTROY_LEVEL", editor);
+    if (histype == 'file') {
       let editor = DDeiEditor.ACTIVE_INSTANCE;
       if (editor?.files.length > 0 && (editor.currentFileIndex == 0 || editor.currentFileIndex)) {
         let file = editor?.files[editor.currentFileIndex]
@@ -61,7 +64,7 @@ class DDeiKeyActionRevoke extends DDeiKeyAction {
           }
         }
       }
-    } else if (DDeiEditor.HISTROY_LEVEL == 'stage') {
+    } else if (histype == 'stage') {
       //修改当前操作控件坐标
       if (ddInstance && ddInstance.stage) {
         let hisData = ddInstance.stage.revokeHistroyData();

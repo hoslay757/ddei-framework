@@ -616,8 +616,20 @@ class DDeiUtil {
    * @mode 模式
    */
   static isAccess(operate: string, control: DDeiAbstractShape, mode: string): boolean {
-
+    debugger
     return false;
+  }
+
+  /**
+   * 获取配置属性值
+   * @param key key
+   */
+  static getConfigValue(key: string, ddInstance: DDei) {
+    if (ddInstance && (ddInstance[key] || ddInstance[key] == false || ddInstance[key] == 0)) {
+      return ddInstance[key];
+    } else {
+      return DDeiConfig[key];
+    }
   }
 }
 

@@ -1,5 +1,9 @@
 //初始化外部配置
 const config = {
+
+  HISTROY_LEVEL: "file",
+
+
   //允许打开多文件
   GLOBAL_ALLOW_OPEN_MULT_FILES: true,
 

@@ -62,6 +62,7 @@ import DDeiEditorCommandAddHistroy from "./js/bus/commands/add-histroy";
 import MenuDialog from "./menus/menudialog/MenuDialog.vue";
 import { throttle } from "lodash";
 import DDeiEnumOperateState from "../framework/js/enums/operate-state";
+import DDeiEditorUtil from "./js/util/editor-util";
 
 export default {
   name: "DDei-Editor",
@@ -110,12 +111,17 @@ export default {
     } else {
       this.editor = DDeiEditor.newInstance("ddei_editor_ins", "ddei_editor");
     }
-    //载入全局配置
-    this.editor.applyConfig(DDeiEditor.extConfig);
     //载入局部配置
     this.editor.applyConfig(this.config);
-    this.allowOpenMultFiles = DDeiEditor.GLOBAL_ALLOW_OPEN_MULT_FILES;
-    this.allowQuickColor = DDeiEditor.GLOBAL_ALLOW_QUICK_COLOR;
+    this.editor.extConfig = this.config;
+    this.allowOpenMultFiles = DDeiEditorUtil.getConfigValue(
+      "GLOBAL_ALLOW_OPEN_MULT_FILES",
+      this.editor
+    );
+    this.allowQuickColor = DDeiEditorUtil.getConfigValue(
+      "GLOBAL_ALLOW_QUICK_COLOR",
+      this.editor
+    );
   },
   mounted() {
     //加载外部配置文件

@@ -256,9 +256,6 @@ class DDeiEditor {
    */
   applyConfig(config: Object): void {
     if (config) {
-      if (!this.extConfig) {
-        this.extConfig = {}
-      }
       //普通值、JSON、数组、MAP
       for (let i in config) {
         let outConfigValue = config[i];
@@ -266,7 +263,6 @@ class DDeiEditor {
         if (i != "HOT_KEY_MAPPING") {
           //深度遍历属性，然后进行设置
           this[i] = DDeiUtil.copyJSONValue(outConfigValue, configValue);
-          this.extConfig[i] = this[i]
         }
       }
       if (config.HOT_KEY_MAPPING) {
@@ -275,7 +271,6 @@ class DDeiEditor {
           //寻找是否已存在相同的键定义
           this.HOT_KEY_MAPPING.push(hotkey)
         });
-        this.extConfig["HOT_KEY_MAPPING"] = this.HOT_KEY_MAPPING
       }
     }
   }
@@ -288,7 +283,6 @@ class DDeiEditor {
       //载入外部配置
       if (configData) {
         DDeiEditor.applyConfig(configData)
-        DDeiEditor.extConfig = configData
       }
       break;
     }

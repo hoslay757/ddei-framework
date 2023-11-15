@@ -208,6 +208,7 @@ import DDeiModelArrtibuteValue from "../../framework/js/models/attribute/attribu
 import ICONS from "../js/icon";
 import { debounce } from "lodash";
 import DDeiConfig from "../../framework/js/config";
+import DDeiEditorUtil from "../js/util/editor-util";
 
 export default {
   name: "DDei-Editor-BottomMenu",
@@ -243,9 +244,12 @@ export default {
       }
       this.maxOpenSize = size;
     });
-    if (DDeiConfig.GLOBAL_ALLOW_STAGE_RATIO) {
-      // 监听obj对象中prop属性的变化
-      this.$watch("currentStage.ratio", function (newVal, oldVal) {
+
+    // 监听obj对象中prop属性的变化
+    this.$watch("currentStage.ratio", function (newVal, oldVal) {
+      if (
+        DDeiEditorUtil.getConfigValue("GLOBAL_ALLOW_STAGE_RATIO", this.editor)
+      ) {
         if (!this.changeCurrentStage) {
           this.ratioInputValue = parseFloat(newVal) * 100;
           this.stageRatio = newVal;
@@ -253,11 +257,15 @@ export default {
         } else {
           this.changeCurrentStage = false;
         }
-      });
-      this.$watch("stageRatio", function (newVal, oldVal) {
+      }
+    });
+    this.$watch("stageRatio", function (newVal, oldVal) {
+      if (
+        DDeiEditorUtil.getConfigValue("GLOBAL_ALLOW_STAGE_RATIO", this.editor)
+      ) {
         this.setRatio(newVal);
-      });
-    }
+      }
+    });
   },
   mounted() {
     //获取编辑器
@@ -267,9 +275,18 @@ export default {
     let sheet = file?.sheets[file?.currentSheetIndex];
     this.changeCurrentStage = true;
     this.currentStage = sheet?.stage;
-    this.allowOpenMultSheets = DDeiEditor.GLOBAL_ALLOW_OPEN_MULT_SHEETS;
-    this.allowOpenMultLayers = DDeiEditor.GLOBAL_ALLOW_OPEN_MULT_LAYERS;
-    this.allowStageRatio = DDeiConfig.GLOBAL_ALLOW_STAGE_RATIO;
+    this.allowOpenMultSheets = DDeiEditorUtil.getConfigValue(
+      "GLOBAL_ALLOW_OPEN_MULT_SHEETS",
+      this.editor
+    );
+    this.allowOpenMultLayers = DDeiEditorUtil.getConfigValue(
+      "GLOBAL_ALLOW_OPEN_MULT_LAYERS",
+      this.editor
+    );
+    this.allowStageRatio = DDeiEditorUtil.getConfigValue(
+      "GLOBAL_ALLOW_STAGE_RATIO",
+      this.editor
+    );
   },
   methods: {
     //创建新图层

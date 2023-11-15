@@ -4,6 +4,7 @@ import DDeiEnumOperateState from '../../enums/operate-state';
 import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
 import { Matrix3, Vector3 } from 'three';
+import DDeiUtil from '../../util';
 /**
  * 缩放画布总线Command
  * 图形类Command一般在普通Command之后执行
@@ -33,7 +34,7 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
    * @param evt 事件对象引用
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
-    if (DDeiConfig.GLOBAL_ALLOW_STAGE_RATIO) {
+    if (DDeiUtil.getConfigValue("GLOBAL_ALLOW_STAGE_RATIO", bus.ddInstance)) {
       let stage = bus.ddInstance.stage;
       if (stage && data.oldValue && data.newValue && data.oldValue != data.newValue) {
         let scaleSize = data.newValue / data.oldValue

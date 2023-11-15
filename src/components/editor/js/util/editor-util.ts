@@ -253,6 +253,17 @@ class DDeiEditorUtil {
     return [];
   }
 
+  /**
+   * 获取配置属性值
+   * @param key key
+   */
+  static getConfigValue(key: string, editor: DDeiEditor) {
+    if (editor && (editor[key] || editor[key] == false || editor[key] == 0)) {
+      return editor[key];
+    } else {
+      return DDeiEditor[key];
+    }
+  }
 }
 
 export default DDeiEditorUtil

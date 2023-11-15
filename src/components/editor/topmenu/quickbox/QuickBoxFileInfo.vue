@@ -1,64 +1,91 @@
 <template>
-  <div class="ddei_editor_file_info" v-if="file">
+  <div class="ddei_editor_file_info"
+       v-if="file">
     <div class="ddei_editor_file_info_content">
       <div class="ddei_editor_file_info_gohome">
-        <img :src="icons['icon-go-left']" @click="goBackFileList">
+        <img :src="icons['icon-go-left']"
+             @click="goBackFileList">
       </div>
       <div class="ddei_editor_file_info_icon">
         <img :src="icons['icon-basic-shape']">
-        <div v-show="file?.state == 0" class="ddei_editor_file_info_item_filename_state">✓</div>
+        <div v-show="file?.state == 0"
+             class="ddei_editor_file_info_item_filename_state">✓</div>
       </div>
       <div class="ddei_editor_file_info_basic">
-        <div class="ddei_editor_file_info_item_filename" :title="file?.name" v-show="!fileNameEditing"
-          @click="startFileNameEditing()">
+        <div class="ddei_editor_file_info_item_filename"
+             :title="file?.name"
+             v-show="!fileNameEditing"
+             @click="startFileNameEditing()">
           {{ file?.name }}
         </div>
-        <div class="ddei_editor_file_info_item_filename" :title="file?.name" v-show="fileNameEditing">
-          <input id="ddei_change_filename_input" class="ddei_change_filename_input"
-            @blur="fileNameEditing && enterFileName(1, $event)" @keyup="fileNameEditing && enterFileName(0, $event)">
+        <div class="ddei_editor_file_info_item_filename"
+             :title="file?.name"
+             v-show="fileNameEditing">
+          <input id="ddei_change_filename_input"
+                 class="ddei_change_filename_input"
+                 @blur="fileNameEditing && enterFileName(1, $event)"
+                 @keyup="fileNameEditing && enterFileName(0, $event)">
         </div>
         <div class="ddei_editor_file_info_item_buttons">
-          <div class="ddei_editor_file_info_item_button" @click="newFile" title="新建">
+          <div class="ddei_editor_file_info_item_button"
+               @click="newFile"
+               title="新建">
             <img :src="icons['icon-file']" />
           </div>
-          <div class="ddei_editor_file_info_item_button" @click="openFile" title="打开">
+          <div class="ddei_editor_file_info_item_button"
+               @click="openFile"
+               title="打开">
             <img :src="icons['icon-open']" />
           </div>
-          <div class="ddei_editor_file_info_item_button" title="导入">
+          <div class="ddei_editor_file_info_item_button"
+               title="导入">
             <img :src="icons['icon-import']" />
           </div>
-          <div class="ddei_editor_file_info_item_button" @click="save" title="保存">
+          <div class="ddei_editor_file_info_item_button"
+               @click="save"
+               title="保存">
             <img :src="icons['icon-save']" />
           </div>
 
         </div>
 
-        <div class="ddei_editor_file_info_item_filedesc" :title="file?.desc" v-show="!fileDescEditing"
-          @click="startFileDescEditing">
+        <div class="ddei_editor_file_info_item_filedesc"
+             :title="file?.desc"
+             v-show="!fileDescEditing"
+             @click="startFileDescEditing">
           {{ file?.desc ? file?.desc : '点击添加备注' }}
         </div>
-        <div class="ddei_editor_file_info_item_filedesc" :title="file?.desc" v-show="fileDescEditing">
-          <textarea id="ddei_change_filedesc_input" class="ddei_change_filedesc_input"
-            @blur="fileDescEditing && enterFileDesc(1, $event)"
-            @keyup="fileDescEditing && enterFileDesc(0, $event)"></textarea>
+        <div class="ddei_editor_file_info_item_filedesc"
+             :title="file?.desc"
+             v-show="fileDescEditing">
+          <textarea id="ddei_change_filedesc_input"
+                    class="ddei_change_filedesc_input"
+                    @blur="fileDescEditing && enterFileDesc(1, $event)"
+                    @keyup="fileDescEditing && enterFileDesc(0, $event)"></textarea>
         </div>
         <div class="ddei_editor_file_info_item_filestate">
-          <div class="ddei_editor_file_info_item_filestate_msg" v-if="file?.state == 1">
+          <div class="ddei_editor_file_info_item_filestate_msg"
+               v-if="file?.state == 1">
             新建
           </div>
-          <div class="ddei_editor_file_info_item_filestate_msg" v-if="file?.state == 0">
+          <div class="ddei_editor_file_info_item_filestate_msg"
+               v-if="file?.state == 0">
             {{ file.publish == 1 ? '已发布' : '已保存' }}
           </div>
-          <div class="ddei_editor_file_info_item_filestate_msg" v-if="file?.state == 2">
+          <div class="ddei_editor_file_info_item_filestate_msg"
+               v-if="file?.state == 2">
             已修改，未保存
           </div>
-          <div class="ddei_editor_file_info_item_filestate_msg" v-if="file?.state == 3">
+          <div class="ddei_editor_file_info_item_filestate_msg"
+               v-if="file?.state == 3">
             已删除
           </div>
-          <div class="ddei_editor_file_info_item_filestate_msg" v-if="file?.state == 4">
+          <div class="ddei_editor_file_info_item_filestate_msg"
+               v-if="file?.state == 4">
             保存中...
           </div>
-          <div class="ddei_editor_file_info_item_filestate_msg" v-if="file?.state == 5">
+          <div class="ddei_editor_file_info_item_filestate_msg"
+               v-if="file?.state == 5">
             发布中...
           </div>
           <div class="ddei_editor_file_info_item_filestate_time">{{ getFileLastTime() }}</div>
@@ -103,7 +130,7 @@ export default {
   },
   computed: {},
   watch: {},
-  created() { },
+  created() {},
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
@@ -111,8 +138,8 @@ export default {
   },
   methods: {
     goBackFileList() {
-      if (DDeiEditor.goBackFileList) {
-        DDeiEditor.goBackFileList();
+      if (this.editor?.goBackFileList) {
+        this.editor?.goBackFileList();
       }
     },
     /**

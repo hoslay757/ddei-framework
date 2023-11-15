@@ -7,6 +7,8 @@ import DDeiActiveType from "../enums/active-type";
 import DDeiFile from "../file";
 import DDeiFileState from "../enums/file-state";
 import DDeiEditor from "../editor";
+import DDeiUtil from "@/components/framework/js/util";
+import DDeiEditorUtil from "../util/editor-util";
 
 /**
  * 键行为:反撤销
@@ -16,8 +18,9 @@ class DDeiKeyActionReRevoke extends DDeiKeyAction {
 
   // ============================ 方法 ===============================
   action(evt: Event, ddInstance: DDei): void {
-    if (DDeiEditor.HISTROY_LEVEL == 'file') {
-      let editor = DDeiEditor.ACTIVE_INSTANCE;
+    let editor = DDeiEditor.ACTIVE_INSTANCE;
+    let histype = DDeiEditorUtil.getConfigValue("HISTROY_LEVEL", editor);
+    if (histype == 'file') {
       if (editor?.files.length > 0 && (editor.currentFileIndex == 0 || editor.currentFileIndex)) {
         let file = editor?.files[editor.currentFileIndex]
         //从历史恢复文件
@@ -58,7 +61,7 @@ class DDeiKeyActionReRevoke extends DDeiKeyAction {
           }
         }
       }
-    } else if (DDeiEditor.HISTROY_LEVEL == 'stage') {
+    } else if (histype == 'stage') {
       //修改当前操作控件坐标
       if (ddInstance && ddInstance.stage) {
         let hisData = ddInstance.stage.reRevokeHistroyData();

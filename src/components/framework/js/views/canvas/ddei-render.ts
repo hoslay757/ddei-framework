@@ -204,7 +204,7 @@ class DDeiCanvasRender {
   mouseWheel(evt: Event) {
     //放大缩小
     if ((evt.wheelDeltaY == 240 || evt.wheelDeltaY == -240)) {
-      if (DDeiConfig.GLOBAL_ALLOW_STAGE_RATIO) {
+      if (DDeiUtil.getConfigValue("GLOBAL_ALLOW_STAGE_RATIO", this.model)) {
         this.mouseScale(evt.wheelDeltaY, evt)
       }
     }

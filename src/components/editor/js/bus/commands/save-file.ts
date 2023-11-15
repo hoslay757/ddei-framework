@@ -48,8 +48,8 @@ class DDeiEditorCommandSaveFile extends DDeiBusCommand {
           if (data.publish == 1) {
             file.state = DDeiFileState.PUBLISHING
             //调用SPI进行发布
-            if (DDeiConfig.publishFile) {
-              DDeiConfig.publishFile(json).then(data => {
+            if (editor?.publishFile) {
+              editor.publishFile(json).then(data => {
                 if (data.result == 1) {
                   file.state = DDeiFileState.NONE;
                 } else if (data.result != 4) {
@@ -60,8 +60,8 @@ class DDeiEditorCommandSaveFile extends DDeiBusCommand {
           } else {
             file.state = DDeiFileState.SAVING
             //调用SPI进行保存
-            if (DDeiConfig.saveFile) {
-              DDeiConfig.saveFile(json).then(data => {
+            if (editor.saveFile) {
+              editor.saveFile(json).then(data => {
                 if (data.result == 1) {
                   file.state = DDeiFileState.NONE;
                 } else if (data.result != 4) {
