@@ -32,18 +32,17 @@ class DDeiEditorCommandRefreshEditorParts extends DDeiBusCommand {
   action(data: object, bus: DDeiBus, evt: Event): boolean {
 
     let editor = bus.invoker;
-
     if (data?.parts?.length > 0) {
-      if (data.parts?.indexOf("bottommenu") == -1) {
+      if (data.parts?.indexOf("bottommenu") != -1) {
         editor.editorViewer?.forceRefreshBottomMenu();
       }
-      if (data.parts?.indexOf("openfiles") == -1) {
+      if (data.parts?.indexOf("openfiles") != -1) {
         editor.editorViewer?.forceRefreshOpenFilesView();
       }
-      if (data.parts?.indexOf("topmenu") == -1) {
+      if (data.parts?.indexOf("topmenu") != -1) {
         editor.editorViewer?.forceRefreshTopMenuView();
       }
-      if (data.parts?.indexOf("property") == -1) {
+      if (data.parts?.indexOf("property") != -1) {
         editor.editorViewer?.forcePropertyView();
       }
     } else {

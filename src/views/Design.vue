@@ -45,19 +45,21 @@ export default {
         EVENT_PUBLISH_FILE: this.publishFile,
         // AC_DESIGN_SELECT: false,
         // AC_DESIGN_DRAG: false,
-        AC_DESIGN_EDIT: false,
+        AC_DESIGN_EDIT: true,
         AC_DESIGN_CREATE_DDeiRectangle: false,
         AC_DESIGN_SELECT_DDeiRectangle: true,
         AC_DESIGN_DRAG_DDeiRectangle: false,
         AC_DESIGN_DEL_DDeiRectContainer: false,
         // AC_DESIGN_EDIT_DDeiRectangle: true,
-        // AC_DESIGN_EDIT_DDeiRectangle_text: false,
+        AC_DESIGN_EDIT_DDeiRectangle_text: false,
         // EVENT_CONTROL_SELECT_BEFORE: this.selectBefore,
         EVENT_CONTROL_SELECT_AFTER: this.selectAfter,
         // EVENT_CONTROL_CREATE_BEFORE: this.createBefore,
         EVENT_CONTROL_CREATE_AFTER: this.createAfter,
         EVENT_CONTROL_DRAG_AFTER: this.dragAfter,
         EVENT_CONTROL_DEL_AFTER: this.removeAfter,
+        EVENT_CONTROL_EDIT_AFTER: this.editAfter,
+        // EVENT_CONTROL_EDIT_BEFORE: this.editBefore,
       }),
     };
   },
@@ -71,9 +73,35 @@ export default {
   },
   methods: {
     /**
+     * 编辑值前
+     */
+    editBefore(operate, models, propName, ddInstance, evt) {
+      models.forEach((model) => {
+        console.log(
+          "准备编辑:" +
+            model.id +
+            " 属性——" +
+            propName +
+            " .  " +
+            model[propName]
+        );
+      });
+      return true;
+    },
+    /**
+     * 编辑值后
+     */
+    editAfter(operate, models, propName, ddInstance, evt) {
+      models.forEach((model) => {
+        console.log(
+          "编辑:" + model.id + " 属性——" + propName + " .  " + model[propName]
+        );
+      });
+    },
+    /**
      * 删除后
      */
-    removeAfter(operate, models, ddInstance, evt) {
+    removeAfter(operate, models, propName, ddInstance, evt) {
       models.forEach((model) => {
         console.log("删除:" + model.id);
       });
@@ -81,7 +109,7 @@ export default {
     /**
      * 拖拽后
      */
-    dragAfter(operate, models, ddInstance, evt) {
+    dragAfter(operate, models, propName, ddInstance, evt) {
       models.forEach((model) => {
         console.log("拖拽:" + model.id);
       });
@@ -90,7 +118,7 @@ export default {
     /**
      * 创建后
      */
-    createAfter(operate, models, ddInstance, evt) {
+    createAfter(operate, models, propName, ddInstance, evt) {
       models.forEach((model) => {
         console.log("创建后:" + model.id);
       });

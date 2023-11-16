@@ -46,6 +46,8 @@ export default {
       //当前编辑器
       editor: null,
       dataSource: null,
+      editBefore: null,
+      editAfter: null,
     };
   },
   computed: {},
@@ -62,18 +64,19 @@ export default {
     this.getDataSource(this.attrDefine);
     this.attrDefine.doCascadeDisplayByValue();
     //判断当前属性是否可编辑
-    let editBefore = DDeiUtil.getConfigValue(
+    this.editBefore = DDeiUtil.getConfigValue(
       "EVENT_CONTROL_EDIT_BEFORE",
       this.editor.ddInstance
     );
-    if (editBefore) {
+
+    if (this.editBefore) {
       let mds = Array.from(
         this.editor?.ddInstance?.stage?.selectedModels?.values()
       );
       if (this.attrDefine?.model && mds.indexOf(this.attrDefine.model) == -1) {
         mds.push(this.attrDefine.model);
       }
-      this.attrDefine.readonly = !editBefore(
+      this.attrDefine.readonly = !this.editBefore(
         DDeiEnumOperateType.EDIT,
         mds,
         this.attrDefine?.code,
@@ -116,6 +119,25 @@ export default {
       if (this.attrDefine?.readonly) {
         return;
       }
+
+      let mds = Array.from(
+        this.editor?.ddInstance?.stage?.selectedModels?.values()
+      );
+      if (this.attrDefine?.model && mds.indexOf(this.attrDefine.model) == -1) {
+        mds.push(this.attrDefine.model);
+      }
+      if (
+        this.editBefore &&
+        !this.editBefore(
+          DDeiEnumOperateType.EDIT,
+          mds,
+          this.attrDefine?.code,
+          this.editor.ddInstance,
+          null
+        )
+      ) {
+        return;
+      }
       //获取属性路径
       let paths = [];
       this.attrDefine?.mapping?.forEach((element) => {
@@ -145,13 +167,27 @@ export default {
           true
         );
       });
-      this.editor.bus.push(
-        DDeiEditorEnumBusCommandType.RefreshEditorParts,
-        null,
-        evt
-      );
-      this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+      this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
+        parts: ["topmenu"],
+      });
+      this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
       this.editor.bus.executeAll();
+      //编辑完成后的回调函数
+      if (!this.editAfter) {
+        this.editAfter = DDeiUtil.getConfigValue(
+          "EVENT_CONTROL_EDIT_AFTER",
+          this.editor.ddInstance
+        );
+      }
+      if (this.editAfter) {
+        this.editAfter(
+          DDeiEnumOperateType.EDIT,
+          mds,
+          this.attrDefine?.code,
+          this.editor.ddInstance,
+          null
+        );
+      }
     },
   },
 };

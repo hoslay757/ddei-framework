@@ -5,25 +5,25 @@
     <div id="ddei_editor_topmenu_quickbox"
          class="ddei_editor_topmenu_quickbox">
       <div class="ddei_editor_topmenu_quickbox_group">
-        <QuickBoxFileInfo v-if="reFresh"></QuickBoxFileInfo>
+        <QuickBoxFileInfo></QuickBoxFileInfo>
       </div>
       <div class="ddei_editor_topmenu_quickbox_group">
-        <QuickBoxOperate v-if="reFresh"></QuickBoxOperate>
+        <QuickBoxOperate></QuickBoxOperate>
       </div>
       <div class="ddei_editor_topmenu_quickbox_group">
-        <QuickBoxFontAndText v-if="reFresh"></QuickBoxFontAndText>
+        <QuickBoxFontAndText></QuickBoxFontAndText>
       </div>
       <div class="ddei_editor_topmenu_quickbox_group">
-        <QuickBoxTool v-if="reFresh"></QuickBoxTool>
+        <QuickBoxTool></QuickBoxTool>
       </div>
       <div class="ddei_editor_topmenu_quickbox_group">
-        <QuickBoxSort v-if="reFresh"></QuickBoxSort>
+        <QuickBoxSort></QuickBoxSort>
       </div>
       <div class="ddei_editor_topmenu_quickbox_group_empty">
 
       </div>
       <div class="ddei_editor_topmenu_quickbox_group">
-        <QuickBoxEImport v-if="reFresh"></QuickBoxEImport>
+        <QuickBoxEImport></QuickBoxEImport>
       </div>
 
     </div>
@@ -52,7 +52,6 @@ export default {
   data() {
     return {
       editor: null,
-      reFresh: true,
     };
   },
   //注册组件
@@ -69,24 +68,12 @@ export default {
   },
   computed: {},
   watch: {},
-  created() {
-    // 监听obj对象中prop属性的变化
-    this.$watch("editor.currentControlDefine", this.forceRefresh);
-
-    // 监听obj对象中prop属性的变化
-    this.$watch("editor.refresh", this.forceRefresh);
-  },
+  created() {},
   mounted() {
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     this.editor.topMenuViewer = this;
   },
   methods: {
-    forceRefresh(newVal, oldVal) {
-      this.reFresh = false;
-      this.$nextTick(() => {
-        this.reFresh = true;
-      });
-    },
     /**
      * 焦点进入当前区域
      */
