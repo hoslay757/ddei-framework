@@ -1,5 +1,6 @@
 import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type";
 import DDeiEditor from "../js/editor";
+import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
 import DDeiEditorState from "../js/enums/editor-state";
 
 /**
@@ -38,9 +39,8 @@ class MenuRemoveSheet {
         editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, null);
         //记录日志
         editor.bus.push(DDeiEnumBusCommandType.AddHistroy)
+        editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, { parts: ["bottommenu"] })
         editor.bus?.executeAll();
-        //刷新下方列表
-        editor?.editorViewer?.forceRefreshBottomMenu();
       }
     }
   }

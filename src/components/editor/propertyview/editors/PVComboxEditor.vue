@@ -193,6 +193,9 @@ export default {
     },
 
     valueChange(value, evt) {
+      if (this.attrDefine?.readonly) {
+        return;
+      }
       this.attrDefine.value = value;
       let itemDefine = this.getDataDefine(value);
       let text = itemDefine.text;

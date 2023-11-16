@@ -9,6 +9,7 @@ import DDeiFileState from "../enums/file-state";
 import DDeiEditor from "../editor";
 import DDeiUtil from "@/components/framework/js/util";
 import DDeiEditorUtil from "../util/editor-util";
+import DDeiEditorEnumBusCommandType from "../enums/editor-command-type";
 
 /**
  * 键行为:反撤销
@@ -50,12 +51,9 @@ class DDeiKeyActionReRevoke extends DDeiKeyAction {
                 ddInstance.stage = stage;
                 //加载场景渲染器
                 stage.initRender();
-                ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
-                ddInstance?.bus?.executeAll();
-                editor?.editorViewer.forceRefreshBottomMenu();
-                editor?.editorViewer.forcePropertyView();
-                editor?.editorViewer.forceRefreshOpenFilesView();
-                editor?.editorViewer.forceRefreshTopMenuView();
+                ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
+                ddInstance.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts)
+                ddInstance.bus.executeAll();
               }
             }
           }
@@ -79,12 +77,9 @@ class DDeiKeyActionReRevoke extends DDeiKeyAction {
             ddInstance.stage.layers = layers
             ddInstance.stage.initRender();
             //渲染图形
-            ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
-            ddInstance?.bus?.executeAll();
-            let editor = DDeiEditor.ACTIVE_INSTANCE;
-            editor?.editorViewer?.forceRefreshBottomMenu();
-            editor?.editorViewer?.forcePropertyView();
-            editor?.editorViewer?.forceRefreshOpenFilesView();
+            ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+            ddInstance.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts)
+            ddInstance.bus.executeAll();
           }
         }
 

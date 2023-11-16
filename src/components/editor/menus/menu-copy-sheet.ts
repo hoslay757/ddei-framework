@@ -35,9 +35,8 @@ class MenuCopySheet {
       editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, null);
       //记录日志
       editor.bus.push(DDeiEnumBusCommandType.AddHistroy)
+      editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, { parts: ["bottommenu"] })
       editor.bus?.executeAll();
-      //刷新下方列表
-      editor?.editorViewer?.forceRefreshBottomMenu();
     }
   }
 

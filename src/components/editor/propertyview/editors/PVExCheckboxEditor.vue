@@ -194,6 +194,9 @@ export default {
     },
 
     valueChange(value, evt) {
+      if (this.attrDefine?.readonly) {
+        return;
+      }
       if (!value) {
         return;
       }

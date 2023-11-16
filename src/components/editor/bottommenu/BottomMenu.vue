@@ -452,9 +452,11 @@ export default {
 
         this.editor.editorViewer?.changeFileModifyDirty();
         this.editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
+        this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
+          parts: ["bottommenu"],
+        });
         this.editor.bus.executeAll();
         this.editor.changeState(DDeiEditorState.DESIGNING);
-        this.editor.editorViewer?.forceRefreshBottomMenu();
       }
     },
 
@@ -608,9 +610,11 @@ export default {
               sheet.name = input.value;
               editor.editorViewer?.changeFileModifyDirty();
               editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
+              editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
+                parts: ["bottommenu"],
+              });
               editor.bus.executeAll();
               editor.changeState(DDeiEditorState.DESIGNING);
-              editor.editorViewer?.forceRefreshBottomMenu();
             }
             input.style.display = "none";
             input.style.left = "0px";
@@ -628,9 +632,11 @@ export default {
               sheet.name = input.value;
               editor.editorViewer?.changeFileModifyDirty();
               editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
+              editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
+                parts: ["bottommenu"],
+              });
               editor.bus.executeAll();
               editor.changeState(DDeiEditorState.DESIGNING);
-              editor.editorViewer?.forceRefreshBottomMenu();
             }
             input.style.display = "none";
             input.style.left = "0px";

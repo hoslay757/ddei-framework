@@ -68,6 +68,9 @@ export default {
   },
   methods: {
     doCheck(attrDefine, evt: Event) {
+      if (attrDefine?.readonly) {
+        return;
+      }
       //获取属性路径
       let paths = [];
       this.attrDefine?.mapping?.forEach((element) => {
@@ -108,12 +111,8 @@ export default {
           true
         );
       });
-      this.editor.bus.push(
-        DDeiEditorEnumBusCommandType.RefreshEditorParts,
-        null,
-        evt
-      );
-      this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+      this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts);
+      this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
       this.editor.bus.executeAll();
     },
   },

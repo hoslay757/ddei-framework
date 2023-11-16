@@ -1,41 +1,66 @@
 <template>
-  <div id="ddei_editor_ofsview" @mousedown="changeEditorFocus()" class="ddei_editor_ofsview">
-    <div v-show="this.editor?.leftWidth == 0" class="ddei_editor_ofsview_expandbox" @click="expandToolBox">
-      <img width="25" height="16" src="../icons/icon-expand-right.png" />
+  <div id="ddei_editor_ofsview"
+       @mousedown="changeEditorFocus()"
+       class="ddei_editor_ofsview">
+    <div v-show="this.editor?.leftWidth == 0"
+         class="ddei_editor_ofsview_expandbox"
+         @click="expandToolBox">
+      <img width="25"
+           height="16"
+           src="../icons/icon-expand-right.png" />
     </div>
-    <div
-      :class="item.active == 1 ? 'ddei_editor_ofsview_item ddei_editor_ofsview_item_selected' : 'ddei_editor_ofsview_item'"
-      @click="changeFile(item)" draggable="true" @dragstart="fileDragStart(index, $event)"
-      @dragover="fileDragOver($event)" @drop="fileDragDrop($event)" @dragleave="fileDragCancel($event)"
-      v-for="(item, i) in editor?.files"
-      v-show="i >= openIndex && ((i - openIndex + 1) * 160 + 40) <= editor?.middleWidth" :title="item.name">
+    <div :class="item.active == 1 ? 'ddei_editor_ofsview_item ddei_editor_ofsview_item_selected' : 'ddei_editor_ofsview_item'"
+         @click="changeFile(item)"
+         draggable="true"
+         @dragstart="fileDragStart(index, $event)"
+         @dragover="fileDragOver($event)"
+         @drop="fileDragDrop($event)"
+         @dragleave="fileDragCancel($event)"
+         v-for="(item, i) in editor?.files"
+         v-show="i >= openIndex && ((i - openIndex + 1) * 160 + 40) <= editor?.middleWidth"
+         :title="item.name">
       <img src="../icons/icon-file.png" />
       <span>
-        <div class="text" @dblclick="startChangeFileName(item, $event)">{{ item.name }}</div>
-        <div class="dirty" v-show="item.state != 0">ꔷ</div>
+        <div class="text"
+             @dblclick="startChangeFileName(item, $event)">{{ item.name }}</div>
+        <div class="dirty"
+             v-show="item.state != 0">ꔷ</div>
       </span>
       <div @click.prevent.stop="closeFile(item, $event)">
         <img src="../icons/toolbox-close.png" />
       </div>
     </div>
     <div style="flex:1 1 1px"></div>
-    <div class="ddei_editor_ofsview_movebox" v-show="editor?.files?.length > maxOpenSize" @click="moveItem(-1)">
-      <img width="16" height="16" src="../icons/icon-left.png" />
+    <div class="ddei_editor_ofsview_movebox"
+         v-show="editor?.files?.length > maxOpenSize"
+         @click="moveItem(-1)">
+      <img width="16"
+           height="16"
+           src="../icons/icon-left.png" />
     </div>
-    <div class="ddei_editor_ofsview_movebox" v-show="editor?.files?.length > maxOpenSize" @click="moveItem(1)">
-      <img width="16" height="16" src="../icons/icon-right.png" />
+    <div class="ddei_editor_ofsview_movebox"
+         v-show="editor?.files?.length > maxOpenSize"
+         @click="moveItem(1)">
+      <img width="16"
+           height="16"
+           src="../icons/icon-right.png" />
     </div>
-    <div id="close_file_confirm_dialog" class="close_file_confirm_dialog">
+    <div id="close_file_confirm_dialog"
+         class="close_file_confirm_dialog">
       <div class="close_file_confirm_dialog_content">
         当前文件已经被修改，是否保存？
       </div>
       <div class="close_file_confirm_dialog_button">
-        <div class="button" style="color:white;background-color: #017fff;" @click="saveAndCloseFileConfirmDialog">保 存
+        <div class="button"
+             style="color:white;background-color: #017fff;"
+             @click="saveAndCloseFileConfirmDialog">保 存
         </div>
-        <div class="button" style="border-left:0.1px solid grey;border-right:0.1px solid grey;"
-          @click="abortAndCloseFileConfirmDialog">放 弃
+        <div class="button"
+             style="border-left:0.1px solid grey;border-right:0.1px solid grey;"
+             @click="abortAndCloseFileConfirmDialog">放 弃
         </div>
-        <div class="button" @click="cancelCloseFileConfirmDialog">取 消</div>
+        <div class="button"
+             @click="cancelCloseFileConfirmDialog">取 消</div>
       </div>
     </div>
   </div>
@@ -125,9 +150,11 @@ export default {
               file.name = input.value;
               editor.editorViewer?.changeFileModifyDirty();
               editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
+              editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
+                parts: ["openfiles"],
+              });
               editor.bus.executeAll();
               editor.changeState(DDeiEditorState.DESIGNING);
-              editor.editorViewer?.forceRefreshOpenFilesView();
             }
             input.style.display = "none";
             input.style.left = "0px";
@@ -144,9 +171,11 @@ export default {
               file.name = input.value;
               editor.editorViewer?.changeFileModifyDirty();
               editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
+              editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
+                parts: ["openfiles"],
+              });
               editor.bus.executeAll();
               editor.changeState(DDeiEditorState.DESIGNING);
-              editor.editorViewer?.forceRefreshOpenFilesView();
             }
             input.style.display = "none";
             input.style.left = "0px";
@@ -262,7 +291,10 @@ export default {
         this.sourceFileIndex = null;
         this.changeFileIndex = null;
 
-        this.editor.editorViewer?.forceRefreshOpenFilesView();
+        this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
+          parts: ["openfiles"],
+        });
+        this.editor.bus.executeAll();
       }
     },
 
@@ -292,9 +324,10 @@ export default {
       let ddInstance = this.editor?.ddInstance;
       if (!file) {
         ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
+        ddInstance.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
+          parts: ["bottommenu", "topmenu"],
+        });
         ddInstance?.bus?.executeAll();
-        this.editor.editorViewer?.forceRefreshBottomMenu();
-        this.editor.editorViewer?.forceRefreshTopMenuView();
       } else if (file.active != DDeiActiveType.ACTIVE) {
         this.editor.files.forEach((item) => {
           item.active = DDeiActiveType.NONE;
@@ -311,10 +344,11 @@ export default {
           ddInstance.stage = stage;
           //加载场景渲染器
           stage.initRender();
-          ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
-          ddInstance?.bus?.executeAll();
-          this.editor.editorViewer?.forceRefreshBottomMenu();
-          this.editor.editorViewer?.forceRefreshTopMenuView();
+          ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
+          ddInstance.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
+            parts: ["bottommenu", "topmenu"],
+          });
+          ddInstance.bus.executeAll();
         }
       }
     },
@@ -401,7 +435,7 @@ export default {
           }
         }
         if (this.editor.files.length == 0) {
-          this.changeFile(null)
+          this.changeFile(null);
           this.editor.currentFileIndex = -1;
         }
         if (index > this.openIndex) {

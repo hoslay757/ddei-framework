@@ -30,7 +30,29 @@ class DDeiEditorCommandRefreshEditorParts extends DDeiBusCommand {
    * @param evt 事件对象引用
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
-    bus.invoker.refresh = !bus?.invoker?.refresh
+
+    let editor = bus.invoker;
+
+    if (data?.parts?.length > 0) {
+      if (data.parts?.indexOf("bottommenu") == -1) {
+        editor.editorViewer?.forceRefreshBottomMenu();
+      }
+      if (data.parts?.indexOf("openfiles") == -1) {
+        editor.editorViewer?.forceRefreshOpenFilesView();
+      }
+      if (data.parts?.indexOf("topmenu") == -1) {
+        editor.editorViewer?.forceRefreshTopMenuView();
+      }
+      if (data.parts?.indexOf("property") == -1) {
+        editor.editorViewer?.forcePropertyView();
+      }
+    } else {
+      editor.editorViewer?.forceRefreshBottomMenu();
+      editor.editorViewer?.forceRefreshOpenFilesView();
+      editor.editorViewer?.forceRefreshTopMenuView();
+      editor.editorViewer?.forcePropertyView();
+
+    }
     return true;
 
   }

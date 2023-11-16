@@ -1,5 +1,4 @@
 import DDeiAbstractShape from "./models/shape"
-import loadCommands from "./config/command"
 import DDeiUtil from "./util"
 
 /**
@@ -510,9 +509,6 @@ class DDeiConfig {
         break;
       }
     }
-
-    //加载配置
-    loadCommands();
 
   }
 

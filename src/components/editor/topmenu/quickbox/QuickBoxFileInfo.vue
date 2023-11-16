@@ -186,9 +186,12 @@ export default {
         input.value = "";
         this.editor.editorViewer?.changeFileModifyDirty();
         this.editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
+        this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
+          parts: ["openfiles"],
+        });
+
         this.editor.bus.executeAll();
         this.editor.changeState(DDeiEditorState.DESIGNING);
-        this.editor.editorViewer?.forceRefreshOpenFilesView();
       } else if (evt.keyCode == 27) {
         this.fileNameEditing = false;
         input.value = "";
@@ -223,9 +226,12 @@ export default {
         this.fileDescEditing = false;
         this.editor.editorViewer?.changeFileModifyDirty();
         this.editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
+        this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
+          parts: ["openfiles"],
+        });
+
         this.editor.bus.executeAll();
         this.editor.changeState(DDeiEditorState.DESIGNING);
-        this.editor.editorViewer?.forceRefreshOpenFilesView();
       } else if (evt.keyCode == 27) {
         input.value = "";
         this.fileDescEditing = false;
@@ -314,10 +320,12 @@ export default {
                     ddInstance.bus.push(
                       DDeiEditorEnumBusCommandType.ClearTemplateUI
                     );
+                    ddInstance.bus.push(
+                      DDeiEditorEnumBusCommandType.RefreshEditorParts,
+                      { parts: ["bottommenu", "topmenu"] }
+                    );
                     ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
                     ddInstance?.bus?.executeAll();
-                    this.editor.editorViewer?.forceRefreshBottomMenu();
-                    this.editor.editorViewer?.forceRefreshTopMenuView();
                   }
                 }
               });
@@ -380,11 +388,13 @@ export default {
           //加载场景渲染器
           stage.initRender();
           ddInstance.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
-          ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
+          ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
+          ddInstance.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
+            parts: ["bottommenu", "topmenu"],
+          });
+
           this.editor.changeState(DDeiEditorState.DESIGNING);
           ddInstance?.bus?.executeAll();
-          this.editor.editorViewer?.forceRefreshBottomMenu();
-          this.editor.editorViewer?.forceRefreshTopMenuView();
         }
       }
     },

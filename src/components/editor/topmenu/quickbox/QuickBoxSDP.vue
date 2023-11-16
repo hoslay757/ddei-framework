@@ -1,20 +1,33 @@
 <template>
   <div class="ddei_editor_sdp">
-    <div class="ddei_editor_sdp_item" style="grid-row:1/3">
-      <div class="ddei_editor_sdp_item_box" @click="newFile">
-        <img width="16px" height="16px" :src="icons['icon-file']" />
+    <div class="ddei_editor_sdp_item"
+         style="grid-row:1/3">
+      <div class="ddei_editor_sdp_item_box"
+           @click="newFile">
+        <img width="16px"
+             height="16px"
+             :src="icons['icon-file']" />
         <div>新建</div>
       </div>
-      <div class="ddei_editor_sdp_item_box" @click="save">
-        <img width="16px" height="16px" :src="icons['icon-save']" />
+      <div class="ddei_editor_sdp_item_box"
+           @click="save">
+        <img width="16px"
+             height="16px"
+             :src="icons['icon-save']" />
         <div>保存</div>
       </div>
-      <div class="ddei_editor_sdp_item_box" @click="openFile">
-        <img width="16px" height="16px" :src="icons['icon-open']" />
+      <div class="ddei_editor_sdp_item_box"
+           @click="openFile">
+        <img width="16px"
+             height="16px"
+             :src="icons['icon-open']" />
         <div>打开</div>
       </div>
-      <div class="ddei_editor_sdp_item_box" @click="download">
-        <img width="16px" height="16px" :src="icons['icon-download']" />
+      <div class="ddei_editor_sdp_item_box"
+           @click="download">
+        <img width="16px"
+             height="16px"
+             :src="icons['icon-download']" />
         <div>下载</div>
       </div>
     </div>
@@ -55,7 +68,7 @@ export default {
   },
   computed: {},
   watch: {},
-  created() { },
+  created() {},
   mounted() {
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
   },
@@ -112,10 +125,13 @@ export default {
           //加载场景渲染器
           stage.initRender();
           ddInstance.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
-          ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
+          ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
+          ddInstance.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
+            parts: ["bottommenu"],
+          });
+
           this.editor.changeState(DDeiEditorState.DESIGNING);
-          ddInstance?.bus?.executeAll();
-          this.editor.editorViewer?.forceRefreshBottomMenu();
+          ddInstance.bus.executeAll();
         }
       }
     },
@@ -228,9 +244,13 @@ export default {
                     ddInstance.bus.push(
                       DDeiEditorEnumBusCommandType.ClearTemplateUI
                     );
+                    ddInstance.bus.push(
+                      DDeiEditorEnumBusCommandType.RefreshEditorParts,
+                      { parts: ["bottommenu"] }
+                    );
+
                     ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
                     ddInstance?.bus?.executeAll();
-                    this.editor.editorViewer?.forceRefreshBottomMenu();
                   }
                 }
               });

@@ -86,6 +86,9 @@ export default {
   },
   methods: {
     valueChange(evt) {
+      if (this.attrDefine?.readonly) {
+        return;
+      }
       //获取属性路径
       let paths = [];
       this.attrDefine?.mapping?.forEach((element) => {

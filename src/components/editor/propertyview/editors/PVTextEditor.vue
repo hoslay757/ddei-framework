@@ -74,6 +74,9 @@ export default {
   },
   methods: {
     valueChange(evt) {
+      if (this.attrDefine?.readonly) {
+        return;
+      }
       //获取属性路径
       let paths = [];
       this.attrDefine?.mapping?.forEach((element) => {
@@ -85,6 +88,7 @@ export default {
 
       //通过解析器获取有效值
       let parser: DDeiAbstractArrtibuteParser = this.attrDefine.getParser();
+
       //属性值
       let value = parser.parseValue(this.attrDefine.value);
       DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, value);
@@ -102,12 +106,8 @@ export default {
           true
         );
       });
-      this.editor.bus.push(
-        DDeiEditorEnumBusCommandType.RefreshEditorParts,
-        null,
-        evt
-      );
-      this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+      this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts);
+      this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
       this.editor.bus.executeAll();
     },
   },

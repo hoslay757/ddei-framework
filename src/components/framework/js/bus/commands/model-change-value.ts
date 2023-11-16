@@ -22,7 +22,14 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
    * @param evt 事件对象引用
    */
   before(data: object, bus: DDeiBus, evt: Event): boolean {
-
+    let stage = bus.ddInstance.stage;
+    if (stage && (data?.mids?.length > 0 || data?.models?.length > 0) && data?.paths?.length > 0) {
+      //属性定义
+      let attrDefine = data.attrDefine;
+      if (attrDefine?.readonly) {
+        return false;
+      }
+    }
     return true;
   }
 
@@ -45,6 +52,7 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
       let value = data.value;
       //属性定义
       let attrDefine = data.attrDefine;
+
 
       if (data?.paths?.indexOf('layout') != -1) {
 

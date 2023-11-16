@@ -163,11 +163,8 @@ export default {
         this.editor.changeState(DDeiEditorState.DESIGNING);
         ddInstance.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
         ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
+        ddInstance.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts);
         ddInstance.bus.executeAll();
-        this.editor.editorViewer?.forceRefreshBottomMenu();
-        this.editor.editorViewer?.forceRefreshOpenFilesView();
-        this.editor.editorViewer?.forceRefreshTopMenuView();
-        this.editor.editorViewer?.forcePropertyView();
       }
     });
   },

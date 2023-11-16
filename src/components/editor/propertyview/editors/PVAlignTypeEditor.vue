@@ -185,6 +185,9 @@ export default {
     },
 
     valueChange(type, evt) {
+      if (this.attrDefine?.readonly) {
+        return;
+      }
       let align = 2;
       let valign = 2;
       switch (type) {
