@@ -35,7 +35,7 @@
         <div :class="{ 'ddei_editor_pv_subgroup_view_tab_panel_editors_column': attrDefine.display == 'column', 'ddei_editor_pv_subgroup_view_tab_panel_editors_row': attrDefine.display != 'column', 'empty_value': attrDefine.value ? false : true }"
              v-for="attrDefine in currentSubGroup?.children"
              :title="attrDefine.desc"
-             v-show="attrDefine?.visiable">
+             v-show="attrDefine?.visiable && !attrDefine?.forceHidden">
           <div class="title"
                v-if="!attrDefine.hiddenTitle && attrDefine?.visiable != false">{{ attrDefine.name }}<span v-if="attrDefine.notNull">*</span>：
           </div>
@@ -116,6 +116,7 @@ import PVSwitchCheckboxEditor from "./editors/PVSwitchCheckboxEditor.vue";
 import ICONS from "../js/icon";
 import DDeiEnumBusCommandType from "../../framework/js/enums/bus-command-type";
 import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
+import DDeiEnumOperateType from "../../framework/js/enums/operate-type";
 export default {
   name: "DDei-Editor-PropertyView",
   extends: null,
@@ -500,6 +501,36 @@ export default {
         });
 
         pData.selected = true;
+        this.selectedModels = this.editor.ddInstance.stage.selectedModels;
+        let models: DDeiAbstractShape[] = null;
+        if (this.selectedModels?.size > 0) {
+          //获取当前所有组件的公共属性定义
+          models = Array.from(this.selectedModels.values());
+        } else {
+          //获取当前所有组件的公共属性定义
+          models = [this.editor.ddInstance.stage];
+        }
+        pData?.children.forEach((attd) => {
+          //判断当前属性是否可编辑
+          let viewBefore = DDeiUtil.getConfigValue(
+            "EVENT_CONTROL_VIEW_BEFORE",
+            this.editor.ddInstance
+          );
+          if (
+            viewBefore &&
+            !viewBefore(
+              DDeiEnumOperateType.VIEW,
+              models,
+              attd?.code,
+              this.editor.ddInstance,
+              null
+            )
+          ) {
+            attd.forceHidden = true;
+          } else {
+            attd.forceHidden = false;
+          }
+        });
         this.currentSubGroup = pData;
       }
       setTimeout(() => {

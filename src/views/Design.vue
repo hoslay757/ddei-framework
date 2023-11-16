@@ -45,21 +45,23 @@ export default {
         EVENT_PUBLISH_FILE: this.publishFile,
         // AC_DESIGN_SELECT: false,
         // AC_DESIGN_DRAG: false,
-        AC_DESIGN_EDIT: true,
-        AC_DESIGN_CREATE_DDeiRectangle: true,
-        AC_DESIGN_SELECT_DDeiRectangle: true,
-        AC_DESIGN_DRAG_DDeiRectangle: false,
-        AC_DESIGN_DEL_DDeiRectContainer: false,
+        // AC_DESIGN_EDIT: true,
+        // AC_DESIGN_CREATE_DDeiRectangle: true,
+        // AC_DESIGN_SELECT_DDeiRectangle: true,
+        // AC_DESIGN_DRAG_DDeiRectangle: false,
+        // AC_DESIGN_DEL_DDeiRectContainer: false,
+        "AC_DESIGN_VIEW_DDeiRectangle_fill.color": false,
         // AC_DESIGN_EDIT_DDeiRectangle: true,
-        AC_DESIGN_EDIT_DDeiRectangle_text: false,
+        // AC_DESIGN_EDIT_DDeiRectangle_text: false,
         // EVENT_CONTROL_SELECT_BEFORE: this.selectBefore,
-        EVENT_CONTROL_SELECT_AFTER: this.selectAfter,
+        // EVENT_CONTROL_SELECT_AFTER: this.selectAfter,
         // EVENT_CONTROL_CREATE_BEFORE: this.createBefore,
-        EVENT_CONTROL_CREATE_AFTER: this.createAfter,
-        EVENT_CONTROL_DRAG_AFTER: this.dragAfter,
-        EVENT_CONTROL_DEL_AFTER: this.removeAfter,
-        EVENT_CONTROL_EDIT_AFTER: this.editAfter,
-        // EVENT_CONTROL_EDIT_BEFORE: this.editBefore,
+        // EVENT_CONTROL_CREATE_AFTER: this.createAfter,
+        // EVENT_CONTROL_DRAG_AFTER: this.dragAfter,
+        // EVENT_CONTROL_DEL_AFTER: this.removeAfter,
+        // EVENT_CONTROL_EDIT_AFTER: this.editAfter,
+        // EVENT_CONTROL_VIEW_AFTER: this.viewAfter,
+        // EVENT_CONTROL_VIEW_BEFORE: this.viewBefore,
       }),
     };
   },
@@ -72,6 +74,27 @@ export default {
     this.getUserInfo();
   },
   methods: {
+    /**
+     * 查看前
+     */
+    viewBefore(operate, models, propName, ddInstance, evt) {
+      models.forEach((model) => {
+        console.log(
+          "查看前:" + model.id + " 属性——" + propName + " .  " + model[propName]
+        );
+      });
+      return true;
+    },
+    /**
+     * 查看后
+     */
+    viewAfter(operate, models, propName, ddInstance, evt) {
+      models.forEach((model) => {
+        console.log(
+          "查看:" + model.id + " 属性——" + propName + " .  " + model[propName]
+        );
+      });
+    },
     /**
      * 编辑值前
      */

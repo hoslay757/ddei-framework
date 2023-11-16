@@ -69,6 +69,16 @@ class DDeiLayerCanvasRender {
     this.ddRender = this.model.stage.ddInstance.render
     this.stage = this.model.stage
     this.stageRender = this.model.stage.render
+    //展示前逻辑
+    this.viewBefore = DDeiUtil.getConfigValue(
+      "EVENT_CONTROL_VIEW_BEFORE",
+      this.ddRender.model
+    );
+    //展示后逻辑
+    this.viewAfter = DDeiUtil.getConfigValue(
+      "EVENT_CONTROL_VIEW_AFTER",
+      this.ddRender.model
+    );
   }
 
   /**
@@ -77,23 +87,39 @@ class DDeiLayerCanvasRender {
   drawShape(): void {
     //只有当显示时才绘制图层
     if (this.model.display || this.model.tempDisplay) {
+      if (!this.viewBefore || this.viewBefore(
+        DDeiEnumOperateType.VIEW,
+        [this.model],
+        null,
+        this.ddRender.model,
+        null
+      )) {
+        //绘制子元素
+        this.drawChildrenShapes();
 
-      //绘制子元素
-      this.drawChildrenShapes();
+        //绘制操作点
+        this.drawOpPoints();
 
-      //绘制操作点
-      this.drawOpPoints();
+        //绘制移入移出效果图形
+        this.drawDragInOutPoints();
 
-      //绘制移入移出效果图形
-      this.drawDragInOutPoints();
+        //绘制拖拽影子控件
+        this.drawShadowControls();
 
-      //绘制拖拽影子控件
-      this.drawShadowControls();
+        //绘制辅助线
+        this.drawHelpLines()
 
-      //绘制辅助线
-      this.drawHelpLines()
-
-      this.modelChanged = false;
+        this.modelChanged = false;
+        if (this.viewAfter) {
+          this.viewAfter(
+            DDeiEnumOperateType.VIEW,
+            [this.model],
+            null,
+            this.ddRender.model,
+            null
+          )
+        }
+      }
     }
   }
 

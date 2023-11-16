@@ -1,6 +1,7 @@
 import DDeiConfig from '../../config.js'
 import DDeiEnumBusCommandType from '../../enums/bus-command-type.js';
 import DDeiEnumOperateState from '../../enums/operate-state.js';
+import DDeiEnumOperateType from '../../enums/operate-type.js';
 import DDeiModelArrtibuteValue from '../../models/attribute/attribute-value.js';
 import DDeiSelector from '../../models/selector.js';
 import DDeiAbstractShape from '../../models/shape.js';
@@ -73,61 +74,88 @@ class DDeiStageCanvasRender {
   init(): void {
     this.ddRender = this.model.ddInstance.render
     this.initSelector();
+    //展示前逻辑
+    this.viewBefore = DDeiUtil.getConfigValue(
+      "EVENT_CONTROL_VIEW_BEFORE",
+      this.ddRender.model
+    );
+    //展示后逻辑
+    this.viewAfter = DDeiUtil.getConfigValue(
+      "EVENT_CONTROL_VIEW_AFTER",
+      this.ddRender.model
+    );
   }
 
   /**
    * 创建图形
    */
   drawShape(): void {
-    //计算滚动条
-    this.calScroll();
+    if (!this.viewBefore || this.viewBefore(
+      DDeiEnumOperateType.VIEW,
+      [this.model],
+      null,
+      this.ddRender.model,
+      null
+    )) {
+      //计算滚动条
+      this.calScroll();
 
-    //清空画布，绘制场景大背景
-    this.clearStage();
-    //绘制纸张，以及图层背景
-    this.drawPaper();
+      //清空画布，绘制场景大背景
+      this.clearStage();
+      //绘制纸张，以及图层背景
+      this.drawPaper();
 
-    //绘制网格
-    this.drawGrid()
-    //获得 2d 上下文对象
-    let canvas = this.ddRender.getCanvas();
-    let ctx = canvas.getContext('2d');
-    let rat1 = this.ddRender.ratio;
-    //绘制图形
-    ctx.save();
+      //绘制网格
+      this.drawGrid()
+      //获得 2d 上下文对象
+      let canvas = this.ddRender.getCanvas();
+      let ctx = canvas.getContext('2d');
+      let rat1 = this.ddRender.ratio;
+      //绘制图形
+      ctx.save();
 
-    ctx.translate((this.model.wpv.x) * rat1, (this.model.wpv.y) * rat1)
-    let topDisplayIndex = -1;
-    for (let i = this.model.layers.length - 1; i >= 0; i--) {
-      if (this.model.layers[i].tempDisplay) {
-        topDisplayIndex = i
+      ctx.translate((this.model.wpv.x) * rat1, (this.model.wpv.y) * rat1)
+      let topDisplayIndex = -1;
+      for (let i = this.model.layers.length - 1; i >= 0; i--) {
+        if (this.model.layers[i].tempDisplay) {
+          topDisplayIndex = i
+        }
+        else if (this.model.layers[i].display == 1) {
+          this.model.layers[i].render.drawShape();
+        }
       }
-      else if (this.model.layers[i].display == 1) {
-        this.model.layers[i].render.drawShape();
+
+      if (topDisplayIndex != -1) {
+        this.model.layers[topDisplayIndex].render.drawShape();
+      }
+
+      if (this.selector) {
+        this.selector.render.drawShape();
+      }
+      ctx.restore();
+
+
+
+      //绘制标尺
+      this.drawRuler()
+
+      //绘制水印
+      this.drawMark();
+
+
+      //绘制滚动条
+      this.drawScroll();
+
+      if (this.viewAfter) {
+        this.viewAfter(
+          DDeiEnumOperateType.VIEW,
+          [this.model],
+          null,
+          this.ddRender.model,
+          null
+        )
       }
     }
-
-    if (topDisplayIndex != -1) {
-      this.model.layers[topDisplayIndex].render.drawShape();
-    }
-
-    if (this.selector) {
-      this.selector.render.drawShape();
-    }
-    ctx.restore();
-
-
-
-    //绘制标尺
-    this.drawRuler()
-
-    //绘制水印
-    this.drawMark();
-
-
-    //绘制滚动条
-    this.drawScroll();
-
   }
 
   /**

@@ -14,6 +14,7 @@ import DDeiAbstractShapeRender from './shape-render-base.js';
 import DDeiStageCanvasRender from './stage-render.js';
 import { cloneDeep } from 'lodash'
 import { Matrix3, Vector3 } from 'three';
+import DDeiEnumOperateType from '../../enums/operate-type.js';
 
 
 /**
@@ -56,6 +57,16 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       this.layer = this.model.layer
       this.layerRender = this.model.layer.render
     }
+    //展示前逻辑
+    this.viewBefore = DDeiUtil.getConfigValue(
+      "EVENT_CONTROL_VIEW_BEFORE",
+      this.ddRender.model
+    );
+    //展示后逻辑
+    this.viewAfter = DDeiUtil.getConfigValue(
+      "EVENT_CONTROL_VIEW_AFTER",
+      this.ddRender.model
+    );
   }
 
 
@@ -79,23 +90,41 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
    * 创建图形
    */
   drawShape(): void {
-    //获得 2d 上下文对象
-    let canvas = this.ddRender.getCanvas();
-    let ctx = canvas.getContext('2d');
-    ctx.save();
-    //绘制边框
-    this.drawBorder();
+    if (!this.viewBefore || this.viewBefore(
+      DDeiEnumOperateType.VIEW,
+      [this.model],
+      null,
+      this.ddRender.model,
+      null
+    )) {
+      //获得 2d 上下文对象
+      let canvas = this.ddRender.getCanvas();
+      let ctx = canvas.getContext('2d');
+      ctx.save();
+      //绘制边框
+      this.drawBorder();
 
-    //绘制填充
-    this.drawFill();
+      //绘制填充
+      this.drawFill();
 
-    // //绘制文本
-    this.drawText();
+      // //绘制文本
+      this.drawText();
 
-    //清空绘图时计算的临时变量
-    this.tempFillAreaRect = null
+      //清空绘图时计算的临时变量
+      this.tempFillAreaRect = null
 
-    ctx.restore();
+      ctx.restore();
+
+      if (this.viewAfter) {
+        this.viewAfter(
+          DDeiEnumOperateType.VIEW,
+          [this.model],
+          null,
+          this.ddRender.model,
+          null
+        )
+      }
+    }
   }
 
 

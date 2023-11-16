@@ -643,6 +643,18 @@ class DDeiConfig {
   static EVENT_CONTROL_EDIT_AFTER: Function;
 
 
+  /**
+   * 控件查看前，此方法为外部传入的勾子函数
+   */
+  static EVENT_CONTROL_VIEW_BEFORE: Function;
+
+  /**
+   * 控件查看后，此方法为外部传入的勾子函数
+   */
+  static EVENT_CONTROL_VIEW_AFTER: Function;
+
+
+
 
   /**
   * 根据配置文件的配置，将模型与渲染器绑定

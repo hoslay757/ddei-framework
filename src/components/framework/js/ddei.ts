@@ -122,7 +122,7 @@ class DDei {
     DDeiConfig.EVENT_CONTROL_DRAG_BEFORE = DDei.beforeOperateValid
     DDeiConfig.EVENT_CONTROL_DEL_BEFORE = DDei.beforeOperateValid
     DDeiConfig.EVENT_CONTROL_EDIT_BEFORE = DDei.beforeOperateValid
-
+    DDeiConfig.EVENT_CONTROL_VIEW_BEFORE = DDei.beforeOperateValid
 
   }
 
