@@ -1,18 +1,21 @@
 <template>
   <div :class="{ 'ddei_pv_editor_text': true, 'ddei_pv_editor_text_disabled': attrDefine.readonly }">
-    <input :type="attrDefine?.itemStyle?.type ? attrDefine?.itemStyle?.type : 'input'" v-model="attrDefine.value"
-      :disabled="attrDefine.readonly" :placeholder="attrDefine.defaultValue" />
+    <input :type="attrDefine?.itemStyle?.type ? attrDefine?.itemStyle?.type : 'input'"
+           v-model="attrDefine.value"
+           :disabled="attrDefine.readonly"
+           :placeholder="attrDefine.defaultValue" />
   </div>
 </template>
 
 <script lang="ts">
-import { debounce } from 'lodash';
-import DDeiEditorArrtibute from '../../js/attribute/editor-attribute';
-import DDeiEditor from '../../js/editor';
-import DDeiEnumBusCommandType from '../../../framework/js/enums/bus-command-type';
-import DDeiAbstractArrtibuteParser from '../../../framework/js/models/attribute/parser/attribute-parser';
-import DDeiEditorEnumBusCommandType from '../../js/enums/editor-command-type';
-import DDeiUtil from '../../../framework/js/util';
+import { debounce } from "lodash";
+import DDeiEditorArrtibute from "../../js/attribute/editor-attribute";
+import DDeiEditor from "../../js/editor";
+import DDeiEnumBusCommandType from "../../../framework/js/enums/bus-command-type";
+import DDeiAbstractArrtibuteParser from "../../../framework/js/models/attribute/parser/attribute-parser";
+import DDeiEditorEnumBusCommandType from "../../js/enums/editor-command-type";
+import DDeiUtil from "../../../framework/js/util";
+import DDeiEnumOperateType from "../../../framework/js/enums/operate-type";
 
 export default {
   name: "DDei-Editor-PV-Text-Editor",
@@ -22,59 +25,92 @@ export default {
     //当前属性定义
     attrDefine: {
       type: DDeiEditorArrtibute,
-      default: null
+      default: null,
     },
     //当前控件定义
     controlDefine: {
       type: Object,
-      default: null
+      default: null,
     },
   },
   data() {
     return {
       //当前编辑器
       editor: null,
+      canView: true,
     };
   },
   computed: {},
-  watch: {
-
-  },
+  watch: {},
   created() {
     // 监听obj对象中prop属性的变化
-    this.$watch('attrDefine.value', function (newVal, oldVal) {
+    this.$watch("attrDefine.value", function (newVal, oldVal) {
       this.valueChange();
     });
   },
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
+    //判断当前属性是否可编辑
+    let editBefore = DDeiUtil.getConfigValue(
+      "EVENT_CONTROL_EDIT_BEFORE",
+      this.editor.ddInstance
+    );
+    if (editBefore) {
+      let mds = Array.from(
+        this.editor?.ddInstance?.stage?.selectedModels?.values()
+      );
+      if (this.attrDefine?.model && mds.indexOf(this.attrDefine.model) == -1) {
+        mds.push(this.attrDefine.model);
+      }
+      this.attrDefine.readonly = !editBefore(
+        DDeiEnumOperateType.EDIT,
+        mds,
+        this.attrDefine?.code,
+        this.editor.ddInstance,
+        null
+      );
+    }
   },
   methods: {
     valueChange(evt) {
       //获取属性路径
       let paths = [];
-      this.attrDefine?.mapping?.forEach(element => {
+      this.attrDefine?.mapping?.forEach((element) => {
         paths.push(element);
       });
       if (!(paths?.length > 0)) {
-        paths = [this.attrDefine.code]
+        paths = [this.attrDefine.code];
       }
 
       //通过解析器获取有效值
       let parser: DDeiAbstractArrtibuteParser = this.attrDefine.getParser();
       //属性值
       let value = parser.parseValue(this.attrDefine.value);
-      DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, value)
-      this.editor.ddInstance.stage.selectedModels.forEach(element => {
+      DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, value);
+      this.editor.ddInstance.stage.selectedModels.forEach((element) => {
         //推送信息进入总线
-        this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: value, attrDefine: this.attrDefine }, evt, true);
+        this.editor.bus.push(
+          DDeiEnumBusCommandType.ModelChangeValue,
+          {
+            mids: [element.id],
+            paths: paths,
+            value: value,
+            attrDefine: this.attrDefine,
+          },
+          evt,
+          true
+        );
       });
-      this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, null, evt);
+      this.editor.bus.push(
+        DDeiEditorEnumBusCommandType.RefreshEditorParts,
+        null,
+        evt
+      );
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
       this.editor.bus.executeAll();
-    }
-  }
+    },
+  },
 };
 </script>
 

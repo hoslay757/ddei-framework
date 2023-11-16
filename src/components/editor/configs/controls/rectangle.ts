@@ -486,7 +486,7 @@ export const datas = {
       'name': '文本',
       'desc': '控件的主体显示文本',
       'group': '基础信息',
-      'controlType': 'text',
+      'controlType': 'textarea',
       'defaultValue': '文本',
       'dataType': 'string',
       'type': [1, 2], //类别，1图形，2业务，3事件

@@ -36,6 +36,7 @@
   </div>
 </template>
 <script lang="ts">
+import DDeiUtil from "../../../framework/js/util";
 import DDeiEditor from "../../js/editor";
 import DDeiEnumKeyActionInst from "../../js/enums/key-action-inst";
 import ICONS from "../../js/icon";
@@ -109,17 +110,22 @@ export default {
     /**
      * 检查剪切板中是否有内容
      */
-    hasClipboard() {
+    async hasClipboard() {
       this.hasClipData = false;
       if (this.editor?.ddInstance?.stage?.copyMode) {
         this.hasClipData = true;
       } else {
-        let cbData = navigator.clipboard;
-        cbData.read().then((items) => {
-          if (items?.length > 0) {
-            this.hasClipData = true;
+        let hasFocus = document.hasFocus();
+        if (hasFocus) {
+          // 判断是否Safari浏览器
+          if (!DDeiUtil.isSafari()) {
+            let cbData = navigator.clipboard;
+            let items = await cbData.read();
+            if (items?.length > 0) {
+              this.hasClipData = true;
+            }
           }
-        });
+        }
       }
     },
   },

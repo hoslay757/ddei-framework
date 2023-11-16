@@ -62,6 +62,7 @@ import DDeiAbstractArrtibuteParser from "../../../framework/js/models/attribute/
 import PVBaseCombox from "./PVBaseCombox.vue";
 import DDeiUtil from "@/components/framework/js/util";
 import DDeiEditorEnumBusCommandType from "../../js/enums/editor-command-type";
+import DDeiEnumOperateType from "../../../framework/js/enums/operate-type";
 
 export default {
   name: "DDei-Editor-PV-Align-Type",
@@ -106,6 +107,26 @@ export default {
     this.$refs.combox.text = text;
     this.$refs.combox.value = type.value;
     this.value = type.value;
+    //判断当前属性是否可编辑
+    let editBefore = DDeiUtil.getConfigValue(
+      "EVENT_CONTROL_EDIT_BEFORE",
+      this.editor.ddInstance
+    );
+    if (editBefore) {
+      let mds = Array.from(
+        this.editor?.ddInstance?.stage?.selectedModels?.values()
+      );
+      if (this.attrDefine?.model && mds.indexOf(this.attrDefine.model) == -1) {
+        mds.push(this.attrDefine.model);
+      }
+      this.attrDefine.readonly = !editBefore(
+        DDeiEnumOperateType.EDIT,
+        mds,
+        this.attrDefine?.code,
+        this.editor.ddInstance,
+        null
+      );
+    }
   },
   methods: {
     getTypeText(type) {

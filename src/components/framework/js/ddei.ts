@@ -52,13 +52,14 @@ class DDei {
   /**
    * 选中前，一般用于校验，默认根据权限配置参数进行校验
    */
-  static beforeOperateValid(operate: DDeiEnumOperateType, models: DDeiAbstractShape[], ddInstance: DDei, evt: Event): boolean {
+  static beforeOperateValid(operate: DDeiEnumOperateType, models: DDeiAbstractShape[], propName: string, ddInstance: DDei, evt: Event): boolean {
     //获取权限
     let modeName = DDeiUtil.getConfigValue("MODE_NAME", ddInstance);
     for (let i = 0; i < models.length; i++) {
       let access = DDeiUtil.isAccess(
         operate,
         models[i],
+        propName,
         modeName,
         ddInstance
       );
@@ -120,6 +121,8 @@ class DDei {
     DDeiConfig.EVENT_CONTROL_CREATE_BEFORE = DDei.beforeOperateValid
     DDeiConfig.EVENT_CONTROL_DRAG_BEFORE = DDei.beforeOperateValid
     DDeiConfig.EVENT_CONTROL_DEL_BEFORE = DDei.beforeOperateValid
+    DDeiConfig.EVENT_CONTROL_EDIT_BEFORE = DDei.beforeOperateValid
+
 
   }
 

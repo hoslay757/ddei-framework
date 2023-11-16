@@ -31,7 +31,7 @@
             subGroup.name }}</div>
       </div>
       <div class="ddei_editor_pv_subgroup_view_tab_panel"
-           :style="{ height: 'calc(100vh - ' + (editor?.topHeight + editor?.bottomHeight + 40) + 'px' }">
+           :style="{ height: 'calc(100vh - ' + (editor?.topHeight + editor?.bottomHeight + 40) + 'px'}">
         <div :class="{ 'ddei_editor_pv_subgroup_view_tab_panel_editors_column': attrDefine.display == 'column', 'ddei_editor_pv_subgroup_view_tab_panel_editors_row': attrDefine.display != 'column', 'empty_value': attrDefine.value ? false : true }"
              v-for="attrDefine in currentSubGroup?.children"
              :title="attrDefine.desc"

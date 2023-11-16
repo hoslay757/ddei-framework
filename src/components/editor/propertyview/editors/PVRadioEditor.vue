@@ -1,5 +1,6 @@
 <template>
-  <div :class="{ 'ddei_pv_editor_radio': true, 'ddei_pv_editor_radio_disabled': attrDefine.readonly }">
+  <div :class="{ 'ddei_pv_editor_radio': true, 'ddei_pv_editor_radio_disabled': attrDefine.readonly }"
+       :style="{'pointer-events':attrDefine.readonly ? 'none':''}">
     <div class="itembox"
          v-for="item in dataSource"
          @click="checkRadioValue(attrDefine, $event)">
@@ -22,6 +23,7 @@ import DDeiAbstractArrtibuteParser from "../../../framework/js/models/attribute/
 import DDeiEditorUtil from "../../js/util/editor-util";
 import DDeiEditorEnumBusCommandType from "../../js/enums/editor-command-type";
 import DDeiUtil from "../../../framework/js/util";
+import DDeiEnumOperateType from "../../../framework/js/enums/operate-type";
 
 export default {
   name: "DDei-Editor-PV-Radio-Editor",
@@ -59,6 +61,26 @@ export default {
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     this.getDataSource(this.attrDefine);
     this.attrDefine.doCascadeDisplayByValue();
+    //判断当前属性是否可编辑
+    let editBefore = DDeiUtil.getConfigValue(
+      "EVENT_CONTROL_EDIT_BEFORE",
+      this.editor.ddInstance
+    );
+    if (editBefore) {
+      let mds = Array.from(
+        this.editor?.ddInstance?.stage?.selectedModels?.values()
+      );
+      if (this.attrDefine?.model && mds.indexOf(this.attrDefine.model) == -1) {
+        mds.push(this.attrDefine.model);
+      }
+      this.attrDefine.readonly = !editBefore(
+        DDeiEnumOperateType.EDIT,
+        mds,
+        this.attrDefine?.code,
+        this.editor.ddInstance,
+        null
+      );
+    }
   },
   methods: {
     /**

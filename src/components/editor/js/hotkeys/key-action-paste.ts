@@ -862,10 +862,10 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
     //选中前
     if ((mode == 'copy' &&
       (!createBefore ||
-        createBefore(DDeiEnumOperateType.CREATE, models, stage.ddInstance))) ||
+        createBefore(DDeiEnumOperateType.CREATE, models, null, stage.ddInstance))) ||
       (mode == 'cut' &&
         (!dragBefore ||
-          dragBefore(DDeiEnumOperateType.DRAG, models, stage.ddInstance)))
+          dragBefore(DDeiEnumOperateType.DRAG, models, null, stage.ddInstance)))
     ) {
       //重新计算坐标，基于粘贴的中心点
       let outRect = DDeiAbstractShape.getOutRectByPV(models);
@@ -900,7 +900,7 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
           stage.ddInstance
         );
         if (dragAfter) {
-          dragAfter(DDeiEnumOperateType.DRAG, models, stage.ddInstance, evt)
+          dragAfter(DDeiEnumOperateType.DRAG, models, null, stage.ddInstance, evt)
         }
       }
     }

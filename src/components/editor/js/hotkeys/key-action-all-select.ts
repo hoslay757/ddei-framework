@@ -33,7 +33,7 @@ class DDeiKeyActionAllSelect extends DDeiKeyAction {
           ddInstance
         );
 
-        if (!selectBefore || selectBefore(DDeiEnumOperateType.SELECT, Array.from(layer.models.values()), ddInstance, evt)) {
+        if (!selectBefore || selectBefore(DDeiEnumOperateType.SELECT, Array.from(layer.models.values()), null, ddInstance, evt)) {
           ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, { models: layer.models, value: DDeiEnumControlState.SELECTED }, evt);
         }
       }

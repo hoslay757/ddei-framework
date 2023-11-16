@@ -627,7 +627,7 @@ class DDeiLayerCanvasRender {
             this.stage?.ddInstance
           );
 
-          if (!selectBefore || selectBefore(DDeiEnumOperateType.SELECT, Array.from(includedModels.values()), this.stage?.ddInstance, evt)) {
+          if (!selectBefore || selectBefore(DDeiEnumOperateType.SELECT, Array.from(includedModels.values()), null, this.stage?.ddInstance, evt)) {
             this.stageRender.currentOperateContainer = this.model;
             includedModels.forEach((model, key) => {
               pushDatas.push({ id: model.id, value: DDeiEnumControlState.SELECTED });
@@ -722,7 +722,7 @@ class DDeiLayerCanvasRender {
                 this.stage?.ddInstance
               );
               if (dragAfter) {
-                dragAfter(DDeiEnumOperateType.DRAG, operateModels, this.stage?.ddInstance, evt)
+                dragAfter(DDeiEnumOperateType.DRAG, operateModels, null, this.stage?.ddInstance, evt)
               }
             }
           }
@@ -838,7 +838,7 @@ class DDeiLayerCanvasRender {
           if (sms.indexOf(this.stageRender.currentOperateShape) == -1) {
             sms.push(this.stageRender.currentOperateShape)
           }
-          if (!dragBefore || dragBefore(DDeiEnumOperateType.DRAG, sms, this.stage?.ddInstance, evt)) {
+          if (!dragBefore || dragBefore(DDeiEnumOperateType.DRAG, sms, null, this.stage?.ddInstance, evt)) {
             //当前操作状态：控件拖拽中
             this.stageRender.operateState = DDeiEnumOperateState.CONTROL_DRAGING
             //产生影子控件

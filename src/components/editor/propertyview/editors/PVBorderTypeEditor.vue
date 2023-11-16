@@ -1,21 +1,28 @@
 <template>
-  <div :class="{ 'ddei_pv_editor_bordertype': true, 'ddei_pv_editor_bordertype_disabled': attrDefine.readonly }">
-    <div class="itembox" v-for="item in dataSource" @click="checkRadioValue(attrDefine, $event)">
-      <input type="radio" :disabled="attrDefine.readonly" :name="attrDefine.id" :value="item.value"
-        v-model="attrDefine.value" />
+  <div :class="{ 'ddei_pv_editor_bordertype': true, 'ddei_pv_editor_bordertype_disabled': attrDefine.readonly }"
+       :style="{'pointer-events':attrDefine.readonly ? 'none':''}">
+    <div class="itembox"
+         v-for="item in dataSource"
+         @click="checkRadioValue(attrDefine, $event)">
+      <input type="radio"
+             :disabled="attrDefine.readonly"
+             :name="attrDefine.id"
+             :value="item.value"
+             v-model="attrDefine.value" />
       <div>{{ item.text }}</div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import DDeiEditorArrtibute from '../../js/attribute/editor-attribute';
-import DDeiEditor from '../../js/editor';
-import DDeiEnumBusCommandType from '../../../framework/js/enums/bus-command-type';
-import DDeiAbstractArrtibuteParser from '../../../framework/js/models/attribute/parser/attribute-parser';
-import DDeiEditorUtil from '../../js/util/editor-util';
-import DDeiUtil from '../../../framework/js/util';
-import DDeiEditorEnumBusCommandType from '../../js/enums/editor-command-type';
+import DDeiEditorArrtibute from "../../js/attribute/editor-attribute";
+import DDeiEditor from "../../js/editor";
+import DDeiEnumBusCommandType from "../../../framework/js/enums/bus-command-type";
+import DDeiAbstractArrtibuteParser from "../../../framework/js/models/attribute/parser/attribute-parser";
+import DDeiEditorUtil from "../../js/util/editor-util";
+import DDeiUtil from "../../../framework/js/util";
+import DDeiEditorEnumBusCommandType from "../../js/enums/editor-command-type";
+import DDeiEnumOperateType from "../../../framework/js/enums/operate-type";
 
 export default {
   name: "DDei-Editor-PV-BorderType-Editor",
@@ -25,42 +32,54 @@ export default {
     //当前属性定义
     attrDefine: {
       type: DDeiEditorArrtibute,
-      default: null
+      default: null,
     },
     //当前控件定义
     controlDefine: {
       type: Object,
-      default: null
+      default: null,
     },
   },
   data() {
     return {
       //当前编辑器
       editor: null,
-      dataSource: null
+      dataSource: null,
     };
   },
   computed: {},
-  watch: {
-
-  },
-  created() {
-    // 监听obj对象中prop属性的变化,TODO 一点击就触发file的dirty
-    // this.$watch('attrDefine.value', function (newVal, oldVal) {
-    //   this.valueChange();
-    // });
-  },
+  watch: {},
+  created() {},
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     this.getDataSource(this.attrDefine);
     let type = this.getTypeValue();
     if (type) {
-      this.attrDefine.value = type.value
+      this.attrDefine.value = type.value;
+    }
+    //判断当前属性是否可编辑
+    let editBefore = DDeiUtil.getConfigValue(
+      "EVENT_CONTROL_EDIT_BEFORE",
+      this.editor.ddInstance
+    );
+    if (editBefore) {
+      let mds = Array.from(
+        this.editor?.ddInstance?.stage?.selectedModels?.values()
+      );
+      if (this.attrDefine?.model && mds.indexOf(this.attrDefine.model) == -1) {
+        mds.push(this.attrDefine.model);
+      }
+      this.attrDefine.readonly = !editBefore(
+        DDeiEnumOperateType.EDIT,
+        mds,
+        this.attrDefine?.code,
+        this.editor.ddInstance,
+        null
+      );
     }
   },
   methods: {
-
     /**
      * 根据值获取选项定义
      * @param value 值
@@ -71,7 +90,7 @@ export default {
           if (this.dataSource[i].value.toString() == value.toString()) {
             return this.dataSource[i];
           }
-        };
+        }
       }
       return { text: "" };
     },
@@ -80,7 +99,10 @@ export default {
      */
     checkRadioValue(attrDefine, evt: Event) {
       let targetElement = evt.target;
-      if (targetElement.tagName == "DIV" && targetElement.className == 'itembox') {
+      if (
+        targetElement.tagName == "DIV" &&
+        targetElement.className == "itembox"
+      ) {
         targetElement = targetElement.children[0];
       } else if (targetElement.tagName == "DIV") {
         targetElement = targetElement.parentElement.children[0];
@@ -105,33 +127,34 @@ export default {
     getTypeValue() {
       //获取属性路径
       let paths = [];
-      this.attrDefine?.exmapping?.forEach(element => {
+      this.attrDefine?.exmapping?.forEach((element) => {
         paths.push(element);
       });
       if (!(paths?.length > 0)) {
-        paths = [this.attrDefine.code]
+        paths = [this.attrDefine.code];
       }
 
       //通过解析器获取有效值
       let value = DDeiUtil.getDataByPathList(this.attrDefine.model, paths);
       if (!value) {
-        return { value: '1' };
-      } else if (value == 'true' || value == true) {
-        return { value: '0' };
+        return { value: "1" };
+      } else if (value == "true" || value == true) {
+        return { value: "0" };
       }
-      return { isDefault: true, value: this.attrDefine.getParser().getDefaultValue() };
+      return {
+        isDefault: true,
+        value: this.attrDefine.getParser().getDefaultValue(),
+      };
     },
 
-
     valueChange(evt) {
-
       //获取属性路径
       let paths = [];
-      this.attrDefine?.exmapping?.forEach(element => {
+      this.attrDefine?.exmapping?.forEach((element) => {
         paths.push(element);
       });
       if (!(paths?.length > 0)) {
-        paths = [this.attrDefine.code]
+        paths = [this.attrDefine.code];
       }
 
       //通过解析器获取有效值
@@ -139,40 +162,90 @@ export default {
       //属性值
       let value = parser.parseValue(this.attrDefine.value);
       //显示隐藏其他属性
-      if (value == '0') {
-        DDeiEditorArrtibute.hiddenAttributesByCode(this.controlDefine.styles, "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound");
-        if(this.controlDefine.subStyles){
-          DDeiEditorArrtibute.hiddenAttributesByCode(this.controlDefine.subStyles, "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound");
-        }
-      } else if (value == '1') {
-        DDeiEditorArrtibute.showAttributesByCode(this.controlDefine.styles, "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound");
+      if (value == "0") {
+        DDeiEditorArrtibute.hiddenAttributesByCode(
+          this.controlDefine.styles,
+          "borderColor",
+          "borderOpacity",
+          "borderWidth",
+          "borderDash",
+          "borderRound"
+        );
         if (this.controlDefine.subStyles) {
-          DDeiEditorArrtibute.showAttributesByCode(this.controlDefine.subStyles, "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound");
+          DDeiEditorArrtibute.hiddenAttributesByCode(
+            this.controlDefine.subStyles,
+            "borderColor",
+            "borderOpacity",
+            "borderWidth",
+            "borderDash",
+            "borderRound"
+          );
+        }
+      } else if (value == "1") {
+        DDeiEditorArrtibute.showAttributesByCode(
+          this.controlDefine.styles,
+          "borderColor",
+          "borderOpacity",
+          "borderWidth",
+          "borderDash",
+          "borderRound"
+        );
+        if (this.controlDefine.subStyles) {
+          DDeiEditorArrtibute.showAttributesByCode(
+            this.controlDefine.subStyles,
+            "borderColor",
+            "borderOpacity",
+            "borderWidth",
+            "borderDash",
+            "borderRound"
+          );
         }
       }
       //设置当前编辑器控件的临时属性值
-      this.editor.ddInstance.stage.selectedModels.forEach(element => {
-        if (value == '0') {
+      this.editor.ddInstance.stage.selectedModels.forEach((element) => {
+        if (value == "0") {
           //推送信息进入总线
-          this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: true, attrDefine: this.attrDefine }, evt, true);
+          this.editor.bus.push(
+            DDeiEnumBusCommandType.ModelChangeValue,
+            {
+              mids: [element.id],
+              paths: paths,
+              value: true,
+              attrDefine: this.attrDefine,
+            },
+            evt,
+            true
+          );
           //根据code以及mapping设置属性值
-          DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, true)
+          DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, true);
         }
         //处理实线
-        else if (value == '1') {
+        else if (value == "1") {
           //推送信息进入总线
-          this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: false , attrDefine: this.attrDefine }, evt, true);
+          this.editor.bus.push(
+            DDeiEnumBusCommandType.ModelChangeValue,
+            {
+              mids: [element.id],
+              paths: paths,
+              value: false,
+              attrDefine: this.attrDefine,
+            },
+            evt,
+            true
+          );
           //根据code以及mapping设置属性值
-          DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, false)
+          DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, false);
         }
-
       });
-      this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, null, evt);
+      this.editor.bus.push(
+        DDeiEditorEnumBusCommandType.RefreshEditorParts,
+        null,
+        evt
+      );
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
       this.editor.bus.executeAll();
-
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -196,10 +269,6 @@ export default {
   background: transparent;
 }
 
-
-
-
-
 .ddei_pv_editor_bordertype .itembox input {
   float: left;
   width: 14px;
@@ -212,7 +281,6 @@ export default {
   margin-left: 15px;
 }
 
-
 .ddei_editor_pv_subgroup_view_tab_panel_editors_row .itembox {
   float: left;
   margin-right: 10px;
@@ -221,8 +289,6 @@ export default {
 .ddei_editor_pv_subgroup_view_tab_panel_editors_column .itembox {
   margin-top: 10px;
 }
-
-
 
 .ddei_editor_pv_subgroup_view_tab_panel_editors_row .itembox div {
   float: left;

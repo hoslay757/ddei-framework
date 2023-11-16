@@ -1,5 +1,6 @@
 <template>
-  <div :class="{ 'ddei_pv_editor_combox': true, 'ddei_pv_editor_combox_disabled': !attrDefine || attrDefine.readonly }">
+  <div :class="{ 'ddei_pv_editor_combox': true, 'ddei_pv_editor_combox_disabled': !attrDefine || attrDefine.readonly }"
+       :style="{'pointer-events':attrDefine.readonly ? 'none':''}">
     <PVBaseCombox :attrDefine="attrDefine"
                   :searchMethod="doSearch"
                   ref="combox"
@@ -37,6 +38,7 @@ import PVBaseCombox from "./PVBaseCombox.vue";
 import DDeiUtil from "@/components/framework/js/util";
 import DDeiEditorUtil from "../../js/util/editor-util";
 import DDeiEditorEnumBusCommandType from "../../js/enums/editor-command-type";
+import DDeiEnumOperateType from "../../../framework/js/enums/operate-type";
 
 export default {
   name: "DDei-Editor-PV-Combox",
@@ -124,6 +126,26 @@ export default {
     this.$refs.combox.value = type.value;
     this.value = type.value;
     this.attrDefine.doCascadeDisplayByValue();
+    //判断当前属性是否可编辑
+    let editBefore = DDeiUtil.getConfigValue(
+      "EVENT_CONTROL_EDIT_BEFORE",
+      this.editor.ddInstance
+    );
+    if (editBefore) {
+      let mds = Array.from(
+        this.editor?.ddInstance?.stage?.selectedModels?.values()
+      );
+      if (this.attrDefine?.model && mds.indexOf(this.attrDefine.model) == -1) {
+        mds.push(this.attrDefine.model);
+      }
+      this.attrDefine.readonly = !editBefore(
+        DDeiEnumOperateType.EDIT,
+        mds,
+        this.attrDefine?.code,
+        this.editor.ddInstance,
+        null
+      );
+    }
   },
   methods: {
     /**

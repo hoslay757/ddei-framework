@@ -1,16 +1,24 @@
 <template>
   <div :id="getEditorId(attrDefine?.code)"
-    :class="{ 'ddei_pv_base_combox': true, 'ddei_pv_base_combox_disabled': !attrDefine || attrDefine.readonly }">
+       :class="{ 'ddei_pv_base_combox': true, 'ddei_pv_base_combox_disabled': !attrDefine || attrDefine.readonly }">
     <div :class="{ 'textinput': true, 'textinput_expanded': expanded , 'display_img':img && attrDefine?.itemStyle?.display == 'img' , 'display_img_text': img && attrDefine?.itemStyle?.display == 'img-text'}">
-      <img :src="img" v-if="img && (attrDefine?.itemStyle?.display == 'img-text' || attrDefine?.itemStyle?.display == 'img')" 
-          @click="attrDefine && !attrDefine.readonly && !canSearch && showDialog()" />
-      <input type="text" v-if="!attrDefine?.itemStyle?.display || attrDefine?.itemStyle?.display == 'img-text' || attrDefine?.itemStyle?.display == 'text'" :readonly="attrDefine && (attrDefine.readonly || !canSearch)" v-model="text" :placeholder="defaultText"
-        @click="attrDefine && !attrDefine.readonly && !canSearch && showDialog()" @keydown="search($event)" />
-      <div> <img style="width:8px;height:8px;margin:auto;float:none;" src="../../icons/toolbox-expanded.png"
-          @click="attrDefine && !attrDefine.readonly && showDialog()" />
+      <img :src="img"
+           v-if="img && (attrDefine?.itemStyle?.display == 'img-text' || attrDefine?.itemStyle?.display == 'img')"
+           @click="attrDefine && !attrDefine.readonly && !canSearch && showDialog()" />
+      <input type="text"
+             v-if="!attrDefine?.itemStyle?.display || attrDefine?.itemStyle?.display == 'img-text' || attrDefine?.itemStyle?.display == 'text'"
+             :readonly="attrDefine && (attrDefine.readonly || !canSearch)"
+             v-model="text"
+             :placeholder="defaultText"
+             @click="attrDefine && !attrDefine.readonly && !canSearch && showDialog()"
+             @keydown="search($event)" />
+      <div> <img style="width:8px;height:8px;margin:auto;float:none;"
+             src="../../icons/toolbox-expanded.png"
+             @click="attrDefine && !attrDefine.readonly && showDialog()" />
       </div>
     </div>
-    <div :id="getShowDialogId(attrDefine?.code)" :class="{ 'ddei_combox_show_dialog': true }">
+    <div :id="getShowDialogId(attrDefine?.code)"
+         :class="{ 'ddei_combox_show_dialog': true }">
       <div class="ddei_combox_show_dialog_content">
         <slot></slot>
       </div>
@@ -19,10 +27,10 @@
 </template>
 
 <script lang="ts">
-import { debounce } from 'lodash';
-import DDeiEditorArrtibute from '../../js/attribute/editor-attribute';
-import DDeiEditor from '../../js/editor';
-import DDeiUtil from '../../../framework/js/util';
+import { debounce } from "lodash";
+import DDeiEditorArrtibute from "../../js/attribute/editor-attribute";
+import DDeiEditor from "../../js/editor";
+import DDeiUtil from "../../../framework/js/util";
 export default {
   name: "DDei-Editor-PV-Base-Combox",
   extends: null,
@@ -31,20 +39,20 @@ export default {
     //当前属性定义
     attrDefine: {
       type: DDeiEditorArrtibute,
-      default: null
+      default: null,
     },
     canSearch: {
       type: Boolean,
-      default: false
+      default: false,
     },
     searchMethod: {
       type: Function,
-      defaut: null
+      defaut: null,
     },
     //当前控件定义
     controlDefine: {
       type: Object,
-      default: null
+      default: null,
     },
   },
   data() {
@@ -58,14 +66,12 @@ export default {
       //文本
       text: null,
       //图片
-      img:null,
-      defaultText: ""
+      img: null,
+      defaultText: "",
     };
   },
   computed: {},
-  watch: {
-
-  },
+  watch: {},
   created() {
     // 搜索框防抖
     this.search = debounce(this.search, 200);
@@ -77,7 +83,6 @@ export default {
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
   },
   methods: {
-
     getShowDialogId(id) {
       return "ddei_attr_editor_dialog_" + id;
     },
@@ -85,7 +90,6 @@ export default {
     getEditorId(id) {
       return "ddei_attr_editor_" + id;
     },
-
 
     search(evt) {
       if (this.searchMethod) {
@@ -95,7 +99,9 @@ export default {
 
     //打开弹出框
     showDialog(show: boolean = false, evt) {
-      let dialog = document.getElementById(this.getShowDialogId(this.attrDefine.code));
+      let dialog = document.getElementById(
+        this.getShowDialogId(this.attrDefine.code)
+      );
       let haveElement = false;
       for (let i = 0; i < document.body.children.length; i++) {
         if (document.body.children[i] == dialog) {
@@ -107,13 +113,19 @@ export default {
         document.body.appendChild(dialog);
       }
       if (!this.expanded || haveElement) {
-
         dialog.style.display = "block";
         //获取父级控件绝对坐标
-        let attrEditor = document.getElementById(this.getEditorId(this.attrDefine.code));
+        let attrEditor = document.getElementById(
+          this.getEditorId(this.attrDefine.code)
+        );
         let position = DDeiUtil.getDomAbsPosition(attrEditor);
-        dialog.style.left = (position.left - dialog.offsetWidth + attrEditor.offsetWidth - 9.5) + "px";
-        dialog.style.top = (position.top + attrEditor.offsetHeight) + "px";
+        dialog.style.left =
+          position.left -
+          dialog.offsetWidth +
+          attrEditor.offsetWidth -
+          9.5 +
+          "px";
+        dialog.style.top = position.top + attrEditor.offsetHeight + "px";
 
         this.expanded = true;
       } else {
@@ -130,20 +142,19 @@ export default {
           dialogs.push(document.body.children[i]);
         }
       }
-      dialogs.forEach(dialog => {
+      dialogs.forEach((dialog) => {
         dialog.remove();
-      })
+      });
     },
 
     closeDialog(evt) {
       this.expanded = false;
-      let dialog = document.getElementById(this.getShowDialogId(this.attrDefine.code));
+      let dialog = document.getElementById(
+        this.getShowDialogId(this.attrDefine.code)
+      );
       dialog.style.display = "none";
     },
-
-
   },
-
 };
 </script>
 
@@ -158,7 +169,6 @@ export default {
   background-color: rgb(210, 210, 210);
 }
 
-
 .ddei_pv_base_combox .textinput {
   width: 100%;
   padding-right: 5px;
@@ -166,8 +176,6 @@ export default {
   border-radius: 4px;
   display: flex;
   padding-left: 5px;
-
-
 }
 
 .ddei_pv_base_combox .textinput:hover {
@@ -175,12 +183,9 @@ export default {
   box-sizing: border-box;
 }
 
-
-
-
 .ddei_pv_base_combox .textinput input {
   flex: 1 1 calc(100% - 10px);
-  width:calc(100% - 10px);
+  width: calc(100% - 10px);
   border: transparent;
   outline: none;
   font-size: 13px;
@@ -189,32 +194,28 @@ export default {
 }
 
 .ddei_pv_base_combox .textinput div {
-  flex:1;
+  flex: 1;
   width: 10px;
   height: 20px;
 }
 
-
-
-
-
-.ddei_pv_base_combox .display_img input{
-  display:none;
+.ddei_pv_base_combox .display_img input {
+  display: none;
 }
 
-.ddei_pv_base_combox .display_img img{
-  width:20px;
-  height:20px;
+.ddei_pv_base_combox .display_img img {
+  width: 20px;
+  height: 20px;
 }
 
-.ddei_pv_base_combox .display_img_text input{
-  width:calc(100% - 30px);
+.ddei_pv_base_combox .display_img_text input {
+  width: calc(100% - 30px);
 }
 
-.ddei_pv_base_combox .display_img_text img{
-  float:left;
-  width:20px;
-  height:20px;
+.ddei_pv_base_combox .display_img_text img {
+  float: left;
+  width: 20px;
+  height: 20px;
 }
 
 .ddei_combox_show_dialog {
@@ -224,7 +225,6 @@ export default {
   position: absolute;
   z-index: 999;
   border-radius: 4px;
-
 }
 
 .ddei_combox_show_dialog_content {
@@ -232,6 +232,6 @@ export default {
   height: 100%;
   background: white;
   padding: 10px;
-  box-shadow: 4.0px 4.0px 4.0px hsl(0deg 0% 0% /0.25)
+  box-shadow: 4px 4px 4px hsl(0deg 0% 0% /0.25);
 }
 </style>

@@ -1,6 +1,7 @@
 <template>
   <div :class="{ 'ddei_pv_editor_switch_excheckbox': true, 'ddei_pv_editor_switch_excheckbox_disabled': attrDefine.readonly }"
-       @click="doCheck(attrDefine,$event)">
+       @click="doCheck(attrDefine,$event)"
+       :style="{'pointer-events':attrDefine.readonly ? 'none':''}">
     <div :class="{'chk_state':attrDefine.value != 1,'chk_state_checked':attrDefine.value == 1 || (attrDefine.value == null && attrDefine.defaultValue == 1)}"><span>{{attrDefine.value == 1 || (attrDefine.value == null && attrDefine.defaultValue == 1)?'✓':''}}</span></div>
     <div class="title">{{ attrDefine.name }}</div>
   </div>
@@ -13,6 +14,7 @@ import DDeiEnumBusCommandType from "../../../framework/js/enums/bus-command-type
 import DDeiAbstractArrtibuteParser from "../../../framework/js/models/attribute/parser/attribute-parser";
 import DDeiEditorEnumBusCommandType from "../../js/enums/editor-command-type";
 import DDeiUtil from "../../../framework/js/util";
+import DDeiEnumOperateType from "../../../framework/js/enums/operate-type";
 
 export default {
   name: "DDei-Editor-PV-Switch-Checkbox-Editor",
@@ -43,6 +45,26 @@ export default {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     this.attrDefine.doCascadeDisplayByValue();
+    //判断当前属性是否可编辑
+    let editBefore = DDeiUtil.getConfigValue(
+      "EVENT_CONTROL_EDIT_BEFORE",
+      this.editor.ddInstance
+    );
+    if (editBefore) {
+      let mds = Array.from(
+        this.editor?.ddInstance?.stage?.selectedModels?.values()
+      );
+      if (this.attrDefine?.model && mds.indexOf(this.attrDefine.model) == -1) {
+        mds.push(this.attrDefine.model);
+      }
+      this.attrDefine.readonly = !editBefore(
+        DDeiEnumOperateType.EDIT,
+        mds,
+        this.attrDefine?.code,
+        this.editor.ddInstance,
+        null
+      );
+    }
   },
   methods: {
     doCheck(attrDefine, evt: Event) {

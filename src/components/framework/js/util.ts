@@ -613,26 +613,61 @@ class DDeiUtil {
    * 判断是否具备某种权限
    * @operate 操作
    * @control 控件
+   * @propName 属性
    * @mode 模式
    */
-  static isAccess(operate: string, control: DDeiAbstractShape, mode: string, ddInstance: DDei): boolean {
+  static isAccess(operate: string, control: DDeiAbstractShape, propName: string, mode: string, ddInstance: DDei): boolean {
     //按照优先级获取属性权限值，如果获取不到，默认返回true
     let strkey = "AC_" + mode + "_" + operate
     if (control) {
+      if (propName) {
+        //控件ID
+        let accessValue = DDeiUtil.getConfigValue(strkey + "_" + control.id + "_" + propName, ddInstance)
+        if (accessValue || accessValue == false) {
+          return accessValue;
+        } else {
+          if (control.code) {
+            accessValue = DDeiUtil.getConfigValue(strkey + "_" + control.code + "_" + propName, ddInstance)
+          }
+          if (accessValue || accessValue == false) {
+            return accessValue;
+          } else {
+            if (control.modelCode) {
+              accessValue = DDeiUtil.getConfigValue(strkey + "_" + control.modelCode + "_" + propName, ddInstance)
+            }
+            if (accessValue || accessValue == false) {
+              return accessValue;
+            } else {
+              if (control.modelType) {
+                accessValue = DDeiUtil.getConfigValue(strkey + "_" + control.modelType + "_" + propName, ddInstance)
+              }
+              if (accessValue || accessValue == false) {
+                return accessValue;
+              }
+            }
+          }
+        }
+      }
       //控件ID
       let accessValue = DDeiUtil.getConfigValue(strkey + "_" + control.id, ddInstance)
       if (accessValue || accessValue == false) {
         return accessValue;
       } else {
-        accessValue = DDeiUtil.getConfigValue(strkey + "_" + control.code, ddInstance)
+        if (control.code) {
+          accessValue = DDeiUtil.getConfigValue(strkey + "_" + control.code, ddInstance)
+        }
         if (accessValue || accessValue == false) {
           return accessValue;
         } else {
-          accessValue = DDeiUtil.getConfigValue(strkey + "_" + control.modelCode, ddInstance)
+          if (control.modelCode) {
+            accessValue = DDeiUtil.getConfigValue(strkey + "_" + control.modelCode, ddInstance)
+          }
           if (accessValue || accessValue == false) {
             return accessValue;
           } else {
-            accessValue = DDeiUtil.getConfigValue(strkey + "_" + control.modelType, ddInstance)
+            if (control.modelType) {
+              accessValue = DDeiUtil.getConfigValue(strkey + "_" + control.modelType, ddInstance)
+            }
             if (accessValue || accessValue == false) {
               return accessValue;
             }
@@ -657,6 +692,15 @@ class DDeiUtil {
     } else {
       return DDeiConfig[key];
     }
+  }
+
+
+  /**
+   * 是否为safari浏览器
+   */
+  static isSafari(): boolean {
+    // 判断是否Safari浏览器
+    return /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent) > -1  // 是Safari为true，
   }
 }
 

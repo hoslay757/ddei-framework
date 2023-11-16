@@ -251,7 +251,7 @@ export default {
       //选中前
       if (
         !createBefore ||
-        createBefore(DDeiEnumOperateType.CREATE, [model], ddInstance)
+        createBefore(DDeiEnumOperateType.CREATE, [model], null, ddInstance)
       ) {
         let stageRatio = stage.getStageRatio();
         let moveMatrix = new Matrix3(

@@ -43,7 +43,7 @@ class DDeiBusCommandNodifyControlCreated extends DDeiBusCommand {
       );
       //选中前
       if (createAfter) {
-        createAfter(DDeiEnumOperateType.CREATE, data?.models, bus.ddInstance)
+        createAfter(DDeiEnumOperateType.CREATE, data?.models, null, bus.ddInstance)
       }
     }
     return true

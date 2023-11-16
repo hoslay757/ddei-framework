@@ -28,6 +28,7 @@ import DDeiAbstractArrtibuteParser from "../../../framework/js/models/attribute/
 import DDeiEditorEnumBusCommandType from "../../js/enums/editor-command-type";
 import DDeiUtil from "../../../framework/js/util";
 import { throttle } from "lodash";
+import DDeiEnumOperateType from "../../../framework/js/enums/operate-type";
 export default {
   name: "DDei-Editor-PV-Range-Editor",
   extends: null,
@@ -62,6 +63,26 @@ export default {
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
+    //判断当前属性是否可编辑
+    let editBefore = DDeiUtil.getConfigValue(
+      "EVENT_CONTROL_EDIT_BEFORE",
+      this.editor.ddInstance
+    );
+    if (editBefore) {
+      let mds = Array.from(
+        this.editor?.ddInstance?.stage?.selectedModels?.values()
+      );
+      if (this.attrDefine?.model && mds.indexOf(this.attrDefine.model) == -1) {
+        mds.push(this.attrDefine.model);
+      }
+      this.attrDefine.readonly = !editBefore(
+        DDeiEnumOperateType.EDIT,
+        mds,
+        this.attrDefine?.code,
+        this.editor.ddInstance,
+        null
+      );
+    }
   },
   methods: {
     valueChange(evt) {
