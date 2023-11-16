@@ -79,94 +79,96 @@ export default {
       "EVENT_LOAD_FILE",
       this.editor
     );
-    loadFile().then((fileData) => {
-      //当前已打开的文件
-      let file = null;
-      //查看当前file是否已打开
-      for (let x = 0; x < this.editor.files.length; x++) {
-        if (this.editor.files[x].id == fileData.id) {
-          file = this.editor.files[x];
+    if (loadFile) {
+      loadFile().then((fileData) => {
+        //当前已打开的文件
+        let file = null;
+        //查看当前file是否已打开
+        for (let x = 0; x < this.editor.files.length; x++) {
+          if (this.editor.files[x].id == fileData.id) {
+            file = this.editor.files[x];
+          }
+          this.editor.files[x].active = DDeiActiveType.NONE;
         }
-        this.editor.files[x].active = DDeiActiveType.NONE;
-      }
-      //当前文件已存在
-      if (!file) {
-        if (fileData?.content) {
-          file = DDeiFile.loadFromJSON(JSON.parse(fileData?.content), {
-            currentDdInstance: this.editor.ddInstance,
-          });
-          file.id = fileData.id;
-          file.publish = fileData.publish;
-          file.name = fileData.name;
-          file.path = fileData.path;
-          file.desc = fileData.desc;
-          file.version = fileData.version;
-        } else {
-          file = new DDeiFile({
-            id: fileData.id,
-            publish: fileData.publish,
-            name: fileData.name,
-            path: fileData.path,
-            desc: fileData.desc,
-            version: fileData.version,
-            sheets: [
-              new DDeiSheet({
-                name: "新建页面",
-                desc: "新建页面",
-                stage: DDeiStage.initByJSON(
-                  { id: "stage_1" },
-                  { currentDdInstance: ddInstance }
-                ),
-                active: DDeiActiveType.ACTIVE,
-              }),
-            ],
-            currentSheetIndex: 0,
-            state: DDeiFileState.NEW,
-            active: DDeiActiveType.ACTIVE,
-          });
-        }
+        //当前文件已存在
+        if (!file) {
+          if (fileData?.content) {
+            file = DDeiFile.loadFromJSON(JSON.parse(fileData?.content), {
+              currentDdInstance: this.editor.ddInstance,
+            });
+            file.id = fileData.id;
+            file.publish = fileData.publish;
+            file.name = fileData.name;
+            file.path = fileData.path;
+            file.desc = fileData.desc;
+            file.version = fileData.version;
+          } else {
+            file = new DDeiFile({
+              id: fileData.id,
+              publish: fileData.publish,
+              name: fileData.name,
+              path: fileData.path,
+              desc: fileData.desc,
+              version: fileData.version,
+              sheets: [
+                new DDeiSheet({
+                  name: "新建页面",
+                  desc: "新建页面",
+                  stage: DDeiStage.initByJSON(
+                    { id: "stage_1" },
+                    { currentDdInstance: ddInstance }
+                  ),
+                  active: DDeiActiveType.ACTIVE,
+                }),
+              ],
+              currentSheetIndex: 0,
+              state: DDeiFileState.NEW,
+              active: DDeiActiveType.ACTIVE,
+            });
+          }
 
-        this.editor.addFile(file);
-        file.state = DDeiFileState.NONE;
-      }
-      this.editor.currentFileIndex = this.editor.files.indexOf(file);
-      file.active = DDeiActiveType.ACTIVE;
-      let sheets = file?.sheets;
-      if (file && sheets && ddInstance) {
-        file.changeSheet(file.currentSheetIndex);
-
-        let stage = sheets[file.currentSheetIndex].stage;
-        stage.ddInstance = ddInstance;
-        //记录文件初始日志
-        file.initHistroy();
-        //刷新页面
-        ddInstance.stage = stage;
-        //加载场景渲染器
-        stage.initRender();
-        //设置视窗位置到中央
-        if (!stage.wpv) {
-          //缺省定位在画布中心点位置
-          stage.wpv = {
-            x:
-              -(
-                stage.width -
-                ddInstance.render.canvas.width / ddInstance.render.ratio
-              ) / 2,
-            y:
-              -(
-                stage.height -
-                ddInstance.render.canvas.height / ddInstance.render.ratio
-              ) / 2,
-            z: 0,
-          };
+          this.editor.addFile(file);
+          file.state = DDeiFileState.NONE;
         }
-        this.editor.changeState(DDeiEditorState.DESIGNING);
-        ddInstance.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
-        ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
-        ddInstance.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts);
-        ddInstance.bus.executeAll();
-      }
-    });
+        this.editor.currentFileIndex = this.editor.files.indexOf(file);
+        file.active = DDeiActiveType.ACTIVE;
+        let sheets = file?.sheets;
+        if (file && sheets && ddInstance) {
+          file.changeSheet(file.currentSheetIndex);
+
+          let stage = sheets[file.currentSheetIndex].stage;
+          stage.ddInstance = ddInstance;
+          //记录文件初始日志
+          file.initHistroy();
+          //刷新页面
+          ddInstance.stage = stage;
+          //加载场景渲染器
+          stage.initRender();
+          //设置视窗位置到中央
+          if (!stage.wpv) {
+            //缺省定位在画布中心点位置
+            stage.wpv = {
+              x:
+                -(
+                  stage.width -
+                  ddInstance.render.canvas.width / ddInstance.render.ratio
+                ) / 2,
+              y:
+                -(
+                  stage.height -
+                  ddInstance.render.canvas.height / ddInstance.render.ratio
+                ) / 2,
+              z: 0,
+            };
+          }
+          this.editor.changeState(DDeiEditorState.DESIGNING);
+          ddInstance.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+          ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
+          ddInstance.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts);
+          ddInstance.bus.executeAll();
+        }
+      });
+    }
   },
   methods: {
     /**

@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-import { debounce } from "lodash";
+import { throttle } from "lodash";
 import DDeiEditorArrtibute from "../../js/attribute/editor-attribute";
 import DDeiEditor from "../../js/editor";
 import DDeiEnumBusCommandType from "../../../framework/js/enums/bus-command-type";
@@ -49,21 +49,10 @@ export default {
   computed: {},
   watch: {},
   created() {
+    this.valueChange = throttle(this.valueChange, 40);
     // 监听obj对象中prop属性的变化
     this.$watch("attrDefine.value", function (newVal, oldVal) {
-      //控制帧率
-      let isExec = true;
-      let dt = new Date().getTime();
-      if (!window.upTime) {
-        window.upTime = dt;
-      } else if (dt - window.upTime > 40) {
-        window.upTime = dt;
-      } else {
-        isExec = false;
-      }
-      if (isExec) {
-        this.valueChange();
-      }
+      this.valueChange();
     });
   },
   mounted() {

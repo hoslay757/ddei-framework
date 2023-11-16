@@ -46,7 +46,7 @@ export default {
         // AC_DESIGN_SELECT: false,
         // AC_DESIGN_DRAG: false,
         AC_DESIGN_EDIT: true,
-        AC_DESIGN_CREATE_DDeiRectangle: false,
+        AC_DESIGN_CREATE_DDeiRectangle: true,
         AC_DESIGN_SELECT_DDeiRectangle: true,
         AC_DESIGN_DRAG_DDeiRectangle: false,
         AC_DESIGN_DEL_DDeiRectContainer: false,
