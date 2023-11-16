@@ -232,10 +232,12 @@ class DDeiCanvasRender {
     if (stage) {
       let ratio = stage.getStageRatio()
       let newValue = ratio
+      let dn = 0.02 * ratio;
       if (delta > 0) {
-        newValue = ratio + 0.02
+
+        newValue = ratio + dn
       } else {
-        newValue = ratio - 0.02
+        newValue = ratio - dn
       }
       if (newValue < 0.1) {
         newValue = 0.1
@@ -257,7 +259,9 @@ class DDeiCanvasRender {
     let stage = this.model.stage;
     let stageRatio = stage.getStageRatio();
     if (stage) {
-      let maxMove = 50 * stageRatio
+      let maxMove = 75 * stageRatio
+      dx *= stageRatio
+      dy *= stageRatio
       if (dx > maxMove) {
         dx = maxMove
       } else if (dx < -maxMove) {
