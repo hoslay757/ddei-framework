@@ -31,7 +31,7 @@ class DDeiRectangle extends DDeiAbstractShape {
   // ============================ 静态方法 ============================
 
   // 通过一个JSON反向序列化成对象，模型数据与JSON完全一样
-  static loadFromJSON(json, tempData: object = {}): any {
+  static loadFromJSON(json: object, tempData: object = {}): DDeiRectangle {
     let model = new DDeiRectangle(json);
     model.layer = tempData['currentLayer']
     model.stage = tempData['currentStage']
@@ -47,7 +47,7 @@ class DDeiRectangle extends DDeiAbstractShape {
   }
 
   // 通过JSON初始化对象，数据未传入时将初始化数据
-  static initByJSON(json, tempData: object = {}): DDeiRectangle {
+  static initByJSON(json: object, tempData: object = {}): DDeiRectangle {
     let model = new DDeiRectangle(json);
     model.layer = tempData['currentLayer']
     model.stage = tempData['currentStage']
