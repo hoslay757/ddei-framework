@@ -201,6 +201,11 @@ class DDeiEditor {
         if (!DDeiUtil.getSubControlJSON) {
           DDeiUtil.getSubControlJSON = DDeiEditorUtil.getSubControlJSON;
         }
+        if (!DDeiUtil.getLineInitJSON) {
+          DDeiUtil.getLineInitJSON = DDeiEditorUtil.getLineInitJSON;
+        }
+
+
 
         //将DDeiEditor对象装入全局缓存
         DDeiEditor.INSTANCE_POOL[id] = editorInstance;

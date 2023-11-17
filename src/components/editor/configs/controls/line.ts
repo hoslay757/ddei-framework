@@ -47,7 +47,7 @@ export const styles = {
       'group': '线段',
       'controlType': 'range',
       'dataType': 'integer',
-      'defaultValue': "1",
+      'defaultValue': "3",
       'orderNo': 2,
       'visiable': true
     },
@@ -59,7 +59,7 @@ export const styles = {
       'group': '线段',
       'controlType': 'color',
       'dataType': 'string',
-      'defaultValue': 'black',
+      'defaultValue': 'red',
       'orderNo': 3,
       'visiable': true
     },
@@ -86,7 +86,7 @@ export const styles = {
       ],
       'itemStyle': { width: 80, height: 25, col: 2, row: 6, imgWidth: 60, imgHeight: 20, display: "img-text" },
       'dataType': 'integer',
-      'defaultValue': [],
+      'defaultValue': [10, 5],
       'isArray': true,
       'orderNo': 4,
       'visiable': true
@@ -118,13 +118,16 @@ export const styles = {
       'controlType': 'combox',
       'dataSource': [
         { 'text': '无', 'value': 0 },
-        { 'text': '圆形', 'value': 1 },
-        { 'text': '方形', 'value': 2 },
-        { 'text': '箭头', 'value': 3 }
+        { 'text': '箭头', 'value': 1 },
+        { 'text': '圆形', 'value': 2 },
+        { 'text': '方形', 'value': 3 },
+        { 'text': '菱形', 'value': 4 },
+        { 'text': '三角形', 'value': 5 },
+
       ],
       'itemStyle': { width: 80, height: 25, col: 2, row: 6 },
       'dataType': 'integer',
-      'defaultValue': 0,
+      'defaultValue': 2,
       'orderNo': 10
     },
     {
@@ -136,13 +139,15 @@ export const styles = {
       'controlType': 'combox',
       'dataSource': [
         { 'text': '无', 'value': 0 },
-        { 'text': '圆形', 'value': 1 },
-        { 'text': '方形', 'value': 2 },
-        { 'text': '箭头', 'value': 3 }
+        { 'text': '箭头', 'value': 1 },
+        { 'text': '圆形', 'value': 2 },
+        { 'text': '方形', 'value': 3 },
+        { 'text': '菱形', 'value': 4 },
+        { 'text': '三角形', 'value': 5 },
       ],
       'itemStyle': { width: 80, height: 25, col: 2, row: 6 },
       'dataType': 'integer',
-      'defaultValue': 0,
+      'defaultValue': 5,
       'orderNo': 20
     },
 

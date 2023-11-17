@@ -7,12 +7,14 @@ import DDeiEnumOperateState from '../../enums/operate-state.js';
 import DDeiEnumOperateType from '../../enums/operate-type.js';
 import DDeiModelArrtibuteValue from '../../models/attribute/attribute-value.js';
 import DDeiLayer from '../../models/layer.js';
+import DDeiLine from '../../models/line.js';
 import DDeiAbstractShape from '../../models/shape.js';
 import DDeiStage from '../../models/stage.js';
 import DDeiUtil from '../../util.js'
 import DDeiCanvasRender from './ddei-render.js';
 import DDeiStageCanvasRender from './stage-render.js';
-
+import { Vector3 } from 'three';
+import { xor } from 'lodash';
 /**
  * DDeiLayer的渲染器类，用于渲染文件
  * 渲染器必须要有模型才可以初始化
@@ -281,12 +283,15 @@ class DDeiLayerCanvasRender {
         //开始绘制  
         let lineOffset = 1 * ratio / 2;
         ctx.beginPath();
-        ctx.moveTo(pvs[0].x * ratio + lineOffset, pvs[0].y * ratio + lineOffset);
-        ctx.lineTo(pvs[1].x * ratio + lineOffset, pvs[1].y * ratio + lineOffset);
-        ctx.lineTo(pvs[2].x * ratio + lineOffset, pvs[2].y * ratio + lineOffset);
-        ctx.lineTo(pvs[3].x * ratio + lineOffset, pvs[3].y * ratio + lineOffset);
-        ctx.lineTo(pvs[0].x * ratio + lineOffset, pvs[0].y * ratio + lineOffset);
-        ctx.closePath();
+        if (item.baseModelType == 'DDeiLine') {
+
+        } else {
+          ctx.moveTo(pvs[0].x * ratio + lineOffset, pvs[0].y * ratio + lineOffset);
+          ctx.lineTo(pvs[1].x * ratio + lineOffset, pvs[1].y * ratio + lineOffset);
+          ctx.lineTo(pvs[2].x * ratio + lineOffset, pvs[2].y * ratio + lineOffset);
+          ctx.lineTo(pvs[3].x * ratio + lineOffset, pvs[3].y * ratio + lineOffset);
+          ctx.lineTo(pvs[0].x * ratio + lineOffset, pvs[0].y * ratio + lineOffset);
+        }
         ctx.fill();
         ctx.restore();
       });
@@ -564,25 +569,45 @@ class DDeiLayerCanvasRender {
 
         //重置选择器位置
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ResetSelectorState, { x: ex, y: ey }, evt);
-        if (this.stage.ddInstance?.editMode == 1) {
-          //当前操作状态：选择器工作中
-          this.stageRender.operateState = DDeiEnumOperateState.SELECT_WORKING
-        } else if (this.stage.ddInstance?.editMode == 2) {
-          //当前操作状态：抓手工作中
-          //记录当前的拖拽的x,y,写入dragObj作为临时变量
-          let dragObj = {
-            dx: ex,
-            dy: ey,
+        let clearSelect = false;
+        switch (this.stage.ddInstance?.editMode) {
+          case 1: {
+            //当前操作状态：选择器工作中
+            this.stageRender.operateState = DDeiEnumOperateState.SELECT_WORKING
+            //当没有按下ctrl键时，清空除了当前操作控件外所有选中状态控件
+            clearSelect = !isCtrl;
+            break;
           }
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
-          this.stageRender.operateState = DDeiEnumOperateState.GRAB_WORKING
-        }
+          case 2: {
+            //当前操作状态：抓手工作中
+            //记录当前的拖拽的x,y,写入dragObj作为临时变量
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { dx: ex, dy: ey } }, evt);
+            this.stageRender.operateState = DDeiEnumOperateState.GRAB_WORKING
+            //当没有按下ctrl键时，清空除了当前操作控件外所有选中状态控件
+            clearSelect = !isCtrl;
+            break;
+          }
+          case 3: {
+            //当前操作状态：文本创建中
+            //记录当前的拖拽的x,y,写入dragObj作为临时变量
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { dx: ex, dy: ey } }, evt);
+            this.stageRender.operateState = DDeiEnumOperateState.TEXT_CREATING
+            clearSelect = true;
+          }
+          case 4: {
+            //当前操作状态：线改变点中
+            //记录当前的拖拽的x,y,写入dragObj作为临时变量
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { dx: ex, dy: ey } }, evt);
+            this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING
 
-        //当没有按下ctrl键时，清空除了当前操作控件外所有选中状态控件
-        if (!isCtrl) {
-          //清空所有层级的已选状态
+            clearSelect = true
+          }
+        }
+        if (clearSelect) {
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
         }
+
+
       }
     }
 
@@ -668,6 +693,40 @@ class DDeiLayerCanvasRender {
         case DDeiEnumOperateState.GRAB_WORKING:
 
           break;
+        //文本创建中
+        case DDeiEnumOperateState.TEXT_CREATING:
+
+          break;
+        //线段修改点中
+        case DDeiEnumOperateState.LINE_POINT_CHANGING:
+          {
+            let hasChange = false
+            //同步影子元素的坐标大小等状态到当前模型
+            if (this.model.shadowControls.length > 0) {
+              let item = this.model.shadowControls[0];
+              item.dragPoint = null
+              let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
+              let model = this.stage?.getModelById(id)
+              if (model) {
+                model.syncVectors(item)
+              } else {
+                //影子控件转变为真实控件并创建
+                item.id = id
+                this.model.addModel(item)
+                item.initRender();
+              }
+              hasChange = true;
+            }
+
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars);
+            if (hasChange) {
+              this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
+              this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.NodifyChange);
+              this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy);
+            }
+            this.model.shadowControls = [];
+            break;
+          }
         //控件拖拽中
         case DDeiEnumOperateState.CONTROL_DRAGING:
 
@@ -892,6 +951,54 @@ class DDeiLayerCanvasRender {
       //抓手工作中
       case DDeiEnumOperateState.GRAB_WORKING: {
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeStageWPV, { x: ex, y: ey, dragObj: this.stageRender.dragObj }, evt);
+        break;
+      }
+      //线段修改点中
+      case DDeiEnumOperateState.LINE_POINT_CHANGING: {
+        //如果当前操作控件不存在，创建线段,生成影子控件，并把影子线段作为当前操作控件
+        if (!this.stageRender.currentOperateShape) {
+          let lineJson = DDeiUtil.getLineInitJSON();
+          lineJson.id = "line_" + (++this.stage.idIdx)
+          lineJson.cpv = new Vector3(this.stageRender.dragObj.dx, this.stageRender.dragObj.dy, 1);
+          //根据线的类型生成不同的初始化点
+          lineJson.type = 2
+          //直线两个点
+          if (lineJson.type == 1) {
+            lineJson.pvs = [lineJson.cpv, new Vector3(ex, ey, 1)]
+          } else {
+            lineJson.pvs = [lineJson.cpv, new Vector3((lineJson.cpv.x + ex) / 2, lineJson.cpv.y, 1), new Vector3((lineJson.cpv.x + ex) / 2, ey, 1), new Vector3(ex, ey, 1)]
+          }
+          //初始化开始点和结束点
+          let ddeiLine = DDeiLine.initByJSON(lineJson, { currentStage: this.stage, currentLayer: this.model, currentContainer: this.model });
+          let lineShadow = DDeiUtil.getShadowControl(ddeiLine);
+          this.model.shadowControls.push(lineShadow);
+          //将当前被拖动的控件转变为影子控件
+          this.stageRender.currentOperateShape = lineShadow
+          //默认拖动结束线
+          lineShadow.dragPoint = lineShadow.pvs[lineShadow.pvs.length - 1];
+          //渲染图形
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
+        } else {
+          if (this.stageRender.currentOperateShape.dragPoint) {
+            let lineModel = this.stageRender.currentOperateShape;
+            let dp = this.stageRender.currentOperateShape.dragPoint
+            //直线两个点
+            if (lineModel.type == 1) {
+              dp.x = ex
+              dp.y = ey
+            } else {
+              lineModel.pvs[1].x = (lineModel.cpv.x + ex) / 2;
+              lineModel.pvs[1].y = lineModel.cpv.y;
+              lineModel.pvs[2].x = (lineModel.cpv.x + ex) / 2;
+              lineModel.pvs[2].y = ey;
+              lineModel.pvs[3].x = ex;
+              lineModel.pvs[3].y = ey;
+            }
+            //渲染图形
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
+          }
+        }
+        //如果操作控件存在，修改线段的点
         break;
       }
       //控件拖拽中

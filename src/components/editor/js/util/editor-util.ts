@@ -11,6 +11,16 @@ class DDeiEditorUtil {
 
   // ============================ 静态方法 ============================
 
+  /**
+  * 获取线的初始化JSON定义
+  */
+  static getLineInitJSON(): object {
+    let dataJson = {
+      modelCode: "100401",
+    };
+
+    return dataJson
+  }
 
   /**
    * 获取子元素定义的json信息

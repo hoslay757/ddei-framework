@@ -231,8 +231,10 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         let ctx = canvas.getContext('2d');
         //保存状态
         ctx.save();
-        //绘制临时Border
-        model.render.drawBorder({ width: 1, color: "red" });
+        if (model.baseModelType != "DDeiLine") {
+          //绘制临时Border
+          model.render.drawBorder({ width: 1, color: "red" });
+        }
         ctx.restore()
       });
     }

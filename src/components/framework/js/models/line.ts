@@ -1,7 +1,7 @@
 import DDeiConfig from '../config'
 import DDeiAbstractShape from './shape'
-import { Vector3 } from 'three';
-
+import { Matrix3, Vector3 } from 'three';
+import { clone, cloneDeep } from 'lodash'
 /**
  * line（连线）
  * 主要样式属性：颜色、宽度、开始和结束节点样式、虚线、字体、文本样式
@@ -12,14 +12,14 @@ class DDeiLine extends DDeiAbstractShape {
   constructor(props: object) {
     super(props);
     //线段颜色
-    this.color = props.color ? props.color : "black"
+    this.color = props.color;
     //线段宽度
-    this.weight = props.weight ? props.weight : 1;
+    this.weight = props.weight;
     //开始和结束节点的样式
     this.estyle = props.estyle;
     this.sstyle = props.sstyle;
     //虚线属性
-    this.dash = props.dash ? props.dash : null;
+    this.dash = props.dash;
     //虚线属性
     this.points = props.points;
     //连线类型
@@ -128,6 +128,36 @@ class DDeiLine extends DDeiAbstractShape {
     this.initHPV();
     //计算旋转
     this.calRotate();
+    this.calLoosePVS();
+  }
+
+  /**
+   * 设置当前最新的hpv
+   */
+  initHPV(): void {
+    this.hpv[0] = this.cpv
+    this.hpv[1] = new Vector3(this.cpv.x + 100, this.cpv.y, 1)
+  }
+
+  /**
+   * 基于当前向量计算宽松判定向量
+   */
+  calLoosePVS(): void {
+    //构造N个点，包围直线或曲线范围
+    this.loosePVS = this.pvs
+
+  }
+
+  /**
+ * 变换向量
+ */
+  transVectors(matrix: Matrix3): void {
+    this.cpv.applyMatrix3(matrix);
+    this.pvs.forEach(pv => {
+      pv.applyMatrix3(matrix)
+    });
+    this.hpv[1].applyMatrix3(matrix)
+    this.calRotate()
     this.calLoosePVS();
   }
 

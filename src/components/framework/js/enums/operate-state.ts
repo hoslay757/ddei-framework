@@ -26,6 +26,10 @@ enum DDeiEnumOperateState {
   GRAB_WORKING = 20,
   //画布滚动条工作中
   STAGE_SCROLL_WORKING = 21,
+  //创建文本中
+  TEXT_CREATING = 30,
+  //线段修改点中
+  LINE_POINT_CHANGING = 40,
 }
 
 export default DDeiEnumOperateState

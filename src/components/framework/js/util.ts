@@ -23,6 +23,8 @@ class DDeiUtil {
   static showContextMenu: Function;
   //钩子函数，返回控件的子控件定义，用于创建控件时自动创建子控件
   static getSubControlJSON: Function;
+  //钩子函数，返回线控件的定义
+  static getLineInitJSON: Function;
 
   static offsetX: number;
   static offsetY: number;

@@ -18,12 +18,7 @@ export default {
       'text': '长方形',
       'orderNo': 2
     },
-    {
-      'id': '100401',
-      'name': '线',
-      'text': '线',
-      'orderNo': 3
-    },
+
     {
       'id': '100003',
       'name': '圆形',

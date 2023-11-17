@@ -510,7 +510,7 @@ export default {
           //获取当前所有组件的公共属性定义
           models = [this.editor.ddInstance.stage];
         }
-        pData?.children.forEach((attd) => {
+        pData?.children?.forEach((attd) => {
           //判断当前属性是否可编辑
           let viewBefore = DDeiUtil.getConfigValue(
             "EVENT_CONTROL_VIEW_BEFORE",
