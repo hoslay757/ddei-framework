@@ -113,7 +113,7 @@ export const styles = {
       'id': '100401010',
       'code': 'stype',
       'name': '起点类型',
-      'desc': '起始点的样式样式',
+      'desc': '起点的样式样式',
       'group': '线段',
       'controlType': 'combox',
       'dataSource': [
@@ -133,8 +133,8 @@ export const styles = {
     {
       'id': '100401020',
       'code': 'etype',
-      'name': '起点类型',
-      'desc': '起始点的样式样式',
+      'name': '终点类型',
+      'desc': '终点的样式样式',
       'group': '线段',
       'controlType': 'combox',
       'dataSource': [

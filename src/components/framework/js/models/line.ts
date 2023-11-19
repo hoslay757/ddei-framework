@@ -2,6 +2,7 @@ import DDeiConfig from '../config'
 import DDeiAbstractShape from './shape'
 import { Matrix3, Vector3 } from 'three';
 import { clone, cloneDeep } from 'lodash'
+import DDeiUtil from '../util';
 /**
  * line（连线）
  * 主要样式属性：颜色、宽度、开始和结束节点样式、虚线、字体、文本样式
@@ -113,21 +114,12 @@ class DDeiLine extends DDeiAbstractShape {
     if (!this.cpv) {
       this.cpv = new Vector3(0, 0, 1)
     }
-    if (!this.pvs || this.pvs.length < 2) {
-      this.pvs = []
-      this.pvs[0] = new Vector3(0, 0, 1)
-      //全局缩放因子
-      let stageRatio = this.getStageRatio();
-      let w = 100 * stageRatio
-      this.pvs[1] = new Vector3(w, 0, 1)
-      this.pvs[2] = new Vector3(w, w, 1)
-      this.pvs[3] = new Vector3(w * 2, w, 1)
-      this.pvs[4] = new Vector3(w * 2, w * 2, 1)
-      this.pvs[5] = new Vector3(w * 3, w * 2, 1)
-    }
+
     this.initHPV();
     //计算旋转
     this.calRotate();
+
+
     this.calLoosePVS();
   }
 
@@ -135,8 +127,10 @@ class DDeiLine extends DDeiAbstractShape {
    * 设置当前最新的hpv
    */
   initHPV(): void {
-    this.hpv[0] = this.cpv
-    this.hpv[1] = new Vector3(this.cpv.x + 100, this.cpv.y, 1)
+    if (!this.hpv || this.hpv.length < 2) {
+      this.hpv[0] = new Vector3(this.cpv.x, this.cpv.y, 1)
+      this.hpv[1] = new Vector3(this.cpv.x + 100, this.cpv.y, 1)
+    }
   }
 
   /**
@@ -145,7 +139,73 @@ class DDeiLine extends DDeiAbstractShape {
   calLoosePVS(): void {
     //构造N个点，包围直线或曲线范围
     this.loosePVS = this.pvs
+    //创建临时canvas绘制线段到临时canvas上，通过临时线段判断canvas的状态
+    this.updateLooseCanvas();
+  }
 
+  updateLooseCanvas(): Promise {
+    return new Promise((resolve, reject) => {
+      //转换为图片
+      if (!this.looseCanvas) {
+        this.looseCanvas = document.createElement('canvas');
+        this.looseCanvas.setAttribute("style", "-moz-transform-origin:left top;");
+      }
+      let canvas = this.looseCanvas
+
+      let pvs = this.pvs;
+      let outRect = DDeiAbstractShape.pvsToOutRect(pvs);
+
+      this.loosePVS = Object.freeze([
+        new Vector3(outRect.x, outRect.y, 1),
+        new Vector3(outRect.x1, outRect.y, 1),
+        new Vector3(outRect.x1, outRect.y1, 1),
+        new Vector3(outRect.x, outRect.y1, 1)
+      ])
+      canvas.setAttribute("width", outRect.width)
+      canvas.setAttribute("height", outRect.height)
+
+
+      //获得 2d 上下文对象
+      let ctx = canvas.getContext('2d');
+      ctx.save();
+      ctx.fillStyle = DDeiUtil.getColor("white");
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      ctx.translate(- outRect.x, -outRect.y)
+      let rat1 = 1
+      let type = this.type;
+      ctx.strokeStyle = DDeiUtil.getColor("red");
+      let weight = 10
+      if (this.weight) {
+        weight = this.weight + 5
+      }
+      ctx.lineWidth = weight
+      ctx.beginPath()
+      switch (type) {
+        case 1: {
+          //直线
+          ctx.moveTo(pvs[0].x * rat1, pvs[0].y * rat1)
+          ctx.lineTo(pvs[pvs.length - 1].x * rat1, pvs[pvs.length - 1].y * rat1)
+          ctx.stroke();
+        } break;
+        case 2: {
+          //折线
+          ctx.moveTo(pvs[0].x * rat1, pvs[0].y * rat1)
+          for (let i = 1; i < pvs.length; i++) {
+            ctx.lineTo(pvs[i].x * rat1, pvs[i].y * rat1)
+          }
+          ctx.stroke();
+        } break;
+        case 3: {
+          //曲线
+          ctx.moveTo(pvs[0].x * rat1, pvs[0].y * rat1)
+          ctx.bezierCurveTo(pvs[1].x * rat1, pvs[1].y * rat1, pvs[2].x * rat1, pvs[2].y * rat1, pvs[3].x * rat1, pvs[3].y * rat1);
+          ctx.stroke();
+        } break;
+      }
+      ctx.closePath()
+      ctx.restore();
+      resolve()
+    });
   }
 
   /**
@@ -156,9 +216,31 @@ class DDeiLine extends DDeiAbstractShape {
     this.pvs.forEach(pv => {
       pv.applyMatrix3(matrix)
     });
+    this.hpv[0].applyMatrix3(matrix)
     this.hpv[1].applyMatrix3(matrix)
     this.calRotate()
     this.calLoosePVS();
+  }
+
+  /**
+   * 判断图形是否在一个区域内，采用宽松的判定模式，允许传入一个大小值
+   * @param x
+   * @param y
+   * @param loose 宽松判定,默认false
+   * @returns 是否在区域内
+   */
+  isInAreaLoose(x: number | undefined = undefined, y: number | undefined = undefined, loose: boolean = false): boolean {
+    if (super.isInAreaLoose(x, y, loose)) {
+      let ctx = this.looseCanvas.getContext("2d");
+      let outRect = DDeiAbstractShape.pvsToOutRect(this.pvs);
+      let cx = x - outRect.x
+      let cy = y - outRect.y
+      let cdata = ctx.getImageData(cx, cy, 1, 1).data;
+      if (cdata && cdata[0] == 255 && cdata[1] != 255 && cdata[2] != 255) {
+        return true;
+      }
+    }
+    return false;
   }
 
 

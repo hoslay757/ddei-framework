@@ -1107,6 +1107,7 @@ class DDeiLayerCanvasRender {
         //有控件：分发事件到当前控件
         if (operateControls != null && operateControls.length > 0) {
           operateControls[0].render.mouseMove(evt);
+          this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'all-scroll' }, evt);
         } else if (this.stageRender.selector.passIndex == -1) {
           if (this.stage.ddInstance?.editMode == 1) {
             this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
@@ -1117,7 +1118,7 @@ class DDeiLayerCanvasRender {
         if (this.stage?.brushData) {
           this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { image: 'cursor-brush' }, evt);
         }
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
         break;
       }
     }

@@ -108,8 +108,10 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
   * 绘制线段
   */
   drawLine(): void {
+
     //获得 2d 上下文对象
     let canvas = this.ddRender.getCanvas();
+
     let ctx = canvas.getContext('2d');
 
     //获取全局缩放比例
@@ -286,6 +288,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       case 5: {
         //三角形
         //旋转
+        console.log("绘制：" + this.model.rotate)
         ctx.translate(point.x * rat1, point.y * rat1)
         ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
         ctx.translate(-point.x * rat1, -point.y * rat1)

@@ -28,7 +28,13 @@ abstract class DDeiAbstractShape {
         this.pvs.push(new Vector3(pv.x, pv.y, pv.z));
       });
     }
-    this.hpv = props.hpv ? props.hpv : [];
+    this.hpv = []
+    if (props.hpv) {
+      props.hpv.forEach(pv => {
+        this.hpv.push(new Vector3(pv.x, pv.y, pv.z));
+      });
+    }
+
 
   }
 
@@ -990,6 +996,7 @@ abstract class DDeiAbstractShape {
     if (container) {
       for (let mg = container.midList.length - 1; mg >= 0; mg--) {
         let item = container.models.get(container.midList[mg]);
+
         //如果射线相交，则视为选中
         if (item.isInAreaLoose(x, y, loose)) {
           //如果当前控件状态为选中，且是容器，则往下寻找控件，否则返回当前控件
