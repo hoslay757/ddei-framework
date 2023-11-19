@@ -714,7 +714,9 @@ class DDeiLayerCanvasRender {
                 item.id = id
                 this.model.addModel(item)
                 item.initRender();
+                model = item;
               }
+              model?.initPVS()
               hasChange = true;
             }
 

@@ -32,7 +32,6 @@ class DDeiBusCommandUpdateSelectorBounds extends DDeiBusCommand {
   action(data: object, bus: DDeiBus, evt: Event): boolean {
     let stage = bus.ddInstance.stage;
     if (stage) {
-      let stageRatio = stage.getStageRatio()
       //获取当前选中控件
       let optContainer = stage.render.currentOperateContainer;
       if (!optContainer) {

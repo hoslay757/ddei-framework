@@ -126,40 +126,6 @@ class DDeiSelector extends DDeiRectangle {
     return DDeiConfig.STAGE_RATIO
   }
 
-  // /**
-  //  * 判断图形是否在一个区域内，采用宽松的判定模式，允许传入一个大小值
-  //  * @param x0
-  //  * @param y0
-  //  * @param loose 宽松判定
-  //  * @returns 是否在区域内
-  //  */
-  // isInAreaLoose(x0: number | undefined = undefined, y0: number | undefined = undefined, loose: boolean = false): boolean {
-  //   if (x0 === undefined || y0 === undefined) {
-  //     return false
-  //   }    //遍历所有点，求得最大、最小的x、y
-  //   if (this.currentOPVS?.length > 0) {
-  //     let x: number = Infinity, y: number = Infinity, x1: number = 0, y1: number = 0;
-  //     //找到最大、最小的x和y
-  //     this.currentOPVS.forEach(p => {
-  //       if (p) {
-  //         x = Math.min(Math.floor(p.x), x)
-  //         x1 = Math.max(Math.floor(p.x), x1)
-  //         y = Math.min(Math.floor(p.y), y)
-  //         y1 = Math.max(Math.floor(p.y), y1)
-  //       }
-  //     })
-  //     return DDeiAbstractShape.isInsidePolygon(
-  //       [
-  //         { x: x - looseWeight, y: y - looseWeight },
-  //         { x: x1 + looseWeight, y: y - looseWeight },
-  //         { x: x1 + looseWeight, y: y1 + looseWeight },
-  //         { x: x - looseWeight, y: y1 + looseWeight },
-  //       ], { x: x0, y: y0 });
-  //   }
-
-
-  //   return false;
-  // }
 
   updatePVSByRect(x: number, y: number, w: number, h: number): void {
     let pvs = [];

@@ -61,7 +61,6 @@ import MenuDialog from "./menus/menudialog/MenuDialog.vue";
 import { throttle } from "lodash";
 import DDeiEnumOperateState from "../framework/js/enums/operate-state";
 import DDeiEditorUtil from "./js/util/editor-util";
-
 export default {
   name: "DDei-Editor",
   extends: null,

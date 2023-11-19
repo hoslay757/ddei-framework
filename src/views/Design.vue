@@ -31,12 +31,12 @@ import { userinfo } from "@/lib/api/login/index.js";
 import { loadfile, savefile, publishfile } from "@/lib/api/file";
 import Cookies from "js-cookie";
 import DDeiEditor from "../components/editor/Editor.vue";
-import DDeiEnumOperateType from "../components/framework/js/enums/operate-type";
 
 export default {
   props: {},
   data() {
     return {
+      publishPostData: null,
       publishFileDialogShow: false,
       ddeiConfig: Object.freeze({
         EVENT_LOAD_FILE: this.openFile,

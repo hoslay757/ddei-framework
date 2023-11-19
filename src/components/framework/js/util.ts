@@ -30,6 +30,21 @@ class DDeiUtil {
   static offsetY: number;
   static screenX: number;
   static screenY: number;
+
+
+  //计算贝塞尔曲线坐标时，用到的常量
+  static p331t3 = Math.pow(1 - 0.333, 3)
+  static p331t2 = Math.pow(1 - 0.333, 2)
+  static p33t2 = Math.pow(0.333, 2)
+  static p33t3 = Math.pow(0.333, 3)
+
+  static p661t3 = Math.pow(1 - 0.666, 3)
+  static p661t2 = Math.pow(1 - 0.666, 2)
+  static p66t2 = Math.pow(0.666, 2)
+  static p66t3 = Math.pow(0.666, 3)
+
+  static PI2 = Math.PI * 2
+
   /**
    * 记录鼠标位置
    * @param offsetX 
@@ -704,6 +719,8 @@ class DDeiUtil {
     // 判断是否Safari浏览器
     return /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent) > -1  // 是Safari为true，
   }
+
+
 }
 
 export default DDeiUtil

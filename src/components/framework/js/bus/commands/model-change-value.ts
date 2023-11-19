@@ -58,43 +58,18 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
 
       } else {
         if (mids?.length > 0) {
+          models = []
           mids.forEach(modelId => {
             if (modelId) {
               //从bus中获取实际控件
               let model = stage?.getModelById(modelId);
               if (model) {
-                //表格是修改里面的选中单元格
-                if (model.baseModelType == 'DDeiTable') {
-                  if (attrDefine?.modelCode == 'DDeiTable') {
-                    //根据code以及mapping设置属性值
-                    DDeiUtil.setAttrValueByPath(model, paths, value)
-                  } else {
-                    let cells = model.getSelectedCells();
-
-                    cells.forEach(cell => {
-                      paths.forEach(path => {
-                        //根据code以及mapping设置属性值
-                        DDeiUtil.setAttrValueByPath(cell, [path], value)
-                        cell.render?.setCachedValue(path, value)
-                      });
-
-
-                    });
-                  }
-
-                } else {
-                  //根据code以及mapping设置属性值
-                  DDeiUtil.setAttrValueByPath(model, paths, value)
-                  model.render?.setCachedValue(paths, value)
-                }
+                models.push(model);
               }
-
             }
           });
-          bus.push(DDeiEnumBusCommandType.NodifyChange);
-          bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
-          bus.executeAll();
-        } else if (models?.length > 0) {
+        }
+        if (models?.length > 0) {
           models.forEach(model => {
             if (model) {
               //表格是修改里面的选中单元格
@@ -116,6 +91,11 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
                   });
                 }
 
+              } else if (model.baseModelType == 'DDeiLine') {
+                model.updateLooseCanvas()
+                //根据code以及mapping设置属性值
+                DDeiUtil.setAttrValueByPath(model, paths, value)
+                model.render?.setCachedValue(paths, value)
               } else {
                 //根据code以及mapping设置属性值
                 DDeiUtil.setAttrValueByPath(model, paths, value)
@@ -145,7 +125,7 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
       bus?.insert(DDeiEnumBusCommandType.ChangeLayout, data, evt);
     } else {
       bus.push(DDeiEnumBusCommandType.NodifyChange);
-      bus.insert(DDeiEnumBusCommandType.AddHistroy, null, evt);
+      bus.insert(DDeiEnumBusCommandType.AddHistroy);
     }
     return true;
   }

@@ -3,6 +3,7 @@ import DDeiAbstractShape from './shape'
 import { Matrix3, Vector3 } from 'three';
 import { clone, cloneDeep } from 'lodash'
 import DDeiUtil from '../util';
+import { debounce } from "lodash";
 /**
  * line（连线）
  * 主要样式属性：颜色、宽度、开始和结束节点样式、虚线、字体、文本样式
@@ -38,6 +39,8 @@ class DDeiLine extends DDeiAbstractShape {
     this.opacity = props.opacity
     //圆角
     this.round = props.round
+
+    this.updateLooseCanvas = debounce(this.updateLooseCanvas, 30)
   }
 
   // ============================ 静态变量 ============================
@@ -148,6 +151,7 @@ class DDeiLine extends DDeiAbstractShape {
       //转换为图片
       if (!this.looseCanvas) {
         this.looseCanvas = document.createElement('canvas');
+        document.body.appendChild(this.looseCanvas)
         this.looseCanvas.setAttribute("style", "-moz-transform-origin:left top;");
       }
       let canvas = this.looseCanvas
@@ -166,7 +170,7 @@ class DDeiLine extends DDeiAbstractShape {
 
 
       //获得 2d 上下文对象
-      let ctx = canvas.getContext('2d');
+      let ctx = canvas.getContext('2d', { willReadFrequently: true });
       ctx.save();
       ctx.fillStyle = DDeiUtil.getColor("white");
       ctx.fillRect(0, 0, canvas.width, canvas.height)

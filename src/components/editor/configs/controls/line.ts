@@ -47,7 +47,7 @@ export const styles = {
       'group': '线段',
       'controlType': 'range',
       'dataType': 'integer',
-      'defaultValue': "3",
+      'defaultValue': "1",
       'orderNo': 2,
       'visiable': true
     },
@@ -59,7 +59,7 @@ export const styles = {
       'group': '线段',
       'controlType': 'color',
       'dataType': 'string',
-      'defaultValue': 'red',
+      'defaultValue': 'black',
       'orderNo': 3,
       'visiable': true
     },

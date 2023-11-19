@@ -39,19 +39,174 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     let ctx = canvas.getContext('2d');
     //保存状态
     ctx.save();
-    //绘制边框
-    this.drawBorder();
+    let models = null;
+    if (this.stage?.selectedModels?.size > 0) {
+      models = Array.from(this.stage.selectedModels.values())
+    }
+    if (models?.length == 1 && models[0]?.baseModelType == "DDeiLine") {
+      //绘制线的选中效果
+      this.drawLine();
+      //绘制操作图形
+      this.drawOperatorShapeLine();
+    } else {
+      //绘制边框
+      this.drawBorder();
 
-    //绘制边框上的操作图形
-    this.drawOperatorShape();
+      //绘制边框上的操作图形
+      this.drawOperatorShape();
+
+    }
 
     //绘制选中控件特效
     this.drawIncludedStyle();
-
     ctx.restore();
 
   }
 
+  /**
+   * 线模式下绘制线的效果
+   */
+  drawLine(): void {
+    // if (this.stage?.selectedModels?.size > 0) {
+    //   let lineModel = Array.from(this.stage?.selectedModels?.values())[0];
+    //   if (lineModel.baseModelType == 'DDeiLine') {
+    //     lineModel.render.drawLine({ color: "blue" });
+    //   }
+    // }
+
+  }
+
+  /**
+   * 线模式下绘制线的操作图形
+   */
+  drawOperatorShapeLine(): void {
+    if (this.model.state != DDeiEnumControlState.SELECTED) {
+      return;
+    }
+    if (this.stage?.selectedModels?.size > 0) {
+      let lineModel = Array.from(this.stage?.selectedModels?.values())[0];
+      if (lineModel.baseModelType == 'DDeiLine') {
+        //获得 2d 上下文对象
+        let canvas = this.ddRender.getCanvas();
+        let ctx = canvas.getContext('2d');
+        //获取全局缩放比例
+        let stageRatio = this.stage.getStageRatio()
+        let rat1 = this.ddRender.ratio;
+        let ratio = rat1 * stageRatio;
+        let pvs = lineModel.pvs
+        let type = DDeiModelArrtibuteValue.getAttrValueByState(lineModel, "type", true);
+        let weight = DDeiModelArrtibuteValue.getAttrValueByState(lineModel, "weight", true);
+        let w10 = weight * ratio
+        let w15 = 1.5 * w10
+        let w20 = 2 * w10
+        let w30 = 2 * w15
+        //保存状态
+        ctx.save();
+        switch (type) {
+          case 1: {
+            this.drawSEPoint(pvs, w10, w20, ctx, rat1, ratio)
+            break;
+          }
+          case 2: {
+            this.drawSEPoint(pvs, w10, w20, ctx, rat1, ratio)
+            //根据中间节点绘制操作点
+            ctx.strokeStyle = "#017fff";
+            ctx.fillStyle = "white";
+            for (let i = 1; i < pvs.length; i++) {
+              if (i != pvs.length - 1) {
+                ctx.save()
+                let x1 = pvs[i].x * rat1;
+                let y1 = pvs[i].y * rat1;
+                if (lineModel.rotate) {
+                  ctx.translate(x1, y1)
+                  ctx.rotate(lineModel.rotate * DDeiConfig.ROTATE_UNIT);
+                  ctx.translate(-x1, -y1)
+                }
+                ctx.fillRect(x1 - w15, y1 - w15, w30, w30)
+                ctx.strokeRect(x1 - w15, y1 - w15, w30, w30)
+                ctx.restore()
+              }
+              ctx.save()
+              let x = (pvs[i].x + pvs[i - 1].x) / 2 * rat1
+              let y = (pvs[i].y + pvs[i - 1].y) / 2 * rat1
+              ctx.translate(x, y)
+              ctx.rotate(((lineModel.rotate ? lineModel.rotate : 0) + 45) * DDeiConfig.ROTATE_UNIT);
+              ctx.translate(-x, -y)
+              //菱形
+              ctx.fillRect(x - w10, y - w10, w20, w20)
+              ctx.strokeRect(x - w10, y - w10, w20, w20)
+              ctx.restore()
+            }
+            break;
+          }
+          case 3: {
+            this.drawSEPoint(pvs, w10, w20, ctx, rat1, ratio)
+            ctx.strokeStyle = "#017fff";
+            ctx.fillStyle = "white";
+            //计算三次贝赛尔曲线的落点，通过落点来操作图形
+            let t = 0.333;
+            let btx = pvs[0].x * DDeiUtil.p331t3 + 3 * DDeiUtil.p331t2 * t * pvs[1].x + 3 * (1 - t) * DDeiUtil.p33t2 * pvs[2].x + DDeiUtil.p33t3 * pvs[3].x
+            let bty = pvs[0].y * DDeiUtil.p331t3 + 3 * DDeiUtil.p331t2 * t * pvs[1].y + 3 * (1 - t) * DDeiUtil.p33t2 * pvs[2].y + DDeiUtil.p33t3 * pvs[3].y
+            ctx.beginPath()
+            ctx.ellipse(btx * rat1, bty * rat1, w20, w20, 0, 0, DDeiUtil.PI2);
+            ctx.closePath()
+            ctx.fill();
+            ctx.stroke();
+            t = 0.666;
+            btx = pvs[0].x * DDeiUtil.p661t3 + 3 * DDeiUtil.p661t2 * t * pvs[1].x + 3 * (1 - t) * DDeiUtil.p66t2 * pvs[2].x + DDeiUtil.p66t3 * pvs[3].x
+            bty = pvs[0].y * DDeiUtil.p661t3 + 3 * DDeiUtil.p661t2 * t * pvs[1].y + 3 * (1 - t) * DDeiUtil.p66t2 * pvs[2].y + DDeiUtil.p66t3 * pvs[3].y
+            ctx.beginPath()
+            ctx.ellipse(btx * rat1, bty * rat1, w20, w20, 0, 0, DDeiUtil.PI2);
+            ctx.closePath()
+            ctx.fill();
+            ctx.stroke();
+            break;
+          }
+        }
+
+        //恢复状态
+        ctx.restore();
+      }
+    }
+
+  }
+
+  /**
+   * 绘制开始和结束操作点
+   */
+  private drawSEPoint(pvs: object[], w10: number, w20: number, ctx: object, rat1: number, ratio: number): void {
+    ctx.strokeStyle = "red";
+    ctx.lineWidth = ratio
+    ctx.fillStyle = "white";
+    //白色打底
+    ctx.beginPath()
+    ctx.ellipse(pvs[0].x * rat1, pvs[0].y * rat1, w20, w20, 0, 0, DDeiUtil.PI2);
+    ctx.closePath()
+    ctx.fill();
+    ctx.beginPath()
+    ctx.ellipse(pvs[pvs.length - 1].x * rat1, pvs[pvs.length - 1].y * rat1, w20, w20, 0, 0, DDeiUtil.PI2);
+    ctx.closePath()
+    ctx.fill();
+    //最里面红点
+    ctx.fillStyle = "red";
+    ctx.beginPath()
+    ctx.ellipse(pvs[0].x * rat1, pvs[0].y * rat1, w10, w10, 0, 0, DDeiUtil.PI2);
+    ctx.closePath()
+    ctx.fill();
+    ctx.beginPath()
+    ctx.ellipse(pvs[pvs.length - 1].x * rat1, pvs[pvs.length - 1].y * rat1, w10, w10, 0, 0, DDeiUtil.PI2);
+    ctx.closePath()
+    ctx.fill();
+    //最外层红线
+    ctx.beginPath()
+    ctx.ellipse(pvs[0].x * rat1, pvs[0].y * rat1, w20, w20, 0, 0, DDeiUtil.PI2);
+    ctx.closePath()
+    ctx.stroke();
+    ctx.beginPath()
+    ctx.ellipse(pvs[pvs.length - 1].x * rat1, pvs[pvs.length - 1].y * rat1, w20, w20, 0, 0, DDeiUtil.PI2);
+    ctx.closePath()
+    ctx.stroke();
+  }
 
 
 
@@ -231,7 +386,9 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         let ctx = canvas.getContext('2d');
         //保存状态
         ctx.save();
-        if (model.baseModelType != "DDeiLine") {
+        if (model.baseModelType == "DDeiLine") {
+          model.render.drawLine({ color: "red", dash: [], });
+        } else {
           //绘制临时Border
           model.render.drawBorder({ width: 1, color: "red" });
         }

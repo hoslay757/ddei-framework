@@ -107,7 +107,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
   /**
   * 绘制线段
   */
-  drawLine(): void {
+  drawLine(tempLine): void {
 
     //获得 2d 上下文对象
     let canvas = this.ddRender.getCanvas();
@@ -120,14 +120,15 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     let ratio = rat1 * stageRatio;
 
     //获取绘图属性
-    let color = this.getCachedValue("color");
-    let weight = this.getCachedValue("weight");
-    let dash = this.getCachedValue("dash");
-    let round = this.getCachedValue("round");
+    let color = tempLine?.color ? tempLine.color : this.getCachedValue("color");
+    let weight = tempLine?.weight ? tempLine.weight : this.getCachedValue("weight");
+    let dash = tempLine?.dash ? tempLine.dash : this.getCachedValue("dash");
+    let round = tempLine?.round ? tempLine.round : this.getCachedValue("round");
     let type = this.getCachedValue("type");
     let stype = this.getCachedValue("stype");
     let etype = this.getCachedValue("etype");
-    let opacity = this.getCachedValue("opacity");
+    let opacity = tempLine?.opacity ? tempLine.opacity : this.getCachedValue("opacity");
+
     let pvs = this.model.pvs;
 
     //绘制线段
@@ -288,7 +289,6 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       case 5: {
         //三角形
         //旋转
-        console.log("绘制：" + this.model.rotate)
         ctx.translate(point.x * rat1, point.y * rat1)
         ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
         ctx.translate(-point.x * rat1, -point.y * rat1)
