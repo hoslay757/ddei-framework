@@ -144,17 +144,15 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
             ctx.strokeStyle = "#017fff";
             ctx.fillStyle = "white";
             //计算三次贝赛尔曲线的落点，通过落点来操作图形
-            let t = 0.333;
-            let btx = pvs[0].x * DDeiUtil.p331t3 + 3 * DDeiUtil.p331t2 * t * pvs[1].x + 3 * (1 - t) * DDeiUtil.p33t2 * pvs[2].x + DDeiUtil.p33t3 * pvs[3].x
-            let bty = pvs[0].y * DDeiUtil.p331t3 + 3 * DDeiUtil.p331t2 * t * pvs[1].y + 3 * (1 - t) * DDeiUtil.p33t2 * pvs[2].y + DDeiUtil.p33t3 * pvs[3].y
+            let btx = pvs[0].x * DDeiUtil.p331t3 + DDeiUtil.p331t2t3 * pvs[1].x + DDeiUtil.p33t21t3 * pvs[2].x + DDeiUtil.p33t3 * pvs[3].x
+            let bty = pvs[0].y * DDeiUtil.p331t3 + DDeiUtil.p331t2t3 * pvs[1].y + DDeiUtil.p33t21t3 * pvs[2].y + DDeiUtil.p33t3 * pvs[3].y
             ctx.beginPath()
             ctx.ellipse(btx * rat1, bty * rat1, w20, w20, 0, 0, DDeiUtil.PI2);
             ctx.closePath()
             ctx.fill();
             ctx.stroke();
-            t = 0.666;
-            btx = pvs[0].x * DDeiUtil.p661t3 + 3 * DDeiUtil.p661t2 * t * pvs[1].x + 3 * (1 - t) * DDeiUtil.p66t2 * pvs[2].x + DDeiUtil.p66t3 * pvs[3].x
-            bty = pvs[0].y * DDeiUtil.p661t3 + 3 * DDeiUtil.p661t2 * t * pvs[1].y + 3 * (1 - t) * DDeiUtil.p66t2 * pvs[2].y + DDeiUtil.p66t3 * pvs[3].y
+            btx = pvs[0].x * DDeiUtil.p661t3 + DDeiUtil.p661t2t3 * pvs[1].x + DDeiUtil.p66t21t3 * pvs[2].x + DDeiUtil.p66t3 * pvs[3].x
+            bty = pvs[0].y * DDeiUtil.p661t3 + DDeiUtil.p661t2t3 * pvs[1].y + DDeiUtil.p66t21t3 * pvs[2].y + DDeiUtil.p66t3 * pvs[3].y
             ctx.beginPath()
             ctx.ellipse(btx * rat1, bty * rat1, w20, w20, 0, 0, DDeiUtil.PI2);
             ctx.closePath()

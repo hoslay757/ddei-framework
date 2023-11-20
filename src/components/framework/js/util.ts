@@ -37,11 +37,21 @@ class DDeiUtil {
   static p331t2 = Math.pow(1 - 0.333, 2)
   static p33t2 = Math.pow(0.333, 2)
   static p33t3 = Math.pow(0.333, 3)
+  static p33t21t3 = 3 * (1 - 0.333) * DDeiUtil.p33t2
+  static p331t2t3 = 3 * DDeiUtil.p331t2 * 0.333
+
 
   static p661t3 = Math.pow(1 - 0.666, 3)
   static p661t2 = Math.pow(1 - 0.666, 2)
   static p66t2 = Math.pow(0.666, 2)
   static p66t3 = Math.pow(0.666, 3)
+
+  static p661t2t3 = 3 * DDeiUtil.p661t2 * 0.666
+
+  static p66t21t3 = (3 * (1 - 0.666) * DDeiUtil.p66t2)
+
+
+
 
   static PI2 = Math.PI * 2
 

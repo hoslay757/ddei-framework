@@ -986,7 +986,8 @@ class DDeiLayerCanvasRender {
             model: lineShadow,
             passIndex: 1,
             opvsIndex: lineJson.pvs.length - 1,
-            opvs: lineJson.pvs
+            opvs: lineJson.pvs,
+            create: true
           }
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
           //渲染图形
@@ -996,11 +997,11 @@ class DDeiLayerCanvasRender {
         else {
           if (this.stageRender.dragObj) {
             let lineModel = this.stageRender.dragObj.model
-            let dp = this.stageRender.dragObj.dragPoint
             let passIndex = this.stageRender.dragObj.passIndex;
             let opvsIndex = this.stageRender.dragObj.opvsIndex;
             let opvs = this.stageRender.dragObj.opvs;
             let pvs = lineModel.pvs;
+            let create = this.stageRender.dragObj.create
             switch (lineModel.type) {
               case 1: {
                 //直线
@@ -1016,13 +1017,60 @@ class DDeiLayerCanvasRender {
                 }
               } break;
               case 2: {
-                //折线
-                pvs[1].x = (lineModel.cpv.x + ex) / 2;
-                pvs[1].y = lineModel.cpv.y;
-                pvs[2].x = (lineModel.cpv.x + ex) / 2;
-                pvs[2].y = ey;
-                pvs[3].x = ex;
-                pvs[3].y = ey;
+                //开始点
+                if (passIndex == 1 && opvsIndex == 0) {
+                  let otherP = pvs[1]
+                  //TODO 旋转的情况下，需要把旋转归0判断，x相等
+                  if (Math.abs(pvs[0].x - otherP.x) <= 1) {
+                    otherP.x = ex
+                  } else {
+                    otherP.y = ey
+                  }
+                  pvs[0].x = ex
+                  pvs[0].y = ey
+
+
+                }
+                //结束点
+                else if (passIndex == 1 && opvsIndex == opvs.length - 1) {
+                  if (create) {
+                    pvs[1].x = (lineModel.cpv.x + ex) / 2;
+                    pvs[1].y = lineModel.cpv.y;
+                    pvs[2].x = (lineModel.cpv.x + ex) / 2;
+                    pvs[2].y = ey;
+                    pvs[3].x = ex;
+                    pvs[3].y = ey;
+                  } else {
+                    let otherP = pvs[pvs.length - 2]
+                    //TODO 旋转的情况下，需要把旋转归0判断，x相等
+                    if (Math.abs(pvs[pvs.length - 1].x - otherP.x) <= 1) {
+                      otherP.x = ex
+                    } else {
+                      otherP.y = ey
+                    }
+                    pvs[pvs.length - 1].x = ex
+                    pvs[pvs.length - 1].y = ey
+
+                  }
+                } else if (passIndex == 2) {
+
+                } else if (passIndex == 3) {
+                  //相邻的两个点的坐标处理
+                  let sIndex = parseInt(opvsIndex / 2)
+                  let sp = pvs[sIndex]
+                  let ep = pvs[sIndex + 1]
+                  //TODO 旋转的情况下，需要把旋转归0判断，x相等
+
+                  if (Math.abs(sp.x - ep.x) <= 1) {
+                    sp.x = ex
+                    ep.x = ex
+                  } else {
+                    sp.y = ey
+                    ep.y = ey
+                  }
+
+                }
+
               } break;
               case 3: {
                 //曲线
@@ -1040,13 +1088,11 @@ class DDeiLayerCanvasRender {
                 else if (passIndex == 4) {
                   //修改关联的两个点
                   if (opvsIndex == 1) {
-                    let t = 0.333;
-                    pvs[1].x = -(pvs[0].x * DDeiUtil.p331t3 + 3 * (1 - t) * DDeiUtil.p33t2 * pvs[2].x + DDeiUtil.p33t3 * pvs[3].x - ex) / (3 * DDeiUtil.p331t2 * t)
-                    pvs[1].y = -(pvs[0].y * DDeiUtil.p331t3 + 3 * (1 - t) * DDeiUtil.p33t2 * pvs[2].y + DDeiUtil.p33t3 * pvs[3].y - ey) / (3 * DDeiUtil.p331t2 * t)
+                    pvs[1].x = -(pvs[0].x * DDeiUtil.p331t3 + DDeiUtil.p33t21t3 * pvs[2].x + DDeiUtil.p33t3 * pvs[3].x - ex) / DDeiUtil.p331t2t3
+                    pvs[1].y = -(pvs[0].y * DDeiUtil.p331t3 + DDeiUtil.p33t21t3 * pvs[2].y + DDeiUtil.p33t3 * pvs[3].y - ey) / DDeiUtil.p331t2t3
                   } else {
-                    let t = 0.666;
-                    pvs[2].x = -(pvs[0].x * DDeiUtil.p661t3 + 3 * DDeiUtil.p661t2 * t * pvs[1].x + DDeiUtil.p66t3 * pvs[3].x - ex) / (3 * (1 - t) * DDeiUtil.p66t2)
-                    pvs[2].y = -(pvs[0].y * DDeiUtil.p661t3 + 3 * DDeiUtil.p661t2 * t * pvs[1].y + DDeiUtil.p66t3 * pvs[3].y - ey) / (3 * (1 - t) * DDeiUtil.p66t2)
+                    pvs[2].x = -(pvs[0].x * DDeiUtil.p661t3 + DDeiUtil.p661t2t3 * pvs[1].x + DDeiUtil.p66t3 * pvs[3].x - ex) / DDeiUtil.p66t21t3
+                    pvs[2].y = -(pvs[0].y * DDeiUtil.p661t3 + DDeiUtil.p661t2t3 * pvs[1].y + DDeiUtil.p66t3 * pvs[3].y - ey) / DDeiUtil.p66t21t3
                   }
                 }
 
