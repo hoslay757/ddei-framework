@@ -504,6 +504,9 @@ class DDeiLayerCanvasRender {
       this.helpLines = null;
     }
   }
+
+
+
   // ============================== 事件 ===============================
   /**
    * 鼠标按下事件
@@ -526,7 +529,16 @@ class DDeiLayerCanvasRender {
     let ey = evt.offsetY;
     ex -= this.stage.wpv.x;
     ey -= this.stage.wpv.y;
-    if (this.stageRender.selector && this.stageRender.selector.isInAreaLoose(ex, ey, true) &&
+    //判定是否在操作点上，如果在则快捷创建线段
+    let opPoint = this.model.getOpPointByPos(ex, ey);
+    if (opPoint) {
+      //当前操作状态：线改变点中
+      //记录当前的拖拽的x,y,写入dragObj作为临时变量
+      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { dx: ex, dy: ey } }, evt);
+      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
+      this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING
+    }
+    else if (this.stageRender.selector && this.stageRender.selector.isInAreaLoose(ex, ey, true) &&
       ((this.stageRender.selector.passIndex >= 1 && this.stageRender.selector.passIndex <= 9) || this.stageRender.selector.passIndex == 13)) {
       //派发给selector的mousedown事件，在事件中对具体坐标进行判断
       this.stageRender.selector.render.mouseDown(evt);
@@ -704,7 +716,6 @@ class DDeiLayerCanvasRender {
             //同步影子元素的坐标大小等状态到当前模型
             if (this.model.shadowControls.length > 0) {
               let item = this.model.shadowControls[0];
-              item.dragPoint = null
               let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
               let model = this.stage?.getModelById(id)
               if (model) {
@@ -715,6 +726,16 @@ class DDeiLayerCanvasRender {
                 this.model.addModel(item)
                 item.initRender();
                 model = item;
+              }
+              let passIndex = this.stageRender.dragObj.passIndex;
+
+              //如果是开始或结束节点的拖拽，判断落点是否在操作点上，如果在，则关联
+              if (passIndex == 1) {
+                let opPoint = this.model.getOpPointByPos(ex, ey);
+                if (opPoint) {
+                  //关联点与线
+                  console.log("关联")
+                }
               }
               model?.initPVS()
               hasChange = true;
@@ -999,7 +1020,17 @@ class DDeiLayerCanvasRender {
           //渲染图形
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
         }
-
+        //判定是否到达了另一个控件的操作点
+        this.model.opPoints = [];
+        //判断当前鼠标坐标是否落在选择器控件的区域内
+        // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
+        let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, ex, ey, true);
+        if (operateControls != null && operateControls.length > 0) {
+          let projPoint = operateControls[0].getProjPoint({ x: ex, y: ey });
+          if (projPoint) {
+            this.model.opPoints.push(projPoint)
+          }
+        }
         break;
       }
       //控件拖拽中
@@ -1093,7 +1124,7 @@ class DDeiLayerCanvasRender {
       }
       //默认缺省状态
       default: {
-        // //清空当前opPoints
+        //清空当前opPoints
         this.model.opPoints = [];
         //判断当前鼠标坐标是否落在选择器控件的区域内
 

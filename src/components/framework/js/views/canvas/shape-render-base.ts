@@ -170,7 +170,6 @@ class DDeiAbstractShapeRender {
     if (this.layer) {
       let ex = evt.offsetX;
       let ey = evt.offsetY;
-      let stageRatio = this.stage.getStageRatio()
       ex -= this.stage.wpv.x;
       ey -= this.stage.wpv.y
       let projPoint = this.model.getProjPoint({ x: ex, y: ey });

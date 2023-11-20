@@ -370,6 +370,24 @@ class DDeiLayer {
     return { x: 0, y: 0 }
   }
 
+  /**
+  * 根据坐标获取操作点
+  * @param x 
+  * @param y 
+  * @returns 操作点
+  */
+  getOpPointByPos(x: number = 0, y: number = 0): object {
+    if (x && y && this.opPoints?.length > 0) {
+      for (let i = 0; i < this.opPoints.length; i++) {
+        let point = this.opPoints[i]
+        if (Math.abs(x - point.x) <= 10 && Math.abs(y - point.y) <= 10) {
+          return point;
+        }
+      }
+    }
+    return null;
+  }
+
 
   /**
    * 获取某个选中区域的所有控件
