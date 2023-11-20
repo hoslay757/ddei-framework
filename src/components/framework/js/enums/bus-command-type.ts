@@ -34,6 +34,7 @@ enum DDeiEnumBusCommandType {
   CenterStageWPV = "center-stage-wpv",
   NodifyChange = "nodify-change",
   NodifyControlCreated = "nodify-control-created",
+  ChangeLinePoint = "change-line-point",
 }
 
 export default DDeiEnumBusCommandType

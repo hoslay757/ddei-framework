@@ -330,7 +330,6 @@ class DDeiSelector extends DDeiRectangle {
         }
         case 3: {
           //计算三次贝赛尔曲线的落点，通过落点来操作图形
-
           let btx = pvs[0].x * DDeiUtil.p331t3 + DDeiUtil.p331t2t3 * pvs[1].x + DDeiUtil.p33t21t3 * pvs[2].x + DDeiUtil.p33t3 * pvs[3].x
           let bty = pvs[0].y * DDeiUtil.p331t3 + DDeiUtil.p331t2t3 * pvs[1].y + DDeiUtil.p33t21t3 * pvs[2].y + DDeiUtil.p33t3 * pvs[3].y
           opvs.push(new Vector3(btx, bty, 1))
