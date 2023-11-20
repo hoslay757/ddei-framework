@@ -430,6 +430,8 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         }
 
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { type: 'line', passIndex: tpdata.type, direct: direct, opvsIndex: tpdata.index }, evt);
+      } else {
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { type: 'line', passIndex: -1, opvsIndex: -1 }, evt);
       }
     } else {
       if (this.model.isOpvOn(1, ex, ey)) {
@@ -507,6 +509,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         layer.shadowControls.push(lineShadow);
         this.stageRender.currentOperateShape = lineShadow
         this.stageRender.currentOperateShape.dragPoint = dragPoint
+
         let dragObj = {
           x: ex,
           y: ey,

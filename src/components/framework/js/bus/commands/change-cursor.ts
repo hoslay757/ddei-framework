@@ -58,7 +58,7 @@ class DDeiBusCommandChangeCursor extends DDeiBusCommand {
                   document.body.style.cursor = 'grab';
                   break;
                 default:
-                  document.body.style.cursor = 'default';
+                  document.body.style.cursor = 'all-scroll';
                   break;
               }
             } break;
