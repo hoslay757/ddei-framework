@@ -47,7 +47,7 @@ class DDeiBusCommandClearTemplateVars extends DDeiBusCommand {
       stage.render.hAdsY = Infinity
 
       //清除作为临时变量dragX、dargY、dragObj
-      stage.render.selector.setPassIndex(-1);
+      stage.render.selector.setPassIndex("", -1, -1);
     }
     return true;
 

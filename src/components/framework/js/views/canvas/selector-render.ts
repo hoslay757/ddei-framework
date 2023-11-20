@@ -407,56 +407,82 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     ex -= this.stage.wpv.x;
     ey -= this.stage.wpv.y
     //判断当前坐标是否位于操作按钮上
+    let models = null;
+    if (this.stage?.selectedModels?.size > 0) {
+      models = Array.from(this.stage.selectedModels.values())
+    }
+    if (models?.length == 1 && models[0]?.baseModelType == "DDeiLine") {
 
-    if (this.model.isOpvOn(1, ex, ey)) {
-      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 1 }, evt);
-    }
-    //右上
-    else if (this.model.isOpvOn(2, ex, ey)) {
-      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 2 }, evt);
-    }
-    //右中
-    else if (this.model.isOpvOn(3, ex, ey)) {
-      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 3 }, evt);
-    }
-    //右下
-    else if (this.model.isOpvOn(4, ex, ey)) {
-      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 4 }, evt);
-    }
-    //中下
-    else if (this.model.isOpvOn(5, ex, ey)) {
-      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 5 }, evt);
-    }
-    //左下
-    else if (this.model.isOpvOn(6, ex, ey)) {
-      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 6 }, evt);
-    }
-    //左中
-    else if (this.model.isOpvOn(7, ex, ey)) {
-      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 7 }, evt);
-    }
-    //左上
-    else if (this.model.isOpvOn(8, ex, ey)) {
-      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 8 }, evt);
-    }
-    //旋转
-    else if (this.model.isOpvOn(9, ex, ey)) {
-      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 9 }, evt);
-    }
-    //拖拽点
-    else if (this.model.isOpvOn(10, ex, ey)) {
-      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 13 }, evt);
+      let tpdata = this.model.isOpvOnLine(ex, ey);
+
+      if (tpdata) {
+        //如果类型为3，需要计算方向
+        let direct = null;
+        if (tpdata.type == 3) {
+          let beforeP = this.model.opvs[tpdata.index - 1]
+          let afterP = this.model.opvs[tpdata.index + 1]
+          //TODO 旋转的情况下，需要把旋转归0判断，x相等
+          if (Math.abs(beforeP.x - afterP.x) <= 1) {
+            direct = 2
+          } else {
+            direct = 1
+          }
+        }
+
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { type: 'line', passIndex: tpdata.type, direct: direct, opvsIndex: tpdata.index }, evt);
+      }
     } else {
-      //判断是否在某个具体选中的控件上，如果是则分发事件
-      let models = this.stage?.layers[this.stage?.layerIndex].findModelsByArea(ex, ey);
-      if (models && models.length > 0) {
-        //普通拖动
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 10 }, evt);
+      if (this.model.isOpvOn(1, ex, ey)) {
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 1, opvsIndex: -1 }, evt);
+      }
+      //右上
+      else if (this.model.isOpvOn(2, ex, ey)) {
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 2, opvsIndex: -1 }, evt);
+      }
+      //右中
+      else if (this.model.isOpvOn(3, ex, ey)) {
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 3, opvsIndex: -1 }, evt);
+      }
+      //右下
+      else if (this.model.isOpvOn(4, ex, ey)) {
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 4, opvsIndex: -1 }, evt);
+      }
+      //中下
+      else if (this.model.isOpvOn(5, ex, ey)) {
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 5, opvsIndex: -1 }, evt);
+      }
+      //左下
+      else if (this.model.isOpvOn(6, ex, ey)) {
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 6, opvsIndex: -1 }, evt);
+      }
+      //左中
+      else if (this.model.isOpvOn(7, ex, ey)) {
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 7, opvsIndex: -1 }, evt);
+      }
+      //左上
+      else if (this.model.isOpvOn(8, ex, ey)) {
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 8, opvsIndex: -1 }, evt);
+      }
+      //旋转
+      else if (this.model.isOpvOn(9, ex, ey)) {
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 9, opvsIndex: -1 }, evt);
+      }
+      //拖拽点
+      else if (this.model.isOpvOn(10, ex, ey)) {
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 13, opvsIndex: -1 }, evt);
       } else {
-        //清空
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: -1 }, evt);
+        //判断是否在某个具体选中的控件上，如果是则分发事件
+        let models = this.stage?.layers[this.stage?.layerIndex].findModelsByArea(ex, ey);
+        if (models && models.length > 0) {
+          //普通拖动
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 10, opvsIndex: -1 }, evt);
+        } else {
+          //清空
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: -1, opvsIndex: -1 }, evt);
+        }
       }
     }
+
     this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
   }
 
@@ -466,73 +492,102 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
   mouseDown(evt: Event): void {
     let ex = evt.offsetX;
     let ey = evt.offsetY;
-    let stageRatio = this.stage.getStageRatio()
     ex -= this.stage.wpv.x;
     ey -= this.stage.wpv.y
-    //判断当前坐标是否位于操作按钮上,如果是则改变状态为响应状态
-    if (this.model.passIndex >= 1 && this.model.passIndex <= 8) {
-      let dragObj = {
-        x: ex,
-        y: ey
-      }
-      //获取当前层次选择的控件
-      //计算移动后的坐标以及大小
-      let pContainerModel = this.stage.render.currentOperateContainer;
-      let selectedModels = pContainerModel.getSelectedModels();
-      let layer = this.stage.layers[this.stage.layerIndex]
-      selectedModels.forEach(m => {
-        let md = DDeiUtil.getShadowControl(m);
-        layer.shadowControls.push(md);
-      });
-      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
-      //当前操作状态：改变控件大小中
-      this.stageRender.operateState = DDeiEnumOperateState.CONTROL_CHANGING_BOUND
+    //当前操作对象为线
+    if (this.model.passType == 'line') {
+      let lineModel = null;
+      if (this.stage?.selectedModels?.size > 0) {
+        let layer = this.stage.layers[this.stage?.layerIndex];
+        lineModel = Array.from(this.stage.selectedModels.values())[0]
+        let dragPoint = this.model.opvs[this.model.opvsIndex]
+        //创建影子控件
+        let lineShadow = DDeiUtil.getShadowControl(lineModel);
 
-    }
-    //旋转
-    else if (this.model.passIndex == 9) {
-      let dragObj = {
-        x: ex,
-        y: ey
-      }
-      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
-      //当前操作状态：改变控件大小中
-      this.stageRender.operateState = DDeiEnumOperateState.CONTROL_ROTATE
-    }
-    //拖拽移动
-    else if (this.model.passIndex == 13) {
-      let selectedModels = this.stage?.selectedModels;
-      //当前操作状态：控件拖拽中
-      this.stageRender.operateState = DDeiEnumOperateState.CONTROL_DRAGING
-
-      let layer = Array.from(selectedModels?.values())[0].layer;
-      //清除临时操作点
-      layer.opPoints = [];
-      //中心点坐标
-      //当前控件的上层控件，可能是一个layer也可能是容器
-      let centerPointVector = this.model.cpv;
-      //记录当前的拖拽的x,y,写入dragObj作为临时变量
-      let dragObj = {
-        x: ex,
-        y: ey,
-        dx: centerPointVector.x - ex,//鼠标在控件中心坐标的增量位置
-        dy: centerPointVector.y - ey,
-      }
-
-      //产生影子控件
-      selectedModels.forEach(m => {
-        let md = DDeiUtil.getShadowControl(m);
-        layer.shadowControls.push(md);
-        if (!this.stageRender.currentOperateShape) {
-          this.stageRender.currentOperateShape = md;
+        layer.shadowControls.push(lineShadow);
+        this.stageRender.currentOperateShape = lineShadow
+        this.stageRender.currentOperateShape.dragPoint = dragPoint
+        let dragObj = {
+          x: ex,
+          y: ey,
+          dragPoint: dragPoint,
+          model: lineShadow,
+          opvsIndex: this.model.opvsIndex,
+          passIndex: this.model.passIndex,
+          opvs: this.model.opvs
         }
-      });
-      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, [{ id: this.stageRender.currentOperateShape.id, value: DDeiEnumControlState.SELECTED }], evt);
-      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
-    }
-    //记录当前拖拽状态
-    if (this.model.passIndex != -1) {
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
+        //改变光标
+        this.stage?.ddInstance?.bus?.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: "grabbing" }, evt);
+        this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING
 
+      }
+    } else {
+      //判断当前坐标是否位于操作按钮上,如果是则改变状态为响应状态
+      if (this.model.passIndex >= 1 && this.model.passIndex <= 8) {
+        let dragObj = {
+          x: ex,
+          y: ey
+        }
+        //获取当前层次选择的控件
+        //计算移动后的坐标以及大小
+        let pContainerModel = this.stage.render.currentOperateContainer;
+        let selectedModels = pContainerModel.getSelectedModels();
+        let layer = this.stage.layers[this.stage.layerIndex]
+        selectedModels.forEach(m => {
+          let md = DDeiUtil.getShadowControl(m);
+          layer.shadowControls.push(md);
+        });
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
+        //当前操作状态：改变控件大小中
+        this.stageRender.operateState = DDeiEnumOperateState.CONTROL_CHANGING_BOUND
+
+      }
+      //旋转
+      else if (this.model.passIndex == 9) {
+        let dragObj = {
+          x: ex,
+          y: ey
+        }
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
+        //当前操作状态：改变控件大小中
+        this.stageRender.operateState = DDeiEnumOperateState.CONTROL_ROTATE
+      }
+      //拖拽移动
+      else if (this.model.passIndex == 13) {
+        let selectedModels = this.stage?.selectedModels;
+        //当前操作状态：控件拖拽中
+        this.stageRender.operateState = DDeiEnumOperateState.CONTROL_DRAGING
+
+        let layer = Array.from(selectedModels?.values())[0].layer;
+        //清除临时操作点
+        layer.opPoints = [];
+        //中心点坐标
+        //当前控件的上层控件，可能是一个layer也可能是容器
+        let centerPointVector = this.model.cpv;
+        //记录当前的拖拽的x,y,写入dragObj作为临时变量
+        let dragObj = {
+          x: ex,
+          y: ey,
+          dx: centerPointVector.x - ex,//鼠标在控件中心坐标的增量位置
+          dy: centerPointVector.y - ey,
+        }
+
+        //产生影子控件
+        selectedModels.forEach(m => {
+          let md = DDeiUtil.getShadowControl(m);
+          layer.shadowControls.push(md);
+          if (!this.stageRender.currentOperateShape) {
+            this.stageRender.currentOperateShape = md;
+          }
+        });
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, [{ id: this.stageRender.currentOperateShape.id, value: DDeiEnumControlState.SELECTED }], evt);
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
+      }
+      //记录当前拖拽状态
+      if (this.model.passIndex != -1) {
+
+      }
     }
   }
 

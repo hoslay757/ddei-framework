@@ -6,6 +6,7 @@ import DDeiRectangle from './rectangle';
 import DDeiAbstractShape from './shape';
 import { clone, cloneDeep } from 'lodash'
 import { Matrix3, Vector3 } from 'three';
+import DDeiModelArrtibuteValue from './attribute/attribute-value';
 
 /**
  * selector选择器，用来选择界面上的控件，选择器不是一个实体控件,不会被序列化
@@ -48,6 +49,12 @@ class DDeiSelector extends DDeiRectangle {
   //当前操作触发pass的下标，-1为未激活，1～8按，1:中上，2右上顺时针计数，9为旋转
   passIndex: number = -1;
 
+  //当前操作触发操作点下标
+  opvsIndex: number = -1;
+
+  //当前操作触发pass的类别，缺省空代表矩形，line代表线，不同passType下的passIndex，操作不一样
+  passType: string = '';
+
   //当前操作触发pass的是否发生变化
   passChange: boolean = false;
 
@@ -57,9 +64,11 @@ class DDeiSelector extends DDeiRectangle {
    * 设置passindex
    * @param index pass值
    */
-  setPassIndex(index: number) {
-    if (this.passIndex != index) {
-      this.passIndex = index;
+  setPassIndex(passType: string, passIndex: number, opvsIndex: number) {
+    if (this.passType != passType || this.passIndex != passIndex || this.opvsIndex != opvsIndex) {
+      this.passIndex = passIndex;
+      this.passType = passType
+      this.opvsIndex = opvsIndex
       this.passChange = true;
     }
   }
@@ -287,78 +296,162 @@ class DDeiSelector extends DDeiRectangle {
    * 根据向量点计算操作图标的向量点
    */
   calOPVS(): void {
-    let pvs = this.pvs;
-    let opvs = [];
-    if (pvs?.length > 0) {
-      opvs[1] = { x: (pvs[0].x + pvs[1].x) / 2, y: (pvs[0].y + pvs[1].y) / 2 };
-      opvs[2] = { x: pvs[1].x, y: pvs[1].y };
-      opvs[3] = { x: (pvs[1].x + pvs[2].x) / 2, y: (pvs[1].y + pvs[2].y) / 2 };
-      opvs[4] = { x: pvs[2].x, y: pvs[2].y };
-      opvs[5] = { x: (pvs[2].x + pvs[3].x) / 2, y: (pvs[2].y + pvs[3].y) / 2 };
-      opvs[6] = { x: pvs[3].x, y: pvs[3].y };
-      opvs[7] = { x: (pvs[0].x + pvs[3].x) / 2, y: (pvs[0].y + pvs[3].y) / 2 };
-      opvs[8] = { x: pvs[0].x, y: pvs[0].y };
-      let v1 = new Vector3(pvs[1].x, pvs[1].y, 1);
-      let moveMatrix = new Matrix3(
-        1, 0, -(pvs[0].x + pvs[1].x) / 2,
-        0, 1, -(pvs[0].y + pvs[1].y) / 2,
-        0, 0, 1);
-      //归到原点，求夹角
-      v1.applyMatrix3(moveMatrix)
-      //基于构建一个向量，经过旋转90度+角度，再平移到目标位置
-      let angle1 = (new Vector3(1, 0, 0).angleTo(new Vector3(v1.x, v1.y, 0)) * 180 / Math.PI).toFixed(4);
+    let models = null;
+    if (this.stage?.selectedModels?.size > 0) {
+      models = Array.from(this.stage.selectedModels.values())
+    }
+    if (models?.length == 1 && models[0]?.baseModelType == "DDeiLine") {
+      //计算线的操作点
+      let lineModel = models[0];
+      let type = DDeiModelArrtibuteValue.getAttrValueByState(lineModel, "type", true);
 
-      //判断移动后的线属于第几象限
-      //B.构建旋转矩阵。旋转linvV和pointV
-      let angle = 0;
-      if (v1.x >= 0 && v1.y >= 0) {
-        angle = (angle1 * DDeiConfig.ROTATE_UNIT).toFixed(4);
-      } else if (v1.x <= 0 && v1.y >= 0) {
-        angle = (angle1 * DDeiConfig.ROTATE_UNIT).toFixed(4);
-      } else if (v1.x <= 0 && v1.y <= 0) {
-        angle = (- angle1 * DDeiConfig.ROTATE_UNIT).toFixed(4);
-      } else if (v1.x >= 0 && v1.y <= 0) {
-        angle = ((- angle1) * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      let opvs = [];
+      let opvsType = [];
+      //开始点
+      let pvs = lineModel.pvs;
+      opvs.push(pvs[0])
+      opvsType.push(1);
+
+      switch (type) {
+        case 2: {
+          for (let i = 1; i < pvs.length; i++) {
+            let x = (pvs[i].x + pvs[i - 1].x) / 2
+            let y = (pvs[i].y + pvs[i - 1].y) / 2
+
+            opvs.push(new Vector3(x, y, 1))
+            opvsType.push(3);
+
+            if (i != pvs.length - 1) {
+              opvs.push(pvs[i])
+              opvsType.push(2);
+            }
+          }
+          break;
+        }
+        case 3: {
+          //计算三次贝赛尔曲线的落点，通过落点来操作图形
+          let t = 0.333;
+          let btx = pvs[0].x * DDeiUtil.p331t3 + 3 * DDeiUtil.p331t2 * t * pvs[1].x + 3 * (1 - t) * DDeiUtil.p33t2 * pvs[2].x + DDeiUtil.p33t3 * pvs[3].x
+          let bty = pvs[0].y * DDeiUtil.p331t3 + 3 * DDeiUtil.p331t2 * t * pvs[1].y + 3 * (1 - t) * DDeiUtil.p33t2 * pvs[2].y + DDeiUtil.p33t3 * pvs[3].y
+          opvs.push(new Vector3(btx, bty, 1))
+          opvsType.push(4);
+          t = 0.666;
+          btx = pvs[0].x * DDeiUtil.p661t3 + 3 * DDeiUtil.p661t2 * t * pvs[1].x + 3 * (1 - t) * DDeiUtil.p66t2 * pvs[2].x + DDeiUtil.p66t3 * pvs[3].x
+          bty = pvs[0].y * DDeiUtil.p661t3 + 3 * DDeiUtil.p661t2 * t * pvs[1].y + 3 * (1 - t) * DDeiUtil.p66t2 * pvs[2].y + DDeiUtil.p66t3 * pvs[3].y
+          opvs.push(new Vector3(btx, bty, 1))
+          opvsType.push(4);
+          break;
+        }
       }
-      let angleR1 = (90 * DDeiConfig.ROTATE_UNIT).toFixed(4) - angle
-      v1 = new Vector3(20, 0, 1)
-
-      let rotateMatrix = new Matrix3(
-        Math.cos(angleR1), Math.sin(angleR1), 0,
-        -Math.sin(angleR1), Math.cos(angleR1), 0,
-        0, 0, 1);
-      v1.applyMatrix3(rotateMatrix);
-
-
-      let removeMatrix = new Matrix3(
-        1, 0, (pvs[0].x + pvs[1].x) / 2,
-        0, 1, (pvs[0].y + pvs[1].y) / 2,
-        0, 0, 1);
-
-
-      v1.applyMatrix3(removeMatrix);
-      opvs[9] = v1;
-
-      let v2 = new Vector3(25, 0, 1)
-      let angleR2 = (135 * DDeiConfig.ROTATE_UNIT).toFixed(4) - angle
-      let rotateMatrix2 = new Matrix3(
-        Math.cos(angleR2), Math.sin(angleR2), 0,
-        -Math.sin(angleR2), Math.cos(angleR2), 0,
-        0, 0, 1);
-      v2.applyMatrix3(rotateMatrix2);
-
-      let removeMatrix2 = new Matrix3(
-        1, 0, pvs[0].x,
-        0, 1, pvs[0].y,
-        0, 0, 1);
-
-
-      v2.applyMatrix3(removeMatrix2);
-      opvs[10] = v2;
+      //结束点
+      opvs.push(pvs[pvs.length - 1])
+      opvsType.push(1);
       this.opvs = opvs;
+      this.opvsType = opvsType;
+    }
+
+    else {
+      //计算矩形的操作点
+      let pvs = this.pvs;
+      let opvs = [];
+      let opvsType = []
+      if (pvs?.length > 0) {
+        opvs[1] = { x: (pvs[0].x + pvs[1].x) / 2, y: (pvs[0].y + pvs[1].y) / 2 };
+        opvs[2] = { x: pvs[1].x, y: pvs[1].y };
+        opvs[3] = { x: (pvs[1].x + pvs[2].x) / 2, y: (pvs[1].y + pvs[2].y) / 2 };
+        opvs[4] = { x: pvs[2].x, y: pvs[2].y };
+        opvs[5] = { x: (pvs[2].x + pvs[3].x) / 2, y: (pvs[2].y + pvs[3].y) / 2 };
+        opvs[6] = { x: pvs[3].x, y: pvs[3].y };
+        opvs[7] = { x: (pvs[0].x + pvs[3].x) / 2, y: (pvs[0].y + pvs[3].y) / 2 };
+        opvs[8] = { x: pvs[0].x, y: pvs[0].y };
+        let v1 = new Vector3(pvs[1].x, pvs[1].y, 1);
+        let moveMatrix = new Matrix3(
+          1, 0, -(pvs[0].x + pvs[1].x) / 2,
+          0, 1, -(pvs[0].y + pvs[1].y) / 2,
+          0, 0, 1);
+        //归到原点，求夹角
+        v1.applyMatrix3(moveMatrix)
+        //基于构建一个向量，经过旋转90度+角度，再平移到目标位置
+        let angle1 = (new Vector3(1, 0, 0).angleTo(new Vector3(v1.x, v1.y, 0)) * 180 / Math.PI).toFixed(4);
+
+        //判断移动后的线属于第几象限
+        //B.构建旋转矩阵。旋转linvV和pointV
+        let angle = 0;
+        if (v1.x >= 0 && v1.y >= 0) {
+          angle = (angle1 * DDeiConfig.ROTATE_UNIT).toFixed(4);
+        } else if (v1.x <= 0 && v1.y >= 0) {
+          angle = (angle1 * DDeiConfig.ROTATE_UNIT).toFixed(4);
+        } else if (v1.x <= 0 && v1.y <= 0) {
+          angle = (- angle1 * DDeiConfig.ROTATE_UNIT).toFixed(4);
+        } else if (v1.x >= 0 && v1.y <= 0) {
+          angle = ((- angle1) * DDeiConfig.ROTATE_UNIT).toFixed(4);
+        }
+        let angleR1 = (90 * DDeiConfig.ROTATE_UNIT).toFixed(4) - angle
+        v1 = new Vector3(20, 0, 1)
+
+        let rotateMatrix = new Matrix3(
+          Math.cos(angleR1), Math.sin(angleR1), 0,
+          -Math.sin(angleR1), Math.cos(angleR1), 0,
+          0, 0, 1);
+        v1.applyMatrix3(rotateMatrix);
+
+
+        let removeMatrix = new Matrix3(
+          1, 0, (pvs[0].x + pvs[1].x) / 2,
+          0, 1, (pvs[0].y + pvs[1].y) / 2,
+          0, 0, 1);
+
+
+        v1.applyMatrix3(removeMatrix);
+        opvs[9] = v1;
+
+        let v2 = new Vector3(25, 0, 1)
+        let angleR2 = (135 * DDeiConfig.ROTATE_UNIT).toFixed(4) - angle
+        let rotateMatrix2 = new Matrix3(
+          Math.cos(angleR2), Math.sin(angleR2), 0,
+          -Math.sin(angleR2), Math.cos(angleR2), 0,
+          0, 0, 1);
+        v2.applyMatrix3(rotateMatrix2);
+
+        let removeMatrix2 = new Matrix3(
+          1, 0, pvs[0].x,
+          0, 1, pvs[0].y,
+          0, 0, 1);
+
+
+        v2.applyMatrix3(removeMatrix2);
+        opvs[10] = v2;
+        this.opvs = opvs;
+        this.opvsType = opvsType
+      }
     }
   }
 
+  /**
+   * 返回当前坐标是否在操作点上，并返回操作点的类型
+   * @param direct 操作点下标
+   * @param x 
+   * @param y
+   */
+  isOpvOnLine(x: number, y: number): { type: number, index: number } {
+    //操作图标的宽度
+    let weight = DDeiConfig.SELECTOR.OPERATE_ICON.weight;
+    let halfWeigth = weight * 0.5;
+    for (let i = 0; i < this.opvs.length; i++) {
+      let pv = this.opvs[i];
+      if (DDeiAbstractShape.isInsidePolygon(
+        [
+          { x: pv.x - halfWeigth, y: pv.y - halfWeigth },
+          { x: pv.x + halfWeigth, y: pv.y - halfWeigth },
+          { x: pv.x + halfWeigth, y: pv.y + halfWeigth },
+          { x: pv.x - halfWeigth, y: pv.y + halfWeigth }
+        ]
+        , { x: x, y: y })) {
+        return { type: this.opvsType[i], index: i }
+      }
+    }
+    return null;
+  }
 
   /**
    * 判断是否在某个操作点上
@@ -384,6 +477,26 @@ class DDeiSelector extends DDeiRectangle {
       }
     }
     return false;
+  }
+
+  /**
+   * 判断图形是否在一个区域内，采用宽松的判定模式，允许传入一个大小值
+   * @param x
+   * @param y
+   * @param loose 宽松判定,默认false
+   * @returns 是否在区域内
+   */
+  isInAreaLoose(x: number | undefined = undefined, y: number | undefined = undefined, loose: boolean = false): boolean {
+    //判断当前坐标是否位于操作按钮上
+    let models = null;
+    if (this.stage?.selectedModels?.size > 0) {
+      models = Array.from(this.stage.selectedModels.values())
+    }
+    if (models?.length == 1 && models[0]?.baseModelType == "DDeiLine") {
+      return models[0].isInAreaLoose(x, y, loose)
+    } else {
+      return super.isInAreaLoose(x, y, loose)
+    }
   }
 
 }

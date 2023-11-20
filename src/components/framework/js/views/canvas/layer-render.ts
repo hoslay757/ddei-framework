@@ -726,6 +726,8 @@ class DDeiLayerCanvasRender {
               this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.NodifyChange);
               this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy);
             }
+            //改变光标
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: "grab" }, evt);
             this.model.shadowControls = [];
             break;
           }
@@ -977,30 +979,86 @@ class DDeiLayerCanvasRender {
           //将当前被拖动的控件转变为影子控件
           this.stageRender.currentOperateShape = lineShadow
           //默认拖动结束线
-          lineShadow.dragPoint = lineShadow.pvs[lineShadow.pvs.length - 1];
+          let dragObj = {
+            x: ex,
+            y: ey,
+            dragPoint: lineShadow.pvs[lineShadow.pvs.length - 1],
+            model: lineShadow,
+            passIndex: 1,
+            opvsIndex: lineJson.pvs.length - 1,
+            opvs: lineJson.pvs
+          }
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
           //渲染图形
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
-        } else {
-          if (this.stageRender.currentOperateShape.dragPoint) {
-            let lineModel = this.stageRender.currentOperateShape;
-            let dp = this.stageRender.currentOperateShape.dragPoint
-            //直线两个点
-            if (lineModel.type == 1) {
-              dp.x = ex
-              dp.y = ey
-            } else {
-              lineModel.pvs[1].x = (lineModel.cpv.x + ex) / 2;
-              lineModel.pvs[1].y = lineModel.cpv.y;
-              lineModel.pvs[2].x = (lineModel.cpv.x + ex) / 2;
-              lineModel.pvs[2].y = ey;
-              lineModel.pvs[3].x = ex;
-              lineModel.pvs[3].y = ey;
+        }
+        //如果操作控件存在，修改线段的点
+        else {
+          if (this.stageRender.dragObj) {
+            let lineModel = this.stageRender.dragObj.model
+            let dp = this.stageRender.dragObj.dragPoint
+            let passIndex = this.stageRender.dragObj.passIndex;
+            let opvsIndex = this.stageRender.dragObj.opvsIndex;
+            let opvs = this.stageRender.dragObj.opvs;
+            let pvs = lineModel.pvs;
+            switch (lineModel.type) {
+              case 1: {
+                //直线
+                //开始点
+                if (passIndex == 1 && opvsIndex == 0) {
+                  pvs[0].x = ex
+                  pvs[0].y = ey
+                }
+                //结束点
+                else if (passIndex == 1 && opvsIndex == opvs.length - 1) {
+                  pvs[pvs.length - 1].x = ex
+                  pvs[pvs.length - 1].y = ey
+                }
+              } break;
+              case 2: {
+                //折线
+                pvs[1].x = (lineModel.cpv.x + ex) / 2;
+                pvs[1].y = lineModel.cpv.y;
+                pvs[2].x = (lineModel.cpv.x + ex) / 2;
+                pvs[2].y = ey;
+                pvs[3].x = ex;
+                pvs[3].y = ey;
+              } break;
+              case 3: {
+                //曲线
+                //开始点
+                if (passIndex == 1 && opvsIndex == 0) {
+                  pvs[0].x = ex
+                  pvs[0].y = ey
+                }
+                //结束点
+                else if (passIndex == 1 && opvsIndex == opvs.length - 1) {
+                  pvs[pvs.length - 1].x = ex
+                  pvs[pvs.length - 1].y = ey
+                }
+                //控制点
+                else if (passIndex == 4) {
+                  //修改关联的两个点
+                  if (opvsIndex == 1) {
+                    let t = 0.333;
+                    pvs[1].x = -(pvs[0].x * DDeiUtil.p331t3 + 3 * (1 - t) * DDeiUtil.p33t2 * pvs[2].x + DDeiUtil.p33t3 * pvs[3].x - ex) / (3 * DDeiUtil.p331t2 * t)
+                    pvs[1].y = -(pvs[0].y * DDeiUtil.p331t3 + 3 * (1 - t) * DDeiUtil.p33t2 * pvs[2].y + DDeiUtil.p33t3 * pvs[3].y - ey) / (3 * DDeiUtil.p331t2 * t)
+                  } else {
+                    let t = 0.666;
+                    pvs[2].x = -(pvs[0].x * DDeiUtil.p661t3 + 3 * DDeiUtil.p661t2 * t * pvs[1].x + DDeiUtil.p66t3 * pvs[3].x - ex) / (3 * (1 - t) * DDeiUtil.p66t2)
+                    pvs[2].y = -(pvs[0].y * DDeiUtil.p661t3 + 3 * DDeiUtil.p661t2 * t * pvs[1].y + DDeiUtil.p66t3 * pvs[3].y - ey) / (3 * (1 - t) * DDeiUtil.p66t2)
+                  }
+                }
+
+              } break;
             }
+            //改变光标
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: "grabbing" }, evt);
             //渲染图形
             this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
           }
         }
-        //如果操作控件存在，修改线段的点
+
         break;
       }
       //控件拖拽中
@@ -1097,6 +1155,7 @@ class DDeiLayerCanvasRender {
         // //清空当前opPoints
         this.model.opPoints = [];
         //判断当前鼠标坐标是否落在选择器控件的区域内
+
         if (this.stageRender.selector &&
           this.stageRender.selector.isInAreaLoose(ex, ey, true)) {
           //派发给selector的mousemove事件，在事件中对具体坐标进行判断
@@ -1107,9 +1166,10 @@ class DDeiLayerCanvasRender {
 
         //光标所属位置是否有控件
         //有控件：分发事件到当前控件
+
         if (operateControls != null && operateControls.length > 0) {
           operateControls[0].render.mouseMove(evt);
-          this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'all-scroll' }, evt);
+          this.stage.ddInstance.bus.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'all-scroll' }, evt);
         } else if (this.stageRender.selector.passIndex == -1) {
           if (this.stage.ddInstance?.editMode == 1) {
             this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);

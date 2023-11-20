@@ -40,47 +40,73 @@ class DDeiBusCommandChangeCursor extends DDeiBusCommand {
         document.body.style.cursor = data.cursor;
       } else if (data.passIndex) {
         if (bus.ddInstance.state != DDeiEnumState.IN_ACTIVITY) {
-          switch (data.passIndex) {
-            case 1:
-              document.body.style.cursor = 'ns-resize';
-              break;
-            case 2:
-              document.body.style.cursor = 'nesw-resize';
-              break;
-            case 3:
-              document.body.style.cursor = 'ew-resize';
-              break;
-            case 4:
-              document.body.style.cursor = 'nwse-resize';
-              break;
-            case 5:
-              document.body.style.cursor = 'ns-resize';
-              break;
-            case 6:
-              document.body.style.cursor = 'nesw-resize';
-              break;
-            case 7:
-              document.body.style.cursor = 'ew-resize';
-              break;
-            case 8:
-              document.body.style.cursor = 'nwse-resize';
-              break;
-            case 9:
-              document.body.style.cursor = 'alias';
-              break;
-            case 10:
-              document.body.style.cursor = 'all-scroll';
-              break;
-            case 11:
-              document.body.style.cursor = 'alias';
-              break;
-            case 13:
-              document.body.style.cursor = 'all-scroll';
-              break;
-            default:
-              document.body.style.cursor = 'default';
-              break;
+          let type = data?.type;
+          switch (type) {
+            case 'line': {
+
+              switch (data.passIndex) {
+                case 1:
+                  document.body.style.cursor = 'grab';
+                  break;
+                case 2:
+                  document.body.style.cursor = 'grab';
+                  break;
+                case 3:
+                  document.body.style.cursor = data?.direct == 1 ? 'ns-resize' : 'ew-resize';
+                  break;
+                case 4:
+                  document.body.style.cursor = 'grab';
+                  break;
+                default:
+                  document.body.style.cursor = 'default';
+                  break;
+              }
+            } break;
+            default: {
+              switch (data.passIndex) {
+                case 1:
+                  document.body.style.cursor = 'ns-resize';
+                  break;
+                case 2:
+                  document.body.style.cursor = 'nesw-resize';
+                  break;
+                case 3:
+                  document.body.style.cursor = 'ew-resize';
+                  break;
+                case 4:
+                  document.body.style.cursor = 'nwse-resize';
+                  break;
+                case 5:
+                  document.body.style.cursor = 'ns-resize';
+                  break;
+                case 6:
+                  document.body.style.cursor = 'nesw-resize';
+                  break;
+                case 7:
+                  document.body.style.cursor = 'ew-resize';
+                  break;
+                case 8:
+                  document.body.style.cursor = 'nwse-resize';
+                  break;
+                case 9:
+                  document.body.style.cursor = 'alias';
+                  break;
+                case 10:
+                  document.body.style.cursor = 'all-scroll';
+                  break;
+                case 11:
+                  document.body.style.cursor = 'alias';
+                  break;
+                case 13:
+                  document.body.style.cursor = 'all-scroll';
+                  break;
+                default:
+                  document.body.style.cursor = 'default';
+                  break;
+              }
+            }
           }
+
         }
       }
     }

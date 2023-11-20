@@ -32,7 +32,7 @@ class DDeiBusCommandChangeSelectorPassIndex extends DDeiBusCommand {
   action(data: object, bus: DDeiBus, evt: Event): boolean {
     let stage = bus.ddInstance.stage;
     if (stage && stage.render.selector && data?.passIndex) {
-      stage.render.selector.setPassIndex(data?.passIndex)
+      stage.render.selector.setPassIndex(data?.type, data?.passIndex, data?.opvsIndex)
     }
     return true;
   }
@@ -44,7 +44,7 @@ class DDeiBusCommandChangeSelectorPassIndex extends DDeiBusCommand {
    * @param evt 事件对象引用
    */
   after(data: object, bus: DDeiBus, evt: Event): boolean {
-    bus?.insert(DDeiEnumBusCommandType.ChangeCursor, { passIndex: data?.passIndex }, evt);
+    bus?.insert(DDeiEnumBusCommandType.ChangeCursor, { type: data?.type, passIndex: data?.passIndex, direct: data?.direct }, evt);
     return true;
   }
 

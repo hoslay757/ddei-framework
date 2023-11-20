@@ -151,14 +151,22 @@ class DDeiLine extends DDeiAbstractShape {
       //转换为图片
       if (!this.looseCanvas) {
         this.looseCanvas = document.createElement('canvas');
-        document.body.appendChild(this.looseCanvas)
         this.looseCanvas.setAttribute("style", "-moz-transform-origin:left top;");
       }
       let canvas = this.looseCanvas
 
       let pvs = this.pvs;
       let outRect = DDeiAbstractShape.pvsToOutRect(pvs);
-
+      let weight = 10
+      if (this.weight) {
+        weight = this.weight + 5
+      }
+      outRect.x -= weight
+      outRect.x1 += weight
+      outRect.y -= weight
+      outRect.y1 += weight
+      outRect.width += 2 * weight
+      outRect.height += 2 * weight
       this.loosePVS = Object.freeze([
         new Vector3(outRect.x, outRect.y, 1),
         new Vector3(outRect.x1, outRect.y, 1),
@@ -178,10 +186,7 @@ class DDeiLine extends DDeiAbstractShape {
       let rat1 = 1
       let type = this.type;
       ctx.strokeStyle = DDeiUtil.getColor("red");
-      let weight = 10
-      if (this.weight) {
-        weight = this.weight + 5
-      }
+
       ctx.lineWidth = weight
       ctx.beginPath()
       switch (type) {
@@ -234,11 +239,19 @@ class DDeiLine extends DDeiAbstractShape {
    * @returns 是否在区域内
    */
   isInAreaLoose(x: number | undefined = undefined, y: number | undefined = undefined, loose: boolean = false): boolean {
-    if (super.isInAreaLoose(x, y, loose)) {
+    if (super.isInAreaLoose(x, y, loose) && this.looseCanvas) {
       let ctx = this.looseCanvas.getContext("2d");
       let outRect = DDeiAbstractShape.pvsToOutRect(this.pvs);
+      let weight = 10
+      if (this.weight) {
+        weight = this.weight + 5
+      }
+
+      outRect.x -= weight
+      outRect.y -= weight
       let cx = x - outRect.x
       let cy = y - outRect.y
+
       let cdata = ctx.getImageData(cx, cy, 1, 1).data;
       if (cdata && cdata[0] == 255 && cdata[1] != 255 && cdata[2] != 255) {
         return true;
