@@ -3,6 +3,7 @@ import DDeiLayer from './layer';
 import DDei from '../ddei';
 import DDeiAbstractShape from './shape';
 import DDeiUtil from '../util';
+import DDeiLink from './link';
 
 
 /**
@@ -29,6 +30,7 @@ class DDeiStage {
     this.paper = props.paper;
     this.ruler = props.ruler;
     this.grid = props.grid;
+    this.links = props.links;
 
   }
 
@@ -104,6 +106,9 @@ class DDeiStage {
   height: number;
   //当前视窗开始点，缺省为0，0, 0
   wpv: object;
+
+  //关联，维护了统一画布上，跨图层的图形关联
+  links: DDeiLink[];
 
   /**
    * 水印依附于stage存在，每个stage都可以有自己的水印

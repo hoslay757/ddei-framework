@@ -5,6 +5,7 @@ import DDeiEnumControlState from '../enums/control-state'
 import DDeiUtil from '../util'
 import { Matrix3, Vector3 } from 'three';
 import { clone, cloneDeep } from 'lodash'
+import DDeiLink from './link'
 /**
  * 抽象的图形类，定义了大多数图形都有的属性和方法
  */
@@ -32,6 +33,13 @@ abstract class DDeiAbstractShape {
     if (props.hpv) {
       props.hpv.forEach(pv => {
         this.hpv.push(new Vector3(pv.x, pv.y, pv.z));
+      });
+    }
+
+    if (props.exPvs) {
+      this.exPvs = [];
+      props.exPvs.forEach(pv => {
+        this.exPvs.push(new Vector3(pv.x, pv.y, pv.z));
       });
     }
 
@@ -67,11 +75,13 @@ abstract class DDeiAbstractShape {
   cpv: Vector3;
 
   //隐藏平行线点，形成一条平行于x轴的直线，用于在旋转后，通过其与坐标轴的夹角求真实的旋转角度
-  //一般多边形的
   hpv: Vector3[];
 
   //周围点向量
   pvs: Vector3;
+
+  //额外扩展向量，如：与连线关联的向量
+  exPvs: Vector3[];
 
   //唯一表示码，运行时临时生成
   unicode: string;
@@ -107,6 +117,9 @@ abstract class DDeiAbstractShape {
   transVectors(matrix: Matrix3): void {
     this.cpv.applyMatrix3(matrix);
     this.pvs.forEach(pv => {
+      pv.applyMatrix3(matrix)
+    });
+    this.exPvs.forEach(pv => {
       pv.applyMatrix3(matrix)
     });
     this.initHPV();
