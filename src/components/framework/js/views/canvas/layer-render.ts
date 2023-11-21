@@ -341,7 +341,12 @@ class DDeiLayerCanvasRender {
       ctx.save();
       this.model?.opPoints.forEach(point => {
         //设置字体颜色
-        ctx.fillStyle = "red"
+        if (point.mode == 1) {
+          ctx.fillStyle = "#017fff"
+        } else {
+          ctx.fillStyle = "red"
+        }
+
         //开始绘制  
         let lineOffset = 1 * ratio / 2;
         ctx.beginPath();
@@ -1123,6 +1128,7 @@ class DDeiLayerCanvasRender {
           let projPoint = operateControls[0].getProjPoint({ x: ex, y: ey });
           if (projPoint) {
             projPoint.model = operateControls[0]
+            projPoint.mode = 1
             this.model.opPoints.push(projPoint)
           }
         }
