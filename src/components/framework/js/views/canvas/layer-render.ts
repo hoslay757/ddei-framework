@@ -15,6 +15,7 @@ import DDeiCanvasRender from './ddei-render.js';
 import DDeiStageCanvasRender from './stage-render.js';
 import { Vector3 } from 'three';
 import { xor } from 'lodash';
+import DDeiLink from '../../models/link.js';
 /**
  * DDeiLayer的渲染器类，用于渲染文件
  * 渲染器必须要有模型才可以初始化
@@ -534,9 +535,9 @@ class DDeiLayerCanvasRender {
     if (opPoint) {
       //当前操作状态：线改变点中
       //记录当前的拖拽的x,y,写入dragObj作为临时变量
-      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { dx: ex, dy: ey } }, evt);
+      this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { opPoint: opPoint } }, evt);
       this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
-      this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING
+      this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING_CONFIRM
     }
     else if (this.stageRender.selector && this.stageRender.selector.isInAreaLoose(ex, ey, true) &&
       ((this.stageRender.selector.passIndex >= 1 && this.stageRender.selector.passIndex <= 9) || this.stageRender.selector.passIndex == 13)) {
@@ -669,7 +670,18 @@ class DDeiLayerCanvasRender {
       //判断当前操作状态
       switch (this.stageRender.operateState) {
         //控件状态确认中
-        case DDeiEnumOperateState.CONTROL_CONFIRMING:
+        case DDeiEnumOperateState.LINE_POINT_CHANGING_CONFIRM: {
+          // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
+          let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, ex, ey, true);
+          //光标所属位置是否有控件
+          //有控件：分发事件到当前控件
+          if (operateControls != null && operateControls.length > 0) {
+            //全局变量：当前操作控件=当前控件
+            let operateControl = operateControls[0];
+            this.stageRender.currentOperateShape = operateControl;
+          }
+        }
+        case DDeiEnumOperateState.CONTROL_CONFIRMING: {
           this.model.shadowControls = [];
           this.stageRender.currentOperateShape.render.mouseUp(evt);
           //如果有格式刷
@@ -677,6 +689,7 @@ class DDeiLayerCanvasRender {
             this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CopyStyle, { models: [this.stageRender.currentOperateShape], brushData: this.stage.brushData }, evt)
           }
           break;
+        }
         //选择器工作中
         case DDeiEnumOperateState.SELECT_WORKING:
           //选中被选择器包含的控件
@@ -727,14 +740,45 @@ class DDeiLayerCanvasRender {
                 item.initRender();
                 model = item;
               }
+
               let passIndex = this.stageRender.dragObj.passIndex;
 
               //如果是开始或结束节点的拖拽，判断落点是否在操作点上，如果在，则关联
               if (passIndex == 1) {
+                //如果原有的关联存在，取消原有的关联
+                let opvsIndex = this.stageRender.dragObj.opvsIndex;
+                let dmpath = ""
+                //判断开始点还是结束点
+                if (opvsIndex == 0) {
+                  dmpath = "startPoint"
+                } else {
+                  dmpath = "endPoint"
+                }
+                let distLinks = this.stage?.getDistModelLinks(model.id);
+                distLinks?.forEach(dl => {
+                  if (dl.dmpath == dmpath) {
+                    this.stage?.removeLink(dl);
+                  }
+                })
+
                 let opPoint = this.model.getOpPointByPos(ex, ey);
                 if (opPoint) {
-                  //关联点与线
-                  console.log("关联")
+
+                  //建立关联
+                  let smodel = opPoint.model;
+                  //创建连接点
+                  let pi = smodel.exPvs.length;
+                  smodel.exPvs[pi] = new Vector3(opPoint.x, opPoint.y, opPoint.z)
+                  let link = new DDeiLink({
+                    sm: smodel,
+                    dm: model,
+                    smpath: "exPvs[" + pi + "]",
+                    dmpath: dmpath,
+                    stage: this.stage
+                  });
+                  this.stage?.addLink(link)
+                  model?.initPVS()
+                  smodel.updateLinkModels();
                 }
               }
               model?.initPVS()
@@ -801,7 +845,14 @@ class DDeiLayerCanvasRender {
                   selMods.push({ id: lastOnContainer?.id, value: DDeiEnumControlState.SELECTED })
                 }
 
-
+                //加载事件的配置
+                let dragAfter = DDeiUtil.getConfigValue(
+                  "EVENT_CONTROL_DRAG_AFTER",
+                  this.stage?.ddInstance
+                );
+                if (dragAfter) {
+                  dragAfter(DDeiEnumOperateType.DRAG, operateModels, null, this.stage?.ddInstance, evt)
+                }
                 //构造移动容器action数据
                 this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeContainer, { oldContainer: pContainerModel, newContainer: lastOnContainer, models: operateModels }, evt);
                 this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, selMods, evt);
@@ -821,6 +872,7 @@ class DDeiLayerCanvasRender {
                 model.syncVectors(item)
                 hasChange = true;
                 operateModels.push(model)
+                model.updateLinkModels();
               })
               pContainerModel?.layoutManager?.updateLayout(ex, ey, operateModels);
               operateModels?.forEach(item => {
@@ -978,13 +1030,39 @@ class DDeiLayerCanvasRender {
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeStageWPV, { x: ex, y: ey, dragObj: this.stageRender.dragObj }, evt);
         break;
       }
+      //线段修改点中-待确认
+      case DDeiEnumOperateState.LINE_POINT_CHANGING_CONFIRM: {
+        let dx, dy, opPoint
+        if (this.stageRender.dragObj.opPoint) {
+          opPoint = this.stageRender.dragObj.opPoint
+          dx = opPoint.x
+          dy = opPoint.y
+        } else {
+          dx = this.stageRender.dragObj.dx
+          dy = this.stageRender.dragObj.dy
+        }
+        if (Math.abs(ex - dx) >= 10 || Math.abs(ey - dy) >= 10) {
+          this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING
+        }
+        break;
+      }
       //线段修改点中
       case DDeiEnumOperateState.LINE_POINT_CHANGING: {
         //如果当前操作控件不存在，创建线段,生成影子控件，并把影子线段作为当前操作控件
         if (!this.stageRender.currentOperateShape) {
           let lineJson = DDeiUtil.getLineInitJSON();
           lineJson.id = "line_" + (++this.stage.idIdx)
-          lineJson.cpv = new Vector3(this.stageRender.dragObj.dx, this.stageRender.dragObj.dy, 1);
+          let dx, dy, opPoint
+          if (this.stageRender.dragObj.opPoint) {
+            opPoint = this.stageRender.dragObj.opPoint
+            dx = opPoint.x
+            dy = opPoint.y
+          } else {
+            dx = this.stageRender.dragObj.dx
+            dy = this.stageRender.dragObj.dy
+          }
+          lineJson.cpv = new Vector3(dx, dy, 1);
+
           //根据线的类型生成不同的初始化点
           lineJson.type = 2
           //直线两个点
@@ -999,6 +1077,22 @@ class DDeiLayerCanvasRender {
           this.model.shadowControls.push(lineShadow);
           //将当前被拖动的控件转变为影子控件
           this.stageRender.currentOperateShape = lineShadow
+          //建立连接关系
+          if (opPoint) {
+            let smodel = opPoint.model;
+            //创建连接点
+            let pi = smodel.exPvs.length;
+            smodel.exPvs[pi] = new Vector3(opPoint.x, opPoint.y, opPoint.z)
+            let link = new DDeiLink({
+              sm: smodel,
+              dm: lineShadow,
+              smpath: "exPvs[" + pi + "]",
+              dmpath: "startPoint",
+              stage: this.stage
+            });
+            this.stage?.addLink(link)
+            smodel.updateLinkModels();
+          }
           //默认拖动结束线
           let dragObj = {
             x: ex,
@@ -1028,6 +1122,7 @@ class DDeiLayerCanvasRender {
         if (operateControls != null && operateControls.length > 0) {
           let projPoint = operateControls[0].getProjPoint({ x: ex, y: ey });
           if (projPoint) {
+            projPoint.model = operateControls[0]
             this.model.opPoints.push(projPoint)
           }
         }

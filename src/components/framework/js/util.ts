@@ -264,6 +264,7 @@ class DDeiUtil {
           if (typeof (obj) == "string") {
             pathArray = paths[ix].split(".");
             try {
+
               let returnJSON = DDeiUtil.getDataByPath(data, pathArray);
               if (returnJSON?.data || returnJSON?.data == 0) {
                 return returnJSON.data;
@@ -362,7 +363,12 @@ class DDeiUtil {
       }
       //获取属性
       for (let i = 0; i < path.length; i++) {
-        dataJson = dataJson[path[i]];
+        let p = path[i];
+        if (p.indexOf('[') != -1) {
+          eval("dataJson = dataJson." + p + ";")
+        } else {
+          dataJson = dataJson[p];
+        }
         if (dataJson?.overwrite == true) {
           isoverwrite = true
         }

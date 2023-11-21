@@ -30,6 +30,8 @@ enum DDeiEnumOperateState {
   TEXT_CREATING = 30,
   //线段修改点中
   LINE_POINT_CHANGING = 40,
+  //线段修改点确认中
+  LINE_POINT_CHANGING_CONFIRM = 41,
 }
 
 export default DDeiEnumOperateState

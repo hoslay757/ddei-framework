@@ -36,8 +36,8 @@ abstract class DDeiAbstractShape {
       });
     }
 
+    this.exPvs = [];
     if (props.exPvs) {
-      this.exPvs = [];
       props.exPvs.forEach(pv => {
         this.exPvs.push(new Vector3(pv.x, pv.y, pv.z));
       });
@@ -313,6 +313,25 @@ abstract class DDeiAbstractShape {
       this.render.initImage();
     }
 
+  }
+
+  /**
+   * 更新关联图形
+   */
+  updateLinkModels(): void {
+    //如果存在关联控件，同步修改关联控件坐标
+    let links = this.stage.getSourceModelLinks(this.id);
+    if (links?.length > 0) {
+      //同步调整链接控件的数据
+      links.forEach(link => {
+        let spv = link.getSourcePV();
+        let dpv = link.getDistPV();
+        dpv.x = spv.x
+        dpv.y = spv.y
+        dpv.z = spv.z
+        link.dm.initPVS()
+      })
+    }
   }
 
   /**

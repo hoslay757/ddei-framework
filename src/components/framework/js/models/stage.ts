@@ -30,8 +30,10 @@ class DDeiStage {
     this.paper = props.paper;
     this.ruler = props.ruler;
     this.grid = props.grid;
-    this.links = props.links;
-
+    this.links = []
+    props?.links?.forEach(link => {
+      this.links.push(link)
+    });
   }
 
   // ============================ 静态变量 ============================
@@ -55,6 +57,35 @@ class DDeiStage {
     stage.layers = layers
     stage.initHistroy();
     stage.initRender();
+    //加载links
+    if (stage.links) {
+      let links = []
+      stage.links.forEach(lk => {
+        let sm = null;
+        let dm = null;
+        if (lk.sm) {
+          sm = lk.sm
+        } else if (lk.smid) {
+          sm = stage.getModelById(lk.smid)
+        }
+        if (lk.dm) {
+          dm = lk.dm
+        } else if (lk.dmid) {
+          dm = stage.getModelById(lk.dmid)
+        }
+        let link = new DDeiLink({
+          group: lk.group,
+          smpath: lk.smpath,
+          dmpath: lk.dmpath,
+          stage: stage,
+          sm: sm,
+          dm: dm
+        });
+        links.push(link);
+      })
+      stage.links = links;
+      stage.refreshLinkCache()
+    }
     return stage;
   }
 
@@ -143,6 +174,89 @@ class DDeiStage {
 
 
   // ============================ 方法 ===============================
+
+
+  /**
+   * 添加连接点
+   * @param link 链接点
+   */
+  addLink(...links: DDeiLink): void {
+    links?.forEach(link => {
+      if (link) {
+        if (this.links.indexOf(link) == -1) {
+          this.links.push(link);
+        }
+      }
+    });
+    this.refreshLinkCache()
+  }
+
+  /**
+   * 删除连接点
+   * @param link 链接点
+   */
+  removeLink(...links: DDeiLink): void {
+    links?.forEach(link => {
+      if (link) {
+        let index = this.links.indexOf(link)
+        if (index != -1) {
+          this.links.splice(index, 1)
+        }
+      }
+    });
+    this.refreshLinkCache()
+  }
+
+  /**
+   * 刷新链接缓存
+   */
+  refreshLinkCache(): void {
+    this.sourceLinkCache = new Map()
+    this.distLinkCache = new Map()
+    this.links.forEach(link => {
+      if (link.sm) {
+        let smid = link.sm.id;
+        if (!this.sourceLinkCache.has(smid)) {
+          this.sourceLinkCache.set(smid, [])
+        }
+        let sourceLinks = this.sourceLinkCache.get(smid)
+        if (sourceLinks.indexOf(link) == -1) {
+          sourceLinks.push(link)
+        }
+      }
+      if (link.dm) {
+        let dmid = link.dm.id;
+        if (!this.distLinkCache.has(dmid)) {
+          this.distLinkCache.set(dmid, [])
+        }
+        let distLinks = this.distLinkCache.get(dmid)
+        if (distLinks.indexOf(link) == -1) {
+          distLinks.push(link)
+        }
+      }
+
+    })
+  }
+
+  /**
+   * 获取源模型的链接
+   * @param modelId 模型ID
+   */
+  getSourceModelLinks(modelId: string): DDeiLink[] {
+    if (modelId) {
+      return this.sourceLinkCache?.get(modelId)
+    }
+  }
+
+  /**
+   * 获取目标模型的链接
+   * @param modelId 模型ID
+   */
+  getDistModelLinks(modelId: string): DDeiLink[] {
+    if (modelId) {
+      return this.distLinkCache?.get(modelId)
+    }
+  }
 
   /**
    * 计算当前stage的模型总数量

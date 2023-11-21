@@ -40,6 +40,7 @@ class DDeiLine extends DDeiAbstractShape {
     //圆角
     this.round = props.round
 
+
     this.updateLooseCanvas = debounce(this.updateLooseCanvas, 30)
   }
 
@@ -58,6 +59,7 @@ class DDeiLine extends DDeiAbstractShape {
     tempData[model.id] = model;
     //基于初始化的宽度、高度，构建向量
     model.initPVS();
+
     return model;
   }
 
@@ -106,6 +108,10 @@ class DDeiLine extends DDeiAbstractShape {
   opacity: number;
   //圆角
   round: number;
+  //开始点
+  startPoint: Vector3;
+  //结束点
+  endPoint: Vector3;
 
   // ============================ 方法 ===============================
 
@@ -114,8 +120,10 @@ class DDeiLine extends DDeiAbstractShape {
    * 初始化向量，默认开始在0，0的位置
    */
   initPVS() {
-    if (!this.cpv) {
+    if (!this.cpv && !(this.pvs?.length > 0)) {
       this.cpv = new Vector3(0, 0, 1)
+    } else {
+      this.cpv = this.pvs[0];
     }
 
     this.initHPV();
@@ -124,6 +132,9 @@ class DDeiLine extends DDeiAbstractShape {
 
 
     this.calLoosePVS();
+
+    this.startPoint = this.pvs[0]
+    this.endPoint = this.pvs[this.pvs.length - 1]
   }
 
   /**
@@ -218,10 +229,9 @@ class DDeiLine extends DDeiAbstractShape {
   }
 
   /**
- * 变换向量
- */
+   * 变换向量
+   */
   transVectors(matrix: Matrix3): void {
-    this.cpv.applyMatrix3(matrix);
     this.pvs.forEach(pv => {
       pv.applyMatrix3(matrix)
     });

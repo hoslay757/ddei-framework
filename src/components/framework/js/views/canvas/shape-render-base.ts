@@ -174,6 +174,7 @@ class DDeiAbstractShapeRender {
       ey -= this.stage.wpv.y
       let projPoint = this.model.getProjPoint({ x: ex, y: ey });
       if (projPoint) {
+        projPoint.model = this.model
         this.layer.opPoints.push(projPoint);
       }
     }

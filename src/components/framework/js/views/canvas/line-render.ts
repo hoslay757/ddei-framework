@@ -320,10 +320,10 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
   }
 
   /**
-   * 鼠标移动
-   */
+    * 鼠标移动
+    */
   mouseMove(evt: Event): void {
-    super.mouseMove(evt);
+
   }
 }
 
