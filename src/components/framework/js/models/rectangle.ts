@@ -2,6 +2,7 @@ import DDeiConfig from '../config'
 import DDeiStage from './stage'
 import DDeiLayer from './layer'
 import DDeiAbstractShape from './shape'
+import DDeiUtil from '../util';
 
 /**
  * rectangle（矩形）包含了正方形与长方形。
@@ -88,6 +89,28 @@ class DDeiRectangle extends DDeiAbstractShape {
     this.render.init();
   }
 
+  /**
+   * 返回某个点，相对于该图形的角度
+   */
+  getPointAngle(point): number {
+    //上
+    if (DDeiUtil.isPointInLine(point, this.pvs[0], this.pvs[1])) {
+      return DDeiUtil.getLineAngle(0, 0, 0, -2)
+    }
+    //右
+    else if (DDeiUtil.isPointInLine(point, this.pvs[1], this.pvs[2])) {
+      return DDeiUtil.getLineAngle(0, 0, 2, 0)
+    }
+    //下
+
+    else if (DDeiUtil.isPointInLine(point, this.pvs[2], this.pvs[3])) {
+      return DDeiUtil.getLineAngle(0, 0, 0, 2)
+    }
+    //左
+    else if (DDeiUtil.isPointInLine(point, this.pvs[3], this.pvs[0])) {
+      return DDeiUtil.getLineAngle(0, 0, -2, 0)
+    }
+  }
 
 
 

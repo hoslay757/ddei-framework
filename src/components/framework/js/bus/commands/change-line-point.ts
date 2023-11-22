@@ -76,12 +76,8 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
           //结束点
           else if (passIndex == 1 && opvsIndex == opvs.length - 1) {
             if (create) {
-              pvs[1].x = (lineModel.cpv.x + ex) / 2;
-              pvs[1].y = lineModel.cpv.y;
-              pvs[2].x = (lineModel.cpv.x + ex) / 2;
-              pvs[2].y = ey;
-              pvs[3].x = ex;
-              pvs[3].y = ey;
+              pvs[pvs.length - 1].x = ex;
+              pvs[pvs.length - 1].y = ey;
             } else {
               let otherP = pvs[pvs.length - 2]
               //TODO 旋转的情况下，需要把旋转归0判断，x相等
@@ -119,6 +115,7 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
 
             cp.x = ex;
             cp.y = ey;
+            lineModel.spvs[cIndex] = true
           } else if (passIndex == 3) {
             //相邻的两个点的坐标处理
             let sIndex = parseInt(opvsIndex / 2)
@@ -133,6 +130,8 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
               sp.y = ey
               ep.y = ey
             }
+            lineModel.spvs[sIndex] = true
+            lineModel.spvs[sIndex + 1] = true
 
           }
 
@@ -155,14 +154,17 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
             if (opvsIndex == 1) {
               pvs[1].x = -(pvs[0].x * DDeiUtil.p331t3 + DDeiUtil.p33t21t3 * pvs[2].x + DDeiUtil.p33t3 * pvs[3].x - ex) / DDeiUtil.p331t2t3
               pvs[1].y = -(pvs[0].y * DDeiUtil.p331t3 + DDeiUtil.p33t21t3 * pvs[2].y + DDeiUtil.p33t3 * pvs[3].y - ey) / DDeiUtil.p331t2t3
+              lineModel.spvs[1] = true
             } else {
               pvs[2].x = -(pvs[0].x * DDeiUtil.p661t3 + DDeiUtil.p661t2t3 * pvs[1].x + DDeiUtil.p66t3 * pvs[3].x - ex) / DDeiUtil.p66t21t3
               pvs[2].y = -(pvs[0].y * DDeiUtil.p661t3 + DDeiUtil.p661t2t3 * pvs[1].y + DDeiUtil.p66t3 * pvs[3].y - ey) / DDeiUtil.p66t21t3
+              lineModel.spvs[2] = true
             }
           }
 
         } break;
       }
+      lineModel.calPoints();
       return true;
     }
   }

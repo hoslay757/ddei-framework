@@ -254,21 +254,40 @@ class DDeiSelector extends DDeiRectangle {
     //计算宽、高信息，该值为不考虑缩放的大小
     this.x = tempPVS[0].x / stageRatio
     this.y = tempPVS[0].y / stageRatio
-    this.width = (tempPVS[1].x - tempPVS[0].x) / stageRatio
-    this.height = (tempPVS[3].y - tempPVS[0].y) / stageRatio
-    //记录缩放后的大小以及坐标
-    this.essBounds = { x: tempPVS[0].x, y: tempPVS[0].y, width: tempPVS[1].x - tempPVS[0].x, height: tempPVS[3].y - tempPVS[0].y }
+    let models = null;
+    if (this.stage?.selectedModels?.size > 0) {
+      models = Array.from(this.stage.selectedModels.values())
+    }
+    if (models?.length == 1 && models[0]?.baseModelType == "DDeiLine") {
+      this.width = (tempPVS[1].x - tempPVS[0].x) / stageRatio
+      this.height = (tempPVS[1].y - tempPVS[0].y) / stageRatio
+      //记录缩放后的大小以及坐标
+      this.essBounds = { x: tempPVS[0].x, y: tempPVS[0].y, width: tempPVS[1].x - tempPVS[0].x, height: tempPVS[1].y - tempPVS[0].y }
+      this.loosePVS = []
+      this.loosePVS[0] = new Vector3(tempPVS[0].x - looseWeight, tempPVS[0].y - looseWeight, 1)
+      this.loosePVS[1] = new Vector3(tempPVS[1].x + looseWeight, tempPVS[0].y - looseWeight, 1)
+      this.loosePVS[2] = new Vector3(tempPVS[1].x + looseWeight, tempPVS[1].y + looseWeight, 1)
+      this.loosePVS[3] = new Vector3(tempPVS[0].x - looseWeight, tempPVS[1].y + looseWeight, 1)
 
 
-    this.loosePVS = []
-    this.loosePVS[0] = new Vector3(tempPVS[0].x - looseWeight, tempPVS[0].y - looseWeight, 1)
-    this.loosePVS[1] = new Vector3(tempPVS[0].x + (tempPVS[1].x - tempPVS[0].x) / 2 - looseWeight, tempPVS[0].y - looseWeight, 1)
-    this.loosePVS[2] = new Vector3(this.loosePVS[1].x, this.loosePVS[1].y - 40, 1)
-    this.loosePVS[3] = new Vector3(this.loosePVS[2].x + 2 * looseWeight, this.loosePVS[2].y, 1)
-    this.loosePVS[4] = new Vector3(this.loosePVS[3].x, this.loosePVS[3].y - 40, 1)
-    this.loosePVS[5] = new Vector3(tempPVS[1].x + looseWeight, tempPVS[1].y - looseWeight, 1)
-    this.loosePVS[6] = new Vector3(this.loosePVS[5].x, tempPVS[2].y + looseWeight, 1)
-    this.loosePVS[7] = new Vector3(tempPVS[3].x - looseWeight, this.loosePVS[6].y, 1)
+    } else {
+      this.width = (tempPVS[1].x - tempPVS[0].x) / stageRatio
+      this.height = (tempPVS[3].y - tempPVS[0].y) / stageRatio
+      //记录缩放后的大小以及坐标
+      this.essBounds = { x: tempPVS[0].x, y: tempPVS[0].y, width: tempPVS[1].x - tempPVS[0].x, height: tempPVS[3].y - tempPVS[0].y }
+      this.loosePVS = []
+      this.loosePVS[0] = new Vector3(tempPVS[0].x - looseWeight, tempPVS[0].y - looseWeight, 1)
+      this.loosePVS[1] = new Vector3(tempPVS[0].x + (tempPVS[1].x - tempPVS[0].x) / 2 - looseWeight, tempPVS[0].y - looseWeight, 1)
+      this.loosePVS[2] = new Vector3(this.loosePVS[1].x, this.loosePVS[1].y - 40, 1)
+      this.loosePVS[3] = new Vector3(this.loosePVS[2].x + 2 * looseWeight, this.loosePVS[2].y, 1)
+      this.loosePVS[4] = new Vector3(this.loosePVS[3].x, this.loosePVS[3].y - 40, 1)
+      this.loosePVS[5] = new Vector3(tempPVS[1].x + looseWeight, tempPVS[1].y - looseWeight, 1)
+      this.loosePVS[6] = new Vector3(this.loosePVS[5].x, tempPVS[2].y + looseWeight, 1)
+      this.loosePVS[7] = new Vector3(tempPVS[3].x - looseWeight, this.loosePVS[6].y, 1)
+
+    }
+
+
 
     //旋转并位移回去
     if (this.rotate && this.rotate != 0) {

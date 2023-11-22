@@ -170,12 +170,19 @@ class DDeiLayer {
       if (ignoreModelIds && ignoreModelIds?.indexOf(mid) != -1) {
         return;
       }
-      let subModel = this.models.get(mid)
-      if (level > 1 && subModel.getSubModels) {
-        let subModels = subModel.getSubModels(ignoreModelIds, level - 1);
-        models = models.concat(subModels)
+      let subModel = null
+      if (this.models.get) {
+        subModel = this.models.get(mid)
+      } else {
+        subModel = this.models[mid]
       }
-      models.push(subModel);
+      if (subModel) {
+        if (level > 1 && subModel?.getSubModels) {
+          let subModels = subModel.getSubModels(ignoreModelIds, level - 1);
+          models = models.concat(subModels)
+        }
+        models.push(subModel);
+      }
     })
     return models;
   }

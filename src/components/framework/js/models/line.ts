@@ -1,9 +1,9 @@
 import DDeiConfig from '../config'
 import DDeiAbstractShape from './shape'
 import { Matrix3, Vector3 } from 'three';
-import { clone, cloneDeep } from 'lodash'
 import DDeiUtil from '../util';
 import { debounce } from "lodash";
+import DDeiModelArrtibuteValue from './attribute/attribute-value';
 /**
  * line（连线）
  * 主要样式属性：颜色、宽度、开始和结束节点样式、虚线、字体、文本样式
@@ -22,8 +22,6 @@ class DDeiLine extends DDeiAbstractShape {
     this.sstyle = props.sstyle;
     //虚线属性
     this.dash = props.dash;
-    //虚线属性
-    this.points = props.points;
     //连线类型
     this.type = props.type ? props.type : 1;
     //开始和结束节点的类型
@@ -39,6 +37,8 @@ class DDeiLine extends DDeiAbstractShape {
     this.opacity = props.opacity
     //圆角
     this.round = props.round
+
+    this.spvs = props.spvs ? props.spvs : [];
 
 
     this.updateLooseCanvas = debounce(this.updateLooseCanvas, 30)
@@ -112,6 +112,8 @@ class DDeiLine extends DDeiAbstractShape {
   startPoint: Vector3;
   //结束点
   endPoint: Vector3;
+  //特殊修改过的点下标，特殊修改过的点在自动计算坐标时会有所限制
+  spvs: [];
 
   // ============================ 方法 ===============================
 
@@ -130,11 +132,16 @@ class DDeiLine extends DDeiAbstractShape {
     //计算旋转
     this.calRotate();
 
-
-    this.calLoosePVS();
-
     this.startPoint = this.pvs[0]
     this.endPoint = this.pvs[this.pvs.length - 1]
+
+    //根据开始节点和结束节点的关系，自动计算中间节点路径的坐标
+    setTimeout(() => {
+      this.calPoints();
+      this.calLoosePVS();
+    }, 20);
+
+
   }
 
   /**
@@ -145,6 +152,83 @@ class DDeiLine extends DDeiAbstractShape {
       this.hpv[0] = new Vector3(this.cpv.x, this.cpv.y, 1)
       this.hpv[1] = new Vector3(this.cpv.x + 100, this.cpv.y, 1)
     }
+  }
+
+
+  /**
+   * 根据开始节点和结束节点的关系，自动计算中间节点路径的坐标
+   */
+  calPoints(): void {
+    switch (this.type) {
+      case 1: {
+        this.pvs = [this.startPoint, this.endPoint]
+      } break;
+      case 2: {
+        let pvs = this.pvs;
+        //得到开始点在开始图形的方向
+        let lineLinks = this.stage?.getDistModelLinks(this.id);
+        let startLink = null;
+        let endLink = null;
+        lineLinks?.forEach(lk => {
+          if (lk.dmpath == "startPoint") {
+            startLink = lk;
+          } else if (lk.dmpath == "endPoint") {
+            endLink = lk;
+          }
+        })
+        let sAngle = null;
+        let eAngle = null;
+        if (startLink?.sm) {
+          sAngle = startLink.sm.getPointAngle(this.startPoint)
+        }
+        if (endLink?.sm) {
+          eAngle = endLink.sm.getPointAngle(this.endPoint)
+        }
+        if (sAngle == null) {
+          sAngle = DDeiUtil.getLineAngle(this.startPoint.x, this.startPoint.y, pvs[1].x, pvs[1].y)
+        }
+        if (eAngle == null) {
+          eAngle = DDeiUtil.getLineAngle(this.endPoint.x, this.endPoint.y, pvs[pvs.length - 2].x, pvs[pvs.length - 2].y)
+        }
+
+        //解析movepath，生成点
+        let middlePaths = []
+        //获取移动路径
+        let movePath = DDeiUtil.getMovePath(sAngle, eAngle, this.startPoint, this.endPoint)
+        if (movePath) {
+          let mPaths = movePath.split(",")
+
+          let cPoint = { x: this.startPoint.x, y: this.startPoint.y }
+          let h = Math.abs(this.startPoint.y - this.endPoint.y)
+          let w = Math.abs(this.startPoint.x - this.endPoint.x)
+          mPaths.forEach(mPath => {
+            let mpa = mPath.split(":");
+            let opType = mpa[0];
+            let opSize = parseFloat(mpa[1]);
+            if (opType == 'x') {
+              cPoint.x += opSize * w
+            } else if (opType == 'y') {
+              cPoint.y += opSize * h
+            }
+            //生成中间点
+            middlePaths.push(new Vector3(cPoint.x, cPoint.y, 1))
+          });
+        }
+        //更新中间节点
+        this.pvs = [this.startPoint]
+        if (middlePaths?.length > 0) {
+          middlePaths.forEach(mp => {
+            this.pvs.push(mp)
+          });
+        }
+        this.pvs.push(this.endPoint)
+
+      } break;
+      case 3: {
+
+      } break;
+    }
+
   }
 
   /**

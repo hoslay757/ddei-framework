@@ -82,7 +82,12 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
       ctx.save();
-
+      //如果线段类型发生了改变，则重新绘制线段，计算中间点坐标
+      if (!this.upLineType || this.upLineType != this.model.type) {
+        this.upLineType = this.model.type
+        this.model.spvs = []
+        this.model.initPVS()
+      }
 
       //绘制线段
       this.drawLine();

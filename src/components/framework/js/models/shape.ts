@@ -324,12 +324,14 @@ abstract class DDeiAbstractShape {
     if (links?.length > 0) {
       //同步调整链接控件的数据
       links.forEach(link => {
-        let spv = link.getSourcePV();
         let dpv = link.getDistPV();
-        dpv.x = spv.x
-        dpv.y = spv.y
-        dpv.z = spv.z
-        link.dm.initPVS()
+        if (dpv) {
+          let spv = link.getSourcePV();
+          dpv.x = spv.x
+          dpv.y = spv.y
+          dpv.z = spv.z
+          link.dm.initPVS()
+        }
       })
     }
   }
@@ -662,38 +664,33 @@ abstract class DDeiAbstractShape {
     ]
     len = modelLines.length;
     for (let i = 0; i < len; i++) {
-      let l1 = modelLines[i];
       for (let j = 0; j < 4; j++) {
-        let l2 = rectLines[j];
-        //快速排斥实验
-        if ((l1.x1 > l1.x2 ? l1.x1 : l1.x2) < (l2.x1 < l2.x2 ? l2.x1 : l2.x2) ||
-          (l1.y1 > l1.y2 ? l1.y1 : l1.y2) < (l2.y1 < l2.y2 ? l2.y1 : l2.y2) ||
-          (l2.x1 > l2.x2 ? l2.x1 : l2.x2) < (l1.x1 < l1.x2 ? l1.x1 : l1.x2) ||
-          (l2.y1 > l2.y2 ? l2.y1 : l2.y2) < (l1.y1 < l1.y2 ? l1.y1 : l1.y2)) {
-          continue;
-        }
-        //跨立实验
-        if ((((l1.x1 - l2.x1) * (l2.y2 - l2.y1) - (l1.y1 - l2.y1) * (l2.x2 - l2.x1)) *
-          ((l1.x2 - l2.x1) * (l2.y2 - l2.y1) - (l1.y2 - l2.y1) * (l2.x2 - l2.x1))) > 0 ||
-          (((l2.x1 - l1.x1) * (l1.y2 - l1.y1) - (l2.y1 - l1.y1) * (l1.x2 - l1.x1)) *
-            ((l2.x2 - l1.x1) * (l1.y2 - l1.y1) - (l2.y2 - l1.y1) * (l1.x2 - l1.x1))) > 0) {
-          continue;
-        }
-        pn++;
-        if (pn >= pointNumber) {
-          return true;
+        if (DDeiUtil.isLineCross(modelLines[i], rectLines[j])) {
+          pn++;
+          if (pn >= pointNumber) {
+            return true;
+          }
         }
       }
-
-
     }
-
-
     return true;
+  }
 
-
-
-    return false;
+  /**
+  * 判断某个线段是否与当前图形相交
+  */
+  isLineCross(line: { x1: number, y1: number, x2: number, y2: number }): boolean {
+    for (let i = 0; i < this.pvs.length; i++) {
+      let s = i
+      let e = i + 1
+      if (i == this.pvs.length - 1) {
+        e = 0
+      }
+      if (DDeiUtil.isLineCross(line, { x1: this.pvs[s].x, y1: this.pvs[s].y, x2: this.pvs[e].x, y2: this.pvs[e].y })) {
+        return true;
+      }
+    }
+    return false
   }
 
   /**
