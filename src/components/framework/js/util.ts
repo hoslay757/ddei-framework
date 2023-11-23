@@ -371,260 +371,503 @@ class DDeiUtil {
   static getMovePath(sAngle, eAngle, startPoint, endPoint): string {
     let movePath = ""
     //开始点为左边线的各种情况
-    if (sAngle == 0 && eAngle == 180) {
-      //Y相等
-      if (Math.abs(startPoint.y - endPoint.y) <= 1) {
-        if (startPoint.x > endPoint.x) {
-          movePath = "x:0.25,y:-0.25,x:-1.5,y:0.25,x:0.25"
+    switch (sAngle) {
+      case 0: {
+        switch (eAngle) {
+          case 180: {
+            //Y相等
+            if (Math.abs(startPoint.y - endPoint.y) <= 1) {
+              if (startPoint.x > endPoint.x) {
+                movePath = "x:0.25,y:-0.25,x:-1.5,y:0.25,x:0.25"
+              }
+              else {
+                movePath = "x:1"
+              }
+            }
+            //开始高于结束
+            else if (startPoint.y > endPoint.y) {
+              if (startPoint.x > endPoint.x) {
+                movePath = "x:0.25,y:-0.5,x:-1.5,y:-0.5,x:0.25"
+              }
+              else {
+                movePath = "x:0.5,y:-1,x:0.5"
+              }
+            }
+            //结束高于开始
+            else {
+              if (startPoint.x > endPoint.x) {
+                movePath = "x:0.25,y:0.5,x:-1.5,y:0.5,x:0.25"
+              }
+              else {
+                movePath = "x:0.5,y:1,x:0.5"
+              }
+            }
+          } break;
+          case -90: {
+            //Y相等
+            if (Math.abs(startPoint.y - endPoint.y) <= 1) {
+              if (startPoint.x > endPoint.x) {
+                movePath = "x:0.25,y:-0.25,x:-1.25,y:0.25"
+              }
+            }
+            //开始高于结束
+            else if (startPoint.y > endPoint.y) {
+              if (startPoint.x > endPoint.x) {
+                movePath = "x:0.25,y:-1.25,x:-1.25"
+              }
+              else {
+                movePath = "x:0.5,y:-1.25,x:0.5,y:0.25"
+              }
+            }
+            //结束高于开始
+            else {
+              if (startPoint.x > endPoint.x) {
+                movePath = "x:0.25,y:0.5,x:-1.25,y:0.5"
+              }
+              else {
+                movePath = "x:1,y:1"
+              }
+            }
+          } break;
+          case 90: {
+            //Y相等
+            if (Math.abs(startPoint.y - endPoint.y) <= 1) {
+              if (startPoint.x > endPoint.x) {
+                movePath = "x:0.25,y:0.25,x:-1.25,y:-0.25"
+              }
+            }
+            //开始高于结束
+            else if (startPoint.y > endPoint.y) {
+              if (startPoint.x > endPoint.x) {
+                movePath = "x:0.25,y:-0.5,x:-1.25"
+              }
+              else {
+                movePath = "x:1"
+              }
+            }
+            //结束高于开始
+            else {
+              if (startPoint.x > endPoint.x) {
+                movePath = "x:0.25,y:-1.25,x:-1.25"
+              }
+              else {
+                movePath = "x:0.5,y:1.25,x:0.5"
+              }
+            }
+          }
+            break;
+          case 0: {
+            //Y相等
+            if (Math.abs(startPoint.y - endPoint.y) <= 1) {
+              movePath = "x:0.25,y:0.25,x:-1.25,y:-0.25"
+            }
+            //开始高于结束
+            else if (startPoint.y > endPoint.y) {
+              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+                movePath = "x:0.25,y:-1"
+              }
+              else if (startPoint.x > endPoint.x) {
+                movePath = "x:0.25,y:-1"
+              }
+              else {
+                movePath = "x:1.25,y:-1"
+              }
+            }
+            //结束高于开始
+            else {
+              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+                movePath = "x:0.25,y:1"
+              }
+              else if (startPoint.x > endPoint.x) {
+                movePath = "x:0.25,y:1"
+              }
+              else {
+                movePath = "x:1.25,y:1"
+              }
+            }
+          } break;
         }
-        else {
-          movePath = "x:1"
-        }
-      }
-      //开始高于结束
-      else if (startPoint.y > endPoint.y) {
-        if (startPoint.x > endPoint.x) {
-          movePath = "x:0.25,y:-0.5,x:-1.5,y:-0.5,x:0.25"
-        }
-        else {
-          movePath = "x:0.5,y:-1,x:0.5"
-        }
-      }
-      //结束高于开始
-      else {
-        if (startPoint.x > endPoint.x) {
-          movePath = "x:0.25,y:0.5,x:-1.5,y:0.5,x:0.25"
-        }
-        else {
-          movePath = "x:0.5,y:1,x:0.5"
-        }
-      }
-    }
-    else if (sAngle == 0 && eAngle == -90) {
-      //Y相等
-      if (Math.abs(startPoint.y - endPoint.y) <= 1) {
-        if (startPoint.x > endPoint.x) {
-          movePath = "x:0.25,y:-0.25,x:-1.25,y:0.25"
-        }
-      }
-      //开始高于结束
-      else if (startPoint.y > endPoint.y) {
-        if (startPoint.x > endPoint.x) {
-          movePath = "x:0.25,y:-1.25,x:-1.25"
-        }
-        else {
-          movePath = "x:0.5,y:-1.25,x:0.5,y:0.25"
-        }
-      }
-      //结束高于开始
-      else {
-        if (startPoint.x > endPoint.x) {
-          movePath = "x:0.25,y:0.5,x:-1.25,y:0.5"
-        }
-        else {
-          movePath = "x:1,y:1"
-        }
-      }
-    } else if (sAngle == 0 && eAngle == 90) {
-      //Y相等
-      if (Math.abs(startPoint.y - endPoint.y) <= 1) {
-        if (startPoint.x > endPoint.x) {
-          movePath = "x:0.25,y:0.25,x:-1.25,y:-0.25"
-        }
-      }
-      //开始高于结束
-      else if (startPoint.y > endPoint.y) {
-        if (startPoint.x > endPoint.x) {
-          movePath = "x:0.25,y:-0.5,x:-1.25"
-        }
-        else {
-          movePath = "x:1"
-        }
-      }
-      //结束高于开始
-      else {
-        if (startPoint.x > endPoint.x) {
-          movePath = "x:0.25,y:-1.25,x:-1.25"
-        }
-        else {
-          movePath = "x:0.5,y:1.25,x:0.5"
-        }
-      }
-    } else if (sAngle == 0 && eAngle == 0) {
-      //Y相等
-      if (Math.abs(startPoint.y - endPoint.y) <= 1) {
-        movePath = "x:0.25,y:0.25,x:-1.25,y:-0.25"
-      }
-      //开始高于结束
-      else if (startPoint.y > endPoint.y) {
-        if (Math.abs(startPoint.x - endPoint.x) <= 1) {
-          movePath = "x:0.25,y:-1"
-        }
-        else if (startPoint.x > endPoint.x) {
-          movePath = "x:0.25,y:-1"
-        }
-        else {
-          movePath = "x:1.25,y:-1"
-        }
-      }
-      //结束高于开始
-      else {
-        if (Math.abs(startPoint.x - endPoint.x) <= 1) {
-          movePath = "x:0.25,y:1"
-        }
-        else if (startPoint.x > endPoint.x) {
-          movePath = "x:0.25,y:1"
-        }
-        else {
-          movePath = "x:1.25,y:1"
-        }
-      }
-    }
+      } break;
+      case 180: {
+        switch (eAngle) {
+          //开始点为右边线的各种情况
+          case 0: {
+            //Y相等
+            if (Math.abs(startPoint.y - endPoint.y) <= 1) {
+              if (startPoint.x > endPoint.x) {
+                movePath = ""
+              }
+              else {
+                movePath = "x:-0.25,y:-0.25,x:1.5,y:0.25"
+              }
+            }
+            //开始高于结束
+            else if (startPoint.y > endPoint.y) {
+              if (startPoint.x > endPoint.x) {
+                movePath = "x:-0.25,y:-1"
+              }
+              else {
+                movePath = "x:-0.25,y:-0.5,x:1.5,y:-0.5"
+              }
+            }
+            //结束高于开始
+            else {
+              if (startPoint.x > endPoint.x) {
+                movePath = "x:-0.25,y:1"
+              }
+              else {
+                movePath = "x:-0.25,y:0.5,x:1.5,y:0.5"
+              }
+            }
+          }
+            break;
+          case -90: {
+            //Y相等
+            if (Math.abs(startPoint.y - endPoint.y) <= 1) {
+              if (startPoint.x < endPoint.x) {
+                movePath = "x:-0.25,y:-0.25,x:1.25,y:0.25"
+              }
+            }
+            //开始高于结束
+            else if (startPoint.y > endPoint.y) {
+              if (startPoint.x > endPoint.x) {
+                movePath = "x:-0.5,y:-1.25,x:-0.5"
+              }
+              else {
+                movePath = "x:-0.25,y:-1.25,x:1.25"
+              }
+            }
+            //结束高于开始
+            else {
+              if (startPoint.x > endPoint.x) {
+                movePath = "x:-1"
+              }
+              else {
+                movePath = "x:-0.25,y:0.5,x:1.25"
+              }
+            }
+          }
+            break;
+          case 90: {
+            //Y相等
+            if (Math.abs(startPoint.y - endPoint.y) <= 1) {
+              if (startPoint.x < endPoint.x) {
+                movePath = "x:-0.25,y:0.25,x:1.25"
+              }
+            }
+            //开始高于结束
+            else if (startPoint.y > endPoint.y) {
+              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+              } else if (startPoint.x > endPoint.x) {
+                movePath = "x:-1"
+              }
+              else {
+                movePath = "x:-0.25,y:-0.5,x:1.25"
+              }
+            }
+            //结束高于开始
+            else {
+              if (startPoint.x > endPoint.x) {
+                movePath = "x:-0.5,y:1.25,x:-0.5"
+              }
+              else {
+                movePath = "x:-0.5,y:1.25,x:1.5"
+              }
+            }
+          } break;
+          case 180: {
+            //Y相等
+            if (Math.abs(startPoint.y - endPoint.y) <= 1) {
+              if (startPoint.x > endPoint.x) {
+                movePath = "x:-0.25,y:-0.25,x:-1,y:0.25"
+              } else {
+                movePath = "x:-0.25,y:-0.25,x:1,y:0.25"
+              }
 
-    //开始点为右边线的各种情况
-    if (sAngle == 180 && eAngle == 0) {
-      //Y相等
-      if (Math.abs(startPoint.y - endPoint.y) <= 1) {
-        if (startPoint.x > endPoint.x) {
-          movePath = ""
+            }
+            //开始高于结束
+            else if (startPoint.y > endPoint.y) {
+              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+                movePath = "x:-0.25,y:-1"
+              }
+              else if (startPoint.x > endPoint.x) {
+                movePath = "x:-1.25,y:-1"
+              }
+              else {
+                movePath = "x:-0.25,y:-1"
+              }
+            }
+            //结束高于开始
+            else {
+              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+                movePath = "x:-0.25,y:1"
+              }
+              else if (startPoint.x > endPoint.x) {
+                movePath = "x:-1.25,y:1"
+              }
+              else {
+                movePath = "x:-0.25,y:1"
+              }
+            }
+          } break;
         }
-        else {
-          movePath = "x:-0.25,y:-0.25,x:1.5,y:0.25"
-        }
-      }
-      //开始高于结束
-      else if (startPoint.y > endPoint.y) {
-        if (startPoint.x > endPoint.x) {
-          movePath = "x:-0.25,y:-1"
-        }
-        else {
-          movePath = "x:-0.25,y:-0.5,x:1.5,y:-0.5"
-        }
-      }
-      //结束高于开始
-      else {
-        if (startPoint.x > endPoint.x) {
-          movePath = "x:-0.25,y:1"
-        }
-        else {
-          movePath = "x:-0.25,y:0.5,x:1.5,y:0.5"
-        }
-      }
-    } else if (sAngle == 180 && eAngle == -90) {
-      //Y相等
-      if (Math.abs(startPoint.y - endPoint.y) <= 1) {
-        if (startPoint.x < endPoint.x) {
-          movePath = "x:-0.25,y:-0.25,x:1.25,y:0.25"
-        }
-      }
-      //开始高于结束
-      else if (startPoint.y > endPoint.y) {
-        if (startPoint.x > endPoint.x) {
-          movePath = "x:-0.5,y:-1.25,x:-0.5"
-        }
-        else {
-          movePath = "x:-0.25,y:-1.25,x:1.25"
-        }
-      }
-      //结束高于开始
-      else {
-        if (startPoint.x > endPoint.x) {
-          movePath = "x:-1"
-        }
-        else {
-          movePath = "x:-0.25,y:0.5,x:1.25"
-        }
-      }
-    } else if (sAngle == 180 && eAngle == 90) {
-      //Y相等
-      if (Math.abs(startPoint.y - endPoint.y) <= 1) {
-        if (startPoint.x < endPoint.x) {
-          movePath = "x:-0.25,y:0.25,x:1.25"
-        }
-      }
-      //开始高于结束
-      else if (startPoint.y > endPoint.y) {
-        if (Math.abs(startPoint.x - endPoint.x) <= 1) {
-        } else if (startPoint.x > endPoint.x) {
-          movePath = "x:-1"
-        }
-        else {
-          movePath = "x:-0.25,y:-0.5,x:1.25"
-        }
-      }
-      //结束高于开始
-      else {
-        if (startPoint.x > endPoint.x) {
-          movePath = "x:-0.5,y:1.25,x:-0.5"
-        }
-        else {
-          movePath = "x:-0.5,y:1.25,x:1.5"
-        }
-      }
-    } else if (sAngle == 180 && eAngle == 180) {
-      //Y相等
-      if (Math.abs(startPoint.y - endPoint.y) <= 1) {
-        if (startPoint.x > endPoint.x) {
-          movePath = "x:-0.25,y:-0.25,x:-1,y:0.25"
-        } else {
-          movePath = "x:-0.25,y:-0.25,x:1,y:0.25"
-        }
+      } break;
 
-      }
-      //开始高于结束
-      else if (startPoint.y > endPoint.y) {
-        if (Math.abs(startPoint.x - endPoint.x) <= 1) {
-          movePath = "x:-0.25,y:-1"
-        }
-        else if (startPoint.x > endPoint.x) {
-          movePath = "x:-1.25,y:-1"
-        }
-        else {
-          movePath = "x:-0.25,y:-1"
-        }
-      }
-      //结束高于开始
-      else {
-        if (Math.abs(startPoint.x - endPoint.x) <= 1) {
-          movePath = "x:-0.25,y:1"
-        }
-        else if (startPoint.x > endPoint.x) {
-          movePath = "x:-1.25,y:1"
-        }
-        else {
-          movePath = "x:-0.25,y:1"
-        }
-      }
-    }
+      case -90: {
+        switch (eAngle) {
+          //开始点为上边线的各种情况
+          case 90: {
+            //Y相等
+            if (Math.abs(startPoint.y - endPoint.y) <= 1) {
+            }
+            //开始高于结束
+            else if (startPoint.y > endPoint.y) {
+              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
 
-    //开始点为上边线的各种情况
-    if (sAngle == -90 && eAngle == 90) {
-      //Y相等
-      if (Math.abs(startPoint.y - endPoint.y) <= 1) {
-      }
-      //开始高于结束
-      else if (startPoint.y > endPoint.y) {
-        if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+              } else if (startPoint.x > endPoint.x) {
+                movePath = "y:-0.5,x:-1"
+              }
+              else {
+                movePath = "y:-0.5,x:1"
+              }
+            }
+            //结束高于开始
+            else {
+              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+                movePath = "y:-0.25,x:-0.5,y:1.5,x:-0.5"
+              }
+              else if (startPoint.x > endPoint.x) {
+                movePath = "y:-0.25,x:-0.5,y:1.5,x:-0.5"
+              }
+              else {
+                movePath = "y:-0.25,x:0.5,y:1.5,x:0.5"
+              }
+            }
+          }
+            break;
+          case 0: {
+            //Y相等
+            if (Math.abs(startPoint.y - endPoint.y) <= 1) {
+              if (startPoint.x < endPoint.x) {
+                movePath = "y:-0.5,x:1.25,y:0.5"
+              }
+            }
+            //开始高于结束
+            else if (startPoint.y > endPoint.y) {
+              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
 
-        } else if (startPoint.x > endPoint.x) {
-          movePath = "y:-0.5,x:-1"
+              } else if (startPoint.x > endPoint.x) {
+                movePath = "y:-1"
+              }
+              else {
+                movePath = "y:-0.5,x:1.25,y:-0.5"
+              }
+            }
+            //结束高于开始
+            else {
+              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+                movePath = "y:-0.25,x:0.5,y:1.25"
+              }
+              else if (startPoint.x > endPoint.x) {
+                movePath = "y:-0.25,x:-0.5,y:1.25"
+              }
+              else {
+                movePath = "y:-0.25,x:1.25,y:1.25"
+              }
+            }
+          }
+            break;
+          case 180: {
+            //Y相等
+            if (Math.abs(startPoint.y - endPoint.y) <= 1) {
+              if (startPoint.x > endPoint.x) {
+                movePath = "y:-0.5,x:-1.25,y:0.5"
+              }
+            }
+            //开始高于结束
+            else if (startPoint.y > endPoint.y) {
+              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+
+              } else if (startPoint.x > endPoint.x) {
+                movePath = "y:-0.5,x:-1.25,y:-0.5"
+              }
+              else {
+                movePath = "y:-1"
+              }
+            }
+            //结束高于开始
+            else {
+              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+                movePath = "y:-0.25,x:-0.5,y:1.25"
+              }
+              else if (startPoint.x > endPoint.x) {
+                movePath = "y:-0.25,x:-1.25,y:1.25"
+              }
+              else {
+                movePath = "y:-0.25,x:0.5,y:1.25"
+              }
+            }
+          }
+            break;
+          case -90: {
+            //Y相等
+            if (Math.abs(startPoint.y - endPoint.y) <= 1) {
+              if (startPoint.x > endPoint.x) {
+                movePath = "y:-0.25,x:-1"
+              }
+              else {
+                movePath = "y:-0.25,x:1"
+              }
+            }
+            //开始高于结束
+            else if (startPoint.y > endPoint.y) {
+              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+                movePath = "y:-0.25,x:-0.5,y:-1,x:0.5"
+              } else if (startPoint.x > endPoint.x) {
+                movePath = "y:-1.25,x:-1"
+              }
+              else {
+                movePath = "y:-1.25,x:1"
+              }
+            }
+            //结束高于开始
+            else {
+              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+                movePath = "y:-0.25,x:-0.5,y:1.25,x:0.5"
+              }
+              else if (startPoint.x > endPoint.x) {
+                movePath = "y:-0.25,x:-1"
+              }
+              else {
+                movePath = "y:-0.25,x:1"
+              }
+            }
+          }
+            break;
         }
-        else {
-          movePath = "y:-0.5,x:1"
+      } break;
+      case 90: {
+        switch (eAngle) {
+          //开始点为下边线的各种情况
+          case -90: {
+            //Y相等
+            if (Math.abs(startPoint.y - endPoint.y) <= 1) {
+            }
+            //开始高于结束
+            else if (startPoint.y > endPoint.y) {
+              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+                movePath = "y:0.25,x:0.5,y:-1.5,x:-0.5"
+              } else if (startPoint.x > endPoint.x) {
+                movePath = "y:0.25,x:-0.5,y:-1.5,x:-0.5"
+              }
+              else {
+                movePath = "y:0.25,x:0.5,y:-1.5,x:0.5"
+              }
+            }
+            //结束高于开始
+            else {
+              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+
+              }
+              else if (startPoint.x > endPoint.x) {
+                movePath = "y:0.5,x:-1"
+              }
+              else {
+                movePath = "y:0.5,x:1"
+              }
+            }
+          } break;
+          case 0: {
+            //Y相等
+            if (Math.abs(startPoint.y - endPoint.y) <= 1) {
+              if (startPoint.x < endPoint.x) {
+                movePath = "y:0.5,x:1.25,y:-0.5"
+              }
+            }
+            //开始高于结束
+            else if (startPoint.y > endPoint.y) {
+              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+              } else if (startPoint.x > endPoint.x) {
+                movePath = "y:0.25,x:-0.5,y:-1.25"
+              }
+              else {
+                movePath = "y:0.25,x:1.25,y:-1.25"
+              }
+            }
+            //结束高于开始
+            else {
+              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+
+              }
+              else if (startPoint.x > endPoint.x) {
+                movePath = "y:1"
+              }
+              else {
+                movePath = "y:0.5,x:1.25,y:0.5"
+              }
+            }
+          } break;
+          case 180: {
+            //Y相等
+            if (Math.abs(startPoint.y - endPoint.y) <= 1) {
+              if (startPoint.x > endPoint.x) {
+                movePath = "y:0.5,x:-1.25,y:-0.5"
+              }
+            }
+            //开始高于结束
+            else if (startPoint.y > endPoint.y) {
+              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+              } else if (startPoint.x > endPoint.x) {
+                movePath = "y:0.25,x:-1.25,y:-1.25"
+              }
+              else {
+                movePath = "y:0.25,x:0.5,y:-1.25"
+              }
+            }
+            //结束高于开始
+            else {
+              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+
+              }
+              else if (startPoint.x > endPoint.x) {
+                movePath = "y:0.5,x:-1.25,y:0.5"
+              }
+              else {
+                movePath = "y:1"
+              }
+            }
+          } break;
+          case 90: {
+            //Y相等
+            if (Math.abs(startPoint.y - endPoint.y) <= 1) {
+
+            }
+            //开始高于结束
+            else if (startPoint.y > endPoint.y) {
+              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+                movePath = "y:0.25,x:-0.5,y:-1,x:0.5"
+              } else if (startPoint.x > endPoint.x) {
+                movePath = "y:0.25,x:-1"
+              }
+              else {
+                movePath = "y:0.25,x:1"
+              }
+            }
+            //结束高于开始
+            else {
+              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+                movePath = "y:0.25,x:0.5,y:1,x:-0.5"
+              }
+              else if (startPoint.x > endPoint.x) {
+                movePath = "y:1.25,x:-1"
+              }
+              else {
+                movePath = "y:1.25,x:1"
+              }
+            }
+          } break;
         }
-      }
-      //结束高于开始
-      else {
-        if (Math.abs(startPoint.x - endPoint.x) <= 1) {
-          movePath = "y:-0.25,x:-0.5,y:1.5,x:-0.5"
-        }
-        else if (startPoint.x > endPoint.x) {
-          movePath = "y:-0.25,x:-0.5,y:1.5,x:-0.5"
-        }
-        else {
-          movePath = "y:-0.25,x:0.5,y:1.5,x:0.5"
-        }
-      }
+      } break;
     }
 
     return movePath;
