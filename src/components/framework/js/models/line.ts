@@ -163,6 +163,9 @@ class DDeiLine extends DDeiAbstractShape {
       case 1: {
         this.pvs = [this.startPoint, this.endPoint]
       } break;
+      case 3: {
+
+      } break;
       case 2: {
         let pvs = this.pvs;
         //得到开始点在开始图形的方向
@@ -178,10 +181,10 @@ class DDeiLine extends DDeiAbstractShape {
         })
         let sAngle = null;
         let eAngle = null;
-        if (startLink?.sm) {
+        if (startLink?.sm?.getPointAngle) {
           sAngle = startLink.sm.getPointAngle(this.startPoint)
         }
-        if (endLink?.sm) {
+        if (endLink?.sm?.getPointAngle) {
           eAngle = endLink.sm.getPointAngle(this.endPoint)
         }
         if (sAngle == null) {
@@ -197,7 +200,6 @@ class DDeiLine extends DDeiAbstractShape {
         let movePath = DDeiUtil.getMovePath(sAngle, eAngle, this.startPoint, this.endPoint)
         if (movePath) {
           let mPaths = movePath.split(",")
-
           let cPoint = { x: this.startPoint.x, y: this.startPoint.y }
           let h = Math.abs(this.startPoint.y - this.endPoint.y)
           let w = Math.abs(this.startPoint.x - this.endPoint.x)
@@ -224,9 +226,7 @@ class DDeiLine extends DDeiAbstractShape {
         this.pvs.push(this.endPoint)
 
       } break;
-      case 3: {
 
-      } break;
     }
 
   }
@@ -326,6 +326,13 @@ class DDeiLine extends DDeiAbstractShape {
     this.hpv[1].applyMatrix3(matrix)
     this.calRotate()
     this.calLoosePVS();
+  }
+
+  /**
+   * 获取中心点操作点
+   */
+  getCenterOpPoints(): [] {
+    return []
   }
 
   /**

@@ -130,8 +130,6 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     let dash = tempLine?.dash ? tempLine.dash : this.getCachedValue("dash");
     let round = tempLine?.round ? tempLine.round : this.getCachedValue("round");
     let type = this.getCachedValue("type");
-    let stype = this.getCachedValue("stype");
-    let etype = this.getCachedValue("etype");
     let opacity = tempLine?.opacity ? tempLine.opacity : this.getCachedValue("opacity");
 
     let pvs = this.model.pvs;
@@ -151,30 +149,49 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       }
       //颜色
       ctx.strokeStyle = DDeiUtil.getColor(color);
-      ctx.beginPath()
+
       switch (type) {
         case 1: {
           //直线
+          ctx.beginPath()
           ctx.moveTo(pvs[0].x * rat1, pvs[0].y * rat1)
           ctx.lineTo(pvs[pvs.length - 1].x * rat1, pvs[pvs.length - 1].y * rat1)
           ctx.stroke();
+          ctx.closePath()
         } break;
         case 2: {
           //折线
+          ctx.beginPath()
           ctx.moveTo(pvs[0].x * rat1, pvs[0].y * rat1)
           for (let i = 1; i < pvs.length; i++) {
             ctx.lineTo(pvs[i].x * rat1, pvs[i].y * rat1)
           }
           ctx.stroke();
+          ctx.closePath()
         } break;
         case 3: {
           //曲线
+          ctx.beginPath()
           ctx.moveTo(pvs[0].x * rat1, pvs[0].y * rat1)
           ctx.bezierCurveTo(pvs[1].x * rat1, pvs[1].y * rat1, pvs[2].x * rat1, pvs[2].y * rat1, pvs[3].x * rat1, pvs[3].y * rat1);
           ctx.stroke();
+          ctx.closePath()
+          if (pvs.length >= 5) {
+            ctx.beginPath()
+            ctx.moveTo(pvs[3].x * rat1, pvs[3].y * rat1)
+            ctx.bezierCurveTo(pvs[3].x * rat1, pvs[3].y * rat1, pvs[4].x * rat1, pvs[4].y * rat1, pvs[4].x * rat1, pvs[4].y * rat1);
+            ctx.stroke();
+            ctx.closePath()
+          }
+
+          // for (let i = 0; i < pvs.length - 3; i++) {
+          //   ctx.moveTo(pvs[i].x * rat1, pvs[i].y * rat1)
+          //   ctx.bezierCurveTo(pvs[i + 1].x * rat1, pvs[i + 1].y * rat1, pvs[i + 2].x * rat1, pvs[i + 2].y * rat1, pvs[i + 3].x * rat1, pvs[i + 3].y * rat1);
+          //   ctx.stroke();
+          // }
         } break;
       }
-      ctx.closePath()
+
       ctx.restore();
     }
   }
@@ -202,10 +219,10 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       let stype = this.getCachedValue("stype");
       let etype = this.getCachedValue("etype");
       //开始节点
-      this.drawOnePoint(pvs[0], stype, weight * stageRatio, 0, ctx)
+      this.drawOnePoint(1, stype, weight * stageRatio, ctx)
 
       //结束节点
-      this.drawOnePoint(pvs[pvs.length - 1], etype, weight * stageRatio, 0, ctx)
+      this.drawOnePoint(2, etype, weight * stageRatio, ctx)
 
 
     }
@@ -216,7 +233,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
    * @param type 
    * @param direct 
    */
-  private drawOnePoint(point, type: number, weight: number, direct: number, ctx): void {
+  private drawOnePoint(pointType: number, type: number, weight: number, ctx): void {
     if (!type) {
       return;
     }
@@ -230,7 +247,21 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     let opacity = this.getCachedValue("opacity");
     ctx.save()
     let lineWidth = weight * ratio;
+    let pvs = this.model.pvs;
     ctx.lineWidth = lineWidth;
+
+    let point = null;
+    let upPoint = null;
+    //开始
+    if (pointType == 1) {
+      point = this.model.startPoint;
+      upPoint = pvs[1];
+    }
+    //结束
+    else if (pointType == 2) {
+      point = this.model.endPoint;
+      upPoint = pvs[pvs.length - 2];
+    }
 
     //透明度
     if (opacity != null && opacity != undefined) {
@@ -241,21 +272,22 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     //颜色
     ctx.strokeStyle = DDeiUtil.getColor("black");
 
-    weight *= 1.5
-
     switch (type) {
       case 1: {
         //箭头
         ctx.strokeStyle = DDeiUtil.getColor(color);
         //旋转
-        ctx.translate(point.x * rat1, point.y * rat1)
-        ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
-        ctx.translate(-point.x * rat1, -point.y * rat1)
+        let rotate = DDeiUtil.getLineAngle(upPoint.x, upPoint.y, point.x, point.y)
+        if (rotate != 0) {
+          ctx.translate(point.x * rat1, point.y * rat1)
+          ctx.rotate(rotate * DDeiConfig.ROTATE_UNIT);
+          ctx.translate(-point.x * rat1, -point.y * rat1)
+        }
         ctx.beginPath()
         ctx.moveTo(point.x * rat1, point.y * rat1)
-        ctx.lineTo((point.x - 1.5 * weight) * rat1, (point.y - 1.5 * weight) * rat1)
+        ctx.lineTo((point.x - 2 * weight) * rat1, (point.y - 2 * weight) * rat1)
         ctx.lineTo(point.x * rat1, point.y * rat1)
-        ctx.lineTo((point.x - 1.5 * weight) * rat1, (point.y + 1.5 * weight) * rat1)
+        ctx.lineTo((point.x - 2 * weight) * rat1, (point.y + 2 * weight) * rat1)
         ctx.stroke()
         ctx.closePath()
         break;
@@ -263,17 +295,17 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       case 2: {
         //圆形
         ctx.beginPath()
-        ctx.ellipse(point.x * rat1, point.y * rat1, weight * 2, weight * 2, 0, 0, Math.PI * 2)
+        ctx.ellipse(point.x * rat1, point.y * rat1, weight * 1.5, weight * 1.5, 0, 0, Math.PI * 2)
         ctx.stroke();
         ctx.fill()
         ctx.closePath()
         break;
       }
       case 3: {
-        if (this.model.rotate != 0) {
-          //旋转
+        let rotate = DDeiUtil.getLineAngle(upPoint.x, upPoint.y, point.x, point.y)
+        if (rotate != 0) {
           ctx.translate(point.x * rat1, point.y * rat1)
-          ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
+          ctx.rotate(rotate * DDeiConfig.ROTATE_UNIT);
           ctx.translate(-point.x * rat1, -point.y * rat1)
         }
         //方形
@@ -282,10 +314,12 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         break;
       }
       case 4: {
-        //旋转
+        let rotate = DDeiUtil.getLineAngle(upPoint.x, upPoint.y, point.x, point.y)
+
         ctx.translate(point.x * rat1, point.y * rat1)
-        ctx.rotate((this.model.rotate + 45) * DDeiConfig.ROTATE_UNIT);
+        ctx.rotate((rotate + 45) * DDeiConfig.ROTATE_UNIT);
         ctx.translate(-point.x * rat1, -point.y * rat1)
+
         //菱形
         ctx.strokeRect((point.x - weight) * rat1, (point.y - weight) * rat1, 2 * weight * rat1, 2 * weight * rat1)
         ctx.fillRect((point.x - weight) * rat1, (point.y - weight) * rat1, 2 * weight * rat1, 2 * weight * rat1)
@@ -294,13 +328,16 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       case 5: {
         //三角形
         //旋转
-        ctx.translate(point.x * rat1, point.y * rat1)
-        ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
-        ctx.translate(-point.x * rat1, -point.y * rat1)
+        let rotate = DDeiUtil.getLineAngle(upPoint.x, upPoint.y, point.x, point.y)
+        if (rotate != 0) {
+          ctx.translate(point.x * rat1, point.y * rat1)
+          ctx.rotate(rotate * DDeiConfig.ROTATE_UNIT);
+          ctx.translate(-point.x * rat1, -point.y * rat1)
+        }
         ctx.beginPath()
         ctx.moveTo(point.x * rat1, point.y * rat1)
-        ctx.lineTo((point.x - weight * 1.5) * rat1, (point.y - weight) * rat1)
-        ctx.lineTo((point.x - weight * 1.5) * rat1, (point.y + weight) * rat1)
+        ctx.lineTo((point.x - weight * 2) * rat1, (point.y - weight * 1.5) * rat1)
+        ctx.lineTo((point.x - weight * 2) * rat1, (point.y + weight * 1.5) * rat1)
         ctx.closePath()
         ctx.fill()
         ctx.stroke()

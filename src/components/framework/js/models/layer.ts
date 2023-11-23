@@ -90,6 +90,8 @@ class DDeiLayer {
 
   //操作点对象，用于显示操作点，操作点点击后，会进行不同的操作，操作点临时存在，不满足出现条件时就会删除，操作点不会序列化
   opPoints: object[] = [];
+  //控件的中心点操作点对象，用于快速连线等逻辑
+  centerOpPoints: object[] = [];
 
   //布局管理器
   layoutManager: object;
@@ -384,9 +386,15 @@ class DDeiLayer {
   * @returns 操作点
   */
   getOpPointByPos(x: number = 0, y: number = 0): object {
-    if (x && y && this.opPoints?.length > 0) {
-      for (let i = 0; i < this.opPoints.length; i++) {
+    if (x && y && (this.opPoints?.length > 0 || this.centerOpPoints?.length > 0)) {
+      for (let i = 0; i < this.opPoints?.length; i++) {
         let point = this.opPoints[i]
+        if (Math.abs(x - point.x) <= 10 && Math.abs(y - point.y) <= 10) {
+          return point;
+        }
+      }
+      for (let i = 0; i < this.centerOpPoints?.length; i++) {
+        let point = this.centerOpPoints[i]
         if (Math.abs(x - point.x) <= 10 && Math.abs(y - point.y) <= 10) {
           return point;
         }

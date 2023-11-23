@@ -486,6 +486,23 @@ abstract class DDeiAbstractShape {
     }
   }
 
+
+  /**
+   * 获取中心点操作点
+   */
+  getCenterOpPoints(): [] {
+    let points = []
+    for (let i = 0; i < this.pvs.length; i++) {
+      let s = i
+      let e = i + 1
+      if (i == this.pvs.length - 1) {
+        e = 0
+      }
+      points.push(new Vector3((this.pvs[s].x + this.pvs[e].x) / 2, (this.pvs[s].y + this.pvs[e].y) / 2, 1))
+    }
+    return points;
+  }
+
   /**
    * 得到点在图形连接线上的投射点
    * @param point 测试点
@@ -569,6 +586,11 @@ abstract class DDeiAbstractShape {
 
           //C.判断两个向量的关系，pointV.x必须大于0，且小于lineV.x
           if (pointV.x >= 0 && pointV.x <= lineV.x) {
+            let isMiddle = false;
+            if (Math.abs(lineV.x / 2 - pointV.x) <= 5) {
+              pointV.x = lineV.x / 2
+              isMiddle = true;
+            }
             //D.投影点=（pointV.x,0)，通过旋转+位移到达目标点
             let v1 = new Vector3(pointV.x, 0, 1);
             angle = -angle;
@@ -582,6 +604,7 @@ abstract class DDeiAbstractShape {
               0, 1, y1,
               0, 0, 1);
             v1.applyMatrix3(removeMatrix);
+            v1.isMiddle = isMiddle
             //返回投影点
             return v1;
           }
@@ -1056,7 +1079,32 @@ abstract class DDeiAbstractShape {
         }
       }
     }
-    //TODO 对控件进行排序，按照zIndex > 添加顺序
+    //对控件进行排序，按照zIndex > 添加顺序
+    if (controls.length > 1) {
+      controls.sort(function (a, b) {
+        let anumber = -1
+        let bnumber = -1
+
+        if (a.baseModelType == 'DDeiLine') {
+          anumber = 1000 + (a.zIndex ? b.zIndex : 0)
+        } else {
+          anumber = 2000 + (a.zIndex ? b.zIndex : 0)
+        }
+        if (b.baseModelType == 'DDeiLine') {
+          bnumber = 1000 + (b.zIndex ? b.zIndex : 0)
+        } else {
+          bnumber = 2000 + (b.zIndex ? b.zIndex : 0)
+        }
+        if (a.state == DDeiEnumControlState.SELECTED) {
+          anumber += 10000
+        }
+        if (b.state == DDeiEnumControlState.SELECTED) {
+          bnumber += 10000
+        }
+        return bnumber - anumber; //降序排序
+
+      });
+    }
     return controls;
   }
 

@@ -175,6 +175,9 @@ class DDeiAbstractShapeRender {
       let projPoint = this.model.getProjPoint({ x: ex, y: ey });
       if (projPoint) {
         projPoint.model = this.model
+        if (projPoint.isMiddle) {
+          console.log("中心点");
+        }
         this.layer.opPoints.push(projPoint);
       }
     }
