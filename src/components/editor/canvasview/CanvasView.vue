@@ -188,6 +188,7 @@ export default {
       if (this.editor.state == DDeiEditorState.DESIGNING) {
         this.mouseWheelThrottle(evt);
         evt.preventDefault();
+        evt.cancelBubble = true;
         return false;
       }
     },

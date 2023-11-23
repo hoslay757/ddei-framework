@@ -3,7 +3,10 @@ import { routes } from './routes'
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
+  scrollBehavior: () => {
+    history.pushState(null, null, document.URL)
+  }
 })
 
 export default router

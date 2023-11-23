@@ -12,8 +12,7 @@ export const routes = [
   {
     path: '/design/:id',
     name: 'Design',
-    component: () => import('@/views/Design.vue'),
-
+    component: () => import('@/views/Design.vue')
 
   },
 ]

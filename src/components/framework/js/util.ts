@@ -351,18 +351,28 @@ class DDeiUtil {
     if (!p1 || !p2 || !q) {
       return false;
     }
-    let maxx = parseFloat((p1.x > p2.x ? p1.x : p2.x).toFixed(2))    //矩形的右边长
-    let minx = parseFloat((p1.x > p2.x ? p2.x : p1.x).toFixed(2))     //矩形的左边长
-    let maxy = parseFloat((p1.y > p2.y ? p1.y : p2.y).toFixed(2))    //矩形的上边长
-    let miny = parseFloat((p1.y > p2.y ? p2.y : p1.y).toFixed(2))    //矩形的下边长
-    let qx = parseFloat(q.x.toFixed(2))
-    let qy = parseFloat(q.y.toFixed(2))
-
-    if (((qx - p1.x) * (p2.y - p1.y) == (p2.x - p1.x) * (qy - p1.y)) && (qx >= minx && qx <= maxx) && (qy >= miny && qy <= maxy))
+    let x0 = q.x;
+    let y0 = q.y;
+    //判断鼠标是否在某个控件的范围内
+    //点到直线的距离
+    let plLength = Infinity;
+    let x1 = p1.x;
+    let y1 = p1.y;
+    let x2 = p2.x;
+    let y2 = p2.y;
+    //获取控件所有向量
+    if (x1 == x2 && y1 == y2) {
+      plLength = Math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0))
+    } else {
+      //根据向量外积计算面积
+      let s = (x0 - x1) * (y2 - y1) - (y0 - y1) * (x2 - x1)
+      //计算直线上两点之间的距离
+      let d = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+      plLength = s / d
+    }
+    if (Math.abs(plLength) <= 1) {
       return true;
-    else
-      return false;
-
+    }
   }
 
   /**
