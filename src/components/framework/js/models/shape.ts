@@ -36,11 +36,14 @@ abstract class DDeiAbstractShape {
       });
     }
 
-    this.exPvs = [];
+    this.exPvs = {}
     if (props.exPvs) {
-      props.exPvs.forEach(pv => {
-        this.exPvs.push(new Vector3(pv.x, pv.y, pv.z));
-      });
+      for (let i in props.exPvs) {
+        let pv = props.exPvs[i];
+        let v = new Vector3(pv.x, pv.y, pv.z)
+        v.id = pv.id
+        this.exPvs[pv.id] = v;
+      }
     }
 
 
@@ -81,7 +84,7 @@ abstract class DDeiAbstractShape {
   pvs: Vector3;
 
   //额外扩展向量，如：与连线关联的向量
-  exPvs: Vector3[];
+  exPvs: object;
 
   //唯一表示码，运行时临时生成
   unicode: string;
@@ -119,9 +122,10 @@ abstract class DDeiAbstractShape {
     this.pvs.forEach(pv => {
       pv.applyMatrix3(matrix)
     });
-    this.exPvs.forEach(pv => {
+    for (let i in this.exPvs) {
+      let pv = this.exPvs[i];
       pv.applyMatrix3(matrix)
-    });
+    };
     this.initHPV();
     this.calRotate()
     this.calLoosePVS();

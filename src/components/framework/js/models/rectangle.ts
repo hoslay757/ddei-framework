@@ -102,7 +102,6 @@ class DDeiRectangle extends DDeiAbstractShape {
       return DDeiUtil.getLineAngle(0, 0, 2, 0)
     }
     //下
-
     else if (DDeiUtil.isPointInLine(point, this.pvs[2], this.pvs[3])) {
       return DDeiUtil.getLineAngle(0, 0, 0, 2)
     }

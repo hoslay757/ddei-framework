@@ -213,9 +213,10 @@ class DDeiSelector extends DDeiRectangle {
     this.pvs.forEach(pv => {
       pv.applyMatrix3(matrix)
     });
-    this.exPvs.forEach(pv => {
+    for (let i in this.exPvs) {
+      let pv = this.exPvs[i];
       pv.applyMatrix3(matrix)
-    });
+    };
     this.initHPV();
     this.calRotate()
     this.calOPVS()

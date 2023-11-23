@@ -345,7 +345,7 @@ class DDeiUtil {
   }
 
   /**
-   * 判断点是否在线上,TODO该方法存在问题
+   * 判断点是否在线上
    */
   static isPointInLine(q, p1, p2): boolean {
     if (!p1 || !p2 || !q) {

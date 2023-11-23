@@ -780,6 +780,10 @@ class DDeiLayerCanvasRender {
                 distLinks?.forEach(dl => {
                   if (dl.dmpath == dmpath) {
                     this.stage?.removeLink(dl);
+                    //删除源点
+                    if (dl?.sm && dl?.smpath) {
+                      eval("delete dl.sm." + dl.smpath)
+                    }
                   }
                 })
 
@@ -789,12 +793,13 @@ class DDeiLayerCanvasRender {
                   //建立关联
                   let smodel = opPoint.model;
                   //创建连接点
-                  let pi = smodel.exPvs.length;
-                  smodel.exPvs[pi] = new Vector3(opPoint.x, opPoint.y, opPoint.z)
+                  let id = "_" + DDeiUtil.getUniqueCode()
+                  smodel.exPvs[id] = new Vector3(opPoint.x, opPoint.y, opPoint.z)
+                  smodel.exPvs[id].id = id
                   let link = new DDeiLink({
                     sm: smodel,
                     dm: model,
-                    smpath: "exPvs[" + pi + "]",
+                    smpath: "exPvs." + id,
                     dmpath: dmpath,
                     stage: this.stage
                   });
@@ -1103,12 +1108,13 @@ class DDeiLayerCanvasRender {
           if (opPoint) {
             let smodel = opPoint.model;
             //创建连接点
-            let pi = smodel.exPvs.length;
-            smodel.exPvs[pi] = new Vector3(opPoint.x, opPoint.y, opPoint.z)
+            let id = "_" + DDeiUtil.getUniqueCode()
+            smodel.exPvs[id] = new Vector3(opPoint.x, opPoint.y, opPoint.z)
+            smodel.exPvs[id].id = id
             let link = new DDeiLink({
               sm: smodel,
               dm: lineShadow,
-              smpath: "exPvs[" + pi + "]",
+              smpath: "exPvs." + id,
               dmpath: "startPoint",
               stage: this.stage
             });
