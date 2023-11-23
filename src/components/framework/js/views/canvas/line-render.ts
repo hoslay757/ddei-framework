@@ -262,6 +262,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       point = this.model.endPoint;
       upPoint = pvs[pvs.length - 2];
     }
+    point = new Vector3(point.x, point.y, 1)
 
     //透明度
     if (opacity != null && opacity != undefined) {

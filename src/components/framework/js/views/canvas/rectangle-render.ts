@@ -268,6 +268,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
       let lineOffset = 1 * ratio / 2;
       let lineWidth = width * ratio;
+
       ctx.lineWidth = lineWidth;
       ctx.beginPath();
       //线段、虚线样式
