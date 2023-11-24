@@ -83,8 +83,9 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       let ctx = canvas.getContext('2d');
       ctx.save();
       //如果线段类型发生了改变，则重新绘制线段，计算中间点坐标
-      if (!this.upLineType || this.upLineType != this.model.type) {
+      if (this.model.id.indexOf("_shadow") == -1 && (!this.upLineType || this.upLineType != this.model.type)) {
         this.upLineType = this.model.type
+        this.model.freeze = 0
         this.model.spvs = []
         this.model.initPVS()
       }
@@ -170,25 +171,26 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
           ctx.closePath()
         } break;
         case 3: {
-          //曲线
-          ctx.beginPath()
-          ctx.moveTo(pvs[0].x * rat1, pvs[0].y * rat1)
-          ctx.bezierCurveTo(pvs[1].x * rat1, pvs[1].y * rat1, pvs[2].x * rat1, pvs[2].y * rat1, pvs[3].x * rat1, pvs[3].y * rat1);
-          ctx.stroke();
-          ctx.closePath()
-          if (pvs.length >= 5) {
+          if (pvs.length >= 4) {
+            //曲线
+            for (let i = 4; i <= pvs.length; i += 3) {
+              ctx.beginPath()
+              let i0 = i - 4;
+              let i1 = i - 3;
+              let i2 = i - 2;
+              let i3 = i - 1;
+              ctx.moveTo(pvs[i0].x * rat1, pvs[i0].y * rat1)
+              ctx.bezierCurveTo(pvs[i1].x * rat1, pvs[i1].y * rat1, pvs[i2].x * rat1, pvs[i2].y * rat1, pvs[i3].x * rat1, pvs[i3].y * rat1);
+              ctx.stroke();
+              ctx.closePath()
+            }
+          } else {
             ctx.beginPath()
-            ctx.moveTo(pvs[3].x * rat1, pvs[3].y * rat1)
-            ctx.bezierCurveTo(pvs[3].x * rat1, pvs[3].y * rat1, pvs[4].x * rat1, pvs[4].y * rat1, pvs[4].x * rat1, pvs[4].y * rat1);
+            ctx.moveTo(pvs[0].x * rat1, pvs[0].y * rat1)
+            ctx.lineTo(pvs[0].x * rat1, pvs[0].y * rat1, pvs[1].x * rat1, pvs[1].y * rat1);
             ctx.stroke();
             ctx.closePath()
           }
-
-          // for (let i = 0; i < pvs.length - 3; i++) {
-          //   ctx.moveTo(pvs[i].x * rat1, pvs[i].y * rat1)
-          //   ctx.bezierCurveTo(pvs[i + 1].x * rat1, pvs[i + 1].y * rat1, pvs[i + 2].x * rat1, pvs[i + 2].y * rat1, pvs[i + 3].x * rat1, pvs[i + 3].y * rat1);
-          //   ctx.stroke();
-          // }
         } break;
       }
 

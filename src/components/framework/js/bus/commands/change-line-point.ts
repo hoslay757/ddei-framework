@@ -70,7 +70,8 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
             }
             pvs[0].x = ex
             pvs[0].y = ey
-
+            //解冻
+            lineModel.freeze = 0;
 
           }
           //结束点
@@ -90,6 +91,8 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
               pvs[pvs.length - 1].y = ey
 
             }
+            //解冻
+            lineModel.freeze = 0;
           } else if (passIndex == 2) {
             //相邻的两个点的坐标处理
             let cIndex = parseInt(opvsIndex / 2)
@@ -116,13 +119,14 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
             cp.x = ex;
             cp.y = ey;
             lineModel.spvs[cIndex] = true
+            //冻结
+            lineModel.freeze = 1
           } else if (passIndex == 3) {
             //相邻的两个点的坐标处理
             let sIndex = parseInt(opvsIndex / 2)
             let sp = pvs[sIndex]
             let ep = pvs[sIndex + 1]
             //TODO 旋转的情况下，需要把旋转归0判断，x相等
-
             if (Math.abs(sp.x - ep.x) <= 1) {
               sp.x = ex
               ep.x = ex
@@ -132,34 +136,62 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
             }
             lineModel.spvs[sIndex] = true
             lineModel.spvs[sIndex + 1] = true
-
+            //冻结
+            lineModel.freeze = 1
           }
-
         } break;
         case 3: {
           //曲线
           //开始点
-          if (passIndex == 1 && opvsIndex == 0) {
-            pvs[0].x = ex
-            pvs[0].y = ey
-          }
-          //结束点
-          else if (passIndex == 1 && opvsIndex == opvs.length - 1) {
-            pvs[pvs.length - 1].x = ex
-            pvs[pvs.length - 1].y = ey
+          if (passIndex == 1) {
+            if (opvsIndex == 0) {
+              pvs[0].x = ex
+              pvs[0].y = ey
+            }
+            //结束点
+            else {
+              pvs[pvs.length - 1].x = ex
+              pvs[pvs.length - 1].y = ey
+            }
+            //解冻
+            lineModel.freeze = 0;
           }
           //控制点
           else if (passIndex == 4) {
-            //修改关联的两个点
-            if (opvsIndex == 1) {
-              pvs[1].x = -(pvs[0].x * DDeiUtil.p331t3 + DDeiUtil.p33t21t3 * pvs[2].x + DDeiUtil.p33t3 * pvs[3].x - ex) / DDeiUtil.p331t2t3
-              pvs[1].y = -(pvs[0].y * DDeiUtil.p331t3 + DDeiUtil.p33t21t3 * pvs[2].y + DDeiUtil.p33t3 * pvs[3].y - ey) / DDeiUtil.p331t2t3
-              lineModel.spvs[1] = true
-            } else {
-              pvs[2].x = -(pvs[0].x * DDeiUtil.p661t3 + DDeiUtil.p661t2t3 * pvs[1].x + DDeiUtil.p66t3 * pvs[3].x - ex) / DDeiUtil.p66t21t3
-              pvs[2].y = -(pvs[0].y * DDeiUtil.p661t3 + DDeiUtil.p661t2t3 * pvs[1].y + DDeiUtil.p66t3 * pvs[3].y - ey) / DDeiUtil.p66t21t3
-              lineModel.spvs[2] = true
+            let lineIndex = parseInt(opvsIndex / 3);
+            let oitype = opvsIndex % 2
+            let i0 = lineIndex * 3;
+            let i1 = i0 + 1;
+            let i2 = i0 + 2
+            let i3 = i0 + 3
+            if (opvs.length > 4) {
+              //中间的连接点
+              if (opvsIndex % 3 == 0) {
+                oitype = 2
+              } else {
+                oitype = (opvsIndex % 3) % 2
+              }
             }
+
+            //前面的点
+            if (oitype == 1) {
+              pvs[i1].x = -(pvs[i0].x * DDeiUtil.p331t3 + DDeiUtil.p33t21t3 * pvs[i2].x + DDeiUtil.p33t3 * pvs[i3].x - ex) / DDeiUtil.p331t2t3
+              pvs[i1].y = -(pvs[i0].y * DDeiUtil.p331t3 + DDeiUtil.p33t21t3 * pvs[i2].y + DDeiUtil.p33t3 * pvs[i3].y - ey) / DDeiUtil.p331t2t3
+              lineModel.spvs[i1] = true
+            }
+            //中间的连接点
+            else if (oitype == 2) {
+              pvs[opvsIndex].x = ex
+              pvs[opvsIndex].y = ey
+            }
+            //后面的点
+            else {
+              pvs[i2].x = -(pvs[i0].x * DDeiUtil.p661t3 + DDeiUtil.p661t2t3 * pvs[i1].x + DDeiUtil.p66t3 * pvs[i3].x - ex) / DDeiUtil.p66t21t3
+              pvs[i2].y = -(pvs[i0].y * DDeiUtil.p661t3 + DDeiUtil.p661t2t3 * pvs[i1].y + DDeiUtil.p66t3 * pvs[i3].y - ey) / DDeiUtil.p66t21t3
+              lineModel.spvs[i2] = true
+            }
+            //冻结
+            lineModel.freeze = 1;
           }
 
         } break;

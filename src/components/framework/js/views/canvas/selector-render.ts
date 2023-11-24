@@ -141,23 +141,19 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
           }
           case 3: {
             this.drawSEPoint(pvs, w10, w20, ctx, rat1, ratio)
-            ctx.strokeStyle = "#017fff";
-            ctx.fillStyle = "white";
-            //计算三次贝赛尔曲线的落点，通过落点来操作图形
-            let btx = pvs[0].x * DDeiUtil.p331t3 + DDeiUtil.p331t2t3 * pvs[1].x + DDeiUtil.p33t21t3 * pvs[2].x + DDeiUtil.p33t3 * pvs[3].x
-            let bty = pvs[0].y * DDeiUtil.p331t3 + DDeiUtil.p331t2t3 * pvs[1].y + DDeiUtil.p33t21t3 * pvs[2].y + DDeiUtil.p33t3 * pvs[3].y
-            ctx.beginPath()
-            ctx.ellipse(btx * rat1, bty * rat1, w20, w20, 0, 0, DDeiUtil.PI2);
-            ctx.closePath()
-            ctx.fill();
-            ctx.stroke();
-            btx = pvs[0].x * DDeiUtil.p661t3 + DDeiUtil.p661t2t3 * pvs[1].x + DDeiUtil.p66t21t3 * pvs[2].x + DDeiUtil.p66t3 * pvs[3].x
-            bty = pvs[0].y * DDeiUtil.p661t3 + DDeiUtil.p661t2t3 * pvs[1].y + DDeiUtil.p66t21t3 * pvs[2].y + DDeiUtil.p66t3 * pvs[3].y
-            ctx.beginPath()
-            ctx.ellipse(btx * rat1, bty * rat1, w20, w20, 0, 0, DDeiUtil.PI2);
-            ctx.closePath()
-            ctx.fill();
-            ctx.stroke();
+            if (pvs.length >= 4) {
+              ctx.strokeStyle = "#017fff";
+              ctx.fillStyle = "white";
+              for (let i = 1; i < this.model.opvs.length - 1; i++) {
+                let pv = this.model.opvs[i];
+                ctx.beginPath()
+                ctx.ellipse(pv.x * rat1, pv.y * rat1, w20, w20, 0, 0, DDeiUtil.PI2);
+                ctx.closePath()
+                ctx.fill();
+                ctx.stroke();
+              }
+
+            }
             break;
           }
         }
@@ -503,7 +499,6 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         let dragPoint = this.model.opvs[this.model.opvsIndex]
         //创建影子控件
         let lineShadow = DDeiUtil.getShadowControl(lineModel);
-
         layer.shadowControls.push(lineShadow);
         this.stageRender.currentOperateShape = lineShadow
         this.stageRender.currentOperateShape.dragPoint = dragPoint

@@ -352,16 +352,30 @@ class DDeiSelector extends DDeiRectangle {
           break;
         }
         case 3: {
-          //计算三次贝赛尔曲线的落点，通过落点来操作图形
-          let btx = pvs[0].x * DDeiUtil.p331t3 + DDeiUtil.p331t2t3 * pvs[1].x + DDeiUtil.p33t21t3 * pvs[2].x + DDeiUtil.p33t3 * pvs[3].x
-          let bty = pvs[0].y * DDeiUtil.p331t3 + DDeiUtil.p331t2t3 * pvs[1].y + DDeiUtil.p33t21t3 * pvs[2].y + DDeiUtil.p33t3 * pvs[3].y
-          opvs.push(new Vector3(btx, bty, 1))
-          opvsType.push(4);
+          if (pvs.length >= 4) {
+            //曲线
+            for (let i = 4; i <= pvs.length; i += 3) {
+              let i0 = i - 4;
+              let i1 = i - 3;
+              let i2 = i - 2;
+              let i3 = i - 1;
+              //输出中间控制点
+              if (i0 != 0) {
+                opvs.push(new Vector3(pvs[i0].x, pvs[i0].y, 1))
+                opvsType.push(4);
+              }
+              //计算三次贝赛尔曲线的落点，通过落点来操作图形
+              let btx = pvs[i0].x * DDeiUtil.p331t3 + DDeiUtil.p331t2t3 * pvs[i1].x + DDeiUtil.p33t21t3 * pvs[i2].x + DDeiUtil.p33t3 * pvs[i3].x
+              let bty = pvs[i0].y * DDeiUtil.p331t3 + DDeiUtil.p331t2t3 * pvs[i1].y + DDeiUtil.p33t21t3 * pvs[i2].y + DDeiUtil.p33t3 * pvs[i3].y
+              opvs.push(new Vector3(btx, bty, 1))
+              opvsType.push(4);
+              btx = pvs[i0].x * DDeiUtil.p661t3 + DDeiUtil.p661t2t3 * pvs[i1].x + DDeiUtil.p66t21t3 * pvs[i2].x + DDeiUtil.p66t3 * pvs[i3].x
+              bty = pvs[i0].y * DDeiUtil.p661t3 + DDeiUtil.p661t2t3 * pvs[i1].y + DDeiUtil.p66t21t3 * pvs[i2].y + DDeiUtil.p66t3 * pvs[i3].y
+              opvs.push(new Vector3(btx, bty, 1))
+              opvsType.push(4);
 
-          btx = pvs[0].x * DDeiUtil.p661t3 + DDeiUtil.p661t2t3 * pvs[1].x + DDeiUtil.p66t21t3 * pvs[2].x + DDeiUtil.p66t3 * pvs[3].x
-          bty = pvs[0].y * DDeiUtil.p661t3 + DDeiUtil.p661t2t3 * pvs[1].y + DDeiUtil.p66t21t3 * pvs[2].y + DDeiUtil.p66t3 * pvs[3].y
-          opvs.push(new Vector3(btx, bty, 1))
-          opvsType.push(4);
+            }
+          }
           break;
         }
       }

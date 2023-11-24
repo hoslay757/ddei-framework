@@ -40,6 +40,8 @@ class DDeiLine extends DDeiAbstractShape {
 
     this.spvs = props.spvs ? props.spvs : [];
 
+    this.freeze = props.freeze ? props.freeze : 0;
+
 
     this.updateLooseCanvas = debounce(this.updateLooseCanvas, 30)
   }
@@ -114,6 +116,8 @@ class DDeiLine extends DDeiAbstractShape {
   endPoint: Vector3;
   //特殊修改过的点下标，特殊修改过的点在自动计算坐标时会有所限制
   spvs: [];
+  //冻结，冻结后不会自动计算位置以及坐标
+  freeze: 0;
 
   // ============================ 方法 ===============================
 
@@ -136,10 +140,8 @@ class DDeiLine extends DDeiAbstractShape {
     this.endPoint = this.pvs[this.pvs.length - 1]
 
     //根据开始节点和结束节点的关系，自动计算中间节点路径的坐标
-    setTimeout(() => {
-      this.calPoints();
-      this.calLoosePVS();
-    }, 20);
+    this.calPoints();
+    this.calLoosePVS();
 
 
   }
@@ -159,77 +161,115 @@ class DDeiLine extends DDeiAbstractShape {
    * 根据开始节点和结束节点的关系，自动计算中间节点路径的坐标
    */
   calPoints(): void {
-    switch (this.type) {
-      case 1: {
-        this.pvs = [this.startPoint, this.endPoint]
-      } break;
-      case 3: {
+    if (this.freeze != 1) {
+      switch (this.type) {
+        case 1: {
+          this.pvs = [this.startPoint, this.endPoint]
+        } break;
+        case 2: {
+          this.calLineType3();
+        } break;
+        case 3: {
+          this.calLineType3();
+          //需要拆分的点数量，实际情况为1或者2
+          if (this.pvs.length < 4) {
 
-      } break;
-      case 2: {
-        let pvs = this.pvs;
-        //得到开始点在开始图形的方向
-        let lineLinks = this.stage?.getDistModelLinks(this.id);
-        let startLink = null;
-        let endLink = null;
-        lineLinks?.forEach(lk => {
-          if (lk.dmpath == "startPoint") {
-            startLink = lk;
-          } else if (lk.dmpath == "endPoint") {
-            endLink = lk;
-          }
-        })
-        let sAngle = null;
-        let eAngle = null;
-
-        if (startLink?.sm?.getPointAngle) {
-          sAngle = startLink.sm.getPointAngle(this.startPoint)
-        }
-        if (endLink?.sm?.getPointAngle) {
-          eAngle = endLink.sm.getPointAngle(this.endPoint)
-        }
-        if (sAngle == null) {
-          sAngle = DDeiUtil.getLineAngle(this.startPoint.x, this.startPoint.y, pvs[1].x, pvs[1].y)
-        }
-        if (eAngle == null) {
-          eAngle = DDeiUtil.getLineAngle(this.endPoint.x, this.endPoint.y, pvs[pvs.length - 2].x, pvs[pvs.length - 2].y)
-        }
-
-        //解析movepath，生成点
-        let middlePaths = []
-        //获取移动路径
-        let movePath = DDeiUtil.getMovePath(sAngle, eAngle, this.startPoint, this.endPoint)
-        if (movePath) {
-          let mPaths = movePath.split(",")
-          let cPoint = { x: this.startPoint.x, y: this.startPoint.y }
-          let h = Math.abs(this.startPoint.y - this.endPoint.y)
-          let w = Math.abs(this.startPoint.x - this.endPoint.x)
-          mPaths.forEach(mPath => {
-            let mpa = mPath.split(":");
-            let opType = mpa[0];
-            let opSize = parseFloat(mpa[1]);
-            if (opType == 'x') {
-              cPoint.x += opSize * w
-            } else if (opType == 'y') {
-              cPoint.y += opSize * h
+            if (this.pvs.length == 2) {
+              let x1 = this.pvs[0].x + (this.pvs[1].x - this.pvs[0].x) * 0.33
+              let y1 = this.pvs[0].y + (this.pvs[1].y - this.pvs[0].y) * 0.33
+              let x2 = this.pvs[0].x + (this.pvs[1].x - this.pvs[0].x) * 0.66
+              let y2 = this.pvs[0].y + (this.pvs[1].y - this.pvs[0].y) * 0.66
+              this.pvs = [this.pvs[0], new Vector3(x1, y1, 1), new Vector3(x2, y2, 1), this.pvs[1]]
+            } else if (this.pvs.length == 3) {
+              let x1 = this.pvs[0].x + (this.pvs[1].x - this.pvs[0].x) * 0.66
+              let y1 = this.pvs[0].y + (this.pvs[1].y - this.pvs[0].y) * 0.66
+              let x2 = this.pvs[1].x + (this.pvs[2].x - this.pvs[1].x) * 0.33
+              let y2 = this.pvs[1].y + (this.pvs[2].y - this.pvs[1].y) * 0.33
+              this.pvs = [this.pvs[0], new Vector3(x1, y1, 1), new Vector3(x2, y2, 1), this.pvs[2]]
             }
-            //生成中间点
-            middlePaths.push(new Vector3(cPoint.x, cPoint.y, 1))
-          });
-        }
-        //更新中间节点
-        this.pvs = [this.startPoint]
-        if (middlePaths?.length > 0) {
-          middlePaths.forEach(mp => {
-            this.pvs.push(mp)
-          });
-        }
-        this.pvs.push(this.endPoint)
+          } else {
+            let appendPointSize = 3 - (this.pvs.length - 4) % 3
+            for (let i = 0; i < appendPointSize; i++) {
+              let s = this.pvs.length - 2 - (i * 2)
+              let e = this.pvs.length - 1 - (i * 2)
+              let x1 = this.pvs[s].x + (this.pvs[e].x - this.pvs[s].x) * 0.5
+              let y1 = this.pvs[s].y + (this.pvs[e].y - this.pvs[s].y) * 0.5
+              this.pvs.splice(s + 1, 0, new Vector3(x1, y1, 1))
+            }
+          }
 
-      } break;
-
+        } break;
+      }
     }
 
+  }
+
+  /**
+   * 计算折线连线点
+   */
+  calLineType3() {
+    let pvs = this.pvs;
+    //得到开始点在开始图形的方向
+    let id = this.id
+    if (id.indexOf("_shadow") != -1) {
+      id = id.substring(0, id.lastIndexOf("_shadow"))
+    }
+    let lineLinks = this.stage?.getDistModelLinks(id);
+    let startLink = null;
+    let endLink = null;
+    lineLinks?.forEach(lk => {
+      if (lk.dmpath == "startPoint") {
+        startLink = lk;
+      } else if (lk.dmpath == "endPoint") {
+        endLink = lk;
+      }
+    })
+    let sAngle = null;
+    let eAngle = null;
+
+    if (startLink?.sm?.getPointAngle) {
+      sAngle = startLink.sm.getPointAngle(this.startPoint)
+    }
+    if (endLink?.sm?.getPointAngle) {
+      eAngle = endLink.sm.getPointAngle(this.endPoint)
+    }
+    if (sAngle == null) {
+      sAngle = DDeiUtil.getLineAngle(this.startPoint.x, this.startPoint.y, pvs[1].x, pvs[1].y)
+    }
+    if (eAngle == null) {
+      eAngle = DDeiUtil.getLineAngle(this.endPoint.x, this.endPoint.y, pvs[pvs.length - 2].x, pvs[pvs.length - 2].y)
+    }
+
+    //解析movepath，生成点
+    let middlePaths = []
+    //获取移动路径
+    let movePath = DDeiUtil.getMovePath(sAngle, eAngle, this.startPoint, this.endPoint)
+    if (movePath) {
+      let mPaths = movePath.split(",")
+      let cPoint = { x: this.startPoint.x, y: this.startPoint.y }
+      let h = Math.abs(this.startPoint.y - this.endPoint.y)
+      let w = Math.abs(this.startPoint.x - this.endPoint.x)
+      mPaths.forEach(mPath => {
+        let mpa = mPath.split(":");
+        let opType = mpa[0];
+        let opSize = parseFloat(mpa[1]);
+        if (opType == 'x') {
+          cPoint.x += opSize * w
+        } else if (opType == 'y') {
+          cPoint.y += opSize * h
+        }
+        //生成中间点
+        middlePaths.push(new Vector3(cPoint.x, cPoint.y, 1))
+      });
+    }
+    //更新中间节点
+    this.pvs = [this.startPoint]
+    if (middlePaths?.length > 0) {
+      middlePaths.forEach(mp => {
+        this.pvs.push(mp)
+      });
+    }
+    this.pvs.push(this.endPoint)
   }
 
   /**
@@ -284,30 +324,51 @@ class DDeiLine extends DDeiAbstractShape {
       ctx.strokeStyle = DDeiUtil.getColor("red");
 
       ctx.lineWidth = weight
-      ctx.beginPath()
+
       switch (type) {
         case 1: {
+          ctx.beginPath()
           //直线
           ctx.moveTo(pvs[0].x * rat1, pvs[0].y * rat1)
           ctx.lineTo(pvs[pvs.length - 1].x * rat1, pvs[pvs.length - 1].y * rat1)
           ctx.stroke();
+
+          ctx.closePath()
         } break;
         case 2: {
+          ctx.beginPath()
           //折线
           ctx.moveTo(pvs[0].x * rat1, pvs[0].y * rat1)
           for (let i = 1; i < pvs.length; i++) {
             ctx.lineTo(pvs[i].x * rat1, pvs[i].y * rat1)
           }
           ctx.stroke();
+
+          ctx.closePath()
         } break;
         case 3: {
-          //曲线
-          ctx.moveTo(pvs[0].x * rat1, pvs[0].y * rat1)
-          ctx.bezierCurveTo(pvs[1].x * rat1, pvs[1].y * rat1, pvs[2].x * rat1, pvs[2].y * rat1, pvs[3].x * rat1, pvs[3].y * rat1);
-          ctx.stroke();
+          if (pvs.length >= 4) {
+            //曲线
+            for (let i = 4; i <= pvs.length; i += 3) {
+              ctx.beginPath()
+              let i0 = i - 4;
+              let i1 = i - 3;
+              let i2 = i - 2;
+              let i3 = i - 1;
+              ctx.moveTo(pvs[i0].x * rat1, pvs[i0].y * rat1)
+              ctx.bezierCurveTo(pvs[i1].x * rat1, pvs[i1].y * rat1, pvs[i2].x * rat1, pvs[i2].y * rat1, pvs[i3].x * rat1, pvs[i3].y * rat1);
+              ctx.stroke();
+              ctx.closePath()
+            }
+          } else {
+            ctx.beginPath()
+            ctx.moveTo(pvs[0].x * rat1, pvs[0].y * rat1)
+            ctx.lineTo(pvs[0].x * rat1, pvs[0].y * rat1, pvs[1].x * rat1, pvs[1].y * rat1);
+            ctx.stroke();
+            ctx.closePath()
+          }
         } break;
       }
-      ctx.closePath()
       ctx.restore();
       resolve()
     });
@@ -364,6 +425,32 @@ class DDeiLine extends DDeiAbstractShape {
       }
     }
     return false;
+  }
+
+
+  syncVectors(source: DDeiAbstractShape, clonePV: boolean = false): void {
+    super.syncVectors(source, clonePV)
+    if (source.freeze != null && source.freeze != undefined) {
+      this.freeze = source.freeze;
+    }
+    this.startPoint = this.pvs[0]
+    this.endPoint = this.pvs[this.pvs.length - 1]
+
+    let distLinks = this.stage?.getDistModelLinks(this.id);
+    distLinks?.forEach(dl => {
+      //判断开始点还是结束点
+      let pv = null;
+      if (dl.dmpath == "startPoint") {
+        pv = this.startPoint;
+      } else {
+        pv = this.endPoint;
+      }
+      //删除源点
+      if (dl?.sm && dl?.smpath) {
+        DDeiUtil.setAttrValueByPath(dl.sm, dl.smpath + ".x", pv.x)
+        DDeiUtil.setAttrValueByPath(dl.sm, dl.smpath + ".y", pv.y)
+      }
+    })
   }
 
 

@@ -380,6 +380,7 @@ class DDeiUtil {
    */
   static getMovePath(sAngle, eAngle, startPoint, endPoint): string {
     let movePath = ""
+    debugger
     //开始点为左边线的各种情况
     switch (sAngle) {
       case 0: {
@@ -388,28 +389,25 @@ class DDeiUtil {
             //Y相等
             if (Math.abs(startPoint.y - endPoint.y) <= 1) {
               if (startPoint.x > endPoint.x) {
-                movePath = "x:0.25,y:-0.25,x:-1.5,y:0.25,x:0.25"
-              }
-              else {
-                movePath = "x:1"
+                movePath = "x:0.25,y:-0.25,x:-1.5,y:0.25"
               }
             }
             //开始高于结束
             else if (startPoint.y > endPoint.y) {
               if (startPoint.x > endPoint.x) {
-                movePath = "x:0.25,y:-0.5,x:-1.5,y:-0.5,x:0.25"
+                movePath = "x:0.25,y:-0.5,x:-1.5,y:-0.5"
               }
               else {
-                movePath = "x:0.5,y:-1,x:0.5"
+                movePath = "x:0.5,y:-1"
               }
             }
             //结束高于开始
             else {
               if (startPoint.x > endPoint.x) {
-                movePath = "x:0.25,y:0.5,x:-1.5,y:0.5,x:0.25"
+                movePath = "x:0.25,y:0.5,x:-1.5,y:0.5"
               }
               else {
-                movePath = "x:0.5,y:1,x:0.5"
+                movePath = "x:0.5,y:1"
               }
             }
           } break;
@@ -417,7 +415,7 @@ class DDeiUtil {
             //Y相等
             if (Math.abs(startPoint.y - endPoint.y) <= 1) {
               if (startPoint.x > endPoint.x) {
-                movePath = "x:0.25,y:-0.25,x:-1.25,y:0.25"
+                movePath = "x:0.25,y:-0.25,x:-1.25"
               }
             }
             //开始高于结束
@@ -426,16 +424,16 @@ class DDeiUtil {
                 movePath = "x:0.25,y:-1.25,x:-1.25"
               }
               else {
-                movePath = "x:0.5,y:-1.25,x:0.5,y:0.25"
+                movePath = "x:0.5,y:-1.25,x:0.5"
               }
             }
             //结束高于开始
             else {
               if (startPoint.x > endPoint.x) {
-                movePath = "x:0.25,y:0.5,x:-1.25,y:0.5"
+                movePath = "x:0.25,y:0.5,x:-1.25"
               }
               else {
-                movePath = "x:1,y:1"
+                movePath = "x:1"
               }
             }
           } break;
@@ -458,7 +456,7 @@ class DDeiUtil {
             //结束高于开始
             else {
               if (startPoint.x > endPoint.x) {
-                movePath = "x:0.25,y:-1.25,x:-1.25"
+                movePath = "x:0.25,y:1.25,x:-1.25"
               }
               else {
                 movePath = "x:0.5,y:1.25,x:0.5"
