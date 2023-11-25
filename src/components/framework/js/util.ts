@@ -345,6 +345,13 @@ class DDeiUtil {
   }
 
   /**
+   * 求两点距离
+   */
+  static getPointDistance(x0: number, y0: number, x1: number, y1: number): number {
+    return Math.sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2)
+  }
+
+  /**
    * 判断点是否在线上
    */
   static isPointInLine(q, p1, p2): boolean {
@@ -362,12 +369,12 @@ class DDeiUtil {
     let y2 = p2.y;
     //获取控件所有向量
     if (x1 == x2 && y1 == y2) {
-      plLength = Math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0))
+      plLength = DDeiUtil.getPointDistance(x0, y0, x1, y1)
     } else {
       //根据向量外积计算面积
       let s = (x0 - x1) * (y2 - y1) - (y0 - y1) * (x2 - x1)
       //计算直线上两点之间的距离
-      let d = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+      let d = DDeiUtil.getPointDistance(x0, y0, x1, y1)
       plLength = s / d
     }
     if (Math.abs(plLength) <= 1) {

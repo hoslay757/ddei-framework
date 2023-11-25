@@ -187,11 +187,27 @@ class DDeiLine extends DDeiAbstractShape {
               let y2 = this.pvs[1].y + (this.pvs[2].y - this.pvs[1].y) * 0.33
               this.pvs = [this.pvs[0], new Vector3(x1, y1, 1), new Vector3(x2, y2, 1), this.pvs[2]]
             }
-          } else {
+          } else if (this.pvs.length > 4) {
             let appendPointSize = 3 - (this.pvs.length - 4) % 3
+
             for (let i = 0; i < appendPointSize; i++) {
-              let s = this.pvs.length - 2 - (i * 2)
-              let e = this.pvs.length - 1 - (i * 2)
+              //逆向，寻找最长的一条线
+              let maxS = -1;
+              let maxlength = 0;
+              for (let j = 2; j < this.pvs.length - 1; j++) {
+                let p1 = this.pvs[j]
+                let p2 = this.pvs[j + 1]
+                let l = DDeiUtil.getPointDistance(p1.x, p1.y, p2.x, p2.y)
+                if (!maxlength) {
+                  maxlength = l
+                  maxS = j
+                } else if (l > maxlength) {
+                  maxlength = l
+                  maxS = j
+                }
+              }
+              let s = maxS
+              let e = maxS + 1
               let x1 = this.pvs[s].x + (this.pvs[e].x - this.pvs[s].x) * 0.5
               let y1 = this.pvs[s].y + (this.pvs[e].y - this.pvs[s].y) * 0.5
               this.pvs.splice(s + 1, 0, new Vector3(x1, y1, 1))

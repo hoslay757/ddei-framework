@@ -175,19 +175,29 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
 
             //前面的点
             if (oitype == 1) {
+
               pvs[i1].x = -(pvs[i0].x * DDeiUtil.p331t3 + DDeiUtil.p33t21t3 * pvs[i2].x + DDeiUtil.p33t3 * pvs[i3].x - ex) / DDeiUtil.p331t2t3
               pvs[i1].y = -(pvs[i0].y * DDeiUtil.p331t3 + DDeiUtil.p33t21t3 * pvs[i2].y + DDeiUtil.p33t3 * pvs[i3].y - ey) / DDeiUtil.p331t2t3
               lineModel.spvs[i1] = true
+
             }
             //中间的连接点
             else if (oitype == 2) {
+              let dx = ex - pvs[opvsIndex].x
+              let dy = ey - pvs[opvsIndex].y
               pvs[opvsIndex].x = ex
               pvs[opvsIndex].y = ey
+              pvs[opvsIndex - 1].x += dx
+              pvs[opvsIndex - 1].y += dy
+              pvs[opvsIndex + 1].x += dx
+              pvs[opvsIndex + 1].y += dy
             }
             //后面的点
             else {
+
               pvs[i2].x = -(pvs[i0].x * DDeiUtil.p661t3 + DDeiUtil.p661t2t3 * pvs[i1].x + DDeiUtil.p66t3 * pvs[i3].x - ex) / DDeiUtil.p66t21t3
               pvs[i2].y = -(pvs[i0].y * DDeiUtil.p661t3 + DDeiUtil.p661t2t3 * pvs[i1].y + DDeiUtil.p66t3 * pvs[i3].y - ey) / DDeiUtil.p66t21t3
+
               lineModel.spvs[i2] = true
             }
             //冻结

@@ -86,7 +86,7 @@ export const styles = {
       ],
       'itemStyle': { width: 80, height: 25, col: 2, row: 6, imgWidth: 60, imgHeight: 20, display: "img-text" },
       'dataType': 'integer',
-      'defaultValue': [10, 5],
+      'defaultValue': [],
       'isArray': true,
       'orderNo': 4,
       'visiable': true
