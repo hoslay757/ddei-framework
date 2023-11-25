@@ -61,12 +61,14 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
         case 2: {
           //开始点
           if (passIndex == 1 && opvsIndex == 0) {
-            let otherP = pvs[1]
-            //TODO 旋转的情况下，需要把旋转归0判断，x相等
-            if (Math.abs(pvs[0].x - otherP.x) <= 1) {
-              otherP.x = ex
-            } else {
-              otherP.y = ey
+            if (pvs.length > 2) {
+              let otherP = pvs[1]
+              //TODO 旋转的情况下，需要把旋转归0判断，x相等
+              if (Math.abs(pvs[0].x - otherP.x) <= 1) {
+                otherP.x = ex
+              } else {
+                otherP.y = ey
+              }
             }
             pvs[0].x = ex
             pvs[0].y = ey
@@ -80,12 +82,14 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
               pvs[pvs.length - 1].x = ex;
               pvs[pvs.length - 1].y = ey;
             } else {
-              let otherP = pvs[pvs.length - 2]
-              //TODO 旋转的情况下，需要把旋转归0判断，x相等
-              if (Math.abs(pvs[pvs.length - 1].x - otherP.x) <= 1) {
-                otherP.x = ex
-              } else {
-                otherP.y = ey
+              if (pvs.length > 2) {
+                let otherP = pvs[pvs.length - 2]
+                //TODO 旋转的情况下，需要把旋转归0判断，x相等
+                if (Math.abs(pvs[pvs.length - 1].x - otherP.x) <= 1) {
+                  otherP.x = ex
+                } else {
+                  otherP.y = ey
+                }
               }
               pvs[pvs.length - 1].x = ex
               pvs[pvs.length - 1].y = ey

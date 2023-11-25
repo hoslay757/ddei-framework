@@ -944,6 +944,8 @@ class DDeiLayerCanvasRender {
               if (model.changeChildrenBounds) {
                 model.changeChildrenBounds();
               }
+
+              model.updateLinkModels()
               operateModels.push(model)
             }
           })
@@ -1242,6 +1244,7 @@ class DDeiLayerCanvasRender {
           if (!pContainerModel) {
             pContainerModel = this.model;
           }
+
           //更新旋转
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeRotate, { deltaX: movedPos.x, container: pContainerModel }, evt);
           //更新dragObj临时变量中的数值,确保坐标对应关系一致
@@ -1257,11 +1260,12 @@ class DDeiLayerCanvasRender {
         //清空当前opPoints
         this.model.opPoints = [];
         //判断当前鼠标坐标是否落在选择器控件的区域内
-
+        let inSelector = false
         if (this.stageRender.selector &&
           this.stageRender.selector.isInAreaLoose(ex, ey, true)) {
           //派发给selector的mousemove事件，在事件中对具体坐标进行判断
           this.stageRender.selector.render.mouseMove(evt);
+          inSelector = true;
         }
         // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
         let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, ex, ey, true);
@@ -1276,7 +1280,7 @@ class DDeiLayerCanvasRender {
             this.model.opPoints.push(op)
           })
           this.stage.ddInstance.bus.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'all-scroll' }, evt);
-        } else if (this.stageRender.selector.passIndex == -1) {
+        } else if (!inSelector || this.stageRender.selector.passIndex == -1) {
           if (this.stage.ddInstance?.editMode == 1) {
             this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
           } else if (this.stage.ddInstance?.editMode == 2) {

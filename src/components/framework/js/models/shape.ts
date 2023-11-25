@@ -224,9 +224,11 @@ abstract class DDeiAbstractShape {
     if (clonePV) {
       this.pvs = cloneDeep(source.pvs)
       this.cpv = cloneDeep(source.cpv)
+      this.exPvs = cloneDeep(source.exPvs)
     } else {
       this.pvs = source.pvs
       this.cpv = source.cpv
+      this.exPvs = source.exPvs
     }
     this.initHPV()
     this.calRotate();
@@ -327,6 +329,7 @@ abstract class DDeiAbstractShape {
     let links = this.stage.getSourceModelLinks(this.id);
     if (links?.length > 0) {
       //同步调整链接控件的数据
+
       links.forEach(link => {
         let dpv = link.getDistPV();
         if (dpv) {

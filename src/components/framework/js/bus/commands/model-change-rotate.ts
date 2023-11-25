@@ -89,6 +89,7 @@ class DDeiBusCommandModelChangeRotate extends DDeiBusCommand {
       for (let i = 0; i < models.length; i++) {
         let item = models[i]
         item.transVectors(m1)
+        item.updateLinkModels();
       }
       selector.transVectors(m1)
 

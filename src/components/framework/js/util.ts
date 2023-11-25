@@ -191,6 +191,10 @@ class DDeiUtil {
     sourceModel.pvs.forEach(pv => {
       returnModel.pvs.push(clone(pv));
     });
+    returnModel.exPvs = {}
+    for (let i in sourceModel.exPvs) {
+      returnModel.exPvs[i] = clone(sourceModel.exPvs[i])
+    }
     returnModel.cpv = clone(sourceModel.cpv)
     returnModel.initPVS()
     return returnModel;
