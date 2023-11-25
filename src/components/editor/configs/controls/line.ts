@@ -30,7 +30,7 @@ export const styles = {
       'controlType': 'radio',
       'dataSource': [{ 'text': '直线', 'value': 1 }, { 'text': '折线', 'value': 2 }, { 'text': '曲线', 'value': 3 }],
       'dataType': 'integer',
-      'defaultValue': 0,
+      'defaultValue': 1,
       'hiddenTitle': true,
       'display': 'column',
       'cascadeDisplay': {},

@@ -153,7 +153,6 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       }
       //颜色
       ctx.strokeStyle = DDeiUtil.getColor(color);
-
       switch (type) {
         case 1: {
           //直线

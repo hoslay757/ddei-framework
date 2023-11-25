@@ -158,7 +158,7 @@ class DDeiEditorUtil {
           if (searchMap.has(searchPath)) {
             let attrDefine = searchMap.get(searchPath);
 
-            if (!attrDefine.mapping) {
+            if (!attrDefine.mapping || attrDefine.mapping.length == 0) {
               //获取属性值
               returnDatas.set(searchPath, { "overwrite": attrDefine.overwrite ? attrDefine.overwrite : false, "data": attrDefine.getParser().getDefaultValue() });
             } else {
