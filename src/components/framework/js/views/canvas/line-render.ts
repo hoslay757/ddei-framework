@@ -83,11 +83,14 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       let ctx = canvas.getContext('2d');
       ctx.save();
       //如果线段类型发生了改变，则重新绘制线段，计算中间点坐标
-      if (this.model.id.indexOf("_shadow") == -1 && (!this.upLineType || this.upLineType != this.model.type)) {
+      if (this.inited && this.model.id.indexOf("_shadow") == -1 && (!this.upLineType || this.upLineType != this.model.type)) {
         this.upLineType = this.model.type
         this.model.freeze = 0
         this.model.spvs = []
         this.model.initPVS()
+      } else if (!this.inited) {
+        this.inited = true;
+        this.upLineType = this.model.type
       }
 
       //绘制线段

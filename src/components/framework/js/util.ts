@@ -380,7 +380,6 @@ class DDeiUtil {
    */
   static getMovePath(sAngle, eAngle, startPoint, endPoint): string {
     let movePath = ""
-    debugger
     //开始点为左边线的各种情况
     switch (sAngle) {
       case 0: {
