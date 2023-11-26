@@ -46,8 +46,11 @@ export const styles = {
       'desc': '控件的宽度',
       'group': '线段',
       'controlType': 'range',
-      'dataType': 'integer',
-      'defaultValue': "1",
+      'min': 0.1,
+      'max': 10,
+      'step': 0.1,
+      'dataType': 'float',
+      'defaultValue': 1.5,
       'orderNo': 2,
       'visiable': true
     },
@@ -117,7 +120,7 @@ export const styles = {
       'group': '线段',
       'controlType': 'combox',
       'dataSource': [
-        { 'text': '无', 'value': 0 },
+        { 'text': '无', 'value': -1 },
         { 'text': '箭头', 'value': 1 },
         { 'text': '圆形', 'value': 2 },
         { 'text': '方形', 'value': 3 },
@@ -127,7 +130,7 @@ export const styles = {
       ],
       'itemStyle': { width: 80, height: 25, col: 2, row: 6 },
       'dataType': 'integer',
-      'defaultValue': 2,
+      'defaultValue': -1,
       'orderNo': 10
     },
     {
@@ -138,7 +141,7 @@ export const styles = {
       'group': '线段',
       'controlType': 'combox',
       'dataSource': [
-        { 'text': '无', 'value': 0 },
+        { 'text': '无', 'value': -1 },
         { 'text': '箭头', 'value': 1 },
         { 'text': '圆形', 'value': 2 },
         { 'text': '方形', 'value': 3 },
