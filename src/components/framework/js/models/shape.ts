@@ -344,6 +344,23 @@ abstract class DDeiAbstractShape {
   }
 
   /**
+   * 移除自身的方法
+   */
+  destroyed() {
+    //找到以自己为source的链接
+    let sourceLinks = this.stage?.getSourceModelLinks(this.id);
+    //删除链接
+    sourceLinks?.forEach(link => {
+      if (link.dm) {
+        link.dm.pModel.removeModel(link.dm)
+      }
+      this.stage?.removeLink(link);
+    })
+
+    this.render = null
+  }
+
+  /**
    * 设置当前模型为被修改状态
    */
   setModelChanged(): void {

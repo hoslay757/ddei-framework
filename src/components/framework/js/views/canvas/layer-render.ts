@@ -753,63 +753,74 @@ class DDeiLayerCanvasRender {
               let item = this.model.shadowControls[0];
               let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
               let model = this.stage?.getModelById(id)
+              let isStop = false;
               if (model) {
                 model.syncVectors(item)
               } else {
-                //影子控件转变为真实控件并创建
-                item.id = id
-                this.model.addModel(item)
-                item.initRender();
-                model = item;
-              }
-
-              let passIndex = this.stageRender.dragObj.passIndex;
-
-              //如果是开始或结束节点的拖拽，判断落点是否在操作点上，如果在，则关联
-              if (passIndex == 1) {
-                //如果原有的关联存在，取消原有的关联
-                let opvsIndex = this.stageRender.dragObj.opvsIndex;
-                let dmpath = ""
-                //判断开始点还是结束点
-                if (opvsIndex == 0) {
-                  dmpath = "startPoint"
+                //如果长度小于15，终止创建
+                let maxLength = 0
+                for (let i = 0; i < item.pvs.length - 1; i++) {
+                  maxLength += DDeiUtil.getPointDistance(item.pvs[i].x, item.pvs[i].y, item.pvs[i + 1].x, item.pvs[i + 1].y)
+                }
+                if (maxLength > 15) {
+                  //影子控件转变为真实控件并创建
+                  item.id = id
+                  this.model.addModel(item)
+                  item.initRender();
+                  model = item;
                 } else {
-                  dmpath = "endPoint"
-                }
-                let distLinks = this.stage?.getDistModelLinks(model.id);
-                distLinks?.forEach(dl => {
-                  if (dl.dmpath == dmpath) {
-                    this.stage?.removeLink(dl);
-                    //删除源点
-                    if (dl?.sm && dl?.smpath) {
-                      eval("delete dl.sm." + dl.smpath)
-                    }
-                  }
-                })
-
-                let opPoint = this.model.getOpPointByPos(ex, ey);
-                if (opPoint) {
-
-                  //建立关联
-                  let smodel = opPoint.model;
-                  //创建连接点
-                  let id = "_" + DDeiUtil.getUniqueCode()
-                  smodel.exPvs[id] = new Vector3(opPoint.x, opPoint.y, opPoint.z)
-                  smodel.exPvs[id].id = id
-                  let link = new DDeiLink({
-                    sm: smodel,
-                    dm: model,
-                    smpath: "exPvs." + id,
-                    dmpath: dmpath,
-                    stage: this.stage
-                  });
-                  this.stage?.addLink(link)
-                  model?.initPVS()
-                  smodel.updateLinkModels();
+                  isStop = true;
                 }
               }
-              model?.initPVS()
-              hasChange = true;
+              if (!isStop) {
+                let passIndex = this.stageRender.dragObj.passIndex;
+
+                //如果是开始或结束节点的拖拽，判断落点是否在操作点上，如果在，则关联
+                if (passIndex == 1) {
+                  //如果原有的关联存在，取消原有的关联
+                  let opvsIndex = this.stageRender.dragObj.opvsIndex;
+                  let dmpath = ""
+                  //判断开始点还是结束点
+                  if (opvsIndex == 0) {
+                    dmpath = "startPoint"
+                  } else {
+                    dmpath = "endPoint"
+                  }
+                  let distLinks = this.stage?.getDistModelLinks(model.id);
+                  distLinks?.forEach(dl => {
+                    if (dl.dmpath == dmpath) {
+                      this.stage?.removeLink(dl);
+                      //删除源点
+                      if (dl?.sm && dl?.smpath) {
+                        eval("delete dl.sm." + dl.smpath)
+                      }
+                    }
+                  })
+
+                  let opPoint = this.model.getOpPointByPos(ex, ey);
+                  if (opPoint) {
+
+                    //建立关联
+                    let smodel = opPoint.model;
+                    //创建连接点
+                    let id = "_" + DDeiUtil.getUniqueCode()
+                    smodel.exPvs[id] = new Vector3(opPoint.x, opPoint.y, opPoint.z)
+                    smodel.exPvs[id].id = id
+                    let link = new DDeiLink({
+                      sm: smodel,
+                      dm: model,
+                      smpath: "exPvs." + id,
+                      dmpath: dmpath,
+                      stage: this.stage
+                    });
+                    this.stage?.addLink(link)
+                    model?.initPVS()
+                    smodel.updateLinkModels();
+                  }
+                }
+                model?.initPVS()
+                hasChange = true;
+              }
             }
 
             this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars);

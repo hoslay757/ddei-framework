@@ -443,6 +443,20 @@ class DDeiLine extends DDeiAbstractShape {
     return false;
   }
 
+  /**
+   * 移除自身的方法
+   */
+  destroyed() {
+    let distLinks = this.stage?.getDistModelLinks(this.id);
+    distLinks?.forEach(dl => {
+      //删除源点
+      if (dl?.sm && dl?.smpath) {
+        eval("delete dl.sm." + dl.smpath)
+      }
+      this.stage?.removeLink(dl);
+    })
+    super.destroyed();
+  }
 
   syncVectors(source: DDeiAbstractShape, clonePV: boolean = false): void {
     super.syncVectors(source, clonePV)

@@ -163,6 +163,7 @@ class DDeiRectContainer extends DDeiRectangle {
     if (idx != -1) {
       this.midList.splice(idx, 1);
     }
+    model.destroyed();
     //清除原有的zindex属性
     model.zIndex = null;
     model.pModel = null;
