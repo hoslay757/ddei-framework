@@ -757,12 +757,16 @@ class DDeiLayerCanvasRender {
               if (model) {
                 model.syncVectors(item)
               } else {
+                let opPoint = this.model.getOpPointByPos(ex, ey);
+
                 //如果长度小于15，终止创建
                 let maxLength = 0
-                for (let i = 0; i < item.pvs.length - 1; i++) {
-                  maxLength += DDeiUtil.getPointDistance(item.pvs[i].x, item.pvs[i].y, item.pvs[i + 1].x, item.pvs[i + 1].y)
+                if (!opPoint?.model) {
+                  for (let i = 0; i < item.pvs.length - 1; i++) {
+                    maxLength += DDeiUtil.getPointDistance(item.pvs[i].x, item.pvs[i].y, item.pvs[i + 1].x, item.pvs[i + 1].y)
+                  }
                 }
-                if (maxLength > 15) {
+                if ((opPoint?.model && (Math.abs(opPoint.x - item.startPoint.x) >= 1 || Math.abs(opPoint.y - item.startPoint.y) >= 1)) || maxLength >= 15) {
                   //影子控件转变为真实控件并创建
                   item.id = id
                   this.model.addModel(item)
