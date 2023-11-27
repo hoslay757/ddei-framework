@@ -182,20 +182,30 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
           if (pvs.length >= 4) {
             //曲线
             for (let i = 4; i <= pvs.length; i += 3) {
+
               ctx.beginPath()
               let i0 = i - 4;
               let i1 = i - 3;
               let i2 = i - 2;
               let i3 = i - 1;
-              ctx.moveTo(pvs[i0].x * rat1, pvs[i0].y * rat1)
-              ctx.bezierCurveTo(pvs[i1].x * rat1, pvs[i1].y * rat1, pvs[i2].x * rat1, pvs[i2].y * rat1, pvs[i3].x * rat1, pvs[i3].y * rat1);
+              if (i == 4) {
+                ctx.moveTo((pvs[i0].x + startDX) * rat1, (pvs[i0].y + startDY) * rat1)
+              } else {
+                ctx.moveTo(pvs[i0].x * rat1, pvs[i0].y * rat1)
+              }
+              if (i == pvs.length) {
+                ctx.bezierCurveTo(pvs[i1].x * rat1, pvs[i1].y * rat1, pvs[i2].x * rat1, pvs[i2].y * rat1, (pvs[i3].x + endDX) * rat1, (pvs[i3].y + endDY) * rat1);
+              } else {
+                ctx.bezierCurveTo(pvs[i1].x * rat1, pvs[i1].y * rat1, pvs[i2].x * rat1, pvs[i2].y * rat1, pvs[i3].x * rat1, pvs[i3].y * rat1);
+
+              }
               ctx.stroke();
               ctx.closePath()
             }
           } else {
             ctx.beginPath()
-            ctx.moveTo(pvs[0].x * rat1, pvs[0].y * rat1)
-            ctx.lineTo(pvs[0].x * rat1, pvs[0].y * rat1, pvs[1].x * rat1, pvs[1].y * rat1);
+            ctx.moveTo((pvs[0].x + startDX) * rat1, (pvs[0].y + startDY) * rat1)
+            ctx.lineTo((pvs[0].x + endDX) * rat1, pvs[0].y * rat1, pvs[1].x * rat1, (pvs[1].y + endDY) * rat1);
             ctx.stroke();
             ctx.closePath()
           }
