@@ -375,7 +375,6 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
 
     switch (type) {
       case 1: {
-
         let wl = 6 * stageRatio;
         ctx.beginPath()
         ctx.moveTo((point.x - wl) * rat1, (point.y - 0.8 * wl) * rat1)
@@ -385,6 +384,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         ctx.closePath()
         break;
       }
+      case 21:
       case 2: {
         //圆形
         let wl = 6 * stageRatio;
@@ -392,9 +392,12 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         ctx.ellipse((point.x - wl / 2) * rat1 - lineWidth / 2, point.y * rat1, wl, wl, 0, 0, Math.PI * 2)
         ctx.closePath()
         ctx.stroke();
-        // ctx.fill()
+        if (type == 21) {
+          ctx.fill()
+        }
         break;
       }
+      case 31:
       case 3: {
         let wl = 6 * stageRatio;
         //方形
@@ -405,9 +408,12 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         ctx.lineTo((point.x - wl) * rat1 - lineWidth / 2, (point.y + wl / 2) * rat1)
         ctx.closePath()
         ctx.stroke();
-        // ctx.fill();
+        if (type == 31) {
+          ctx.fill();
+        }
         break;
       }
+      case 41:
       case 4: {
         let wl = 2 * stageRatio;
         //菱形
@@ -419,9 +425,12 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         ctx.lineTo(point.x * rat1 - lineWidth, point.y * rat1)
         ctx.closePath()
         ctx.stroke();
-        // ctx.fill()
+        if (type == 41) {
+          ctx.fill()
+        }
         break;
       }
+      case 51:
       case 5: {
         let wl = 6 * stageRatio;
         ctx.beginPath()
@@ -429,8 +438,10 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         ctx.lineTo((point.x - wl) * rat1, (point.y - 0.8 * wl) * rat1)
         ctx.lineTo((point.x - wl) * rat1, (point.y + 0.8 * wl) * rat1)
         ctx.closePath()
-        // ctx.fill()
         ctx.stroke()
+        if (type == 51) {
+          ctx.fill()
+        }
         break;
       }
     }

@@ -62,6 +62,7 @@ export default {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     this.getDataSource(this.attrDefine);
+
     this.attrDefine.doCascadeDisplayByValue();
     //判断当前属性是否可编辑
     this.editBefore = DDeiUtil.getConfigValue(
@@ -152,6 +153,10 @@ export default {
       //属性值
       let value = parser.parseValue(this.attrDefine.value);
       DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, value);
+      if (this.attrDefine.code == "type") {
+        debugger;
+      }
+      console.log(this.attrDefine.code);
       this.attrDefine.doCascadeDisplayByValue();
       this.editor.ddInstance.stage.selectedModels.forEach((element) => {
         //推送信息进入总线
