@@ -387,7 +387,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         //保存状态
         ctx.save();
         if (model.baseModelType == "DDeiLine") {
-          model.render.drawLine({ color: "red", dash: [], });
+          model.render.drawLine({ color: "red", dash: [] });
         } else {
           //绘制临时Border
           model.render.drawBorder({ width: 1, color: "red" });

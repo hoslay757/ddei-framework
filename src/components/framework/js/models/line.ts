@@ -331,7 +331,7 @@ class DDeiLine extends DDeiAbstractShape {
         //获得 2d 上下文对象
         let ctx = canvas.getContext('2d', { willReadFrequently: true });
         ctx.translate(-outRect.x, -outRect.y)
-        this.render.drawLine({ color: "red", weight: weight }, ctx)
+        this.render.drawLine({ color: "red", weight: weight, rat1: 1 }, ctx)
       }
       resolve()
     });

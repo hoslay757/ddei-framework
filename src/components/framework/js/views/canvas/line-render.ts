@@ -125,7 +125,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
 
     //获取全局缩放比例
     let stageRatio = this.model.getStageRatio()
-    let rat1 = tempLine ? 1 : this.ddRender.ratio;
+    let rat1 = tempLine?.rat1 ? tempLine.rat1 : this.ddRender.ratio;
     let ratio = rat1 * stageRatio;
 
     //获取绘图属性
@@ -320,7 +320,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     }
     //获取全局缩放比例
     let stageRatio = this.model.getStageRatio()
-    let rat1 = tempLine ? 1 : this.ddRender.ratio;
+    let rat1 = tempLine?.rat1 ? tempLine.rat1 : this.ddRender.ratio;
     let ratio = rat1 * stageRatio;
     //获取绘图属性
     let color = tempLine?.color ? tempLine.color : this.getCachedValue("color");
