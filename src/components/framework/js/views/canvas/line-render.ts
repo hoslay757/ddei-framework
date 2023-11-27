@@ -168,12 +168,13 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         case 2: {
           //折线
           ctx.beginPath()
+
           ctx.moveTo((pvs[0].x + startDX) * rat1, (pvs[0].y + startDY) * rat1)
           for (let i = 1; i < pvs.length; i++) {
             if (i == pvs.length - 1) {
               ctx.lineTo((pvs[i].x + endDX) * rat1, (pvs[i].y + endDY) * rat1)
             } else {
-              ctx.lineTo(pvs[i].x * rat1, pvs[i].y * rat1)
+              ctx.arcTo(pvs[i].x * rat1, pvs[i].y * rat1, pvs[i + 1].x * rat1, pvs[i + 1].y * rat1, round * rat1);
             }
           }
           ctx.stroke();
@@ -183,7 +184,6 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
           if (pvs.length >= 4) {
             //曲线
             for (let i = 4; i <= pvs.length; i += 3) {
-
               ctx.beginPath()
               let i0 = i - 4;
               let i1 = i - 3;
