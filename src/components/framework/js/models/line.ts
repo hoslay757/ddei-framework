@@ -300,92 +300,39 @@ class DDeiLine extends DDeiAbstractShape {
 
   updateLooseCanvas(): Promise {
     return new Promise((resolve, reject) => {
-      //转换为图片
-      if (!this.looseCanvas) {
-        this.looseCanvas = document.createElement('canvas');
-        this.looseCanvas.setAttribute("style", "-moz-transform-origin:left top;");
+      if (this.render) {
+        //转换为图片
+        if (!this.looseCanvas) {
+          this.looseCanvas = document.createElement('canvas');
+          this.looseCanvas.setAttribute("style", "-moz-transform-origin:left top;");
+        }
+        let canvas = this.looseCanvas
+
+        let pvs = this.pvs;
+        let outRect = DDeiAbstractShape.pvsToOutRect(pvs);
+        let weight = 10
+        if (this.weight) {
+          weight = this.weight + 5
+        }
+        outRect.x -= weight
+        outRect.x1 += weight
+        outRect.y -= weight
+        outRect.y1 += weight
+        outRect.width += 2 * weight
+        outRect.height += 2 * weight
+        this.loosePVS = Object.freeze([
+          new Vector3(outRect.x, outRect.y, 1),
+          new Vector3(outRect.x1, outRect.y, 1),
+          new Vector3(outRect.x1, outRect.y1, 1),
+          new Vector3(outRect.x, outRect.y1, 1)
+        ])
+        canvas.setAttribute("width", outRect.width)
+        canvas.setAttribute("height", outRect.height)
+        //获得 2d 上下文对象
+        let ctx = canvas.getContext('2d', { willReadFrequently: true });
+        ctx.translate(-outRect.x, -outRect.y)
+        this.render.drawLine({ color: "red", weight: weight }, ctx)
       }
-      let canvas = this.looseCanvas
-
-      let pvs = this.pvs;
-      let outRect = DDeiAbstractShape.pvsToOutRect(pvs);
-      let weight = 10
-      if (this.weight) {
-        weight = this.weight + 5
-      }
-      outRect.x -= weight
-      outRect.x1 += weight
-      outRect.y -= weight
-      outRect.y1 += weight
-      outRect.width += 2 * weight
-      outRect.height += 2 * weight
-      this.loosePVS = Object.freeze([
-        new Vector3(outRect.x, outRect.y, 1),
-        new Vector3(outRect.x1, outRect.y, 1),
-        new Vector3(outRect.x1, outRect.y1, 1),
-        new Vector3(outRect.x, outRect.y1, 1)
-      ])
-      canvas.setAttribute("width", outRect.width)
-      canvas.setAttribute("height", outRect.height)
-
-
-      //获得 2d 上下文对象
-      let ctx = canvas.getContext('2d', { willReadFrequently: true });
-      ctx.save();
-      ctx.fillStyle = DDeiUtil.getColor("white");
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
-      ctx.translate(- outRect.x, -outRect.y)
-      let rat1 = 1
-      let type = this.type;
-      ctx.strokeStyle = DDeiUtil.getColor("red");
-
-      ctx.lineWidth = weight
-
-      switch (type) {
-        case 1: {
-          ctx.beginPath()
-          //直线
-          ctx.moveTo(pvs[0].x * rat1, pvs[0].y * rat1)
-          ctx.lineTo(pvs[pvs.length - 1].x * rat1, pvs[pvs.length - 1].y * rat1)
-          ctx.stroke();
-
-          ctx.closePath()
-        } break;
-        case 2: {
-          ctx.beginPath()
-          //折线
-          ctx.moveTo(pvs[0].x * rat1, pvs[0].y * rat1)
-          for (let i = 1; i < pvs.length; i++) {
-            ctx.lineTo(pvs[i].x * rat1, pvs[i].y * rat1)
-          }
-          ctx.stroke();
-
-          ctx.closePath()
-        } break;
-        case 3: {
-          if (pvs.length >= 4) {
-            //曲线
-            for (let i = 4; i <= pvs.length; i += 3) {
-              ctx.beginPath()
-              let i0 = i - 4;
-              let i1 = i - 3;
-              let i2 = i - 2;
-              let i3 = i - 1;
-              ctx.moveTo(pvs[i0].x * rat1, pvs[i0].y * rat1)
-              ctx.bezierCurveTo(pvs[i1].x * rat1, pvs[i1].y * rat1, pvs[i2].x * rat1, pvs[i2].y * rat1, pvs[i3].x * rat1, pvs[i3].y * rat1);
-              ctx.stroke();
-              ctx.closePath()
-            }
-          } else {
-            ctx.beginPath()
-            ctx.moveTo(pvs[0].x * rat1, pvs[0].y * rat1)
-            ctx.lineTo(pvs[0].x * rat1, pvs[0].y * rat1, pvs[1].x * rat1, pvs[1].y * rat1);
-            ctx.stroke();
-            ctx.closePath()
-          }
-        } break;
-      }
-      ctx.restore();
       resolve()
     });
   }

@@ -97,8 +97,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       //绘制线段
       this.drawLine();
 
-      //绘制端点
-      this.drawPoint();
+
 
       ctx.restore();
       if (this.viewAfter) {
@@ -117,16 +116,16 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
   /**
   * 绘制线段
   */
-  drawLine(tempLine): void {
+  drawLine(tempLine, tempCtx): void {
 
     //获得 2d 上下文对象
     let canvas = this.ddRender.getCanvas();
 
-    let ctx = canvas.getContext('2d');
+    let ctx = tempCtx ? tempCtx : canvas.getContext('2d');
 
     //获取全局缩放比例
     let stageRatio = this.model.getStageRatio()
-    let rat1 = this.ddRender.ratio;
+    let rat1 = tempLine ? 1 : this.ddRender.ratio;
     let ratio = rat1 * stageRatio;
 
     //获取绘图属性
@@ -212,7 +211,8 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
           }
         } break;
       }
-
+      //绘制端点
+      this.drawPoint(tempLine, tempCtx);
       ctx.restore();
     }
   }
@@ -294,30 +294,19 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
   /**
   * 绘制端点
   */
-  drawPoint(): void {
+  drawPoint(tempLine, tempCtx): void {
     //获得 2d 上下文对象
     let canvas = this.ddRender.getCanvas();
-    let ctx = canvas.getContext('2d');
+    let ctx = tempCtx ? tempCtx : canvas.getContext('2d');
 
     //获取绘图属性
-    let color = this.getCachedValue("color");
-    let weight = this.getCachedValue("weight");
+    let stype = this.getCachedValue("stype");
+    let etype = this.getCachedValue("etype");
+    //开始节点
+    this.drawOnePoint(1, stype, ctx, tempLine)
 
-    let opacity = this.getCachedValue("opacity");
-    let pvs = this.model.pvs;
-
-    if (pvs?.length >= 2 && color && (!opacity || opacity > 0) && weight > 0) {
-
-      let stype = this.getCachedValue("stype");
-      let etype = this.getCachedValue("etype");
-      //开始节点
-      this.drawOnePoint(1, stype, ctx)
-
-      //结束节点
-      this.drawOnePoint(2, etype, ctx)
-
-
-    }
+    //结束节点
+    this.drawOnePoint(2, etype, ctx, tempLine)
   }
 
   /**
@@ -325,21 +314,19 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
    * @param type 
    * @param direct 
    */
-  private drawOnePoint(pointType: number, type: number, ctx): void {
+  private drawOnePoint(pointType: number, type: number, ctx, tempLine): void {
     if (!type) {
       return;
     }
     //获取全局缩放比例
     let stageRatio = this.model.getStageRatio()
-    let rat1 = this.ddRender.ratio;
+    let rat1 = tempLine ? 1 : this.ddRender.ratio;
     let ratio = rat1 * stageRatio;
-
     //获取绘图属性
-    let color = this.getCachedValue("color");
-    let opacity = this.getCachedValue("opacity");
+    let color = tempLine?.color ? tempLine.color : this.getCachedValue("color");
+    let opacity = tempLine?.opacity ? tempLine.opacity : this.getCachedValue("opacity");
     ctx.save()
     let pvs = this.model.pvs;
-
     let point = null;
     let upPoint = null;
     let lineWidth = ratio;
@@ -392,7 +379,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         ctx.ellipse((point.x - wl / 2) * rat1 - lineWidth / 2, point.y * rat1, wl, wl, 0, 0, Math.PI * 2)
         ctx.closePath()
         ctx.stroke();
-        if (type == 21) {
+        if (type == 21 || tempLine) {
           ctx.fill()
         }
         break;
@@ -408,7 +395,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         ctx.lineTo((point.x - wl) * rat1 - lineWidth / 2, (point.y + wl / 2) * rat1)
         ctx.closePath()
         ctx.stroke();
-        if (type == 31) {
+        if (type == 31 || tempLine) {
           ctx.fill();
         }
         break;
@@ -425,7 +412,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         ctx.lineTo(point.x * rat1 - lineWidth, point.y * rat1)
         ctx.closePath()
         ctx.stroke();
-        if (type == 41) {
+        if (type == 41 || tempLine) {
           ctx.fill()
         }
         break;
@@ -439,7 +426,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         ctx.lineTo((point.x - wl) * rat1, (point.y + 0.8 * wl) * rat1)
         ctx.closePath()
         ctx.stroke()
-        if (type == 51) {
+        if (type == 51 || tempLine) {
           ctx.fill()
         }
         break;
