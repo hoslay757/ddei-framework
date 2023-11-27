@@ -240,6 +240,26 @@ class DDeiLayer {
   }
 
   /**
+   * 根据基础模型获取控件
+   * @param bmt 基础模型类别
+   */
+  getModelsByBaseType(bmt: string): DDeiAbstractShape[] {
+    let returnValues = []
+    this.midList.forEach(mid => {
+      let model = this.models.get(mid)
+      if (model?.baseModelType == bmt) {
+        returnValues.push(model)
+      } else if (model?.baseModelType == 'DDeiContainer') {
+        let datas = model.getModelsByBaseType(bmt);
+        datas.forEach(dt => {
+          returnValues.push(dt);
+        });
+      }
+    })
+    return returnValues;
+  }
+
+  /**
      * 获取当前图形的除layer的所有父节点对象
      */
   getParents(): DDeiAbstractShape[] {

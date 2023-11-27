@@ -59,9 +59,6 @@ class DDeiLine extends DDeiAbstractShape {
       model.pModel = model.layer;
     }
     tempData[model.id] = model;
-    //基于初始化的宽度、高度，构建向量
-    model.initPVS();
-
     return model;
   }
 
@@ -71,8 +68,7 @@ class DDeiLine extends DDeiAbstractShape {
     model.layer = tempData['currentLayer']
     model.stage = tempData['currentStage']
     model.pModel = tempData['currentContainer']
-    //基于初始化的宽度、高度，构建向量
-    model.initPVS();
+
     return model;
   }
 
@@ -140,8 +136,10 @@ class DDeiLine extends DDeiAbstractShape {
     this.endPoint = this.pvs[this.pvs.length - 1]
 
     //根据开始节点和结束节点的关系，自动计算中间节点路径的坐标
+
     this.calPoints();
     this.calLoosePVS();
+
 
 
   }
@@ -242,7 +240,6 @@ class DDeiLine extends DDeiAbstractShape {
     })
     let sAngle = null;
     let eAngle = null;
-
     if (startLink?.sm?.getPointAngle) {
       sAngle = startLink.sm.getPointAngle(this.startPoint)
     }

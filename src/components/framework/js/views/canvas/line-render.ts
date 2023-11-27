@@ -159,15 +159,14 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         case 1: {
           //直线
           ctx.beginPath()
-          ctx.moveTo(pvs[0].x * rat1, pvs[0].y * rat1)
-          ctx.lineTo(pvs[pvs.length - 1].x * rat1, pvs[pvs.length - 1].y * rat1)
+          ctx.moveTo((pvs[0].x + startDX) * rat1, (pvs[0].y + startDY) * rat1)
+          ctx.lineTo((pvs[pvs.length - 1].x + endDX) * rat1, (pvs[pvs.length - 1].y + endDY) * rat1)
           ctx.stroke();
           ctx.closePath()
         } break;
         case 2: {
           //折线
           ctx.beginPath()
-
           ctx.moveTo((pvs[0].x + startDX) * rat1, (pvs[0].y + startDY) * rat1)
           for (let i = 1; i < pvs.length; i++) {
             if (i == pvs.length - 1) {
@@ -255,15 +254,19 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       case 1:
         wl = stageRatio;
         break;
+      case 21:
       case 2:
         wl = 6 * stageRatio;
         break;
+      case 31:
       case 3:
         wl = 6 * stageRatio;
         break;
+      case 41:
       case 4:
         wl = 12 * stageRatio;
         break;
+      case 51:
       case 5:
         wl = 6 * stageRatio;
         break;
@@ -274,15 +277,19 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       case 1:
         wl = stageRatio;
         break;
+      case 21:
       case 2:
         wl = 6 * stageRatio;
         break;
+      case 31:
       case 3:
         wl = 6 * stageRatio;
         break;
+      case 41:
       case 4:
         wl = 12 * stageRatio;
         break;
+      case 51:
       case 5:
         wl = 6 * stageRatio;
         break;

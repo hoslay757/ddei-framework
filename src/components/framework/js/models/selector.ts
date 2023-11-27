@@ -327,7 +327,7 @@ class DDeiSelector extends DDeiRectangle {
       //计算线的操作点
       let lineModel = models[0];
       let type = DDeiModelArrtibuteValue.getAttrValueByState(lineModel, "type", true);
-
+      let { startDX, startDY, endDX, endDY } = lineModel.render.getPointShapeSize();
       let opvs = [];
       let opvsType = [];
       //开始点
@@ -364,13 +364,25 @@ class DDeiSelector extends DDeiRectangle {
                 opvs.push(new Vector3(pvs[i0].x, pvs[i0].y, 1))
                 opvsType.push(4);
               }
+              let stratX = pvs[i0].x
+              let stratY = pvs[i0].y
+              let endX = pvs[i3].x
+              let endY = pvs[i3].y
+              if (i0 == 0) {
+                stratX = pvs[i0].x + startDX
+                stratY = pvs[i0].y + startDY
+              }
+              if (i == pvs.length) {
+                endX = pvs[i3].x + endDX
+                endY = pvs[i3].y + endDY
+              }
               //计算三次贝赛尔曲线的落点，通过落点来操作图形
-              let btx = pvs[i0].x * DDeiUtil.p331t3 + DDeiUtil.p331t2t3 * pvs[i1].x + DDeiUtil.p33t21t3 * pvs[i2].x + DDeiUtil.p33t3 * pvs[i3].x
-              let bty = pvs[i0].y * DDeiUtil.p331t3 + DDeiUtil.p331t2t3 * pvs[i1].y + DDeiUtil.p33t21t3 * pvs[i2].y + DDeiUtil.p33t3 * pvs[i3].y
+              let btx = stratX * DDeiUtil.p331t3 + DDeiUtil.p331t2t3 * pvs[i1].x + DDeiUtil.p33t21t3 * pvs[i2].x + DDeiUtil.p33t3 * endX
+              let bty = stratY * DDeiUtil.p331t3 + DDeiUtil.p331t2t3 * pvs[i1].y + DDeiUtil.p33t21t3 * pvs[i2].y + DDeiUtil.p33t3 * endY
               opvs.push(new Vector3(btx, bty, 1))
               opvsType.push(4);
-              btx = pvs[i0].x * DDeiUtil.p661t3 + DDeiUtil.p661t2t3 * pvs[i1].x + DDeiUtil.p66t21t3 * pvs[i2].x + DDeiUtil.p66t3 * pvs[i3].x
-              bty = pvs[i0].y * DDeiUtil.p661t3 + DDeiUtil.p661t2t3 * pvs[i1].y + DDeiUtil.p66t21t3 * pvs[i2].y + DDeiUtil.p66t3 * pvs[i3].y
+              btx = stratX * DDeiUtil.p661t3 + DDeiUtil.p661t2t3 * pvs[i1].x + DDeiUtil.p66t21t3 * pvs[i2].x + DDeiUtil.p66t3 * endX
+              bty = stratY * DDeiUtil.p661t3 + DDeiUtil.p661t2t3 * pvs[i1].y + DDeiUtil.p66t21t3 * pvs[i2].y + DDeiUtil.p66t3 * endY
               opvs.push(new Vector3(btx, bty, 1))
               opvsType.push(4);
 

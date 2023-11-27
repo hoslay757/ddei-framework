@@ -4,6 +4,7 @@ import DDei from '../ddei';
 import DDeiAbstractShape from './shape';
 import DDeiUtil from '../util';
 import DDeiLink from './link';
+import { datas } from '@/components/editor/configs/layer';
 
 
 /**
@@ -86,6 +87,11 @@ class DDeiStage {
       stage.links = links;
       stage.refreshLinkCache()
     }
+    //初始化线
+    let lines = stage.getModelsByBaseType("DDeiLine");
+    lines.forEach(line => {
+      line.initPVS()
+    })
     return stage;
   }
 
@@ -470,6 +476,22 @@ class DDeiStage {
       }
     }
     return reutrnModel;
+  }
+
+  /**
+   * 根据基础模型获取控件
+   * @param bmt 基础模型类别
+   */
+  getModelsByBaseType(bmt: string): DDeiAbstractShape[] {
+    let returnValues = []
+    this.layers.forEach(layer => {
+      let datas = layer.getModelsByBaseType(bmt);
+      datas.forEach(dt => {
+        returnValues.push(dt);
+      });
+    })
+
+    return returnValues;
   }
 
   /**
