@@ -7,6 +7,7 @@
        @dragover="createControlOver"
        @drop="createControlDrop"
        @dragleave="createControlCancel"
+       @dblclick="canvasDBClick"
        @contextmenu.prevent>
   </div>
 </template>
@@ -31,6 +32,7 @@ import { throttle } from "lodash";
 import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
 import DDeiStage from "@/components/framework/js/models/stage";
 import DDeiEditorUtil from "../js/util/editor-util";
+import DDeiEnumKeyActionInst from "../js/enums/key-action-inst";
 
 export default {
   name: "DDei-Editor-CanvasView",
@@ -171,6 +173,22 @@ export default {
     }
   },
   methods: {
+    /**
+     * 画布双击
+     */
+    canvasDBClick(evt) {
+      let middleCanvas = document.getElementById(this.id);
+      let middleCanvasPos = DDeiUtil.getDomAbsPosition(middleCanvas);
+      if (
+        middleCanvasPos.left + 5 <= evt.clientX &&
+        middleCanvasPos.left + middleCanvas.offsetWidth - 5 >= evt.clientX
+      ) {
+        DDeiEnumKeyActionInst.StartQuickEdit.action(
+          evt,
+          this.editor.ddInstance
+        );
+      }
+    },
     /**
      * 焦点进入当前区域
      */
