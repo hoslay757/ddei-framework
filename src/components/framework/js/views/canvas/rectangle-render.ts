@@ -735,10 +735,10 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       width = 0
     }
     return {
-      x: this.model.x - width,
-      y: this.model.y - width,
-      width: this.model.width + 2 * width,
-      height: this.model.height + 2 * width
+      x: this.model.x + width,
+      y: this.model.y + width,
+      width: this.model.width - 2 * width,
+      height: this.model.height - 2 * width
     }
   }
 

@@ -91,6 +91,7 @@ class DDeiStage {
     let lines = stage.getModelsByBaseType("DDeiLine");
     lines.forEach(line => {
       line.initPVS()
+      line.initLinkModels();
     })
     return stage;
   }

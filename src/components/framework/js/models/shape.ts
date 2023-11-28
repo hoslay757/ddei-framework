@@ -357,6 +357,14 @@ abstract class DDeiAbstractShape {
       this.stage?.removeLink(link);
     })
 
+    let lines = this.stage?.getModelsByBaseType("DDeiLine");
+    //删除线链接
+    lines?.forEach(line => {
+      if (line.linkModels?.has(this.id)) {
+        line.linkModels.delete(this.id)
+      }
+    })
+
     this.render = null
   }
 

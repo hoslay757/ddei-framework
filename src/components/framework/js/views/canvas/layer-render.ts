@@ -758,7 +758,6 @@ class DDeiLayerCanvasRender {
                 model.syncVectors(item)
               } else {
                 let opPoint = this.model.getOpPointByPos(ex, ey);
-
                 //如果长度小于15，终止创建
                 let maxLength = 0
                 if (!opPoint?.model) {
@@ -907,6 +906,7 @@ class DDeiLayerCanvasRender {
             let pContainerModel = this.stageRender.currentOperateShape.pModel;
             if (!pContainerModel.layoutManager || pContainerModel.layoutManager.canChangePosition(ex, ey, this.model.shadowControls)) {
               let operateModels = []
+              let lines = this.stage?.getModelsByBaseType("DDeiLine");
               //同步影子元素的坐标大小等状态到当前模型
               this.model.shadowControls.forEach(item => {
                 let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
@@ -915,6 +915,22 @@ class DDeiLayerCanvasRender {
                 hasChange = true;
                 operateModels.push(model)
                 model.updateLinkModels();
+                //判定当前控件是否为某个线段的关联控件，如果是，更改关联点的dx和dy关系
+                lines?.forEach(line => {
+                  if (line.linkModels?.has(model.id)) {
+                    let lm = line.linkModels?.get(model.id);
+                    let point = null;
+                    if (lm.type == 1) {
+                      point = line.startPoint;
+                    } else if (lm.type == 2) {
+                      point = line.endPoint;
+                    } else if (lm.type == 3) {
+                      point = line.pvs[Math.floor(line.pvs.length / 2)];
+                    }
+                    lm.dx = model.cpv.x - point.x
+                    lm.dy = model.cpv.y - point.y
+                  }
+                })
               })
               pContainerModel?.layoutManager?.updateLayout(ex, ey, operateModels);
               operateModels?.forEach(item => {

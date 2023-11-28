@@ -1,9 +1,9 @@
-import DDeiConfig from '../config'
+import { MODEL_CLS, DDeiConfig } from '../config'
 import DDeiAbstractShape from './shape'
 import { Matrix3, Vector3 } from 'three';
 import DDeiUtil from '../util';
 import { debounce } from "lodash";
-import DDeiModelArrtibuteValue from './attribute/attribute-value';
+import DDeiLineLink from './linelink';
 /**
  * line（连线）
  * 主要样式属性：颜色、宽度、开始和结束节点样式、虚线、字体、文本样式
@@ -27,12 +27,7 @@ class DDeiLine extends DDeiAbstractShape {
     //开始和结束节点的类型
     this.etype = props.etype ? props.etype : 0;
     this.stype = props.stype ? props.stype : 0;
-    //文本内容
-    this.text = props.text ? props.text : "";
-    //字体，包含了选中/未选中，字体的名称，大小，颜色等配置
-    this.font = props.font ? props.font : null;
-    //文本样式（除字体外），包含了横纵对齐、文字方向、镂空、换行、缩小字体填充等文本相关内容
-    this.textStyle = props.textStyle ? props.textStyle : null;
+
     //透明度
     this.opacity = props.opacity
     //圆角
@@ -42,6 +37,7 @@ class DDeiLine extends DDeiAbstractShape {
 
     this.freeze = props.freeze ? props.freeze : 0;
 
+    this.linkModels = props.linkModels ? props.linkModels : new Map();
 
     this.updateLooseCanvas = debounce(this.updateLooseCanvas, 30)
   }
@@ -81,12 +77,12 @@ class DDeiLine extends DDeiAbstractShape {
   weight: number;
   //线段颜色
   color: string;
-  //字体，包含了选中/未选中，字体的名称，大小，颜色等配置
-  font: any;
-  //文本内容
-  text: string;
-  //文本样式（除字体外），包含了横纵对齐、文字方向、镂空、换行、缩小字体填充等文本相关内容
-  textStyle: any;
+  /**
+   * 线上的文本或者其他图形，图形的中点相对于线上某个点的坐标，持有一个增量
+   * 暂时只考虑：开始节点、结束节点，或者最中间的节点
+   */
+  linkModels: Map<string, DDeiLineLink>;
+
   // 本模型的唯一名称
   modelType: string = 'DDeiLine';
   // 本模型的基础图形
@@ -136,12 +132,64 @@ class DDeiLine extends DDeiAbstractShape {
     this.endPoint = this.pvs[this.pvs.length - 1]
 
     //根据开始节点和结束节点的关系，自动计算中间节点路径的坐标
-
     this.calPoints();
     this.calLoosePVS();
+    //联动更新链接控件
+    this.refreshLinkModels()
 
+  }
 
+  /**
+   * 初始化链接模型
+   */
+  initLinkModels() {
+    //加载子模型
+    let linkModels: Map<string, DDeiLineLink> = new Map<string, DDeiLineLink>();
+    for (let key in this.linkModels) {
+      let item = this.linkModels[key];
+      if (item?.dmid) {
+        let dm = this.stage.getModelById(item.dmid)
+        item.dm = dm
+        item.line = this;
+        let lm = new DDeiLineLink(item);
 
+        linkModels.set(key, lm)
+      }
+    }
+    this.linkModels = linkModels
+  }
+
+  /**
+   * 刷新链接模型
+   */
+  refreshLinkModels() {
+    //加载子模型
+    if (this.linkModels.has) {
+      this.linkModels.forEach(lm => {
+        if (lm.dm) {
+          //同步坐标关系
+          let oldCPVX = lm.dm.cpv.x;
+          let oldCPVY = lm.dm.cpv.y;
+          let point = null;
+          if (lm.type == 1) {
+            point = this.startPoint;
+          } else if (lm.type == 2) {
+            point = this.endPoint;
+          } else if (lm.type == 3) {
+            point = this.pvs[Math.floor(this.pvs.length / 2)];
+          }
+          let newCPVX = point.x + lm.dx;
+          let newCPVY = point.y + lm.dy;
+          let moveMatrix = new Matrix3(
+            1, 0, newCPVX - oldCPVX,
+            0, 1, newCPVY - oldCPVY,
+            0, 0, 1
+          )
+          lm.dm.transVectors(moveMatrix)
+          lm.dm.updateLinkModels();
+        }
+      })
+    }
   }
 
   /**
