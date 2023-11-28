@@ -448,6 +448,14 @@ class DDeiLine extends DDeiAbstractShape {
       this.stage?.removeLink(dl);
     })
     super.destroyed();
+    //移除自身所有附属控件
+    this.linkModels.forEach(lm => {
+      if (lm.dm) {
+        lm.dm.pModel.removeModel(lm.dm)
+      }
+    })
+    this.linkModels.clear()
+    this.linkModels = null;
   }
 
   syncVectors(source: DDeiAbstractShape, clonePV: boolean = false): void {
