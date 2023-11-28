@@ -723,6 +723,28 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
   /**
    * 计算除边框外的填充区域，用于填充颜色和字体
    */
+  getFillArea(): object {
+    //获取边框区域，实际填充区域=坐标-边框区域
+    let disabled = this.getBorderInfo(null, 1, "disabled");
+    let color = this.getBorderInfo(null, 1, "color");
+    let opacity = this.getBorderInfo(null, 1, "opacity");
+    let width = this.getBorderInfo(null, 1, "width");
+
+    //计算填充的原始区域
+    if (!(!disabled && color && (!opacity || opacity > 0) && width > 0)) {
+      width = 0
+    }
+    return {
+      x: this.model.x - width,
+      y: this.model.y - width,
+      width: this.model.width + 2 * width,
+      height: this.model.height + 2 * width
+    }
+  }
+
+  /**
+   * 计算除边框外的填充区域，用于填充颜色和字体
+   */
   getFillAreaPVS(): object {
     //获取边框区域，实际填充区域=坐标-边框区域
     let topDisabled = this.getCachedValue("border.top.disabled");
@@ -837,6 +859,14 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
    */
   mouseMove(evt: Event): void {
     super.mouseMove(evt);
+  }
+
+  /**
+   * 鼠标双击
+   * @param evt 
+   */
+  dblClick(evt: Event): void {
+
   }
 }
 

@@ -65,17 +65,11 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
             editor.changeState(DDeiEditorState.DESIGNING);
           }
         }
-        let rotate = model.getAbsRotate()
+        let rotate = model.rotate
         let stageRatio = ddInstance.stage.getStageRatio();
-        let pos = new Vector3(fillArea.x * stageRatio, fillArea.y * stageRatio, 1)
+        let pos = new Vector3(model.pvs[0].x, model.pvs[0].y, 1)
         if (rotate != 0) {
-          let pv1Pos = model.currentPointVectors[0];
-          let modelAbsPos = model.getAbsPosition()
-          let dx = (fillArea.x - modelAbsPos.x) * stageRatio
-          let dy = (fillArea.y - modelAbsPos.y) * stageRatio
-          pos.x = pv1Pos.x + dx
-          pos.y = pv1Pos.y + dy
-          let pvc = new Vector3(model.centerPointVector.x + dx, model.centerPointVector.y + dy, 1);
+          let pvc = new Vector3(model.cpv.x, model.cpv.y, 1);
           let angle = (rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
           //计算input的正确打开位置，由节点0
           let move1Matrix = new Matrix3(
@@ -99,8 +93,9 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
         inputEle.style.color = DDeiUtil.getColor(model.render.getCachedValue("font.color"))
         inputEle.style.width = (fillArea.width - 1) * stageRatio + "px";
         inputEle.style.height = (fillArea.height - 1) * stageRatio + "px";
-        inputEle.style.left = canvasPos.left + pos.x + 1 + "px";
-        inputEle.style.top = canvasPos.top + pos.y + 1 + "px";
+
+        inputEle.style.left = canvasPos.left + pos.x + ddInstance.stage.wpv.x + 1 + "px";
+        inputEle.style.top = canvasPos.top + pos.y + ddInstance.stage.wpv.y + 1 + "px";
         inputEle.style.transform = "rotate(" + rotate + "deg)";
         inputEle.style.backgroundColor = "red"
         inputEle.style.display = "block";
