@@ -47,7 +47,7 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
             ex -= stage.wpv.x;
             ey -= stage.wpv.y;
             let cdist = DDeiUtil.getPointDistance(model.pvs[0].x, model.pvs[1].y, model.pvs[model.pvs.length - 1].x, model.pvs[model.pvs.length - 1].y);
-            let sdist = DDeiUtil.getPointDistance(ex, ey, model.pvs[0].x, model.pvs[1].y);
+            let sdist = DDeiUtil.getPointDistance(ex, ey, model.pvs[0].x, model.pvs[0].y);
             let edist = DDeiUtil.getPointDistance(ex, ey, model.pvs[model.pvs.length - 1].x, model.pvs[model.pvs.length - 1].y);
             //开始
             if (sdist < cdist / 5) {
