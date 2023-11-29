@@ -411,13 +411,13 @@ class DDeiLayer {
     if (x && y && (this.opPoints?.length > 0 || this.centerOpPoints?.length > 0)) {
       for (let i = 0; i < this.opPoints?.length; i++) {
         let point = this.opPoints[i]
-        if (Math.abs(x - point.x) <= 10 && Math.abs(y - point.y) <= 10) {
+        if (Math.abs(x - point.x) <= 8 && Math.abs(y - point.y) <= 8) {
           return point;
         }
       }
       for (let i = 0; i < this.centerOpPoints?.length; i++) {
         let point = this.centerOpPoints[i]
-        if (Math.abs(x - point.x) <= 10 && Math.abs(y - point.y) <= 10) {
+        if (Math.abs(x - point.x) <= 8 && Math.abs(y - point.y) <= 8) {
           return point;
         }
       }
