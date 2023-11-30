@@ -5,6 +5,7 @@ import DDeiAbstractShape from './shape';
 import DDeiUtil from '../util';
 import DDeiLink from './link';
 import { datas } from '@/components/editor/configs/layer';
+import DDeiLine from './line';
 
 
 /**
@@ -288,6 +289,8 @@ class DDeiStage {
     for (let i = 0; i < this.layers.length; i++) {
       this.layers[i].initRender();
     }
+    //计算线的交叉
+    DDeiLine.calLineCrossSync(this.layers[this.layerIndex]);
   }
 
   /**

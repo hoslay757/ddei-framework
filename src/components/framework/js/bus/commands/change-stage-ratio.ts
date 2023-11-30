@@ -5,6 +5,7 @@ import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
 import { Matrix3, Vector3 } from 'three';
 import DDeiUtil from '../../util';
+import DDeiLine from '../../models/line';
 /**
  * 缩放画布总线Command
  * 图形类Command一般在普通Command之后执行
@@ -48,6 +49,8 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
           layer.midList.forEach(mid => {
             let model = layer.models.get(mid);
             model.transVectors(scaleMatrix)
+            //更新线段
+            DDeiLine.calLineCross(layer)
           })
         });
         let vbn = stage.wpv.y / stage.height;
@@ -57,6 +60,9 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
         //计算位置比例,保持位置比例
         stage.wpv.y = stage.height * vbn
         stage.wpv.x = stage.width * hbn
+
+
+
         return true;
       }
     }

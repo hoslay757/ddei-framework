@@ -132,7 +132,10 @@ export default {
       this.editor.ddInstance
     );
 
-    if (this.editBefore) {
+    if (
+      this.editBefore &&
+      this.editor?.ddInstance?.stage?.selectedModels?.size > 0
+    ) {
       let mds = Array.from(
         this.editor?.ddInstance?.stage?.selectedModels?.values()
       );
