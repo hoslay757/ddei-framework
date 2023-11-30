@@ -91,7 +91,7 @@ class DDeiLine extends DDeiAbstractShape {
     lines.forEach(line => {
       line.clps = {}
     })
-    let jumpLine = DDeiModelArrtibuteValue.getAttrValueByState(layer.stage, "grid.jumpline", true);
+    let jumpLine = DDeiModelArrtibuteValue.getAttrValueByState(layer.stage, "global.jumpline", true);
     if (jumpLine == 1) {
       let len = lines.length
       let rectMap = new Map();

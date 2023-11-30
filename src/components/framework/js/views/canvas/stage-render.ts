@@ -3,6 +3,7 @@ import DDeiEnumBusCommandType from '../../enums/bus-command-type.js';
 import DDeiEnumOperateState from '../../enums/operate-state.js';
 import DDeiEnumOperateType from '../../enums/operate-type.js';
 import DDeiModelArrtibuteValue from '../../models/attribute/attribute-value.js';
+import DDeiLine from '../../models/line.js';
 import DDeiSelector from '../../models/selector.js';
 import DDeiAbstractShape from '../../models/shape.js';
 import DDeiStage from '../../models/stage.js';
@@ -145,6 +146,13 @@ class DDeiStageCanvasRender {
 
       //绘制滚动条
       this.drawScroll();
+
+
+      let jumpLine = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "global.jumpline", true);
+      if (this.upJumpLine == undefined || this.upJumpLine == null || this.upJumpLine != jumpLine) {
+        this.upJumpLine = jumpLine
+        DDeiLine.calLineCrossSync(this.model.layers[this.model.layerIndex])
+      }
 
       if (this.viewAfter) {
         this.viewAfter(

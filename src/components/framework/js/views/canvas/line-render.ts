@@ -138,7 +138,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
 
     let pvs = this.model.pvs;
     //条线
-    let jumpLine = DDeiModelArrtibuteValue.getAttrValueByState(this.stage, "grid.jumpline", true);
+    let jumpLine = DDeiModelArrtibuteValue.getAttrValueByState(this.stage, "global.jumpline", true);
     //绘制线段
     if (pvs?.length >= 2 && color && (!opacity || opacity > 0) && weight > 0) {
       //获取图标图形

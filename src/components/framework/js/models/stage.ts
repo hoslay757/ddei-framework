@@ -32,6 +32,7 @@ class DDeiStage {
     this.paper = props.paper;
     this.ruler = props.ruler;
     this.grid = props.grid;
+    this.global = props.global;
     this.links = []
     props?.links?.forEach(link => {
       this.links.push(link)

@@ -258,7 +258,7 @@ export const styles = {
     },
     {
       'id': '999001304',
-      'code': 'grid.jumpline',
+      'code': 'global.jumpline',
       'name': '跳线',
       'desc': '遇到线交叉时，展示跳线',
       'group': '辅助功能',
