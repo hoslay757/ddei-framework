@@ -93,6 +93,7 @@ class DDeiLine extends DDeiAbstractShape {
     })
     let jumpLine = DDeiModelArrtibuteValue.getAttrValueByState(layer.stage, "global.jumpline", true);
     if (jumpLine == 1) {
+      let wl = 12 * layer.stage?.getStageRatio();
       let len = lines.length
       let rectMap = new Map();
       let corssLinePoints = []
@@ -134,7 +135,13 @@ class DDeiLine extends DDeiAbstractShape {
                       -Math.sin(pAngle), Math.cos(pAngle), 0,
                       0, 0, 1);
                     pVectorUnit.applyMatrix3(pRotateMatrix)
-                    corssLinePoints.push({ line: l1, index: pi, cp: crossPoint, unit: pVectorUnit, r: pRotate, dist: DDeiUtil.getPointDistance(p1.x, p1.y, crossPoint.x, crossPoint.y) })
+                    let sdist = DDeiUtil.getPointDistance(p1.x, p1.y, crossPoint.x, crossPoint.y)
+                    let edist = DDeiUtil.getPointDistance(p2.x, p2.y, crossPoint.x, crossPoint.y)
+                    let s1dist = DDeiUtil.getPointDistance(p3.x, p3.y, crossPoint.x, crossPoint.y)
+                    let e1dist = DDeiUtil.getPointDistance(p4.x, p4.y, crossPoint.x, crossPoint.y)
+                    if (sdist > wl && edist > wl && s1dist > wl && e1dist > wl) {
+                      corssLinePoints.push({ line: l1, index: pi, cp: crossPoint, unit: pVectorUnit, r: pRotate, dist: sdist })
+                    }
                   }
                 }
               }
