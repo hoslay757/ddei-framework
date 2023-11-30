@@ -1366,7 +1366,364 @@ class DDeiUtil {
     return /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent) > -1  // 是Safari为true，
   }
 
+  /**
+   * 对输入数据进行合并拆分等处理，主要用来处理分页打印，多页打印等功能
+   */
+  static analysisDataFromTemplate(iData, templateJSON) {
+    let tableListConfig = {};
+    let pdJSON = templateJSON;
+    //循环模板，找到所有表格控件，读取配置
+    for (let j in pdJSON.rootModels) {
+      //处理bindField
+      if (pdJSON.rootModels[j].modelType == "PDTable") {
+        //找到策略为超出后分页的表格
+        let outDataRowStrategy = pdJSON.rootModels[j]["outDataRowStrategy"];
+        if (outDataRowStrategy == 1 || outDataRowStrategy == '1') {
+          //找到最大数据行的配置
+          let maxDataRow = pdJSON.rootModels[j]["maxDataRow"];
+          if (maxDataRow != 0 && maxDataRow != null && maxDataRow != '') {
+            //找到第一个绑定的字段
+            let table = pdJSON.rootModels[j];
+            //计算最大数据行和最小数据行
+            let dataRowStart = -1;
+            let dataRowEnd = -1;
+            //第一个绑定的列表key
+            let listKey = null;
+            //循环表格计算数据区域和表格的配置数据
+            for (let ri = 0; ri < table.rows.length; ri++) {
+              for (let rj = 0; rj < table.rows[ri].length; rj++) {
+                let curCell = table.rows[ri][rj];
+                //数据行
+                if (curCell.dataRow == 2 || curCell.dataRow == '2' || curCell.attrs['dataRow'] == 2 || curCell.attrs['dataRow'] == '2') {
+                  if (dataRowStart == -1) {
+                    dataRowStart = ri;
+                  }
+                  if (dataRowEnd < ri) {
+                    dataRowEnd = ri;
+                  }
+                  let expressContent = null;
+                  //获取绑定字段
+                  if (curCell.bindField || curCell.attrs.bindField) {
+                    expressContent = curCell.bindField ? curCell.bindField : curCell.attrs.bindField;
+                  }
+                  //获取text中的绑定字段
+                  else if (curCell.text && curCell.text.indexOf("#{") != -1) {
+                    let t = curCell.text;
+                    let reg = /#\{[^\{\}]*\}/g;
+                    let result = reg.exec(t);
+                    if (result != null && result.length > 0) {
+                      let rs = result[0].replaceAll(" ", "");
+                      expressContent = rs.substring(2, rs.length - 1);
+                    }
+                  }
+                  //解析表达式中的列表绑定
+                  if (expressContent) {
+                    //去掉表达式中的空格
+                    expressContent = expressContent.replaceAll(" ", "");
+                    let expressArray = expressContent.split(/\+|\-|\*|\//g);
+                    if (expressArray != null && expressArray.length > 0) {
+                      //循环对每一个子项进行求值,并返回替换表达式中的值
+                      for (let i = 0; i < expressArray.length; i++) {
+                        let ea = expressArray[i];
+                        if (ea.indexOf('.') != -1) {
+                          try {
+                            listKey = ea.split('.')[0];
+                          } catch (e) { }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            if (listKey) {
+              //能输出的列表数据行=最大数据行/(dataRowEnd-dataRowStart+1)
+              let rowNum = parseInt(maxDataRow / (dataRowEnd - dataRowStart + 1));
+              if (rowNum >= 1) {
+                tableListConfig[listKey] = rowNum;
+              }
+            }
+          }
+        }
+      }
+    }
+    let newIDatas = [];
+    //根据配置，对数据进行拆分
+    for (let listKey in tableListConfig) {
+      if (iData[listKey] && tableListConfig[listKey] && tableListConfig[listKey] > 0 && iData[listKey].length > tableListConfig[listKey]) {
+        //拆分后的数组
+        let subArrays = this.subArrayGroup(iData[listKey], tableListConfig[listKey]);
+        //执行拆分
+        for (let si = 0; si < subArrays.length; si++) {
+          let newIData = cloneDeep(iData);
+          //替换拆分的数据
+          newIData[listKey] = subArrays[si];
+          newIDatas[newIDatas.length] = newIData;
+        }
+      }
+    }
+    //如果未执行替换，则原样返回
+    if (newIDatas.length == 0) {
+      newIDatas[0] = iData;
+    }
+    return newIDatas;
+  }
 
+  /**
+   * 以templateJSON为模板，循环inputData，替换模板值后，生成新的JSON数组返回
+   * 如果存在bindField则全部利用bindField进行替换
+   * 如果不存在bindField但在text中出现了#{}包起来的表达式，则执行作为部分表达式替换
+   * 循环表格的数据，对表格进行循环输出，并处理分页打印
+   */
+  static analysisBindData(inputData, templateJSON) {
+    //将传入的数据与表格进行对比，根据是否分页打印对数据本身进行拆分
+    let processDatas = [];
+    for (let i = 0; i < inputData.length; i++) {
+      let idata = inputData[i];
+      let dataList = this.analysisDataFromTemplate(idata, templateJSON);
+      processDatas.push.apply(processDatas, dataList);
+    }
+    inputData = processDatas;
+    let printJSON = [];
+    //根据传入数据的数量，复制设计器，并替换里面的值
+    for (let i = 0; i < inputData.length; i++) {
+      let idata = inputData[i];
+      let pdJSON = JSON.stringify(templateJSON.toJSON());
+      eval("pdJSON = " + pdJSON + ";");
+      //处理水印
+      let pdPaper = pdJSON["pdPaper"];
+      let watermarkReplaceData = this.processTextOrBindFieldExpress(pdPaper, idata);
+      if (watermarkReplaceData) {
+        pdPaper.watermarkBase64 = watermarkReplaceData;
+        pdPaper.attrs['watermarkBase64'] = watermarkReplaceData;
+        pdPaper.watermark = watermarkReplaceData;
+        pdPaper.attrs['watermark'] = watermarkReplaceData;
+        pdPaper.bindField = null;
+        pdPaper.attrs['bindField'] = null;
+      }
+      //用当前的值替换设计器中的值
+      for (let j in pdJSON.rootModels) {
+        let control = pdJSON.rootModels[j];
+        if (control.modelType == 'PDTable') {
+          let table = control;
+          let dataRowStart = -1;
+          let dataRowEnd = -1;
+          let iDataList = null;
+          //获取表格输出的数据行的开始行与结束行
+          for (let ri = 0; ri < table.rows.length; ri++) {
+            for (let rj = 0; rj < table.rows[ri].length; rj++) {
+              var curCell = table.rows[ri][rj];
+              if (curCell.dataRow == 2 || curCell.dataRow == '2' || curCell.attrs['dataRow'] == 2 || curCell.attrs['dataRow'] == '2') {
+                if (dataRowStart == -1) {
+                  dataRowStart = ri;
+                }
+                if (dataRowEnd < ri) {
+                  dataRowEnd = ri;
+                }
+                if (!iDataList) {
+                  let expressContent = null;
+                  //获取绑定字段
+                  if (curCell.bindField || curCell.attrs.bindField) {
+                    expressContent = curCell.bindField ? curCell.bindField : curCell.attrs.bindField;
+                  }
+                  //获取text中的绑定字段
+                  else if (curCell.text && curCell.text.indexOf("#{") != -1) {
+                    let t = curCell.text;
+                    let reg = /#\{[^\{\}]*\}/g;
+                    let result = reg.exec(t);
+                    if (result != null && result.length > 0) {
+                      let rs = result[0].replaceAll(" ", "");
+                      expressContent = rs.substring(2, rs.length - 1);
+                    }
+                  }
+                  //解析表达式中的列表绑定
+                  if (expressContent) {
+                    //去掉表达式中的空格
+                    expressContent = expressContent.replaceAll(" ", "");
+                    let expressArray = expressContent.split(/\+|\-|\*|\//g);
+                    if (expressArray != null && expressArray.length > 0) {
+                      //循环对每一个子项进行求值,并返回替换表达式中的值
+                      for (let ei = 0; ei < expressArray.length; ei++) {
+                        let ea = expressArray[ei];
+                        if (ea.indexOf('.') != -1) {
+                          try {
+                            let listKey = ea.split('.')[0];
+                            iDataList = idata[listKey];
+                          } catch (e) { }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          //循环处理数据行与非数据行
+          for (var ri = 0; ri < table.rows.length; ri++) {
+            //如果是定义了数据的行,则进行表格样式（合并单元格）与绑定关系的复制，并替换值，随后跳过数据行区域，输出普通数据行区域
+            if (ri >= dataRowStart && ri <= dataRowEnd) {
+              let sourceRowNum = dataRowEnd - dataRowStart + 1;
+              //执行同步复制
+              let mergeCells = [];
+              //循环数据，执行数据复制
+
+              for (var c = 1; c < iDataList.length; c++) {
+                for (var ci = dataRowEnd + (c - 1) * sourceRowNum + 1; ci < dataRowEnd + c * sourceRowNum + 1; ci++) {
+                  let offsetI = null;
+                  if (sourceRowNum == 1) {
+                    offsetI = dataRowStart
+                  } else {
+                    offsetI = (ci - dataRowEnd + 1) % sourceRowNum + dataRowStart
+                  }
+                  for (let cj = 0; cj < table.rows[ci].length; cj++) {
+                    //获取要复制的单元格
+                    let sourceCell = table.rows[offsetI][cj];
+                    //取得目标单元格
+                    let targetCell = table.rows[ci][cj];
+                    //执行列表值绑定计算
+
+                    let replaceData = this.processTextOrBindFieldExpress(sourceCell, idata, c);
+                    targetCell.text = replaceData;
+                    targetCell.attrs['text'] = replaceData;
+                    targetCell.bindField = null;
+                    targetCell.attrs['bindField'] = null;
+                    targetCell.convertToRMBY = '1';
+                    //字体样式
+                    targetCell.align = sourceCell.align;
+                    targetCell.attrs.align = sourceCell.attrs.align;
+                    targetCell.valign = sourceCell.valign;
+                    targetCell.attrs.valign = sourceCell.attrs.valign;
+                    targetCell.feed = sourceCell.feed;
+                    targetCell.attrs.feed = sourceCell.attrs.feed;
+                    targetCell.autoScaleFill = sourceCell.autoScaleFill;
+                    targetCell.attrs.autoScaleFill = sourceCell.attrs.autoScaleFill;
+                    targetCell.font = sourceCell.font;
+                    targetCell.attrs.font = sourceCell.attrs.font;
+                    targetCell.fill = sourceCell.fill;
+                    targetCell.attrs.fill = sourceCell.attrs.fill;
+                    targetCell.border = sourceCell.border;
+                    targetCell.attrs.border = sourceCell.attrs.border;
+                    //记录合并单元格
+                    if (sourceCell.mergeRowNum > 1 || sourceCell.mergeColNum > 1) {
+                      targetCell.mergeRowNum = sourceCell.mergeRowNum;
+                      targetCell.mergeColNum = sourceCell.mergeColNum;
+                      mergeCells[mergeCells.length] = targetCell;
+                    }
+                  }
+                }
+              }
+
+              //执行合并单元格
+              for (let mi = 0; mi < mergeCells.length; mi++) {
+                let mc = mergeCells[mi];
+                //合并单元格
+                this.mergeCells(table, mc);
+              }
+              //处理绑定的数据行
+              for (var ci = dataRowStart; ci <= dataRowEnd; ci++) {
+                for (let cj = 0; cj < table.rows[ci].length; cj++) {
+                  let sourceCell = table.rows[ci][cj];
+                  //执行列表值绑定计算
+                  let replaceData = this.processTextOrBindFieldExpress(sourceCell, idata, 0);
+                  sourceCell.text = replaceData;
+                  sourceCell.attrs['text'] = replaceData;
+                  sourceCell.bindField = null;
+                  sourceCell.attrs['bindField'] = null;
+                  sourceCell.convertToRMBY = '1';
+                }
+              }
+              //跳过已处理的数据行
+              ri = dataRowStart + iDataList.length * sourceRowNum
+            }
+            if (ri < table.rows.length) {
+              //处理普通单元格
+              for (var rj = 0; rj < table.rows[ri].length; rj++) {
+                var curCell = table.rows[ri][rj];
+                let replaceData = this.processTextOrBindFieldExpress(curCell, idata, ri);
+                curCell.text = replaceData;
+                curCell.attrs['text'] = replaceData;
+                curCell.bindField = null;
+                curCell.attrs['bindField'] = null;
+                curCell.convertToRMBY = '1';
+              }
+            }
+          }
+        } else if (control.modelType == 'PDImage') {
+          let replaceData = this.processTextOrBindFieldExpress(control, idata);
+          if (replaceData) {
+            control.base64 = replaceData;
+            control.attrs['base64'] = replaceData;
+            control.src = replaceData;
+            control.attrs['src'] = replaceData;
+            control.bindField = null;
+            control.attrs['bindField'] = null;
+          }
+        } else {
+          let replaceData = this.processTextOrBindFieldExpress(control, idata);
+          control.text = replaceData;
+          control.attrs['text'] = replaceData;
+          control.bindField = null;
+          control.attrs['bindField'] = null;
+          control.convertToRMBY = '1';
+        }
+      }
+      printJSON[i] = pdJSON;
+    }
+
+    return printJSON;
+  }
+
+
+  /**
+   * 用于处理绑定字段或文本的表达式替换
+   */
+  static processTextOrBindFieldExpress(control, idata, row) {
+    //处理bindField
+    if (control.bindField || control.attrs.bindField) {
+      //简单做一个替换程序
+      let replaceData = "";
+      //判断表达式的类型，普通类型、对象、对象列表以及其他类型
+      let expressContent = control.bindField ? control.bindField : control.attrs.bindField;
+      //执行表达式处理与替换
+      replaceData = this.analysisExpress(expressContent, idata, row);
+      if (!replaceData) {
+        replaceData = "";
+      }
+      if (control.attrs.convertToRMBY == 2 || control.attrs.convertToRMBY == '2' || control.convertToRMBY == 2 || control.convertToRMBY == '2') {
+        replaceData = PDSetting.dealBigMoney(replaceData);
+      }
+      return replaceData;
+    }
+    //处理text
+    else if (control.text && control.text.indexOf("#{") != -1) {
+      let t = control.text;
+      let replaceData = "";
+      while (t && t != '') {
+        let reg = /#\{[^\{\}]*\}/g;
+        let result = reg.exec(t);
+        if (result != null && result.length > 0) {
+          replaceData += t.substring(0, result.index);
+          let rs = result[0].replaceAll(" ", "");
+          let aer = this.analysisExpress(rs.substring(2, rs.length - 1), idata, row);
+          if (control.attrs.convertToRMBY == 2 || control.attrs.convertToRMBY == '2' || control.convertToRMBY == 2 || control.convertToRMBY == '2') {
+            aer = this.dealBigMoney(aer);
+          }
+          replaceData += aer;
+          t = t.substr(result.index + result[0].length);
+        } else {
+          replaceData += t;
+          break;
+        }
+      }
+      return replaceData;
+    } else if (control.text) {
+      if (control.attrs.convertToRMBY == 2 || control.attrs.convertToRMBY == '2' || control.convertToRMBY == 2 || control.convertToRMBY == '2') {
+        return this.dealBigMoney(control.text);
+      } else {
+        return control.text;
+      }
+    }
+  }
 }
 
 export default DDeiUtil
