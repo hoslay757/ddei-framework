@@ -16,6 +16,7 @@ import DDeiStageCanvasRender from './stage-render.js';
 import { Vector3 } from 'three';
 import { xor } from 'lodash';
 import DDeiLink from '../../models/link.js';
+import line from '@/components/editor/configs/controls/line.js';
 /**
  * DDeiLayer的渲染器类，用于渲染文件
  * 渲染器必须要有模型才可以初始化

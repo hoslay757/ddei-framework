@@ -153,10 +153,6 @@ export default {
       //属性值
       let value = parser.parseValue(this.attrDefine.value);
       DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, value);
-      if (this.attrDefine.code == "type") {
-        debugger;
-      }
-      console.log(this.attrDefine.code);
       this.attrDefine.doCascadeDisplayByValue();
       this.editor.ddInstance.stage.selectedModels.forEach((element) => {
         //推送信息进入总线

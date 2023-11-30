@@ -916,6 +916,49 @@ class DDeiUtil {
   }
 
   /**
+   * 取得两条线相交的点
+   * @param p1 线1点1
+   * @param p2 线1点2
+   * @param p3 线2点1
+   * @param p4 线2点2
+   * @returns 
+   */
+  static getLineCorssPoint(p1: { x: number, y: number }, p2: { x: number, y: number }, p3: { x: number, y: number }, p4: { x: number, y: number }) {
+
+    let abc = (p1.x - p3.x) * (p2.y - p3.y) - (p1.y - p3.y) * (p2.x - p3.x);
+    let abd = (p1.x - p4.x) * (p2.y - p4.y) - (p1.y - p4.y) * (p2.x - p4.x);
+    if (abc * abd >= 0) {
+      return null;
+    }
+
+    let cda = (p3.x - p1.x) * (p4.y - p1.y) - (p3.y - p1.y) * (p4.x - p1.x);
+    let cdb = cda + abc - abd;
+    if (cda * cdb >= 0) {
+      return null;
+    }
+
+    let t = cda / (abd - abc);
+    let dx = t * (p2.x - p1.x),
+      dy = t * (p2.y - p1.y);
+    return { x: p1.x + dx, y: p1.y + dy };
+
+  }
+
+  static isRectCorss(rect1, rect2): boolean {
+    let maxX, maxY, minX, minY
+    maxX = rect1.x + rect1.width >= rect2.x + rect2.width ? rect1.x + rect1.width : rect2.x + rect2.width
+    maxY = rect1.y + rect1.height >= rect2.y + rect2.height ? rect1.y + rect1.height : rect2.y + rect2.height
+    minX = rect1.x <= rect2.x ? rect1.x : rect2.x
+    minY = rect1.y <= rect2.y ? rect1.y : rect2.y
+
+    if (maxX - minX <= rect1.width + rect2.width && maxY - minY <= rect1.height + rect2.height) {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  /**
    * 计算线段相对于窗口的角度
    */
   static getLineAngle(x1: number, y1: number, x2: number, y2: number): number {

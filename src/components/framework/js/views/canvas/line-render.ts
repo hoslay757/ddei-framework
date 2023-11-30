@@ -155,11 +155,20 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       }
       //颜色
       ctx.strokeStyle = DDeiUtil.getColor(color);
+      let crossWeidht = 4 * stageRatio;
       switch (type) {
         case 1: {
           //直线
           ctx.beginPath()
           ctx.moveTo((pvs[0].x + startDX) * rat1, (pvs[0].y + startDY) * rat1)
+          if (this.model.clps[0]) {
+            let clps = this.model.clps[0];
+            for (let c = 0; c < clps.length; c++) {
+              let cpi = clps[c].cp;
+              let r = clps[c].r
+              ctx.arc(cpi.x * rat1, cpi.y * rat1, crossWeidht * rat1, (Math.PI / 180) * (r + 180), (Math.PI / 180) * r, true);
+            }
+          }
           ctx.lineTo((pvs[pvs.length - 1].x + endDX) * rat1, (pvs[pvs.length - 1].y + endDY) * rat1)
           ctx.stroke();
           ctx.closePath()
@@ -169,10 +178,26 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
           ctx.beginPath()
           ctx.moveTo((pvs[0].x + startDX) * rat1, (pvs[0].y + startDY) * rat1)
           for (let i = 1; i < pvs.length; i++) {
-            if (i == pvs.length - 1) {
-              ctx.lineTo((pvs[i].x + endDX) * rat1, (pvs[i].y + endDY) * rat1)
+            //如果存在交错点，则截断线段生成
+            if (this.model.clps[i - 1]) {
+              let clps = this.model.clps[i - 1];
+              for (let c = 0; c < clps.length; c++) {
+                let cpi = clps[c].cp;
+                let r = clps[c].r
+                ctx.arc(cpi.x * rat1, cpi.y * rat1, crossWeidht * rat1, (Math.PI / 180) * (r + 180), (Math.PI / 180) * r, true);
+              }
+              //绘制剩下的线段
+              if (i == pvs.length - 1) {
+                ctx.lineTo((pvs[i].x + endDX) * rat1, (pvs[i].y + endDY) * rat1)
+              } else {
+                ctx.arcTo(pvs[i].x * rat1, pvs[i].y * rat1, pvs[i + 1].x * rat1, pvs[i + 1].y * rat1, round * rat1);
+              }
             } else {
-              ctx.arcTo(pvs[i].x * rat1, pvs[i].y * rat1, pvs[i + 1].x * rat1, pvs[i + 1].y * rat1, round * rat1);
+              if (i == pvs.length - 1) {
+                ctx.lineTo((pvs[i].x + endDX) * rat1, (pvs[i].y + endDY) * rat1)
+              } else {
+                ctx.arcTo(pvs[i].x * rat1, pvs[i].y * rat1, pvs[i + 1].x * rat1, pvs[i + 1].y * rat1, round * rat1);
+              }
             }
           }
           ctx.stroke();

@@ -1,4 +1,6 @@
+import { debounce } from 'lodash';
 import DDeiConfig, { MODEL_CLS } from '../config'
+import DDeiEnumBusCommandType from '../enums/bus-command-type';
 import DDeiEnumControlState from '../enums/control-state';
 import DDeiUtil from '../util';
 import DDeiAbstractShape from './shape';
@@ -24,6 +26,8 @@ class DDeiLayer {
     this.print = props.print ? props.print : false;
     this.unicode = props.unicode ? props.unicode : DDeiUtil.getUniqueCode()
     this.bg = props.bg
+
+
 
   }
 
@@ -258,6 +262,7 @@ class DDeiLayer {
     })
     return returnValues;
   }
+
 
   /**
      * 获取当前图形的除layer的所有父节点对象
