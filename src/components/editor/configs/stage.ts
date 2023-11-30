@@ -256,6 +256,21 @@ export const styles = {
       'hiddenTitle': true,
       'visiable': true
     },
+    {
+      'id': '999001304',
+      'code': 'grid.jumpline',
+      'name': '跳线',
+      'desc': '遇到线交叉时，展示跳线',
+      'group': '辅助功能',
+      'controlType': 'switch-checkbox',
+      'dataType': 'integer',
+      'defaultValue': 1,
+      'type': 1,
+      'orderNo': 4,
+      'display': 'column',
+      'hiddenTitle': true,
+      'visiable': true
+    },
 
   ],
   'visiable': false,

@@ -137,7 +137,8 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     let opacity = tempLine?.opacity ? tempLine.opacity : this.getCachedValue("opacity");
 
     let pvs = this.model.pvs;
-
+    //条线
+    let jumpLine = DDeiModelArrtibuteValue.getAttrValueByState(this.stage, "grid.jumpline", true);
     //绘制线段
     if (pvs?.length >= 2 && color && (!opacity || opacity > 0) && weight > 0) {
       //获取图标图形
@@ -161,7 +162,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
           //直线
           ctx.beginPath()
           ctx.moveTo((pvs[0].x + startDX) * rat1, (pvs[0].y + startDY) * rat1)
-          if (this.model.clps[0]) {
+          if (this.model.clps[0] && jumpLine == 1) {
             let clps = this.model.clps[0];
             for (let c = 0; c < clps.length; c++) {
               let cpi = clps[c].cp;
@@ -179,7 +180,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
           ctx.moveTo((pvs[0].x + startDX) * rat1, (pvs[0].y + startDY) * rat1)
           for (let i = 1; i < pvs.length; i++) {
             //如果存在交错点，则截断线段生成
-            if (this.model.clps[i - 1]) {
+            if (this.model.clps[i - 1] && jumpLine == 1) {
               let clps = this.model.clps[i - 1];
               for (let c = 0; c < clps.length; c++) {
                 let cpi = clps[c].cp;

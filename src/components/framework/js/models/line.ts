@@ -6,6 +6,7 @@ import { debounce } from "lodash";
 import DDeiLineLink from './linelink';
 import DDeiLayer from './layer';
 import DDeiEnumBusCommandType from '../enums/bus-command-type';
+import DDeiModelArrtibuteValue from './attribute/attribute-value';
 /**
  * line（连线）
  * 主要样式属性：颜色、宽度、开始和结束节点样式、虚线、字体、文本样式
@@ -84,80 +85,85 @@ class DDeiLine extends DDeiAbstractShape {
   }
 
   static calLineCross(layer: DDeiLayer): void {
+
     let lines = layer.getModelsByBaseType("DDeiLine");
-    let len = lines.length
-    let rectMap = new Map();
-    let corssLinePoints = []
-    for (let i = 0; i < len - 1; i++) {
-      let l1 = lines[i];
-      if (l1.type == 3) {
-        continue;
-      }
-      if (!rectMap.has(l1.id)) {
-        rectMap.set(l1.id, DDeiAbstractShape.getOutRectByPV([l1]))
-      }
-      let l1Rect = rectMap.get(l1.id);
-      for (let j = i + 1; j < len; j++) {
-        let l2 = lines[j];
-        if (l2.type == 3) {
+    //遍历，生成线的交错点
+    lines.forEach(line => {
+      line.clps = {}
+    })
+    let jumpLine = DDeiModelArrtibuteValue.getAttrValueByState(layer.stage, "grid.jumpline", true);
+    if (jumpLine == 1) {
+      let len = lines.length
+      let rectMap = new Map();
+      let corssLinePoints = []
+      for (let i = 0; i < len - 1; i++) {
+        let l1 = lines[i];
+        if (l1.type == 3) {
           continue;
         }
-        if (l1 != l2) {
-          if (!rectMap.has(l2.id)) {
-            rectMap.set(l2.id, DDeiAbstractShape.getOutRectByPV([l2]))
+        if (!rectMap.has(l1.id)) {
+          rectMap.set(l1.id, DDeiAbstractShape.getOutRectByPV([l1]))
+        }
+        let l1Rect = rectMap.get(l1.id);
+        for (let j = i + 1; j < len; j++) {
+          let l2 = lines[j];
+          if (l2.type == 3) {
+            continue;
           }
-          let l2Rect = rectMap.get(l2.id);
-          if (DDeiUtil.isRectCorss(l1Rect, l2Rect)) {
-            for (let pi = 0; pi < l1.pvs.length - 1; pi++) {
-              let p1 = l1.pvs[pi];
-              let p2 = l1.pvs[pi + 1];
-              for (let pj = 0; pj < l2.pvs.length - 1; pj++) {
-                let p3 = l2.pvs[pj];
-                let p4 = l2.pvs[pj + 1];
-                //判定线穿越
-                let crossPoint = DDeiUtil.getLineCorssPoint(p1, p2, p3, p4);
-                if (crossPoint != null) {
-                  //计算单位移动量
-                  let pRotate = DDeiUtil.getLineAngle(p1.x, p1.y, p2.x, p2.y)
-                  let pAngle = (pRotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
-                  let pVectorUnit = new Vector3(1, 0, 1)
-                  let pRotateMatrix = new Matrix3(
-                    Math.cos(pAngle), Math.sin(pAngle), 0,
-                    -Math.sin(pAngle), Math.cos(pAngle), 0,
-                    0, 0, 1);
-                  pVectorUnit.applyMatrix3(pRotateMatrix)
-                  corssLinePoints.push({ line: l1, index: pi, cp: crossPoint, unit: pVectorUnit, r: pRotate, dist: DDeiUtil.getPointDistance(p1.x, p1.y, crossPoint.x, crossPoint.y) })
+          if (l1 != l2) {
+            if (!rectMap.has(l2.id)) {
+              rectMap.set(l2.id, DDeiAbstractShape.getOutRectByPV([l2]))
+            }
+            let l2Rect = rectMap.get(l2.id);
+            if (DDeiUtil.isRectCorss(l1Rect, l2Rect)) {
+              for (let pi = 0; pi < l1.pvs.length - 1; pi++) {
+                let p1 = l1.pvs[pi];
+                let p2 = l1.pvs[pi + 1];
+                for (let pj = 0; pj < l2.pvs.length - 1; pj++) {
+                  let p3 = l2.pvs[pj];
+                  let p4 = l2.pvs[pj + 1];
+                  //判定线穿越
+                  let crossPoint = DDeiUtil.getLineCorssPoint(p1, p2, p3, p4);
+                  if (crossPoint != null) {
+                    //计算单位移动量
+                    let pRotate = DDeiUtil.getLineAngle(p1.x, p1.y, p2.x, p2.y)
+                    let pAngle = (pRotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+                    let pVectorUnit = new Vector3(1, 0, 1)
+                    let pRotateMatrix = new Matrix3(
+                      Math.cos(pAngle), Math.sin(pAngle), 0,
+                      -Math.sin(pAngle), Math.cos(pAngle), 0,
+                      0, 0, 1);
+                    pVectorUnit.applyMatrix3(pRotateMatrix)
+                    corssLinePoints.push({ line: l1, index: pi, cp: crossPoint, unit: pVectorUnit, r: pRotate, dist: DDeiUtil.getPointDistance(p1.x, p1.y, crossPoint.x, crossPoint.y) })
+                  }
                 }
               }
             }
           }
         }
       }
-    }
-    //遍历，生成线的交错点
-    lines.forEach(line => {
-      line.clps = {}
-    })
-    corssLinePoints.forEach(clp => {
-      if (!clp.line.clps[clp.index]) {
-        clp.line.clps[clp.index] = []
-      }
-      //排序并插入，按从小到达顺序排列
-      let dist = clp.dist;
-      let has = false
-      for (let di = 0; di < clp.line.clps[clp.index].length; di++) {
-        if (dist <= clp.line.clps[clp.index][di]?.dist) {
-          clp.line.clps[clp.index].splice(di, 0, clp)
-          has = true;
-          break;
+
+      corssLinePoints.forEach(clp => {
+        if (!clp.line.clps[clp.index]) {
+          clp.line.clps[clp.index] = []
         }
-      }
-      if (!has) {
-        clp.line.clps[clp.index].push(clp)
-      }
-    })
-    layer.stage?.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
-    layer.stage?.ddInstance.bus.executeAll()
+        //排序并插入，按从小到达顺序排列
+        let dist = clp.dist;
+        let has = false
+        for (let di = 0; di < clp.line.clps[clp.index].length; di++) {
+          if (dist <= clp.line.clps[clp.index][di]?.dist) {
+            clp.line.clps[clp.index].splice(di, 0, clp)
+            has = true;
+            break;
+          }
+        }
+        if (!has) {
+          clp.line.clps[clp.index].push(clp)
+        }
+      })
+      layer.stage?.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
+      layer.stage?.ddInstance.bus.executeAll()
+    }
 
   }
 
