@@ -50,7 +50,7 @@ export default {
         // AC_DESIGN_SELECT_DDeiRectangle: true,
         // AC_DESIGN_DRAG_DDeiRectangle: false,
         // AC_DESIGN_DEL_DDeiRectContainer: false,
-        "AC_DESIGN_VIEW_DDeiRectangle_fill.color": false,
+        // "AC_DESIGN_VIEW_DDeiRectangle_fill.color": true,
         // AC_DESIGN_EDIT_DDeiRectangle: true,
         // AC_DESIGN_EDIT_DDeiRectangle_text: false,
         // EVENT_CONTROL_SELECT_BEFORE: this.selectBefore,

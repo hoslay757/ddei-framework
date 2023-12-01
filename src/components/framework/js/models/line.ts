@@ -277,7 +277,7 @@ class DDeiLine extends DDeiAbstractShape {
    */
   refreshLinkModels() {
     //加载子模型
-    if (this.linkModels.has) {
+    if (this.linkModels?.has) {
       this.linkModels.forEach(lm => {
         if (lm.dm) {
           //同步坐标关系
