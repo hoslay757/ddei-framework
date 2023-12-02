@@ -1,46 +1,54 @@
 <template>
   <div>
-    <div id="ddei_editor_quick_fat_item_fontsize" :class="{'ddei_editor_quick_fat_item_fontsize':true,'ddei_editor_quick_fat_item_fontsize_disabled': !attrDefine }">
-      <input class="ddei_editor_quick_fat_item_fontsize_input" :readonly="!attrDefine || (attrDefine && (attrDefine.readonly))"
-        v-model="text" @keydown="inputValue($event)" :placeholder="defaultText" />
-      <img width="16px" height="16px" class="ddei_editor_quick_fat_item_fontsize_combox" :src="toolboxExpandedIcon"
-        @click="attrDefine && !attrDefine.readonly && showDialog()">
+    <div id="ddei_editor_quick_fat_item_fontsize"
+         :class="{'ddei_editor_quick_fat_item_fontsize':true,'ddei_editor_quick_fat_item_fontsize_disabled': !attrDefine }">
+      <input class="ddei_editor_quick_fat_item_fontsize_input"
+             :readonly="!attrDefine || (attrDefine && (attrDefine.readonly))"
+             v-model="text"
+             @keydown="inputValue($event)"
+             :placeholder="defaultText" />
+      <div class="ddei_editor_quick_fat_item_fontsize_combox"
+           @click="attrDefine && !attrDefine.readonly && showDialog()">
+        <img :src="toolboxExpandedIcon">
+      </div>
+
     </div>
-    <div id="ddei_editor_quick_fat_item_fontsize_combox_dialog" class="ddei_editor_quick_fat_item_fontsize_combox_dialog">
-      <div
-        :class="{ 'itembox': true, 'itembox_selected': item.value == attrDefine.value, 'itembox_deleted': item.deleted, 'itembox_disabled': item.disabled, 'itembox_underline': item.underline, 'itembox_bold': item.bold }"
-        v-for="item in dataSource" @click="!item.disabled && valueChange(item.value, $event)" :title="item.desc">
-        <div class="itembox_text" v-if="item.text" :style="{ 'font-family': item.fontFamily }">{{ item.text }}</div>
+    <div id="ddei_editor_quick_fat_item_fontsize_combox_dialog"
+         class="ddei_editor_quick_fat_item_fontsize_combox_dialog">
+      <div :class="{ 'itembox': true, 'itembox_selected': item.value == attrDefine.value, 'itembox_deleted': item.deleted, 'itembox_disabled': item.disabled, 'itembox_underline': item.underline, 'itembox_bold': item.bold }"
+           v-for="item in dataSource"
+           @click="!item.disabled && valueChange(item.value, $event)"
+           :title="item.desc">
+        <div class="itembox_text"
+             v-if="item.text"
+             :style="{ 'font-family': item.fontFamily }">{{ item.text }}</div>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import FONTS from '../../../configs/fonts/font';
-import { debounce } from 'lodash';
-import { controlOriginDefinies } from '@/components/editor/configs/toolgroup';
-import DDeiEditor from '../../../js/editor';
-import EditorVue from '@/components/editor/Editor.vue';
-import ICONS from '../../../js/icon';
-import DDeiEditorUtil from '../../../js/util/editor-util';
-import DDeiUtil from '../../../../framework/js/util';
-import DDeiEnumBusCommandType from '../../../../framework/js/enums/bus-command-type';
+import FONTS from "../../../configs/fonts/font";
+import { debounce } from "lodash";
+import { controlOriginDefinies } from "@/components/editor/configs/toolgroup";
+import DDeiEditor from "../../../js/editor";
+import EditorVue from "@/components/editor/Editor.vue";
+import ICONS from "../../../js/icon";
+import DDeiEditorUtil from "../../../js/util/editor-util";
+import DDeiUtil from "../../../../framework/js/util";
+import DDeiEnumBusCommandType from "../../../../framework/js/enums/bus-command-type";
 
 export default {
   name: "DDei-Editor-QBT-FontSize",
   extends: null,
   mixins: [],
-  components: {
-
-  },
-  props: {
-  },
+  components: {},
+  props: {},
   data() {
     return {
       //当前编辑器
       editor: null,
-      toolboxExpandedIcon: ICONS['toolbox-expanded'],
+      toolboxExpandedIcon: ICONS["toolbox-expanded"],
       controlDefine: null,
       attrDefine: null,
       dataSource: null,
@@ -52,9 +60,7 @@ export default {
     };
   },
   computed: {},
-  watch: {
-
-  },
+  watch: {},
   created() {
     this.inputValue = debounce(this.inputValue, 500);
   },
@@ -64,12 +70,12 @@ export default {
     if (this.editor?.currentControlDefine) {
       this.controlDefine = this.editor.currentControlDefine;
       if (this.controlDefine) {
-        this.attrDefine = this.controlDefine.attrDefineMap.get('font.size');
+        this.attrDefine = this.controlDefine.attrDefineMap.get("font.size");
       } else {
-        this.attrDefine = null
+        this.attrDefine = null;
       }
-      if(this.attrDefine){
-        this.getDataSource(this.attrDefine)
+      if (this.attrDefine) {
+        this.getDataSource(this.attrDefine);
         let type = this.getDataValue();
         let define = this.getDataDefine(type.value);
         if (!type.isDefault) {
@@ -88,7 +94,6 @@ export default {
     }
   },
   methods: {
-
     inputValue(evt) {
       //过滤dataSource，找到text
       let value = this.text;
@@ -104,23 +109,34 @@ export default {
       let parsedValue = parser.parseValue(value);
       //获取属性路径
       let paths = [];
-      this.attrDefine?.mapping?.forEach(element => {
+      this.attrDefine?.mapping?.forEach((element) => {
         paths.push(element);
       });
       if (!(paths?.length > 0)) {
-        paths = [this.attrDefine.code]
+        paths = [this.attrDefine.code];
       }
-      this.editor.ddInstance.stage.selectedModels.forEach(element => {
-        this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: parsedValue }, evt, true);
+      this.editor.ddInstance.stage.selectedModels.forEach((element) => {
+        this.editor.bus.push(
+          DDeiEnumBusCommandType.ModelChangeValue,
+          { mids: [element.id], paths: paths, value: parsedValue },
+          evt,
+          true
+        );
       });
-      this.editor.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels, null, evt);
+      this.editor.bus.push(
+        DDeiEnumBusCommandType.StageChangeSelectModels,
+        null,
+        evt
+      );
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
       this.editor.bus.executeAll();
     },
 
     //打开弹出框
     showDialog(show: boolean = false, evt) {
-      let dialog = document.getElementById("ddei_editor_quick_fat_item_fontsize_combox_dialog");
+      let dialog = document.getElementById(
+        "ddei_editor_quick_fat_item_fontsize_combox_dialog"
+      );
       let haveElement = false;
       for (let i = 0; i < document.body.children.length; i++) {
         if (document.body.children[i] == dialog) {
@@ -133,10 +149,13 @@ export default {
       if (dialog.style.display != "grid") {
         dialog.style.display = "grid";
         //获取父级控件绝对坐标
-        let attrEditor = document.getElementById("ddei_editor_quick_fat_item_fontsize");
+        let attrEditor = document.getElementById(
+          "ddei_editor_quick_fat_item_fontsize"
+        );
         let position = DDeiUtil.getDomAbsPosition(attrEditor);
-        dialog.style.left = (position.left - dialog.offsetWidth + attrEditor.offsetWidth) + "px";
-        dialog.style.top = (position.top + attrEditor.offsetHeight) + "px";
+        dialog.style.left =
+          position.left - dialog.offsetWidth + attrEditor.offsetWidth + "px";
+        dialog.style.top = position.top + attrEditor.offsetHeight + "px";
       } else {
         dialog.style.display = "none";
       }
@@ -151,7 +170,7 @@ export default {
           if (this.dataSource[i].value.toString() == value.toString()) {
             return this.dataSource[i];
           }
-        };
+        }
       }
       return { text: "" };
     },
@@ -161,47 +180,56 @@ export default {
       if (this.attrDefine) {
         let dataValue = this.attrDefine.value;
         if (!dataValue) {
-          dataValue = DDeiUtil.getDataByPathList(this.attrDefine.model, this.attrDefine.code, this.attrDefine.mapping);
+          dataValue = DDeiUtil.getDataByPathList(
+            this.attrDefine.model,
+            this.attrDefine.code,
+            this.attrDefine.mapping
+          );
         }
         if (dataValue) {
-          return { value: dataValue }
+          return { value: dataValue };
         }
       }
       //通过解析器获取有效值
-      return { isDefault: true, value: this.attrDefine?.getParser().getDefaultValue() };
+      return {
+        isDefault: true,
+        value: this.attrDefine?.getParser().getDefaultValue(),
+      };
     },
 
     /**
-    * 获取数据源数据
-    */
+     * 获取数据源数据
+     */
     getDataSource(attrDefine) {
       if (this.attrDefine) {
         this.attrDefine.dataSource = [
-          { text: '9', value: 9 },
-          { text: '10', value: 10 },
-          { text: '10.5', value: 10.5 },
-          { text: '11', value: 11 },
-          { text: '12', value: 12 },
-          { text: '13', value: 13 },
-          { text: '14', value: 14 },
-          { text: '18', value: 18 },
-          { text: '24', value: 24 },
-          { text: '36', value: 36 },
-          { text: '48', value: 48 },
-          { text: '64', value: 64 },
-          { text: '72', value: 72 },
-          { text: '96', value: 96 },
-          { text: '144', value: 144 },
-          { text: '288', value: 288 },
+          { text: "9", value: 9 },
+          { text: "10", value: 10 },
+          { text: "10.5", value: 10.5 },
+          { text: "11", value: 11 },
+          { text: "12", value: 12 },
+          { text: "13", value: 13 },
+          { text: "14", value: 14 },
+          { text: "18", value: 18 },
+          { text: "24", value: 24 },
+          { text: "36", value: 36 },
+          { text: "48", value: 48 },
+          { text: "64", value: 64 },
+          { text: "72", value: 72 },
+          { text: "96", value: 96 },
+          { text: "144", value: 144 },
+          { text: "288", value: 288 },
         ];
-        let dataSources = DDeiEditorUtil.getDataSource(this.attrDefine, this.searchText);
+        let dataSources = DDeiEditorUtil.getDataSource(
+          this.attrDefine,
+          this.searchText
+        );
         this.dataSource = dataSources;
         return this.dataSource;
       }
     },
 
     valueChange(value, evt) {
-
       this.attrDefine.value = value;
       let itemDefine = this.getDataDefine(value);
       let text = itemDefine.text;
@@ -213,27 +241,37 @@ export default {
       let parsedValue = parser.parseValue(value);
       //获取属性路径
       let paths = [];
-      this.attrDefine?.mapping?.forEach(element => {
+      this.attrDefine?.mapping?.forEach((element) => {
         paths.push(element);
       });
       if (!(paths?.length > 0)) {
-        paths = [this.attrDefine.code]
+        paths = [this.attrDefine.code];
       }
-      this.editor.ddInstance.stage.selectedModels.forEach(element => {
-        this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: parsedValue }, evt, true);
+      this.editor.ddInstance.stage.selectedModels.forEach((element) => {
+        this.editor.bus.push(
+          DDeiEnumBusCommandType.ModelChangeValue,
+          { mids: [element.id], paths: paths, value: parsedValue },
+          evt,
+          true
+        );
       });
-      this.editor.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels, null, evt);
+      this.editor.bus.push(
+        DDeiEnumBusCommandType.StageChangeSelectModels,
+        null,
+        evt
+      );
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
       this.editor.bus.executeAll();
     },
 
     closeDialog(evt) {
       this.expanded = false;
-      let dialog = document.getElementById("ddei_editor_quick_fat_item_fontsize");
+      let dialog = document.getElementById(
+        "ddei_editor_quick_fat_item_fontsize"
+      );
       dialog.style.display = "none";
     },
-
-  }
+  },
 };
 </script>
 
@@ -241,7 +279,6 @@ export default {
 /*字体大小设置框 */
 
 .ddei_editor_quick_fat_item_fontsize {
-
   background-color: white;
   border-radius: 4px;
   height: 24px;
@@ -252,10 +289,9 @@ export default {
   box-sizing: border-box;
 }
 
-
 .ddei_editor_quick_fat_item_fontsize_disabled:hover {
-  background-color:transparent !important;
-  cursor:not-allowed !important;
+  background-color: transparent !important;
+  cursor: not-allowed !important;
 }
 
 .ddei_editor_quick_fat_item_fontsize_input {
@@ -269,6 +305,11 @@ export default {
 }
 
 .ddei_editor_quick_fat_item_fontsize_combox {
+  width: 20px;
+  height: 20px;
+  float: left;
+}
+.ddei_editor_quick_fat_item_fontsize_combox img {
   width: 8px;
   margin-top: 8px;
   margin-right: 4px;
@@ -276,12 +317,6 @@ export default {
   height: 8px;
   float: left;
 }
-
-
-
-
-
-
 
 .ddei_editor_quick_fat_item_box {
   width: 25px;
@@ -294,15 +329,14 @@ export default {
   filter: brightness(40%) drop-shadow(0.3px 0px 0.3px #000);
 }
 
-
 .ddei_editor_quick_fat_item_box_disabled {
   color: rgb(228, 228, 232);
   filter: brightness(200%) !important;
 }
 
 .ddei_editor_quick_fat_item_box_disabled:hover {
-  background-color:transparent !important;
-  cursor:not-allowed;
+  background-color: transparent !important;
+  cursor: not-allowed;
 }
 
 .ddei_editor_quick_fat_item_box_selected {
@@ -318,17 +352,12 @@ export default {
   filter: brightness(40%) drop-shadow(0.3px 0px 0.3px #000);
 }
 
-
 .ddei_editor_quick_fat_item_box:hover {
   background-color: rgb(233, 233, 238);
   border-radius: 4px;
 }
 
-
-
 /*以下为弹出框内容*/
-
-
 
 .ddei_editor_quick_fat_item_fontsize_combox_dialog {
   border-radius: 4px;
@@ -356,8 +385,6 @@ export default {
   height: 20px;
 }
 
-
-
 .ddei_editor_quick_fat_item_fontsize_combox_dialog .itembox:hover {
   background-color: rgb(245, 245, 245);
   cursor: pointer;
@@ -370,7 +397,6 @@ export default {
   vertical-align: middle;
 }
 
-
 .ddei_editor_quick_fat_item_fontsize_combox_dialog .itembox_selected {
   background-color: rgb(240, 240, 240) !important;
 }
@@ -382,12 +408,10 @@ export default {
 .ddei_editor_quick_fat_item_fontsize_combox_dialog .itembox_disabled {
   color: rgb(210, 210, 210);
   text-decoration: line-through;
-
 }
 
 .ddei_editor_quick_fat_item_fontsize_combox_dialog .itembox_disabled:hover {
   cursor: not-allowed !important;
-
 }
 
 .ddei_editor_quick_fat_item_fontsize_combox_dialog .itembox_underline {

@@ -1,3 +1,4 @@
+import DDeiEditorEnumBusCommandType from '@/components/editor/js/enums/editor-command-type';
 import DDeiEnumBusCommandType from '../../enums/bus-command-type';
 import DDeiEnumOperateState from '../../enums/operate-state';
 import DDeiBus from '../bus';
@@ -31,6 +32,7 @@ class DDeiBusCommandStageChangeSelectModels extends DDeiBusCommand {
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
     let stage = bus.ddInstance.stage;
+
     if (stage) {
       //获取当前选中控件
       //当前激活的图层
@@ -51,6 +53,10 @@ class DDeiBusCommandStageChangeSelectModels extends DDeiBusCommand {
    * @param evt 事件对象引用
    */
   after(data: object, bus: DDeiBus, evt: Event): boolean {
+    console.log(1)
+    bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
+      parts: ["topmenu"],
+    });
     return true;
   }
 

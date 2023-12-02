@@ -58,7 +58,7 @@ class DDeiBusCommandCancelCurLevelSelectedModels extends DDeiBusCommand {
    * @param evt 事件对象引用
    */
   after(data: object, bus: DDeiBus, evt: Event): boolean {
-    bus.insert(DDeiEnumBusCommandType.StageChangeSelectModels, {}, evt);
+    // bus.insert(DDeiEnumBusCommandType.StageChangeSelectModels, {}, evt);
     return true;
   }
 

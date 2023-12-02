@@ -25,6 +25,7 @@
                :style="{ 'font-family': item.fontFamily ,'text-align':attrDefine?.itemStyle?.align}">{{ item.desc }}</div>
         </div>
       </div>
+
     </PVBaseCombox>
   </div>
 </template>

@@ -154,7 +154,9 @@ class DDeiAbstractShapeRender {
     else {
       pushMulits.push({ actionType: DDeiEnumBusCommandType.CancelCurLevelSelectedModels, data: { ignoreModels: [this.model] } });
       pushMulits.push({ actionType: DDeiEnumBusCommandType.ModelChangeSelect, data: [{ id: this.model.id, value: DDeiEnumControlState.SELECTED }] });
+
     }
+    pushMulits.push({ actionType: DDeiEnumBusCommandType.StageChangeSelectModels });
     this.stage?.ddInstance?.bus?.pushMulit(pushMulits, evt);
     this.stage?.ddInstance?.bus?.executeAll()
     return true;

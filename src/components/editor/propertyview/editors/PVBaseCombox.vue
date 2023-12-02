@@ -12,9 +12,8 @@
              :placeholder="defaultText"
              @click="attrDefine && !attrDefine.readonly && !canSearch && showDialog()"
              @keydown="search($event)" />
-      <div> <img style="width:8px;height:8px;margin:auto;float:none;"
-             src="../../icons/toolbox-expanded.png"
-             @click="attrDefine && !attrDefine.readonly && showDialog()" />
+      <div @click="attrDefine && !attrDefine.readonly && showDialog()"> <img style="width:8px;height:8px;margin:auto;float:none;"
+             src="../../icons/toolbox-expanded.png" />
       </div>
     </div>
     <div :id="getShowDialogId(attrDefine?.code)"
@@ -194,9 +193,7 @@ export default {
 }
 
 .ddei_pv_base_combox .textinput div {
-  flex: 1;
-  width: 10px;
-  height: 20px;
+  flex: 0 0 20px;
 }
 
 .ddei_pv_base_combox .display_img input {
