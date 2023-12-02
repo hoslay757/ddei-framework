@@ -73,7 +73,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
   initImage(): void {
     //加载图片
     let that = this;
-    let bgImage = this.getCachedValue("fill.image");
+    let bgImage = DDeiUtil.getReplacibleValue(this.model, "fill.image");
     //加载base64图片
     if ((this.model.bgImageBase64 || bgImage) && !this.imgObj) {
       let img = new Image();   // 创建一个<img>元素
@@ -321,7 +321,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
    */
   drawImage(): void {
     //如果有图片，则绘制
-    let bgImage = this.getCachedValue("fill.image");
+    let bgImage = DDeiUtil.getReplacibleValue(this.model, "fill.image");
     if (!this.imgObj || bgImage != this.upFillImage) {
       this.initImage();
     } else {

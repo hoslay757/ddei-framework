@@ -164,7 +164,6 @@ class DDeiLayerCanvasRender {
       //绘制图片背景类型
       else if (bgInfoType == 2) {
         let bgImage = DDeiUtil.getReplacibleValue(this.model, "bg.image");
-        console.log(bgImage)
         //没有图片，加载图片，有图片绘制图片
         if (!this.bgImgObj || bgImage != this.upBgImage) {
           this.initBgImage();
