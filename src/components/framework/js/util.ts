@@ -1,15 +1,14 @@
 import DDeiConfig from './config.js'
 import DDeiAbstractShape from './models/shape.js';
-import { clone } from 'lodash'
+import { clone, isDate, isNumber, isString } from 'lodash'
 import DDei from './ddei.js';
 import { Matrix3, Vector3 } from 'three';
-import DDeiModelArrtibuteValue from './models/attribute/attribute-value.js';
-
 const expressBindValueReg = /#\{[^\{\}]*\}/;
 const contentSplitReg = /\+|\-|\*|\//;
 const isNumberReg = /^[+-]?\d*(\.\d*)?(e[+-]?\d+)?$/;
 const safariReg = /Safari/;
 const chromeReg = /Chrome/;
+const ytestReg = /(y+)/;
 
 class DDeiUtil {
 
@@ -1243,7 +1242,7 @@ class DDeiUtil {
       "m+": date.getMinutes(), //分 
       "s+": date.getSeconds() //秒 
     };
-    if (/(y+)/.test(fmt)) { //根据y的长度来截取年
+    if (ytestReg.test(fmt)) { //根据y的长度来截取年
       fmt = fmt.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
     }
     for (let k in o) {
@@ -1367,6 +1366,32 @@ class DDeiUtil {
     }
   }
 
+  /**
+   *@param num：格式化目标数字
+   *@param decimal：保留几位小数，默认2位
+   *@param split：千分位分隔符，默认为空
+  */
+  static formatNumber(num, decimal = 0, split = ''): string {
+    if (num != null && num != undefined && isFinite(num)) {
+      let res = ''
+      let dotIndex = String(num).indexOf('.')
+      if (dotIndex === -1) { // 整数
+        if (decimal === 0) {
+          res = String(num).replace(/(\d)(?=(?:\d{3})+$)/g, `$1${split}`)
+        } else {
+          res = String(num).replace(/(\d)(?=(?:\d{3})+$)/g, `$1${split}`) + '.' + '0'.repeat(decimal)
+        }
+      } else {
+        let numStr = String((Math.round(num * Math.pow(10, decimal)) / Math.pow(10, decimal)).toFixed(decimal)) // 四舍五入，然后固定保留2位小数
+        let decimals = numStr.slice(dotIndex, dotIndex + decimal + 1) // 截取小数位
+        res = String(numStr.slice(0, dotIndex)).replace(/(\d)(?=(?:\d{3})+$)/g, `$1${split}`) + decimals
+      }
+      return res
+    } else {
+      return num
+    }
+  }
+
 
   /**
    * 是否为safari浏览器
@@ -1380,24 +1405,97 @@ class DDeiUtil {
      * 主要用于得到经过业务替换值绑定后的数据
      * @param model 对象
      * @param keypath  属性路径，一般用.隔开
+     * @param format 是否需要格式化
      */
-  static getReplacibleValue(model: object, keypath: string): any {
+  static getReplacibleValue(model: object, keypath: string, format: boolean = false): any {
     //获取原始值
-    let originValue = model?.render?.getCachedValue(keypath);
-    //执行值绑定替换
-    if (originValue) {
-      //获取外部业务传入值
-      let busiData = DDeiUtil.getBusiData();
-      if (busiData) {
-        let replaceData = DDeiUtil.expressBindValue(originValue, busiData);
-        if (replaceData) {
-          return replaceData;
+    if (model) {
+      let originValue = model?.render?.getCachedValue(keypath);
+      let returnValue = originValue;
+      //执行值绑定替换
+      if (originValue) {
+        //获取外部业务传入值
+        let busiData = DDeiUtil.getBusiData();
+        if (busiData) {
+          let replaceData = DDeiUtil.expressBindValue(originValue, busiData);
+          if (replaceData) {
+            returnValue = replaceData;
+          }
         }
-      } else {
-        return originValue;
       }
+      //如果开启格式化
+      if (format) {
+
+        let fmtType = model?.render?.getCachedValue("fmt.type");
+        switch (fmtType) {
+          case 1: {
+            //数字
+            //小数位数
+            let scale = model?.render?.getCachedValue("fmt.nscale");
+            //千分符
+            let tmark = model?.render?.getCachedValue("fmt.tmark");
+            returnValue = DDeiUtil.formatNumber(returnValue, isNaN(scale) ? 0 : scale, tmark == 1 ? ',' : '')
+          } break;
+          case 2: {
+
+            //人民币大写
+            let mrmb = model?.render?.getCachedValue("fmt.mrmb");
+
+            if (mrmb == 1) {
+              returnValue = DDeiUtil.toBigMoney(returnValue);
+            } else {
+              //小数位数
+              let scale = model?.render?.getCachedValue("fmt.scale");
+              //千分符
+              let tmark = model?.render?.getCachedValue("fmt.tmark");
+              //货币单位
+              let munit = model?.render?.getCachedValue("fmt.munit");
+              //货币符号
+              let mmark = model?.render?.getCachedValue("fmt.mmark");
+              returnValue = DDeiUtil.formatNumber(returnValue, isNaN(scale) ? 0 : scale, tmark == 1 ? ',' : '')
+              returnValue = (mmark ? mmark : '') + returnValue + (munit ? munit : '')
+            }
+          } break;
+          case 3: {
+            //时间类型
+            let dtype = model?.render?.getCachedValue("fmt.dtype");
+            let isFmt = false
+            let dv = null;
+            if (isDate(returnValue)) {
+              isFmt = true;
+              dv = returnValue
+            } else if (isString(returnValue) || isNumber(returnValue) && ("" + returnValue).length == 13) {
+              try {
+                dv = new Date(parseInt(returnValue))
+                isFmt = true;
+              } catch (e) { }
+            }
+            if (isFmt) {
+              switch (dtype) {
+                case 1: {
+                  returnValue = DDeiUtil.formatDate(dv, "yyyy-MM-dd")
+                } break;
+                case 2: {
+                  returnValue = DDeiUtil.formatDate(dv, "hh:mm:ss")
+                } break;
+                case 3: {
+                  returnValue = DDeiUtil.formatDate(dv, "yyyy-MM-dd hh:mm:ss")
+                } break;
+                case 99: {
+                  //自定义格式化字符串
+                  let format = model?.render?.getCachedValue("fmt.format");
+                  if (format) {
+                    returnValue = DDeiUtil.formatDate(dv, format)
+                  }
+                } break;
+              }
+            }
+          } break;
+        }
+      }
+      return returnValue;
     }
-    return originValue;
+    return null;
   }
 
 
@@ -1415,10 +1513,6 @@ class DDeiUtil {
           replaceData += t.substring(0, result.index);
           let rs = result[0].replaceAll(" ", "");
           let aer = this.analysisExpress(rs.substring(2, rs.length - 1), busiData, row);
-          //人民币转换
-          // if (control.attrs.convertToRMBY == 2 || control.attrs.convertToRMBY == '2' || control.convertToRMBY == 2 || control.convertToRMBY == '2') {
-          //   aer = this.dealBigMoney(aer);
-          // }
           replaceData += aer;
           t = t.substr(result.index + result[0].length);
         } else {
@@ -1984,6 +2078,102 @@ class DDeiUtil {
         return control.text;
       }
     }
+  }
+
+  /**
+   * 转换为人民币大写
+   * @param money 数字
+   * @returns 
+   */
+  static toBigMoney(money): string {
+    //汉字的数字
+    let cnNums = new Array('零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖');
+    //基本单位
+    let cnIntRadice = new Array('', '拾', '佰', '仟');
+    //对应整数部分扩展单位
+    let cnIntUnits = new Array('', '万', '亿', '兆');
+    //对应小数部分单位
+    let cnDecUnits = new Array('角', '分', '毫', '厘');
+    //整数金额时后面跟的字符
+    let cnInteger = '整';
+    //整型完以后的单位
+    let cnIntLast = '元';
+    //最大处理的数字
+    let maxNum = 999999999999999.9999;
+    //金额整数部分
+    let integerNum;
+    //金额小数部分
+    let decimalNum;
+    //输出的中文金额字符串
+    let chineseStr = '';
+    //分离金额后用的数组，预定义
+    let parts;
+    // 传入的参数为空情况 
+    if (money == '' || money == null || money == undefined) {
+      return '';
+    }
+    money = parseFloat(money)
+    if (money >= maxNum) {
+      return ''
+    }
+    // 传入的参数为0情况 
+    if (money == 0) {
+      chineseStr = cnNums[0] + cnIntLast + cnInteger;
+      return chineseStr
+    }
+    // 转为字符串
+    money = money.toString();
+    // indexOf 检测某字符在字符串中首次出现的位置 返回索引值（从0 开始） -1 代表无
+    if (money.indexOf('.') == -1) {
+      integerNum = money;
+      decimalNum = ''
+    } else {
+      parts = money.split('.');
+      integerNum = parts[0];
+      decimalNum = parts[1].substr(0, 4);
+    }
+    //转换整数部分
+    if (parseInt(integerNum, 10) > 0) {
+      let zeroCount = 0;
+      let IntLen = integerNum.length
+      for (let i = 0; i < IntLen; i++) {
+        let n = integerNum.substr(i, 1);
+        let p = IntLen - i - 1;
+        let q = p / 4;
+        let m = p % 4;
+        if (n == '0') {
+          zeroCount++;
+        } else {
+          if (zeroCount > 0) {
+            chineseStr += cnNums[0]
+          }
+          zeroCount = 0;
+          chineseStr += cnNums[parseInt(n)] + cnIntRadice[m];
+        }
+        if (m == 0 && zeroCount < 4) {
+          chineseStr += cnIntUnits[q];
+        }
+      }
+      // 最后+ 元
+      chineseStr += cnIntLast;
+    }
+    // 转换小数部分
+    if (decimalNum != '') {
+      let decLen = decimalNum.length;
+      for (let i = 0; i < decLen; i++) {
+        let n = decimalNum.substr(i, 1);
+        if (n != '0') {
+          chineseStr += cnNums[Number(n)] + cnDecUnits[i]
+        }
+      }
+    }
+    if (chineseStr == '') {
+      chineseStr += cnNums[0] + cnIntLast + cnInteger;
+    } else if (decimalNum == '') {
+      chineseStr += cnInteger;
+    }
+
+    return chineseStr
   }
 }
 

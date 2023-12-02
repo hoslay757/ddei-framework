@@ -492,7 +492,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     let fontSize = fiSize * ratio;
 
 
-    let cText = DDeiUtil.getReplacibleValue(this.model, "text");
+    let cText = DDeiUtil.getReplacibleValue(this.model, "text", true);
 
     if (cText) {
       cText = "" + cText;

@@ -63,7 +63,7 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
             if (modelId) {
               if (modelId == 'DDeiStage') {
                 models.push(stage);
-              } else if (modelId == 'DDeiStage') {
+              } else if (modelId == 'DDeiLayer') {
                 models.push(stage?.layers[stage?.layerIndex]);
               } else {
                 //从bus中获取实际控件

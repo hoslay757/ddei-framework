@@ -20,6 +20,7 @@ abstract class DDeiAbstractShape {
     this.rotate = props.rotate ? props.rotate : null
     this.modelCode = props.modelCode ? props.modelCode : null
     this.unicode = props.unicode ? props.unicode : DDeiUtil.getUniqueCode()
+    this.fmt = props.fmt
     if (props.cpv) {
       this.cpv = new Vector3(props.cpv.x, props.cpv.y, props.cpv.z);
     }
@@ -88,6 +89,9 @@ abstract class DDeiAbstractShape {
 
   //唯一表示码，运行时临时生成
   unicode: string;
+
+  //格式化信息
+  fmt: object | null;
   // ============================ 方法 ============================
 
   /**

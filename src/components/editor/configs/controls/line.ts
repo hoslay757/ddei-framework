@@ -50,7 +50,7 @@ export const styles = {
       'max': 10,
       'step': 0.1,
       'dataType': 'float',
-      'defaultValue': 1.5,
+      'defaultValue': 1,
       'orderNo': 2,
       'visiable': true
     },

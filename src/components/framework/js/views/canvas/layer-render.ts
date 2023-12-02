@@ -63,7 +63,10 @@ class DDeiLayerCanvasRender {
    */
   helpLines: object = {};
 
-
+  /**
+   * 用于绘图时缓存属性等信息
+   */
+  renderCacheData: Map<string, object> = new Map();
 
   // ============================ 方法 ===============================
   /**
@@ -160,7 +163,8 @@ class DDeiLayerCanvasRender {
       }
       //绘制图片背景类型
       else if (bgInfoType == 2) {
-        let bgImage = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.image", true);
+        let bgImage = DDeiUtil.getReplacibleValue(this.model, "bg.image");
+        console.log(bgImage)
         //没有图片，加载图片，有图片绘制图片
         if (!this.bgImgObj || bgImage != this.upBgImage) {
           this.initBgImage();
@@ -246,7 +250,7 @@ class DDeiLayerCanvasRender {
   initBgImage(): void {
     //加载图片
     let that = this;
-    let bgImage = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.image", true);
+    let bgImage = DDeiUtil.getReplacibleValue(this.model, "bg.image");
     //加载base64图片
     if ((this.model.bgImageBase64 || bgImage)) {
       let img = new Image();   // 创建一个<img>元素
@@ -433,6 +437,36 @@ class DDeiLayerCanvasRender {
     }
     this.model.dragInPoints = []
     this.model.dragOutPoints = []
+  }
+
+  /**
+   * 获取缓存的渲染数据
+   */
+  getCachedValue(attrPath: string): object | null {
+    let returnValue: object | null = null;
+
+    if (!this.renderCacheData.has(attrPath)) {
+      returnValue = DDeiModelArrtibuteValue.getAttrValueByState(this.model, attrPath, true);
+      this.renderCacheData.set(attrPath, returnValue)
+    } else {
+      returnValue = this.renderCacheData.get(attrPath)
+    }
+    return returnValue;
+  }
+
+  /**
+  * 设置渲染缓存数据
+  */
+  setCachedValue(attrPath: string | string[], value: any): void {
+    if (attrPath) {
+      if (Array.isArray(attrPath)) {
+        attrPath.forEach(item => {
+          this.renderCacheData.set(item, value);
+        })
+      } else {
+        this.renderCacheData.set(attrPath, value);
+      }
+    }
   }
 
   /**
