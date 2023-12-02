@@ -576,7 +576,8 @@ class DDeiLayerCanvasRender {
           //全局变量：当前操作控件=当前控件
           let operateControl = operateControls[0];
           this.stageRender.currentOperateShape = operateControl;
-
+          this.stageRender.tempSX = ex
+          this.stageRender.tempSY = ey
           //当前操作状态:控件状态确认中
           this.stageRender.operateState = DDeiEnumOperateState.CONTROL_CONFIRMING
           //分发事件到当前控件 TODO 事件分发逻辑设计
@@ -1030,8 +1031,10 @@ class DDeiLayerCanvasRender {
     switch (this.stageRender.operateState) {
       //控件状态确认中
       case DDeiEnumOperateState.CONTROL_CONFIRMING: {
-        //如果当前未按下ctrl键，并且在表格上，则认为是表格内部的拖拽
-
+        //如果移动的距离比较小，则忽略
+        if (Math.abs(ex - this.stageRender.tempSX) <= 2 && Math.abs(ey - this.stageRender.tempSY) <= 2) {
+          return;
+        }
         //清除临时操作点
         this.model.opPoints = [];
         //中心点坐标
