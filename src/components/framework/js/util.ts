@@ -8,6 +8,8 @@ import DDeiModelArrtibuteValue from './models/attribute/attribute-value.js';
 const expressBindValueReg = /#\{[^\{\}]*\}/;
 const contentSplitReg = /\+|\-|\*|\//;
 const isNumberReg = /^[+-]?\d*(\.\d*)?(e[+-]?\d+)?$/;
+const safariReg = /Safari/;
+const chromeReg = /Chrome/;
 
 class DDeiUtil {
 
@@ -1371,7 +1373,7 @@ class DDeiUtil {
    */
   static isSafari(): boolean {
     // 判断是否Safari浏览器
-    return /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent) > -1  // 是Safari为true，
+    return safariReg.test(navigator.userAgent) && !chromeReg.test(navigator.userAgent)  // 是Safari为true，
   }
   /**
      * 获取可替换的数据值
