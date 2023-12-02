@@ -92,7 +92,7 @@ export default {
           }
           this.editor.files[x].active = DDeiActiveType.NONE;
         }
-        //当前文件已存在
+        //加载文件
         if (!file) {
           if (fileData?.content) {
             file = DDeiFile.loadFromJSON(JSON.parse(fileData?.content), {
@@ -104,6 +104,8 @@ export default {
             file.path = fileData.path;
             file.desc = fileData.desc;
             file.version = fileData.version;
+            file.extData = fileData.extData;
+            file.busiData = fileData.busiData;
           } else {
             file = new DDeiFile({
               id: fileData.id,
@@ -112,6 +114,8 @@ export default {
               path: fileData.path,
               desc: fileData.desc,
               version: fileData.version,
+              extData: fileData.extData,
+              busiData: fileData.busiData,
               sheets: [
                 new DDeiSheet({
                   name: "新建页面",
@@ -132,6 +136,7 @@ export default {
           this.editor.addFile(file);
           file.state = DDeiFileState.NONE;
         }
+
         this.editor.currentFileIndex = this.editor.files.indexOf(file);
         file.active = DDeiActiveType.ACTIVE;
         let sheets = file?.sheets;

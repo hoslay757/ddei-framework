@@ -61,10 +61,16 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
           models = []
           mids.forEach(modelId => {
             if (modelId) {
-              //从bus中获取实际控件
-              let model = stage?.getModelById(modelId);
-              if (model) {
-                models.push(model);
+              if (modelId == 'DDeiStage') {
+                models.push(stage);
+              } else if (modelId == 'DDeiStage') {
+                models.push(stage?.layers[stage?.layerIndex]);
+              } else {
+                //从bus中获取实际控件
+                let model = stage?.getModelById(modelId);
+                if (model) {
+                  models.push(model);
+                }
               }
             }
           });

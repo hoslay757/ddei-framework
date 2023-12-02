@@ -262,19 +262,37 @@ export default {
       }
       DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, parsedValue);
       this.attrDefine.doCascadeDisplayByValue();
-      this.editor.ddInstance.stage.selectedModels.forEach((element) => {
+      if (
+        this.attrDefine.model.modelType == "DDeiStage" ||
+        this.attrDefine.model.modelType == "DDeiLayer"
+      ) {
+        //推送信息进入总线
         this.editor.bus.push(
           DDeiEnumBusCommandType.ModelChangeValue,
           {
-            mids: [element.id],
+            mids: [this.attrDefine.model.modelType],
             paths: paths,
-            value: parsedValue,
+            value: value,
             attrDefine: this.attrDefine,
           },
           evt,
           true
         );
-      });
+      } else {
+        this.editor.ddInstance.stage.selectedModels.forEach((element) => {
+          this.editor.bus.push(
+            DDeiEnumBusCommandType.ModelChangeValue,
+            {
+              mids: [element.id],
+              paths: paths,
+              value: parsedValue,
+              attrDefine: this.attrDefine,
+            },
+            evt,
+            true
+          );
+        });
+      }
       this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
         parts: ["topmenu"],
       });

@@ -214,6 +214,7 @@ export default {
           );
         }
       }
+
       //设置当前编辑器控件的临时属性值
       this.editor.ddInstance.stage.selectedModels.forEach((element) => {
         if (value == "0") {

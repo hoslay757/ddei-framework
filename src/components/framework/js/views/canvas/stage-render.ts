@@ -68,6 +68,12 @@ class DDeiStageCanvasRender {
   //横向滚动条和纵向滚动条，当需要显示时不为空
   hScroll: object | null = null;
   vScroll: object | null = null;
+
+
+  /**
+   * 用于绘图时缓存属性等信息
+   */
+  renderCacheData: Map<string, object> = new Map();
   // ============================== 方法 ===============================
   /**
    * 初始化
@@ -734,7 +740,7 @@ class DDeiStageCanvasRender {
     //文本水印
     if (markType == 1 || markType == '1') {
       //内容
-      let text = this.model.mark.data
+      let text = DDeiUtil.getReplacibleValue(this.model, "mark.data");
       if (text) {
         if (!this.markCanvas) {
           this.markCanvas = document.createElement("canvas");
@@ -966,6 +972,35 @@ class DDeiStageCanvasRender {
     } else {
       this.hScroll = null;
       this.model.wpv.x = 0
+    }
+  }
+  /**
+   * 获取缓存的渲染数据
+   */
+  getCachedValue(attrPath: string): object | null {
+    let returnValue: object | null = null;
+
+    if (!this.renderCacheData.has(attrPath)) {
+      returnValue = DDeiModelArrtibuteValue.getAttrValueByState(this.model, attrPath, true);
+      this.renderCacheData.set(attrPath, returnValue)
+    } else {
+      returnValue = this.renderCacheData.get(attrPath)
+    }
+    return returnValue;
+  }
+
+  /**
+  * 设置渲染缓存数据
+  */
+  setCachedValue(attrPath: string | string[], value: any): void {
+    if (attrPath) {
+      if (Array.isArray(attrPath)) {
+        attrPath.forEach(item => {
+          this.renderCacheData.set(item, value);
+        })
+      } else {
+        this.renderCacheData.set(attrPath, value);
+      }
     }
   }
 

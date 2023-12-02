@@ -3,6 +3,11 @@ import DDeiAbstractShape from './models/shape.js';
 import { clone } from 'lodash'
 import DDei from './ddei.js';
 import { Matrix3, Vector3 } from 'three';
+import DDeiModelArrtibuteValue from './models/attribute/attribute-value.js';
+
+const expressBindValueReg = /#\{[^\{\}]*\}/;
+const contentSplitReg = /\+|\-|\*|\//;
+const isNumberReg = /^[+-]?\d*(\.\d*)?(e[+-]?\d+)?$/;
 
 class DDeiUtil {
 
@@ -26,6 +31,9 @@ class DDeiUtil {
   static getSubControlJSON: Function;
   //钩子函数，返回线控件的定义
   static getLineInitJSON: Function;
+  //钩子函数，获取业务数据
+  static getBusiData: Function;
+
 
   static offsetX: number;
   static offsetY: number;
@@ -1365,6 +1373,257 @@ class DDeiUtil {
     // 判断是否Safari浏览器
     return /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent) > -1  // 是Safari为true，
   }
+  /**
+     * 获取可替换的数据值
+     * 主要用于得到经过业务替换值绑定后的数据
+     * @param model 对象
+     * @param keypath  属性路径，一般用.隔开
+     */
+  static getReplacibleValue(model: object, keypath: string): any {
+    //获取原始值
+    let originValue = model?.render?.getCachedValue(keypath);
+    //执行值绑定替换
+    if (originValue) {
+      //获取外部业务传入值
+      let busiData = DDeiUtil.getBusiData();
+      if (busiData) {
+        let replaceData = DDeiUtil.expressBindValue(originValue, busiData);
+        if (replaceData) {
+          return replaceData;
+        }
+      } else {
+        return originValue;
+      }
+    }
+    return originValue;
+  }
+
+
+
+  /**
+   * 用于处理绑定字段或文本的表达式替换
+   */
+  static expressBindValue(originValue, busiData, row) {
+    if (originValue && originValue.indexOf("#{") != -1) {
+      let t = originValue;
+      let replaceData = "";
+      while (t && t != '') {
+        let result = expressBindValueReg.exec(t);
+        if (result != null && result.length > 0) {
+          replaceData += t.substring(0, result.index);
+          let rs = result[0].replaceAll(" ", "");
+          let aer = this.analysisExpress(rs.substring(2, rs.length - 1), busiData, row);
+          //人民币转换
+          // if (control.attrs.convertToRMBY == 2 || control.attrs.convertToRMBY == '2' || control.convertToRMBY == 2 || control.convertToRMBY == '2') {
+          //   aer = this.dealBigMoney(aer);
+          // }
+          replaceData += aer;
+          t = t.substr(result.index + result[0].length);
+        } else {
+          replaceData += t;
+          break;
+        }
+      }
+      return replaceData;
+
+    }
+  }
+
+  /**
+   * 处理表达式计算,格式如下：
+   * 列表.行#费用 列表的当前行费用
+   * 列表.行#费用-列表.行#收入 列表当前行费用-当前行收入
+   * 列表.0#费用 第一行的费用字段
+   * 列表.数量 列表长度
+   * 列表.平均#费用 对列表中的费用字段求平均值
+   * 列表.求和#费用 对列表中的费用字段求合
+   * 列表.求和#收入-列表#求和#费用 列表中收入-费用
+   * 列表.求和#收入-100 列表中收入-100
+   */
+  static analysisExpress(expressContent, busiData, row) {
+    //去掉表达式中的空格
+    expressContent = expressContent.replaceAll(" ", "");
+    //用正则进行拆分
+    let replaceData = expressContent;
+    let expressArray = expressContent.split(contentSplitReg);
+    if (expressArray != null && expressArray.length > 0) {
+      //循环对每一个子项进行求值,并返回替换表达式中的值
+      for (let i = 0; i < expressArray.length; i++) {
+        let ea = expressArray[i];
+        let eaValue = this.calculExpressValue(ea, busiData, row);
+        replaceData = replaceData.replaceAll(ea, eaValue);
+      }
+    }
+    try {
+      if (contentSplitReg.test(expressContent)) {
+        replaceData = replaceData.replaceAll("null", 0);
+        replaceData = eval(replaceData);
+      } else {
+        replaceData = replaceData.replaceAll("null", "");
+      }
+    } catch (e) {
+      console.error(e);
+      replaceData = "";
+    }
+    return replaceData;
+  }
+
+  //解析简单的，不带任何运算符号的表达式
+  static calculExpressValue(ea, busiData, row) {
+
+    let rd = null;
+    //如果是数字则直接返回
+    if (isNumberReg.test(ea)) {
+      return ea;
+    }
+    //在idata中获取，如果获取不到就返回0
+    else {
+      //如果既没有.也没有#，则代表是普通值，则直接从idata获取
+      if (ea.indexOf('.') == -1 && ea.indexOf('#') == -1) {
+        rd = busiData[ea];
+      }
+      //如果表达式中存在.则是从列表中获取数据 :列表.平均值#费用
+      else if (ea.indexOf('.') != -1) {
+        try {
+          let listKey = ea.split('.')[0];
+          let listDataExpress = ea.split('.')[1];
+          if (listKey && listDataExpress) {
+            //取得列表的子属性  平均值#费用
+            let listSubKey = listDataExpress.split("#")[0];
+            let listData = busiData[listKey];
+            //处理所属列表的函数及其属性取值
+            if ('平均' == listSubKey || '平均值' == listSubKey) {
+              let listSubEP = listDataExpress.split("#")[1];
+              //判断平均的值是否存在缓存中
+              if (busiData[ea + "_catch_avg"]) {
+                rd = busiData[ea + "_catch_avg"];
+              } else {
+                let countNum = 0;
+                if (busiData[ea + "_catch_count"]) {
+                  countNum = busiData[ea + "_catch_count"];
+                } else {
+                  for (let i = 0; i < listData.length; i++) {
+                    var ld = listData[i][listSubEP];
+                    if (ld && isNumberReg.test(ld)) {
+                      countNum += parseFloat(ld);
+                    }
+                  }
+                  //将结果放入缓存中
+                  busiData[ea + "_catch_count"] = countNum;
+                }
+                //求平均
+                let avgNNum = countNum / listData.length;
+                //将结果放入缓存中
+                busiData[ea + "_catch_avg"] = avgNNum;
+                rd = avgNNum;
+
+              }
+            } else if ('最大' == listSubKey || '最大值' == listSubKey) {
+              let listSubEP = listDataExpress.split("#")[1];
+              let maxNum = null;
+              if (busiData[ea + "_catch_max"]) {
+                maxNum = busiData[ea + "_catch_max"];
+              } else {
+                for (let i = 0; i < listData.length; i++) {
+                  let ld = listData[i][listSubEP];
+                  if (ld && isNumberReg.test(ld)) {
+                    if (maxNum == null) {
+                      maxNum = ld;
+                    } else if (maxNum < ld) {
+                      maxNum = ld;
+                    }
+                  }
+                }
+                //将结果放入缓存中
+                busiData[ea + "_catch_max"] = maxNum;
+              }
+              rd = maxNum;
+            } else if ('最小' == listSubKey || '最小值' == listSubKey) {
+              let listSubEP = listDataExpress.split("#")[1];
+              let minNum = null;
+              if (busiData[ea + "_catch_min"]) {
+                minNum = busiData[ea + "_catch_min"];
+              } else {
+                for (let i = 0; i < listData.length; i++) {
+                  let ld = listData[i][listSubEP];
+                  if (ld && isNumberReg.test(ld)) {
+                    if (minNum == null) {
+                      minNum = ld;
+                    } else if (minNum > ld) {
+                      minNum = ld;
+                    }
+                  }
+                }
+                //将结果放入缓存中
+                busiData[ea + "_catch_min"] = minNum;
+              }
+              rd = minNum;
+            } else if ('合计' == listSubKey || '求和' == listSubKey || '求合' == listSubKey) {
+              let listSubEP = listDataExpress.split("#")[1];
+              let countNum = 0;
+              if (busiData[ea + "_catch_count"]) {
+                countNum = busiData[ea + "_catch_count"];
+              } else {
+                for (let i = 0; i < listData.length; i++) {
+                  var ld = listData[i][listSubEP];
+                  if (ld && isNumberReg.test(ld)) {
+                    countNum += parseFloat(ld);
+                  }
+                }
+                //将结果放入缓存中
+                busiData[ea + "_catch_count"] = countNum;
+              }
+              rd = countNum;
+            } else if ('数量' == listSubKey || '长度' == listSubKey) {
+              rd = busiData[listKey].length;
+            } else if ('尾行' == listSubKey) {
+              let listSubEP = listDataExpress.split("#")[1];
+              let ld = listData[listData.length - 1][listSubEP];
+              if (ld && isNumberReg.test(ld)) {
+                rd = parseFloat(ld);
+              } else if (ld) {
+                rd = ld;
+              }
+            } else if ('首行' == listSubKey) {
+              let listSubEP = listDataExpress.split("#")[1];
+              let ld = listData[0][listSubEP];
+              if (ld && isNumberReg.test(ld)) {
+                rd = parseFloat(ld);
+              } else if (ld) {
+                rd = ld;
+              }
+            } else if ('行' == listSubKey) {
+              let listSubEP = listDataExpress.split("#")[1];
+              let ld = listData[row][listSubEP];
+              if (ld && isNumberReg.test(ld)) {
+                rd = parseFloat(ld);
+              } else if (ld) {
+                rd = ld;
+              }
+            }
+            //指定的固定行的数据
+            else if (isNumberReg.test(listSubKey)) {
+              let listSubEP = listDataExpress.split("#")[1];
+              let ld = listData[listSubKey][listSubEP];
+              if (ld && isNumberReg.test(ld)) {
+                rd = parseFloat(ld);
+              } else if (ld) {
+                rd = ld;
+              }
+            }
+          }
+        } catch (e) {
+          console.error(e)
+        }
+      }
+    }
+    if (rd != null && isNumberReg.test(rd)) {
+      return rd;
+    } else if (rd) {
+      return rd;
+    }
+    return null;
+  }
 
   /**
    * 对输入数据进行合并拆分等处理，主要用来处理分页打印，多页打印等功能
@@ -1420,7 +1679,7 @@ class DDeiUtil {
                   if (expressContent) {
                     //去掉表达式中的空格
                     expressContent = expressContent.replaceAll(" ", "");
-                    let expressArray = expressContent.split(/\+|\-|\*|\//g);
+                    let expressArray = expressContent.split(contentSplitReg);
                     if (expressArray != null && expressArray.length > 0) {
                       //循环对每一个子项进行求值,并返回替换表达式中的值
                       for (let i = 0; i < expressArray.length; i++) {
@@ -1540,7 +1799,7 @@ class DDeiUtil {
                   if (expressContent) {
                     //去掉表达式中的空格
                     expressContent = expressContent.replaceAll(" ", "");
-                    let expressArray = expressContent.split(/\+|\-|\*|\//g);
+                    let expressArray = expressContent.split(contentSplitReg);
                     if (expressArray != null && expressArray.length > 0) {
                       //循环对每一个子项进行求值,并返回替换表达式中的值
                       for (let ei = 0; ei < expressArray.length; ei++) {

@@ -204,6 +204,9 @@ class DDeiEditor {
         if (!DDeiUtil.getLineInitJSON) {
           DDeiUtil.getLineInitJSON = DDeiEditorUtil.getLineInitJSON;
         }
+        if (!DDeiUtil.getBusiData) {
+          DDeiUtil.getBusiData = DDeiEditorUtil.getBusiData;
+        }
 
 
 

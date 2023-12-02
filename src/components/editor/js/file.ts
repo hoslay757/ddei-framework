@@ -20,6 +20,8 @@ class DDeiFile {
     this.lastUpdateTime = props.lastUpdateTime ? props.lastUpdateTime : new Date().getTime()
     this.publish = props.publish ? props.publish : "0"
     this.desc = props.desc ? props.desc : ""
+    this.extData = props.extData ? props.extData : {}
+    this.busiData = props.busiData
   }
   // ============================ 静态变量 ============================
 
@@ -40,6 +42,10 @@ class DDeiFile {
   name: string;
   // 文件的描述
   desc: string = "";
+  //额外数据，存储额外的业务关键信息
+  extData: object;
+  //业务数据，用于替换显示内容，不会被存储
+  busiData: object;
   // 当前实例的状态
   state: DDeiFileState;
 
@@ -105,8 +111,6 @@ class DDeiFile {
         this.currentSheetIndex = index
       }
     }
-
-
   }
 
   /**
@@ -170,7 +174,7 @@ class DDeiFile {
   toJSON(): Object {
     let json: Object = new Object();
     for (let i in this) {
-      if (i == 'active' || i == 'histroy' || i == 'histroyIdx') {
+      if (i == 'active' || i == 'histroy' || i == 'histroyIdx' || i == 'busiData') {
         continue;
       }
       if (this[i] || this[i] == 0) {

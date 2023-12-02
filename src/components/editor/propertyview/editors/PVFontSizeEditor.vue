@@ -126,12 +126,15 @@ export default {
       //属性值
       let value = parser.parseValue(this.attrDefine.value);
       DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, value);
-      this.editor.ddInstance.stage.selectedModels.forEach((element) => {
+      if (
+        this.attrDefine.model.modelType == "DDeiStage" ||
+        this.attrDefine.model.modelType == "DDeiLayer"
+      ) {
         //推送信息进入总线
         this.editor.bus.push(
           DDeiEnumBusCommandType.ModelChangeValue,
           {
-            mids: [element.id],
+            mids: [this.attrDefine.model.modelType],
             paths: paths,
             value: value,
             attrDefine: this.attrDefine,
@@ -139,7 +142,22 @@ export default {
           evt,
           true
         );
-      });
+      } else {
+        this.editor.ddInstance.stage.selectedModels.forEach((element) => {
+          //推送信息进入总线
+          this.editor.bus.push(
+            DDeiEnumBusCommandType.ModelChangeValue,
+            {
+              mids: [element.id],
+              paths: paths,
+              value: value,
+              attrDefine: this.attrDefine,
+            },
+            evt,
+            true
+          );
+        });
+      }
       this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
         parts: ["topmenu"],
       });

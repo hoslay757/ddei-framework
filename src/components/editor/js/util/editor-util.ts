@@ -6,6 +6,7 @@ import DDeiAbstractShape from "@/components/framework/js/models/shape";
 import DDeiEditor from "../editor";
 import DDeiConfig from "@/components/framework/js/config";
 import DDeiUtil from "@/components/framework/js/util";
+import DDeiStage from "@/components/framework/js/models/stage";
 
 class DDeiEditorUtil {
 
@@ -20,6 +21,17 @@ class DDeiEditorUtil {
     };
 
     return dataJson
+  }
+
+  /**
+  * 获取业务数据
+  */
+  static getBusiData(): object {
+    let editor = DDeiEditor.ACTIVE_INSTANCE;
+    if (editor) {
+      let file = editor.files[editor.currentFileIndex]
+      return file?.busiData
+    }
   }
 
   /**
