@@ -157,10 +157,27 @@ class DDeiCanvasRender {
    */
   bindEvent(): void {
     setInterval(() => {
+      //边缘扫描
+      // this.mouseInEdge();
       this.model.stage.drawing = true;
       this.drawShape();
     }, 20)
   }
+
+  // /**
+  //  * 鼠标在画布边缘
+  //  */
+  // mouseInEdge(): void {
+  //   //在边缘，计数
+  //   if (this.upInEdge != this.inEdge) {
+  //     this.inEdgeTime = 0
+  //     this.upInEdge = this.inEdge
+  //   }
+  //   if (this.inEdge) {
+  //     this.inEdgeTime += 20;
+  //   }
+
+  // }
 
   /**
    * 鼠标按下事件

@@ -48,7 +48,6 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
     if (data?.models?.length > 0) {
-
       let x = data.x ? data.x : 0;
       let y = data.y ? data.y : 0;
       let dragObj = data.dragObj;
@@ -139,16 +138,28 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
 
         model.transVectors(moveMatrix);
 
+        //获取鼠标在屏幕上的位置
+        let ddRender = stage?.ddInstance.render
+        let rat1 = ddRender?.ratio;
+        let canvasWidth = ddRender.canvas.width / rat1
+        let canvasHeight = ddRender.canvas.height / rat1
+        let isLeft = true, isTop = true;
+        if (evt.offsetX >= canvasWidth * 0.5) {
+          isLeft = false
+        }
+        if (evt.offsetY >= canvasHeight * 0.5) {
+          isTop = false
+        }
         //判断如果model的某个点到了边缘，则移动窗口视图
         model.pvs.forEach(pv => {
-          if (pv.y >= wpvy1) {
+          if (pv.y >= wpvy1 && !isTop) {
             exWpvY = Math.max(pv.y - wpvy1, exWpvY)
-          } else if (pv.y <= wpvy) {
+          } else if (pv.y <= wpvy && isTop) {
             exWpvY = Math.min(pv.y - wpvy, exWpvY)
           }
-          if (pv.x >= wpvx1) {
+          if (pv.x >= wpvx1 && !isLeft) {
             exWpvX = Math.max(pv.x - wpvx1, exWpvX)
-          } else if (pv.x <= wpvx) {
+          } else if (pv.x <= wpvx && isLeft) {
             exWpvX = Math.min(pv.x - wpvx, exWpvX)
           }
         });
@@ -161,6 +172,7 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
         exWpvY = 0
         dragObj.num++
       }
+
       if (exWpvX || exWpvY) {
         let exr = exWpvX
         let eyr = exWpvY

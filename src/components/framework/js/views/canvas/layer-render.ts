@@ -1055,11 +1055,26 @@ class DDeiLayerCanvasRender {
     //ctrl、alt键的按下状态
     let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
     let isAlt = DDei.KEY_DOWN_STATE.get("alt");
+
     let ex = evt.offsetX;
     let ey = evt.offsetY;
-    let stageRatio = this.stage.getStageRatio()
+    // let rat1 = this.ddRender?.ratio;
+    // let canvasWidth = this.ddRender.canvas.width / rat1
+    // let canvasHeight = this.ddRender.canvas.height / rat1
+    // //判断是否在边缘
+    // if (ex < 100) {
+    //   this.ddRender.inEdge = 4;
+    // } else if (ex > canvasWidth - 100) {
+    //   this.ddRender.inEdge = 2;
+    // } else if (ey < 100) {
+    //   this.ddRender.inEdge = 1;
+    // } else if (ey > canvasHeight - 100) {
+    //   this.ddRender.inEdge = 3;
+    // } else {
+    //   this.ddRender.inEdge = 0;
+    // }
     ex -= this.stage.wpv.x;
-    ey -= this.stage.wpv.y
+    ey -= this.stage.wpv.y;
     //判断当前操作状态
     switch (this.stageRender.operateState) {
       //控件状态确认中
@@ -1268,6 +1283,7 @@ class DDeiLayerCanvasRender {
           //设置辅助线
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.SetHelpLine, { models: this.model.shadowControls }, evt);
           //修改所有选中控件坐标
+          this.stageRender.tempPushData = pushData;
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangePosition, pushData, evt);
           //渲染图形
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
@@ -1365,6 +1381,8 @@ class DDeiLayerCanvasRender {
     }
     this.stage?.ddInstance?.bus?.executeAll();
   }
+
+
 }
 
 export default DDeiLayerCanvasRender
