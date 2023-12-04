@@ -54,10 +54,6 @@ class DDeiBusCommandModelEdgePosition extends DDeiBusCommand {
       }
 
       //移动窗口的大小
-      let wpvx = -stage.wpv.x;
-      let wpvy = -stage.wpv.y;
-      let wpvx1 = wpvx + canvas.width / rat1;
-      let wpvy1 = wpvy + canvas.height / rat1;
       let ignoreModelIds = [];
 
       //移动控件以及窗口
@@ -118,6 +114,9 @@ class DDeiBusCommandModelEdgePosition extends DDeiBusCommand {
             stage?.spv.applyMatrix3(moveMatrix)
             let mds = stage.getLayerModels(ignoreModelIds);
             mds.forEach(item => {
+              item.transVectors(moveMatrix)
+            });
+            models.forEach(item => {
               item.transVectors(moveMatrix)
             });
             stage.render.selector?.transVectors(moveMatrix)
