@@ -227,6 +227,64 @@ export default {
         middleCanvasPos.left + 5 <= evt.clientX &&
         middleCanvasPos.left + middleCanvas.offsetWidth - 5 >= evt.clientX
       ) {
+        if (this.editor.state == DDeiEditorState.QUICK_EDITING) {
+          //判定落点是否在正在编辑的影子控件上，如果是则识别坐标，制作选中效果
+          if (this.editor?.ddInstance?.stage?.render?.editorShadowControl) {
+            let stage = this.editor?.ddInstance?.stage;
+            let rat1 = stage.ddInstance.render.ratio;
+            let ex = evt.offsetX;
+            let ey = evt.offsetY;
+            ex -= stage.wpv.x;
+            ey -= stage.wpv.y;
+            let shadowControl =
+              this.editor?.ddInstance?.stage?.render?.editorShadowControl;
+            if (shadowControl.isInAreaLoose(ex, ey)) {
+              let cx = (ex - shadowControl.cpv.x) * rat1;
+              let cy = (ey - shadowControl.cpv.y) * rat1;
+              //先判断行，再判断具体位置
+              //textUsedArea记录的是基于中心点的偏移量
+              let startIndex = 0;
+              for(let i = 0;i < shadowControl.render.textUsedArea.length;i++){
+                let rowData = shadowControl.render.textUsedArea[i];
+                
+                if(cy >= rowData.y && cy<=rowData.y+rowData.height){
+                  if(cx >= rowData.x && cx<=rowData.x+rowData.width){
+                    //判断位于第几个字符，求出光标的开始位置
+                    let endI = startIndex+rowData.text.length;
+                    for(let x = startIndex;x < endI;x++){
+                      let fx = shadowControl.render.textUsedArea[0].textPosCache[x].x;
+                      let lx = x<endI-1 ? shadowControl.render.textUsedArea[0].textPosCache[x+1].x:rowData.x+rowData.width
+                      let halfW = (lx-fx)/2
+                      if(cx >= fx && cx <lx){
+                        let editorText = DDeiUtil.getEditorText();
+                        if(cx >fx+halfW){
+                          editorText.selectionStart = x+1
+                          editorText.selectionEnd = x+1
+                        }else{
+                          editorText.selectionStart = x
+                          editorText.selectionEnd = x
+                        }
+                        setTimeout(() => {  
+                          editorText.focus()
+                        }, 10);
+                        this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
+                        this.editor.bus.executeAll();
+                        break;
+                      }
+                    }
+                   
+                  }
+                  break;
+                }
+                startIndex+=rowData.text.length
+                
+              }
+              
+              return;
+            }
+          }
+        }
+
         this.changeEditorFocus();
         this.editor.ddInstance.state = DDeiEnumState.NONE;
         this.editor.ddInstance.render.mouseDown(evt);

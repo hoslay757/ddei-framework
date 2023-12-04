@@ -12,7 +12,7 @@ import DDeiCanvasRender from './ddei-render.js';
 import DDeiLayerCanvasRender from './layer-render.js';
 import DDeiAbstractShapeRender from './shape-render-base.js';
 import DDeiStageCanvasRender from './stage-render.js';
-import { cloneDeep } from 'lodash'
+import { cloneDeep, startsWith } from 'lodash'
 import { Matrix3, Vector3 } from 'three';
 import DDeiEnumOperateType from '../../enums/operate-type.js';
 
@@ -107,7 +107,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       //绘制填充
       this.drawFill();
 
-      // //绘制文本
+      //绘制文本
       this.drawText();
 
       //清空绘图时计算的临时变量
@@ -427,6 +427,18 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     //设置所有文本的对齐方式，以便于后续所有的对齐都采用程序计算
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
+    //获取编辑文本框的实时状态
+    let editorText = null;
+    if (this.isEditoring) {
+      editorText = DDeiUtil.getEditorText();
+    }
+    //开始光标与结束光标
+    let curSIdx = -1
+    let curEIdx = -1
+    if (editorText) {
+      curSIdx = editorText.selectionStart
+      curEIdx = editorText.selectionEnd
+    }
 
     //获取字体信息
     let fiFamily = this.getCachedValue("font.family");
@@ -619,11 +631,26 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       }
       y = y + ratPos.y
       //如果换行，则对每一子行进行对齐
+
+      let cursorX = -1;
+      let cursorY = -1;
+      let curTextIdx = 0;
+      if(textContainer.length> 0){
+        textContainer[0].textPosCache = []
+      }
       if (feed == 1) {
 
         //对内部容器进行排列对齐
+        //记录当前行的开始坐标和结束坐标，用来计算光标选中或跨行效果
+        let curRowStart = 0, curRowEnd = 0;
         for (let tci = 0; tci < textContainer.length; tci++) {
-
+          if (tci == 0) {
+            curRowStart = 0
+            curRowEnd = textContainer[tci].text.length;
+          } else {
+            curRowStart = curRowEnd
+            curRowEnd += textContainer[tci].text.length;
+          }
           let rRect = textContainer[tci];
           let x1, y1, x2;
           //绘制文字
@@ -644,10 +671,43 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
           if (hollow == '1') {
             ctx.strokeStyle = fiColor;
             ctx.strokeText(rRect.text, x1, y1)
+
           } else {
             ctx.fillText(rRect.text, x1, y1)
+          }
+          //绘制光标和选中效果
+          if (curSIdx != -1 && curEIdx != -1) {
+            //记录每一个字的区域和位置，用于后续选择和计算，TODO性能较低
+            textContainer[0].textPosCache[curTextIdx] = {x:x1,y:y1}
+            curTextIdx++;
+            for(let ti = 1;ti <rRect.text.length;ti++){
+              let trs = ctx.measureText(rRect.text.substring(0,ti))
+              textContainer[0].textPosCache[curTextIdx] = {x:x1+trs.width,y:y1}
+              curTextIdx++;
+            }
+            
+            //计算光标在本行的位置和光标选中文本的宽度
+            let sIdx = Math.max(curSIdx, curRowStart) - curRowStart;
+            let eIdx = Math.min(curEIdx, curRowEnd) - curRowStart;
+
+            if (sIdx <= eIdx) {
+              let bText = rRect.text.substring(0, sIdx);
+              let cText = rRect.text.substring(sIdx, eIdx);
+              let bBackRect = ctx.measureText(bText);
+              let cBackRect = ctx.measureText(cText);
+              let oldFillStyle = ctx.fillStyle
+              let oldAlpha = ctx.globalAlpha
+              ctx.fillStyle = "#017fff";
+              ctx.globalAlpha = 0.3
+              ctx.fillRect(x1 + bBackRect.width, y1, cBackRect.width, rRect.height)
+              ctx.fillStyle = oldFillStyle
+              ctx.globalAlpha = oldAlpha
+              cursorX = x1 + bBackRect.width + cBackRect.width
+              cursorY = y1
+            }
 
           }
+          //记录开始绘制的坐标
           textContainer[tci].x = x1;
           textContainer[tci].y = y1;
           if (underline == '1') {
@@ -712,6 +772,14 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
           ctx.stroke();
         }
 
+      }
+      //绘制光标
+      if (cursorX != -1 && cursorY != -1 && curSIdx == curEIdx) {
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 1.5;
+        ctx.moveTo(cursorX, cursorY - 2);
+        ctx.lineTo(cursorX, cursorY + textContainer[0].height + 2);
+        ctx.stroke();
       }
       this.textUsedArea = textContainer;
     }

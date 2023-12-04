@@ -207,6 +207,9 @@ class DDeiEditor {
         if (!DDeiUtil.getBusiData) {
           DDeiUtil.getBusiData = DDeiEditorUtil.getBusiData;
         }
+        if (!DDeiUtil.getEditorText) {
+          DDeiUtil.getEditorText = DDeiEditorUtil.getEditorText;
+        }
 
 
 

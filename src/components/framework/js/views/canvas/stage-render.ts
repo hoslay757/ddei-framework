@@ -59,6 +59,9 @@ class DDeiStageCanvasRender {
    */
   selector: DDeiSelector;
 
+  //编辑时的影子控件，编辑完成后删除
+  editorShadowControl: DDeiAbstractShape | null = null;
+
   /**
    * 刷新，如果为true则会绘制图形
    */
@@ -139,6 +142,10 @@ class DDeiStageCanvasRender {
       if (this.selector) {
         this.selector.render.drawShape();
       }
+
+      //绘制编辑时的影子控件
+      this.drawEditorShadowControl();
+
       ctx.restore();
 
 
@@ -172,6 +179,23 @@ class DDeiStageCanvasRender {
     }
   }
 
+  /**
+   * 绘制编辑时的影子元素
+   */
+  drawEditorShadowControl(): void {
+    if (this.editorShadowControl) {
+      //获得 2d 上下文对象
+      let canvas = this.ddRender.getCanvas();
+      let ctx = canvas.getContext('2d');
+      //获取全局缩放比例
+      let ratio = this.ddRender.ratio;
+      //保存状态
+      ctx.save();
+      let item = this.editorShadowControl;
+      item.render.drawShape();
+      ctx.restore();
+    }
+  }
   /**
    * 清空画布
    */

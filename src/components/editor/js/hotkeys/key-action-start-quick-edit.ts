@@ -116,33 +116,7 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
         let fillArea = model.render.getFillArea();
         let canvasPos = DDeiUtil.getDomAbsPosition(ddInstance.render.canvas);
         //创建大文本框
-        let inputId = editor.id + "_quickeditor";
-        let inputEle = document.getElementById(inputId);
-        if (!inputEle) {
-          inputEle = document.createElement("textarea")
-          inputEle.setAttribute("id", inputId)
-          inputEle.setAttribute("style", "border:none;resize:none;padding:0;z-index:9999;position:absolute;left:0;top:0;display:none;outline:none;");
-          document.body.appendChild(inputEle);
-          editor.quickEditorInput = inputEle;
-          inputEle.onblur = function () {
-            //设置属性值
-            let editor = DDeiEditor.ACTIVE_INSTANCE;
-            if (editor.quickEditorModel) {
-              editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { models: [editor.quickEditorModel], paths: ["text"], value: inputEle.value }, evt, true);
-              editor.bus.push(DDeiEnumBusCommandType.NodifyChange);
-              editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt, true);
-              editor.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt, true);
-            }
-            inputEle.style.display = "none";
-            inputEle.style.left = "0px";
-            inputEle.style.top = "0px";
-            inputEle.style.transform = "";
-            inputEle.value = "";
-            editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
-            editor.bus.executeAll();
-            editor.changeState(DDeiEditorState.DESIGNING);
-          }
-        }
+        let inputEle = DDeiUtil.getEditorText();
         let rotate = model.rotate
         let stageRatio = ddInstance.stage.getStageRatio();
         let pos = new Vector3(model.pvs[0].x, model.pvs[0].y, 1)
@@ -173,10 +147,15 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
         inputEle.style.height = (fillArea.height) * stageRatio + "px";
 
         inputEle.style.left = canvasPos.left + pos.x + ddInstance.stage.wpv.x + 1 + "px";
-        inputEle.style.top = canvasPos.top + pos.y + ddInstance.stage.wpv.y + 1 + "px";
+        inputEle.style.top = canvasPos.top + pos.y + ddInstance.stage.wpv.y + 100 + "px";
         inputEle.style.transform = "rotate(" + rotate + "deg)";
-        // inputEle.style.backgroundColor = "white"
+        // inputEle.style.backgroundColor = "grey"
         inputEle.style.display = "block";
+        // inputEle.style.width = "0.1px"
+        // inputEle.style.height = "0.1px"
+        //创建编辑影子元素
+        ddInstance.stage.render.editorShadowControl = DDeiUtil.getShadowControl(model);
+        ddInstance.stage.render.editorShadowControl.render.isEditoring = true
         inputEle.focus()
 
         inputEle.selectionStart = 0 // 选中开始位置

@@ -7,6 +7,9 @@ import DDeiEditor from "../editor";
 import DDeiConfig from "@/components/framework/js/config";
 import DDeiUtil from "@/components/framework/js/util";
 import DDeiStage from "@/components/framework/js/models/stage";
+import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type";
+import DDeiEditorEnumBusCommandType from "../enums/editor-command-type";
+import DDeiEditorState from "../enums/editor-state";
 
 class DDeiEditorUtil {
 
@@ -32,6 +35,63 @@ class DDeiEditorUtil {
       let file = editor.files[editor.currentFileIndex]
       return file?.busiData
     }
+  }
+
+  /**
+   * 获取快捷编辑文本框
+   */
+  static getEditorText() {
+    let editor = DDeiEditor.ACTIVE_INSTANCE;
+    if (editor) {
+      if (!editor.quickEditorInput) {
+        let inputId = editor.id + "_quickeditor";
+        let inputEle = document.getElementById(inputId);
+        if (!inputEle) {
+          inputEle = document.createElement("textarea")
+          inputEle.setAttribute("id", inputId)
+          inputEle.setAttribute("style", "border:none;resize:none;padding:0;z-index:9999;position:absolute;left:0;top:0;display:none;outline:none;");
+          document.body.appendChild(inputEle);
+          editor.quickEditorInput = inputEle;
+          // inputEle.onblur = function () {
+          //   //设置属性值
+          //   let editor = DDeiEditor.ACTIVE_INSTANCE;
+          //   let ddInstance = editor?.ddInstance;
+          //   if (editor.quickEditorModel) {
+          //     ddInstance.stage.render.editorShadowControl = null;
+          //     editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { models: [editor.quickEditorModel], paths: ["text"], value: inputEle.value }, null, true);
+          //     editor.bus.push(DDeiEnumBusCommandType.NodifyChange);
+          //     editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
+          //     editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
+          //   }
+          //   inputEle.style.display = "none";
+          //   inputEle.style.left = "0px";
+          //   inputEle.style.top = "0px";
+          //   inputEle.style.transform = "";
+          //   inputEle.value = "";
+          //   editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+          //   editor.bus.executeAll();
+          //   editor.changeState(DDeiEditorState.DESIGNING);
+          // }
+          inputEle.onkeydown = function () {
+            let editor = DDeiEditor.ACTIVE_INSTANCE;
+            editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
+            editor.bus.executeAll();
+          }
+          inputEle.oninput = function () {
+            let editor = DDeiEditor.ACTIVE_INSTANCE;
+            let ddInstance = editor?.ddInstance;
+            if (ddInstance.stage.render.editorShadowControl) {
+              ddInstance.stage.render.editorShadowControl.text = inputEle.value;
+              ddInstance.stage.render.editorShadowControl.render.setCachedValue("text", inputEle.value)
+              editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
+              editor.bus.executeAll();
+            }
+          }
+        }
+      }
+      return editor.quickEditorInput;
+    }
+
   }
 
   /**

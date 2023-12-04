@@ -53,7 +53,6 @@ class DDeiBusCommandStageChangeSelectModels extends DDeiBusCommand {
    * @param evt 事件对象引用
    */
   after(data: object, bus: DDeiBus, evt: Event): boolean {
-    console.log(1)
     bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
       parts: ["topmenu"],
     });

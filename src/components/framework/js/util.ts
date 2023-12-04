@@ -34,6 +34,8 @@ class DDeiUtil {
   static getLineInitJSON: Function;
   //钩子函数，获取业务数据
   static getBusiData: Function;
+  //钩子函数，获取快捷编辑文本框
+  static getEditorText: Function;
 
 
   static offsetX: number;

@@ -266,7 +266,7 @@ class DDeiLayerCanvasRender {
     }
   }
   /**
-   * 绘制子元素
+   * 绘制影子元素
    */
   drawShadowControls(): void {
     if (this.model.shadowControls?.length > 0) {
@@ -302,6 +302,9 @@ class DDeiLayerCanvasRender {
 
     }
   }
+
+
+
 
 
 
