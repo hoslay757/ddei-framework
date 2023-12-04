@@ -15,7 +15,10 @@ class DDeiKeyActionAllSelect extends DDeiKeyAction {
   action(evt: Event, ddInstance: DDei): void {
     //修改当前操作控件坐标
     if (ddInstance && ddInstance.stage) {
-      let models = Array.from(ddInstance.stage.selectedModels?.values());
+      let models = []
+      if (ddInstance.stage.selectedModels?.size > 0) {
+        models = Array.from(ddInstance.stage.selectedModels?.values());
+      }
       if (models?.length == 1 && models[0].baseModelType == 'DDeiTable' && models[0].curRow != -1 && models[0].curCol != -1) {
         //选中当前表格所有单元格
         for (let i = 0; i < models[0].rows.length; i++) {

@@ -138,95 +138,9 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
 
         model.transVectors(moveMatrix);
 
-        //获取鼠标在屏幕上的位置
-        let ddRender = stage?.ddInstance.render
-        let rat1 = ddRender?.ratio;
-        let canvasWidth = ddRender.canvas.width / rat1
-        let canvasHeight = ddRender.canvas.height / rat1
-        let isLeft = true, isTop = true;
-        if (evt.offsetX >= canvasWidth * 0.5) {
-          isLeft = false
-        }
-        if (evt.offsetY >= canvasHeight * 0.5) {
-          isTop = false
-        }
-        //判断如果model的某个点到了边缘，则移动窗口视图
-        model.pvs.forEach(pv => {
-          if (pv.y >= wpvy1 && !isTop) {
-            exWpvY = Math.max(pv.y - wpvy1, exWpvY)
-          } else if (pv.y <= wpvy && isTop) {
-            exWpvY = Math.min(pv.y - wpvy, exWpvY)
-          }
-          if (pv.x >= wpvx1 && !isLeft) {
-            exWpvX = Math.max(pv.x - wpvx1, exWpvX)
-          } else if (pv.x <= wpvx && isLeft) {
-            exWpvX = Math.min(pv.x - wpvx, exWpvX)
-          }
-        });
 
       });
-      //自动移动视窗以及扩展画布大小
-      //如果是创建中，且第一次触碰边缘，则不会触发
-      if (stage.render.operateState == DDeiEnumOperateState.CONTROL_CREATING && !(dragObj.num > 10)) {
-        exWpvX = 0
-        exWpvY = 0
-        dragObj.num++
-      }
 
-      if (exWpvX || exWpvY) {
-        let exr = exWpvX
-        let eyr = exWpvY
-        stage.wpv.x -= exr
-        stage.wpv.y -= eyr
-        let extW = 0;
-        let moveW = 0;
-        let hScrollWidth = stage.render.hScroll?.width ? stage.render.hScroll?.width : 0
-        let vScrollHeight = stage.render.vScroll?.height ? stage.render.vScroll?.height : 0
-        if (stage.wpv.x > 0) {
-          if (DDeiConfig.EXT_STAGE_WIDTH) {
-            extW = stage.wpv.x
-            moveW = extW
-          }
-          stage.wpv.x = 0
-        } else if (stage.wpv.x < -stage.width + hScrollWidth) {
-          if (DDeiConfig.EXT_STAGE_WIDTH) {
-            extW = -stage.width + hScrollWidth - stage.wpv.x
-          } else {
-            stage.wpv.x = -stage.width + hScrollWidth
-          }
-        }
-        let extH = 0;
-        let moveH = 0;
-        if (stage.wpv.y > 0) {
-          if (DDeiConfig.EXT_STAGE_HEIGHT) {
-            extH = stage.wpv.y
-            moveH = extH
-          }
-          stage.wpv.y = 0
-        } else if (stage.wpv.y < -stage.height + vScrollHeight) {
-          if (DDeiConfig.EXT_STAGE_HEIGHT) {
-            extH = -stage.height + vScrollHeight - stage.wpv.y
-          } else {
-            stage.wpv.y = -stage.height + vScrollHeight
-          }
-        }
-        if (extW || extH) {
-          stage.width += extW
-          stage.height += extH
-          if (moveW || moveH) {
-            let moveMatrix = new Matrix3(
-              1, 0, extW,
-              0, 1, extH,
-              0, 0, 1,
-            );
-            let mds = stage.getLayerModels(ignoreModelIds);
-            mds.forEach(item => {
-              item.transVectors(moveMatrix)
-            });
-            stage.render.selector?.transVectors(moveMatrix)
-          }
-        }
-      }
       models[0].layer.dragInPoints = []
       models[0].layer.dragOutPoints = []
       //设置移入移出效果的向量

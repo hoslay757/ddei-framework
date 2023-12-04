@@ -1058,21 +1058,21 @@ class DDeiLayerCanvasRender {
 
     let ex = evt.offsetX;
     let ey = evt.offsetY;
-    // let rat1 = this.ddRender?.ratio;
-    // let canvasWidth = this.ddRender.canvas.width / rat1
-    // let canvasHeight = this.ddRender.canvas.height / rat1
-    // //判断是否在边缘
-    // if (ex < 100) {
-    //   this.ddRender.inEdge = 4;
-    // } else if (ex > canvasWidth - 100) {
-    //   this.ddRender.inEdge = 2;
-    // } else if (ey < 100) {
-    //   this.ddRender.inEdge = 1;
-    // } else if (ey > canvasHeight - 100) {
-    //   this.ddRender.inEdge = 3;
-    // } else {
-    //   this.ddRender.inEdge = 0;
-    // }
+    let rat1 = this.ddRender?.ratio;
+    let canvasWidth = this.ddRender.canvas.width / rat1
+    let canvasHeight = this.ddRender.canvas.height / rat1
+    //判断是否在边缘
+    if (ex < 50) {
+      this.ddRender.inEdge = 4;
+    } else if (ex > canvasWidth - 50) {
+      this.ddRender.inEdge = 2;
+    } else if (ey < 50) {
+      this.ddRender.inEdge = 1;
+    } else if (ey > canvasHeight - 50) {
+      this.ddRender.inEdge = 3;
+    } else {
+      this.ddRender.inEdge = 0;
+    }
     ex -= this.stage.wpv.x;
     ey -= this.stage.wpv.y;
     //判断当前操作状态
@@ -1251,44 +1251,44 @@ class DDeiLayerCanvasRender {
       }
       //控件拖拽中
       case DDeiEnumOperateState.CONTROL_DRAGING: {
-        let pContainerModel = null;
-        //当前控件的上层控件
-        if (this.stageRender.currentOperateShape.id.indexOf("_shadow") != -1) {
-          let id = this.stageRender.currentOperateShape.id.substring(this.stageRender.currentOperateShape.id, this.stageRender.currentOperateShape.id.lastIndexOf("_shadow"))
-          let model = this.stage?.getModelById(id)
-          pContainerModel = model.pModel;
-        } else {
-          pContainerModel = this.stageRender.currentOperateShape.pModel;
-        }
-        if (pContainerModel) {
-          let pushData = { x: ex, y: ey, dragObj: this.stageRender.dragObj, models: this.model.shadowControls, changeContainer: isAlt };
-          pushData.oldContainer = pContainerModel
-          if (isAlt) {
-            //寻找鼠标落点当前所在的容器
-            let mouseOnContainers = DDeiAbstractShape.findBottomContainersByArea(this.model, ex, ey);
-            let lastOnContainer = this.model;
-            if (mouseOnContainers && mouseOnContainers.length > 0) {
-              //获取最下层容器
-              for (let k = mouseOnContainers.length - 1; k >= 0; k--) {
-                if (mouseOnContainers[k].id != this.stageRender.currentOperateShape.id) {
-                  lastOnContainer = mouseOnContainers[k]
-                  break;
+        if (!this.ddRender.inEdge) {
+          let pContainerModel = null;
+          //当前控件的上层控件
+          if (this.stageRender.currentOperateShape.id.indexOf("_shadow") != -1) {
+            let id = this.stageRender.currentOperateShape.id.substring(this.stageRender.currentOperateShape.id, this.stageRender.currentOperateShape.id.lastIndexOf("_shadow"))
+            let model = this.stage?.getModelById(id)
+            pContainerModel = model.pModel;
+          } else {
+            pContainerModel = this.stageRender.currentOperateShape.pModel;
+          }
+          if (pContainerModel) {
+            let pushData = { x: ex, y: ey, dragObj: this.stageRender.dragObj, models: this.model.shadowControls, changeContainer: isAlt };
+            pushData.oldContainer = pContainerModel
+            if (isAlt) {
+              //寻找鼠标落点当前所在的容器
+              let mouseOnContainers = DDeiAbstractShape.findBottomContainersByArea(this.model, ex, ey);
+              let lastOnContainer = this.model;
+              if (mouseOnContainers && mouseOnContainers.length > 0) {
+                //获取最下层容器
+                for (let k = mouseOnContainers.length - 1; k >= 0; k--) {
+                  if (mouseOnContainers[k].id != this.stageRender.currentOperateShape.id) {
+                    lastOnContainer = mouseOnContainers[k]
+                    break;
+                  }
                 }
               }
+              pushData.isAlt = true;
+              pushData.newContainer = lastOnContainer
             }
-            pushData.isAlt = true;
-            pushData.newContainer = lastOnContainer
+
+            //设置辅助线
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.SetHelpLine, { models: this.model.shadowControls }, evt);
+            //修改所有选中控件坐标
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangePosition, pushData, evt);
+            //渲染图形
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
           }
-
-          //设置辅助线
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.SetHelpLine, { models: this.model.shadowControls }, evt);
-          //修改所有选中控件坐标
-          this.stageRender.tempPushData = pushData;
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangePosition, pushData, evt);
-          //渲染图形
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
         }
-
         break;
       }
       //表格内部拖拽中

@@ -1194,6 +1194,49 @@ class DDeiStageCanvasRender {
       }
     }
   }
+
+  /**
+   * 鼠标悬停
+   * @param inEdge 悬停方位
+   * @param inEdgeTime 悬停时间
+   */
+  mouseInEdge(inEdge: number, inEdgeTime: number) {
+    switch (this.operateState) {
+      case DDeiEnumOperateState.CONTROL_DRAGING: {
+        //鼠标悬停于边缘时的拖拽
+        if (inEdge && inEdgeTime > 500) {
+          let pContainerModel = null;
+          //当前控件的上层控件
+          if (this.currentOperateShape.id.indexOf("_shadow") != -1) {
+            let id = this.currentOperateShape.id.substring(this.currentOperateShape.id, this.currentOperateShape.id.lastIndexOf("_shadow"))
+            let model = this.model.getModelById(id)
+            pContainerModel = model.pModel;
+          } else {
+            pContainerModel = this.currentOperateShape.pModel;
+          }
+          if (pContainerModel) {
+            let dx = 0, dy = 0;
+            let deltaSize = 10;
+            switch (inEdge) {
+              case 1: dy = -deltaSize; break;
+              case 2: dx = deltaSize; break;
+              case 3: dy = deltaSize; break;
+              case 4: dx = -deltaSize; break;
+            }
+            if (dx || dy) {
+              let shadowControls = this.model.layers[this.model.layerIndex].shadowControls
+              let pushData = { dx: dx, dy: dy, dragObj: this.dragObj, models: shadowControls };
+              //修改所有选中控件坐标
+              this.model?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelEdgePosition, pushData);
+              //渲染图形
+              this.model?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
+              this.model?.ddInstance?.bus?.executeAll();
+            }
+          }
+        }
+      } break;
+    };
+  }
 }
 
 export default DDeiStageCanvasRender
