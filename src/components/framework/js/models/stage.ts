@@ -4,7 +4,7 @@ import DDei from '../ddei';
 import DDeiAbstractShape from './shape';
 import DDeiUtil from '../util';
 import DDeiLink from './link';
-import { datas } from '@/components/editor/configs/layer';
+import { Vector3 } from 'three';
 import DDeiLine from './line';
 
 
@@ -33,6 +33,10 @@ class DDeiStage {
     this.ruler = props.ruler;
     this.grid = props.grid;
     this.global = props.global;
+    if (props.spv) {
+      this.spv = new Vector3(props.spv.x, props.spv.y, 1)
+    }
+
     this.links = []
     props?.links?.forEach(link => {
       this.links.push(link)
@@ -163,6 +167,9 @@ class DDeiStage {
    * 一个画布上可以同时并排多张纸，也可以不设纸张，采用自动扩展的方式增加纸张
    */
   paper: any;
+
+  //纸张和标量开始点的位置，初始化时默认为中心
+  spv: Vector3 | null = null;
 
   /**
    * 标尺,可以控制标尺是否显示

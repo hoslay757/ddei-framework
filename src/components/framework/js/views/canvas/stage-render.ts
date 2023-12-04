@@ -9,7 +9,7 @@ import DDeiAbstractShape from '../../models/shape.js';
 import DDeiStage from '../../models/stage.js';
 import DDeiUtil from '../../util.js';
 import DDeiCanvasRender from './ddei-render.js';
-import DDeiAbstractShapeRender from './shape-render-base.js';
+import { Vector3 } from 'three';
 
 /**
  * DDeiStage的渲染器类，用于渲染文件
@@ -213,8 +213,14 @@ class DDeiStageCanvasRender {
       let paperHeight = paperSize.height;
 
       //第一张纸开始位置
-      let startPaperX = Math.floor(this.model.width / 2 * rat1 - paperWidth / 2)
-      let startPaperY = Math.floor(this.model.height / 2 * rat1 - paperHeight / 2)
+      if (!this.model.spv) {
+        let sx = this.model.width / 2 - paperWidth / 2 / rat1
+        let sy = this.model.height / 2 - paperHeight / 2 / rat1
+        this.model.spv = new Vector3(sx, sy, 1)
+      }
+      let startPaperX = this.model.spv.x * rat1 + 1
+      let startPaperY = this.model.spv.y * rat1 + 1
+
       let posX = startPaperX - wpvX + offsetWidth;
       let posY = startPaperY - wpvY + offsetWidth;
 
@@ -364,9 +370,16 @@ class DDeiStageCanvasRender {
       let paperWidth = paperSize.width;
       let paperHeight = paperSize.height;
 
-      //基准位置0刻度
-      let startBaseX = this.model.width / 2 * rat1 - paperWidth / 2 + 0.5
-      let startBaseY = this.model.height / 2 * rat1 - paperHeight / 2 + 0.5
+      //基准位置0刻度，初始以这个刻度为准，后续跟着变化
+
+
+      if (!this.model.spv) {
+        let sx = this.model.width / 2 - paperWidth / 2 / rat1
+        let sy = this.model.height / 2 - paperHeight / 2 / rat1
+        this.model.spv = new Vector3(sx, sy, 1)
+      }
+      let startBaseX = this.model.spv.x * rat1 + 1
+      let startBaseY = this.model.spv.y * rat1 + 1
       if (ruleDisplay == 1 || ruleDisplay == "1") {
         //横向尺子背景
         ctx.fillRect(0, 0, cwidth, weight)
@@ -635,8 +648,14 @@ class DDeiStageCanvasRender {
       let paperWidth = paperSize.width;
       let paperHeight = paperSize.height;
       //基准位置0刻度
-      let startBaseX = this.model.width / 2 * rat1 - paperWidth / 2 + 0.5
-      let startBaseY = this.model.height / 2 * rat1 - paperHeight / 2 + 0.5
+
+      if (!this.model.spv) {
+        let sx = this.model.width / 2 - paperWidth / 2 / rat1
+        let sy = this.model.height / 2 - paperHeight / 2 / rat1
+        this.model.spv = new Vector3(sx, sy, 1)
+      }
+      let startBaseX = this.model.spv.x * rat1 + 1
+      let startBaseY = this.model.spv.y * rat1 + 1
 
 
       //绘制竖线

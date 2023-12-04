@@ -36,7 +36,6 @@ class DDeiBusCommandModelEdgePosition extends DDeiBusCommand {
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
     if (data?.models?.length > 0) {
-      console.log(1)
       let dx = data.dx ? data.dx : 0;
       let dy = data.dy ? data.dy : 0;
       let dragObj = data.dragObj;
@@ -116,6 +115,7 @@ class DDeiBusCommandModelEdgePosition extends DDeiBusCommand {
               0, 1, extH,
               0, 0, 1,
             );
+            stage?.spv.applyMatrix3(moveMatrix)
             let mds = stage.getLayerModels(ignoreModelIds);
             mds.forEach(item => {
               item.transVectors(moveMatrix)
