@@ -10,6 +10,7 @@ import DDeiEditorEnumBusCommandType from "../enums/editor-command-type";
 import DDeiEditorState from "../enums/editor-state";
 import DDeiEditorUtil from "../util/editor-util";
 import DDeiKeyAction from "./key-action";
+import DDeiEnumOperateState from "@/components/framework/js/enums/operate-state";
 
 /**
  * 键行为:开启快捷编辑
@@ -147,7 +148,7 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
         inputEle.style.height = (fillArea.height) * stageRatio + "px";
 
         inputEle.style.left = canvasPos.left + pos.x + ddInstance.stage.wpv.x + 1 + "px";
-        inputEle.style.top = canvasPos.top + pos.y + ddInstance.stage.wpv.y + 100 + "px";
+        inputEle.style.top = canvasPos.top + pos.y + ddInstance.stage.wpv.y + 50 + "px";
         inputEle.style.transform = "rotate(" + rotate + "deg)";
         // inputEle.style.backgroundColor = "grey"
         inputEle.style.display = "block";
@@ -162,6 +163,7 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
         inputEle.selectionEnd = inputEle.value.length // 获取输入框里的长度。
         //修改编辑器状态为快捷编辑中
         editor.changeState(DDeiEditorState.QUICK_EDITING);
+        ddInstance.stage.render.operateState = DDeiEnumOperateState.QUICK_EDITING
         editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
         editor.bus.executeAll();
       }

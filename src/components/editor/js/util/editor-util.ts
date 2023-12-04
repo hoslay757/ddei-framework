@@ -49,29 +49,26 @@ class DDeiEditorUtil {
         if (!inputEle) {
           inputEle = document.createElement("textarea")
           inputEle.setAttribute("id", inputId)
-          inputEle.setAttribute("style", "border:none;resize:none;padding:0;z-index:9999;position:absolute;left:0;top:0;display:none;outline:none;");
+          inputEle.setAttribute("style", "filter: opacity(0);user-select: none;pointer-events: none;border:none;resize:none;padding:0;z-index:9999;position:absolute;left:0;top:0;display:none;outline:none;");
           document.body.appendChild(inputEle);
           editor.quickEditorInput = inputEle;
-          // inputEle.onblur = function () {
-          //   //设置属性值
-          //   let editor = DDeiEditor.ACTIVE_INSTANCE;
-          //   let ddInstance = editor?.ddInstance;
-          //   if (editor.quickEditorModel) {
-          //     ddInstance.stage.render.editorShadowControl = null;
-          //     editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { models: [editor.quickEditorModel], paths: ["text"], value: inputEle.value }, null, true);
-          //     editor.bus.push(DDeiEnumBusCommandType.NodifyChange);
-          //     editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
-          //     editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
-          //   }
-          //   inputEle.style.display = "none";
-          //   inputEle.style.left = "0px";
-          //   inputEle.style.top = "0px";
-          //   inputEle.style.transform = "";
-          //   inputEle.value = "";
-          //   editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
-          //   editor.bus.executeAll();
-          //   editor.changeState(DDeiEditorState.DESIGNING);
-          // }
+          inputEle.enterValue = function () {
+            //设置属性值
+            let editor = DDeiEditor.ACTIVE_INSTANCE;
+            let ddInstance = editor?.ddInstance;
+            if (editor.quickEditorModel) {
+              ddInstance.stage.render.editorShadowControl = null;
+              editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { models: [editor.quickEditorModel], paths: ["text"], value: inputEle.value }, null, true);
+              editor.bus.push(DDeiEnumBusCommandType.NodifyChange);
+              editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
+              editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
+            }
+            inputEle.value = "";
+            editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+            editor.bus.push(DDeiEnumBusCommandType.ClearTemplateVars);
+            editor.bus.executeAll();
+            editor.changeState(DDeiEditorState.DESIGNING);
+          }
           inputEle.onkeydown = function () {
             let editor = DDeiEditor.ACTIVE_INSTANCE;
             editor.bus.push(DDeiEnumBusCommandType.RefreshShape);

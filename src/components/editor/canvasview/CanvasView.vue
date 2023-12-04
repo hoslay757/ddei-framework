@@ -1,14 +1,7 @@
 <template>
-  <div :id="id"
-       class="ddei_editor_canvasview"
-       @mousedown="mouseDown($event)"
-       ondragstart="return false;"
-       @mousewheel="mouseWheel($event)"
-       @dragover="createControlOver"
-       @drop="createControlDrop"
-       @dragleave="createControlCancel"
-       @dblclick="canvasDBClick"
-       @contextmenu.prevent>
+  <div :id="id" class="ddei_editor_canvasview" @mousedown="mouseDown($event)" ondragstart="return false;"
+    @mousewheel="mouseWheel($event)" @dragover="createControlOver" @drop="createControlDrop"
+    @dragleave="createControlCancel" @dblclick="canvasDBClick" @contextmenu.prevent>
   </div>
 </template>
 
@@ -220,6 +213,7 @@ export default {
       this.editor.ddInstance.render.mouseWheel(evt);
     },
 
+
     mouseDown(evt) {
       let middleCanvas = document.getElementById(this.id);
       let middleCanvasPos = DDeiUtil.getDomAbsPosition(middleCanvas);
@@ -238,48 +232,50 @@ export default {
             ey -= stage.wpv.y;
             let shadowControl =
               this.editor?.ddInstance?.stage?.render?.editorShadowControl;
-            if (shadowControl.isInAreaLoose(ex, ey)) {
+            if (shadowControl?.isInAreaLoose(ex, ey)) {
               let cx = (ex - shadowControl.cpv.x) * rat1;
               let cy = (ey - shadowControl.cpv.y) * rat1;
               //先判断行，再判断具体位置
               //textUsedArea记录的是基于中心点的偏移量
               let startIndex = 0;
-              for(let i = 0;i < shadowControl.render.textUsedArea.length;i++){
+              for (let i = 0; i < shadowControl.render.textUsedArea.length; i++) {
                 let rowData = shadowControl.render.textUsedArea[i];
-                
-                if(cy >= rowData.y && cy<=rowData.y+rowData.height){
-                  if(cx >= rowData.x && cx<=rowData.x+rowData.width){
+
+                if (cy >= rowData.y && cy <= rowData.y + rowData.height) {
+                  if (cx >= rowData.x && cx <= rowData.x + rowData.width) {
                     //判断位于第几个字符，求出光标的开始位置
-                    let endI = startIndex+rowData.text.length;
-                    for(let x = startIndex;x < endI;x++){
+                    let endI = startIndex + rowData.text.length;
+                    for (let x = startIndex; x < endI; x++) {
                       let fx = shadowControl.render.textUsedArea[0].textPosCache[x].x;
-                      let lx = x<endI-1 ? shadowControl.render.textUsedArea[0].textPosCache[x+1].x:rowData.x+rowData.width
-                      let halfW = (lx-fx)/2
-                      if(cx >= fx && cx <lx){
+                      let lx = x < endI - 1 ? shadowControl.render.textUsedArea[0].textPosCache[x + 1].x : rowData.x + rowData.width
+                      let halfW = (lx - fx) / 2
+                      if (cx >= fx && cx < lx) {
                         let editorText = DDeiUtil.getEditorText();
-                        if(cx >fx+halfW){
-                          editorText.selectionStart = x+1
-                          editorText.selectionEnd = x+1
-                        }else{
+                        if (cx > fx + halfW) {
+                          editorText.selectionStart = x + 1
+                          editorText.selectionEnd = x + 1
+                        } else {
                           editorText.selectionStart = x
                           editorText.selectionEnd = x
                         }
-                        setTimeout(() => {  
+                        setTimeout(() => {
                           editorText.focus()
                         }, 10);
                         this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
                         this.editor.bus.executeAll();
+                        this.editor.ddInstance.stage.render.tempTextStart = editorText.selectionStart
+                        this.editor.ddInstance.stage.render.operateState = DDeiEnumOperateState.QUICK_EDITING_TEXT_SELECTING;
                         break;
                       }
                     }
-                   
+
                   }
                   break;
                 }
-                startIndex+=rowData.text.length
-                
+                startIndex += rowData.text.length
+
               }
-              
+
               return;
             }
           }
@@ -290,6 +286,7 @@ export default {
         this.editor.ddInstance.render.mouseDown(evt);
       }
     },
+
 
     /**
      * 拖拽元素移动

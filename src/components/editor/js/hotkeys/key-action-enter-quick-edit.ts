@@ -11,7 +11,7 @@ class DDeiKeyActionEnterQuickEdit extends DDeiKeyAction {
   // ============================ 方法 ===============================
   action(evt: Event, ddInstance: DDei): void {
     let editor = DDeiEditor.ACTIVE_INSTANCE;
-    editor.quickEditorInput?.blur();
+    editor.quickEditorInput?.enterValue();
 
   }
 

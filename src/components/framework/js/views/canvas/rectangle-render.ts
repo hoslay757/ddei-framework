@@ -635,7 +635,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       let cursorX = -1;
       let cursorY = -1;
       let curTextIdx = 0;
-      if(textContainer.length> 0){
+      if (textContainer.length > 0) {
         textContainer[0].textPosCache = []
       }
       if (feed == 1) {
@@ -678,14 +678,14 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
           //绘制光标和选中效果
           if (curSIdx != -1 && curEIdx != -1) {
             //记录每一个字的区域和位置，用于后续选择和计算，TODO性能较低
-            textContainer[0].textPosCache[curTextIdx] = {x:x1,y:y1}
+            textContainer[0].textPosCache[curTextIdx] = { x: x1, y: y1 }
             curTextIdx++;
-            for(let ti = 1;ti <rRect.text.length;ti++){
-              let trs = ctx.measureText(rRect.text.substring(0,ti))
-              textContainer[0].textPosCache[curTextIdx] = {x:x1+trs.width,y:y1}
+            for (let ti = 1; ti < rRect.text.length; ti++) {
+              let trs = ctx.measureText(rRect.text.substring(0, ti))
+              textContainer[0].textPosCache[curTextIdx] = { x: x1 + trs.width, y: y1 }
               curTextIdx++;
             }
-            
+
             //计算光标在本行的位置和光标选中文本的宽度
             let sIdx = Math.max(curSIdx, curRowStart) - curRowStart;
             let eIdx = Math.min(curEIdx, curRowEnd) - curRowStart;
@@ -738,8 +738,40 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       }
       //如果不换行，则输出第一行内容,直接对整理进行坐标对齐
       else {
+        //绘制光标和选中效果
+        if (curSIdx != -1 && curEIdx != -1) {
+          //记录每一个字的区域和位置，用于后续选择和计算，TODO性能较低
+          textContainer[0].textPosCache[curTextIdx] = { x: x, y: y }
+          curTextIdx++;
+          for (let ti = 1; ti < textContainer[0].text.length; ti++) {
+            let trs = ctx.measureText(textContainer[0].text.substring(0, ti))
+            textContainer[0].textPosCache[curTextIdx] = { x: x + trs.width, y: y }
+            curTextIdx++;
+          }
+          //计算光标在本行的位置和光标选中文本的宽度
+          let sIdx = curSIdx;
+          let eIdx = Math.min(curEIdx, textContainer[0].text.length);
+
+          if (sIdx <= eIdx) {
+            let bText = textContainer[0].text.substring(0, sIdx);
+            let cText = textContainer[0].text.substring(sIdx, eIdx);
+            let bBackRect = ctx.measureText(bText);
+            let cBackRect = ctx.measureText(cText);
+            let oldFillStyle = ctx.fillStyle
+            let oldAlpha = ctx.globalAlpha
+            ctx.fillStyle = "#017fff";
+            ctx.globalAlpha = 0.3
+            ctx.fillRect(x + bBackRect.width, y, cBackRect.width, textContainer[0].height)
+            ctx.fillStyle = oldFillStyle
+            ctx.globalAlpha = oldAlpha
+            cursorX = x + bBackRect.width + cBackRect.width
+            cursorY = y
+          }
+
+        }
         textContainer[0].x = x;
         textContainer[0].y = y;
+
         //处理镂空样式
         if (hollow == 1) {
           ctx.strokeStyle = fiColor;

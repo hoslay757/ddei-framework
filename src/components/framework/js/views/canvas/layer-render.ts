@@ -590,6 +590,12 @@ class DDeiLayerCanvasRender {
     let ey = evt.offsetY;
     ex -= this.stage.wpv.x;
     ey -= this.stage.wpv.y;
+    if (this.stageRender?.operateState == DDeiEnumOperateState.QUICK_EDITING) {
+      //如果不在编辑的控件上，则确认解除快捷编辑状态
+      if (!this.stageRender.editorShadowControl || !this.stageRender.editorShadowControl?.isInAreaLoose(ex, ey)) {
+        DDeiUtil.getEditorText()?.enterValue()
+      }
+    }
     //判定是否在操作点上，如果在则快捷创建线段
     if (this.stageRender.selector && this.stageRender.selector.isInAreaLoose(ex, ey, true) &&
       ((this.stageRender.selector.passIndex >= 1 && this.stageRender.selector.passIndex <= 9) || this.stageRender.selector.passIndex == 13)) {
@@ -706,7 +712,6 @@ class DDeiLayerCanvasRender {
       return;
     }
     //ctrl、alt键的按下状态
-
     let isAlt = DDei.KEY_DOWN_STATE.get("alt");
     let ex = evt.offsetX;
     let ey = evt.offsetY;
@@ -1023,7 +1028,19 @@ class DDeiLayerCanvasRender {
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
           this.stageRender.selector.updatePVSByModels(operateModels)
           this.model.shadowControls = [];
-
+          break;
+        case DDeiEnumOperateState.QUICK_EDITING_TEXT_SELECTING:
+          this.stageRender.operateState = DDeiEnumOperateState.QUICK_EDITING;
+          //渲染图形
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+          //排序并执行所有action
+          this.stage?.ddInstance?.bus?.executeAll();
+          return;
+        case DDeiEnumOperateState.QUICK_EDITING:
+          //如果不在编辑的控件上，则确认解除快捷编辑状态
+          if (!this.stageRender.editorShadowControl || !this.stageRender.editorShadowControl?.isInAreaLoose(ex, ey)) {
+            DDeiUtil.getEditorText()?.enterValue()
+          }
           break;
         //默认缺省状态
         default:
@@ -1054,7 +1071,6 @@ class DDeiLayerCanvasRender {
     if (!this.model.display && !this.model.tempDisplay || this.model.lock) {
       return;
     }
-
     //ctrl、alt键的按下状态
     let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
     let isAlt = DDei.KEY_DOWN_STATE.get("alt");
@@ -1340,6 +1356,72 @@ class DDeiLayerCanvasRender {
           //渲染图形
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
 
+        }
+        break;
+      }
+      //快捷编辑中
+      case DDeiEnumOperateState.QUICK_EDITING: {
+        if (this.stageRender.editorShadowControl) {
+          let shadowControl = this.stageRender.editorShadowControl;
+          if (shadowControl?.isInAreaLoose(ex, ey)) {
+            this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'text' }, evt);
+          }
+        }
+        break;
+      }
+      //快捷编辑选择文本中
+      case DDeiEnumOperateState.QUICK_EDITING_TEXT_SELECTING: {
+
+        let shadowControl = this.stageRender.editorShadowControl;
+        if (shadowControl?.isInAreaLoose(ex, ey)) {
+
+          let cx = (ex - shadowControl.cpv.x) * rat1;
+          let cy = (ey - shadowControl.cpv.y) * rat1;
+          //先判断行，再判断具体位置
+          //textUsedArea记录的是基于中心点的偏移量
+          let startIndex = 0;
+          for (let i = 0; i < shadowControl.render.textUsedArea.length; i++) {
+            let rowData = shadowControl.render.textUsedArea[i];
+
+            if (cy >= rowData.y && cy <= rowData.y + rowData.height) {
+              if (cx >= rowData.x && cx <= rowData.x + rowData.width) {
+                //判断位于第几个字符，求出光标的开始位置
+                let endI = startIndex + rowData.text.length;
+                for (let x = startIndex; x < endI; x++) {
+                  let fx = shadowControl.render.textUsedArea[0].textPosCache[x].x;
+                  let lx = x < endI - 1 ? shadowControl.render.textUsedArea[0].textPosCache[x + 1].x : rowData.x + rowData.width
+                  let halfW = (lx - fx) / 2
+                  if (cx >= fx && cx < lx) {
+                    let editorText = DDeiUtil.getEditorText();
+                    let x1 = null;
+                    if (cx > fx + halfW) {
+                      x1 = x + 1
+                    } else {
+                      x1 = x
+                    }
+                    if (this.stageRender.tempTextStart > x1) {
+                      editorText.selectionStart = x1
+                      editorText.selectionEnd = this.stageRender.tempTextStart
+                    } else {
+                      editorText.selectionEnd = x1
+                    }
+
+                    setTimeout(() => {
+                      editorText.focus()
+                    }, 10);
+                    this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'text' }, evt);
+                    this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
+                    this.stage.ddInstance.bus.executeAll();
+                    break;
+                  }
+                }
+
+              }
+
+            }
+            startIndex += rowData.text.length
+
+          }
         }
         break;
       }

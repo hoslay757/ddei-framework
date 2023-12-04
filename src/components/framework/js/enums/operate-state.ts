@@ -32,6 +32,10 @@ enum DDeiEnumOperateState {
   LINE_POINT_CHANGING = 40,
   //线段修改点确认中
   LINE_POINT_CHANGING_CONFIRM = 41,
+  //快捷编辑中
+  QUICK_EDITING = 50,
+  //快捷编辑器的待确认选中
+  QUICK_EDITING_TEXT_SELECTING = 51
 }
 
 export default DDeiEnumOperateState
