@@ -205,7 +205,6 @@ class DDeiCanvasRender {
     let sx = evt.screenX;
     let sy = evt.screenY;
     let stage = this.model.stage
-    let stageRatio = stage.getStageRatio()
     ex -= stage.wpv.x;
     ey -= stage.wpv.y;
     sx -= stage.wpv.x;

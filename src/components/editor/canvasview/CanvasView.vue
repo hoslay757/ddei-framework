@@ -254,6 +254,7 @@ export default {
             stage.render.currentOperateContainer = layer;
             stage.render.operateState = DDeiEnumOperateState.CONTROL_CREATING;
             let control = this.editor.creatingControl;
+            stage.render.currentOperateShape = control;
             //在画布上创建临时对象
             if (!layer.models.has(control.id)) {
               this.editor.bus.push(
@@ -306,56 +307,80 @@ export default {
                 isExec = false;
               }
               if (isExec) {
-                //显示辅助对齐线、坐标文本等图形
-                let selectedModels: Map<string, DDeiAbstractShape> = new Map();
-                selectedModels.set(control.id, control);
-
-                //修改辅助线
-                this.editor?.bus?.push(
-                  DDeiEnumBusCommandType.SetHelpLine,
-                  { models: selectedModels },
-                  e
-                );
-
-                this.editor.bus.push(
-                  DDeiEnumBusCommandType.ModelChangePosition,
-                  {
-                    models: [control],
-                    x: ex,
-                    y: ey,
-                    dx: 0,
-                    dy: 0,
-                    dragObj: ddInstance.stage.render.dragObj,
-                  },
-                  e
-                );
-                let isAlt = DDeiEditor.KEY_DOWN_STATE.get("alt");
-                this.editor.bus.push(
-                  DDeiEnumBusCommandType.ChangeSelectorPassIndex,
-                  { passIndex: 10 },
-                  e
-                );
-                let lastOnContainer = layer;
-                if (isAlt) {
-                  //寻找鼠标落点当前所在的容器
-                  let mouseOnContainers =
-                    DDeiAbstractShape.findBottomContainersByArea(layer, ex, ey);
-                  if (mouseOnContainers && mouseOnContainers.length > 0) {
-                    lastOnContainer =
-                      mouseOnContainers[mouseOnContainers.length - 1];
-                  }
-                  //如果最小层容器不是当前容器，则修改鼠标样式，代表可能要移入
-                  if (lastOnContainer != layer) {
-                    this.editor.bus.push(
-                      DDeiEnumBusCommandType.ChangeSelectorPassIndex,
-                      { passIndex: 11 },
-                      e
-                    );
-                  }
+                let ex1 = e.offsetX;
+                let ey1 = e.offsetY;
+                let rat1 = ddInstance.render?.ratio;
+                let canvasWidth = ddInstance.render.canvas.width / rat1;
+                let canvasHeight = ddInstance.render.canvas.height / rat1;
+                //判断是否在边缘
+                if (ex1 < 50) {
+                  ddInstance.render.inEdge = 4;
+                } else if (ex1 > canvasWidth - 50) {
+                  ddInstance.render.inEdge = 2;
+                } else if (ey1 < 50) {
+                  ddInstance.render.inEdge = 1;
+                } else if (ey1 > canvasHeight - 50) {
+                  ddInstance.render.inEdge = 3;
+                } else {
+                  ddInstance.render.inEdge = 0;
                 }
+                if (!ddInstance.render.inEdge) {
+                  //显示辅助对齐线、坐标文本等图形
+                  let selectedModels: Map<string, DDeiAbstractShape> =
+                    new Map();
+                  selectedModels.set(control.id, control);
 
-                //渲染图形
-                this.editor?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
+                  //修改辅助线
+                  this.editor?.bus?.push(
+                    DDeiEnumBusCommandType.SetHelpLine,
+                    { models: selectedModels },
+                    e
+                  );
+
+                  this.editor.bus.push(
+                    DDeiEnumBusCommandType.ModelChangePosition,
+                    {
+                      models: [control],
+                      x: ex,
+                      y: ey,
+                      dx: 0,
+                      dy: 0,
+                      dragObj: ddInstance.stage.render.dragObj,
+                    },
+                    e
+                  );
+                  let isAlt = DDeiEditor.KEY_DOWN_STATE.get("alt");
+                  this.editor.bus.push(
+                    DDeiEnumBusCommandType.ChangeSelectorPassIndex,
+                    { passIndex: 10 },
+                    e
+                  );
+                  let lastOnContainer = layer;
+                  if (isAlt) {
+                    //寻找鼠标落点当前所在的容器
+                    let mouseOnContainers =
+                      DDeiAbstractShape.findBottomContainersByArea(
+                        layer,
+                        ex,
+                        ey
+                      );
+                    if (mouseOnContainers && mouseOnContainers.length > 0) {
+                      lastOnContainer =
+                        mouseOnContainers[mouseOnContainers.length - 1];
+                    }
+                    //如果最小层容器不是当前容器，则修改鼠标样式，代表可能要移入
+                    if (lastOnContainer != layer) {
+                      this.editor.bus.push(
+                        DDeiEnumBusCommandType.ChangeSelectorPassIndex,
+                        { passIndex: 11 },
+                        e
+                      );
+                    }
+                  }
+
+                  //渲染图形
+                  this.editor?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
+                }
               }
             }
             this.editor.bus.executeAll();
@@ -374,7 +399,6 @@ export default {
         let stage = ddInstance.stage;
         let ex = e.offsetX;
         let ey = e.offsetY;
-        let stageRatio = stage.getStageRatio();
         ex -= stage.wpv.x;
         ey -= stage.wpv.y;
         if (this.editor.creatingControl) {

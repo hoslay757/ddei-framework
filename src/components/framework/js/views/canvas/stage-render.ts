@@ -1202,9 +1202,10 @@ class DDeiStageCanvasRender {
    */
   mouseInEdge(inEdge: number, inEdgeTime: number) {
     switch (this.operateState) {
+      case DDeiEnumOperateState.CONTROL_CREATING:
       case DDeiEnumOperateState.CONTROL_DRAGING: {
         //鼠标悬停于边缘时的拖拽
-        if (inEdge && inEdgeTime > 500) {
+        if (inEdge && inEdgeTime > 300) {
           let pContainerModel = null;
           //当前控件的上层控件
           if (this.currentOperateShape.id.indexOf("_shadow") != -1) {
@@ -1216,7 +1217,7 @@ class DDeiStageCanvasRender {
           }
           if (pContainerModel) {
             let dx = 0, dy = 0;
-            let deltaSize = 10;
+            let deltaSize = 10 * this.model.getStageRatio();
             switch (inEdge) {
               case 1: dy = -deltaSize; break;
               case 2: dx = deltaSize; break;
@@ -1225,6 +1226,9 @@ class DDeiStageCanvasRender {
             }
             if (dx || dy) {
               let shadowControls = this.model.layers[this.model.layerIndex].shadowControls
+              if (!(shadowControls?.length > 0)) {
+                shadowControls = [this.currentOperateShape]
+              }
               let pushData = { dx: dx, dy: dy, dragObj: this.dragObj, models: shadowControls };
               //修改所有选中控件坐标
               this.model?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelEdgePosition, pushData);
