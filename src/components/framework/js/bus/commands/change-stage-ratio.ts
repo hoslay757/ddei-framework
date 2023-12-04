@@ -44,7 +44,7 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
           scaleSize, 0, 0,
           0, scaleSize, 0,
           0, 0, 1);
-
+        stage?.spv.applyMatrix3(scaleMatrix)
         stage.layers.forEach(layer => {
           layer.midList.forEach(mid => {
             let model = layer.models.get(mid);
