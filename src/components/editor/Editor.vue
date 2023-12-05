@@ -477,6 +477,11 @@ export default {
      */
     createControlPrepare(model: DDeiAbstractShape): void {
       if (model) {
+        let ddInstance = this.editor.ddInstance;
+        let stage = ddInstance.stage;
+        if (stage?.render?.operateState == DDeiEnumOperateState.QUICK_EDITING && stage?.render?.editorShadowControl) {
+          DDeiUtil.getEditorText()?.enterValue()
+        }
         //修改编辑器状态为控件创建中
         this.editor.changeState(DDeiEditorState.CONTROL_CREATING);
         //设置正在需要创建的控件

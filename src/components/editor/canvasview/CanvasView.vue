@@ -243,7 +243,7 @@ export default {
               for (; i < shadowControl.render.textUsedArea.length; i++) {
                 let rowData = shadowControl.render.textUsedArea[i];
                 if (cy >= rowData.y && cy <= rowData.y + rowData.height) {
-                  
+
                   if (cx >= rowData.x && cx <= rowData.x + rowData.width) {
                     //判断位于第几个字符，求出光标的开始位置
                     let endI = startIndex + rowData.text.length;
@@ -253,40 +253,40 @@ export default {
                       let halfW = (lx - fx) / 2
                       if (cx >= fx && cx < lx) {
                         if (cx > fx + halfW) {
-                          sx = x+1
+                          sx = x + 1
                         } else {
                           sx = x;
                         }
-                       
+
                         break;
                       }
                     }
                   }
-                  if(!sx){
-                    if(ex < shadowControl.cpv.x){
+                  if (!sx) {
+                    if (ex < shadowControl.cpv.x) {
                       sx = startIndex
-                    }else{
-                      sx = startIndex+rowData.text.length;
+                    } else {
+                      sx = startIndex + rowData.text.length;
                     }
                   }
                   break;
                 }
                 startIndex += rowData.text.length
               }
-              if(!sx){
-                if(ex < shadowControl.cpv.x){
+              if (!sx) {
+                if (ex < shadowControl.cpv.x) {
                   sx = 0
-                }else{
-                  sx = startIndex+shadowControl.render.textUsedArea[i-1].text.length;
+                } else {
+                  sx = startIndex + shadowControl.render.textUsedArea[i - 1].text.length;
                 }
               }
               let editorText = DDeiUtil.getEditorText();
               editorText.selectionStart = sx
               editorText.selectionEnd = sx
               setTimeout(() => {
-                    editorText.focus()
-                  }, 10);
-              
+                editorText.focus()
+              }, 10);
+
               this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
               this.editor.bus.executeAll();
               this.editor.ddInstance.stage.render.tempTextStart = editorText.selectionStart
@@ -312,12 +312,13 @@ export default {
 
         let ddInstance = this.editor.ddInstance;
         let stage = ddInstance.stage;
-        let stageRatio = stage.getStageRatio();
         let ex = e.offsetX;
         let ey = e.offsetY;
         ex -= stage.wpv.x;
         ey -= stage.wpv.y;
         if (this.editor.creatingControl) {
+
+
           //当前激活的图层
           let layer = stage.layers[stage.layerIndex];
           if (layer) {
