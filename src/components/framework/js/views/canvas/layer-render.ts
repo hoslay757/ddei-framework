@@ -591,11 +591,12 @@ class DDeiLayerCanvasRender {
     ex -= this.stage.wpv.x;
     ey -= this.stage.wpv.y;
     if (this.stageRender?.operateState == DDeiEnumOperateState.QUICK_EDITING) {
-      //如果不在编辑的控件上，则确认解除快捷编辑状态
-      if (!this.stageRender.editorShadowControl || !this.stageRender.editorShadowControl?.isInAreaLoose(ex, ey)) {
+      //如果在画布范围内，但不在编辑的控件上，则确认解除快捷编辑状态
+      if (evt.target == this.ddRender.canvas && (!this.stageRender.editorShadowControl || !this.stageRender.editorShadowControl?.isInAreaLoose(ex, ey))) {
         DDeiUtil.getEditorText()?.enterValue()
       }
     }
+
     //判定是否在操作点上，如果在则快捷创建线段
     if (this.stageRender.selector && this.stageRender.selector.isInAreaLoose(ex, ey, true) &&
       ((this.stageRender.selector.passIndex >= 1 && this.stageRender.selector.passIndex <= 9) || this.stageRender.selector.passIndex == 13)) {
@@ -1038,8 +1039,10 @@ class DDeiLayerCanvasRender {
           return;
         case DDeiEnumOperateState.QUICK_EDITING:
           //如果不在编辑的控件上，则确认解除快捷编辑状态
-          if (!this.stageRender.editorShadowControl || !this.stageRender.editorShadowControl?.isInAreaLoose(ex, ey)) {
+          if (evt.target == this.ddRender.canvas && (!this.stageRender.editorShadowControl || !this.stageRender.editorShadowControl?.isInAreaLoose(ex, ey))) {
             DDeiUtil.getEditorText()?.enterValue()
+          } else if (evt.target != this.ddRender.canvas) {
+            return;
           }
           break;
         //默认缺省状态

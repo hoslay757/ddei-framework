@@ -21,6 +21,7 @@ abstract class DDeiAbstractShape {
     this.modelCode = props.modelCode ? props.modelCode : null
     this.unicode = props.unicode ? props.unicode : DDeiUtil.getUniqueCode()
     this.fmt = props.fmt
+    this.sptStyle = props.sptStyle ? props.sptStyle : {}
     if (props.cpv) {
       this.cpv = new Vector3(props.cpv.x, props.cpv.y, props.cpv.z);
     }
@@ -46,6 +47,7 @@ abstract class DDeiAbstractShape {
         this.exPvs[pv.id] = v;
       }
     }
+
 
 
   }
@@ -92,6 +94,10 @@ abstract class DDeiAbstractShape {
 
   //格式化信息
   fmt: object | null;
+
+
+  //特殊文本样式
+  sptStyle: object;
   // ============================ 方法 ============================
 
   /**
@@ -136,7 +142,36 @@ abstract class DDeiAbstractShape {
   }
 
 
+  /**
+   * 设置特殊文本样式
+   * @param sIdx 开始文本坐标
+   * @param eIdx 结束文本坐标
+   */
+  setSptStyle(sIdx: number, eIdx: number, paths: string[] | string, value: any) {
+    //设置每一个字符的样式
+    let attrPaths = []
+    if (typeof (paths) == 'string') {
+      attrPaths = paths.split(",");
+    } else {
+      attrPaths = paths;
+    }
 
+    if (attrPaths?.length > 0 && sIdx > -1 && eIdx > -1 && sIdx <= eIdx) {
+      for (; sIdx < eIdx; sIdx++) {
+        for (let i = 0; i < attrPaths.length; i++) {
+          DDeiUtil.setAttrValueByPath(this, ["sptStyle." + sIdx + "." + attrPaths[i]], value)
+        }
+
+      }
+    }
+  }
+
+  /**
+   * 清空特殊文本样式
+   */
+  clearSptStyle() {
+    this.sptStyle = {}
+  }
 
 
   /**

@@ -1,90 +1,70 @@
 <template>
-  <div id="ddei_editor_propertyview"
-       class="ddei_editor_propertyview"
-       @mousedown="changeEditorFocus">
+  <div id="ddei_editor_propertyview" class="ddei_editor_propertyview" @mousedown="changeEditorFocus">
     <div class="ddei_editor_pv_group_view">
-      <div class="ddei_editor_pv_group_view_expandbox"
-           @click="hidOrShowPV">
+      <div class="ddei_editor_pv_group_view_expandbox" @click="hidOrShowPV">
         <img class="ddei_editor_pv_group_view_expandbox_img"
-             :src="editor?.rightWidth > 38 ? expandRightImg : expandLeftImg" />
+          :src="editor?.rightWidth > 38 ? expandRightImg : expandLeftImg" />
       </div>
       <div class="ddei_editor_pv_group_view_items">
-        <div :class="topGroup.selected ? 'ddei_editor_pv_group_view_items_item_selected' : 'ddei_editor_pv_group_view_items_item'"
-             v-for="topGroup in topGroups"
-             v-show="!topGroup?.empty"
-             @click="changeTopGroup(topGroup)"
-             :title="topGroup.name">
-          <img class="img"
-               :src="topGroup.img" />
+        <div
+          :class="topGroup.selected ? 'ddei_editor_pv_group_view_items_item_selected' : 'ddei_editor_pv_group_view_items_item'"
+          v-for="topGroup in topGroups" v-show="!topGroup?.empty" @click="changeTopGroup(topGroup)"
+          :title="topGroup.name">
+          <img class="img" :src="topGroup.img" />
         </div>
       </div>
     </div>
 
-    <div class="ddei_editor_pv_subgroup_view"
-         v-show="editor?.rightWidth > 38">
+    <div class="ddei_editor_pv_subgroup_view" v-show="editor?.rightWidth > 38">
       <div class="ddei_editor_pv_subgroup_view_tab_title">
-        <div :class="currentTopGroup?.groups.length > 1 && subGroup.selected ? 'ddei_editor_pv_subgroup_view_tab_title_item_selected' : 'ddei_editor_pv_subgroup_view_tab_title_item'"
-             v-show="!subGroup.empty"
-             v-for="subGroup in currentTopGroup?.groups"
-             :title="subGroup.name"
-             @mouseup="changeSubGroup(subGroup)">{{
+        <div
+          :class="currentTopGroup?.groups.length > 1 && subGroup.selected ? 'ddei_editor_pv_subgroup_view_tab_title_item_selected' : 'ddei_editor_pv_subgroup_view_tab_title_item'"
+          v-show="!subGroup.empty" v-for="subGroup in currentTopGroup?.groups" :title="subGroup.name"
+          @mouseup="changeSubGroup(subGroup)">{{
             subGroup.name }}</div>
       </div>
       <div class="ddei_editor_pv_subgroup_view_tab_panel"
-           :style="{ height: 'calc(100vh - ' + (editor?.topHeight + editor?.bottomHeight + 40) + 'px'}">
-        <div :class="{ 'ddei_editor_pv_subgroup_view_tab_panel_editors_column': attrDefine.display == 'column', 'ddei_editor_pv_subgroup_view_tab_panel_editors_row': attrDefine.display != 'column', 'empty_value': attrDefine.value ? false : true }"
-             v-for="attrDefine in currentSubGroup?.children"
-             :title="attrDefine.desc"
-             v-show="attrDefine?.visiable && !attrDefine?.forceHidden">
-          <div class="title"
-               v-if="!attrDefine.hiddenTitle && attrDefine?.visiable != false">{{ attrDefine.name }}<span v-if="attrDefine.notNull">*</span>：
+        :style="{ height: 'calc(100vh - ' + (editor?.topHeight + editor?.bottomHeight + 40) + 'px' }">
+        <div
+          :class="{ 'ddei_editor_pv_subgroup_view_tab_panel_editors_column': attrDefine.display == 'column', 'ddei_editor_pv_subgroup_view_tab_panel_editors_row': attrDefine.display != 'column', 'empty_value': attrDefine.value ? false : true }"
+          v-for="attrDefine in currentSubGroup?.children" :title="attrDefine.desc"
+          v-show="attrDefine?.visiable && !attrDefine?.forceHidden">
+          <div class="title" v-if="!attrDefine.hiddenTitle && attrDefine?.visiable != false">{{ attrDefine.name }}<span
+              v-if="attrDefine.notNull">*</span>：
           </div>
-          <div class="editor"
-               v-if="attrDefine.visiable != false">
-            <PVTextEditor :controlDefine="controlDefine"
-                          :attrDefine="attrDefine"
-                          v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'text'">
+          <div class="editor" v-if="attrDefine.visiable != false">
+            <PVTextEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'text'">
             </PVTextEditor>
-            <PVTextAreaEditor :controlDefine="controlDefine"
-                              :attrDefine="attrDefine"
-                              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'textarea'">
+            <PVTextAreaEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'textarea'">
             </PVTextAreaEditor>
-            <PVRangeEditor :controlDefine="controlDefine"
-                           :attrDefine="attrDefine"
-                           v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'range'"></PVRangeEditor>
-            <PVColorEditor :controlDefine="controlDefine"
-                           :attrDefine="attrDefine"
-                           v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'color'"></PVColorEditor>
-            <PVRadioEditor :controlDefine="controlDefine"
-                           :attrDefine="attrDefine"
-                           v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'radio'"></PVRadioEditor>
-            <PVFontSizeEditor :controlDefine="controlDefine"
-                              :attrDefine="attrDefine"
-                              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'font-size'">
+            <PVRangeEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'range'"></PVRangeEditor>
+            <PVColorEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'color'"></PVColorEditor>
+            <PVRadioEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'radio'"></PVRadioEditor>
+            <PVFontSizeEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'font-size'">
             </PVFontSizeEditor>
-            <PVAlignTypeEditor :controlDefine="controlDefine"
-                               :attrDefine="attrDefine"
-                               v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'align-type'">
+            <PVAlignTypeEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'align-type'">
             </PVAlignTypeEditor>
-            <PVComboxEditor :controlDefine="controlDefine"
-                            :attrDefine="attrDefine"
-                            v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'combox'">
+            <PVComboxEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'combox'">
             </PVComboxEditor>
-            <PVBorderTypeEditor :controlDefine="controlDefine"
-                                :attrDefine="attrDefine"
-                                v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'border-type'">
+            <PVBorderTypeEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'border-type'">
             </PVBorderTypeEditor>
-            <PVFillTypeEditor :controlDefine="controlDefine"
-                              :attrDefine="attrDefine"
-                              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'fill-type'">
+            <PVFillTypeEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'fill-type'">
             </PVFillTypeEditor>
-            <PVExCheckboxEditor :controlDefine="controlDefine"
-                                :attrDefine="attrDefine"
-                                v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'ex-checkbox'">
+            <PVExCheckboxEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'ex-checkbox'">
             </PVExCheckboxEditor>
-            <PVSwitchCheckboxEditor :controlDefine="controlDefine"
-                                    :attrDefine="attrDefine"
-                                    v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'switch-checkbox'">
+            <PVSwitchCheckboxEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'switch-checkbox'">
             </PVSwitchCheckboxEditor>
           </div>
         </div>
@@ -645,9 +625,11 @@ export default {
      * 焦点进入当前区域
      */
     changeEditorFocus() {
-      this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
-      this.editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
-      this.editor.bus.executeAll();
+      if (this.editor.state != DDeiEditorState.PROPERTY_EDITING && this.editor.state != DDeiEditorState.QUICK_EDITING) {
+        this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
+        this.editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+        this.editor.bus.executeAll();
+      }
     },
   },
 };
