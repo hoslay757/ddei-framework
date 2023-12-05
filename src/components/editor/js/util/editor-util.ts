@@ -49,7 +49,7 @@ class DDeiEditorUtil {
         if (!inputEle) {
           inputEle = document.createElement("textarea")
           inputEle.setAttribute("id", inputId)
-          inputEle.setAttribute("style", "filter: opacity(100);user-select: none;pointer-events: none;border:none;resize:none;padding:0;z-index:9999;position:absolute;left:0;top:0;display:none;outline:none;");
+          inputEle.setAttribute("style", "filter: opacity(0);user-select: none;pointer-events: none;border:none;resize:none;padding:0;z-index:9999;position:absolute;left:0;top:0;display:none;outline:none;");
           document.body.appendChild(inputEle);
           editor.quickEditorInput = inputEle;
           inputEle.enterValue = function () {

@@ -634,201 +634,64 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       y = y + ratPos.y
       //如果换行，则对每一子行进行对齐
 
-      let cursorX = -1;
-      let cursorY = -1;
+      let cursorX = -Infinity;
+      let cursorY = -Infinity;
+      let cursorHeight = 0;
       let curTextIdx = 0;
       if (textContainer.length > 0) {
         textContainer[0].textPosCache = []
       }
-      if (feed == 1 || feed == '1') {
+      // if (feed == 1 || feed == '1') {
 
-        //对内部容器进行排列对齐
-        //记录当前行的开始坐标和结束坐标，用来计算光标选中或跨行效果
-        let curRowStart = 0, curRowEnd = 0;
-        let tempIdx = 0
-        for (let tci = 0; tci < textContainer.length; tci++) {
-          if (tci == 0) {
-            curRowStart = 0
-            curRowEnd = textContainer[tci].text.length;
-          } else {
-            curRowStart = curRowEnd
-            curRowEnd += textContainer[tci].text.length;
-          }
-          let rRect = textContainer[tci];
-          let x1, y1, x2;
-          //绘制文字
-          if (align == 1) {
-            x1 = x;
-            y1 = y + rRect.height * tci;
-            x2 = x1 + rRect.width;
-          } else if (align == 2) {
-            x1 = ratPos.x + (ratPos.width - rRect.width) * 0.5;
-            y1 = y + rRect.height * tci
-            x2 = x1 + rRect.width;
-          } else if (align == 3) {
-            x1 = ratPos.x + (ratPos.width - rRect.width);
-            y1 = y + rRect.height * tci
-            x2 = x1 + rRect.width;
-          }
-
-          //绘制光标和选中效果
-          if (curSIdx != -1 && curEIdx != -1) {
-            //记录每一个字的区域和位置，用于后续选择和计算
-            textContainer[0].textPosCache[curTextIdx] = { x: x1, y: y1 }
-            curTextIdx++;
-            for (let ti = 1; ti < rRect.text.length; ti++) {
-              textContainer[0].textPosCache[curTextIdx] = { x: textContainer[0].textPosCache[curTextIdx - 1].x + rRect.widths[ti], y: y1 }
-              curTextIdx++;
-            }
-
-            //计算光标在本行的位置和光标选中文本的宽度
-            let sIdx = Math.max(curSIdx, curRowStart) - curRowStart;
-            let eIdx = Math.min(curEIdx, curRowEnd) - curRowStart;
-            if (sIdx <= eIdx) {
-              let bBackWidth = 0
-              let cBackWidth = 0
-              for (let x = 0; x < sIdx; x++) {
-                bBackWidth += rRect.widths[x]
-              }
-              for (let x = sIdx; x < eIdx; x++) {
-                cBackWidth += rRect.widths[x]
-              }
-              let oldFillStyle = ctx.fillStyle
-              let oldAlpha = ctx.globalAlpha
-              ctx.fillStyle = "#017fff";
-              ctx.globalAlpha = 0.3
-              ctx.fillRect(x1 + bBackWidth, y1, cBackWidth, rRect.height)
-              ctx.fillStyle = oldFillStyle
-              ctx.globalAlpha = oldAlpha
-              cursorX = x1 + bBackWidth + cBackWidth
-              cursorY = y1
-            }
-          }
-          //记录开始绘制的坐标
-          textContainer[tci].x = x1;
-          textContainer[tci].y = y1;
-          //循环输出每一个字符
-          let usedX = x1;
-          let usedY = y1;
-          for (let tj = 0; tj < textContainer[tci].text.length; tj++, tempIdx++) {
-            let outputText = textContainer[tci].text[tj]
-            let width = textContainer[tci].widths[tj]
-            let height = textContainer[tci].heights[tj]
-            //获取样式
-            ctx.save();
-            //读取当前特殊样式，如果没有，则使用外部基本样式
-            let font = fontSize + "px " + fiFamily;
-            if (bold == '1') {
-              font = "bold " + font;
-            }
-            if (italic == '1') {
-              font = "italic " + font;
-            }
-            let tHollow = hollow;
-            let tUnderline = underline;
-            let tDeleteline = deleteline;
-            let tTopline = topline;
-            let tFontColor = fiColor
-            if (this.model.sptStyle[tempIdx]) {
-              let ftsize = this.model.sptStyle[tempIdx]?.font?.size ? this.model.sptStyle[tempIdx]?.font?.size * ratio : fontSize;
-              let ftfamily = this.model.sptStyle[tempIdx]?.font?.family ? this.model.sptStyle[tempIdx]?.font?.family : fiFamily;
-              font = ftsize + "px " + ftfamily
-              if (this.model.sptStyle[tempIdx]?.textStyle?.bold == '1') {
-                font = "bold " + font;
-              }
-              if (this.model.sptStyle[tempIdx]?.textStyle?.italic == '1') {
-                font = "italic " + font;
-              }
-              tHollow = this.model.sptStyle[tempIdx]?.textStyle?.hollow == '1' ? '1' : '0'
-              tUnderline = this.model.sptStyle[tempIdx]?.textStyle?.underline == '1' ? '1' : '0'
-              tDeleteline = this.model.sptStyle[tempIdx]?.textStyle?.deleteline == '1' ? '1' : '0'
-              tTopline = this.model.sptStyle[tempIdx]?.textStyle?.topline == '1' ? '1' : '0'
-              tFontColor = this.model.sptStyle[tempIdx]?.font?.color ? this.model.sptStyle[tempIdx]?.font?.color : tFontColor
-            }
-            //设置字体颜色
-            ctx.fillStyle = tFontColor
-            //设置输出字体
-            ctx.font = font;
-            //处理镂空样式
-            if (tHollow == '1') {
-              ctx.strokeStyle = tFontColor;
-              ctx.strokeText(outputText, usedX, usedY)
-            } else {
-              ctx.fillText(outputText, usedX, usedY)
-            }
-            if (tUnderline == '1') {
-              ctx.beginPath();
-              ctx.strokeStyle = tFontColor;
-              ctx.moveTo(usedX, usedY + height);
-              ctx.lineTo(usedX + width, usedY + height);
-              ctx.closePath();
-              ctx.stroke();
-            }
-            if (tDeleteline == '1') {
-              ctx.beginPath();
-              ctx.strokeStyle = tFontColor;
-              ctx.moveTo(usedX, usedY + height / 2);
-              ctx.lineTo(usedX + width, usedY + height / 2);
-              ctx.closePath();
-              ctx.stroke();
-            }
-            if (tTopline == '1') {
-              ctx.beginPath();
-              ctx.strokeStyle = tFontColor;
-              ctx.moveTo(usedX, usedY);
-              ctx.lineTo(usedX + width, usedY);
-              ctx.closePath();
-              ctx.stroke();
-            }
-            usedX += width
-            ctx.restore();
-          }
+      //对内部容器进行排列对齐
+      //记录当前行的开始坐标和结束坐标，用来计算光标选中或跨行效果
+      let curRowStart = 0, curRowEnd = 0;
+      let tempIdx = 0
+      let usedY = 0;
+      for (let tci = 0; tci < textContainer.length; tci++) {
+        if (tci == 0) {
+          curRowStart = 0
+          curRowEnd = textContainer[tci].text.length;
+        } else {
+          curRowStart = curRowEnd
+          curRowEnd += textContainer[tci].text.length;
         }
-      }
-      //如果不换行，则输出第一行内容,直接对整理进行坐标对齐
-      else {
+        let rRect = textContainer[tci];
+        let x1, y1, x2;
+        //绘制文字
+        if (align == 1) {
+          x1 = x;
+          y1 = y + usedY
+          x2 = x1 + rRect.width;
+        } else if (align == 2) {
+          x1 = ratPos.x + (ratPos.width - rRect.width) * 0.5;
+          y1 = y + usedY
+          x2 = x1 + rRect.width;
+        } else if (align == 3) {
+          x1 = ratPos.x + (ratPos.width - rRect.width);
+          y1 = y + usedY
+          x2 = x1 + rRect.width;
+        }
+
         //绘制光标和选中效果
         if (curSIdx != -1 && curEIdx != -1) {
-          //记录每一个字的区域和位置，用于后续选择和计算，TODO性能较低
-          textContainer[0].textPosCache[curTextIdx] = { x: x, y: y }
+          //记录每一个字的区域和位置，用于后续选择和计算
+          textContainer[0].textPosCache[curTextIdx] = { x: x1, y: y1 }
           curTextIdx++;
-          for (let ti = 1; ti < textContainer[0].text.length; ti++) {
-            textContainer[0].textPosCache[curTextIdx] = { x: textContainer[0].textPosCache[curTextIdx - 1].x + textContainer[0].widths[ti], y: y }
+          for (let ti = 1; ti < rRect.text.length; ti++) {
+            textContainer[0].textPosCache[curTextIdx] = { x: textContainer[0].textPosCache[curTextIdx - 1].x + rRect.widths[ti], y: y1 }
             curTextIdx++;
           }
-          //计算光标在本行的位置和光标选中文本的宽度
-          let sIdx = curSIdx;
-          let eIdx = Math.min(curEIdx, textContainer[0].text.length);
-          if (sIdx <= eIdx) {
-            let bBackWidth = 0
-            let cBackWidth = 0
-            for (let x = 0; x < sIdx; x++) {
-              bBackWidth += textContainer[0].widths[x]
-            }
-            for (let x = sIdx; x < eIdx; x++) {
-              cBackWidth += textContainer[0].widths[x]
-            }
-            let oldFillStyle = ctx.fillStyle
-            let oldAlpha = ctx.globalAlpha
-            ctx.fillStyle = "#017fff";
-            ctx.globalAlpha = 0.3
-            ctx.fillRect(x + bBackWidth, y, cBackWidth, textContainer[0].height)
-            ctx.fillStyle = oldFillStyle
-            ctx.globalAlpha = oldAlpha
-            cursorX = x + bBackWidth + cBackWidth
-            cursorY = y
-          }
-
         }
-        textContainer[0].x = x;
-        textContainer[0].y = y;
+        //记录开始绘制的坐标
+        textContainer[tci].x = x1;
+        textContainer[tci].y = y1;
         //循环输出每一个字符
-        let usedX = x;
-        let usedY = y;
-        for (let tj = 0; tj < textContainer[0].text.length; tj++) {
-          let outputText = textContainer[0].text[tj]
-          let width = textContainer[0].widths[tj]
-          let height = textContainer[0].heights[tj]
+        let usedX = x1;
+        for (let tj = 0; tj < textContainer[tci].text.length; tj++, tempIdx++) {
+          let outputText = textContainer[tci].text[tj]
+          let width = textContainer[tci].widths[tj]
+          let height = textContainer[tci].heights[tj]
           //获取样式
           ctx.save();
           //读取当前特殊样式，如果没有，则使用外部基本样式
@@ -844,69 +707,88 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
           let tDeleteline = deleteline;
           let tTopline = topline;
           let tFontColor = fiColor
-          if (this.model.sptStyle[tj]) {
-            let ftsize = this.model.sptStyle[tj]?.font?.size ? this.model.sptStyle[tj]?.font?.size * ratio : fontSize;
-            let ftfamily = this.model.sptStyle[tj]?.font?.family ? this.model.sptStyle[tj]?.font?.family : fiFamily;
+          if (this.model.sptStyle[tempIdx]) {
+            let ftsize = this.model.sptStyle[tempIdx]?.font?.size ? this.model.sptStyle[tempIdx]?.font?.size * ratio : fontSize;
+            let ftfamily = this.model.sptStyle[tempIdx]?.font?.family ? this.model.sptStyle[tempIdx]?.font?.family : fiFamily;
             font = ftsize + "px " + ftfamily
-            if (this.model.sptStyle[tj]?.textStyle?.bold == '1') {
+            if (this.model.sptStyle[tempIdx]?.textStyle?.bold == '1') {
               font = "bold " + font;
             }
-            if (this.model.sptStyle[tj]?.textStyle?.italic == '1') {
+            if (this.model.sptStyle[tempIdx]?.textStyle?.italic == '1') {
               font = "italic " + font;
             }
-            tHollow = this.model.sptStyle[tj]?.textStyle?.hollow == '1' ? '1' : '0'
-            tUnderline = this.model.sptStyle[tj]?.textStyle?.underline == '1' ? '1' : '0'
-            tDeleteline = this.model.sptStyle[tj]?.textStyle?.deleteline == '1' ? '1' : '0'
-            tTopline = this.model.sptStyle[tj]?.textStyle?.topline == '1' ? '1' : '0'
-            tFontColor = this.model.sptStyle[tj]?.font?.color ? this.model.sptStyle[tj]?.font?.color : tFontColor
+            tHollow = this.model.sptStyle[tempIdx]?.textStyle?.hollow == '1' ? '1' : '0'
+            tUnderline = this.model.sptStyle[tempIdx]?.textStyle?.underline == '1' ? '1' : '0'
+            tDeleteline = this.model.sptStyle[tempIdx]?.textStyle?.deleteline == '1' ? '1' : '0'
+            tTopline = this.model.sptStyle[tempIdx]?.textStyle?.topline == '1' ? '1' : '0'
+            tFontColor = this.model.sptStyle[tempIdx]?.font?.color ? this.model.sptStyle[tempIdx]?.font?.color : tFontColor
           }
+          let ofY = rRect.height - height
+          //绘制光标和选中效果
+          if (tempIdx >= curSIdx && tempIdx < curEIdx) {
+            let oldFillStyle = ctx.fillStyle
+            let oldAlpha = ctx.globalAlpha
+            ctx.fillStyle = "#017fff";
+            ctx.globalAlpha = 0.3
+            ctx.fillRect(usedX, y1 + ofY, width, height)
+            ctx.fillStyle = oldFillStyle
+            ctx.globalAlpha = oldAlpha
+
+          }
+          if (curSIdx == curEIdx && tempIdx == curEIdx) {
+            cursorX = usedX
+            cursorY = y1 + ofY
+            cursorHeight = height
+          }
+
           //设置字体颜色
           ctx.fillStyle = tFontColor
           //设置输出字体
           ctx.font = font;
           //处理镂空样式
+
           if (tHollow == '1') {
             ctx.strokeStyle = tFontColor;
-            ctx.strokeText(outputText, usedX, usedY)
+            ctx.strokeText(outputText, usedX, y1 + ofY)
           } else {
-            ctx.fillText(outputText, usedX, usedY)
+            ctx.fillText(outputText, usedX, y1 + ofY)
           }
           if (tUnderline == '1') {
             ctx.beginPath();
             ctx.strokeStyle = tFontColor;
-            ctx.moveTo(usedX, usedY + height);
-            ctx.lineTo(usedX + width, usedY + height);
+            ctx.moveTo(usedX, y1 + ofY + height);
+            ctx.lineTo(usedX + width, y1 + ofY + height);
             ctx.closePath();
             ctx.stroke();
           }
           if (tDeleteline == '1') {
             ctx.beginPath();
             ctx.strokeStyle = tFontColor;
-            ctx.moveTo(usedX, usedY + height / 2);
-            ctx.lineTo(usedX + width, usedY + height / 2);
+            ctx.moveTo(usedX, y1 + ofY + height / 2);
+            ctx.lineTo(usedX + width, y1 + ofY + height / 2);
             ctx.closePath();
             ctx.stroke();
           }
           if (tTopline == '1') {
             ctx.beginPath();
             ctx.strokeStyle = tFontColor;
-            ctx.moveTo(usedX, usedY);
-            ctx.lineTo(usedX + width, usedY);
+            ctx.moveTo(usedX, y1 + ofY);
+            ctx.lineTo(usedX + width, y1 + ofY);
             ctx.closePath();
             ctx.stroke();
           }
           usedX += width
           ctx.restore();
         }
-
+        usedY += rRect.height
       }
       //绘制光标
-      if (cursorX != -1 && cursorY != -1 && curSIdx == curEIdx) {
+      if (cursorX != -Infinity && cursorY != -Infinity && curSIdx == curEIdx) {
         ctx.strokeStyle = "black";
         ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.moveTo(cursorX, cursorY - 2);
-        ctx.lineTo(cursorX, cursorY + textContainer[0].height + 2);
+        ctx.lineTo(cursorX, cursorY + cursorHeight + 2);
         ctx.closePath();
         ctx.stroke();
       }
