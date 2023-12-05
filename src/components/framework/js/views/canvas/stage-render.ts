@@ -139,12 +139,13 @@ class DDeiStageCanvasRender {
         this.model.layers[topDisplayIndex].render.drawShape();
       }
 
+      //绘制编辑时的影子控件
+      this.drawEditorShadowControl();
       if (this.selector) {
         this.selector.render.drawShape();
       }
 
-      //绘制编辑时的影子控件
-      this.drawEditorShadowControl();
+
 
       ctx.restore();
 
