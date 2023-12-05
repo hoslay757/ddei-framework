@@ -1,28 +1,22 @@
 <template>
   <div :class="{ 'ddei_pv_editor_combox': true, 'ddei_pv_editor_combox_disabled': !attrDefine || attrDefine.readonly }"
-       :style="{'pointer-events':attrDefine.readonly ? 'none':''}">
-    <PVBaseCombox :attrDefine="attrDefine"
-                  :searchMethod="doSearch"
-                  ref="combox"
-                  :canSearch="attrDefine?.canSearch">
+    :style="{ 'pointer-events': attrDefine.readonly ? 'none' : '' }">
+    <PVBaseCombox :attrDefine="attrDefine" :searchMethod="doSearch" ref="combox" :canSearch="attrDefine?.canSearch">
       <div class="itemboxs"
-           :style="{ width: width ? width + 'px' : '', height: height ? height + 'px' : '', 'grid-template-columns': gridTemplateColumns, 'grid-template-rows': gridTemplateRows }">
+        :style="{ width: width ? width + 'px' : '', height: height ? height + 'px' : '', 'grid-template-columns': gridTemplateColumns, 'grid-template-rows': gridTemplateRows }">
         <div :style="{ width: attrDefine?.itemStyle?.width + 'px', height: attrDefine?.itemStyle?.height + 'px' }"
-             :class="{ 'itembox': true, 'itembox_selected': item.value == attrDefine.value, 'itembox_deleted': item.deleted, 'itembox_disabled': item.disabled, 'itembox_underline': item.underline, 'itembox_bold': item.bold }"
-             v-for="item in dataSource"
-             @click="!item.disabled && valueChange(item.value, $event)"
-             :title="item.desc">
-          <div v-if="item.img"
-               class="itembox_img">
-            <img :style="{ width: attrDefine?.itemStyle?.imgWidth + 'px', height: attrDefine?.itemStyle?.imgHeight + 'px' }"
-                 :src="item.img" />
+          :class="{ 'itembox': true, 'itembox_selected': item.value == attrDefine.value, 'itembox_deleted': item.deleted, 'itembox_disabled': item.disabled, 'itembox_underline': item.underline, 'itembox_bold': item.bold }"
+          v-for="item in dataSource" @click="!item.disabled && valueChange(item.value, $event)" :title="item.desc">
+          <div v-if="item.img" class="itembox_img">
+            <img
+              :style="{ width: attrDefine?.itemStyle?.imgWidth + 'px', height: attrDefine?.itemStyle?.imgHeight + 'px' }"
+              :src="item.img" />
           </div>
-          <div class="itembox_text"
-               v-if="item.text"
-               :style="{ 'font-family': item.fontFamily ,'text-align':attrDefine?.itemStyle?.align,'padding-left':attrDefine?.itemStyle?.paddingLeft}">{{ item.text }}</div>
-          <div class="itembox_desc"
-               v-if="item.desc"
-               :style="{ 'font-family': item.fontFamily ,'text-align':attrDefine?.itemStyle?.align}">{{ item.desc }}</div>
+          <div class="itembox_text" v-if="item.text"
+            :style="{ 'font-family': item.fontFamily, 'text-align': attrDefine?.itemStyle?.align, 'padding-left': attrDefine?.itemStyle?.paddingLeft }">
+            {{ item.text }}</div>
+          <div class="itembox_desc" v-if="item.desc"
+            :style="{ 'font-family': item.fontFamily, 'text-align': attrDefine?.itemStyle?.align }">{{ item.desc }}</div>
         </div>
       </div>
 
@@ -78,7 +72,7 @@ export default {
     PVBaseCombox,
   },
   watch: {},
-  created() {},
+  created() { },
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
@@ -240,38 +234,62 @@ export default {
       if (!(paths?.length > 0)) {
         paths = [this.attrDefine.code];
       }
-      DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, parsedValue);
-      this.attrDefine.doCascadeDisplayByValue();
-      if (
-        this.attrDefine.model.modelType == "DDeiStage" ||
-        this.attrDefine.model.modelType == "DDeiLayer"
-      ) {
-        //推送信息进入总线
-        this.editor.bus.push(
-          DDeiEnumBusCommandType.ModelChangeValue,
-          {
-            mids: [this.attrDefine.model.modelType],
-            paths: paths,
-            value: value,
-            attrDefine: this.attrDefine,
-          },
-          evt,
-          true
-        );
-      } else {
-        this.editor.ddInstance.stage.selectedModels?.forEach((element) => {
+
+      let hasEditSetted = false;
+      //文本编辑状态
+      if (this.editor.ddInstance.stage.render.operateState == DDeiEnumOperateState.QUICK_EDITING) {
+        //读取文本的一部分修改其样式
+        let shadowControl = this.editor.ddInstance.stage.render.editorShadowControl
+        if (shadowControl?.render.isEditoring) {
+          let editorText = DDeiUtil.getEditorText();
+          //开始光标与结束光标
+          let curSIdx = -1
+          let curEIdx = -1
+          if (editorText) {
+            curSIdx = editorText.selectionStart
+            curEIdx = editorText.selectionEnd
+          }
+          if (curSIdx != -1 && curEIdx != -1 && curSIdx <= curSIdx) {
+            //增加特殊样式
+            shadowControl.setSptStyle(curSIdx, curEIdx, paths, value)
+            hasEditSetted = true;
+          }
+        }
+      }
+      if (!hasEditSetted) {
+        DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, parsedValue);
+        this.attrDefine.doCascadeDisplayByValue();
+        if (
+          this.attrDefine.model.modelType == "DDeiStage" ||
+          this.attrDefine.model.modelType == "DDeiLayer"
+        ) {
+          //推送信息进入总线
           this.editor.bus.push(
             DDeiEnumBusCommandType.ModelChangeValue,
             {
-              mids: [element.id],
+              mids: [this.attrDefine.model.modelType],
               paths: paths,
-              value: parsedValue,
+              value: value,
               attrDefine: this.attrDefine,
             },
             evt,
             true
           );
-        });
+        } else {
+          this.editor.ddInstance.stage.selectedModels?.forEach((element) => {
+            this.editor.bus.push(
+              DDeiEnumBusCommandType.ModelChangeValue,
+              {
+                mids: [element.id],
+                paths: paths,
+                value: parsedValue,
+                attrDefine: this.attrDefine,
+              },
+              evt,
+              true
+            );
+          });
+        }
       }
       this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
         parts: ["topmenu"],
@@ -318,8 +336,7 @@ export default {
   margin-top: 4px;
 }
 
-.ddei_pv_editor_combox_disabled {
-}
+.ddei_pv_editor_combox_disabled {}
 
 .ddei_combox_show_dialog_content .itemboxs {
   border-radius: 4px;

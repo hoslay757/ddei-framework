@@ -243,13 +243,13 @@ export default {
               for (; i < shadowControl.render.textUsedArea.length; i++) {
                 let rowData = shadowControl.render.textUsedArea[i];
                 if (cy >= rowData.y && cy <= rowData.y + rowData.height) {
-
                   if (cx >= rowData.x && cx <= rowData.x + rowData.width) {
                     //判断位于第几个字符，求出光标的开始位置
                     let endI = startIndex + rowData.text.length;
                     for (let x = startIndex; x < endI; x++) {
                       let fx = shadowControl.render.textUsedArea[0].textPosCache[x].x;
                       let lx = x < endI - 1 ? shadowControl.render.textUsedArea[0].textPosCache[x + 1].x : rowData.x + rowData.width
+
                       let halfW = (lx - fx) / 2
                       if (cx >= fx && cx < lx) {
                         if (cx > fx + halfW) {

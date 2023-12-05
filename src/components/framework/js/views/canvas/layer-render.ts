@@ -1383,9 +1383,10 @@ class DDeiLayerCanvasRender {
           //先判断行，再判断具体位置
           //textUsedArea记录的是基于中心点的偏移量
           let startIndex = 0;
-          for (let i = 0; i < shadowControl.render.textUsedArea.length; i++) {
+          let sx = 0;
+          let i = 0;
+          for (; i < shadowControl.render.textUsedArea.length; i++) {
             let rowData = shadowControl.render.textUsedArea[i];
-
             if (cy >= rowData.y && cy <= rowData.y + rowData.height) {
               if (cx >= rowData.x && cx <= rowData.x + rowData.width) {
                 //判断位于第几个字符，求出光标的开始位置
@@ -1395,36 +1396,48 @@ class DDeiLayerCanvasRender {
                   let lx = x < endI - 1 ? shadowControl.render.textUsedArea[0].textPosCache[x + 1].x : rowData.x + rowData.width
                   let halfW = (lx - fx) / 2
                   if (cx >= fx && cx < lx) {
-                    let editorText = DDeiUtil.getEditorText();
-                    let x1 = null;
                     if (cx > fx + halfW) {
-                      x1 = x + 1
+                      sx = x + 1
                     } else {
-                      x1 = x
+                      sx = x
                     }
-                    if (this.stageRender.tempTextStart > x1) {
-                      editorText.selectionStart = x1
-                      editorText.selectionEnd = this.stageRender.tempTextStart
-                    } else {
-                      editorText.selectionEnd = x1
-                    }
-
-                    setTimeout(() => {
-                      editorText.focus()
-                    }, 10);
-                    this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'text' }, evt);
-                    this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
-                    this.stage.ddInstance.bus.executeAll();
                     break;
                   }
                 }
-
               }
-
+              if (!sx) {
+                if (ex < shadowControl.cpv.x) {
+                  sx = startIndex
+                } else {
+                  sx = startIndex + rowData.text.length;
+                }
+              }
+              break;
             }
             startIndex += rowData.text.length
-
           }
+          if (!sx) {
+            if (ex < shadowControl.cpv.x) {
+              sx = 0
+            } else {
+              sx = startIndex + shadowControl.render.textUsedArea[i - 1].text.length;
+            }
+          }
+          let editorText = DDeiUtil.getEditorText();
+          if (this.stageRender.tempTextStart > sx) {
+            editorText.selectionStart = sx
+            editorText.selectionEnd = this.stageRender.tempTextStart
+          } else {
+            editorText.selectionEnd = sx
+          }
+
+          setTimeout(() => {
+            editorText.focus()
+          }, 10);
+          this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'text' }, evt);
+          this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
+          this.stage.ddInstance.bus.executeAll();
+          break;
         }
         break;
       }

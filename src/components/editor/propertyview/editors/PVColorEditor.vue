@@ -1,21 +1,16 @@
 <template>
   <div :class="{ 'ddei_pv_editor_color': true, 'ddei_pv_editor_color_disabled': attrDefine.readonly }">
-    <input type="color"
-           :step="attrDefine.step"
-           class="color"
-           v-model="attrDefine.value"
-           :disabled="attrDefine.readonly" />
+    <input type="color" :step="attrDefine.step" class="color" v-model="attrDefine.value"
+      :disabled="attrDefine.readonly" />
     <div class="textinput">
-      <input type="text"
-             v-model="attrDefine.value"
-             :disabled="attrDefine.readonly"
-             :placeholder="attrDefine.defaultValue" />
+      <input type="text" v-model="attrDefine.value" :disabled="attrDefine.readonly"
+        :placeholder="attrDefine.defaultValue" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { throttle } from "lodash";
+import { has, throttle } from "lodash";
 import DDeiEditorArrtibute from "../../js/attribute/editor-attribute";
 import DDeiEditor from "../../js/editor";
 import DDeiEnumBusCommandType from "../../../framework/js/enums/bus-command-type";
@@ -23,6 +18,7 @@ import DDeiAbstractArrtibuteParser from "../../../framework/js/models/attribute/
 import DDeiUtil from "../../../framework/js/util";
 import DDeiEditorEnumBusCommandType from "../../js/enums/editor-command-type";
 import DDeiEnumOperateType from "../../../framework/js/enums/operate-type";
+import DDeiEnumOperateState from "@/components/framework/js/enums/operate-state";
 
 export default {
   name: "DDei-Editor-PV-Color-Editor",
@@ -119,30 +115,38 @@ export default {
       let parser: DDeiAbstractArrtibuteParser = this.attrDefine.getParser();
       //属性值
       let value = parser.parseValue(this.attrDefine.value);
-      DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, value);
-      if (
-        this.attrDefine.model.modelType == "DDeiStage" ||
-        this.attrDefine.model.modelType == "DDeiLayer"
-      ) {
-        //推送信息进入总线
-        this.editor.bus.push(
-          DDeiEnumBusCommandType.ModelChangeValue,
-          {
-            mids: [this.attrDefine.model.modelType],
-            paths: paths,
-            value: value,
-            attrDefine: this.attrDefine,
-          },
-          evt,
-          true
-        );
-      } else {
-        this.editor.ddInstance.stage.selectedModels.forEach((element) => {
+      let hasEditSetted = false;
+      //文本编辑状态
+      if (this.editor.ddInstance.stage.render.operateState == DDeiEnumOperateState.QUICK_EDITING) {
+        //读取文本的一部分修改其样式
+        let shadowControl = this.editor.ddInstance.stage.render.editorShadowControl
+        if (shadowControl?.render.isEditoring) {
+          let editorText = DDeiUtil.getEditorText();
+          //开始光标与结束光标
+          let curSIdx = -1
+          let curEIdx = -1
+          if (editorText) {
+            curSIdx = editorText.selectionStart
+            curEIdx = editorText.selectionEnd
+          }
+          if (curSIdx != -1 && curEIdx != -1 && curSIdx <= curSIdx) {
+            //增加特殊样式
+            shadowControl.setSptStyle(curSIdx, curEIdx, paths, value)
+            hasEditSetted = true;
+          }
+        }
+      }
+      if (!hasEditSetted) {
+        DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, value);
+        if (
+          this.attrDefine.model.modelType == "DDeiStage" ||
+          this.attrDefine.model.modelType == "DDeiLayer"
+        ) {
           //推送信息进入总线
           this.editor.bus.push(
             DDeiEnumBusCommandType.ModelChangeValue,
             {
-              mids: [element.id],
+              mids: [this.attrDefine.model.modelType],
               paths: paths,
               value: value,
               attrDefine: this.attrDefine,
@@ -150,7 +154,22 @@ export default {
             evt,
             true
           );
-        });
+        } else {
+          this.editor.ddInstance.stage.selectedModels.forEach((element) => {
+            //推送信息进入总线
+            this.editor.bus.push(
+              DDeiEnumBusCommandType.ModelChangeValue,
+              {
+                mids: [element.id],
+                paths: paths,
+                value: value,
+                attrDefine: this.attrDefine,
+              },
+              evt,
+              true
+            );
+          });
+        }
       }
       this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
         parts: ["topmenu"],

@@ -64,6 +64,8 @@ class DDeiAbstractShapeRender {
   getHTML(): string {
     return null;
   }
+
+
   /**
    * 获取缓存的渲染数据
    */

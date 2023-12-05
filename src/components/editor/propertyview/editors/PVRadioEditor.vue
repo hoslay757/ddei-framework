@@ -170,9 +170,7 @@ export default {
             shadowControl.setSptStyle(curSIdx, curEIdx, paths, value)
             hasEditSetted = true;
           }
-
         }
-
       }
       if (!hasEditSetted) {
         DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, value);

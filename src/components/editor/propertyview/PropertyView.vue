@@ -627,9 +627,10 @@ export default {
     changeEditorFocus() {
       if (this.editor.state != DDeiEditorState.PROPERTY_EDITING && this.editor.state != DDeiEditorState.QUICK_EDITING) {
         this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
-        this.editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
-        this.editor.bus.executeAll();
       }
+      this.editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+      this.editor.bus.executeAll();
+
     },
   },
 };

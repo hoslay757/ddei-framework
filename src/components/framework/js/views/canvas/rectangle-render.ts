@@ -12,7 +12,7 @@ import DDeiCanvasRender from './ddei-render.js';
 import DDeiLayerCanvasRender from './layer-render.js';
 import DDeiAbstractShapeRender from './shape-render-base.js';
 import DDeiStageCanvasRender from './stage-render.js';
-import { cloneDeep, startsWith } from 'lodash'
+import { cloneDeep, startsWith, trim } from 'lodash'
 import { Matrix3, Vector3 } from 'three';
 import DDeiEnumOperateType from '../../enums/operate-type.js';
 
@@ -439,57 +439,35 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       curSIdx = editorText.selectionStart
       curEIdx = editorText.selectionEnd
     }
-
-    //获取字体信息
-    let fiFamily = this.getCachedValue("font.family");
-    let fiSize = this.getCachedValue("font.size");
-    let fiColor = this.getCachedValue("font.color");
+    //以下样式为控件的整体样式，不能在文本中单独设置
     //字体对齐信息
     let align = this.getCachedValue("textStyle.align");
     let valign = this.getCachedValue("textStyle.valign");
     //缩小字体填充
     let autoScaleFill = this.getCachedValue("textStyle.autoScaleFill");
+    //自动换行
+    let feed = this.getCachedValue("textStyle.feed");
+    //以上样式为控件的整体样式，不能在文本中单独设置
+
+    //以下样式：字体、颜色、大小、镂空、粗体、斜体、下划线、删除线、上标、下标等
+    //可以单独设置，未单独设置则使用整体样式
+    //字体信息
+    let fiFamily = this.getCachedValue("font.family");
+    let fiSize = this.getCachedValue("font.size");
+    let fiColor = this.getCachedValue("font.color");
     //镂空
     let hollow = this.getCachedValue("textStyle.hollow");
-
     //粗体
     let bold = this.getCachedValue("textStyle.bold");
-
     //斜体
     let italic = this.getCachedValue("textStyle.italic");
-
     //下划线
     let underline = this.getCachedValue("textStyle.underline");
-
     //删除线
     let deleteline = this.getCachedValue("textStyle.deleteline");
-
     //删除线
     let topline = this.getCachedValue("textStyle.topline");
 
-
-    //自动换行
-    let feed = this.getCachedValue("textStyle.feed");
-    //如果字体不存在则退出，不输出
-    if (!fiFamily) {
-      return;
-    }
-    //TODO 校验属性，不满足则设置缺省值
-    if (!align) {
-      align = 1
-    }
-    if (!valign) {
-      valign = 2
-    }
-    if (!autoScaleFill) {
-      autoScaleFill = 0
-    }
-    if (!hollow) {
-      hollow = 0
-    }
-    if (!feed) {
-      feed = 0;
-    }
     //保存状态
     ctx.save();
     ctx.translate(this.model.cpv.x * rat1, this.model.cpv.y * rat1)
@@ -503,21 +481,19 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     let loop = true;
     let fontSize = fiSize * ratio;
 
-
+    //获取值替换后的文本信息 TODO 值替换后特殊样式也跟着替换
     let cText = DDeiUtil.getReplacibleValue(this.model, "text", true);
 
-    if (cText) {
+    if (cText && trim(cText) != '') {
       cText = "" + cText;
       let contentWidth = ratPos.width;
       while (loop) {
-
         //记录使用过的宽度和高度
         let usedWidth = 0;
         let usedHeight = 0;
         //行容器
-        let textRowContainer = { text: "" };
+        let textRowContainer = { text: "", widths: [], heights: [] };
         textContainer.push(textRowContainer);
-
         //是否超出输出长度标志
         let isOutSize = false;
         if (fontSize > ratPos.height) {
@@ -528,26 +504,50 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
           }
         }
         //设置字体
-        let font = fontSize + "px " + fiFamily;
+        let baseFont = fontSize + "px " + fiFamily;
         if (bold == '1') {
-          font = "bold " + font;
+          baseFont = "bold " + baseFont;
         }
         if (italic == '1') {
-          font = "italic " + font;
+          baseFont = "italic " + baseFont;
         }
-        ctx.font = font;
-        //设置字体颜色
-        ctx.fillStyle = fiColor
 
-        for (let ti = 0; ti < cText.length; ti++) {
+        //循环每一个字符，计算和记录大小
+        let rcIndex = 0;
+        for (let ti = 0; ti < cText.length; ti++, rcIndex++) {
           let te = cText[ti];
+          //读取当前特殊样式，如果没有，则使用外部基本样式
+          let font = null
+          let fontHeight = null
+          if (this.model.sptStyle[ti]) {
+            let ftsize = this.model.sptStyle[ti]?.font?.size ? this.model.sptStyle[ti]?.font?.size * ratio : fontSize;
+            let ftfamily = this.model.sptStyle[ti]?.font?.family ? this.model.sptStyle[ti]?.font?.family : fiFamily;
+            font = ftsize + "px " + ftfamily
+            if (this.model.sptStyle[ti]?.textStyle?.bold == '1') {
+              font = "bold " + font;
+            }
+            if (this.model.sptStyle[ti]?.textStyle?.italic == '1') {
+              font = "italic " + font;
+            }
+            fontHeight = ftsize
+          }
+          if (!font) {
+            font = baseFont;
+            fontHeight = fontSize
+          }
+          //特殊字体
+          ctx.font = font;
+          //计算当前字符大小
+          let fontShapeRect = ctx.measureText(te);
+          usedWidth += fontShapeRect.width;
+
           textRowContainer.text += te;
-          let fontShapeRect = ctx.measureText(textRowContainer.text);
-          usedWidth = fontShapeRect.width;
-          let fontHeight = parseFloat(fontSize);
+          textRowContainer.widths[rcIndex] = fontShapeRect.width
+          textRowContainer.heights[rcIndex] = fontHeight
           textRowContainer.width = usedWidth
-          textRowContainer.height = fontHeight
+          textRowContainer.height = Math.max(fontHeight, textRowContainer.height ? textRowContainer.height : 0)
           //如果不自动换行也不缩小字体，则超过的话，就省略显示
+
           if (feed == 0) {
             //如果具备缩小字体填充，并且usedWidth超出了单行大小,则跳出循环，重新生成
             if (autoScaleFill == 1 && usedWidth > contentWidth) {
@@ -557,35 +557,37 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
             //省略显示,除去一个字符，重新计算大小
             else if (usedWidth > contentWidth) {
               textRowContainer.text = textRowContainer.text.substring(0, textRowContainer.text.length - 1)
-              let fontShapeRect = ctx.measureText(textRowContainer.text);
-              usedWidth = fontShapeRect.width;
+              usedWidth -= fontShapeRect.width;
               textRowContainer.width = usedWidth
               break;
             }
           }
-          //处理换行
-          else if (feed == 1) {
 
+          //处理换行
+          else if (feed == 1 || feed == '1') {
             //如果插入本字符后的大小，大于了容器的大小，则需要换行
             if (usedWidth > contentWidth) {
               //先使当前行字符-1
               textRowContainer.text = textRowContainer.text.substring(0, textRowContainer.text.length - 1)
-              let fontShapeRect = ctx.measureText(textRowContainer.text);
-              textRowContainer.width = fontShapeRect.width
+              textRowContainer.width -= fontShapeRect.width;
+              textRowContainer.widths.splice(rcIndex, 1)
+              textRowContainer.heights.splice(rcIndex, 1)
               //新开一行重新开始
               usedWidth = 0;
-              usedHeight += fontHeight;
+              usedHeight += textRowContainer.height;
+
               //换行的情况下，如果行高度超出，则不输出
-              if (usedHeight + fontHeight > ratPos.height) {
+              if (usedHeight + textRowContainer.height > ratPos.height) {
                 //如果具备缩小字体填充，则重新生成
                 if (autoScaleFill == 1) {
                   isOutSize = true;
                 }
                 break;
               }
-              textRowContainer = { text: te };
-              fontShapeRect = ctx.measureText(textRowContainer.text);
-              usedWidth = fontShapeRect.width;
+              rcIndex = 0;
+              textRowContainer = { text: te, widths: [], heights: [] };
+              textRowContainer.widths[rcIndex] = fontShapeRect.width
+              textRowContainer.heights[rcIndex] = fontHeight
               textRowContainer.width = usedWidth
               textRowContainer.height = fontHeight
               textContainer.push(textRowContainer);
@@ -638,11 +640,12 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       if (textContainer.length > 0) {
         textContainer[0].textPosCache = []
       }
-      if (feed == 1) {
+      if (feed == 1 || feed == '1') {
 
         //对内部容器进行排列对齐
         //记录当前行的开始坐标和结束坐标，用来计算光标选中或跨行效果
         let curRowStart = 0, curRowEnd = 0;
+        let tempIdx = 0
         for (let tci = 0; tci < textContainer.length; tci++) {
           if (tci == 0) {
             curRowStart = 0
@@ -668,71 +671,117 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
             x2 = x1 + rRect.width;
           }
 
-          if (hollow == '1') {
-            ctx.strokeStyle = fiColor;
-            ctx.strokeText(rRect.text, x1, y1)
-
-          } else {
-            ctx.fillText(rRect.text, x1, y1)
-          }
           //绘制光标和选中效果
           if (curSIdx != -1 && curEIdx != -1) {
-            //记录每一个字的区域和位置，用于后续选择和计算，TODO性能较低
+            //记录每一个字的区域和位置，用于后续选择和计算
             textContainer[0].textPosCache[curTextIdx] = { x: x1, y: y1 }
             curTextIdx++;
             for (let ti = 1; ti < rRect.text.length; ti++) {
-              let trs = ctx.measureText(rRect.text.substring(0, ti))
-              textContainer[0].textPosCache[curTextIdx] = { x: x1 + trs.width, y: y1 }
+              textContainer[0].textPosCache[curTextIdx] = { x: textContainer[0].textPosCache[curTextIdx - 1].x + rRect.widths[ti], y: y1 }
               curTextIdx++;
             }
 
             //计算光标在本行的位置和光标选中文本的宽度
             let sIdx = Math.max(curSIdx, curRowStart) - curRowStart;
             let eIdx = Math.min(curEIdx, curRowEnd) - curRowStart;
-
             if (sIdx <= eIdx) {
-              let bText = rRect.text.substring(0, sIdx);
-              let cText = rRect.text.substring(sIdx, eIdx);
-              let bBackRect = ctx.measureText(bText);
-              let cBackRect = ctx.measureText(cText);
+              let bBackWidth = 0
+              let cBackWidth = 0
+              for (let x = 0; x < sIdx; x++) {
+                bBackWidth += rRect.widths[x]
+              }
+              for (let x = sIdx; x < eIdx; x++) {
+                cBackWidth += rRect.widths[x]
+              }
               let oldFillStyle = ctx.fillStyle
               let oldAlpha = ctx.globalAlpha
               ctx.fillStyle = "#017fff";
               ctx.globalAlpha = 0.3
-              ctx.fillRect(x1 + bBackRect.width, y1, cBackRect.width, rRect.height)
+              ctx.fillRect(x1 + bBackWidth, y1, cBackWidth, rRect.height)
               ctx.fillStyle = oldFillStyle
               ctx.globalAlpha = oldAlpha
-              cursorX = x1 + bBackRect.width + cBackRect.width
+              cursorX = x1 + bBackWidth + cBackWidth
               cursorY = y1
             }
-
           }
           //记录开始绘制的坐标
           textContainer[tci].x = x1;
           textContainer[tci].y = y1;
-          if (underline == '1') {
-            ctx.beginPath();
-            ctx.strokeStyle = fiColor;
-            ctx.moveTo(x1, y1 + rRect.height);
-            ctx.lineTo(x2, y1 + rRect.height);
-            ctx.closePath();
-            ctx.stroke();
-          }
-          if (deleteline == '1') {
-            ctx.beginPath();
-            ctx.strokeStyle = fiColor;
-            ctx.moveTo(x1, y1 + rRect.height * 0.5);
-            ctx.lineTo(x2, y1 + rRect.height * 0.5);
-            ctx.closePath();
-            ctx.stroke();
-          }
-          if (topline == '1') {
-            ctx.beginPath();
-            ctx.strokeStyle = fiColor;
-            ctx.moveTo(x1, y1);
-            ctx.lineTo(x2, y1);
-            ctx.closePath();
-            ctx.stroke();
+          //循环输出每一个字符
+          let usedX = x1;
+          let usedY = y1;
+          for (let tj = 0; tj < textContainer[tci].text.length; tj++, tempIdx++) {
+            let outputText = textContainer[tci].text[tj]
+            let width = textContainer[tci].widths[tj]
+            let height = textContainer[tci].heights[tj]
+            //获取样式
+            ctx.save();
+            //读取当前特殊样式，如果没有，则使用外部基本样式
+            let font = fontSize + "px " + fiFamily;
+            if (bold == '1') {
+              font = "bold " + font;
+            }
+            if (italic == '1') {
+              font = "italic " + font;
+            }
+            let tHollow = hollow;
+            let tUnderline = underline;
+            let tDeleteline = deleteline;
+            let tTopline = topline;
+            let tFontColor = fiColor
+            if (this.model.sptStyle[tempIdx]) {
+              let ftsize = this.model.sptStyle[tempIdx]?.font?.size ? this.model.sptStyle[tempIdx]?.font?.size * ratio : fontSize;
+              let ftfamily = this.model.sptStyle[tempIdx]?.font?.family ? this.model.sptStyle[tempIdx]?.font?.family : fiFamily;
+              font = ftsize + "px " + ftfamily
+              if (this.model.sptStyle[tempIdx]?.textStyle?.bold == '1') {
+                font = "bold " + font;
+              }
+              if (this.model.sptStyle[tempIdx]?.textStyle?.italic == '1') {
+                font = "italic " + font;
+              }
+              tHollow = this.model.sptStyle[tempIdx]?.textStyle?.hollow == '1' ? '1' : '0'
+              tUnderline = this.model.sptStyle[tempIdx]?.textStyle?.underline == '1' ? '1' : '0'
+              tDeleteline = this.model.sptStyle[tempIdx]?.textStyle?.deleteline == '1' ? '1' : '0'
+              tTopline = this.model.sptStyle[tempIdx]?.textStyle?.topline == '1' ? '1' : '0'
+              tFontColor = this.model.sptStyle[tempIdx]?.font?.color ? this.model.sptStyle[tempIdx]?.font?.color : tFontColor
+            }
+            //设置字体颜色
+            ctx.fillStyle = tFontColor
+            //设置输出字体
+            ctx.font = font;
+            //处理镂空样式
+            if (tHollow == '1') {
+              ctx.strokeStyle = tFontColor;
+              ctx.strokeText(outputText, usedX, usedY)
+            } else {
+              ctx.fillText(outputText, usedX, usedY)
+            }
+            if (tUnderline == '1') {
+              ctx.beginPath();
+              ctx.strokeStyle = tFontColor;
+              ctx.moveTo(usedX, usedY + height);
+              ctx.lineTo(usedX + width, usedY + height);
+              ctx.closePath();
+              ctx.stroke();
+            }
+            if (tDeleteline == '1') {
+              ctx.beginPath();
+              ctx.strokeStyle = tFontColor;
+              ctx.moveTo(usedX, usedY + height / 2);
+              ctx.lineTo(usedX + width, usedY + height / 2);
+              ctx.closePath();
+              ctx.stroke();
+            }
+            if (tTopline == '1') {
+              ctx.beginPath();
+              ctx.strokeStyle = tFontColor;
+              ctx.moveTo(usedX, usedY);
+              ctx.lineTo(usedX + width, usedY);
+              ctx.closePath();
+              ctx.stroke();
+            }
+            usedX += width
+            ctx.restore();
           }
         }
       }
@@ -744,64 +793,110 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
           textContainer[0].textPosCache[curTextIdx] = { x: x, y: y }
           curTextIdx++;
           for (let ti = 1; ti < textContainer[0].text.length; ti++) {
-            let trs = ctx.measureText(textContainer[0].text.substring(0, ti))
-            textContainer[0].textPosCache[curTextIdx] = { x: x + trs.width, y: y }
+            textContainer[0].textPosCache[curTextIdx] = { x: textContainer[0].textPosCache[curTextIdx - 1].x + textContainer[0].widths[ti], y: y }
             curTextIdx++;
           }
           //计算光标在本行的位置和光标选中文本的宽度
           let sIdx = curSIdx;
           let eIdx = Math.min(curEIdx, textContainer[0].text.length);
-
           if (sIdx <= eIdx) {
-            let bText = textContainer[0].text.substring(0, sIdx);
-            let cText = textContainer[0].text.substring(sIdx, eIdx);
-            let bBackRect = ctx.measureText(bText);
-            let cBackRect = ctx.measureText(cText);
+            let bBackWidth = 0
+            let cBackWidth = 0
+            for (let x = 0; x < sIdx; x++) {
+              bBackWidth += textContainer[0].widths[x]
+            }
+            for (let x = sIdx; x < eIdx; x++) {
+              cBackWidth += textContainer[0].widths[x]
+            }
             let oldFillStyle = ctx.fillStyle
             let oldAlpha = ctx.globalAlpha
             ctx.fillStyle = "#017fff";
             ctx.globalAlpha = 0.3
-            ctx.fillRect(x + bBackRect.width, y, cBackRect.width, textContainer[0].height)
+            ctx.fillRect(x + bBackWidth, y, cBackWidth, textContainer[0].height)
             ctx.fillStyle = oldFillStyle
             ctx.globalAlpha = oldAlpha
-            cursorX = x + bBackRect.width + cBackRect.width
+            cursorX = x + bBackWidth + cBackWidth
             cursorY = y
           }
 
         }
         textContainer[0].x = x;
         textContainer[0].y = y;
-
-        //处理镂空样式
-        if (hollow == 1) {
-          ctx.strokeStyle = fiColor;
-          ctx.strokeText(textContainer[0].text, x, y)
-        } else {
-          ctx.fillText(textContainer[0].text, x, y)
-        }
-        if (underline == '1') {
-          ctx.beginPath();
-          ctx.strokeStyle = fiColor;
-          ctx.moveTo(x, y + textContainer[0].height);
-          ctx.lineTo(x + textContainer[0].width, y + textContainer[0].height);
-          ctx.closePath();
-          ctx.stroke();
-        }
-        if (deleteline == '1') {
-          ctx.beginPath();
-          ctx.strokeStyle = fiColor;
-          ctx.moveTo(x, y + textContainer[0].height / 2);
-          ctx.lineTo(x + textContainer[0].width, y + textContainer[0].height / 2);
-          ctx.closePath();
-          ctx.stroke();
-        }
-        if (topline == '1') {
-          ctx.beginPath();
-          ctx.strokeStyle = fiColor;
-          ctx.moveTo(x, y);
-          ctx.lineTo(x + textContainer[0].width, y);
-          ctx.closePath();
-          ctx.stroke();
+        //循环输出每一个字符
+        let usedX = x;
+        let usedY = y;
+        for (let tj = 0; tj < textContainer[0].text.length; tj++) {
+          let outputText = textContainer[0].text[tj]
+          let width = textContainer[0].widths[tj]
+          let height = textContainer[0].heights[tj]
+          //获取样式
+          ctx.save();
+          //读取当前特殊样式，如果没有，则使用外部基本样式
+          let font = fontSize + "px " + fiFamily;
+          if (bold == '1') {
+            font = "bold " + font;
+          }
+          if (italic == '1') {
+            font = "italic " + font;
+          }
+          let tHollow = hollow;
+          let tUnderline = underline;
+          let tDeleteline = deleteline;
+          let tTopline = topline;
+          let tFontColor = fiColor
+          if (this.model.sptStyle[tj]) {
+            let ftsize = this.model.sptStyle[tj]?.font?.size ? this.model.sptStyle[tj]?.font?.size * ratio : fontSize;
+            let ftfamily = this.model.sptStyle[tj]?.font?.family ? this.model.sptStyle[tj]?.font?.family : fiFamily;
+            font = ftsize + "px " + ftfamily
+            if (this.model.sptStyle[tj]?.textStyle?.bold == '1') {
+              font = "bold " + font;
+            }
+            if (this.model.sptStyle[tj]?.textStyle?.italic == '1') {
+              font = "italic " + font;
+            }
+            tHollow = this.model.sptStyle[tj]?.textStyle?.hollow == '1' ? '1' : '0'
+            tUnderline = this.model.sptStyle[tj]?.textStyle?.underline == '1' ? '1' : '0'
+            tDeleteline = this.model.sptStyle[tj]?.textStyle?.deleteline == '1' ? '1' : '0'
+            tTopline = this.model.sptStyle[tj]?.textStyle?.topline == '1' ? '1' : '0'
+            tFontColor = this.model.sptStyle[tj]?.font?.color ? this.model.sptStyle[tj]?.font?.color : tFontColor
+          }
+          //设置字体颜色
+          ctx.fillStyle = tFontColor
+          //设置输出字体
+          ctx.font = font;
+          //处理镂空样式
+          if (tHollow == '1') {
+            ctx.strokeStyle = tFontColor;
+            ctx.strokeText(outputText, usedX, usedY)
+          } else {
+            ctx.fillText(outputText, usedX, usedY)
+          }
+          if (tUnderline == '1') {
+            ctx.beginPath();
+            ctx.strokeStyle = tFontColor;
+            ctx.moveTo(usedX, usedY + height);
+            ctx.lineTo(usedX + width, usedY + height);
+            ctx.closePath();
+            ctx.stroke();
+          }
+          if (tDeleteline == '1') {
+            ctx.beginPath();
+            ctx.strokeStyle = tFontColor;
+            ctx.moveTo(usedX, usedY + height / 2);
+            ctx.lineTo(usedX + width, usedY + height / 2);
+            ctx.closePath();
+            ctx.stroke();
+          }
+          if (tTopline == '1') {
+            ctx.beginPath();
+            ctx.strokeStyle = tFontColor;
+            ctx.moveTo(usedX, usedY);
+            ctx.lineTo(usedX + width, usedY);
+            ctx.closePath();
+            ctx.stroke();
+          }
+          usedX += width
+          ctx.restore();
         }
 
       }
@@ -809,8 +904,10 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       if (cursorX != -1 && cursorY != -1 && curSIdx == curEIdx) {
         ctx.strokeStyle = "black";
         ctx.lineWidth = 1.5;
+        ctx.beginPath();
         ctx.moveTo(cursorX, cursorY - 2);
         ctx.lineTo(cursorX, cursorY + textContainer[0].height + 2);
+        ctx.closePath();
         ctx.stroke();
       }
       this.textUsedArea = textContainer;
