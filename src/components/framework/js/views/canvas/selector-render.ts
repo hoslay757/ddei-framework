@@ -49,6 +49,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       //绘制操作图形
       this.drawOperatorShapeLine();
     } else {
+
       //绘制边框
       this.drawBorder();
 

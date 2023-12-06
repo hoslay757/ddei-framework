@@ -508,6 +508,7 @@ export default {
               value: DDeiEnumControlState.SELECTED,
             },
           ]);
+          this.editor.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels);
 
           this.editor.bus.push(DDeiEnumBusCommandType.NodifyControlCreated, {
             models: [this.editor.creatingControl],

@@ -45,6 +45,7 @@ class DDeiBusCommandCancelCurLevelSelectedModels extends DDeiBusCommand {
         }
         return true;
       }
+
     } else {
       return false;
     }
