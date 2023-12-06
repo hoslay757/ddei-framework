@@ -151,39 +151,32 @@ export default {
       let parser: DDeiAbstractArrtibuteParser = this.attrDefine.getParser();
       //属性值
       let value = parser.parseValue(this.attrDefine.value);
-      let hasEditSetted = false;
-      //文本编辑状态
-      if (this.editor.ddInstance.stage.render.operateState == DDeiEnumOperateState.QUICK_EDITING) {
-        //读取文本的一部分修改其样式
-        let shadowControl = this.editor.ddInstance.stage.render.editorShadowControl
-        if (shadowControl?.render.isEditoring) {
-          let editorText = DDeiUtil.getEditorText();
-          //开始光标与结束光标
-          let curSIdx = -1
-          let curEIdx = -1
-          if (editorText) {
-            curSIdx = editorText.selectionStart
-            curEIdx = editorText.selectionEnd
-          }
-          if (curSIdx != -1 && curEIdx != -1 && curSIdx <= curSIdx) {
-            //增加特殊样式
-            shadowControl.setSptStyle(curSIdx, curEIdx, paths, value)
-            hasEditSetted = true;
-          }
-        }
-      }
-      if (!hasEditSetted) {
-        DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, value);
-        this.attrDefine.doCascadeDisplayByValue();
-        if (
-          this.attrDefine.model.modelType == "DDeiStage" ||
-          this.attrDefine.model.modelType == "DDeiLayer"
-        ) {
+
+      DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, value);
+      this.attrDefine.doCascadeDisplayByValue();
+      if (
+        this.attrDefine.model.modelType == "DDeiStage" ||
+        this.attrDefine.model.modelType == "DDeiLayer"
+      ) {
+        //推送信息进入总线
+        this.editor.bus.push(
+          DDeiEnumBusCommandType.ModelChangeValue,
+          {
+            mids: [this.attrDefine.model.modelType],
+            paths: paths,
+            value: value,
+            attrDefine: this.attrDefine,
+          },
+          evt,
+          true
+        );
+      } else {
+        this.editor.ddInstance.stage.selectedModels.forEach((element) => {
           //推送信息进入总线
           this.editor.bus.push(
             DDeiEnumBusCommandType.ModelChangeValue,
             {
-              mids: [this.attrDefine.model.modelType],
+              mids: [element.id],
               paths: paths,
               value: value,
               attrDefine: this.attrDefine,
@@ -191,23 +184,9 @@ export default {
             evt,
             true
           );
-        } else {
-          this.editor.ddInstance.stage.selectedModels.forEach((element) => {
-            //推送信息进入总线
-            this.editor.bus.push(
-              DDeiEnumBusCommandType.ModelChangeValue,
-              {
-                mids: [element.id],
-                paths: paths,
-                value: value,
-                attrDefine: this.attrDefine,
-              },
-              evt,
-              true
-            );
-          });
-        }
+        });
       }
+
       this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
         parts: ["topmenu"],
       });

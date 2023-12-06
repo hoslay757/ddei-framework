@@ -1,8 +1,7 @@
 <template>
   <div :class="{ 'ddei_pv_editor_textarea': true, 'ddei_pv_editor_textarea_disabled': attrDefine.readonly }">
-    <textarea v-model="attrDefine.value"
-              :disabled="attrDefine.readonly"
-              :placeholder="attrDefine.defaultValue" />
+    <textarea ref="pvTextArea" v-model="attrDefine.value" :disabled="attrDefine.readonly"
+      :placeholder="attrDefine.defaultValue" />
   </div>
 </template>
 
@@ -14,6 +13,8 @@ import DDeiAbstractArrtibuteParser from "../../../framework/js/models/attribute/
 import DDeiEditorEnumBusCommandType from "../../js/enums/editor-command-type";
 import DDeiUtil from "../../../framework/js/util";
 import DDeiEnumOperateType from "../../../framework/js/enums/operate-type";
+import DDeiEnumOperateState from "@/components/framework/js/enums/operate-state";
+import DDeiEditorUtil from "../../js/util/editor-util";
 
 export default {
   name: "DDei-Editor-PV-Text-Area",
@@ -109,6 +110,8 @@ export default {
       let parser: DDeiAbstractArrtibuteParser = this.attrDefine.getParser();
       //属性值
       let value = parser.parseValue(this.attrDefine.value);
+
+
       DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, value);
       if (
         this.attrDefine.model.modelType == "DDeiStage" ||
@@ -142,6 +145,7 @@ export default {
           );
         });
       }
+
       this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
         parts: ["topmenu"],
       });

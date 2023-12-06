@@ -103,8 +103,16 @@ class DDeiEditorUtil {
   /**
    * 设置编辑器值到控件
    */
-  static quickEditorToControl() {
-    let inputEle = DDeiEditorUtil.getEditorText();
+  static quickEditorToControl(inputEle) {
+    let editorInput = DDeiEditorUtil.getEditorText();
+    if (!inputEle) {
+      inputEle = editorInput
+    }
+    if (inputEle != editorInput) {
+      editorInput.value = inputEle.value
+      editorInput.selectionStart = inputEle.selectionStart
+      editorInput.selectionEnd = inputEle.selectionEnd
+    }
     let editor = DDeiEditor.ACTIVE_INSTANCE;
     let ddInstance = editor?.ddInstance;
     //删除选择区域内样式，然后新增样式

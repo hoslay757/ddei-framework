@@ -491,6 +491,7 @@ export const datas = {
       'dataType': 'string',
       'type': [1, 2], //类别，1图形，2业务，3事件
       'orderNo': 3,
+      'readonly': true,
       'visiable': true,
     },
     {

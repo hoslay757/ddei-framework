@@ -1,5 +1,6 @@
 <template>
-  <div :class="{'ddei_editor_quick_fat_item_box':true, 'ddei_editor_quick_fat_item_box_disabled': !attrDefine }" @click="attrDefine && valueChange($event)">
+  <div :class="{ 'ddei_editor_quick_fat_item_box': true, 'ddei_editor_quick_fat_item_box_disabled': !attrDefine }"
+    @click="attrDefine && valueChange($event)">
     <img style="width:13px;height:13px" :src="img" />
   </div>
 </template>
@@ -8,21 +9,22 @@
 import DDeiEditor from '../../../js/editor';
 import DDeiUtil from '../../../../framework/js/util';
 import DDeiEnumBusCommandType from '../../../../framework/js/enums/bus-command-type';
+import DDeiEnumOperateState from '@/components/framework/js/enums/operate-state';
 
 export default {
   name: "DDei-Editor-QBT-AddFontSize",
   extends: null,
   mixins: [],
-  components:{
+  components: {
   },
   props: {
-    attrCode:{
-      type:String,
-      default:null
+    attrCode: {
+      type: String,
+      default: null
     },
     addValue: {
       type: Number,
-      default:null
+      default: null
     },
     img: {
       type: String,
@@ -33,9 +35,9 @@ export default {
     return {
       //当前编辑器
       editor: null,
-      controlDefine:null,
-      attrDefine:null,
-      value:0
+      controlDefine: null,
+      attrDefine: null,
+      value: 0
     };
   },
   computed: {},
@@ -43,18 +45,18 @@ export default {
 
   },
   created() {
-    
+
   },
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     this.value = 0;
-    if(this.editor?.currentControlDefine){
+    if (this.editor?.currentControlDefine) {
       this.controlDefine = this.editor.currentControlDefine;
       if (this.controlDefine) {
         this.attrDefine = this.controlDefine.attrDefineMap.get(this.attrCode);
         let valueDefine = this.getDataValue();
-        if(valueDefine){
+        if (valueDefine) {
           this.value = valueDefine.value;
         }
       } else {
@@ -81,7 +83,7 @@ export default {
 
 
     valueChange(evt) {
-      let value = this.value+this.addValue;
+      let value = this.value + this.addValue;
       this.value = value;
       this.attrDefine.value = value;
       //通过解析器获取有效值
@@ -96,10 +98,32 @@ export default {
       if (!(paths?.length > 0)) {
         paths = [this.attrDefine.code]
       }
-      this.editor.ddInstance.stage.selectedModels.forEach(element => {
-        this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: parsedValue }, evt, true);
-      });
-      this.editor.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels, null, evt);
+      let hasEditSetted = false;
+      //文本编辑状态
+      if (this.editor.ddInstance.stage.render.operateState == DDeiEnumOperateState.QUICK_EDITING) {
+        //读取文本的一部分修改其样式
+        let shadowControl = this.editor.ddInstance.stage.render.editorShadowControl
+        if (shadowControl?.render.isEditoring) {
+          let editorText = DDeiUtil.getEditorText();
+          //开始光标与结束光标
+          let curSIdx = -1
+          let curEIdx = -1
+          if (editorText) {
+            curSIdx = editorText.selectionStart
+            curEIdx = editorText.selectionEnd
+          }
+          if (curSIdx != -1 && curEIdx != -1 && curSIdx <= curSIdx) {
+            //增加特殊样式
+            shadowControl.setSptStyle(curSIdx, curEIdx, paths, parsedValue)
+            hasEditSetted = true;
+          }
+        }
+      }
+      if (!hasEditSetted) {
+        this.editor.ddInstance.stage.selectedModels.forEach(element => {
+          this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: parsedValue }, evt, true);
+        });
+      }
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
       this.editor.bus.executeAll();
     }
@@ -126,8 +150,8 @@ export default {
 }
 
 .ddei_editor_quick_fat_item_box_disabled:hover {
-  background-color:transparent !important;
-  cursor:not-allowed;
+  background-color: transparent !important;
+  cursor: not-allowed;
 }
 
 .ddei_editor_quick_fat_item_box_selected {
