@@ -449,6 +449,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     let autoScaleFill = this.getCachedValue("textStyle.autoScaleFill");
     //自动换行
     let feed = this.getCachedValue("textStyle.feed");
+
     //以上样式为控件的整体样式，不能在文本中单独设置
 
     //以下样式：字体、颜色、大小、镂空、粗体、斜体、下划线、删除线、上标、下标等
@@ -469,7 +470,10 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     let deleteline = this.getCachedValue("textStyle.deleteline");
     //删除线
     let topline = this.getCachedValue("textStyle.topline");
-
+    if (this.isEditoring) {
+      feed = "1"
+      autoScaleFill = "1"
+    }
     //保存状态
     ctx.save();
     ctx.translate(this.model.cpv.x * rat1, this.model.cpv.y * rat1)

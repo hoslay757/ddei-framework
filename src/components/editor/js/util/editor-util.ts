@@ -58,6 +58,7 @@ class DDeiEditorUtil {
             let editor = DDeiEditor.ACTIVE_INSTANCE;
             let ddInstance = editor?.ddInstance;
             if (editor.quickEditorModel) {
+              editor.quickEditorModel.sptStyle = ddInstance.stage.render.editorShadowControl.sptStyle
               ddInstance.stage.render.editorShadowControl = null;
               editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { models: [editor.quickEditorModel], paths: ["text"], value: inputEle.value }, null, true);
               editor.bus.push(DDeiEnumBusCommandType.NodifyChange);
