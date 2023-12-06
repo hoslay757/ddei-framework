@@ -997,7 +997,6 @@ class DDeiLayerCanvasRender {
             this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.NodifyChange);
             this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy);
           }
-
           this.model.shadowControls = [];
           break;
         //表格内部拖拽中

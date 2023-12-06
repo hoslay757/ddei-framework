@@ -85,7 +85,9 @@ class DDeiLine extends DDeiAbstractShape {
   }
 
   static calLineCross(layer: DDeiLayer): void {
-
+    if (!layer) {
+      return;
+    }
     let lines = layer.getModelsByBaseType("DDeiLine");
     //遍历，生成线的交错点
     lines.forEach(line => {
@@ -556,6 +558,7 @@ class DDeiLine extends DDeiAbstractShape {
    * 移除自身的方法
    */
   destroyed() {
+    let layer = this.layer;
     let distLinks = this.stage?.getDistModelLinks(this.id);
     distLinks?.forEach(dl => {
       //删除源点
@@ -566,15 +569,15 @@ class DDeiLine extends DDeiAbstractShape {
     })
     super.destroyed();
     //移除自身所有附属控件
-    this.linkModels.forEach(lm => {
+    this.linkModels?.forEach(lm => {
       if (lm.dm) {
         lm.dm.pModel.removeModel(lm.dm)
       }
     })
-    this.linkModels.clear()
+    this.linkModels?.clear()
     this.linkModels = null;
 
-    DDeiLine.calLineCrossSync(this.layer);
+    DDeiLine.calLineCrossSync(layer);
   }
 
   syncVectors(source: DDeiAbstractShape, clonePV: boolean = false): void {
