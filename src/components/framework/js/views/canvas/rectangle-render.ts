@@ -370,11 +370,21 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     ctx.save();
     let fillType = this.getCachedValue("fill.type");
     //纯色填充
+    if (this.isEditoring) {
+      if (!fillType) {
+        fillType = 1
+      }
+    }
     if (fillType == 1) {
       //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
       let fillColor = this.getCachedValue("fill.color");
       let fillOpacity = this.getCachedValue("fill.opacity");
       let fillDisabled = this.getCachedValue("fill.disabled");
+      if (this.isEditoring) {
+        fillDisabled = false
+        fillOpacity = 1.0
+
+      }
       //如果拥有填充色，则使用填充色
       if (!fillDisabled && fillColor && (!fillOpacity || fillOpacity > 0)) {
         ctx.fillStyle = DDeiUtil.getColor(fillColor);

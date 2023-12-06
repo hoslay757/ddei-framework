@@ -147,6 +147,7 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
         inputEle.style.width = (fillArea.width) * stageRatio + "px";
         inputEle.style.height = (fillArea.height) * stageRatio + "px";
 
+
         inputEle.style.left = canvasPos.left + pos.x + ddInstance.stage.wpv.x + 1 + "px";
         inputEle.style.top = canvasPos.top + pos.y + ddInstance.stage.wpv.y + 50 + "px";
         inputEle.style.transform = "rotate(" + rotate + "deg)";
