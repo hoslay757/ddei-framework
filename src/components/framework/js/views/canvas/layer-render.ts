@@ -1031,6 +1031,7 @@ class DDeiLayerCanvasRender {
           this.model.shadowControls = [];
           break;
         case DDeiEnumOperateState.QUICK_EDITING_TEXT_SELECTING:
+
           this.stageRender.operateState = DDeiEnumOperateState.QUICK_EDITING;
           //渲染图形
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);

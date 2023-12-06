@@ -21,7 +21,7 @@ abstract class DDeiAbstractShape {
     this.modelCode = props.modelCode ? props.modelCode : null
     this.unicode = props.unicode ? props.unicode : DDeiUtil.getUniqueCode()
     this.fmt = props.fmt
-    this.sptStyle = props.sptStyle ? props.sptStyle : {}
+    this.sptStyle = props.sptStyle ? Object.freeze(props.sptStyle) : Object.freeze({})
     if (props.cpv) {
       this.cpv = new Vector3(props.cpv.x, props.cpv.y, props.cpv.z);
     }
@@ -170,7 +170,7 @@ abstract class DDeiAbstractShape {
    * 清空特殊文本样式
    */
   clearSptStyle() {
-    this.sptStyle = {}
+    this.sptStyle = Object.freeze({})
   }
 
 

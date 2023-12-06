@@ -438,6 +438,8 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     if (editorText) {
       curSIdx = editorText.selectionStart
       curEIdx = editorText.selectionEnd
+      this.stageRender.editorShadowControl.tempCursorStart = curSIdx
+      this.stageRender.editorShadowControl.tempCursorEnd = curEIdx
     }
     //以下样式为控件的整体样式，不能在文本中单独设置
     //字体对齐信息

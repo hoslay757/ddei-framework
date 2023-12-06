@@ -10,6 +10,7 @@ import DDeiStage from "@/components/framework/js/models/stage";
 import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type";
 import DDeiEditorEnumBusCommandType from "../enums/editor-command-type";
 import DDeiEditorState from "../enums/editor-state";
+import { before } from "lodash";
 
 class DDeiEditorUtil {
 
@@ -74,21 +75,90 @@ class DDeiEditorUtil {
             editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
             editor.bus.executeAll();
           }
-          inputEle.oninput = function () {
+          inputEle.addEventListener("compositionend", function () {
             let editor = DDeiEditor.ACTIVE_INSTANCE;
             let ddInstance = editor?.ddInstance;
             if (ddInstance.stage.render.editorShadowControl) {
-              ddInstance.stage.render.editorShadowControl.text = inputEle.value;
-              ddInstance.stage.render.editorShadowControl.render.setCachedValue("text", inputEle.value)
-              editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
-              editor.bus.executeAll();
+              DDeiEditorUtil.quickEditorToControl();
+
             }
-          }
+          })
+          inputEle.addEventListener("input", () => {
+            let editor = DDeiEditor.ACTIVE_INSTANCE;
+            let ddInstance = editor?.ddInstance;
+            if (ddInstance.stage.render.editorShadowControl) {
+              DDeiEditorUtil.quickEditorToControl();
+            }
+          })
+
+
         }
       }
       return editor.quickEditorInput;
     }
 
+  }
+
+  /**
+   * 设置编辑器值到控件
+   */
+  static quickEditorToControl() {
+    let inputEle = DDeiEditorUtil.getEditorText();
+    let editor = DDeiEditor.ACTIVE_INSTANCE;
+    let ddInstance = editor?.ddInstance;
+    //删除选择区域内样式，然后新增样式
+    let oldStr = ddInstance.stage.render.editorShadowControl.text
+    let newStr = inputEle.value
+    let curstrIdx = Math.min(ddInstance.stage.render.editorShadowControl.tempCursorStart, inputEle.selectionStart)
+    //提取新增的文本
+    let beforeStr = oldStr.substring(0, curstrIdx)
+    //拼接新的样式信息
+    let beforeSPT = {};
+    for (let i = 0; i < curstrIdx; i++) {
+      if (ddInstance.stage.render.editorShadowControl.sptStyle[i]) {
+        beforeSPT[i] = ddInstance.stage.render.editorShadowControl.sptStyle[i];
+      }
+    }
+    //计算after的特殊样式，此时还不知道中间的append需要多少
+    let sptIndex = curstrIdx
+    let afterStr = oldStr.substring(ddInstance.stage.render.editorShadowControl.tempCursorEnd)
+    let afterSPT = {}
+    for (let i = ddInstance.stage.render.editorShadowControl.tempCursorEnd; i < oldStr.length; i++) {
+      if (ddInstance.stage.render.editorShadowControl.sptStyle[i]) {
+        afterSPT[i] = ddInstance.stage.render.editorShadowControl.sptStyle[i];
+      }
+    }
+    //计算append以及append的特殊样式
+    let bIndex = newStr.indexOf(beforeStr) + beforeStr.length;
+    let appendStr = null
+
+    if (afterStr) {
+      appendStr = newStr.substring(bIndex, newStr.lastIndexOf(afterStr))
+    } else {
+      appendStr = newStr.substring(bIndex)
+    }
+
+    let oriStyle = bIndex == 0 ? afterSPT[bIndex] : beforeSPT[bIndex - 1];
+    if (oriStyle && appendStr) {
+      let cloneSPTStr = JSON.stringify(oriStyle);
+      for (let i = 0; i < appendStr.length; i++, sptIndex++) {
+        beforeSPT[sptIndex] = JSON.parse(cloneSPTStr);
+      }
+    }
+    let appendStrLen = newStr.length - oldStr.length;
+    for (let i in afterSPT) {
+      beforeSPT[parseInt(i) + appendStrLen] = afterSPT[i]
+    }
+    ddInstance.stage.render.editorShadowControl.sptStyle = beforeSPT
+
+
+    ddInstance.stage.render.editorShadowControl.tempCursorStart = inputEle.selectionStart
+    ddInstance.stage.render.editorShadowControl.tempCursorEnd = inputEle.selectionEnd
+
+    ddInstance.stage.render.editorShadowControl.text = inputEle.value;
+    ddInstance.stage.render.editorShadowControl.render.setCachedValue("text", inputEle.value)
+    editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
+    editor.bus.executeAll();
   }
 
   /**
