@@ -165,6 +165,7 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
         editor.changeState(DDeiEditorState.QUICK_EDITING);
         ddInstance.stage.render.operateState = DDeiEnumOperateState.QUICK_EDITING
         //发出通知，选中的焦点发生变化
+        editor.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels);
         editor.bus.push(DDeiEnumBusCommandType.TextEditorChangeSelectPos);
         editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
         editor.bus.executeAll();

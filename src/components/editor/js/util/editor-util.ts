@@ -69,8 +69,9 @@ class DDeiEditorUtil {
             editor.changeState(DDeiEditorState.DESIGNING);
             editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
             editor.bus.push(DDeiEnumBusCommandType.ClearTemplateVars);
-            editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, { parts: ["topmenu", "property"], });
-            editor.bus.executeAll();
+            editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, { parts: ["topmenu"] });
+            editor.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels);
+            editor.bus?.executeAll();
 
           }
           inputEle.onkeydown = function () {

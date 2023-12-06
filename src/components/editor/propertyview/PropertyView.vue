@@ -1,5 +1,7 @@
 <template>
-  <div id="ddei_editor_propertyview" class="ddei_editor_propertyview" @mousedown="changeEditorFocus">
+  <div id="ddei_editor_propertyview"
+    :class="{ 'ddei_editor_propertyview': true, 'ddei_editor_propertyview_disabled': propertyDisabled }"
+    @mousedown="changeEditorFocus">
     <div class="ddei_editor_pv_group_view">
       <div class="ddei_editor_pv_group_view_expandbox" @click="hidOrShowPV">
         <img class="ddei_editor_pv_group_view_expandbox_img"
@@ -117,15 +119,13 @@ export default {
       currentTopGroup: null,
       currentSubGroup: null,
       reFresh: true,
+      propertyDisabled: false
     };
   },
   computed: {},
   watch: {
     currentSubGroup() {
-      this.reFresh = false;
-      this.$nextTick(() => {
-        this.reFresh = true;
-      });
+      this.forceRefresh();
     },
   },
   components: {
@@ -150,8 +150,18 @@ export default {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     this.editor.properyViewer = this;
+    this.refreshAttrs();
   },
   methods: {
+    forceRefresh() {
+      this.reFresh = false;
+      this.propertyDisabled = false
+      this.$nextTick(() => {
+        this.propertyDisabled = (this.editor.state == DDeiEditorState.QUICK_EDITING)
+        this.reFresh = true;
+      });
+    },
+
     refreshAttrs(newVal, oldVal) {
       this.selectedModels = this.editor.ddInstance.stage.selectedModels;
       let models: DDeiAbstractShape[] = null;
@@ -416,6 +426,7 @@ export default {
         }
         this.changeSubGroup(currentSubGroup);
         this.editor.currentControlDefine = this.controlDefine;
+
       } else {
         //清除信息
         this.controlDefine = null;
@@ -646,6 +657,12 @@ export default {
   user-select: none;
 }
 
+.ddei_editor_propertyview_disabled {
+  pointer-events: none !important;
+  user-select: none !important;
+  filter: opacity(70%);
+}
+
 .ddei_editor_propertyview .empty_value {
   filter: opacity(50%);
 }
@@ -760,6 +777,12 @@ export default {
   color: black;
   font-size: 13px;
   font-family: "Microsoft YaHei";
+}
+
+.ddei_editor_propertyview_disabled .ddei_editor_pv_subgroup_view_tab_panel {
+  pointer-events: none !important;
+  user-select: none !important;
+  filter: opacity(70%) !important;
 }
 
 .ddei_editor_pv_subgroup_view_tab_panel::-webkit-scrollbar {
