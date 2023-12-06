@@ -1,9 +1,6 @@
 <template>
-  <div id="ddei_editor_topmenu"
-       class="ddei_editor_topmenu"
-       @mousedown="changeEditorFocus">
-    <div id="ddei_editor_topmenu_quickbox"
-         class="ddei_editor_topmenu_quickbox">
+  <div id="ddei_editor_topmenu" class="ddei_editor_topmenu" @mousedown="changeEditorFocus">
+    <div id="ddei_editor_topmenu_quickbox" class="ddei_editor_topmenu_quickbox">
       <div class="ddei_editor_topmenu_quickbox_group">
         <QuickBoxFileInfo></QuickBoxFileInfo>
       </div>
@@ -68,7 +65,7 @@ export default {
   },
   computed: {},
   watch: {},
-  created() {},
+  created() { },
   mounted() {
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     this.editor.topMenuViewer = this;
@@ -78,7 +75,9 @@ export default {
      * 焦点进入当前区域
      */
     changeEditorFocus() {
-      this.editor.changeState(DDeiEditorState.TOP_MENU_OPERATING);
+      if (this.editor.state != DDeiEditorState.TOP_MENU_OPERATING && this.editor.state != DDeiEditorState.QUICK_EDITING) {
+        this.editor.changeState(DDeiEditorState.TOP_MENU_OPERATING);
+      }
       this.editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
       this.editor.bus.executeAll();
     },
@@ -103,6 +102,7 @@ export default {
   margin: auto 0;
   margin-left: 5px;
 }
+
 .ddei_editor_topmenu_quickbox_group_empty {
   flex: 1;
   margin: auto 0;

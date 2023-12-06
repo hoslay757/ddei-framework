@@ -21,6 +21,7 @@ class DDeiKeyActionCancelQuickEdit extends DDeiKeyAction {
     editor.changeState(DDeiEditorState.DESIGNING);
     editor.bus.push(DDeiEnumBusCommandType.ClearTemplateVars);
     editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+    editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, { parts: ["topmenu", "property"], });
     editor.bus.executeAll();
   }
 

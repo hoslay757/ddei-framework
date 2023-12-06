@@ -147,6 +147,9 @@ export default {
         execute: [this.addFileHistroy],
       };
     }
+    this.editor.bus.interceptor[DDeiEnumBusCommandType.TextEditorChangeSelectPos] = {
+      execute: [this.textEditorChangeSelectPos],
+    };
     if (!DDeiUtil.setCurrentMenu) {
       DDeiUtil.setCurrentMenu = this.setCurrentMenu;
     }
@@ -206,6 +209,18 @@ export default {
       let action: DDeiEditorCommandAddHistroy =
         DDeiEditorCommandAddHistroy.newInstance();
       return action.action({}, this.editor.bus, null);
+    },
+
+
+    textEditorChangeSelectPos() {
+      //触发文本焦点改变内部监听
+      if (!this.editor.textEditorSelectedChange) {
+        this.editor.textEditorSelectedChange = 1
+      } else {
+        this.editor.textEditorSelectedChange++
+      }
+      this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
+      this.editor.bus.executeAll();
     },
 
     resetSize() {

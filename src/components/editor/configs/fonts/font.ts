@@ -380,10 +380,11 @@ for (let key in fontTypes) {
   fontType.forEach(font => {
     let fontEn = font.en, fontCh = font.ch;
     // 检测是否为系统默认字体
-    let support = document.fonts.check("14px '" + fontEn + "'", "Abc123");
+    let support = document.fonts.check("14px '" + fontEn + "'", "Abc123")
     if (support) {
       if (fontEn.toLowerCase() === rootFontFamily.toLowerCase() || ("\"" + fontEn + "\"").toLowerCase() === rootFontFamily.toLowerCase()
         || fontCh.toLowerCase() === rootFontFamily.toLowerCase() || ("\"" + fontCh + "\"").toLowerCase() === rootFontFamily.toLowerCase()) {
+        console.log(font)
         font.isSystemDefault = true;
       }
       //加入数据源

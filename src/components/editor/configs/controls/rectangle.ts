@@ -323,7 +323,7 @@ export const styles = {
       'controlType': 'radio',
       'dataType': 'string',
       'dataSource': [{ 'text': '是', 'value': '1' }, { 'text': '否', 'value': '0' }],
-      'defaultValue': '0',
+      'defaultValue': '1',
       'orderNo': 5,
       'visiable': true
     },

@@ -3,7 +3,6 @@
     <div id="ddei_editor_quick_fat_item_fontfamily"
       :class="{ 'ddei_editor_quick_fat_item_fontfamily': true, 'ddei_editor_quick_fat_item_fontfamily_disabled': !attrDefine }">
       <img width="16px" height="16px" class="ddei_editor_quick_fat_item_fontfamily_icon" :src="searchIcon">
-
       <input class="ddei_editor_quick_fat_item_fontfamily_input"
         :readonly="!attrDefine || (attrDefine && (attrDefine.readonly || !canSearch))" v-model="text"
         :placeholder="defaultText" @click="attrDefine && !attrDefine.readonly && !canSearch && showDialog()"
@@ -32,6 +31,8 @@ import DDeiEditorUtil from "../../../js/util/editor-util";
 import DDeiUtil from "../../../../framework/js/util";
 import DDeiEnumBusCommandType from "../../../../framework/js/enums/bus-command-type";
 import DDeiEnumOperateState from "@/components/framework/js/enums/operate-state";
+import DDeiModelArrtibuteValue from "@/components/framework/js/models/attribute/attribute-value";
+import DDeiEditorEnumBusCommandType from "@/components/editor/js/enums/editor-command-type";
 
 export default {
   name: "DDei-Editor-QBT-FontFamily",
@@ -52,7 +53,7 @@ export default {
       text: null,
       defaultText: null,
       expanded: false,
-      canSearch: true,
+      canSearch: true
     };
   },
   computed: {},
@@ -60,35 +61,50 @@ export default {
   created() {
     // 搜索框防抖
     this.search = debounce(this.search, 200);
+    this.closeDialog = debounce(this.closeDialog, 2000);
+    // 监听obj对象中prop属性的变化
+    this.$watch("editor.textEditorSelectedChange", function (newVal, oldVal) {
+      if (newVal) {
+        this.refreshEditor();
+      }
+    });
   },
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
-    if (this.editor?.currentControlDefine) {
-      this.controlDefine = this.editor.currentControlDefine;
 
-      if (this.controlDefine) {
-        this.attrDefine = this.controlDefine.attrDefineMap.get("font.family");
-      } else {
-        this.attrDefine = null;
-      }
+    this.refreshEditor();
 
-      this.getDataSource(this.attrDefine);
-      let type = this.getDataValue();
-      let define = this.getDataDefine(type.value);
-      if (!type.isDefault) {
-        this.attrDefine.value = type.value;
-        this.text = define.text;
-        if (define.img) {
-          this.$refs.combox.img = define.img;
-        }
-      } else {
-        this.defaultText = define.text;
-      }
-      this.value = type.value;
-    }
   },
   methods: {
+
+    refreshEditor() {
+      if (this.editor?.currentControlDefine) {
+        this.controlDefine = this.editor.currentControlDefine;
+
+        if (this.controlDefine) {
+          this.attrDefine = this.controlDefine.attrDefineMap.get("font.family");
+        } else {
+          this.attrDefine = null;
+        }
+
+        this.getDataSource(this.attrDefine);
+        let type = this.getDataValue();
+        let define = this.getDataDefine(type.value);
+        if (!type.isDefault) {
+          this.attrDefine.value = type.value;
+          this.text = define.text;
+          if (define.img) {
+            this.$refs.combox.img = define.img;
+          }
+        } else {
+          this.defaultText = define.text;
+        }
+        this.value = type.value;
+      }
+    },
+
+
     search(evt) {
       //过滤dataSource，找到text
       this.searchText = this.text;
@@ -142,6 +158,38 @@ export default {
     //获取数据值
     getDataValue() {
       if (this.attrDefine) {
+        //文本编辑状态
+        if (this.editor.ddInstance.stage.render.operateState == DDeiEnumOperateState.QUICK_EDITING) {
+          //读取文本的一部分修改其样式
+          let shadowControl = this.editor.ddInstance.stage.render.editorShadowControl
+          if (shadowControl?.render.isEditoring) {
+            let editorText = DDeiUtil.getEditorText();
+            //开始光标与结束光标
+            let curSIdx = -1
+            let curEIdx = -1
+            if (editorText) {
+              curSIdx = editorText.selectionStart
+              curEIdx = editorText.selectionEnd
+            }
+            //获取光标范围内的特殊样式，如果有且相同，则返回值，否则不返回值
+            if (curSIdx != -1 && curEIdx != -1 && curSIdx <= curSIdx) {
+              //获取特殊样式
+              //获取属性路径
+              let paths = [];
+              this.attrDefine?.mapping?.forEach((element) => {
+                paths.push(element);
+              });
+              if (!(paths?.length > 0)) {
+                paths = [this.attrDefine.code];
+              }
+              let value = shadowControl.getSptStyle(curSIdx, curEIdx, paths)
+              if (value === undefined) {
+                value = DDeiModelArrtibuteValue.getAttrValueByState(shadowControl, paths[0], true);
+              }
+              return { value: value };
+            }
+          }
+        }
         let dataValue = this.attrDefine.value;
         if (!dataValue) {
           dataValue = DDeiUtil.getDataByPathList(
@@ -209,7 +257,13 @@ export default {
           }
           if (curSIdx != -1 && curEIdx != -1 && curSIdx <= curSIdx) {
             //增加特殊样式
-            shadowControl.setSptStyle(curSIdx, curEIdx, paths, value)
+            shadowControl.setSptStyle(curSIdx, curEIdx, paths, parsedValue)
+            this.editor.bus.push(DDeiEnumBusCommandType.TextEditorChangeSelectPos);
+            setTimeout(() => {
+              editorText.focus();
+            }, 20);
+
+            this.closeDialog();
             hasEditSetted = true;
           }
         }
@@ -228,13 +282,13 @@ export default {
       this.editor.bus.executeAll();
     },
 
+
+
     closeDialog(evt) {
-      this.expanded = false;
-      let dialog = document.getElementById(
-        "ddei_editor_quick_fat_item_fontfamily"
-      );
-      dialog.style.display = "none";
+      this.editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+      this.editor.bus.executeAll();
     },
+
   },
 };
 </script>

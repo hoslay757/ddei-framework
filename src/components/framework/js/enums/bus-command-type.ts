@@ -36,6 +36,7 @@ enum DDeiEnumBusCommandType {
   NodifyChange = "nodify-change",
   NodifyControlCreated = "nodify-control-created",
   ChangeLinePoint = "change-line-point",
+  TextEditorChangeSelectPos = "texteditor-change-select-pos",
 }
 
 export default DDeiEnumBusCommandType

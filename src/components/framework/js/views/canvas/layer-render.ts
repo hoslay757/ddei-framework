@@ -1033,8 +1033,10 @@ class DDeiLayerCanvasRender {
         case DDeiEnumOperateState.QUICK_EDITING_TEXT_SELECTING:
 
           this.stageRender.operateState = DDeiEnumOperateState.QUICK_EDITING;
+          //发出通知，选中的焦点发生变化
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.TextEditorChangeSelectPos);
           //渲染图形
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
           //排序并执行所有action
           this.stage?.ddInstance?.bus?.executeAll();
           return;

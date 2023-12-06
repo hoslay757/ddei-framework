@@ -1,81 +1,64 @@
 <template>
   <div class="ddei_editor_quick_fat">
 
-    <div class="ddei_editor_quick_fat_item"
-         style="grid-column:1/6;">
+    <div class="ddei_editor_quick_fat_item" style="grid-column:1/6;">
       <QBTFontFamily></QBTFontFamily>
     </div>
-    <div class="ddei_editor_quick_fat_item"
-         style="grid-column:6/8;">
+    <div class="ddei_editor_quick_fat_item" style="grid-column:6/8;">
       <QBTFontSize></QBTFontSize>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="1"
-                  attrCode="textStyle.align"
-                  :img="icons['text-align-left']"></QBTEditBox>
+      <QBTEditBox selectedValue="1" :supportQuickEdit="false" attrCode="textStyle.align" :img="icons['text-align-left']">
+      </QBTEditBox>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="2"
-                  attrCode="textStyle.align"
-                  :img="icons['text-align-center']"></QBTEditBox>
+      <QBTEditBox selectedValue="2" :supportQuickEdit="false" attrCode="textStyle.align"
+        :img="icons['text-align-center']">
+      </QBTEditBox>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="3"
-                  attrCode="textStyle.align"
-                  :img="icons['text-align-right']"></QBTEditBox>
+      <QBTEditBox selectedValue="3" :supportQuickEdit="false" attrCode="textStyle.align" :img="icons['text-align-right']">
+      </QBTEditBox>
     </div>
 
     <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="1"
-                  attrCode="textStyle.bold"
-                  :img="icons['icon-font-bold']"></QBTEditBox>
+      <QBTEditBox selectedValue="1" unSelectValue="0" attrCode="textStyle.bold" :img="icons['icon-font-bold']">
+      </QBTEditBox>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="1"
-                  attrCode="textStyle.italic"
-                  :img="icons['icon-font-italic']"></QBTEditBox>
+      <QBTEditBox selectedValue="1" unSelectValue="0" attrCode="textStyle.italic" :img="icons['icon-font-italic']">
+      </QBTEditBox>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="1"
-                  attrCode="textStyle.underline"
-                  :img="icons['icon-text-underline']"></QBTEditBox>
+      <QBTEditBox selectedValue="1" unSelectValue="0" attrCode="textStyle.underline" :img="icons['icon-text-underline']">
+      </QBTEditBox>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="1"
-                  attrCode="textStyle.deleteline"
-                  :img="icons['icon-text-deleteline']"></QBTEditBox>
+      <QBTEditBox selectedValue="1" unSelectValue="0" attrCode="textStyle.deleteline"
+        :img="icons['icon-text-deleteline']"></QBTEditBox>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <QBTEditAddFontSize :addValue="1"
-                          attrCode="font.size"
-                          :img="icons['icon-font-up']"></QBTEditAddFontSize>
+      <QBTEditAddFontSize :addValue="1" attrCode="font.size" :img="icons['icon-font-up']"></QBTEditAddFontSize>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <QBTEditAddFontSize :addValue="-1"
-                          attrCode="font.size"
-                          :img="icons['icon-font-down']"></QBTEditAddFontSize>
+      <QBTEditAddFontSize :addValue="-1" attrCode="font.size" :img="icons['icon-font-down']"></QBTEditAddFontSize>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <QBTEditColor attrCode="font.color"
-                    :img="icons['icon-font-color']"></QBTEditColor>
+      <QBTEditColor attrCode="font.color" :img="icons['icon-font-color']"></QBTEditColor>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="1"
-                  attrCode="textStyle.valign"
-                  :img="icons['text-valign-top']"></QBTEditBox>
+      <QBTEditBox selectedValue="1" :supportQuickEdit="false" attrCode="textStyle.valign" :img="icons['text-valign-top']">
+      </QBTEditBox>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="2"
-                  attrCode="textStyle.valign"
-                  :img="icons['text-valign-middle']"></QBTEditBox>
+      <QBTEditBox selectedValue="2" :supportQuickEdit="false" attrCode="textStyle.valign"
+        :img="icons['text-valign-middle']"></QBTEditBox>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="3"
-                  attrCode="textStyle.valign"
-                  :img="icons['text-valign-bottom']"></QBTEditBox>
+      <QBTEditBox selectedValue="3" :supportQuickEdit="false" attrCode="textStyle.valign"
+        :img="icons['text-valign-bottom']"></QBTEditBox>
     </div>
-    <div class="ddei_editor_quick_fat_item"
-         style="grid-column:1/11;">
+    <div class="ddei_editor_quick_fat_item" style="grid-column:1/11;">
       <div class="ddei_editor_quick_fat_item_text">
         字体和段落
       </div>
@@ -109,7 +92,7 @@ export default {
     QBTEditColor,
   },
   watch: {},
-  created() {},
+  created() { },
   mounted() {
     for (let i in ICONS) {
       this.icons[i] = ICONS[i];

@@ -167,6 +167,39 @@ abstract class DDeiAbstractShape {
   }
 
   /**
+   * 获取特殊文本样式，返回同样的样式
+   * @param sIdx 开始文本坐标
+   * @param eIdx 结束文本坐标
+   */
+  getSptStyle(sIdx: number, eIdx: number, paths: string[] | string) {
+    //设置每一个字符的样式
+    let attrPaths = []
+    if (typeof (paths) == 'string') {
+      attrPaths = paths.split(",");
+    } else {
+      attrPaths = paths;
+    }
+
+    if (attrPaths?.length > 0 && sIdx > -1 && eIdx > -1 && sIdx <= eIdx) {
+      let first = true;
+      let firstValue = undefined;
+      for (; sIdx < eIdx; sIdx++) {
+        for (let i = 0; i < attrPaths.length; i++) {
+          let v = DDeiUtil.getDataByPathList(this, "sptStyle." + sIdx + "." + attrPaths[i]);
+          if (first) {
+            firstValue = v == null || v == undefined ? undefined : v;
+            first = false;
+          } else if (v != undefined && firstValue != v) {
+            return undefined
+          }
+        }
+      }
+      return firstValue;
+    }
+    return undefined;
+  }
+
+  /**
    * 清空特殊文本样式
    */
   clearSptStyle() {

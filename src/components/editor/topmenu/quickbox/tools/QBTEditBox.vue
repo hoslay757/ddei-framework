@@ -11,6 +11,7 @@ import DDeiEditor from "../../../js/editor";
 import DDeiUtil from "../../../../framework/js/util";
 import DDeiEnumBusCommandType from "../../../../framework/js/enums/bus-command-type";
 import DDeiEnumOperateState from "@/components/framework/js/enums/operate-state";
+import DDeiModelArrtibuteValue from "@/components/framework/js/models/attribute/attribute-value";
 
 export default {
   name: "DDei-Editor-QBT-EditBox",
@@ -23,8 +24,11 @@ export default {
       default: null,
     },
     unSelectValue: {
-      type: Object,
       default: null,
+    },
+    supportQuickEdit: {
+      type: Boolean,
+      default: true,
     },
     selectedValue: {
       default: null,
@@ -45,34 +49,82 @@ export default {
   },
   computed: {},
   watch: {},
-  created() { },
+  created() {
+    // 监听obj对象中prop属性的变化
+    this.$watch("editor.textEditorSelectedChange", function (newVal, oldVal) {
+      if (newVal) {
+        this.refreshEditor();
+      }
+    });
+  },
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
-    this.value = false;
-    if (this.editor?.currentControlDefine) {
-      this.controlDefine = this.editor.currentControlDefine;
-      if (this.controlDefine) {
-        this.attrDefine = this.controlDefine.attrDefineMapAll.get(
-          this.attrCode
-        );
-        let valueDefine = this.getDataValue();
-        if (
-          valueDefine &&
-          !valueDefine.isDefault &&
-          valueDefine.value + "" == this.selectedValue + ""
-        ) {
-          this.value = true;
-        }
-      } else {
-        this.attrDefine = null;
-      }
-    }
+    this.refreshEditor();
   },
   methods: {
+
+    refreshEditor() {
+      if (!this.supportQuickEdit && this.editor?.ddInstance?.stage?.render?.operateState == DDeiEnumOperateState.QUICK_EDITING) {
+        this.attrDefine = null
+        return;
+      }
+      this.value = false;
+      if (this.editor?.currentControlDefine) {
+        this.controlDefine = this.editor.currentControlDefine;
+        if (this.controlDefine) {
+          this.attrDefine = this.controlDefine.attrDefineMapAll.get(
+            this.attrCode
+          );
+          let valueDefine = this.getDataValue();
+          if (
+            valueDefine &&
+            !valueDefine.isDefault &&
+            valueDefine.value + "" == this.selectedValue + ""
+          ) {
+            this.value = true;
+          }
+        } else {
+          this.attrDefine = null;
+        }
+      }
+    },
+
     //获取数据值
     getDataValue() {
       if (this.attrDefine) {
+        //文本编辑状态
+        if (this.editor.ddInstance.stage.render.operateState == DDeiEnumOperateState.QUICK_EDITING) {
+          //读取文本的一部分修改其样式
+          let shadowControl = this.editor.ddInstance.stage.render.editorShadowControl
+          if (shadowControl?.render.isEditoring) {
+            let editorText = DDeiUtil.getEditorText();
+            //开始光标与结束光标
+            let curSIdx = -1
+            let curEIdx = -1
+            if (editorText) {
+              curSIdx = editorText.selectionStart
+              curEIdx = editorText.selectionEnd
+            }
+            //获取光标范围内的特殊样式，如果有且相同，则返回值，否则不返回值
+            if (curSIdx != -1 && curEIdx != -1 && curSIdx <= curSIdx) {
+              //获取特殊样式
+              //获取属性路径
+              let paths = [];
+              this.attrDefine?.mapping?.forEach((element) => {
+                paths.push(element);
+              });
+              if (!(paths?.length > 0)) {
+                paths = [this.attrDefine.code];
+              }
+              let value = shadowControl.getSptStyle(curSIdx, curEIdx, paths)
+              if (value === undefined) {
+                value = DDeiModelArrtibuteValue.getAttrValueByState(shadowControl, paths[0], true);
+              }
+              return { value: value };
+            }
+          }
+        }
         let dataValue = this.attrDefine.value;
         if (!dataValue) {
           dataValue = DDeiUtil.getDataByPathList(
@@ -134,6 +186,10 @@ export default {
           if (curSIdx != -1 && curEIdx != -1 && curSIdx <= curSIdx) {
             //增加特殊样式
             shadowControl.setSptStyle(curSIdx, curEIdx, paths, parsedValue)
+            this.editor.bus.push(DDeiEnumBusCommandType.TextEditorChangeSelectPos);
+            setTimeout(() => {
+              editorText.focus();
+            }, 20);
             hasEditSetted = true;
           }
         }
