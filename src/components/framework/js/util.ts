@@ -1,6 +1,6 @@
 import DDeiConfig from './config.js'
 import DDeiAbstractShape from './models/shape.js';
-import { clone, isDate, isNumber, isString } from 'lodash'
+import { clone, cloneDeep, isDate, isNumber, isString } from 'lodash'
 import DDei from './ddei.js';
 import { Matrix3, Vector3 } from 'three';
 const expressBindValueReg = /#\{[^\{\}]*\}/;
@@ -62,7 +62,7 @@ class DDeiUtil {
 
   static p66t21t3 = (3 * (1 - 0.666) * DDeiUtil.p66t2)
 
-
+  static cacheTextCharSize: Map<string, object> = new Map()
 
 
   static PI2 = Math.PI * 2
@@ -103,6 +103,19 @@ class DDeiUtil {
 
     ctx.restore();
     return { width: maxWidth, height: height }
+  }
+
+  /**
+   * 计算文字的高度和宽度
+   */
+  static measureText(text: string, ctx): object {
+
+    let key = text + "_" + ctx.font
+    if (!DDeiUtil.cacheTextCharSize.has(key)) {
+      let rect = ctx.measureText(text);
+      DDeiUtil.cacheTextCharSize.set(key, { width: rect.width, height: ctx.fontSize })
+    }
+    return DDeiUtil.cacheTextCharSize.get(key);
   }
 
   /**
@@ -1408,27 +1421,31 @@ class DDeiUtil {
      * @param model 对象
      * @param keypath  属性路径，一般用.隔开
      * @param format 是否需要格式化
+     * @param replaceSPT 是否替换特殊样式
      */
-  static getReplacibleValue(model: object, keypath: string, format: boolean = false): any {
+  static getReplacibleValue(model: object, keypath: string, format: boolean = false, replaceSPT: boolean = false): any {
     //获取原始值
     if (model) {
+      let replaceDetail = null;
       let originValue = model?.render?.getCachedValue(keypath);
       let returnValue = originValue;
       //执行值绑定替换
-      if (originValue) {
+      if (originValue && originValue.indexOf("#") != -1) {
         //获取外部业务传入值
         let busiData = DDeiUtil.getBusiData();
         if (busiData) {
-          let replaceData = DDeiUtil.expressBindValue(originValue, busiData);
-          if (replaceData) {
-            returnValue = replaceData;
+          let replaceResult = DDeiUtil.expressBindValue(originValue, busiData);
+          if (replaceResult?.data) {
+            returnValue = replaceResult.data;
+            replaceDetail = replaceResult.detail
           }
         }
       }
-      //如果开启格式化
+      //如果开启格式化，套用格式化的替换规则
+      let hasFormatted = false;
       if (format) {
-
         let fmtType = model?.render?.getCachedValue("fmt.type");
+        let formatValue = null;
         switch (fmtType) {
           case 1: {
             //数字
@@ -1436,15 +1453,13 @@ class DDeiUtil {
             let scale = model?.render?.getCachedValue("fmt.nscale");
             //千分符
             let tmark = model?.render?.getCachedValue("fmt.tmark");
-            returnValue = DDeiUtil.formatNumber(returnValue, isNaN(scale) ? 0 : scale, tmark == 1 ? ',' : '')
+            formatValue = DDeiUtil.formatNumber(returnValue, isNaN(scale) ? 0 : scale, tmark == 1 ? ',' : '')
           } break;
           case 2: {
-
             //人民币大写
             let mrmb = model?.render?.getCachedValue("fmt.mrmb");
-
             if (mrmb == 1) {
-              returnValue = DDeiUtil.toBigMoney(returnValue);
+              formatValue = DDeiUtil.toBigMoney(returnValue);
             } else {
               //小数位数
               let scale = model?.render?.getCachedValue("fmt.scale");
@@ -1454,8 +1469,8 @@ class DDeiUtil {
               let munit = model?.render?.getCachedValue("fmt.munit");
               //货币符号
               let mmark = model?.render?.getCachedValue("fmt.mmark");
-              returnValue = DDeiUtil.formatNumber(returnValue, isNaN(scale) ? 0 : scale, tmark == 1 ? ',' : '')
-              returnValue = (mmark ? mmark : '') + returnValue + (munit ? munit : '')
+              formatValue = DDeiUtil.formatNumber(returnValue, isNaN(scale) ? 0 : scale, tmark == 1 ? ',' : '')
+              formatValue = (mmark ? mmark : '') + formatValue + (munit ? munit : '')
             }
           } break;
           case 3: {
@@ -1475,24 +1490,87 @@ class DDeiUtil {
             if (isFmt) {
               switch (dtype) {
                 case 1: {
-                  returnValue = DDeiUtil.formatDate(dv, "yyyy-MM-dd")
+                  formatValue = DDeiUtil.formatDate(dv, "yyyy-MM-dd")
                 } break;
                 case 2: {
-                  returnValue = DDeiUtil.formatDate(dv, "hh:mm:ss")
+                  formatValue = DDeiUtil.formatDate(dv, "hh:mm:ss")
                 } break;
                 case 3: {
-                  returnValue = DDeiUtil.formatDate(dv, "yyyy-MM-dd hh:mm:ss")
+                  formatValue = DDeiUtil.formatDate(dv, "yyyy-MM-dd hh:mm:ss")
                 } break;
                 case 99: {
                   //自定义格式化字符串
                   let format = model?.render?.getCachedValue("fmt.format");
                   if (format) {
-                    returnValue = DDeiUtil.formatDate(dv, format)
+                    formatValue = DDeiUtil.formatDate(dv, format)
                   }
                 } break;
               }
             }
           } break;
+        }
+        //如果格式化后的字符与原始字符不一致，则用第一个特殊样式作为全局样式
+        if (formatValue) {
+          if (returnValue != formatValue && model.render && replaceSPT && model.sptStyle) {
+            //复制一份作为临时样式，只替换临时样式，不动原始样式
+            let tempSptStyleArr = DDeiUtil.sptStyleToArray(JSON.parse(JSON.stringify(model.sptStyle)));
+            let tempStyle = null;
+            for (let i = 0; i < tempSptStyleArr.length; i++) {
+              let v = tempSptStyleArr[i];
+              if (v && JSON.stringify(v) != "{}") {
+                tempStyle = v
+                break;
+              }
+            }
+            //复制并替换样式
+            if (tempStyle) {
+              tempSptStyleArr = DDeiUtil.copyElementToArray(tempStyle, formatValue.length)
+            }
+            if (tempSptStyleArr?.length > 0) {
+              model.render.tempSptStyle = DDeiUtil.sptStyleArrayToObject(tempSptStyleArr);
+            } else {
+              delete model.render.tempSptStyle
+            }
+          } else {
+            delete model.render.tempSptStyle
+          }
+          returnValue = formatValue;
+          hasFormatted = true;
+        }
+      }
+
+      //未执行格式化的情况下，对开启特殊样式值替换,且存在被替换的字符串
+      if (!hasFormatted && model.render && replaceSPT && replaceDetail?.length > 0 && model.sptStyle) {
+        //复制一份作为临时样式，只替换临时样式，不动原始样式
+        let tempSptStyleArr = DDeiUtil.sptStyleToArray(JSON.parse(JSON.stringify(model.sptStyle)));
+        //基于replaceDetail对tempSptStyle进行替换
+        let deltaI = 0;
+
+        replaceDetail.forEach(detail => {
+          //开始和结束
+          let sidx = detail.index
+          let eidx = detail.index + detail.bind.length
+
+          //遍历样式，找到样式模板
+          let tempStyle = null;
+          for (let i = sidx; i < eidx; i++) {
+            let v = DDeiUtil.getDataByPathList(model, "sptStyle." + i);
+            if (v && JSON.stringify(v) != "{}") {
+              tempStyle = v
+              break;
+            }
+          }
+          //复制并替换样式
+          if (tempStyle) {
+            let insertArr = DDeiUtil.copyElementToArray(tempStyle, detail.value.length)
+            tempSptStyleArr.splice(sidx + deltaI, (eidx - sidx), ...insertArr);
+            deltaI += (detail.value.length - eidx + sidx)
+          }
+        });
+        if (tempSptStyleArr?.length > 0) {
+          model.render.tempSptStyle = DDeiUtil.sptStyleArrayToObject(tempSptStyleArr);
+        } else {
+          delete model.render.tempSptStyle
         }
       }
       return returnValue;
@@ -1501,28 +1579,87 @@ class DDeiUtil {
   }
 
 
+  /**
+   * 把一个元素复制到一个数组中
+   * @param element 
+   * @param size 
+   */
+  static copyElementToArray(element: object, size: number): object[] {
+    let arr = []
+    if (size > 0) {
+      for (let i = 0; i < size; i++) {
+        let data = cloneDeep(element);
+        arr.push(data)
+      }
+    }
+    return arr
+  }
+
+  /**
+   * 将sptStyle，按照key的大小转换为数组形式
+   * @param sptStyle 
+   */
+  static sptStyleToArray(sptStyle: object): object[] {
+    //先求到最大和最小然后补全
+    let max = -Infinity, min = Infinity;
+    let arr = []
+    for (let i in sptStyle) {
+      max = Math.max(max, parseInt(i))
+      min = Math.min(min, parseInt(i))
+    }
+    if (max != -Infinity && min != Infinity) {
+      for (let i = 0; i < min; i++) {
+        arr.push(null);
+      }
+      for (let i = min; i <= max; i++) {
+        arr.push(sptStyle[i]);
+      }
+    }
+    return arr;
+  }
+
+  /**
+   * 将sptStyle，按照key的大小转换为数组形式
+   * @param sptStyle 
+   */
+  static sptStyleArrayToObject(sptStyle: object[]): object {
+    let obj = {}
+    for (let i = 0; i < sptStyle.length; i++) {
+      if (sptStyle[i]) {
+        obj[i] = sptStyle[i]
+      }
+    }
+    return obj;
+  }
+
 
   /**
    * 用于处理绑定字段或文本的表达式替换
+   * @return 返回替换后的字符串，以及替换的详情信息
    */
-  static expressBindValue(originValue, busiData, row) {
+  static expressBindValue(originValue, busiData, row): object {
     if (originValue && originValue.indexOf("#{") != -1) {
       let t = originValue;
       let replaceData = "";
+      let replaceDetail = []
+      let usedCharIdx = 0;
       while (t && t != '') {
         let result = expressBindValueReg.exec(t);
         if (result != null && result.length > 0) {
+
           replaceData += t.substring(0, result.index);
           let rs = result[0].replaceAll(" ", "");
           let aer = this.analysisExpress(rs.substring(2, rs.length - 1), busiData, row);
+          replaceDetail.push({ index: result.index + usedCharIdx, bind: result[0], value: aer })
           replaceData += aer;
+          usedCharIdx += result.index + result[0].length
           t = t.substr(result.index + result[0].length);
         } else {
           replaceData += t;
           break;
         }
       }
-      return replaceData;
+      return { data: replaceData, detail: replaceDetail };
 
     }
   }
