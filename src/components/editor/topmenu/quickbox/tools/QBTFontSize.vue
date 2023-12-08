@@ -3,8 +3,8 @@
     <div id="ddei_editor_quick_fat_item_fontsize"
       :class="{ 'ddei_editor_quick_fat_item_fontsize': true, 'ddei_editor_quick_fat_item_fontsize_disabled': !attrDefine }">
       <input class="ddei_editor_quick_fat_item_fontsize_input"
-        :readonly="!attrDefine || (attrDefine && (attrDefine.readonly))" v-model="text" @blur="inputValue()"
-        @input="inputValueDeb()" :placeholder="defaultText" />
+        :readonly="!attrDefine || (attrDefine && (attrDefine.readonly))" v-model="text" @input="inputValue()"
+        :placeholder="defaultText" />
       <div class="ddei_editor_quick_fat_item_fontsize_combox" @click="attrDefine && !attrDefine.readonly && showDialog()">
         <img :src="toolboxExpandedIcon">
       </div>
@@ -55,7 +55,6 @@ export default {
   computed: {},
   watch: {},
   created() {
-    this.inputValueDeb = debounce(this.inputValue, 1000);
     // 监听obj对象中prop属性的变化
     this.$watch("editor.textEditorSelectedChange", function (newVal, oldVal) {
       if (newVal) {
@@ -81,6 +80,7 @@ export default {
         if (this.attrDefine) {
           this.getDataSource(this.attrDefine);
           let type = this.getDataValue()
+
           let define = this.getDataDefine(type.value);
           if (!type.isDefault) {
             this.attrDefine.value = type.value;
@@ -246,11 +246,14 @@ export default {
               if (!(paths?.length > 0)) {
                 paths = [this.attrDefine.code];
               }
+
               let value = shadowControl.getSptStyle(curSIdx, curEIdx, paths)
               if (value === undefined) {
                 value = DDeiModelArrtibuteValue.getAttrValueByState(shadowControl, paths[0], true);
+                return { isDefault: true, value: value };
+              } else {
+                return { value: value };
               }
-              return { value: value };
             }
           }
         }

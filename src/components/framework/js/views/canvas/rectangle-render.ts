@@ -587,6 +587,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
           textRowContainer.heights[rcIndex] = fontHeight
           textRowContainer.width = usedWidth
           textRowContainer.height = Math.max(fontHeight, textRowContainer.height ? textRowContainer.height : 0, lastUnSubTypeFontSize)
+
           //如果不自动换行也不缩小字体，则超过的话，就省略显示
 
           if (feed == 0) {
@@ -609,9 +610,11 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
             //如果插入本字符后的大小，大于了容器的大小，则需要换行
 
             if (usedWidth > contentWidth) {
+
               //先使当前行字符-1
               textRowContainer.text = textRowContainer.text.substring(0, textRowContainer.text.length - 1)
               textRowContainer.width -= fontShapeRect.width;
+
               textRowContainer.widths.splice(rcIndex, 1)
               textRowContainer.heights.splice(rcIndex, 1)
               //新开一行重新开始
@@ -631,7 +634,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
               textRowContainer.widths[rcIndex] = fontShapeRect.width
               textRowContainer.heights[rcIndex] = fontHeight
               textRowContainer.width = usedWidth
-              textRowContainer.height = fontHeight
+              textRowContainer.height = Math.max(fontHeight, lastUnSubTypeFontSize)
               textContainer.push(textRowContainer);
             }
           }
@@ -804,7 +807,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
           if (tempIdx >= curSIdx && tempIdx < curEIdx) {
             ctx.save();
             ctx.fillStyle = "#017fff";
-            ctx.globalAlpha = 0.3
+            ctx.globalAlpha = 0.4
             ctx.fillRect(usedX - 0.5, y1 + ofY, width + 1, height)
             ctx.restore();
           }
