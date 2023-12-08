@@ -131,6 +131,8 @@ export default {
       let parser: DDeiAbstractArrtibuteParser = this.attrDefine.getParser();
       //属性值
       let parsedValue = parser.parseValue(value);
+      parsedValue = isNaN(parsedValue) || parsedValue <= 0 ? null : parsedValue
+      parsedValue = parsedValue > 300 ? 300 : parsedValue
       let hasEditSetted = false;
       //文本编辑状态
       if (this.editor.ddInstance.stage.render.operateState == DDeiEnumOperateState.QUICK_EDITING) {

@@ -1453,7 +1453,8 @@ class DDeiUtil {
             let scale = model?.render?.getCachedValue("fmt.nscale");
             //千分符
             let tmark = model?.render?.getCachedValue("fmt.tmark");
-            formatValue = DDeiUtil.formatNumber(returnValue, isNaN(scale) ? 0 : scale, tmark == 1 ? ',' : '')
+
+            formatValue = DDeiUtil.formatNumber(returnValue, !scale || isNaN(scale) ? 0 : scale, tmark == 1 ? ',' : '')
           } break;
           case 2: {
             //人民币大写
@@ -1462,14 +1463,14 @@ class DDeiUtil {
               formatValue = DDeiUtil.toBigMoney(returnValue);
             } else {
               //小数位数
-              let scale = model?.render?.getCachedValue("fmt.scale");
+              let scale = model?.render?.getCachedValue("fmt.nscale");
               //千分符
               let tmark = model?.render?.getCachedValue("fmt.tmark");
               //货币单位
               let munit = model?.render?.getCachedValue("fmt.munit");
               //货币符号
               let mmark = model?.render?.getCachedValue("fmt.mmark");
-              formatValue = DDeiUtil.formatNumber(returnValue, isNaN(scale) ? 0 : scale, tmark == 1 ? ',' : '')
+              formatValue = DDeiUtil.formatNumber(returnValue, !scale || isNaN(scale) ? 0 : scale, tmark == 1 ? ',' : '')
               formatValue = (mmark ? mmark : '') + formatValue + (munit ? munit : '')
             }
           } break;
