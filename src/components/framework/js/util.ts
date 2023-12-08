@@ -1428,6 +1428,7 @@ class DDeiUtil {
   static getReplacibleValue(model: object, keypath: string, format: boolean = false, replaceSPT: boolean = false): any {
     //获取原始值
     if (model) {
+      let hasTempSpt = false;
       let replaceDetail = null;
       let originValue = model?.render?.getCachedValue(keypath);
       let returnValue = originValue;
@@ -1571,10 +1572,12 @@ class DDeiUtil {
           }
         });
         if (tempSptStyleArr?.length > 0) {
+          hasTempSpt = true;
           model.render.tempSptStyle = DDeiUtil.sptStyleArrayToObject(tempSptStyleArr);
-        } else {
-          delete model.render.tempSptStyle
         }
+      }
+      if (!hasTempSpt) {
+        delete model.render.tempSptStyle
       }
       return returnValue;
     }

@@ -555,6 +555,9 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
 
             //如果显示的是标注，则当前字体的大小取决于前面最后一个未设置标注的字体大小（包括缺省大小）
             if (sptStyle[ti].textStyle?.subtype) {
+              if (!lastUnSubTypeFontSize) {
+                lastUnSubTypeFontSize = ftsize
+              }
               ftsize = lastUnSubTypeFontSize / 2
             } else if (ftsize < 1) {
               ftsize = 2 * ratio
@@ -752,6 +755,9 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
             ftsize = sptStyle[tempIdx].font?.size ? sptStyle[tempIdx].font?.size * ratio - subtractionFontSize : fontSize;
             //如果显示的是标注，则当前字体的大小取决于前面最后一个未设置标注的字体大小（包括缺省大小）
             if (sptStyle[tempIdx].textStyle?.subtype) {
+              if (!lastUnSubTypeFontSize) {
+                lastUnSubTypeFontSize = ftsize
+              }
               ftsize = lastUnSubTypeFontSize / 2
               //上中下位置
               switch (sptStyle[tempIdx].textStyle?.subtype) {
