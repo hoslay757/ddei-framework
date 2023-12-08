@@ -29,23 +29,22 @@
     </div>
 
     <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="1" unSelectValue="0" attrCode="textStyle.bold" :img="icons['icon-font-bold']">
+      <QBTEditBox selectedValue="1" attrCode="textStyle.bold" :img="icons['icon-font-bold']">
       </QBTEditBox>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="1" unSelectValue="0" attrCode="textStyle.italic" :img="icons['icon-font-italic']">
+      <QBTEditBox selectedValue="1" attrCode="textStyle.italic" :img="icons['icon-font-italic']">
       </QBTEditBox>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="1" unSelectValue="0" attrCode="textStyle.underline" :img="icons['icon-text-underline']">
+      <QBTEditBox selectedValue="1" attrCode="textStyle.underline" :img="icons['icon-text-underline']">
       </QBTEditBox>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="1" unSelectValue="0" attrCode="textStyle.deleteline"
-        :img="icons['icon-text-deleteline']"></QBTEditBox>
+      <QBTEditBox selectedValue="1" attrCode="textStyle.deleteline" :img="icons['icon-text-deleteline']"></QBTEditBox>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="1" unSelectValue="0" attrCode="textStyle.topline" :img="icons['icon-text-deleteline']">
+      <QBTEditBox selectedValue="1" attrCode="textStyle.topline" :img="icons['icon-text-deleteline']">
       </QBTEditBox>
     </div>
     <div class="ddei_editor_quick_fat_item">

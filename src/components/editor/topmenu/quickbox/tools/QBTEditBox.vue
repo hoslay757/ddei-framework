@@ -26,6 +26,7 @@ export default {
     unSelectValue: {
       default: null,
     },
+
     supportQuickEdit: {
       type: Boolean,
       default: true,

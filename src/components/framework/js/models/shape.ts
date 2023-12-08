@@ -4,8 +4,7 @@ import DDeiLayer from './layer'
 import DDeiEnumControlState from '../enums/control-state'
 import DDeiUtil from '../util'
 import { Matrix3, Vector3 } from 'three';
-import { clone, cloneDeep } from 'lodash'
-import DDeiLink from './link'
+import { cloneDeep } from 'lodash'
 /**
  * 抽象的图形类，定义了大多数图形都有的属性和方法
  */
@@ -147,7 +146,7 @@ abstract class DDeiAbstractShape {
    * @param sIdx 开始文本坐标
    * @param eIdx 结束文本坐标
    */
-  setSptStyle(sIdx: number, eIdx: number, paths: string[] | string, value: any) {
+  setSptStyle(sIdx: number, eIdx: number, paths: string[] | string, value: any, emptyDelete: boolean = true) {
     //设置每一个字符的样式
     let attrPaths = []
     if (typeof (paths) == 'string') {
@@ -157,13 +156,28 @@ abstract class DDeiAbstractShape {
     }
 
     if (attrPaths?.length > 0 && sIdx > -1 && eIdx > -1 && sIdx <= eIdx) {
-      for (; sIdx < eIdx; sIdx++) {
+      for (let k = sIdx; k < eIdx; k++) {
         for (let i = 0; i < attrPaths.length; i++) {
-          DDeiUtil.setAttrValueByPath(this, ["sptStyle." + sIdx + "." + attrPaths[i]], value)
+          if ((value === null || value === undefined || isNaN(value)) && emptyDelete) {
+            try {
+              eval("delete this.sptStyle[" + k + "]." + attrPaths[i])
+            } catch (e) { }
+            if (this.sptStyle[k]?.textStyle && JSON.stringify(this.sptStyle[k].textStyle) == "{}") {
+              delete this.sptStyle[k].textStyle
+            }
+            if (this.sptStyle[k]?.font && JSON.stringify(this.sptStyle[k].font) == "{}") {
+              delete this.sptStyle[k].font
+            }
+            if (this.sptStyle[k] && JSON.stringify(this.sptStyle[k]) == "{}") {
+              delete this.sptStyle[k]
+            }
+          } else {
+            DDeiUtil.setAttrValueByPath(this, ["sptStyle." + k + "." + attrPaths[i]], value)
+          }
         }
-
       }
     }
+    console.log(this.sptStyle)
   }
 
   /**

@@ -527,10 +527,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
 
         if (fontSize > ratPos.height) {
           if (autoScaleFill == 1) {
-
-
             textContainer = [];
-            subtractionFontSize += 0.5
             fontSize -= 0.5;
             continue;
           }
@@ -692,7 +689,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       let curRowStart = 0, curRowEnd = 0;
       let tempIdx = 0
       let usedY = 0;
-
+      let lastUnSubTypeFontSize = 0
       for (let tci = 0; tci < textContainer.length; tci++) {
         if (tci == 0) {
           curRowStart = 0
@@ -702,20 +699,17 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
           curRowEnd += textContainer[tci].text.length;
         }
         let rRect = textContainer[tci];
-        let x1, y1, x2;
+        let x1, y1;
         //绘制文字
         if (align == 1) {
           x1 = x;
           y1 = y + usedY
-          x2 = x1 + rRect.width;
         } else if (align == 2) {
           x1 = ratPos.x + (ratPos.width - rRect.width) * 0.5;
           y1 = y + usedY
-          x2 = x1 + rRect.width;
         } else if (align == 3) {
           x1 = ratPos.x + (ratPos.width - rRect.width);
           y1 = y + usedY
-          x2 = x1 + rRect.width;
         }
 
         //绘制光标和选中效果
@@ -733,7 +727,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
         textContainer[tci].y = y1;
         //循环输出每一个字符
         let usedX = x1;
-        let lastUnSubTypeFontSize = 0
+
         for (let tj = 0; tj < textContainer[tci].text.length; tj++, tempIdx++) {
           let outputText = textContainer[tci].text[tj]
           let width = textContainer[tci].widths[tj]
@@ -758,7 +752,6 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
           let subScriptOffY = 0;
           if (sptStyle[tempIdx]) {
             tBgColor = sptStyle[tempIdx].textStyle?.bgcolor ? sptStyle[tempIdx].textStyle.bgcolor : textBgColor;
-
             ftsize = sptStyle[tempIdx].font?.size ? sptStyle[tempIdx].font?.size * ratio - subtractionFontSize : fontSize;
             //如果显示的是标注，则当前字体的大小取决于前面最后一个未设置标注的字体大小（包括缺省大小）
             if (sptStyle[tempIdx].textStyle?.subtype) {
@@ -774,6 +767,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
                 case 3: break;
               }
             }
+
             let ftfamily = sptStyle[tempIdx].font?.family ? sptStyle[tempIdx].font?.family : fiFamily;
             font = ftsize + "px " + ftfamily
             if (sptStyle[tempIdx]?.textStyle?.bold == '1') {
@@ -782,11 +776,11 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
             if (sptStyle[tempIdx]?.textStyle?.italic == '1') {
               font = "italic " + font;
             }
-            tHollow = sptStyle[tempIdx]?.textStyle?.hollow == '1' ? '1' : '0'
-            tUnderline = sptStyle[tempIdx]?.textStyle?.underline == '1' ? '1' : '0'
-            tDeleteline = sptStyle[tempIdx]?.textStyle?.deleteline == '1' ? '1' : '0'
-            tTopline = sptStyle[tempIdx]?.textStyle?.topline == '1' ? '1' : '0'
-            tFontColor = sptStyle[tempIdx]?.font?.color ? sptStyle[tempIdx]?.font?.color : tFontColor
+            tHollow = sptStyle[tempIdx]?.textStyle?.hollow == '1' ? '1' : tHollow
+            tUnderline = sptStyle[tempIdx]?.textStyle?.underline == '1' ? '1' : tUnderline
+            tDeleteline = sptStyle[tempIdx]?.textStyle?.deleteline == '1' ? '1' : tDeleteline
+            tTopline = sptStyle[tempIdx]?.textStyle?.topline == '1' ? '1' : tTopline
+            tFontColor = sptStyle[tempIdx]?.font?.color ? sptStyle[tempIdx].font.color : tFontColor
           }
           if (!sptStyle[tempIdx]?.textStyle?.subtype) {
             lastUnSubTypeFontSize = ftsize
