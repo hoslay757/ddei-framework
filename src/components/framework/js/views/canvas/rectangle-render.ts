@@ -757,7 +757,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
           let ftsize = fontSize
           let subScriptOffY = 0;
           if (sptStyle[tempIdx]) {
-            tBgColor = sptStyle[tempIdx].textStyle?.bgColor ? sptStyle[tempIdx].textStyle.bgColor : textBgColor;
+            tBgColor = sptStyle[tempIdx].textStyle?.bgcolor ? sptStyle[tempIdx].textStyle.bgcolor : textBgColor;
 
             ftsize = sptStyle[tempIdx].font?.size ? sptStyle[tempIdx].font?.size * ratio - subtractionFontSize : fontSize;
             //如果显示的是标注，则当前字体的大小取决于前面最后一个未设置标注的字体大小（包括缺省大小）
