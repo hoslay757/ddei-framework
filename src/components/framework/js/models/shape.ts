@@ -4,7 +4,7 @@ import DDeiLayer from './layer'
 import DDeiEnumControlState from '../enums/control-state'
 import DDeiUtil from '../util'
 import { Matrix3, Vector3 } from 'three';
-import { cloneDeep } from 'lodash'
+import { cloneDeep, isNumber } from 'lodash'
 /**
  * 抽象的图形类，定义了大多数图形都有的属性和方法
  */
@@ -158,7 +158,7 @@ abstract class DDeiAbstractShape {
     if (attrPaths?.length > 0 && sIdx > -1 && eIdx > -1 && sIdx <= eIdx) {
       for (let k = sIdx; k < eIdx; k++) {
         for (let i = 0; i < attrPaths.length; i++) {
-          if ((value === null || value === undefined || isNaN(value)) && emptyDelete) {
+          if ((value === null || value === undefined || (isNumber(value) && isNaN(value))) && emptyDelete) {
             try {
               eval("delete this.sptStyle[" + k + "]." + attrPaths[i])
             } catch (e) { }

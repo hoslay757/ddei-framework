@@ -108,10 +108,12 @@ class DDeiUtil {
   /**
    * 计算文字的高度和宽度
    */
-  static measureText(text: string, ctx): object {
+  static measureText(text: string, font, ctx): object {
 
-    let key = text + "_" + ctx.font
+    let key = text + "_" + font
     if (!DDeiUtil.cacheTextCharSize.has(key)) {
+      //特殊字体
+      ctx.font = font;
       let rect = ctx.measureText(text);
       DDeiUtil.cacheTextCharSize.set(key, { width: rect.width, height: ctx.fontSize })
     }

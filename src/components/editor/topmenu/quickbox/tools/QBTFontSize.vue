@@ -3,8 +3,8 @@
     <div id="ddei_editor_quick_fat_item_fontsize"
       :class="{ 'ddei_editor_quick_fat_item_fontsize': true, 'ddei_editor_quick_fat_item_fontsize_disabled': !attrDefine }">
       <input class="ddei_editor_quick_fat_item_fontsize_input"
-        :readonly="!attrDefine || (attrDefine && (attrDefine.readonly))" v-model="text" @input="inputValue()"
-        :placeholder="defaultText" />
+        :readonly="!attrDefine || (attrDefine && (attrDefine.readonly))" v-model="text" @blur="inputValue()"
+        @input="inputValueDeb()" :placeholder="defaultText" />
       <div class="ddei_editor_quick_fat_item_fontsize_combox" @click="attrDefine && !attrDefine.readonly && showDialog()">
         <img :src="toolboxExpandedIcon">
       </div>
@@ -55,7 +55,7 @@ export default {
   computed: {},
   watch: {},
   created() {
-    this.inputValue = debounce(this.inputValue, 200);
+    this.inputValueDeb = debounce(this.inputValue, 1000);
     // 监听obj对象中prop属性的变化
     this.$watch("editor.textEditorSelectedChange", function (newVal, oldVal) {
       if (newVal) {

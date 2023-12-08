@@ -546,14 +546,18 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
         let lastUnSubTypeFontSize = 0;
         for (let ti = 0; ti < cText.length; ti++, rcIndex++) {
           let te = cText[ti];
+
           //读取当前特殊样式，如果没有，则使用外部基本样式
           let font = null
           let fontHeight = null
           if (sptStyle[ti]) {
             let ftsize = sptStyle[ti]?.font?.size ? sptStyle[ti]?.font?.size * ratio - subtractionFontSize : fontSize;
+
             //如果显示的是标注，则当前字体的大小取决于前面最后一个未设置标注的字体大小（包括缺省大小）
             if (sptStyle[ti].textStyle?.subtype) {
               ftsize = lastUnSubTypeFontSize / 2
+            } else if (ftsize < 1) {
+              ftsize = 2 * ratio
             }
             let ftfamily = sptStyle[ti]?.font?.family ? sptStyle[ti]?.font?.family : fiFamily;
             font = ftsize + "px " + ftfamily
@@ -573,17 +577,16 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
             lastUnSubTypeFontSize = fontHeight
           }
 
-          //特殊字体
-          ctx.font = font;
-          //计算当前字符大小
-          let fontShapeRect = DDeiUtil.measureText(te, ctx);
+
+
+          let fontShapeRect = DDeiUtil.measureText(te, font, ctx);
           usedWidth += fontShapeRect.width;
 
           textRowContainer.text += te;
           textRowContainer.widths[rcIndex] = fontShapeRect.width
           textRowContainer.heights[rcIndex] = fontHeight
           textRowContainer.width = usedWidth
-          textRowContainer.height = Math.max(fontHeight, textRowContainer.height ? textRowContainer.height : 0)
+          textRowContainer.height = Math.max(fontHeight, textRowContainer.height ? textRowContainer.height : 0, lastUnSubTypeFontSize)
           //如果不自动换行也不缩小字体，则超过的话，就省略显示
 
           if (feed == 0) {
@@ -606,8 +609,6 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
             //如果插入本字符后的大小，大于了容器的大小，则需要换行
 
             if (usedWidth > contentWidth) {
-
-
               //先使当前行字符-1
               textRowContainer.text = textRowContainer.text.substring(0, textRowContainer.text.length - 1)
               textRowContainer.width -= fontShapeRect.width;
@@ -686,18 +687,11 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
 
       //对内部容器进行排列对齐
       //记录当前行的开始坐标和结束坐标，用来计算光标选中或跨行效果
-      let curRowStart = 0, curRowEnd = 0;
       let tempIdx = 0
-      let usedY = 0;
+      let usedY = 0, usedX = 0;
+      let lastUsedX, lastUsedY, lastWidth, lastHeight;
       let lastUnSubTypeFontSize = 0
       for (let tci = 0; tci < textContainer.length; tci++) {
-        if (tci == 0) {
-          curRowStart = 0
-          curRowEnd = textContainer[tci].text.length;
-        } else {
-          curRowStart = curRowEnd
-          curRowEnd += textContainer[tci].text.length;
-        }
         let rRect = textContainer[tci];
         let x1, y1;
         //绘制文字
@@ -712,7 +706,6 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
           y1 = y + usedY
         }
 
-        //绘制光标和选中效果
         if (curSIdx != -1 && curEIdx != -1) {
           //记录每一个字的区域和位置，用于后续选择和计算
           textContainer[0].textPosCache[curTextIdx] = { x: x1, y: y1 }
@@ -726,12 +719,14 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
         textContainer[tci].x = x1;
         textContainer[tci].y = y1;
         //循环输出每一个字符
-        let usedX = x1;
+        usedX = x1;
 
         for (let tj = 0; tj < textContainer[tci].text.length; tj++, tempIdx++) {
           let outputText = textContainer[tci].text[tj]
           let width = textContainer[tci].widths[tj]
           let height = textContainer[tci].heights[tj]
+          lastWidth = width
+          lastHeight = height
           //获取样式
           ctx.save();
           //读取当前特殊样式，如果没有，则使用外部基本样式
@@ -766,6 +761,8 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
                   break;
                 case 3: break;
               }
+            } else if (ftsize < 1) {
+              ftsize = 2 * ratio
             }
 
             let ftfamily = sptStyle[tempIdx].font?.family ? sptStyle[tempIdx].font?.family : fiFamily;
@@ -798,21 +795,22 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
           else if (tBgColor) {
             ctx.save();
             ctx.fillStyle = DDeiUtil.getColor(tBgColor);
-            ctx.fillRect(usedX - 0.5, y1 + ofY, width + 1, height)
+            ctx.fillRect(usedX, y1 + ofY, width, height)
             ctx.restore();
           }
           if (curSIdx == curEIdx && tempIdx == curEIdx) {
             cursorX = usedX
             cursorY = y1 + ofY
-            cursorHeight = height
+            cursorHeight = tj > 1 ? textContainer[tci].heights[tj - 1] : height
           }
+
 
           //设置字体颜色
           ctx.fillStyle = tFontColor
           //设置输出字体
           ctx.font = font;
           //处理镂空样式
-
+          lastUsedY = y1 + ofY
           if (tHollow == '1') {
             ctx.strokeStyle = tFontColor;
             ctx.strokeText(outputText, usedX, y1 + ofY)
@@ -843,9 +841,12 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
             ctx.closePath();
             ctx.stroke();
           }
+          lastUsedX = usedX
           usedX += width
+
           ctx.restore();
         }
+
         usedY += rRect.height
       }
       //绘制光标
@@ -855,6 +856,14 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
         ctx.beginPath();
         ctx.moveTo(cursorX, cursorY - 2);
         ctx.lineTo(cursorX, cursorY + cursorHeight + 2);
+        ctx.closePath();
+        ctx.stroke();
+      } else if (editorText?.selectionEnd == cText.length) {
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(lastUsedX + lastWidth, lastUsedY - 2);
+        ctx.lineTo(lastUsedX + lastWidth, lastUsedY + lastHeight + 2);
         ctx.closePath();
         ctx.stroke();
       }
