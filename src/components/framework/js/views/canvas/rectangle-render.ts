@@ -12,7 +12,7 @@ import DDeiCanvasRender from './ddei-render.js';
 import DDeiLayerCanvasRender from './layer-render.js';
 import DDeiAbstractShapeRender from './shape-render-base.js';
 import DDeiStageCanvasRender from './stage-render.js';
-import { cloneDeep, startsWith, trim } from 'lodash'
+import { cloneDeep, debounce, startsWith, trim } from 'lodash'
 import { Matrix3, Vector3 } from 'three';
 import DDeiEnumOperateType from '../../enums/operate-type.js';
 
@@ -722,7 +722,6 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
         usedX = x1;
 
         for (let tj = 0; tj < textContainer[tci].text.length; tj++, tempIdx++) {
-          let outputText = textContainer[tci].text[tj]
           let width = textContainer[tci].widths[tj]
           let height = textContainer[tci].heights[tj]
           lastWidth = width
@@ -782,26 +781,46 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
           if (!sptStyle[tempIdx]?.textStyle?.subtype) {
             lastUnSubTypeFontSize = ftsize
           }
+          //记录计算值
+          if (!textContainer[tci].tHollow) {
+            textContainer[tci].tHollow = []
+            textContainer[tci].tUnderline = []
+            textContainer[tci].tDeleteline = []
+            textContainer[tci].tTopline = []
+            textContainer[tci].tFontColor = []
+            textContainer[tci].font = []
+            textContainer[tci].subScriptOffY = []
+          }
+          textContainer[tci].tHollow[tj] = tHollow
+          textContainer[tci].tUnderline[tj] = tUnderline
+          textContainer[tci].tDeleteline[tj] = tDeleteline
+          textContainer[tci].tTopline[tj] = tTopline
+          textContainer[tci].tFontColor[tj] = tFontColor
+          textContainer[tci].font[tj] = font
+          textContainer[tci].subScriptOffY[tj] = subScriptOffY
+
           let ofY = rRect.height - height + subScriptOffY
           //绘制光标和选中效果
           if (tempIdx >= curSIdx && tempIdx < curEIdx) {
             ctx.save();
             ctx.fillStyle = "#017fff";
             ctx.globalAlpha = 0.3
-            ctx.fillRect(usedX, y1 + ofY, width, height)
+            ctx.fillRect(usedX - 0.5, y1 + ofY, width + 1, height)
             ctx.restore();
           }
           //绘制文字背景
           else if (tBgColor) {
             ctx.save();
             ctx.fillStyle = DDeiUtil.getColor(tBgColor);
-            ctx.fillRect(usedX, y1 + ofY, width, height)
+            ctx.fillRect(usedX - 0.5, y1 + ofY, width + 1, height)
             ctx.restore();
           }
           if (curSIdx == curEIdx && tempIdx == curEIdx) {
             cursorX = usedX
-            cursorY = y1 + ofY
             cursorHeight = tj > 1 ? textContainer[tci].heights[tj - 1] : height
+            ofY = rRect.height - cursorHeight + (tj > 1 ? textContainer[tci].subScriptOffY[tj - 1] : subScriptOffY)
+            cursorY = y1 + ofY
+
           }
 
 
@@ -811,6 +830,36 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
           ctx.font = font;
           //处理镂空样式
           lastUsedY = y1 + ofY
+          lastUsedX = usedX
+          usedX += width
+
+          ctx.restore();
+        }
+
+
+        //此轮循环输出每一个字符
+        usedX = x1;
+        for (let tj = 0; tj < textContainer[tci].text.length; tj++) {
+          let outputText = textContainer[tci].text[tj]
+          let width = textContainer[tci].widths[tj]
+          let height = textContainer[tci].heights[tj]
+          //获取样式
+          ctx.save();
+
+          let tHollow = textContainer[tci].tHollow[tj];
+          let tUnderline = textContainer[tci].tUnderline[tj];;
+          let tDeleteline = textContainer[tci].tDeleteline[tj];;
+          let tTopline = textContainer[tci].tTopline[tj];;
+          let tFontColor = textContainer[tci].tFontColor[tj];
+          let font = textContainer[tci].font[tj];
+          let subScriptOffY = textContainer[tci].subScriptOffY[tj];;
+          let ofY = rRect.height - height + subScriptOffY
+
+          //设置字体颜色
+          ctx.fillStyle = tFontColor
+          //设置输出字体
+          ctx.font = font;
+          //处理镂空样式
           if (tHollow == '1') {
             ctx.strokeStyle = tFontColor;
             ctx.strokeText(outputText, usedX, y1 + ofY)
@@ -841,9 +890,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
             ctx.closePath();
             ctx.stroke();
           }
-          lastUsedX = usedX
           usedX += width
-
           ctx.restore();
         }
 
