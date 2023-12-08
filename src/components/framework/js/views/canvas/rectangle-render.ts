@@ -480,6 +480,8 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     let deleteline = this.getCachedValue("textStyle.deleteline");
     //删除线
     let topline = this.getCachedValue("textStyle.topline");
+    //文本背景色
+    let textBgColor = this.getCachedValue("textStyle.bgcolor");
 
     //保存状态
     ctx.save();
@@ -544,6 +546,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
 
         //循环每一个字符，计算和记录大小
         let rcIndex = 0;
+        let lastUnSubTypeFontSize = 0;
         for (let ti = 0; ti < cText.length; ti++, rcIndex++) {
           let te = cText[ti];
           //读取当前特殊样式，如果没有，则使用外部基本样式
@@ -551,7 +554,10 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
           let fontHeight = null
           if (sptStyle[ti]) {
             let ftsize = sptStyle[ti]?.font?.size ? sptStyle[ti]?.font?.size * ratio - subtractionFontSize : fontSize;
-
+            //如果显示的是标注，则当前字体的大小取决于前面最后一个未设置标注的字体大小（包括缺省大小）
+            if (sptStyle[ti].textStyle?.subtype) {
+              ftsize = lastUnSubTypeFontSize / 2
+            }
             let ftfamily = sptStyle[ti]?.font?.family ? sptStyle[ti]?.font?.family : fiFamily;
             font = ftsize + "px " + ftfamily
             if (sptStyle[ti]?.textStyle?.bold == '1') {
@@ -565,6 +571,9 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
           if (!font) {
             font = baseFont;
             fontHeight = fontSize
+          }
+          if (!sptStyle[ti]?.textStyle?.subtype) {
+            lastUnSubTypeFontSize = fontHeight
           }
 
           //特殊字体
@@ -724,6 +733,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
         textContainer[tci].y = y1;
         //循环输出每一个字符
         let usedX = x1;
+        let lastUnSubTypeFontSize = 0
         for (let tj = 0; tj < textContainer[tci].text.length; tj++, tempIdx++) {
           let outputText = textContainer[tci].text[tj]
           let width = textContainer[tci].widths[tj]
@@ -743,9 +753,28 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
           let tDeleteline = deleteline;
           let tTopline = topline;
           let tFontColor = fiColor
+          let tBgColor = textBgColor;
+          let ftsize = fontSize
+          let subScriptOffY = 0;
           if (sptStyle[tempIdx]) {
-            let ftsize = sptStyle[tempIdx]?.font?.size ? sptStyle[tempIdx]?.font?.size * ratio - subtractionFontSize : fontSize;
-            let ftfamily = sptStyle[tempIdx]?.font?.family ? sptStyle[tempIdx]?.font?.family : fiFamily;
+            tBgColor = sptStyle[tempIdx].textStyle?.bgColor ? sptStyle[tempIdx].textStyle.bgColor : textBgColor;
+
+            ftsize = sptStyle[tempIdx].font?.size ? sptStyle[tempIdx].font?.size * ratio - subtractionFontSize : fontSize;
+            //如果显示的是标注，则当前字体的大小取决于前面最后一个未设置标注的字体大小（包括缺省大小）
+            if (sptStyle[tempIdx].textStyle?.subtype) {
+              ftsize = lastUnSubTypeFontSize / 2
+              //上中下位置
+              switch (sptStyle[tempIdx].textStyle?.subtype) {
+                case 1:
+                  subScriptOffY = -(lastUnSubTypeFontSize - ftsize)
+                  break;
+                case 2:
+                  subScriptOffY = -(lastUnSubTypeFontSize - ftsize) / 2
+                  break;
+                case 3: break;
+              }
+            }
+            let ftfamily = sptStyle[tempIdx].font?.family ? sptStyle[tempIdx].font?.family : fiFamily;
             font = ftsize + "px " + ftfamily
             if (sptStyle[tempIdx]?.textStyle?.bold == '1') {
               font = "bold " + font;
@@ -759,17 +788,24 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
             tTopline = sptStyle[tempIdx]?.textStyle?.topline == '1' ? '1' : '0'
             tFontColor = sptStyle[tempIdx]?.font?.color ? sptStyle[tempIdx]?.font?.color : tFontColor
           }
-          let ofY = rRect.height - height
+          if (!sptStyle[tempIdx]?.textStyle?.subtype) {
+            lastUnSubTypeFontSize = ftsize
+          }
+          let ofY = rRect.height - height + subScriptOffY
           //绘制光标和选中效果
           if (tempIdx >= curSIdx && tempIdx < curEIdx) {
-            let oldFillStyle = ctx.fillStyle
-            let oldAlpha = ctx.globalAlpha
+            ctx.save();
             ctx.fillStyle = "#017fff";
             ctx.globalAlpha = 0.3
             ctx.fillRect(usedX, y1 + ofY, width, height)
-            ctx.fillStyle = oldFillStyle
-            ctx.globalAlpha = oldAlpha
-
+            ctx.restore();
+          }
+          //绘制文字背景
+          else if (tBgColor) {
+            ctx.save();
+            ctx.fillStyle = DDeiUtil.getColor(tBgColor);
+            ctx.fillRect(usedX - 0.5, y1 + ofY, width + 1, height)
+            ctx.restore();
           }
           if (curSIdx == curEIdx && tempIdx == curEIdx) {
             cursorX = usedX

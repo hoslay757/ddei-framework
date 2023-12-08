@@ -4,9 +4,16 @@
     <div class="ddei_editor_quick_fat_item" style="grid-column:1/6;">
       <QBTFontFamily></QBTFontFamily>
     </div>
-    <div class="ddei_editor_quick_fat_item" style="grid-column:6/8;">
+    <div class="ddei_editor_quick_fat_item" style="grid-column:6/9;">
       <QBTFontSize></QBTFontSize>
     </div>
+    <div class="ddei_editor_quick_fat_item">
+      <QBTEditAddFontSize :addValue="1" attrCode="font.size" :img="icons['icon-font-up']"></QBTEditAddFontSize>
+    </div>
+    <div class="ddei_editor_quick_fat_item">
+      <QBTEditAddFontSize :addValue="-1" attrCode="font.size" :img="icons['icon-font-down']"></QBTEditAddFontSize>
+    </div>
+
     <div class="ddei_editor_quick_fat_item">
       <QBTEditBox selectedValue="1" :supportQuickEdit="false" attrCode="textStyle.align" :img="icons['text-align-left']">
       </QBTEditBox>
@@ -38,14 +45,31 @@
         :img="icons['icon-text-deleteline']"></QBTEditBox>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <QBTEditAddFontSize :addValue="1" attrCode="font.size" :img="icons['icon-font-up']"></QBTEditAddFontSize>
+      <QBTEditBox selectedValue="1" unSelectValue="0" attrCode="textStyle.topline" :img="icons['icon-text-deleteline']">
+      </QBTEditBox>
     </div>
     <div class="ddei_editor_quick_fat_item">
-      <QBTEditAddFontSize :addValue="-1" attrCode="font.size" :img="icons['icon-font-down']"></QBTEditAddFontSize>
+      <QBTEditBox selectedValue="1" :onlyQuickEdit="true" attrCode="textStyle.subtype"
+        :img="icons['icon-text-superscript']">
+      </QBTEditBox>
+    </div>
+    <div class="ddei_editor_quick_fat_item">
+      <QBTEditBox selectedValue="2" :onlyQuickEdit="true" attrCode="textStyle.subtype"
+        :img="icons['icon-text-superscript']">
+      </QBTEditBox>
+    </div>
+    <div class="ddei_editor_quick_fat_item">
+      <QBTEditBox selectedValue="3" :onlyQuickEdit="true" attrCode="textStyle.subtype"
+        :img="icons['icon-text-subscript']">
+      </QBTEditBox>
     </div>
     <div class="ddei_editor_quick_fat_item">
       <QBTEditColor attrCode="font.color" :img="icons['icon-font-color']"></QBTEditColor>
     </div>
+    <div class="ddei_editor_quick_fat_item">
+      <QBTEditColor attrCode="textStyle.bgcolor" :img="icons['icon-font-color']"></QBTEditColor>
+    </div>
+
     <div class="ddei_editor_quick_fat_item">
       <QBTEditBox selectedValue="1" :supportQuickEdit="false" attrCode="textStyle.valign" :img="icons['text-valign-top']">
       </QBTEditBox>
@@ -58,6 +82,7 @@
       <QBTEditBox selectedValue="3" :supportQuickEdit="false" attrCode="textStyle.valign"
         :img="icons['text-valign-bottom']"></QBTEditBox>
     </div>
+
     <div class="ddei_editor_quick_fat_item" style="grid-column:1/11;">
       <div class="ddei_editor_quick_fat_item_text">
         字体和段落
@@ -106,7 +131,7 @@ export default {
   height: 90px;
   border-right: 1px solid rgb(224, 224, 224);
   grid-template-rows: 30px 30px 20px;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
   display: grid;
   gap: 4px;
   padding-right: 4px;

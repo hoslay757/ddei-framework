@@ -379,6 +379,31 @@ export const styles = {
       'orderNo': 8,
       'visiable': true
     },
+    {
+      'id': '100002213',
+      'code': 'textStyle.bgcolor',
+      'name': '文字背景',
+      'desc': '文本的背景颜色',
+      'group': '文本',
+      'controlType': 'color',
+      'dataType': 'string',
+      'defaultValue': '',
+      'orderNo': 9,
+      'visiable': true
+    },
+    {
+      'id': '100002214',
+      'code': 'textStyle.subtype',
+      'name': '标注类型',
+      'desc': '文本的标注类型',
+      'group': '基础信息',
+      'controlType': 'radio',
+      'dataType': 'integer',
+      'dataSource': [{ 'text': '正常', 'value': 0 }, { 'text': '上标', 'value': 1 }, { 'text': '中标', 'value': 2 }, { 'text': '下标', 'value': 3 }],
+      'defaultValue': 0,
+      'orderNo': 10,
+      'visiable': false,
+    },
 
     {
       'id': '100002303',

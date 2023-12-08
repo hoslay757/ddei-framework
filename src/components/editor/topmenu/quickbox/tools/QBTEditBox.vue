@@ -30,6 +30,10 @@ export default {
       type: Boolean,
       default: true,
     },
+    onlyQuickEdit: {
+      type: Boolean,
+      default: false,
+    },
     selectedValue: {
       default: null,
     },
@@ -66,6 +70,10 @@ export default {
 
     refreshEditor() {
       if (!this.supportQuickEdit && this.editor?.ddInstance?.stage?.render?.operateState == DDeiEnumOperateState.QUICK_EDITING) {
+        this.attrDefine = null
+        return;
+      }
+      if (this.onlyQuickEdit && this.editor?.ddInstance?.stage?.render?.operateState != DDeiEnumOperateState.QUICK_EDITING) {
         this.attrDefine = null
         return;
       }
