@@ -34,6 +34,7 @@ import DDeiUtil from "@/components/framework/js/util";
 import DDeiEditorUtil from "../../js/util/editor-util";
 import DDeiEditorEnumBusCommandType from "../../js/enums/editor-command-type";
 import DDeiEnumOperateType from "../../../framework/js/enums/operate-type";
+import DDeiEnumOperateState from "@/components/framework/js/enums/operate-state";
 
 export default {
   name: "DDei-Editor-PV-Combox",
