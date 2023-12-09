@@ -691,9 +691,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       let cursorY = -Infinity;
       let cursorHeight = 0;
       let curTextIdx = 0;
-      if (textContainer.length > 0) {
-        textContainer[0].textPosCache = []
-      }
+
 
       //对内部容器进行排列对齐
       //记录当前行的开始坐标和结束坐标，用来计算光标选中或跨行效果
@@ -701,6 +699,9 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       let usedY = 0, usedX = 0;
       let lastUsedX, lastUsedY, lastWidth, lastHeight;
       let lastUnSubTypeFontSize = 0
+      if (textContainer.length > 0) {
+        textContainer[0].textPosCache = []
+      }
       for (let tci = 0; tci < textContainer.length; tci++) {
         let rRect = textContainer[tci];
         let x1, y1;
@@ -716,15 +717,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
           y1 = y + usedY
         }
 
-        if (curSIdx != -1 && curEIdx != -1) {
-          //记录每一个字的区域和位置，用于后续选择和计算
-          textContainer[0].textPosCache[curTextIdx] = { x: x1, y: y1 }
-          curTextIdx++;
-          for (let ti = 1; ti < rRect.text.length; ti++) {
-            textContainer[0].textPosCache[curTextIdx] = { x: textContainer[0].textPosCache[curTextIdx - 1].x + rRect.widths[ti], y: y1 }
-            curTextIdx++;
-          }
-        }
+
         //记录开始绘制的坐标
         textContainer[tci].x = x1;
         textContainer[tci].y = y1;
@@ -879,6 +872,12 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
             ctx.strokeText(outputText, usedX, y1 + ofY)
           } else {
             ctx.fillText(outputText, usedX, y1 + ofY)
+          }
+          //记录缓存位置
+          if (curSIdx != -1 && curEIdx != -1) {
+            //记录每一个字的区域和位置，用于后续选择和计算
+
+            textContainer[0].textPosCache.push({ x: usedX, y: y1 + ofY })
           }
           if (tUnderline == '1') {
             ctx.beginPath();

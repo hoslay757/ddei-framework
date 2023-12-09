@@ -248,6 +248,7 @@ export default {
                     let endI = startIndex + rowData.text.length;
                     for (let x = startIndex; x < endI; x++) {
                       let fx = shadowControl.render.textUsedArea[0].textPosCache[x].x;
+
                       let lx = x < endI - 1 ? shadowControl.render.textUsedArea[0].textPosCache[x + 1].x : rowData.x + rowData.width
                       let halfW = (lx - fx) / 2
                       if (cx >= fx && cx < lx) {
