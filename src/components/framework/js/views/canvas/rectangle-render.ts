@@ -524,11 +524,13 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
         textContainer.push(textRowContainer);
         //是否超出输出长度标志
         let isOutSize = false;
+        let maxFontSize = 0;
 
         if (fontSize > ratPos.height) {
           if (autoScaleFill == 1) {
             textContainer = [];
-            fontSize -= 0.5;
+            let ds = fontSize < 50 ? 0.5 : Math.floor(fontSize / 50)
+            fontSize -= ds;
             continue;
           }
         }
@@ -579,8 +581,8 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
           if (!sptStyle[ti]?.textStyle?.subtype) {
             lastUnSubTypeFontSize = fontHeight
           }
-
-
+          //记录最大字体大小
+          maxFontSize = Math.max(maxFontSize, fontHeight)
 
           let fontShapeRect = DDeiUtil.measureText(te, font, ctx);
           usedWidth += fontShapeRect.width;
@@ -649,8 +651,9 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
         //如果超出，清空生成的字段，缩小字体重新输出
         else {
           textContainer = [];
-          fontSize -= 0.5;
-          subtractionFontSize += 0.5
+          let ds = maxFontSize < 50 ? 0.5 : Math.floor(maxFontSize / 50)
+          fontSize -= ds;
+          subtractionFontSize += ds
         }
       }
       // 计算文字整体区域位置
