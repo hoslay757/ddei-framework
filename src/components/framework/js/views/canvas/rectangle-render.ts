@@ -495,7 +495,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     //是否全部输出完毕标志
     let loop = true;
 
-    let fontSize = fiSize * ratio;
+    let fontSize = fiSize;
 
     //获取值替换后的文本信息
     let cText = null;
@@ -553,7 +553,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
           let font = null
           let fontHeight = null
           if (sptStyle[ti]) {
-            let ftsize = sptStyle[ti]?.font?.size ? sptStyle[ti]?.font?.size * ratio - subtractionFontSize : fontSize;
+            let ftsize = sptStyle[ti]?.font?.size ? sptStyle[ti]?.font?.size - subtractionFontSize : fontSize;
 
             //如果显示的是标注，则当前字体的大小取决于前面最后一个未设置标注的字体大小（包括缺省大小）
             if (sptStyle[ti].textStyle?.subtype) {
@@ -562,7 +562,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
               }
               ftsize = lastUnSubTypeFontSize / 2
             } else if (ftsize < 1) {
-              ftsize = 2 * ratio
+              ftsize = 2
             }
             let ftfamily = sptStyle[ti]?.font?.family ? sptStyle[ti]?.font?.family : fiFamily;
             font = ftsize + "px " + ftfamily
@@ -584,14 +584,15 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
           //记录最大字体大小
           maxFontSize = Math.max(maxFontSize, fontHeight)
 
-          let fontShapeRect = DDeiUtil.measureText(te, font, ctx);
+          let rc1 = DDeiUtil.measureText(te, font, ctx);
+          let fontShapeRect = { width: rc1.width * ratio, height: rc1.height * ratio }
           usedWidth += fontShapeRect.width;
 
           textRowContainer.text += te;
           textRowContainer.widths[rcIndex] = fontShapeRect.width
-          textRowContainer.heights[rcIndex] = fontHeight
+          textRowContainer.heights[rcIndex] = fontHeight * ratio
           textRowContainer.width = usedWidth
-          textRowContainer.height = Math.max(fontHeight, textRowContainer.height ? textRowContainer.height : 0, lastUnSubTypeFontSize)
+          textRowContainer.height = Math.max(fontHeight * ratio, textRowContainer.height ? textRowContainer.height : 0, lastUnSubTypeFontSize * ratio)
 
           //如果不自动换行也不缩小字体，则超过的话，就省略显示
 
@@ -637,9 +638,9 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
               rcIndex = 0;
               textRowContainer = { text: te, widths: [], heights: [] };
               textRowContainer.widths[rcIndex] = fontShapeRect.width
-              textRowContainer.heights[rcIndex] = fontHeight
+              textRowContainer.heights[rcIndex] = fontHeight * ratio
               textRowContainer.width = usedWidth
-              textRowContainer.height = Math.max(fontHeight, lastUnSubTypeFontSize)
+              textRowContainer.height = Math.max(fontHeight * ratio, lastUnSubTypeFontSize * ratio)
               textContainer.push(textRowContainer);
             }
           }
@@ -738,7 +739,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
           //获取样式
           ctx.save();
           //读取当前特殊样式，如果没有，则使用外部基本样式
-          let font = fontSize + "px " + fiFamily;
+          let font = (fontSize * ratio) + "px " + fiFamily;
           if (bold == '1') {
             font = "bold " + font;
           }
@@ -751,11 +752,12 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
           let tTopline = topline;
           let tFontColor = fiColor
           let tBgColor = textBgColor;
-          let ftsize = fontSize
+          let ftsize = fontSize * ratio
           let subScriptOffY = 0;
           if (sptStyle[tempIdx]) {
             tBgColor = sptStyle[tempIdx].textStyle?.bgcolor ? sptStyle[tempIdx].textStyle.bgcolor : textBgColor;
-            ftsize = sptStyle[tempIdx].font?.size ? sptStyle[tempIdx].font?.size * ratio - subtractionFontSize : fontSize;
+            ftsize = sptStyle[tempIdx].font?.size ? sptStyle[tempIdx].font?.size - subtractionFontSize : fontSize;
+            ftsize *= ratio
             //如果显示的是标注，则当前字体的大小取决于前面最后一个未设置标注的字体大小（包括缺省大小）
             if (sptStyle[tempIdx].textStyle?.subtype) {
               if (!lastUnSubTypeFontSize) {
