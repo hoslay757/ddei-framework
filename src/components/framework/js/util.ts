@@ -1532,6 +1532,7 @@ class DDeiUtil {
             }
             if (tempSptStyleArr?.length > 0) {
               model.render.tempSptStyle = DDeiUtil.sptStyleArrayToObject(tempSptStyleArr);
+              hasTempSpt = true;
             } else {
               delete model.render.tempSptStyle
             }

@@ -507,6 +507,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       cText = this.getCachedValue("text")
     } else {
       cText = DDeiUtil.getReplacibleValue(this.model, "text", true, true);
+
       sptStyle = this.tempSptStyle ? this.tempSptStyle : this.model.sptStyle;
     }
 
