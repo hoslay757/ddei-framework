@@ -548,51 +548,63 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
         let lastUnSubTypeFontSize = 0;
         for (let ti = 0; ti < cText.length; ti++, rcIndex++) {
           let te = cText[ti];
+          //回车换行
 
           //读取当前特殊样式，如果没有，则使用外部基本样式
           let font = null
           let fontHeight = null
-          if (sptStyle[ti]) {
-            let ftsize = sptStyle[ti]?.font?.size ? sptStyle[ti]?.font?.size - subtractionFontSize : fontSize;
+          let isEnter = false;
+          let fontShapeRect = null;
+          if ((feed == 1 || feed == '1') && te == '\n') {
+            isEnter = true;
+            textRowContainer.text += te;
+            textRowContainer.widths[rcIndex] = 0
+            textRowContainer.heights[rcIndex] = 0
+            textRowContainer.width = Math.max(0, usedWidth)
+            textRowContainer.height = Math.max(0, textRowContainer.height ? textRowContainer.height : 0, lastUnSubTypeFontSize * ratio)
+          } else {
+            if (sptStyle[ti]) {
+              let ftsize = sptStyle[ti]?.font?.size ? sptStyle[ti]?.font?.size - subtractionFontSize : fontSize;
 
-            //如果显示的是标注，则当前字体的大小取决于前面最后一个未设置标注的字体大小（包括缺省大小）
-            if (sptStyle[ti].textStyle?.subtype) {
-              if (!lastUnSubTypeFontSize) {
-                lastUnSubTypeFontSize = ftsize
+              //如果显示的是标注，则当前字体的大小取决于前面最后一个未设置标注的字体大小（包括缺省大小）
+              if (sptStyle[ti].textStyle?.subtype) {
+                if (!lastUnSubTypeFontSize) {
+                  lastUnSubTypeFontSize = ftsize
+                }
+                ftsize = lastUnSubTypeFontSize / 2
+              } else if (ftsize < 1) {
+                ftsize = 2
               }
-              ftsize = lastUnSubTypeFontSize / 2
-            } else if (ftsize < 1) {
-              ftsize = 2
+              let ftfamily = sptStyle[ti]?.font?.family ? sptStyle[ti]?.font?.family : fiFamily;
+              font = ftsize + "px " + ftfamily
+              if (sptStyle[ti]?.textStyle?.bold == '1') {
+                font = "bold " + font;
+              }
+              if (sptStyle[ti]?.textStyle?.italic == '1') {
+                font = "italic " + font;
+              }
+              fontHeight = ftsize
             }
-            let ftfamily = sptStyle[ti]?.font?.family ? sptStyle[ti]?.font?.family : fiFamily;
-            font = ftsize + "px " + ftfamily
-            if (sptStyle[ti]?.textStyle?.bold == '1') {
-              font = "bold " + font;
+            if (!font) {
+              font = baseFont;
+              fontHeight = fontSize
             }
-            if (sptStyle[ti]?.textStyle?.italic == '1') {
-              font = "italic " + font;
+            if (!sptStyle[ti]?.textStyle?.subtype) {
+              lastUnSubTypeFontSize = fontHeight
             }
-            fontHeight = ftsize
-          }
-          if (!font) {
-            font = baseFont;
-            fontHeight = fontSize
-          }
-          if (!sptStyle[ti]?.textStyle?.subtype) {
-            lastUnSubTypeFontSize = fontHeight
-          }
-          //记录最大字体大小
-          maxFontSize = Math.max(maxFontSize, fontHeight)
+            //记录最大字体大小
+            maxFontSize = Math.max(maxFontSize, fontHeight)
 
-          let rc1 = DDeiUtil.measureText(te, font, ctx);
-          let fontShapeRect = { width: rc1.width * ratio, height: rc1.height * ratio }
-          usedWidth += fontShapeRect.width;
+            let rc1 = DDeiUtil.measureText(te, font, ctx);
+            fontShapeRect = { width: rc1.width * ratio, height: rc1.height * ratio }
+            usedWidth += fontShapeRect.width;
 
-          textRowContainer.text += te;
-          textRowContainer.widths[rcIndex] = fontShapeRect.width
-          textRowContainer.heights[rcIndex] = fontHeight * ratio
-          textRowContainer.width = usedWidth
-          textRowContainer.height = Math.max(fontHeight * ratio, textRowContainer.height ? textRowContainer.height : 0, lastUnSubTypeFontSize * ratio)
+            textRowContainer.text += te;
+            textRowContainer.widths[rcIndex] = fontShapeRect.width
+            textRowContainer.heights[rcIndex] = fontHeight * ratio
+            textRowContainer.width = usedWidth
+            textRowContainer.height = Math.max(fontHeight * ratio, textRowContainer.height ? textRowContainer.height : 0, lastUnSubTypeFontSize * ratio)
+          }
 
           //如果不自动换行也不缩小字体，则超过的话，就省略显示
 
@@ -613,9 +625,28 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
 
           //处理换行
           else if (feed == 1 || feed == '1') {
-            //如果插入本字符后的大小，大于了容器的大小，则需要换行
+            //如果回车
+            if (isEnter) {
+              //新开一行重新开始
+              usedWidth = 0;
+              usedHeight += textRowContainer.height;
 
-            if (usedWidth > contentWidth) {
+              //换行的情况下，如果行高度超出，则不输出
+              if (usedHeight + textRowContainer.height > ratPos.height) {
+                //如果具备缩小字体填充，则重新生成
+                if (autoScaleFill == 1) {
+                  isOutSize = true;
+                }
+                break;
+              }
+              rcIndex = -1;
+              textRowContainer = { text: '', widths: [], heights: [] };
+              textRowContainer.width = usedWidth
+              textRowContainer.height = 0
+              textContainer.push(textRowContainer);
+            }
+            //如果插入本字符后的大小，大于了容器的大小，则需要换行
+            else if (usedWidth > contentWidth) {
 
               //先使当前行字符-1
               textRowContainer.text = textRowContainer.text.substring(0, textRowContainer.text.length - 1)
@@ -690,7 +721,6 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       let cursorX = -Infinity;
       let cursorY = -Infinity;
       let cursorHeight = 0;
-      let curTextIdx = 0;
 
 
       //对内部容器进行排列对齐
@@ -703,6 +733,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
         textContainer[0].textPosCache = []
       }
       for (let tci = 0; tci < textContainer.length; tci++) {
+
         let rRect = textContainer[tci];
         let x1, y1;
         //绘制文字
