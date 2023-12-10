@@ -255,8 +255,16 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     let endDY = 0;
     //计算开始和结束点的单位增量
     //计算不同类型箭头下的增量与减量
-    let stype = this.getCachedValue("stype");
-    let etype = this.getCachedValue("etype");
+    let stype = this.getCachedValue("sp.type");
+    let etype = this.getCachedValue("ep.type");
+    let sweight = this.getCachedValue("sp.weight");
+    let eweight = this.getCachedValue("ep.weight");
+    if (sweight <= 0) {
+      sweight = 1
+    }
+    if (eweight <= 0) {
+      eweight = 1
+    }
     //旋转
     let startRotate = DDeiUtil.getLineAngle(pvs[1].x, pvs[1].y, pvs[0].x, pvs[0].y)
     let endRotate = DDeiUtil.getLineAngle(pvs[pvs.length - 2].x, pvs[pvs.length - 2].y, pvs[pvs.length - 1].x, pvs[pvs.length - 1].y)
@@ -278,46 +286,46 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     let wl = 0;
     switch (stype) {
       case 1:
-        wl = stageRatio;
+        wl = sweight * stageRatio;
         break;
       case 21:
       case 2:
-        wl = 6 * stageRatio;
+        wl = sweight * stageRatio;
         break;
       case 31:
       case 3:
-        wl = 6 * stageRatio;
+        wl = sweight * stageRatio;
         break;
       case 41:
       case 4:
-        wl = 12 * stageRatio;
+        wl = 2 * sweight * stageRatio;
         break;
       case 51:
       case 5:
-        wl = 6 * stageRatio;
+        wl = sweight * stageRatio;
         break;
     }
     startDX = -startVectorUnit.x * wl
     startDY = startVectorUnit.y * wl
     switch (etype) {
       case 1:
-        wl = stageRatio;
+        wl = eweight * stageRatio;
         break;
       case 21:
       case 2:
-        wl = 6 * stageRatio;
+        wl = eweight * stageRatio;
         break;
       case 31:
       case 3:
-        wl = 6 * stageRatio;
+        wl = eweight * stageRatio;
         break;
       case 41:
       case 4:
-        wl = 12 * stageRatio;
+        wl = eweight * stageRatio;
         break;
       case 51:
       case 5:
-        wl = 6 * stageRatio;
+        wl = eweight * stageRatio;
         break;
     }
     endDX = -endVectorUnit.x * wl
@@ -333,13 +341,15 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     let ctx = tempCtx ? tempCtx : canvas.getContext('2d');
 
     //获取绘图属性
-    let stype = this.getCachedValue("stype");
-    let etype = this.getCachedValue("etype");
+    let stype = this.getCachedValue("sp.type");
+    let etype = this.getCachedValue("ep.type");
+    let sweight = this.getCachedValue("sp.weight");
+    let eweight = this.getCachedValue("ep.weight");
     //开始节点
-    this.drawOnePoint(1, stype, ctx, tempLine)
+    this.drawOnePoint(1, stype, sweight, ctx, tempLine)
 
     //结束节点
-    this.drawOnePoint(2, etype, ctx, tempLine)
+    this.drawOnePoint(2, etype, eweight, ctx, tempLine)
   }
 
   /**
@@ -347,7 +357,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
    * @param type 
    * @param direct 
    */
-  private drawOnePoint(pointType: number, type: number, ctx, tempLine): void {
+  private drawOnePoint(pointType: number, type: number, weight: number, ctx, tempLine): void {
     if (!type) {
       return;
     }
@@ -358,11 +368,17 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     //获取绘图属性
     let color = tempLine?.color ? tempLine.color : this.getCachedValue("color");
     let opacity = tempLine?.opacity ? tempLine.opacity : this.getCachedValue("opacity");
+
     ctx.save()
+
     let pvs = this.model.pvs;
     let point = null;
     let upPoint = null;
-    let lineWidth = ratio;
+    let lineWeight = tempLine?.weight ? tempLine.weight : this.getCachedValue("weight");
+    if (weight <= 0) {
+      weight = 1
+    }
+    let lineWidth = lineWeight * ratio
     ctx.lineWidth = lineWidth;
     //开始
     if (pointType == 1) {
@@ -395,7 +411,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
 
     switch (type) {
       case 1: {
-        let wl = 6 * stageRatio;
+        let wl = weight * stageRatio;
         ctx.beginPath()
         ctx.moveTo((point.x - wl) * rat1, (point.y - 0.8 * wl) * rat1)
         ctx.lineTo(point.x * rat1 - lineWidth / 2, point.y * rat1)
@@ -407,7 +423,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       case 21:
       case 2: {
         //圆形
-        let wl = 6 * stageRatio;
+        let wl = weight * stageRatio;
         ctx.beginPath()
         ctx.ellipse((point.x - wl / 2) * rat1 - lineWidth / 2, point.y * rat1, wl, wl, 0, 0, Math.PI * 2)
         ctx.closePath()
@@ -419,7 +435,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       }
       case 31:
       case 3: {
-        let wl = 6 * stageRatio;
+        let wl = weight * stageRatio;
         //方形
         ctx.beginPath()
         ctx.moveTo((point.x - wl) * rat1 - lineWidth / 2, (point.y - wl / 2) * rat1)
@@ -435,13 +451,13 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       }
       case 41:
       case 4: {
-        let wl = 2 * stageRatio;
+        let wl = weight * stageRatio;
         //菱形
         ctx.beginPath()
         ctx.moveTo(point.x * rat1 - lineWidth, point.y * rat1)
-        ctx.lineTo((point.x - 3 * wl) * rat1 - lineWidth, (point.y - 2 * wl) * rat1)
-        ctx.lineTo((point.x - 6 * wl) * rat1 - lineWidth, point.y * rat1)
-        ctx.lineTo((point.x - 3 * wl) * rat1 - lineWidth, (point.y + 2 * wl) * rat1)
+        ctx.lineTo((point.x - wl) * rat1 - lineWidth, (point.y - wl / 2) * rat1)
+        ctx.lineTo((point.x - 2 * wl) * rat1 - lineWidth, point.y * rat1)
+        ctx.lineTo((point.x - wl) * rat1 - lineWidth, (point.y + wl / 2) * rat1)
         ctx.lineTo(point.x * rat1 - lineWidth, point.y * rat1)
         ctx.closePath()
         ctx.stroke();
@@ -452,7 +468,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       }
       case 51:
       case 5: {
-        let wl = 6 * stageRatio;
+        let wl = weight * stageRatio;
         ctx.beginPath()
         ctx.moveTo(point.x * rat1 - lineWidth, point.y * rat1)
         ctx.lineTo((point.x - wl) * rat1, (point.y - 0.8 * wl) * rat1)

@@ -114,7 +114,7 @@ export const styles = {
 
     {
       'id': '100401010',
-      'code': 'stype',
+      'code': 'sp.type',
       'name': '起点类型',
       'desc': '起点的样式样式',
       'group': '线段',
@@ -134,12 +134,28 @@ export const styles = {
       ],
       'itemStyle': { width: 80, height: 25, col: 2, row: 6 },
       'dataType': 'integer',
+      'cascadeDisplay': { "-1": { hidden: ['startWeidht'] }, empty: { hidden: ['startWeidht'] }, notempty: { show: ['startWeidht'] } },
       'defaultValue': -1,
       'orderNo': 10
     },
     {
+      'id': '100401011',
+      'code': 'sp.weight',
+      'name': '大小',
+      'desc': '起点的箭头的宽度',
+      'group': '线段',
+      'controlType': 'range',
+      'min': 1,
+      'max': 30,
+      'step': 1,
+      'defaultValue': 6,
+      'dataType': 'integer',
+      'orderNo': 11,
+      'visiable': true
+    },
+    {
       'id': '100401020',
-      'code': 'etype',
+      'code': 'ep.type',
       'name': '终点类型',
       'desc': '终点的样式样式',
       'group': '线段',
@@ -158,8 +174,24 @@ export const styles = {
       ],
       'itemStyle': { width: 80, height: 25, col: 2, row: 6 },
       'dataType': 'integer',
+      'cascadeDisplay': { "-1": { hidden: ['endWeidht'] }, empty: { hidden: ['endWeidht'] }, notempty: { show: ['endWeidht'] } },
       'defaultValue': 5,
       'orderNo': 20
+    },
+    {
+      'id': '100401021',
+      'code': 'ep.weight',
+      'name': '大小',
+      'desc': '终点的箭头的宽度',
+      'group': '线段',
+      'controlType': 'range',
+      'min': 1,
+      'max': 30,
+      'step': 1,
+      'defaultValue': 6,
+      'dataType': 'integer',
+      'orderNo': 21,
+      'visiable': true
     },
 
     {

@@ -28,8 +28,8 @@ class DDeiLine extends DDeiAbstractShape {
     //连线类型
     this.type = props.type ? props.type : 1;
     //开始和结束节点的类型
-    this.etype = props.etype ? props.etype : 0;
-    this.stype = props.stype ? props.stype : 0;
+    this.sp = props.sp;
+    this.ep = props.ep;
 
     //透明度
     this.opacity = props.opacity
@@ -207,9 +207,9 @@ class DDeiLine extends DDeiAbstractShape {
   dash: number;
   //线类型
   type: number;
-  //开始和结束节点的类型
-  etype: number;
-  stype: number;
+  //开始和结束节点
+  sp: object;
+  ep: object;
   //透明度
   opacity: number;
   //圆角
