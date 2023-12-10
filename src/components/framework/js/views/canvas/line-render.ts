@@ -332,7 +332,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         break;
       case 51:
       case 5:
-        wl = sweight * stageRatio;
+        wl = sweight * stageRatio + lineWeight;
         break;
     }
     startDX = -startVectorUnit.x * wl
@@ -355,7 +355,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         break;
       case 51:
       case 5:
-        wl = eweight * stageRatio;
+        wl = eweight * stageRatio + lineWeight;
         break;
     }
     endDX = -endVectorUnit.x * wl
