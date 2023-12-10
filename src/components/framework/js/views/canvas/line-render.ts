@@ -131,6 +131,8 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     //获取绘图属性
     let color = tempLine?.color ? tempLine.color : this.getCachedValue("color");
     let weight = tempLine?.weight ? tempLine.weight : this.getCachedValue("weight");
+    let fillColor = tempLine?.fill?.color ? tempLine?.fill?.color : this.getCachedValue("fill.color");
+    let fillWeight = tempLine?.fill?.weight ? tempLine?.fill?.weight : this.getCachedValue("fill.weight");
     let dash = tempLine?.dash ? tempLine.dash : this.getCachedValue("dash");
     let round = tempLine?.round ? tempLine.round : this.getCachedValue("round");
     let type = this.getCachedValue("type");
@@ -139,12 +141,15 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     let pvs = this.model.pvs;
     //条线
     let jumpLine = DDeiModelArrtibuteValue.getAttrValueByState(this.stage, "global.jumpline", true);
+    weight = weight + fillWeight
+
     //绘制线段
     if (pvs?.length >= 2 && color && (!opacity || opacity > 0) && weight > 0) {
       //获取图标图形
       let { startDX, startDY, endDX, endDY } = this.getPointShapeSize();
       ctx.save()
       let lineWidth = weight * ratio;
+      let fillLineWidth = fillWeight * ratio;
       ctx.lineWidth = lineWidth;
       //线段、虚线样式
       if (dash) {
@@ -172,6 +177,11 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
           }
           ctx.lineTo((pvs[pvs.length - 1].x + endDX) * rat1, (pvs[pvs.length - 1].y + endDY) * rat1)
           ctx.stroke();
+          if (fillLineWidth > 0) {
+            ctx.lineWidth = fillLineWidth;
+            ctx.strokeStyle = DDeiUtil.getColor(fillColor);
+            ctx.stroke();
+          }
           ctx.closePath()
         } break;
         case 2: {
@@ -202,6 +212,11 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
             }
           }
           ctx.stroke();
+          if (fillLineWidth > 0) {
+            ctx.lineWidth = fillLineWidth;
+            ctx.strokeStyle = DDeiUtil.getColor(fillColor);
+            ctx.stroke();
+          }
           ctx.closePath()
         } break;
         case 3: {
@@ -225,6 +240,11 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
 
               }
               ctx.stroke();
+              if (fillLineWidth > 0) {
+                ctx.lineWidth = fillLineWidth;
+                ctx.strokeStyle = DDeiUtil.getColor(fillColor);
+                ctx.stroke();
+              }
               ctx.closePath()
             }
           } else {
@@ -232,6 +252,11 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
             ctx.moveTo((pvs[0].x + startDX) * rat1, (pvs[0].y + startDY) * rat1)
             ctx.lineTo((pvs[0].x + endDX) * rat1, pvs[0].y * rat1, pvs[1].x * rat1, (pvs[1].y + endDY) * rat1);
             ctx.stroke();
+            if (fillLineWidth > 0) {
+              ctx.lineWidth = fillLineWidth;
+              ctx.strokeStyle = DDeiUtil.getColor(fillColor);
+              ctx.stroke();
+            }
             ctx.closePath()
           }
         } break;
@@ -259,6 +284,11 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     let etype = this.getCachedValue("ep.type");
     let sweight = this.getCachedValue("sp.weight");
     let eweight = this.getCachedValue("ep.weight");
+    let fillWeight = this.getCachedValue("fill.weight");
+    let lineWeight = this.getCachedValue("weight");
+    lineWeight = lineWeight * stageRatio
+    sweight += fillWeight
+    eweight += fillWeight
     if (sweight <= 0) {
       sweight = 1
     }
@@ -298,7 +328,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         break;
       case 41:
       case 4:
-        wl = 2 * sweight * stageRatio;
+        wl = 2 * sweight * stageRatio + lineWeight;
         break;
       case 51:
       case 5:
@@ -321,7 +351,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         break;
       case 41:
       case 4:
-        wl = eweight * stageRatio;
+        wl = 2 * eweight * stageRatio + lineWeight;
         break;
       case 51:
       case 5:
@@ -345,6 +375,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     let etype = this.getCachedValue("ep.type");
     let sweight = this.getCachedValue("sp.weight");
     let eweight = this.getCachedValue("ep.weight");
+
     //开始节点
     this.drawOnePoint(1, stype, sweight, ctx, tempLine)
 
@@ -375,6 +406,9 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     let point = null;
     let upPoint = null;
     let lineWeight = tempLine?.weight ? tempLine.weight : this.getCachedValue("weight");
+    let fillColor = tempLine?.fill?.color ? tempLine?.fill?.color : this.getCachedValue("fill.color");
+    let fillWeight = tempLine?.fill?.weight ? tempLine?.fill?.weight : this.getCachedValue("fill.weight");
+    weight += fillWeight
     if (weight <= 0) {
       weight = 1
     }
@@ -428,7 +462,10 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         ctx.ellipse((point.x - wl / 2) * rat1 - lineWidth / 2, point.y * rat1, wl, wl, 0, 0, Math.PI * 2)
         ctx.closePath()
         ctx.stroke();
-        if (type == 21 || tempLine) {
+        if (fillWeight > 0 || type == 21 || tempLine) {
+          if (fillWeight > 0) {
+            ctx.fillStyle = DDeiUtil.getColor(fillColor)
+          }
           ctx.fill()
         }
         break;
@@ -444,7 +481,11 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         ctx.lineTo((point.x - wl) * rat1 - lineWidth / 2, (point.y + wl / 2) * rat1)
         ctx.closePath()
         ctx.stroke();
-        if (type == 31 || tempLine) {
+        if (fillWeight > 0 || type == 31 || tempLine) {
+          if (fillWeight > 0) {
+            ctx.fillStyle = DDeiUtil.getColor(fillColor)
+          }
+
           ctx.fill();
         }
         break;
@@ -461,7 +502,10 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         ctx.lineTo(point.x * rat1 - lineWidth, point.y * rat1)
         ctx.closePath()
         ctx.stroke();
-        if (type == 41 || tempLine) {
+        if (fillWeight > 0 || type == 41 || tempLine) {
+          if (fillWeight > 0) {
+            ctx.fillStyle = DDeiUtil.getColor(fillColor)
+          }
           ctx.fill()
         }
         break;
@@ -471,11 +515,15 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         let wl = weight * stageRatio;
         ctx.beginPath()
         ctx.moveTo(point.x * rat1 - lineWidth, point.y * rat1)
-        ctx.lineTo((point.x - wl) * rat1, (point.y - 0.8 * wl) * rat1)
-        ctx.lineTo((point.x - wl) * rat1, (point.y + 0.8 * wl) * rat1)
+        ctx.lineTo((point.x - wl) * rat1 - lineWidth, (point.y - wl / 2) * rat1)
+        ctx.lineTo((point.x - wl) * rat1 - lineWidth, (point.y + wl / 2) * rat1)
+        ctx.lineTo(point.x * rat1 - lineWidth, point.y * rat1)
         ctx.closePath()
         ctx.stroke()
-        if (type == 51 || tempLine) {
+        if (fillWeight > 0 || type == 51 || tempLine) {
+          if (fillWeight > 0) {
+            ctx.fillStyle = DDeiUtil.getColor(fillColor)
+          }
           ctx.fill()
         }
         break;

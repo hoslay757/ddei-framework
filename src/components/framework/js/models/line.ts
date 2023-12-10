@@ -40,6 +40,8 @@ class DDeiLine extends DDeiAbstractShape {
 
     this.freeze = props.freeze ? props.freeze : 0;
 
+    this.fill = props.fill
+
     this.linkModels = props.linkModels ? props.linkModels : new Map();
 
     this.updateLooseCanvas = debounce(this.updateLooseCanvas, 30)
@@ -189,6 +191,9 @@ class DDeiLine extends DDeiAbstractShape {
   weight: number;
   //线段颜色
   color: string;
+
+  //填充
+  fill: object;
   /**
    * 线上的文本或者其他图形，图形的中点相对于线上某个点的坐标，持有一个增量
    * 暂时只考虑：开始节点、结束节点，或者最中间的节点
@@ -495,7 +500,7 @@ class DDeiLine extends DDeiAbstractShape {
         //获得 2d 上下文对象
         let ctx = canvas.getContext('2d', { willReadFrequently: true });
         ctx.translate(-outRect.x, -outRect.y)
-        this.render.drawLine({ color: "red", weight: weight, rat1: 1 }, ctx)
+        this.render.drawLine({ color: "red", weight: weight, rat1: 1, fill: { color: "red" } }, ctx)
       }
       resolve()
     });

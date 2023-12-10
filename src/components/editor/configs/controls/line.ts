@@ -24,15 +24,13 @@ export const styles = {
     {
       'id': '100401001',
       'code': 'type',
-      'name': '连线类型',
+      'name': '类型',
       'desc': '用来快速连线类型，以便于套用相关的样式',
       'group': '线段',
       'controlType': 'radio',
       'dataSource': [{ 'text': '直线', 'value': 1 }, { 'text': '折线', 'value': 2 }, { 'text': '曲线', 'value': 3 }],
       'dataType': 'integer',
       'defaultValue': 1,
-      'hiddenTitle': true,
-      'display': 'column',
       'cascadeDisplay': { 2: { show: ['round'], hidden: [] }, default: { show: [], hidden: ['round'] }, notempty: { hidden: ['round'] } },
       'mapping': [],
       'type': 1,
@@ -42,7 +40,7 @@ export const styles = {
     {
       'id': '100401002',
       'code': 'weight',
-      'name': '宽度',
+      'name': '线段',
       'desc': '控件的宽度',
       'group': '线段',
       'controlType': 'range',
@@ -68,6 +66,34 @@ export const styles = {
     },
     {
       'id': '100401004',
+      'code': 'fill.weight',
+      'name': '填充',
+      'desc': '填充的大小',
+      'group': '线段',
+      'controlType': 'range',
+      'min': 0,
+      'max': 30,
+      'step': 1,
+      'defaultValue': 0,
+      'dataType': 'integer',
+      'orderNo': 4,
+      'visiable': true
+    },
+    {
+      'id': '100401005',
+      'code': 'fill.color',
+      'name': '填充色',
+      'desc': '线段的边框显示颜色',
+      'group': '线段',
+      'controlType': 'color',
+      'dataType': 'string',
+      'defaultValue': 'black',
+      'orderNo': 5,
+      'visiable': true
+    },
+
+    {
+      'id': '100401006',
       'code': 'dash',
       'name': '虚线',
       'desc': '图形的边框的是否为虚线样式，虚线由长短不一的线段构成',
@@ -91,11 +117,11 @@ export const styles = {
       'dataType': 'integer',
       'defaultValue': [],
       'isArray': true,
-      'orderNo': 4,
+      'orderNo': 6,
       'visiable': true
     },
     {
-      'id': '100401005',
+      'id': '100401007',
       'code': 'opacity',
       'name': '透明度',
       'desc': '图形的边框的透明度，0完全透明~1完全不透明',
@@ -107,7 +133,7 @@ export const styles = {
       'dataType': 'float',
       'defaultValue': 1,
       'display': 'column',
-      'orderNo': 5,
+      'orderNo': 7,
       'visiable': true
     },
 
