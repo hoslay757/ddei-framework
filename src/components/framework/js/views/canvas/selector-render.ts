@@ -528,9 +528,17 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     } else {
       //判断当前坐标是否位于操作按钮上,如果是则改变状态为响应状态
       if (this.model.passIndex >= 1 && this.model.passIndex <= 8) {
+
         let dragObj = {
           x: ex,
-          y: ey
+          y: ey,
+          originData: {
+            x: this.model.x,
+            y: this.model.y,
+            width: this.model.width,
+            height: this.model.height
+          }
+
         }
         //获取当前层次选择的控件
         //计算移动后的坐标以及大小

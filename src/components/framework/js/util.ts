@@ -217,6 +217,10 @@ class DDeiUtil {
     sourceModel.pvs.forEach(pv => {
       returnModel.pvs.push(clone(pv));
     });
+    returnModel.textArea = []
+    sourceModel.textArea?.forEach(pv => {
+      returnModel.textArea.push(clone(pv));
+    });
     returnModel.exPvs = {}
     for (let i in sourceModel.exPvs) {
       returnModel.exPvs[i] = clone(sourceModel.exPvs[i])

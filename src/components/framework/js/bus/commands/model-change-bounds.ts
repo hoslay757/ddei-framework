@@ -35,6 +35,8 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
   action(data: object, bus: DDeiBus, evt: Event): boolean {
     if (data?.models?.length > 0) {
 
+
+
       let deltaX = data.deltaX ? data.deltaX : 0;
       let deltaY = data.deltaY ? data.deltaY : 0;
       let deltaWidth = data.deltaWidth ? data.deltaWidth : 0;
@@ -43,6 +45,9 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
       let models = data.models;
       let parentContainer = data?.models[0].pModel;
       let stage = bus.ddInstance.stage;
+
+      //拖拽前的原始信息
+      let originData = stage.render.dragObj?.originData
       //除以缩放比例
       let stageRatio = stage?.getStageRatio()
       deltaWidth = deltaWidth
@@ -112,10 +117,16 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
         let cpvR = { xR: parseFloat((cpvTemp.x / originRect.width).toFixed(4)), yR: parseFloat((cpvTemp.y / originRect.height).toFixed(4)) }
         let pvsR = [];
         let exPvsR = {}
+        let textPvsR = []
         item.pvs.forEach(pv => {
           let pvTemp = new Vector3(pv.x, pv.y, 1);
           pvTemp.applyMatrix3(m1)
           pvsR.push({ xR: parseFloat((pvTemp.x / originRect.width).toFixed(4)), yR: parseFloat((pvTemp.y / originRect.height).toFixed(4)) })
+        });
+        item.textArea?.forEach(pv => {
+          let pvTemp = new Vector3(pv.x, pv.y, 1);
+          pvTemp.applyMatrix3(m1)
+          textPvsR.push({ xR: parseFloat((pvTemp.x / originRect.width).toFixed(4)), yR: parseFloat((pvTemp.y / originRect.height).toFixed(4)) })
         });
         for (let i in item.exPvs) {
           let pv = item.exPvs[i];
@@ -123,13 +134,20 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
           pvTemp.applyMatrix3(m1)
           exPvsR[i] = { xR: parseFloat((pvTemp.x / originRect.width).toFixed(4)), yR: parseFloat((pvTemp.y / originRect.height).toFixed(4)) }
         }
-        originPosMap.set(id, { cpvR: cpvR, pvsR: pvsR, exPvsR: exPvsR });
+
+        originPosMap.set(id, { cpvR: cpvR, pvsR: pvsR, exPvsR: exPvsR, textPvsR: textPvsR });
 
       }
       //计算好原始比例后，按照增量扩展控件大小，并按照其旋转数字施加一个变换
       models.forEach(item => {
         item.cpv.x = parseFloat((movedBounds.x + movedBounds.width * originPosMap.get(item.id).cpvR.xR).toFixed(4))
         item.cpv.y = parseFloat((movedBounds.y + movedBounds.height * originPosMap.get(item.id).cpvR.yR).toFixed(4))
+        for (let xi = 0; xi < item.textArea?.length; xi++) {
+          let pv = item.textArea[xi];
+          let pvR = originPosMap.get(item.id).textPvsR[xi];
+          pv.x = parseFloat((movedBounds.x + movedBounds.width * pvR.xR).toFixed(4))
+          pv.y = parseFloat((movedBounds.y + movedBounds.height * pvR.yR).toFixed(4))
+        }
         for (let xi = 0; xi < item.pvs.length; xi++) {
           let pv = item.pvs[xi];
           let pvR = originPosMap.get(item.id).pvsR[xi];
