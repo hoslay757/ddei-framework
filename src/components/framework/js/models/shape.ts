@@ -237,7 +237,8 @@ abstract class DDeiAbstractShape {
     //宽松判定区域的宽度
     let looseWeight = 10;
     //复制当前向量
-    this.loosePVS = cloneDeep(this.pvs)
+    // this.loosePVS = cloneDeep(this.pvs)
+    this.loosePVS = DDeiAbstractShape.getOutPV([this])
     let move1Matrix = new Matrix3(
       1, 0, -this.cpv.x,
       0, 1, -this.cpv.y,

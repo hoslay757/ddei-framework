@@ -1,52 +1,27 @@
 <template>
-  <div id="ddei_editor_toolbox"
-       v-show="editor?.leftWidth > 0"
-       @mousedown="changeEditorFocus"
-       class="ddei_editor_toolbox">
+  <div id="ddei_editor_toolbox" v-show="editor?.leftWidth > 0" @mousedown="changeEditorFocus" class="ddei_editor_toolbox">
     <div class="expandbox">
-      <img class="img"
-           :src="expandLeftImg"
-           @click="hiddenToolBox" />
+      <img class="img" :src="expandLeftImg" @click="hiddenToolBox" />
     </div>
     <div class="searchbox">
       <div class="group">
-        <input v-model="searchText"
-               class="input"
-               @keypress="searchInputEnter"
-               placeholder="搜索控件">
-        <div class="button"
-             @click="searchControl">搜索</div>
+        <input v-model="searchText" class="input" @keypress="searchInputEnter" placeholder="搜索控件">
+        <div class="button" @click="searchControl">搜索</div>
       </div>
     </div>
     <hr />
-    <div class="groups"
-         :style="{ height: 'calc(100vh - ' + (editor?.topHeight + editor?.bottomHeight + 90) + 'px' }">
-      <div v-for="group in groups"
-           v-show="group.display == true"
-           class="group">
-        <div :class="{ 'box': true, 'expanded': group.expand }"
-             @click="groupBoxExpand(group)">
-          <img class="expand"
-               v-show="!group.expand"
-               src="../icons/toolbox-unexpanded.png" />
-          <img class="expand"
-               v-show="group.expand"
-               src="../icons/toolbox-expanded.png" />
+    <div class="groups" :style="{ height: 'calc(100vh - ' + (editor?.topHeight + editor?.bottomHeight + 90) + 'px' }">
+      <div v-for="group in groups" v-show="group.display == true" class="group">
+        <div :class="{ 'box': true, 'expanded': group.expand }" @click="groupBoxExpand(group)">
+          <img class="expand" v-show="!group.expand" src="../icons/toolbox-unexpanded.png" />
+          <img class="expand" v-show="group.expand" src="../icons/toolbox-expanded.png" />
           <span class="title">{{ group.name }}</span>
-          <img v-if="!group.cannotClose"
-               class="close"
-               src="../icons/toolbox-close.png"
-               @click="groupBoxClose(group)" />
+          <img v-if="!group.cannotClose" class="close" src="../icons/toolbox-close.png" @click="groupBoxClose(group)" />
         </div>
-        <div class="item_panel"
-             v-if="group.expand == true">
-          <div class="item"
-               :title="control.desc"
-               draggable="true"
-               @dragstart="createControlPrepare(control, $event)"
-               v-for="control in group.controls">
-            <img class="icon"
-                 :src="control.icon" />
+        <div class="item_panel" v-if="group.expand == true">
+          <div class="item" :title="control.desc" draggable="true" @dragstart="createControlPrepare(control, $event)"
+            v-for="control in group.controls">
+            <img class="icon" :src="control.icon" />
             <div class="text">{{ control.name }}</div>
           </div>
         </div>
@@ -59,7 +34,7 @@
 import DDeiEditor from "../js/editor";
 import DDeiEnumOperateType from "@/components/framework/js/enums/operate-type";
 import DDei from "@/components/framework/js/ddei";
-import { loadToolGroups, controlOriginDefinies } from "../configs/toolgroup";
+import { groupOriginDefinies } from "../configs/toolgroup";
 import DDeiEditorState from "../js/enums/editor-state";
 import { cloneDeep, trim } from "lodash";
 import DDeiAbstractShape from "@/components/framework/js/models/shape";
@@ -95,7 +70,7 @@ export default {
   },
   computed: {},
   watch: {},
-  created() {},
+  created() { },
   emits: ["createControlPrepare"],
   mounted() {
     //空图片
@@ -116,26 +91,9 @@ export default {
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     this.editor.toolBarViewer = this;
     //加载工具栏
-    loadToolGroups().then((module) => {
-      //遍历module，加上display、expand两个属性，来控制在本组件内是否展开、和关闭
-      module.forEach((item, index) => {
-        item.display = true;
-        //缺省第一个展开
-        if (index == 0) {
-          item.expand = true;
-        } else {
-          item.expand = false;
-        }
-        //处理control的图标
-        item.controls.forEach((control) => {
-          if (control.icon) {
-            control.icon = ICONS[control.icon];
-          }
-        });
-      });
-      this.groups = module;
-      this.searchOriginGroups = this.groups;
-    });
+    this.groups = groupOriginDefinies
+    this.searchOriginGroups = this.groups;
+
   },
   methods: {
     /**
@@ -226,6 +184,7 @@ export default {
         modelCode: control.id,
       };
 
+
       //设置配置的属性值
       searchPaths.forEach((key) => {
         if (configAtrs.get(key)) {
@@ -238,6 +197,10 @@ export default {
       if (control.img) {
         dataJson.fill = { type: 2, image: control.img };
       }
+      for (let i in control?.define) {
+        dataJson[i] = control.define[i];
+      }
+      //如果有from则根据from读取属性
 
       let model: DDeiAbstractShape = this.controlCls[control.type].initByJSON(
         dataJson,
