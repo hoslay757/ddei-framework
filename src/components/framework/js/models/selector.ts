@@ -176,8 +176,13 @@ class DDeiSelector extends DDeiRectangle {
       //计算多个图形的顶点最大范围，根据顶点范围构建一个最大的外接矩形，规则的外接矩形，可以看作由4个顶点构成的图形
       let pvs = null;
       if (models.length == 1) {
-        pvs = cloneDeep(models[0].pvs);
-        this.cpv = cloneDeep(models[0].cpv)
+        if (models[0].baseModelType == "DDeiLine") {
+          pvs = cloneDeep(models[0].pvs);
+          this.cpv = cloneDeep(models[0].cpv)
+        } else {
+          pvs = DDeiAbstractShape.getOutPV(models)
+          this.cpv = cloneDeep(models[0].cpv)
+        }
       } else {
         let outRectBounds = DDeiAbstractShape.getOutRectByPV(models);
         pvs = DDeiAbstractShape.getOutPV(models);

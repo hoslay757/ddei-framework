@@ -14,9 +14,7 @@ import DDeiUtil from '../../util.js'
 import DDeiCanvasRender from './ddei-render.js';
 import DDeiStageCanvasRender from './stage-render.js';
 import { Vector3 } from 'three';
-import { xor } from 'lodash';
 import DDeiLink from '../../models/link.js';
-import line from '@/components/editor/configs/controls/line.js';
 /**
  * DDeiLayer的渲染器类，用于渲染文件
  * 渲染器必须要有模型才可以初始化
@@ -274,29 +272,13 @@ class DDeiLayerCanvasRender {
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
       //获取全局缩放比例
-      let ratio = this.ddRender.ratio;
+      let rat1 = this.ddRender.ratio;
 
       this.model.shadowControls.forEach(item => {
         //保存状态
         ctx.save();
         item.render.drawShape();
-        let pvs = item.pvs;
-        ctx.globalAlpha = 0.7
-        //设置字体颜色
-        ctx.fillStyle = DDeiUtil.getColor("#017fff");
-        //开始绘制  
-        let lineOffset = 1 * ratio / 2;
-        ctx.beginPath();
-        if (item.baseModelType == 'DDeiLine') {
-
-        } else {
-          ctx.moveTo(pvs[0].x * ratio + lineOffset, pvs[0].y * ratio + lineOffset);
-          ctx.lineTo(pvs[1].x * ratio + lineOffset, pvs[1].y * ratio + lineOffset);
-          ctx.lineTo(pvs[2].x * ratio + lineOffset, pvs[2].y * ratio + lineOffset);
-          ctx.lineTo(pvs[3].x * ratio + lineOffset, pvs[3].y * ratio + lineOffset);
-          ctx.lineTo(pvs[0].x * ratio + lineOffset, pvs[0].y * ratio + lineOffset);
-        }
-        ctx.fill();
+        item.render.drawShape({ fill: { color: '#017fff', opacity: 0.7 } });
         ctx.restore();
       });
 

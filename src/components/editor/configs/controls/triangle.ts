@@ -1,5 +1,5 @@
 export default {
-  'id': '100006',
+  'id': '100010',
   'name': '三角形',
   'code': 'triangle',
   'desc': '由三个点构成的三角形',

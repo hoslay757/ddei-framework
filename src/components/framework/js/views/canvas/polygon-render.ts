@@ -78,9 +78,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     }
   }
   /**
-   * 创建图形
+   * 绘制图形
    */
-  drawShape(): void {
+  drawShape(tempShape): void {
     if (!this.viewBefore || this.viewBefore(
       DDeiEnumOperateType.VIEW,
       [this.model],
@@ -93,10 +93,10 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       let ctx = canvas.getContext('2d');
       ctx.save();
       //绘制边框
-      this.drawBorder();
+      this.drawBorder(tempShape);
 
       //绘制填充
-      this.drawFill();
+      this.drawFill(tempShape);
 
       //绘制文本
       // this.drawText();
@@ -163,18 +163,18 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       0, 0, 1);
     let roundPVS = new Vector3(round, 0, 1)
     roundPVS.applyMatrix3(rotateMatrix)
-    //测试
-    {
-      let t1pvs = new Vector3(100, 0, 1)
-      let tag = (108 * DDeiConfig.ROTATE_UNIT).toFixed(4);
-      let trm = new Matrix3(
-        Math.cos(tag), Math.sin(tag), 0,
-        -Math.sin(tag), Math.cos(tag), 0,
-        0, 0, 1);
-      t1pvs.applyMatrix3(trm)
-      console.log(t1pvs)
-    }
-    borderPVS[0] = new Vector3(pvs[0].x + Math.floor(roundPVS.x), pvs[0].y + Math.floor(roundPVS.y), 1);
+    // //测试
+    // {
+    //   let t1pvs = new Vector3(100, 0, 1)
+    //   let tag = (120 * DDeiConfig.ROTATE_UNIT).toFixed(4);
+    //   let trm = new Matrix3(
+    //     Math.cos(tag), Math.sin(tag), 0,
+    //     -Math.sin(tag), Math.cos(tag), 0,
+    //     0, 0, 1);
+    //   t1pvs.applyMatrix3(trm)
+    //   console.log(t1pvs)
+    // }
+    borderPVS[0] = new Vector3(pvs[0].x + roundPVS.x, pvs[0].y + roundPVS.y, 1);
     //四个角的点，考虑边框的位置也要响应变小
     for (let i = 1; i < pvs.length; i++) {
       borderPVS[i] = new Vector3(pvs[i].x, pvs[i].y, 1);
@@ -211,12 +211,12 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let ratio = rat1 * stageRatio;
     //如果被选中，使用选中的边框，否则使用缺省边框
 
-    let disabled = this.getCachedValue("border.disabled")
-    let color = this.getCachedValue("border.color")
-    let opacity = this.getCachedValue("border.opacity");
-    let width = this.getCachedValue("border.width");
-    let dash = this.getCachedValue("border.dash");
-    let round = this.getCachedValue("border.round");
+    let disabled = tempBorder?.border?.disabled ? tempBorder?.border?.disabled : this.getCachedValue("border.disabled")
+    let color = tempBorder?.border?.color ? tempBorder?.border?.color : this.getCachedValue("border.color")
+    let opacity = tempBorder?.border?.opacity ? tempBorder?.border?.opacity : this.getCachedValue("border.opacity");
+    let width = tempBorder?.border?.width ? tempBorder?.border?.width : this.getCachedValue("border.width");
+    let dash = tempBorder?.border?.dash ? tempBorder?.border?.dash : this.getCachedValue("border.dash");
+    let round = tempBorder?.border?.round ? tempBorder?.border?.round : this.getCachedValue("border.round");
 
     //绘制四个方向的边框
     //如果边框未被disabled，则绘制边框
@@ -241,6 +241,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       //加载边框的矩阵
       this.getBorderPVS(tempBorder);
       let pvs = this.borderPVS;
+
       if (pvs?.length > 2) {
         let len = pvs.length;
         ctx.moveTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset)
@@ -305,7 +306,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   /**
    * 绘制填充
    */
-  drawFill(): void {
+  drawFill(tempShape: object | null): void {
     //获得 2d 上下文对象
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
@@ -313,10 +314,10 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let stageRatio = this.model.getStageRatio()
     let rat1 = this.ddRender.ratio;
     let ratio = rat1 * stageRatio;
-    let round = this.getCachedValue("border.round");
+    let round = tempShape?.border?.round ? tempShape.border.round : this.getCachedValue("border.round");
     //保存状态
     ctx.save();
-    let fillType = this.getCachedValue("fill.type");
+    let fillType = tempShape?.fill?.type ? tempShape.fill.type : this.getCachedValue("fill.type");
     //纯色填充
     if (this.isEditoring) {
       if (!fillType || fillType == '0') {
@@ -325,15 +326,17 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     }
     let lineOffset = 1 * ratio / 2;
     if (fillType == 1) {
+
       //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
-      let fillColor = this.getCachedValue("fill.color");
-      let fillOpacity = this.getCachedValue("fill.opacity");
-      let fillDisabled = this.getCachedValue("fill.disabled");
+      let fillColor = tempShape?.fill?.color ? tempShape.fill.color : this.getCachedValue("fill.color");
+      let fillOpacity = tempShape?.fill?.opacity ? tempShape.fill.opacity : this.getCachedValue("fill.opacity");
+      let fillDisabled = tempShape?.fill?.disabled ? tempShape.fill.disabled : this.getCachedValue("fill.disabled");
       if (this.isEditoring) {
         fillDisabled = false
         fillOpacity = 1.0
 
       }
+
       //如果拥有填充色，则使用填充色
       if (!fillDisabled && fillColor && (!fillOpacity || fillOpacity > 0)) {
         ctx.fillStyle = DDeiUtil.getColor(fillColor);
@@ -342,6 +345,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           ctx.globalAlpha = fillOpacity
         }
         ctx.beginPath();
+        this.getBorderPVS(tempShape);
         let pvs = this.borderPVS;
         if (pvs?.length > 2) {
           let len = pvs.length;

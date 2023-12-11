@@ -384,7 +384,6 @@ for (let key in fontTypes) {
     if (support) {
       if (fontEn.toLowerCase() === rootFontFamily.toLowerCase() || ("\"" + fontEn + "\"").toLowerCase() === rootFontFamily.toLowerCase()
         || fontCh.toLowerCase() === rootFontFamily.toLowerCase() || ("\"" + fontCh + "\"").toLowerCase() === rootFontFamily.toLowerCase()) {
-        console.log(font)
         font.isSystemDefault = true;
       }
       //加入数据源

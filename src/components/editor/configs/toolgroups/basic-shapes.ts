@@ -51,16 +51,22 @@ export default {
       'orderNo': 7
     },
     {
-      'id': '100006',
+      'id': '100010',
       'name': '三角形',
       'text': '三角形',
-      'orderNo': 8
+      'orderNo': 10
     },
     {
-      'id': '100007',
+      'id': '100020',
       'name': '五边形',
       'text': '五边形',
-      'orderNo': 9
+      'orderNo': 20
+    },
+    {
+      'id': '100030',
+      'name': '六边形',
+      'text': '六边形',
+      'orderNo': 30
     },
 
 

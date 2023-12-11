@@ -1,5 +1,5 @@
 export default {
-  'id': '100007',
+  'id': '100020',
   'name': '五边形',
   'code': 'pentagon',
   'desc': '由五个点构成的五边形',
