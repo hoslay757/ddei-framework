@@ -44,12 +44,7 @@ export default {
       'text': '椭圆',
       'orderNo': 6
     },
-    {
-      'id': '100005',
-      'name': '菱形',
-      'text': '菱形',
-      'orderNo': 7
-    },
+
     {
       'id': '100010',
       'name': '三角形',
@@ -68,7 +63,12 @@ export default {
       'text': '六边形',
       'orderNo': 30
     },
-
+    {
+      'id': '100040',
+      'name': '菱形',
+      'text': '菱形',
+      'orderNo': 40
+    },
 
 
 

@@ -96,9 +96,16 @@ class DDeiPolygon extends DDeiAbstractShape {
     this.render.init();
   }
 
+  //覆写hpv
+  initHPV(): void {
+
+  }
 
   transVectors(matrix: Matrix3): void {
     this.textArea.forEach(pv => {
+      pv.applyMatrix3(matrix)
+    });
+    this.hpv.forEach(pv => {
       pv.applyMatrix3(matrix)
     });
     super.transVectors(matrix)
@@ -112,9 +119,12 @@ class DDeiPolygon extends DDeiAbstractShape {
   syncVectors(source: DDeiAbstractShape, clonePV: boolean = false): void {
     if (clonePV) {
       this.textArea = cloneDeep(source.textArea)
+      this.hpv = cloneDeep(source.hpv)
     } else {
       this.textArea = source.textArea
+      this.hpv = source.hpv
     }
+
     super.syncVectors(source, clonePV)
   }
 
