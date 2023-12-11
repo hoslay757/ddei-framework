@@ -200,7 +200,6 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let rat1 = this.ddRender.ratio;
     let ratio = rat1 * stageRatio;
     //如果被选中，使用选中的边框，否则使用缺省边框
-
     let disabled = tempBorder?.border?.disabled ? tempBorder?.border?.disabled : this.getCachedValue("border.disabled")
     let color = tempBorder?.border?.color ? tempBorder?.border?.color : this.getCachedValue("border.color")
     let opacity = tempBorder?.border?.opacity ? tempBorder?.border?.opacity : this.getCachedValue("border.opacity");
