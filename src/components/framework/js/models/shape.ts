@@ -234,8 +234,6 @@ abstract class DDeiAbstractShape {
    */
   calLoosePVS(): void {
     let stageRatio = this.stage?.getStageRatio();
-    //宽松判定区域的宽度
-    let looseWeight = 10;
     //复制当前向量
     this.loosePVS = cloneDeep(this.pvs)
 
@@ -257,26 +255,25 @@ abstract class DDeiAbstractShape {
         fpv.applyMatrix3(rotateMatrix)
       });
     }
+    let outRect = DDeiAbstractShape.pvsToOutRect(this.loosePVS);
     if (this.loosePVS.length < 4) {
-      this.loosePVS = DDeiAbstractShape.outRectToPV(DDeiAbstractShape.pvsToOutRect(this.loosePVS))
+      this.loosePVS = DDeiAbstractShape.outRectToPV(outRect)
     }
     //计算宽、高信息，该值为不考虑缩放的大小
-    this.x = this.loosePVS[0].x / stageRatio
-    this.y = this.loosePVS[0].y / stageRatio
-    this.width = (this.loosePVS[1].x - this.loosePVS[0].x) / stageRatio
-    this.height = (this.loosePVS[3].y - this.loosePVS[0].y) / stageRatio
+    this.x = outRect.x / stageRatio
+    this.y = outRect.y / stageRatio
+    this.width = outRect.width / stageRatio
+    this.height = outRect.height / stageRatio
     //记录缩放后的大小以及坐标
-    this.essBounds = { x: this.loosePVS[0].x, y: this.loosePVS[0].y, width: this.loosePVS[1].x - this.loosePVS[0].x, height: this.loosePVS[3].y - this.loosePVS[0].y }
+    this.essBounds = outRect;
 
-    this.loosePVS[0].x -= looseWeight;
-    this.loosePVS[0].y -= looseWeight;
-    this.loosePVS[1].x += looseWeight;
-    this.loosePVS[1].y -= looseWeight;
-    this.loosePVS[2].x += looseWeight;
-    this.loosePVS[2].y += looseWeight;
-    this.loosePVS[3].x -= looseWeight;
-    this.loosePVS[3].y += looseWeight;
-
+    let m1 = new Matrix3()
+    //通过缩放矩阵，进行缩放
+    let scaleMatrix = new Matrix3(
+      1.1, 0, 0,
+      0, 1.1, 0,
+      0, 0, 1);
+    m1.premultiply(scaleMatrix)
     //旋转并位移回去
     if (this.rotate && this.rotate != 0) {
       let angle = -(this.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
@@ -284,22 +281,22 @@ abstract class DDeiAbstractShape {
         Math.cos(angle), Math.sin(angle), 0,
         -Math.sin(angle), Math.cos(angle), 0,
         0, 0, 1);
-      this.loosePVS.forEach(fpv => {
-        fpv.applyMatrix3(rotateMatrix)
-      });
+      m1.premultiply(rotateMatrix)
     }
     let move2Matrix = new Matrix3(
       1, 0, this.cpv.x,
       0, 1, this.cpv.y,
       0, 0, 1);
+    m1.premultiply(move2Matrix)
     this.loosePVS.forEach(fpv => {
-      fpv.applyMatrix3(move2Matrix)
+      fpv.applyMatrix3(m1)
     });
     this.x += this.cpv.x / stageRatio
     this.y += this.cpv.y / stageRatio
-    //记录缩放后的大小以及坐标
+    // 记录缩放后的大小以及坐标
     this.essBounds.x += this.cpv.x
     this.essBounds.y += this.cpv.y
+
 
   }
 
