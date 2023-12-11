@@ -98,7 +98,6 @@ class DDeiPolygon extends DDeiAbstractShape {
 
 
   transVectors(matrix: Matrix3): void {
-
     this.textArea.forEach(pv => {
       pv.applyMatrix3(matrix)
     });

@@ -163,17 +163,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       0, 0, 1);
     let roundPVS = new Vector3(round, 0, 1)
     roundPVS.applyMatrix3(rotateMatrix)
-    // //测试
-    // {
-    //   let t1pvs = new Vector3(100, 0, 1)
-    //   let tag = (120 * DDeiConfig.ROTATE_UNIT).toFixed(4);
-    //   let trm = new Matrix3(
-    //     Math.cos(tag), Math.sin(tag), 0,
-    //     -Math.sin(tag), Math.cos(tag), 0,
-    //     0, 0, 1);
-    //   t1pvs.applyMatrix3(trm)
-    //   console.log(t1pvs)
-    // }
+
     borderPVS[0] = new Vector3(pvs[0].x + roundPVS.x, pvs[0].y + roundPVS.y, 1);
     //四个角的点，考虑边框的位置也要响应变小
     for (let i = 1; i < pvs.length; i++) {
@@ -383,7 +373,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let rat1 = this.ddRender.ratio;
     let ratio = rat1 * stageRatio;
     //计算填充的原始区域
-    let fillRect = DDeiAbstractShape.pvsToOutRect(this.model.textArea)
+    let fillRect = DDeiAbstractShape.pvsToOutRect(DDeiUtil.pointsToZero(this.model.textArea, this.model.cpv, this.model.rotate))
     let ratPos = DDeiUtil.getRatioPosition(fillRect, rat1)
 
     //设置所有文本的对齐方式，以便于后续所有的对齐都采用程序计算
@@ -437,10 +427,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
 
     //保存状态
     ctx.save();
-
     ctx.translate(this.model.cpv.x * rat1, this.model.cpv.y * rat1)
     ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
-    ctx.translate(-this.model.cpv.x * rat1, -this.model.cpv.y * rat1)
 
     //循环进行分段输出,整体容器，代表了一个整体的文本大小区域
     let textContainer = []
