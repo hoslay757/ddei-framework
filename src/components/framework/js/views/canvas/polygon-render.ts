@@ -269,7 +269,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       let stageRatio = this.model.getStageRatio()
       let rat1 = this.ddRender.ratio;
       let ratio = rat1 * stageRatio;
-      let fillRect = this.tempFillAreaRect;
+      let fillRect = this.model.essBounds
       //缩放填充区域
       //保存状态
       ctx.save();

@@ -531,14 +531,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
 
         let dragObj = {
           x: ex,
-          y: ey,
-          originData: {
-            x: this.model.x,
-            y: this.model.y,
-            width: this.model.width,
-            height: this.model.height
-          }
-
+          y: ey
         }
         //获取当前层次选择的控件
         //计算移动后的坐标以及大小
