@@ -99,7 +99,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       this.drawFill(tempShape);
 
       //绘制文本
-      // this.drawText();
+      this.drawText(tempShape);
 
       //清空绘图时计算的临时变量
       this.tempFillAreaRect = null
@@ -374,7 +374,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   /**
    * 绘制文本
    */
-  drawText(): void {
+  drawText(tempShape: object | null): void {
     //获得 2d 上下文对象
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
@@ -383,7 +383,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let rat1 = this.ddRender.ratio;
     let ratio = rat1 * stageRatio;
     //计算填充的原始区域
-    let fillRect = this.tempFillAreaRect;
+    let fillRect = DDeiAbstractShape.pvsToOutRect(this.model.textArea)
     let ratPos = DDeiUtil.getRatioPosition(fillRect, rat1)
 
     //设置所有文本的对齐方式，以便于后续所有的对齐都采用程序计算
@@ -437,9 +437,10 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
 
     //保存状态
     ctx.save();
+
     ctx.translate(this.model.cpv.x * rat1, this.model.cpv.y * rat1)
     ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
-
+    ctx.translate(-this.model.cpv.x * rat1, -this.model.cpv.y * rat1)
 
     //循环进行分段输出,整体容器，代表了一个整体的文本大小区域
     let textContainer = []
@@ -830,6 +831,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
 
         //此轮循环输出每一个字符
         usedX = x1;
+
         for (let tj = 0; tj < textContainer[tci].text.length; tj++) {
           let outputText = textContainer[tci].text[tj]
           let width = textContainer[tci].widths[tj]
@@ -917,35 +919,6 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     //恢复状态
     ctx.restore();
 
-  }
-
-  /**
-   * 计算除边框外的填充区域，用于填充颜色和字体
-   */
-  getFillArea(): object {
-    //获取边框区域，实际填充区域=坐标-边框区域
-    let disabled = this.getBorderInfo(null, 1, "disabled");
-    let color = this.getBorderInfo(null, 1, "color");
-    let opacity = this.getBorderInfo(null, 1, "opacity");
-    let width = this.getBorderInfo(null, 1, "width");
-
-    //计算填充的原始区域
-    if (!(!disabled && color && (!opacity || opacity > 0) && width > 0)) {
-      width = 0
-    }
-    return {
-      x: this.model.x + width,
-      y: this.model.y + width,
-      width: this.model.width - 2 * width,
-      height: this.model.height - 2 * width
-    }
-  }
-
-  /**
-   * 计算除边框外的填充区域，用于填充颜色和字体
-   */
-  getFillAreaPVS(): object {
-    return this.model.pvs;
   }
 
 

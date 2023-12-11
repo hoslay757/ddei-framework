@@ -114,7 +114,7 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
         }
 
         //获取控件所占区域
-        let fillArea = model.render.getFillArea();
+        let fillArea = model.textArea
         let canvasPos = DDeiUtil.getDomAbsPosition(ddInstance.render.canvas);
         //创建大文本框
         let inputEle = DDeiUtil.getEditorText();

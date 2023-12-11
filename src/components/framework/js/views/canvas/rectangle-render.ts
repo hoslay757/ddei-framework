@@ -489,6 +489,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
 
 
+
     //循环进行分段输出,整体容器，代表了一个整体的文本大小区域
     let textContainer = []
 

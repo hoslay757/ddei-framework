@@ -1,7 +1,7 @@
 import DDeiConfig from '../config'
 import DDeiAbstractShape from './shape'
 import DDeiUtil from '../util';
-
+import { Matrix3, Vector3 } from 'three';
 /**
  * polygon由3个以上点构成的图形
  * 主要样式属性：坐标、高宽、边框、字体、填充
@@ -24,6 +24,13 @@ class DDeiPolygon extends DDeiAbstractShape {
 
     //文本样式（除字体外），包含了横纵对齐、文字方向、镂空、换行、缩小字体填充等文本相关内容
     this.textStyle = props.textStyle ? props.textStyle : null;
+
+    if (props.textArea) {
+      this.textArea = [];
+      props.textArea.forEach(pv => {
+        this.textArea.push(new Vector3(pv.x, pv.y, pv.z));
+      });
+    }
   }
 
   // ============================ 静态变量 ============================
@@ -71,6 +78,8 @@ class DDeiPolygon extends DDeiAbstractShape {
   text: string;
   //文本样式（除字体外），包含了横纵对齐、文字方向、镂空、换行、缩小字体填充等文本相关内容
   textStyle: any;
+  //文本区域
+  textArea: object[];
   // 本模型的唯一名称
   modelType: string = 'DDeiPolygon';
   // 本模型的基础图形
@@ -86,6 +95,31 @@ class DDeiPolygon extends DDeiAbstractShape {
     DDeiConfig.bindRender(this);
     this.render.init();
   }
+
+
+  transVectors(matrix: Matrix3): void {
+
+    this.textArea.forEach(pv => {
+      pv.applyMatrix3(matrix)
+    });
+    super.transVectors(matrix)
+  }
+
+  /**
+  * 同步向量
+  * @param source 源模型
+  * @param cloneVP 是否克隆向量，默认false
+  */
+  syncVectors(source: DDeiAbstractShape, clonePV: boolean = false): void {
+    if (clonePV) {
+      this.textArea = cloneDeep(source.textArea)
+    } else {
+      this.textArea = source.textArea
+    }
+    super.syncVectors(source, clonePV)
+  }
+
+
 
   /**
    * 返回某个点，相对于该图形的角度
