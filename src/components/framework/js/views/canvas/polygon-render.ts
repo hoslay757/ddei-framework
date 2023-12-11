@@ -163,7 +163,6 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       0, 0, 1);
     let roundPVS = new Vector3(round, 0, 1)
     roundPVS.applyMatrix3(rotateMatrix)
-
     borderPVS[0] = new Vector3(pvs[0].x + roundPVS.x, pvs[0].y + roundPVS.y, 1);
     //四个角的点，考虑边框的位置也要响应变小
     for (let i = 1; i < pvs.length; i++) {
@@ -208,15 +207,29 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let round = tempBorder?.border?.round ? tempBorder?.border?.round : this.getCachedValue("border.round");
 
     //绘制四个方向的边框
+    //加载边框的矩阵
+    //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
+    let lineOffset = 1 * ratio / 2;
+    let lineWidth = width * ratio;
+    this.getBorderPVS(tempBorder);
+    let pvs = this.borderPVS;
+
+    if (pvs?.length > 2) {
+      ctx.beginPath();
+      let len = pvs.length;
+      ctx.moveTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset)
+      for (let i = 1; i < len - 1; i++) {
+        ctx.arcTo(pvs[i].x * rat1 + lineOffset, pvs[i].y * rat1 + lineOffset, pvs[i + 1].x * rat1 + lineOffset, pvs[i + 1].y * rat1 + lineOffset, round * rat1);
+      }
+      ctx.arcTo(pvs[len - 1].x * rat1 + lineOffset, pvs[len - 1].y * rat1 + lineOffset, pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset, round * rat1);
+      ctx.closePath()
+    }
+
     //如果边框未被disabled，则绘制边框
     if (!disabled && color && (!opacity || opacity > 0) && width > 0) {
 
-      //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
-      let lineOffset = 1 * ratio / 2;
-      let lineWidth = width * ratio;
-
       ctx.lineWidth = lineWidth;
-      ctx.beginPath();
+
       //线段、虚线样式
       if (dash) {
         ctx.setLineDash(dash);
@@ -227,28 +240,17 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       }
       //颜色
       ctx.strokeStyle = DDeiUtil.getColor(color);
-      //加载边框的矩阵
-      this.getBorderPVS(tempBorder);
-      let pvs = this.borderPVS;
 
-      if (pvs?.length > 2) {
-        let len = pvs.length;
-        ctx.moveTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset)
-        for (let i = 1; i < len - 1; i++) {
-          ctx.arcTo(pvs[i].x * rat1 + lineOffset, pvs[i].y * rat1 + lineOffset, pvs[i + 1].x * rat1 + lineOffset, pvs[i + 1].y * rat1 + lineOffset, round * rat1);
-        }
-        ctx.arcTo(pvs[len - 1].x * rat1 + lineOffset, pvs[len - 1].y * rat1 + lineOffset, pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset, round * rat1);
-      }
-      ctx.closePath()
       ctx.stroke();
-      if (this.clip) {
-        ctx.clip();
-      }
-      ctx.globalAlpha = 1
-      ctx.lineWidth = 1
-      ctx.lineColor = "black"
-      ctx.setLineDash([])
     }
+    if (this.clip) {
+      ctx.clip();
+    }
+    ctx.globalAlpha = 1
+    ctx.lineWidth = 1
+    ctx.lineColor = "black"
+    ctx.setLineDash([])
+
   }
 
 

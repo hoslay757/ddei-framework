@@ -270,8 +270,8 @@ abstract class DDeiAbstractShape {
     let m1 = new Matrix3()
     //通过缩放矩阵，进行缩放
     let scaleMatrix = new Matrix3(
-      1.1, 0, 0,
-      0, 1.1, 0,
+      1 + Math.min(0.1, 20 / this.width), 0, 0,
+      0, 1 + Math.min(0.1, 20 / this.height), 0,
       0, 0, 1);
     m1.premultiply(scaleMatrix)
     //旋转并位移回去
