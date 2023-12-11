@@ -237,8 +237,8 @@ abstract class DDeiAbstractShape {
     //宽松判定区域的宽度
     let looseWeight = 10;
     //复制当前向量
-    // this.loosePVS = cloneDeep(this.pvs)
-    this.loosePVS = DDeiAbstractShape.getOutPV([this])
+    this.loosePVS = cloneDeep(this.pvs)
+
     let move1Matrix = new Matrix3(
       1, 0, -this.cpv.x,
       0, 1, -this.cpv.y,
@@ -257,8 +257,9 @@ abstract class DDeiAbstractShape {
         fpv.applyMatrix3(rotateMatrix)
       });
     }
-
-
+    if (this.loosePVS.length < 4) {
+      this.loosePVS = DDeiAbstractShape.outRectToPV(DDeiAbstractShape.pvsToOutRect(this.loosePVS))
+    }
     //计算宽、高信息，该值为不考虑缩放的大小
     this.x = this.loosePVS[0].x / stageRatio
     this.y = this.loosePVS[0].y / stageRatio
@@ -1128,6 +1129,15 @@ abstract class DDeiAbstractShape {
   */
   static getOutPV(models: Array<DDeiAbstractShape>): object {
     let o = DDeiAbstractShape.getOutRectByPV(models);
+    return DDeiAbstractShape.outRectToPV(o)
+
+
+  }
+
+  /**
+   * 返回外接矩形的点集合
+   */
+  static outRectToPV(o: object): object[] {
     return [
       new Vector3(o.x, o.y, 1),
       new Vector3(o.x1, o.y, 1),
@@ -1135,6 +1145,7 @@ abstract class DDeiAbstractShape {
       new Vector3(o.x, o.y1, 1)
     ]
   }
+
 
   /**
    * 返回点集合的外接矩形
