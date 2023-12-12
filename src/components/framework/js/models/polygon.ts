@@ -103,12 +103,17 @@ class DDeiPolygon extends DDeiAbstractShape {
   }
 
   transVectors(matrix: Matrix3): void {
-    this.textArea.forEach(pv => {
-      pv.applyMatrix3(matrix)
-    });
-    this.hpv.forEach(pv => {
-      pv.applyMatrix3(matrix)
-    });
+    if (this.poly == 2) {
+
+    } else {
+      this.textArea.forEach(pv => {
+        pv.applyMatrix3(matrix)
+      });
+      this.hpv.forEach(pv => {
+        pv.applyMatrix3(matrix)
+      });
+
+    }
     super.transVectors(matrix)
   }
 
@@ -118,14 +123,17 @@ class DDeiPolygon extends DDeiAbstractShape {
   * @param cloneVP 是否克隆向量，默认false
   */
   syncVectors(source: DDeiAbstractShape, clonePV: boolean = false): void {
-    if (clonePV) {
-      this.textArea = cloneDeep(source.textArea)
-      this.hpv = cloneDeep(source.hpv)
-    } else {
-      this.textArea = source.textArea
-      this.hpv = source.hpv
-    }
+    if (this.poly == 2) {
 
+    } else {
+      if (clonePV) {
+        this.textArea = cloneDeep(source.textArea)
+        this.hpv = cloneDeep(source.hpv)
+      } else {
+        this.textArea = source.textArea
+        this.hpv = source.hpv
+      }
+    }
     super.syncVectors(source, clonePV)
   }
 

@@ -22,6 +22,8 @@ abstract class DDeiAbstractShape {
     this.fmt = props.fmt
     this.sptStyle = props.sptStyle ? props.sptStyle : {}
     this.poly = props.poly;
+    this.sample = props.sample
+    this.ruleEvals = []
     if (props.cpv) {
       this.cpv = new Vector3(props.cpv.x, props.cpv.y, props.cpv.z || props.cpv.z == 0 ? props.cpv.z : 1);
     }
@@ -99,7 +101,8 @@ abstract class DDeiAbstractShape {
   //坐标描述方式，null/1为直角坐标，2为极坐标，默认直角坐标
   poly: number | null;
 
-
+  //极坐标下的采样策略
+  sample: object | null;
   //特殊文本样式
   sptStyle: object;
   // ============================ 方法 ============================
@@ -108,24 +111,65 @@ abstract class DDeiAbstractShape {
    * 初始化向量，基于width和height构建向量，默认中心点在0，0的位置
    */
   initPVS() {
-
-
     if (!this.cpv) {
       this.cpv = new Vector3(0, 0, 1)
     }
-    if (!this.pvs || this.pvs.length == 0) {
-      //全局缩放因子
-      let stageRatio = this.getStageRatio();
-      this.pvs = [];
-      this.pvs[0] = new Vector3(-this.width * stageRatio / 2, -this.height * stageRatio / 2, 1)
-      this.pvs[1] = new Vector3(this.width * stageRatio / 2, -this.height * stageRatio / 2, 1)
-      this.pvs[2] = new Vector3(this.width * stageRatio / 2, this.height * stageRatio / 2, 1)
-      this.pvs[3] = new Vector3(-this.width * stageRatio / 2, this.height * stageRatio / 2, 1)
+    //如果是极坐标，则用极坐标的方式来计算pvs、hpv等信息，否则采用pvs的方式
+    if (this.poly == 2) {
+      //极坐标系中，采用基于原点的100向量表示水平
+      if (!(this.hpv?.length > 0)) {
+        this.hpv = [new Vector3(0, 0, 1), new Vector3(100, 0, 1)]
+      }
+      this.executeSample();
+    } else {
+      if (!this.pvs || this.pvs.length == 0) {
+        //全局缩放因子
+        let stageRatio = this.getStageRatio();
+        this.pvs = [];
+        this.pvs[0] = new Vector3(-this.width * stageRatio / 2, -this.height * stageRatio / 2, 1)
+        this.pvs[1] = new Vector3(this.width * stageRatio / 2, -this.height * stageRatio / 2, 1)
+        this.pvs[2] = new Vector3(this.width * stageRatio / 2, this.height * stageRatio / 2, 1)
+        this.pvs[3] = new Vector3(-this.width * stageRatio / 2, this.height * stageRatio / 2, 1)
+      }
+      this.initHPV();
     }
-    this.initHPV();
     //计算宽松判定矩阵
     this.calRotate();
     this.calLoosePVS();
+  }
+
+  /**
+   * 执行采样计算pvs
+   */
+  executeSample() {
+    //通过采样计算pvs,可能存在多组pvs
+    if (this.sample?.rules?.length > 0) {
+      //采样结果
+      let sampliesResult = []
+      //采样次数
+      let loop = this.sample.loop;
+      //单次采样角度
+      let pn = 360 / loop;
+      //初始角度
+      let angle = this.sample.angle;
+      //执行采样
+      for (let i = 0; i < loop; i++) {
+        let sita = angle + i * pn
+        for (let j = 0; j < this.sample?.rules?.length; j++) {
+          if (this.ruleEvals && !this.ruleEvals[j]) {
+            eval("this.ruleEvals[j] = function" + this.sample?.rules[j])
+          }
+          let spFn = this.ruleEvals[j]
+          if (!sampliesResult[j]) {
+            sampliesResult[j] = []
+          }
+          let spResult = sampliesResult[j]
+          spFn(i, sita, this.sample, spResult, this)
+        }
+      }
+      //TODO 用第一个
+      this.pvs = sampliesResult[0]
+    }
   }
 
   /**
@@ -133,13 +177,17 @@ abstract class DDeiAbstractShape {
    */
   transVectors(matrix: Matrix3): void {
     this.cpv.applyMatrix3(matrix);
-    this.pvs.forEach(pv => {
-      pv.applyMatrix3(matrix)
-    });
-    for (let i in this.exPvs) {
-      let pv = this.exPvs[i];
-      pv.applyMatrix3(matrix)
-    };
+    if (this.poly == 2) {
+      this.executeSample();
+    } else {
+      this.pvs.forEach(pv => {
+        pv.applyMatrix3(matrix)
+      });
+      for (let i in this.exPvs) {
+        let pv = this.exPvs[i];
+        pv.applyMatrix3(matrix)
+      };
+    }
     this.initHPV();
     this.calRotate()
     this.calLoosePVS();
@@ -182,7 +230,6 @@ abstract class DDeiAbstractShape {
         }
       }
     }
-    console.log(this.sptStyle)
   }
 
   /**
@@ -311,14 +358,25 @@ abstract class DDeiAbstractShape {
    * @param cloneVP 是否克隆向量，默认false
    */
   syncVectors(source: DDeiAbstractShape, clonePV: boolean = false): void {
-    if (clonePV) {
-      this.pvs = cloneDeep(source.pvs)
-      this.cpv = cloneDeep(source.cpv)
-      this.exPvs = cloneDeep(source.exPvs)
+    if (this.poly == 2) {
+      if (clonePV) {
+        this.cpv = cloneDeep(source.cpv)
+        this.exPvs = cloneDeep(source.exPvs)
+      } else {
+        this.cpv = source.cpv
+        this.exPvs = source.exPvs
+      }
+      this.executeSample();
     } else {
-      this.pvs = source.pvs
-      this.cpv = source.cpv
-      this.exPvs = source.exPvs
+      if (clonePV) {
+        this.pvs = cloneDeep(source.pvs)
+        this.cpv = cloneDeep(source.cpv)
+        this.exPvs = cloneDeep(source.exPvs)
+      } else {
+        this.pvs = source.pvs
+        this.cpv = source.cpv
+        this.exPvs = source.exPvs
+      }
     }
     this.initHPV()
     this.calRotate();

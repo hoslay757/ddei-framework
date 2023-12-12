@@ -141,6 +141,12 @@ export default {
       'text': '',
       'orderNo': 61
     },
+    {
+      'id': '100070',
+      'name': '五角星',
+      'text': '',
+      'orderNo': 70
+    },
 
 
 
