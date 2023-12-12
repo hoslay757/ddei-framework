@@ -28,7 +28,6 @@ export default {
       { x: 150, y: 0, z: 1 },
     ],
     border: {
-      width: 2,
       round: 5
     }
   }

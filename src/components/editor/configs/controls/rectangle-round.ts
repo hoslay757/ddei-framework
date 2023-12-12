@@ -1,7 +1,7 @@
 export default {
   'id': '100005',
   'name': '圆角矩形',
-  'code': 'rectangle',
+  'code': 'rect',
   'desc': '由4个点组成的矩形',
   'from': '100500',
   'icon': 'toolbox-shape-rect',
@@ -26,8 +26,7 @@ export default {
       { x: 160, y: 0 },
     ],
     border: {
-      round: 5,
-      width: 2
+      round: 5
     }
   }
 }

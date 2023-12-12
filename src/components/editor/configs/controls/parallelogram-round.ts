@@ -29,8 +29,7 @@ export default {
       italic: 1
     },
     border: {
-      round: 5,
-      width: 2
+      round: 5
     }
   }
 }

@@ -26,7 +26,6 @@ export default {
       { x: 10, y: 0 },
     ],
     border: {
-      width: 2,
       round: 5
     }
   }

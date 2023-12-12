@@ -23,6 +23,10 @@ export default {
     hpv: [
       { x: 0, y: 124.7, z: 1 },
       { x: 144, y: 124.7, z: 1 },
-    ]
+    ],
+
+    border: {
+      round: 5
+    }
   }
 }
