@@ -1,14 +1,9 @@
 <template>
   <div :class="{ 'ddei_pv_editor_bordertype': true, 'ddei_pv_editor_bordertype_disabled': attrDefine.readonly }"
-       :style="{'pointer-events':attrDefine.readonly ? 'none':''}">
-    <div class="itembox"
-         v-for="item in dataSource"
-         @click="checkRadioValue(attrDefine, $event)">
-      <input type="radio"
-             :disabled="attrDefine.readonly"
-             :name="attrDefine.id"
-             :value="item.value"
-             v-model="attrDefine.value" />
+    :style="{ 'pointer-events': attrDefine.readonly ? 'none' : '' }">
+    <div class="itembox" v-for="item in dataSource" @click="checkRadioValue(attrDefine, $event)">
+      <input type="radio" :disabled="attrDefine.readonly" :name="attrDefine.id" :value="item.value"
+        v-model="attrDefine.value" />
       <div>{{ item.text }}</div>
     </div>
   </div>
@@ -49,7 +44,7 @@ export default {
   },
   computed: {},
   watch: {},
-  created() {},
+  created() { },
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
@@ -138,8 +133,7 @@ export default {
           "borderColor",
           "borderOpacity",
           "borderWidth",
-          "borderDash",
-          "borderRound"
+          "borderDash"
         );
         if (this.controlDefine.subStyles) {
           DDeiEditorArrtibute.hiddenAttributesByCode(
@@ -147,8 +141,7 @@ export default {
             "borderColor",
             "borderOpacity",
             "borderWidth",
-            "borderDash",
-            "borderRound"
+            "borderDash"
           );
         }
       } else if (value == "1") {
@@ -157,8 +150,7 @@ export default {
           "borderColor",
           "borderOpacity",
           "borderWidth",
-          "borderDash",
-          "borderRound"
+          "borderDash"
         );
         if (this.controlDefine.subStyles) {
           DDeiEditorArrtibute.showAttributesByCode(
@@ -166,8 +158,7 @@ export default {
             "borderColor",
             "borderOpacity",
             "borderWidth",
-            "borderDash",
-            "borderRound"
+            "borderDash"
           );
         }
       }

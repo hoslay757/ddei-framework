@@ -22,18 +22,18 @@ abstract class DDeiAbstractShape {
     this.fmt = props.fmt
     this.sptStyle = props.sptStyle ? props.sptStyle : {}
     if (props.cpv) {
-      this.cpv = new Vector3(props.cpv.x, props.cpv.y, props.cpv.z);
+      this.cpv = new Vector3(props.cpv.x, props.cpv.y, props.cpv.z || props.cpv.z == 0 ? props.cpv.z : 1);
     }
     if (props.pvs) {
       this.pvs = [];
       props.pvs.forEach(pv => {
-        this.pvs.push(new Vector3(pv.x, pv.y, pv.z));
+        this.pvs.push(new Vector3(pv.x, pv.y, pv.z || pv.z == 0 ? pv.z : 1));
       });
     }
     this.hpv = []
     if (props.hpv) {
       props.hpv.forEach(pv => {
-        this.hpv.push(new Vector3(pv.x, pv.y, pv.z));
+        this.hpv.push(new Vector3(pv.x, pv.y, pv.z || pv.z == 0 ? pv.z : 1));
       });
     }
 
@@ -41,7 +41,7 @@ abstract class DDeiAbstractShape {
     if (props.exPvs) {
       for (let i in props.exPvs) {
         let pv = props.exPvs[i];
-        let v = new Vector3(pv.x, pv.y, pv.z)
+        let v = new Vector3(pv.x, pv.y, pv.z || pv.z == 0 ? pv.z : 1)
         v.id = pv.id
         this.exPvs[pv.id] = v;
       }

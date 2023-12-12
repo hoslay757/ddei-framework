@@ -512,7 +512,7 @@ export const datas = {
       'desc': '控件的主体显示文本',
       'group': '基础信息',
       'controlType': 'textarea',
-      'defaultValue': '文本',
+      'defaultValue': '',
       'dataType': 'string',
       'type': [1, 2], //类别，1图形，2业务，3事件
       'orderNo': 3,

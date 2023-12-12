@@ -1,5 +1,5 @@
 export default {
-  'id': '100005',
+  'id': '999995',
   'name': '菱形',
   'code': 'diamond',
   'desc': '标准的菱形',

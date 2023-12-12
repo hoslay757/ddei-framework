@@ -1,5 +1,5 @@
 export default {
-  'id': '100004',
+  'id': '100006',
   'name': '椭圆形',
   'code': 'ellipse',
   'desc': '标准的椭圆形',

@@ -1,8 +1,8 @@
 export default {
-  'id': '100040',
+  'id': '100041',
   'name': '菱形',
   'code': 'diamond',
-  'desc': '标准的菱形',
+  'desc': '圆角的菱形',
   'from': '100500',
   'icon': 'toolbox-shape-rect',
   'define': {
@@ -24,6 +24,10 @@ export default {
     hpv: [
       { x: 80, y: 0, z: 1 },
       { x: 90, y: 0, z: 1 },
-    ]
+    ],
+    border: {
+      round: 5,
+      width: 2
+    }
   }
 }

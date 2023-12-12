@@ -1,5 +1,5 @@
 export default {
-  'id': '100010',
+  'id': '100013',
   'name': '三角形',
   'code': 'triangle',
   'desc': '由三个点构成的三角形',
@@ -23,10 +23,6 @@ export default {
     hpv: [
       { x: 0, y: 124.7, z: 1 },
       { x: 144, y: 124.7, z: 1 },
-    ],
-    border: {
-      round: 5,
-      width: 2
-    }
+    ]
   }
 }

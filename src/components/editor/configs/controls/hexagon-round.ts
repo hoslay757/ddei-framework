@@ -1,5 +1,5 @@
 export default {
-  'id': '100030',
+  'id': '100031',
   'name': '六边形',
   'code': 'hexagon',
   'desc': '由六个点构成的六边形',
@@ -26,6 +26,10 @@ export default {
     hpv: [
       { x: 50, y: 0, z: 1 },
       { x: 150, y: 0, z: 1 },
-    ]
+    ],
+    border: {
+      width: 2,
+      round: 5
+    }
   }
 }
