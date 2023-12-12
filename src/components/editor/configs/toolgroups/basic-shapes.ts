@@ -117,6 +117,31 @@ export default {
       'text': '',
       'orderNo': 41
     },
+    {
+      'id': '100050',
+      'name': '平行四边形',
+      'text': '',
+      'orderNo': 50
+    },
+    {
+      'id': '100051',
+      'name': '平行四边形',
+      'text': '',
+      'orderNo': 51
+    },
+    {
+      'id': '100060',
+      'name': '梯形',
+      'text': '',
+      'orderNo': 60
+    },
+    {
+      'id': '100061',
+      'name': '圆角梯形',
+      'text': '',
+      'orderNo': 61
+    },
+
 
 
 
