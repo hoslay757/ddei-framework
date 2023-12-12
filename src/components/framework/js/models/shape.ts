@@ -21,9 +21,11 @@ abstract class DDeiAbstractShape {
     this.unicode = props.unicode ? props.unicode : DDeiUtil.getUniqueCode()
     this.fmt = props.fmt
     this.sptStyle = props.sptStyle ? props.sptStyle : {}
+    this.poly = props.poly;
     if (props.cpv) {
       this.cpv = new Vector3(props.cpv.x, props.cpv.y, props.cpv.z || props.cpv.z == 0 ? props.cpv.z : 1);
     }
+
     if (props.pvs) {
       this.pvs = [];
       props.pvs.forEach(pv => {
@@ -93,6 +95,9 @@ abstract class DDeiAbstractShape {
 
   //格式化信息
   fmt: object | null;
+
+  //坐标描述方式，null/1为直角坐标，2为极坐标，默认直角坐标
+  poly: number | null;
 
 
   //特殊文本样式

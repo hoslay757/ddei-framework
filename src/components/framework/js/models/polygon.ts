@@ -84,6 +84,7 @@ class DDeiPolygon extends DDeiAbstractShape {
   modelType: string = 'DDeiPolygon';
   // 本模型的基础图形
   baseModelType: string = 'DDeiPolygon';
+
   // ============================ 方法 ===============================
 
   /**
