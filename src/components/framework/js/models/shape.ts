@@ -287,18 +287,22 @@ abstract class DDeiAbstractShape {
   transVectors(matrix: Matrix3): void {
     this.cpv.applyMatrix3(matrix);
     if (this.poly == 2) {
+
       this.hpv.forEach(pv => {
         pv.applyMatrix3(matrix);
       })
-
+      for (let i in this.exPvs) {
+        let pv = this.exPvs[i];
+        pv.applyMatrix3(matrix)
+      };
       this.bpv.applyMatrix3(matrix);
-
 
 
       this.initHPV();
       this.calRotate()
-      this.calLoosePVS();
       this.executeSample();
+      this.calLoosePVS();
+
     } else {
       this.pvs.forEach(pv => {
         pv.applyMatrix3(matrix)
@@ -417,6 +421,7 @@ abstract class DDeiAbstractShape {
     this.loosePVS.forEach(fpv => {
       fpv.applyMatrix3(move1Matrix)
     });
+    console.log(this.loosePVS[0].x + " .  " + this.loosePVS[0].y)
     //获取旋转角度
     if (this.rotate && this.rotate != 0) {
       let angle = (this.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);

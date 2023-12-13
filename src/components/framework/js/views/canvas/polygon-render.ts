@@ -539,10 +539,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         continue;
       }
       ctx.save();
-      if (i > 0) {
-        //创建path
-        this.createPath(pvs, tempShape)
-      }
+      //创建path
+      this.createPath(pvs, tempShape)
       //绘制线条
       if (!disabled && color && (!opacity || opacity > 0) && width > 0) {
         ctx.lineWidth = lineWidth;
