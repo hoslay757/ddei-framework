@@ -6,8 +6,8 @@ export default {
   'from': '100500',
   'icon': 'toolbox-shape-rect',
   'define': {
-    width: 154,
-    height: 154,
+    width: 100,
+    height: 100,
     //2为极坐标，缺省点为原点
     poly: 2,
     //采样信息
@@ -24,18 +24,14 @@ export default {
             let er = i%2 == 0 ? sample.r : sample.r * 0.58
             let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
             let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-            let v = new Vector3(model.cpv.x + x, model.cpv.y + y, 1);
-            v.group = j
-            pvs.push(v);
+            pvs.push({ x: x, y: y, group: j });
         }`,
         `(i,j, sita, sample, pvs, model){
           if(i % 2 == 1){
             let er = sample.r * 0.58
             let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
             let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-            let v = new Vector3(model.cpv.x + x, model.cpv.y + y, 1);
-            v.group = j
-            pvs.push(v);
+            pvs.push({ x: x, y: y, group: j });
           }
         }`,
         `(i,j, sita, sample, pvs, model){
@@ -43,10 +39,7 @@ export default {
             let er = sample.r * 0.5
             let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
             let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-            let v = new Vector3(model.cpv.x + x, model.cpv.y + y, 1);
-            v.type=10
-            v.group = j
-            pvs.push(v);
+            pvs.push({ x: x, y: y,type:10, group: j });
           }
         }`,
 

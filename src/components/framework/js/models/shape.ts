@@ -180,6 +180,7 @@ abstract class DDeiAbstractShape {
       //对返回的数据进行处理和拆分
       let pvs = []
       let textArea = []
+      let operatePVS = []
       for (let i = 0; i < sampliesResult.length; i++) {
         if (sampliesResult[i].length > 0 && sampliesResult[i][0].type != 10) {
           sampliesResult[i].forEach(pvd => {
@@ -189,7 +190,11 @@ abstract class DDeiAbstractShape {
             }
             pv.z = (pvd.z || pvd.z === 0) ? pvd.z : 1
             pvs.push(pv)
+            if (i == 0) {
+              operatePVS.push(pv)
+            }
           })
+
         } else if (sampliesResult[i].length > 0 && sampliesResult[i][0].type == 10) {
           sampliesResult[i].forEach(pvd => {
             let pv = new Vector3()
@@ -203,6 +208,7 @@ abstract class DDeiAbstractShape {
       }
       //根据旋转和缩放参照点，构建旋转和缩放矩阵，对矩阵进行旋转
       let m1 = new Matrix3();
+      //因为bpv在缩放时同步变大，因此会随着stageRatio变化大小
       let bpv = DDeiUtil.pointsToZero([this.bpv], this.cpv, this.rotate)[0]
       let scaleX = (bpv.x / 100).toFixed(4);
       let scaleY = (bpv.y / 100).toFixed(4);
@@ -233,8 +239,10 @@ abstract class DDeiAbstractShape {
       textArea.forEach(pv => {
         pv.applyMatrix3(m1)
       });
-
       this.pvs = pvs
+
+      this.operatePVS = operatePVS;
+
       this.textArea = textArea
     }
 
@@ -400,7 +408,7 @@ abstract class DDeiAbstractShape {
   calLoosePVS(): void {
     let stageRatio = this.stage?.getStageRatio();
     //复制当前向量
-    this.loosePVS = cloneDeep(this.pvs)
+    this.loosePVS = this.operatePVS?.length > 2 ? cloneDeep(this.operatePVS) : cloneDeep(this.pvs)
 
     let move1Matrix = new Matrix3(
       1, 0, -this.cpv.x,

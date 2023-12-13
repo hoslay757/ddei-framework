@@ -26,19 +26,14 @@ export default {
             let er = i%2 == 0 ? sample.r : sample.r * 0.58
             let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
             let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-            let v = new Vector3(model.cpv.x + x, model.cpv.y + y, 1);
-            v.group = j
-            pvs.push(v);
+            pvs.push({ x: x, y: y, group: j });
         }`,
         `(i,j, sita, sample, pvs, model){
           if(i % 2 == 0 && i != 6 && i !=0){
             let er = sample.r * 0.5
             let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
             let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-            let v = new Vector3(model.cpv.x + x, model.cpv.y + y, 1);
-            v.type=10
-            v.group = j
-            pvs.push(v);
+            pvs.push({ x: x, y: y,type:10, group: j });
           }
         }`,
 

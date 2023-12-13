@@ -103,9 +103,6 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       //根据pvss绘制边框
       this.drawBorder(tempShape);
 
-      //清空pvss
-      this.clearPVSS()
-
       ctx.restore();
 
       if (this.viewAfter) {
@@ -461,13 +458,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   }
 
 
-  /**
-   * 清空pvss
-   */
-  clearPVSS() {
-    this.pvss = null
-    this.borderPVSS = null
-  }
+
 
   /**
    * 创建路径

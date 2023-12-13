@@ -28,7 +28,6 @@ export default {
           let er = i % 2 == 0 ? sample.r : sample.r / 2.7
           let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
           let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-          let v = new Vector3(model.cpv.x + x, model.cpv.y + y, 1);
           pvs.push({ x: x, y: y, group: j });
         }`,
         `(i, j, sita, sample, pvs, model){
