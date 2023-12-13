@@ -228,6 +228,8 @@ class DDeiUtil {
       returnModel.exPvs[i] = clone(sourceModel.exPvs[i])
     }
     returnModel.cpv = clone(sourceModel.cpv)
+    returnModel.bpv = clone(sourceModel.bpv)
+
     returnModel.initPVS()
     return returnModel;
   }

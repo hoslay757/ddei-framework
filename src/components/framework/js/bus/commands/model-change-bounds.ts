@@ -128,6 +128,7 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
           let pvTemp = new Vector3(pv.x, pv.y, 1);
           pvTemp.applyMatrix3(m1)
           textPvsR.push({ xR: parseFloat((pvTemp.x / originRect.width).toFixed(4)), yR: parseFloat((pvTemp.y / originRect.height).toFixed(4)) })
+
         });
 
 
@@ -139,7 +140,14 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
           exPvsR[i] = { xR: parseFloat((pvTemp.x / originRect.width).toFixed(4)), yR: parseFloat((pvTemp.y / originRect.height).toFixed(4)) }
         }
 
-        originPosMap.set(id, { cpvR: cpvR, pvsR: pvsR, exPvsR: exPvsR, textPvsR: textPvsR });
+        let bpvR = null
+        if (item.poly == 2) {
+          let pvTemp = new Vector3(item.bpv.x, item.bpv.y, 1);
+          pvTemp.applyMatrix3(m1)
+          bpvR = { xR: pvTemp.x / originRect.width, yR: pvTemp.y / originRect.height }
+        }
+
+        originPosMap.set(id, { cpvR: cpvR, pvsR: pvsR, exPvsR: exPvsR, textPvsR: textPvsR, bpvR: bpvR });
 
       }
       //计算好原始比例后，按照增量扩展控件大小，并按照其旋转数字施加一个变换
@@ -162,13 +170,19 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
 
         for (let xi in item.exPvs) {
           let pv = item.exPvs[xi];
-
           let pvR = originPosMap.get(item.id).exPvsR[xi];
           pv.x = parseFloat((movedBounds.x + movedBounds.width * pvR.xR).toFixed(4))
-
           pv.y = parseFloat((movedBounds.y + movedBounds.height * pvR.yR).toFixed(4))
 
         }
+
+        if (item.poly == 2) {
+          let pv = item.bpv;
+          let pvR = originPosMap.get(item.id).bpvR;
+          pv.x = parseFloat((movedBounds.x + movedBounds.width * pvR.xR).toFixed(4))
+          pv.y = parseFloat((movedBounds.y + movedBounds.height * pvR.yR).toFixed(4))
+        }
+
         if (item.rotate && item.rotate != 0) {
           //旋转
           let m1 = new Matrix3();

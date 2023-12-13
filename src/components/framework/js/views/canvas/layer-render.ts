@@ -1002,7 +1002,6 @@ class DDeiLayerCanvasRender {
               if (model.changeChildrenBounds) {
                 model.changeChildrenBounds();
               }
-
               model.updateLinkModels()
               operateModels.push(model)
             }

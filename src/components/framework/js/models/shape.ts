@@ -40,6 +40,11 @@ abstract class DDeiAbstractShape {
       });
     }
 
+
+    if (props.bpv) {
+      this.bpv = new Vector3(props.bpv.x, props.bpv.y, props.bpv.z || props.bpv.z == 0 ? props.bpv.z : 1);
+    }
+
     this.exPvs = {}
     if (props.exPvs) {
       for (let i in props.exPvs) {
@@ -117,7 +122,11 @@ abstract class DDeiAbstractShape {
     if (this.poly == 2) {
       //极坐标系中，采用基于原点的100向量表示水平
       if (!(this.hpv?.length > 0)) {
-        this.hpv = [new Vector3(0, 0, 1), new Vector3(100, 0, 1), new Vector3(this.width, this.height, 1)]
+        this.hpv = [new Vector3(0, 0, 1), new Vector3(100, 0, 1)]
+      }
+      //用于计算缩放大小比率的点PV，以100为参考
+      if (!this.bpv) {
+        this.bpv = new Vector3(this.width, this.height, 1)
       }
       this.executeSample();
     } else {
@@ -194,10 +203,9 @@ abstract class DDeiAbstractShape {
       }
       //根据旋转和缩放参照点，构建旋转和缩放矩阵，对矩阵进行旋转
       let m1 = new Matrix3();
-
-      let hpv = DDeiUtil.pointsToZero(this.hpv, this.cpv, this.rotate)
-      let scaleX = (hpv[2].x / 100).toFixed(2);
-      let scaleY = (hpv[2].y / 100).toFixed(2);
+      let bpv = DDeiUtil.pointsToZero([this.bpv], this.cpv, this.rotate)[0]
+      let scaleX = (bpv.x / 100).toFixed(4);
+      let scaleY = (bpv.y / 100).toFixed(4);
       let scaleMatrix = new Matrix3(
         scaleX, 0, 0,
         0, scaleY, 0,
@@ -229,8 +237,41 @@ abstract class DDeiAbstractShape {
       this.pvs = pvs
       this.textArea = textArea
     }
+
   }
 
+  /**
+   * 同步向量
+   * @param source 源模型
+   * @param cloneVP 是否克隆向量，默认false
+   */
+  syncVectors(source: DDeiAbstractShape, clonePV: boolean = false): void {
+    if (this.poly == 2) {
+      if (clonePV) {
+        this.cpv = cloneDeep(source.cpv)
+        this.exPvs = cloneDeep(source.exPvs)
+        this.bpv = cloneDeep(source.bpv)
+      } else {
+        this.cpv = source.cpv
+        this.exPvs = source.exPvs
+        this.bpv = source.bpv
+      }
+      this.executeSample();
+    } else {
+      if (clonePV) {
+        this.pvs = cloneDeep(source.pvs)
+        this.cpv = cloneDeep(source.cpv)
+        this.exPvs = cloneDeep(source.exPvs)
+      } else {
+        this.pvs = source.pvs
+        this.cpv = source.cpv
+        this.exPvs = source.exPvs
+      }
+    }
+    this.initHPV()
+    this.calRotate();
+    this.calLoosePVS();
+  }
 
   /**
    * 变换向量
@@ -241,6 +282,11 @@ abstract class DDeiAbstractShape {
       this.hpv.forEach(pv => {
         pv.applyMatrix3(matrix);
       })
+
+      this.bpv.applyMatrix3(matrix);
+
+
+
       this.initHPV();
       this.calRotate()
       this.calLoosePVS();
@@ -419,36 +465,7 @@ abstract class DDeiAbstractShape {
 
   }
 
-  /**
-   * 同步向量
-   * @param source 源模型
-   * @param cloneVP 是否克隆向量，默认false
-   */
-  syncVectors(source: DDeiAbstractShape, clonePV: boolean = false): void {
-    if (this.poly == 2) {
-      if (clonePV) {
-        this.cpv = cloneDeep(source.cpv)
-        this.exPvs = cloneDeep(source.exPvs)
-      } else {
-        this.cpv = source.cpv
-        this.exPvs = source.exPvs
-      }
-      this.executeSample();
-    } else {
-      if (clonePV) {
-        this.pvs = cloneDeep(source.pvs)
-        this.cpv = cloneDeep(source.cpv)
-        this.exPvs = cloneDeep(source.exPvs)
-      } else {
-        this.pvs = source.pvs
-        this.cpv = source.cpv
-        this.exPvs = source.exPvs
-      }
-    }
-    this.initHPV()
-    this.calRotate();
-    this.calLoosePVS();
-  }
+
 
   /**
    * 设置旋转角度
