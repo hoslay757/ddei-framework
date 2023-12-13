@@ -24,40 +24,23 @@ export default {
             let er  = sample.r / Math.cos(45 * DDeiConfig.ROTATE_UNIT)+2
             let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
             let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-            let v = new Vector3(model.cpv.x + x, model.cpv.y + y, 1);
-            v.r = er
-            v.type = 0
-            v.group = j
-            pvs.push(v);
+            pvs.push({x:x,y:y,r:er,type:0,group:j});
         }`,
         `(i,j, sita, sample, pvs, model){
             if(i == 0){
               let er = sample.r
               let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
               let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-              let v = new Vector3(model.cpv.x + x, model.cpv.y + y, 1);
-              v.r = er
-              v.group = j
-              pvs.push(v);
+              pvs.push({x:x,y:y,r:er,group:j});
             }
         }`,
         `(i,j, sita, sample, pvs, model){
             let er = sample.r
             let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
             let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-            let v = new Vector3(model.cpv.x + x, model.cpv.y + y, 1);
-            v.r = er
-            v.type = 10
-            v.group = j
-            pvs.push(v);
+            pvs.push({x:x,y:y,r:er,type:10,group:j});
         }`,
       ]
-    },
-    textArea: [
-      { x: -2.5, y: 32.5, z: 1 },
-      { x: 102.5, y: 32.5, z: 1 },
-      { x: 102.5, y: 142.5, z: 1 },
-      { x: -2.5, y: 142.5, z: 1 },
-    ],
+    }
   }
 }

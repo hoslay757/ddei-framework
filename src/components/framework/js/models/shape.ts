@@ -117,7 +117,7 @@ abstract class DDeiAbstractShape {
     if (this.poly == 2) {
       //极坐标系中，采用基于原点的100向量表示水平
       if (!(this.hpv?.length > 0)) {
-        this.hpv = [new Vector3(0, 0, 1), new Vector3(100, 0, 1)]
+        this.hpv = [new Vector3(0, 0, 1), new Vector3(100, 0, 1), new Vector3(this.width, this.height, 1)]
       }
       this.executeSample();
     } else {
@@ -168,16 +168,69 @@ abstract class DDeiAbstractShape {
           spFn(i, j, sita, this.sample, spResult, this)
         }
       }
-      this.pvs = Object.freeze([])
+      //对返回的数据进行处理和拆分
+      let pvs = []
+      let textArea = []
       for (let i = 0; i < sampliesResult.length; i++) {
         if (sampliesResult[i].length > 0 && sampliesResult[i][0].type != 10) {
-          this.pvs = this.pvs.concat(sampliesResult[i]);
+          sampliesResult[i].forEach(pvd => {
+            let pv = new Vector3()
+            for (let i in pvd) {
+              pv[i] = pvd[i]
+            }
+            pv.z = (pvd.z || pvd.z === 0) ? pvd.z : 1
+            pvs.push(pv)
+          })
         } else if (sampliesResult[i].length > 0 && sampliesResult[i][0].type == 10) {
-          this.textArea = sampliesResult[i]
+          sampliesResult[i].forEach(pvd => {
+            let pv = new Vector3()
+            for (let i in pvd) {
+              pv[i] = pvd[i]
+            }
+            pv.z = (pvd.z || pvd.z === 0) ? pvd.z : 1
+            textArea.push(pv)
+          })
         }
       }
+      //根据旋转和缩放参照点，构建旋转和缩放矩阵，对矩阵进行旋转
+      let m1 = new Matrix3();
+
+      let hpv = DDeiUtil.pointsToZero(this.hpv, this.cpv, this.rotate)
+      let scaleX = (hpv[2].x / 100).toFixed(2);
+      let scaleY = (hpv[2].y / 100).toFixed(2);
+      let scaleMatrix = new Matrix3(
+        scaleX, 0, 0,
+        0, scaleY, 0,
+        0, 0, 1);
+      m1.premultiply(scaleMatrix)
+
+      if (this.rotate) {
+        let angle = parseFloat((-this.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4));
+        let rotateMatrix = new Matrix3(
+          Math.cos(angle), Math.sin(angle), 0,
+          -Math.sin(angle), Math.cos(angle), 0,
+          0, 0, 1);
+        m1.premultiply(rotateMatrix)
+      }
+
+
+      let moveMatrix = new Matrix3(
+        1, 0, this.cpv.x,
+        0, 1, this.cpv.y,
+        0, 0, 1);
+      m1.premultiply(moveMatrix)
+      pvs.forEach(pv => {
+        pv.applyMatrix3(m1)
+      });
+      textArea.forEach(pv => {
+        pv.applyMatrix3(m1)
+      });
+
+      this.pvs = pvs
+      this.textArea = textArea
     }
   }
+
 
   /**
    * 变换向量
@@ -185,6 +238,12 @@ abstract class DDeiAbstractShape {
   transVectors(matrix: Matrix3): void {
     this.cpv.applyMatrix3(matrix);
     if (this.poly == 2) {
+      this.hpv.forEach(pv => {
+        pv.applyMatrix3(matrix);
+      })
+      this.initHPV();
+      this.calRotate()
+      this.calLoosePVS();
       this.executeSample();
     } else {
       this.pvs.forEach(pv => {
@@ -194,10 +253,11 @@ abstract class DDeiAbstractShape {
         let pv = this.exPvs[i];
         pv.applyMatrix3(matrix)
       };
+      this.initHPV();
+      this.calRotate()
+      this.calLoosePVS();
     }
-    this.initHPV();
-    this.calRotate()
-    this.calLoosePVS();
+
   }
 
 

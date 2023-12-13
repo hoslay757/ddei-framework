@@ -10,8 +10,8 @@ export default {
   'from': '100500',
   'icon': 'toolbox-shape-rect',
   'define': {
-    width: 154,
-    height: 154,
+    width: 100,
+    height: 100,
     //2为极坐标，缺省点为原点
     poly: 2,
     //采样信息
@@ -29,36 +29,23 @@ export default {
           let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
           let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
           let v = new Vector3(model.cpv.x + x, model.cpv.y + y, 1);
-          v.group = j
-          pvs.push(v);
+          pvs.push({ x: x, y: y, group: j });
         }`,
-        `(i,j, sita, sample, pvs, model){
-          if(i  == 0){
+        `(i, j, sita, sample, pvs, model){
+          if (i == 0) {
             let er = sample.r / 3
             let x = er * Math.cos(45 * DDeiConfig.ROTATE_UNIT)
             let y = er * Math.sin(45 * DDeiConfig.ROTATE_UNIT)
-            let v = new Vector3(model.cpv.x + x, model.cpv.y + y, 1);
-            v.type=10
-            v.group = j
-            pvs.push(v);
+            pvs.push({ x: x, y: y, type: 10, group: j });
             x = er * Math.cos(135 * DDeiConfig.ROTATE_UNIT)
             y = er * Math.sin(135 * DDeiConfig.ROTATE_UNIT)
-            v = new Vector3(model.cpv.x + x, model.cpv.y + y, 1);
-            v.type=10
-            v.group = j
-            pvs.push(v);
+            pvs.push({ x: x, y: y, type: 10, group: j });
             x = er * Math.cos(225 * DDeiConfig.ROTATE_UNIT)
             y = er * Math.sin(225 * DDeiConfig.ROTATE_UNIT)
-            v = new Vector3(model.cpv.x + x, model.cpv.y + y, 1);
-            v.type=10
-            v.group = j
-            pvs.push(v);
+            pvs.push({ x: x, y: y, type: 10, group: j });
             x = er * Math.cos(315 * DDeiConfig.ROTATE_UNIT)
             y = er * Math.sin(315 * DDeiConfig.ROTATE_UNIT)
-            v = new Vector3(model.cpv.x + x, model.cpv.y + y, 1);
-            v.type=10
-            v.group = j
-            pvs.push(v);
+            pvs.push({ x: x, y: y, type: 10, group: j });
           }
         }`,
       ]

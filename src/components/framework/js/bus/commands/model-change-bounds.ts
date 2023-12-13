@@ -118,6 +118,7 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
         let pvsR = [];
         let exPvsR = {}
         let textPvsR = []
+
         item.pvs.forEach(pv => {
           let pvTemp = new Vector3(pv.x, pv.y, 1);
           pvTemp.applyMatrix3(m1)
@@ -128,6 +129,9 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
           pvTemp.applyMatrix3(m1)
           textPvsR.push({ xR: parseFloat((pvTemp.x / originRect.width).toFixed(4)), yR: parseFloat((pvTemp.y / originRect.height).toFixed(4)) })
         });
+
+
+
         for (let i in item.exPvs) {
           let pv = item.exPvs[i];
           let pvTemp = new Vector3(pv.x, pv.y, 1);
@@ -142,6 +146,7 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
       models.forEach(item => {
         item.cpv.x = parseFloat((movedBounds.x + movedBounds.width * originPosMap.get(item.id).cpvR.xR).toFixed(4))
         item.cpv.y = parseFloat((movedBounds.y + movedBounds.height * originPosMap.get(item.id).cpvR.yR).toFixed(4))
+
         for (let xi = 0; xi < item.textArea?.length; xi++) {
           let pv = item.textArea[xi];
           let pvR = originPosMap.get(item.id).textPvsR[xi];
@@ -178,7 +183,6 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
             -Math.sin(angle), Math.cos(angle), 0,
             0, 0, 1);
           m1.premultiply(rotateMatrix);
-
           let move2Matrix = new Matrix3(
             1, 0, item.cpv.x,
             0, 1, item.cpv.y,
