@@ -122,14 +122,24 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
    * @param tempShape 
    */
   createClip(tempShape: object | null): void {
-    let canvas = this.ddRender.getCanvas();
-    let ctx = canvas.getContext('2d');
-    let pvs = this.borderPVSS[0];
-    //创建path
-    this.createPath(pvs, tempShape)
     if (this.clip) {
+      let canvas = this.ddRender.getCanvas();
+      let ctx = canvas.getContext('2d');
+      // let pvs = this.borderPVSS[0];
+      //找到第一个类型不为0的
+      let i = 0
+      for (; i < this.borderPVSS.length; i++) {
+        if (this.borderPVSS[i][0].type === undefined || this.borderPVSS[i][0].type === null || this.borderPVSS[i][0].type != 0) {
+          break;
+        }
+      }
+      let pvs = this.borderPVSS[i];
+      //创建path
+      this.createPath(pvs, tempShape)
+
       ctx.clip();
     }
+
 
   }
 

@@ -126,7 +126,9 @@ abstract class DDeiAbstractShape {
       }
       //用于计算缩放大小比率的点PV，以100为参考
       if (!this.bpv) {
-        this.bpv = new Vector3(this.width, this.height, 1)
+        //全局缩放因子
+        let stageRatio = this.getStageRatio();
+        this.bpv = new Vector3(this.width * stageRatio, this.height * stageRatio, 1)
       }
       this.executeSample();
     } else {
