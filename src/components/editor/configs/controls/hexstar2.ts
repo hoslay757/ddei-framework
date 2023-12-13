@@ -44,20 +44,27 @@ export default {
               pvs.push({ x: x, y: y,r:er, group: j });
             }
         }`,
-
         `(i,j, sita, sample, pvs, model){
             let er = i%2 == 0 ? sample.r : sample.r * 0.58
             let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
             let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
             pvs.push({ x: x, y: y, group: j });
         }`,
-
         `(i,j, sita, sample, pvs, model){
           if(i % 2 == 1){
             let er = sample.r * 0.58
             let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
             let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
             pvs.push({ x: x, y: y, group: j });
+          }
+        }`,
+        `(i,j, sita, sample, pvs, model){
+          if(i == 1 || i == 2){
+            let er = sample.r * 0.4
+            let rad = sita * DDeiConfig.ROTATE_UNIT
+            let x = er * Math.cos(rad)
+            let y = er * Math.sin(rad)
+            pvs.push({ x: x, y: y,r:er,rad:rad, direct:1,group: j });
           }
         }`,
         `(i,j, sita, sample, pvs, model){

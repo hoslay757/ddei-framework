@@ -501,12 +501,28 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       ctx.closePath()
     } else if (pvs.length == 1) {
       ctx.beginPath();
-      ctx.arc(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pvs[0].r * rat1, 0, DDeiConfig.ROTATE_UNIT * 360, !pvs[0].direct);
+      let rotate = this.model.rotate;
+      if (!rotate) {
+        rotate = 0
+      }
+      let bpv = DDeiUtil.pointsToZero([this.model.bpv], this.model.cpv, rotate)[0]
+      let scaleX = Math.abs(bpv.x / 100)
+      let scaleY = Math.abs(bpv.y / 100)
+      ctx.ellipse(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pvs[0].r * rat1 * scaleX, pvs[0].r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, DDeiConfig.ROTATE_UNIT * 0, Math.PI * 2)
       ctx.closePath()
     } else if (pvs.length == 2) {
       ctx.beginPath();
+      let rotate = this.model.rotate;
+      if (!rotate) {
+        rotate = 0
+      }
+      let bpv = DDeiUtil.pointsToZero([this.model.bpv], this.model.cpv, rotate)[0]
+      let scaleX = Math.abs(bpv.x / 100)
+      let scaleY = Math.abs(bpv.y / 100)
       ctx.moveTo(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset)
-      ctx.arc(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pvs[1].r * rat1, pvs[0].rad, pvs[1].rad, !pvs[1].direct);
+      ctx.lineTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset)
+      ctx.ellipse(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pvs[0].r * rat1 * scaleX, pvs[0].r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, pvs[0].rad, pvs[1].rad)
+      ctx.lineTo(pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset)
       ctx.closePath()
     }
   }

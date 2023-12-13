@@ -210,8 +210,8 @@ abstract class DDeiAbstractShape {
       let m1 = new Matrix3();
       //因为bpv在缩放时同步变大，因此会随着stageRatio变化大小
       let bpv = DDeiUtil.pointsToZero([this.bpv], this.cpv, this.rotate)[0]
-      let scaleX = (bpv.x / 100).toFixed(4);
-      let scaleY = (bpv.y / 100).toFixed(4);
+      let scaleX = Math.abs(bpv.x / 100)
+      let scaleY = Math.abs(bpv.y / 100)
       let scaleMatrix = new Matrix3(
         scaleX, 0, 0,
         0, scaleY, 0,
