@@ -188,6 +188,10 @@ class DDeiEditor {
         if (!DDeiUtil.getAttrValueByConfig) {
           DDeiUtil.getAttrValueByConfig = DDeiEditorUtil.getAttrValueByConfig;
         }
+        if (!DDeiUtil.getControlDefine) {
+          DDeiUtil.getControlDefine = DDeiEditorUtil.getControlDefine;
+        }
+
         if (!DDeiUtil.getMenuConfig) {
           DDeiUtil.getMenuConfig = DDeiEditorUtil.getMenuConfig;
         }

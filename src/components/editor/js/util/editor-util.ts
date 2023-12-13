@@ -338,6 +338,16 @@ class DDeiEditorUtil {
   }
 
   /**
+   * 返回控件原始定义
+   * @param modelCode model或id
+   */
+  static getControlDefine(configModel: DDeiAbstractShape) {
+    let id = configModel.modelCode ? configModel.modelCode : configModel.id;
+    //找到控件定义
+    return controlOriginDefinies.get(id);
+  }
+
+  /**
     * 获取数据源数据
     */
   static getDataSource(attrDefine: DDeiEditorArrtibute, searchText: string | null = null): object[] | null {

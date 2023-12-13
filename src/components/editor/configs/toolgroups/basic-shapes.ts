@@ -147,6 +147,24 @@ export default {
       'text': '',
       'orderNo': 70
     },
+    {
+      'id': '100076',
+      'name': '六角形',
+      'text': '',
+      'orderNo': 75
+    },
+    {
+      'id': '100075',
+      'name': '六芒星',
+      'text': '',
+      'orderNo': 76
+    },
+    {
+      'id': '100077',
+      'name': '六芒星',
+      'text': '',
+      'orderNo': 77
+    },
 
 
 

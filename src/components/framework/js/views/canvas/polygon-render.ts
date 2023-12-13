@@ -2,7 +2,7 @@ import DDeiConfig from '../../config.js'
 import DDeiEnumBusCommandType from '../../enums/bus-command-type.js';
 import DDeiUtil from '../../util.js'
 import DDeiAbstractShapeRender from './shape-render-base.js';
-import { cloneDeep, trim } from 'lodash'
+import { clone, trim } from 'lodash'
 import { Matrix3, Vector3 } from 'three';
 import DDeiEnumOperateType from '../../enums/operate-type.js';
 import DDeiAbstractShape from '../../models/shape.js';
@@ -92,27 +92,20 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
       ctx.save();
+      //拆分并计算pvss
+      this.calPVSS(tempShape)
+      //创建剪切区
+      this.createClip(tempShape);
+      //绘制填充
+      this.drawFill(tempShape);
+      //绘制文本
+      this.drawText(tempShape);
+      //根据pvss绘制边框
+      this.drawBorder(tempShape);
 
-      if (this.model.text == 'test1') {
-        //绘制五角星
-        this.drawFiveStar(tempShape)
-      } else if (this.model.text == 'test2') {
-        //绘制五角星
-        this.drawFiveStar1(tempShape)
-      } else {
+      //清空pvss
+      this.clearPVSS()
 
-        //绘制边框
-        this.drawBorder(tempShape);
-
-        //绘制填充
-        this.drawFill(tempShape);
-
-        //绘制文本
-        this.drawText(tempShape);
-
-        //清空绘图时计算的临时变量
-        this.tempFillAreaRect = null
-      }
       ctx.restore();
 
       if (this.viewAfter) {
@@ -127,337 +120,259 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     }
   }
 
-  drawFiveStar(tempBorder: object | null): void {
-
-    //获得 2d 上下文对象
+  /**
+   * 创建剪切区
+   * @param tempShape 
+   */
+  createClip(tempShape: object | null): void {
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
-
-    //获取全局缩放比例
-    let stageRatio = this.model.getStageRatio()
-    let rat1 = this.ddRender.ratio;
-    let ratio = rat1 * stageRatio;
-    //如果被选中，使用选中的边框，否则使用缺省边框
-    let disabled = tempBorder?.border?.disabled ? tempBorder?.border?.disabled : this.getCachedValue("border.disabled")
-    let color = tempBorder?.border?.color ? tempBorder?.border?.color : this.getCachedValue("border.color")
-    let opacity = tempBorder?.border?.opacity ? tempBorder?.border?.opacity : this.getCachedValue("border.opacity");
-    let width = tempBorder?.border?.width ? tempBorder?.border?.width : this.getCachedValue("border.width");
-    let dash = tempBorder?.border?.dash ? tempBorder?.border?.dash : this.getCachedValue("border.dash");
-    let round = tempBorder?.border?.round ? tempBorder?.border?.round : this.getCachedValue("border.round");
-
-    //绘制四个方向的边框
-    //加载边框的矩阵
-    //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
-    let lineOffset = 1 * ratio / 2;
-    let lineWidth = width * ratio;
-
-    //r是点到原点的距离，a是五角星的大小（半径)、n是五角星的旋转角度
-    let m1 = new Matrix3()
-    let moveMatrix = new Matrix3(
-      1, 0, this.model.cpv.x,
-      0, 1, this.model.cpv.y,
-      0, 0, 1);
-
-    let scaleMatrix = new Matrix3(
-      1, 0, 0,
-      0, 1, 0,
-      0, 0, 1);
-    m1.premultiply(scaleMatrix).premultiply(moveMatrix)
-
-
-    let pvs = []
-    //单次采样角度
-    let pn = 36;
-    //半径距离
-    let r = 100;
-    //初始角度
-    let startSita = -90;
-    //采样次数
-    for (let i = 0; i < 10; i++) {
-      let er = 0
-      if (i % 2 == 0) {
-        er = r
-      } else {
-        er = r / 3
-      }
-      let sita = (startSita + i * pn)
-      let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
-      let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-      //计算顶点坐标
-      pvs.push(new Vector3(x, y, 1));
-    }
-    pvs.forEach(pv => {
-      pv.applyMatrix3(m1)
-    })
-
-
-    //如果边框未被disabled，则绘制边框
-    if (!disabled && color && (!opacity || opacity > 0) && width > 0) {
-
-      ctx.lineWidth = lineWidth;
-
-      //线段、虚线样式
-      if (dash) {
-        ctx.setLineDash(dash);
-      }
-      //透明度
-      if (opacity != null && opacity != undefined) {
-        ctx.globalAlpha = opacity
-      }
-      //颜色
-      ctx.strokeStyle = DDeiUtil.getColor(color);
-      if (pvs?.length > 2) {
-        ctx.beginPath();
-        let len = pvs.length;
-        ctx.moveTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset)
-        for (let i = 1; i < len - 1; i++) {
-          ctx.arcTo(pvs[i].x * rat1 + lineOffset, pvs[i].y * rat1 + lineOffset, pvs[i + 1].x * rat1 + lineOffset, pvs[i + 1].y * rat1 + lineOffset, round * rat1);
-        }
-        ctx.arcTo(pvs[len - 1].x * rat1 + lineOffset, pvs[len - 1].y * rat1 + lineOffset, pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset, round * rat1);
-        ctx.closePath()
-      }
-      ctx.stroke();
+    let pvs = this.borderPVSS[0];
+    //创建path
+    this.createPath(pvs, tempShape)
+    if (this.clip) {
+      ctx.clip();
     }
 
   }
 
-  drawFiveStar1(tempBorder: object | null): void {
+  // drawFiveStar1(tempBorder: object | null): void {
 
-    //获得 2d 上下文对象
-    let canvas = this.ddRender.getCanvas();
-    let ctx = canvas.getContext('2d');
+  //   //获得 2d 上下文对象
+  //   let canvas = this.ddRender.getCanvas();
+  //   let ctx = canvas.getContext('2d');
 
-    //获取全局缩放比例
-    let stageRatio = this.model.getStageRatio()
-    let rat1 = this.ddRender.ratio;
-    let ratio = rat1 * stageRatio;
-    //如果被选中，使用选中的边框，否则使用缺省边框
-    let disabled = tempBorder?.border?.disabled ? tempBorder?.border?.disabled : this.getCachedValue("border.disabled")
-    let color = tempBorder?.border?.color ? tempBorder?.border?.color : this.getCachedValue("border.color")
-    let opacity = tempBorder?.border?.opacity ? tempBorder?.border?.opacity : this.getCachedValue("border.opacity");
-    let width = tempBorder?.border?.width ? tempBorder?.border?.width : this.getCachedValue("border.width");
-    let dash = tempBorder?.border?.dash ? tempBorder?.border?.dash : this.getCachedValue("border.dash");
-    let round = tempBorder?.border?.round ? tempBorder?.border?.round : this.getCachedValue("border.round");
+  //   //获取全局缩放比例
+  //   let stageRatio = this.model.getStageRatio()
+  //   let rat1 = this.ddRender.ratio;
+  //   let ratio = rat1 * stageRatio;
+  //   //如果被选中，使用选中的边框，否则使用缺省边框
+  //   let disabled = tempBorder?.border?.disabled ? tempBorder?.border?.disabled : this.getCachedValue("border.disabled")
+  //   let color = tempBorder?.border?.color ? tempBorder?.border?.color : this.getCachedValue("border.color")
+  //   let opacity = tempBorder?.border?.opacity ? tempBorder?.border?.opacity : this.getCachedValue("border.opacity");
+  //   let width = tempBorder?.border?.width ? tempBorder?.border?.width : this.getCachedValue("border.width");
+  //   let dash = tempBorder?.border?.dash ? tempBorder?.border?.dash : this.getCachedValue("border.dash");
+  //   let round = tempBorder?.border?.round ? tempBorder?.border?.round : this.getCachedValue("border.round");
 
-    //绘制四个方向的边框
-    //加载边框的矩阵
-    //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
-    let lineOffset = 1 * ratio / 2;
-    let lineWidth = width * ratio;
+  //   //绘制四个方向的边框
+  //   //加载边框的矩阵
+  //   //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
+  //   let lineOffset = 1 * ratio / 2;
+  //   let lineWidth = width * ratio;
 
-    //r是点到原点的距离，a是五角星的大小（半径)、n是五角星的旋转角度
-    let m1 = new Matrix3()
-    let moveMatrix = new Matrix3(
-      1, 0, this.model.cpv.x,
-      0, 1, this.model.cpv.y,
-      0, 0, 1);
+  //   //r是点到原点的距离，a是五角星的大小（半径)、n是五角星的旋转角度
+  //   let m1 = new Matrix3()
+  //   let moveMatrix = new Matrix3(
+  //     1, 0, this.model.cpv.x,
+  //     0, 1, this.model.cpv.y,
+  //     0, 0, 1);
 
-    //获取宽高比
+  //   //获取宽高比
 
-    let scaleMatrix = new Matrix3(
-      1, 0, 0,
-      0, 1, 0,
-      0, 0, 1);
-    m1.premultiply(scaleMatrix).premultiply(moveMatrix)
-
-
-
-    //采样次数
-    let loop = 360;
-    //单次采样角度
-    let pn = loop / 360;
-    //半径距离
-    let r = 100;
-    //初始角度
-    let startSita = 45;
-
-    //圆心的间隔
-    let centerPadding = 20;
-    //采样函数
-    let samplies = [
-      (r: number, sita: number, startSita: number, centerPadding: number, i: number = -1, pvs: object[]) => {
-        //采样触发条件
-        if ((sita - startSita - 15) % 90 == 0) {
-          let rad = -sita * DDeiConfig.ROTATE_UNIT
-          let x = r * Math.cos(rad)
-          let y = r * Math.sin(rad)
-          let sx = centerPadding * Math.cos(rad)
-          let sy = centerPadding * Math.sin(rad)
-          let v1 = new Vector3(sx, sy, 1)
-          v1.rad = rad
-          v1.r = centerPadding
-          v1.type = 2
-          pvs.push(v1);
-          let v2 = new Vector3(x, y, 1)
-          v2.rad = rad
-          v2.r = r
-          v2.type = 1
-          pvs.push(v2);
-        } else if ((sita - startSita + 15) % 90 == 0) {
-          let rad = -sita * DDeiConfig.ROTATE_UNIT
-          let x = r * Math.cos(rad)
-          let y = r * Math.sin(rad)
-          let ex = centerPadding * Math.cos(rad)
-          let ey = centerPadding * Math.sin(rad)
-          let v1 = new Vector3(x, y, 1)
-          v1.rad = rad
-          v1.r = r
-          v1.type = 2
-          pvs.push(v1);
-          let v2 = new Vector3(ex, ey, 1)
-          v2.rad = rad
-          v2.r = centerPadding
-          v2.type = 1
-          pvs.push(v2);
-        }
-      },
-      (r: number, sita: number, startSita: number, centerPadding: number, i: number = -1, pvs: object[]) => {
-        //采样触发条件
-        if (sita - startSita == 0) {
-          let rad = -sita * DDeiConfig.ROTATE_UNIT
-          let sx = centerPadding * Math.cos(rad)
-          let sy = centerPadding * Math.sin(rad)
-          let v1 = new Vector3(sx, sy, 1)
-          v1.rad = rad
-          v1.r = centerPadding
-          v1.type = 2
-          pvs.push(v1);
-        }
-      },
-      (r: number, sita: number, startSita: number, centerPadding: number, i: number = -1, pvs: object[]) => {
-        //采样触发条件
-        if (sita - startSita == 0) {
-          let rad = -sita * DDeiConfig.ROTATE_UNIT
-          let sx = centerPadding / 2 * Math.cos(rad)
-          let sy = centerPadding / 2 * Math.sin(rad)
-          let v1 = new Vector3(sx, sy, 1)
-          v1.rad = rad
-          v1.r = centerPadding / 2
-          v1.type = 2
-          pvs.push(v1);
-        }
-      },
-      (r: number, sita: number, startSita: number, centerPadding: number, i: number = -1, pvs: object[]) => {
-        let nowSeconds = new Date().getSeconds();
-        //采样触发条件
-        if (sita - startSita < 60 && ((sita - startSita) % 60 == nowSeconds)) {
-          let rad = sita * DDeiConfig.ROTATE_UNIT
-          let sx = (r + centerPadding) * Math.cos(rad)
-          let sy = (r + centerPadding) * Math.sin(rad)
-          let v1 = new Vector3(sx, sy, 1)
-          v1.rad = rad
-          v1.r = r + centerPadding
-          v1.type = 2
-          v1.direct = 1
-          pvs.push(v1);
-          rad = (sita + 10) * DDeiConfig.ROTATE_UNIT
-          sx = (r + centerPadding) * Math.cos(rad)
-          sy = (r + centerPadding) * Math.sin(rad)
-          v1 = new Vector3(sx, sy, 1)
-          v1.rad = rad
-          v1.r = r + centerPadding
-          v1.type = 2
-          v1.direct = 1
-          pvs.push(v1);
-        }
-      },
-      (r: number, sita: number, startSita: number, centerPadding: number, i: number = -1, pvs: object[]) => {
-        //采样触发条件
-        if (i == 0) {
-          let rad = sita * DDeiConfig.ROTATE_UNIT
-          let sx = (r + centerPadding + centerPadding) * Math.cos(rad)
-          let sy = (r + centerPadding + centerPadding) * Math.sin(rad)
-          let v1 = new Vector3(sx, sy, 1)
-          v1.rad = rad
-          v1.r = r + centerPadding + centerPadding
-          v1.type = 2
-          pvs.push(v1);
-        }
-      }
-
-    ]
-    //采样结果
-    let sampliesResult = [[], [], [], [], []]
-
-    //执行采样
-    for (let i = 0; i < loop; i++) {
-      let sita = startSita + i * pn
-      for (let j = 0; j < samplies.length; j++) {
-        let spFn = samplies[j]
-        let spResult = sampliesResult[j]
-        spFn(r, sita, startSita, centerPadding, i, spResult)
-      }
-    }
-    sampliesResult.forEach(sr => {
-      sr.forEach(pv => {
-        pv.applyMatrix3(m1)
-      })
-    })
-
-    //如果边框未被disabled，则绘制边框
-    if (!disabled && color && (!opacity || opacity > 0) && width > 0) {
-
-      ctx.lineWidth = lineWidth;
-
-      //线段、虚线样式
-      if (dash) {
-        ctx.setLineDash(dash);
-      }
-      //透明度
-      if (opacity != null && opacity != undefined) {
-        ctx.globalAlpha = opacity
-      }
-      //颜色
-      ctx.strokeStyle = DDeiUtil.getColor(color);
-      sampliesResult.forEach(pvs => {
-        ctx.beginPath();
-        let len = pvs.length;
-
-        if (pvs.length > 2) {
-          ctx.moveTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset)
-          for (let i = 1; i < len; i++) {
-            let pv = pvs[i];
-            if (pv.type == 1) {
-              ctx.lineTo(pvs[i].x * rat1 + lineOffset, pvs[i].y * rat1 + lineOffset);
-            } else if (pv.type == 2) {
-              let lastPV = pvs[i - 1]
-              ctx.arc(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pv.r * rat1, lastPV.rad, pv.rad, !pv.direct);
-            }
-
-            if (i == len - 1) {
-              pv = pvs[0];
-              if (pv.type == 1) {
-                ctx.lineTo(pvs[i].x * rat1 + lineOffset, pvs[i].y * rat1 + lineOffset);
-              } else if (pv.type == 2) {
-                let lastPV = pvs[i]
-                ctx.arc(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pv.r * rat1, lastPV.rad, pv.rad, !pv.direct);
-              }
-            }
-          }
-        } else if (pvs.length == 1) {
-          ctx.arc(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pvs[0].r * rat1, 0, DDeiConfig.ROTATE_UNIT * 360, !pvs[0].direct);
-        } else if (pvs.length == 2) {
-          ctx.moveTo(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset)
-          ctx.arc(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pvs[1].r * rat1, pvs[0].rad, pvs[1].rad, !pvs[1].direct);
-        }
-        ctx.closePath()
-        ctx.stroke();
+  //   let scaleMatrix = new Matrix3(
+  //     1, 0, 0,
+  //     0, 1, 0,
+  //     0, 0, 1);
+  //   m1.premultiply(scaleMatrix).premultiply(moveMatrix)
 
 
-      })
-    }
 
-  }
+  //   //采样次数
+  //   let loop = 360;
+  //   //单次采样角度
+  //   let pn = loop / 360;
+  //   //半径距离
+  //   let r = 100;
+  //   //初始角度
+  //   let startSita = 45;
+
+  //   //圆心的间隔
+  //   let centerPadding = 20;
+  //   //采样函数
+  //   let samplies = [
+  //     (r: number, sita: number, startSita: number, centerPadding: number, i: number = -1, pvs: object[]) => {
+  //       //采样触发条件
+  //       if ((sita - startSita - 15) % 90 == 0) {
+  //         let rad = -sita * DDeiConfig.ROTATE_UNIT
+  //         let x = r * Math.cos(rad)
+  //         let y = r * Math.sin(rad)
+  //         let sx = centerPadding * Math.cos(rad)
+  //         let sy = centerPadding * Math.sin(rad)
+  //         let v1 = new Vector3(sx, sy, 1)
+  //         v1.rad = rad
+  //         v1.r = centerPadding
+  //         v1.type = 2
+  //         pvs.push(v1);
+  //         let v2 = new Vector3(x, y, 1)
+  //         v2.rad = rad
+  //         v2.r = r
+  //         v2.type = 1
+  //         pvs.push(v2);
+  //       } else if ((sita - startSita + 15) % 90 == 0) {
+  //         let rad = -sita * DDeiConfig.ROTATE_UNIT
+  //         let x = r * Math.cos(rad)
+  //         let y = r * Math.sin(rad)
+  //         let ex = centerPadding * Math.cos(rad)
+  //         let ey = centerPadding * Math.sin(rad)
+  //         let v1 = new Vector3(x, y, 1)
+  //         v1.rad = rad
+  //         v1.r = r
+  //         v1.type = 2
+  //         pvs.push(v1);
+  //         let v2 = new Vector3(ex, ey, 1)
+  //         v2.rad = rad
+  //         v2.r = centerPadding
+  //         v2.type = 1
+  //         pvs.push(v2);
+  //       }
+  //     },
+  //     (r: number, sita: number, startSita: number, centerPadding: number, i: number = -1, pvs: object[]) => {
+  //       //采样触发条件
+  //       if (sita - startSita == 0) {
+  //         let rad = -sita * DDeiConfig.ROTATE_UNIT
+  //         let sx = centerPadding * Math.cos(rad)
+  //         let sy = centerPadding * Math.sin(rad)
+  //         let v1 = new Vector3(sx, sy, 1)
+  //         v1.rad = rad
+  //         v1.r = centerPadding
+  //         v1.type = 2
+  //         pvs.push(v1);
+  //       }
+  //     },
+  //     (r: number, sita: number, startSita: number, centerPadding: number, i: number = -1, pvs: object[]) => {
+  //       //采样触发条件
+  //       if (sita - startSita == 0) {
+  //         let rad = -sita * DDeiConfig.ROTATE_UNIT
+  //         let sx = centerPadding / 2 * Math.cos(rad)
+  //         let sy = centerPadding / 2 * Math.sin(rad)
+  //         let v1 = new Vector3(sx, sy, 1)
+  //         v1.rad = rad
+  //         v1.r = centerPadding / 2
+  //         v1.type = 2
+  //         pvs.push(v1);
+  //       }
+  //     },
+  //     (r: number, sita: number, startSita: number, centerPadding: number, i: number = -1, pvs: object[]) => {
+  //       let nowSeconds = new Date().getSeconds();
+  //       //采样触发条件
+  //       if (sita - startSita < 60 && ((sita - startSita) % 60 == nowSeconds)) {
+  //         let rad = sita * DDeiConfig.ROTATE_UNIT
+  //         let sx = (r + centerPadding) * Math.cos(rad)
+  //         let sy = (r + centerPadding) * Math.sin(rad)
+  //         let v1 = new Vector3(sx, sy, 1)
+  //         v1.rad = rad
+  //         v1.r = r + centerPadding
+  //         v1.type = 2
+  //         v1.direct = 1
+  //         pvs.push(v1);
+  //         rad = (sita + 10) * DDeiConfig.ROTATE_UNIT
+  //         sx = (r + centerPadding) * Math.cos(rad)
+  //         sy = (r + centerPadding) * Math.sin(rad)
+  //         v1 = new Vector3(sx, sy, 1)
+  //         v1.rad = rad
+  //         v1.r = r + centerPadding
+  //         v1.type = 2
+  //         v1.direct = 1
+  //         pvs.push(v1);
+  //       }
+  //     },
+  //     (r: number, sita: number, startSita: number, centerPadding: number, i: number = -1, pvs: object[]) => {
+  //       //采样触发条件
+  //       if (i == 0) {
+  //         let rad = sita * DDeiConfig.ROTATE_UNIT
+  //         let sx = (r + centerPadding + centerPadding) * Math.cos(rad)
+  //         let sy = (r + centerPadding + centerPadding) * Math.sin(rad)
+  //         let v1 = new Vector3(sx, sy, 1)
+  //         v1.rad = rad
+  //         v1.r = r + centerPadding + centerPadding
+  //         v1.type = 2
+  //         pvs.push(v1);
+  //       }
+  //     }
+
+  //   ]
+  //   //采样结果
+  //   let sampliesResult = [[], [], [], [], []]
+
+  //   //执行采样
+  //   for (let i = 0; i < loop; i++) {
+  //     let sita = startSita + i * pn
+  //     for (let j = 0; j < samplies.length; j++) {
+  //       let spFn = samplies[j]
+  //       let spResult = sampliesResult[j]
+  //       spFn(r, sita, startSita, centerPadding, i, spResult)
+  //     }
+  //   }
+  //   sampliesResult.forEach(sr => {
+  //     sr.forEach(pv => {
+  //       pv.applyMatrix3(m1)
+  //     })
+  //   })
+
+  //   //如果边框未被disabled，则绘制边框
+  //   if (!disabled && color && (!opacity || opacity > 0) && width > 0) {
+
+  //     ctx.lineWidth = lineWidth;
+
+  //     //线段、虚线样式
+  //     if (dash) {
+  //       ctx.setLineDash(dash);
+  //     }
+  //     //透明度
+  //     if (opacity != null && opacity != undefined) {
+  //       ctx.globalAlpha = opacity
+  //     }
+  //     //颜色
+  //     ctx.strokeStyle = DDeiUtil.getColor(color);
+  //     sampliesResult.forEach(pvs => {
+  //       ctx.beginPath();
+  //       let len = pvs.length;
+
+  //       if (pvs.length > 2) {
+  //         ctx.moveTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset)
+  //         for (let i = 1; i < len; i++) {
+  //           let pv = pvs[i];
+  //           if (pv.type == 1) {
+  //             ctx.lineTo(pvs[i].x * rat1 + lineOffset, pvs[i].y * rat1 + lineOffset);
+  //           } else if (pv.type == 2) {
+  //             let lastPV = pvs[i - 1]
+  //             ctx.arc(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pv.r * rat1, lastPV.rad, pv.rad, !pv.direct);
+  //           }
+
+  //           if (i == len - 1) {
+  //             pv = pvs[0];
+  //             if (pv.type == 1) {
+  //               ctx.lineTo(pvs[i].x * rat1 + lineOffset, pvs[i].y * rat1 + lineOffset);
+  //             } else if (pv.type == 2) {
+  //               let lastPV = pvs[i]
+  //               ctx.arc(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pv.r * rat1, lastPV.rad, pv.rad, !pv.direct);
+  //             }
+  //           }
+  //         }
+  //       } else if (pvs.length == 1) {
+  //         ctx.arc(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pvs[0].r * rat1, 0, DDeiConfig.ROTATE_UNIT * 360, !pvs[0].direct);
+  //       } else if (pvs.length == 2) {
+  //         ctx.moveTo(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset)
+  //         ctx.arc(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pvs[1].r * rat1, pvs[0].rad, pvs[1].rad, !pvs[1].direct);
+  //       }
+  //       ctx.closePath()
+  //       ctx.stroke();
+
+
+  //     })
+  //   }
+
+  // }
 
 
   /**
    * 生成边框的区域向量
    */
-  getBorderPVS(tempBorder) {
+  getBorderPVS(pvs, tempShape) {
     let stageRatio = this.model.getStageRatio()
-    let round = this.getCachedValue("border.round");
-    let disabled = this.getCachedValue("border.disabled");
-    let width = this.getCachedValue("border.width");
+    let round = tempShape?.border?.round ? tempShape?.border?.round : this.getCachedValue("border.round");
+    let disabled = tempShape?.border?.disabled ? tempShape?.border?.disabled : this.getCachedValue("border.disabled");
+    let width = tempShape?.border?.width ? tempShape?.border?.width : this.getCachedValue("border.width");
 
     if (disabled) {
       width = 0
@@ -467,9 +382,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     }
     round = round * stageRatio
     width = width / 2
-
     let borderPVS = []
-    let pvs = this.model.pvs;
     let toZeroMatrix = new Matrix3(
       1, 0, -pvs[0].x,
       0, 1, -pvs[0].y,
@@ -494,13 +407,16 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       0, 0, 1);
     let roundPVS = new Vector3(round, 0, 1)
     roundPVS.applyMatrix3(rotateMatrix)
-    borderPVS[0] = new Vector3(pvs[0].x + roundPVS.x, pvs[0].y + roundPVS.y, 1);
+    borderPVS[0] = clone(pvs[0]);//new Vector3(pvs[0].x + roundPVS.x, pvs[0].y + roundPVS.y, 1);
+    borderPVS[0].x += roundPVS.x
+    borderPVS[0].y += roundPVS.y
     //四个角的点，考虑边框的位置也要响应变小
     for (let i = 1; i < pvs.length; i++) {
-      borderPVS[i] = new Vector3(pvs[i].x, pvs[i].y, 1);
+      borderPVS[i] = clone(pvs[i])
     }
-    borderPVS[pvs.length] = new Vector3(pvs[0].x, pvs[0].y, 1);
-    this.borderPVS = borderPVS
+    borderPVS[pvs.length] = clone(pvs[0])
+
+    return borderPVS
   }
   /**
    * 取得边框的绘制区域
@@ -515,73 +431,145 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
 
 
   /**
-   * 绘制边框
-   * @param tempBorder 临时边框，优先级最高
-   * @param usePV 是否采用向量输出
+   * 对pvs按group进行拆分，
    */
-  drawBorder(tempBorder: object | null): void {
+  calPVSS(tempShape: object | null) {
+    //按照group对pvs进行拆分
+    let pvss = []
+    let curPVS = null
+    let curGroup = -1
+    let len1 = this.model.pvs.length;
+    for (let i = 0; i < len1; i++) {
+      if (curGroup != this.model.pvs[i].group) {
+        curGroup = this.model.pvs[i].group
+        curPVS = []
+        pvss.push(curPVS)
+      }
+      curPVS?.push(this.model.pvs[i])
+    }
+    let borderPVSS = []
+    pvss.forEach(pvs => {
+      if (pvs.length > 2) {
+        let borderPVS = this.getBorderPVS(pvs, tempShape);
+        borderPVSS.push(borderPVS)
+      } else {
+        borderPVSS.push(pvs)
+      }
+    });
+    this.pvss = pvss
+    this.borderPVSS = borderPVSS
+  }
 
+
+  /**
+   * 清空pvss
+   */
+  clearPVSS() {
+    this.pvss = null
+    this.borderPVSS = null
+  }
+
+  /**
+   * 创建路径
+   */
+  createPath(pvs, tempShape) {
     //获得 2d 上下文对象
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
-
     //获取全局缩放比例
     let stageRatio = this.model.getStageRatio()
     let rat1 = this.ddRender.ratio;
     let ratio = rat1 * stageRatio;
-    //如果被选中，使用选中的边框，否则使用缺省边框
-    let disabled = tempBorder?.border?.disabled ? tempBorder?.border?.disabled : this.getCachedValue("border.disabled")
-    let color = tempBorder?.border?.color ? tempBorder?.border?.color : this.getCachedValue("border.color")
-    let opacity = tempBorder?.border?.opacity ? tempBorder?.border?.opacity : this.getCachedValue("border.opacity");
-    let width = tempBorder?.border?.width ? tempBorder?.border?.width : this.getCachedValue("border.width");
-    let dash = tempBorder?.border?.dash ? tempBorder?.border?.dash : this.getCachedValue("border.dash");
-    let round = tempBorder?.border?.round ? tempBorder?.border?.round : this.getCachedValue("border.round");
-
-    //绘制四个方向的边框
-    //加载边框的矩阵
+    let round = tempShape?.border?.round ? tempShape?.border?.round : this.getCachedValue("border.round");
     //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
     let lineOffset = 1 * ratio / 2;
-    let lineWidth = width * ratio;
-    this.getBorderPVS(tempBorder);
-    let pvs = this.borderPVS;
-
+    if (pvs[0].type == 10) {
+      return;
+    }
     if (pvs?.length > 2) {
       ctx.beginPath();
       let len = pvs.length;
       ctx.moveTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset)
       for (let i = 1; i < len - 1; i++) {
-        ctx.arcTo(pvs[i].x * rat1 + lineOffset, pvs[i].y * rat1 + lineOffset, pvs[i + 1].x * rat1 + lineOffset, pvs[i + 1].y * rat1 + lineOffset, round * rat1);
+        let pv = pvs[i];
+        if (pv.type == 2) {
+          let upPV = pvs[i - 1]
+          ctx.arc(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pv.r * rat1, upPV.rad, pv.rad, !pv.direct);
+        } else {
+          ctx.arcTo(pvs[i].x * rat1 + lineOffset, pvs[i].y * rat1 + lineOffset, pvs[i + 1].x * rat1 + lineOffset, pvs[i + 1].y * rat1 + lineOffset, round * rat1);
+        }
       }
-      ctx.arcTo(pvs[len - 1].x * rat1 + lineOffset, pvs[len - 1].y * rat1 + lineOffset, pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset, round * rat1);
+      let pv = pvs[0];
+      if (pv.type == 2) {
+        let lastPV = pvs[len - 1]
+        ctx.arc(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pv.r * rat1, lastPV.rad, pv.rad, !pv.direct);
+      } else {
+        ctx.arcTo(pvs[len - 1].x * rat1 + lineOffset, pvs[len - 1].y * rat1 + lineOffset, pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset, round * rat1);
+      }
+
+      ctx.closePath()
+    } else if (pvs.length == 1) {
+      ctx.beginPath();
+      ctx.arc(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pvs[0].r * rat1, 0, DDeiConfig.ROTATE_UNIT * 360, !pvs[0].direct);
+      ctx.closePath()
+    } else if (pvs.length == 2) {
+      ctx.beginPath();
+      ctx.moveTo(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset)
+      ctx.arc(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pvs[1].r * rat1, pvs[0].rad, pvs[1].rad, !pvs[1].direct);
       ctx.closePath()
     }
+  }
 
-    //如果边框未被disabled，则绘制边框
-    if (!disabled && color && (!opacity || opacity > 0) && width > 0) {
+  /**
+   * 绘制边框
+   * @param tempShape 临时图形，优先级最高
+   */
+  drawBorder(tempShape: object | null): void {
+    //获得 2d 上下文对象
+    let canvas = this.ddRender.getCanvas();
+    let ctx = canvas.getContext('2d');
+    //获取全局缩放比例
+    let stageRatio = this.model.getStageRatio()
+    let rat1 = this.ddRender.ratio;
+    let ratio = rat1 * stageRatio;
 
-      ctx.lineWidth = lineWidth;
+    //如果被选中，使用选中的边框，否则使用缺省边框
+    let disabled = tempShape?.border?.disabled ? tempShape?.border?.disabled : this.getCachedValue("border.disabled")
+    let color = tempShape?.border?.color ? tempShape?.border?.color : this.getCachedValue("border.color")
+    let opacity = tempShape?.border?.opacity ? tempShape?.border?.opacity : this.getCachedValue("border.opacity");
+    let width = tempShape?.border?.width ? tempShape?.border?.width : this.getCachedValue("border.width");
+    let dash = tempShape?.border?.dash ? tempShape?.border?.dash : this.getCachedValue("border.dash");
 
-      //线段、虚线样式
-      if (dash) {
-        ctx.setLineDash(dash);
+    //加载边框的矩阵
+    let lineWidth = width * ratio;
+    for (let i = 0; i < this.borderPVSS.length; i++) {
+      let pvs = this.borderPVSS[i];
+      if (pvs[0].type == 0) {
+        continue;
       }
-      //透明度
-      if (opacity != null && opacity != undefined) {
-        ctx.globalAlpha = opacity
+      ctx.save();
+      if (i > 0) {
+        //创建path
+        this.createPath(pvs, tempShape)
       }
-      //颜色
-      ctx.strokeStyle = DDeiUtil.getColor(color);
+      //绘制线条
+      if (!disabled && color && (!opacity || opacity > 0) && width > 0) {
+        ctx.lineWidth = lineWidth;
+        //线段、虚线样式
+        if (dash) {
+          ctx.setLineDash(dash);
+        }
+        //透明度
+        if (opacity != null && opacity != undefined) {
+          ctx.globalAlpha = opacity
+        }
+        //颜色
+        ctx.strokeStyle = DDeiUtil.getColor(color);
 
-      ctx.stroke();
+        ctx.stroke();
+      }
+      ctx.restore();
     }
-    if (this.clip) {
-      ctx.clip();
-    }
-    ctx.globalAlpha = 1
-    ctx.lineWidth = 1
-    ctx.lineColor = "black"
-    ctx.setLineDash([])
-
   }
 
 
@@ -632,33 +620,37 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     //获得 2d 上下文对象
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
-    //获取全局缩放比例
-    let stageRatio = this.model.getStageRatio()
-    let rat1 = this.ddRender.ratio;
-    let ratio = rat1 * stageRatio;
-    let round = tempShape?.border?.round ? tempShape.border.round : this.getCachedValue("border.round");
+    //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
+    let fillColor = tempShape?.fill?.color ? tempShape.fill.color : this.getCachedValue("fill.color");
+    let fillOpacity = tempShape?.fill?.opacity ? tempShape.fill.opacity : this.getCachedValue("fill.opacity");
+    let fillDisabled = tempShape?.fill?.disabled ? tempShape.fill.disabled : this.getCachedValue("fill.disabled");
+    let fillType = tempShape?.fill?.type ? tempShape.fill.type : this.getCachedValue("fill.type");
     //保存状态
     ctx.save();
-    let fillType = tempShape?.fill?.type ? tempShape.fill.type : this.getCachedValue("fill.type");
+    //找到第一个类型不为0的
+    let i = 0
+    for (; i < this.borderPVSS.length; i++) {
+      if (this.borderPVSS[i][0].type === undefined || this.borderPVSS[i][0].type === null || this.borderPVSS[i][0].type != 0) {
+        break;
+      }
+    }
+    if (i != 0) {
+      let pvs = this.borderPVSS[i];
+      //创建path
+      this.createPath(pvs, tempShape)
+    }
+
     //纯色填充
     if (this.isEditoring) {
       if (!fillType || fillType == '0') {
         fillType = 1
       }
     }
-    let lineOffset = 1 * ratio / 2;
     if (fillType == 1) {
-
-      //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
-      let fillColor = tempShape?.fill?.color ? tempShape.fill.color : this.getCachedValue("fill.color");
-      let fillOpacity = tempShape?.fill?.opacity ? tempShape.fill.opacity : this.getCachedValue("fill.opacity");
-      let fillDisabled = tempShape?.fill?.disabled ? tempShape.fill.disabled : this.getCachedValue("fill.disabled");
       if (this.isEditoring) {
         fillDisabled = false
         fillOpacity = 1.0
-
       }
-
       //如果拥有填充色，则使用填充色
       if (!fillDisabled && fillColor && (!fillOpacity || fillOpacity > 0)) {
         ctx.fillStyle = DDeiUtil.getColor(fillColor);
@@ -666,31 +658,16 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         if (fillOpacity != null && !fillOpacity != undefined) {
           ctx.globalAlpha = fillOpacity
         }
-        ctx.beginPath();
-        this.getBorderPVS(tempShape);
-        let pvs = this.borderPVS;
-        if (pvs?.length > 2) {
-          let len = pvs.length;
-          ctx.moveTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset)
-          for (let i = 1; i < len - 1; i++) {
-            ctx.arcTo(pvs[i].x * rat1 + lineOffset, pvs[i].y * rat1 + lineOffset, pvs[i + 1].x * rat1 + lineOffset, pvs[i + 1].y * rat1 + lineOffset, round * rat1);
-          }
-          ctx.arcTo(pvs[len - 1].x * rat1 + lineOffset, pvs[len - 1].y * rat1 + lineOffset, pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset, round * rat1);
-        }
-        ctx.closePath();
         //填充矩形
         ctx.fill();
       }
-
     }
     //图片填充
     else if (fillType == 2) {
       this.drawImage()
     }
-
     //恢复状态
     ctx.restore();
-
   }
 
   /**

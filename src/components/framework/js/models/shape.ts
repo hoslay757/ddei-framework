@@ -22,12 +22,11 @@ abstract class DDeiAbstractShape {
     this.fmt = props.fmt
     this.sptStyle = props.sptStyle ? props.sptStyle : {}
     this.poly = props.poly;
-    this.sample = props.sample
+    this.sample = props.sample ? cloneDeep(props.sample) : null
     this.ruleEvals = []
     if (props.cpv) {
       this.cpv = new Vector3(props.cpv.x, props.cpv.y, props.cpv.z || props.cpv.z == 0 ? props.cpv.z : 1);
     }
-
     if (props.pvs) {
       this.pvs = [];
       props.pvs.forEach(pv => {
@@ -143,7 +142,8 @@ abstract class DDeiAbstractShape {
    */
   executeSample() {
     //通过采样计算pvs,可能存在多组pvs
-    if (this.sample?.rules?.length > 0) {
+    let defineSample = DDeiUtil.getControlDefine(this)?.define?.sample;
+    if (defineSample?.rules?.length > 0 && this.sample) {
       //采样结果
       let sampliesResult = []
       //采样次数
@@ -152,23 +152,30 @@ abstract class DDeiAbstractShape {
       let pn = 360 / loop;
       //初始角度
       let angle = this.sample.angle;
+      this.sample.rules = []
       //执行采样
       for (let i = 0; i < loop; i++) {
         let sita = angle + i * pn
-        for (let j = 0; j < this.sample?.rules?.length; j++) {
+        for (let j = 0; j < defineSample.rules?.length; j++) {
           if (this.ruleEvals && !this.ruleEvals[j]) {
-            eval("this.ruleEvals[j] = function" + this.sample?.rules[j])
+            eval("this.ruleEvals[j] = function" + defineSample.rules[j])
           }
           let spFn = this.ruleEvals[j]
           if (!sampliesResult[j]) {
             sampliesResult[j] = []
           }
           let spResult = sampliesResult[j]
-          spFn(i, sita, this.sample, spResult, this)
+          spFn(i, j, sita, this.sample, spResult, this)
         }
       }
-      //TODO 用第一个
-      this.pvs = sampliesResult[0]
+      this.pvs = Object.freeze([])
+      for (let i = 0; i < sampliesResult.length; i++) {
+        if (sampliesResult[i].length > 0 && sampliesResult[i][0].type != 10) {
+          this.pvs = this.pvs.concat(sampliesResult[i]);
+        } else if (sampliesResult[i].length > 0 && sampliesResult[i][0].type == 10) {
+          this.textArea = sampliesResult[i]
+        }
+      }
     }
   }
 

@@ -22,23 +22,46 @@ export default {
       angle: -90,
       //半径距离
       r: 100,
-      //圆心的间隔
-      centerPadding: 20,
       //采样的规则，多组采样返回多组规则
       rules: [
-        `(i, sita, sample, pvs, model){
-          let er = i % 2 == 0 ? sample.r : sample.r / 3
+        `(i, j, sita, sample, pvs, model){
+          let er = i % 2 == 0 ? sample.r : sample.r / 2.7
           let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
           let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-          pvs.push(new Vector3(model.cpv.x + x, model.cpv.y + y, 1));
+          let v = new Vector3(model.cpv.x + x, model.cpv.y + y, 1);
+          v.group = j
+          pvs.push(v);
+        }`,
+        `(i,j, sita, sample, pvs, model){
+          if(i  == 0){
+            let er = sample.r / 3
+            let x = er * Math.cos(45 * DDeiConfig.ROTATE_UNIT)
+            let y = er * Math.sin(45 * DDeiConfig.ROTATE_UNIT)
+            let v = new Vector3(model.cpv.x + x, model.cpv.y + y, 1);
+            v.type=10
+            v.group = j
+            pvs.push(v);
+            x = er * Math.cos(135 * DDeiConfig.ROTATE_UNIT)
+            y = er * Math.sin(135 * DDeiConfig.ROTATE_UNIT)
+            v = new Vector3(model.cpv.x + x, model.cpv.y + y, 1);
+            v.type=10
+            v.group = j
+            pvs.push(v);
+            x = er * Math.cos(225 * DDeiConfig.ROTATE_UNIT)
+            y = er * Math.sin(225 * DDeiConfig.ROTATE_UNIT)
+            v = new Vector3(model.cpv.x + x, model.cpv.y + y, 1);
+            v.type=10
+            v.group = j
+            pvs.push(v);
+            x = er * Math.cos(315 * DDeiConfig.ROTATE_UNIT)
+            y = er * Math.sin(315 * DDeiConfig.ROTATE_UNIT)
+            v = new Vector3(model.cpv.x + x, model.cpv.y + y, 1);
+            v.type=10
+            v.group = j
+            pvs.push(v);
+          }
         }`,
       ]
-    },
-    textArea: [
-      { x: -2.5, y: 32.5, z: 1 },
-      { x: 102.5, y: 32.5, z: 1 },
-      { x: 102.5, y: 142.5, z: 1 },
-      { x: -2.5, y: 142.5, z: 1 },
-    ],
+    }
   }
 }

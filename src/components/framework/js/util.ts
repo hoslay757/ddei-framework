@@ -18,6 +18,8 @@ class DDeiUtil {
 
   //钩子函数，调用外部的配置属性读取函数,由外部调用者初始化
   static getAttrValueByConfig: Function;
+  //钩子函数，调用外部的配置属性读取函数,由外部调用者初始化
+  static getControlDefine: Function;
 
   //钩子函数，获取菜单的函数，由外部调用者初始化
   static getMenuConfig: Function;
