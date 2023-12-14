@@ -8,6 +8,58 @@ const groupOriginDefinies = [];
 //已读取的控件原始定义
 const controlOriginDefinies = new Map();
 
+const loadControlByFrom = function (control) {
+  if (control.from && !control.def) {
+    let fromControl = controlOriginDefinies.get(control.from)
+    if (fromControl.from) {
+      loadControlByFrom(fromControl)
+    }
+    control.styles = cloneDeep(fromControl.styles)
+    control.datas = cloneDeep(fromControl.datas)
+    control.events = cloneDeep(fromControl.events)
+    let fromMenus = cloneDeep(fromControl.menus)
+    let fromDefine = cloneDeep(fromControl.define)
+    //合并控件自身与from组件的define、menu
+    if (fromDefine) {
+      if (!control.define) {
+        control.define = {};
+      }
+      for (let i in fromDefine) {
+        if (!(control.define[i] || control.define[i] == 0)) {
+          control.define[i] = fromDefine[i]
+        }
+      }
+    }
+    if (fromMenus) {
+      if (!control.menus) {
+        control.menus = {};
+      }
+      for (let i in fromMenus) {
+        if (!(control.menus[i] || control.menus[i] == 0)) {
+          control.menus[i] = fromMenus[i]
+        }
+      }
+    }
+
+
+    control.menus = fromMenus
+
+    control.attrDefineMap = new Map()
+    if (control?.styles?.children) {
+      parseAttrsToGroup(control, control.styles, DDeiEnumAttributeType.GRAPHICS);
+    }
+    if (control?.datas?.children) {
+      parseAttrsToGroup(control, control.datas, DDeiEnumAttributeType.BUSINESS);
+    }
+    if (control?.events?.children) {
+      parseAttrsToGroup(control, control.events, DDeiEnumAttributeType.EVENT);
+    }
+    control.type = fromControl.type
+    controlOriginDefinies.set(control.id, control);
+  }
+  control.def = true;
+};
+
 //将属性转换为更深的groups中
 const parseAttrsToGroup = function (control, attrs, type) {
   if (attrs?.children) {
@@ -45,7 +97,7 @@ const parseAttrsToGroup = function (control, attrs, type) {
 }
 
 //加载控件定义
-const control_ctx = import.meta.glob('./controls/*.ts', { eager: true })
+const control_ctx = import.meta.glob('./controls/*/*.ts', { eager: true })
 let loadArray = [];
 for (let i in control_ctx) {
   let cls = control_ctx[i];
@@ -139,25 +191,9 @@ groupOriginDefinies.forEach((item, index) => {
     if (control.icon) {
       control.icon = ICONS[control.icon];
     }
-    if (control.from) {
-      let fromControl = controlOriginDefinies.get(control.from)
-      control.styles = cloneDeep(fromControl.styles)
-      control.datas = cloneDeep(fromControl.datas)
-      control.events = cloneDeep(fromControl.events)
-      control.menus = cloneDeep(fromControl.menus)
-      control.attrDefineMap = new Map()
-      if (control?.styles?.children) {
-        parseAttrsToGroup(control, control.styles, DDeiEnumAttributeType.GRAPHICS);
-      }
-      if (control?.datas?.children) {
-        parseAttrsToGroup(control, control.datas, DDeiEnumAttributeType.BUSINESS);
-      }
-      if (control?.events?.children) {
-        parseAttrsToGroup(control, control.events, DDeiEnumAttributeType.EVENT);
-      }
-      control.type = fromControl.type
-      controlOriginDefinies.set(control.id, control);
-    }
+
+    loadControlByFrom(control)
+
   });
 });
 

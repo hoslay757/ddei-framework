@@ -423,7 +423,6 @@ abstract class DDeiAbstractShape {
     this.loosePVS.forEach(fpv => {
       fpv.applyMatrix3(move1Matrix)
     });
-    console.log(this.loosePVS[0].x + " .  " + this.loosePVS[0].y)
     //获取旋转角度
     if (this.rotate && this.rotate != 0) {
       let angle = (this.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);

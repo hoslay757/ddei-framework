@@ -34,15 +34,20 @@ export default {
     {
       'id': '100005',
       'name': '圆角矩形',
-      'text': '圆角矩形',
+      'text': '',
       'orderNo': 5
     },
-
     {
       'id': '100006',
       'name': '椭圆',
-      'text': '椭圆',
+      'text': '',
       'orderNo': 6
+    },
+    {
+      'id': '100007',
+      'name': '矩形边框',
+      'text': '',
+      'orderNo': 7
     },
 
     {
