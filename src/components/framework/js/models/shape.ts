@@ -172,7 +172,8 @@ abstract class DDeiAbstractShape {
       let pn = 360 / loop;
       //初始角度
       let angle = this.sample.angle;
-      this.sample.rules = []
+      delete this.sample.rules
+      delete this.sample.eqrat
       //执行采样
       for (let i = 0; i < loop; i++) {
         let sita = angle + i * pn

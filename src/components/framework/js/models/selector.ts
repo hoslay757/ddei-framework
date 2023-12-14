@@ -182,16 +182,19 @@ class DDeiSelector extends DDeiRectangle {
         } else {
           pvs = DDeiAbstractShape.getOutPV(models)
           this.cpv = cloneDeep(models[0].cpv)
-          this.eqrat = models[0]?.sample?.eqrat
+          let defineSample = DDeiUtil.getControlDefine(models[0])?.define?.sample;
+          this.eqrat = models[0]?.sample?.eqrat || defineSample?.eqrat
         }
       } else {
         this.eqrat = false
         for (let i = 0; i < models.length; i++) {
-          if (models[i]?.sample?.eqrat) {
+          let defineSample = DDeiUtil.getControlDefine(models[i])?.define?.sample;
+          if (models[i]?.sample?.eqrat || defineSample?.eqrat) {
             this.eqrat = true
             break;
           }
         }
+
         let outRectBounds = DDeiAbstractShape.getOutRectByPV(models);
         pvs = DDeiAbstractShape.getOutPV(models);
         let stageRatio = this.stage.getStageRatio()
