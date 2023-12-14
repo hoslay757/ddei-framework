@@ -24,6 +24,10 @@ export default {
     hpv: [
       { x: 0, y: 0 },
       { x: 100, y: 0 },
-    ]
+    ],
+    sample: {
+      //锁定比例
+      eqrat: true
+    }
   }
 }

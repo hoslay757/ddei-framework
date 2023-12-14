@@ -58,15 +58,7 @@ export default {
             pvs.push({ x: x, y: y, group: j });
           }
         }`,
-        `(i,j, sita, sample, pvs, model){
-          if(i == 1 || i == 2){
-            let er = sample.r * 0.4
-            let rad = sita * DDeiConfig.ROTATE_UNIT
-            let x = er * Math.cos(rad)
-            let y = er * Math.sin(rad)
-            pvs.push({ x: x, y: y,r:er,rad:rad, direct:1,group: j });
-          }
-        }`,
+
         `(i,j, sita, sample, pvs, model){
           if(i % 2 == 0 && i != 6 && i !=0){
             let er = sample.r * 0.5

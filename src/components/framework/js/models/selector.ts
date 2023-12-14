@@ -182,8 +182,16 @@ class DDeiSelector extends DDeiRectangle {
         } else {
           pvs = DDeiAbstractShape.getOutPV(models)
           this.cpv = cloneDeep(models[0].cpv)
+          this.eqrat = models[0]?.sample?.eqrat
         }
       } else {
+        this.eqrat = false
+        for (let i = 0; i < models.length; i++) {
+          if (models[i]?.sample?.eqrat) {
+            this.eqrat = true
+            break;
+          }
+        }
         let outRectBounds = DDeiAbstractShape.getOutRectByPV(models);
         pvs = DDeiAbstractShape.getOutPV(models);
         let stageRatio = this.stage.getStageRatio()
@@ -410,13 +418,15 @@ class DDeiSelector extends DDeiRectangle {
       let opvsType = []
       if (pvs?.length > 0) {
         opvs[1] = { x: (pvs[0].x + pvs[1].x) / 2, y: (pvs[0].y + pvs[1].y) / 2 };
-        opvs[2] = { x: pvs[1].x, y: pvs[1].y };
         opvs[3] = { x: (pvs[1].x + pvs[2].x) / 2, y: (pvs[1].y + pvs[2].y) / 2 };
-        opvs[4] = { x: pvs[2].x, y: pvs[2].y };
         opvs[5] = { x: (pvs[2].x + pvs[3].x) / 2, y: (pvs[2].y + pvs[3].y) / 2 };
-        opvs[6] = { x: pvs[3].x, y: pvs[3].y };
         opvs[7] = { x: (pvs[0].x + pvs[3].x) / 2, y: (pvs[0].y + pvs[3].y) / 2 };
-        opvs[8] = { x: pvs[0].x, y: pvs[0].y };
+        if (!this.eqrat) {
+          opvs[2] = { x: pvs[1].x, y: pvs[1].y };
+          opvs[4] = { x: pvs[2].x, y: pvs[2].y };
+          opvs[6] = { x: pvs[3].x, y: pvs[3].y };
+          opvs[8] = { x: pvs[0].x, y: pvs[0].y };
+        }
         let v1 = new Vector3(pvs[1].x, pvs[1].y, 1);
         let moveMatrix = new Matrix3(
           1, 0, -(pvs[0].x + pvs[1].x) / 2,

@@ -292,9 +292,11 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
           if (opvs?.length > 0) {
 
             if (i >= 1 && i <= 8) {
-              ctx.ellipse(opvs[i].x * ratio + lineOffset, opvs[i].y * ratio + lineOffset, halfWidth, halfWidth, 0, 0, Math.PI * 2);
-              ctx.fill();
-              ctx.stroke();
+              if (opvs[i]) {
+                ctx.ellipse(opvs[i].x * ratio + lineOffset, opvs[i].y * ratio + lineOffset, halfWidth, halfWidth, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+              }
             } else if (i == 9) {
               if (this.model.passIndex == i) {
                 //填充一个圆形
@@ -656,6 +658,12 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         returnBounds.y = returnBounds.y + dy
         returnBounds.height = returnBounds.height - dy
         returnBounds.width = returnBounds.width + dx
+        if (er) {
+          returnBounds.x = returnBounds.x + dy * wbh / 2
+          returnBounds.width = returnBounds.width - dy * wbh
+          returnBounds.y = returnBounds.y - (dx / wbh / 2)
+          returnBounds.height = returnBounds.height + (dx / wbh)
+        }
         break;
       }
       //中右
@@ -675,6 +683,12 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         let dy = y - centerPointVector.y - returnBounds.height / 2
         returnBounds.width = returnBounds.width + dx
         returnBounds.height = returnBounds.height + dy
+        if (er) {
+          returnBounds.y = returnBounds.y - (dx / wbh / 2)
+          returnBounds.height = returnBounds.height + (dx / wbh)
+          returnBounds.x = returnBounds.x - dy * wbh / 2
+          returnBounds.width = returnBounds.width + dy * wbh
+        }
         break;
       }
       //下中
@@ -694,6 +708,12 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         returnBounds.x = returnBounds.x + dx
         returnBounds.width = returnBounds.width - dx
         returnBounds.height = returnBounds.height + dy
+        if (er) {
+          returnBounds.x = returnBounds.x - dy * wbh / 2
+          returnBounds.width = returnBounds.width + dy * wbh
+          returnBounds.y = returnBounds.y + (dx / wbh / 2)
+          returnBounds.height = returnBounds.height - (dx / wbh)
+        }
         break;
       }
       //中左
@@ -715,6 +735,12 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         returnBounds.width = returnBounds.width - dx
         returnBounds.y = returnBounds.y + dy
         returnBounds.height = returnBounds.height - dy
+        if (er) {
+          returnBounds.y = returnBounds.y + (dx / wbh / 2)
+          returnBounds.height = returnBounds.height - (dx / wbh)
+          returnBounds.x = returnBounds.x + dy * wbh / 2
+          returnBounds.width = returnBounds.width - dy * wbh
+        }
         break;
       }
       default: {

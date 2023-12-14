@@ -1308,9 +1308,8 @@ class DDeiLayerCanvasRender {
       }
       //控件改变大小中
       case DDeiEnumOperateState.CONTROL_CHANGING_BOUND: {
-
         //得到改变后的新坐标以及大小，按下ctrl则等比放大缩小
-        let movedBounds = this.stageRender.selector.render.getMovedBounds(ex, ey, isCtrl);
+        let movedBounds = this.stageRender.selector.render.getMovedBounds(ex, ey, isCtrl || this.stageRender.selector.eqrat);
         if (movedBounds) {
           let selector = this.stageRender.selector;
           let stageRatio = this.model.getStageRatio()

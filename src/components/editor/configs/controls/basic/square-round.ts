@@ -27,6 +27,10 @@ export default {
     ],
     border: {
       round: 5
+    },
+    sample: {
+      //锁定比例
+      eqrat: true
     }
   }
 }

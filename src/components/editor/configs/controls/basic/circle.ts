@@ -12,6 +12,8 @@ export default {
     poly: 2,
     //采样信息
     sample: {
+      //锁定比例
+      eqrat: true,
       //一圈4次采样
       loop: 4,
       //初始次采样的开始角度

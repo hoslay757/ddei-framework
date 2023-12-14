@@ -225,6 +225,7 @@ abstract class DDeiAbstractShape {
       let bpv = DDeiUtil.pointsToZero([this.bpv], this.cpv, this.rotate)[0]
       let scaleX = Math.abs(bpv.x / 100)
       let scaleY = Math.abs(bpv.y / 100)
+
       let scaleMatrix = new Matrix3(
         scaleX, 0, 0,
         0, scaleY, 0,
