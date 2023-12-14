@@ -113,6 +113,7 @@ abstract class DDeiAbstractShape {
    *    r:半径
    *    x:点坐标
    *    y:点坐标
+   *    oppoint:1为操作点只判定点，2为操作点，判定点以及中间，3为操作点，判定圆心
    *        
    */
   sample: object | null;
@@ -193,11 +194,11 @@ abstract class DDeiAbstractShape {
       let pvs = []
       let textArea = []
       let operatePVS = []
+      let opps = []
       for (let i = 0; i < sampliesResult.length; i++) {
         if (sampliesResult[i].length > 0 && sampliesResult[i][0].type != 10) {
           sampliesResult[i].forEach(pvd => {
             let pv = new Vector3()
-
             for (let i in pvd) {
               pv[i] = pvd[i]
             }
@@ -206,6 +207,9 @@ abstract class DDeiAbstractShape {
             pvs.push(pv)
             if (i == 0) {
               operatePVS.push(pv)
+            }
+            if (pvd.oppoint) {
+              opps.push(pv)
             }
           })
 
@@ -217,6 +221,9 @@ abstract class DDeiAbstractShape {
             }
             pv.z = (pvd.z || pvd.z === 0) ? pvd.z : 1
             textArea.push(pv)
+            if (pvd.oppoint) {
+              opps.push(pv)
+            }
           })
         }
       }
@@ -259,6 +266,8 @@ abstract class DDeiAbstractShape {
       this.operatePVS = operatePVS;
 
       this.textArea = textArea
+
+      this.opps = opps;
     }
 
   }
@@ -782,16 +791,23 @@ abstract class DDeiAbstractShape {
    * 获取中心点操作点
    */
   getCenterOpPoints(): [] {
-    let points = []
-    for (let i = 0; i < this.pvs.length; i++) {
-      let s = i
-      let e = i + 1
-      if (i == this.pvs.length - 1) {
-        e = 0
-      }
-      points.push(new Vector3((this.pvs[s].x + this.pvs[e].x) / 2, (this.pvs[s].y + this.pvs[e].y) / 2, 1))
+
+    if (this.opps?.length > 0) {
+      return this.opps
     }
-    return points;
+    else {
+      let points = []
+      for (let i = 0; i < this.pvs.length; i++) {
+        let s = i
+        let e = i + 1
+        if (i == this.pvs.length - 1) {
+          e = 0
+        }
+        points.push(new Vector3((this.pvs[s].x + this.pvs[e].x) / 2, (this.pvs[s].y + this.pvs[e].y) / 2, 1))
+      }
+      return points;
+    }
+
   }
 
   /**
@@ -806,22 +822,31 @@ abstract class DDeiAbstractShape {
     let x0 = point.x;
     let y0 = point.y;
     //判断鼠标是否在某个控件的范围内
-    if (this.pvs?.length > 0) {
+    let opPVS = []
+    if (this.opps?.length) {
+      this.opps.forEach(opvs => {
+        if (opvs.oppoint == 1) {
+          opPVS.push(opPVS);
+        }
+      });
+    }
+    opPVS = opPVS.length > 0 ? opPVS : this.pvs
+    if (opPVS?.length > 0) {
       let st, en;
-      for (let j = 0; j < this.pvs.length; j++) {
+      for (let j = 0; j < opPVS.length; j++) {
         //点到直线的距离
         let plLength = Infinity;
-        if (j == this.pvs.length - 1) {
+        if (j == opPVS.length - 1) {
           st = j;
           en = 0;
         } else {
           st = j;
           en = j + 1;
         }
-        let x1 = this.pvs[st].x;
-        let y1 = this.pvs[st].y;
-        let x2 = this.pvs[en].x;
-        let y2 = this.pvs[en].y;
+        let x1 = opPVS[st].x;
+        let y1 = opPVS[st].y;
+        let x2 = opPVS[en].x;
+        let y2 = opPVS[en].y;
         //获取控件所有向量
         if (x1 == x2 && y1 == y2) {
           plLength = Math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0))
@@ -1110,7 +1135,11 @@ abstract class DDeiAbstractShape {
     }
     for (let i in this) {
       if ((!skipFields || skipFields?.indexOf(i) == -1)) {
-
+        if (this.poly == 2) {
+          if (i == 'pvs' || i == 'textArea' || i == 'opps') {
+            continue;
+          }
+        }
         if (toJSONFields && toJSONFields.indexOf(i) != -1 && this[i]) {
           if (Array.isArray(this[i])) {
             let array = [];

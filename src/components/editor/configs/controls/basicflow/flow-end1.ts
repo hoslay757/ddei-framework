@@ -27,6 +27,12 @@ export default {
             pvs.push({x:x,y:y,r:er,type:0,group:j});
         }`,
         `(i,j, sita, sample, pvs, model){
+            let er  = sample.r
+            let x = er * Math.cos((sita+45) * DDeiConfig.ROTATE_UNIT)
+            let y = er * Math.sin((sita+45) * DDeiConfig.ROTATE_UNIT)
+            pvs.push({x:x,y:y,r:er,type:0,oppoint:1,group:j});
+        }`,
+        `(i,j, sita, sample, pvs, model){
             if(i == 0){
               let er = sample.r
               let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)

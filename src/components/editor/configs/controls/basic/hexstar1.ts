@@ -26,7 +26,7 @@ export default {
             let er = i%2 == 0 ? sample.r : sample.r * 0.58
             let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
             let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-            pvs.push({ x: x, y: y, group: j });
+            pvs.push({ x: x, y: y,oppoint:1, group: j });
         }`,
         `(i,j, sita, sample, pvs, model){
           if(i % 2 == 0 && i != 6 && i !=0){
