@@ -793,7 +793,7 @@ abstract class DDeiAbstractShape {
   getCenterOpPoints(): [] {
 
     if (this.opps?.length > 0) {
-      return this.opps
+      return cloneDeep(this.opps)
     }
     else {
       let points = []
@@ -825,12 +825,12 @@ abstract class DDeiAbstractShape {
     let opPVS = []
     if (this.opps?.length) {
       this.opps.forEach(opvs => {
-        if (opvs.oppoint == 1) {
+        if (opvs.oppoint == 2) {
           opPVS.push(opPVS);
         }
       });
     }
-    opPVS = opPVS.length > 0 ? opPVS : this.pvs
+    opPVS = this.opps?.length > 0 ? opPVS : this.pvs
     if (opPVS?.length > 0) {
       let st, en;
       for (let j = 0; j < opPVS.length; j++) {

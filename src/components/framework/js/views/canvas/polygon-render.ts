@@ -503,18 +503,12 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           let scaleY = Math.abs(bpv.y / 100)
           let upPV = pvs[i - 1]
 
-          // if (pv.m == 2) {
-          //   ctx.ellipse(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, upPV.r * rat1 * scaleX, upPV.r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, upPV.rad, pv.rad, !pv.direct)
-          //   ctx.ellipse(this.model.cpv.x * rat1 + lineOffset, (- this.model.cpv.y + 2 * upPV.y) * rat1 + lineOffset, upPV.r * rat1 * scaleX, upPV.r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * (rotate + 180), upPV.rad, pv.rad, !pv.direct)
-          //   ctx.ellipse(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, upPV.r * rat1 * scaleX, upPV.r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, upPV.rad, pv.rad, !pv.direct)
-          // } else 
+
           if (pv.m == 1) {
             ctx.ellipse(this.model.cpv.x * rat1 + lineOffset, (- this.model.cpv.y + 2 * upPV.y) * rat1 + lineOffset, upPV.r * rat1 * scaleX, upPV.r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * (rotate + 180), pv.rad, upPV.rad, pv.direct)
           } else {
             ctx.ellipse(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, upPV.r * rat1 * scaleX, upPV.r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, upPV.rad, pv.rad, !pv.direct)
           }
-
-          // ctx.arc(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pv.r * rat1, upPV.rad, pv.rad, !pv.direct);
         } else {
           ctx.arcTo(pvs[i].x * rat1 + lineOffset, pvs[i].y * rat1 + lineOffset, pvs[i + 1].x * rat1 + lineOffset, pvs[i + 1].y * rat1 + lineOffset, round * rat1);
         }
@@ -523,7 +517,6 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       if (pv.type == 2) {
         let lastPV = pvs[len - 1]
         ctx.ellipse(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, lastPV.r * rat1 * scaleX, lastPV.r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, lastPV.rad, pv.rad, !pv.direct)
-        // ctx.arc(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pv.r * rat1, lastPV.rad, pv.rad, !pv.direct);
       } else {
         ctx.arcTo(pvs[len - 1].x * rat1 + lineOffset, pvs[len - 1].y * rat1 + lineOffset, pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset, round * rat1);
       }

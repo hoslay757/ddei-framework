@@ -1168,6 +1168,7 @@ class DDeiLayerCanvasRender {
       }
       //线段修改点中
       case DDeiEnumOperateState.LINE_POINT_CHANGING: {
+
         //如果当前操作控件不存在，创建线段,生成影子控件，并把影子线段作为当前操作控件
         if (!this.stageRender.currentOperateShape) {
           let lineJson = DDeiUtil.getLineInitJSON();
@@ -1241,18 +1242,7 @@ class DDeiLayerCanvasRender {
         // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
         let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, ex, ey, true);
         if (operateControls != null && operateControls.length > 0) {
-          let projPoint = operateControls[0].getProjPoint({ x: ex, y: ey });
-          let centerOpPoints = operateControls[0].getCenterOpPoints()
-          centerOpPoints.forEach(op => {
-            op.model = operateControls[0]
-            op.mode = 3
-            this.model.opPoints.push(op)
-          })
-          if (projPoint) {
-            projPoint.model = operateControls[0]
-            projPoint.mode = 1
-            this.model.opPoints.push(projPoint)
-          }
+          operateControls[0].render.changeOpPoints(ex, ey, 1);
         }
         break;
       }
@@ -1443,12 +1433,6 @@ class DDeiLayerCanvasRender {
         //有控件：分发事件到当前控件
         if (operateControls != null && operateControls.length > 0) {
           operateControls[0].render.mouseMove(evt);
-          let centerOpPoints = operateControls[0].getCenterOpPoints()
-          centerOpPoints.forEach(op => {
-            op.model = operateControls[0]
-            op.mode = 3
-            this.model.opPoints.push(op)
-          })
           this.stage.ddInstance.bus.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'all-scroll' }, evt);
         } else if (!inSelector || this.stageRender.selector.passIndex == -1) {
           if (this.stage.ddInstance?.editMode == 1) {

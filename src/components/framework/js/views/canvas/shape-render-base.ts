@@ -1,3 +1,4 @@
+import { cloneDeep } from 'lodash';
 import DDeiConfig from '../../config.js'
 import DDei from '../../ddei.js';
 import DDeiEnumBusCommandType from '../../enums/bus-command-type.js';
@@ -12,7 +13,7 @@ import DDeiUtil from '../../util.js'
 import DDeiCanvasRender from './ddei-render.js';
 import DDeiLayerCanvasRender from './layer-render.js';
 import DDeiStageCanvasRender from './stage-render.js';
-
+import { Vector3 } from 'three';
 /**
  * 缺省的图形渲染器，默认实现的了监听等方法
  */
@@ -176,11 +177,75 @@ class DDeiAbstractShapeRender {
       let ey = evt.offsetY;
       ex -= this.stage.wpv.x;
       ey -= this.stage.wpv.y
-      let projPoint = this.model.getProjPoint({ x: ex, y: ey });
-      if (projPoint) {
-        projPoint.model = this.model
-        this.layer.opPoints.push(projPoint);
+      this.changeOpPoints(ex, ey);
+    }
+
+  }
+
+  changeOpPoints(ex: number, ey: number, pointMode: number | null = null) {
+
+    //获取直线连接操作点
+    let hasPoint = false;
+    let projPoint = this.model.getProjPoint({ x: ex, y: ey });
+    let pots = []
+    if (projPoint) {
+      projPoint.model = this.model
+      projPoint.mode = pointMode
+      hasPoint = true;
+      this.layer.opPoints.push(projPoint);
+    }
+    let centerOpPoints = this.model.getCenterOpPoints()
+    centerOpPoints.forEach(op => {
+      op.model = this.model
+      op.mode = 3
+      //只响应点的操作点，如果距离小于10，则变大
+      if (op.oppoint == 1 || op.oppoint == 3) {
+        let dist = DDeiUtil.getPointDistance(op.x, op.y, ex, ey);
+        if (Math.abs(dist) <= 5) {
+          op.isMiddle = true
+          delete op.mode
+          hasPoint = true;
+        }
+        //判定是否圆心，判定点到圆心的距离
+        else if (op.oppoint == 3) {
+          let rotate = this.model.rotate;
+          if (!rotate) {
+            rotate = 0
+          }
+          let bpv = DDeiUtil.pointsToZero([this.model.bpv], this.model.cpv, rotate)[0]
+          let scaleX = Math.abs(bpv.x / 100)
+          let scaleY = Math.abs(bpv.y / 100)
+          let dist1 = DDeiUtil.getPointDistance(op.x - this.model.cpv.x, op.y - this.model.cpv.y, (ex - this.model.cpv.x) / scaleX, (ey - this.model.cpv.y) / scaleY);
+          if (Math.abs(op.r - dist1) <= 5) {
+            let dr = op.r - dist1
+            console.log(dr)
+            let op1 = new Vector3(ex, ey, 1)
+            op1.model = this.model
+            pots.push(op1)
+            hasPoint = true;
+          }
+        }
       }
+      this.layer.opPoints.push(op);
+    })
+    //过滤靠近centerOppoints的点
+    pots.forEach(po => {
+      let insert = true;
+      for (let i = 0; i < centerOpPoints.length; i++) {
+        let co = centerOpPoints[i]
+        if (co.isMiddle) {
+          let dist = DDeiUtil.getPointDistance(po.x, po.y, co.x, co.y);
+          if (Math.abs(dist) <= 5) {
+            insert = false
+          }
+        }
+      }
+      if (insert) {
+        this.layer.opPoints.push(po);
+      }
+    })
+    if (hasPoint) {
+      this.stage.ddInstance.bus.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'pointer' });
     }
   }
 }
