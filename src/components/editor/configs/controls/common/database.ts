@@ -23,19 +23,30 @@ export default {
       rules: [
         `(i,j, sita, sample, pvs, model){
             let er  = sample.r
+            let ds = i == 1 || i ==0 ? 18: -18
             let x = er * Math.cos((sita) * DDeiConfig.ROTATE_UNIT)
-            let y = er * Math.sin((sita) * DDeiConfig.ROTATE_UNIT)
+            let y = er * Math.sin((sita) * DDeiConfig.ROTATE_UNIT)+ds
             pvs.push({ x: x, y: y,r:er,type:0, group: j });
         }`,
+
         `(i,j, sita, sample, pvs, model){
             let er  = sample.r
-            let x = er * Math.cos((sita) * DDeiConfig.ROTATE_UNIT)
-            let y = er * Math.sin((sita) * DDeiConfig.ROTATE_UNIT)
+            let rad = (sita) * DDeiConfig.ROTATE_UNIT
+            let x = er * Math.cos(rad)
+            let y = er * Math.sin(rad)
             let type = 1;
-            if(i == 1){
+            let direct =0;
+            if(i == 1 || i == 3){
               type = 2
+              direct = 1
             }
-            pvs.push({ x: x, y: y,r:er,type:type, group: j });
+            pvs.push({ x: x, y: y,type:type,r:er,rad:rad,direct:direct, group: j });
+            if(i == 3){
+              let uPvs = pvs[pvs.length-2];
+              let lPvs = pvs[pvs.length-1];
+              pvs.push({ x: uPvs.x, y: uPvs.y,type:type,r:er,rad:uPvs.rad,direct:0,m:1, group: j });
+              pvs.push({ x: x, y: y,type:type,r:er,rad:rad,direct:direct, group: j });
+            }
         }`,
 
         `(i,j, sita, sample, pvs, model){

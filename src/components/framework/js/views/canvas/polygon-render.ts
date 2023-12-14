@@ -494,8 +494,27 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       for (let i = 1; i < len - 1; i++) {
         let pv = pvs[i];
         if (pv.type == 2) {
+          let rotate = this.model.rotate;
+          if (!rotate) {
+            rotate = 0
+          }
+          let bpv = DDeiUtil.pointsToZero([this.model.bpv], this.model.cpv, rotate)[0]
+          let scaleX = Math.abs(bpv.x / 100)
+          let scaleY = Math.abs(bpv.y / 100)
           let upPV = pvs[i - 1]
-          ctx.arc(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pv.r * rat1, upPV.rad, pv.rad, !pv.direct);
+
+          // if (pv.m == 2) {
+          //   ctx.ellipse(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, upPV.r * rat1 * scaleX, upPV.r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, upPV.rad, pv.rad, !pv.direct)
+          //   ctx.ellipse(this.model.cpv.x * rat1 + lineOffset, (- this.model.cpv.y + 2 * upPV.y) * rat1 + lineOffset, upPV.r * rat1 * scaleX, upPV.r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * (rotate + 180), upPV.rad, pv.rad, !pv.direct)
+          //   ctx.ellipse(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, upPV.r * rat1 * scaleX, upPV.r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, upPV.rad, pv.rad, !pv.direct)
+          // } else 
+          if (pv.m == 1) {
+            ctx.ellipse(this.model.cpv.x * rat1 + lineOffset, (- this.model.cpv.y + 2 * upPV.y) * rat1 + lineOffset, upPV.r * rat1 * scaleX, upPV.r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * (rotate + 180), pv.rad, upPV.rad, pv.direct)
+          } else {
+            ctx.ellipse(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, upPV.r * rat1 * scaleX, upPV.r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, upPV.rad, pv.rad, !pv.direct)
+          }
+
+          // ctx.arc(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pv.r * rat1, upPV.rad, pv.rad, !pv.direct);
         } else {
           ctx.arcTo(pvs[i].x * rat1 + lineOffset, pvs[i].y * rat1 + lineOffset, pvs[i + 1].x * rat1 + lineOffset, pvs[i + 1].y * rat1 + lineOffset, round * rat1);
         }
@@ -503,7 +522,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       let pv = pvs[0];
       if (pv.type == 2) {
         let lastPV = pvs[len - 1]
-        ctx.arc(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pv.r * rat1, lastPV.rad, pv.rad, !pv.direct);
+        ctx.ellipse(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, lastPV.r * rat1 * scaleX, lastPV.r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, lastPV.rad, pv.rad, !pv.direct)
+        // ctx.arc(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pv.r * rat1, lastPV.rad, pv.rad, !pv.direct);
       } else {
         ctx.arcTo(pvs[len - 1].x * rat1 + lineOffset, pvs[len - 1].y * rat1 + lineOffset, pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset, round * rat1);
       }
@@ -515,10 +535,13 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       if (!rotate) {
         rotate = 0
       }
+      let pv = pvs[0]
       let bpv = DDeiUtil.pointsToZero([this.model.bpv], this.model.cpv, rotate)[0]
       let scaleX = Math.abs(bpv.x / 100)
       let scaleY = Math.abs(bpv.y / 100)
-      ctx.ellipse(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pvs[0].r * rat1 * scaleX, pvs[0].r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, DDeiConfig.ROTATE_UNIT * 0, Math.PI * 2)
+      let x = pv.cx || pv.cx == 0 ? this.model.cpv.x + pv.cx : this.model.cpv.x
+      let y = pv.cy || pv.cy == 0 ? this.model.cpv.y + pv.cy : this.model.cpv.y
+      ctx.ellipse(x * rat1 + lineOffset, y * rat1 + lineOffset, pv.r * rat1 * scaleX, pv.r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, DDeiConfig.ROTATE_UNIT * 0, Math.PI * 2)
       ctx.closePath()
     } else if (pvs.length == 2) {
       ctx.beginPath();
@@ -561,7 +584,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let lineWidth = width * ratio;
     for (let i = 0; i < this.borderPVSS.length; i++) {
       let pvs = this.borderPVSS[i];
-      if (pvs[0].type == 0) {
+      if (pvs[0].type == 0 || pvs[0].type == 9) {
         continue;
       }
       ctx.save();

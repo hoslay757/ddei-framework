@@ -81,6 +81,11 @@ export default {
       'name': '数据库',
       'orderNo': 41
     },
+    {
+      'id': '103001',
+      'name': '人员',
+      'orderNo': 45
+    },
 
   ]
 }

@@ -22,6 +22,7 @@ abstract class DDeiAbstractShape {
     this.fmt = props.fmt
     this.sptStyle = props.sptStyle ? props.sptStyle : {}
     this.poly = props.poly;
+
     this.sample = props.sample ? cloneDeep(props.sample) : null
     this.ruleEvals = []
     if (props.cpv) {
@@ -105,7 +106,15 @@ abstract class DDeiAbstractShape {
   //坐标描述方式，null/1为直角坐标，2为极坐标，默认直角坐标
   poly: number | null;
 
-  //极坐标下的采样策略
+  /**
+   * 极坐标下的采样策略
+   * 返回值：
+   *    type:0不画线、不生成剪切区域，只用来选中/1直线/2曲线/9不画线、不填充生成剪切区域/10文本区域
+   *    r:半径
+   *    x:点坐标
+   *    y:点坐标
+   *        
+   */
   sample: object | null;
   //特殊文本样式
   sptStyle: object;
@@ -187,10 +196,12 @@ abstract class DDeiAbstractShape {
         if (sampliesResult[i].length > 0 && sampliesResult[i][0].type != 10) {
           sampliesResult[i].forEach(pvd => {
             let pv = new Vector3()
+
             for (let i in pvd) {
               pv[i] = pvd[i]
             }
             pv.z = (pvd.z || pvd.z === 0) ? pvd.z : 1
+
             pvs.push(pv)
             if (i == 0) {
               operatePVS.push(pv)

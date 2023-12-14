@@ -6,7 +6,7 @@ export default {
   'from': '100500',
   'icon': 'toolbox-shape-rect',
   'define': {
-    width: 100,
+    width: 50,
     height: 100,
     //2为极坐标，缺省点为原点
     poly: 2,
@@ -22,38 +22,29 @@ export default {
       //采样的规则，多组采样返回多组规则
       rules: [
         `(i,j, sita, sample, pvs, model){
+            let ds = i == 0 || i ==1 ? 20: 0
+            let er  = sample.r
+            let x = er * Math.cos((sita) * DDeiConfig.ROTATE_UNIT)
+            let y = er * Math.sin((sita) * DDeiConfig.ROTATE_UNIT)+ds
+            pvs.push({ x: x, y: y,r:er,type:9, group: j });
+        }`,
+        `(i,j, sita, sample, pvs, model){
+         
             let er  = sample.r
             let x = er * Math.cos((sita) * DDeiConfig.ROTATE_UNIT)
             let y = er * Math.sin((sita) * DDeiConfig.ROTATE_UNIT)
             pvs.push({ x: x, y: y,r:er, group: j });
         }`,
+
         `(i,j, sita, sample, pvs, model){
-          if(i == 1){
-            let er  = sample.r
-            let x = er * Math.cos((sita) * DDeiConfig.ROTATE_UNIT)
-            let y = er * Math.sin((sita) * DDeiConfig.ROTATE_UNIT)
-            pvs.push({ x: x, y: y,r:er, group: j });
-          }else if(i == 2){
-            let er  = sample.r
-            let x = er * Math.cos((sita) * DDeiConfig.ROTATE_UNIT)
-            let y = er * Math.sin((sita) * DDeiConfig.ROTATE_UNIT)
-            pvs[3] = { x: x, y: y,r:er, group: j };
-            pvs[1] = { x: x+10, y: y,r:er, group: j };
-            pvs[2] = { x: pvs[0].x+10, y: pvs[0].y,r:er, group: j };
-          }
-        }`,
-        `(i,j, sita, sample, pvs, model){
-            let ds = i == 1 || i ==2 ? 10: -10
             let er = sample.r
-            let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)+ds
+            let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
             let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-            pvs.push({ x: x, y: y, group: j });
-        }`,
-        `(i,j, sita, sample, pvs, model){
-            let ds = i == 1 || i ==2 ? 10: -10
-            let er = sample.r
-            let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)+ds
-            let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
+            if( i == 0 || i ==1){
+              y+=20
+            }else{
+             y=pvs[0].y-20
+            }
             pvs.push({ x: x, y: y,type:10, group: j });
         }`,
       ]

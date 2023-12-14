@@ -31,7 +31,7 @@ export default {
               let er = sample.r
               let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
               let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-              pvs.push({x:x,y:y,r:er,group:j});
+              pvs.push({r:er,group:j});
             }
         }`,
         `(i,j, sita, sample, pvs, model){
@@ -39,7 +39,7 @@ export default {
               let er = sample.r -10
               let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
               let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-              pvs.push({x:x,y:y,r:er,group:j});
+              pvs.push({r:er,group:j});
             }
         }`,
         `(i,j, sita, sample, pvs, model){
