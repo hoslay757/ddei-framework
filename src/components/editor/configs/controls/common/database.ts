@@ -28,6 +28,19 @@ export default {
             let y = er * Math.sin((sita) * DDeiConfig.ROTATE_UNIT)+ds
             pvs.push({ x: x, y: y,r:er,type:0, group: j });
         }`,
+        `(i,j, sita, sample, pvs, model){
+            let er  = sample.r
+            if(i == 2 || i ==0){
+              sita += 45
+            }
+            let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
+            let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
+            if(i ==1 || i ==3){
+              let ny = er * Math.sin((sita+90) * DDeiConfig.ROTATE_UNIT)
+              y = (y+ny)/2
+            }
+            pvs.push({ x: x, y: y,r:er,type:0,oppoint:1, group: j });
+        }`,
 
         `(i,j, sita, sample, pvs, model){
             let er  = sample.r
@@ -41,12 +54,7 @@ export default {
               direct = 1
             }
             pvs.push({ x: x, y: y,type:type,r:er,rad:rad,direct:direct, group: j });
-            if(i == 3){
-              let uPvs = pvs[pvs.length-2];
-              let lPvs = pvs[pvs.length-1];
-              pvs.push({ x: uPvs.x, y: uPvs.y,type:type,r:er,rad:uPvs.rad,direct:0,m:1, group: j });
-              pvs.push({ x: x, y: y,type:type,r:er,rad:rad,direct:direct, group: j });
-            }
+           
         }`,
 
         `(i,j, sita, sample, pvs, model){

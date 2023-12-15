@@ -826,7 +826,7 @@ abstract class DDeiAbstractShape {
     if (this.opps?.length) {
       this.opps.forEach(opvs => {
         if (opvs.oppoint == 2) {
-          opPVS.push(opPVS);
+          opPVS.push(opvs);
         }
       });
     }
