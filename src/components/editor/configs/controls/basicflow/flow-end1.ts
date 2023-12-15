@@ -31,6 +31,9 @@ export default {
             let x = er * Math.cos((sita+45) * DDeiConfig.ROTATE_UNIT)
             let y = er * Math.sin((sita+45) * DDeiConfig.ROTATE_UNIT)
             pvs.push({x:x,y:y,r:er,type:0,oppoint:1,group:j});
+            if(i == 3){
+              pvs.push({x:0,y:0,r:er,type:0,oppoint:3,group:j});
+            }
         }`,
         `(i,j, sita, sample, pvs, model){
             if(i == 0){

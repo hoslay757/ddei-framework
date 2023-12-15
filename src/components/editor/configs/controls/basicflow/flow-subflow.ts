@@ -28,6 +28,23 @@ export default {
             pvs.push({ x: x, y: y,r:er, group: j });
         }`,
         `(i,j, sita, sample, pvs, model){
+            let er  = sample.r
+            let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
+            let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
+            pvs.push({x:x,y:y,r:er,type:0,oppoint:2,group:j});
+             if(i ==1 || i ==3){
+              let ny = er * Math.sin((sita+90) * DDeiConfig.ROTATE_UNIT)
+              y = (y+ny)/2
+            }else{
+              let nx = er * Math.cos((sita+90) * DDeiConfig.ROTATE_UNIT)
+              x = (x+nx)/2
+            }
+            pvs.push({x:x,y:y,r:er,type:0,oppoint:2,group:j});
+            if(i == 3){
+              pvs.push({x:0,y:0,r:er,type:0,oppoint:1,group:j});
+            }
+        }`,
+        `(i,j, sita, sample, pvs, model){
             let ds = i == 1 || i ==2 ? 10: -10
             let er = sample.r
             let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)+ds

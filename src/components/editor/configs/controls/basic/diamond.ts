@@ -8,23 +8,6 @@ export default {
   'define': {
     width: 160,
     height: 80,
-    // pvs: [
-    //   { x: 80, y: 0, z: 1 },
-    //   { x: 160, y: 40, z: 1 },
-    //   { x: 80, y: 80, z: 1 },
-    //   { x: 0, y: 40, z: 1 }
-    // ],
-    // cpv: { x: 80, y: 40, z: 1 },
-    // textArea: [
-    //   { x: 40, y: 20, z: 1 },
-    //   { x: 120, y: 20, z: 1 },
-    //   { x: 120, y: 60, z: 1 },
-    //   { x: 40, y: 60, z: 1 }
-    // ],
-    // hpv: [
-    //   { x: 80, y: 0, z: 1 },
-    //   { x: 90, y: 0, z: 1 },
-    // ]
     //2为极坐标，缺省点为原点
     poly: 2,
     //采样信息
@@ -41,7 +24,16 @@ export default {
             let er  = sample.r
             let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
             let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-            pvs.push({x:x,y:y,r:er,oppoint:2,group:j});
+            pvs.push({x:x,y:y,r:er,group:j});
+        }`,
+        `(i,j, sita, sample, pvs, model){
+            let er  = sample.r
+            let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
+            let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
+            pvs.push({x:x,y:y,r:er,type:0,oppoint:2,group:j});
+            if(i == 3){
+              pvs.push({x:0,y:0,r:er,type:0,oppoint:3,group:j});
+            }
         }`,
         `(i,j, sita, sample, pvs, model){
             let er = sample.r/2

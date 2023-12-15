@@ -6,10 +6,10 @@ export default {
   'from': '102010',
   'icon': 'toolbox-shape-rect',
   'define': {
-    height: 50,
+    height: 60,
     width: 100,
     border: {
-      round: 25
+      round: 15
     }
   }
 }

@@ -244,7 +244,6 @@ class DDeiAbstractShapeRender {
           }
         }
       }
-      debugger
       if (insert) {
         this.layer.opPoints.push(po);
       }
