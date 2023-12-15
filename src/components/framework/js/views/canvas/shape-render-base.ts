@@ -212,14 +212,17 @@ class DDeiAbstractShapeRender {
           if (!rotate) {
             rotate = 0
           }
+
           let bpv = DDeiUtil.pointsToZero([this.model.bpv], this.model.cpv, rotate)[0]
           let scaleX = Math.abs(bpv.x / 100)
           let scaleY = Math.abs(bpv.y / 100)
-          let dist1 = DDeiUtil.getPointDistance(op.x - this.model.cpv.x, op.y - this.model.cpv.y, (ex - this.model.cpv.x) / scaleX, (ey - this.model.cpv.y) / scaleY);
+          let dist1 = DDeiUtil.getPointDistance(0, 0, (ex - op.x) / scaleX, (ey - op.y) / scaleY);
           if (Math.abs(op.r - dist1) <= 5) {
             let dr = op.r - dist1
-            console.log(dr)
-            let op1 = new Vector3(ex, ey, 1)
+            let rotate = DDeiUtil.getLineAngle(op.x, op.y, ex, ey)
+            let dx = dr * Math.cos(rotate * DDeiConfig.ROTATE_UNIT)
+            let dy = dr * Math.sin(rotate * DDeiConfig.ROTATE_UNIT)
+            let op1 = new Vector3(ex + dx, ey + dy, 1)
             op1.model = this.model
             pots.push(op1)
             hasPoint = true;
