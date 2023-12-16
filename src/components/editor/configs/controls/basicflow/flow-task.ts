@@ -6,8 +6,8 @@ export default {
   'from': '100002',
   'icon': 'toolbox-shape-rect',
   'define': {
-    width: 150,
-    height: 90,
+    width: 110,
+    height: 70,
 
   }
 }

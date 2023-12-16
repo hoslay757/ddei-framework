@@ -6,8 +6,8 @@ export default {
   'from': '100500',
   'icon': 'toolbox-shape-rect',
   'define': {
-    width: 150,
-    height: 90,
+    width: 160,
+    height: 100,
     //2为极坐标，缺省点为原点
     poly: 2,
     //采样信息
@@ -40,9 +40,6 @@ export default {
               x = (x+nx)/2
             }
             pvs.push({x:x,y:y,r:er,type:0,oppoint:2,group:j});
-            if(i == 3){
-              pvs.push({x:0,y:0,r:er,type:0,oppoint:1,group:j});
-            }
         }`,
         `(i,j, sita, sample, pvs, model){
           if(i == 1){

@@ -6,8 +6,8 @@ export default {
   'from': '100500',
   'icon': 'toolbox-shape-rect',
   'define': {
-    width: 120,
-    height: 120,
+    width: 100,
+    height: 100,
     //2为极坐标，缺省点为原点
     poly: 2,
     //采样信息
@@ -35,9 +35,7 @@ export default {
               let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
               let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
               pvs.push({x:x,y:y,r:er,type:0,oppoint:2,group:j});
-              if(i == 8){
-                pvs.push({x:0,y:0,type:0,oppoint:1,group:j});
-              }
+             
             }
         }`,
 

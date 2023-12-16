@@ -10,6 +10,7 @@ export default {
     height: 50,
     //2为极坐标，缺省点为原点
     poly: 2,
+    zIndex: 2,
     //采样信息
     sample: {
       //一圈采样次数
@@ -40,6 +41,9 @@ export default {
               y = (y+ny)/2
             }
             pvs.push({ x: x, y: y,r:er,type:0,oppoint:1, group: j });
+            if(i == 0){
+              pvs.push({ x: 0, y: 0,r:er,type:0,oppoint:1, group: j });
+            }
         }`,
 
         `(i,j, sita, sample, pvs, model){
@@ -49,7 +53,7 @@ export default {
             let y = er * Math.sin(rad)
             let type = 1;
             let direct =0;
-            if(i == 1 || i == 3){
+            if(i == 3){
               type = 2
               direct = 1
             }
@@ -65,6 +69,32 @@ export default {
             pvs.push({ x: x, y: y,type:10, group: j });
         }`,
       ]
-    }
+    },
+    //组合控件
+    composes: [
+      {
+        id: '100006',
+        zIndex: 3,
+        cpv: {
+          x: 0, y: -28
+        },
+        width: 70.5,
+        height: 5
+      },
+
+
+      {
+        id: '100006',
+        zIndex: 1,
+        cpv: {
+          x: 50, y: -28
+        },
+        width: 70.5,
+        height: 5
+      },
+
+
+
+    ]
   }
 }

@@ -2,7 +2,7 @@ import DDeiConfig from '../../config.js'
 import DDeiEnumBusCommandType from '../../enums/bus-command-type.js';
 import DDeiUtil from '../../util.js'
 import DDeiAbstractShapeRender from './shape-render-base.js';
-import { clone, trim } from 'lodash'
+import { clone, trim, zip } from 'lodash'
 import { Matrix3, Vector3 } from 'three';
 import DDeiEnumOperateType from '../../enums/operate-type.js';
 import DDeiAbstractShape from '../../models/shape.js';
@@ -80,32 +80,62 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   /**
    * 绘制图形
    */
-  drawShape(tempShape): void {
-    if (!this.viewBefore || this.viewBefore(
+  drawShape(tempShape, composeRender: boolean = false): void {
+    if (composeRender || !this.viewBefore || this.viewBefore(
       DDeiEnumOperateType.VIEW,
       [this.model],
       null,
       this.ddRender.model,
       null
     )) {
-      //获得 2d 上下文对象
-      let canvas = this.ddRender.getCanvas();
-      let ctx = canvas.getContext('2d');
-      ctx.save();
-      //拆分并计算pvss
-      this.calPVSS(tempShape)
-      //创建剪切区
-      this.createClip(tempShape);
-      //绘制填充
-      this.drawFill(tempShape);
-      //绘制文本
-      this.drawText(tempShape);
-      //根据pvss绘制边框
-      this.drawBorder(tempShape);
 
-      ctx.restore();
 
-      if (this.viewAfter) {
+      //将当前控件以及composes按照zindex顺序排列并输出
+      let rendList = [];
+      if (this.model.composes?.length > 0) {
+        rendList = rendList.concat(this.model.composes);
+      }
+      rendList.push(this.model)
+      rendList.sort((a, b) => {
+        if ((a.zIndex || a.zIndex == 0) && (b.zIndex || b.zIndex == 0)) {
+          return a.zIndex - b.zIndex
+        } else if ((a.zIndex || a.zIndex == 0) && !(b.zIndex || b.zIndex == 0)) {
+          return 1
+        } else if (!(a.zIndex || a.zIndex == 0) && (b.zIndex || b.zIndex == 0)) {
+          return -1
+        } else {
+          return 0
+        }
+      })
+      rendList.forEach(c => {
+        if (c == this.model) {
+          //获得 2d 上下文对象
+          let canvas = this.ddRender.getCanvas();
+          let ctx = canvas.getContext('2d');
+          ctx.save();
+          //拆分并计算pvss
+          this.calPVSS(tempShape)
+          //创建剪切区
+          this.createClip(tempShape);
+          //绘制填充
+          this.drawFill(tempShape);
+          //绘制文本
+          this.drawText(tempShape);
+          //根据pvss绘制边框
+          this.drawBorder(tempShape);
+          ctx.restore();
+        } else {
+          //绘制组合控件的内容
+          c.render.drawShape(tempShape, true)
+        }
+      })
+
+
+
+
+
+
+      if (!composeRender && this.viewAfter) {
         this.viewAfter(
           DDeiEnumOperateType.VIEW,
           [this.model],

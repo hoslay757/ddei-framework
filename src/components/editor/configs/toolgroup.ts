@@ -8,6 +8,7 @@ const groupOriginDefinies = [];
 //已读取的控件原始定义
 const controlOriginDefinies = new Map();
 
+
 const loadControlByFrom = function (control) {
   if (control.from && !control.def) {
     let fromControl = controlOriginDefinies.get(control.from)
@@ -29,6 +30,26 @@ const loadControlByFrom = function (control) {
           control.define[i] = fromDefine[i]
         }
       }
+    }
+    //处理composes
+    if (control.define?.composes) {
+      control.define?.composes.forEach(compose => {
+        let composeControlDefine = controlOriginDefinies.get(compose.id)
+        if (composeControlDefine.from) {
+          loadControlByFrom(composeControlDefine)
+        }
+        compose.styles = cloneDeep(composeControlDefine.styles)
+        let composeDefine = cloneDeep(composeControlDefine.define)
+        //合并控件自身与from组件的define、menu
+        if (composeDefine) {
+
+          for (let i in composeDefine) {
+            if (!(compose[i] || compose[i] == 0)) {
+              compose[i] = composeDefine[i]
+            }
+          }
+        }
+      });
     }
     if (fromMenus) {
       if (!control.menus) {

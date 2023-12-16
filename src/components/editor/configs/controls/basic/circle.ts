@@ -8,7 +8,7 @@ export default {
   'define': {
     width: 100,
     height: 100,
-    //2为极坐标，缺省点为原点
+    //2为极坐标，以cpv为圆心，半径r采样获得点，在以width/100、height/100的的原始比例进行缩放
     poly: 2,
     //采样信息
     sample: {

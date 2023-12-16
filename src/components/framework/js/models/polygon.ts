@@ -1,7 +1,7 @@
-import DDeiConfig from '../config'
 import DDeiAbstractShape from './shape'
 import DDeiUtil from '../util';
 import { Matrix3, Vector3 } from 'three';
+import DDeiConfig, { MODEL_CLS } from '../config';
 /**
  * polygon由3个以上点构成的图形
  * 主要样式属性：坐标、高宽、边框、字体、填充
@@ -37,7 +37,7 @@ class DDeiPolygon extends DDeiAbstractShape {
   // ============================ 静态方法 ============================
 
   // 通过一个JSON反向序列化成对象，模型数据与JSON完全一样
-  static loadFromJSON(json: object, tempData: object = {}): DDeiPolygon {
+  static loadFromJSON(json: object, tempData: object = {}, initPVS: boolean = true): DDeiPolygon {
     let model = new DDeiPolygon(json);
     model.layer = tempData['currentLayer']
     model.stage = tempData['currentStage']
@@ -46,20 +46,53 @@ class DDeiPolygon extends DDeiAbstractShape {
       model.pModel = model.layer;
     }
     tempData[model.id] = model;
+
+    //初始化composes
+    if (json?.composes?.length > 0) {
+      let composes = []
+      json?.composes.forEach(composeJSON => {
+        let def = DDeiUtil.getControlDefine(composeJSON)
+        let composeModel: DDeiAbstractShape = MODEL_CLS[def.type].loadFromJSON(
+          composeJSON,
+          tempData,
+          false
+        );
+        composes.push(composeModel)
+      });
+      model.composes = composes
+    }
     //基于初始化的宽度、高度，构建向量
-    model.initPVS();
+    if (initPVS) {
+      model.initPVS();
+    }
     model.initRender();
     return model;
   }
 
   // 通过JSON初始化对象，数据未传入时将初始化数据
-  static initByJSON(json: object, tempData: object = {}): DDeiPolygon {
+  static initByJSON(json: object, tempData: object = {}, initPVS: boolean = true): DDeiPolygon {
     let model = new DDeiPolygon(json);
     model.layer = tempData['currentLayer']
     model.stage = tempData['currentStage']
     model.pModel = tempData['currentContainer']
+    //初始化composes
+    if (json?.composes?.length > 0) {
+      let composes = []
+      json?.composes.forEach(composeJSON => {
+        let def = DDeiUtil.getControlDefine(composeJSON)
+        let composeModel: DDeiAbstractShape = MODEL_CLS[def.type].initByJSON(
+          composeJSON,
+          tempData,
+          false
+        );
+        composes.push(composeModel)
+      });
+      model.composes = composes
+    }
     //基于初始化的宽度、高度，构建向量
-    model.initPVS();
+    if (initPVS) {
+      model.initPVS();
+    }
     return model;
   }
 
@@ -95,6 +128,10 @@ class DDeiPolygon extends DDeiAbstractShape {
     //绑定并初始化渲染器
     DDeiConfig.bindRender(this);
     this.render.init();
+    //加载所有模型的渲染器
+    this.composes?.forEach(compose => {
+      compose.initRender()
+    });
   }
 
   //覆写hpv

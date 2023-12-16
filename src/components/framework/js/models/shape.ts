@@ -24,6 +24,7 @@ abstract class DDeiAbstractShape {
     this.poly = props.poly;
 
     this.sample = props.sample ? cloneDeep(props.sample) : null
+    this.composes = props.composes
     this.ruleEvals = []
     if (props.cpv) {
       this.cpv = new Vector3(props.cpv.x, props.cpv.y, props.cpv.z || props.cpv.z == 0 ? props.cpv.z : 1);
@@ -117,6 +118,12 @@ abstract class DDeiAbstractShape {
    *        
    */
   sample: object | null;
+
+  /**
+   * 组合控件的信息
+   */
+  composes: DDeiAbstractShape[] | null;
+
   //特殊文本样式
   sptStyle: object;
   // ============================ 方法 ============================
@@ -138,7 +145,7 @@ abstract class DDeiAbstractShape {
       if (!this.bpv) {
         //全局缩放因子
         let stageRatio = this.getStageRatio();
-        this.bpv = new Vector3(this.width * stageRatio, this.height * stageRatio, 1)
+        this.bpv = new Vector3(this.cpv.x + this.width * stageRatio, this.cpv.y + this.height * stageRatio, 1)
       }
       this.executeSample();
     } else {
@@ -156,6 +163,9 @@ abstract class DDeiAbstractShape {
     //计算宽松判定矩阵
     this.calRotate();
     this.calLoosePVS();
+    this.composes?.forEach(compose => {
+      compose.initPVS()
+    });
   }
 
   /**
@@ -233,6 +243,7 @@ abstract class DDeiAbstractShape {
       let bpv = DDeiUtil.pointsToZero([this.bpv], this.cpv, this.rotate)[0]
       let scaleX = Math.abs(bpv.x / 100)
       let scaleY = Math.abs(bpv.y / 100)
+      console.log(scaleX + " .  " + scaleY)
 
       let scaleMatrix = new Matrix3(
         scaleX, 0, 0,
@@ -288,6 +299,7 @@ abstract class DDeiAbstractShape {
         this.exPvs = source.exPvs
         this.bpv = source.bpv
       }
+
       this.executeSample();
     } else {
       if (clonePV) {
@@ -303,6 +315,12 @@ abstract class DDeiAbstractShape {
     this.initHPV()
     this.calRotate();
     this.calLoosePVS();
+    for (let i = 0; i < source.composes?.length; i++) {
+      let scop = source.composes[i]
+      let tcop = this.composes[i]
+      tcop.syncVectors(scop, clonePV)
+    }
+
   }
 
   /**
@@ -339,7 +357,9 @@ abstract class DDeiAbstractShape {
       this.calRotate()
       this.calLoosePVS();
     }
-
+    this.composes?.forEach(compose => {
+      compose.transVectors(matrix)
+    });
   }
 
 

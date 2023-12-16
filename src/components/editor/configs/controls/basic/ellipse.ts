@@ -6,8 +6,8 @@ export default {
   'from': '100003',
   'icon': 'toolbox-shape-rect',
   'define': {
-    width: 200,
-    height: 100,
+    width: 160,
+    height: 80,
     //采样信息
     sample: {
       //一圈4次采样

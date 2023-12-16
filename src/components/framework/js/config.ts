@@ -88,7 +88,7 @@ class DDeiConfig {
     "DDeiStage": { "TOJSON": ["layers", "links"], "SKIP": ["ddInstance", "selectedModels", "render", "unicode", "histroy", 'histroyIdx', "sourceLinkCache", "distLinkCache"] },
     "DDeiLayer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "render", "unicode", "opPoints", "dragInPoints", "dragOutPoints", "shadowControls", "layoutManager", "tempDisplay"] },
     "DDeiContainer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "hpv", "loosePVS", "x", "y", "width", "height", "layoutManager"] },
-    "AbstractShape": { "SKIP": ["ddInstance", "stage", "layer", "pModel", "state", "render", "unicode", "loosePVS", "x", "y", "width", "height", "ruleEvals", "operatePVS"] },
+    "AbstractShape": { "TOJSON": ["composes"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "state", "render", "unicode", "loosePVS", "x", "y", "width", "height", "ruleEvals", "operatePVS"] },
     "DDeiLine": { "TOJSON": ["linkModels"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "state", "render", "unicode", "looseCanvas", "loosePVS", "x", "y", "width", "height", "startPoint", "endPoint", "cpv", "clps"] },
     "DDeiTable": { "TOJSON": ["rows"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "hpv", "loosePVS", "x", "y", "width", "height", "cols", "selector", "initColNum", "initRowNum", "tempDragCell", "tempDragType", "curCol", "curRow", "specilDrag", "tempUpCel", "dragChanging", "dragType", "dragCell"] },
     "DDeiTableCell": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "hpv", "loosePVS", "x", "y", "width", "height", "layoutManager", "id", "table", "mergedCell"] },

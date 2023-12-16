@@ -6,7 +6,7 @@ export default {
   'from': '100003',
   'icon': 'toolbox-shape-rect',
   'define': {
-    width: 40,
-    height: 40,
+    width: 50,
+    height: 50,
   }
 }

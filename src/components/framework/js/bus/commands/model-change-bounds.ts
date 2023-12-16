@@ -110,111 +110,139 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
           0, 1, -originRect.y,
           0, 0, 1);
         m1.premultiply(move3Matrix);
-        //中心点比例
-        let cpvTemp = new Vector3(item.cpv.x, item.cpv.y, 1);
-        cpvTemp.applyMatrix3(m1)
 
-        let cpvR = { xR: parseFloat((cpvTemp.x / originRect.width).toFixed(4)), yR: parseFloat((cpvTemp.y / originRect.height).toFixed(4)) }
-        let pvsR = [];
-        let exPvsR = {}
-        let textPvsR = []
-
-        item.pvs.forEach(pv => {
-          let pvTemp = new Vector3(pv.x, pv.y, 1);
-          pvTemp.applyMatrix3(m1)
-          pvsR.push({ xR: parseFloat((pvTemp.x / originRect.width).toFixed(4)), yR: parseFloat((pvTemp.y / originRect.height).toFixed(4)) })
-        });
-        item.textArea?.forEach(pv => {
-          let pvTemp = new Vector3(pv.x, pv.y, 1);
-          pvTemp.applyMatrix3(m1)
-          textPvsR.push({ xR: parseFloat((pvTemp.x / originRect.width).toFixed(4)), yR: parseFloat((pvTemp.y / originRect.height).toFixed(4)) })
-
-        });
-
-
-
-        for (let i in item.exPvs) {
-          let pv = item.exPvs[i];
-          let pvTemp = new Vector3(pv.x, pv.y, 1);
-          pvTemp.applyMatrix3(m1)
-          exPvsR[i] = { xR: parseFloat((pvTemp.x / originRect.width).toFixed(4)), yR: parseFloat((pvTemp.y / originRect.height).toFixed(4)) }
-        }
-
-        let bpvR = null
-        if (item.poly == 2) {
-          let pvTemp = new Vector3(item.bpv.x, item.bpv.y, 1);
-          pvTemp.applyMatrix3(m1)
-          bpvR = { xR: pvTemp.x / originRect.width, yR: pvTemp.y / originRect.height }
-        }
-
-        originPosMap.set(id, { cpvR: cpvR, pvsR: pvsR, exPvsR: exPvsR, textPvsR: textPvsR, bpvR: bpvR });
+        //计算并记录item在矩形中的位置比例
+        this.setPVR(id, item, m1, originRect, originPosMap)
 
       }
       //计算好原始比例后，按照增量扩展控件大小，并按照其旋转数字施加一个变换
       models.forEach(item => {
-        item.cpv.x = parseFloat((movedBounds.x + movedBounds.width * originPosMap.get(item.id).cpvR.xR).toFixed(4))
-        item.cpv.y = parseFloat((movedBounds.y + movedBounds.height * originPosMap.get(item.id).cpvR.yR).toFixed(4))
-
-        for (let xi = 0; xi < item.textArea?.length; xi++) {
-          let pv = item.textArea[xi];
-          let pvR = originPosMap.get(item.id).textPvsR[xi];
-          pv.x = parseFloat((movedBounds.x + movedBounds.width * pvR.xR).toFixed(4))
-          pv.y = parseFloat((movedBounds.y + movedBounds.height * pvR.yR).toFixed(4))
-        }
-        for (let xi = 0; xi < item.pvs.length; xi++) {
-          let pv = item.pvs[xi];
-          let pvR = originPosMap.get(item.id).pvsR[xi];
-          pv.x = parseFloat((movedBounds.x + movedBounds.width * pvR.xR).toFixed(4))
-          pv.y = parseFloat((movedBounds.y + movedBounds.height * pvR.yR).toFixed(4))
-        }
-
-        for (let xi in item.exPvs) {
-          let pv = item.exPvs[xi];
-          let pvR = originPosMap.get(item.id).exPvsR[xi];
-          pv.x = parseFloat((movedBounds.x + movedBounds.width * pvR.xR).toFixed(4))
-          pv.y = parseFloat((movedBounds.y + movedBounds.height * pvR.yR).toFixed(4))
-
-        }
-
-        if (item.poly == 2) {
-          let pv = item.bpv;
-          let pvR = originPosMap.get(item.id).bpvR;
-          pv.x = parseFloat((movedBounds.x + movedBounds.width * pvR.xR).toFixed(4))
-          pv.y = parseFloat((movedBounds.y + movedBounds.height * pvR.yR).toFixed(4))
-        }
-
-        if (item.rotate && item.rotate != 0) {
-          //旋转
-          let m1 = new Matrix3();
-          let move1Matrix = new Matrix3(
-            1, 0, -item.cpv.x,
-            0, 1, -item.cpv.y,
-            0, 0, 1);
-          m1.premultiply(move1Matrix);
-          let angle = -(item.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
-          let rotateMatrix = new Matrix3(
-            Math.cos(angle), Math.sin(angle), 0,
-            -Math.sin(angle), Math.cos(angle), 0,
-            0, 0, 1);
-          m1.premultiply(rotateMatrix);
-          let move2Matrix = new Matrix3(
-            1, 0, item.cpv.x,
-            0, 1, item.cpv.y,
-            0, 0, 1);
-          m1.premultiply(move2Matrix);
-          for (let xi = 0; xi < item.pvs.length; xi++) {
-            let pv = item.pvs[xi];
-            pv.applyMatrix3(m1)
-          }
-        }
-
-        item.calRotate()
-        item.calLoosePVS();
+        this.syncPVS(item, movedBounds, originPosMap)
       })
       return true;
     }
     return false;
   }
+
+  syncPVS(item, movedBounds, originPosMap) {
+    item.cpv.x = parseFloat((movedBounds.x + movedBounds.width * originPosMap.get(item.id).cpvR.xR).toFixed(4))
+    item.cpv.y = parseFloat((movedBounds.y + movedBounds.height * originPosMap.get(item.id).cpvR.yR).toFixed(4))
+
+    for (let xi = 0; xi < item.textArea?.length; xi++) {
+      let pv = item.textArea[xi];
+      let pvR = originPosMap.get(item.id).textPvsR[xi];
+      pv.x = parseFloat((movedBounds.x + movedBounds.width * pvR.xR).toFixed(4))
+      pv.y = parseFloat((movedBounds.y + movedBounds.height * pvR.yR).toFixed(4))
+    }
+    for (let xi = 0; xi < item.pvs.length; xi++) {
+      let pv = item.pvs[xi];
+      let pvR = originPosMap.get(item.id).pvsR[xi];
+      pv.x = parseFloat((movedBounds.x + movedBounds.width * pvR.xR).toFixed(4))
+      pv.y = parseFloat((movedBounds.y + movedBounds.height * pvR.yR).toFixed(4))
+    }
+
+    for (let xi in item.exPvs) {
+      let pv = item.exPvs[xi];
+      let pvR = originPosMap.get(item.id).exPvsR[xi];
+      pv.x = parseFloat((movedBounds.x + movedBounds.width * pvR.xR).toFixed(4))
+      pv.y = parseFloat((movedBounds.y + movedBounds.height * pvR.yR).toFixed(4))
+
+    }
+
+    if (item.poly == 2) {
+      let pv = item.bpv;
+      let pvR = originPosMap.get(item.id).bpvR;
+      pv.x = parseFloat((movedBounds.x + movedBounds.width * pvR.xR).toFixed(4))
+      pv.y = parseFloat((movedBounds.y + movedBounds.height * pvR.yR).toFixed(4))
+    }
+    //组合控件
+    if (item.composes?.length > 0) {
+      for (let i = 0; i < item.composes.length; i++) {
+        let cPVRMap = originPosMap.get(item.id).composesPVR[i];
+        let comp = item.composes[i];
+        this.syncPVS(comp, movedBounds, cPVRMap)
+      }
+    }
+    if (item.rotate && item.rotate != 0) {
+      //旋转
+      let m1 = new Matrix3();
+      let move1Matrix = new Matrix3(
+        1, 0, -item.cpv.x,
+        0, 1, -item.cpv.y,
+        0, 0, 1);
+      m1.premultiply(move1Matrix);
+      let angle = -(item.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      let rotateMatrix = new Matrix3(
+        Math.cos(angle), Math.sin(angle), 0,
+        -Math.sin(angle), Math.cos(angle), 0,
+        0, 0, 1);
+      m1.premultiply(rotateMatrix);
+      let move2Matrix = new Matrix3(
+        1, 0, item.cpv.x,
+        0, 1, item.cpv.y,
+        0, 0, 1);
+      m1.premultiply(move2Matrix);
+      for (let xi = 0; xi < item.pvs.length; xi++) {
+        let pv = item.pvs[xi];
+        pv.applyMatrix3(m1)
+      }
+    }
+
+    item.calRotate()
+    item.calLoosePVS();
+  }
+
+  setPVR(id: string, item: DDeiAbstractShape, m1: Matrix3, originRect: object, originPosMap: Map<string, object>) {
+    //中心点比例
+    let cpvTemp = new Vector3(item.cpv.x, item.cpv.y, 1);
+    cpvTemp.applyMatrix3(m1)
+
+    let cpvR = { xR: parseFloat((cpvTemp.x / originRect.width).toFixed(4)), yR: parseFloat((cpvTemp.y / originRect.height).toFixed(4)) }
+    let pvsR = [];
+    let exPvsR = {}
+    let textPvsR = []
+    let composesPVR = []
+    //组合控件
+    item.composes?.forEach(comp => {
+      let comOriginPosMap = new Map()
+      this.setPVR(comp.id, comp, m1, originRect, comOriginPosMap)
+      composesPVR.push(comOriginPosMap)
+    });
+    item.pvs.forEach(pv => {
+      let pvTemp = new Vector3(pv.x, pv.y, 1);
+      pvTemp.applyMatrix3(m1)
+      pvsR.push({ xR: parseFloat((pvTemp.x / originRect.width).toFixed(4)), yR: parseFloat((pvTemp.y / originRect.height).toFixed(4)) })
+    });
+    item.textArea?.forEach(pv => {
+      let pvTemp = new Vector3(pv.x, pv.y, 1);
+      pvTemp.applyMatrix3(m1)
+      textPvsR.push({ xR: parseFloat((pvTemp.x / originRect.width).toFixed(4)), yR: parseFloat((pvTemp.y / originRect.height).toFixed(4)) })
+
+    });
+
+
+
+    for (let i in item.exPvs) {
+      let pv = item.exPvs[i];
+      let pvTemp = new Vector3(pv.x, pv.y, 1);
+      pvTemp.applyMatrix3(m1)
+      exPvsR[i] = { xR: parseFloat((pvTemp.x / originRect.width).toFixed(4)), yR: parseFloat((pvTemp.y / originRect.height).toFixed(4)) }
+    }
+
+    let bpvR = null
+    if (item.poly == 2) {
+      let pvTemp = new Vector3(item.bpv.x, item.bpv.y, 1);
+      pvTemp.applyMatrix3(m1)
+      bpvR = { xR: pvTemp.x / originRect.width, yR: pvTemp.y / originRect.height }
+    }
+
+    originPosMap.set(id, { cpvR: cpvR, pvsR: pvsR, exPvsR: exPvsR, textPvsR: textPvsR, bpvR: bpvR, composesPVR: composesPVR });
+
+  }
+
+
+
+
 
   /**
    * 后置行为

@@ -229,6 +229,13 @@ class DDeiUtil {
     }
     returnModel.cpv = clone(sourceModel.cpv)
     returnModel.bpv = clone(sourceModel.bpv)
+    if (sourceModel.composes?.length > 0) {
+      let composes = []
+      sourceModel.composes?.forEach(com => {
+        composes.push(DDeiUtil.cloneModel(com))
+      });
+      returnModel.composes = composes;
+    }
 
     returnModel.initPVS()
     return returnModel;
