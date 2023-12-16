@@ -708,7 +708,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     //找到第一个类型不为0的
     let i = 0
     for (; i < this.borderPVSS.length; i++) {
-      if (this.borderPVSS[i][0].type === undefined || this.borderPVSS[i][0].type === null || this.borderPVSS[i][0].type != 0) {
+      if (this.borderPVSS[i][0].type === undefined || this.borderPVSS[i][0].type === null || (this.borderPVSS[i][0].type != 0 && this.borderPVSS[i][0].type != 9)) {
         break;
       }
     }
@@ -744,6 +744,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     else if (fillType == 2) {
       this.drawImage()
     }
+
     //恢复状态
     ctx.restore();
   }
@@ -752,6 +753,14 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
    * 绘制文本
    */
   drawText(tempShape: object | null): void {
+    //计算填充的原始区域
+    if (!this.model.textArea || this.model.textArea.length < 4) {
+      return;
+    }
+    let fillRect = DDeiAbstractShape.pvsToOutRect(DDeiUtil.pointsToZero(this.model.textArea, this.model.cpv, this.model.rotate))
+    if (!fillRect || fillRect.width == -Infinity || fillRect == -Infinity) {
+      return;
+    }
     //获得 2d 上下文对象
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
@@ -759,8 +768,6 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let stageRatio = this.model.getStageRatio()
     let rat1 = this.ddRender.ratio;
     let ratio = rat1 * stageRatio;
-    //计算填充的原始区域
-    let fillRect = DDeiAbstractShape.pvsToOutRect(DDeiUtil.pointsToZero(this.model.textArea, this.model.cpv, this.model.rotate))
     let ratPos = DDeiUtil.getRatioPosition(fillRect, rat1)
 
     //设置所有文本的对齐方式，以便于后续所有的对齐都采用程序计算

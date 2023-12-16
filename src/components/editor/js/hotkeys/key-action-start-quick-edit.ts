@@ -25,7 +25,7 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
       let model = Array.from(ddInstance.stage?.selectedModels.values())[0]
       let editor = DDeiEditor.ACTIVE_INSTANCE;
 
-      editor.quickEditorModel = model;
+
       let stage = ddInstance.stage;
       if (model?.render) {
         if (model.baseModelType == 'DDeiTable') {
@@ -115,61 +115,64 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
 
         //获取控件所占区域
         let fillArea = model.textArea
-        let canvasPos = DDeiUtil.getDomAbsPosition(ddInstance.render.canvas);
-        //创建大文本框
-        let inputEle = DDeiUtil.getEditorText();
-        let rotate = model.rotate
-        let stageRatio = ddInstance.stage.getStageRatio();
-        let pos = new Vector3(model.pvs[0].x, model.pvs[0].y, 1)
-        if (rotate != 0) {
-          let pvc = new Vector3(model.cpv.x, model.cpv.y, 1);
-          let angle = (rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
-          //计算input的正确打开位置，由节点0
-          let move1Matrix = new Matrix3(
-            1, 0, -pvc.x,
-            0, 1, -pvc.y,
-            0, 0, 1);
-          let rotateMatrix = new Matrix3(
-            Math.cos(angle), Math.sin(angle), 0,
-            -Math.sin(angle), Math.cos(angle), 0,
-            0, 0, 1);
-          let move2Matrix = new Matrix3(
-            1, 0, pvc.x,
-            0, 1, pvc.y,
-            0, 0, 1);
-          let m1 = new Matrix3().premultiply(move1Matrix).premultiply(rotateMatrix).premultiply(move2Matrix);
-          pos.applyMatrix3(m1)
+        if (fillArea?.length > 0) {
+          editor.quickEditorModel = model;
+          let canvasPos = DDeiUtil.getDomAbsPosition(ddInstance.render.canvas);
+          //创建大文本框
+          let inputEle = DDeiUtil.getEditorText();
+          let rotate = model.rotate
+          let stageRatio = ddInstance.stage.getStageRatio();
+          let pos = new Vector3(model.pvs[0].x, model.pvs[0].y, 1)
+          if (rotate != 0) {
+            let pvc = new Vector3(model.cpv.x, model.cpv.y, 1);
+            let angle = (rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+            //计算input的正确打开位置，由节点0
+            let move1Matrix = new Matrix3(
+              1, 0, -pvc.x,
+              0, 1, -pvc.y,
+              0, 0, 1);
+            let rotateMatrix = new Matrix3(
+              Math.cos(angle), Math.sin(angle), 0,
+              -Math.sin(angle), Math.cos(angle), 0,
+              0, 0, 1);
+            let move2Matrix = new Matrix3(
+              1, 0, pvc.x,
+              0, 1, pvc.y,
+              0, 0, 1);
+            let m1 = new Matrix3().premultiply(move1Matrix).premultiply(rotateMatrix).premultiply(move2Matrix);
+            pos.applyMatrix3(m1)
+          }
+
+          inputEle.value = model.text ? model.text : ''
+          inputEle.style.fontSize = (model.render.getCachedValue("font.size") * stageRatio) + "px"
+          inputEle.style.color = DDeiUtil.getColor(model.render.getCachedValue("font.color"))
+          inputEle.style.width = (fillArea.width) * stageRatio + "px";
+          inputEle.style.height = (fillArea.height) * stageRatio + "px";
+
+
+          inputEle.style.left = canvasPos.left + pos.x + ddInstance.stage.wpv.x + 1 + "px";
+          inputEle.style.top = canvasPos.top + pos.y + ddInstance.stage.wpv.y + 50 + "px";
+          inputEle.style.transform = "rotate(" + rotate + "deg)";
+          // inputEle.style.backgroundColor = "grey"
+          inputEle.style.display = "block";
+          // inputEle.style.width = "0.1px"
+          // inputEle.style.height = "0.1px"
+          //创建编辑影子元素
+          ddInstance.stage.render.editorShadowControl = DDeiUtil.getShadowControl(model);
+          ddInstance.stage.render.editorShadowControl.render.isEditoring = true
+          inputEle.focus()
+
+          inputEle.selectionStart = 0 // 选中开始位置
+          inputEle.selectionEnd = inputEle.value.length // 获取输入框里的长度。
+          //修改编辑器状态为快捷编辑中
+          editor.changeState(DDeiEditorState.QUICK_EDITING);
+          ddInstance.stage.render.operateState = DDeiEnumOperateState.QUICK_EDITING
+          //发出通知，选中的焦点发生变化
+          editor.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels);
+          editor.bus.push(DDeiEnumBusCommandType.TextEditorChangeSelectPos);
+          editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+          editor.bus.executeAll();
         }
-
-        inputEle.value = model.text ? model.text : ''
-        inputEle.style.fontSize = (model.render.getCachedValue("font.size") * stageRatio) + "px"
-        inputEle.style.color = DDeiUtil.getColor(model.render.getCachedValue("font.color"))
-        inputEle.style.width = (fillArea.width) * stageRatio + "px";
-        inputEle.style.height = (fillArea.height) * stageRatio + "px";
-
-
-        inputEle.style.left = canvasPos.left + pos.x + ddInstance.stage.wpv.x + 1 + "px";
-        inputEle.style.top = canvasPos.top + pos.y + ddInstance.stage.wpv.y + 50 + "px";
-        inputEle.style.transform = "rotate(" + rotate + "deg)";
-        // inputEle.style.backgroundColor = "grey"
-        inputEle.style.display = "block";
-        // inputEle.style.width = "0.1px"
-        // inputEle.style.height = "0.1px"
-        //创建编辑影子元素
-        ddInstance.stage.render.editorShadowControl = DDeiUtil.getShadowControl(model);
-        ddInstance.stage.render.editorShadowControl.render.isEditoring = true
-        inputEle.focus()
-
-        inputEle.selectionStart = 0 // 选中开始位置
-        inputEle.selectionEnd = inputEle.value.length // 获取输入框里的长度。
-        //修改编辑器状态为快捷编辑中
-        editor.changeState(DDeiEditorState.QUICK_EDITING);
-        ddInstance.stage.render.operateState = DDeiEnumOperateState.QUICK_EDITING
-        //发出通知，选中的焦点发生变化
-        editor.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels);
-        editor.bus.push(DDeiEnumBusCommandType.TextEditorChangeSelectPos);
-        editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
-        editor.bus.executeAll();
       }
     }
   }

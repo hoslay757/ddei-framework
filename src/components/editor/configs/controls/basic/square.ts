@@ -41,21 +41,9 @@ export default {
             pvs.push({x:x,y:y,r:er,group:j});
         }`,
         `(i,j, sita, sample, pvs, model){
-            let er  = sample.r
-            let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
-            let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-            switch(i){
-              case 1:
-                pvs[0].y=y
-              break;
-              case 2:
-                pvs[1].x=x
-              break;
-              case 3:
-                pvs[2].y=y 
-               x = pvs[0].x
-              break;
-            }
+            let er = sample.r
+            let x = er * Math.cos((sita+45) * DDeiConfig.ROTATE_UNIT)
+            let y = er * Math.sin((sita+45) * DDeiConfig.ROTATE_UNIT)
             pvs.push({x:x,y:y,r:er,type:10,group:j});
         }`,
       ]
