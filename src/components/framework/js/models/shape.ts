@@ -26,6 +26,7 @@ abstract class DDeiAbstractShape {
     this.sample = props.sample ? cloneDeep(props.sample) : null
     this.composes = props.composes
     this.ruleEvals = []
+    this.initCPV = props.initCPV ? props.initCPV : null
     if (props.cpv) {
       this.cpv = new Vector3(props.cpv.x, props.cpv.y, props.cpv.z || props.cpv.z == 0 ? props.cpv.z : 1);
     }
@@ -134,7 +135,14 @@ abstract class DDeiAbstractShape {
    */
   initPVS() {
     if (!this.cpv) {
-      this.cpv = new Vector3(0, 0, 1)
+      if (this.initCPV) {
+        //全局缩放因子
+        let stageRatio = this.getStageRatio();
+        this.cpv = new Vector3(this.initCPV.x * stageRatio, this.initCPV.y * stageRatio, 1)
+        delete this.initCPV
+      } else {
+        this.cpv = new Vector3(0, 0, 1)
+      }
     }
     //如果是极坐标，则用极坐标的方式来计算pvs、hpv等信息，否则采用pvs的方式
     if (this.poly == 2) {

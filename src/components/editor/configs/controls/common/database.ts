@@ -50,16 +50,22 @@ export default {
             let er  = sample.r
             let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
             let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-            pvs.push({x:x,y:y,type:0,oppoint:1,r:er,group:j});
+            
              switch(i){
               case 1:
                 y=y+20
+                pvs.push({x:x,y:y,type:0,oppoint:1,r:er,group:j});
               break;
               case 3:
+                pvs.push({x:x,y:y,type:0,oppoint:1,r:er,group:j});
                 y=y-20
+                pvs.push({x:x,y:y,type:0,oppoint:1,r:er,group:j});
+              break;
+              default:
+                pvs.push({x:x,y:y,type:0,oppoint:1,r:er,group:j});  
               break;
             }
-            pvs.push({x:x,y:y,type:0,oppoint:1,r:er,group:j});
+           
         }`,
         // 主体区域
         `(i,j, sita, sample, pvs, model){
@@ -100,7 +106,7 @@ export default {
       {
         id: '100006',
         zIndex: 3,
-        cpv: {
+        initCPV: {
           x: 0, y: -35
         },
         width: 100,
@@ -109,7 +115,7 @@ export default {
       {
         id: '100006',
         zIndex: 1,
-        cpv: {
+        initCPV: {
           x: 0, y: 35
         },
         width: 100,
