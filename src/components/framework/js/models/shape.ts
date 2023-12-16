@@ -126,6 +126,7 @@ abstract class DDeiAbstractShape {
 
   //特殊文本样式
   sptStyle: object;
+
   // ============================ 方法 ============================
 
   /**

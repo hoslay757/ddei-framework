@@ -7,7 +7,7 @@ export default {
   'icon': 'toolbox-shape-rect',
   'define': {
     width: 100,
-    height: 50,
+    height: 70,
     //2为极坐标，缺省点为原点
     poly: 2,
     zIndex: 2,
@@ -18,51 +18,76 @@ export default {
       //半径距离
       r: 50,
       //初始次采样的开始角度
-      angle: 45,
+      angle: 0,
       //半径距离
       //采样的规则，多组采样返回多组规则
       rules: [
+        //确定范围
         `(i,j, sita, sample, pvs, model){
             let er  = sample.r
-            let ds = i == 1 || i ==0 ? 18: -18
-            let x = er * Math.cos((sita) * DDeiConfig.ROTATE_UNIT)
-            let y = er * Math.sin((sita) * DDeiConfig.ROTATE_UNIT)+ds
-            pvs.push({ x: x, y: y,r:er,type:0, group: j });
-        }`,
-        `(i,j, sita, sample, pvs, model){
-            let er  = sample.r
-            if(i == 2 || i ==0){
-              sita += 45
-            }
             let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
             let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-            if(i ==1 || i ==3){
-              let ny = er * Math.sin((sita+90) * DDeiConfig.ROTATE_UNIT)
-              y = (y+ny)/2
+            switch(i){
+              case 1:
+                pvs[0].y=y+22
+                y=y+22
+              break;
+              case 2:
+                pvs[1].x=x
+                
+              break;
+              case 3:
+                 y = y-20
+                pvs[2].y=y
+               x = pvs[0].x
+              
+              break;
             }
-            pvs.push({ x: x, y: y,r:er,type:0,oppoint:1, group: j });
-            if(i == 0){
-              pvs.push({ x: 0, y: 0,r:er,type:0,oppoint:1, group: j });
-            }
+            pvs.push({x:x,y:y,type:0,r:er,group:j});
         }`,
-
+        //关键点
         `(i,j, sita, sample, pvs, model){
             let er  = sample.r
-            let rad = (sita) * DDeiConfig.ROTATE_UNIT
-            let x = er * Math.cos(rad)
-            let y = er * Math.sin(rad)
-            let type = 1;
-            let direct =0;
-            if(i == 3){
-              type = 2
-              direct = 1
+            let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
+            let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
+            pvs.push({x:x,y:y,type:0,oppoint:1,r:er,group:j});
+             switch(i){
+              case 1:
+                y=y+20
+              break;
+              case 3:
+                y=y-20
+              break;
             }
-            pvs.push({ x: x, y: y,type:type,r:er,rad:rad,direct:direct, group: j });
-           
+            pvs.push({x:x,y:y,type:0,oppoint:1,r:er,group:j});
+        }`,
+        // 主体区域
+        `(i,j, sita, sample, pvs, model){
+            let er  = sample.r
+            let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
+            let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
+            let type = 1;
+            switch(i){
+              case 1:
+                type = 3
+                pvs[0].y=y
+              break;
+              case 2:
+                pvs[1].x=x
+              break;
+              case 3:
+                pvs[2].y=y
+               x = pvs[0].x
+              break;
+            }
+            
+            pvs.push({x:x,y:y,r:er,type:type,group:j});
         }`,
 
+
+        //文本区域
         `(i,j, sita, sample, pvs, model){
-            let ds = i == 1 || i ==0 ? 0: 12
+            let ds = i == 1 || i ==0 ? 0: 20
             let er = sample.r
             let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
             let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)+ds
@@ -76,24 +101,20 @@ export default {
         id: '100006',
         zIndex: 3,
         cpv: {
-          x: 0, y: -28
+          x: 0, y: -35
         },
-        width: 70.5,
-        height: 5
+        width: 100,
+        height: 30
       },
-
-
       {
         id: '100006',
         zIndex: 1,
         cpv: {
-          x: 50, y: -28
+          x: 0, y: 35
         },
-        width: 70.5,
-        height: 5
+        width: 100,
+        height: 30
       },
-
-
 
     ]
   }
