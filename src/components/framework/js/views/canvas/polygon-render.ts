@@ -503,10 +503,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   /**
    * 创建路径
    */
-  createPath(pvs, tempShape, drawLine: boolean = false) {
-    if (!pvs || pvs?.length < 1) {
-      return;
-    }
+  createPath(pvs, tempShape) {
     //获得 2d 上下f文对象
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
@@ -515,47 +512,39 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let rat1 = this.ddRender.ratio;
     let ratio = rat1 * stageRatio;
     let round = tempShape?.border?.round ? tempShape?.border?.round : this.getCachedValue("border.round");
+    if (!round) {
+      round = 0
+    }
+    round = round * stageRatio
+
     //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
     let lineOffset = 1 * ratio / 2;
-    //如果被选中，使用选中的边框，否则使用缺省边框
-    let disabled = tempShape?.border?.disabled ? tempShape?.border?.disabled : this.getCachedValue("border.disabled")
-    let color = tempShape?.border?.color ? tempShape?.border?.color : this.getCachedValue("border.color")
-    let opacity = tempShape?.border?.opacity ? tempShape?.border?.opacity : this.getCachedValue("border.opacity");
-    let width = tempShape?.border?.width ? tempShape?.border?.width : this.getCachedValue("border.width");
-    let dash = tempShape?.border?.dash ? tempShape?.border?.dash : this.getCachedValue("border.dash");
 
-    //加载边框的矩阵
-    let lineWidth = width * ratio;
-    drawLine = drawLine && (!disabled && color && (!opacity || opacity > 0) && width > 0)
-    if (drawLine) {
-      ctx.save();
-      //绘制线条
-      ctx.lineWidth = lineWidth;
-      //线段、虚线样式
-      if (dash) {
-        ctx.setLineDash(dash);
-      }
-      //透明度
-      if (opacity != null && opacity != undefined) {
-        ctx.globalAlpha = opacity
-      }
-      //颜色
-      ctx.strokeStyle = DDeiUtil.getColor(color);
+    if (!pvs || pvs?.length < 1) {
+      return;
     }
+
     if (pvs[0].type == 10) {
       return;
     }
+
     if (pvs?.length > 2) {
-      if (!drawLine) {
+      let len = pvs.length;
+      if (pvs[0].begin) {
         ctx.beginPath();
       }
-      let len = pvs.length;
       ctx.moveTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset)
+
       for (let i = 1; i < len - 1; i++) {
         let pv = pvs[i];
-        if (pv.type == 3 && drawLine) {
+
+        let dx = pv.dx ? pv.dx * stageRatio : 0
+        let dy = pv.dy ? pv.dy * stageRatio : 0
+        if (pv.begin) {
+          ctx.beginPath()
+        }
+        if (pv.type == 3) {
           ctx.moveTo(pv.x * rat1 + lineOffset, pv.y * rat1 + lineOffset)
-          continue;
         } else if (pv.type == 2) {
           let rotate = this.model.rotate;
           if (!rotate) {
@@ -565,63 +554,34 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           let scaleX = Math.abs(bpv.x / 100)
           let scaleY = Math.abs(bpv.y / 100)
           let upPV = pvs[i - 1]
-          if (pv.m == 1) {
-            ctx.ellipse(this.model.cpv.x * rat1 + lineOffset, (- this.model.cpv.y + 2 * upPV.y) * rat1 + lineOffset, upPV.r * rat1 * scaleX, upPV.r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * (rotate + 180), pv.rad, upPV.rad, pv.direct)
-          } else {
-            ctx.ellipse(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, upPV.r * rat1 * scaleX, upPV.r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, upPV.rad, pv.rad, !pv.direct)
-          }
-          if (drawLine) {
-            ctx.stroke();
-          }
+
+          ctx.ellipse((this.model.cpv.x + dx) * rat1 + lineOffset, (this.model.cpv.y + dy) * rat1 + lineOffset, upPV.r * rat1 * scaleX, upPV.r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, upPV.rad, pv.rad, !pv.direct)
         } else {
           ctx.arcTo(pvs[i].x * rat1 + lineOffset, pvs[i].y * rat1 + lineOffset, pvs[i + 1].x * rat1 + lineOffset, pvs[i + 1].y * rat1 + lineOffset, round * rat1);
-          if (drawLine) {
-            ctx.stroke();
-          }
         }
-      }
-      let pv = pvs[0];
-      if (pv.type == 2) {
-        let lastPV = pvs[len - 1]
-        ctx.ellipse(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, lastPV.r * rat1 * scaleX, lastPV.r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, lastPV.rad, pv.rad, !pv.direct)
-        if (drawLine) {
-          ctx.stroke();
+        if (pv.end) {
+          ctx.closePath()
         }
-      } else {
-        ctx.arcTo(pvs[len - 1].x * rat1 + lineOffset, pvs[len - 1].y * rat1 + lineOffset, pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset, round * rat1);
-        if (drawLine) {
-          ctx.stroke();
-        }
-      }
+        // ctx.strokeStyle = "red"
+        // ctx.lineWidth = 1
+        // debugger
+        // ctx.stroke()
 
-      if (!drawLine) {
-        ctx.closePath();
       }
-
     } else if (pvs.length == 1) {
       let pv = pvs[0]
-      if (pv.type == 8) {
-        let path = new Path2D(pv.path)
-        ctx.stroke(path);
-        debugger
-      } else {
-        ctx.beginPath();
-        let rotate = this.model.rotate;
-        if (!rotate) {
-          rotate = 0
-        }
-
-        let bpv = DDeiUtil.pointsToZero([this.model.bpv], this.model.cpv, rotate)[0]
-        let scaleX = Math.abs(bpv.x / 100)
-        let scaleY = Math.abs(bpv.y / 100)
-        let x = pv.cx || pv.cx == 0 ? this.model.cpv.x + pv.cx : this.model.cpv.x
-        let y = pv.cy || pv.cy == 0 ? this.model.cpv.y + pv.cy : this.model.cpv.y
-        ctx.ellipse(x * rat1 + lineOffset, y * rat1 + lineOffset, pv.r * rat1 * scaleX, pv.r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, DDeiConfig.ROTATE_UNIT * 0, Math.PI * 2)
-        ctx.closePath()
-        if (drawLine) {
-          ctx.stroke();
-        }
+      ctx.beginPath();
+      let rotate = this.model.rotate;
+      if (!rotate) {
+        rotate = 0
       }
+      let bpv = DDeiUtil.pointsToZero([this.model.bpv], this.model.cpv, rotate)[0]
+      let scaleX = Math.abs(bpv.x / 100)
+      let scaleY = Math.abs(bpv.y / 100)
+      let x = pv.cx || pv.cx == 0 ? this.model.cpv.x + pv.cx : this.model.cpv.x
+      let y = pv.cy || pv.cy == 0 ? this.model.cpv.y + pv.cy : this.model.cpv.y
+      ctx.ellipse(x * rat1 + lineOffset, y * rat1 + lineOffset, pv.r * rat1 * scaleX, pv.r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, DDeiConfig.ROTATE_UNIT * 0, Math.PI * 2)
+      ctx.closePath()
     } else if (pvs.length == 2) {
       ctx.beginPath();
       let rotate = this.model.rotate;
@@ -636,13 +596,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       ctx.ellipse(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pvs[0].r * rat1 * scaleX, pvs[0].r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, pvs[0].rad, pvs[1].rad)
       ctx.lineTo(pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset)
       ctx.closePath()
-      if (drawLine) {
-        ctx.stroke();
-      }
+
     }
-    if (drawLine) {
-      ctx.restore();
-    }
+
   }
 
   /**
@@ -650,17 +606,46 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
    * @param tempShape 临时图形，优先级最高
    */
   drawBorder(tempShape: object | null): void {
-
-    for (let i = 0; i < this.borderPVSS.length; i++) {
-      let pvs = this.borderPVSS[i];
-      if (pvs[0].type == 0 || pvs[0].type == 9) {
-        continue;
+    //获得 2d 上下f文对象
+    let canvas = this.ddRender.getCanvas();
+    let ctx = canvas.getContext('2d');
+    //获取全局缩放比例
+    let stageRatio = this.model.getStageRatio()
+    let rat1 = this.ddRender.ratio;
+    let ratio = rat1 * stageRatio;
+    //如果被选中，使用选中的边框，否则使用缺省边框
+    let disabled = tempShape?.border?.disabled ? tempShape?.border?.disabled : this.getCachedValue("border.disabled")
+    let color = tempShape?.border?.color ? tempShape?.border?.color : this.getCachedValue("border.color")
+    let opacity = tempShape?.border?.opacity ? tempShape?.border?.opacity : this.getCachedValue("border.opacity");
+    let width = tempShape?.border?.width ? tempShape?.border?.width : this.getCachedValue("border.width");
+    let dash = tempShape?.border?.dash ? tempShape?.border?.dash : this.getCachedValue("border.dash");
+    //加载边框的矩阵
+    let lineWidth = width * ratio;
+    let drawLine = (!disabled && color && (!opacity || opacity > 0) && width > 0)
+    if (drawLine) {
+      for (let i = 0; i < this.borderPVSS.length; i++) {
+        let pvs = this.borderPVSS[i];
+        if (pvs[0].type == 0 || pvs[0].type == 9) {
+          continue;
+        }
+        //创建path
+        this.createPath(pvs, tempShape)
+        ctx.save();
+        //绘制线条
+        ctx.lineWidth = lineWidth;
+        //线段、虚线样式
+        if (dash) {
+          ctx.setLineDash(dash);
+        }
+        //透明度
+        if (opacity != null && opacity != undefined) {
+          ctx.globalAlpha = opacity
+        }
+        //颜色
+        ctx.strokeStyle = DDeiUtil.getColor(color);
+        ctx.stroke();
+        ctx.restore();
       }
-
-      //创建path
-      this.createPath(pvs, tempShape, true)
-
-
     }
   }
 

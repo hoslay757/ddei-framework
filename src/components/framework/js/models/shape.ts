@@ -22,8 +22,6 @@ abstract class DDeiAbstractShape {
     this.fmt = props.fmt
     this.sptStyle = props.sptStyle ? props.sptStyle : {}
     this.poly = props.poly;
-
-    this.sample = props.sample ? cloneDeep(props.sample) : null
     this.composes = props.composes
     this.ruleEvals = []
     this.initCPV = props.initCPV ? props.initCPV : null
@@ -111,14 +109,14 @@ abstract class DDeiAbstractShape {
   /**
    * 极坐标下的采样策略
    * 返回值：
-   *    type:0不画线、不生成剪切区域，只用来选中/1直线/2曲线/3不画线直接跳转/8绘制path/9不画线、不填充生成剪切区域/10文本区域
+   *    type:0不画线、不生成剪切区域，只用来选中/1直线/2曲线/3不画线直接跳转/8绘制path/9不画线、不填充,仅用于生成剪切区域/10文本区域
    *    r:半径
    *    x:点坐标
    *    y:点坐标
    *    oppoint:1为操作点只判定点，2为操作点，判定点以及中间，3为操作点，判定圆心
    *        
    */
-  sample: object | null;
+  //sample: object | null;
 
   /**
    * 组合控件的信息
@@ -183,17 +181,15 @@ abstract class DDeiAbstractShape {
   executeSample() {
     //通过采样计算pvs,可能存在多组pvs
     let defineSample = DDeiUtil.getControlDefine(this)?.define?.sample;
-    if (defineSample?.rules?.length > 0 && this.sample) {
+    if (defineSample?.rules?.length > 0) {
       //采样结果
       let sampliesResult = []
       //采样次数
-      let loop = this.sample.loop;
+      let loop = defineSample.loop;
       //单次采样角度
       let pn = 360 / loop;
       //初始角度
-      let angle = this.sample.angle;
-      delete this.sample.rules
-      delete this.sample.eqrat
+      let angle = defineSample.angle;
       //执行采样
       for (let i = 0; i < loop; i++) {
         let sita = angle + i * pn
@@ -206,7 +202,7 @@ abstract class DDeiAbstractShape {
             sampliesResult[j] = []
           }
           let spResult = sampliesResult[j]
-          spFn(i, j, sita, this.sample, spResult, this)
+          spFn(i, j, sita, defineSample, spResult, this)
         }
       }
       //对返回的数据进行处理和拆分
@@ -252,7 +248,6 @@ abstract class DDeiAbstractShape {
       let bpv = DDeiUtil.pointsToZero([this.bpv], this.cpv, this.rotate)[0]
       let scaleX = Math.abs(bpv.x / 100)
       let scaleY = Math.abs(bpv.y / 100)
-      console.log(scaleX + " .  " + scaleY)
 
       let scaleMatrix = new Matrix3(
         scaleX, 0, 0,

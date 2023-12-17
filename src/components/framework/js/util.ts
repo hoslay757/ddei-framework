@@ -242,6 +242,22 @@ class DDeiUtil {
   }
 
   /**
+   * 返回某个点旋转后的坐标
+   */
+  static getRotatedPoint(point: object, rotate: number = 0): object {
+    let vc = new Vector3(point.x, point.y, point.z || point.z == 0 ? point.z : 1);
+    if (rotate) {
+      let angle = (-rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      let rotateMatrix = new Matrix3(
+        Math.cos(angle), Math.sin(angle), 0,
+        -Math.sin(angle), Math.cos(angle), 0,
+        0, 0, 1);
+      vc.applyMatrix3(rotateMatrix)
+    }
+    return vc
+  }
+
+  /**
    * 返回dom绝对坐标
    * @param element 
    */
