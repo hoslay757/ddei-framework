@@ -62,6 +62,11 @@ export default {
       'orderNo': 31
     },
     {
+      'id': '102032',
+      'name': '存储数据',
+      'orderNo': 32
+    },
+    {
       'id': '102090',
       'name': '结束',
       'orderNo': 90,

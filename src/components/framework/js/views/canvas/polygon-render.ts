@@ -599,21 +599,28 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       }
 
     } else if (pvs.length == 1) {
-      ctx.beginPath();
-      let rotate = this.model.rotate;
-      if (!rotate) {
-        rotate = 0
-      }
       let pv = pvs[0]
-      let bpv = DDeiUtil.pointsToZero([this.model.bpv], this.model.cpv, rotate)[0]
-      let scaleX = Math.abs(bpv.x / 100)
-      let scaleY = Math.abs(bpv.y / 100)
-      let x = pv.cx || pv.cx == 0 ? this.model.cpv.x + pv.cx : this.model.cpv.x
-      let y = pv.cy || pv.cy == 0 ? this.model.cpv.y + pv.cy : this.model.cpv.y
-      ctx.ellipse(x * rat1 + lineOffset, y * rat1 + lineOffset, pv.r * rat1 * scaleX, pv.r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, DDeiConfig.ROTATE_UNIT * 0, Math.PI * 2)
-      ctx.closePath()
-      if (drawLine) {
-        ctx.stroke();
+      if (pv.type == 8) {
+        let path = new Path2D(pv.path)
+        ctx.stroke(path);
+        debugger
+      } else {
+        ctx.beginPath();
+        let rotate = this.model.rotate;
+        if (!rotate) {
+          rotate = 0
+        }
+
+        let bpv = DDeiUtil.pointsToZero([this.model.bpv], this.model.cpv, rotate)[0]
+        let scaleX = Math.abs(bpv.x / 100)
+        let scaleY = Math.abs(bpv.y / 100)
+        let x = pv.cx || pv.cx == 0 ? this.model.cpv.x + pv.cx : this.model.cpv.x
+        let y = pv.cy || pv.cy == 0 ? this.model.cpv.y + pv.cy : this.model.cpv.y
+        ctx.ellipse(x * rat1 + lineOffset, y * rat1 + lineOffset, pv.r * rat1 * scaleX, pv.r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, DDeiConfig.ROTATE_UNIT * 0, Math.PI * 2)
+        ctx.closePath()
+        if (drawLine) {
+          ctx.stroke();
+        }
       }
     } else if (pvs.length == 2) {
       ctx.beginPath();
