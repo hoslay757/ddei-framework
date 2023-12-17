@@ -504,7 +504,10 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
    * 创建路径
    */
   createPath(pvs, tempShape, drawLine: boolean = false) {
-    //获得 2d 上下文对象
+    if (!pvs || pvs?.length < 1) {
+      return;
+    }
+    //获得 2d 上下f文对象
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
@@ -543,7 +546,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       return;
     }
     if (pvs?.length > 2) {
-      ctx.beginPath();
+      if (!drawLine) {
+        ctx.beginPath();
+      }
       let len = pvs.length;
       ctx.moveTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset)
       for (let i = 1; i < len - 1; i++) {
@@ -589,7 +594,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         }
       }
 
-      ctx.closePath()
+      if (!drawLine) {
+        ctx.closePath();
+      }
 
     } else if (pvs.length == 1) {
       ctx.beginPath();
@@ -695,58 +702,63 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
    * 绘制填充
    */
   drawFill(tempShape: object | null): void {
-    //获得 2d 上下文对象
-    let canvas = this.ddRender.getCanvas();
-    let ctx = canvas.getContext('2d');
-    //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
-    let fillColor = tempShape?.fill?.color ? tempShape.fill.color : this.getCachedValue("fill.color");
-    let fillOpacity = tempShape?.fill?.opacity ? tempShape.fill.opacity : this.getCachedValue("fill.opacity");
-    let fillDisabled = tempShape?.fill?.disabled ? tempShape.fill.disabled : this.getCachedValue("fill.disabled");
-    let fillType = tempShape?.fill?.type ? tempShape.fill.type : this.getCachedValue("fill.type");
-    //保存状态
-    ctx.save();
+
     //找到第一个类型不为0的
     let i = 0
+    let havePath = false;
     for (; i < this.borderPVSS.length; i++) {
       if (this.borderPVSS[i][0].type === undefined || this.borderPVSS[i][0].type === null || (this.borderPVSS[i][0].type != 0 && this.borderPVSS[i][0].type != 9)) {
+        havePath = true
         break;
       }
     }
-    if (i != 0) {
-      let pvs = this.borderPVSS[i];
-      //创建path
-      this.createPath(pvs, tempShape)
-    }
-
-    //纯色填充
-    if (this.isEditoring) {
-      if (!fillType || fillType == '0') {
-        fillType = 1
+    if (havePath) {
+      //获得 2d 上下文对象
+      let canvas = this.ddRender.getCanvas();
+      let ctx = canvas.getContext('2d');
+      //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
+      let fillColor = tempShape?.fill?.color ? tempShape.fill.color : this.getCachedValue("fill.color");
+      let fillOpacity = tempShape?.fill?.opacity ? tempShape.fill.opacity : this.getCachedValue("fill.opacity");
+      let fillDisabled = tempShape?.fill?.disabled ? tempShape.fill.disabled : this.getCachedValue("fill.disabled");
+      let fillType = tempShape?.fill?.type ? tempShape.fill.type : this.getCachedValue("fill.type");
+      //保存状态
+      ctx.save();
+      if (i != 0) {
+        let pvs = this.borderPVSS[i];
+        //创建path
+        this.createPath(pvs, tempShape)
       }
-    }
-    if (fillType == 1) {
+
+      //纯色填充
       if (this.isEditoring) {
-        fillDisabled = false
-        fillOpacity = 1.0
-      }
-      //如果拥有填充色，则使用填充色
-      if (!fillDisabled && fillColor && (!fillOpacity || fillOpacity > 0)) {
-        ctx.fillStyle = DDeiUtil.getColor(fillColor);
-        //透明度
-        if (fillOpacity != null && !fillOpacity != undefined) {
-          ctx.globalAlpha = fillOpacity
+        if (!fillType || fillType == '0') {
+          fillType = 1
         }
-        //填充矩形
-        ctx.fill();
       }
-    }
-    //图片填充
-    else if (fillType == 2) {
-      this.drawImage()
-    }
+      if (fillType == 1) {
+        if (this.isEditoring) {
+          fillDisabled = false
+          fillOpacity = 1.0
+        }
+        //如果拥有填充色，则使用填充色
+        if (!fillDisabled && fillColor && (!fillOpacity || fillOpacity > 0)) {
+          ctx.fillStyle = DDeiUtil.getColor(fillColor);
+          //透明度
+          if (fillOpacity != null && !fillOpacity != undefined) {
+            ctx.globalAlpha = fillOpacity
+          }
+          //填充矩形
+          ctx.fill();
+        }
+      }
+      //图片填充
+      else if (fillType == 2) {
+        this.drawImage()
+      }
 
-    //恢复状态
-    ctx.restore();
+      //恢复状态
+      ctx.restore();
+    }
   }
 
   /**
