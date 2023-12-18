@@ -107,13 +107,21 @@ abstract class DDeiAbstractShape {
   poly: number | null;
 
   /**
-   * 极坐标下的采样策略
+   * 极坐标下的采样策略，采样策略返回的点上会附带绘图的控制属性
    * 返回值：
-   *    type:0不画线、不生成剪切区域，只用来选中/1直线/2曲线/3不画线直接跳转/8绘制path/9不画线、不填充,仅用于生成剪切区域/10文本区域
+   *    type:1直线/2曲线/3不画线直接跳转 ,默认1
    *    r:半径
+   *    rad：当前点位的弧度
    *    x:点坐标
    *    y:点坐标
+   *    begin: 开启一个路径 
+   *    end：关闭一个路径
    *    oppoint:1为操作点只判定点，2为操作点，判定点以及中间，3为操作点，判定圆心
+   *    clip:1生成剪切区域
+   *    stroke：1连线
+   *    fill：1填充
+   *    select：1用于生成区域
+   *    text:1文本
    *        
    */
   //sample: object | null;
@@ -192,7 +200,12 @@ abstract class DDeiAbstractShape {
       let angle = defineSample.angle;
       //执行采样
       for (let i = 0; i < loop; i++) {
-        let sita = angle + i * pn
+        defineSample.sita = angle + i * pn
+        defineSample.rad = defineSample.sita * DDeiConfig.ROTATE_UNIT
+        defineSample.cos = Math.cos(defineSample.sita * DDeiConfig.ROTATE_UNIT)
+        defineSample.sin = Math.sin(defineSample.sita * DDeiConfig.ROTATE_UNIT)
+        defineSample.x = defineSample.r * defineSample.cos
+        defineSample.y = defineSample.r * defineSample.sin
         for (let j = 0; j < defineSample.rules?.length; j++) {
           if (this.ruleEvals && !this.ruleEvals[j]) {
             eval("this.ruleEvals[j] = function" + defineSample.rules[j])
@@ -202,7 +215,7 @@ abstract class DDeiAbstractShape {
             sampliesResult[j] = []
           }
           let spResult = sampliesResult[j]
-          spFn(i, j, sita, defineSample, spResult, this)
+          spFn(i, defineSample, spResult, this)
         }
       }
       //对返回的数据进行处理和拆分
@@ -210,25 +223,60 @@ abstract class DDeiAbstractShape {
       let textArea = []
       let operatePVS = []
       let opps = []
+      //因为bpv在缩放时同步变大，因此会随着stageRatio变化大小
+      let scaleX, scaleY, bpv, stageRatio, rotate
+
       for (let i = 0; i < sampliesResult.length; i++) {
-        if (sampliesResult[i].length > 0 && sampliesResult[i][0].type != 10) {
+        if (sampliesResult[i].length > 0) {
           sampliesResult[i].forEach(pvd => {
             let pv = new Vector3()
+            pv.group = i
+            //如果有dx和dy属性，则需要通过旋转和缩放对齐进行调整值
+            if (pvd.dx || pvd.dx == 0 || pvd.dy || pvd.dy == 0) {
+              if (!bpv) {
+                if (!pvd.dx) {
+                  pvd.dx = 0
+                }
+                if (!pvd.dy) {
+                  pvd.dy = 0
+                }
+
+                //因为bpv在缩放时同步变大，因此会随着stageRatio变化大小
+                rotate = this.rotate
+                if (!rotate) {
+                  rotate = 0
+                }
+
+                bpv = DDeiUtil.pointsToZero([this.bpv], this.cpv, rotate)[0]
+                stageRatio = this.getStageRatio()
+                scaleX = Math.abs(bpv.x / 100) / stageRatio
+                scaleY = Math.abs(bpv.y / 100) / stageRatio
+              }
+              let dp = DDeiUtil.getRotatedPoint({ x: pvd.dx * scaleX, y: pvd.dy * scaleY, z: 1 }, rotate)
+
+              pvd.dx = dp.x
+              pvd.dy = dp.y
+            }
+
             for (let i in pvd) {
               pv[i] = pvd[i]
             }
             pv.z = (pvd.z || pvd.z === 0) ? pvd.z : 1
 
             pvs.push(pv)
-            if (i == 0) {
+            if (pvd.select) {
               operatePVS.push(pv)
             }
             if (pvd.oppoint) {
               opps.push(pv)
             }
+            if (pvd.text) {
+              textArea.push(pv)
+            }
           })
 
-        } else if (sampliesResult[i].length > 0 && sampliesResult[i][0].type == 10) {
+        } else if (sampliesResult[i].length > 0 && sampliesResult[i][0].text == 1) {
+
           sampliesResult[i].forEach(pvd => {
             let pv = new Vector3()
             for (let i in pvd) {
@@ -245,9 +293,14 @@ abstract class DDeiAbstractShape {
       //根据旋转和缩放参照点，构建旋转和缩放矩阵，对矩阵进行旋转
       let m1 = new Matrix3();
       //因为bpv在缩放时同步变大，因此会随着stageRatio变化大小
-      let bpv = DDeiUtil.pointsToZero([this.bpv], this.cpv, this.rotate)[0]
-      let scaleX = Math.abs(bpv.x / 100)
-      let scaleY = Math.abs(bpv.y / 100)
+      if (!bpv) {
+        bpv = DDeiUtil.pointsToZero([this.bpv], this.cpv, this.rotate)[0]
+        scaleX = Math.abs(bpv.x / 100)
+        scaleY = Math.abs(bpv.y / 100)
+      } else {
+        scaleX *= stageRatio
+        scaleY *= stageRatio
+      }
 
       let scaleMatrix = new Matrix3(
         scaleX, 0, 0,
@@ -271,9 +324,6 @@ abstract class DDeiAbstractShape {
         0, 0, 1);
       m1.premultiply(moveMatrix)
       pvs.forEach(pv => {
-        pv.applyMatrix3(m1)
-      });
-      textArea.forEach(pv => {
         pv.applyMatrix3(m1)
       });
       this.pvs = pvs

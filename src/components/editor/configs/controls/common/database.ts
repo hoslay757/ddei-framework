@@ -14,7 +14,7 @@ export default {
     //采样信息
     sample: {
       //一圈采样次数
-      loop: 4,
+      loop: 1,
       //半径距离
       r: 50,
       //初始次采样的开始角度
@@ -22,82 +22,44 @@ export default {
       //半径距离
       //采样的规则，多组采样返回多组规则
       rules: [
-        //确定范围
-        `(i,j, sita, sample, pvs, model){
-            let er  = sample.r
-            let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
-            let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-            switch(i){
-              case 1:
-                pvs[0].y=y+22
-                y=y+22
-              break;
-              case 2:
-                pvs[1].x=x
-                
-              break;
-              case 3:
-                 y = y-20
-                pvs[2].y=y
-               x = pvs[0].x
-              
-              break;
-            }
-            pvs.push({x:x,y:y,type:0,r:er,group:j});
+        //选中区域
+        `(i, sample, pvs, model){
+            let dn = 15;
+            pvs.push({begin:true,x:50,y:50+dn,select:1,clip:1})
+            pvs.push({x:-50,y:50+dn,select:1,clip:1})
+            pvs.push({x:-50,y:-50-dn,select:1,clip:1})
+            pvs.push({end:true,x:50,y:-50-dn,select:1,clip:1})
         }`,
-        //关键点
-        `(i,j, sita, sample, pvs, model){
-            let er  = sample.r
-            let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
-            let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-            
-             switch(i){
-              case 1:
-                y=y+20
-                pvs.push({x:x,y:y,type:0,oppoint:1,r:er,group:j});
-              break;
-              case 3:
-                pvs.push({x:x,y:y,type:0,oppoint:1,r:er,group:j});
-                y=y-20
-                pvs.push({x:x,y:y,type:0,oppoint:1,r:er,group:j});
-              break;
-              default:
-                pvs.push({x:x,y:y,type:0,oppoint:1,r:er,group:j});  
-              break;
-            }
-           
+        //操作点
+        `(i, sample, pvs, model){
+            let dn = 15;
+            pvs.push({begin:1,x:50,y:0,oppoint:1})
+            pvs.push({x:0,y:50+dn,oppoint:1})
+            pvs.push({x:-50,y:0,oppoint:1})
+            pvs.push({end:1,x:0,y:-50-dn,oppoint:1})
         }`,
-        // 主体区域
-        `(i,j, sita, sample, pvs, model){
-            let er  = sample.r
-            let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
-            let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-            let type = 1;
-            switch(i){
-              case 1:
-                type = 3
-                pvs[0].y=y
-              break;
-              case 2:
-                pvs[1].x=x
-              break;
-              case 3:
-                pvs[2].y=y
-               x = pvs[0].x
-              break;
-            }
-            
-            pvs.push({x:x,y:y,r:er,type:type,group:j});
+        //绘制线段区域
+        `(i, sample, pvs, model){
+            pvs.push({begin:1,x:50,y:50,stroke:1})
+            pvs.push({x:-50,y:50,stroke:1,type:3})
+            pvs.push({x:-50,y:-50,stroke:1})
+            pvs.push({x:50,y:-50,stroke:1})
+            pvs.push({x:50,y:50,stroke:1})
         }`,
-
-
+        //填充区域
+        `(i, sample, pvs, model){
+            pvs.push({begin:1,x:50,y:50,fill:1})
+            pvs.push({x:-50,y:50,fill:1})
+            pvs.push({x:-50,y:-50,fill:1})
+            pvs.push({end:1,x:50,y:-50, fill:1})
+        }`,
         //文本区域
-        `(i,j, sita, sample, pvs, model){
-            let ds = i == 1 || i ==0 ? 0: 20
-            let er = sample.r
-            let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
-            let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)+ds
-            pvs.push({ x: x, y: y,type:10, group: j });
+        `(i, sample, pvs, model){
+            let dn = 15;
+            pvs.push({begin:1,x:50,y:50,text:1})
+            pvs.push({x:-50,y:50,text:1})
+            pvs.push({x:-50,y:-50+dn,text:1})
+            pvs.push({end:1,x:50,y:-50+dn,text:1})
         }`,
       ]
     },
