@@ -21,19 +21,17 @@ export default {
       //半径距离
       //采样的规则，多组采样返回多组规则
       rules: [
-        `(i,j, sita, sample, pvs, model){
+        `(i,sample, pvs, model){
             let ds = i == 2 || i ==3 ? 5: -5
-            let er  = sample.r
-            let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)+ds
-            let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-            pvs.push({ x: x, y: y,r:er, group: j });
+            let x = sample.x+ds
+            let y = sample.y
+            pvs.push({begin:i==0,end:i==3, x: x, y: y,select:1,clip:1,fill:1,stroke:1,oppoint:2 });
         }`,
-        `(i,j, sita, sample, pvs, model){
+        `(i,sample, pvs, model){
             let ds = i == 1 || i ==2 ? 5: -5
-            let er = sample.r
-            let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)+ds
-            let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-            pvs.push({ x: x, y: y,type:10, group: j });
+            let x = sample.x+ds
+            let y = sample.y
+            pvs.push({ begin:i==0,end:i==3, x: x, y: y,text:1 });
         }`,
       ]
     }

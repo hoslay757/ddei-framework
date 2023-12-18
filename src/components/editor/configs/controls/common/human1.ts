@@ -10,7 +10,7 @@ export default {
     height: 85,
     //2为极坐标，缺省点为原点
     poly: 2,
-    zIndex: 1,
+    cIndex: 1,
     //采样信息
     sample: {
       //一圈采样次数
@@ -22,10 +22,9 @@ export default {
       //半径距离
       //采样的规则，多组采样返回多组规则
       rules: [
-        `(i,j, sita, sample, pvs, model){
-            let er  = sample.r
-            let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
-            let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
+        `(i, sample, pvs, model){
+            let x = sample.x
+            let y = sample.y
             switch(i){
               case 1:
                 y = y-20
@@ -40,7 +39,7 @@ export default {
                x = pvs[0].x
               break;
             }
-            pvs.push({x:x,y:y,r:er,type:9,group:j});
+            pvs.push({begin:i==0,end:i==3,x:x,y:y,select:1,clip:1});
         }`,
 
       ]
@@ -49,7 +48,7 @@ export default {
     composes: [
       {
         id: '100003',
-        zIndex: 2,
+        cIndex: 2,
         initCPV: {
           x: 0, y: -35
         },
@@ -58,7 +57,7 @@ export default {
       },
       {
         id: '100002',
-        zIndex: 1,
+        cIndex: 1,
         width: 60,
         height: 50,
         border: {
