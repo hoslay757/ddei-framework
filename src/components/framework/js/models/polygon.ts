@@ -62,6 +62,7 @@ class DDeiPolygon extends DDeiAbstractShape {
           tempData,
           false
         );
+        composeModel.pModel = model
         composes.push(composeModel)
       });
       model.composes = composes
@@ -90,6 +91,7 @@ class DDeiPolygon extends DDeiAbstractShape {
           tempData,
           false
         );
+        composeModel.pModel = model
         composes.push(composeModel)
       });
       model.composes = composes

@@ -75,7 +75,7 @@ class DDeiAbstractShapeRender {
 
     if (!this.renderCacheData.has(attrPath)) {
       returnValue = DDeiModelArrtibuteValue.getAttrValueByState(this.model, attrPath, true);
-      this.renderCacheData.set(attrPath, returnValue)
+      this.setCachedValue(attrPath, returnValue)
     } else {
       returnValue = this.renderCacheData.get(attrPath)
     }
@@ -90,9 +90,36 @@ class DDeiAbstractShapeRender {
       if (Array.isArray(attrPath)) {
         attrPath.forEach(item => {
           this.renderCacheData.set(item, value);
+          this.changeComposesCacheValue(item, value);
         })
       } else {
         this.renderCacheData.set(attrPath, value);
+        this.changeComposesCacheValue(attrPath, value)
+      }
+
+    }
+  }
+
+  changeComposesCacheValue(attrPath, value) {
+    //通知composes的值改变
+    let define = DDeiUtil.getControlDefine(this.model)?.define;
+    if (define?.composes?.length > 0) {
+      for (let i = 0; i < define.composes.length; i++) {
+        let comDef = define.composes[i]
+        let comModel = this.model.composes[i]
+        if (comDef.attrLinks?.length > 0) {
+          comDef.attrLinks.forEach(attrLink => {
+            if (attrPath.startsWith(attrLink.code) && attrLink.mapping?.length > 0) {
+              attrLink.mapping.forEach(mp => {
+                if (mp == "*") {
+                  comModel.render.setCachedValue(attrPath, value)
+                } else {
+                  comModel.render.setCachedValue(mp, value)
+                }
+              });
+            }
+          });
+        }
       }
     }
   }

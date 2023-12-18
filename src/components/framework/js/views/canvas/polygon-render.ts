@@ -522,7 +522,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           if (fillOpacity != null && !fillOpacity != undefined) {
             ctx.globalAlpha = fillOpacity
           }
-          //填充矩形
+          //填充
           ctx.fill();
         }
       }

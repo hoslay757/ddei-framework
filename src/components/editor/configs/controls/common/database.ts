@@ -24,7 +24,7 @@ export default {
       rules: [
         //选中区域
         `(i, sample, pvs, model){
-            let dn = 15;
+            let dn = 22;
             pvs.push({begin:1,x:50,y:50+dn,select:1,clip:1})
             pvs.push({x:-50,y:50+dn,select:1,clip:1})
             pvs.push({x:-50,y:-50-dn,select:1,clip:1})
@@ -32,7 +32,7 @@ export default {
         }`,
         //操作点
         `(i, sample, pvs, model){
-            let dn = 15;
+            let dn = 22;
             pvs.push({begin:1,x:50,y:0,oppoint:1})
             pvs.push({x:0,y:50+dn,oppoint:1})
             pvs.push({x:-50,y:0,oppoint:1})
@@ -43,7 +43,7 @@ export default {
             pvs.push({begin:1,x:50,y:50,stroke:1})
             pvs.push({x:-50,y:50,stroke:1,type:3})
             pvs.push({x:-50,y:-50,stroke:1})
-            pvs.push({x:50,y:-50,stroke:1})
+            pvs.push({x:50,y:-50,stroke:1,type:3})
             pvs.push({x:50,y:50,stroke:1})
         }`,
         //填充区域
@@ -55,7 +55,7 @@ export default {
         }`,
         //文本区域
         `(i, sample, pvs, model){
-            let dn = 15;
+            let dn = 20;
             pvs.push({begin:1,x:50,y:50,text:1})
             pvs.push({x:-50,y:50,text:1})
             pvs.push({x:-50,y:-50+dn,text:1})
@@ -73,6 +73,10 @@ export default {
         },
         width: 100,
         height: 30
+        , attrLinks: [
+          { code: "border", mapping: ["*"] },
+          { code: "fill", mapping: ["*"] },
+        ]
       },
       {
         id: '100006',
@@ -82,6 +86,10 @@ export default {
         },
         width: 100,
         height: 30
+        , attrLinks: [
+          { code: "border", mapping: ["*"] },
+          { code: "fill", mapping: ["*"] },
+        ]
       },
 
     ]

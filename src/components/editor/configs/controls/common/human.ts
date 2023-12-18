@@ -79,7 +79,11 @@ export default {
           x: 0, y: -35
         },
         width: 30,
-        height: 30
+        height: 30,
+        attrLinks: [
+          { code: "border", mapping: ["*"] },
+          { code: "fill", mapping: ["*"] },
+        ]
       },
     ]
   }

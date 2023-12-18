@@ -25,8 +25,8 @@ export default {
         `(i, sample, pvs, model){
             let dr  = -50/ Math.cos(45 * DDeiConfig.ROTATE_UNIT)
             pvs.push({begin:1,x:50,y:50,select:1})
-            pvs.push({x:dr,y:50})
-            pvs.push({x:dr,y:-50})
+            pvs.push({x:dr,y:50,select:1})
+            pvs.push({x:dr,y:-50,select:1})
             pvs.push({end:1,x:50,y:-50,select:1})
         }`,
         //操作点

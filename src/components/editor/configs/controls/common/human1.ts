@@ -54,6 +54,10 @@ export default {
         },
         width: 35,
         height: 35
+        , attrLinks: [
+          { code: "border", mapping: ["*"] },
+          { code: "fill", mapping: ["*"] },
+        ]
       },
       {
         id: '100002',
@@ -63,6 +67,10 @@ export default {
         border: {
           round: 15
         }
+        , attrLinks: [
+          { code: "border", mapping: ["*"] },
+          { code: "fill", mapping: ["*"] },
+        ]
       },
     ]
   }
