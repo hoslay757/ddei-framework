@@ -20,24 +20,15 @@ export default {
       r: 50,
       //采样的规则，多组采样返回多组规则
       rules: [
-        `(i,j, sita, sample, pvs, model){
-            let er  = sample.r
-            let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
-            let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-            pvs.push({x:x,y:y,r:er,group:j});
+        `(i, sample, pvs, model){
+           
+            pvs.push({begin:i==0,end:i==3,x:sample.x,y:sample.y,select:1,oppoint:2,stroke:1,fill:1,clip:1});
         }`,
-        `(i,j, sita, sample, pvs, model){
-            let er  = sample.r
-            let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
-            let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-            pvs.push({x:x,y:y,r:er,type:0,oppoint:2,group:j});
-            
-        }`,
-        `(i,j, sita, sample, pvs, model){
-            let er = sample.r/2
-            let x = er * Math.cos((sita+45) * DDeiConfig.ROTATE_UNIT)
-            let y = er * Math.sin((sita+45) * DDeiConfig.ROTATE_UNIT)
-            pvs.push({x:x,y:y,r:er,type:10,group:j});
+        `(i, sample, pvs, model){
+            let er = sample.r * Math.cos(45)
+            let x = er * Math.cos((sample.sita+45) * DDeiConfig.ROTATE_UNIT)
+            let y = er * Math.sin((sample.sita+45) * DDeiConfig.ROTATE_UNIT)
+            pvs.push({begin:i==0,end:i==3,x:x,y:y,text:1});
         }`,
       ]
     }

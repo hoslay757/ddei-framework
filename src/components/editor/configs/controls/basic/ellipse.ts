@@ -3,11 +3,13 @@ export default {
   'name': '椭圆',
   'code': 'ellipse',
   'desc': '由极坐标系构造的椭圆形',
-  'from': '100003',
+  'from': '100500',
   'icon': 'toolbox-shape-rect',
   'define': {
     width: 160,
     height: 80,
+    //2为极坐标，以cpv为圆心，半径r采样获得点，在以width/100、height/100的的原始比例进行缩放
+    poly: 2,
     //采样信息
     sample: {
       //一圈4次采样
@@ -46,6 +48,5 @@ export default {
         }`,
       ]
     }
-
   }
 }

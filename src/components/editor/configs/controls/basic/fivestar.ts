@@ -21,30 +21,30 @@ export default {
       //初始次采样的开始角度
       angle: -90,
       //半径距离
-      r: 100,
+      r: 50,
       //采样的规则，多组采样返回多组规则
       rules: [
-        `(i, j, sita, sample, pvs, model){
+        `(i,  sample, pvs, model){
           let er = i % 2 == 0 ? sample.r : sample.r / 2.7
-          let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
-          let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-          pvs.push({ x: x, y: y, group: j });
+          let x = er * sample.cos
+          let y = er * sample.sin
+          pvs.push({ begin:i==0,end:i==9,x: x, y: y ,fill:1,select:1,stroke:1,clip:1,oppoint:1});
         }`,
-        `(i, j, sita, sample, pvs, model){
+        `(i,  sample, pvs, model){
           if (i == 0) {
             let er = sample.r / 3
             let x = er * Math.cos(45 * DDeiConfig.ROTATE_UNIT)
             let y = er * Math.sin(45 * DDeiConfig.ROTATE_UNIT)
-            pvs.push({ x: x, y: y, type: 10, group: j });
+            pvs.push({ begin:1,x: x, y: y, text:1 });
             x = er * Math.cos(135 * DDeiConfig.ROTATE_UNIT)
             y = er * Math.sin(135 * DDeiConfig.ROTATE_UNIT)
-            pvs.push({ x: x, y: y, type: 10, group: j });
+            pvs.push({ x: x, y: y, text:1 });
             x = er * Math.cos(225 * DDeiConfig.ROTATE_UNIT)
             y = er * Math.sin(225 * DDeiConfig.ROTATE_UNIT)
-            pvs.push({ x: x, y: y, type: 10, group: j });
+            pvs.push({ x: x, y: y, text:1 });
             x = er * Math.cos(315 * DDeiConfig.ROTATE_UNIT)
             y = er * Math.sin(315 * DDeiConfig.ROTATE_UNIT)
-            pvs.push({ x: x, y: y, type: 10, group: j });
+            pvs.push({ end:1,x: x, y: y, text:1 });
           }
         }`,
       ]

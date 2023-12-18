@@ -10,7 +10,7 @@ export default {
     height: 70,
     //2为极坐标，缺省点为原点
     poly: 2,
-    zIndex: 2,
+    cIndex: 2,
     //采样信息
     sample: {
       //一圈采样次数
@@ -25,10 +25,10 @@ export default {
         //选中区域
         `(i, sample, pvs, model){
             let dn = 15;
-            pvs.push({begin:true,x:50,y:50+dn,select:1,clip:1})
+            pvs.push({begin:1,x:50,y:50+dn,select:1,clip:1})
             pvs.push({x:-50,y:50+dn,select:1,clip:1})
             pvs.push({x:-50,y:-50-dn,select:1,clip:1})
-            pvs.push({end:true,x:50,y:-50-dn,select:1,clip:1})
+            pvs.push({end:1,x:50,y:-50-dn,select:1,clip:1})
         }`,
         //操作点
         `(i, sample, pvs, model){
@@ -67,7 +67,7 @@ export default {
     composes: [
       {
         id: '100006',
-        zIndex: 3,
+        cIndex: 3,
         initCPV: {
           x: 0, y: -35
         },
@@ -76,7 +76,7 @@ export default {
       },
       {
         id: '100006',
-        zIndex: 1,
+        cIndex: 1,
         initCPV: {
           x: 0, y: 35
         },

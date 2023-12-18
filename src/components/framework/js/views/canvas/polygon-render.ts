@@ -94,14 +94,13 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         rendList = rendList.concat(this.model.composes);
       }
       rendList.push(this.model)
-      console.log(this.model.id + " .  " + this.model.zIndex)
       rendList.sort((a, b) => {
 
-        if ((a.zIndex || a.zIndex == 0) && (b.zIndex || b.zIndex == 0)) {
-          return a.zIndex - b.zIndex
-        } else if ((a.zIndex || a.zIndex == 0) && !(b.zIndex || b.zIndex == 0)) {
+        if ((a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+          return a.cIndex - b.cIndex
+        } else if ((a.cIndex || a.cIndex == 0) && !(b.cIndex || b.cIndex == 0)) {
           return 1
-        } else if (!(a.zIndex || a.zIndex == 0) && (b.zIndex || b.zIndex == 0)) {
+        } else if (!(a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
           return -1
         } else {
           return 0
@@ -229,7 +228,13 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       borderPVS[i] = clone(pvs[i])
     }
     borderPVS[pvs.length] = clone(pvs[0])
-
+    if (borderPVS[borderPVS.length - 2].end) {
+      delete borderPVS[borderPVS.length - 2].end
+      borderPVS[borderPVS.length - 1].end = 1
+    }
+    if (borderPVS[borderPVS.length - 1].begin) {
+      delete borderPVS[borderPVS.length - 1].begin
+    }
     return borderPVS
   }
   /**
@@ -302,18 +307,20 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     }
 
     if (pvs?.length > 2) {
-      // if (this.model.composes?.length > 0 && pvs[0].stroke == 1) {
-      //   debugger
-      // }
+
       let len = pvs.length;
       if (pvs[0].begin) {
         ctx.beginPath();
       }
       ctx.moveTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset)
 
-      for (let i = 1; i < len - 1; i++) {
+      for (let i = 1; i < len; i++) {
         let pv = pvs[i];
-
+        let s = i
+        let e = i + 1
+        if (i == len - 1) {
+          e = 0
+        }
         let dx = pv.dx ? pv.dx * stageRatio : 0
         let dy = pv.dy ? pv.dy * stageRatio : 0
         if (pv.begin) {
@@ -333,7 +340,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
 
           ctx.ellipse((this.model.cpv.x + dx) * rat1 + lineOffset, (this.model.cpv.y + dy) * rat1 + lineOffset, upPV.r * rat1 * scaleX, upPV.r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, upPV.rad, pv.rad, !pv.direct)
         } else {
-          ctx.arcTo(pvs[i].x * rat1 + lineOffset, pvs[i].y * rat1 + lineOffset, pvs[i + 1].x * rat1 + lineOffset, pvs[i + 1].y * rat1 + lineOffset, round * rat1);
+          ctx.arcTo(pvs[s].x * rat1 + lineOffset, pvs[s].y * rat1 + lineOffset, pvs[e].x * rat1 + lineOffset, pvs[e].y * rat1 + lineOffset, round * rat1);
         }
         if (pv.end) {
           ctx.closePath()

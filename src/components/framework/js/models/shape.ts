@@ -23,6 +23,7 @@ abstract class DDeiAbstractShape {
     this.sptStyle = props.sptStyle ? props.sptStyle : {}
     this.poly = props.poly;
     this.composes = props.composes
+    this.cIndex = props.cIndex ? props.cIndex : null
     this.ruleEvals = []
     this.initCPV = props.initCPV ? props.initCPV : null
     if (props.cpv) {
@@ -30,8 +31,13 @@ abstract class DDeiAbstractShape {
     }
     if (props.pvs) {
       this.pvs = [];
-      props.pvs.forEach(pv => {
-        this.pvs.push(new Vector3(pv.x, pv.y, pv.z || pv.z == 0 ? pv.z : 1));
+      props.pvs.forEach(pvd => {
+        let pv = new Vector3()
+        for (let i in pvd) {
+          pv[i] = pvd[i]
+        }
+        pv.z = (pvd.z || pvd.z === 0) ? pvd.z : 1
+        this.pvs.push(pv);
       });
     }
     this.hpv = []
@@ -82,6 +88,8 @@ abstract class DDeiAbstractShape {
   stage: DDeiStage | null;
   // 当前图形在当前图层的层次
   zIndex: number | null;
+  // 当前图形在组合控件中的层次
+  cIndex: number | null;
   // 旋转,0/null 不旋转，默认0
   rotate: number | null;
 

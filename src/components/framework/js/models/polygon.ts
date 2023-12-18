@@ -27,8 +27,13 @@ class DDeiPolygon extends DDeiAbstractShape {
 
     if (props.textArea) {
       this.textArea = [];
-      props.textArea.forEach(pv => {
-        this.textArea.push(new Vector3(pv.x, pv.y, pv.z || pv.z == 0 ? pv.z : 1));
+      props.textArea.forEach(pvd => {
+        let pv = new Vector3()
+        for (let i in pvd) {
+          pv[i] = pvd[i]
+        }
+        pv.z = (pvd.z || pvd.z === 0) ? pvd.z : 1
+        this.textArea.push(pv);
       });
     }
   }

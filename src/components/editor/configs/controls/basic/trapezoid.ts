@@ -9,17 +9,17 @@ export default {
     width: 160,
     height: 80,
     pvs: [
-      { x: 20, y: 0 },
+      { begin: 1, x: 20, y: 0, stroke: 1, clip: 1, fill: 1 },
       { x: 140, y: 0 },
       { x: 160, y: 80 },
-      { x: 0, y: 80 }
+      { end: 1, x: 0, y: 80 }
     ],
     cpv: { x: 80, y: 40 },
     textArea: [
-      { x: 20, y: 0 },
+      { begin: 1, x: 20, y: 0 },
       { x: 140, y: 0 },
       { x: 140, y: 80 },
-      { x: 20, y: 80 }
+      { end: 1, x: 20, y: 80 }
     ],
     hpv: [
       { x: 0, y: 0 },

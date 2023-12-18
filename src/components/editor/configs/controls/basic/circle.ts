@@ -12,8 +12,7 @@ export default {
     poly: 2,
     //采样信息
     sample: {
-      //锁定比例
-      eqrat: true,
+      eqrat: 1,
       //一圈4次采样
       loop: 4,
       //初始次采样的开始角度
@@ -22,34 +21,31 @@ export default {
       r: 50,
       //采样的规则，多组采样返回多组规则
       rules: [
-        `(i,j, sita, sample, pvs, model){
+        //选中区域
+        `(i, sample, pvs, model){
             let er  = sample.r / Math.cos(45 * DDeiConfig.ROTATE_UNIT) + 2
-            let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
-            let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-            pvs.push({x:x,y:y,r:er,type:0,group:j});
+            let x = er * sample.cos
+            let y = er * sample.sin
+            pvs.push({x:x,y:y,r:er,select:1});
         }`,
-        `(i,j, sita, sample, pvs, model){
-            let er  = sample.r 
-            let x = er * Math.cos((sita+45) * DDeiConfig.ROTATE_UNIT)
-            let y = er * Math.sin((sita+45) * DDeiConfig.ROTATE_UNIT)
-            pvs.push({x:x,y:y,r:er,type:0,oppoint:1,group:j});
+        //操作点
+        `(i, sample, pvs, model){
+            let x = sample.r  * Math.cos((sample.sita+45) * DDeiConfig.ROTATE_UNIT)
+            let y = sample.r  * Math.sin((sample.sita+45) * DDeiConfig.ROTATE_UNIT)
+            pvs.push({x:x,y:y,r:sample.r ,oppoint:1});
             if(i == 3){
-              pvs.push({x:0,y:0,r:er,type:0,oppoint:3,group:j});
+              pvs.push({x:0,y:0,r:sample.r ,oppoint:3});
             }
         }`,
-        `(i,j, sita, sample, pvs, model){
+        //绘制线段、填充区域
+        `(i, sample, pvs, model){
             if(i == 0){
-              let er = sample.r
-              let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
-              let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-              pvs.push({r:er,group:j});
+              pvs.push({r:sample.r,stroke:1,fill:1,clip:1});
             }
         }`,
-        `(i,j, sita, sample, pvs, model){
-            let er = sample.r
-            let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
-            let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-            pvs.push({x:x,y:y,r:er,type:10,group:j});
+        //文本区域
+        `(i, sample, pvs, model){
+            pvs.push({x:sample.x,y:sample.y,r:sample.r,text:1});
         }`,
       ]
     }

@@ -10,7 +10,7 @@ export default {
     height: 80,
     //2为极坐标，缺省点为原点
     poly: 2,
-    zIndex: 2,
+    cIndex: 2,
     //采样信息
     sample: {
       //一圈采样次数
@@ -22,11 +22,15 @@ export default {
       //半径距离
       //采样的规则，多组采样返回多组规则
       rules: [
-        `(i,j, sita, sample, pvs, model){
+        `(i, sample, pvs, model){
             let er  = sample.r * 1.25
-            let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
-            let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
+            let x = er * sample.cos
+            let y = er * sample.sin
+            let begin = 0,end = 0
             switch(i){
+              case 0:
+                begin = 1
+              break;
               case 1:
                 pvs[0].y=y
               break;
@@ -36,16 +40,21 @@ export default {
               case 3:
                 pvs[2].y=y 
                x = pvs[0].x
+               end = 1
               break;
             }
-            pvs.push({x:x,y:y,r:er,type:0,oppoint:2,group:j});
+            pvs.push({begin:begin,end:end,x:x,y:y,r:er,select:1,clip:1,oppoint:2});
         }`,
 
-        `(i,j, sita, sample, pvs, model){
+        `(i, sample, pvs, model){
             let er  = sample.r
-            let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
-            let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
+            let x = sample.x
+            let y = sample.y
+            let begin = 0,end = 0
             switch(i){
+              case 0:
+                begin = 1
+              break;
               case 1:
                 pvs[0].y=y
               break;
@@ -55,15 +64,10 @@ export default {
               case 3:
                 pvs[2].y=y 
                x = pvs[0].x
+               end = 1
               break;
             }
-            pvs.push({x:x,y:y,r:er,group:j});
-        }`,
-        `(i,j, sita, sample, pvs, model){
-            let er = sample.r
-            let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
-            let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-            pvs.push({ x: x, y: y,type:10, group: j });
+            pvs.push({begin:begin,end:end,x:x,y:y,r:er,stroke:1,fill:1,text:1});
         }`,
       ],
 
@@ -75,8 +79,7 @@ export default {
         width: 200,
         height: 100,
         id: '100002',
-        zIndex: 1,
-
+        cIndex: 1,
       },
     ]
   }

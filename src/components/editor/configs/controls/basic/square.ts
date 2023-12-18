@@ -22,42 +22,27 @@ export default {
       r: 50,
       //采样的规则，多组采样返回多组规则
       rules: [
-        `(i,j, sita, sample, pvs, model){
-            let er  = sample.r
-            let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
-            let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
+        `(i, sample, pvs, model){
+          let start = 0,end = 0
             switch(i){
+              case 0:
+                start = 1  
+              break;
               case 1:
-                pvs[0].y=y
+                pvs[0].y=sample.y
               break;
               case 2:
-                pvs[1].x=x
+                pvs[1].x=sample.x
               break;
               case 3:
-                pvs[2].y=y 
-               x = pvs[0].x
+                pvs[2].y=sample.y 
+                sample.x = pvs[0].x
+                end = 1
               break;
             }
-            pvs.push({x:x,y:y,r:er,group:j});
-        }`,
-        `(i,j, sita, sample, pvs, model){
-            let er  = sample.r
-            let x = er * Math.cos(sita * DDeiConfig.ROTATE_UNIT)
-            let y = er * Math.sin(sita * DDeiConfig.ROTATE_UNIT)
-            switch(i){
-              case 1:
-                pvs[0].y=y
-              break;
-              case 2:
-                pvs[1].x=x
-              break;
-              case 3:
-                pvs[2].y=y 
-               x = pvs[0].x
-              break;
-            }
-            pvs.push({x:x,y:y,r:er,type:10,group:j});
-        }`,
+            pvs.push({begin:start,end:end,x:sample.x,y:sample.y,r:sample.r,select:1,clip:1,text:1,stroke:1,fill:1});
+        }`
+
       ]
     }
   }
