@@ -40,7 +40,7 @@ export default {
         //绘制线段、填充区域
         `(i, sample, pvs, model){
             if(i == 0){
-              pvs.push({r:sample.r,stroke:1,fill:1,clip:1});
+              pvs.push({r:sample.r,stroke:1,fill:1,clip:1,begin:1,end:1});
             }
         }`,
         //文本区域

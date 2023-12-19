@@ -46,25 +46,25 @@ export default {
             let y = -20
             pvs.push({begin:1,x:x,y:y,stroke:1});
             y = 10
-            pvs.push({x:x,y:y});
+            pvs.push({x:x,y:y,stroke:1});
             y += 10
             let y1= y
             let x1 = x
-            pvs.push({x:x,y:y});
+            pvs.push({x:x,y:y,stroke:1});
             let er = sample.r
             x = sample.x
             y = sample.y
             let y2 = er * Math.sin(90 * DDeiConfig.ROTATE_UNIT)
-            pvs.push({x:x,y:y2,oppoint:1});
+            pvs.push({x:x,y:y2,oppoint:1,stroke:1});
             pvs.push({x:x1,y:y1,type:3});
             let x3 = er * Math.cos(180 * DDeiConfig.ROTATE_UNIT)
             let y3 = er * Math.sin(180 * DDeiConfig.ROTATE_UNIT)
-            pvs.push({x:x3,y:y2,oppoint:1});
+            pvs.push({x:x3,y:y2,oppoint:1,stroke:1});
             pvs.push({x:x1,y:y1,type:3});
             pvs.push({x:0,y:-10,type:3});
-            pvs.push({x:x3,y:10,oppoint:1});
+            pvs.push({x:x3,y:10,oppoint:1,stroke:1});
             pvs.push({x:0,y:-10,type:3});
-            pvs.push({x:x,y:10,oppoint:1});
+            pvs.push({x:x,y:10,oppoint:1,stroke:1});
             pvs.push({x:0,y:-10,type:3});
           }
         }`

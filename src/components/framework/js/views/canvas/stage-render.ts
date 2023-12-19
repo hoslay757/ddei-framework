@@ -121,6 +121,7 @@ class DDeiStageCanvasRender {
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
       let rat1 = this.ddRender.ratio;
+
       //绘制图形
       ctx.save();
 

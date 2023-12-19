@@ -68,7 +68,10 @@ export default {
           round: 15
         }
         , attrLinks: [
-          { code: "border", mapping: ["*"] },
+          { code: "border.color", mapping: ["border.color"] },
+          { code: "border.width", mapping: ["border.width"] },
+          { code: "border.opacity", mapping: ["border.opacity"] },
+          { code: "border.dash", mapping: ["border.dash"] },
           { code: "fill", mapping: ["*"] },
         ]
       },

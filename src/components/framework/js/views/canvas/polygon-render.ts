@@ -75,6 +75,35 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       img.src = this.model.bgImageBase64 ? this.model.bgImageBase64 : bgImage;
     }
   }
+
+  createTemeShape() {
+    let rat1 = this.ddRender.ratio;
+    //测试剪切图形
+    //转换为图片
+    if (!this.tempCanvas) {
+      this.tempCanvas = document.createElement('canvas');
+      this.tempCanvas.setAttribute("style", "-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
+    }
+    let tempCanvas = this.tempCanvas
+    let outRect = DDeiAbstractShape.pvsToOutRect(this.model.operatePVS)
+    let weight = 5
+    outRect.x -= weight
+    outRect.x1 += weight
+    outRect.y -= weight
+    outRect.y1 += weight
+    outRect.width += 2 * weight
+    outRect.height += 2 * weight
+    tempCanvas.setAttribute("width", outRect.width * rat1)
+    tempCanvas.setAttribute("height", outRect.height * rat1)
+    //获得 2d 上下文对象
+    let tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
+    tempCanvas.tx = -outRect.x * rat1
+    tempCanvas.ty = -outRect.y * rat1
+    tempCanvas.outRect = outRect
+    tempCtx.translate(tempCanvas.tx, tempCanvas.ty)
+
+  }
+
   /**
    * 绘制图形
    */
@@ -87,7 +116,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       null
     )) {
 
-
+      //创建准备图形
+      this.createTemeShape();
       //将当前控件以及composes按照zindex顺序排列并输出
       let rendList = [];
       if (this.model.composes?.length > 0) {
@@ -109,7 +139,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       rendList.forEach(c => {
         if (c == this.model) {
           //获得 2d 上下文对象
-          let canvas = this.ddRender.getCanvas();
+          let canvas = this.getCanvas();
           let ctx = canvas.getContext('2d');
           ctx.save();
           //拆分并计算pvss
@@ -132,8 +162,13 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         }
       })
 
+      //外部canvas
+      let canvas = this.getRenderCanvas(composeRender)
+      let ctx = canvas.getContext('2d');
+      let rat1 = this.ddRender.ratio;
+      let outRect = this.tempCanvas.outRect
 
-
+      ctx.drawImage(this.tempCanvas, 0, 0, outRect.width * rat1, outRect.height * rat1, outRect.x * rat1, outRect.y * rat1, outRect.width * rat1, outRect.height * rat1)
 
 
 
@@ -147,6 +182,18 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         )
       }
     }
+  }
+
+  getRenderCanvas(composeRender) {
+    if (composeRender) {
+      return this.model.pModel.render.getCanvas()
+    } else {
+      return this.ddRender?.getCanvas();
+    }
+  }
+
+  getCanvas() {
+    return this.tempCanvas;
   }
 
   /**
@@ -164,7 +211,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       }
     }
     if (createClip) {
-      let canvas = this.ddRender.getCanvas();
+      let canvas = this.getCanvas();
       let ctx = canvas.getContext('2d');
       let pvs = this.borderPVSS[i];
       //创建path
@@ -287,7 +334,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
    */
   createPath(pvs, tempShape, drawLine: boolean = false) {
     //获得 2d 上下f文对象
-    let canvas = this.ddRender.getCanvas();
+    let canvas = this.getCanvas();
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
     let stageRatio = this.model.getStageRatio()
@@ -301,7 +348,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let dash = tempShape?.border?.dash ? tempShape?.border?.dash : this.getCachedValue("border.dash");
     //加载边框的矩阵
     let lineWidth = width * ratio;
-    drawLine = drawLine && (!disabled && color && (!opacity || opacity > 0) && width > 0)
+    drawLine = drawLine && (!disabled && (!opacity || opacity > 0) && width > 0)
     let round = tempShape?.border?.round ? tempShape?.border?.round : this.getCachedValue("border.round");
     if (!round) {
       round = 0
@@ -328,6 +375,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       }
       //颜色
       ctx.strokeStyle = DDeiUtil.getColor(color);
+      if (pvs[0].strokeClear) {
+        ctx.globalCompositeOperation = "destination-out"
+      }
     }
 
     if (pvs?.length > 2) {
@@ -381,7 +431,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       }
     } else if (pvs.length == 1) {
       let pv = pvs[0]
-      ctx.beginPath();
+      if (pv.begin) {
+        ctx.beginPath();
+      }
       let rotate = this.model.rotate;
       if (!rotate) {
         rotate = 0
@@ -392,9 +444,17 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       let x = pv.cx || pv.cx == 0 ? this.model.cpv.x + pv.cx : this.model.cpv.x
       let y = pv.cy || pv.cy == 0 ? this.model.cpv.y + pv.cy : this.model.cpv.y
       ctx.ellipse(x * rat1 + lineOffset, y * rat1 + lineOffset, pv.r * rat1 * scaleX, pv.r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, DDeiConfig.ROTATE_UNIT * 0, Math.PI * 2)
-      ctx.closePath()
+      if (pv.end) {
+        ctx.closePath()
+      }
+      if (drawLine && pv.stroke) {
+        ctx.stroke()
+      }
     } else if (pvs.length == 2) {
-      ctx.beginPath();
+      if (pvs[0].begin) {
+        ctx.beginPath();
+      }
+
       let rotate = this.model.rotate;
       if (!rotate) {
         rotate = 0
@@ -406,8 +466,12 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       ctx.lineTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset)
       ctx.ellipse(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pvs[0].r * rat1 * scaleX, pvs[0].r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, pvs[0].rad, pvs[1].rad)
       ctx.lineTo(pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset)
-      ctx.closePath()
-
+      if (pvs[1].end) {
+        ctx.closePath();
+      }
+      if (drawLine && pvs[1].stroke) {
+        ctx.stroke()
+      }
     }
     if (drawLine) {
       ctx.restore();
@@ -422,10 +486,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   drawBorder(tempShape: object | null): void {
     // //如果被选中，使用选中的边框，否则使用缺省边框
     let disabled = tempShape?.border?.disabled ? tempShape?.border?.disabled : this.getCachedValue("border.disabled")
-    let color = tempShape?.border?.color ? tempShape?.border?.color : this.getCachedValue("border.color")
     let opacity = tempShape?.border?.opacity ? tempShape?.border?.opacity : this.getCachedValue("border.opacity");
     let width = tempShape?.border?.width ? tempShape?.border?.width : this.getCachedValue("border.width");
-    let drawLine = (!disabled && color && (!opacity || opacity > 0) && width > 0)
+    let drawLine = (!disabled && (!opacity || opacity > 0) && width > 0)
     if (drawLine) {
       for (let i = 0; i < this.borderPVSS.length; i++) {
         let pvs = this.borderPVSS[i];
@@ -433,6 +496,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         this.createPath(pvs, tempShape, true)
       }
     }
+
+
   }
 
 
@@ -481,7 +546,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
    */
   drawFill(tempShape: object | null): void {
     //获得 2d 上下文对象
-    let canvas = this.ddRender.getCanvas();
+    let canvas = this.getCanvas();
     let ctx = canvas.getContext('2d');
     //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
     let fillColor = tempShape?.fill?.color ? tempShape.fill.color : this.getCachedValue("fill.color");
@@ -514,6 +579,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
             if (fillOpacity != null && !fillOpacity != undefined) {
               ctx.globalAlpha = fillOpacity
             }
+            if (pvs[0].fillClear) {
+              ctx.globalCompositeOperation = "destination-out"
+            }
             //填充
             ctx.fill();
           }
@@ -543,7 +611,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       return;
     }
     //获得 2d 上下文对象
-    let canvas = this.ddRender.getCanvas();
+    let canvas = this.getCanvas();
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
     let stageRatio = this.model.getStageRatio()
