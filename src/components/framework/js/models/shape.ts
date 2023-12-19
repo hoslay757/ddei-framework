@@ -117,7 +117,7 @@ abstract class DDeiAbstractShape {
   /**
    * 极坐标下的采样策略，采样策略返回的点上会附带绘图的控制属性
    * 返回值：
-   *    type:1直线/2曲线/3不画线直接跳转 ,默认1
+   *    type:1直线/2曲线/3不画线直接跳转,4圆或椭圆 ,默认1
    *    r:半径
    *    rad：当前点位的弧度
    *    x:点坐标
@@ -241,16 +241,16 @@ abstract class DDeiAbstractShape {
             pv.group = i
             //如果有dx和dy属性，则需要通过旋转和缩放对齐进行调整值
             if (pvd.dx || pvd.dx == 0 || pvd.dy || pvd.dy == 0) {
+              if (!pvd.dx) {
+                pvd.dx = 0
+              }
+              if (!pvd.dy) {
+                pvd.dy = 0
+              }
               if (!bpv) {
-                if (!pvd.dx) {
-                  pvd.dx = 0
-                }
-                if (!pvd.dy) {
-                  pvd.dy = 0
-                }
-
                 //因为bpv在缩放时同步变大，因此会随着stageRatio变化大小
                 rotate = this.rotate
+
                 if (!rotate) {
                   rotate = 0
                 }
@@ -260,6 +260,8 @@ abstract class DDeiAbstractShape {
                 scaleX = Math.abs(bpv.x / 100) / stageRatio
                 scaleY = Math.abs(bpv.y / 100) / stageRatio
               }
+
+
               let dp = DDeiUtil.getRotatedPoint({ x: pvd.dx * scaleX, y: pvd.dy * scaleY, z: 1 }, rotate)
 
               pvd.dx = dp.x

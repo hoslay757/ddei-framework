@@ -285,7 +285,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   /**
    * 创建路径
    */
-  createPath(pvs, tempShape) {
+  createPath(pvs, tempShape, drawLine: boolean = false) {
     //获得 2d 上下f文对象
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
@@ -293,6 +293,15 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let stageRatio = this.model.getStageRatio()
     let rat1 = this.ddRender.ratio;
     let ratio = rat1 * stageRatio;
+    //如果被选中，使用选中的边框，否则使用缺省边框
+    let disabled = tempShape?.border?.disabled ? tempShape?.border?.disabled : this.getCachedValue("border.disabled")
+    let color = tempShape?.border?.color ? tempShape?.border?.color : this.getCachedValue("border.color")
+    let opacity = tempShape?.border?.opacity ? tempShape?.border?.opacity : this.getCachedValue("border.opacity");
+    let width = tempShape?.border?.width ? tempShape?.border?.width : this.getCachedValue("border.width");
+    let dash = tempShape?.border?.dash ? tempShape?.border?.dash : this.getCachedValue("border.dash");
+    //加载边框的矩阵
+    let lineWidth = width * ratio;
+    drawLine = drawLine && (!disabled && color && (!opacity || opacity > 0) && width > 0)
     let round = tempShape?.border?.round ? tempShape?.border?.round : this.getCachedValue("border.round");
     if (!round) {
       round = 0
@@ -304,6 +313,21 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
 
     if (!pvs || pvs?.length < 1) {
       return;
+    }
+    if (drawLine) {
+      ctx.save();
+      //绘制线条
+      ctx.lineWidth = lineWidth;
+      //线段、虚线样式
+      if (dash) {
+        ctx.setLineDash(dash);
+      }
+      //透明度
+      if (opacity != null && opacity != undefined) {
+        ctx.globalAlpha = opacity
+      }
+      //颜色
+      ctx.strokeStyle = DDeiUtil.getColor(color);
     }
 
     if (pvs?.length > 2) {
@@ -326,9 +350,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         if (pv.begin) {
           ctx.beginPath()
         }
-        if (pv.type == 3) {
+        if (pv.type == 3 || (drawLine && !pv.stroke)) {
           ctx.moveTo(pv.x * rat1 + lineOffset, pv.y * rat1 + lineOffset)
-        } else if (pv.type == 2) {
+        } else if (pv.type == 2 || pv.type == 4) {
           let rotate = this.model.rotate;
           if (!rotate) {
             rotate = 0
@@ -337,17 +361,23 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           let scaleX = Math.abs(bpv.x / 100)
           let scaleY = Math.abs(bpv.y / 100)
           let upPV = pvs[i - 1]
-
-          ctx.ellipse((this.model.cpv.x + dx) * rat1 + lineOffset, (this.model.cpv.y + dy) * rat1 + lineOffset, upPV.r * rat1 * scaleX, upPV.r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, upPV.rad, pv.rad, !pv.direct)
+          let wr = upPV.r
+          let hr = upPV.r
+          if (pv.type == 4) {
+            wr = pvs[i + 1].r
+            hr = pvs[i + 2].r
+            i = i + 2
+          }
+          ctx.ellipse((this.model.cpv.x + dx) * rat1 + lineOffset, (this.model.cpv.y + dy) * rat1 + lineOffset, wr * rat1 * scaleX, hr * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, upPV.rad, pv.rad, !pv.direct)
         } else {
           ctx.arcTo(pvs[s].x * rat1 + lineOffset, pvs[s].y * rat1 + lineOffset, pvs[e].x * rat1 + lineOffset, pvs[e].y * rat1 + lineOffset, round * rat1);
         }
         if (pv.end) {
           ctx.closePath()
         }
-        // ctx.strokeStyle = "red"
-        // ctx.lineWidth = 1
-        // ctx.stroke()
+        if (drawLine && pv.stroke) {
+          ctx.stroke()
+        }
       }
     } else if (pvs.length == 1) {
       let pv = pvs[0]
@@ -379,6 +409,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       ctx.closePath()
 
     }
+    if (drawLine) {
+      ctx.restore();
+    }
 
   }
 
@@ -387,48 +420,17 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
    * @param tempShape 临时图形，优先级最高
    */
   drawBorder(tempShape: object | null): void {
-    //获得 2d 上下f文对象
-    let canvas = this.ddRender.getCanvas();
-    let ctx = canvas.getContext('2d');
-    //获取全局缩放比例
-    let stageRatio = this.model.getStageRatio()
-    let rat1 = this.ddRender.ratio;
-    let ratio = rat1 * stageRatio;
-    //如果被选中，使用选中的边框，否则使用缺省边框
+    // //如果被选中，使用选中的边框，否则使用缺省边框
     let disabled = tempShape?.border?.disabled ? tempShape?.border?.disabled : this.getCachedValue("border.disabled")
     let color = tempShape?.border?.color ? tempShape?.border?.color : this.getCachedValue("border.color")
     let opacity = tempShape?.border?.opacity ? tempShape?.border?.opacity : this.getCachedValue("border.opacity");
     let width = tempShape?.border?.width ? tempShape?.border?.width : this.getCachedValue("border.width");
-    let dash = tempShape?.border?.dash ? tempShape?.border?.dash : this.getCachedValue("border.dash");
-    //加载边框的矩阵
-    let lineWidth = width * ratio;
     let drawLine = (!disabled && color && (!opacity || opacity > 0) && width > 0)
     if (drawLine) {
       for (let i = 0; i < this.borderPVSS.length; i++) {
         let pvs = this.borderPVSS[i];
-
-        if (pvs[0].stroke == 1) {
-
-          //创建path
-          this.createPath(pvs, tempShape)
-
-          ctx.save();
-          //绘制线条
-          ctx.lineWidth = lineWidth;
-          //线段、虚线样式
-          if (dash) {
-            ctx.setLineDash(dash);
-          }
-          //透明度
-          if (opacity != null && opacity != undefined) {
-            ctx.globalAlpha = opacity
-          }
-          //颜色
-          ctx.strokeStyle = DDeiUtil.getColor(color);
-          ctx.stroke();
-          ctx.restore();
-          continue;
-        }
+        //创建path
+        this.createPath(pvs, tempShape, true)
       }
     }
   }
@@ -478,62 +480,52 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
    * 绘制填充
    */
   drawFill(tempShape: object | null): void {
-
+    //获得 2d 上下文对象
+    let canvas = this.ddRender.getCanvas();
+    let ctx = canvas.getContext('2d');
+    //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
+    let fillColor = tempShape?.fill?.color ? tempShape.fill.color : this.getCachedValue("fill.color");
+    let fillOpacity = tempShape?.fill?.opacity ? tempShape.fill.opacity : this.getCachedValue("fill.opacity");
+    let fillDisabled = tempShape?.fill?.disabled ? tempShape.fill.disabled : this.getCachedValue("fill.disabled");
+    let fillType = tempShape?.fill?.type ? tempShape.fill.type : this.getCachedValue("fill.type");
+    //保存状态
+    ctx.save();
     //找到第一个类型不为0的
-    let i = 0
-    let havePath = false;
-    for (; i < this.borderPVSS.length; i++) {
+    for (let i = 0; i < this.borderPVSS.length; i++) {
       if (this.borderPVSS[i][0].fill == 1) {
-        havePath = true
-        break;
-      }
-    }
-    if (havePath) {
-      //获得 2d 上下文对象
-      let canvas = this.ddRender.getCanvas();
-      let ctx = canvas.getContext('2d');
-      //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
-      let fillColor = tempShape?.fill?.color ? tempShape.fill.color : this.getCachedValue("fill.color");
-      let fillOpacity = tempShape?.fill?.opacity ? tempShape.fill.opacity : this.getCachedValue("fill.opacity");
-      let fillDisabled = tempShape?.fill?.disabled ? tempShape.fill.disabled : this.getCachedValue("fill.disabled");
-      let fillType = tempShape?.fill?.type ? tempShape.fill.type : this.getCachedValue("fill.type");
-      //保存状态
-      ctx.save();
-      let pvs = this.borderPVSS[i];
-      //创建path
-      this.createPath(pvs, tempShape)
-
-
-      //纯色填充
-      if (this.isEditoring) {
-        if (!fillType || fillType == '0') {
-          fillType = 1
-        }
-      }
-      if (fillType == 1) {
+        let pvs = this.borderPVSS[i];
+        //创建path
+        this.createPath(pvs, tempShape)
+        //纯色填充
         if (this.isEditoring) {
-          fillDisabled = false
-          fillOpacity = 1.0
-        }
-        //如果拥有填充色，则使用填充色
-        if (!fillDisabled && fillColor && (!fillOpacity || fillOpacity > 0)) {
-          ctx.fillStyle = DDeiUtil.getColor(fillColor);
-          //透明度
-          if (fillOpacity != null && !fillOpacity != undefined) {
-            ctx.globalAlpha = fillOpacity
+          if (!fillType || fillType == '0') {
+            fillType = 1
           }
-          //填充
-          ctx.fill();
+        }
+        if (fillType == 1) {
+          if (this.isEditoring) {
+            fillDisabled = false
+            fillOpacity = 1.0
+          }
+          //如果拥有填充色，则使用填充色
+          if (!fillDisabled && fillColor && (!fillOpacity || fillOpacity > 0)) {
+            ctx.fillStyle = DDeiUtil.getColor(fillColor);
+            //透明度
+            if (fillOpacity != null && !fillOpacity != undefined) {
+              ctx.globalAlpha = fillOpacity
+            }
+            //填充
+            ctx.fill();
+          }
+        }
+        //图片填充
+        else if (fillType == 2) {
+          this.drawImage()
         }
       }
-      //图片填充
-      else if (fillType == 2) {
-        this.drawImage()
-      }
-
-      //恢复状态
-      ctx.restore();
     }
+    //恢复状态
+    ctx.restore();
   }
 
   /**
