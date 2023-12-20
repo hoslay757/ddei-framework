@@ -85,7 +85,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       this.tempCanvas.setAttribute("style", "-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
     }
     let tempCanvas = this.tempCanvas
-    let outRect = DDeiAbstractShape.pvsToOutRect(this.model.operatePVS)
+    let pvs = this.model.operatePVS ? this.model.operatePVS : this.model.pvs
+
+    let outRect = DDeiAbstractShape.pvsToOutRect(pvs)
     let weight = 5
     outRect.x -= weight
     outRect.x1 += weight
@@ -271,16 +273,22 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     borderPVS[0].x += roundPVS.x
     borderPVS[0].y += roundPVS.y
     //四个角的点，考虑边框的位置也要响应变小
+    let lastType = 0
     for (let i = 1; i < pvs.length; i++) {
       borderPVS[i] = clone(pvs[i])
+      if (borderPVS[i].type) {
+        lastType = borderPVS[i].type
+      }
     }
-    borderPVS[pvs.length] = clone(pvs[0])
-    if (borderPVS[borderPVS.length - 2].end) {
-      delete borderPVS[borderPVS.length - 2].end
-      borderPVS[borderPVS.length - 1].end = 1
-    }
-    if (borderPVS[borderPVS.length - 1].begin) {
-      delete borderPVS[borderPVS.length - 1].begin
+    if (lastType != 2 && lastType != 5) {
+      borderPVS[pvs.length] = clone(pvs[0])
+      if (borderPVS[borderPVS.length - 2].end) {
+        delete borderPVS[borderPVS.length - 2].end
+        borderPVS[borderPVS.length - 1].end = 1
+      }
+      if (borderPVS[borderPVS.length - 1].begin) {
+        delete borderPVS[borderPVS.length - 1].begin
+      }
     }
     return borderPVS
   }
@@ -419,7 +427,17 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
             i = i + 2
           }
           ctx.ellipse((this.model.cpv.x + dx) * rat1 + lineOffset, (this.model.cpv.y + dy) * rat1 + lineOffset, wr * rat1 * scaleX, hr * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, upPV.rad, pv.rad, !pv.direct)
-        } else {
+        }
+        //曲线
+        else if (pv.type == 5) {
+          let i0 = i;
+          let i1 = i + 1;
+          let i2 = i + 2;
+          let i3 = i + 3;
+          i = i + 3
+          ctx.bezierCurveTo(pvs[i1].x * rat1 + lineOffset, pvs[i1].y * rat1 + lineOffset, pvs[i2].x * rat1 + lineOffset, pvs[i2].y * rat1 + lineOffset, pvs[i3].x * rat1 + lineOffset, pvs[i3].y * rat1 + lineOffset);
+        }
+        else {
           ctx.arcTo(pvs[s].x * rat1 + lineOffset, pvs[s].y * rat1 + lineOffset, pvs[e].x * rat1 + lineOffset, pvs[e].y * rat1 + lineOffset, round * rat1);
         }
         if (pv.end) {
@@ -454,18 +472,23 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       if (pvs[0].begin) {
         ctx.beginPath();
       }
-
-      let rotate = this.model.rotate;
-      if (!rotate) {
-        rotate = 0
+      if (pvs[1].type == 1) {
+        ctx.moveTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset)
+        ctx.lineTo(pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset)
+      } else {
+        let rotate = this.model.rotate;
+        if (!rotate) {
+          rotate = 0
+        }
+        let bpv = DDeiUtil.pointsToZero([this.model.bpv], this.model.cpv, rotate)[0]
+        let scaleX = Math.abs(bpv.x / 100)
+        let scaleY = Math.abs(bpv.y / 100)
+        ctx.moveTo(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset)
+        ctx.lineTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset)
+        ctx.ellipse(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pvs[0].r * rat1 * scaleX, pvs[0].r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, pvs[0].rad, pvs[1].rad)
+        ctx.lineTo(pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset)
       }
-      let bpv = DDeiUtil.pointsToZero([this.model.bpv], this.model.cpv, rotate)[0]
-      let scaleX = Math.abs(bpv.x / 100)
-      let scaleY = Math.abs(bpv.y / 100)
-      ctx.moveTo(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset)
-      ctx.lineTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset)
-      ctx.ellipse(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pvs[0].r * rat1 * scaleX, pvs[0].r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, pvs[0].rad, pvs[1].rad)
-      ctx.lineTo(pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset)
+
       if (pvs[1].end) {
         ctx.closePath();
       }

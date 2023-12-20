@@ -52,6 +52,11 @@ export default {
       'orderNo': 26
     },
     {
+      'id': '103003',
+      'name': '文档',
+      'orderNo': 27
+    },
+    {
       'id': '102030',
       'name': '数据',
       'orderNo': 30
@@ -67,35 +72,79 @@ export default {
       'orderNo': 32
     },
     {
+      'id': '102033',
+      'name': '顺序数据',
+      'orderNo': 33
+    },
+    {
+      'id': '103013',
+      'name': '直接数据',
+      'orderNo': 34
+    },
+
+    {
       'id': '102090',
       'name': '结束',
-      'orderNo': 90,
+      'orderNo': 50,
     },
     {
       'id': '102091',
       'name': '结束',
-      'orderNo': 91,
+      'orderNo': 51,
     },
     {
       'id': '102092',
       'name': '结束',
-      'orderNo': 92,
+      'orderNo': 52,
     },
+
     {
       'id': '103010',
       'name': '数据库',
-      'orderNo': 41
+      'orderNo': 60
     },
     {
       'id': '103001',
       'name': '人员',
-      'orderNo': 45
+      'orderNo': 71
     },
     {
       'id': '103002',
       'name': '人员',
-      'orderNo': 46
+      'orderNo': 72
     },
+    {
+      'id': '102050',
+      'name': '循环界限',
+      'orderNo': 73
+    },
+    {
+      'id': '102052',
+      'name': '手动输入',
+      'orderNo': 74
+    },
+    {
+      'id': '102053',
+      'name': '卡片',
+      'orderNo': 75
+    },
+    {
+      'id': '102054',
+      'name': '准备',
+      'orderNo': 76
+    },
+    {
+      'id': '103004',
+      'name': '纸带',
+      'orderNo': 77
+    },
+
+    {
+      'id': '102051',
+      'name': '跨页引用',
+      'orderNo': 83
+    },
+
 
   ]
 }

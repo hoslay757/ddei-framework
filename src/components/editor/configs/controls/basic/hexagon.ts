@@ -6,26 +6,46 @@ export default {
   'from': '100500',
   'icon': 'toolbox-shape-rect',
   'define': {
-    width: 200,
-    height: 173.2,
-    pvs: [
-      { begin: 1, x: 50, y: 0, z: 1, stroke: 1, clip: 1, fill: 1 },
-      { x: 150, y: 0, z: 1 },
-      { x: 200, y: 86.6, z: 1 },
-      { x: 150, y: 173.2, z: 1 },
-      { x: 50, y: 173.2, z: 1 },
-      { end: 1, x: 0, y: 86.6, z: 1 },
-    ],
-    cpv: { x: 100, y: 86.6, z: 1 },
-    textArea: [
-      { begin: 1, x: 25, y: 41.6, z: 1 },
-      { x: 175, y: 41.6, z: 1 },
-      { x: 175, y: 131.6, z: 1 },
-      { end: 1, x: 25, y: 131.6, z: 1 },
-    ],
-    hpv: [
-      { x: 50, y: 0, z: 1 },
-      { x: 150, y: 0, z: 1 },
-    ]
+    width: 100,
+    height: 100,
+    //2为极坐标，以cpv为圆心，半径r采样获得点，在以width/100、height/100的的原始比例进行缩放
+    poly: 2,
+    //采样信息
+    sample: {
+      //一圈4次采样
+      loop: 6,
+      //初始次采样的开始角度
+      angle: 0,
+      //半径距离
+      r: 50,
+      //采样的规则，多组采样返回多组规则
+      rules: [
+        `(i, sample, pvs, model){
+          let er = sample.r / Math.cos(45 * DDeiConfig.ROTATE_UNIT)
+          let x = er * sample.cos
+          let y = er * sample.sin
+          pvs.push({begin:i == 0,end:i == 5,oppoint:2,x:x,y:y,select:1,clip:1,stroke:1,fill:1});
+        }`,
+
+        `(i, sample, pvs, model){
+          
+          switch(i){
+            case 0:;
+            case 2:;
+            case 3:;
+            case 5:
+              let er = sample.r / Math.cos(30 * DDeiConfig.ROTATE_UNIT)
+              let rad = (sample.sita+30) * DDeiConfig.ROTATE_UNIT
+              let x = er * Math.cos(rad)
+              let y = er * Math.sin(rad)
+              pvs.push({begin:i == 0,end:i == 5,x:x,y:y,text:1});
+            ;
+          }
+        }`,
+
+
+
+      ]
+    }
   }
 }

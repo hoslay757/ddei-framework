@@ -64,17 +64,14 @@ export default {
         cIndex: 1,
         width: 60,
         height: 50,
-        border: {
-          round: 15
-        }
-        , attrLinks: [
-          { code: "border.color", mapping: ["border.color"] },
-          { code: "border.width", mapping: ["border.width"] },
-          { code: "border.opacity", mapping: ["border.opacity"] },
-          { code: "border.dash", mapping: ["border.dash"] },
+        attrLinks: [
+          { code: "border", mapping: ["*"] },
           { code: "fill", mapping: ["*"] },
         ]
       },
     ]
+    , border: {
+      round: 15
+    }
   }
 }
