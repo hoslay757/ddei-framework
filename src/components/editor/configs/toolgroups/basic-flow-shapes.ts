@@ -124,6 +124,11 @@ export default {
       'orderNo': 74
     },
     {
+      'id': '102057',
+      'name': '手动操作',
+      'orderNo': 74
+    },
+    {
       'id': '102053',
       'name': '卡片',
       'orderNo': 75
@@ -137,6 +142,16 @@ export default {
       'id': '103004',
       'name': '纸带',
       'orderNo': 77
+    },
+    {
+      'id': '102055',
+      'name': '推迟',
+      'orderNo': 78
+    },
+    {
+      'id': '102056',
+      'name': '显示内容',
+      'orderNo': 79
     },
 
     {

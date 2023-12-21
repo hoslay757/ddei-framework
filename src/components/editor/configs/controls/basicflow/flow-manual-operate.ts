@@ -1,14 +1,13 @@
 export default {
-  'id': '100060',
-  'name': '梯形',
-  'code': 'trapezoid',
-  'desc': '由4个点组成的梯形',
+  'id': '102057',
+  'name': '手动操作',
+  'code': 'fmo',
+  'desc': '由人工手动完成的节点',
   'from': '100500',
   'icon': 'toolbox-shape-rect',
   'define': {
-
-    width: 160,
-    height: 80,
+    width: 140,
+    height: 70,
     //2为极坐标，以cpv为圆心，半径r采样获得点，在以width/100、height/100的的原始比例进行缩放
     poly: 2,
     //采样信息
@@ -27,17 +26,17 @@ export default {
             switch(i){
               case 0:
                 start = 1  
+                sample.x -= 20
               break;
               case 1:
                 pvs[0].y=sample.y
               break;
               case 2:
-                pvs[1].x=sample.x
-                sample.x+=20
+                pvs[1].x = sample.x+20
               break;
               case 3:
                 pvs[2].y=sample.y 
-                sample.x = pvs[0].x-20
+                sample.x = pvs[0].x+20
                 end = 1
               break;
             }
@@ -49,14 +48,13 @@ export default {
             switch(i){
               case 0:
                 start = 1  
-                sample.x -= 20
               break;
               case 1:
                 pvs[0].y=sample.y
-                 sample.x += 20
               break;
               case 2:
-                pvs[1].x=sample.x
+                sample.x +=20
+                pvs[1].x = sample.x
               break;
               case 3:
                 pvs[2].y=sample.y 
