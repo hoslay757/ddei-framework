@@ -5,6 +5,9 @@ export default {
   'desc': 'UML的关联',
   'from': '100040',
   'icon': 'toolbox-shape-rect',
-
+  'define': {
+    width: 110,
+    height: 70
+  }
 
 }
