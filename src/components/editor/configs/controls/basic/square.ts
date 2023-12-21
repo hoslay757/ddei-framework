@@ -1,5 +1,5 @@
 export default {
-  'id': '100001',
+  'id': '100000',
   'name': '正方形',
   'code': 'square',
   'desc': '由4个点组成的正方形',
@@ -40,7 +40,7 @@ export default {
                 end = 1
               break;
             }
-            pvs.push({begin:start,end:end,x:sample.x,y:sample.y,r:sample.r,select:1,clip:1,text:1,stroke:1,fill:1});
+            pvs.push({begin:start,end:end,x:sample.x,y:sample.y,r:sample.r,select:1,clip:1,stroke:1,fill:1});
         }`
 
       ]

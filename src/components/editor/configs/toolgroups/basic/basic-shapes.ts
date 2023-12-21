@@ -13,7 +13,7 @@ export default {
       'orderNo': 1,
     },
     {
-      'id': '100002',
+      'id': '100008',
       'name': '长方形',
       'text': '长方形',
       'orderNo': 2
