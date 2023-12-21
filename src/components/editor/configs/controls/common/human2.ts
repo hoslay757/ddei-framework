@@ -1,5 +1,5 @@
 export default {
-  'id': '103003',
+  'id': '103006',
   'name': '人',
   'code': 'human',
   'desc': '人形图标',

@@ -8,7 +8,7 @@ export default {
   'define': {
     width: 110,
     height: 70,
-    text: "<<actor>>\r\nSystem Actor",
+    text: "<<actor>>/r/nSystem Actor",
     textStyle: {
       valign: 1,
       italic: 1
