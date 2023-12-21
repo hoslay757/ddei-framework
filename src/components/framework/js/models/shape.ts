@@ -210,8 +210,9 @@ abstract class DDeiAbstractShape {
       for (let i = 0; i < loop; i++) {
         defineSample.sita = angle + i * pn
         defineSample.rad = defineSample.sita * DDeiConfig.ROTATE_UNIT
-        defineSample.cos = Math.cos(defineSample.sita * DDeiConfig.ROTATE_UNIT)
-        defineSample.sin = Math.sin(defineSample.sita * DDeiConfig.ROTATE_UNIT)
+
+        defineSample.cos = parseFloat(Math.cos(defineSample.rad).toFixed(4))
+        defineSample.sin = parseFloat(Math.sin(defineSample.rad).toFixed(4))
         defineSample.x = defineSample.r * defineSample.cos
         defineSample.y = defineSample.r * defineSample.sin
         for (let j = 0; j < defineSample.rules?.length; j++) {

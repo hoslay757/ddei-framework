@@ -256,7 +256,9 @@ class DDeiAbstractShapeRender {
           hasPoint = true;
         }
       }
-      this.layer.opPoints.push(op);
+      if (op.oppoint != 3) {
+        this.layer.opPoints.push(op);
+      }
     })
 
     //过滤靠近centerOppoints的点

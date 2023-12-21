@@ -118,7 +118,7 @@ const parseAttrsToGroup = function (control, attrs, type) {
 }
 
 //加载控件定义
-const control_ctx = import.meta.glob('./controls/*/*.ts', { eager: true })
+const control_ctx = import.meta.glob('./controls/**', { eager: true })
 let loadArray = [];
 for (let i in control_ctx) {
   let cls = control_ctx[i];
@@ -154,7 +154,7 @@ loadArray.forEach(item => {
 })
 loadArray = [];
 //加载toolbox定义信息
-let ctx = import.meta.glob('./toolgroups/*.ts', { eager: true })
+let ctx = import.meta.glob('./toolgroups/**', { eager: true })
 for (let path in ctx) {
   loadArray.push(ctx[path]);
 }
