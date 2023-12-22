@@ -316,6 +316,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
 
 
 
+
   /**
    * 填充图片
    */

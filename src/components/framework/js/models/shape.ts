@@ -1118,6 +1118,23 @@ abstract class DDeiAbstractShape {
   }
 
   /**
+   * 判断图形是否在一个文本编辑的区域内
+   * @param x
+   * @param y
+   * @returns 是否在区域内
+   */
+  isInTextArea(x: number | undefined = undefined, y: number | undefined = undefined): boolean {
+    if (x === undefined || y === undefined) {
+      return false
+    }
+    if (this.textArea?.length > 0) {
+      return DDeiAbstractShape.isInsidePolygon(
+        this.textArea, { x: x, y: y });
+    }
+    return false;
+  }
+
+  /**
    * 判断图形是否在一个区域内，采用宽松的判定模式，允许传入一个大小值
    * @param x
    * @param y
@@ -1449,6 +1466,46 @@ abstract class DDeiAbstractShape {
     }
   }
 
+
+  /**
+   * 获取某个控件下的最底层componse控件，如果没有则返回控件本身
+   */
+  static findBottomComponseByArea(control: DDeiAbstractShape, x = undefined, y = undefined): DDeiAbstractShape | null {
+    let componses = [];
+    if (control) {
+      control.composes?.forEach(item => {
+        //如果射线相交，则视为选中
+        if (item.isInAreaLoose(x, y, true)) {
+          //如果当前控件状态为选中，且是容器，则往下寻找控件，否则返回当前控件
+          let subComponse = DDeiAbstractShape.findBottomComponseByArea(item, x, y);
+          if (subComponse) {
+            componses.push(subComponse);
+          } else {
+            componses.push(item);
+          }
+        }
+      })
+      //对控件进行排序，按照zIndex > 添加顺序
+      if (componses.length > 0) {
+        componses.sort(function (a, b) {
+          if ((a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+            return a.cIndex - b.cIndex
+          } else if ((a.cIndex || a.cIndex == 0) && !(b.cIndex || b.cIndex == 0)) {
+            return 1
+          } else if (!(a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+            return -1
+          } else {
+            return 0
+          }
+        });
+        return componses[0];
+      }
+      else {
+        return control
+      }
+
+    }
+  }
 
 
 

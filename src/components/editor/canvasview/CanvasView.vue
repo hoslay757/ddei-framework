@@ -232,7 +232,7 @@ export default {
             ey -= stage.wpv.y;
             let shadowControl =
               this.editor?.ddInstance?.stage?.render?.editorShadowControl;
-            if (shadowControl?.isInAreaLoose(ex, ey)) {
+            if (shadowControl?.isInTextArea(ex, ey)) {
               let cx = (ex - shadowControl.cpv.x) * rat1;
               let cy = (ey - shadowControl.cpv.y) * rat1;
               //先判断行，再判断具体位置

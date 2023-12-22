@@ -271,9 +271,6 @@ class DDeiLayerCanvasRender {
       //获得 2d 上下文对象
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
-      //获取全局缩放比例
-      let rat1 = this.ddRender.ratio;
-
       this.model.shadowControls.forEach(item => {
         //保存状态
         ctx.save();
@@ -1350,7 +1347,7 @@ class DDeiLayerCanvasRender {
       case DDeiEnumOperateState.QUICK_EDITING_TEXT_SELECTING: {
 
         let shadowControl = this.stageRender.editorShadowControl;
-        if (shadowControl?.isInAreaLoose(ex, ey)) {
+        if (shadowControl?.isInTextArea(ex, ey)) {
 
           let cx = (ex - shadowControl.cpv.x) * rat1;
           let cy = (ey - shadowControl.cpv.y) * rat1;

@@ -11,6 +11,7 @@ import DDeiEditorState from "../enums/editor-state";
 import DDeiEditorUtil from "../util/editor-util";
 import DDeiKeyAction from "./key-action";
 import DDeiEnumOperateState from "@/components/framework/js/enums/operate-state";
+import DDeiAbstractShape from "@/components/framework/js/models/shape";
 
 /**
  * 键行为:开启快捷编辑
@@ -28,6 +29,15 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
 
       let stage = ddInstance.stage;
       if (model?.render) {
+        let ex = -1;
+        let ey = -1;
+        if (evt.offsetX || evt.offsetY) {
+          ex = evt.offsetX
+          ey = evt.offsetY
+          ex -= stage.wpv.x;
+          ey -= stage.wpv.y;
+
+        }
         if (model.baseModelType == 'DDeiTable') {
           let selectCells = model.getSelectedCells();
           if (selectCells?.length == 1) {
@@ -43,10 +53,6 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
           let linePoint = null;
           //鼠标事件
           if (evt.offsetX || evt.offsetY) {
-            let ex = evt.offsetX;
-            let ey = evt.offsetY;
-            ex -= stage.wpv.x;
-            ey -= stage.wpv.y;
             let cdist = DDeiUtil.getPointDistance(model.pvs[0].x, model.pvs[1].y, model.pvs[model.pvs.length - 1].x, model.pvs[model.pvs.length - 1].y);
             let sdist = DDeiUtil.getPointDistance(ex, ey, model.pvs[0].x, model.pvs[0].y);
             let edist = DDeiUtil.getPointDistance(ex, ey, model.pvs[model.pvs.length - 1].x, model.pvs[model.pvs.length - 1].y);
@@ -114,7 +120,11 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
         }
 
         //获取控件所占区域
+        //判断控件是否有composes，如果被composes拦截了，则启用componses的编辑
+        model = DDeiAbstractShape.findBottomComponseByArea(model, ex, ey);
+
         let fillArea = model.textArea
+
         if (fillArea?.length > 0) {
           editor.quickEditorModel = model;
           let canvasPos = DDeiUtil.getDomAbsPosition(ddInstance.render.canvas);

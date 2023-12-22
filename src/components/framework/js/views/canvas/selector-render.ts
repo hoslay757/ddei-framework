@@ -48,6 +48,9 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       this.drawLine();
       //绘制操作图形
       this.drawOperatorShapeLine();
+    } else if (this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING || this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING_TEXT_SELECTING) {
+      //绘制编辑边框
+      this.drawEditBorder()
     } else {
 
       //绘制边框
@@ -62,6 +65,47 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     this.drawIncludedStyle();
     ctx.restore();
 
+  }
+
+  /**
+   * 绘制编辑边框
+   * @param tempBorder 临时边框，优先级最高
+   * @param usePV 是否采用向量输出
+   */
+  drawEditBorder(): void {
+    if (this.stageRender.editorShadowControl?.textArea?.length > 3) {
+      //获得 2d 上下文对象
+      let canvas = this.ddRender.getCanvas();
+      let ctx = canvas.getContext('2d');
+
+      //获取全局缩放比例
+      let stageRatio = this.model.getStageRatio()
+      let rat1 = this.ddRender.ratio;
+      let ratio = rat1 * stageRatio;
+
+
+      //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
+      let lineOffset = 1 * ratio / 2;
+      let lineWidth = 1.5 * ratio;
+
+      ctx.lineWidth = lineWidth;
+      ctx.beginPath();
+      //线段、虚线样式=
+      ctx.setLineDash([10, 10]);
+      //颜色
+      ctx.strokeStyle = DDeiUtil.getColor("#017fff");
+      let pvs = this.stageRender.editorShadowControl.textArea;
+      if (pvs?.length > 0) {
+        ctx.moveTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset);
+        ctx.lineTo(pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset);
+        ctx.lineTo(pvs[2].x * rat1 + lineOffset, pvs[2].y * rat1 + lineOffset);
+        ctx.lineTo(pvs[3].x * rat1 + lineOffset, pvs[3].y * rat1 + lineOffset);
+
+      }
+      ctx.closePath();
+      ctx.stroke();
+      ctx.restore();
+    }
   }
 
   /**

@@ -296,6 +296,9 @@ class DDeiEditorUtil {
         searchMap = configModel.attrDefineMap;
       } else if (configModel.id || configModel.modelCode) {
         let id = configModel.modelCode ? configModel.modelCode : configModel.id;
+        if (id.indexOf("_shadow") != -1) {
+          id = id.substring(id, id.lastIndexOf("_shadow"))
+        }
         //找到控件定义
         let control = controlOriginDefinies.get(id);
         if (control) {
