@@ -1337,8 +1337,10 @@ class DDeiLayerCanvasRender {
       case DDeiEnumOperateState.QUICK_EDITING: {
         if (this.stageRender.editorShadowControl) {
           let shadowControl = this.stageRender.editorShadowControl;
-          if (shadowControl?.isInAreaLoose(ex, ey)) {
+          if (shadowControl?.isInTextArea(ex, ey)) {
             this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'text' }, evt);
+          } else {
+            this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
           }
         }
         break;
