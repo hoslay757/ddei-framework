@@ -31,6 +31,33 @@ const loadControlByFrom = function (control) {
         }
       }
     }
+    //处理ext
+    if (control.define?.ext) {
+      for (let i in control.define.ext) {
+        if (i != "sample") {
+          control.define[i] = control.define.ext[i]
+        } else {
+          if (!control.define?.sample) {
+            control.define.sample = {}
+          }
+          for (let j in control.define.ext.sample) {
+
+            if (j != 'rules') {
+              control.define.sample[j] = control.define.ext.sample[j]
+            } else {
+              if (!control.define.sample.rules) {
+                control.define.sample.rules = []
+              }
+              control.define.ext.sample[j].forEach(rule => {
+                control.define.sample.rules.push(rule)
+              });
+            }
+          }
+        }
+
+      }
+      delete control.define.ext
+    }
     //处理composes
     if (control.define?.composes) {
       control.define?.composes.forEach(compose => {

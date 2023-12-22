@@ -6,8 +6,8 @@ export default {
   'from': '100009',
   'icon': 'toolbox-shape-rect',
   'define': {
-    width: 120,
-    height: 80,
+    width: 140,
+    height: 90,
 
     border: {
       round: 5
@@ -18,7 +18,50 @@ export default {
         //分割横线的纵坐标
         pvalue: -20,
       }
-    }
+    },
+
+    //组合控件
+    composes: [
+      {
+        width: 136,
+        height: 24,
+        cIndex: 2,
+        id: '100002',
+        border: {
+          disabled: true
+        },
+        fill: {
+          disabled: true
+        },
+        textStyle: {
+          align: 3,
+        },
+        text: "Name",
+        initCPV: {
+          x: 0, y: -31.5
+        },
+      },
+      {
+        width: 136,
+        height: 60,
+        cIndex: 2,
+        id: '100002',
+        textStyle: {
+          align: 3,
+          feed: 1
+        },
+        border: {
+          disabled: true
+        },
+        fill: {
+          disabled: true,
+        },
+        text: "Activities",
+        initCPV: {
+          x: 0, y: 13.5
+        },
+      },
+    ]
   }
 
 }
