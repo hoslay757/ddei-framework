@@ -1,5 +1,5 @@
 export default {
-  'id': '100003',
+  'id': '100103',
   'name': '圆形',
   'code': 'circle',
   'desc': '由极坐标系构造的圆形',
@@ -42,11 +42,7 @@ export default {
             if(i == 0){
               pvs.push({r:sample.r,stroke:1,fill:1,clip:1,begin:1,end:1});
             }
-        }`,
-        //文本区域
-        `(i, sample, pvs, model){
-            pvs.push({x:sample.x,y:sample.y,r:sample.r,text:1});
-        }`,
+        }`
       ]
     }
   }

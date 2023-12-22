@@ -1,9 +1,9 @@
 export default {
   'id': '308',
-  'name': 'UML-活动图',
+  'name': 'UML-活动',
   'code': 'uml-active',
   'desc': 'UML2.0中的活动图',
-  'orderNo': 2,
+  'orderNo': 308,
   //当前分组下所有控件
   'controls': [
     {

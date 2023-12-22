@@ -1,13 +1,18 @@
 export default {
-  'id': '302004',
-  'name': '参与者',
+  'id': '308004',
+  'name': '状态',
   'code': 'state',
-  'desc': 'UML的用例图参与者',
+  'desc': 'UML的活动的状态节点',
   'from': '100009',
   'icon': 'toolbox-shape-rect',
   'define': {
-    width: 140,
-    height: 90,
+    width: 120,
+    height: 80,
+
+    border: {
+      round: 5
+    },
+
     ext: {
       sample: {
         //分割横线的纵坐标
@@ -18,8 +23,8 @@ export default {
     //组合控件
     composes: [
       {
-        width: 136,
-        height: 24,
+        width: 115,
+        height: 20,
         cIndex: 2,
         id: '100002',
         border: {
@@ -28,21 +33,17 @@ export default {
         fill: {
           disabled: true
         },
-        textStyle: {
-          align: 3,
-        },
-        text: "<<actor>>",
+        text: "State",
         initCPV: {
-          x: 0, y: -31.5
+          x: 0, y: -27
         },
       },
       {
-        width: 136,
-        height: 60,
+        width: 115,
+        height: 53,
         cIndex: 2,
         id: '100002',
         textStyle: {
-          align: 3,
           feed: 1
         },
         border: {
@@ -51,9 +52,9 @@ export default {
         fill: {
           disabled: true,
         },
-        text: "系统参与者",
+        text: "Action",
         initCPV: {
-          x: 0, y: 13.5
+          x: 0, y: 12
         },
       },
     ]

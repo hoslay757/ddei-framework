@@ -3,7 +3,7 @@ export default {
   'name': 'UML-序列',
   'code': 'uml-sequence',
   'desc': 'UML2.0中的序列图',
-  'orderNo': 2,
+  'orderNo': 303,
   //当前分组下所有控件
   'controls': [
     {

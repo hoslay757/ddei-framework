@@ -18,6 +18,8 @@ export default {
       angle: 0,
       //半径距离
       r: 50,
+      //允许文本输入
+      textInput: 1,
       //采样的规则，多组采样返回多组规则
       rules: [
         `(i, sample, pvs, model){
@@ -54,25 +56,27 @@ export default {
         }`,
         //文本
         `(i, sample, pvs, model){
-          let weight = 20
-          let x=sample.x,y=sample.y
-            switch(i){
-              case 0:
-                pvs.push({begin:1,x:x,y:y,text:1});
-              break;
-              case 1:
-                pvs[0].y=y
-                pvs.push({x:x,y:y,text:1});
-              break;
-              case 2:
-                pvs[1].x=x
-                pvs.push({x:x,y:y,text:1});
-              break;
-              case 3:
-                pvs[2].y=y+weight
-                x = pvs[0].x
-                pvs.push({x:x,y:pvs[2].y,text:1});
-              break;
+          if(sample.textInput){
+            let weight = 20
+            let x=sample.x,y=sample.y
+              switch(i){
+                case 0:
+                  pvs.push({begin:1,x:x,y:y,text:1});
+                break;
+                case 1:
+                  pvs[0].y=y
+                  pvs.push({x:x,y:y,text:1});
+                break;
+                case 2:
+                  pvs[1].x=x
+                  pvs.push({x:x,y:y,text:1});
+                break;
+                case 3:
+                  pvs[2].y=y+weight
+                  x = pvs[0].x
+                  pvs.push({x:x,y:pvs[2].y,text:1});
+                break;
+              }
             }
         }`,
 

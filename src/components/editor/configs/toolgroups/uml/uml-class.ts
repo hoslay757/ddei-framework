@@ -3,7 +3,7 @@ export default {
   'name': 'UML-类图',
   'code': 'uml-class',
   'desc': 'UML2.0中的类图',
-  'orderNo': 2,
+  'orderNo': 307,
   //当前分组下所有控件
   'controls': [
     {

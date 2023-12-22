@@ -3,7 +3,7 @@ export default {
   'name': 'UML-用例',
   'code': 'uml-case',
   'desc': 'UML2.0中的用例图',
-  'orderNo': 2,
+  'orderNo': 302,
   //当前分组下所有控件
   'controls': [
     {
@@ -13,6 +13,14 @@ export default {
     {
       'id': '302002',
       'name': '用例',
+    },
+    {
+      'id': '302006',
+      'name': '扩展用例',
+    },
+    {
+      'id': '302007',
+      'name': '扩展用例',
     },
     {
       'id': '302003',

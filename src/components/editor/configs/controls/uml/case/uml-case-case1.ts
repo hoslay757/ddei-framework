@@ -1,8 +1,8 @@
 export default {
-  'id': '302004',
-  'name': '参与者',
-  'code': 'state',
-  'desc': 'UML的用例图参与者',
+  'id': '302006',
+  'name': '扩展用例',
+  'code': 'case',
+  'desc': 'UML的用例节点',
   'from': '100009',
   'icon': 'toolbox-shape-rect',
   'define': {
@@ -14,7 +14,6 @@ export default {
         pvalue: -20,
       }
     },
-
     //组合控件
     composes: [
       {
@@ -28,21 +27,18 @@ export default {
         fill: {
           disabled: true
         },
-        textStyle: {
-          align: 3,
-        },
-        text: "<<actor>>",
+        text: "用例",
         initCPV: {
           x: 0, y: -31.5
         },
       },
       {
         width: 136,
-        height: 60,
+        height: 55,
         cIndex: 2,
         id: '100002',
         textStyle: {
-          align: 3,
+          valign: 1,
           feed: 1
         },
         border: {
@@ -51,9 +47,9 @@ export default {
         fill: {
           disabled: true,
         },
-        text: "系统参与者",
+        text: "扩展点",
         initCPV: {
-          x: 0, y: 13.5
+          x: 0, y: 16
         },
       },
     ]

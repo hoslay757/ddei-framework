@@ -3,7 +3,7 @@ export default {
   'name': 'UML-状态图',
   'code': 'uml-state',
   'desc': 'UML2.0中的状态图',
-  'orderNo': 2,
+  'orderNo': 301,
   //当前分组下所有控件
   'controls': [
     {

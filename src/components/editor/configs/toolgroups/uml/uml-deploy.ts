@@ -3,7 +3,7 @@ export default {
   'name': 'UML-部署',
   'code': 'uml-deploy',
   'desc': 'UML2.0中的部署图',
-  'orderNo': 2,
+  'orderNo': 304,
   //当前分组下所有控件
   'controls': [
     {

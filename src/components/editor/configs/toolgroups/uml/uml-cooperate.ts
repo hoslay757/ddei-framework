@@ -3,7 +3,7 @@ export default {
   'name': 'UML-协作',
   'code': 'uml-cooperate',
   'desc': 'UML2.0中的协作图',
-  'orderNo': 2,
+  'orderNo': 306,
   //当前分组下所有控件
   'controls': [
     {

@@ -3,7 +3,7 @@ export default {
   'name': 'UML-对象关系图',
   'code': 'uml-objrel',
   'desc': 'UML2.0中的对象关系图',
-  'orderNo': 2,
+  'orderNo': 309,
   //当前分组下所有控件
   'controls': [
     {

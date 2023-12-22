@@ -1,24 +1,24 @@
 export default {
-  'id': '302004',
-  'name': '参与者',
-  'code': 'state',
-  'desc': 'UML的用例图参与者',
-  'from': '100009',
+  'id': '302007',
+  'name': '扩展用例',
+  'code': 'case',
+  'desc': 'UML的用例节点',
+  'from': '100104',
   'icon': 'toolbox-shape-rect',
   'define': {
     width: 140,
-    height: 90,
+    height: 100,
     ext: {
       sample: {
+        eqrat: false,
         //分割横线的纵坐标
-        pvalue: -20,
+        pvalue: -10,
       }
     },
-
     //组合控件
     composes: [
       {
-        width: 136,
+        width: 85,
         height: 24,
         cIndex: 2,
         id: '100002',
@@ -28,21 +28,17 @@ export default {
         fill: {
           disabled: true
         },
-        textStyle: {
-          align: 3,
-        },
-        text: "<<actor>>",
+        text: "用例",
         initCPV: {
-          x: 0, y: -31.5
+          x: 0, y: -27.5
         },
       },
       {
-        width: 136,
-        height: 60,
+        width: 90,
+        height: 45,
         cIndex: 2,
         id: '100002',
         textStyle: {
-          align: 3,
           feed: 1
         },
         border: {
@@ -51,9 +47,9 @@ export default {
         fill: {
           disabled: true,
         },
-        text: "系统参与者",
+        text: "扩展点",
         initCPV: {
-          x: 0, y: 13.5
+          x: 0, y: 13
         },
       },
     ]
