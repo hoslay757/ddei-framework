@@ -159,6 +159,12 @@ export default {
       'name': '跨页引用',
       'orderNo': 83
     },
+    {
+      'id': '102058',
+      'name': '控制传递',
+      'orderNo': 84
+    },
+
 
 
   ]

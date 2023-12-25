@@ -67,10 +67,40 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     );
   }
 
+  createTemeShape() {
+    let rat1 = this.ddRender.ratio;
+    //测试剪切图形
+    //转换为图片
+    if (!this.tempCanvas) {
+      this.tempCanvas = document.createElement('canvas');
+      this.tempCanvas.setAttribute("style", "-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
+    }
+    let tempCanvas = this.tempCanvas
+    let pvs = this.model.getOperatePVS(true);
+    let outRect = DDeiAbstractShape.pvsToOutRect(pvs)
+    let weight = 5
+    outRect.x -= weight
+    outRect.x1 += weight
+    outRect.y -= weight
+    outRect.y1 += weight
+    outRect.width += 2 * weight
+    outRect.height += 2 * weight
+    tempCanvas.setAttribute("width", outRect.width * rat1)
+    tempCanvas.setAttribute("height", outRect.height * rat1)
+    //获得 2d 上下文对象
+    let tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
+    tempCanvas.tx = -outRect.x * rat1
+    tempCanvas.ty = -outRect.y * rat1
+    tempCanvas.outRect = outRect
+    tempCtx.translate(tempCanvas.tx, tempCanvas.ty)
+
+  }
+
+
   /**
    * 创建图形
    */
-  drawShape(): void {
+  drawShape(tempShape, composeRender: boolean = false): void {
     if (!this.viewBefore || this.viewBefore(
       DDeiEnumOperateType.VIEW,
       [this.model],
@@ -78,28 +108,62 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       this.ddRender.model,
       null
     )) {
-      //获得 2d 上下文对象
-      let canvas = this.ddRender.getCanvas();
-      let ctx = canvas.getContext('2d');
-      ctx.save();
-      //如果线段类型发生了改变，则重新绘制线段，计算中间点坐标
-      if (this.inited && this.model.id.indexOf("_shadow") == -1 && (!this.upLineType || this.upLineType != this.model.type)) {
-        this.upLineType = this.model.type
-        this.model.freeze = 0
-        this.model.spvs = []
-        this.model.initPVS()
-        this.stageRender?.selector.updatePVSByModels();
-      } else if (!this.inited) {
-        this.inited = true;
-        this.upLineType = this.model.type
+      //创建准备图形
+      this.createTemeShape();
+      //将当前控件以及composes按照zindex顺序排列并输出
+      let rendList = [];
+      if (this.model.composes?.length > 0) {
+        rendList = rendList.concat(this.model.composes);
       }
+      rendList.push(this.model)
+      rendList.sort((a, b) => {
 
-      //绘制线段
-      this.drawLine();
+        if ((a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+          return a.cIndex - b.cIndex
+        } else if ((a.cIndex || a.cIndex == 0) && !(b.cIndex || b.cIndex == 0)) {
+          return 1
+        } else if (!(a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+          return -1
+        } else {
+          return 0
+        }
+      })
+      rendList.forEach(c => {
+        if (c == this.model) {
+          //获得 2d 上下文对象
+          let canvas = this.getCanvas();
+          let ctx = canvas.getContext('2d');
+          ctx.save();
+          //如果线段类型发生了改变，则重新绘制线段，计算中间点坐标
+          if (this.inited && this.model.id.indexOf("_shadow") == -1 && (!this.upLineType || this.upLineType != this.model.type)) {
+            this.upLineType = this.model.type
+            this.model.freeze = 0
+            this.model.spvs = []
+            this.model.initPVS()
+            this.stageRender?.selector.updatePVSByModels();
+          } else if (!this.inited) {
+            this.inited = true;
+            this.upLineType = this.model.type
+          }
+
+          //绘制线段
+          this.drawLine();
 
 
+          ctx.restore();
+        } else {
+          //绘制组合控件的内容
+          c.render.drawShape(tempShape, true)
+        }
+      })
 
-      ctx.restore();
+      //外部canvas
+      let canvas = this.getRenderCanvas(composeRender)
+      let ctx = canvas.getContext('2d');
+      let rat1 = this.ddRender.ratio;
+      let outRect = this.tempCanvas.outRect
+
+      ctx.drawImage(this.tempCanvas, 0, 0, outRect.width * rat1, outRect.height * rat1, outRect.x * rat1, outRect.y * rat1, outRect.width * rat1, outRect.height * rat1)
       if (this.viewAfter) {
         this.viewAfter(
           DDeiEnumOperateType.VIEW,
@@ -111,6 +175,19 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       }
     }
   }
+
+  getRenderCanvas(composeRender) {
+    if (composeRender) {
+      return this.model.pModel.render.getCanvas()
+    } else {
+      return this.ddRender?.getCanvas();
+    }
+  }
+
+  getCanvas() {
+    return this.tempCanvas;
+  }
+
 
 
   /**

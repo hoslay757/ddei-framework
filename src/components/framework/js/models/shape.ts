@@ -348,6 +348,27 @@ abstract class DDeiAbstractShape {
 
   }
 
+  getOperatePVS(compose: boolean = false) {
+    let pvs = this.operatePVS ? this.operatePVS : this.pvs
+    let returnPVS = []
+    if (pvs) {
+      pvs.forEach(pv => {
+        returnPVS.push(pv)
+      });
+    }
+    if (compose && this.composes?.length > 0) {
+      this.composes.forEach(comp => {
+        let ps = comp.getOperatePVS(compose);
+        if (ps) {
+          ps.forEach(pv => {
+            returnPVS.push(pv)
+          });
+        }
+      });
+    }
+    return returnPVS;
+  }
+
   /**
    * 同步向量
    * @param source 源模型

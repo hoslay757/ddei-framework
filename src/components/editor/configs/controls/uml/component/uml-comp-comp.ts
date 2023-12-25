@@ -10,11 +10,12 @@ export default {
     height: 75,
     //2为极坐标，以cpv为圆心，半径r采样获得点，在以width/100、height/100的的原始比例进行缩放
     poly: 2,
-    //允许文本输入
-    textInput: 1,
+
     //采样信息
     sample: {
       eqrat: false,
+      //允许文本输入
+      textInput: 1,
       //一圈4次采样
       loop: 4,
       //初始次采样的开始角度

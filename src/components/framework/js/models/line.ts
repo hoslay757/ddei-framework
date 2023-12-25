@@ -51,7 +51,7 @@ class DDeiLine extends DDeiAbstractShape {
   // ============================ 静态方法 ============================
 
   // 通过一个JSON反向序列化成对象，模型数据与JSON完全一样
-  static loadFromJSON(json, tempData: object = {}): DDeiLine {
+  static loadFromJSON(json, tempData: object = {}, initPVS: boolean = true): DDeiLine {
     let model = new DDeiLine(json);
     model.layer = tempData['currentLayer']
     model.stage = tempData['currentStage']
@@ -60,16 +60,53 @@ class DDeiLine extends DDeiAbstractShape {
       model.pModel = model.layer;
     }
     tempData[model.id] = model;
+    //初始化composes
+    if (json?.composes?.length > 0) {
+      let composes = []
+      json?.composes.forEach(composeJSON => {
+        let def = DDeiUtil.getControlDefine(composeJSON)
+        let composeModel: DDeiAbstractShape = MODEL_CLS[def.type].loadFromJSON(
+          composeJSON,
+          tempData,
+          false
+        );
+        composeModel.pModel = model
+        composes.push(composeModel)
+      });
+      model.composes = composes
+    }
+    //基于初始化的宽度、高度，构建向量
+    if (initPVS) {
+      model.initPVS();
+    }
     return model;
   }
 
   // 通过JSON初始化对象，数据未传入时将初始化数据
-  static initByJSON(json, tempData: object = {}): DDeiLine {
+  static initByJSON(json: object, tempData: object = {}, initPVS: boolean = true): DDeiLine {
     let model = new DDeiLine(json);
     model.layer = tempData['currentLayer']
     model.stage = tempData['currentStage']
     model.pModel = tempData['currentContainer']
-
+    //初始化composes
+    if (json?.composes?.length > 0) {
+      let composes = []
+      json?.composes.forEach(composeJSON => {
+        let def = DDeiUtil.getControlDefine(composeJSON)
+        let composeModel: DDeiAbstractShape = MODEL_CLS[def.type].initByJSON(
+          composeJSON,
+          tempData,
+          false
+        );
+        composeModel.pModel = model
+        composes.push(composeModel)
+      });
+      model.composes = composes
+    }
+    //基于初始化的宽度、高度，构建向量
+    if (initPVS) {
+      model.initPVS();
+    }
     return model;
   }
 
@@ -256,6 +293,10 @@ class DDeiLine extends DDeiAbstractShape {
     this.calLoosePVS();
     //联动更新链接控件
     this.refreshLinkModels()
+    //处理composes
+    this.composes?.forEach(compose => {
+      compose.initPVS()
+    });
 
   }
 
@@ -521,6 +562,9 @@ class DDeiLine extends DDeiAbstractShape {
     this.hpv[1].applyMatrix3(matrix)
     this.calRotate()
     this.calLoosePVS();
+    this.composes?.forEach(compose => {
+      compose.transVectors(matrix)
+    });
   }
 
   /**
@@ -608,6 +652,11 @@ class DDeiLine extends DDeiAbstractShape {
         DDeiUtil.setAttrValueByPath(dl.sm, dl.smpath + ".y", pv.y)
       }
     })
+    for (let i = 0; i < source.composes?.length; i++) {
+      let scop = source.composes[i]
+      let tcop = this.composes[i]
+      tcop.syncVectors(scop, clonePV)
+    }
   }
 
 
@@ -619,6 +668,10 @@ class DDeiLine extends DDeiAbstractShape {
     //绑定并初始化渲染器
     DDeiConfig.bindRender(this);
     this.render.init();
+    //加载所有模型的渲染器
+    this.composes?.forEach(compose => {
+      compose.initRender()
+    });
   }
 
 
