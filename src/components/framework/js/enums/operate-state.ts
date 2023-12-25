@@ -35,7 +35,9 @@ enum DDeiEnumOperateState {
   //快捷编辑中
   QUICK_EDITING = 50,
   //快捷编辑器的待确认选中
-  QUICK_EDITING_TEXT_SELECTING = 51
+  QUICK_EDITING_TEXT_SELECTING = 51,
+  //特殊操作点修改中
+  OV_POINT_CHANGING = 60,
 }
 
 export default DDeiEnumOperateState

@@ -558,6 +558,9 @@ class DDeiLine extends DDeiAbstractShape {
       let pv = this.exPvs[i];
       pv.applyMatrix3(matrix)
     };
+    this.ovs?.forEach(pv => {
+      pv.applyMatrix3(matrix);
+    })
     this.hpv[0].applyMatrix3(matrix)
     this.hpv[1].applyMatrix3(matrix)
     this.calRotate()

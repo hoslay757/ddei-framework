@@ -37,6 +37,7 @@ enum DDeiEnumBusCommandType {
   NodifyControlCreated = "nodify-control-created",
   ChangeLinePoint = "change-line-point",
   TextEditorChangeSelectPos = "texteditor-change-select-pos",
+  OVSChangePosition = "ovs-change-position",
 }
 
 export default DDeiEnumBusCommandType

@@ -104,6 +104,8 @@ class DDeiLayerCanvasRender {
         //绘制操作点
         this.drawOpPoints();
 
+
+
         //绘制移入移出效果图形
         this.drawDragInOutPoints();
 
@@ -126,7 +128,6 @@ class DDeiLayerCanvasRender {
       }
     }
   }
-
 
 
 
@@ -576,8 +577,24 @@ class DDeiLayerCanvasRender {
       }
     }
 
+    //判定是否在快捷操作点上
+    //判定是否在特殊操作点上，特殊操作点的优先级最大
+    let isOvPoint = false;
+    if (this.stage?.selectedModels?.size == 1) {
+      let model = Array.from(this.stage?.selectedModels.values())[0]
+      let ovPoint = model.getOvPointByPos(ex, ey)
+      if (ovPoint) {
+        isOvPoint = true;
+        this.stageRender.operateState = DDeiEnumOperateState.OV_POINT_CHANGING
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { x: ex, y: ey, opPoint: ovPoint, model: model } }, evt);
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: "none" }, evt);
+      }
+    }
+    if (isOvPoint) {
+
+    }
     //判定是否在操作点上，如果在则快捷创建线段
-    if (this.stageRender.selector && this.stageRender.selector.isInAreaLoose(ex, ey, true) &&
+    else if (this.stageRender.selector && this.stageRender.selector.isInAreaLoose(ex, ey, true) &&
       ((this.stageRender.selector.passIndex >= 1 && this.stageRender.selector.passIndex <= 9) || this.stageRender.selector.passIndex == 13)) {
       //派发给selector的mousedown事件，在事件中对具体坐标进行判断
       this.stageRender.selector.render.mouseDown(evt);
@@ -1412,6 +1429,13 @@ class DDeiLayerCanvasRender {
           this.stage.ddInstance.bus.executeAll();
           break;
         }
+        break;
+      }
+      case DDeiEnumOperateState.OV_POINT_CHANGING: {
+        //修改所有选中控件坐标
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.OVSChangePosition, { x: ex, y: ey }, evt);
+        //渲染图形
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
         break;
       }
       //默认缺省状态

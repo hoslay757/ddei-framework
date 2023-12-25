@@ -47,6 +47,19 @@ abstract class DDeiAbstractShape {
       });
     }
 
+    //控制点
+    this.ovs = []
+    if (props.ovs) {
+      props.ovs.forEach(pvd => {
+        let pv = new Vector3()
+        for (let i in pvd) {
+          pv[i] = pvd[i]
+        }
+        pv.z = (pvd.z || pvd.z === 0) ? pvd.z : 1
+        this.ovs.push(pv);
+      });
+    }
+
 
     if (props.bpv) {
       this.bpv = new Vector3(props.bpv.x, props.bpv.y, props.bpv.z || props.bpv.z == 0 ? props.bpv.z : 1);
@@ -94,16 +107,19 @@ abstract class DDeiAbstractShape {
   rotate: number | null;
 
   //中心点向量
-  cpv: Vector3;
+  cpv: object;
 
   //隐藏平行线点，形成一条平行于x轴的直线，用于在旋转后，通过其与坐标轴的夹角求真实的旋转角度
-  hpv: Vector3[];
+  hpv: object[];
 
   //周围点向量
-  pvs: Vector3;
+  pvs: object;
 
   //额外扩展向量，如：与连线关联的向量
   exPvs: object;
+
+  //操作点，用于在图形上操作和控制的特殊点位，一般用于改变图形的内部结构，操作点体现为黄色的菱形点
+  ovs: object[];
 
   //唯一表示码，运行时临时生成
   unicode: string;
@@ -192,6 +208,24 @@ abstract class DDeiAbstractShape {
   }
 
   /**
+  * 根据坐标获取特殊操作点
+  * @param x 
+  * @param y 
+  * @returns 操作点
+  */
+  getOvPointByPos(x: number = 0, y: number = 0): object {
+    if (x && y && this.ovs?.length > 0) {
+      for (let i = 0; i < this.ovs?.length; i++) {
+        let point = this.ovs[i]
+        if (Math.abs(x - point.x) <= 8 && Math.abs(y - point.y) <= 8) {
+          return point;
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
    * 执行采样计算pvs
    */
   executeSample() {
@@ -234,7 +268,15 @@ abstract class DDeiAbstractShape {
       let opps = []
       //因为bpv在缩放时同步变大，因此会随着stageRatio变化大小
       let scaleX, scaleY, bpv, stageRatio, rotate
-
+      let ovs = []
+      defineSample.ovs?.forEach(ovd => {
+        let pv = new Vector3()
+        for (let i in ovd) {
+          pv[i] = ovd[i]
+        }
+        pv.z = (ovd.z || ovd.z === 0) ? ovd.z : 1
+        ovs.push(pv)
+      })
       for (let i = 0; i < sampliesResult.length; i++) {
         if (sampliesResult[i].length > 0) {
           sampliesResult[i].forEach(pvd => {
@@ -337,6 +379,13 @@ abstract class DDeiAbstractShape {
       pvs.forEach(pv => {
         pv.applyMatrix3(m1)
       });
+
+      ovs?.forEach(pv => {
+        pv.applyMatrix3(m1)
+      });
+
+      this.ovs = ovs
+
       this.pvs = pvs
 
       this.operatePVS = operatePVS;
@@ -380,6 +429,7 @@ abstract class DDeiAbstractShape {
         this.cpv = cloneDeep(source.cpv)
         this.exPvs = cloneDeep(source.exPvs)
         this.bpv = cloneDeep(source.bpv)
+
       } else {
         this.cpv = source.cpv
         this.exPvs = source.exPvs
@@ -424,8 +474,6 @@ abstract class DDeiAbstractShape {
         pv.applyMatrix3(matrix)
       };
       this.bpv.applyMatrix3(matrix);
-
-
       this.initHPV();
       this.calRotate()
       this.executeSample();
@@ -773,6 +821,46 @@ abstract class DDeiAbstractShape {
     return null;
   }
 
+
+
+  /**
+    * 判断是否在某个边线上
+    * @param direct 1，2，3，4 上、右、下、左
+    */
+  isBorderOn(direct: number, x: number, y: number, inWeight: number = -3, outWeight: number = 3): boolean {
+    let projPoint = this.getProjPointOnLine({ x: x, y: y }
+      , { in: inWeight, out: outWeight }, 1, direct - 1)
+    if (projPoint) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+
+  /**
+   * 获取中心点操作点
+   */
+  getCenterOpPoints(): [] {
+
+    if (this.opps?.length > 0) {
+      return cloneDeep(this.opps)
+    }
+    else {
+      let points = []
+      for (let i = 0; i < this.pvs.length; i++) {
+        let s = i
+        let e = i + 1
+        if (i == this.pvs.length - 1) {
+          e = 0
+        }
+        points.push(new Vector3((this.pvs[s].x + this.pvs[e].x) / 2, (this.pvs[s].y + this.pvs[e].y) / 2, 1))
+      }
+      return points;
+    }
+
+  }
+
   /**
    * 得到点在图形某条线上的投射点
    * @param point 测试点
@@ -878,43 +966,6 @@ abstract class DDeiAbstractShape {
     return null;
   }
 
-  /**
-    * 判断是否在某个边线上
-    * @param direct 1，2，3，4 上、右、下、左
-    */
-  isBorderOn(direct: number, x: number, y: number, inWeight: number = -3, outWeight: number = 3): boolean {
-    let projPoint = this.getProjPointOnLine({ x: x, y: y }
-      , { in: inWeight, out: outWeight }, 1, direct - 1)
-    if (projPoint) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-
-  /**
-   * 获取中心点操作点
-   */
-  getCenterOpPoints(): [] {
-
-    if (this.opps?.length > 0) {
-      return cloneDeep(this.opps)
-    }
-    else {
-      let points = []
-      for (let i = 0; i < this.pvs.length; i++) {
-        let s = i
-        let e = i + 1
-        if (i == this.pvs.length - 1) {
-          e = 0
-        }
-        points.push(new Vector3((this.pvs[s].x + this.pvs[e].x) / 2, (this.pvs[s].y + this.pvs[e].y) / 2, 1))
-      }
-      return points;
-    }
-
-  }
 
   /**
    * 得到点在图形连接线上的投射点
@@ -1529,6 +1580,118 @@ abstract class DDeiAbstractShape {
   }
 
 
+  /**
+   * 得到点在某个路径组合上的投射点
+   * @param opPVS 构成路径的点
+   * @param x0,y0 测试点
+   * @param isClose 是否闭合
+   * @param sort 是否排序后返回（按照投射距离的绝对值）
+   * @returns 每一条路径上的投影点的坐标
+   */
+  static getProjPointDists(opPVS: [], x0: number, y0: number,
+    isClose: boolean = false, sort: number = 0): [{ index: number, dist: number, x: number, y: number }] | null {
+    if (opPVS?.length > 0) {
+      let st, en;
+      let returnData = []
+      for (let j = 0; j < opPVS.length; j++) {
+        //点到直线的距离
+        let plLength = Infinity;
+        if (j == opPVS.length - 1) {
+          if (isClose) {
+            st = j;
+            en = 0;
+          } else {
+            continue;
+          }
+        } else {
+          st = j;
+          en = j + 1;
+        }
+        let x1 = opPVS[st].x;
+        let y1 = opPVS[st].y;
+        let x2 = opPVS[en].x;
+        let y2 = opPVS[en].y;
+        //获取控件所有向量
+        if (x1 == x2 && y1 == y2) {
+          plLength = Math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0))
+        } else {
+          //根据向量外积计算面积
+          let s = (x0 - x1) * (y2 - y1) - (y0 - y1) * (x2 - x1)
+          //计算直线上两点之间的距离
+          let d = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+          plLength = s / d
+        }
+        //计算投射点的坐标
+
+        //A.求得线向量与直角坐标系的夹角
+        let lineV = new Vector3(x2, y2, 1);
+        let pointV = new Vector3(x0, y0, 1);
+        let toZeroMatrix = new Matrix3(
+          1, 0, -x1,
+          0, 1, -y1,
+          0, 0, 1);
+        //归到原点，求夹角
+        lineV.applyMatrix3(toZeroMatrix)
+        pointV.applyMatrix3(toZeroMatrix)
+        let lineAngle = (new Vector3(1, 0, 0).angleTo(new Vector3(lineV.x, lineV.y, 0)) * 180 / Math.PI).toFixed(4);
+        //判断移动后的线属于第几象限
+        //B.构建旋转矩阵。旋转linvV和pointV
+        let angle = 0;
+        if (lineV.x >= 0 && lineV.y >= 0) {
+          angle = (lineAngle * DDeiConfig.ROTATE_UNIT).toFixed(4);
+        } else if (lineV.x <= 0 && lineV.y >= 0) {
+          angle = (lineAngle * DDeiConfig.ROTATE_UNIT).toFixed(4);
+        } else if (lineV.x <= 0 && lineV.y <= 0) {
+          angle = (- lineAngle * DDeiConfig.ROTATE_UNIT).toFixed(4);
+        } else if (lineV.x >= 0 && lineV.y <= 0) {
+          angle = (- lineAngle * DDeiConfig.ROTATE_UNIT).toFixed(4);
+        }
+        let rotateMatrix = new Matrix3(
+          Math.cos(angle), Math.sin(angle), 0,
+          -Math.sin(angle), Math.cos(angle), 0,
+          0, 0, 1);
+        lineV.applyMatrix3(rotateMatrix);
+        pointV.applyMatrix3(rotateMatrix);
+
+        //C.判断两个向量的关系，pointV.x必须大于0，且小于lineV.x
+        if (pointV.x < 0) {
+          pointV.x = 0
+        } else if (pointV.x > lineV.x) {
+          pointV.x = lineV.x
+        }
+        //D.投影点=（pointV.x,0)，通过旋转+位移到达目标点
+        let v1 = new Vector3(pointV.x, 0, 1);
+        angle = -angle;
+        let rotateMatrix1 = new Matrix3(
+          Math.cos(angle), Math.sin(angle), 0,
+          -Math.sin(angle), Math.cos(angle), 0,
+          0, 0, 1);
+        v1.applyMatrix3(rotateMatrix1);
+        let removeMatrix = new Matrix3(
+          1, 0, x1,
+          0, 1, y1,
+          0, 0, 1);
+        v1.applyMatrix3(removeMatrix);
+        //返回投影点
+        returnData.push({ index: st, dist: plLength, x: v1.x, y: v1.y })
+
+      }
+      //升序
+      if (sort == 1) {
+        returnData.sort((a, b) => {
+          return Math.abs(a.dist) - Math.abs(b.dist)
+        })
+      }
+      //降序
+      else if (sort == 2) {
+        returnData.sort((a, b) => {
+          return Math.abs(b.dist) - Math.abs(a.dist)
+        })
+      }
+      return returnData;
+    }
+    return null;
+  }
 
 
   /**

@@ -63,7 +63,48 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
 
     //绘制选中控件特效
     this.drawIncludedStyle();
+
+    //绘制特殊操作点
+    this.drawOvsPoints();
     ctx.restore();
+
+  }
+
+
+  /**
+   * 绘制特殊操作点
+   */
+  drawOvsPoints(): void {
+    if (this.model.state == DDeiEnumControlState.SELECTED && this.stage?.selectedModels?.size == 1) {
+      let model = Array.from(this.stage?.selectedModels.values())[0]
+      let ovs = model.ovs;
+      if (ovs?.length > 0) {
+        //获得 2d 上下文对象
+        let canvas = this.ddRender.getCanvas();
+        let ctx = canvas.getContext('2d');
+        let ratio = this.ddRender.ratio;
+        let weight = 4
+        ctx.save();
+        ctx.fillStyle = "yellow"
+        ctx.strokeStyle = "black"
+        ovs.forEach(point => {
+          ctx.beginPath();
+          ctx.moveTo((point.x + weight) * ratio, point.y * ratio)
+          ctx.lineTo(point.x * ratio, (point.y + weight) * ratio)
+          ctx.lineTo((point.x - weight) * ratio, point.y * ratio)
+          ctx.lineTo(point.x * ratio, (point.y - weight) * ratio)
+          ctx.closePath();
+          ctx.stroke()
+          ctx.fill();
+        })
+        //恢复状态
+        ctx.restore();
+      }
+
+
+    }
+
+
 
   }
 
@@ -458,80 +499,89 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     if (this.stage?.selectedModels?.size > 0) {
       models = Array.from(this.stage.selectedModels.values())
     }
-    if (models?.length == 1 && models[0]?.baseModelType == "DDeiLine") {
+    //判定是否在特殊操作点上，特殊操作点的优先级最大
+    let isOvPoint = false;
+    if (models?.length == 1 && models[0]?.ovs.length > 0) {
+      let ovPoint = models[0].getOvPointByPos(ex, ey)
+      if (ovPoint) {
+        isOvPoint = true;
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: "pointer" }, evt);
+      }
+    }
+    if (!isOvPoint) {
+      if (models?.length == 1 && models[0]?.baseModelType == "DDeiLine") {
+        let tpdata = this.model.isOpvOnLine(ex, ey);
 
-      let tpdata = this.model.isOpvOnLine(ex, ey);
-
-      if (tpdata) {
-        //如果类型为3，需要计算方向
-        let direct = null;
-        if (tpdata.type == 3) {
-          let beforeP = this.model.opvs[tpdata.index - 1]
-          let afterP = this.model.opvs[tpdata.index + 1]
-          //TODO 旋转的情况下，需要把旋转归0判断，x相等
-          if (Math.abs(beforeP.x - afterP.x) <= 1) {
-            direct = 2
-          } else {
-            direct = 1
+        if (tpdata) {
+          //如果类型为3，需要计算方向
+          let direct = null;
+          if (tpdata.type == 3) {
+            let beforeP = this.model.opvs[tpdata.index - 1]
+            let afterP = this.model.opvs[tpdata.index + 1]
+            //TODO 旋转的情况下，需要把旋转归0判断，x相等
+            if (Math.abs(beforeP.x - afterP.x) <= 1) {
+              direct = 2
+            } else {
+              direct = 1
+            }
           }
-        }
 
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { type: 'line', passIndex: tpdata.type, direct: direct, opvsIndex: tpdata.index }, evt);
-      } else {
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { type: 'line', passIndex: -1, opvsIndex: -1 }, evt);
-      }
-    } else {
-      if (this.model.isOpvOn(1, ex, ey)) {
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 1, opvsIndex: -1 }, evt);
-      }
-      //右上
-      else if (this.model.isOpvOn(2, ex, ey)) {
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 2, opvsIndex: -1 }, evt);
-      }
-      //右中
-      else if (this.model.isOpvOn(3, ex, ey)) {
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 3, opvsIndex: -1 }, evt);
-      }
-      //右下
-      else if (this.model.isOpvOn(4, ex, ey)) {
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 4, opvsIndex: -1 }, evt);
-      }
-      //中下
-      else if (this.model.isOpvOn(5, ex, ey)) {
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 5, opvsIndex: -1 }, evt);
-      }
-      //左下
-      else if (this.model.isOpvOn(6, ex, ey)) {
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 6, opvsIndex: -1 }, evt);
-      }
-      //左中
-      else if (this.model.isOpvOn(7, ex, ey)) {
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 7, opvsIndex: -1 }, evt);
-      }
-      //左上
-      else if (this.model.isOpvOn(8, ex, ey)) {
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 8, opvsIndex: -1 }, evt);
-      }
-      //旋转
-      else if (this.model.isOpvOn(9, ex, ey)) {
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 9, opvsIndex: -1 }, evt);
-      }
-      //拖拽点
-      else if (this.model.isOpvOn(10, ex, ey)) {
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 13, opvsIndex: -1 }, evt);
-      } else {
-        //判断是否在某个具体选中的控件上，如果是则分发事件
-        let models = this.stage?.layers[this.stage?.layerIndex].findModelsByArea(ex, ey);
-        if (models && models.length > 0) {
-          //普通拖动
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 10, opvsIndex: -1 }, evt);
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { type: 'line', passIndex: tpdata.type, direct: direct, opvsIndex: tpdata.index }, evt);
         } else {
-          //清空
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: -1, opvsIndex: -1 }, evt);
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { type: 'line', passIndex: -1, opvsIndex: -1 }, evt);
+        }
+      } else {
+        if (this.model.isOpvOn(1, ex, ey)) {
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 1, opvsIndex: -1 }, evt);
+        }
+        //右上
+        else if (this.model.isOpvOn(2, ex, ey)) {
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 2, opvsIndex: -1 }, evt);
+        }
+        //右中
+        else if (this.model.isOpvOn(3, ex, ey)) {
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 3, opvsIndex: -1 }, evt);
+        }
+        //右下
+        else if (this.model.isOpvOn(4, ex, ey)) {
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 4, opvsIndex: -1 }, evt);
+        }
+        //中下
+        else if (this.model.isOpvOn(5, ex, ey)) {
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 5, opvsIndex: -1 }, evt);
+        }
+        //左下
+        else if (this.model.isOpvOn(6, ex, ey)) {
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 6, opvsIndex: -1 }, evt);
+        }
+        //左中
+        else if (this.model.isOpvOn(7, ex, ey)) {
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 7, opvsIndex: -1 }, evt);
+        }
+        //左上
+        else if (this.model.isOpvOn(8, ex, ey)) {
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 8, opvsIndex: -1 }, evt);
+        }
+        //旋转
+        else if (this.model.isOpvOn(9, ex, ey)) {
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 9, opvsIndex: -1 }, evt);
+        }
+        //拖拽点
+        else if (this.model.isOpvOn(10, ex, ey)) {
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 13, opvsIndex: -1 }, evt);
+        } else {
+          //判断是否在某个具体选中的控件上，如果是则分发事件
+          let models = this.stage?.layers[this.stage?.layerIndex].findModelsByArea(ex, ey);
+          if (models && models.length > 0) {
+            //普通拖动
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 10, opvsIndex: -1 }, evt);
+          } else {
+            //清空
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: -1, opvsIndex: -1 }, evt);
+          }
         }
       }
     }
-
     this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
   }
 

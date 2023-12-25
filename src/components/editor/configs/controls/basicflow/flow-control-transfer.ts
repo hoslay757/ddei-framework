@@ -25,6 +25,24 @@ export default {
           x: 75, y: 0, z: 1
         }
       },
+    ],
+    //操作点
+    ovs: [
+      {
+        x: 75, y: 0,
+        //约束，控制点的移动路径和位置
+        constraint: {
+          type: 1,//路径
+          pvs: ["pvs"]//当前对象的pvs
+        },
+        //联动，点移动后控制的其它点
+        links: [
+          {
+            type: 1,//同步平移
+            pvs: ["composes[0]"]
+          }
+        ]
+      }
     ]
   }
 }
