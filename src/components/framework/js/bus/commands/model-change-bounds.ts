@@ -141,6 +141,15 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
       pv.y = parseFloat((movedBounds.y + movedBounds.height * pvR.yR).toFixed(4))
     }
 
+    for (let xi = 0; xi < item.ovs?.length; xi++) {
+      let pv = item.ovs[xi];
+      let pvR = originPosMap.get(item.id).ovsR[xi];
+      pv.x = parseFloat((movedBounds.x + movedBounds.width * pvR.xR).toFixed(4))
+      pv.y = parseFloat((movedBounds.y + movedBounds.height * pvR.yR).toFixed(4))
+      pv.ovi.x = parseFloat((movedBounds.x + movedBounds.width * pvR.xiR).toFixed(4))
+      pv.ovi.y = parseFloat((movedBounds.y + movedBounds.height * pvR.yiR).toFixed(4))
+    }
+
     for (let xi in item.exPvs) {
       let pv = item.exPvs[xi];
       let pvR = originPosMap.get(item.id).exPvsR[xi];
@@ -199,6 +208,7 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
 
     let cpvR = { xR: parseFloat((cpvTemp.x / originRect.width).toFixed(4)), yR: parseFloat((cpvTemp.y / originRect.height).toFixed(4)) }
     let pvsR = [];
+    let ovsR = [];
     let exPvsR = {}
     let textPvsR = []
     let composesPVR = []
@@ -220,6 +230,14 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
 
     });
 
+    item.ovs?.forEach(pv => {
+      let pvTemp = new Vector3(pv.x, pv.y, 1);
+      pvTemp.applyMatrix3(m1)
+      let pvi = new Vector3(pv.ovi.x, pv.ovi.y, 1);
+      pvi.applyMatrix3(m1)
+      ovsR.push({ xR: parseFloat((pvTemp.x / originRect.width).toFixed(4)), yR: parseFloat((pvTemp.y / originRect.height).toFixed(4)), xiR: parseFloat((pvi.x / originRect.width).toFixed(4)), yiR: parseFloat((pvi.y / originRect.height).toFixed(4)) })
+    });
+
 
 
     for (let i in item.exPvs) {
@@ -236,7 +254,7 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
       bpvR = { xR: pvTemp.x / originRect.width, yR: pvTemp.y / originRect.height }
     }
 
-    originPosMap.set(id, { cpvR: cpvR, pvsR: pvsR, exPvsR: exPvsR, textPvsR: textPvsR, bpvR: bpvR, composesPVR: composesPVR });
+    originPosMap.set(id, { cpvR: cpvR, pvsR: pvsR, exPvsR: exPvsR, textPvsR: textPvsR, bpvR: bpvR, composesPVR: composesPVR, ovsR: ovsR });
 
   }
 

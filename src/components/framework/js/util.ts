@@ -229,6 +229,7 @@ class DDeiUtil {
     }
     returnModel.cpv = clone(sourceModel.cpv)
     returnModel.bpv = clone(sourceModel.bpv)
+    returnModel.ovs = cloneDeep(sourceModel.ovs)
     if (sourceModel.composes?.length > 0) {
       let composes = []
       sourceModel.composes?.forEach(com => {

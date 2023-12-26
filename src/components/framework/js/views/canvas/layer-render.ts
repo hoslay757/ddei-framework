@@ -587,7 +587,7 @@ class DDeiLayerCanvasRender {
         isOvPoint = true;
         this.stageRender.operateState = DDeiEnumOperateState.OV_POINT_CHANGING
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { x: ex, y: ey, opPoint: ovPoint, model: model } }, evt);
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: "none" }, evt);
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: "pointer" }, evt);
       }
     }
     if (isOvPoint) {

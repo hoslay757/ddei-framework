@@ -201,6 +201,7 @@ export default {
         dataJson[i] = control.define[i];
       }
       //如果有from则根据from读取属性
+      delete dataJson.ovs
       let model: DDeiAbstractShape = this.controlCls[control.type].initByJSON(
         dataJson,
         { currentStage: stage }

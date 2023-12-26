@@ -4,7 +4,7 @@ import DDeiLayer from './layer'
 import DDeiEnumControlState from '../enums/control-state'
 import DDeiUtil from '../util'
 import { Matrix3, Vector3 } from 'three';
-import { cloneDeep, isNumber } from 'lodash'
+import { cloneDeep, clone, isNumber } from 'lodash'
 /**
  * 抽象的图形类，定义了大多数图形都有的属性和方法
  */
@@ -51,11 +51,9 @@ abstract class DDeiAbstractShape {
     this.ovs = []
     if (props.ovs) {
       props.ovs.forEach(pvd => {
-        let pv = new Vector3()
-        for (let i in pvd) {
-          pv[i] = pvd[i]
-        }
-        pv.z = (pvd.z || pvd.z === 0) ? pvd.z : 1
+        let pv = new Vector3(pvd.x, pvd.y, pvd.z || pvd.z == 0 ? pvd.z : 1)
+        let ovi = new Vector3(pvd.ovi.x, pvd.ovi.y, pvd.ovi.z || pvd.ovi.z == 0 ? pvd.ovi.z : 1)
+        pv.ovi = ovi
         this.ovs.push(pv);
       });
     }
@@ -119,6 +117,7 @@ abstract class DDeiAbstractShape {
   exPvs: object;
 
   //操作点，用于在图形上操作和控制的特殊点位，一般用于改变图形的内部结构，操作点体现为黄色的菱形点
+  //序列化的ovs用于记录当前点的位置，sample中的ovs用于定义
   ovs: object[];
 
   //唯一表示码，运行时临时生成
@@ -174,6 +173,23 @@ abstract class DDeiAbstractShape {
         this.cpv = new Vector3(0, 0, 1)
       }
     }
+    //通过定义初始化ovs
+    if (!(this.ovs?.length > 0)) {
+      //通过采样计算pvs,可能存在多组pvs
+      let defineOvs = DDeiUtil.getControlDefine(this)?.define?.ovs;
+      if (defineOvs?.length > 0) {
+        //全局缩放因子
+        let stageRatio = this.getStageRatio();
+        let ovs = []
+        defineOvs.forEach(ovd => {
+          let ov = new Vector3(ovd.x * stageRatio, ovd.y * stageRatio, ovd.z || ovd.z == 0 ? ovd.z : 1)
+          let ovi = new Vector3(ovd.ix * stageRatio, ovd.iy * stageRatio, ovd.iz || ovd.iz == 0 ? ovd.iz : 1)
+          ov.ovi = ovi
+          ovs.push(ov)
+        });
+        this.ovs = ovs
+      }
+    }
     //如果是极坐标，则用极坐标的方式来计算pvs、hpv等信息，否则采用pvs的方式
     if (this.poly == 2) {
       //极坐标系中，采用基于原点的100向量表示水平
@@ -186,6 +202,7 @@ abstract class DDeiAbstractShape {
         let stageRatio = this.getStageRatio();
         this.bpv = new Vector3(this.cpv.x + this.width * stageRatio, this.cpv.y + this.height * stageRatio, 1)
       }
+
       this.executeSample();
     } else {
       if (!this.pvs || this.pvs.length == 0) {
@@ -199,6 +216,7 @@ abstract class DDeiAbstractShape {
       }
       this.initHPV();
     }
+
     //计算宽松判定矩阵
     this.calRotate();
     this.calLoosePVS();
@@ -232,6 +250,35 @@ abstract class DDeiAbstractShape {
     //通过采样计算pvs,可能存在多组pvs
     let defineSample = DDeiUtil.getControlDefine(this)?.define?.sample;
     if (defineSample?.rules?.length > 0) {
+      ///计算ovs未旋转量，传入采样函数进行计算
+      let originOVS = []
+      if (this.ovs?.length > 0) {
+        originOVS = cloneDeep(this.ovs);
+        let rotate = 0
+        if (this.rotate) {
+          rotate = this.rotate
+          let angle = parseFloat((this.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4));
+          let move1Matrix = new Matrix3(
+            1, 0, -this.cpv.x,
+            0, 1, -this.cpv.y,
+            0, 0, 1);
+          let rotateMatrix = new Matrix3(
+            Math.cos(angle), Math.sin(angle), 0,
+            -Math.sin(angle), Math.cos(angle), 0,
+            0, 0, 1);
+          let move2Matrix = new Matrix3(
+            1, 0, this.cpv.x,
+            0, 1, this.cpv.y,
+            0, 0, 1);
+          let m1 = new Matrix3().premultiply(move1Matrix).premultiply(rotateMatrix).premultiply(move2Matrix)
+          //获取定义时的x和y，用于在内部计算增量
+          originOVS.forEach(ov => {
+            ov.applyMatrix3(m1)
+          })
+        }
+      }
+
+
       //采样结果
       let sampliesResult = []
       //采样次数
@@ -258,7 +305,7 @@ abstract class DDeiAbstractShape {
             sampliesResult[j] = []
           }
           let spResult = sampliesResult[j]
-          spFn(i, defineSample, spResult, this)
+          spFn(i, defineSample, spResult, this, originOVS)
         }
       }
       //对返回的数据进行处理和拆分
@@ -268,15 +315,7 @@ abstract class DDeiAbstractShape {
       let opps = []
       //因为bpv在缩放时同步变大，因此会随着stageRatio变化大小
       let scaleX, scaleY, bpv, stageRatio, rotate
-      let ovs = []
-      defineSample.ovs?.forEach(ovd => {
-        let pv = new Vector3()
-        for (let i in ovd) {
-          pv[i] = ovd[i]
-        }
-        pv.z = (ovd.z || ovd.z === 0) ? ovd.z : 1
-        ovs.push(pv)
-      })
+
       for (let i = 0; i < sampliesResult.length; i++) {
         if (sampliesResult[i].length > 0) {
           sampliesResult[i].forEach(pvd => {
@@ -379,13 +418,9 @@ abstract class DDeiAbstractShape {
       pvs.forEach(pv => {
         pv.applyMatrix3(m1)
       });
-
-      ovs?.forEach(pv => {
-        pv.applyMatrix3(m1)
-      });
-
-      this.ovs = ovs
-
+      // this.ovs?.forEach(pv => {
+      //   pv.applyMatrix3(m1)
+      // });
       this.pvs = pvs
 
       this.operatePVS = operatePVS;
@@ -429,11 +464,13 @@ abstract class DDeiAbstractShape {
         this.cpv = cloneDeep(source.cpv)
         this.exPvs = cloneDeep(source.exPvs)
         this.bpv = cloneDeep(source.bpv)
+        this.ovs = cloneDeep(source.ovs)
 
       } else {
         this.cpv = source.cpv
         this.exPvs = source.exPvs
         this.bpv = source.bpv
+        this.ovs = source.ovs
       }
 
       this.executeSample();
@@ -442,10 +479,12 @@ abstract class DDeiAbstractShape {
         this.pvs = cloneDeep(source.pvs)
         this.cpv = cloneDeep(source.cpv)
         this.exPvs = cloneDeep(source.exPvs)
+        this.ovs = cloneDeep(source.ovs)
       } else {
         this.pvs = source.pvs
         this.cpv = source.cpv
         this.exPvs = source.exPvs
+        this.ovs = source.ovs
       }
     }
     this.initHPV()
@@ -474,6 +513,13 @@ abstract class DDeiAbstractShape {
         pv.applyMatrix3(matrix)
       };
       this.bpv.applyMatrix3(matrix);
+      this.ovs?.forEach(pv => {
+        pv.applyMatrix3(matrix);
+        if (pv.ovi) {
+          pv.ovi.applyMatrix3(matrix);
+        }
+      })
+
       this.initHPV();
       this.calRotate()
       this.executeSample();
@@ -487,6 +533,12 @@ abstract class DDeiAbstractShape {
         let pv = this.exPvs[i];
         pv.applyMatrix3(matrix)
       };
+      this.ovs?.forEach(pv => {
+        pv.applyMatrix3(matrix);
+        if (pv.ovi) {
+          pv.ovi.applyMatrix3(matrix);
+        }
+      })
       this.initHPV();
       this.calRotate()
       this.calLoosePVS();
@@ -1525,7 +1577,7 @@ abstract class DDeiAbstractShape {
    * 返回点集合的外接矩形
    */
   static pvsToOutRect(points: object[]): object {
-    let x: number = Infinity, y: number = Infinity, x1: number = 0, y1: number = 0;
+    let x: number = Infinity, y: number = Infinity, x1: number = -Infinity, y1: number = -Infinity;
     //找到最大、最小的x和y
     points.forEach(p => {
       x = Math.min(Math.floor(p.x), x)

@@ -280,6 +280,23 @@ class DDeiLine extends DDeiAbstractShape {
     } else {
       this.cpv = this.pvs[0];
     }
+    //通过定义初始化ovs
+    if (!(this.ovs?.length > 0)) {
+      //通过采样计算pvs,可能存在多组pvs
+      let defineOvs = DDeiUtil.getControlDefine(this)?.define?.ovs;
+      if (defineOvs?.length > 0) {
+        //全局缩放因子
+        let stageRatio = this.getStageRatio();
+        let ovs = []
+        defineOvs.forEach(ovd => {
+          let ov = new Vector3(ovd.x * stageRatio, ovd.y * stageRatio, ovd.z || ovd.z == 0 ? ovd.z : 1)
+          let ovi = new Vector3(ovd.ix * stageRatio, ovd.iy * stageRatio, ovd.iz || ovd.iz == 0 ? ovd.iz : 1)
+          ov.ovi = ovi
+          ovs.push(ov)
+        });
+        this.ovs = ovs
+      }
+    }
 
     this.initHPV();
     //计算旋转
@@ -560,6 +577,9 @@ class DDeiLine extends DDeiAbstractShape {
     };
     this.ovs?.forEach(pv => {
       pv.applyMatrix3(matrix);
+      if (pv.ovi) {
+        pv.ovi.applyMatrix3(matrix);
+      }
     })
     this.hpv[0].applyMatrix3(matrix)
     this.hpv[1].applyMatrix3(matrix)

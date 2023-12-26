@@ -29,7 +29,7 @@ export default {
     //操作点
     ovs: [
       {
-        x: 75, y: 0,
+        x: 75, y: 0, ix: 75, iy: 0,
         //约束，控制点的移动路径和位置
         constraint: {
           type: 1,//路径
@@ -44,5 +44,6 @@ export default {
         ]
       }
     ]
+
   }
 }
