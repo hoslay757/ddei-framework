@@ -278,7 +278,9 @@ abstract class DDeiAbstractShape {
           0, 1, -this.cpv.y,
           0, 0, 1);
         m1.premultiply(move1Matrix)
+        let rotate = 0
         if (this.rotate) {
+          rotate = this.rotate
           let angle = parseFloat((this.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4));
           let rotateMatrix = new Matrix3(
             Math.cos(angle), Math.sin(angle), 0,
@@ -299,7 +301,7 @@ abstract class DDeiAbstractShape {
 
         originOVS.forEach(ov => {
           //计算ov到圆心的角度
-          ov.sita = parseFloat(DDeiUtil.getLineAngle(this.cpv.x, this.cpv.y, ov.x, ov.y).toFixed(2));
+          ov.sita = parseFloat(DDeiUtil.getLineAngle(this.cpv.x, this.cpv.y, ov.x, ov.y).toFixed(2)) - rotate;
           ov.applyMatrix3(m1)
           ov.ovi.applyMatrix3(m1)
         })
