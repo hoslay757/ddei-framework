@@ -118,7 +118,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       //获得 2d 上下文对象
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
-
+      ctx.save()
       //获取全局缩放比例
       let stageRatio = this.model.getStageRatio()
       let rat1 = this.ddRender.ratio;
@@ -141,7 +141,6 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         ctx.lineTo(pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset);
         ctx.lineTo(pvs[2].x * rat1 + lineOffset, pvs[2].y * rat1 + lineOffset);
         ctx.lineTo(pvs[3].x * rat1 + lineOffset, pvs[3].y * rat1 + lineOffset);
-
       }
       ctx.closePath();
       ctx.stroke();

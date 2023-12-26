@@ -579,8 +579,10 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     //保存状态
     ctx.save();
     //找到第一个类型不为0的
+    let haveFilled = false;
     for (let i = 0; i < this.borderPVSS.length; i++) {
       if (this.borderPVSS[i][0].fill == 1) {
+        haveFilled = true;
         let pvs = this.borderPVSS[i];
         //创建path
         this.createPath(pvs, tempShape)
@@ -614,6 +616,20 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           this.drawImage()
         }
       }
+    }
+
+    if (!haveFilled && this.isEditoring) {
+      let pvs = this.model.textArea;
+      //创建path
+      this.createPath(pvs, tempShape)
+      //纯色填充
+      ctx.globalAlpha = 1.0
+      if (!fillColor) {
+        fillColor = "white"
+      }
+      ctx.fillStyle = DDeiUtil.getColor(fillColor);
+      //填充
+      ctx.fill();
     }
     //恢复状态
     ctx.restore();
