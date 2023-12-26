@@ -1,7 +1,3 @@
-import DDeiConfig from '@/components/framework/js/config';
-import type DDeiAbstractShape from '@/components/framework/js/models/shape';
-import { Vector3 } from 'three';
-
 export default {
   'id': '100070',
   'name': '五角星',
@@ -16,6 +12,7 @@ export default {
     poly: 2,
     //采样信息
     sample: {
+      eqrat: true,
       //一圈10次采样
       loop: 10,
       //初始次采样的开始角度
@@ -24,13 +21,13 @@ export default {
       r: 50,
       //采样的规则，多组采样返回多组规则
       rules: [
-        `(i,  sample, pvs, model){
-          let er = i % 2 == 0 ? sample.r : sample.r / 2.7
+        `(i,  sample, pvs, model,ovs){
+          let er = i % 2 == 0 ? sample.r : sample.r / 2.7+(ovs[0].x-ovs[0].ovi.x)
           let x = er * sample.cos
           let y = er * sample.sin
           pvs.push({ begin:i==0,end:i==9,x: x, y: y ,fill:1,select:1,stroke:1,clip:1,oppoint:1});
         }`,
-        `(i,  sample, pvs, model){
+        `(i,  sample, pvs, model,ovs){
           if (i == 0) {
             let er = sample.r / 3
             let x = er * Math.cos(45 * DDeiConfig.ROTATE_UNIT)
@@ -48,6 +45,21 @@ export default {
           }
         }`,
       ]
-    }
+
+    },
+    //操作点定义
+    ovs: [
+      {
+        x: 10, y: 0, ix: 10, iy: 0,
+        //约束，控制点的移动路径和位置
+        constraint: {
+          type: 2,//矩形范围
+          x0: 0,
+          x1: 30,
+          y0: 0,
+          y1: 0,
+        }
+      }
+    ]
   }
 }

@@ -249,34 +249,48 @@ abstract class DDeiAbstractShape {
   executeSample() {
     //通过采样计算pvs,可能存在多组pvs
     let defineSample = DDeiUtil.getControlDefine(this)?.define?.sample;
+    let stageRatio = this.getStageRatio()
     if (defineSample?.rules?.length > 0) {
       ///计算ovs未旋转量，传入采样函数进行计算
       let originOVS = []
       if (this.ovs?.length > 0) {
         originOVS = cloneDeep(this.ovs);
-        let rotate = 0
+        //逆向旋转，然后缩放至基准大小，再进行比较
+        let bpv = DDeiUtil.pointsToZero([this.bpv], this.cpv, this.rotate)[0]
+        let scaleX = parseFloat(Math.abs(bpv.x / 100).toFixed(4))
+        let scaleY = parseFloat(Math.abs(bpv.y / 100).toFixed(4))
+        let m1 = new Matrix3()
+        let move1Matrix = new Matrix3(
+          1, 0, -this.cpv.x,
+          0, 1, -this.cpv.y,
+          0, 0, 1);
+        m1.premultiply(move1Matrix)
         if (this.rotate) {
-          rotate = this.rotate
           let angle = parseFloat((this.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4));
-          let move1Matrix = new Matrix3(
-            1, 0, -this.cpv.x,
-            0, 1, -this.cpv.y,
-            0, 0, 1);
           let rotateMatrix = new Matrix3(
             Math.cos(angle), Math.sin(angle), 0,
             -Math.sin(angle), Math.cos(angle), 0,
             0, 0, 1);
-          let move2Matrix = new Matrix3(
-            1, 0, this.cpv.x,
-            0, 1, this.cpv.y,
-            0, 0, 1);
-          let m1 = new Matrix3().premultiply(move1Matrix).premultiply(rotateMatrix).premultiply(move2Matrix)
-          //获取定义时的x和y，用于在内部计算增量
-          originOVS.forEach(ov => {
-            ov.applyMatrix3(m1)
-          })
+          m1.premultiply(rotateMatrix)
         }
+        let scaleMatrix = new Matrix3(
+          1 / scaleX, 0, 0,
+          0, 1 / scaleY, 0,
+          0, 0, 1);
+        m1.premultiply(scaleMatrix)
+        let move2Matrix = new Matrix3(
+          1, 0, this.cpv.x,
+          0, 1, this.cpv.y,
+          0, 0, 1);
+        m1.premultiply(move2Matrix)
+
+        originOVS.forEach(ov => {
+          ov.applyMatrix3(m1)
+          ov.ovi.applyMatrix3(m1)
+        })
+
       }
+
 
 
       //采样结果
@@ -314,7 +328,7 @@ abstract class DDeiAbstractShape {
       let operatePVS = []
       let opps = []
       //因为bpv在缩放时同步变大，因此会随着stageRatio变化大小
-      let scaleX, scaleY, bpv, stageRatio, rotate
+      let scaleX, scaleY, bpv, rotate
 
       for (let i = 0; i < sampliesResult.length; i++) {
         if (sampliesResult[i].length > 0) {

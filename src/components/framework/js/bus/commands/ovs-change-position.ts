@@ -57,7 +57,7 @@ class DDeiBusCommandOVSChangePosition extends DDeiBusCommand {
         let dx = x - opPoint.x, dy = y - opPoint.y
         if (point.constraint) {
           switch (point.constraint.type) {
-            //仅限于在一条路径上移动
+            //在一条路径上移动
             case 1: {
               //构建验证路径
               let pathPvs = []
@@ -89,7 +89,7 @@ class DDeiBusCommandOVSChangePosition extends DDeiBusCommand {
               }
               break;
             }
-            //仅限于在一个矩形范围内移动,需要考虑旋转后的情况
+            //在一个矩形范围内移动,需要考虑旋转后的情况
             case 2: {
               //计算旋转、缩放后的控制点大小，而非直接使用定义时的数据
               let rotate = model.rotate
@@ -136,8 +136,12 @@ class DDeiBusCommandOVSChangePosition extends DDeiBusCommand {
               }
               break;
             }
-            //仅限于在一个圆心半径内移动
+            //在一个圆心半径内移动
             case 3: {
+              break;
+            }
+            //沿着一条线移动
+            case 4: {
               break;
             }
           }
