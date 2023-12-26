@@ -27,7 +27,7 @@ export default {
       rules: [
         //选择区域
         `(i, sample, pvs, model, ovs){
-          let sita = Math.round(ovs[1].sita)
+          let sita = Math.round(ovs[1].sita)-model.rotate
           let hdelta = (ovs[2].x-ovs[2].ovi.x)
           if(sita<0 && sita >= -90){
             pvs.push({begin:1,x:hdelta,y:0,select:1,clip:1});
@@ -53,7 +53,7 @@ export default {
         }`,
         //上方直线
         `(i, sample, pvs, model, ovs){
-          let rad = ovs[1].sita * DDeiConfig.ROTATE_UNIT
+          let rad = (ovs[1].sita-model.rotate) * DDeiConfig.ROTATE_UNIT
           let hdelta = (ovs[2].x-ovs[2].ovi.x)
           let x = hdelta * Math.cos(rad)
           let y = hdelta * Math.sin(rad)
@@ -62,14 +62,15 @@ export default {
         }`,
         //弧线/直角线
         `(i, sample, pvs, model, ovs){
-          if(Math.round(ovs[1].sita) == -90){
+          let sita = ovs[1].sita-model.rotate
+          if(Math.round(sita) == -90){
             let ar = (ovs[0].x-ovs[0].ovi.x)
             pvs.push({begin:1,x:0,y:-ar,stroke:1});
             pvs.push({x:ar,y:-ar,stroke:1});
             pvs.push({x:ar,y:0,stroke:1});
             pvs.push({end:1,x:0,y:0,stroke:1});
           }else{
-            let rad = ovs[1].sita * DDeiConfig.ROTATE_UNIT
+            let rad = sita * DDeiConfig.ROTATE_UNIT
             let ar = (ovs[0].x-ovs[0].ovi.x)
             let x = ar * Math.cos(rad)
             let y = ar * Math.sin(rad)
@@ -79,7 +80,7 @@ export default {
         }`,
         //文本区域
         `(i, sample, pvs, model, ovs){
-          let sita = ovs[1].sita
+          let sita = ovs[1].sita-model.rotate
           let disSita
           //显示半径
           let ar = (ovs[0].x-ovs[0].ovi.x)+7
