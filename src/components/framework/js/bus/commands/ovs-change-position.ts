@@ -138,6 +138,26 @@ class DDeiBusCommandOVSChangePosition extends DDeiBusCommand {
             }
             //在一个圆心半径内移动
             case 3: {
+              let distance = DDeiUtil.getPointDistance(x, y, model.cpv.x, model.cpv.y)
+              //计算旋转、缩放后的控制点大小，而非直接使用定义时的数据
+              let rotate = model.rotate
+              if (!rotate) {
+                rotate = 0
+              }
+              let bpv = DDeiUtil.pointsToZero([model.bpv], model.cpv, rotate)[0]
+              let scaleX = Math.abs(bpv.x / 100)
+
+              let r = point.constraint.r * scaleX
+              //离圆心的距离大于弧长
+              if (Math.abs(distance) > r) {
+                //计算角度
+                let pointAngle = DDeiUtil.getLineAngle(model.cpv.x, model.cpv.y, x, y)
+                //根据角度得到位置
+                let pointRad = pointAngle * DDeiConfig.ROTATE_UNIT
+                let fx = model.cpv.x + r * Math.cos(pointRad);
+                let fy = model.cpv.y + r * Math.sin(pointRad);
+                dx = fx - opPoint.x, dy = fy - opPoint.y
+              }
               break;
             }
             //沿着一条线移动

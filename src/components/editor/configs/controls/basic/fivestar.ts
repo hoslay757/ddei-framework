@@ -29,7 +29,7 @@ export default {
         }`,
         `(i,  sample, pvs, model,ovs){
           if (i == 0) {
-            let er = sample.r / 3
+            let er = sample.r / 3+(ovs[0].x-ovs[0].ovi.x)
             let x = er * Math.cos(45 * DDeiConfig.ROTATE_UNIT)
             let y = er * Math.sin(45 * DDeiConfig.ROTATE_UNIT)
             pvs.push({ begin:1,x: x, y: y, text:1 });

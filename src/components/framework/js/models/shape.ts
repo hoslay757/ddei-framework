@@ -182,10 +182,23 @@ abstract class DDeiAbstractShape {
         let stageRatio = this.getStageRatio();
         let ovs = []
         defineOvs.forEach(ovd => {
-          let ov = new Vector3(ovd.x * stageRatio, ovd.y * stageRatio, ovd.z || ovd.z == 0 ? ovd.z : 1)
-          let ovi = new Vector3(ovd.ix * stageRatio, ovd.iy * stageRatio, ovd.iz || ovd.iz == 0 ? ovd.iz : 1)
-          ov.ovi = ovi
-          ovs.push(ov)
+          //如果类型为3，则根据初始的角度、r计算初始位置
+          if (ovd.constraint.type == 3) {
+            let rad = -ovd.isita * DDeiConfig.ROTATE_UNIT
+            let x = ovd.constraint.r * Math.cos(rad)
+            let y = ovd.constraint.r * Math.sin(rad)
+            let ov = new Vector3(x * stageRatio, y * stageRatio, ovd.z || ovd.z == 0 ? ovd.z : 1)
+            let ovi = new Vector3(0, 0, ovd.z || ovd.z == 0 ? ovd.z : 1)
+            ov.ovi = ovi
+            ovs.push(ov)
+          } else {
+            let ov = new Vector3(ovd.x * stageRatio, ovd.y * stageRatio, ovd.z || ovd.z == 0 ? ovd.z : 1)
+            let ovi = new Vector3(ovd.ix * stageRatio, ovd.iy * stageRatio, ovd.iz || ovd.iz == 0 ? ovd.iz : 1)
+            ov.ovi = ovi
+            ovs.push(ov)
+          }
+
+
         });
         this.ovs = ovs
       }
@@ -285,6 +298,8 @@ abstract class DDeiAbstractShape {
         m1.premultiply(move2Matrix)
 
         originOVS.forEach(ov => {
+          //计算ov到圆心的角度
+          ov.sita = parseFloat(DDeiUtil.getLineAngle(this.cpv.x, this.cpv.y, ov.x, ov.y).toFixed(2));
           ov.applyMatrix3(m1)
           ov.ovi.applyMatrix3(m1)
         })

@@ -170,6 +170,12 @@ export default {
       'text': '',
       'orderNo': 77
     },
+    {
+      'id': '104001',
+      'name': '角',
+      'text': '',
+      'orderNo': 80
+    },
 
 
 
