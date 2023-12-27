@@ -140,6 +140,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
             this.model.freeze = 0
             this.model.spvs = []
             this.model.initPVS()
+            this.model.updateOVS()
             this.stageRender?.selector.updatePVSByModels();
           } else if (!this.inited) {
             this.inited = true;

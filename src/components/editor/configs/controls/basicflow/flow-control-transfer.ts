@@ -32,13 +32,13 @@ export default {
         x: 75, y: 0, ix: 75, iy: 0,
         //约束，控制点的移动路径和位置
         constraint: {
-          type: 4,//跟随线段
-          line: ["this"]//当前对象的pvs
+          type: 1,//跟随线段
+          pvs: ["pvs"]//当前对象的pvs
         },
         //联动，点移动后控制的其它点
         links: [
           {
-            type: 1,//同步平移
+            type: 1,//1施加矩阵
             pvs: ["composes[0]"]
           }
         ]

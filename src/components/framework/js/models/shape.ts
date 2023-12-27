@@ -53,6 +53,15 @@ abstract class DDeiAbstractShape {
       props.ovs.forEach(pvd => {
         let pv = new Vector3(pvd.x, pvd.y, pvd.z || pvd.z == 0 ? pvd.z : 1)
         let ovi = new Vector3(pvd.ovi.x, pvd.ovi.y, pvd.ovi.z || pvd.ovi.z == 0 ? pvd.ovi.z : 1)
+        if (pvd.index || pvd.index == 0) {
+          pv.index = pvd.index
+        }
+        if (pvd.rate || pvd.rate == 0) {
+          pv.rate = pvd.rate
+        }
+        if (pvd.sita || pvd.sita == 0) {
+          pv.sita = pvd.sita
+        }
         pv.ovi = ovi
         this.ovs.push(pv);
       });
@@ -533,6 +542,7 @@ abstract class DDeiAbstractShape {
    * 变换向量
    */
   transVectors(matrix: Matrix3): void {
+
     this.cpv.applyMatrix3(matrix);
     if (this.poly == 2) {
 
@@ -843,8 +853,135 @@ abstract class DDeiAbstractShape {
           dpv.y = spv.y
           dpv.z = spv.z
           link.dm.initPVS()
+          link.dm.updateOVS()
         }
       })
+    }
+  }
+
+
+
+  /**
+   * 更改图形后同步调整OVS点的位置
+   */
+  updateOVS(): void {
+    if (this.ovs?.length > 0) {
+      let defineOvs = DDeiUtil.getControlDefine(this)?.define?.ovs;
+      for (let i = 0; i < this.ovs.length; i++) {
+        let ov = this.ovs[i]
+        let ovd = defineOvs[i]
+        //依附于Path，则根据比例和index更新位置
+        if (ovd.constraint.type == 1) {
+          //构建验证路径
+          let pathPvs = []
+          let pvsStr = ovd.constraint.pvs;
+          if (pvsStr?.length > 0) {
+            pvsStr.forEach(pvsS => {
+              //联动的点
+              let pvsData = DDeiUtil.getDataByPathList(this, pvsS)
+              if (Array.isArray(pvsData)) {
+                pvsData.forEach(pvsD => {
+                  pathPvs.push(pvsD)
+                })
+              } else {
+                pathPvs.push(pvsData)
+              }
+
+            })
+          }
+          if (pathPvs.length > 1) {
+            //如果是初始状态或者pvs发生了变化，则根据现有坐标，投射最近的路径，找到index
+            let x, y
+
+            if (!(ov.index || ov.index == 0) || pathPvs.length <= ov.index) {
+              let proPoints = DDeiAbstractShape.getProjPointDists(pathPvs, ov.x, ov.y, false, 1);
+              ov.index = proPoints[0].index
+              x = proPoints[0].x
+              y = proPoints[0].y
+
+              //计算当前path的角度（方向）angle和投射后点的比例rate
+              let pointDistance = DDeiUtil.getPointDistance(pathPvs[ov.index].x, pathPvs[ov.index].y, ov.x, ov.y)
+              let distance = DDeiUtil.getPointDistance(pathPvs[ov.index].x, pathPvs[ov.index].y, pathPvs[ov.index + 1].x, pathPvs[ov.index + 1].y)
+              let rate = pointDistance / distance
+              ov.rate = rate > 1 ? rate : rate
+            } else {
+              x = pathPvs[ov.index].x + (ov.rate * (pathPvs[ov.index + 1].x - pathPvs[ov.index].x))
+              y = pathPvs[ov.index].y + (ov.rate * (pathPvs[ov.index + 1].y - pathPvs[ov.index].y))
+            }
+            let sita = parseFloat(DDeiUtil.getLineAngle(pathPvs[ov.index].x, pathPvs[ov.index].y, pathPvs[ov.index + 1].x, pathPvs[ov.index + 1].y).toFixed(4))
+
+
+            let m1 = new Matrix3()
+            let dx = x - ov.x, dy = y - ov.y
+            let deltaMoveMatrix = new Matrix3(
+              1, 0, dx,
+              0, 1, dy,
+              0, 0, 1,
+            );
+            m1.premultiply(deltaMoveMatrix)
+            let ovSita = ov.sita
+            if (!ovSita) {
+              ovSita = 0
+            }
+            if (sita != ovSita) {
+              //计算input的正确打开位置，由节点0
+              let move1Matrix = new Matrix3(
+                1, 0, -x,
+                0, 1, -y,
+                0, 0, 1);
+              let angle = (-(sita - ovSita) * DDeiConfig.ROTATE_UNIT).toFixed(4);
+              let rotateMatrix = new Matrix3(
+                Math.cos(angle), Math.sin(angle), 0,
+                -Math.sin(angle), Math.cos(angle), 0,
+                0, 0, 1);
+              let move2Matrix = new Matrix3(
+                1, 0, x,
+                0, 1, y,
+                0, 0, 1);
+              m1.premultiply(move1Matrix).premultiply(rotateMatrix).premultiply(move2Matrix)
+            }
+            ov.x = x
+            ov.y = y
+            ov.sita = sita
+            this.updateOVSLink(ovd, m1)
+          }
+        }
+      }
+    }
+  }
+
+  updateOVSLink(point, matrix): void {
+    //遍历links
+    if (point?.links) {
+      //根据点联动配置，执行不同的策略
+      point.links.forEach(link => {
+        switch (link.type) {
+          case 1: {
+            let pvsStr = link.pvs;
+            if (pvsStr?.length > 0) {
+              pvsStr.forEach(pvsS => {
+                //联动的点
+                let pvsData = DDeiUtil.getDataByPathList(this, pvsS)
+                if (pvsData) {
+                  if (Array.isArray(pvsData)) {
+                    pvsData.forEach(pvsD => {
+                      pvsD.applyMatrix3(matrix)
+                    })
+                  } else {
+                    if (pvsData.transVectors) {
+                      pvsData.transVectors(matrix)
+                    } else {
+                      pvsData.applyMatrix3(matrix)
+                    }
+                  }
+                }
+              });
+
+            }
+
+          } break;
+        }
+      });
     }
   }
 

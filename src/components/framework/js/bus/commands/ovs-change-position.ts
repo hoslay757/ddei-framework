@@ -54,6 +54,8 @@ class DDeiBusCommandOVSChangePosition extends DDeiBusCommand {
       }
       if (point) {
         //根据坐标生成移动矩阵，根据约束限制移动矩阵
+        let m1 = new Matrix3()
+        let mr = null
         let dx = x - opPoint.x, dy = y - opPoint.y
         if (point.constraint) {
           switch (point.constraint.type) {
@@ -73,15 +75,45 @@ class DDeiBusCommandOVSChangePosition extends DDeiBusCommand {
                   } else {
                     pathPvs.push(pvsData)
                   }
-
                 })
               }
               if (pathPvs.length > 1) {
                 //将点投射到路径上
                 let proPoints = DDeiAbstractShape.getProjPointDists(pathPvs, x, y, false, 1);
                 if (proPoints?.length > 0) {
+                  opPoint.index = proPoints[0].index;
+                  //计算当前path的角度（方向）angle和投射后点的比例rate
+                  let distance = DDeiUtil.getPointDistance(pathPvs[proPoints[0].index].x, pathPvs[proPoints[0].index].y, pathPvs[proPoints[0].index + 1].x, pathPvs[proPoints[0].index + 1].y)
+                  let sita = DDeiUtil.getLineAngle(pathPvs[proPoints[0].index].x, pathPvs[proPoints[0].index].y, pathPvs[proPoints[0].index + 1].x, pathPvs[proPoints[0].index + 1].y)
+                  let pointDistance = DDeiUtil.getPointDistance(pathPvs[proPoints[0].index].x, pathPvs[proPoints[0].index].y, proPoints[0].x, proPoints[0].y)
+                  let rate = pointDistance / distance
+                  //计算角度
+                  let ovSita = opPoint.sita
+                  if (!ovSita) {
+                    ovSita = 0
+                  }
+                  opPoint.rate = rate > 1 ? rate : rate
+                  opPoint.sita = sita
                   dx = proPoints[0].x - opPoint.x
                   dy = proPoints[0].y - opPoint.y
+
+                  if (sita != ovSita) {
+                    mr = new Matrix3()
+                    let move1Matrix = new Matrix3(
+                      1, 0, -proPoints[0].x,
+                      0, 1, -proPoints[0].y,
+                      0, 0, 1);
+                    let angle = (-(sita - ovSita) * DDeiConfig.ROTATE_UNIT).toFixed(4);
+                    let rotateMatrix = new Matrix3(
+                      Math.cos(angle), Math.sin(angle), 0,
+                      -Math.sin(angle), Math.cos(angle), 0,
+                      0, 0, 1);
+                    let move2Matrix = new Matrix3(
+                      1, 0, proPoints[0].x,
+                      0, 1, proPoints[0].y,
+                      0, 0, 1);
+                    mr.premultiply(move1Matrix).premultiply(rotateMatrix).premultiply(move2Matrix)
+                  }
                 } else {
                   dx = 0
                   dy = 0
@@ -171,39 +203,15 @@ class DDeiBusCommandOVSChangePosition extends DDeiBusCommand {
           0, 1, dy,
           0, 0, 1,
         );
-        opPoint.applyMatrix3(moveMatrix)
-        //遍历links
-        if (point?.links) {
-          //根据点联动配置，执行不同的策略
-          point.links.forEach(link => {
-            switch (link.type) {
-              case 1: {
-                let pvsStr = link.pvs;
-                if (pvsStr?.length > 0) {
-                  pvsStr.forEach(pvsS => {
-                    //联动的点
-                    let pvsData = DDeiUtil.getDataByPathList(model, pvsS)
-                    if (pvsData) {
-                      if (Array.isArray(pvsData)) {
-                        pvsData.forEach(pvsD => {
-                          pvsD.applyMatrix3(moveMatrix)
-                        })
-                      } else {
-                        if (pvsData.transVectors) {
-                          pvsData.transVectors(moveMatrix)
-                        } else {
-                          pvsData.applyMatrix3(moveMatrix)
-                        }
-                      }
-                    }
-                  });
-
-                }
-
-              } break;
-            }
-          });
+        m1.premultiply(moveMatrix)
+        if (mr) {
+          m1.premultiply(mr)
         }
+
+        opPoint.applyMatrix3(moveMatrix)
+        //同步更新links
+        model.updateOVSLink(point, m1)
+
         //触发重新采样，重新计算exPVS的坐标，exPVS是间接得到，因此需要特殊计算
         //TODO EXPVS应该记录其类别，以确保重新计算时可以还原
         model.initPVS()

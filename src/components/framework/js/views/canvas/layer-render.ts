@@ -819,9 +819,9 @@ class DDeiLayerCanvasRender {
               }
               if (!isStop) {
                 let passIndex = this.stageRender.dragObj.passIndex;
-
                 //如果是开始或结束节点的拖拽，判断落点是否在操作点上，如果在，则关联
                 if (passIndex == 1) {
+
                   //如果原有的关联存在，取消原有的关联
                   let opvsIndex = this.stageRender.dragObj.opvsIndex;
                   let dmpath = ""
@@ -861,9 +861,11 @@ class DDeiLayerCanvasRender {
                     this.stage?.addLink(link)
                     model?.initPVS()
                     smodel.updateLinkModels();
+
                   }
                 }
-                model?.initPVS()
+                model.initPVS()
+                model.updateOVS()
                 hasChange = true;
               }
             }
