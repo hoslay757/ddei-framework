@@ -1,12 +1,9 @@
 import DDeiConfig from '../../config';
 import DDeiEnumBusCommandType from '../../enums/bus-command-type';
-import DDeiEnumOperateState from '../../enums/operate-state';
 import DDeiAbstractShape from '../../models/shape';
 import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
 import { Matrix3, Vector3 } from 'three';
-import DDeiLayoutManagerFactory from '../../layout/layout-manager-factory';
-import { has } from 'lodash';
 import DDeiUtil from '../../util';
 /**
  * 改变特殊操作点位置的总线Command
@@ -59,6 +56,9 @@ class DDeiBusCommandOVSChangePosition extends DDeiBusCommand {
         let dx = x - opPoint.x, dy = y - opPoint.y
         if (point.constraint) {
           switch (point.constraint.type) {
+            case 0: {
+              return true;
+            }
             //在一条路径上移动
             case 1: {
               //构建验证路径

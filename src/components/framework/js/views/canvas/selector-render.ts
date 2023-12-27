@@ -87,16 +87,21 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         ctx.save();
         ctx.fillStyle = "yellow"
         ctx.strokeStyle = "black"
-        ovs.forEach(point => {
-          ctx.beginPath();
-          ctx.moveTo((point.x + weight) * ratio, point.y * ratio)
-          ctx.lineTo(point.x * ratio, (point.y + weight) * ratio)
-          ctx.lineTo((point.x - weight) * ratio, point.y * ratio)
-          ctx.lineTo(point.x * ratio, (point.y - weight) * ratio)
-          ctx.closePath();
-          ctx.stroke()
-          ctx.fill();
-        })
+        let ovsDefine = DDeiUtil.getControlDefine(model)?.define?.ovs;
+        for (let i = 0; i < ovs.length; i++) {
+          let point = ovs[i]
+          let pointDefine = ovsDefine[i]
+          if (pointDefine?.constraint?.type) {
+            ctx.beginPath();
+            ctx.moveTo((point.x + weight) * ratio, point.y * ratio)
+            ctx.lineTo(point.x * ratio, (point.y + weight) * ratio)
+            ctx.lineTo((point.x - weight) * ratio, point.y * ratio)
+            ctx.lineTo(point.x * ratio, (point.y - weight) * ratio)
+            ctx.closePath();
+            ctx.stroke()
+            ctx.fill();
+          }
+        }
         //恢复状态
         ctx.restore();
       }
@@ -503,8 +508,12 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     if (models?.length == 1 && models[0]?.ovs.length > 0) {
       let ovPoint = models[0].getOvPointByPos(ex, ey)
       if (ovPoint) {
-        isOvPoint = true;
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: "pointer" }, evt);
+        let ovsDefine = DDeiUtil.getControlDefine(models[0])?.define?.ovs;
+        let ovd = ovsDefine[models[0].ovs.indexOf(ovPoint)];
+        if (ovd?.constraint?.type) {
+          isOvPoint = true;
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: "pointer" }, evt);
+        }
       }
     }
     if (!isOvPoint) {
