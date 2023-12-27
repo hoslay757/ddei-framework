@@ -212,14 +212,10 @@ class DDeiBusCommandOVSChangePosition extends DDeiBusCommand {
         //同步更新links
         model.updateOVSLink(point, m1)
 
-        //触发重新采样，重新计算exPVS的坐标，exPVS是间接得到，因此需要特殊计算
-        //TODO EXPVS应该记录其类别，以确保重新计算时可以还原
+        //触发重新采样和坐标计算
         model.initPVS()
-        for (let i in model.exPvs) {
-          let pv = model.exPvs[i];
-          pv.applyMatrix3(moveMatrix)
-        };
-        model.updateLinkModels();
+
+
 
         return true;
       }

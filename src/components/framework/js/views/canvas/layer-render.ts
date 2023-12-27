@@ -850,6 +850,9 @@ class DDeiLayerCanvasRender {
                     //创建连接点
                     let id = "_" + DDeiUtil.getUniqueCode()
                     smodel.exPvs[id] = new Vector3(opPoint.x, opPoint.y, opPoint.z)
+                    smodel.exPvs[id].rate = opPoint.rate
+                    smodel.exPvs[id].sita = opPoint.sita
+                    smodel.exPvs[id].index = opPoint.index
                     smodel.exPvs[id].id = id
                     let link = new DDeiLink({
                       sm: smodel,
@@ -1220,6 +1223,9 @@ class DDeiLayerCanvasRender {
             //创建连接点
             let id = "_" + DDeiUtil.getUniqueCode()
             smodel.exPvs[id] = new Vector3(opPoint.x, opPoint.y, opPoint.z)
+            smodel.exPvs[id].rate = opPoint.rate
+            smodel.exPvs[id].sita = opPoint.sita
+            smodel.exPvs[id].index = opPoint.index
             smodel.exPvs[id].id = id
             let link = new DDeiLink({
               sm: smodel,
