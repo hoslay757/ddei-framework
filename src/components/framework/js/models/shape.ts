@@ -191,6 +191,8 @@ abstract class DDeiAbstractShape {
         this.cpv = new Vector3(0, 0, 1)
       }
     }
+
+
     //通过定义初始化ovs
     if (!(this.ovs?.length > 0)) {
       //通过采样计算pvs,可能存在多组pvs
@@ -201,22 +203,22 @@ abstract class DDeiAbstractShape {
         let ovs = []
         defineOvs.forEach(ovd => {
           //如果类型为3，则根据初始的角度、r计算初始位置
+          let scaleX = this.width / 100
+          let scaleY = this.height / 100
           if (ovd.constraint.type == 3) {
             let rad = -ovd.isita * DDeiConfig.ROTATE_UNIT
             let x = ovd.constraint.r * Math.cos(rad)
             let y = ovd.constraint.r * Math.sin(rad)
-            let ov = new Vector3(x * stageRatio, y * stageRatio, ovd.z || ovd.z == 0 ? ovd.z : 1)
+            let ov = new Vector3(x * scaleX * stageRatio, y * scaleY * stageRatio, ovd.z || ovd.z == 0 ? ovd.z : 1)
             let ovi = new Vector3(0, 0, ovd.z || ovd.z == 0 ? ovd.z : 1)
             ov.ovi = ovi
             ovs.push(ov)
           } else {
-            let ov = new Vector3(ovd.x * stageRatio, ovd.y * stageRatio, ovd.z || ovd.z == 0 ? ovd.z : 1)
-            let ovi = new Vector3(ovd.ix * stageRatio, ovd.iy * stageRatio, ovd.iz || ovd.iz == 0 ? ovd.iz : 1)
+            let ov = new Vector3(ovd.x * scaleX * stageRatio, ovd.y * scaleY * stageRatio, ovd.z || ovd.z == 0 ? ovd.z : 1)
+            let ovi = new Vector3(ovd.ix * scaleX * stageRatio, ovd.iy * scaleY * stageRatio, ovd.iz || ovd.iz == 0 ? ovd.iz : 1)
             ov.ovi = ovi
             ovs.push(ov)
           }
-
-
         });
         this.ovs = ovs
       }
@@ -328,6 +330,16 @@ abstract class DDeiAbstractShape {
       }
 
 
+      //计算当前缩放比率
+      let rotate = this.rotate
+      if (!rotate) {
+        rotate = 0
+      }
+      let bpv = DDeiUtil.pointsToZero([this.bpv], this.cpv, rotate)[0]
+      let scaleX = Math.abs(bpv.x / 100)
+      let scaleY = Math.abs(bpv.y / 100)
+      //添加scale变量以便在内部使用
+      this.scale = { x: scaleX, y: scaleY, stageRatio: stageRatio }
 
       //采样结果
       let sampliesResult = []
@@ -358,13 +370,15 @@ abstract class DDeiAbstractShape {
           spFn(i, defineSample, spResult, this, originOVS)
         }
       }
+      //删除scale变量
+      delete this.scale
       //对返回的数据进行处理和拆分
       let pvs = []
       let textArea = []
       let operatePVS = []
       let opps = []
-      //因为bpv在缩放时同步变大，因此会随着stageRatio变化大小
-      let scaleX, scaleY, bpv, rotate
+
+
 
       for (let i = 0; i < sampliesResult.length; i++) {
         if (sampliesResult[i].length > 0) {
@@ -379,22 +393,7 @@ abstract class DDeiAbstractShape {
               if (!pvd.dy) {
                 pvd.dy = 0
               }
-              if (!bpv) {
-                //因为bpv在缩放时同步变大，因此会随着stageRatio变化大小
-                rotate = this.rotate
-
-                if (!rotate) {
-                  rotate = 0
-                }
-
-                bpv = DDeiUtil.pointsToZero([this.bpv], this.cpv, rotate)[0]
-                stageRatio = this.getStageRatio()
-                scaleX = Math.abs(bpv.x / 100) / stageRatio
-                scaleY = Math.abs(bpv.y / 100) / stageRatio
-              }
-
-
-              let dp = DDeiUtil.getRotatedPoint({ x: pvd.dx * scaleX, y: pvd.dy * scaleY, z: 1 }, rotate)
+              let dp = DDeiUtil.getRotatedPoint({ x: pvd.dx * scaleX / stageRatio, y: pvd.dy * scaleY / stageRatio, z: 1 }, rotate)
 
               pvd.dx = dp.x
               pvd.dy = dp.y
@@ -434,15 +433,7 @@ abstract class DDeiAbstractShape {
       }
       //根据旋转和缩放参照点，构建旋转和缩放矩阵，对矩阵进行旋转
       let m1 = new Matrix3();
-      //因为bpv在缩放时同步变大，因此会随着stageRatio变化大小
-      if (!bpv) {
-        bpv = DDeiUtil.pointsToZero([this.bpv], this.cpv, this.rotate)[0]
-        scaleX = Math.abs(bpv.x / 100)
-        scaleY = Math.abs(bpv.y / 100)
-      } else {
-        scaleX *= stageRatio
-        scaleY *= stageRatio
-      }
+
 
       let scaleMatrix = new Matrix3(
         scaleX, 0, 0,
@@ -942,7 +933,7 @@ abstract class DDeiAbstractShape {
               ov.y = this.cpv.y + dy
               ov.ovi.x = ov.x - dx
               ov.ovi.y = ov.y - dy
-              this.updateOVSLink(ovd, m1)
+              this.updateOVSLink(ov, ovd, m1)
               break;
             };
           case 1: {
@@ -995,6 +986,7 @@ abstract class DDeiAbstractShape {
                   st = index;
                   en = index + 1;
                 }
+
                 x = pathPvs[st].x + (ov.rate * (pathPvs[en].x - pathPvs[st].x))
                 y = pathPvs[st].y + (ov.rate * (pathPvs[en].y - pathPvs[st].y))
               }
@@ -1033,7 +1025,7 @@ abstract class DDeiAbstractShape {
               ov.x = x
               ov.y = y
               ov.sita = sita
-              this.updateOVSLink(ovd, m1)
+              this.updateOVSLink(ov, ovd, m1)
             }
             break;
           }
@@ -1042,13 +1034,13 @@ abstract class DDeiAbstractShape {
     }
   }
 
-  updateOVSLink(point, matrix): void {
+  updateOVSLink(point, pointDefine, matrix): void {
     //遍历links
-    if (point?.links) {
+    if (pointDefine?.links) {
       //根据点联动配置，执行不同的策略
-      point.links.forEach(link => {
+      pointDefine.links.forEach(link => {
         switch (link.type) {
-          case 0: ;
+          //类型1 施加矩阵
           case 1: {
             let pvsStr = link.pvs;
             if (pvsStr?.length > 0) {
@@ -1071,9 +1063,20 @@ abstract class DDeiAbstractShape {
               });
 
             }
-
-          } break;
+            break;
+          }
+          //类型99 执行脚本，适合处理逻辑比较复杂的关系
+          case 99: {
+            if (!link.evalScript && link.script) {
+              eval("link.evalScript = function" + link.script)
+            }
+            if (link.evalScript) {
+              link.evalScript(this, point, pointDefine)
+            }
+            break;
+          }
         }
+
       });
     }
   }

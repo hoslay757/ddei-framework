@@ -8,10 +8,12 @@ export default {
   'define': {
     width: 110,
     height: 70,
-    text: "<<primitive>>\r\nPrimitive",
+    text: `<<primitive>>
+Primitive`,
     textStyle: {
       valign: 1,
-      italic: 1
+      italic: 1,
+      feed: 1
     }
   }
 

@@ -8,10 +8,12 @@ export default {
   'define': {
     width: 110,
     height: 70,
-    text: "<<datatype>>\r\nDatatype",
+    text: `<<datatype>>
+Datatype`,
     textStyle: {
       valign: 1,
-      italic: 1
+      italic: 1,
+      feed: 1
     }
   }
 

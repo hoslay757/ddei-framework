@@ -8,10 +8,12 @@ export default {
   'define': {
     width: 110,
     height: 70,
-    text: "<<signal>>\r\nSignal",
+    text: `<<signal>>
+Signal`,
     textStyle: {
       valign: 1,
-      italic: 1
+      italic: 1,
+      feed: 1
     }
   }
 

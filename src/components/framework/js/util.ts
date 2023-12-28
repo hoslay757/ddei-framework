@@ -1245,6 +1245,46 @@ class DDeiUtil {
   }
 
   /**
+   * 将N个归0点，放回坐标
+   */
+  static zeroToPoints(points: Vector3[], cpv: Vector3, rotate: number, scaleX = 1, scaleY = 1): [] {
+    if (points?.length > 0 && cpv) {
+      let m1 = new Matrix3(
+        1, 0, 0,
+        0, 1, 0,
+        0, 0, 1);
+      if (scaleX != 1 || scaleY != 1) {
+        let scaleMatrix = new Matrix3(
+          scaleX, 0, 0,
+          0, scaleY, 0,
+          0, 0, 1);
+        m1.premultiply(scaleMatrix)
+      }
+      if (rotate) {
+        let angle = (-rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+        let rotateMatrix = new Matrix3(
+          Math.cos(angle), Math.sin(angle), 0,
+          -Math.sin(angle), Math.cos(angle), 0,
+          0, 0, 1);
+        m1.premultiply(rotateMatrix)
+      }
+      let moveMatrix = new Matrix3(
+        1, 0, cpv.x,
+        0, 1, cpv.y,
+        0, 0, 1);
+      m1.premultiply(moveMatrix)
+      let returnPoints = []
+      points.forEach(pv => {
+        let npv = new Vector3(pv.x, pv.y, pv.z)
+        npv.applyMatrix3(m1)
+        returnPoints.push(npv)
+      })
+      return returnPoints;
+    }
+    return []
+  }
+
+  /**
    * 对坐标以及大小进行缩放，并返回新的坐标
    * @param pos 原始位置
    * @param ratio 缩放比率

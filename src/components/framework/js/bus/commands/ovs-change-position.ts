@@ -210,7 +210,7 @@ class DDeiBusCommandOVSChangePosition extends DDeiBusCommand {
 
         opPoint.applyMatrix3(moveMatrix)
         //同步更新links
-        model.updateOVSLink(point, m1)
+        model.updateOVSLink(opPoint, point, m1)
 
         //触发重新采样和坐标计算
         model.initPVS()
