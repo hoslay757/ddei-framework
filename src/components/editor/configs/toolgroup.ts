@@ -34,9 +34,22 @@ const loadControlByFrom = function (control) {
     //处理ext
     if (control.define?.ext) {
       for (let i in control.define.ext) {
-        if (i != "sample") {
-          control.define[i] = control.define.ext[i]
-        } else {
+
+        //处理composes
+        if (i == "composes") {
+          let extComps = control.define?.ext.composes
+          let defineComps = control.define.composes
+          for (let j = 0; j < extComps.length; j++) {
+            let extComp = extComps[j]
+            let defComp = defineComps[j]
+            //替换当前部分值
+            if (defComp && !extComp.type) {
+              for (let k in extComp) {
+                defComp[k] = extComp[k]
+              }
+            }
+          }
+        } else if (i == "sample") {
           if (!control.define?.sample) {
             control.define.sample = {}
           }
@@ -53,11 +66,14 @@ const loadControlByFrom = function (control) {
               });
             }
           }
+        } else {
+          control.define[i] = control.define.ext[i]
         }
 
       }
       delete control.define.ext
     }
+
     //处理composes
     if (control.define?.composes) {
       control.define?.composes.forEach(compose => {
@@ -78,6 +94,7 @@ const loadControlByFrom = function (control) {
         }
       });
     }
+
     if (fromMenus) {
       if (!control.menus) {
         control.menus = {};

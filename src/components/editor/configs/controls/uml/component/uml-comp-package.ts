@@ -1,3 +1,4 @@
+import ov_link_split_point from "../../../scripts/uml/ov-link-split-point"
 export default {
   'id': '305003',
   'name': '包',
@@ -50,6 +51,10 @@ export default {
         text: "Package",
         fill: { disabled: true },
         border: { disabled: true },
+        textStyle: {
+          feed: 1,
+          autoScaleFill: 1,
+        },
         initCPV: {
           x: -60, y: -70
         }
@@ -63,12 +68,35 @@ export default {
         border: { disabled: true },
         text: "Attribute",
         textStyle: {
-          feed: 1
+          feed: 1,
+          autoScaleFill: 1,
         },
         initCPV: {
           x: 0, y: 10
         }
       },
+    ],
+    //操作点定义
+    ovs: [
+      //定义标题区域的高度控制点
+      {
+        x: -30, y: -37.5, ix: -30, iy: -50,
+        constraint: {
+          type: 2,
+          x0: -30,
+          x1: -30,
+          y0: -50,
+          y1: -20
+        },
+        //联动，控制第一个和第二个composes[0]的大小
+        //这里计算较为复杂，需要用脚本来进行控制
+        links: [
+          {
+            type: 99,//执行脚本
+            script: ov_link_split_point
+          }
+        ]
+      }
     ]
   }
 
