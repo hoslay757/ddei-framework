@@ -39,7 +39,7 @@ export default {
                 end = 1
               break;
             }
-            pvs.push({begin:start,end:end,x:sample.x,y:sample.y,select:1,clip:1});
+            pvs.push({begin:start,end:end,x:sample.x,y:sample.y,select:1,oppoint:2,clip:1});
         }`
       ],
 
