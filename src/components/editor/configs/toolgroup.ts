@@ -49,6 +49,19 @@ const loadControlByFrom = function (control) {
               }
             }
           }
+        } else if (i == "ovs") {
+          let extOVS = control.define?.ext.ovs
+          let defineOVS = control.define.ovs
+          for (let j = 0; j < extOVS.length; j++) {
+            let extComp = extOVS[j]
+            let defComp = defineOVS[j]
+            //替换当前部分值
+            if (defComp && extComp) {
+              for (let k in extComp) {
+                defComp[k] = extComp[k]
+              }
+            }
+          }
         } else if (i == "sample") {
           if (!control.define?.sample) {
             control.define.sample = {}

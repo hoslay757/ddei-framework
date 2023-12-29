@@ -92,7 +92,10 @@ export default {
         links: [
           {
             type: 99,//执行脚本
-            script: ov_link_v_split_point
+            script: ov_link_v_split_point,
+            //参数可以自定义，脚本中可以取到
+            models: ["composes[0]"],
+            nextModels: ["composes[1]"]
           }
         ]
       },
