@@ -176,6 +176,36 @@ export default {
       'text': '',
       'orderNo': 80
     },
+    {
+      'id': '104102',
+      'name': '小括号',
+      'text': '',
+      'orderNo': 91
+    },
+    {
+      'id': '104101',
+      'name': '小括号',
+      'text': '',
+      'orderNo': 92
+    },
+    {
+      'id': '104103',
+      'name': '小括号',
+      'text': '',
+      'orderNo': 93
+    },
+    {
+      'id': '104104',
+      'name': '小括号',
+      'text': '',
+      'orderNo': 94
+    },
+    {
+      'id': '104105',
+      'name': '小括号',
+      'text': '',
+      'orderNo': 94
+    },
 
 
 

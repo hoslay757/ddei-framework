@@ -21,7 +21,7 @@ export default {
       //采样的规则，多组采样返回多组规则
       rules: [
         //选中区域
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
           if(i !=0 && i != 3){
             let er = sample.r / Math.cos(45 * DDeiConfig.ROTATE_UNIT)
             let x = er * sample.cos
@@ -30,7 +30,7 @@ export default {
           }
         }`,
         //主体图形
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
           let er = sample.r / Math.cos(45 * DDeiConfig.ROTATE_UNIT)
           let x = er * sample.cos
           let y = er * sample.sin

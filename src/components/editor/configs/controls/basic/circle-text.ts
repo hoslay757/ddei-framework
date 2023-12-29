@@ -12,7 +12,7 @@ export default {
         //采样的规则，多组采样返回多组规则
         rules: [
           //文本区域
-          `(i, sample, pvs, model){
+          `(i, sample, pvs, model, ovs){
             pvs.push({x:sample.x,y:sample.y,r:sample.r,text:1});
           }`,
         ]

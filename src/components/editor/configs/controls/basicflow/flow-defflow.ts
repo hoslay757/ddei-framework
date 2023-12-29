@@ -21,11 +21,11 @@ export default {
       //半径距离
       //采样的规则，多组采样返回多组规则
       rules: [
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
             pvs.push({ begin:i==0,end:i==3,x: sample.x, y: sample.y,select:1,clip:1,stroke:1,fill:1 });
         }`,
 
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
             let er  = sample.r
             let x = sample.x
             let y = sample.y
@@ -42,7 +42,7 @@ export default {
         }`,
 
 
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
           if(i == 1){
             pvs.push({begin:1, x: sample.x, y: sample.y,stroke:1});
           }else if(i == 2){
@@ -52,7 +52,7 @@ export default {
           }
         }`,
 
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
             let ds = i == 1 || i ==2 ? 10: -10
             let x = sample.x+ds
             let y = sample.y

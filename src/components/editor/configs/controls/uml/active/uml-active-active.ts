@@ -32,7 +32,7 @@ export default {
       r: 50,
       //采样的规则，多组采样返回多组规则
       rules: [
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
           let start = 0,end = 0
           let x = sample.x,y = sample.y
             switch(i){
@@ -55,25 +55,25 @@ export default {
         }`,
 
         //下方子图标
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
           if(i == 0){
             pvs.push({begin:1,x:35,y:30,type:1,stroke:1});
             pvs.push({x:35,y:40,stroke:1,type:1,end:1});
           }
         }`,
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
           if(i == 0){
             pvs.push({begin:1,x:45,y:30,type:1,stroke:1});
             pvs.push({x:45,y:40,stroke:1,type:1,end:1});
           }
         }`,
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
           if(i == 0){
             pvs.push({begin:1,x:35,y:30,type:1,stroke:1});
             pvs.push({x:45,y:30,stroke:1,type:1,end:1});
           }
         }`,
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
           if(i == 0){
             pvs.push({begin:1,x:40,y:20,type:1,stroke:1});
             pvs.push({x:40,y:40,stroke:1,type:1,end:1});
@@ -83,7 +83,7 @@ export default {
 
 
         //定义锚点
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
             switch(i){
               case 0:
                 pvs.push({x:sample.x,y:sample.y-25,type:0,oppoint:1});
@@ -109,7 +109,7 @@ export default {
         }`,
 
         //文本区域，margin：右10，下15
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
           let start = 0,end = 0
           let x = sample.x,y = sample.y
             switch(i){

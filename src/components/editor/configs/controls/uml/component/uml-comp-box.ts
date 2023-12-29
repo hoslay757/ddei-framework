@@ -17,7 +17,7 @@ export default {
       sample: {
         rules: [
           //文本区域
-          `(i, sample, pvs, model){
+          `(i, sample, pvs, model, ovs){
             if(i == 0){
               pvs.push({begin:1,x:45,y:50,text:1});
               pvs.push({x:-45,y:50,text:1});

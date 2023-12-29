@@ -22,7 +22,7 @@ export default {
       //半径距离
       //采样的规则，多组采样返回多组规则
       rules: [
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
             let er  = sample.r * 1.25
             let x = er * sample.cos
             let y = er * sample.sin
@@ -46,7 +46,7 @@ export default {
             pvs.push({begin:begin,end:end,x:x,y:y,r:er,select:1,clip:1,oppoint:2});
         }`,
 
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
             let er  = sample.r
             let x = sample.x
             let y = sample.y

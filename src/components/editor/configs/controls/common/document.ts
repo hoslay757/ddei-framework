@@ -20,7 +20,7 @@ export default {
       r: 50,
       //采样的规则，多组采样返回多组规则
       rules: [
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
           let start = 0,end = 0
             switch(i){
               case 0:
@@ -41,7 +41,7 @@ export default {
             }
             pvs.push({begin:start,end:end,x:sample.x,y:sample.y,select:1});
         }`,
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
           if(i == 0){
             //从左下，左上，右上，右下，曲线：左下
             pvs.push({begin:1,x:-sample.x,y:sample.x,fill:1,clip:1});
@@ -65,7 +65,7 @@ export default {
           }
         }`,
         //文本区域
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
           if(i == 0){
             //从左下，左上，右上，右下，曲线：左下
             pvs.push({begin:1,x:-sample.x,y:sample.x-15,text:1});

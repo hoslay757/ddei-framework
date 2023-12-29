@@ -22,7 +22,7 @@ export default {
       //采样的规则，多组采样返回多组规则
       rules: [
         //选中区域
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
             let dr  = -50/ Math.cos(45 * DDeiConfig.ROTATE_UNIT)
             pvs.push({begin:1,x:50,y:50,select:1})
             pvs.push({x:dr,y:50,select:1})
@@ -30,7 +30,7 @@ export default {
             pvs.push({end:1,x:50,y:-50,select:1})
         }`,
         //操作点
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
             let dr  = 50/ Math.cos(45 * DDeiConfig.ROTATE_UNIT)
             pvs.push({x:100-dr,y:0,oppoint:1})
             pvs.push({x:-dr,y:0,oppoint:1})
@@ -38,7 +38,7 @@ export default {
             pvs.push({x:0,y:-50,oppoint:1})
         }`,
         //主体区域
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
             let dr  = 50/ Math.cos(45 * DDeiConfig.ROTATE_UNIT)
             let rad1 = 135 * DDeiConfig.ROTATE_UNIT
             let rad2 = 225 * DDeiConfig.ROTATE_UNIT
@@ -49,7 +49,7 @@ export default {
             pvs.push({end:1,dx:100,type:2,r:dr,rad:rad1,direct:0,stroke:1,fill:1,clip:1})
         }`,
         //文本区域
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
             let dr  = 50/ Math.cos(45 * DDeiConfig.ROTATE_UNIT)
             pvs.push({begin:1,x:100-dr,y:50,text:1})
             pvs.push({x:-50,y:50,text:1})

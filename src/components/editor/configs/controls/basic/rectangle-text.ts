@@ -10,7 +10,7 @@ export default {
       sample: {
         //采样的规则，多组采样返回多组规则
         rules: [
-          `(i, sample, pvs, model){
+          `(i, sample, pvs, model, ovs){
             let start = 0,end = 0
             switch(i){
               case 0:

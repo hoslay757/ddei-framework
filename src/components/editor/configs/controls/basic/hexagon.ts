@@ -20,14 +20,14 @@ export default {
       r: 50,
       //采样的规则，多组采样返回多组规则
       rules: [
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
           let er = sample.r / Math.cos(45 * DDeiConfig.ROTATE_UNIT)
           let x = er * sample.cos
           let y = er * sample.sin
           pvs.push({begin:i == 0,end:i == 5,oppoint:2,x:x,y:y,select:1,clip:1,stroke:1,fill:1});
         }`,
 
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
           
           switch(i){
             case 0:;

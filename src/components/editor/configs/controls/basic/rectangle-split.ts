@@ -13,7 +13,7 @@ export default {
         direct: 1,//1横向切割，2纵向切割
         pvalue: -10,//切割的坐标，横向切割时为纵坐标，纵向切割时为横坐标
         rules: [
-          `(i, sample, pvs, model){
+          `(i, sample, pvs, model, ovs){
             if(i == 0){
               if(sample.direct == 1){
                 pvs.push({begin:1,x:-50,y:sample.pvalue,stroke:1,type:1});

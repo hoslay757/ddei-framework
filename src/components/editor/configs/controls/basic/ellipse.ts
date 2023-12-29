@@ -21,14 +21,14 @@ export default {
       //采样的规则，多组采样返回多组规则
       rules: [
         //选中区域
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
             let er  = sample.r / Math.cos(45 * DDeiConfig.ROTATE_UNIT) + 2
             let x = er * sample.cos
             let y = er * sample.sin
             pvs.push({x:x,y:y,r:er,select:1});
         }`,
         //操作点
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
             let x = sample.r  * Math.cos((sample.sita+45) * DDeiConfig.ROTATE_UNIT)
             let y = sample.r  * Math.sin((sample.sita+45) * DDeiConfig.ROTATE_UNIT)
             pvs.push({x:x,y:y,r:sample.r ,oppoint:1});
@@ -37,13 +37,13 @@ export default {
             }
         }`,
         //绘制线段、填充区域
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
             if(i == 0){
               pvs.push({r:sample.r,stroke:1,fill:1,clip:1,begin:1,end:1});
             }
         }`,
         //文本区域
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
             pvs.push({x:sample.x,y:sample.y,r:sample.r,text:1});
         }`,
       ]

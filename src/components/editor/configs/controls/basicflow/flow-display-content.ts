@@ -23,7 +23,7 @@ export default {
       //采样的规则，多组采样返回多组规则
       rules: [
         //选中区域
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
           if(i == 0){
             pvs.push({begin:1,x:65,y:50,select:1,clip:1})
             pvs.push({x:-135,y:50,select:1,clip:1})
@@ -32,7 +32,7 @@ export default {
           }
         }`,
         //操作点
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
           if(i == 0){
             pvs.push({begin:1,x:65,y:0,oppoint:1})
             pvs.push({x:0,y:50,oppoint:1})
@@ -41,7 +41,7 @@ export default {
           }
         }`,
         //绘制线段区域
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
             let er = sample.r / Math.cos(45 * DDeiConfig.ROTATE_UNIT)
             let rad = (sample.sita+45) * DDeiConfig.ROTATE_UNIT
             let x = er * Math.cos(rad)
@@ -68,7 +68,7 @@ export default {
         }`,
 
         //文本区域
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
           if(i == 0){
             pvs.push({begin:1,x:50,y:50,text:1})
             pvs.push({x:-50,y:50,text:1})

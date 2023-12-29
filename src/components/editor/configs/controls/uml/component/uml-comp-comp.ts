@@ -25,7 +25,7 @@ export default {
       //采样的规则，多组采样返回多组规则
       rules: [
         //选中区域
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
           let start = 0,end = 0
           let x = sample.x,y = sample.y
             switch(i){
@@ -47,7 +47,7 @@ export default {
             pvs.push({begin:start,end:end,x:x,y:y,select:1});
         }`,
         //线段与填充区域
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
           if(i == 0){
  
             pvs.push({begin:1,x:50,y:50,stroke:1,oppoint:2,fill:1});
@@ -72,7 +72,7 @@ export default {
           }
             
         }`,
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
           if(i == 0){
             pvs.push({begin:1,x:-50,y:34,stroke:1,fill:1});
             pvs.push({x:-25,y:34,stroke:1,fill:1});
@@ -81,7 +81,7 @@ export default {
             pvs.push({x:-50,y:25,type:0,oppoint:1});
           }   
         }`,
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
           if(i == 0){ 
             pvs.push({begin:1,x:-50,y:-34,stroke:1,fill:1});
             pvs.push({x:-25,y:-34,stroke:1,fill:1});
@@ -91,7 +91,7 @@ export default {
           }   
         }`,
         //文本区域
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
           if(sample.textInput && i == 0){
  
             pvs.push({begin:1,x:50,y:50,text:1});

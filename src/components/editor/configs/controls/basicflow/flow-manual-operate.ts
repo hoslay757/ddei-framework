@@ -21,7 +21,7 @@ export default {
       r: 50,
       //采样的规则，多组采样返回多组规则
       rules: [
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
           let start = 0,end = 0
             switch(i){
               case 0:
@@ -43,7 +43,7 @@ export default {
             pvs.push({begin:start,end:end,x:sample.x,y:sample.y,oppoint:2,select:1,clip:1,stroke:1,fill:1});
         }`,
 
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
           let start = 0,end = 0
             switch(i){
               case 0:

@@ -20,7 +20,7 @@ export default {
       r: 50,
       //采样的规则，多组采样返回多组规则
       rules: [
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
             if(i % 4 == 0){
               pvs.push({begin:i == 0,end:i == 8,x:sample.x,y:sample.y,select:1,clip:1,oppoint:2,stroke:1,fill:1});
             }

@@ -31,7 +31,7 @@ export default {
       r: 50,
       //采样的规则，多组采样返回多组规则
       rules: [
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
           let start = 0,end = 0
           let x = sample.x,y = sample.y
             switch(i){
@@ -53,7 +53,7 @@ export default {
             pvs.push({begin:start,end:end,x:x,y:y,select:1,clip:1,stroke:1,fill:1});
         }`,
         //定义锚点
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
          
             switch(i){
               case 0:
@@ -80,7 +80,7 @@ export default {
         }`,
 
         //文本区域，右margin：5
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model, ovs){
           let start = 0,end = 0
           let x = sample.x,y = sample.y
             switch(i){

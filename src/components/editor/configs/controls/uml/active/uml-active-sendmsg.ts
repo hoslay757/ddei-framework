@@ -23,7 +23,7 @@ export default {
       //采样的规则，多组采样返回多组规则
       rules: [
         //绘制线段区域
-        `(i, sample, pvs, model){ 
+        `(i, sample, pvs, model, ovs){ 
             switch(i){
               case 0:
                 pvs.push({begin:1,x:75,y:0,fill:1,clip:1,select:1,stroke:1});
