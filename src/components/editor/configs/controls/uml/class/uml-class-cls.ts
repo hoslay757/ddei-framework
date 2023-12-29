@@ -7,7 +7,7 @@ export default {
   'from': '100008',
   'icon': 'toolbox-shape-rect',
   'define': {
-    width: 230,
+    width: 240,
     height: 160,
     border: {
       round: 5
@@ -35,7 +35,7 @@ export default {
     //组合控件
     composes: [
       {
-        width: 230,
+        width: 240,
         height: 30,
         id: '100002',
         cIndex: 1,
@@ -55,7 +55,7 @@ export default {
         }
       },
       {
-        width: 230,
+        width: 240,
         height: 64,
         id: '100002',
         cIndex: 1,
@@ -79,7 +79,7 @@ export default {
         }
       },
       {
-        width: 230,
+        width: 240,
         height: 64,
         id: '100002',
         cIndex: 1,

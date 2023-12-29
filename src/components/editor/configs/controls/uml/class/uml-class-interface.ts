@@ -61,7 +61,8 @@ export default {
         textStyle: {
           align: 1,
           feed: 1,
-          autoScaleFill: 1
+          autoScaleFill: 1,
+          vspace: 2,
         },
         fill: {
           disabled: true

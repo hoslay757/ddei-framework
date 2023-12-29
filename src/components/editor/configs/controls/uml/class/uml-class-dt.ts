@@ -13,7 +13,8 @@ Datatype`,
     textStyle: {
       valign: 1,
       italic: 1,
-      feed: 1
+      feed: 1,
+      vspace: 2,
     }
   }
 
