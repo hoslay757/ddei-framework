@@ -37,9 +37,9 @@ export default {
                 deltaRotate =  -180    
               break;
             }
-            let rad1 = (72+model.rotate+deltaRotate) * DDeiConfig.ROTATE_UNIT
-            let rad2 = (-72+model.rotate+deltaRotate) * DDeiConfig.ROTATE_UNIT
-            let rad0 = (model.rotate+deltaRotate) * DDeiConfig.ROTATE_UNIT
+            let rad1 = (72+deltaRotate) * DDeiConfig.ROTATE_UNIT
+            let rad2 = (-72+deltaRotate) * DDeiConfig.ROTATE_UNIT
+            let rad0 = (deltaRotate) * DDeiConfig.ROTATE_UNIT
             let x0 = sample.r * Math.cos(rad0)
             let y0 = sample.r * Math.sin(rad0)
             let x1 = sample.r * Math.cos(rad1)
