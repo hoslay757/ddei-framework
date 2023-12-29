@@ -1071,7 +1071,7 @@ abstract class DDeiAbstractShape {
               eval("link.evalScript = function" + link.script)
             }
             if (link.evalScript) {
-              link.evalScript(this, point, pointDefine)
+              link.evalScript(this, point, pointDefine, link)
             }
             break;
           }

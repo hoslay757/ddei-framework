@@ -1284,6 +1284,29 @@ class DDeiUtil {
     return []
   }
 
+
+  /**
+   * 根据类别获取OVS
+   * @param ovs 
+   * @param type 
+   * @returns 
+   */
+  static getOVSByType(model, type: number) {
+    if (!type) {
+      return model.ovs
+    }
+    let returnOVS = []
+    let ovds = DDeiUtil.getControlDefine(model)?.define?.ovs;
+    for (let i = 0; i < model?.ovs?.length; i++) {
+      let ov = model.ovs[i]
+      let ovd = ovds[i]
+      if (ovd.type == type) {
+        returnOVS.push(ov)
+      }
+    };
+    return returnOVS
+  }
+
   /**
    * 对坐标以及大小进行缩放，并返回新的坐标
    * @param pos 原始位置

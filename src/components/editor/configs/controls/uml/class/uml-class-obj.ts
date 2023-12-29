@@ -1,4 +1,4 @@
-import ov_link_split_point from "../../../scripts/uml/ov-link-split-point"
+import ov_link_v_split_point from "../../../scripts/uml/ov-link-split-point"
 export default {
   'id': '307016',
   'name': '对象',
@@ -79,6 +79,7 @@ export default {
       //定义标题区域的高度控制点
       {
         x: 0, y: -20, ix: 0, iy: -50,
+        type: 1, //纵向分割点
         constraint: {
           type: 2,
           x0: 0,
@@ -91,7 +92,7 @@ export default {
         links: [
           {
             type: 99,//执行脚本
-            script: ov_link_split_point
+            script: ov_link_v_split_point
           }
         ]
       },

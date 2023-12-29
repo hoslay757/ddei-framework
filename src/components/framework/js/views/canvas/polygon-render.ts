@@ -765,7 +765,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         let isOutSize = false;
         let maxFontSize = 0;
 
-        if (fontSize > ratPos.height) {
+        if (fontSize + vspace > ratPos.height) {
           if (autoScaleFill == 1) {
             textContainer = [];
             let ds = fontSize < 50 ? 0.5 : Math.floor(fontSize / 50)
@@ -923,6 +923,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           textContainer = [];
           let ds = maxFontSize < 50 ? 0.5 : Math.floor(maxFontSize / 50)
           fontSize -= ds;
+          vspace -= ds
           subtractionFontSize += ds
         }
       }

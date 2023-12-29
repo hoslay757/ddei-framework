@@ -1,4 +1,4 @@
-import ov_link_split_point from "../../../scripts/uml/ov-link-split-point"
+import ov_link_v_split_point from "../../../scripts/uml/ov-link-split-point"
 export default {
   'id': '307001',
   'name': '类',
@@ -108,6 +108,7 @@ export default {
       //定义标题区域的高度控制点
       {
         x: 0, y: -31, ix: 0, iy: -50,
+        type: 1, //纵向分割点
         constraint: {
           type: 2,
           x0: 0,
@@ -120,13 +121,17 @@ export default {
         links: [
           {
             type: 99,//执行脚本
-            script: ov_link_split_point
+            script: ov_link_v_split_point,
+            //参数可以自定义，脚本中可以取到
+            models: ["composes[0]"],
+            nextModels: ["composes[1]"]
           }
         ]
       },
       //定义属性区的高度控制点
       {
         x: 0, y: 9.375, ix: 0, iy: 9.375,
+        type: 1, //纵向分割点
         constraint: {
           type: 2,
           x0: 0,
@@ -139,7 +144,10 @@ export default {
         links: [
           {
             type: 99,//执行脚本
-            script: ov_link_split_point
+            script: ov_link_v_split_point,
+            //参数可以自定义，脚本中可以取到
+            models: ["composes[1]"],
+            nextModels: ["composes[2]"]
           }
         ]
       }

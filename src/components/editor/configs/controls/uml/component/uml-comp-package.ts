@@ -1,4 +1,5 @@
-import ov_link_split_point from "../../../scripts/uml/ov-link-split-point"
+import { ov_link_v_split_point, ov_link_h_split_point } from "../../../scripts/uml/ov-link-split-point"
+
 export default {
   'id': '305003',
   'name': '包',
@@ -23,18 +24,18 @@ export default {
       //采样的规则，多组采样返回多组规则
       rules: [
         //选中区域
-        `(i, sample, pvs, model){
+        `(i, sample, pvs, model,ovs){
             pvs.push({begin:1,x:50,y:50,stroke:1,fill:1,clip:1,oppoint:2,select:1});
             pvs.push({x:-50,y:50,stroke:1,fill:1,clip:1,oppoint:2,select:1});
-            pvs.push({x:-50,y:-38,stroke:1,fill:1,clip:1,oppoint:2,select:1});
+            pvs.push({x:-50,y:(ovs[0].y-model.cpv.y),stroke:1,fill:1,clip:1,oppoint:2,select:1});
             pvs.push({x:-50,y:-50,stroke:1,fill:1,clip:1,oppoint:2,select:1});
-            pvs.push({x:-10,y:-50,stroke:1,fill:1,clip:1,oppoint:2,select:1});
-            pvs.push({x:-10,y:-38,stroke:1,fill:1,clip:1,oppoint:2,select:1});
-            pvs.push({x:50,y:-38,stroke:1,fill:1,clip:1,oppoint:2,select:1,end:1});
+            pvs.push({x:(ovs[1].x-ovs[1].ovi.x-50),y:-50,stroke:1,fill:1,clip:1,oppoint:2,select:1});
+            pvs.push({x:(ovs[1].x-ovs[1].ovi.x-50),y:(ovs[0].y-model.cpv.y),stroke:1,fill:1,clip:1,oppoint:2,select:1});
+            pvs.push({x:50,y:(ovs[0].y-model.cpv.y),stroke:1,fill:1,clip:1,oppoint:2,select:1,end:1});
         }`,
-        `(i, sample, pvs, model){
-            pvs.push({begin:1,x:-50,y:-38,stroke:1,type:1});
-            pvs.push({end:1,x:50,y:-38,stroke:1,type:1});
+        `(i, sample, pvs, model,ovs){
+            pvs.push({begin:1,x:-50,y:(ovs[0].y-model.cpv.y),stroke:1,type:1});
+            pvs.push({end:1,x:50,y:(ovs[0].y-model.cpv.y),stroke:1,type:1});
             
         }`,
       ],
@@ -78,9 +79,10 @@ export default {
     ],
     //操作点定义
     ovs: [
-      //定义标题区域的高度控制点
+      //定义垂直控制点
       {
         x: -30, y: -37.5, ix: -30, iy: -50,
+        type: 1, //纵向分割点
         constraint: {
           type: 2,
           x0: -30,
@@ -88,12 +90,38 @@ export default {
           y0: -50,
           y1: -20
         },
-        //联动，控制第一个和第二个composes[0]的大小
+        //联动，控制composes的大小
         //这里计算较为复杂，需要用脚本来进行控制
         links: [
           {
             type: 99,//执行脚本
-            script: ov_link_split_point
+            script: ov_link_v_split_point,
+            //参数可以自定义，脚本中可以取到
+            models: ["composes[0]"],
+            nextModels: ["composes[1]"]
+          }
+        ]
+      },
+      //上方标题的区域宽度控制点
+      {
+        x: -10, y: -43.75, ix: -50, iy: -43.75,
+        type: 2, //横向分割点
+        constraint: {
+          type: 2,
+          x0: -50,
+          x1: 50,
+          y0: -43.75,
+          y1: -43.75
+        },
+        //联动，控制第一个和第二个composes的大小
+        //这里计算较为复杂，需要用脚本来进行控制
+        links: [
+          {
+            type: 99,//执行脚本
+            script: ov_link_h_split_point,
+            //参数可以自定义，脚本中可以取到
+            models: ["composes[0]"],
+            nextModels: []
           }
         ]
       }
