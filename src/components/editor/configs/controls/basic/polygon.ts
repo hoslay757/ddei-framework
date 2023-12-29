@@ -396,7 +396,7 @@ export const styles = {
       'code': 'textStyle.subtype',
       'name': '标注类型',
       'desc': '文本的标注类型',
-      'group': '基础信息',
+      'group': '文本',
       'controlType': 'radio',
       'dataType': 'integer',
       'dataSource': [{ 'text': '正常', 'value': 0 }, { 'text': '上标', 'value': 1 }, { 'text': '中标', 'value': 2 }, { 'text': '下标', 'value': 3 }],
@@ -406,7 +406,7 @@ export const styles = {
     },
 
     {
-      'id': '100500303',
+      'id': '100500215',
       'code': 'textStyle.align',
       'name': '水平对齐',
       'desc': '文本的水平对齐',
@@ -417,7 +417,7 @@ export const styles = {
       'visiable': false
     },
     {
-      'id': '100500304',
+      'id': '100500216',
       'code': 'textStyle.valign',
       'name': '垂直对齐',
       'desc': '文本的垂直对齐',
@@ -426,6 +426,34 @@ export const styles = {
       'dataType': 'integer',
       'defaultValue': 2,
       'visiable': false
+    },
+    {
+      'id': '100500217',
+      'code': 'textStyle.hspace',
+      'name': '水平间距',
+      'desc': '文本之间的水平间距',
+      'group': '文本',
+      'controlType': 'range',
+      'min': 0,
+      'max': 1,
+      'step': 0.1,
+      'dataType': 'float',
+      'defaultValue': 0.5,
+      'visiable': true
+    },
+    {
+      'id': '100500218',
+      'code': 'textStyle.vspace',
+      'name': '垂直间距',
+      'desc': '文本之间的垂直间距',
+      'group': '文本',
+      'controlType': 'range',
+      'min': 0,
+      'max': 1,
+      'step': 0.1,
+      'dataType': 'float',
+      'defaultValue': 0.5,
+      'visiable': true
     },
     {
       'id': '100500305',

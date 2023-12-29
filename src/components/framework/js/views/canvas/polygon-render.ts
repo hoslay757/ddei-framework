@@ -684,6 +684,21 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     //自动换行
     let feed = this.getCachedValue("textStyle.feed");
 
+    //间距，间距随全局缩放比例变化，但与控件本身大小无关
+    //自动缩放字体时，间距也同步变小
+    let hspace = this.getCachedValue("textStyle.hspace");
+    let vspace = this.getCachedValue("textStyle.vspace");
+    if (!hspace) {
+      hspace = 0
+    }
+    if (!vspace) {
+      vspace = 0
+    }
+    hspace = hspace * ratio
+    vspace = vspace * ratio
+
+
+
     //以上样式为控件的整体样式，不能在文本中单独设置
 
     //以下样式：字体、颜色、大小、镂空、粗体、斜体、下划线、删除线、上标、下标等
@@ -755,6 +770,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
             textContainer = [];
             let ds = fontSize < 50 ? 0.5 : Math.floor(fontSize / 50)
             fontSize -= ds;
+            vspace -= ds
             continue;
           }
         }
@@ -772,8 +788,6 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         let lastUnSubTypeFontSize = 0;
         for (let ti = 0; ti < cText.length; ti++, rcIndex++) {
           let te = cText[ti];
-          //回车换行
-
           //读取当前特殊样式，如果没有，则使用外部基本样式
           let font = null
           let fontHeight = null
@@ -820,18 +834,18 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
             maxFontSize = Math.max(maxFontSize, fontHeight)
 
             let rc1 = DDeiUtil.measureText(te, font, ctx);
-            fontShapeRect = { width: rc1.width * ratio, height: rc1.height * ratio }
+
+            fontShapeRect = { width: rc1.width * ratio + hspace, height: rc1.height * ratio }
             usedWidth += fontShapeRect.width;
 
             textRowContainer.text += te;
             textRowContainer.widths[rcIndex] = fontShapeRect.width
-            textRowContainer.heights[rcIndex] = fontHeight * ratio
+            textRowContainer.heights[rcIndex] = fontHeight * ratio + vspace
             textRowContainer.width = usedWidth
-            textRowContainer.height = Math.max(fontHeight * ratio, textRowContainer.height ? textRowContainer.height : 0, lastUnSubTypeFontSize * ratio)
+            textRowContainer.height = Math.max(fontHeight * ratio + vspace, textRowContainer.height ? textRowContainer.height : 0, lastUnSubTypeFontSize * ratio + vspace)
           }
 
           //如果不自动换行也不缩小字体，则超过的话，就省略显示
-
           if (feed == 0) {
             //如果具备缩小字体填充，并且usedWidth超出了单行大小,则跳出循环，重新生成
             if (autoScaleFill == 1 && usedWidth > contentWidth) {
