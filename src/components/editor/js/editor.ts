@@ -86,9 +86,9 @@ class DDeiEditor {
     //ESC取消快捷编辑
     { keys: "27", editorState: DDeiEditorState.QUICK_EDITING, action: DDeiEnumKeyActionInst.CancelQuickEdit },
     //Enter确定快捷编辑
-    { keys: "13", editorState: DDeiEditorState.QUICK_EDITING, action: DDeiEnumKeyActionInst.EnterQuickEdit },
+    { keys: "13", shift: 1, editorState: DDeiEditorState.QUICK_EDITING, action: DDeiEnumKeyActionInst.EnterQuickEdit },
     //Enter新行
-    { keys: "13", alt: true, editorState: DDeiEditorState.QUICK_EDITING, action: DDeiEnumKeyActionInst.NewRowQuickEdit },
+    { keys: "13", editorState: DDeiEditorState.QUICK_EDITING, action: DDeiEnumKeyActionInst.NewRowQuickEdit },
     //表格内部回车，往下一行
     { keys: "13", modelType: 'DDeiTable', editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.TableNextRow },
     //表格内部tab，往下一列
