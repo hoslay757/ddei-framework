@@ -189,6 +189,12 @@ export default {
       'text': '',
       'orderNo': 92
     },
+    {
+      'id': '104125',
+      'name': '大括号',
+      'text': '',
+      'orderNo': 93
+    },
 
 
 

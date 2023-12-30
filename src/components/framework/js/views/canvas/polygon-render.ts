@@ -408,6 +408,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         if (pv.begin) {
           ctx.beginPath()
         }
+        if (pv.move) {
+          ctx.moveTo(pv.x * rat1 + lineOffset, pv.y * rat1 + lineOffset)
+        }
         if (pv.type == 3 || (drawLine && !pv.stroke)) {
           ctx.moveTo(pv.x * rat1 + lineOffset, pv.y * rat1 + lineOffset)
         } else if (pv.type == 2 || pv.type == 4) {
@@ -430,7 +433,6 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         }
         //曲线
         else if (pv.type == 5) {
-          let i0 = i;
           let i1 = i + 1;
           let i2 = i + 2;
           let i3 = i + 3;
