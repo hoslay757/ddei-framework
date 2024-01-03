@@ -84,17 +84,24 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
 
           //如果控件不存在，则创建控件并创建链接
           if (!realModel) {
+
             //根据control的定义，初始化临时控件，并推送至上层Editor
             let dataJson = {
-              id: "lsm_" + (stage.idIdx++),
+
               modelCode: "100002",
-              width: 80,
-              height: 20,
-              fill: { type: 0 },
-              border: { top: { disabled: true }, left: { disabled: true }, right: { disabled: true }, bottom: { disabled: true } },
-              font: { size: 10 }
+
             };
-            realModel = MODEL_CLS["DDeiRectangle"].initByJSON(
+            let controlDefine = DDeiUtil.getControlDefine(dataJson)
+            for (let i in controlDefine?.define) {
+              dataJson[i] = controlDefine.define[i];
+            }
+            dataJson["id"] = "lsm_" + (stage.idIdx++)
+            dataJson["width"] = 80
+            dataJson["height"] = 25
+            dataJson["fill"] = { disabled: true }
+            dataJson["border"] = { disabled: true }
+            dataJson["font"] = { size: 12 }
+            realModel = MODEL_CLS["DDeiPolygon"].initByJSON(
               dataJson,
               { currentStage: stage, currentDdInstance: ddInstance, currentContainer: model.pModel }
             );

@@ -394,7 +394,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     let wl = 0;
     switch (stype) {
       case 1:
-        wl = sweight * stageRatio;
+        // wl = sweight * stageRatio;
         break;
       case 21:
       case 2:
@@ -415,9 +415,10 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     }
     startDX = -startVectorUnit.x * wl
     startDY = startVectorUnit.y * wl
+    wl = 0
     switch (etype) {
       case 1:
-        wl = eweight * stageRatio;
+        // wl = eweight * stageRatio;
         break;
       case 21:
       case 2:
@@ -479,7 +480,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     let opacity = tempLine?.opacity ? tempLine.opacity : this.getCachedValue("opacity");
 
     ctx.save()
-
+    ctx.setLineDash([])
     let pvs = this.model.pvs;
     let point = null;
     let upPoint = null;
@@ -520,7 +521,6 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       ctx.rotate(rotate * DDeiConfig.ROTATE_UNIT);
       ctx.translate(-point.x * rat1, -point.y * rat1)
     }
-
     switch (type) {
       case 1: {
         let wl = weight * stageRatio;
