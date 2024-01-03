@@ -26,6 +26,7 @@ import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
 import DDeiStage from "@/components/framework/js/models/stage";
 import DDeiEditorUtil from "../js/util/editor-util";
 import DDeiEnumKeyActionInst from "../js/enums/key-action-inst";
+import DDeiLineLink from "@/components/framework/js/models/linelink";
 
 export default {
   name: "DDei-Editor-CanvasView",
@@ -315,21 +316,19 @@ export default {
         let ey = e.offsetY;
         ex -= stage.wpv.x;
         ey -= stage.wpv.y;
-        if (this.editor.creatingControl) {
-
-
+        if (this.editor.creatingControls) {
           //当前激活的图层
           let layer = stage.layers[stage.layerIndex];
           if (layer) {
             stage.render.currentOperateContainer = layer;
             stage.render.operateState = DDeiEnumOperateState.CONTROL_CREATING;
-            let control = this.editor.creatingControl;
-            stage.render.currentOperateShape = control;
+            let controls = this.editor.creatingControls;
+            stage.render.currentOperateShape = controls[0];
             //在画布上创建临时对象
-            if (!layer.models.has(control.id)) {
+            if (!layer.models.has(controls[0].id)) {
               this.editor.bus.push(
                 DDeiEnumBusCommandType.ModelChangeContainer,
-                { newContainer: layer, models: [control] },
+                { newContainer: layer, models: controls },
                 e
               );
               //记录当前的拖拽的x,y,写入dragObj作为临时变量
@@ -337,11 +336,16 @@ export default {
               let dragObj = {
                 x: ex,
                 y: ey,
-                dx: 0, //鼠标在控件中心坐标的增量位置
-                dy: 0,
-                model: control,
+
+                model: controls[0],
                 num: 0,
-              };
+              }
+              controls.forEach(c => {
+                dragObj[c.id] = {
+                  dx: c.cpv.x - controls[0].cpv.x, //鼠标在控件中心坐标的增量位置
+                  dy: c.cpv.y - controls[0].cpv.y
+                }
+              });
               this.editor.bus.push(
                 DDeiEnumBusCommandType.UpdateDragObj,
                 { dragObj: dragObj },
@@ -351,20 +355,16 @@ export default {
               this.editor.bus.push(
                 DDeiEnumBusCommandType.ModelChangePosition,
                 {
-                  models: [control],
+                  models: controls,
                   x: ex,
                   y: ey,
-                  dx: dragObj.dx,
-                  dy: dragObj.dy,
                   dragObj: dragObj,
                 },
                 e
               );
-              this.editor.bus.push(
-                DDeiEnumBusCommandType.RefreshShape,
-                null,
-                e
-              );
+
+
+              this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
             } else {
               let dt = new Date().getTime();
               let isExec = true;
@@ -398,7 +398,10 @@ export default {
                   //显示辅助对齐线、坐标文本等图形
                   let selectedModels: Map<string, DDeiAbstractShape> =
                     new Map();
-                  selectedModels.set(control.id, control);
+                  controls.forEach(control => {
+                    selectedModels.set(control.id, control);
+                  });
+
 
                   //修改辅助线
                   this.editor?.bus?.push(
@@ -410,7 +413,7 @@ export default {
                   this.editor.bus.push(
                     DDeiEnumBusCommandType.ModelChangePosition,
                     {
-                      models: [control],
+                      models: controls,
                       x: ex,
                       y: ey,
                       dx: 0,
@@ -471,7 +474,7 @@ export default {
         let ey = e.offsetY;
         ex -= stage.wpv.x;
         ey -= stage.wpv.y;
-        if (this.editor.creatingControl) {
+        if (this.editor.creatingControls) {
           let isAlt = DDeiEditor.KEY_DOWN_STATE.get("alt");
           let ddInstance: DDei = this.editor.ddInstance;
           ddInstance.stage.idIdx++;
@@ -492,7 +495,7 @@ export default {
                 {
                   newContainer: lastOnContainer,
                   oldContainer: layer,
-                  models: [this.editor.creatingControl],
+                  models: this.editor.creatingControls,
                 }
               );
             }
@@ -502,17 +505,38 @@ export default {
             DDeiEnumBusCommandType.CancelCurLevelSelectedModels,
             { container: layer, curLevel: true }
           );
-
-          this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeSelect, [
-            {
-              id: this.editor.creatingControl.id,
+          //添加初始linkModels以及控件关联
+          this.editor.creatingControls.forEach(cc => {
+            let ccDefine = DDeiUtil.getControlDefine(cc)
+            if (ccDefine?.define?.iLinkModels) {
+              for (let ilk in ccDefine?.define?.iLinkModels) {
+                let linkData = ccDefine?.define?.iLinkModels[ilk]
+                let cIndex = parseInt(ilk)
+                if (cIndex != -1) {
+                  cIndex++
+                  let linkControl = this.editor.creatingControls[cIndex]
+                  let lineLink = new DDeiLineLink({
+                    line: cc,
+                    type: linkData.type,
+                    dm: linkControl,
+                    dx: linkData.dx,
+                    dy: linkData.dy,
+                  })
+                  cc.linkModels.set(linkControl.id, lineLink);
+                }
+              }
+            }
+          });
+          this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeSelect,
+            [{
+              id: this.editor.creatingControls[0].id,
               value: DDeiEnumControlState.SELECTED,
-            },
-          ]);
+            }]
+          );
           this.editor.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels);
 
           this.editor.bus.push(DDeiEnumBusCommandType.NodifyControlCreated, {
-            models: [this.editor.creatingControl],
+            models: this.editor.creatingControls,
           });
           //清除临时变量
           this.editor.bus.push(DDeiEnumBusCommandType.ClearTemplateVars);
@@ -520,7 +544,7 @@ export default {
           this.editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
           //渲染图形
           this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
-          this.editor.creatingControl = null;
+          this.editor.creatingControls = null;
           //切换到设计器
           this.editor.state = DDeiEditorState.DESIGNING;
           this.editor.bus.executeAll();
@@ -533,11 +557,11 @@ export default {
      */
     createControlCancel(e) {
       if (this.editor.state == DDeiEditorState.CONTROL_CREATING) {
-        if (this.editor.creatingControl) {
+        if (this.editor.creatingControls) {
           let ddInstance: DDei = this.editor.ddInstance;
           let layer = ddInstance.stage.layers[ddInstance.stage.layerIndex];
           //从layer中移除控件
-          layer.removeModel(this.editor.creatingControl);
+          layer.removeModels(this.editor.creatingControls);
 
           //清除临时变量
           this.editor.bus.push(

@@ -72,7 +72,18 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
             linePoint = model.endPoint;
           }
           else if (type == 3) {
-            linePoint = model.pvs[Math.floor(model.pvs.length / 2)];
+            //奇数，取正中间
+            let pi = Math.floor(model.pvs.length / 2)
+            if (model.pvs.length % 3 == 0) {
+              linePoint = model.pvs[pi];
+            }
+            //偶数，取两边的中间点
+            else {
+              linePoint = {
+                x: (model.pvs[pi - 1].x + model.pvs[pi].x) / 2,
+                y: (model.pvs[pi - 1].y + model.pvs[pi].y) / 2
+              }
+            }
           }
           let realModel = null;
 

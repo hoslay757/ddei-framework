@@ -354,7 +354,18 @@ class DDeiLine extends DDeiAbstractShape {
           } else if (lm.type == 2) {
             point = this.endPoint;
           } else if (lm.type == 3) {
-            point = this.pvs[Math.floor(this.pvs.length / 2)];
+            //奇数，取正中间
+            let pi = Math.floor(this.pvs.length / 2)
+            if (this.pvs.length % 3 == 0) {
+              point = this.pvs[pi];
+            }
+            //偶数，取两边的中间点
+            else {
+              point = {
+                x: (this.pvs[pi - 1].x + this.pvs[pi].x) / 2,
+                y: (this.pvs[pi - 1].y + this.pvs[pi].y) / 2
+              }
+            }
           }
           let newCPVX = point.x + lm.dx;
           let newCPVY = point.y + lm.dy;

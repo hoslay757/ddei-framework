@@ -13,7 +13,7 @@ import DDeiStage from '../../models/stage.js';
 import DDeiUtil from '../../util.js'
 import DDeiCanvasRender from './ddei-render.js';
 import DDeiStageCanvasRender from './stage-render.js';
-import { Vector3 } from 'three';
+import { Vector3, Matrix3 } from 'three';
 import DDeiLink from '../../models/link.js';
 /**
  * DDeiLayer的渲染器类，用于渲染文件
@@ -977,19 +977,7 @@ class DDeiLayerCanvasRender {
                     }
                   })
                   //依附于线段存在的子控件，跟着线段移动
-                  model.linkModels.forEach(lm => {
-                    let point = null;
-                    if (lm.type == 1) {
-                      point = model.startPoint;
-                    } else if (lm.type == 2) {
-                      point = model.endPoint;
-                    } else if (lm.type == 3) {
-                      point = model.pvs[Math.floor(model.pvs.length / 2)];
-                    }
-                    lm.dm.cpv.x = point.x + lm.dx
-                    lm.dm.cpv.y = point.y + lm.dy
-                    lm.dm.initPVS()
-                  });
+                  model.refreshLinkModels()
                 }
                 //第二种情况，移动了非线控件，此时要判断两种情况
                 else {

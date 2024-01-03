@@ -490,8 +490,8 @@ export default {
      * 准备创建控件
      * @param control 要创建的控件定义
      */
-    createControlPrepare(model: DDeiAbstractShape): void {
-      if (model) {
+    createControlPrepare(models: DDeiAbstractShape[]): void {
+      if (models?.length > 0) {
         let ddInstance = this.editor.ddInstance;
         let stage = ddInstance.stage;
         if (stage?.render?.operateState == DDeiEnumOperateState.QUICK_EDITING && stage?.render?.editorShadowControl) {
@@ -500,7 +500,7 @@ export default {
         //修改编辑器状态为控件创建中
         this.editor.changeState(DDeiEditorState.CONTROL_CREATING);
         //设置正在需要创建的控件
-        this.editor.creatingControl = model;
+        this.editor.creatingControls = models;
         this.editor.bus?.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
         this.editor.bus?.executeAll();
       }

@@ -164,48 +164,59 @@ export default {
       if ((layer.display == 0 && !layer.tempDisplay) || layer.lock) {
         return;
       }
-      //根据control的定义，初始化临时控件，并推送至上层Editor
-      let searchPaths = [
-        "width",
-        "height",
-        "text",
-        "linkChild",
-        "linkSelf",
-        "subcontrol",
-        "layout",
-      ];
-      let configAtrs = DDeiEditorUtil.getAttrValueByConfig(
-        control,
-        searchPaths
-      );
-
-      let dataJson = {
-        id: control.code + "_" + (stage.idIdx + 1),
-        modelCode: control.id,
-      };
-
-
-      //设置配置的属性值
-      searchPaths.forEach((key) => {
-        if (configAtrs.get(key)) {
-          dataJson[key] = configAtrs.get(key).data;
-        }
-        if (control[key] != undefined && control[key] != null) {
-          dataJson[key] = control[key];
-        }
+      let createControlArr = [control]
+      control.others?.forEach(oc => {
+        createControlArr.push(oc)
       });
-      if (control.img) {
-        dataJson.fill = { type: 2, image: control.img };
-      }
-      for (let i in control?.define) {
-        dataJson[i] = control.define[i];
-      }
-      //如果有from则根据from读取属性
-      delete dataJson.ovs
-      let model: DDeiAbstractShape = this.controlCls[control.type].initByJSON(
-        dataJson,
-        { currentStage: stage }
-      );
+      //创建控件
+      let models = []
+      createControlArr.forEach(cc => {
+        //根据control的定义，初始化临时控件，并推送至上层Editor
+        let searchPaths = [
+          "width",
+          "height",
+          "text",
+          "linkChild",
+          "linkSelf",
+          "subcontrol",
+          "layout",
+        ];
+        let configAtrs = DDeiEditorUtil.getAttrValueByConfig(
+          cc,
+          searchPaths
+        );
+        let dataJson = {
+          id: cc.code + "_" + (stage.idIdx + 1),
+          modelCode: cc.id,
+        };
+
+
+        //设置配置的属性值
+        searchPaths.forEach((key) => {
+          if (configAtrs.get(key)) {
+            dataJson[key] = configAtrs.get(key).data;
+          }
+          if (cc[key] != undefined && cc[key] != null) {
+            dataJson[key] = cc[key];
+          }
+        });
+        if (cc.img) {
+          dataJson.fill = { type: 2, image: cc.img };
+        }
+        for (let i in cc?.define) {
+          dataJson[i] = cc.define[i];
+        }
+        //如果有from则根据from读取属性
+        delete dataJson.ovs
+        let model: DDeiAbstractShape = this.controlCls[cc.type].initByJSON(
+          dataJson,
+          { currentStage: stage }
+        );
+        models.push(model)
+      })
+
+
+
       //加载事件的配置
       let createBefore = DDeiUtil.getConfigValue(
         "EVENT_CONTROL_CREATE_BEFORE",
@@ -214,7 +225,7 @@ export default {
       //选中前
       if (
         !createBefore ||
-        createBefore(DDeiEnumOperateType.CREATE, [model], null, ddInstance)
+        createBefore(DDeiEnumOperateType.CREATE, models, null, ddInstance)
       ) {
         let stageRatio = stage.getStageRatio();
         let moveMatrix = new Matrix3(
@@ -228,13 +239,15 @@ export default {
           0,
           1
         );
-        model.transVectors(moveMatrix);
+        models.forEach(model => {
+          model.transVectors(moveMatrix);
+          model.setState(DDeiEnumControlState.CREATING);
+        })
 
-        model.setState(DDeiEnumControlState.CREATING);
 
         e.dataTransfer.setDragImage(this.creatingImg, 0, 0);
 
-        this.$emit("createControlPrepare", model);
+        this.$emit("createControlPrepare", models);
       }
     },
 

@@ -108,6 +108,28 @@ const loadControlByFrom = function (control) {
       });
     }
 
+    //处理others
+    if (control.others) {
+      control.others.forEach(other => {
+        let otherControlDefine = controlOriginDefinies.get(other.id)
+        if (otherControlDefine.from) {
+          loadControlByFrom(otherControlDefine)
+        }
+        other.code = otherControlDefine.code
+        let otherDefine = cloneDeep(otherControlDefine.define)
+        //合并控件自身与from组件的define、menu
+        if (otherDefine) {
+
+          for (let i in otherDefine) {
+            if (!(other.define[i] || other.define[i] == 0)) {
+              other.define[i] = otherDefine[i]
+            }
+          }
+        }
+        other.type = otherControlDefine.type
+      });
+    }
+
     if (fromMenus) {
       if (!control.menus) {
         control.menus = {};

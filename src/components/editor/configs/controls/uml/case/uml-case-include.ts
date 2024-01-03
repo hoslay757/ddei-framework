@@ -13,15 +13,27 @@ export default {
     },
     pvs: [
       { x: 0, y: 0, z: 1 },
+      { x: 75, y: 0, z: 1 },
       { x: 150, y: 0, z: 1 },
     ],
+    iLinkModels: {
+      "0": { type: 3, dx: 0, dy: -10 }
+    }
   },
   //其它同时创建的平级控件
   others: [
     {
-      width: 200,
-      height: 100,
-      id: '100002'
+      'id': '100002',
+      'define': {
+        width: 100,
+        height: 20,
+        text: "<<include>>",
+        fill: { disabled: true },
+        border: { disabled: true },
+        initCPV: {
+          x: 75, y: -10
+        }
+      }
     },
   ]
 }
