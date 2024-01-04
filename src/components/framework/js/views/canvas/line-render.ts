@@ -412,6 +412,10 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       case 5:
         wl = sweight * stageRatio + lineWeight;
         break;
+      case 61:
+      case 6:
+        wl = sweight * stageRatio / 2
+        break;
     }
     startDX = -startVectorUnit.x * wl
     startDY = startVectorUnit.y * wl
@@ -435,6 +439,10 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       case 51:
       case 5:
         wl = eweight * stageRatio + lineWeight;
+        break;
+      case 61:
+      case 6:
+        wl = eweight * stageRatio / 2
         break;
     }
     endDX = -endVectorUnit.x * wl
@@ -599,6 +607,22 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         ctx.closePath()
         ctx.stroke()
         if (fillWeight > 0 || type == 51 || tempLine) {
+          if (fillWeight > 0) {
+            ctx.fillStyle = DDeiUtil.getColor(fillColor)
+          }
+          ctx.fill()
+        }
+        break;
+      }
+      case 61:
+      case 6: {
+        //半圆
+        let wl = weight * stageRatio / 2;
+        ctx.beginPath()
+        ctx.ellipse((point.x - wl / 2) * rat1 - lineWidth / 2, point.y * rat1, wl, wl, 0, 0.4 * Math.PI, Math.PI * 1.6)
+
+        ctx.stroke();
+        if (fillWeight > 0 || type == 61 || tempLine) {
           if (fillWeight > 0) {
             ctx.fillStyle = DDeiUtil.getColor(fillColor)
           }
