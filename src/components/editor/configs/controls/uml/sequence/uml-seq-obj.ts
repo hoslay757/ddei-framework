@@ -1,7 +1,7 @@
 export default {
   'id': '303003',
   'name': '序列对象',
-  'code': 'objlife',
+  'code': 'obj',
   'desc': '序列对象',
   'from': '100002',
   'icon': 'toolbox-shape-rect',
