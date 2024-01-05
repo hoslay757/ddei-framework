@@ -17,8 +17,8 @@ export default {
     //组合控件
     composes: [
       {
-        width: 30,
-        height: 30,
+        width: 25,
+        height: 25,
         id: '100110',
         cIndex: 1,
         initCPV: {
