@@ -59,7 +59,9 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
       }
       ctx.closePath();
       //填充矩形
-      ctx.clip();
+      // ctx.clip();
+      ctx.fillStyle = "grey"
+      ctx.fill()
       this.drawChildrenShapes();
       ctx.restore();
 
@@ -112,7 +114,7 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
               }
             }
             ctx.closePath();
-            ctx.clip();
+            // ctx.clip();
             item.render.drawShape();
             //恢复
             ctx.restore();

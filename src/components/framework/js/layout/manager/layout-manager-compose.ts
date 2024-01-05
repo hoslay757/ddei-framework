@@ -13,11 +13,12 @@ class DDeiLayoutManagerCompose extends DDeiLayoutManager {
    * 修改模型的位置和大小
    */
   changeSubModelBounds(): void {
-    let models: DDeiAbstractShape[] = Array.from(this.container.models.values());
-    let originRect = DDeiAbstractShape.pvsToOutRect(DDeiAbstractShape.getOutPV(models))
-    let newRect = DDeiAbstractShape.pvsToOutRect(DDeiAbstractShape.getOutPV([this.container]))
-    this.container.stage?.ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeBounds, { models: models, selector: originRect, deltaX: newRect.x - originRect.x, deltaY: newRect.y - originRect.y, deltaWidth: newRect.width - originRect.width, deltaHeight: newRect.height - originRect.height });
-    this.container.stage?.ddInstance.bus?.executeAll();
+    // let models: DDeiAbstractShape[] = Array.from(this.container.models.values());
+    // let originRect = DDeiAbstractShape.pvsToOutRect(DDeiAbstractShape.getOutPV(models))
+    // originRect.cpv = { x: (originRect.x1 + originRect.x) / 2, y: (originRect.y1 + originRect.y) / 2 }
+    // let newRect = DDeiAbstractShape.pvsToOutRect(DDeiAbstractShape.getOutPV([this.container]))
+    // this.container.stage?.ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeBounds, { models: models, selector: originRect, deltaX: newRect.x - originRect.x, deltaY: newRect.y - originRect.y, deltaWidth: newRect.width - originRect.width, deltaHeight: newRect.height - originRect.height });
+    // this.container.stage?.ddInstance.bus?.executeAll();
   }
   canAppend(x: number, y: number, models: DDeiAbstractShape[]): boolean {
 
@@ -70,7 +71,7 @@ class DDeiLayoutManagerCompose extends DDeiLayoutManager {
   }
 
   canChangePosition(x: number, y: number, models: DDeiAbstractShape[], isAlt: boolean = false): boolean {
-    return true;
+    return false;
   }
 
   canChangeSize(x: number, y: number, models: DDeiAbstractShape[]): boolean {

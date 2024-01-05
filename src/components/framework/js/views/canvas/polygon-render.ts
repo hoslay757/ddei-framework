@@ -165,12 +165,12 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       })
 
       //外部canvas
-      let canvas = this.getRenderCanvas(composeRender)
-      let ctx = canvas.getContext('2d');
-      let rat1 = this.ddRender.ratio;
-      let outRect = this.tempCanvas.outRect
+      // let canvas = this.getRenderCanvas(composeRender)
+      // let ctx = canvas.getContext('2d');
+      // let rat1 = this.ddRender.ratio;
+      // let outRect = this.tempCanvas.outRect
 
-      ctx.drawImage(this.tempCanvas, 0, 0, outRect.width * rat1, outRect.height * rat1, outRect.x * rat1, outRect.y * rat1, outRect.width * rat1, outRect.height * rat1)
+      // ctx.drawImage(this.tempCanvas, 0, 0, outRect.width * rat1, outRect.height * rat1, outRect.x * rat1, outRect.y * rat1, outRect.width * rat1, outRect.height * rat1)
 
 
 
@@ -195,7 +195,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   }
 
   getCanvas() {
-    return this.tempCanvas;
+    return this.getRenderCanvas()
+    // return this.tempCanvas;
   }
 
   /**
