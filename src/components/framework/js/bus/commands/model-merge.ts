@@ -59,12 +59,13 @@ class DDeiBusCommandModelMerge extends DDeiBusCommand {
         let outRect = DDeiAbstractShape.getOutRectByPV(models);
         //创建一个容器，添加到画布,其坐标等于外接矩形
         let container: DDeiRectContainer = DDeiRectContainer.initByJSON({
-          id: "container_" + ddInstance.stage.idIdx,
+          id: "comp_" + ddInstance.stage.idIdx,
           initCPV: {
             x: outRect.x + outRect.width / 2,
             y: outRect.y + outRect.height / 2,
             z: 1
           },
+          layout: "compose",
           modelCode: "100201",
           width: outRect.width / stageRatio,
           height: outRect.height / stageRatio

@@ -460,17 +460,19 @@ class DDeiRectContainer extends DDeiRectangle {
    * 修改上层模型大小
    */
   changeParentsBounds(): boolean {
+
     this.updateBoundsByModels();
     if (this.pModel) {
       this.pModel.changeParentsBounds();
     }
+
     return true;
   }
 
   /**
    * 修改子元素大小
    */
-  changeChildrenBounds(originRect, newRect): boolean {
+  changeChildrenBounds(): boolean {
     if (this.layoutManager) {
       this.layoutManager.changeSubModelBounds();
     }

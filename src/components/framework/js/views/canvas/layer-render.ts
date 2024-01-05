@@ -1001,6 +1001,8 @@ class DDeiLayerCanvasRender {
                   })
                 }
               })
+              //更新新容器大小
+              pContainerModel?.changeParentsBounds()
               pContainerModel?.layoutManager?.updateLayout(ex, ey, operateModels);
               operateModels?.forEach(item => {
                 item.render?.controlDragEnd(evt)

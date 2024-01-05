@@ -34,20 +34,14 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
     if (data?.models?.length > 0) {
-
-
-
       let deltaX = data.deltaX ? data.deltaX : 0;
       let deltaY = data.deltaY ? data.deltaY : 0;
       let deltaWidth = data.deltaWidth ? data.deltaWidth : 0;
       let deltaHeight = data.deltaHeight ? data.deltaHeight : 0;
       let selector = data.selector;
       let models = data.models;
-      let parentContainer = data?.models[0].pModel;
       let stage = bus.ddInstance.stage;
 
-      //拖拽前的原始信息
-      let originData = stage.render.dragObj?.originData
       //除以缩放比例
       let stageRatio = stage?.getStageRatio()
       deltaWidth = deltaWidth
