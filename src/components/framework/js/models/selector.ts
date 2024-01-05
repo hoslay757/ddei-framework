@@ -224,7 +224,7 @@ class DDeiSelector extends DDeiRectangle {
   /**
    * 变换向量
    */
-  transVectors(matrix: Matrix3): void {
+  transVectors(matrix: Matrix3, params: { ignoreBPV: boolean, ignoreComposes: boolean }): void {
     this.cpv.applyMatrix3(matrix);
     this.pvs.forEach(pv => {
       pv.applyMatrix3(matrix)

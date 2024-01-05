@@ -539,19 +539,22 @@ abstract class DDeiAbstractShape {
   /**
    * 变换向量
    */
-  transVectors(matrix: Matrix3): void {
+  transVectors(matrix: Matrix3, params: { ignoreBPV: boolean, ignoreHPV: boolean, ignoreComposes: boolean }): void {
 
     this.cpv.applyMatrix3(matrix);
     if (this.poly == 2) {
-
-      this.hpv.forEach(pv => {
-        pv.applyMatrix3(matrix);
-      })
+      if (!params?.ignoreHPV) {
+        this.hpv.forEach(pv => {
+          pv.applyMatrix3(matrix);
+        })
+      }
       for (let i in this.exPvs) {
         let pv = this.exPvs[i];
         pv.applyMatrix3(matrix)
       };
-      this.bpv.applyMatrix3(matrix);
+      if (!params?.ignoreBPV) {
+        this.bpv.applyMatrix3(matrix);
+      }
       this.ovs?.forEach(pv => {
         pv.applyMatrix3(matrix);
         if (pv.ovi) {
@@ -582,9 +585,11 @@ abstract class DDeiAbstractShape {
       this.calRotate()
       this.calLoosePVS();
     }
-    this.composes?.forEach(compose => {
-      compose.transVectors(matrix)
-    });
+    if (!params?.ignoreComposes) {
+      this.composes?.forEach(compose => {
+        compose.transVectors(matrix)
+      });
+    }
   }
 
 
@@ -703,7 +708,7 @@ abstract class DDeiAbstractShape {
     }
     let outRect = DDeiAbstractShape.pvsToOutRect(this.loosePVS);
     if (this.loosePVS.length < 4) {
-      this.loosePVS = DDeiAbstractShape.outRectToPV(outRect)
+      this.loosePVS = DDeiAbstractShape.outPV(outRect)
     }
     //计算宽、高信息，该值为不考虑缩放的大小
     this.x = outRect.x / stageRatio

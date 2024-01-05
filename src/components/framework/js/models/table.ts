@@ -1757,7 +1757,7 @@ class DDeiTable extends DDeiAbstractShape {
   /**
   * 变换向量
   */
-  transVectors(matrix: Matrix3): void {
+  transVectors(matrix: Matrix3, params: { ignoreBPV: boolean, ignoreComposes: boolean }): void {
     super.transVectors(matrix)
     for (let i = 0; i < this.rows.length; i++) {
       let rowObj = this.rows[i];

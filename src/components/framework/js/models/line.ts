@@ -578,7 +578,7 @@ class DDeiLine extends DDeiAbstractShape {
   /**
    * 变换向量
    */
-  transVectors(matrix: Matrix3): void {
+  transVectors(matrix: Matrix3, params: { ignoreBPV: boolean, ignoreComposes: boolean }): void {
     this.pvs.forEach(pv => {
       pv.applyMatrix3(matrix)
     });
@@ -597,7 +597,7 @@ class DDeiLine extends DDeiAbstractShape {
     this.calRotate()
     this.calLoosePVS();
     this.composes?.forEach(compose => {
-      compose.transVectors(matrix)
+      compose.transVectors(matrix, params)
     });
   }
 

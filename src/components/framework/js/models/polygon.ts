@@ -146,7 +146,7 @@ class DDeiPolygon extends DDeiAbstractShape {
 
   }
 
-  transVectors(matrix: Matrix3): void {
+  transVectors(matrix: Matrix3, params: { ignoreBPV: boolean, ignoreComposes: boolean }): void {
     if (this.poly == 2) {
     } else {
       this.textArea.forEach(pv => {
@@ -157,7 +157,7 @@ class DDeiPolygon extends DDeiAbstractShape {
       });
 
     }
-    super.transVectors(matrix)
+    super.transVectors(matrix, params)
   }
 
   /**

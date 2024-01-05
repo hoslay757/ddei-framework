@@ -176,11 +176,11 @@ class DDeiRectContainer extends DDeiRectangle {
   /**
   * 变换向量
   */
-  transVectors(matrix: Matrix3): void {
-    super.transVectors(matrix)
+  transVectors(matrix: Matrix3, params: { ignoreBPV: boolean, ignoreComposes: boolean }): void {
+    super.transVectors(matrix, params)
     this.midList.forEach(key => {
       let item = this.models.get(key);
-      item.transVectors(matrix)
+      item.transVectors(matrix, params)
     });
   }
 

@@ -9,7 +9,7 @@ import DDeiAbstractShape from '../../models/shape.js';
 import DDeiUtil from '../../util.js';
 import DDeiRectangleCanvasRender from './rectangle-render.js';
 import { Matrix3, Vector3 } from 'three';
-import { clone } from 'lodash'
+import { clone, now } from 'lodash'
 
 /**
  * DDeiSelector的渲染器类，用于渲染选择器
@@ -632,7 +632,6 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     } else {
       //判断当前坐标是否位于操作按钮上,如果是则改变状态为响应状态
       if (this.model.passIndex >= 1 && this.model.passIndex <= 8) {
-
         let dragObj = {
           x: ex,
           y: ey,
