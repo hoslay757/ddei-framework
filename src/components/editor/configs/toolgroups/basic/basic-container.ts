@@ -9,9 +9,7 @@ export default {
     {
       'id': '100201',
       'name': '普通容器',
-      'orderNo': 1,
-      'linkChild': false,
-      'linkSelf': false
+      'orderNo': 1
     },
     {
       'id': '100301',

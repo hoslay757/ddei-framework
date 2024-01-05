@@ -261,32 +261,6 @@ export const styles = {
       'display': 'column',
       'orderNo': 3,
       'visiable': false
-    },
-    {
-      'id': '100201308',
-      'code': 'linkChild',
-      'name': '关联子',
-      'desc': '是否联动子控件，为true时，修改自身大小时，自动会修改子控件大小',
-      'group': '填充',
-      'controlType': 'text',
-      'dataType': 'boolean',
-      'defaultValue': true,
-      'display': 'column',
-      'orderNo': 3,
-      'visiable': false
-    },
-    {
-      'id': '100201309',
-      'code': 'linkSelf',
-      'name': '关联自身',
-      'desc': '是否联动自身，为true时，修改子控件大小时，自动修改自身大小',
-      'group': '填充',
-      'controlType': 'text',
-      'dataType': 'boolean',
-      'defaultValue': true,
-      'display': 'column',
-      'orderNo': 3,
-      'visiable': false
     }
   ],
   'visiable': false,

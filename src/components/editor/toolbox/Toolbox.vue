@@ -176,8 +176,6 @@ export default {
           "width",
           "height",
           "text",
-          "linkChild",
-          "linkSelf",
           "subcontrol",
           "layout",
         ];

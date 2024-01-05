@@ -6,6 +6,7 @@ import DDeiTable from '../../models/table';
 import DDeiAbstractShape from '../../models/shape';
 import DDeiRectContainer from '../../models/rect-container';
 import DDeiEnumControlState from '../../enums/control-state';
+import stage from '@/components/editor/configs/stage';
 /**
  * 组合控件的总线Command
  */
@@ -47,6 +48,7 @@ class DDeiBusCommandModelMerge extends DDeiBusCommand {
     let ddInstance = bus.ddInstance;
     //修改当前操作控件坐标
     if (ddInstance && ddInstance.stage) {
+      let stageRatio = ddInstance.stage.getStageRatio()
       //当前激活的图层
       let layer = ddInstance.stage.layers[ddInstance.stage.layerIndex]
       let selectedModels = layer.getSelectedModels();
@@ -54,19 +56,24 @@ class DDeiBusCommandModelMerge extends DDeiBusCommand {
         let models = Array.from(selectedModels.values());
 
         //获取选中图形的外接矩形
-        let outRect = DDeiAbstractShape.getOutRect(models);
+        let outRect = DDeiAbstractShape.getOutRectByPV(models);
         //创建一个容器，添加到画布,其坐标等于外接矩形
         let container: DDeiRectContainer = DDeiRectContainer.initByJSON({
           id: "container_" + ddInstance.stage.idIdx,
-          x: outRect.x,
-          y: outRect.y,
+          initCPV: {
+            x: outRect.x + outRect.width / 2,
+            y: outRect.y + outRect.height / 2,
+            z: 1
+          },
           modelCode: "100201",
-          width: outRect.width,
-          height: outRect.height,
-          linkChild: true,
-          linkSelf: true
-        });
-        container.stage = ddInstance.stage
+          width: outRect.width / stageRatio,
+          height: outRect.height / stageRatio
+        },
+          {
+            currentLayer: layer,
+            currentStage: ddInstance.stage,
+            currentContainer: layer
+          });
         //下标自增1
         ddInstance.stage.idIdx++;
 

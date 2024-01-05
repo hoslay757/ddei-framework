@@ -1549,37 +1549,6 @@ abstract class DDeiAbstractShape {
     return false;
   }
 
-  /**
-   * 设置控件坐标
-   * @param x 
-   * @param y 
-   */
-  setPosition(x: number, y: number) {
-    console.warn("改成向量")
-    this.setModelChanged()
-  }
-
-  /**
-   * 设置大小
-   * @param w
-   * @param h
-   */
-  setSize(w: number, h: number) {
-
-    console.warn("改成向量")
-    this.setModelChanged()
-  }
-
-  /**
-   * 设置控件坐标以及位置
-   * @param x 
-   * @param y 
-   */
-  setBounds(x: number, y: number, w: number, h: number) {
-    this.setPosition(x, y)
-    this.setSize(w, h)
-  }
-
 
 
   /**

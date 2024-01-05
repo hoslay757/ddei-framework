@@ -563,6 +563,8 @@ class DDeiConfig {
         return DDeiConfig.SELECTOR
       case "DDeiRectContainer":
         return DDeiConfig.CONTAINER
+      case "DDeiComposeContainer":
+        return DDeiConfig.CONTAINER
       case "DDeiStage":
         return DDeiConfig.STAGE
       default:

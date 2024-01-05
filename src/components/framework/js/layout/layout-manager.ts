@@ -1,6 +1,4 @@
-import DDeiRectContainer from "../models/rect-container";
 import DDeiAbstractShape from "../models/shape"
-import { Matrix3, Vector3 } from 'three';
 
 /**
  * 定义了布局管理器的接口

@@ -16,8 +16,6 @@ class DDeiRectContainer extends DDeiRectangle {
     super(props);
     this.layout = props.layout;
     this.layoutData = props.layoutData;
-    this.linkChild = props.linkChild ? props.linkChild : false;
-    this.linkSelf = props.linkSelf ? props.linkSelf : false;
     this.models = props.models ? props.models : new Map();
     this.midList = props.midList ? props.midList : new Array();
     this.layoutManager = DDeiLayoutManagerFactory.getLayoutInstance(this.layout);
@@ -83,10 +81,6 @@ class DDeiRectContainer extends DDeiRectangle {
   layoutData: object;
   //布局管理器，用来实现布局的效果
   layoutManager: DDeiLayoutManager;
-  //是否联动子控件，为true时，修改自身大小时，自动会修改子控件大小
-  linkChild: boolean = false;
-  //是否联动自身，为true时，修改子控件大小时，自动修改自身大小
-  linkSelf: boolean = false;
   // 本模型包含多个模型，每添加一个模型，则向midList末尾添加一条数据
   models: Map<string, DDeiAbstractShape>;
   // 模型的ID按照添加顺序的索引
@@ -170,6 +164,13 @@ class DDeiRectContainer extends DDeiRectangle {
     model.stage = null;
     model.render = null;
     this.resortModelByZIndex();
+  }
+
+  /**
+    * 仅变换自身向量
+    */
+  transSelfVectors(matrix: Matrix3): void {
+    super.transVectors(matrix)
   }
 
   /**
@@ -351,20 +352,40 @@ class DDeiRectContainer extends DDeiRectangle {
    */
   updateBoundsByModels(): void {
     let subModels = Array.from(this.models.values());
-    //换算为上层容器坐标
-    subModels.forEach((si, key) => {
-      si.x = si.x + this.x
-      si.y = si.y + this.y
-    });
-    let outRect = DDeiAbstractShape.getOutRect(subModels);
-    this.setBounds(outRect.x, outRect.y, outRect.width, outRect.height);
-    //换算为下层容器坐标
-    subModels.forEach((si, key) => {
-      si.x = si.x - this.x
-      si.y = si.y - this.y
-    });
+    let outRect = DDeiAbstractShape.getOutRectByPV(subModels);
+    this.setSelfBounds(outRect.x, outRect.y, outRect.width, outRect.height);
     this.setModelChanged()
   }
+
+  //仅设置自身的大小以及宽高
+  setSelfBounds(x, y, width, height) {
+    //归于0，设置大小，然后旋转，再恢复到新坐标
+    this.cpv.x = 0
+    this.cpv.y = 0
+    this.pvs[0].x = -width / 2
+    this.pvs[0].y = -height / 2
+    this.pvs[1].x = width / 2
+    this.pvs[1].y = -height / 2
+    this.pvs[2].x = width / 2
+    this.pvs[2].y = height / 2
+    this.pvs[3].x = -width / 2
+    this.pvs[3].y = height / 2
+
+    let m1 = new Matrix3()
+    let angle = -(this.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+    let rotateMatrix = new Matrix3(
+      Math.cos(angle), Math.sin(angle), 0,
+      -Math.sin(angle), Math.cos(angle), 0,
+      0, 0, 1);
+    let move2Matrix = new Matrix3(
+      1, 0, x + width / 2,
+      0, 1, y + height / 2,
+      0, 0, 1);
+    m1.premultiply(rotateMatrix).premultiply(move2Matrix)
+    this.transSelfVectors(m1)
+  }
+
+
 
   /**
   * 获取选中状态的所有控件
@@ -439,11 +460,9 @@ class DDeiRectContainer extends DDeiRectangle {
    * 修改上层模型大小
    */
   changeParentsBounds(): boolean {
-    if (this.linkSelf) {
-      this.updateBoundsByModels();
-      if (this.pModel) {
-        this.pModel.changeParentsBounds();
-      }
+    this.updateBoundsByModels();
+    if (this.pModel) {
+      this.pModel.changeParentsBounds();
     }
     return true;
   }
@@ -455,113 +474,9 @@ class DDeiRectContainer extends DDeiRectangle {
     if (this.layoutManager) {
       this.layoutManager.changeSubModelBounds();
     }
-    else if (this.linkChild) {
-      let models: DDeiAbstractShape[] = Array.from(this.models.values());
-      //记录每一个图形在原始矩形中的比例
-      let originPosMap: Map<string, object> = new Map();
-      //获取模型在原始模型中的位置比例
-      for (let i = 0; i < models.length; i++) {
-        let item = models[i]
-        originPosMap.set(item.id, {
-          xR: item.x / originRect.width,
-          yR: item.y / originRect.height,
-          wR: item.width / originRect.width,
-          hR: item.height / originRect.height
-        });
-      }
-      //同步多个模型到等比缩放状态
-      models.forEach(item => {
-        let originBound = { x: item.x, y: item.y, width: item.width, height: item.height };
-        let x = newRect.width * originPosMap.get(item.id).xR
-        let width = newRect.width * originPosMap.get(item.id).wR
-        let y = newRect.height * originPosMap.get(item.id).yR
-        let height = newRect.height * originPosMap.get(item.id).hR
-        item.setBounds(x, y, width, height)
-        //如果当前模型是容器，则按照容器比例更新子元素的大小
-        if (item.baseModelType == "DDeiContainer") {
-          let changedBound = { x: item.x, y: item.y, width: item.width, height: item.height };
-          item.changeChildrenBounds(originBound, changedBound)
-        };
-      })
-    }
     return true;
   }
 
-
-  /**
-   * 计算子元素的点旋转后的坐标
-   * @param rotateMatrix 旋转矩阵 
-   */
-  calChildrenRotatePointVectors(rotateMatrix): void {
-    if (this.models) {
-
-      let parentCenterPointVector = this.centerPointVector;
-      //宽松判定区域的宽度
-      let looseWeight = 10;
-      this.midList.forEach(key => {
-        let item = this.models.get(key);
-        let halfWidth = item.width * 0.5;
-        let halfHeight = item.height * 0.5;
-        if (parentCenterPointVector) {
-          let vc, vc1, vc2, vc3, vc4;
-          let loosePointVectors = null;
-          if (item.pointVectors?.length > 0) {
-            vc = item.centerPointVector;
-            vc1 = item.pointVectors[0];
-            vc2 = item.pointVectors[1];
-            vc3 = item.pointVectors[2];
-            vc4 = item.pointVectors[3];
-            loosePointVectors = item.loosePointVectors
-          } else {
-            item.pointVectors = []
-            let absBoundsOrigin = item.getAbsBounds()
-            vc = new Vector3(absBoundsOrigin.x + halfWidth, absBoundsOrigin.y + halfHeight, 1);
-            vc1 = new Vector3(vc.x - halfWidth, vc.y - halfHeight, 1);
-            vc2 = new Vector3(vc.x + halfWidth, vc.y - halfHeight, 1);
-            vc3 = new Vector3(vc.x + halfWidth, vc.y + halfHeight, 1);
-            vc4 = new Vector3(vc.x - halfWidth, vc.y + halfHeight, 1);
-            item.pointVectors.push(vc1)
-            item.pointVectors.push(vc2)
-            item.pointVectors.push(vc3)
-            item.pointVectors.push(vc4)
-            item.centerPointVector = vc;
-            //stage级全局缩放
-            //全局缩放
-            let stageRatio = item.getStageRatio();
-            let globalScaleMatrix = new Matrix3(
-              stageRatio, 0, 0,
-              0, stageRatio, 0,
-              0, 0, 1);
-            item.centerPointVector.applyMatrix3(globalScaleMatrix);
-            item.pointVectors.forEach(pv => {
-              pv.applyMatrix3(globalScaleMatrix);
-            });
-            loosePointVectors = []
-            //记录宽松判定区域的点
-            loosePointVectors.push(new Vector3(vc1.x - looseWeight, vc1.y - looseWeight, vc1.z))
-            loosePointVectors.push(new Vector3(vc2.x + looseWeight, vc2.y - looseWeight, vc2.z))
-            loosePointVectors.push(new Vector3(vc3.x + looseWeight, vc3.y + looseWeight, vc3.z))
-            loosePointVectors.push(new Vector3(vc4.x - looseWeight, vc4.y + looseWeight, vc4.z))
-            item.loosePointVectors = loosePointVectors;
-          }
-          vc1.applyMatrix3(rotateMatrix);
-          vc2.applyMatrix3(rotateMatrix);
-          vc3.applyMatrix3(rotateMatrix);
-          vc4.applyMatrix3(rotateMatrix);
-          vc.applyMatrix3(rotateMatrix);
-          loosePointVectors?.forEach(pv => {
-            pv.applyMatrix3(rotateMatrix);
-          });
-        }
-        if (item.baseModelType == "DDeiTable") {
-          item.calCellsRotatePointVectors(rotateMatrix);
-        } else if (item.baseModelType == "DDeiContainer") {
-          item.calChildrenRotatePointVectors(rotateMatrix);
-        }
-      });
-    }
-
-  }
 }
 
 export default DDeiRectContainer
