@@ -11,6 +11,9 @@ export default {
     //2为极坐标，缺省点为原点
     poly: 2,
     cIndex: 1,
+    fill: {
+      disabled: true
+    },
     //采样信息
     sample: {
       //一圈采样次数

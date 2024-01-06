@@ -5,6 +5,7 @@ import DDeiEnumControlState from '../enums/control-state'
 import DDeiUtil from '../util'
 import { Matrix3, Vector3 } from 'three';
 import { cloneDeep, clone, isNumber } from 'lodash'
+import stage from '@/components/editor/configs/stage'
 /**
  * 抽象的图形类，定义了大多数图形都有的属性和方法
  */
@@ -539,7 +540,7 @@ abstract class DDeiAbstractShape {
   /**
    * 变换向量
    */
-  transVectors(matrix: Matrix3, params: { ignoreBPV: boolean, ignoreHPV: boolean, ignoreComposes: boolean }): void {
+  transVectors(matrix: Matrix3, params: { ignoreBPV: boolean, ignoreOVS: boolean, ignoreHPV: boolean, ignoreComposes: boolean }): void {
 
     this.cpv.applyMatrix3(matrix);
     if (this.poly == 2) {
@@ -555,12 +556,14 @@ abstract class DDeiAbstractShape {
       if (!params?.ignoreBPV) {
         this.bpv.applyMatrix3(matrix);
       }
-      this.ovs?.forEach(pv => {
-        pv.applyMatrix3(matrix);
-        if (pv.ovi) {
-          pv.ovi.applyMatrix3(matrix);
-        }
-      })
+      if (!params?.ignoreOVS) {
+        this.ovs?.forEach(pv => {
+          pv.applyMatrix3(matrix);
+          if (pv.ovi) {
+            pv.ovi.applyMatrix3(matrix);
+          }
+        })
+      }
 
       this.initHPV();
       this.calRotate()
@@ -1701,11 +1704,22 @@ abstract class DDeiAbstractShape {
    * 以矩形的大小变化为参照物，修改模型的大小
    */
   static changeModelBoundByRect(models: DDeiAbstractShape[], rectObj: object, data: { deltaX: number, deltaY: number, deltaWidth: number, deltaHeight: number }) {
+    if (!(models?.length > 0)) {
+      return;
+    }
     let deltaX = data.deltaX ? data.deltaX : 0;
     let deltaY = data.deltaY ? data.deltaY : 0;
     let deltaWidth = data.deltaWidth ? data.deltaWidth : 0;
     let deltaHeight = data.deltaHeight ? data.deltaHeight : 0;
     let selector = rectObj
+
+    //获取全局缩放比例
+    let stageRatio = models[0].getStageRatio()
+    let rat1 = models[0].stage?.ddInstance.render.ratio;
+    let ratio = rat1 * stageRatio;
+
+
+
     //获取间距设定
     let paddingWeight = 0;
     if (selector.modelType) {
@@ -1718,107 +1732,57 @@ abstract class DDeiAbstractShape {
     }
     selector.width -= 2 * paddingWeight
     selector.height -= 2 * paddingWeight
-    //将旋转加到计算中
-    if (selector.oldRotate) {
 
-      let dpPVS = new Vector3(deltaX, deltaY, 1)
-      let dsPVS = new Vector3(deltaWidth, deltaHeight, 1)
-      let dpps = DDeiUtil.zeroToPoints([dpPVS, dsPVS], { x: 0, y: 0, z: 1 }, selector.oldRotate)
-      deltaX = dpps[0].x
-      deltaY = dpps[0].y
-      deltaWidth = dpps[1].x
-      deltaHeight = dpps[1].y
-    }
 
     //计算平移和缩放矩阵
     let selectCPVXDelta = deltaX == 0 ? deltaWidth / 2 : deltaX / 2
     let selectCPVYDelta = deltaY == 0 ? deltaHeight / 2 : deltaY / 2
-    let scaleWRate = deltaWidth / selector.width
-    let scaleHRate = deltaHeight / selector.height
+    let scaleWRate = 1 + deltaWidth / selector.width / stageRatio
+    let scaleHRate = 1 + deltaHeight / selector.height / stageRatio
 
-    //得到宽高的增加比率，构建缩放矩阵
-    let m1 = new Matrix3(
-      1, 0, 0,
-      0, 1, 0,
-      0, 0, 1);
-    let moveMatrix = new Matrix3(
-      1, 0, -selector.cpv.x,
-      0, 1, -selector.cpv.y,
-      0, 0, 1);
     let scaleMatrix = new Matrix3(
-      1 + scaleWRate, 0, 0,
-      0, 1 + scaleHRate, 0,
+      scaleWRate, 0, 0,
+      0, scaleHRate, 0,
       0, 0, 1);
 
-    let move1Matrix = new Matrix3(
-      1, 0, selector.cpv.x,
-      0, 1, selector.cpv.y,
-      0, 0, 1);
-    m1.premultiply(moveMatrix)
-    m1.premultiply(scaleMatrix)
-    m1.premultiply(move1Matrix)
-    let move2Matrix = new Matrix3(
-      1, 0, selectCPVXDelta,
-      0, 1, selectCPVYDelta,
-      0, 0, 1);
-    m1.premultiply(move2Matrix)
     models.forEach(item => {
-      //单独计算bpv和hpv要考虑旋转后的缩放情况
-      if (item.bpv) {
-        let itemBPV = DDeiUtil.pointsToZero([item.bpv], item.cpv, item.rotate)[0]
-        itemBPV.x = itemBPV.x * (1 + scaleWRate)
-        itemBPV.y = itemBPV.y * (1 + scaleHRate)
-        itemBPV = DDeiUtil.zeroToPoints([itemBPV], item.cpv, item.rotate)[0]
-        item.bpv = itemBPV
+      //此item的矩阵
+      let m2 = new Matrix3()
+      let itemMoveMatrix = new Matrix3(
+        1, 0, -item.cpv.x,
+        0, 1, -item.cpv.y,
+        0, 0, 1);
+      m2.premultiply(itemMoveMatrix)
+      if (item.rotate) {
+        let angle = item.rotate * DDeiConfig.ROTATE_UNIT
+        let rotateMatrix = new Matrix3(
+          Math.cos(angle), Math.sin(angle), 0,
+          -Math.sin(angle), Math.cos(angle), 0,
+          0, 0, 1);
+        m2.premultiply(rotateMatrix)
       }
-      if (item.hpv) {
-        let itemHPV = DDeiUtil.pointsToZero(item.hpv, item.cpv, item.rotate)
-        itemHPV.forEach(hpv => {
-          hpv.x = hpv.x * (1 + scaleWRate)
-          hpv.y = hpv.y * (1 + scaleHRate)
-        })
+      m2.premultiply(scaleMatrix)
 
-        itemHPV = DDeiUtil.zeroToPoints(itemHPV, item.cpv, item.rotate)
-        item.hpv = itemHPV
+      if (item.rotate) {
+        let angle = -item.rotate * DDeiConfig.ROTATE_UNIT
+        let rotateMatrix = new Matrix3(
+          Math.cos(angle), Math.sin(angle), 0,
+          -Math.sin(angle), Math.cos(angle), 0,
+          0, 0, 1);
+        m2.premultiply(rotateMatrix)
       }
-      //记录CPV增量，同步到BPV上
-      let cpvX = item.cpv.x
-      let cpvY = item.cpv.y
-      //只同步当前控件的主要点，其余点通过程序来控制
-      let originRect = null;
-      if (item.composes?.length > 0 || (item.models?.size > 0)) {
-        originRect = DDeiAbstractShape.pvsToOutRect(DDeiAbstractShape.getOutPV([item]))
-        originRect.cpv = { x: item.cpv.x, y: item.cpv.y }
-        originRect.oldRotate = item.rotate
-      }
-      item.transVectors(m1, { ignoreBPV: true, ignoreHPV: true, ignoreComposes: true, ignoreChildren: true })
+      let itemMove1Matrix = new Matrix3(
+        1, 0, item.cpv.x + selectCPVXDelta,
+        0, 1, item.cpv.y + selectCPVYDelta,
+        0, 0, 1);
+      m2.premultiply(itemMove1Matrix)
 
-      if (item.bpv) {
-        item.bpv.x += item.cpv.x - cpvX
-        item.bpv.y += item.cpv.y - cpvY
-      }
-      if (item.hpv) {
-        item.hpv.forEach(hpv => {
-          hpv.x += item.cpv.x - cpvX
-          hpv.y += item.cpv.y - cpvY
-        })
-      }
+
+      item.transVectors(m2)
+
+
 
       item.initPVS()
-      //根据前后rect增量，同步composes和子元素
-      if (item.composes?.length > 0 || (item.models?.size > 0)) {
-        let newRect = DDeiAbstractShape.pvsToOutRect(DDeiAbstractShape.getOutPV([item]))
-        originRect.rotate = item.rotate
-        let deltaData = {
-          deltaX: newRect.x - originRect.x, deltaY: newRect.y - originRect.y, deltaWidth: newRect.width - originRect.width, deltaHeight: newRect.height - originRect.height
-        }
-        if (item.composes?.length > 0) {
-          DDeiAbstractShape.changeModelBoundByRect(item.composes, originRect, deltaData)
-        }
-        if (item.models?.size > 0) {
-          DDeiAbstractShape.changeModelBoundByRect(Array.from(item.models.values()), originRect, deltaData)
-        }
-      }
     })
   }
 
