@@ -60,8 +60,8 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
       ctx.closePath();
       //填充矩形
       // ctx.clip();
-      ctx.fillStyle = "grey"
-      ctx.fill()
+      // ctx.fillStyle = "grey"
+      // ctx.fill()
       this.drawChildrenShapes();
       ctx.restore();
 
