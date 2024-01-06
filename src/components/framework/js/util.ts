@@ -233,11 +233,13 @@ class DDeiUtil {
     if (sourceModel.composes?.length > 0) {
       let composes = []
       sourceModel.composes?.forEach(com => {
-        composes.push(DDeiUtil.cloneModel(com))
+        let comp = DDeiUtil.cloneModel(com)
+        comp.pModel = returnModel
+        composes.push(comp)
       });
       returnModel.composes = composes;
     }
-
+    returnModel.unicode = DDeiUtil.getUniqueCode()
     returnModel.initPVS()
     return returnModel;
   }
