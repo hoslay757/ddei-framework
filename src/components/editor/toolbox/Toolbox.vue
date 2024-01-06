@@ -158,7 +158,7 @@ export default {
     createControlPrepare(control, e) {
       //获取当前实例
       let ddInstance: DDei = this.editor.ddInstance;
-
+      ddInstance.render.inEdge = 0;
       let stage = ddInstance.stage;
       let layer = stage.layers[stage.layerIndex];
       if ((layer.display == 0 && !layer.tempDisplay) || layer.lock) {

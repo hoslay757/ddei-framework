@@ -164,7 +164,6 @@ class DDeiCanvasRender {
   }
 
   destroyed() {
-    console.log("清理")
     if (this.interval) {
       clearInterval(this.interval)
     }
