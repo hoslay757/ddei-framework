@@ -155,12 +155,19 @@ class DDeiCanvasRender {
    * 绑定事件
    */
   bindEvent(): void {
-    setInterval(() => {
+    this.interval = setInterval(() => {
       //边缘扫描
       this.mouseInEdge();
       this.model.stage.drawing = true;
       this.drawShape();
     }, 20)
+  }
+
+  destroyed() {
+    console.log("清理")
+    if (this.interval) {
+      clearInterval(this.interval)
+    }
   }
 
   /**

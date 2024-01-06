@@ -109,6 +109,7 @@ class DDei {
         return ddInstance;
       } else {
         let ddInstance = DDei.INSTANCE_POOL[id];
+        //重新加载render
         ddInstance.initRender();
         ddInstance.render.drawShape();
         return ddInstance;
