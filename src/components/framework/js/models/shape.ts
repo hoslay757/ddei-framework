@@ -1758,18 +1758,23 @@ abstract class DDeiAbstractShape {
     let scaleWRate = 1 + deltaWidth / selector.width / stageRatio
     let scaleHRate = 1 + deltaHeight / selector.height / stageRatio
 
+    let itemMoveMatrix = new Matrix3(
+      1, 0, -selector.cpv.x,
+      0, 1, -selector.cpv.y,
+      0, 0, 1);
     let scaleMatrix = new Matrix3(
       scaleWRate, 0, 0,
       0, scaleHRate, 0,
+      0, 0, 1);
+    let itemMove1Matrix = new Matrix3(
+      1, 0, selector.cpv.x + selectCPVXDelta,
+      0, 1, selector.cpv.y + selectCPVYDelta,
       0, 0, 1);
 
     models.forEach(item => {
       //此item的矩阵
       let m2 = new Matrix3()
-      let itemMoveMatrix = new Matrix3(
-        1, 0, -item.cpv.x,
-        0, 1, -item.cpv.y,
-        0, 0, 1);
+
       m2.premultiply(itemMoveMatrix)
       if (item.rotate) {
         let angle = item.rotate * DDeiConfig.ROTATE_UNIT
@@ -1779,6 +1784,7 @@ abstract class DDeiAbstractShape {
           0, 0, 1);
         m2.premultiply(rotateMatrix)
       }
+
       m2.premultiply(scaleMatrix)
 
       if (item.rotate) {
@@ -1789,10 +1795,7 @@ abstract class DDeiAbstractShape {
           0, 0, 1);
         m2.premultiply(rotateMatrix)
       }
-      let itemMove1Matrix = new Matrix3(
-        1, 0, item.cpv.x + selectCPVXDelta,
-        0, 1, item.cpv.y + selectCPVYDelta,
-        0, 0, 1);
+
       m2.premultiply(itemMove1Matrix)
 
 
