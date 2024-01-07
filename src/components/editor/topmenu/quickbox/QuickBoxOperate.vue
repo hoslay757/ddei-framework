@@ -35,6 +35,7 @@
   </div>
 </template>
 <script lang="ts">
+import DDeiConfig from "@/components/framework/js/config";
 import DDeiUtil from "../../../framework/js/util";
 import DDeiEditor from "../../js/editor";
 import DDeiEnumKeyActionInst from "../../js/enums/key-action-inst";
@@ -118,7 +119,7 @@ export default {
         if (hasFocus) {
           // 判断是否Safari浏览器
           if (!DDeiUtil.isSafari()) {
-            if (navigator.clipboard) {
+            if (DDeiConfig.ALLOW_CLIPBOARD) {
               let items = await navigator.clipboard.read();
               if (items?.length > 0) {
                 this.hasClipData = true;

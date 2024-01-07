@@ -1,3 +1,4 @@
+import DDeiConfig from "@/components/framework/js/config";
 import DDei from "@/components/framework/js/ddei";
 import DDeiUtil from "@/components/framework/js/util";
 import DDeiEditor from "../editor";
@@ -64,7 +65,7 @@ class DDeiKeyActionCopy extends DDeiKeyAction {
         let blob = new Blob([copyHtml], {
           type: 'text/html'
         })
-        if (ClipboardItem) {
+        if (DDeiConfig.ALLOW_CLIPBOARD) {
           let writeDatas = [new ClipboardItem({ "text/html": blob })]
           cbData.write(writeDatas).then(function () {
             console.log("复制成功");

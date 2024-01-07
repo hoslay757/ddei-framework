@@ -80,6 +80,9 @@ class DDeiConfig {
   // 缺省吸附效果宽度，小于0时没有吸附效果
   static GLOBAL_ADV_WEIGHT: number = 5;
 
+  //是否允许访问外部剪切板
+  static ALLOW_CLIPBOARD: boolean = false;
+
   //序列化配置
   static SERI_FIELDS: object = {
     "DDei": { "TOJSON": ["stage"], "SKIP": ["bus", "render", "unicode", "editMode"] },
@@ -508,6 +511,7 @@ class DDeiConfig {
         break;
       }
     }
+    DDeiConfig.ALLOW_CLIPBOARD = DDeiConfig.getAllowClipboard();
 
   }
 
@@ -532,6 +536,22 @@ class DDeiConfig {
         }
       }
     }
+  }
+
+  /**
+ * 获取是否支持剪切板
+ */
+  static getAllowClipboard() {
+    try {
+      if (navigator.clipboard) {
+        console.log("加载剪切板:" + ClipboardItem)
+        return true;
+      }
+
+    } catch (e) {
+      return false
+    }
+    return false
   }
 
 

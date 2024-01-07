@@ -1157,6 +1157,8 @@ class DDeiUtil {
     }
   }
 
+
+
   // 16进制编码转rgb
   static hex2rgb(hex: string): string {
     let hexNum = hex.substring(1);

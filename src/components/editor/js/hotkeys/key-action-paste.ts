@@ -5,7 +5,7 @@ import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-
 import DDeiUtil from "@/components/framework/js/util";
 import DDeiStage from "@/components/framework/js/models/stage";
 import DDeiRectangle from "@/components/framework/js/models/rectangle";
-import { MODEL_CLS } from "@/components/framework/js/config";
+import DDeiConfig, { MODEL_CLS } from "@/components/framework/js/config";
 import DDeiAbstractShape from "@/components/framework/js/models/shape";
 import DDeiTable from "@/components/framework/js/models/table";
 import { Matrix3, Vector3 } from 'three';
@@ -22,41 +22,43 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
   action(evt: Event, ddInstance: DDei): void {
     //修改当前操作控件坐标
     if (ddInstance && ddInstance.stage) {
-      //当前激活的图层
-      let cbData = navigator.clipboard;
-      cbData.read().then((items) => {
-        let type = null;
-        //优先级html>图片/文本
-        items[0].types.forEach(t => {
-          if (!type) {
-            type = t;
-          } else if (t = 'text/html') {
-            type = t;
-          }
+      if (DDeiConfig.ALLOW_CLIPBOARD) {
+        //当前激活的图层
+        let cbData = navigator.clipboard;
+        cbData.read().then((items) => {
+          let type = null;
+          //优先级html>图片/文本
+          items[0].types.forEach(t => {
+            if (!type) {
+              type = t;
+            } else if (t = 'text/html') {
+              type = t;
+            }
+          });
+          //三种粘贴类型，文本、图片、HTML
+          items[0].getType(type).then(itemData => {
+            //剪切板中是文本
+            if (type == 'text/plain') {
+              (new Response(itemData)).text().then(dataText => {
+                this.textPaste(evt, ddInstance.stage, dataText);
+              });
+            }
+            //剪切板中是图片
+            else if (type == 'image/png') {
+              this.imagePaste(evt, ddInstance.stage, itemData);
+            }
+            //剪切板中是HTML
+            else if (type == 'text/html') {
+              (new Response(itemData)).text().then(dataText => {
+                this.htmlPaste(evt, ddInstance.stage, dataText);
+              });
+            }
+
+
+          });
+
         });
-        //三种粘贴类型，文本、图片、HTML
-        items[0].getType(type).then(itemData => {
-          //剪切板中是文本
-          if (type == 'text/plain') {
-            (new Response(itemData)).text().then(dataText => {
-              this.textPaste(evt, ddInstance.stage, dataText);
-            });
-          }
-          //剪切板中是图片
-          else if (type == 'image/png') {
-            this.imagePaste(evt, ddInstance.stage, itemData);
-          }
-          //剪切板中是HTML
-          else if (type == 'text/html') {
-            (new Response(itemData)).text().then(dataText => {
-              this.htmlPaste(evt, ddInstance.stage, dataText);
-            });
-          }
-
-
-        });
-
-      });
+      }
     }
   }
 
