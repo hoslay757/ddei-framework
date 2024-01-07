@@ -64,7 +64,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let that = this;
     let bgImage = DDeiUtil.getReplacibleValue(this.model, "fill.image");
     //加载base64图片
-    if ((this.model.bgImageBase64 || bgImage) && !this.imgObj) {
+    if ((this.model.imgBase64 || bgImage) && !this.imgObj) {
       let img = new Image();   // 创建一个<img>元素
       img.onload = function () {
         that.imgObj = img;
@@ -72,7 +72,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         that.ddRender.model.bus.push(DDeiEnumBusCommandType.RefreshShape, null, null);
         that.ddRender.model.bus.executeAll()
       }
-      img.src = this.model.bgImageBase64 ? this.model.bgImageBase64 : bgImage;
+      img.src = this.model.imgBase64 ? this.model.imgBase64 : bgImage;
     }
   }
 

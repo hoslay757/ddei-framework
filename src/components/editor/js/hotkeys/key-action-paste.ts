@@ -11,6 +11,7 @@ import DDeiTable from "@/components/framework/js/models/table";
 import { Matrix3, Vector3 } from 'three';
 import DDeiEnumOperateType from "@/components/framework/js/enums/operate-type";
 import DDeiEditorEnumBusCommandType from "../enums/editor-command-type";
+import DDeiPolygon from "@/components/framework/js/models/polygon";
 /**
  * 键行为:粘贴
  * 粘贴剪切板内容
@@ -202,15 +203,11 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
     if (createControl) {
       stage.idIdx++
       hasChange = true;
-      //根据control的定义，初始化临时控件，并推送至上层Editor
+
       let searchPaths = [
         "font.size",
         "font.family",
-        "width",
-        "height",
       ];
-      stage.idIdx++
-
       let configAtrs = DDeiUtil.getAttrValueByConfig(
         { modelCode: "100002" },
         searchPaths
@@ -219,23 +216,51 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
       //获取文本高度宽度
       let size = DDeiUtil.measureTextSize(stage.ddInstance, textData, configAtrs.get('font.family').data, configAtrs.get('font.size').data * stageRatio)
 
+
       let dataJson = {
-        id: "rectangle_" + stage.idIdx,
+        id: "rect_" + stage.idIdx,
         modelCode: "100002",
-        text: textData,
-        width: size.width,
-        height: size.height,
-        border: { top: { disabled: true }, bottom: { disabled: true }, left: { disabled: true }, right: { disabled: true } },
-        fill: { disable: true }
+
       };
-      let model: DDeiAbstractShape = DDeiRectangle.initByJSON(dataJson);
-      model.cpv.x += offsetX
-      model.cpv.y += offsetY
-      model.pvs.forEach(pv => {
-        pv.x += offsetX
-        pv.y += offsetY
+
+
+      let ccDefine = DDeiUtil.getControlDefine(dataJson)
+      //设置配置的属性值
+      searchPaths.forEach((key) => {
+        if (configAtrs.get(key)) {
+          dataJson[key] = configAtrs.get(key).data;
+        }
+        if (ccDefine[key] != undefined && ccDefine[key] != null) {
+          dataJson[key] = ccDefine[key];
+        }
       });
-      model.calLoosePVS()
+
+      for (let i in ccDefine?.define) {
+        dataJson[i] = ccDefine?.define[i];
+      }
+      dataJson.text = textData;
+      dataJson.border = { disabled: true };
+      dataJson.fill = { disabled: true }
+      dataJson.width = size.width;
+      dataJson.height = size.height;
+      //如果有from则根据from读取属性
+      delete dataJson.ovs
+      delete dataJson.font
+
+      let model: DDeiAbstractShape = DDeiPolygon.initByJSON(
+        dataJson,
+        { currentStage: stage }
+      );
+
+      model.initPVS()
+
+      let moveMatrix = new Matrix3(
+        1, 0, offsetX,
+        0, 1, offsetY,
+        0, 0, 1
+      )
+
+      model.transVectors(moveMatrix)
       stage.ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeContainer, { newContainer: layer, models: [model] }, evt);
       stage.ddInstance.bus.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
       stage.ddInstance.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, { models: [model], value: DDeiEnumControlState.SELECTED }, evt);
@@ -974,23 +999,41 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
     stage.idIdx++
     let rat1 = stage.ddInstance.render.ratio;
     let stageRatio = stage.getStageRatio()
+
     let dataJson = {
       id: "img_" + stage.idIdx,
-      modelCode: "100002",
-      width: image.width * stageRatio / rat1,
-      height: image.height * stageRatio / rat1,
-      border: { top: { disabled: true }, bottom: { disabled: true }, left: { disabled: true }, right: { disabled: true } },
-      fill: { disable: true }
+      modelCode: "100002"
     };
 
-    let model: DDeiAbstractShape = DDeiRectangle.initByJSON(dataJson);
-    model.cpv.x += x
-    model.cpv.y += y
-    model.pvs.forEach(pv => {
-      pv.x += x
-      pv.y += y
-    });
+
+    let ccDefine = DDeiUtil.getControlDefine(dataJson)
+    for (let i in ccDefine?.define) {
+      dataJson[i] = ccDefine?.define[i];
+    }
+    dataJson.text = "";
+    dataJson.border = { disabled: true };
+    dataJson.fill = { type: 2 };
+    dataJson.width = image.width / rat1 / stageRatio;
+    dataJson.height = image.height / rat1 / stageRatio;
+    //如果有from则根据from读取属性
+    delete dataJson.ovs
+
+    let model: DDeiAbstractShape = DDeiPolygon.initByJSON(
+      dataJson,
+      { currentStage: stage }
+    );
+
+    model.initPVS()
+
+    let moveMatrix = new Matrix3(
+      1, 0, x,
+      0, 1, y,
+      0, 0, 1
+    )
+
+    model.transVectors(moveMatrix)
     model.setImgBase64(imgBase64);
+
     stage.ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeContainer, { newContainer: container, models: [model] }, evt);
     stage.ddInstance.bus.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
     stage.ddInstance.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, { models: [model], value: DDeiEnumControlState.SELECTED }, evt);

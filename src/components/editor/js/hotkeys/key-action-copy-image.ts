@@ -1,4 +1,6 @@
+import DDeiConfig from "@/components/framework/js/config";
 import DDei from "@/components/framework/js/ddei";
+import DDeiAbstractShape from "@/components/framework/js/models/shape";
 import DDeiUtil from "@/components/framework/js/util";
 import DDeiKeyAction from "./key-action";
 
@@ -10,14 +12,16 @@ class DDeiKeyActionCopyImage extends DDeiKeyAction {
 
   // ============================ 方法 ===============================
   action(evt: Event, ddInstance: DDei): void {
-    //修改当前操作控件坐标
-    if (ddInstance && ddInstance.stage) {
-      //当前激活的图层
-      let selectedControls = ddInstance.stage.selectedModels;
-      //存在选中控件
-      if (selectedControls?.size > 0) {
-        let models = Array.from(selectedControls?.values());
-        this.copyToImage(ddInstance, models)
+    if (DDeiConfig.ALLOW_CLIPBOARD) {
+      //修改当前操作控件坐标
+      if (ddInstance && ddInstance.stage) {
+        //当前激活的图层
+        let selectedControls = ddInstance.stage.selectedModels;
+        //存在选中控件
+        if (selectedControls?.size > 0) {
+          let models = Array.from(selectedControls?.values());
+          this.copyToImage(ddInstance, models)
+        }
       }
     }
   }
@@ -28,28 +32,27 @@ class DDeiKeyActionCopyImage extends DDeiKeyAction {
     //获得 2d 上下文对象
     let ctx = canvas.getContext('2d');
     //获取缩放比例
-    let ratio = DDeiUtil.getPixelRatio(ctx);
+    let rat1 = DDeiUtil.getPixelRatio(ctx);
+    let stageRatio = ddInstance.stage.getStageRatio()
     ddInstance.render.tempCanvas = canvas;
     //所选择区域的最大范围
-    let x1 = Infinity, x2 = 0, y1 = Infinity, y2 = 0;
-    models.forEach(item => {
-      x1 = Math.min(item.x, x1)
-      y1 = Math.min(item.y, y1)
-      x2 = Math.max(item.x + item.width, x2)
-      y2 = Math.max(item.y + item.height, y2)
-    })
-    let lineOffset = 1 * ratio / 2;
+    let outRect = DDeiAbstractShape.getOutRectByPV(models);
+    let lineOffset = 1 * rat1;
     let addWidth = lineOffset
     if (models.length > 1) {
       addWidth = lineOffset * 2
     }
-    let stageRatio = ddInstance.stage.getStageRatio()
-    canvas.setAttribute("width", Math.abs(x2 - x1) * ratio * stageRatio + addWidth)
-    canvas.setAttribute("height", Math.abs(y2 - y1) * ratio * stageRatio + addWidth)
-    ctx.translate(-x1 * ratio * stageRatio - lineOffset, -y1 * ratio * stageRatio - lineOffset)
+
+    canvas.setAttribute("width", outRect.width * rat1 + addWidth)
+    canvas.setAttribute("height", outRect.height * rat1 + addWidth)
+    canvas.style.width = outRect.width * rat1 + addWidth + 'px';
+    canvas.style.height = outRect.height * rat1 + addWidth + 'px';
+    ctx.translate(-outRect.x * rat1 - lineOffset, -outRect.y * rat1 - lineOffset)
+
     models.forEach(item => {
       item.render.drawShape();
     })
+
     canvas.toBlob(blob => {
       let cbData = navigator.clipboard;
       //得到blob对象
@@ -63,7 +66,7 @@ class DDeiKeyActionCopyImage extends DDeiKeyAction {
         //清空临时canvas
         ddInstance.render.tempCanvas = null;
       });
-    }, 'image/png')
+    }, 'image/png', 1)
   }
 
 }
