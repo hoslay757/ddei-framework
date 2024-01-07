@@ -64,12 +64,14 @@ class DDeiKeyActionCopy extends DDeiKeyAction {
         let blob = new Blob([copyHtml], {
           type: 'text/html'
         })
-        let writeDatas = [new ClipboardItem({ "text/html": blob })]
-        cbData.write(writeDatas).then(function () {
-          console.log("复制成功");
-        }, function (e) {
-          console.error("复制失败" + e);
-        });
+        if (ClipboardItem) {
+          let writeDatas = [new ClipboardItem({ "text/html": blob })]
+          cbData.write(writeDatas).then(function () {
+            console.log("复制成功");
+          }, function (e) {
+            console.error("复制失败" + e);
+          });
+        }
       }
     }
   }

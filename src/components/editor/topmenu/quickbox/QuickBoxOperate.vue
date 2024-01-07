@@ -1,34 +1,33 @@
 <template>
   <div class="ddei_editor_quick_operate">
-    <div class="ddei_editor_quick_operate_item"
-         title="剪切"
-         @click="editor?.ddInstance?.stage?.selectedModels?.size > 0 && execShearAction($event)">
-      <div :class="{'ddei_editor_quick_operate_item_box_selected':editor?.ddInstance?.stage?.copyMode == 'cut','ddei_editor_quick_operate_item_box':editor?.ddInstance?.stage?.selectedModels?.size > 0 ,'ddei_editor_quick_operate_item_box_disabled':editor?.ddInstance?.stage?.selectedModels?.size == 0 || !editor?.ddInstance?.stage?.selectedModels}">
+    <div class="ddei_editor_quick_operate_item" title="剪切"
+      @click="editor?.ddInstance?.stage?.selectedModels?.size > 0 && execShearAction($event)">
+      <div
+        :class="{ 'ddei_editor_quick_operate_item_box_selected': editor?.ddInstance?.stage?.copyMode == 'cut', 'ddei_editor_quick_operate_item_box': editor?.ddInstance?.stage?.selectedModels?.size > 0, 'ddei_editor_quick_operate_item_box_disabled': editor?.ddInstance?.stage?.selectedModels?.size == 0 || !editor?.ddInstance?.stage?.selectedModels }">
         <img :src="iconShear" />
       </div>
     </div>
-    <div class="ddei_editor_quick_operate_item"
-         title="格式刷"
-         @click="editor?.ddInstance?.stage?.selectedModels?.size == 1 && execBrushAction($event)">
-      <div :class="{'ddei_editor_quick_operate_item_box_selected':editor?.ddInstance?.stage?.brushData,'ddei_editor_quick_operate_item_box':displayBrush ,'ddei_editor_quick_operate_item_box_disabled':!displayBrush}">
+    <div class="ddei_editor_quick_operate_item" title="格式刷"
+      @click="editor?.ddInstance?.stage?.selectedModels?.size == 1 && execBrushAction($event)">
+      <div
+        :class="{ 'ddei_editor_quick_operate_item_box_selected': editor?.ddInstance?.stage?.brushData, 'ddei_editor_quick_operate_item_box': displayBrush, 'ddei_editor_quick_operate_item_box_disabled': !displayBrush }">
         <img :src="iconBrush" />
       </div>
     </div>
-    <div class="ddei_editor_quick_operate_item"
-         title="复制"
-         @click="editor?.ddInstance?.stage?.selectedModels?.size > 0 && execCopyAction($event)">
-      <div :class="{'ddei_editor_quick_operate_item_box_selected':editor?.ddInstance?.stage?.copyMode == 'copy','ddei_editor_quick_operate_item_box':editor?.ddInstance?.stage?.selectedModels?.size > 0 ,'ddei_editor_quick_operate_item_box_disabled':editor?.ddInstance?.stage?.selectedModels?.size == 0 || !editor?.ddInstance?.stage?.selectedModels}">
+    <div class="ddei_editor_quick_operate_item" title="复制"
+      @click="editor?.ddInstance?.stage?.selectedModels?.size > 0 && execCopyAction($event)">
+      <div
+        :class="{ 'ddei_editor_quick_operate_item_box_selected': editor?.ddInstance?.stage?.copyMode == 'copy', 'ddei_editor_quick_operate_item_box': editor?.ddInstance?.stage?.selectedModels?.size > 0, 'ddei_editor_quick_operate_item_box_disabled': editor?.ddInstance?.stage?.selectedModels?.size == 0 || !editor?.ddInstance?.stage?.selectedModels }">
         <img :src="iconCopy" />
       </div>
     </div>
-    <div class="ddei_editor_quick_operate_item"
-         title="粘贴">
-      <div :class="{'ddei_editor_quick_operate_item_box':hasClipData ,'ddei_editor_quick_operate_item_box_disabled':!hasClipData}">
+    <div class="ddei_editor_quick_operate_item" title="粘贴">
+      <div
+        :class="{ 'ddei_editor_quick_operate_item_box': hasClipData, 'ddei_editor_quick_operate_item_box_disabled': !hasClipData }">
         <img :src="iconPaste" />
       </div>
     </div>
-    <div class="ddei_editor_quick_operate_item"
-         style="grid-column:1/3;">
+    <div class="ddei_editor_quick_operate_item" style="grid-column:1/3;">
       <div class="ddei_editor_quick_operate_item_text">
         剪切板
       </div>
@@ -59,7 +58,7 @@ export default {
   },
   computed: {},
   watch: {},
-  created() {},
+  created() { },
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
@@ -119,10 +118,11 @@ export default {
         if (hasFocus) {
           // 判断是否Safari浏览器
           if (!DDeiUtil.isSafari()) {
-            let cbData = navigator.clipboard;
-            let items = await cbData.read();
-            if (items?.length > 0) {
-              this.hasClipData = true;
+            if (navigator.clipboard) {
+              let items = await navigator.clipboard.read();
+              if (items?.length > 0) {
+                this.hasClipData = true;
+              }
             }
           }
         }
