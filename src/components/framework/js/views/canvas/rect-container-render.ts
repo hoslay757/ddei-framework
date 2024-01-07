@@ -126,6 +126,14 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
     }
   }
 
+  /**
+* 绘制边框以及Compose的边框
+* @param tempShape 临时图形，优先级最高
+*/
+  drawBorderAndComposesBorder(tempShape: object | null): void {
+    this.drawBorder(tempShape)
+  }
+
 
   // ============================== 事件 ===============================
   /**
