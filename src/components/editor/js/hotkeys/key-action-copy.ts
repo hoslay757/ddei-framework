@@ -27,7 +27,6 @@ class DDeiKeyActionCopy extends DDeiKeyAction {
       //存在选中控件
       if (selectedControls?.size > 0) {
         //生成控件HTML
-        let cbData = navigator.clipboard;
         let copyHtml = '<html><head>';
         copyHtml += '<meta source="ddei">'
         let jsonStr = '['
@@ -65,13 +64,18 @@ class DDeiKeyActionCopy extends DDeiKeyAction {
         let blob = new Blob([copyHtml], {
           type: 'text/html'
         })
+        //如果不支持剪切板，则采用window对象存储，此时不允许外部复制粘贴
         if (DDeiConfig.ALLOW_CLIPBOARD) {
+
           let writeDatas = [new ClipboardItem({ "text/html": blob })]
+          let cbData = navigator.clipboard;
           cbData.write(writeDatas).then(function () {
             console.log("复制成功");
           }, function (e) {
             console.error("复制失败" + e);
           });
+        } else {
+          window.DDEI_CLIPBOARD = blob
         }
       }
     }

@@ -543,7 +543,7 @@ class DDeiConfig {
  */
   static getAllowClipboard() {
     try {
-      if (navigator.clipboard) {
+      if (!DDeiUtil.isSafari() && navigator.clipboard) {
         console.log("加载剪切板:" + ClipboardItem)
         return true;
       }

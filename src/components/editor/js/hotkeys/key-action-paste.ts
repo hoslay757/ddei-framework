@@ -10,6 +10,7 @@ import DDeiAbstractShape from "@/components/framework/js/models/shape";
 import DDeiTable from "@/components/framework/js/models/table";
 import { Matrix3, Vector3 } from 'three';
 import DDeiEnumOperateType from "@/components/framework/js/enums/operate-type";
+import DDeiEditorEnumBusCommandType from "../enums/editor-command-type";
 /**
  * 键行为:粘贴
  * 粘贴剪切板内容
@@ -22,42 +23,53 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
   action(evt: Event, ddInstance: DDei): void {
     //修改当前操作控件坐标
     if (ddInstance && ddInstance.stage) {
-      if (DDeiConfig.ALLOW_CLIPBOARD) {
-        //当前激活的图层
-        let cbData = navigator.clipboard;
-        cbData.read().then((items) => {
-          let type = null;
-          //优先级html>图片/文本
-          items[0].types.forEach(t => {
-            if (!type) {
-              type = t;
-            } else if (t = 'text/html') {
-              type = t;
-            }
-          });
-          //三种粘贴类型，文本、图片、HTML
-          items[0].getType(type).then(itemData => {
-            //剪切板中是文本
-            if (type == 'text/plain') {
-              (new Response(itemData)).text().then(dataText => {
-                this.textPaste(evt, ddInstance.stage, dataText);
-              });
-            }
-            //剪切板中是图片
-            else if (type == 'image/png') {
-              this.imagePaste(evt, ddInstance.stage, itemData);
-            }
-            //剪切板中是HTML
-            else if (type == 'text/html') {
-              (new Response(itemData)).text().then(dataText => {
-                this.htmlPaste(evt, ddInstance.stage, dataText);
-              });
-            }
+      this.doPaste(evt, ddInstance);
+    }
+  }
 
+  /**
+   * 执行粘贴
+   */
+  async doPaste(evt: Event, ddInstance: DDei) {
 
-          });
-
-        });
+    //剪切板中的数据
+    let blobData = null;
+    let type = null;
+    if (DDeiConfig.ALLOW_CLIPBOARD) {
+      //读取剪切板数据
+      let items = await navigator.clipboard.read();
+      //优先级html>图片/文本
+      items[0].types.forEach(t => {
+        if (!type) {
+          type = t;
+        } else if (t = 'text/html') {
+          type = t;
+        }
+      });
+      //三种粘贴类型，文本、图片、HTML
+      blobData = await items[0].getType(type)
+    }
+    //如果不支持剪切板，则从window.DDEI_CLIPBOARD取得数据
+    else {
+      type = 'text/html'
+      blobData = window.DDEI_CLIPBOARD
+    }
+    switch (type) {
+      //剪切板中是文本
+      case 'text/plain': {
+        let dataText = await new Response(blobData).text()
+        this.textPaste(evt, ddInstance.stage, dataText);
+        break;
+      }
+      //剪切板中是图片
+      case 'image/png': {
+        this.imagePaste(evt, ddInstance.stage, blobData);
+        break;
+      }
+      //剪切板中是HTML
+      case 'text/html': {
+        let dataText = await new Response(blobData).text()
+        this.htmlPaste(evt, ddInstance.stage, dataText);
       }
     }
   }
@@ -70,12 +82,9 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
     let that = this;
     //将二进制转换为图片
     let reader = new FileReader();
-    reader.readAsDataURL(blobData);
     reader.onload = function (e) {
       let image = new Image();
-      image.src = e.target.result
       image.onload = function () {
-
         let imgBase64 = e.target.result
         //当前激活的图层
         let layer = stage.layers[stage.layerIndex];
@@ -117,8 +126,6 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
             })
             hasChange = true;
           }
-
-
         }
 
 
@@ -135,8 +142,9 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
         stage.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
         stage.ddInstance.bus?.executeAll();
       }
-
+      image.src = e.target.result
     }
+    reader.readAsDataURL(blobData);
   }
 
 
@@ -233,6 +241,8 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
       stage.ddInstance.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, { models: [model], value: DDeiEnumControlState.SELECTED }, evt);
     }
     if (hasChange) {
+      stage.ddInstance.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels, {}, evt);
+      stage.ddInstance.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds, {}, evt);
       stage.ddInstance.bus.push(DDeiEnumBusCommandType.NodifyChange);
       stage.ddInstance.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
     }
@@ -305,6 +315,9 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
       if (hasChange) {
         stage.ddInstance.bus.push(DDeiEnumBusCommandType.NodifyChange);
         stage.ddInstance.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
+        stage.ddInstance.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels, {}, evt);
+        stage.ddInstance.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds, {}, evt);
+        stage.ddInstance.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts);
       }
       stage.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
       stage.ddInstance.bus?.executeAll();
