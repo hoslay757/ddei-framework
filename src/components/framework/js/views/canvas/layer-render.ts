@@ -324,7 +324,7 @@ class DDeiLayerCanvasRender {
       let ratio = this.ddRender.ratio;
       //保存状态
       ctx.save();
-      let lineOffset = 1 * ratio / 2;
+      let lineOffset = 0//1 * ratio / 2;
       this.model?.opPoints.forEach(point => {
         if (point.mode == 3) {
           let weight = 8;
@@ -383,7 +383,7 @@ class DDeiLayerCanvasRender {
       //设置颜色
       ctx.strokeStyle = DDeiUtil.getColor("green");
       //开始绘制  
-      let lineOffset = 1 * ratio / 2;
+      let lineOffset = 0//1 * ratio / 2;
       let pvs = this.model.dragInPoints;
       for (let i = 0; i < pvs?.length; i++) {
         let s = i;
@@ -512,7 +512,7 @@ class DDeiLayerCanvasRender {
       if (DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
 
         //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
-        let lineOffset = 1 * ratio / 2;
+        let lineOffset = 0//1 * ratio / 2;
         ctx.lineWidth = 1 * ratio;
         //线段、虚线样式
         ctx.setLineDash([0, 1 * ratio, 1 * ratio]);

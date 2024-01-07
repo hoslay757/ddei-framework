@@ -371,7 +371,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     round = round * stageRatio
 
     //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
-    let lineOffset = 1 * ratio / 2;
+    let lineOffset = 0//1 * ratio / 2;
 
     if (!pvs || pvs?.length < 1) {
       return;
@@ -599,7 +599,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         ctx.globalAlpha = imgFillInfo
       }
 
-      let lineOffset = 1 * ratio / 2;
+      let lineOffset = 0//1 * ratio / 2;
       ctx.translate(this.model.cpv.x * rat1, this.model.cpv.y * rat1)
       ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
       ctx.translate(-this.model.cpv.x * rat1, -this.model.cpv.y * rat1)
@@ -1027,7 +1027,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           x1 = x;
           y1 = y + usedY
         } else if (align == 2) {
-          x1 = ratPos.x + (ratPos.width - rRect.width) * 0.5;
+          x1 = rat1 + ratPos.x + (ratPos.width - rRect.width) * 0.5;
           y1 = y + usedY
         } else if (align == 3) {
           x1 = ratPos.x + (ratPos.width - rRect.width);

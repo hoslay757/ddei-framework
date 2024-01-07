@@ -37,7 +37,7 @@ class DDeiKeyActionCopyImage extends DDeiKeyAction {
     ddInstance.render.tempCanvas = canvas;
     //所选择区域的最大范围
     let outRect = DDeiAbstractShape.getOutRectByPV(models);
-    let lineOffset = 1 * rat1;
+    let lineOffset = 0//1 * rat1;
     let addWidth = lineOffset
     if (models.length > 1) {
       addWidth = lineOffset * 2

@@ -46,7 +46,7 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
       let fillPVS = this.getFillAreaPVS();
       //剪切当前区域
       ctx.beginPath();
-      let lineOffset = 1 * ratio / 2;
+      let lineOffset = 0//1 * ratio / 2;
       for (let i = 0; i < fillPVS.length; i++) {
         if (i == fillPVS.length - 1) {
           ctx.lineTo(fillPVS[i].x * rat1 + lineOffset, fillPVS[i].y * rat1 + lineOffset);
@@ -88,7 +88,7 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
       let ctx = canvas.getContext('2d');
       //获取全局缩放比例
       let ratio = this.ddRender.ratio;
-      let lineOffset = 1 * ratio / 2;
+      let lineOffset = 0//1 * ratio / 2;
       let areaPVS = this.model.layoutManager.getAreasPVS();
       let usedMidIds = [];
       for (let n = 0; n < areaPVS.length; n++) {

@@ -358,7 +358,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         if (!disabled && color && (!opacity || opacity > 0) && bWidth > 0) {
 
           //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
-          let lineOffset = bWidth * ratio / 2;
+          let lineOffset = 0//bWidth * ratio / 2;
           ctx.lineWidth = bWidth * ratio;
           ctx.beginPath();
 

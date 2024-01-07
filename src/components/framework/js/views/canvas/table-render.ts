@@ -76,7 +76,7 @@ class DDeiTableCanvasRender extends DDeiRectangleCanvasRender {
     let fillPVS = this.getFillAreaPVS();
     //剪切当前区域
     ctx.beginPath();
-    let lineOffset = 1 * ratio / 2;
+    let lineOffset = 0//1 * ratio / 2;
     for (let i = 0; i < fillPVS.length; i++) {
       if (i == fillPVS.length - 1) {
         ctx.lineTo(fillPVS[i].x * rat1 + lineOffset, fillPVS[i].y * rat1 + lineOffset);
