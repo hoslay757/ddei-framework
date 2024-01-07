@@ -113,10 +113,14 @@ class DDeiKeyActionDownMoveModels extends DDeiKeyAction {
           }
           deltaX = moveSize - mod
         }
+
         DDeiAbstractShape.moveModels(models, deltaX, deltaY);
+        let stage = ddInstance.stage
+        stage.layers[stage.layerIndex].opPoints = []
         ddInstance.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
         ddInstance.bus.push(DDeiEnumBusCommandType.NodifyChange);
         ddInstance.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
+        ddInstance.bus.push(DDeiEnumBusCommandType.ClearTemplateVars);
 
       }
       //渲染图形

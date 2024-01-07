@@ -165,12 +165,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       })
 
       //外部canvas
-      let canvas = this.getRenderCanvas(composeRender)
-      let ctx = canvas.getContext('2d');
-      let rat1 = this.ddRender.ratio;
-      let outRect = this.tempCanvas.outRect
-      ctx.drawImage(this.tempCanvas, 0, 0, outRect.width * rat1, outRect.height * rat1, outRect.x * rat1, outRect.y * rat1, outRect.width * rat1, outRect.height * rat1)
-
+      this.drawSelfToCanvas(composeRender)
 
 
       if (!composeRender && this.viewAfter) {
@@ -183,6 +178,18 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         )
       }
     }
+  }
+
+  /**
+   * 绘制自身到最外层canvas
+   */
+  drawSelfToCanvas(composeRender) {
+    let canvas = this.getRenderCanvas(composeRender)
+    let ctx = canvas.getContext('2d');
+    let rat1 = this.ddRender.ratio;
+    let outRect = this.tempCanvas.outRect
+    ctx.drawImage(this.tempCanvas, 0, 0, outRect.width * rat1, outRect.height * rat1, outRect.x * rat1, outRect.y * rat1, outRect.width * rat1, outRect.height * rat1)
+
   }
 
   getRenderCanvas(composeRender) {
@@ -233,7 +240,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   getBorderPVS(pvs, tempShape) {
     let stageRatio = this.model.getStageRatio()
     let round = tempShape?.border?.round ? tempShape?.border?.round : this.getCachedValue("border.round");
-    let disabled = tempShape?.border?.disabled ? tempShape?.border?.disabled : this.getCachedValue("border.disabled");
+    let disabled = tempShape?.border?.disabled || tempShape?.border?.disabled == false ? tempShape?.border?.disabled : this.getCachedValue("border.disabled");
     let width = tempShape?.border?.width ? tempShape?.border?.width : this.getCachedValue("border.width");
 
     if (disabled) {
@@ -349,7 +356,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let rat1 = this.ddRender.ratio;
     let ratio = rat1 * stageRatio;
     //如果被选中，使用选中的边框，否则使用缺省边框
-    let disabled = tempShape?.border?.disabled ? tempShape?.border?.disabled : this.getCachedValue("border.disabled")
+    let disabled = tempShape?.border?.disabled || tempShape?.border?.disabled == false ? tempShape?.border?.disabled : this.getCachedValue("border.disabled")
     let color = tempShape?.border?.color ? tempShape?.border?.color : this.getCachedValue("border.color")
     let opacity = tempShape?.border?.opacity ? tempShape?.border?.opacity : this.getCachedValue("border.opacity");
     let width = tempShape?.border?.width ? tempShape?.border?.width : this.getCachedValue("border.width");
@@ -510,7 +517,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
    */
   drawBorder(tempShape: object | null): void {
     // //如果被选中，使用选中的边框，否则使用缺省边框
-    let disabled = tempShape?.border?.disabled ? tempShape?.border?.disabled : this.getCachedValue("border.disabled")
+    let disabled = tempShape?.border?.disabled || tempShape?.border?.disabled == false ? tempShape?.border?.disabled : this.getCachedValue("border.disabled")
     let opacity = tempShape?.border?.opacity ? tempShape?.border?.opacity : this.getCachedValue("border.opacity");
     let width = tempShape?.border?.width ? tempShape?.border?.width : this.getCachedValue("border.width");
     let drawLine = (!disabled && (!opacity || opacity > 0) && width > 0)
@@ -523,6 +530,44 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     }
 
 
+  }
+
+
+  /**
+  * 绘制边框以及Compose的边框
+  * @param tempShape 临时图形，优先级最高
+  */
+  drawBorderAndComposesBorder(tempShape: object | null): void {
+    //将当前控件以及composes按照zindex顺序排列并输出
+    let rendList = [];
+    if (this.model.composes?.length > 0) {
+      rendList = rendList.concat(this.model.composes);
+    }
+    rendList.push(this.model)
+    rendList.sort((a, b) => {
+
+      if ((a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+        return a.cIndex - b.cIndex
+      } else if ((a.cIndex || a.cIndex == 0) && !(b.cIndex || b.cIndex == 0)) {
+        return 1
+      } else if (!(a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+        return -1
+      } else {
+        return 0
+      }
+    })
+    this.createTemeShape()
+    rendList.forEach(c => {
+      if (c == this.model) {
+        //根据pvss绘制边框
+        this.drawBorder(tempShape);
+      } else {
+        //绘制组合控件的内容
+        c.render.drawBorder(tempShape, true)
+        c.render.drawSelfToCanvas(true);
+      }
+    })
+    this.drawSelfToCanvas();
   }
 
 
