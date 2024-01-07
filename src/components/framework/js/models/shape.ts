@@ -1701,6 +1701,24 @@ abstract class DDeiAbstractShape {
 
 
   /**
+   * 移动控件位置
+   * @param models 
+   * @param dx 
+   * @param dy 
+   */
+  static moveModels(models: DDeiAbstractShape[], dx: number = 0, dy: number = 0) {
+    if ((dx != 0 || dy != 0) && models?.length > 0) {
+      let moveMatrix = new Matrix3(
+        1, 0, dx,
+        0, 1, dy,
+        0, 0, 1);
+      models.forEach(m => {
+        m.transVectors(moveMatrix)
+      })
+    }
+  }
+
+  /**
    * 以矩形的大小变化为参照物，修改模型的大小
    */
   static changeModelBoundByRect(models: DDeiAbstractShape[], rectObj: object, data: { deltaX: number, deltaY: number, deltaWidth: number, deltaHeight: number }) {

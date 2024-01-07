@@ -30,6 +30,7 @@ class DDeiKeyActionCancelSelect extends DDeiKeyAction {
         let layer = ddInstance.stage.layers[ddInstance.stage.layerIndex]
 
         ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, { container: layer, curLevel: true }, evt);
+        ddInstance?.bus?.push(DDeiEnumBusCommandType.StageChangeSelectModels, {}, evt);
         ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateSelectorBounds, null, evt);
       }
       //渲染图形

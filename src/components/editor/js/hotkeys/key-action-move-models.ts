@@ -4,12 +4,15 @@ import DDeiKeyAction from "./key-action";
 import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type";
 import DDeiAbstractShape from "@/components/framework/js/models/shape";
 import DDeiEnumControlState from "@/components/framework/js/enums/control-state";
+import DDeiModelArrtibuteValue from "@/components/framework/js/models/attribute/attribute-value";
+import DDeiUtil from "@/components/framework/js/util";
 
 /**
  * 键行为:移动模型
  * 批量移动模型
  */
 class DDeiKeyActionDownMoveModels extends DDeiKeyAction {
+
 
   // ============================ 方法 ===============================
   action(evt: Event, ddInstance: DDei): void {
@@ -62,19 +65,21 @@ class DDeiKeyActionDownMoveModels extends DDeiKeyAction {
         }
       } else {
         let moveSize = 1;
+
         let isShift = DDei.KEY_DOWN_STATE.get("shift");
-        if (!isShift && DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
+        if (!isShift) {
+
           //辅助对齐线宽度
-          moveSize = DDeiConfig.GLOBAL_HELP_LINE_WEIGHT;
+          moveSize = 10;
         }
 
-        let outRect = DDeiAbstractShape.getOutRect(models);
+        let outRect = DDeiAbstractShape.getOutRectByPV(models);
         let deltaX, deltaY
         //上
         if (evt.keyCode == 38) {
           let mod = 0;
           //如果开启辅助对齐线，则跳回到对齐线上
-          if (!isShift && DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
+          if (!isShift) {
             if (outRect.y % moveSize > 0) {
               mod = moveSize - (outRect.y % moveSize);
             }
@@ -84,7 +89,7 @@ class DDeiKeyActionDownMoveModels extends DDeiKeyAction {
         //下
         else if (evt.keyCode == 40) {
           let mod = 0;
-          if (!isShift && DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
+          if (!isShift) {
             mod = outRect.y % moveSize;
           }
           deltaY = moveSize - mod
@@ -93,7 +98,7 @@ class DDeiKeyActionDownMoveModels extends DDeiKeyAction {
         else if (evt.keyCode == 37) {
           let mod = 0;
           //如果开启辅助对齐线，则跳回到对齐线上
-          if (!isShift && DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
+          if (!isShift) {
             if (outRect.x % moveSize > 0) {
               mod = moveSize - (outRect.x % moveSize);
             }
@@ -103,13 +108,14 @@ class DDeiKeyActionDownMoveModels extends DDeiKeyAction {
         //右
         else if (evt.keyCode == 39) {
           let mod = 0;
-          if (!isShift && DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
+          if (!isShift) {
             mod = outRect.x % moveSize;
           }
           deltaX = moveSize - mod
         }
-        ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeBounds, { models: models, deltaX: deltaX, deltaY: deltaY }, evt);
-        ddInstance.editor.bus.push(DDeiEnumBusCommandType.NodifyChange);
+        DDeiAbstractShape.moveModels(models, deltaX, deltaY);
+        ddInstance.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
+        ddInstance.bus.push(DDeiEnumBusCommandType.NodifyChange);
         ddInstance.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
 
       }

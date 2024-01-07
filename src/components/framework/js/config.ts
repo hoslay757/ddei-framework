@@ -71,10 +71,8 @@ class DDeiConfig {
   //缺省缩放比例
   static STAGE_RATIO: number = 1.0;
 
-  // 是否打开辅助线功能
-  static GLOBAL_HELP_LINE_ENABLE: boolean = true;
   // 是否打开辅助对齐线
-  static GLOBAL_HELP_LINE_ALIGN_ENABLE: boolean = true;
+  static GLOBAL_HELP_LINE_ENABLE: boolean = true;
 
   // 缺省辅助对齐线颜色
   static GLOBAL_HELP_LINE_ALIGN_COLOR = 'red';

@@ -38,6 +38,7 @@ class DDeiKeyActionAllSelect extends DDeiKeyAction {
 
         if (!selectBefore || selectBefore(DDeiEnumOperateType.SELECT, Array.from(layer.models.values()), null, ddInstance, evt)) {
           ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, { models: layer.models, value: DDeiEnumControlState.SELECTED }, evt);
+          ddInstance?.bus?.push(DDeiEnumBusCommandType.StageChangeSelectModels, {}, evt);
         }
       }
       //渲染图形

@@ -477,7 +477,7 @@ class DDeiLayerCanvasRender {
   */
   drawHelpLines(): void {
     // 未开启主线提示，则不再计算辅助线提示定位
-    if (DDeiConfig.GLOBAL_HELP_LINE_ENABLE && this.helpLines) {
+    if (this.helpLines) {
       let hpoint = this.helpLines.hpoint;
       let vpoint = this.helpLines.vpoint;
       let pvs = this.helpLines.pvs;
@@ -509,7 +509,7 @@ class DDeiLayerCanvasRender {
         ctx.fillText(textPV.x.toFixed(0) + "," + textPV.y.toFixed(0), textPV.x * rat1 - 30, textPV.y * rat1 - 30);
       }
       // 计算对齐辅助线
-      if (DDeiConfig.GLOBAL_HELP_LINE_ALIGN_ENABLE) {
+      if (DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
 
         //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
         let lineOffset = 1 * ratio / 2;
