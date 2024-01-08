@@ -27,6 +27,7 @@ import DDeiStage from "@/components/framework/js/models/stage";
 import DDeiEditorUtil from "../js/util/editor-util";
 import DDeiEnumKeyActionInst from "../js/enums/key-action-inst";
 import DDeiLineLink from "@/components/framework/js/models/linelink";
+import DDeiRectContainer from "@/components/framework/js/models/rect-container";
 
 export default {
   name: "DDei-Editor-CanvasView",
@@ -505,28 +506,11 @@ export default {
             DDeiEnumBusCommandType.CancelCurLevelSelectedModels,
             { container: layer, curLevel: true }
           );
-          //添加初始linkModels以及控件关联
-          this.editor.creatingControls.forEach(cc => {
-            let ccDefine = DDeiUtil.getControlDefine(cc)
-            if (ccDefine?.define?.iLinkModels) {
-              for (let ilk in ccDefine?.define?.iLinkModels) {
-                let linkData = ccDefine?.define?.iLinkModels[ilk]
-                let cIndex = parseInt(ilk)
-                if (cIndex != -1) {
-                  cIndex++
-                  let linkControl = this.editor.creatingControls[cIndex]
-                  let lineLink = new DDeiLineLink({
-                    line: cc,
-                    type: linkData.type,
-                    dm: linkControl,
-                    dx: linkData.dx,
-                    dy: linkData.dy,
-                  })
-                  cc.linkModels.set(linkControl.id, lineLink);
-                }
-              }
-            }
-          });
+
+          //添加链接以及控件合并关系
+          let cc = this.editor.creatingControls[0]
+          this.createLinkAndMerge(cc)
+
           this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeSelect,
             [{
               id: this.editor.creatingControls[0].id,
@@ -548,6 +532,85 @@ export default {
           //切换到设计器
           this.editor.state = DDeiEditorState.DESIGNING;
           this.editor.bus.executeAll();
+        }
+      }
+    },
+
+    /**
+     * 创建link以及merge
+     * @param cc 
+     */
+    createLinkAndMerge(cc) {
+      let ccDefine = DDeiUtil.getControlDefine(cc)
+      //添加初始linkModels以及控件关联
+      if (ccDefine?.define?.iLinkModels) {
+        for (let ilk in ccDefine?.define?.iLinkModels) {
+          let linkData = ccDefine?.define?.iLinkModels[ilk]
+          let cIndex = parseInt(ilk)
+          if (cIndex != -1) {
+            cIndex++
+            let linkControl = this.editor.creatingControls[cIndex]
+            let lineLink = new DDeiLineLink({
+              line: cc,
+              type: linkData.type,
+              dm: linkControl,
+              dx: linkData.dx,
+              dy: linkData.dy,
+            })
+            cc.linkModels.set(linkControl.id, lineLink);
+          }
+        }
+      }
+      //添加初始merge
+      if (ccDefine?.define?.initMerges) {
+        let mergeControls = [cc]
+        for (let m in ccDefine?.define?.initMerges) {
+          let mIndex = ccDefine?.define?.initMerges[m];
+          if (mIndex != -1) {
+            mIndex++
+            let mControl = this.editor.creatingControls[mIndex]
+            if (mergeControls.indexOf(mControl) == -1) {
+              mergeControls.push(mControl)
+            }
+          }
+        }
+        //执行控件合并
+        if (mergeControls.length > 1) {
+          let ddInstance: DDei = this.editor.ddInstance;
+          let layer = ddInstance.stage.layers[ddInstance.stage.layerIndex];
+          let stageRatio = ddInstance.stage?.getStageRatio()
+          //获取选中图形的外接矩形
+          let outRect = DDeiAbstractShape.getOutRectByPV(mergeControls);
+          //创建一个容器，添加到画布,其坐标等于外接矩形
+          let container: DDeiRectContainer = DDeiRectContainer.initByJSON({
+            id: "comp_" + ddInstance.stage.idIdx,
+            initCPV: {
+              x: outRect.x + outRect.width / 2,
+              y: outRect.y + outRect.height / 2,
+              z: 1
+            },
+            layout: "compose",
+            modelCode: "100201",
+            fill: {
+              disabled: true
+            },
+            border: {
+              top: { disabled: true }
+            },
+            width: outRect.width / stageRatio,
+            height: outRect.height / stageRatio
+          },
+            {
+              currentLayer: layer,
+              currentStage: ddInstance.stage,
+              currentContainer: layer
+            });
+          //下标自增1
+          ddInstance.stage.idIdx++;
+          ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeContainer, { newContainer: layer, models: [container], skipValid: true });
+          ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeContainer, { newContainer: container, oldContainer: layer, models: mergeControls, skipValid: true });
+          //返回合并后的控件
+          this.editor.creatingControls.splice(0, mergeControls.length, container);
         }
       }
     },
