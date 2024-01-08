@@ -3,13 +3,17 @@ export default {
   'name': '对象生命线',
   'code': 'obj',
   'desc': '对象生命线',
-  'from': '303003',
+  'from': '100000',
   'icon': 'toolbox-shape-rect',
   'define': {
-
+    create: false,
+    initMerges: [0, 1]
   },
   //其它同时创建的平级控件
   others: [
+    {
+      'id': '303003',
+    },
     {
       'id': '303002',
       'define': {

@@ -5,6 +5,10 @@ export default {
   'desc': '角色',
   'from': '100000',
   'icon': 'toolbox-shape-rect',
+  'define': {
+    create: false,
+    initMerges: [0, 1]
+  },
   //其它同时创建的平级控件
   others: [
     {
