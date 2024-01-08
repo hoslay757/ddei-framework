@@ -10,6 +10,9 @@ export default {
       { x: 0, y: 0, z: 1 },
       { x: -75, y: 0, z: 1 },
     ],
+    iLinkModels: {
+      "0": { type: 3, dx: 100, dy: 0 }
+    }
   },
   others:
     [

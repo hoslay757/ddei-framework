@@ -9,6 +9,9 @@ export default {
     ep: {
       type: 51,
       weight: 15
+    },
+    iLinkModels: {
+      "0": { type: 3, dx: -135, dy: 0 }
     }
   },
   others:
