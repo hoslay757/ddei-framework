@@ -44,7 +44,7 @@ class DDeiLine extends DDeiAbstractShape {
 
     this.linkModels = props.linkModels ? props.linkModels : new Map();
 
-    this.updateLooseCanvas = debounce(this.updateLooseCanvas, 30)
+    this.updateLooseCanvasSync = debounce(this.updateLooseCanvasSync, 30)
   }
 
   // ============================ 静态变量 ============================
@@ -118,11 +118,15 @@ class DDeiLine extends DDeiAbstractShape {
    */
   static calLineCrossSync(layer: DDeiLayer): Promise {
     return new Promise((resolve, reject) => {
-      DDeiLine.calLineCross(layer);
-      let lines = layer.getModelsByBaseType("DDeiLine");
-      lines.forEach(line => {
-        line.updateLooseCanvas();
-      })
+      if (!layer.stage.render.refreshJumpLine) {
+        let lines = layer.getModelsByBaseType("DDeiLine");
+        DDeiLine.calLineCross(layer);
+        lines.forEach(line => {
+          line.updateLooseCanvas();
+        })
+        layer.stage.render.refreshJumpLine = true
+      }
+
       resolve()
     });
   }
@@ -544,47 +548,53 @@ class DDeiLine extends DDeiAbstractShape {
     //构造N个点，包围直线或曲线范围
     this.loosePVS = this.pvs
     //创建临时canvas绘制线段到临时canvas上，通过临时线段判断canvas的状态
-    this.updateLooseCanvas();
+    this.updateLooseCanvasSync();
   }
 
-  updateLooseCanvas(): Promise {
-    return new Promise((resolve, reject) => {
-      if (!this.isShadowControl && this.render) {
-        //转换为图片
-        if (!this.looseCanvas) {
-          this.looseCanvas = document.createElement('canvas');
-          this.looseCanvas.setAttribute("style", "-moz-transform-origin:left top;");
-          // document.body.appendChild(this.looseCanvas)
-        }
-        let canvas = this.looseCanvas
 
-        let pvs = this.pvs;
-        let outRect = DDeiAbstractShape.pvsToOutRect(pvs);
-        let weight = 10
-        if (this.weight) {
-          weight = this.weight + 5
-        }
-        outRect.x -= weight
-        outRect.x1 += weight
-        outRect.y -= weight
-        outRect.y1 += weight
-        outRect.width += 2 * weight
-        outRect.height += 2 * weight
-        this.loosePVS = Object.freeze([
-          new Vector3(outRect.x, outRect.y, 1),
-          new Vector3(outRect.x1, outRect.y, 1),
-          new Vector3(outRect.x1, outRect.y1, 1),
-          new Vector3(outRect.x, outRect.y1, 1)
-        ])
-        canvas.setAttribute("width", outRect.width)
-        canvas.setAttribute("height", outRect.height)
-        //获得 2d 上下文对象
-        let ctx = canvas.getContext('2d', { willReadFrequently: true });
-        ctx.translate(-outRect.x, -outRect.y)
-        this.render.drawLine({ color: "red", weight: weight, dash: [], rat1: 1, fill: { color: "red" } }, ctx)
-      }
+  updateLooseCanvasSync(): Promise {
+    return new Promise((resolve, reject) => {
+      this.updateLooseCanvas()
       resolve()
     });
+  }
+
+  updateLooseCanvas(): void {
+
+    if (!this.isShadowControl && this.render) {
+      //转换为图片
+      if (!this.looseCanvas) {
+        this.looseCanvas = document.createElement('canvas');
+        this.looseCanvas.setAttribute("style", "-moz-transform-origin:left top;");
+        document.body.appendChild(this.looseCanvas)
+      }
+      let canvas = this.looseCanvas
+
+      let pvs = this.pvs;
+      let outRect = DDeiAbstractShape.pvsToOutRect(pvs);
+      let weight = 10
+      if (this.weight) {
+        weight = this.weight + 5
+      }
+      outRect.x -= weight
+      outRect.x1 += weight
+      outRect.y -= weight
+      outRect.y1 += weight
+      outRect.width += 2 * weight
+      outRect.height += 2 * weight
+      this.loosePVS = Object.freeze([
+        new Vector3(outRect.x, outRect.y, 1),
+        new Vector3(outRect.x1, outRect.y, 1),
+        new Vector3(outRect.x1, outRect.y1, 1),
+        new Vector3(outRect.x, outRect.y1, 1)
+      ])
+      canvas.setAttribute("width", outRect.width)
+      canvas.setAttribute("height", outRect.height)
+      //获得 2d 上下文对象
+      let ctx = canvas.getContext('2d', { willReadFrequently: true });
+      ctx.translate(-outRect.x, -outRect.y)
+      this.render.drawLine({ color: "red", weight: weight, dash: [], rat1: 1, fill: { color: "red" } }, ctx)
+    }
   }
 
   /**

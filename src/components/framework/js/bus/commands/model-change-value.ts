@@ -98,7 +98,9 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
                 }
 
               } else if (model.baseModelType == 'DDeiLine') {
-                model.updateLooseCanvas()
+                //重新计算错线
+                model.clps = []
+                model.stage.render.refreshJumpLine = false
                 //根据code以及mapping设置属性值
                 DDeiUtil.setAttrValueByPath(model, paths, value)
                 model.render?.setCachedValue(paths, value)

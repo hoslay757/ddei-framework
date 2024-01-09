@@ -817,6 +817,7 @@ class DDeiLayerCanvasRender {
                   this.model.addModel(item)
                   item.initRender();
                   model = item;
+                  delete model.isShadowControl
                 } else {
                   isStop = true;
                 }
@@ -873,6 +874,10 @@ class DDeiLayerCanvasRender {
                 }
                 model.initPVS()
                 model.updateOVS()
+                //重新计算错线
+                model.clps = []
+
+                this.stageRender.refreshJumpLine = false
                 if (model.pModel != this.model) {
                   model.pModel?.changeParentsBounds()
                 }
@@ -1006,10 +1011,11 @@ class DDeiLayerCanvasRender {
                 }
 
               })
-              //清空错线判断变量clips
+              //重新计算错线
               lines?.forEach(line => {
                 line.clps = []
               })
+              this.stageRender.refreshJumpLine = false
               //更新新容器大小
               pContainerModel?.changeParentsBounds()
               pContainerModel?.layoutManager?.updateLayout(ex, ey, operateModels);

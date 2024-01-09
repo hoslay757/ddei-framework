@@ -88,11 +88,11 @@ class DDeiConfig {
     "DDei": { "TOJSON": ["stage"], "SKIP": ["bus", "render", "unicode", "editMode"] },
     "DDeiStage": { "TOJSON": ["layers", "links"], "SKIP": ["ddInstance", "selectedModels", "render", "unicode", "histroy", 'histroyIdx', "sourceLinkCache", "distLinkCache"] },
     "DDeiLayer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "render", "unicode", "opPoints", "dragInPoints", "dragOutPoints", "shadowControls", "layoutManager", "tempDisplay"] },
-    "DDeiContainer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "hpv", "loosePVS", "x", "y", "width", "height", "layoutManager"] },
-    "AbstractShape": { "TOJSON": ["composes"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "state", "render", "unicode", "loosePVS", "x", "y", "width", "height", "ruleEvals", "sample", "operatePVS"] },
-    "DDeiLine": { "TOJSON": ["linkModels"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "state", "render", "unicode", "looseCanvas", "loosePVS", "x", "y", "width", "height", "startPoint", "endPoint", "cpv", "clps"] },
-    "DDeiTable": { "TOJSON": ["rows"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "hpv", "loosePVS", "x", "y", "width", "height", "cols", "selector", "initColNum", "initRowNum", "tempDragCell", "tempDragType", "curCol", "curRow", "specilDrag", "tempUpCel", "dragChanging", "dragType", "dragCell"] },
-    "DDeiTableCell": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "hpv", "loosePVS", "x", "y", "width", "height", "layoutManager", "id", "table", "mergedCell"] },
+    "DDeiContainer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "hpv", "loosePVS", "x", "y", "width", "height", "layoutManager", "isShadowControl"] },
+    "AbstractShape": { "TOJSON": ["composes"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "state", "render", "unicode", "loosePVS", "x", "y", "width", "height", "ruleEvals", "sample", "operatePVS", "isShadowControl"] },
+    "DDeiLine": { "TOJSON": ["linkModels"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "state", "render", "unicode", "looseCanvas", "loosePVS", "x", "y", "width", "height", "startPoint", "endPoint", "cpv", "clps", "isShadowControl"] },
+    "DDeiTable": { "TOJSON": ["rows"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "hpv", "loosePVS", "x", "y", "width", "height", "cols", "selector", "initColNum", "initRowNum", "tempDragCell", "tempDragType", "curCol", "curRow", "specilDrag", "tempUpCel", "dragChanging", "dragType", "dragCell", "isShadowControl"] },
+    "DDeiTableCell": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "hpv", "loosePVS", "x", "y", "width", "height", "layoutManager", "id", "table", "mergedCell", "isShadowControl"] },
   }
 
   // 边框的相关缺省样式属性

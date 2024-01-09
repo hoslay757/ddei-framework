@@ -164,6 +164,10 @@ class DDeiRectContainer extends DDeiRectangle {
     model.stage = null;
     model.render = null;
     this.resortModelByZIndex();
+    //重新计算错线
+    if (this.stage?.render) {
+      this.stage.render.refreshJumpLine = false
+    }
   }
 
   /**

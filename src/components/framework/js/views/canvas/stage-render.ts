@@ -165,6 +165,7 @@ class DDeiStageCanvasRender {
 
       DDeiLine.calLineCrossSync(this.model.layers[this.model.layerIndex])
 
+
       if (this.viewAfter) {
         this.viewAfter(
           DDeiEnumOperateType.VIEW,
