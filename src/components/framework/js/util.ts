@@ -218,6 +218,11 @@ class DDeiUtil {
     if (isShadowClone) {
       returnModel.clps = []
       returnModel.isShadowControl = true
+
+    }
+    if (returnModel.layoutManager) {
+      returnModel.layoutManager = clone(sourceModel.layoutManager)
+      returnModel.layoutManager.container = returnModel
     }
     returnModel.pvs = []
     sourceModel.pvs.forEach(pv => {

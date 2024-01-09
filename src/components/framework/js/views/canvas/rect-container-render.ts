@@ -60,8 +60,6 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
       ctx.closePath();
       //填充矩形
       // ctx.clip();
-      // ctx.fillStyle = "grey"
-      // ctx.fill()
       this.drawChildrenShapes();
       ctx.restore();
 
@@ -93,32 +91,29 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
       let usedMidIds = [];
       for (let n = 0; n < areaPVS.length; n++) {
         let pvs = areaPVS[n]
-        //遍历子元素，绘制子元素
+
         for (let m = 0; m < this.model.midList?.length; m++) {
           let key = this.model.midList[m];
           let item = this.model.models.get(key);
-          if (usedMidIds.indexOf(item.id) == -1 && pvs?.length > 0 && DDeiAbstractShape.isInsidePolygon(
-            pvs, { x: item.cpv.x, y: item.cpv.y })) {
-            usedMidIds.push(item.id)
-            //保存状态
-            ctx.save();
-            ctx.beginPath();
-            for (let i = 0; i < pvs.length; i++) {
-              if (i == pvs.length - 1) {
-                ctx.lineTo(pvs[0].x * ratio + lineOffset, pvs[0].y * ratio + lineOffset);
-              } else if (i == 0) {
-                ctx.moveTo(pvs[i].x * ratio + lineOffset, pvs[i].y * ratio + lineOffset);
-                ctx.lineTo(pvs[i + 1].x * ratio + lineOffset, pvs[i + 1].y * ratio + lineOffset);
-              } else {
-                ctx.lineTo(pvs[i + 1].x * ratio + lineOffset, pvs[i + 1].y * ratio + lineOffset);
-              }
+          usedMidIds.push(item.id)
+          //保存状态
+          ctx.save();
+          ctx.beginPath();
+          for (let i = 0; i < pvs.length; i++) {
+            if (i == pvs.length - 1) {
+              ctx.lineTo(pvs[0].x * ratio + lineOffset, pvs[0].y * ratio + lineOffset);
+            } else if (i == 0) {
+              ctx.moveTo(pvs[i].x * ratio + lineOffset, pvs[i].y * ratio + lineOffset);
+              ctx.lineTo(pvs[i + 1].x * ratio + lineOffset, pvs[i + 1].y * ratio + lineOffset);
+            } else {
+              ctx.lineTo(pvs[i + 1].x * ratio + lineOffset, pvs[i + 1].y * ratio + lineOffset);
             }
-            ctx.closePath();
-            // ctx.clip();
-            item.render.drawShape();
-            //恢复
-            ctx.restore();
           }
+          ctx.closePath();
+          // ctx.clip();
+          item.render.drawShape();
+          //恢复
+          ctx.restore();
         }
 
 
