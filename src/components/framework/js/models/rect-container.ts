@@ -481,6 +481,53 @@ class DDeiRectContainer extends DDeiRectangle {
     return true;
   }
 
+
+  /**
+   * 获取中心点操作点
+   */
+  getCenterOpPoints(): [] {
+
+    if (this.layout == 'compose') {
+      return []
+    } else {
+      return super.getCenterOpPoints()
+    }
+
+  }
+
+  /**
+   * 得到点在图形某条线上的投射点
+   * @param point 测试点
+   * @param distance 内外部判定区间的距离
+   * @param direct 方向，1外部，2内部 默认1
+   * @param index 线开始点向量的下标
+   * @returns 投影点的坐标
+   */
+  getProjPointOnLine(point: { x: number, y: number }
+    , distance: { in: number, out: number } = { in: 0, out: 15 }, direct: number = 1, index: number): { x: number, y: number } | null {
+    if (this.layout == 'compose') {
+      return null
+    } else {
+      return super.getProjPointOnLine(point, distance, direct)
+    }
+  }
+
+
+  /**
+   * 得到点在图形连接线上的投射点
+   * @param point 测试点
+   * @param distance 内外部判定区间的距离
+   * @param direct 方向，1外部，2内部 默认1
+   * @returns 投影点的坐标
+   */
+  getProjPoint(point: { x: number, y: number }
+    , distance: { in: number, out: number } = { in: 0, out: 15 }, direct: number = 1): { x: number, y: number } | null {
+    if (this.layout == 'compose') {
+      return null
+    } else {
+      return super.getProjPoint(point, distance, direct)
+    }
+  }
 }
 
 export default DDeiRectContainer

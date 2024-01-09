@@ -1194,7 +1194,7 @@ abstract class DDeiAbstractShape {
    * @returns 投影点的坐标
    */
   getProjPointOnLine(point: { x: number, y: number }
-    , distance: { in: number, out: number } = { in: -5, out: 15 }, direct: number = 1, index: number): { x: number, y: number } | null {
+    , distance: { in: number, out: number } = { in: 0, out: 15 }, direct: number = 1, index: number): { x: number, y: number } | null {
     let x0 = point.x;
     let y0 = point.y;
     //判断鼠标是否在某个控件的范围内
