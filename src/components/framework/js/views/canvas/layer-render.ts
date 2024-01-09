@@ -1007,6 +1007,10 @@ class DDeiLayerCanvasRender {
                 }
 
               })
+              //清空错线判断变量clips
+              lines?.forEach(line => {
+                line.clps = []
+              })
               //更新新容器大小
               pContainerModel?.changeParentsBounds()
               pContainerModel?.layoutManager?.updateLayout(ex, ey, operateModels);

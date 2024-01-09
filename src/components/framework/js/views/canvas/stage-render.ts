@@ -163,11 +163,7 @@ class DDeiStageCanvasRender {
       this.drawScroll();
 
 
-      let jumpLine = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "global.jumpline", true);
-      if (this.upJumpLine == undefined || this.upJumpLine == null || this.upJumpLine != jumpLine) {
-        this.upJumpLine = jumpLine
-        DDeiLine.calLineCrossSync(this.model.layers[this.model.layerIndex])
-      }
+      DDeiLine.calLineCrossSync(this.model.layers[this.model.layerIndex])
 
       if (this.viewAfter) {
         this.viewAfter(

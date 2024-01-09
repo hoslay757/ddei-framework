@@ -239,7 +239,21 @@ export const styles = {
       'dataType': 'integer',
       'orderNo': 30,
       'visiable': true
-    }
+    },
+    {
+      'id': '100401040',
+      'code': 'jumpline',
+      'name': '跳线',
+      'desc': '用来控制当前线段的跳线类型',
+      'group': '线段',
+      'controlType': 'radio',
+      'dataSource': [{ 'text': '是', 'value': 1 }, { 'text': '否', 'value': 2 }, { 'text': '全局', 'value': 0 }],
+      'dataType': 'integer',
+      'defaultValue': 0,
+      'type': 1,
+      'orderNo': 49,
+      'visiable': true
+    },
   ],
   'visiable': false,
   'order': 1

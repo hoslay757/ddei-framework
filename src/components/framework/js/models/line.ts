@@ -119,6 +119,10 @@ class DDeiLine extends DDeiAbstractShape {
   static calLineCrossSync(layer: DDeiLayer): Promise {
     return new Promise((resolve, reject) => {
       DDeiLine.calLineCross(layer);
+      let lines = layer.getModelsByBaseType("DDeiLine");
+      lines.forEach(line => {
+        line.updateLooseCanvas();
+      })
       resolve()
     });
   }
@@ -132,17 +136,22 @@ class DDeiLine extends DDeiAbstractShape {
     lines.forEach(line => {
       line.clps = {}
     })
-    let jumpLine = DDeiModelArrtibuteValue.getAttrValueByState(layer.stage, "global.jumpline", true);
-    if (jumpLine == 1) {
-      let wl = 12 * layer.stage?.getStageRatio();
-      let len = lines.length
-      let rectMap = new Map();
-      let corssLinePoints = []
-      for (let i = 0; i < len - 1; i++) {
-        let l1 = lines[i];
-        if (l1.type == 3) {
-          continue;
-        }
+
+    let wl = 12 * layer.stage?.getStageRatio();
+    let len = lines.length
+    let rectMap = new Map();
+    let corssLinePoints = []
+    for (let i = 0; i < len - 1; i++) {
+      let l1 = lines[i];
+      if (l1.type == 3) {
+        continue;
+      }
+      let jumpLine = DDeiModelArrtibuteValue.getAttrValueByState(l1, "jumpline", true);
+      //采用全局跳线
+      if (jumpLine == 0 || !jumpLine) {
+        jumpLine = DDeiModelArrtibuteValue.getAttrValueByState(layer.stage, "global.jumpline", true);
+      }
+      if (jumpLine == 1) {
         if (!rectMap.has(l1.id)) {
           rectMap.set(l1.id, DDeiAbstractShape.getOutRectByPV([l1]))
         }
@@ -152,6 +161,7 @@ class DDeiLine extends DDeiAbstractShape {
           if (l2.type == 3) {
             continue;
           }
+
           if (l1 != l2) {
             if (!rectMap.has(l2.id)) {
               rectMap.set(l2.id, DDeiAbstractShape.getOutRectByPV([l2]))
@@ -190,6 +200,7 @@ class DDeiLine extends DDeiAbstractShape {
           }
         }
       }
+
 
       corssLinePoints.forEach(clp => {
         if (!clp.line.clps[clp.index]) {
@@ -538,11 +549,12 @@ class DDeiLine extends DDeiAbstractShape {
 
   updateLooseCanvas(): Promise {
     return new Promise((resolve, reject) => {
-      if (this.render) {
+      if (!this.isShadowControl && this.render) {
         //转换为图片
         if (!this.looseCanvas) {
           this.looseCanvas = document.createElement('canvas');
           this.looseCanvas.setAttribute("style", "-moz-transform-origin:left top;");
+          // document.body.appendChild(this.looseCanvas)
         }
         let canvas = this.looseCanvas
 

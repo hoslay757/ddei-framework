@@ -164,7 +164,7 @@ class DDeiUtil {
   static getShadowControl(model: DDeiAbstractShape): DDeiAbstractShape {
     let md = null;
     if (model?.baseModelType == "DDeiTable") {
-      md = DDeiUtil.cloneModel(model);
+      md = DDeiUtil.cloneModel(model, true);
       md.id = md.id + "_shadow"
       let rows: DDeiTableCell[][] = [];
       let cols: DDeiTableCell[][] = [];
@@ -189,7 +189,7 @@ class DDeiUtil {
       md.cols = cols;
       md.initRender();
     } else {
-      md = DDeiUtil.cloneModel(model);
+      md = DDeiUtil.cloneModel(model, true);
       md.initRender();
       //将当前操作控件加入临时选择控件
       md.id = md.id + "_shadow"
@@ -210,11 +210,15 @@ class DDeiUtil {
   }
 
   //克隆模型，只克隆关键属性
-  static cloneModel(sourceModel: DDeiAbstractShape): DDeiAbstractShape {
+  static cloneModel(sourceModel: DDeiAbstractShape, isShadowClone = false): DDeiAbstractShape {
     if (!sourceModel) {
       return;
     }
     let returnModel = clone(sourceModel);
+    if (isShadowClone) {
+      returnModel.clps = []
+      returnModel.isShadowControl = true
+    }
     returnModel.pvs = []
     sourceModel.pvs.forEach(pv => {
       returnModel.pvs.push(clone(pv));
