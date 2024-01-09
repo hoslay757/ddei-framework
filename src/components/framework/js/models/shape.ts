@@ -861,6 +861,9 @@ abstract class DDeiAbstractShape {
 
           link.dm.initPVS()
           link.dm.updateOVS()
+          if (link.dm.pModel?.modelType != 'DDeiLayer') {
+            link.dm.pModel?.changeParentsBounds()
+          }
         }
       })
     }
