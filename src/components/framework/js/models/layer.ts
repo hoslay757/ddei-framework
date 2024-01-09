@@ -171,7 +171,7 @@ class DDeiLayer {
   /**
    * 获取子模型
    */
-  getSubModels(ignoreModelIds: string[], level: number = 1): DDeiAbstractShape[] {
+  getSubModels(ignoreModelIds: string[], level: number = 1, rect: object): DDeiAbstractShape[] {
     let models: DDeiAbstractShape[] = [];
     this.midList.forEach(mid => {
       if (ignoreModelIds && ignoreModelIds?.indexOf(mid) != -1) {
@@ -184,11 +184,13 @@ class DDeiLayer {
         subModel = this.models[mid]
       }
       if (subModel) {
-        if (level > 1 && subModel?.getSubModels) {
-          let subModels = subModel.getSubModels(ignoreModelIds, level - 1);
-          models = models.concat(subModels)
+        if (!rect || subModel.isInRect(rect.x, rect.y, rect.x1, rect.y1)) {
+          if (level > 1 && subModel?.getSubModels) {
+            let subModels = subModel.getSubModels(ignoreModelIds, level - 1, rect);
+            models = models.concat(subModels)
+          }
+          models.push(subModel);
         }
-        models.push(subModel);
       }
     })
     return models;

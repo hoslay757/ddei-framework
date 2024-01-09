@@ -1498,7 +1498,7 @@ abstract class DDeiAbstractShape {
         }
       }
     }
-    return true;
+    return false;
   }
 
   /**

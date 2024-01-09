@@ -537,7 +537,6 @@ class DDeiStage {
    */
   getAlignData(data: object, souceModels: Map<string, DDeiAbstractShape> | Array<DDeiAbstractShape>): object {
     //若干条横线和竖线
-
     let hpoint = {}
     let vpoint = {}
     let hasH = false
@@ -564,8 +563,15 @@ class DDeiStage {
       }
     }
 
-    //当前层级的所有控件
-    let curLevelModels = fModel.pModel.getSubModels(sourceModelKeys, 1);
+    //当前当前屏幕、层级的所有控件
+    let canvas = this.ddInstance.render.getCanvas();
+    let rat1 = this.ddInstance.render.ratio
+    let stageRatio = this.getStageRatio()
+    let x = -this.wpv.x * stageRatio;
+    let y = -this.wpv.y * stageRatio;
+    let x1 = x + canvas.width / rat1;
+    let y1 = y + canvas.height / rat1;
+    let curLevelModels = fModel.pModel.getSubModels(sourceModelKeys, 1, { x: x, y: y, x1: x1, y1: y1 });
     curLevelModels.forEach(model => {
       //判定每一个点以及中心点,如果旋转角度不同，则只判断中心点
       let outPVS = [data.cpv]

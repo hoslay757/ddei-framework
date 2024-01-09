@@ -58,7 +58,7 @@ class DDeiBusCommandSetHelpLine extends DDeiBusCommand {
             centerPV = stage.render.selector.cpv
             rotate = stage.render.selector.rotate
           }
-          // 获取计算并获取对齐的点
+          // 获取计算并获取对齐的点，只获取一屏内的数据做对比
           let { hpoint, vpoint, hAds, vAds } = stage.getAlignData({ pvs: outPVS, cpv: centerPV, rotate: rotate }, data?.models)
           layer.render.helpLines = {
             hpoint: hpoint,
