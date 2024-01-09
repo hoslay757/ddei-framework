@@ -874,12 +874,16 @@ class DDeiLayerCanvasRender {
                 }
                 model.initPVS()
                 model.updateOVS()
+                if (model.pModel != this.model) {
+                  model.pModel?.changeParentsBounds()
+                }
                 hasChange = true;
               }
             }
 
             this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars);
             if (hasChange) {
+
               this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
               this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.NodifyChange);
               this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy);
@@ -1001,6 +1005,7 @@ class DDeiLayerCanvasRender {
                     }
                   })
                 }
+
               })
               //更新新容器大小
               pContainerModel?.changeParentsBounds()
