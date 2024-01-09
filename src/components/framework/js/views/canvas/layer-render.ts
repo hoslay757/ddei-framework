@@ -619,6 +619,7 @@ class DDeiLayerCanvasRender {
 
           //全局变量：当前操作控件=当前控件
           let operateControl = operateControls[0];
+
           this.stageRender.currentOperateShape = operateControl;
           this.stageRender.tempSX = ex
           this.stageRender.tempSY = ey
@@ -1136,8 +1137,12 @@ class DDeiLayerCanvasRender {
         //清除临时操作点
         this.model.opPoints = [];
         //中心点坐标
+        let operateControl = this.stageRender.currentOperateShape
         //当前控件的上层控件，可能是一个layer也可能是容器
-        let pContainerModel = this.stageRender.currentOperateShape.pModel;
+        if (operateControl.pModel != this.model && operateControl.state != DDeiEnumControlState.SELECTED) {
+          operateControl = operateControl.pModel
+        }
+        let pContainerModel = operateControl.pModel;
         //记录当前的拖拽的x,y,写入dragObj作为临时变量
         let dragObj = {
           x: ex,
