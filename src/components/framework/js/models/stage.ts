@@ -566,9 +566,8 @@ class DDeiStage {
     //当前当前屏幕、层级的所有控件
     let canvas = this.ddInstance.render.getCanvas();
     let rat1 = this.ddInstance.render.ratio
-    let stageRatio = this.getStageRatio()
-    let x = -this.wpv.x * stageRatio;
-    let y = -this.wpv.y * stageRatio;
+    let x = -this.wpv.x;
+    let y = -this.wpv.y;
     let x1 = x + canvas.width / rat1;
     let y1 = y + canvas.height / rat1;
     let curLevelModels = fModel.pModel.getSubModels(sourceModelKeys, 1, { x: x, y: y, x1: x1, y1: y1 });
