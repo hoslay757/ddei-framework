@@ -823,52 +823,63 @@ class DDeiLayerCanvasRender {
               }
               if (!isStop) {
                 let passIndex = this.stageRender.dragObj.passIndex;
-                //如果是开始或结束节点的拖拽，判断落点是否在操作点上，如果在，则关联
+                //如果是开始或结束节点的拖拽，判断落点是否在操作点上，如果在且满足关联条件，则关联
                 if (passIndex == 1) {
-
                   //如果原有的关联存在，取消原有的关联
+                  //取得线段定义中的约束
+                  let skip = false
+                  let constraint = DDeiUtil.getControlDefine(model)?.define?.constraint;
                   let opvsIndex = this.stageRender.dragObj.opvsIndex;
                   let dmpath = ""
                   //判断开始点还是结束点
                   if (opvsIndex == 0) {
-                    dmpath = "startPoint"
-                  } else {
-                    dmpath = "endPoint"
-                  }
-                  let distLinks = this.stage?.getDistModelLinks(model.id);
-                  distLinks?.forEach(dl => {
-                    if (dl.dmpath == dmpath) {
-                      this.stage?.removeLink(dl);
-                      //删除源点
-                      if (dl?.sm && dl?.smpath) {
-                        eval("delete dl.sm." + dl.smpath)
-                      }
+                    if (constraint?.sp && constraint.sp.link == false) {
+                      skip = true;
+                    } else {
+                      dmpath = "startPoint"
                     }
-                  })
+                  } else {
+                    if (constraint?.ep && constraint.ep.link == false) {
+                      skip = true;
+                    } else {
+                      dmpath = "endPoint"
+                    }
+                  }
+                  if (!skip) {
+                    let distLinks = this.stage?.getDistModelLinks(model.id);
+                    distLinks?.forEach(dl => {
+                      if (dl.dmpath == dmpath) {
+                        this.stage?.removeLink(dl);
+                        //删除源点
+                        if (dl?.sm && dl?.smpath) {
+                          eval("delete dl.sm." + dl.smpath)
+                        }
+                      }
+                    })
 
-                  let opPoint = this.model.getOpPointByPos(ex, ey);
-                  if (opPoint) {
+                    let opPoint = this.model.getOpPointByPos(ex, ey);
+                    if (opPoint) {
 
-                    //建立关联
-                    let smodel = opPoint.model;
-                    //创建连接点
-                    let id = "_" + DDeiUtil.getUniqueCode()
-                    smodel.exPvs[id] = new Vector3(opPoint.x, opPoint.y, opPoint.z)
-                    smodel.exPvs[id].rate = opPoint.rate
-                    smodel.exPvs[id].sita = opPoint.sita
-                    smodel.exPvs[id].index = opPoint.index
-                    smodel.exPvs[id].id = id
-                    let link = new DDeiLink({
-                      sm: smodel,
-                      dm: model,
-                      smpath: "exPvs." + id,
-                      dmpath: dmpath,
-                      stage: this.stage
-                    });
-                    this.stage?.addLink(link)
-                    model?.initPVS()
-                    smodel.updateLinkModels();
-
+                      //建立关联
+                      let smodel = opPoint.model;
+                      //创建连接点
+                      let id = "_" + DDeiUtil.getUniqueCode()
+                      smodel.exPvs[id] = new Vector3(opPoint.x, opPoint.y, opPoint.z)
+                      smodel.exPvs[id].rate = opPoint.rate
+                      smodel.exPvs[id].sita = opPoint.sita
+                      smodel.exPvs[id].index = opPoint.index
+                      smodel.exPvs[id].id = id
+                      let link = new DDeiLink({
+                        sm: smodel,
+                        dm: model,
+                        smpath: "exPvs." + id,
+                        dmpath: dmpath,
+                        stage: this.stage
+                      });
+                      this.stage?.addLink(link)
+                      model?.initPVS()
+                      smodel.updateLinkModels();
+                    }
                   }
                 }
                 model.initPVS()

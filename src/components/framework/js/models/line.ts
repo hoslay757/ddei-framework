@@ -542,6 +542,77 @@ class DDeiLine extends DDeiAbstractShape {
   }
 
   /**
+   * 设置直线的坐标，会根据约束关系来调整位置
+   */
+  setLineType1PointPosition(pointType, ex, ey) {
+    //直线
+    //开始点
+    let sx = this.pvs[0].x
+    let sy = this.pvs[0].y
+    let endX = this.pvs[this.pvs.length - 1].x
+    let endY = this.pvs[this.pvs.length - 1].y
+    if (pointType == 0) {
+      sx = ex
+      sy = ey
+    }
+    //结束点
+    else if (pointType == 1) {
+      endX = ex
+      endY = ey
+    }
+    let constraint = DDeiUtil.getControlDefine(this)?.define?.constraint;
+    //调用方向约束
+    if (constraint?.type[1]?.angles?.length > 0) {
+      //获取开始节点与结束节点的角度
+      let lineAngle = DDeiUtil.getLineAngle(sx, sy, endX, endY)
+      //判断是不是在角度区间内，如果不是则定位到最近的开始或结束角度
+      let angle = this.rotate ? this.rotate : 0
+      let inArea = false;
+      let minAngle = lineAngle
+      let minAngleABS = Infinity
+      for (let i = 0; i < constraint.type[1].angles.length; i++) {
+        let angleArea = constraint.type[1].angles[i]
+        if (angleArea[0] + angle <= lineAngle && angleArea[1] + angle >= lineAngle) {
+          inArea = true;
+          break;
+        }
+        if (Math.abs(angleArea[0] + angle - lineAngle) < minAngleABS) {
+          minAngleABS = Math.abs(angleArea[0] + angle - lineAngle)
+          minAngle = angleArea[0] + angle
+        }
+        if (Math.abs(angleArea[1] + angle - lineAngle) < minAngleABS) {
+          minAngleABS = Math.abs(angleArea[1] + angle - lineAngle)
+          minAngle = angleArea[1] + angle
+        }
+      }
+      if (pointType == 0) {
+
+        let sdx = this.pvs[this.pvs.length - 1].x - this.pvs[0].x
+        let sdy = this.pvs[this.pvs.length - 1].y - this.pvs[0].y
+
+        let zeroEndPoints = [new Vector3(sdx, sdy, 1)]
+        let endPoint = DDeiUtil.zeroToPoints(zeroEndPoints, new Vector3(sx, sy), minAngle - lineAngle)[0]
+        if (isNaN(endPoint.y)) {
+          debugger
+        }
+        endX = endPoint.x
+        endY = endPoint.y
+      } else if (!inArea && pointType == 1) {
+        let zeroEndPoints = DDeiUtil.pointsToZero([new Vector3(endX, endY, 1)], new Vector3(sx, sy), 0)
+        let endPoint = DDeiUtil.zeroToPoints(zeroEndPoints, new Vector3(sx, sy), minAngle - lineAngle)[0]
+        endX = endPoint.x
+        endY = endPoint.y
+      }
+    }
+
+    this.pvs[0].x = sx
+    this.pvs[0].y = sy
+    this.pvs[this.pvs.length - 1].x = endX
+    this.pvs[this.pvs.length - 1].y = endY
+
+  }
+
+  /**
    * 基于当前向量计算宽松判定向量
    */
   calLoosePVS(): void {

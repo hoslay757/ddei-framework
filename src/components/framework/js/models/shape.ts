@@ -854,6 +854,8 @@ abstract class DDeiAbstractShape {
 
           link.dm.initPVS()
           link.dm.updateOVS()
+          let pvs = link.dm.pvs
+          link.dm.setLineType1PointPosition(0, pvs[0].x, pvs[0].y)
           if (link.dm.pModel?.modelType != 'DDeiLayer') {
             link.dm.pModel?.changeParentsBounds()
           }
