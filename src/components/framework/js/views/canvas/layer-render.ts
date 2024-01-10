@@ -276,7 +276,12 @@ class DDeiLayerCanvasRender {
         //保存状态
         ctx.save();
         item.render.drawShape();
-        item.render.drawShape({ fill: { color: '#017fff', opacity: 0.7 } });
+        if (item.modelType == 'DDeiLine') {
+          item.render.drawShape({ color: "#017fff", dash: [], opacity: 0.7, fill: { color: '#017fff', opacity: 0.7 } });
+        } else {
+          item.render.drawShape({ fill: { color: '#017fff', opacity: 0.7 } });
+        }
+
         ctx.restore();
       });
 

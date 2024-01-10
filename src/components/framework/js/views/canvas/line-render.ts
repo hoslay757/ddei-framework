@@ -148,7 +148,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
           }
 
           //绘制线段
-          this.drawLine();
+          this.drawLine(tempShape);
 
 
           ctx.restore();
