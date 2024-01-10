@@ -520,6 +520,16 @@ class DDeiRectContainer extends DDeiRectangle {
     }
   }
 
+  getAPVS() {
+    let arr = [this.cpv]
+    this.models.forEach(model => {
+      let modelarr = model.getAPVS()
+      arr = arr.concat(modelarr);
+
+    });
+    return arr;
+  }
+
 
   /**
    * 得到点在图形连接线上的投射点

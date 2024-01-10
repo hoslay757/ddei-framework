@@ -574,14 +574,10 @@ class DDeiStage {
     let curLevelModels = fModel.pModel.getSubModels(sourceModelKeys, 1, { x: x, y: y, x1: x1, y1: y1 });
     curLevelModels.forEach(model => {
       //判定每一个点以及中心点,如果旋转角度不同，则只判断中心点
-      let outPVS = [data.cpv]
-      let inPVS = [model.cpv]
-      if (data.rotate == model.rotate || (!data.rotate && !model.rotate)) {
-        outPVS = outPVS.concat(data.pvs)
-        inPVS = inPVS.concat(model.pvs)
-      }
+      let outPVS = data.pvs
+      let inPVS = model.getAPVS()
       outPVS.forEach(pv => {
-        inPVS.forEach(mpv => {
+        inPVS?.forEach(mpv => {
           //横向相等
           let pvy = Math.floor(pv.y)
           let pvx = Math.floor(pv.x)

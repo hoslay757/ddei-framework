@@ -47,24 +47,27 @@ class DDeiBusCommandSetHelpLine extends DDeiBusCommand {
         }
         if (models?.length > 0) {
           let outPVS = null;
-          let centerPV = null;
           let rotate = null;
+          let apvs = []
+          models.forEach(model => {
+            let modelAPVS = model.getAPVS()
+            if (modelAPVS?.length > 0) {
+              apvs = apvs.concat(modelAPVS)
+            }
+          });
           if (models.length == 1) {
-            outPVS = models[0].pvs
-            centerPV = models[0].cpv
             rotate = models[0].rotate
           } else {
-            outPVS = DDeiAbstractShape.getOutPV(models);
-            centerPV = stage.render.selector.cpv
             rotate = stage.render.selector.rotate
           }
+
           // 获取计算并获取对齐的点，只获取一屏内的数据做对比
-          let { hpoint, vpoint, hAds, vAds } = stage.getAlignData({ pvs: outPVS, cpv: centerPV, rotate: rotate }, data?.models)
+
+          let { hpoint, vpoint, hAds, vAds } = stage.getAlignData({ pvs: apvs, rotate: rotate }, data?.models)
           layer.render.helpLines = {
             hpoint: hpoint,
             vpoint: vpoint,
             pvs: outPVS,
-            cpv: centerPV,
             hAds: hAds,
             vAds: vAds
           };

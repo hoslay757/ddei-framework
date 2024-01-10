@@ -130,6 +130,8 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
   }
 
 
+
+
   // ============================== 事件 ===============================
   /**
    * 鼠标按下事件

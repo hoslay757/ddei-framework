@@ -163,6 +163,7 @@ abstract class DDeiAbstractShape {
    *    stroke：1连线
    *    fill：1填充
    *    select：1用于生成区域
+   *    align:1 用于辅助对齐
    *    text:1文本
    *        
    */
@@ -375,6 +376,7 @@ abstract class DDeiAbstractShape {
       delete this.scale
       //对返回的数据进行处理和拆分
       let pvs = []
+      let apvs = []
       let textArea = []
       let operatePVS = []
       let opps = []
@@ -412,22 +414,11 @@ abstract class DDeiAbstractShape {
             if (pvd.oppoint) {
               opps.push(pv)
             }
+            if (pvd.align) {
+              apvs.push(pv)
+            }
             if (pvd.text) {
               textArea.push(pv)
-            }
-          })
-
-        } else if (sampliesResult[i].length > 0 && sampliesResult[i][0].text == 1) {
-
-          sampliesResult[i].forEach(pvd => {
-            let pv = new Vector3()
-            for (let i in pvd) {
-              pv[i] = pvd[i]
-            }
-            pv.z = (pvd.z || pvd.z === 0) ? pvd.z : 1
-            textArea.push(pv)
-            if (pvd.oppoint) {
-              opps.push(pv)
             }
           })
         }
@@ -467,6 +458,8 @@ abstract class DDeiAbstractShape {
       this.textArea = textArea
 
       this.opps = opps;
+
+      this.apvs = apvs
     }
 
   }
@@ -711,7 +704,7 @@ abstract class DDeiAbstractShape {
     }
     let outRect = DDeiAbstractShape.pvsToOutRect(this.loosePVS);
     if (this.loosePVS.length < 4) {
-      this.loosePVS = DDeiAbstractShape.outPV(outRect)
+      this.loosePVS = DDeiAbstractShape.outRectToPV(outRect)
     }
     //计算宽、高信息，该值为不考虑缩放的大小
     this.x = outRect.x / stageRatio
@@ -1169,23 +1162,10 @@ abstract class DDeiAbstractShape {
    * 获取中心点操作点
    */
   getCenterOpPoints(): [] {
-
     if (this.opps?.length > 0) {
       return cloneDeep(this.opps)
     }
-    else {
-      let points = []
-      for (let i = 0; i < this.pvs.length; i++) {
-        let s = i
-        let e = i + 1
-        if (i == this.pvs.length - 1) {
-          e = 0
-        }
-        points.push(new Vector3((this.pvs[s].x + this.pvs[e].x) / 2, (this.pvs[s].y + this.pvs[e].y) / 2, 1))
-      }
-      return points;
-    }
-
+    return []
   }
 
   /**
@@ -1201,21 +1181,21 @@ abstract class DDeiAbstractShape {
     let x0 = point.x;
     let y0 = point.y;
     //判断鼠标是否在某个控件的范围内
-    if (this.pvs?.length > index) {
+    if (this.opps?.length > index) {
       let st, en;
       //点到直线的距离
       let plLength = Infinity;
-      if (index == this.pvs.length - 1) {
+      if (index == this.opps.length - 1) {
         st = index;
         en = 0;
       } else {
         st = index;
         en = index + 1;
       }
-      let x1 = this.pvs[st].x;
-      let y1 = this.pvs[st].y;
-      let x2 = this.pvs[en].x;
-      let y2 = this.pvs[en].y;
+      let x1 = this.opps[st].x;
+      let y1 = this.opps[st].y;
+      let x2 = this.opps[en].x;
+      let y2 = this.opps[en].y;
       //获取控件所有向量
       if (x1 == x2 && y1 == y2) {
         plLength = Math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0))
@@ -1314,7 +1294,7 @@ abstract class DDeiAbstractShape {
         }
       });
     }
-    opPVS = this.opps?.length > 0 ? opPVS : this.pvs
+
     if (opPVS?.length > 0) {
       let st, en;
       for (let j = 0; j < opPVS.length; j++) {
@@ -1448,6 +1428,15 @@ abstract class DDeiAbstractShape {
     }
   }
 
+  getAPVS() {
+    let arr = [this.cpv]
+    if (this.apvs?.length > 0) {
+      arr = arr.concat(this.apvs)
+    }
+    return arr;
+  }
+
+
   /**
    * 根据点的数量判断图形是否在一个区域内
    * @param x
@@ -1461,7 +1450,7 @@ abstract class DDeiAbstractShape {
     if (x === undefined || y === undefined || x1 === undefined || y1 === undefined) {
       return false
     }
-    let pvs = this.pvs;
+    let pvs = this.operatePVS?.length > 2 ? this.operatePVS : this.pvs;
     let len = pvs.length;
     let pn = 0
     let modelLines = []

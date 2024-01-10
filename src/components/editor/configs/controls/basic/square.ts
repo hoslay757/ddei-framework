@@ -40,8 +40,8 @@ export default {
                 end = 1
               break;
             }
-            pvs.push({begin:start,end:end,x:sample.x,y:sample.y,r:sample.r,select:1,clip:1,oppoint:2,stroke:1,fill:1});
-        }`
+            pvs.push({begin:start,end:end,x:sample.x,y:sample.y,r:sample.r,select:1,clip:1,oppoint:2,align:1,stroke:1,fill:1});
+        }`,
 
       ]
     }

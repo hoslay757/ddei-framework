@@ -8,7 +8,6 @@ export default {
   'define': {
 
     border: {
-      width: 2,
       round: 5
     }
   }
