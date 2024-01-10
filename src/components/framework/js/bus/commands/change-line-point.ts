@@ -5,6 +5,8 @@ import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
 import { Matrix3, Vector3 } from 'three';
 import DDeiUtil from '../../util';
+import DDeiAbstractShape from '../../models/shape';
+import { min } from 'lodash';
 /**
  * 修改线点坐标的总线Command
  */
@@ -44,19 +46,62 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
       let opvs = stageRender.dragObj.opvs;
       let pvs = lineModel.pvs;
       let create = stageRender.dragObj.create
+      //取得线段定义中的约束
+      let constraint = DDeiUtil.getControlDefine(lineModel)?.define?.constraint;
       switch (lineModel.type) {
         case 1: {
           //直线
           //开始点
+          let sx = pvs[0].x
+          let sy = pvs[0].y
+          let endX = pvs[pvs.length - 1].x
+          let endY = pvs[pvs.length - 1].y
           if (passIndex == 1 && opvsIndex == 0) {
-            pvs[0].x = ex
-            pvs[0].y = ey
+            sx = ex
+            sy = ey
           }
           //结束点
           else if (passIndex == 1 && opvsIndex == opvs.length - 1) {
-            pvs[pvs.length - 1].x = ex
-            pvs[pvs.length - 1].y = ey
+            endX = ex
+            endY = ey
           }
+          //调用方向约束
+          if (constraint?.type[1]?.angles?.length > 0) {
+            //获取开始节点与结束节点的角度
+            let lineAngle = DDeiUtil.getLineAngle(sx, sy, endX, endY)
+            //判断是不是在角度区间内，如果不是则定位到最近的开始或结束角度
+            let angle = lineModel.rotate ? lineModel.rotate : 0
+            let inArea = false;
+            let minAngle = Infinity
+            let minAngleABS = Infinity
+            for (let i = 0; i < constraint.type[1].angles.length; i++) {
+              let angleArea = constraint.type[1].angles[i]
+              if (angleArea[0] + angle <= lineAngle && angleArea[1] + angle >= lineAngle) {
+                inArea = true;
+                break;
+              }
+              if (Math.abs(angleArea[0] + angle - lineAngle) < minAngleABS) {
+                minAngleABS = Math.abs(angleArea[0] + angle - lineAngle)
+                minAngle = angleArea[0] + angle
+              }
+              if (Math.abs(angleArea[1] + angle - lineAngle) < minAngleABS) {
+                minAngleABS = Math.abs(angleArea[1] + angle - lineAngle)
+                minAngle = angleArea[1] + angle
+              }
+            }
+            if (!inArea) {
+              let zeroEndPoints = DDeiUtil.pointsToZero([new Vector3(endX, endY, 1)], new Vector3(sx, sy), 0)
+              let endPoint = DDeiUtil.zeroToPoints(zeroEndPoints, new Vector3(sx, sy), minAngle - lineAngle)[0]
+              endX = endPoint.x
+              endY = endPoint.y
+            }
+          }
+
+          pvs[0].x = sx
+          pvs[0].y = sy
+          pvs[pvs.length - 1].x = endX
+          pvs[pvs.length - 1].y = endY
+
         } break;
         case 2: {
           //开始点
