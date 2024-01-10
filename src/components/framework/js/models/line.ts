@@ -637,7 +637,6 @@ class DDeiLine extends DDeiAbstractShape {
       if (!this.looseCanvas) {
         this.looseCanvas = document.createElement('canvas');
         this.looseCanvas.setAttribute("style", "-moz-transform-origin:left top;");
-        document.body.appendChild(this.looseCanvas)
       }
       let canvas = this.looseCanvas
 

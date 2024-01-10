@@ -25,7 +25,7 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
   /**
      * 创建图形
      */
-  drawShape(): void {
+  drawShape(tempShape): void {
     if (!this.viewBefore || this.viewBefore(
       DDeiEnumOperateType.VIEW,
       [this.model],
@@ -35,7 +35,8 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
     )) {
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
-      super.drawShape();
+
+      super.drawShape(tempShape);
       //保存状态
       ctx.save();
       //获取全局缩放比例
@@ -60,7 +61,7 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
       ctx.closePath();
       //填充矩形
       // ctx.clip();
-      this.drawChildrenShapes();
+      this.drawChildrenShapes(tempShape);
       ctx.restore();
 
       if (this.viewAfter) {
@@ -78,7 +79,7 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
   /**
    * 绘制子元素
    */
-  drawChildrenShapes(): void {
+  drawChildrenShapes(tempShape): void {
 
     if (this.model.models?.size > 0) {
 
@@ -111,7 +112,7 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
           }
           ctx.closePath();
           // ctx.clip();
-          item.render.drawShape();
+          item.render.drawShape(tempShape);
           //恢复
           ctx.restore();
         }

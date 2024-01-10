@@ -89,7 +89,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
   /**
    * 创建图形
    */
-  drawShape(): void {
+  drawShape(tempShape): void {
     if (!this.viewBefore || this.viewBefore(
       DDeiEnumOperateType.VIEW,
       [this.model],
@@ -102,13 +102,13 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       let ctx = canvas.getContext('2d');
       ctx.save();
       //绘制边框
-      this.drawBorder();
+      this.drawBorder(tempShape);
 
       //绘制填充
-      this.drawFill();
+      this.drawFill(tempShape);
 
       //绘制文本
-      this.drawText();
+      this.drawText(tempShape);
 
       //清空绘图时计算的临时变量
       this.tempFillAreaRect = null
@@ -254,7 +254,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     let ratio = rat1 * stageRatio;
     //1,2,3,4 上，右，下，左
     //如果被选中，使用选中的边框，否则使用缺省边框
-    let disabled = this.getBorderInfo(null, 1, "disabled");
+    let disabled = this.getBorderInfo(tempBorder, 1, "disabled");
     let color = this.getBorderInfo(tempBorder, 1, "color");
     let opacity = this.getBorderInfo(tempBorder, 1, "opacity");
     let width = this.getBorderInfo(tempBorder, 1, "width");
@@ -359,7 +359,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
   /**
    * 绘制填充
    */
-  drawFill(): void {
+  drawFill(tempShape): void {
     //获得 2d 上下文对象
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
@@ -369,7 +369,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     let rat1 = this.ddRender.ratio;
     //保存状态
     ctx.save();
-    let fillType = this.getCachedValue("fill.type");
+    let fillType = tempShape?.fill?.type ? tempShape?.fill?.type : this.getCachedValue("fill.type")
     //纯色填充
     if (this.isEditoring) {
       if (!fillType || fillType == '0') {
@@ -378,9 +378,9 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     }
     if (fillType == 1) {
       //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
-      let fillColor = this.getCachedValue("fill.color");
-      let fillOpacity = this.getCachedValue("fill.opacity");
-      let fillDisabled = this.getCachedValue("fill.disabled");
+      let fillColor = tempShape?.fill?.color ? tempShape?.fill?.color : this.getCachedValue("fill.color")
+      let fillOpacity = tempShape?.fill?.opacity ? tempShape?.fill?.opacity : this.getCachedValue("fill.opacity")
+      let fillDisabled = tempShape?.fill?.disabled ? tempShape?.fill?.disabled : this.getCachedValue("fill.disabled")
       if (this.isEditoring) {
         fillDisabled = false
         fillOpacity = 1.0
