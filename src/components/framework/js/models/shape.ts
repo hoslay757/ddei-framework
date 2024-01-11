@@ -293,8 +293,8 @@ abstract class DDeiAbstractShape {
         originOVS = cloneDeep(this.ovs);
         //逆向旋转，然后缩放至基准大小，再进行比较
         let bpv = DDeiUtil.pointsToZero([this.bpv], this.cpv, this.rotate)[0]
-        let scaleX = parseFloat(Math.abs(bpv.x / 100).toFixed(4))
-        let scaleY = parseFloat(Math.abs(bpv.y / 100).toFixed(4))
+        let scaleX = Math.abs(bpv.x / 100)
+        let scaleY = Math.abs(bpv.y / 100)
         let m1 = new Matrix3()
         let move1Matrix = new Matrix3(
           1, 0, -this.cpv.x,
@@ -716,9 +716,21 @@ abstract class DDeiAbstractShape {
 
     let m1 = new Matrix3()
     //通过缩放矩阵，进行缩放
+    let scX = 1, scY = 1
+
+    if (this.width * stageRatio <= 30) {
+      scX = 1 + (10 / this.width * stageRatio)
+    } else {
+      scX = 1 + Math.min(0.1 / stageRatio, 20 / this.width)
+    }
+    if (this.height * stageRatio <= 30) {
+      scY = 1 + (10 / this.height * stageRatio)
+    } else {
+      scY = 1 + Math.min(0.1 / stageRatio, 20 / this.height)
+    }
     let scaleMatrix = new Matrix3(
-      1 + Math.min(0.15 / stageRatio, 20 / this.width), 0, 0,
-      0, 1 + Math.min(0.15 / stageRatio, 20 / this.height), 0,
+      scX, 0, 0,
+      0, scY, 0,
       0, 0, 1);
     m1.premultiply(scaleMatrix)
     //旋转并位移回去

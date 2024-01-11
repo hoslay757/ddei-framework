@@ -186,20 +186,29 @@ class DDeiPolygon extends DDeiAbstractShape {
    * 返回某个点，相对于该图形的角度
    */
   getPointAngle(point): number {
+    let bpv = DDeiUtil.pointsToZero([this.bpv], this.cpv, this.rotate)[0]
+    let scaleX = Math.abs(bpv.x / 100)
+    let scaleY = Math.abs(bpv.y / 100)
+
+    let zeroPoint = DDeiUtil.pointsToZero([new Vector3(point.x, point.y, 1)], this.cpv, this.rotate)[0];
+    zeroPoint.x /= scaleX
+    zeroPoint.y /= scaleY
+
+    let lineAngle = DDeiUtil.getLineAngle(0, 0, zeroPoint.x, zeroPoint.y)
     //上
-    if (DDeiUtil.isPointInLine(point, this.pvs[0], this.pvs[1])) {
+    if (lineAngle <= -45 && lineAngle >= -135) {
       return DDeiUtil.getLineAngle(0, 0, 0, -2)
     }
     //右
-    else if (DDeiUtil.isPointInLine(point, this.pvs[1], this.pvs[2])) {
+    else if (lineAngle >= -45 && lineAngle < 45) {
       return DDeiUtil.getLineAngle(0, 0, 2, 0)
     }
     //下
-    else if (DDeiUtil.isPointInLine(point, this.pvs[2], this.pvs[3])) {
+    else if (lineAngle >= 45 && lineAngle < 135) {
       return DDeiUtil.getLineAngle(0, 0, 0, 2)
     }
     //左
-    else if (DDeiUtil.isPointInLine(point, this.pvs[3], this.pvs[0])) {
+    else {
       return DDeiUtil.getLineAngle(0, 0, -2, 0)
     }
   }
