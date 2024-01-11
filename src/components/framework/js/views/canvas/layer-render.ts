@@ -609,7 +609,7 @@ class DDeiLayerCanvasRender {
       let isStop = false;
       if (opPoint) {
         //只有在控件内部才触发
-        let projPoint = opPoint.model.getProjPoint({ x: ex, y: ey }, { in: -3, out: 15 });
+        let projPoint = opPoint.model.getProjPoint({ x: ex, y: ey }, { in: -3, out: 15 }, 1, 2);
         if (projPoint != null) {
           isStop = true;
           //当前操作状态：线改变点中
@@ -1327,7 +1327,7 @@ class DDeiLayerCanvasRender {
         this.model.opPoints = [];
         //判断当前鼠标坐标是否落在选择器控件的区域内
         // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
-        let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, ex, ey, true);
+        let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, ex, ey, true, true);
         if (operateControls != null && operateControls.length > 0) {
           operateControls[0].render.changeOpPoints(ex, ey, 1);
         }

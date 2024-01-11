@@ -1288,26 +1288,30 @@ abstract class DDeiAbstractShape {
     return null;
   }
 
-
   /**
    * 得到点在图形连接线上的投射点
    * @param point 测试点
    * @param distance 内外部判定区间的距离
    * @param direct 方向，1外部，2内部 默认1
+   * @param pointType 用于判定的点类别，1操作点，2范围点，缺省操作点
    * @returns 投影点的坐标
    */
   getProjPoint(point: { x: number, y: number }
-    , distance: { in: number, out: number } = { in: 0, out: 15 }, direct: number = 1): { x: number, y: number, plLength: number } | null {
+    , distance: { in: number, out: number } = { in: 0, out: 15 }, direct: number = 1, pointType: number = 1): { x: number, y: number, plLength: number } | null {
     let x0 = point.x;
     let y0 = point.y;
     //判断鼠标是否在某个控件的范围内
     let opPVS = []
-    if (this.opps?.length) {
-      this.opps.forEach(opvs => {
-        if (opvs.oppoint == 2) {
-          opPVS.push(opvs);
-        }
-      });
+    if (pointType == 1) {
+      if (this.opps?.length) {
+        this.opps.forEach(opvs => {
+          if (opvs.oppoint == 2) {
+            opPVS.push(opvs);
+          }
+        });
+      }
+    } else {
+      opPVS = this.getOperatePVS()
     }
 
     if (opPVS?.length > 0) {
@@ -2105,10 +2109,14 @@ abstract class DDeiAbstractShape {
 
   /**
    * 获取某个容器下选中区域的所有控件,如果控件已被选中，且是一个容器，则继续向下直到最底层
-   * @param area 选中区域
+   * @param container 容器
+   * @param x  X坐标
+   * @param y  Y坐标
+   * @param loose 启用宽松判定
+   * @param deep 启动深度判定
    * @returns 
    */
-  static findBottomModelsByArea(container, x = undefined, y = undefined, loose: boolean = false): DDeiAbstractShape[] | null {
+  static findBottomModelsByArea(container, x = undefined, y = undefined, loose: boolean = false, deep: boolean = false): DDeiAbstractShape[] | null {
     let controls = [];
     if (container) {
       for (let mg = container.midList.length - 1; mg >= 0; mg--) {
@@ -2117,14 +2125,14 @@ abstract class DDeiAbstractShape {
         //如果射线相交，则视为选中
         if (item.isInAreaLoose(x, y, loose)) {
           //如果当前控件状态为选中，且是容器，则往下寻找控件，否则返回当前控件
-          if (item.state == DDeiEnumControlState.SELECTED && item.baseModelType == "DDeiContainer") {
+          if ((item.state == DDeiEnumControlState.SELECTED || deep) && item.baseModelType == "DDeiContainer") {
             let subControls = DDeiAbstractShape.findBottomModelsByArea(item, x, y, loose);
             if (subControls && subControls.length > 0) {
               controls = controls.concat(subControls);
             } else {
               controls.push(item);
             }
-          } else if (item.state == DDeiEnumControlState.SELECTED && item.baseModelType == "DDeiTable") {
+          } else if ((item.state == DDeiEnumControlState.SELECTED || deep) && item.baseModelType == "DDeiTable") {
             //判断表格当前的单元格是否是选中的单元格，如果是则分发事件
             let currentCell = item.getAccuContainerByPos(x, y);
             if (currentCell?.state == DDeiEnumControlState.SELECTED) {
