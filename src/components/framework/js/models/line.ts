@@ -629,15 +629,10 @@ class DDeiLine extends DDeiAbstractShape {
         }
       }
       if (pointType == 0) {
-
         let sdx = this.pvs[this.pvs.length - 1].x - this.pvs[0].x
         let sdy = this.pvs[this.pvs.length - 1].y - this.pvs[0].y
-
         let zeroEndPoints = [new Vector3(sdx, sdy, 1)]
         let endPoint = DDeiUtil.zeroToPoints(zeroEndPoints, new Vector3(sx, sy), minAngle - lineAngle)[0]
-        if (isNaN(endPoint.y)) {
-          debugger
-        }
         endX = endPoint.x
         endY = endPoint.y
       } else if (!inArea && pointType == 1) {

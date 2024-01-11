@@ -6,6 +6,7 @@ import { Matrix3, Vector3 } from 'three';
 import DDeiLayoutManager from '../layout/layout-manager';
 import DDeiLayoutManagerFactory from '../layout/layout-manager-factory';
 import DDei from '../ddei';
+import DDeiUtil from '../util';
 
 /**
  * 普通容器是一个矩形，能包含其他容器
@@ -419,7 +420,7 @@ class DDeiRectContainer extends DDeiRectangle {
     this.pvs[3].y = height / 2
 
     let m1 = new Matrix3()
-    let angle = -(this.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+    let angle = -DDeiUtil.preciseTimes(this.rotate, DDeiConfig.ROTATE_UNIT)
     let rotateMatrix = new Matrix3(
       Math.cos(angle), Math.sin(angle), 0,
       -Math.sin(angle), Math.cos(angle), 0,

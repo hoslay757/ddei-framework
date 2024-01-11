@@ -259,7 +259,7 @@ class DDeiSelector extends DDeiRectangle {
     });
     //获取旋转角度
     if (this.rotate && this.rotate != 0) {
-      let angle = (this.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      let angle = DDeiUtil.preciseTimes(this.rotate, DDeiConfig.ROTATE_UNIT)
       let rotateMatrix = new Matrix3(
         Math.cos(angle), Math.sin(angle), 0,
         -Math.sin(angle), Math.cos(angle), 0,
@@ -308,7 +308,7 @@ class DDeiSelector extends DDeiRectangle {
 
     //旋转并位移回去
     if (this.rotate && this.rotate != 0) {
-      let angle = -(this.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      let angle = -DDeiUtil.preciseTimes(this.rotate, DDeiConfig.ROTATE_UNIT)
       let rotateMatrix = new Matrix3(
         Math.cos(angle), Math.sin(angle), 0,
         -Math.sin(angle), Math.cos(angle), 0,

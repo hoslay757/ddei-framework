@@ -293,8 +293,8 @@ abstract class DDeiAbstractShape {
         originOVS = cloneDeep(this.ovs);
         //逆向旋转，然后缩放至基准大小，再进行比较
         let bpv = DDeiUtil.pointsToZero([this.bpv], this.cpv, this.rotate)[0]
-        let scaleX = Math.abs(bpv.x / 100)
-        let scaleY = Math.abs(bpv.y / 100)
+        let scaleX = Math.abs(DDeiUtil.preciseDiv(bpv.x, 100))
+        let scaleY = Math.abs(DDeiUtil.preciseDiv(bpv.y, 100))
         let m1 = new Matrix3()
         let move1Matrix = new Matrix3(
           1, 0, -this.cpv.x,
@@ -304,7 +304,7 @@ abstract class DDeiAbstractShape {
         let rotate = 0
         if (this.rotate) {
           rotate = this.rotate
-          let angle = parseFloat((this.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4));
+          let angle = DDeiUtil.preciseTimes(rotate, DDeiConfig.ROTATE_UNIT)
           let rotateMatrix = new Matrix3(
             Math.cos(angle), Math.sin(angle), 0,
             -Math.sin(angle), Math.cos(angle), 0,
@@ -434,7 +434,7 @@ abstract class DDeiAbstractShape {
       m1.premultiply(scaleMatrix)
 
       if (this.rotate) {
-        let angle = parseFloat((-this.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4));
+        let angle = -DDeiUtil.preciseTimes(this.rotate, DDeiConfig.ROTATE_UNIT)
         let rotateMatrix = new Matrix3(
           Math.cos(angle), Math.sin(angle), 0,
           -Math.sin(angle), Math.cos(angle), 0,
@@ -693,7 +693,7 @@ abstract class DDeiAbstractShape {
     });
     //获取旋转角度
     if (this.rotate && this.rotate != 0) {
-      let angle = (this.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      let angle = DDeiUtil.preciseTimes(this.rotate, DDeiConfig.ROTATE_UNIT)
       let rotateMatrix = new Matrix3(
         Math.cos(angle), Math.sin(angle), 0,
         -Math.sin(angle), Math.cos(angle), 0,
@@ -735,7 +735,7 @@ abstract class DDeiAbstractShape {
     m1.premultiply(scaleMatrix)
     //旋转并位移回去
     if (this.rotate && this.rotate != 0) {
-      let angle = -(this.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      let angle = -DDeiUtil.preciseTimes(this.rotate, DDeiConfig.ROTATE_UNIT)
       let rotateMatrix = new Matrix3(
         Math.cos(angle), Math.sin(angle), 0,
         -Math.sin(angle), Math.cos(angle), 0,
@@ -778,7 +778,7 @@ abstract class DDeiAbstractShape {
 
       if (this.rotate) {
         //还原到未旋转状态
-        let angle = (this.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+        let angle = DDeiUtil.preciseTimes(this.rotate, DDeiConfig.ROTATE_UNIT)
         //计算input的正确打开位置，由节点0
         let rotateMatrix = new Matrix3(
           Math.cos(angle), Math.sin(angle), 0,
@@ -788,7 +788,7 @@ abstract class DDeiAbstractShape {
       }
       if (rotate) {
         //还原到未旋转状态
-        let angle = -(rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+        let angle = -DDeiUtil.preciseTimes(rotate, DDeiConfig.ROTATE_UNIT)
         //计算input的正确打开位置，由节点0
         let rotateMatrix = new Matrix3(
           Math.cos(angle), Math.sin(angle), 0,
@@ -1941,10 +1941,10 @@ abstract class DDeiAbstractShape {
     let x: number = Infinity, y: number = Infinity, x1: number = -Infinity, y1: number = -Infinity;
     //找到最大、最小的x和y
     points.forEach(p => {
-      x = Math.min(Math.floor(p.x), x)
-      x1 = Math.max(Math.floor(p.x), x1)
-      y = Math.min(Math.floor(p.y), y)
-      y1 = Math.max(Math.floor(p.y), y1)
+      x = Math.min(p.x, x)
+      x1 = Math.max(p.x, x1)
+      y = Math.min(p.y, y)
+      y1 = Math.max(p.y, y1)
     })
     return {
       x: x, y: y, width: x1 - x, height: y1 - y, x1: x1, y1: y1

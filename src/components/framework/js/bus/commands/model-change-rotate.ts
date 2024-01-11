@@ -70,8 +70,8 @@ class DDeiBusCommandModelChangeRotate extends DDeiBusCommand {
       let occ = { x: originRect.x + originRect.width * 0.5, y: originRect.y + originRect.height * 0.5 };
       //基于中心构建旋转矩阵，旋转所有向量点
       //计算旋转角度
-      let rotate = movedNumber * 0.75;
-      let angle = -(rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      let rotate = movedNumber;
+      let angle = -DDeiUtil.preciseTimes(rotate, DDeiConfig.ROTATE_UNIT)
       let move1Matrix = new Matrix3(
         1, 0, -occ.x,
         0, 1, -occ.y,
@@ -84,11 +84,14 @@ class DDeiBusCommandModelChangeRotate extends DDeiBusCommand {
         1, 0, occ.x,
         0, 1, occ.y,
         0, 0, 1);
+
       let m1 = new Matrix3().premultiply(move1Matrix).premultiply(rotateMatrix).premultiply(move2Matrix);
       //对所有选中图形进行位移并旋转
       for (let i = 0; i < models.length; i++) {
         let item = models[i]
+        console.log("老:" + models[0].cpv.x + " .  " + models[0].cpv.y)
         item.transVectors(m1)
+        console.log("新:" + models[0].cpv.x + " .  " + models[0].cpv.y)
         item.updateLinkModels();
       }
       selector.transVectors(m1)

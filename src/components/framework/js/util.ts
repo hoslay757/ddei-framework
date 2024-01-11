@@ -1239,7 +1239,7 @@ class DDeiUtil {
         0, 1, -cpv.y,
         0, 0, 1);
       if (rotate) {
-        let angle = (rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+        let angle = DDeiUtil.preciseTimes(rotate, DDeiConfig.ROTATE_UNIT)
         let rotateMatrix = new Matrix3(
           Math.cos(angle), Math.sin(angle), 0,
           -Math.sin(angle), Math.cos(angle), 0,
