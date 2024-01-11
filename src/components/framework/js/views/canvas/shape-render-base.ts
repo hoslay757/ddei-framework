@@ -210,13 +210,11 @@ class DDeiAbstractShapeRender {
   }
 
   changeOpPoints(ex: number, ey: number, pointMode: number | null = null) {
-
     //获取直线连接操作点
     let hasPoint = false;
     let projPoint = this.model.getProjPoint({ x: ex, y: ey });
     let pots = []
     if (projPoint) {
-
       projPoint.model = this.model
       projPoint.mode = pointMode
       hasPoint = true;
@@ -257,6 +255,9 @@ class DDeiAbstractShapeRender {
         }
       }
       if (op.oppoint != 3) {
+        let angle = DDeiUtil.getLineAngle(this.model.cpv.x, this.model.cpv.y, op.x, op.y)
+        angle -= (this.model.rotate ? this.model.rotate : 0)
+        op.sita = angle
         this.layer.opPoints.push(op);
       }
     })
@@ -274,6 +275,9 @@ class DDeiAbstractShapeRender {
         }
       }
       if (insert) {
+        let angle = DDeiUtil.getLineAngle(this.model.cpv.x, this.model.cpv.y, po.x, po.y)
+        angle -= (this.model.rotate ? this.model.rotate : 0)
+        po.sita = angle
         this.layer.opPoints.push(po);
       }
     })

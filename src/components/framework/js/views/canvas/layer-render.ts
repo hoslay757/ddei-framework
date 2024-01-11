@@ -598,7 +598,6 @@ class DDeiLayerCanvasRender {
       }
     }
     if (isOvPoint) {
-
     }
     //判定是否在操作点上，如果在则快捷创建线段
     else if (this.stageRender.selector && this.stageRender.selector.isInAreaLoose(ex, ey, true) &&
@@ -607,13 +606,21 @@ class DDeiLayerCanvasRender {
       this.stageRender.selector.render.mouseDown(evt);
     } else {
       let opPoint = this.model.getOpPointByPos(ex, ey);
+      let isStop = false;
       if (opPoint) {
-        //当前操作状态：线改变点中
-        //记录当前的拖拽的x,y,写入dragObj作为临时变量
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { opPoint: opPoint } }, evt);
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
-        this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING_CONFIRM
-      } else {
+        //只有在控件内部才触发
+        let projPoint = opPoint.model.getProjPoint({ x: ex, y: ey }, { in: -3, out: 15 });
+        if (projPoint != null) {
+          isStop = true;
+          //当前操作状态：线改变点中
+          //记录当前的拖拽的x,y,写入dragObj作为临时变量
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { opPoint: opPoint } }, evt);
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
+          this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING_CONFIRM
+        }
+      }
+
+      if (!isStop) {
         // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
         let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, ex, ey, true);
         //光标所属位置是否有控件

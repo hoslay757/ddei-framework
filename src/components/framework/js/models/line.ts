@@ -496,6 +496,7 @@ class DDeiLine extends DDeiAbstractShape {
     })
     let sAngle = null;
     let eAngle = null;
+    debugger
     if (startLink?.sm?.getPointAngle) {
       sAngle = startLink.sm.getPointAngle(this.startPoint)
     }

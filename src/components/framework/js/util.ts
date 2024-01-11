@@ -1036,7 +1036,7 @@ class DDeiUtil {
     y2 -= y1
     let v1 = new Vector3(1, 0, 0)
     let v2 = new Vector3(x2, y2, 0)
-    let lineAngle = parseFloat((v1.angleTo(v2) * 180 / Math.PI).toFixed(4));
+    let lineAngle = v1.angleTo(v2) * 180 / Math.PI;
     if (v1.cross(v2).z < 0) {
       lineAngle = -lineAngle
     }

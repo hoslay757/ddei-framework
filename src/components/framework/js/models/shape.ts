@@ -717,8 +717,8 @@ abstract class DDeiAbstractShape {
     let m1 = new Matrix3()
     //通过缩放矩阵，进行缩放
     let scaleMatrix = new Matrix3(
-      1 + Math.min(0.1, 20 / this.width), 0, 0,
-      0, 1 + Math.min(0.1, 20 / this.height), 0,
+      1 + Math.min(0.15 / stageRatio, 20 / this.width), 0, 0,
+      0, 1 + Math.min(0.15 / stageRatio, 20 / this.height), 0,
       0, 0, 1);
     m1.premultiply(scaleMatrix)
     //旋转并位移回去
@@ -1170,6 +1170,7 @@ abstract class DDeiAbstractShape {
     return []
   }
 
+
   /**
    * 得到点在图形某条线上的投射点
    * @param point 测试点
@@ -1284,7 +1285,7 @@ abstract class DDeiAbstractShape {
    * @returns 投影点的坐标
    */
   getProjPoint(point: { x: number, y: number }
-    , distance: { in: number, out: number } = { in: 0, out: 15 }, direct: number = 1): { x: number, y: number } | null {
+    , distance: { in: number, out: number } = { in: 0, out: 15 }, direct: number = 1): { x: number, y: number, plLength: number } | null {
     let x0 = point.x;
     let y0 = point.y;
     //判断鼠标是否在某个控件的范围内
@@ -1390,6 +1391,7 @@ abstract class DDeiAbstractShape {
             let rate = Math.abs(pointV.x / lineV.x)
             v1.rate = rate > 1 ? 1 : rate
             v1.index = st
+            v1.plLength = plLength
             return v1;
           }
         }
