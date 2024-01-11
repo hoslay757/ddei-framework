@@ -194,22 +194,33 @@ class DDeiPolygon extends DDeiAbstractShape {
     zeroPoint.x /= scaleX
     zeroPoint.y /= scaleY
 
-    let lineAngle = DDeiUtil.getLineAngle(0, 0, zeroPoint.x, zeroPoint.y)
+    let lineAngle = parseFloat(DDeiUtil.getLineAngle(0, 0, zeroPoint.x, zeroPoint.y).toFixed(4))
     //上
-    if (lineAngle <= -45 && lineAngle >= -135) {
-      return DDeiUtil.getLineAngle(0, 0, 0, -2)
+    if (lineAngle < -45 && lineAngle > -135) {
+      // return DDeiUtil.getLineAngle(0, 0, 0, -2)
+      return -90
     }
     //右
-    else if (lineAngle >= -45 && lineAngle < 45) {
-      return DDeiUtil.getLineAngle(0, 0, 2, 0)
+    else if (lineAngle > -45 && lineAngle < 45) {
+      // return DDeiUtil.getLineAngle(0, 0, 2, 0)
+      return 0
     }
     //下
-    else if (lineAngle >= 45 && lineAngle < 135) {
-      return DDeiUtil.getLineAngle(0, 0, 0, 2)
+    else if (lineAngle > 45 && lineAngle < 135) {
+      // return DDeiUtil.getLineAngle(0, 0, 0, 2)
+      return 90
     }
-    //左
     else {
-      return DDeiUtil.getLineAngle(0, 0, -2, 0)
+      //特殊的4个角度的特殊值，特殊值的可左可右，后续程序利用这几个值来进行判断和计算
+      switch (lineAngle) {
+        case -45: return 1002;
+        case 45: return 1003;
+        case -135: return 1001;
+        case 135: return 1004;
+      }
+      // return DDeiUtil.getLineAngle(0, 0, -2, 0)
+      //左
+      return 180
     }
   }
 

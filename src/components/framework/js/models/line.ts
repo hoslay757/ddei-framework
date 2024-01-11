@@ -498,16 +498,14 @@ class DDeiLine extends DDeiAbstractShape {
     let eAngle = null;
     if (startLink?.sm?.getPointAngle) {
       sAngle = startLink.sm.getPointAngle(this.startPoint)
+      sAngle = this.calSpecilPointAngle(sAngle)
     }
     if (endLink?.sm?.getPointAngle) {
       eAngle = endLink.sm.getPointAngle(this.endPoint)
+      eAngle = this.calSpecilPointAngle(eAngle)
     }
-    if (sAngle == null) {
-      sAngle = DDeiUtil.getLineAngle(this.startPoint.x, this.startPoint.y, pvs[1].x, pvs[1].y)
-    }
-    if (eAngle == null) {
-      eAngle = DDeiUtil.getLineAngle(this.endPoint.x, this.endPoint.y, pvs[pvs.length - 2].x, pvs[pvs.length - 2].y)
-    }
+
+
 
     //解析movepath，生成点
     let middlePaths = []
@@ -539,6 +537,51 @@ class DDeiLine extends DDeiAbstractShape {
       });
     }
     this.pvs.push(this.endPoint)
+  }
+
+
+  /**
+   * 计算特殊点位的角度
+   */
+  calSpecilPointAngle(eAngle) {
+    //如果存在特殊角度，则需要进一步判断
+    if (eAngle > 1000) {
+      switch (eAngle) {
+        case 1001:
+          //横向
+          if (Math.abs(this.startPoint.x - this.endPoint.x) > Math.abs(this.startPoint.y - this.endPoint.y)) {
+            eAngle = 180
+          } else {
+            eAngle = -90
+          }
+          break;
+        case 1002:
+          //横向
+          if (Math.abs(this.startPoint.x - this.endPoint.x) > Math.abs(this.startPoint.y - this.endPoint.y)) {
+            eAngle = 0
+          } else {
+            eAngle = -90
+          }
+          break;
+        case 1003:
+          //横向
+          if (Math.abs(this.startPoint.x - this.endPoint.x) > Math.abs(this.startPoint.y - this.endPoint.y)) {
+            eAngle = 0
+          } else {
+            eAngle = 90
+          }
+          break;
+        case 1004:
+          //横向
+          if (Math.abs(this.startPoint.x - this.endPoint.x) > Math.abs(this.startPoint.y - this.endPoint.y)) {
+            eAngle = 180
+          } else {
+            eAngle = 90
+          }
+          break;
+      }
+    }
+    return eAngle
   }
 
   /**

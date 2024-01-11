@@ -2126,7 +2126,7 @@ abstract class DDeiAbstractShape {
         if (item.isInAreaLoose(x, y, loose)) {
           //如果当前控件状态为选中，且是容器，则往下寻找控件，否则返回当前控件
           if ((item.state == DDeiEnumControlState.SELECTED || deep) && item.baseModelType == "DDeiContainer") {
-            let subControls = DDeiAbstractShape.findBottomModelsByArea(item, x, y, loose);
+            let subControls = DDeiAbstractShape.findBottomModelsByArea(item, x, y, loose, deep);
             if (subControls && subControls.length > 0) {
               controls = controls.concat(subControls);
             } else {
@@ -2136,7 +2136,7 @@ abstract class DDeiAbstractShape {
             //判断表格当前的单元格是否是选中的单元格，如果是则分发事件
             let currentCell = item.getAccuContainerByPos(x, y);
             if (currentCell?.state == DDeiEnumControlState.SELECTED) {
-              let subControls = DDeiAbstractShape.findBottomModelsByArea(currentCell, x, y, loose);
+              let subControls = DDeiAbstractShape.findBottomModelsByArea(currentCell, x, y, loose, deep);
               if (subControls && subControls.length > 0) {
                 controls = controls.concat(subControls);
               } else {
@@ -2157,7 +2157,6 @@ abstract class DDeiAbstractShape {
       controls.sort(function (a, b) {
         let anumber = -1
         let bnumber = -1
-
         if (a.baseModelType == 'DDeiLine') {
           anumber = 1000 + (a.zIndex ? b.zIndex : 0)
         } else {
@@ -2173,6 +2172,13 @@ abstract class DDeiAbstractShape {
         }
         if (b.state == DDeiEnumControlState.SELECTED) {
           bnumber += 10000
+        }
+        //如果是compose的容器，则优先级最低
+        if (a.baseModelType == 'DDeiContainer' && a.layout == 'compose') {
+          anumber -= 5000
+        }
+        if (b.baseModelType == 'DDeiContainer' && b.layout == 'compose') {
+          bnumber -= 5000
         }
         return bnumber - anumber; //降序排序
 

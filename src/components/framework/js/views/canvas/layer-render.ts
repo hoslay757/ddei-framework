@@ -635,7 +635,7 @@ class DDeiLayerCanvasRender {
           this.stageRender.tempSY = ey
           //当前操作状态:控件状态确认中
           this.stageRender.operateState = DDeiEnumOperateState.CONTROL_CONFIRMING
-          //分发事件到当前控件 TODO 事件分发逻辑设计
+          //分发事件到当前控件
           operateControl.render.mouseDown(evt);
 
           //当前控件的上层控件，可能是一个layer也可能是容器
@@ -659,7 +659,6 @@ class DDeiLayerCanvasRender {
             this.stage.brushData = null;
             this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
           }
-
           //重置选择器位置
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ResetSelectorState, { x: ex, y: ey }, evt);
           let clearSelect = false;
