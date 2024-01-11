@@ -371,6 +371,28 @@ class DDeiRectContainer extends DDeiRectangle {
   }
 
 
+  cascadeRemoveSelf(): void {
+    let newContainer = this.pModel;
+    if (newContainer.baseModelType == "DDeiLayer" && !newContainer.layoutManager) {
+      let freeLayoutManager = DDeiLayoutManagerFactory.getLayoutInstance("free");
+      freeLayoutManager.container = newContainer;
+      newContainer.layoutManager = freeLayoutManager;
+    }
+    //当只剩一个控件，且为组合时，移除组合关系，将内部控件上提一级
+    if (this.layout == 'compose' && this.models.size <= 1) {
+
+      let models = Array.from(this.models.values())
+      //交由新容器的布局管理器进行控件移入或交换
+      newContainer.layoutManager?.append(null, null, models);
+      //更新新容器大小
+      newContainer.changeParentsBounds()
+      //重新设置布局
+      newContainer.layoutManager?.updateLayout(null, null, models);
+      newContainer.removeModel(this, true)
+    }
+    newContainer?.cascadeRemoveSelf();
+  }
+
 
   /**
    * 通过下层模型更新本层模型的信息

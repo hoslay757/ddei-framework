@@ -11,6 +11,7 @@ enum DDeiEnumBusCommandType {
   ClearTemplateVars = "clear-template-vars",//清楚临时变量，重置状态
   RefreshShape = "refresh-shape",//重绘图形
   ModelChangeContainer = "model-change-container",//模型修改所在容器
+  ModelRemove = "model-remove",//删除模型
   ModelChangeBounds = "model-change-bounds",//模型修改大小
   ModelChangePosition = "model-change-position",//模型修改位置
   ModelEdgePosition = "model-edge-position",//模型修改位置移动到了边缘

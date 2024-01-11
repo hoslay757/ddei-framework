@@ -228,6 +228,8 @@ class DDeiLayer {
 
   }
 
+  cascadeRemoveSelf(): void {
+  }
   /**
    * 移除模型，并维护关系
    * @param model 被移除的模型
