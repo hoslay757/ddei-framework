@@ -219,10 +219,11 @@ class DDeiLayer {
   /**
   * 移除模型，并维护关系
   * @param model 被移除的模型
+  * @param destroy 销毁，缺省false
   */
-  removeModels(models: DDeiAbstractShape[]): void {
+  removeModels(models: DDeiAbstractShape[], destroy: boolean = false): void {
     models?.forEach(model => {
-      this.removeModel(model)
+      this.removeModel(model, destroy)
     })
 
   }
@@ -230,15 +231,18 @@ class DDeiLayer {
   /**
    * 移除模型，并维护关系
    * @param model 被移除的模型
+   * @param destroy 销毁，缺省false
    */
-  removeModel(model: DDeiAbstractShape): void {
+  removeModel(model: DDeiAbstractShape, destroy: boolean = false): void {
     this.models.delete(model.id);
 
     let idx = this.midList.indexOf(model.id);
     if (idx != -1) {
       this.midList.splice(idx, 1);
     }
-    model.destroyed();
+    if (destroy) {
+      model.destroyed();
+    }
     //清除原有的zindex属性
     model.zIndex = null;
     model.layer = null;

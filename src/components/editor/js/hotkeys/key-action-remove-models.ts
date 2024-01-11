@@ -26,7 +26,7 @@ class DDeiKeyActionRemoveModels extends DDeiKeyAction {
         );
 
         if (!removeBefore || removeBefore(DDeiEnumOperateType.DEL, Array.from(selectedModels.values()), null, ddInstance, evt)) {
-          optContainer.removeModels(Array.from(selectedModels.values()))
+          optContainer.removeModels(Array.from(selectedModels.values()), true)
           ddInstance.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels);
           ddInstance.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds, null, evt);
           ddInstance.bus.push(DDeiEnumBusCommandType.NodifyChange);
