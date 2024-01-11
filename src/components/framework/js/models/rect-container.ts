@@ -489,6 +489,15 @@ class DDeiRectContainer extends DDeiRectangle {
     return true;
   }
 
+  /**
+   * 更新关联图形
+   */
+  updateLinkModels(): void {
+    super.updateLinkModels();
+    this.models.forEach(model => {
+      model.updateLinkModels();
+    })
+  }
 
   /**
    * 获取中心点操作点
