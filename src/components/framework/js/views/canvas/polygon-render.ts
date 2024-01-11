@@ -2,7 +2,7 @@ import DDeiConfig from '../../config.js'
 import DDeiEnumBusCommandType from '../../enums/bus-command-type.js';
 import DDeiUtil from '../../util.js'
 import DDeiAbstractShapeRender from './shape-render-base.js';
-import { clone, trim, zip } from 'lodash'
+import { clone, trim, cloneDeep } from 'lodash'
 import { Matrix3, Vector3 } from 'three';
 import DDeiEnumOperateType from '../../enums/operate-type.js';
 import DDeiAbstractShape from '../../models/shape.js';
@@ -220,9 +220,26 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       }
     }
     if (createClip) {
+      //由于绘制边框时宽度的一半会超出pvs的范围，导致最外部边框只显示一半，因此构造一个缩放矩阵，使剪切区域刚好可以容纳边框区域
+      let disabled = tempShape?.border?.disabled || tempShape?.border?.disabled == false ? tempShape?.border?.disabled : this.getCachedValue("border.disabled");
+      let width = tempShape?.border?.width ? tempShape?.border?.width : this.getCachedValue("border.width");
+
+      let pvs = this.borderPVSS[i];
+      if (!disabled && width > 0) {
+        let rat1 = this.ddRender.ratio;
+        if (pvs.length == 1) {
+          pvs = cloneDeep(pvs)
+          pvs[0].r = pvs[0].r * (1 + rat1 * width / this.model.width)
+        } else {
+          pvs = DDeiUtil.pointsToZero(pvs, this.model.cpv, this.model.rotate)
+          pvs = DDeiUtil.zeroToPoints(pvs, this.model.cpv, this.model.rotate, 1 + rat1 * width / this.model.width, 1 + rat1 * width / this.model.height)
+        }
+
+      }
+
       let canvas = this.getCanvas();
       let ctx = canvas.getContext('2d');
-      let pvs = this.borderPVSS[i];
+
       //创建path
       this.createPath(pvs, tempShape)
 

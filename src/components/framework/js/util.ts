@@ -1248,7 +1248,11 @@ class DDeiUtil {
       }
       let returnPoints = []
       points.forEach(pv => {
-        let npv = new Vector3(pv.x, pv.y, pv.z)
+        let npv = new Vector3()
+        for (let i in pv) {
+          npv[i] = pv[i]
+        }
+        npv.z = (pv.z || pv.z === 0) ? pv.z : 1
         npv.applyMatrix3(toZeroMatrix)
         returnPoints.push(npv)
       })
@@ -1288,7 +1292,11 @@ class DDeiUtil {
       m1.premultiply(moveMatrix)
       let returnPoints = []
       points.forEach(pv => {
-        let npv = new Vector3(pv.x, pv.y, pv.z)
+        let npv = new Vector3()
+        for (let i in pv) {
+          npv[i] = pv[i]
+        }
+        npv.z = (pv.z || pv.z === 0) ? pv.z : 1
         npv.applyMatrix3(m1)
         returnPoints.push(npv)
       })
