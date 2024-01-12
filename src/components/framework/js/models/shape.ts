@@ -5,7 +5,6 @@ import DDeiEnumControlState from '../enums/control-state'
 import DDeiUtil from '../util'
 import { Matrix3, Vector3 } from 'three';
 import { cloneDeep, clone, isNumber } from 'lodash'
-import stage from '@/components/editor/configs/stage'
 /**
  * 抽象的图形类，定义了大多数图形都有的属性和方法
  */
@@ -483,6 +482,14 @@ abstract class DDeiAbstractShape {
       });
     }
     return returnPVS;
+  }
+
+  getAPVS() {
+    let arr = [this.cpv]
+    if (this.apvs?.length > 0) {
+      arr = arr.concat(this.apvs)
+    }
+    return arr;
   }
 
   /**
@@ -1099,44 +1106,8 @@ abstract class DDeiAbstractShape {
     }
   }
 
-  /**
-   * 移除自身的方法
-   */
-  destroyed() {
-    //找到以自己为source的链接
-    let sourceLinks = this.stage?.getSourceModelLinks(this.id);
-    //删除链接
-    sourceLinks?.forEach(link => {
-      if (link.dm) {
-        link.dm.pModel.removeModel(link.dm)
-      }
-      this.stage?.removeLink(link);
-    })
 
-    let lines = this.stage?.getModelsByBaseType("DDeiLine");
-    //删除线链接
-    lines?.forEach(line => {
-      if (line.linkModels?.has(this.id)) {
-        line.linkModels.delete(this.id)
-      }
-    })
 
-    this.render = null
-  }
-
-  /**
-   * 设置当前模型为被修改状态
-   */
-  setModelChanged(): void {
-    this.layer?.setModelChanged();
-  }
-
-  /**
-   * 判断当前模型是否已被修改
-   */
-  isModelChanged(): boolean {
-    return this.layer?.isModelChanged();
-  }
   /**
    * 获取实际的内部容器控件
    * @return 容器控件根据布局的模式不同返回不同的内部控件，普通控件返回null
@@ -1448,13 +1419,7 @@ abstract class DDeiAbstractShape {
     }
   }
 
-  getAPVS() {
-    let arr = [this.cpv]
-    if (this.apvs?.length > 0) {
-      arr = arr.concat(this.apvs)
-    }
-    return arr;
-  }
+
 
 
   /**
@@ -1593,7 +1558,43 @@ abstract class DDeiAbstractShape {
     return { x: this.x, y: this.y }
   }
 
+  /**
+     * 设置当前模型为被修改状态
+     */
+  setModelChanged(): void {
+    this.layer?.setModelChanged();
+  }
 
+  /**
+   * 判断当前模型是否已被修改
+   */
+  isModelChanged(): boolean {
+    return this.layer?.isModelChanged();
+  }
+  /**
+   * 移除自身的方法
+   */
+  destroyed() {
+    //找到以自己为source的链接
+    let sourceLinks = this.stage?.getSourceModelLinks(this.id);
+    //删除链接
+    sourceLinks?.forEach(link => {
+      if (link.dm) {
+        link.dm.pModel.removeModel(link.dm)
+      }
+      this.stage?.removeLink(link);
+    })
+
+    let lines = this.stage?.getModelsByBaseType("DDeiLine");
+    //删除线链接
+    lines?.forEach(line => {
+      if (line.linkModels?.has(this.id)) {
+        line.linkModels.delete(this.id)
+      }
+    })
+
+    this.render = null
+  }
   /**
      * 将模型转换为JSON
      */
@@ -1840,54 +1841,6 @@ abstract class DDeiAbstractShape {
     return inside;
   }
 
-  /**
-   * 获取一组图形模型的宽高
-   * @param models
-   */
-  static getModelsPosition(...models): object {
-    models = models.filter(item => !!item)
-    if (!models.length) {
-      return { x: 0, y: 0, width: 0, height: 0 }
-    }
-    let x = Infinity
-    let y = Infinity
-    let width = 0
-    let height = 0
-    models.forEach(item => {
-      x = Math.min(+item.x, x)
-      y = Math.min(+item.y, y)
-    })
-    models.forEach(item => {
-      width = Math.max(Math.floor(+item.x + +item.width - x), width)
-      height = Math.max(Math.floor(+item.y + +item.height - y), height)
-    })
-    return { x, y, width, height, x1: x + width, y1: y + height }
-  }
-
-
-  /**
-   * 判断一组模型的旋转值是否相等
-   * @param models
-   */
-  static isSameRotate(models: Array<DDeiAbstractShape>): boolean {
-    if (!models || models.length < 1) {
-      return true;
-    }
-    let upValues = models[0].rotate
-    if (!upValues) {
-      upValues = 0;
-    }
-    for (let i = 1; i < models.length; i++) {
-      let r = models[i].rotate;
-      if (!r) {
-        r = 0
-      }
-      if (upValues != r) {
-        return false;
-      }
-    }
-    return true;
-  }
 
   /**
   * 基于向量点获取一组图形模型的宽高

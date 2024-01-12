@@ -578,10 +578,10 @@ class DDeiStage {
       outPVS.forEach(pv => {
         inPVS?.forEach(mpv => {
           //横向相等
-          let pvy = Math.floor(pv.y)
-          let pvx = Math.floor(pv.x)
-          let mpvy = Math.floor(mpv.y)
-          let mpvx = Math.floor(mpv.x)
+          let pvy = pv.y
+          let pvx = pv.x
+          let mpvy = mpv.y
+          let mpvx = mpv.x
           if (pvy == mpvy) {
             hasH = true;
             if (!hpoint[pvy]) {

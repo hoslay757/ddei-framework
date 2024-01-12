@@ -1068,6 +1068,7 @@ class DDeiLayerCanvasRender {
           this.stage?.ddInstance?.bus.push(DDeiEnumBusCommandType.CopyStyle, { models: [table], brushData: this.stage.brushData });
           break;
         case DDeiEnumOperateState.CONTROL_ROTATE:
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars);
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.NodifyChange);
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy);
           break;
