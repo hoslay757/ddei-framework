@@ -10,9 +10,8 @@ export default {
     height: 90,
     pvs: [
       { begin: 1, x: 0, y: 90, stroke: 1, clip: 1, fill: 1 },
-
-      { x: 120, y: 90 },
-      { end: 1, x: 0, y: 0 }
+      { x: 120, y: 90, stroke: 1, clip: 1, fill: 1 },
+      { end: 1, x: 0, y: 0, stroke: 1, clip: 1, fill: 1 }
     ],
     cpv: { x: 60, y: 45 },
     textArea: [

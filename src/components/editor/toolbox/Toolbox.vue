@@ -257,7 +257,7 @@ export default {
       delete dataJson.ovs
       let model: DDeiAbstractShape = this.controlCls[cc.type].initByJSON(
         dataJson,
-        { currentStage: stage }
+        { currentStage: stage, currentLayer: layer }
       );
       models.push(model)
       //处理others
