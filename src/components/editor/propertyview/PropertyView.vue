@@ -20,8 +20,8 @@
     <div class="ddei_editor_pv_subgroup_view" v-show="editor?.rightWidth > 38">
       <div class="ddei_editor_pv_subgroup_view_tab_title">
         <div
-          :class="currentTopGroup?.groups.length > 1 && subGroup.selected ? 'ddei_editor_pv_subgroup_view_tab_title_item_selected' : 'ddei_editor_pv_subgroup_view_tab_title_item'"
-          v-show="!subGroup.empty" v-for="subGroup in currentTopGroup?.groups" :title="subGroup.name"
+          :class="currentTopGroup?.subGroups.length > 1 && subGroup.selected ? 'ddei_editor_pv_subgroup_view_tab_title_item_selected' : 'ddei_editor_pv_subgroup_view_tab_title_item'"
+          v-show="!subGroup.empty" v-for="subGroup in currentTopGroup?.subGroups" :title="subGroup.name"
           @mouseup="changeSubGroup(subGroup)">{{
             subGroup.name }}</div>
       </div>
@@ -181,12 +181,13 @@ export default {
       );
       //获取第一个组件及其定义
       if (firstControlDefine) {
-        if (!firstControlDefine.attrDefineMapAll) {
-          firstControlDefine.attrDefineMapAll = new Map();
-          firstControlDefine.attrDefineMap.forEach((d, attrKey) => {
-            firstControlDefine.attrDefineMapAll.set(attrKey, d);
-          });
-        }
+
+        // if (!firstControlDefine.attrDefineMapAll) {
+        //   firstControlDefine.attrDefineMapAll = new Map();
+        //   firstControlDefine.attrDefineMap.forEach((d, attrKey) => {
+        //     firstControlDefine.attrDefineMapAll.set(attrKey, d);
+        //   });
+        // }
         //如果同时有多个组件被选中，则以第一个组件为基准，对属性定义进行过滤，属性值相同则采用相同值，属性值不同采用空值
         let removeKeys = [];
         for (let i = 0; i < models.length; i++) {
@@ -235,12 +236,6 @@ export default {
         //清除不同的属性
         this.deleteAttrDefineByKeys(firstControlDefine, removeKeys);
         let topGroups = null;
-        let layerTopGroup = {
-          name: "背景",
-          img: ICONS["icon-background"],
-          groups: [{}],
-        };
-
         if (firstControlDefine.type == "DDeiStage") {
           //加载layer的配置
           let layerControlDefine = cloneDeep(
@@ -256,147 +251,103 @@ export default {
             );
             attrDefine.model = layer;
           });
-          this.syncAttrsToGroup(layerControlDefine, layerControlDefine.styles);
-          //同步引用关系
-          this.syncAttrsToGroup(firstControlDefine, firstControlDefine.styles);
-          this.syncAttrsToGroup(firstControlDefine, firstControlDefine.datas);
-          this.syncAttrsToGroup(firstControlDefine, firstControlDefine.events);
-          firstControlDefine.styles.img = ICONS["icon-config"];
-          firstControlDefine.datas.img = ICONS["icon-data"];
-          firstControlDefine.events.img = ICONS["icon-event"];
+          firstControlDefine.groups.forEach(topGroup => {
+            topGroup.img = ICONS[topGroup.icon];
+          });
+          layerControlDefine.groups.forEach(topGroup => {
+            topGroup.img = ICONS[topGroup.icon];
+          });
+          topGroups = layerControlDefine.groups.concat(firstControlDefine.groups)
 
-          firstControlDefine.layerStyles = layerControlDefine.styles;
-          layerTopGroup = layerControlDefine.styles;
-          layerTopGroup.img = ICONS["icon-background"];
-          topGroups = [
-            layerTopGroup,
-            firstControlDefine?.styles,
-            firstControlDefine?.datas,
-            firstControlDefine?.events,
-          ];
         }
         //对table的包含属性进行特殊处理
-        else if (firstControlDefine.type == "DDeiTable") {
-          if (firstControlDefine.subcontrol) {
-            //获取单元格子控件信息，叠加到当前控件定义中
-            let subControlDefine = cloneDeep(
-              controlOriginDefinies.get(firstControlDefine.subcontrol)
-            );
-            if (subControlDefine) {
-              //同步引用关系
-              firstControlDefine.styles.img = ICONS["icon-table"];
-              firstControlDefine.styles.name = "表格";
-              this.syncAttrsToGroup(
-                firstControlDefine,
-                firstControlDefine.styles
-              );
-              topGroups = [];
+        // else if (firstControlDefine.type == "DDeiTable") {
+        //   if (firstControlDefine.subcontrol) {
+        //     //获取单元格子控件信息，叠加到当前控件定义中
+        //     let subControlDefine = cloneDeep(
+        //       controlOriginDefinies.get(firstControlDefine.subcontrol)
+        //     );
+        //     if (subControlDefine) {
+        //       //同步引用关系
+        //       firstControlDefine.styles.img = ICONS["icon-table"];
+        //       firstControlDefine.styles.name = "表格";
+        //       this.syncAttrsToGroup(
+        //         firstControlDefine,
+        //         firstControlDefine.styles
+        //       );
+        //       topGroups = [];
 
-              if (firstModel.curRow > -1 && firstModel.curCol > -1) {
-                let selectedCell =
-                  firstModel.rows[firstModel.curRow][firstModel.curCol];
-                if (selectedCell) {
-                  subControlDefine.attrDefineMap.forEach(
-                    (attrDefine, attrKey) => {
-                      //当前属性的定义
-                      let curAttrDefine =
-                        subControlDefine.attrDefineMap.get(attrKey);
-                      attrDefine.value = DDeiUtil.getDataByPathList(
-                        selectedCell,
-                        curAttrDefine.code,
-                        curAttrDefine.mapping
-                      );
-                      attrDefine.model = selectedCell;
-                    }
-                  );
-                  this.syncAttrsToGroup(
-                    subControlDefine,
-                    subControlDefine.styles
-                  );
-                  this.syncAttrsToGroup(
-                    subControlDefine,
-                    subControlDefine.datas
-                  );
-                  this.syncAttrsToGroup(
-                    subControlDefine,
-                    subControlDefine.events
-                  );
-                  firstControlDefine.subStyles = subControlDefine.styles;
-                  firstControlDefine.datas = subControlDefine.datas;
-                  firstControlDefine.events = subControlDefine.events;
-                  firstControlDefine.subStyles.img = ICONS["icon-fill"];
-                  firstControlDefine.datas.img = ICONS["icon-data"];
-                  firstControlDefine.events.img = ICONS["icon-event"];
-                  topGroups.push(firstControlDefine.datas);
-                  topGroups.push(firstControlDefine.subStyles);
-                  topGroups.push(firstControlDefine.events);
-                }
-              }
+        //       if (firstModel.curRow > -1 && firstModel.curCol > -1) {
+        //         let selectedCell =
+        //           firstModel.rows[firstModel.curRow][firstModel.curCol];
+        //         if (selectedCell) {
+        //           subControlDefine.attrDefineMap.forEach(
+        //             (attrDefine, attrKey) => {
+        //               //当前属性的定义
+        //               let curAttrDefine =
+        //                 subControlDefine.attrDefineMap.get(attrKey);
+        //               attrDefine.value = DDeiUtil.getDataByPathList(
+        //                 selectedCell,
+        //                 curAttrDefine.code,
+        //                 curAttrDefine.mapping
+        //               );
+        //               attrDefine.model = selectedCell;
+        //             }
+        //           );
+        //           this.syncAttrsToGroup(
+        //             subControlDefine,
+        //             subControlDefine.styles
+        //           );
+        //           this.syncAttrsToGroup(
+        //             subControlDefine,
+        //             subControlDefine.datas
+        //           );
+        //           this.syncAttrsToGroup(
+        //             subControlDefine,
+        //             subControlDefine.events
+        //           );
+        //           firstControlDefine.subStyles = subControlDefine.styles;
+        //           firstControlDefine.datas = subControlDefine.datas;
+        //           firstControlDefine.events = subControlDefine.events;
+        //           firstControlDefine.subStyles.img = ICONS["icon-fill"];
+        //           firstControlDefine.datas.img = ICONS["icon-data"];
+        //           firstControlDefine.events.img = ICONS["icon-event"];
+        //           topGroups.push(firstControlDefine.datas);
+        //           topGroups.push(firstControlDefine.subStyles);
+        //           topGroups.push(firstControlDefine.events);
+        //         }
+        //       }
 
-              topGroups.push(firstControlDefine.styles);
-            }
-          }
-        } else {
+        //       topGroups.push(firstControlDefine.styles);
+        //     }
+        //   }
+        // } 
+        else {
           //同步引用关系
-          this.syncAttrsToGroup(firstControlDefine, firstControlDefine.styles);
-          this.syncAttrsToGroup(firstControlDefine, firstControlDefine.datas);
-          this.syncAttrsToGroup(firstControlDefine, firstControlDefine.events);
-          firstControlDefine.styles.img = ICONS["icon-fill"];
-          firstControlDefine.datas.img = ICONS["icon-data"];
-          firstControlDefine.events.img = ICONS["icon-event"];
-          topGroups = [
-            firstControlDefine?.styles,
-            firstControlDefine?.datas,
-            firstControlDefine?.events,
-          ];
+          firstControlDefine.groups.forEach(topGroup => {
+            topGroup.img = ICONS[topGroup.icon];
+          });
+          topGroups = firstControlDefine.groups
         }
+
+        // });
         //上一次编辑的名称
         let upName = this.currentTopGroup?.name;
         let currentTopGroup = null;
         if (upName) {
-          if (!layerTopGroup?.empty && upName == layerTopGroup?.name) {
-            layerTopGroup.selected = true;
-            currentTopGroup = layerTopGroup;
-          } else if (
-            !firstControlDefine?.styles?.empty &&
-            upName == firstControlDefine?.styles?.name
-          ) {
-            firstControlDefine.styles.selected = true;
-            currentTopGroup = firstControlDefine.styles;
-          } else if (
-            !firstControlDefine?.subStyles?.empty &&
-            upName == firstControlDefine?.subStyles?.name
-          ) {
-            firstControlDefine.subStyles.selected = true;
-            currentTopGroup = firstControlDefine.subStyles;
-          } else if (
-            !firstControlDefine?.datas?.empty &&
-            upName == firstControlDefine?.datas?.name
-          ) {
-            firstControlDefine.datas.selected = true;
-            currentTopGroup = firstControlDefine.datas;
-          } else if (
-            !firstControlDefine?.events?.empty &&
-            upName == firstControlDefine?.events?.name
-          ) {
-            firstControlDefine.events.selected = true;
-            currentTopGroup = firstControlDefine.events;
+          for (let x = 0; x < firstControlDefine.groups.length; x++) {
+            let topGroup = topGroups[x];
+            if (!topGroup.empty &&
+              upName == topGroup.name) {
+              topGroup.selected = true;
+              currentTopGroup = topGroup;
+              break;
+            }
           }
         }
         if (!currentTopGroup) {
-          if (!layerTopGroup.empty) {
-            layerTopGroup.selected = true;
-            currentTopGroup = layerTopGroup;
-          } else if (!firstControlDefine?.styles?.empty) {
-            firstControlDefine.styles.selected = true;
-            currentTopGroup = firstControlDefine.styles;
-          } else if (!firstControlDefine?.datas?.empty) {
-            firstControlDefine.datas.selected = true;
-            currentTopGroup = firstControlDefine.datas;
-          } else if (!firstControlDefine?.events?.empty) {
-            firstControlDefine.events.selected = true;
-            currentTopGroup = firstControlDefine.events;
-          }
+          topGroups[0].selected = true
+          currentTopGroup = topGroups[0]
         }
         this.currentTopGroup = currentTopGroup;
         this.controlDefine = firstControlDefine;
@@ -405,20 +356,20 @@ export default {
         let upSubGroupName = this.currentSubGroup?.name;
         let currentSubGroup = null;
         if (upSubGroupName) {
-          for (let sgi = 0; sgi < currentTopGroup?.groups.length; sgi++) {
+          for (let sgi = 0; sgi < currentTopGroup?.subGroups.length; sgi++) {
             if (
-              !currentTopGroup?.groups[sgi]?.empty &&
-              upSubGroupName == currentTopGroup?.groups[sgi]?.name
+              !currentTopGroup?.subGroups[sgi]?.empty &&
+              upSubGroupName == currentTopGroup?.subGroups[sgi]?.name
             ) {
-              currentSubGroup = currentTopGroup?.groups[sgi];
+              currentSubGroup = currentTopGroup?.subGroups[sgi];
               break;
             }
           }
         }
         if (!currentSubGroup) {
-          for (let sgi = 0; sgi < currentTopGroup?.groups.length; sgi++) {
-            if (!currentTopGroup?.groups[sgi]?.empty) {
-              currentSubGroup = currentTopGroup?.groups[sgi];
+          for (let sgi = 0; sgi < currentTopGroup?.subGroups.length; sgi++) {
+            if (!currentTopGroup?.subGroups[sgi]?.empty) {
+              currentSubGroup = currentTopGroup?.subGroups[sgi];
               break;
             }
           }
@@ -431,11 +382,9 @@ export default {
         this.controlDefine = null;
         this.topGroups = null;
         if (this.currentTopGroup) {
-          this.currentTopGroup.groups = null;
-          this.currentTopGroup.children = null;
+          this.currentTopGroup.subGroups = null;
         }
         if (this.currentSubGroup) {
-          this.currentSubGroup.groups = null;
           this.currentSubGroup.children = null;
         }
         this.editor.currentControlDefine = null;
@@ -457,20 +406,20 @@ export default {
         let upSubGroupName = this.currentSubGroup?.name;
         let currentSubGroup = null;
         if (upSubGroupName) {
-          for (let sgi = 0; sgi < pData?.groups.length; sgi++) {
+          for (let sgi = 0; sgi < pData?.subGroups.length; sgi++) {
             if (
-              !pData?.groups[sgi]?.empty &&
-              upSubGroupName == pData?.groups[sgi]?.name
+              !pData?.subGroups[sgi]?.empty &&
+              upSubGroupName == pData?.subGroups[sgi]?.name
             ) {
-              currentSubGroup = pData?.groups[sgi];
+              currentSubGroup = pData?.subGroups[sgi];
               break;
             }
           }
         }
         if (!currentSubGroup) {
-          for (let sgi = 0; sgi < pData?.groups.length; sgi++) {
-            if (!pData?.groups[sgi]?.empty) {
-              currentSubGroup = pData?.groups[sgi];
+          for (let sgi = 0; sgi < pData?.subGroups.length; sgi++) {
+            if (!pData?.subGroups[sgi]?.empty) {
+              currentSubGroup = pData?.subGroups[sgi];
               break;
             }
           }
@@ -484,7 +433,7 @@ export default {
      */
     changeSubGroup(pData) {
       if (this.currentSubGroup != pData) {
-        this.currentTopGroup.groups.forEach((group) => {
+        this.currentTopGroup.subGroups.forEach((group) => {
           if (group != pData) {
             group.selected = false;
           }

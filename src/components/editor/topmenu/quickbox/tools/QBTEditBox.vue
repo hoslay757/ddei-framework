@@ -82,7 +82,7 @@ export default {
       if (this.editor?.currentControlDefine) {
         this.controlDefine = this.editor.currentControlDefine;
         if (this.controlDefine) {
-          this.attrDefine = this.controlDefine.attrDefineMapAll.get(
+          this.attrDefine = this.controlDefine.attrDefineMap.get(
             this.attrCode
           );
           let valueDefine = this.getDataValue();

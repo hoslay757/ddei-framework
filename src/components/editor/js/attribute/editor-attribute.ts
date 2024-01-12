@@ -93,10 +93,10 @@ class DDeiEditorArrtibute extends DDeiArrtibuteDefine {
    * @param paths 
    */
   static hiddenAttributesByCode(propTopGroup: object, ...paths: string): object | null {
-    if (propTopGroup?.groups?.length > 0 && paths) {
-      propTopGroup.groups.forEach(topGroup => {
-        if (topGroup?.children?.length > 0) {
-          topGroup.children.forEach(item => {
+    if (propTopGroup?.subGroups?.length > 0 && paths) {
+      propTopGroup.subGroups.forEach(group => {
+        if (group?.children?.length > 0) {
+          group.children.forEach(item => {
             paths.forEach(path => {
               if (path.indexOf(item.code) != -1) {
                 item.visiable = false;
@@ -114,10 +114,10 @@ class DDeiEditorArrtibute extends DDeiArrtibuteDefine {
    * @param paths 
    */
   static showAttributesByCode(propTopGroup: object, ...paths: string): object | null {
-    if (propTopGroup?.groups?.length > 0 && paths) {
-      propTopGroup.groups.forEach(topGroup => {
-        if (topGroup?.children?.length > 0) {
-          topGroup.children.forEach(item => {
+    if (propTopGroup?.subGroups?.length > 0 && paths) {
+      propTopGroup.subGroups.forEach(group => {
+        if (group?.children?.length > 0) {
+          group.children.forEach(item => {
             paths.forEach(path => {
               if (path.indexOf(item.code) != -1) {
                 item.visiable = true;

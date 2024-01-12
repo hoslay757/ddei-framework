@@ -26,10 +26,13 @@ const parseAttrsToGroup = function (control) {
       subGroup.attrs?.forEach(attrCode => {
         let attrDefine = control.attrDefineMap.get(attrCode)
         if (attrDefine) {
+          attrDefine.topGroup = group
+          attrDefine.modelCode = control.id
           attrs.push(attrDefine);
+
         }
       });
-      subGroup.attrs = attrs
+      subGroup.children = attrs
     });
   });
 
@@ -150,7 +153,7 @@ const loadControlByFrom = function (control) {
         if (composeControlDefine.from) {
           loadControlByFrom(composeControlDefine)
         }
-        compose.styles = cloneDeep(composeControlDefine.styles)
+        compose.attrs = cloneDeep(composeControlDefine.attrs)
         let composeDefine = cloneDeep(composeControlDefine.define)
         //合并控件自身与from组件的define、menu
         if (composeDefine) {

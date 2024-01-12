@@ -107,7 +107,7 @@ export default {
       subGroups: [
         {
           name: "背景",
-          attrs: ["bg.type", "bg.color", "bg.image", "bg.image", "bg.opacity", "bg.imageMode", "bg.imageScale", "bg.imageAlign"]
+          attrs: ["bg.type", "bg.color", "bg.image", "bg.opacity", "bg.imageMode", "bg.imageScale", "bg.imageAlign"]
         },
       ]
     }
