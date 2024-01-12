@@ -109,7 +109,7 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
             dataJson["id"] = "lsm_" + (stage.idIdx++)
             dataJson["width"] = 80
             dataJson["height"] = 25
-            dataJson["fill"] = { disabled: true }
+            dataJson["fill"] = { type: 0 }
             dataJson["border"] = { disabled: true }
             dataJson["font"] = { size: 12 }
             realModel = MODEL_CLS["DDeiPolygon"].initByJSON(

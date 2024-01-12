@@ -23,7 +23,7 @@ export default {
           disabled: true
         },
         fill: {
-          disabled: true
+          type: 0
         },
         textStyle: {
           align: 2,

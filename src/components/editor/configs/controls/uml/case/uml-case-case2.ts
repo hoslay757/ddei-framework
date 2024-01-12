@@ -26,7 +26,7 @@ export default {
           disabled: true
         },
         fill: {
-          disabled: true
+          type: 0
         },
         text: "用例",
         initCPV: {
@@ -45,7 +45,7 @@ export default {
           disabled: true
         },
         fill: {
-          disabled: true,
+          type: 0,
         },
         text: "扩展点",
         initCPV: {

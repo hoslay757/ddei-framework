@@ -65,7 +65,7 @@ export default {
         width: 100,
         height: 25,
         text: "Control",
-        fill: { disabled: true },
+        fill: { type: 0 },
         border: { disabled: true },
         initCPV: {
           x: 0, y: 42

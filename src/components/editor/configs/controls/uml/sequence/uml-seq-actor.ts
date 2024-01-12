@@ -20,7 +20,7 @@ export default {
           size: 16,
         },
         text: "Actor",
-        fill: { disabled: true },
+        fill: { type: 0 },
         border: { disabled: true },
         initCPV: {
           x: 0, y: 60

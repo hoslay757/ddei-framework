@@ -50,7 +50,7 @@ export default {
         id: '100002',
         cIndex: 2,
         text: "Package",
-        fill: { disabled: true },
+        fill: { type: 0 },
         border: { disabled: true },
         textStyle: {
           feed: 1,
@@ -65,7 +65,7 @@ export default {
         height: 140,
         id: '100002',
         cIndex: 2,
-        fill: { disabled: true },
+        fill: { type: 0 },
         border: { disabled: true },
         text: "Attribute",
         textStyle: {

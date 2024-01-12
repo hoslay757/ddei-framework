@@ -26,7 +26,7 @@ export default {
           disabled: true
         },
         fill: {
-          disabled: true
+          type: 0
         },
         textStyle: {
           align: 3,
@@ -49,7 +49,7 @@ export default {
           disabled: true
         },
         fill: {
-          disabled: true,
+          type: 0,
         },
         text: "系统参与者",
         initCPV: {

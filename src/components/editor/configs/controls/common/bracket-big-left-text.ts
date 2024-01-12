@@ -68,7 +68,7 @@ export default {
           disabled: true
         },
         fill: {
-          disabled: true
+          type: 0
         },
         textStyle: {
           feed: 1,

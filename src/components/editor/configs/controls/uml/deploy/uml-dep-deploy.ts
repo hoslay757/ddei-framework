@@ -28,7 +28,7 @@ export default {
         width: 100,
         height: 20,
         text: "<<deploy>>",
-        fill: { disabled: true },
+        fill: { type: 0 },
         border: { disabled: true },
         initCPV: {
           x: 75, y: -10

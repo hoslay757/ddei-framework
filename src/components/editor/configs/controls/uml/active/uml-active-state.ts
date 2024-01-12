@@ -31,7 +31,7 @@ export default {
           disabled: true
         },
         fill: {
-          disabled: true
+          type: 0
         },
         text: "State",
         initCPV: {
@@ -50,7 +50,7 @@ export default {
           disabled: true
         },
         fill: {
-          disabled: true,
+          type: 0,
         },
         text: "Action",
         initCPV: {

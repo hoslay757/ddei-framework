@@ -240,7 +240,7 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
       }
       dataJson.text = textData;
       dataJson.border = { disabled: true };
-      dataJson.fill = { disabled: true }
+      dataJson.fill = { type: 0 }
       dataJson.width = size.width;
       dataJson.height = size.height;
       //如果有from则根据from读取属性

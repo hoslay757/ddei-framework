@@ -638,7 +638,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
     let fillColor = tempShape?.fill?.color ? tempShape.fill.color : this.getCachedValue("fill.color");
     let fillOpacity = tempShape?.fill?.opacity ? tempShape.fill.opacity : this.getCachedValue("fill.opacity");
-    let fillDisabled = tempShape?.fill?.disabled ? tempShape.fill.disabled : this.getCachedValue("fill.disabled");
+
     let fillType = tempShape?.fill?.type ? tempShape.fill.type : this.getCachedValue("fill.type");
     //保存状态
     ctx.save();
@@ -658,11 +658,10 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         }
         if (fillType == 1) {
           if (this.isEditoring) {
-            fillDisabled = false
             fillOpacity = 1.0
           }
           //如果拥有填充色，则使用填充色
-          if (!fillDisabled && fillColor && (!fillOpacity || fillOpacity > 0)) {
+          if (fillColor && (!fillOpacity || fillOpacity > 0)) {
             ctx.fillStyle = DDeiUtil.getColor(fillColor);
             //透明度
             if (fillOpacity != null && !fillOpacity != undefined) {

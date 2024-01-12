@@ -485,7 +485,7 @@ export default {
   groups: [
     {
       name: "样式",
-      icon: 'icon-config',
+      icon: 'icon-style',
       subGroups: [
         {
           name: "填充",

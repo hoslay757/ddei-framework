@@ -41,7 +41,7 @@ export default {
           align: 1
         },
         fill: {
-          disabled: true
+          type: 0
         },
         border: {
           disabled: true
@@ -64,7 +64,7 @@ export default {
           vspace: 2,
         },
         fill: {
-          disabled: true
+          type: 0
         },
         border: {
           disabled: true
