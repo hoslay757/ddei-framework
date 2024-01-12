@@ -96,7 +96,6 @@ import PVFillTypeEditor from "./editors/PVFillTypeEditor.vue";
 import PVExCheckboxEditor from "./editors/PVExCheckboxEditor.vue";
 import PVSwitchCheckboxEditor from "./editors/PVSwitchCheckboxEditor.vue";
 import ICONS from "../js/icon";
-import DDeiEnumBusCommandType from "../../framework/js/enums/bus-command-type";
 import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
 import DDeiEnumOperateType from "../../framework/js/enums/operate-type";
 export default {

@@ -54,7 +54,7 @@ export default {
         border: { disabled: true },
         textStyle: {
           feed: 1,
-          autoScaleFill: 1,
+          scale: 1,
         },
         initCPV: {
           x: -60, y: -70
@@ -70,7 +70,7 @@ export default {
         text: "Attribute",
         textStyle: {
           feed: 1,
-          autoScaleFill: 1,
+          scale: 1,
         },
         initCPV: {
           x: 0, y: 10

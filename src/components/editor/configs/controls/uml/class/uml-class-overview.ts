@@ -16,7 +16,7 @@ Package`,
           textStyle: {
             feed: 1,
             align: 1,
-            autoScaleFill: 1,
+            scale: 1,
           },
           initCPV: {
             x: -50, y: -60

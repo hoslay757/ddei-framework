@@ -72,7 +72,7 @@ export default {
         },
         textStyle: {
           feed: 1,
-          autoScaleFill: 1,
+          scale: 1,
           align: 3
         },
         attrLinks: [

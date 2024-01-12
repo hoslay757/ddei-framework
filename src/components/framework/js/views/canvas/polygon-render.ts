@@ -744,7 +744,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let align = this.getCachedValue("textStyle.align");
     let valign = this.getCachedValue("textStyle.valign");
     //缩小字体填充
-    let autoScaleFill = this.getCachedValue("textStyle.autoScaleFill");
+    let scale = this.getCachedValue("textStyle.scale");
     //自动换行
     let feed = this.getCachedValue("textStyle.feed");
 
@@ -805,7 +805,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     if (this.isEditoring) {
       sptStyle = this.model.sptStyle
       feed = "1"
-      autoScaleFill = "1"
+      scale = "1"
       cText = this.getCachedValue("text")
     } else {
       cText = DDeiUtil.getReplacibleValue(this.model, "text", true, true);
@@ -830,7 +830,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         let maxFontSize = 0;
 
         if (fontSize + vspace > ratPos.height) {
-          if (autoScaleFill == 1) {
+          if (scale == 1) {
             textContainer = [];
             let ds = fontSize < 50 ? 0.5 : Math.floor(fontSize / 50)
             fontSize -= ds;
@@ -912,7 +912,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           //如果不自动换行也不缩小字体，则超过的话，就省略显示
           if (feed == 0) {
             //如果具备缩小字体填充，并且usedWidth超出了单行大小,则跳出循环，重新生成
-            if (autoScaleFill == 1 && usedWidth > contentWidth) {
+            if (scale == 1 && usedWidth > contentWidth) {
               isOutSize = true;
               break;
             }
@@ -936,7 +936,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
               //换行的情况下，如果行高度超出，则不输出
               if (usedHeight + textRowContainer.height > ratPos.height) {
                 //如果具备缩小字体填充，则重新生成
-                if (autoScaleFill == 1) {
+                if (scale == 1) {
                   isOutSize = true;
                 }
                 break;
@@ -963,7 +963,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
               //换行的情况下，如果行高度超出，则不输出
               if (usedHeight + textRowContainer.height > ratPos.height) {
                 //如果具备缩小字体填充，则重新生成
-                if (autoScaleFill == 1) {
+                if (scale == 1) {
                   isOutSize = true;
                 }
                 break;

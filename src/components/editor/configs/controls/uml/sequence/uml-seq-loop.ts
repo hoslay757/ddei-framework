@@ -37,7 +37,7 @@ export default {
         cIndex: 1,
         text: "Loop",
         textStyle: {
-          autoScaleFill: 1,
+          scale: 1,
           align: 1
         },
         fill: {
@@ -60,7 +60,7 @@ export default {
           align: 1,
           valign: 1,
           feed: 1,
-          autoScaleFill: 1,
+          scale: 1,
           vspace: 2,
         },
         fill: {

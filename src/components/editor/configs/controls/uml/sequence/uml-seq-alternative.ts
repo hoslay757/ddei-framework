@@ -44,7 +44,7 @@ export default {
         cIndex: 1,
         text: "Alternative",
         textStyle: {
-          autoScaleFill: 1,
+          scale: 1,
           align: 1
         },
         fill: {
@@ -66,7 +66,7 @@ export default {
         textStyle: {
           align: 1,
           feed: 1,
-          autoScaleFill: 1,
+          scale: 1,
           vspace: 2,
         },
         fill: {
@@ -88,7 +88,7 @@ export default {
         textStyle: {
           align: 1,
           feed: 1,
-          autoScaleFill: 1,
+          scale: 1,
           vspace: 2,
         },
         fill: {

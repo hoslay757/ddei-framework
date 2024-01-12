@@ -42,7 +42,7 @@ export default {
         text: "类名",
         textStyle: {
           bold: 1,
-          autoScaleFill: 1
+          scale: 1
         },
         fill: {
           disabled: true
@@ -65,7 +65,7 @@ export default {
         textStyle: {
           align: 1,
           feed: 1,
-          autoScaleFill: 1,
+          scale: 1,
           vspace: 2,
         },
         fill: {
@@ -89,7 +89,7 @@ export default {
         textStyle: {
           align: 1,
           feed: 1,
-          autoScaleFill: 1,
+          scale: 1,
           vspace: 2,
         },
         fill: {

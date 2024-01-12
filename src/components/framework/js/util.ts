@@ -2240,8 +2240,8 @@ class DDeiUtil {
                     targetCell.attrs.valign = sourceCell.attrs.valign;
                     targetCell.feed = sourceCell.feed;
                     targetCell.attrs.feed = sourceCell.attrs.feed;
-                    targetCell.autoScaleFill = sourceCell.autoScaleFill;
-                    targetCell.attrs.autoScaleFill = sourceCell.attrs.autoScaleFill;
+                    targetCell.scale = sourceCell.scale;
+                    targetCell.attrs.scale = sourceCell.attrs.scale;
                     targetCell.font = sourceCell.font;
                     targetCell.attrs.font = sourceCell.attrs.font;
                     targetCell.fill = sourceCell.fill;

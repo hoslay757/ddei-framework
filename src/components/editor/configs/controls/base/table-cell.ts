@@ -274,7 +274,7 @@ export const styles = {
     },
     {
       'id': '100302206',
-      'code': 'textStyle.autoScaleFill',
+      'code': 'textStyle.scale',
       'name': '缩小字体',
       'desc': '文本的自动缩小字体填充',
       'group': '文本',

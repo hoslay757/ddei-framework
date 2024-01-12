@@ -81,7 +81,7 @@ export default {
         },
         textStyle: {
           feed: 1,
-          autoScaleFill: 1,
+          scale: 1,
         },
         attrLinks: [
           { code: "textStyle", mapping: ["*"] }

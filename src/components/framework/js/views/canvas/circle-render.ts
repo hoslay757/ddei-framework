@@ -199,7 +199,7 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
     let align = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.align", true);
     let valign = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.valign", true);
     //缩小字体填充
-    let autoScaleFill = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.autoScaleFill", true);
+    let scale = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.scale", true);
     //镂空
     let hollow = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "textStyle.hollow", true);
     //自动换行
@@ -216,8 +216,8 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
     if (!valign) {
       valign = 2
     }
-    if (!autoScaleFill) {
-      autoScaleFill = 0
+    if (!scale) {
+      scale = 0
     }
     if (!hollow) {
       hollow = 0
@@ -257,7 +257,7 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
       //是否超出输出长度标志
       let isOutSize = false;
       if (fontSize > ratPos.height) {
-        if (autoScaleFill == 1) {
+        if (scale == 1) {
           textContainer = [];
           fontSize = fontSize - 0.5;
           continue;
@@ -279,7 +279,7 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
         //如果不自动换行也不缩小字体，则超过的话，就省略显示
         if (feed == 0) {
           //如果具备缩小字体填充，并且usedWidth超出了单行大小,则跳出循环，重新生成
-          if (autoScaleFill == 1 && usedWidth > contentWidth) {
+          if (scale == 1 && usedWidth > contentWidth) {
             isOutSize = true;
             break;
           }
@@ -307,7 +307,7 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
             //换行的情况下，如果行高度超出，则不输出
             if (usedHeight + fontHeight > ratPos.height) {
               //如果具备缩小字体填充，则重新生成
-              if (autoScaleFill == 1) {
+              if (scale == 1) {
                 isOutSize = true;
               }
               break;

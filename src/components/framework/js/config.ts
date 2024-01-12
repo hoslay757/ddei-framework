@@ -266,14 +266,14 @@ class DDeiConfig {
       //自动换行，0/null不换行，1换行，默认0
       feed: 1,
       //缩小字体填充，0/null不缩小，1缩小，默认0
-      autoScaleFill: 1,
+      scale: 1,
       //镂空，0/null不镂空，1镂空，默认0
       hollow: 0,
       selected: {
         align: 1,
         valign: 2,
         feed: 0,
-        autoScaleFill: 0,
+        scale: 0,
         hollow: 0
       }
     }
@@ -310,14 +310,14 @@ class DDeiConfig {
       //自动换行，0/null不换行，1换行，默认0
       feed: 1,
       //缩小字体填充，0/null不缩小，1缩小，默认0
-      autoScaleFill: 1,
+      scale: 1,
       //镂空，0/null不镂空，1镂空，默认0
       hollow: 0,
       selected: {
         align: 2,
         valign: 2,
         feed: 0,
-        autoScaleFill: 0,
+        scale: 0,
         hollow: 0
       }
     }
@@ -377,14 +377,14 @@ class DDeiConfig {
       //自动换行，0/null不换行，1换行，默认0
       feed: 1,
       //缩小字体填充，0/null不缩小，1缩小，默认0
-      autoScaleFill: 1,
+      scale: 1,
       //镂空，0/null不镂空，1镂空，默认0
       hollow: 0,
       selected: {
         align: 1,
         valign: 2,
         feed: 0,
-        autoScaleFill: 0,
+        scale: 0,
         hollow: 0
       }
     }

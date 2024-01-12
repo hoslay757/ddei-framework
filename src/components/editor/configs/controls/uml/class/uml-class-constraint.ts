@@ -15,7 +15,7 @@ export default {
           textStyle: {
             align: 3,
             feed: 1,
-            autoScaleFill: 1
+            scale: 1
           }
         },
       ]
