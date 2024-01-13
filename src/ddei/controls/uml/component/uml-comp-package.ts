@@ -1,4 +1,4 @@
-import { ov_link_v_split_point, ov_link_h_split_point } from "../../../scripts/uml/ov-link-split-point"
+import { ov_link_v_split_point, ov_link_h_split_point } from "@/components/editor/configs/scripts/common/ov-link-split-point";
 
 export default {
   'id': '305003',

@@ -1,17 +1,14 @@
-import ov_link_v_split_point from "../../../scripts/uml/ov-link-split-point"
+import { ov_link_v_split_point, ov_link_h_split_point } from "@/components/editor/configs/scripts/common/ov-link-split-point";
 export default {
-  'id': '307016',
+  'id': '304003',
   'name': '对象',
   'code': 'obj',
   'desc': 'UML的对象节点',
   'from': '100008',
   'icon': 'toolbox-shape-rect',
   'define': {
-    width: 230,
+    width: 160,
     height: 100,
-    border: {
-      round: 5
-    },
     //扩展采样信息，用于在原有的基础上增加采样，或者覆盖采样的部分信息
     ext: {
       //追加一个从中间切开的采样点，用于横向切割
@@ -52,15 +49,16 @@ export default {
     //组合控件
     composes: [
       {
-        width: 230,
+        width: 160,
         height: 30,
         id: '100002',
         cIndex: 1,
         text: `对象名`,
         textStyle: {
-          bold: 1,
+          underline: 1,
           feed: 1,
-          scale: 1
+          scale: 1,
+          align: 3
         },
         fill: {
           type: 0
@@ -77,14 +75,13 @@ export default {
         ]
       },
       {
-        width: 230,
+        width: 160,
         height: 70,
         id: '100002',
         cIndex: 1,
-        text: ` attribute A = value A
- attribute B = value B`,
+        text: ` attribute A = value A`,
         textStyle: {
-          align: 1,
+          align: 3,
           feed: 1,
           scale: 1,
           vspace: 2,

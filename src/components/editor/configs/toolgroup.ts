@@ -227,6 +227,11 @@ for (let i in control_ctx) {
   let cls = control_ctx[i];
   loadArray.push(cls);
 }
+const out_control_ctx = import.meta.glob('@/ddei/controls/**', { eager: true });
+for (let i in out_control_ctx) {
+  let cls = out_control_ctx[i];
+  loadArray.push(cls);
+}
 let stage_ctx = import.meta.glob('./stage.ts', { eager: true })
 for (let i in stage_ctx) {
   let cls = stage_ctx[i];
@@ -250,6 +255,11 @@ loadArray = [];
 let ctx = import.meta.glob('./toolgroups/**', { eager: true })
 for (let path in ctx) {
   loadArray.push(ctx[path]);
+}
+
+let out_ctx = import.meta.glob('@/ddei/groups/**', { eager: true });
+for (let path in out_ctx) {
+  loadArray.push(out_ctx[path]);
 }
 
 
