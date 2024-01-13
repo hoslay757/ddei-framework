@@ -170,7 +170,6 @@ export default {
       //创建并初始化控件以及关系
       let models = this.createControl(control)
 
-
       //加载事件的配置
       let createBefore = DDeiUtil.getConfigValue(
         "EVENT_CONTROL_CREATE_BEFORE",
@@ -323,9 +322,9 @@ export default {
               z: 1
             },
             layout: "compose",
-            modelCode: "100201",
+            modelCode: "100202",
             fill: {
-              disabled: true
+              type: 0
             },
             border: {
               top: { disabled: true }

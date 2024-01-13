@@ -61,6 +61,7 @@ const loadControlByFrom = function (control) {
     }
     //处理ext
     if (control.define?.ext) {
+
       for (let i in control.define.ext) {
         switch (i) {
           case "composes": {

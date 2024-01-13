@@ -66,7 +66,7 @@ class DDeiBusCommandModelMerge extends DDeiBusCommand {
             z: 1
           },
           layout: "compose",
-          modelCode: "100201",
+          modelCode: "100202",
           fill: {
             disabled: true
           },

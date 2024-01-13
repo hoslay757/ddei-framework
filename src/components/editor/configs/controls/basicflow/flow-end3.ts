@@ -14,8 +14,13 @@ export default {
         id: "102001",
         width: 30,
         height: 30,
-        cIndex: 2
+        cIndex: 2,
+        attrLinks: [
+          { code: "fill", mapping: ["*"] },
+          { code: "border", mapping: ["*"] },
+        ]
       }
-    ]
+    ],
+
   }
 }

@@ -3,7 +3,7 @@ export default {
   'name': '发送信号',
   'code': 'uasm',
   'desc': '发送信号',
-  'from': '100500',
+  'from': '104999',
   'icon': 'toolbox-shape-rect',
   'define': {
     width: 110,
@@ -23,20 +23,20 @@ export default {
       //采样的规则，多组采样返回多组规则
       rules: [
         //绘制线段区域
-        `(i, sample, pvs, model, ovs){ 
+        `(i, sample, pvs, model, ovs){
             switch(i){
               case 0:
-                pvs.push({begin:1,x:75,y:0,fill:1,clip:1,select:1,stroke:1});
+                pvs.push({begin:1,x:75,y:0,fill:1,clip:1,select:1,oppoint:2,stroke:1});
               break;
               case 1:
-                pvs.push({x:50,y:50,fill:1,clip:1,text:1,select:1,stroke:1});
-                pvs.push({x:-50,y:50,fill:1,clip:1,text:1,select:1,stroke:1});
+                pvs.push({x:50,y:50,fill:1,clip:1,text:1,select:1,oppoint:2,stroke:1});
+                pvs.push({x:-50,y:50,fill:1,clip:1,text:1,select:1,oppoint:2,stroke:1});
               break;
               case 2:
-                 pvs.push({x:-50,y:-50,fill:1,clip:1,text:1,select:1,stroke:1});
+                 pvs.push({x:-50,y:-50,fill:1,clip:1,text:1,select:1,oppoint:2,stroke:1});
               break;
               case 3:
-               pvs.push({x:50,y:-50,fill:1,stroke:1,text:1,clip:1,select:1,end:1});
+               pvs.push({x:50,y:-50,fill:1,stroke:1,text:1,clip:1,oppoint:2,select:1,end:1});
               break;
             }
         }`,

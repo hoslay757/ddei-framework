@@ -175,6 +175,23 @@ export default {
           }
         }`,
       ]
+    },
+    ext: {
+      /**
+       * 定义分组，用于属性编辑
+       */
+      groups: [
+        {
+          name: "样式",
+          icon: 'icon-config',
+          subGroups: [
+            {
+              name: "线条",
+              attrs: ["borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
+            }
+          ]
+        }
+      ]
     }
   }
 }

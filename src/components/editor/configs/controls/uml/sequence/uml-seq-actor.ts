@@ -7,7 +7,7 @@ export default {
   'icon': 'toolbox-shape-rect',
   'define': {
     //初始化时合并
-    initMerges: [0]
+    initMerges: [0],
   },
   //其它同时创建的平级控件
   others: [

@@ -54,7 +54,10 @@ export default {
         cIndex: 2,
         initCPV: {
           x: -65, y: 0, z: 1
-        }
+        },
+        attrLinks: [
+          { code: "border", mapping: ["*"] },
+        ]
       },
       {
         width: 150,
@@ -76,9 +79,34 @@ export default {
           align: 1
         },
         attrLinks: [
-          { code: "textStyle", mapping: ["*"] }
+          { code: "textStyle", mapping: ["*"] },
+          { code: "font", mapping: ["*"] }
         ]
       },
     ],
+    ext: {
+      /**
+       * 定义分组，用于属性编辑
+       */
+      groups: [
+        {
+          name: "样式",
+          icon: 'icon-config',
+          subGroups: [
+            {
+              name: "线条",
+              attrs: ["borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
+            },
+
+            {
+              name: "文本",
+              attrs: ["font.family", "font.size", "font.color", "fontAlign", "textStyle.feed"
+                , "textStyle.scale", "textStyle.hollow", "textStyle.bold", "textStyle.italic"
+                , "textStyle.underline", "textStyle.deleteline", "textStyle.topline", "textStyle.hspace", "textStyle.vspace"]
+            },
+          ]
+        }
+      ]
+    }
   }
 }

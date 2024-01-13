@@ -236,11 +236,11 @@ export default {
       ]
     },
     {
-      name: "数据",
+      name: "属性",
       icon: 'icon-data',
       subGroups: [
         {
-          name: "基础信息",
+          name: "属性",
           attrs: ["code"]
         },
 

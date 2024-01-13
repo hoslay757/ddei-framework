@@ -328,54 +328,70 @@ export default {
             topGroup.img = ICONS[topGroup.icon];
           });
           topGroups = firstControlDefine.groups
+          // //如果属性不存在，则读取下层元素的控件内容
+          // if (topGroups?.length == 0 && models.length == 1 && models[0].baseModelType == 'DDeiContainer' && models[0].layout == 'compose') {
+          //   topGroups = this.getFirstChildAttrsGroup(models[0])
+          // }
+        }
+        if (topGroups?.length > 0) {
+          //上一次编辑的名称
+          let upName = this.currentTopGroup?.name;
+          let currentTopGroup = null;
+          if (upName) {
+            for (let x = 0; x < firstControlDefine.groups.length; x++) {
+              let topGroup = topGroups[x];
+              if (!topGroup.empty &&
+                upName == topGroup.name) {
+                topGroup.selected = true;
+                currentTopGroup = topGroup;
+                break;
+              }
+            }
+          }
+          if (!currentTopGroup) {
+            topGroups[0].selected = true
+            currentTopGroup = topGroups[0]
+          }
+          this.currentTopGroup = currentTopGroup;
+          this.controlDefine = firstControlDefine;
+          this.topGroups = topGroups;
+          //上一次编辑的名称
+          let upSubGroupName = this.currentSubGroup?.name;
+          let currentSubGroup = null;
+          if (upSubGroupName) {
+            for (let sgi = 0; sgi < currentTopGroup?.subGroups.length; sgi++) {
+              if (
+                !currentTopGroup?.subGroups[sgi]?.empty &&
+                upSubGroupName == currentTopGroup?.subGroups[sgi]?.name
+              ) {
+                currentSubGroup = currentTopGroup?.subGroups[sgi];
+                break;
+              }
+            }
+          }
+          if (!currentSubGroup) {
+            for (let sgi = 0; sgi < currentTopGroup?.subGroups.length; sgi++) {
+              if (!currentTopGroup?.subGroups[sgi]?.empty) {
+                currentSubGroup = currentTopGroup?.subGroups[sgi];
+                break;
+              }
+            }
+          }
+          this.changeSubGroup(currentSubGroup);
+          this.editor.currentControlDefine = this.controlDefine;
+        } else {
+          //清除信息
+          this.controlDefine = null;
+          this.topGroups = null;
+          if (this.currentTopGroup) {
+            this.currentTopGroup.subGroups = null;
+          }
+          if (this.currentSubGroup) {
+            this.currentSubGroup.children = null;
+          }
+          this.editor.currentControlDefine = null;
         }
 
-        // });
-        //上一次编辑的名称
-        let upName = this.currentTopGroup?.name;
-        let currentTopGroup = null;
-        if (upName) {
-          for (let x = 0; x < firstControlDefine.groups.length; x++) {
-            let topGroup = topGroups[x];
-            if (!topGroup.empty &&
-              upName == topGroup.name) {
-              topGroup.selected = true;
-              currentTopGroup = topGroup;
-              break;
-            }
-          }
-        }
-        if (!currentTopGroup) {
-          topGroups[0].selected = true
-          currentTopGroup = topGroups[0]
-        }
-        this.currentTopGroup = currentTopGroup;
-        this.controlDefine = firstControlDefine;
-        this.topGroups = topGroups;
-        //上一次编辑的名称
-        let upSubGroupName = this.currentSubGroup?.name;
-        let currentSubGroup = null;
-        if (upSubGroupName) {
-          for (let sgi = 0; sgi < currentTopGroup?.subGroups.length; sgi++) {
-            if (
-              !currentTopGroup?.subGroups[sgi]?.empty &&
-              upSubGroupName == currentTopGroup?.subGroups[sgi]?.name
-            ) {
-              currentSubGroup = currentTopGroup?.subGroups[sgi];
-              break;
-            }
-          }
-        }
-        if (!currentSubGroup) {
-          for (let sgi = 0; sgi < currentTopGroup?.subGroups.length; sgi++) {
-            if (!currentTopGroup?.subGroups[sgi]?.empty) {
-              currentSubGroup = currentTopGroup?.subGroups[sgi];
-              break;
-            }
-          }
-        }
-        this.changeSubGroup(currentSubGroup);
-        this.editor.currentControlDefine = this.controlDefine;
 
       } else {
         //清除信息
@@ -390,6 +406,33 @@ export default {
         this.editor.currentControlDefine = null;
       }
     },
+
+    getFirstChildAttrsGroup(control) {
+      if (control.models?.size > 0) {
+        let firstControl = control.models.get(control.midList[0])
+        let curDefine = controlOriginDefinies.get(firstControl.modelCode);
+        if (curDefine.groups?.length > 0) {
+          let returnGroups = curDefine.groups;
+          returnGroups.forEach(group => {
+            group?.subGroups.forEach(subGroup => {
+              subGroup.children?.forEach(attrDefine => {
+                attrDefine.value = DDeiUtil.getDataByPathList(
+                  firstControl,
+                  attrDefine.code,
+                  attrDefine.mapping
+                );
+                attrDefine.model = firstControl
+              });
+            });
+          });
+          return returnGroups;
+        } else if (firstControl.baseModelType == 'DDeiContainer' && firstControl.layout == 'compose') {
+          return this.getFirstChildAttrsGroup(firstControl)
+        }
+      }
+      return null
+    },
+
     /**
      * 展开顶级属性，收起其他顶级层级
      */
