@@ -13,6 +13,25 @@ export default {
     },
     border: {
       disabled: true
+    },
+    ext: {
+      groups: [
+        {
+          name: "样式",
+          icon: 'icon-config',
+          subGroups: [
+            {
+              name: "填充",
+              attrs: ["fill.type", "fill.color", "fill.image", "fill.opacity"]
+            },
+            {
+              name: "线条",
+              attrs: ["borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
+            },
+          ]
+        },
+
+      ]
     }
   }
 }

@@ -12,7 +12,8 @@ export default {
       align: 3,
       feed: 1
     },
-    text: "Constraint Name : \r\nBody",
+    text: ` Constraint Name :
+Body`,
     composes: [
       {
         width: 90,
@@ -32,7 +33,36 @@ export default {
         initCPV: {
           x: -15, y: -35
         },
+        attrLinks: [
+          { code: "font", mapping: ["*"] },
+          { code: "textStyle", mapping: ["*"] },
+        ]
       },
-    ]
+    ],
+    ext: {
+      groups: [
+        {
+          name: "样式",
+          icon: 'icon-config',
+          subGroups: [
+            {
+              name: "填充",
+              attrs: ["fill.type", "fill.color", "fill.image", "fill.opacity"]
+            },
+            {
+              name: "线条",
+              attrs: ["borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
+            },
+            {
+              name: "文本",
+              attrs: ["font.family", "font.size", "font.color", "fontAlign", "textStyle.feed"
+                , "textStyle.scale", "textStyle.hollow", "textStyle.bold", "textStyle.italic"
+                , "textStyle.underline", "textStyle.deleteline", "textStyle.topline", "textStyle.hspace", "textStyle.vspace"]
+            },
+          ]
+        },
+
+      ]
+    }
   }
 }

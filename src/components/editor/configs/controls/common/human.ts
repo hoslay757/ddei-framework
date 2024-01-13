@@ -73,7 +73,7 @@ export default {
     //组合控件
     composes: [
       {
-        id: '100003',
+        id: '100103',
         cIndex: 2,
         initCPV: {
           x: 0, y: -35
@@ -85,6 +85,26 @@ export default {
           { code: "fill", mapping: ["*"] },
         ]
       },
-    ]
+    ],
+    ext: {
+      groups: [
+        {
+          name: "样式",
+          icon: 'icon-config',
+          subGroups: [
+            {
+              name: "填充",
+              attrs: ["fill.type", "fill.color", "fill.image", "fill.opacity"]
+            },
+            {
+              name: "线条",
+              attrs: ["borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
+            },
+
+
+          ]
+        }
+      ]
+    }
   }
 }

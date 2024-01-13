@@ -24,7 +24,30 @@ export default {
             }
           }`
         ]
-      }
+      },
+      groups: [
+        {
+          name: "样式",
+          icon: 'icon-config',
+          subGroups: [
+            {
+              name: "填充",
+              attrs: ["fill.type", "fill.color", "fill.image", "fill.opacity"]
+            },
+            {
+              name: "线条",
+              attrs: ["borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
+            },
+            {
+              name: "文本",
+              attrs: ["font.family", "font.size", "font.color", "fontAlign", "textStyle.feed"
+                , "textStyle.scale", "textStyle.hollow", "textStyle.bold", "textStyle.italic"
+                , "textStyle.underline", "textStyle.deleteline", "textStyle.topline", "textStyle.hspace", "textStyle.vspace"]
+            },
+          ]
+        },
+
+      ]
     },
     //组合控件
     composes: [
@@ -47,7 +70,11 @@ export default {
         },
         initCPV: {
           x: 0, y: -35
-        }
+        },
+        attrLinks: [
+          { code: "font", mapping: ["*"] },
+          { code: "textStyle", mapping: ["*"] },
+        ]
       },
       {
         width: 230,
@@ -70,7 +97,11 @@ export default {
         },
         initCPV: {
           x: 0, y: 15
-        }
+        },
+        attrLinks: [
+          { code: "font", mapping: ["*"] },
+          { code: "textStyle", mapping: ["*"] },
+        ]
       },
 
     ],

@@ -47,7 +47,7 @@ export default {
     //组合控件
     composes: [
       {
-        id: '100003',
+        id: '100103',
         cIndex: 2,
         initCPV: {
           x: 0, y: -35
@@ -60,7 +60,7 @@ export default {
         ]
       },
       {
-        id: '100002',
+        id: '100008',
         cIndex: 1,
         width: 60,
         height: 50,
@@ -72,6 +72,26 @@ export default {
     ]
     , border: {
       round: 15
+    },
+    ext: {
+      groups: [
+        {
+          name: "样式",
+          icon: 'icon-config',
+          subGroups: [
+            {
+              name: "填充",
+              attrs: ["fill.type", "fill.color", "fill.image", "fill.opacity"]
+            },
+            {
+              name: "线条",
+              attrs: ["borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
+            },
+
+
+          ]
+        }
+      ]
     }
   }
 }

@@ -58,7 +58,11 @@ export default {
         },
         initCPV: {
           x: -60, y: -70
-        }
+        },
+        attrLinks: [
+          { code: "font", mapping: ["*"] },
+          { code: "textStyle", mapping: ["*"] },
+        ]
       },
       {
         width: 200,
@@ -74,7 +78,11 @@ export default {
         },
         initCPV: {
           x: 0, y: 10
-        }
+        },
+        attrLinks: [
+          { code: "font", mapping: ["*"] },
+          { code: "textStyle", mapping: ["*"] },
+        ]
       },
     ],
     //操作点定义
@@ -125,7 +133,32 @@ export default {
           }
         ]
       }
-    ]
+    ],
+    ext: {
+      groups: [
+        {
+          name: "样式",
+          icon: 'icon-config',
+          subGroups: [
+            {
+              name: "填充",
+              attrs: ["fill.type", "fill.color", "fill.image", "fill.opacity"]
+            },
+            {
+              name: "线条",
+              attrs: ["borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
+            },
+            {
+              name: "文本",
+              attrs: ["font.family", "font.size", "font.color", "fontAlign", "textStyle.feed"
+                , "textStyle.scale", "textStyle.hollow", "textStyle.bold", "textStyle.italic"
+                , "textStyle.underline", "textStyle.deleteline", "textStyle.topline", "textStyle.hspace", "textStyle.vspace"]
+            },
+          ]
+        },
+
+      ]
+    }
   }
 
 }

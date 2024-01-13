@@ -3,7 +3,7 @@ export default {
   'name': '发送信号',
   'code': 'uasm',
   'desc': '发送信号',
-  'from': '104999',
+  'from': '100500',
   'icon': 'toolbox-shape-rect',
   'define': {
     width: 110,

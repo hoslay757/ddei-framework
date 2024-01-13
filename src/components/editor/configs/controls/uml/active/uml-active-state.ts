@@ -20,12 +20,16 @@ export default {
       },
       groups: [
         {
-          name: "属性",
+          name: "样式",
           icon: 'icon-config',
           subGroups: [
             {
-              name: "样式",
-              attrs: ["fill.type", "fill.color", "fill.image", "fill.opacity", "borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash"]
+              name: "填充",
+              attrs: ["fill.type", "fill.color", "fill.image", "fill.opacity"]
+            },
+            {
+              name: "线条",
+              attrs: ["borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
             },
             {
               name: "文本",
@@ -35,6 +39,7 @@ export default {
             },
           ]
         },
+
       ]
     },
 
