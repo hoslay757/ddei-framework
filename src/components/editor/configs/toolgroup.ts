@@ -1,18 +1,31 @@
 import DDeiEditorArrtibute from '../js/attribute/editor-attribute';
 import { cloneDeep } from 'lodash'
 import ICONS from "../js/icon";
+import DDeiUtil from '@/components/framework/js/util';
 //已读取的配置组原始定义
 const groupOriginDefinies = [];
 
 //已读取的控件原始定义
 const controlOriginDefinies = new Map();
 
-
+const ToDefaultPropertys = ["fill.type", "fill.color", "fill.image", "fill.opacity", "borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound",
+  "font.family", "font.size", "font.color", "fontAlign", "textStyle.feed"
+  , "textStyle.scale", "textStyle.hollow", "textStyle.bold", "textStyle.italic"
+  , "textStyle.underline", "textStyle.deleteline", "textStyle.topline", "textStyle.hspace", "textStyle.vspace"]
 //将属性转换为更深的groups中
 const parseAttrsToGroup = function (control) {
+
   if (control.attrs) {
     control.attrs.forEach(curAttr => {
       let attrDefine = new DDeiEditorArrtibute(curAttr);
+      //在define中寻找样式值，如果有值，作为属性缺省值，再删除属性
+      if (ToDefaultPropertys.indexOf(curAttr.code) != -1) {
+        let defValue = DDeiUtil.getDataByPathList(control.define, curAttr.code, curAttr.mapping);
+        if (defValue || defValue == 0) {
+          attrDefine.defaultValue = defValue
+        }
+      }
+
       //将属性加入控件的属性map
       if (!control.attrDefineMap) {
         control.attrDefineMap = new Map();
@@ -262,7 +275,15 @@ for (let path in out_ctx) {
   loadArray.push(out_ctx[path]);
 }
 
-
+controlOriginDefinies.forEach(control => {
+  if (control.define) {
+    delete control.define.font
+    delete control.define.textStyle
+    delete control.define.border
+    delete control.define.fill
+  }
+  delete control.attrs
+})
 
 //组的定义
 loadArray.forEach(item => {
@@ -314,6 +335,7 @@ groupOriginDefinies.forEach((item, index) => {
   item.controls.forEach((control) => {
     if (control.icon) {
       control.icon = ICONS[control.icon];
+
     }
 
   });

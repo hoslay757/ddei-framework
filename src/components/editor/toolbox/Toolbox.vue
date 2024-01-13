@@ -230,6 +230,7 @@ export default {
         cc,
         searchPaths
       );
+
       stage.idIdx++
       let dataJson = {
         id: cc.code + "_" + (stage.idIdx),

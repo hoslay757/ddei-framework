@@ -45,6 +45,7 @@ export default {
 
     },
 
+
     //组合控件
     composes: [
       {

@@ -1605,7 +1605,11 @@ abstract class DDeiAbstractShape {
       skipFields = DDeiConfig.SERI_FIELDS[this.baseModelType]?.SKIP;
     }
     if (!(skipFields?.length > 0)) {
-      skipFields = DDeiConfig.SERI_FIELDS["AbstractShape"]?.SKIP;
+      if (this.poly == 2) {
+        skipFields = DDeiConfig.SERI_FIELDS["AbstractShape"]?.SKIP2;
+      } else {
+        skipFields = DDeiConfig.SERI_FIELDS["AbstractShape"]?.SKIP;
+      }
     }
 
     let toJSONFields = DDeiConfig.SERI_FIELDS[this.modelType]?.TOJSON;
@@ -1617,11 +1621,6 @@ abstract class DDeiAbstractShape {
     }
     for (let i in this) {
       if ((!skipFields || skipFields?.indexOf(i) == -1)) {
-        if (this.poly == 2) {
-          if (i == 'pvs' || i == 'textArea' || i == 'opps') {
-            continue;
-          }
-        }
         if (toJSONFields && toJSONFields.indexOf(i) != -1 && this[i]) {
           if (Array.isArray(this[i])) {
             let array = [];
@@ -1680,6 +1679,10 @@ abstract class DDeiAbstractShape {
                 array.push(subArray);
               } else if (element?.toJSON) {
                 array.push(element.toJSON());
+              } else if (element.isVector3) {
+                let dt = clone(element);
+                delete dt.z
+                array.push(dt);
               } else {
                 array.push(element);
               }
@@ -1702,7 +1705,16 @@ abstract class DDeiAbstractShape {
           } else if (this[i]?.toJSON) {
             json[i] = this[i].toJSON();
           } else if (this[i] || this[i] == 0) {
-            json[i] = this[i];
+            if (i == 'rotate' && this[i] == 0) {
+
+            } else if ((i == 'text' || i == 'imgBase64') && this[i] == "") {
+
+            } else if (this[i].isVector3) {
+              json[i] = clone(this[i]);
+              delete json[i].z
+            } else {
+              json[i] = this[i];
+            }
           }
         }
       }
