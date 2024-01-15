@@ -23,17 +23,17 @@ export default {
         `(i, sample, pvs, model, ovs){
             switch(i){
               case 0:
-                pvs.push({begin:1,x:sample.x,y:sample.y,select:1,clip:1,text:1,stroke:1,fill:1});
+                pvs.push({begin:1,x:sample.x,y:sample.y,select:1,clip:1,text:1,oppoint:2,stroke:1,fill:1});
               break;
               case 1:
-                pvs.push({x:sample.x,y:sample.y,select:1,clip:1,stroke:1,fill:1});
+                pvs.push({x:sample.x,y:sample.y,select:1,clip:1,stroke:1,oppoint:2,fill:1});
               break;
               case 2:
-                pvs.push({x:sample.x,y:sample.y,select:1,clip:1,text:1,stroke:1,fill:1});
+                pvs.push({x:sample.x,y:sample.y,select:1,clip:1,text:1,oppoint:2,stroke:1,fill:1});
               break;
               case 3:
-                pvs.push({x:-pvs[0].x,y:sample.y,select:1,clip:1,text:1,stroke:1,fill:1});
-                pvs.push({x:pvs[0].x,y:sample.y,select:1,clip:1,text:1,stroke:1,fill:1,end:1});
+                pvs.push({x:-pvs[0].x,y:sample.y,select:1,clip:1,text:1,oppoint:2,stroke:1,fill:1});
+                pvs.push({x:pvs[0].x,y:sample.y,select:1,clip:1,text:1,oppoint:2,stroke:1,fill:1,end:1});
                
               break;
             }

@@ -67,6 +67,11 @@ export default {
             pvs.push({x:x,y:10,oppoint:1,stroke:1});
             pvs.push({x:0,y:-10,type:3});
           }
+        }`,
+        `(i, sample, pvs, model, ovs){
+          if(i == 0){
+            pvs.push({x:0,y:-50,oppoint:1,type:0});
+          }
         }`
       ]
     },

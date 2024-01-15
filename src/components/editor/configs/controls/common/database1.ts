@@ -143,7 +143,7 @@ export default {
             let dn = 10;
             pvs.push({begin:1,x:50,y:50,text:1})
             pvs.push({x:-50,y:50,text:1})
-            pvs.push({x:-50,y:-10+dn,text:1})
+            pvs.push({x:-50,y:-30+dn,text:1})
             pvs.push({end:1,x:50,y:-30+dn,text:1})
           }
         }`,

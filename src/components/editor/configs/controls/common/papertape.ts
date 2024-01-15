@@ -46,7 +46,7 @@ export default {
         `(i, sample, pvs, model, ovs){
           if(i == 0){
             //从左下，左上，曲线：右上，右下，曲线：左下
-            pvs.push({begin:1,x:-sample.x,y:sample.x,fill:1,clip:1});
+            pvs.push({begin:1,x:-sample.x,y:sample.x,fill:1});
             pvs.push({x:-sample.x,y:-sample.x,stroke:1});
             //贝塞尔曲线，至少需要四个点，
             pvs.push({x:-50,y:-50,stroke:1,type:5});
@@ -71,10 +71,7 @@ export default {
             pvs.push({x:-34,y:70});
             pvs.push({x:-50,y:50}); 
 
-            //操作点
-            pvs.push({x:-sample.x,y:0,type:0,oppoint:1});
-            pvs.push({x:sample.x,y:0,type:0,oppoint:1});
-            pvs.push({x:0,y:50,type:0,oppoint:1});
+            
           }
         }`,
         //文本区域
@@ -85,6 +82,16 @@ export default {
             pvs.push({x:-sample.x,y:-sample.x+15,text:1});
             pvs.push({x:sample.x,y:-sample.x+15,text:1});
             pvs.push({x:sample.x,y:sample.x-15,end:1,text:1});
+          }
+        }`,
+        //操作点
+        `(i, sample, pvs, model, ovs){
+          if(i == 0){
+    
+            pvs.push({x:-sample.x,y:0,type:0,oppoint:1});
+            pvs.push({x:sample.x,y:0,type:0,oppoint:1});
+            pvs.push({x:0,y:50,type:0,oppoint:1});
+            pvs.push({x:0,y:-50,type:0,oppoint:1});
           }
         }`
 
