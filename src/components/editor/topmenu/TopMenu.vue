@@ -93,7 +93,7 @@ export default {
 .ddei_editor_topmenu_quickbox {
   background-color: #f2f2f7;
   width: 100%;
-  height: 100px;
+  height: 103px;
   display: flex;
 }
 

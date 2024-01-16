@@ -1,24 +1,19 @@
 <template>
   <DDeiEditor :config="ddeiConfig"></DDeiEditor>
 
-  <div class="publish_file_dialog"
-       v-show="publishFileDialogShow">
+  <div class="publish_file_dialog" v-show="publishFileDialogShow">
     <div class="content">
       <div class="title">
         发布文件
       </div>
       <div style="margin-top:10px;padding:10px;">
-        是否发布：【{{ publishPostData?.name+" V"+publishPostData?.version }}】？
+        是否发布：【{{ publishPostData?.name + " V" + publishPostData?.version }}】？
       </div>
       <div class="buttons">
-        <div class="button_ok"
-             style="margin-top:20px;"
-             @click="submitPublishFile()">
+        <div class="button_ok" style="margin-top:20px;" @click="submitPublishFile()">
           <span>确定</span>
         </div>
-        <div class="button_cancel"
-             style="margin-top:20px;"
-             @click="showPublishFileDialog()">
+        <div class="button_cancel" style="margin-top:20px;" @click="showPublishFileDialog()">
           <span>取消</span>
         </div>
       </div>
@@ -69,7 +64,7 @@ export default {
   components: {
     DDeiEditor,
   },
-  created() {},
+  created() { },
   mounted() {
     this.getUserInfo();
   },
@@ -102,11 +97,11 @@ export default {
       models.forEach((model) => {
         console.log(
           "准备编辑:" +
-            model.id +
-            " 属性——" +
-            propName +
-            " .  " +
-            model[propName]
+          model.id +
+          " 属性——" +
+          propName +
+          " .  " +
+          model[propName]
         );
       });
       return true;
@@ -441,7 +436,7 @@ export default {
       display: block;
       margin: auto;
 
-      > div {
+      >div {
         width: 45%;
         height: 40px;
         cursor: pointer;
@@ -450,7 +445,7 @@ export default {
         text-align: center;
         padding-top: 6px;
 
-        > span {
+        >span {
           font-size: 15px;
           color: white;
           text-align: center;
