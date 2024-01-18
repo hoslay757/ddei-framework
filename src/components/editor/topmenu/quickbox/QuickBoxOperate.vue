@@ -1,36 +1,41 @@
 <template>
-  <div class="ddei_editor_quick_operate">
-    <div class="ddei_editor_quick_operate_item" title="剪切"
-      @click="editor?.ddInstance?.stage?.selectedModels?.size > 0 && execShearAction($event)">
-      <div
-        :class="{ 'ddei_editor_quick_operate_item_box_selected': editor?.ddInstance?.stage?.copyMode == 'cut', 'ddei_editor_quick_operate_item_box': editor?.ddInstance?.stage?.selectedModels?.size > 0, 'ddei_editor_quick_operate_item_box_disabled': editor?.ddInstance?.stage?.selectedModels?.size == 0 || !editor?.ddInstance?.stage?.selectedModels }">
-        <img :src="iconShear" />
+  <div class="ddei_editor_cut">
+    <div class="header"></div>
+    <div class="content">
+      <div class="part">
+        <div
+          :class="{ 'button-v-selected': editor?.ddInstance?.stage?.copyMode == 'cut', 'button-v': editor?.ddInstance?.stage?.selectedModels?.size > 0, 'button-v-disabled': editor?.ddInstance?.stage?.selectedModels?.size == 0 || !editor?.ddInstance?.stage?.selectedModels }"
+          title="剪切" @click="editor?.ddInstance?.stage?.selectedModels?.size > 0 && execShearAction($event)">
+          <span class="iconfont icon-a-ziyuan57"></span>
+          <div class="text">剪切</div>
+        </div>
+      </div>
+
+      <div class="part">
+        <div
+          :class="{ 'button-v-selected': editor?.ddInstance?.stage?.copyMode == 'copy', 'button-v': editor?.ddInstance?.stage?.selectedModels?.size > 0, 'button-v-disabled': editor?.ddInstance?.stage?.selectedModels?.size == 0 || !editor?.ddInstance?.stage?.selectedModels }"
+          title="复制" @click="editor?.ddInstance?.stage?.selectedModels?.size > 0 && execCopyAction($event)">
+          <span class="iconfont icon-a-ziyuan10"></span>
+          <div class="text">复制</div>
+        </div>
+      </div>
+      <div class="part">
+        <div :class="{ 'button-v': hasClipData, 'button-v-disabled': !hasClipData }" title="粘贴">
+          <span class="iconfont icon-a-ziyuan39"></span>
+          <div class="text">粘贴</div>
+        </div>
+      </div>
+      <div class="part">
+        <div
+          :class="{ 'button-v-selected': editor?.ddInstance?.stage?.brushData, 'button-v': displayBrush, 'button-v-disabled': !displayBrush }"
+          title="格式刷" @click="editor?.ddInstance?.stage?.selectedModels?.size == 1 && execBrushAction($event)">
+          <span class="iconfont icon-a-ziyuan85"></span>
+          <div class="text">格式刷</div>
+        </div>
       </div>
     </div>
-    <div class="ddei_editor_quick_operate_item" title="格式刷"
-      @click="editor?.ddInstance?.stage?.selectedModels?.size == 1 && execBrushAction($event)">
-      <div
-        :class="{ 'ddei_editor_quick_operate_item_box_selected': editor?.ddInstance?.stage?.brushData, 'ddei_editor_quick_operate_item_box': displayBrush, 'ddei_editor_quick_operate_item_box_disabled': !displayBrush }">
-        <img :src="iconBrush" />
-      </div>
-    </div>
-    <div class="ddei_editor_quick_operate_item" title="复制"
-      @click="editor?.ddInstance?.stage?.selectedModels?.size > 0 && execCopyAction($event)">
-      <div
-        :class="{ 'ddei_editor_quick_operate_item_box_selected': editor?.ddInstance?.stage?.copyMode == 'copy', 'ddei_editor_quick_operate_item_box': editor?.ddInstance?.stage?.selectedModels?.size > 0, 'ddei_editor_quick_operate_item_box_disabled': editor?.ddInstance?.stage?.selectedModels?.size == 0 || !editor?.ddInstance?.stage?.selectedModels }">
-        <img :src="iconCopy" />
-      </div>
-    </div>
-    <div class="ddei_editor_quick_operate_item" title="粘贴">
-      <div
-        :class="{ 'ddei_editor_quick_operate_item_box': hasClipData, 'ddei_editor_quick_operate_item_box_disabled': !hasClipData }">
-        <img :src="iconPaste" />
-      </div>
-    </div>
-    <div class="ddei_editor_quick_operate_item" style="grid-column:1/3;">
-      <div class="ddei_editor_quick_operate_item_text">
-        剪切板
-      </div>
+    <div class="tail">
+      剪切板
     </div>
   </div>
 </template>
@@ -39,20 +44,15 @@ import DDeiConfig from "@/components/framework/js/config";
 import DDeiUtil from "../../../framework/js/util";
 import DDeiEditor from "../../js/editor";
 import DDeiEnumKeyActionInst from "../../js/enums/key-action-inst";
-import ICONS from "../../js/icon";
 
 export default {
-  name: "DDei-Editor-Quick-Operate",
+  name: "DDei-Editor-Quick-CUT",
   extends: null,
   mixins: [],
   props: {},
   data() {
     return {
       editor: null,
-      iconShear: ICONS["icon-shear"],
-      iconBrush: ICONS["icon-brush"],
-      iconCopy: ICONS["icon-copy"],
-      iconPaste: ICONS["icon-paste"],
       hasClipData: false,
       displayBrush: false,
     };
@@ -133,74 +133,75 @@ export default {
 };
 </script>
 
-<style scoped>
-.ddei_editor_quick_operate {
-  width: 70px;
-  height: 90px;
-  border-right: 1px solid rgb(224, 224, 224);
-  grid-template-rows: 30px 30px 20px;
-  grid-template-columns: 1fr 1fr;
+<style lang="less" scoped>
+.ddei_editor_cut {
+  width: 234px;
+  height: 103px;
   display: grid;
-  gap: 4px;
-  padding-right: 4px;
-}
-
-.ddei_editor_quick_operate_item {
-  margin: auto;
-}
-
-.ddei_editor_quick_operate_item_text {
+  grid-template-rows: 23px 57px 23px;
+  grid-template-columns: 1fr;
   text-align: center;
-  font-family: "Microsoft YaHei";
-  font-size: 12px;
-  color: rgb(120, 120, 120);
-}
 
-.ddei_editor_quick_operate_item_box {
-  width: 25px;
-  height: 25px;
-  text-align: center;
-}
+  .content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-right: 1px solid #E2E2EB;
 
-.ddei_editor_quick_operate_item_box img {
-  margin-top: 4px;
-  width: 16px;
-  height: 16px;
-  filter: brightness(45%) drop-shadow(0.2px 0px 0.2px #000);
-}
+    .part {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
 
-.ddei_editor_quick_operate_item_box_selected {
-  width: 25px;
-  height: 25px;
-  text-align: center;
-  background-color: rgb(228, 228, 232);
-  border-radius: 4px;
-}
+      .button-v {
+        flex: 0 0 36px;
+        height: 48px;
+        border-radius: 4px;
+      }
 
-.ddei_editor_quick_operate_item_box_selected img {
-  margin-top: 4px;
-  width: 16px;
-  height: 16px;
-  filter: brightness(45%) drop-shadow(0.2px 0px 0.2px #000);
-}
+      .button-v:hover {
+        cursor: pointer;
+        background-color: #e6e6e6;
+      }
 
-.ddei_editor_quick_operate_item_box:hover {
-  background-color: rgb(233, 233, 238);
-  border-radius: 4px;
-}
+      .button-v-selected {
+        flex: 0 0 36px;
+        height: 48px;
+        background-color: #e6e6e6;
+        border-radius: 4px;
+      }
 
-.ddei_editor_quick_operate_item_box_disabled {
-  width: 25px;
-  height: 25px;
-  text-align: center;
-  cursor: not-allowed;
-  border-radius: 4px;
-}
+      .button-v-disabled {
+        flex: 0 0 36px;
+        height: 48px;
+        cursor: not-allowed;
 
-.ddei_editor_quick_operate_item_box_disabled img {
-  margin-top: 4px;
-  width: 16px;
-  height: 16px;
-  filter: brightness(100%) drop-shadow(0.2px 0px 0.2px #000);
+        >span {
+          color: #bcbcbc;
+        }
+
+        .text {
+          color: #bcbcbc;
+        }
+      }
+
+      .text {
+        height: 13px;
+        font-size: 12px;
+        font-family: "Microsoft YaHei";
+        font-weight: 400;
+        color: #000000;
+      }
+    }
+  }
+
+  .tail {
+    font-size: 12px;
+    font-family: "Microsoft YaHei";
+    font-weight: 400;
+    color: #9D9D9D;
+    border-right: 1px solid #E2E2EB;
+  }
 }
 </style>

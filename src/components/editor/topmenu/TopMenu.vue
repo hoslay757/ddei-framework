@@ -2,6 +2,9 @@
   <div id="ddei_editor_topmenu" class="ddei_editor_topmenu" @mousedown="changeEditorFocus">
     <div id="ddei_editor_topmenu_quickbox" class="ddei_editor_topmenu_quickbox">
       <div class="ddei_editor_topmenu_quickbox_group">
+        <QuickBoxGoBack></QuickBoxGoBack>
+      </div>
+      <div class="ddei_editor_topmenu_quickbox_group">
         <QuickBoxFileInfo></QuickBoxFileInfo>
       </div>
       <div class="ddei_editor_topmenu_quickbox_group">
@@ -35,6 +38,7 @@ import QuickBoxStyle from "./quickbox/QuickBoxStyle.vue";
 import QuickBoxSort from "./quickbox/QuickBoxSort.vue";
 import QuickBoxChangeShape from "./quickbox/QuickBoxChangeShape.vue";
 import QuickBoxFileInfo from "./quickbox/QuickBoxFileInfo.vue";
+import QuickBoxGoBack from "./quickbox/QuickBoxGoBack.vue";
 import QuickBoxSDP from "./quickbox/QuickBoxSDP.vue";
 import QuickBoxEImport from "./quickbox/QuickBoxEImport.vue";
 import DDeiEditor from "../js/editor";
@@ -62,6 +66,7 @@ export default {
     QuickBoxSDP,
     QuickBoxFileInfo,
     QuickBoxEImport,
+    QuickBoxGoBack
   },
   computed: {},
   watch: {},
@@ -91,7 +96,7 @@ export default {
 }
 
 .ddei_editor_topmenu_quickbox {
-  background-color: #f2f2f7;
+  background-color: hsl(240, 24%, 96%);
   width: 100%;
   height: 103px;
   display: flex;
@@ -100,7 +105,6 @@ export default {
 .ddei_editor_topmenu_quickbox_group {
   flex: 0;
   margin: auto 0;
-  margin-left: 5px;
 }
 
 .ddei_editor_topmenu_quickbox_group_empty {

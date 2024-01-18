@@ -1,74 +1,34 @@
 <template>
-  <div class="ddei_editor_file_info" v-if="file">
-    <div class="ddei_editor_file_info_content">
-      <div class="ddei_editor_file_info_gohome">
-        <img :src="icons['icon-go-left']" @click="goBackFileList">
+  <div class="ddei_editor_file_info">
+    <div class="header"></div>
+    <div class="content">
+      <div class="part">
+        <div class="button-v" @click="newFile" title="新建">
+          <span class="iconfont icon-a-ziyuan193"></span>
+          <div class="text">新建</div>
+        </div>
       </div>
-      <div class="ddei_editor_file_info_icon">
-        <img :src="icons['logo']">
-        <div v-show="file?.state == 0" class="ddei_editor_file_info_item_filename_state">✓</div>
+      <div class="part">
+        <div class="button-h">
+          <div class="button" @click="openFile" title="打开">
+            <span class="iconfont icon-a-ziyuan133"></span>
+            <div class="text">打开</div>
+          </div>
+          <div class="button" title="导入">
+            <span class="iconfont icon-a-ziyuan120"></span>
+            <div class="text">导入</div>
+          </div>
+        </div>
       </div>
-      <div class="ddei_editor_file_info_basic">
-        <div class="ddei_editor_file_info_item_filename" :title="file?.name" v-show="!fileNameEditing"
-          @click="startFileNameEditing()">
-          {{ file?.name }}
-        </div>
-        <div class="ddei_editor_file_info_item_filename" :title="file?.name" v-show="fileNameEditing">
-          <input id="ddei_change_filename_input" class="ddei_change_filename_input"
-            @blur="fileNameEditing && enterFileName(1, $event)" @keyup="fileNameEditing && enterFileName(0, $event)">
-        </div>
-        <div class="ddei_editor_file_info_item_buttons">
-          <div class="ddei_editor_file_info_item_button" @click="newFile" title="新建">
-            <img :src="icons['icon-file']" />
-          </div>
-          <div class="ddei_editor_file_info_item_button" @click="openFile" title="打开">
-            <img :src="icons['icon-open']" />
-          </div>
-          <div class="ddei_editor_file_info_item_button" title="导入">
-            <img :src="icons['icon-import']" />
-          </div>
-          <div class="ddei_editor_file_info_item_button" @click="save" title="保存">
-            <img :src="icons['icon-save']" />
-          </div>
-
-        </div>
-
-        <div class="ddei_editor_file_info_item_filedesc" :title="file?.desc" v-show="!fileDescEditing"
-          @click="startFileDescEditing">
-          {{ file?.desc ? file?.desc : '点击添加备注' }}
-        </div>
-        <div class="ddei_editor_file_info_item_filedesc" :title="file?.desc" v-show="fileDescEditing">
-          <textarea id="ddei_change_filedesc_input" class="ddei_change_filedesc_input"
-            @blur="fileDescEditing && enterFileDesc(1, $event)"
-            @keyup="fileDescEditing && enterFileDesc(0, $event)"></textarea>
-        </div>
-        <div class="ddei_editor_file_info_item_filestate">
-          <div class="ddei_editor_file_info_item_filestate_msg" v-if="file?.state == 1">
-            新建
-          </div>
-          <div class="ddei_editor_file_info_item_filestate_msg" v-if="file?.state == 0">
-            {{ file.publish == 1 ? '已发布' : '已保存' }}
-          </div>
-          <div class="ddei_editor_file_info_item_filestate_msg" v-if="file?.state == 2">
-            已修改，未保存
-          </div>
-          <div class="ddei_editor_file_info_item_filestate_msg" v-if="file?.state == 3">
-            已删除
-          </div>
-          <div class="ddei_editor_file_info_item_filestate_msg" v-if="file?.state == 4">
-            保存中...
-          </div>
-          <div class="ddei_editor_file_info_item_filestate_msg" v-if="file?.state == 5">
-            发布中...
-          </div>
-          <div class="ddei_editor_file_info_item_filestate_time">{{ getFileLastTime() }}</div>
+      <div class="part">
+        <div class="button-v" @click="save" title="保存">
+          <span class="iconfont icon-a-ziyuan178"></span>
+          <div class="text">保存</div>
         </div>
       </div>
     </div>
-    <div style="margin:auto">
-      <div class="ddei_editor_file_info_desc">
-        文件
-      </div>
+    <div class="tail">
+      文件
     </div>
   </div>
 </template>
@@ -81,12 +41,8 @@ import DDeiEditorEnumBusCommandType from "../../js/enums/editor-command-type";
 import DDeiEditorState from "../../js/enums/editor-state";
 import DDeiFileState from "../../js/enums/file-state";
 import DDeiFile from "../../js/file";
-import ICONS from "../../js/icon";
-import DDei from "../../../framework/js/ddei";
 import DDeiStage from "../../../framework/js/models/stage";
 import DDeiSheet from "../../js/sheet";
-import DDeiUtil from "../../../framework/js/util";
-import DDeiEditorUtil from "../../js/util/editor-util";
 
 export default {
   name: "DDei-Editor-File-Info",
@@ -96,7 +52,6 @@ export default {
   data() {
     return {
       editor: null,
-      icons: ICONS,
       file: {},
       fileNameEditing: false,
       fileDescEditing: false,
@@ -111,107 +66,6 @@ export default {
     this.file = this.editor?.files[this.editor?.currentFileIndex];
   },
   methods: {
-    goBackFileList() {
-      //调用SPI进行保存
-      let goBackFileList = DDeiEditorUtil.getConfigValue(
-        "EVENT_GOBACK_FILE_LIST",
-        this.editor
-      );
-      if (goBackFileList) {
-        goBackFileList();
-      }
-    },
-    /**
-     * 获取文件最后更新时间
-     */
-    getFileLastTime(): string {
-      if (this.file?.lastUpdateTime) {
-        let date = new Date(this.file?.lastUpdateTime);
-        if (date) {
-          return DDeiUtil.formatDate(date, "MM-dd hh:mm:ss");
-        }
-      }
-      return "";
-    },
-    /**
-     * 开始编辑文件名
-     */
-    startFileNameEditing() {
-      this.fileNameEditing = true;
-      let input = document.getElementById("ddei_change_filename_input");
-      input.value = this.file.name;
-      setTimeout(() => {
-        input.selectionStart = 0; // 选中开始位置
-        input.selectionEnd = input.value.length; // 获取输入框里的长度。
-        input.focus();
-      }, 20);
-    },
-
-    /**
-     * 确定修改文件名
-     * type 1 确认 0交由事件处理
-     */
-    enterFileName(type: number, evt) {
-      let input = document.getElementById("ddei_change_filename_input");
-      if (type == 1 || evt.keyCode == 13) {
-        this.file.name = input.value;
-        this.fileNameEditing = false;
-        input.value = "";
-        this.editor.editorViewer?.changeFileModifyDirty();
-        this.editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
-        this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
-          parts: ["openfiles"],
-        });
-
-        this.editor.bus.executeAll();
-        this.editor.changeState(DDeiEditorState.DESIGNING);
-      } else if (evt.keyCode == 27) {
-        this.fileNameEditing = false;
-        input.value = "";
-        this.editor.changeState(DDeiEditorState.DESIGNING);
-      }
-    },
-
-    /**
-     * 开始编辑文件备注
-     */
-    startFileDescEditing() {
-      this.fileDescEditing = true;
-      let input = document.getElementById("ddei_change_filedesc_input");
-      input.value = this.file.desc;
-
-      setTimeout(() => {
-        input.selectionStart = 0; // 选中开始位置
-        input.selectionEnd = input.value.length; // 获取输入框里的长度。
-        input.focus();
-      }, 20);
-    },
-
-    /**
-     * 确定修改备注
-     * type 1 确认 0交由事件处理
-     */
-    enterFileDesc(type: number, evt) {
-      let input = document.getElementById("ddei_change_filedesc_input");
-      if (type == 1 || evt.keyCode == 13) {
-        this.file.desc = input.value;
-        input.value = "";
-        this.fileDescEditing = false;
-        this.editor.editorViewer?.changeFileModifyDirty();
-        this.editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
-        this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
-          parts: ["openfiles"],
-        });
-
-        this.editor.bus.executeAll();
-        this.editor.changeState(DDeiEditorState.DESIGNING);
-      } else if (evt.keyCode == 27) {
-        input.value = "";
-        this.fileDescEditing = false;
-        this.editor.changeState(DDeiEditorState.DESIGNING);
-      }
-    },
-
     /**
      * 保存
      * @param evt
@@ -375,143 +229,90 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .ddei_editor_file_info {
-  width: 350px;
-  height: 90px;
-  border-right: 1px solid rgb(224, 224, 224);
+  width: 169px;
+  height: 103px;
   display: grid;
-  grid-template-rows: 64px 20px;
+  grid-template-rows: 23px 57px 23px;
   grid-template-columns: 1fr;
-  gap: 4px;
-  padding-right: 4px;
-}
-
-.ddei_editor_file_info_content {
-  display: flex;
-}
-
-.ddei_editor_file_info_gohome {
-  flex: 0 0 32px;
-}
-
-.ddei_editor_file_info_gohome img {
-  width: 32px;
-  height: 32px;
-  margin-top: 5px;
-}
-
-.ddei_editor_file_info_gohome img:hover {
-  filter: brightness(40%);
-  cursor: pointer;
-}
-
-.ddei_editor_file_info_icon {
-  flex: 0 0 54px;
-}
-
-.ddei_editor_file_info_icon img {
-  width: 44px;
-  height: 44px;
-  margin-top: 5px;
-  border: 1px solid rgb(230, 230, 230);
-}
-
-.ddei_editor_file_info_basic {
-  flex: 1;
-  display: grid;
-  grid-template-rows: 26px 38px;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-}
-
-.ddei_editor_file_info_item_filename {
-  font-size: 16px;
-  grid-column: 1/6;
-  color: black;
-  margin-right: 5px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 142px;
-  overflow: hidden;
-  font-weight: bold;
-}
-
-.ddei_editor_file_info_item_filename:hover {
-  cursor: pointer;
-}
-
-.ddei_editor_file_info_item_filename_state {
-  position: relative;
-  width: 12px;
-  font-size: 12px;
-  color: green;
-  left: 33px;
-  top: -55px;
-}
-
-.ddei_editor_file_info_item_filestate {
-  font-size: 12px;
-  grid-column: 6/9;
-  font-family: "Microsoft YaHei";
-  font-size: 12px;
-  padding-top: 4px;
   text-align: center;
-  color: rgb(110, 110, 110);
-}
 
-.ddei_editor_file_info_item_buttons {
-  grid-column: 6/9;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-}
+  .content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-right: 1px solid #E2E2EB;
 
-.ddei_editor_file_info_item_button img {
-  width: 16px;
-  height: 16px;
-  filter: brightness(40%);
-  margin-top: 4px;
-  margin-left: 4px;
-}
+    .part {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
 
-.ddei_editor_file_info_item_button:hover {
-  background: rgb(210, 210, 210);
-  cursor: pointer;
-  border-radius: 4px;
-}
+      .button-v {
+        flex: 0 0 24px;
+        height: 48px;
 
-.ddei_editor_file_info_item_filedesc {
-  font-size: 13px;
-  grid-column: 1/6;
-  font-family: "Microsoft YaHei";
-  font-size: 12px;
-  color: rgb(110, 110, 110);
-  overflow: hidden;
-}
+        .text {
+          width: 24px;
+          height: 13px;
+          font-size: 12px;
+          font-family: "Microsoft YaHei";
+          font-weight: 400;
+          color: #000000;
+        }
+      }
 
-.ddei_editor_file_info_item_filedesc:hover {
-  font-weight: bold;
-  cursor: pointer;
-}
+      .button-v:hover {
+        cursor: pointer;
+        background-color: #e6e6e6;
+      }
 
-.ddei_editor_file_info_desc {
-  text-align: center;
-  font-family: "Microsoft YaHei";
-  font-size: 12px;
-  color: rgb(120, 120, 120);
-}
+      .button-h {
+        flex: 1;
+        height: 54px;
+        display: flex;
+        flex-direction: column;
 
-.ddei_change_filedesc_input {
-  width: 100%;
-  height: 100%;
-  border-width: 0.5px;
-  border-radius: 4px;
-  resize: none;
-}
+        .button {
+          flex: 1;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-radius: 4px;
 
-.ddei_change_filename_input {
-  width: 100%;
-  height: 100%;
-  border-width: 0.5px;
-  border-radius: 4px;
+
+          .iconfont {
+            flex: 1;
+          }
+
+          .text {
+            flex: 0 0 25px;
+            font-size: 12px;
+            font-family: "Microsoft YaHei";
+            font-weight: 400;
+            color: #000000;
+          }
+        }
+
+        .button:hover {
+
+          cursor: pointer;
+          background-color: #e6e6e6;
+        }
+
+      }
+    }
+  }
+
+  .tail {
+
+    font-size: 12px;
+    font-family: "Microsoft YaHei";
+    font-weight: 400;
+    color: #9D9D9D;
+    border-right: 1px solid #E2E2EB;
+  }
 }
 </style>
