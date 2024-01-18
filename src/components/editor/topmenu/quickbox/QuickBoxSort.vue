@@ -1,84 +1,77 @@
 <template>
   <div class="ddei_editor_quick_sort">
-    <div class="ddei_editor_quick_sort_item">
-      <div :class="{'ddei_editor_quick_sort_item_box_disabled':!isButtonEnable(),'ddei_editor_quick_sort_item_box_selected':isButtonEnable() && dialogShow == 'ddei_editor_quick_sort_position_dialog','ddei_editor_quick_sort_item_box':isButtonEnable() && dialogShow != 'ddei_editor_quick_sort_position_dialog'}"
-           @click="isButtonEnable() && showDialog('ddei_editor_quick_sort_position_dialog',$event)">
-        <img style="width:20px;height:20px"
-             src="../../icons/icon-push-up.png" />
-        <div>位置</div>
-        <img style="width:6px;height:6px;margin-top:10px"
-             src="../../icons/toolbox-expanded.png" />
+    <header></header>
+    <content>
+      <part>
+        <div
+          :class="{ 'button-v-disabled': !isButtonEnable(), 'button-v-selected': isButtonEnable() && dialogShow == 'ddei_editor_quick_sort_position_dialog', 'ddei_editor_quick_sort_item_box': isButtonEnable() && dialogShow != 'ddei_editor_quick_sort_position_dialog' }"
+          @click="isButtonEnable() && showDialog('ddei_editor_quick_sort_position_dialog', $event)">
+          <span class="iconfont icon-a-ziyuan18"></span>
+          <div class="text">位置</div>
+        </div>
+      </part>
+      <div class="ddei_editor_quick_sort_item">
+        <div>
+          <img style="width:20px;height:20px" src="../../icons/icon-push-up.png" />
+          <div>位置</div>
+          <img style="width:6px;height:6px;margin-top:10px" src="../../icons/toolbox-expanded.png" />
+        </div>
       </div>
-    </div>
-    <div class="ddei_editor_quick_sort_item">
-      <div :class="{'ddei_editor_quick_sort_item_box_disabled':!isButtonEnable(),'ddei_editor_quick_sort_item_box_selected':isButtonEnable() && dialogShow == 'ddei_editor_quick_sort_merge_dialog','ddei_editor_quick_sort_item_box':isButtonEnable() && dialogShow != 'ddei_editor_quick_sort_merge_dialog'}"
-           @click="isButtonEnable() && showDialog('ddei_editor_quick_sort_merge_dialog',$event)">
-        <img style="width:20px;height:20px"
-             src="../../icons/icon-compose.png" />
-        <div>组合</div>
-        <img style="width:6px;height:6px;margin-top:10px"
-             src="../../icons/toolbox-expanded.png" />
+      <div class="ddei_editor_quick_sort_item">
+        <div
+          :class="{ 'ddei_editor_quick_sort_item_box_disabled': !isButtonEnable(), 'ddei_editor_quick_sort_item_box_selected': isButtonEnable() && dialogShow == 'ddei_editor_quick_sort_merge_dialog', 'ddei_editor_quick_sort_item_box': isButtonEnable() && dialogShow != 'ddei_editor_quick_sort_merge_dialog' }"
+          @click="isButtonEnable() && showDialog('ddei_editor_quick_sort_merge_dialog', $event)">
+          <img style="width:20px;height:20px" src="../../icons/icon-compose.png" />
+          <div>组合</div>
+          <img style="width:6px;height:6px;margin-top:10px" src="../../icons/toolbox-expanded.png" />
+        </div>
       </div>
-    </div>
-    <div class="ddei_editor_quick_sort_item">
-      <div :class="{'ddei_editor_quick_sort_item_box_disabled':!isButtonEnable(2),'ddei_editor_quick_sort_item_box_selected':isButtonEnable(2) && dialogShow == 'ddei_editor_quick_sort_align_dialog','ddei_editor_quick_sort_item_box':isButtonEnable(2) && dialogShow != 'ddei_editor_quick_sort_align_dialog'}"
-           @click="isButtonEnable(2) && showDialog('ddei_editor_quick_sort_align_dialog',$event)">
-        <img style="width:24px;height:24px;margin-top:0px;margin-left:-2px"
-             src="../../icons/control-align-left.png" />
-        <div>对齐</div>
-        <img style="width:6px;height:6px;margin-top:10px"
-             src="../../icons/toolbox-expanded.png" />
+      <div class="ddei_editor_quick_sort_item">
+        <div
+          :class="{ 'ddei_editor_quick_sort_item_box_disabled': !isButtonEnable(2), 'ddei_editor_quick_sort_item_box_selected': isButtonEnable(2) && dialogShow == 'ddei_editor_quick_sort_align_dialog', 'ddei_editor_quick_sort_item_box': isButtonEnable(2) && dialogShow != 'ddei_editor_quick_sort_align_dialog' }"
+          @click="isButtonEnable(2) && showDialog('ddei_editor_quick_sort_align_dialog', $event)">
+          <img style="width:24px;height:24px;margin-top:0px;margin-left:-2px" src="../../icons/control-align-left.png" />
+          <div>对齐</div>
+          <img style="width:6px;height:6px;margin-top:10px" src="../../icons/toolbox-expanded.png" />
+        </div>
       </div>
-    </div>
-    <div class="ddei_editor_quick_sort_item">
-      <div :class="{'ddei_editor_quick_sort_item_box_disabled':!isButtonEnable(),'ddei_editor_quick_sort_item_box_selected':isButtonEnable() && dialogShow == 'ddei_editor_quick_sort_rotate_dialog','ddei_editor_quick_sort_item_box':isButtonEnable() && dialogShow != 'ddei_editor_quick_sort_rotate_dialog'}"
-           @click="isButtonEnable()&& showDialog('ddei_editor_quick_sort_rotate_dialog',$event)">
-        <img style="width:20px;height:20px"
-             src="../../icons/icon-turn-right.png" />
-        <div>翻转</div>
-        <img style="width:6px;height:6px;margin-top:10px"
-             src="../../icons/toolbox-expanded.png" />
+      <div class="ddei_editor_quick_sort_item">
+        <div
+          :class="{ 'ddei_editor_quick_sort_item_box_disabled': !isButtonEnable(), 'ddei_editor_quick_sort_item_box_selected': isButtonEnable() && dialogShow == 'ddei_editor_quick_sort_rotate_dialog', 'ddei_editor_quick_sort_item_box': isButtonEnable() && dialogShow != 'ddei_editor_quick_sort_rotate_dialog' }"
+          @click="isButtonEnable() && showDialog('ddei_editor_quick_sort_rotate_dialog', $event)">
+          <img style="width:20px;height:20px" src="../../icons/icon-turn-right.png" />
+          <div>翻转</div>
+          <img style="width:6px;height:6px;margin-top:10px" src="../../icons/toolbox-expanded.png" />
+        </div>
       </div>
-    </div>
+    </content>
+    <tail>排列</tail>
 
-    <div class="ddei_editor_quick_sort_item"
-         style="grid-column:1/3;">
-      <div class="ddei_editor_quick_sort_item_text">
-        排列
-      </div>
-    </div>
 
   </div>
-  <div id="ddei_editor_quick_sort_align_dialog"
-       class="ddei_editor_quick_sort_align_dialog"
-       v-show="dialogShow == 'ddei_editor_quick_sort_align_dialog'">
+  <div id="ddei_editor_quick_sort_align_dialog" class="ddei_editor_quick_sort_align_dialog"
+    v-show="dialogShow == 'ddei_editor_quick_sort_align_dialog'">
     <div class="ddei_editor_quick_sort_align_dialog_title">对齐</div>
     <hr />
     <div class="ddei_editor_quick_sort_align_dialog_group">
       <div class="ddei_editor_quick_sort_align_dialog_group_title">对齐:</div>
       <div class="ddei_editor_quick_sort_align_dialog_group_content">
-        <div class="ddei_editor_quick_sort_align_dialog_group_content_item"
-             @click="changeAlign('left')">
+        <div class="ddei_editor_quick_sort_align_dialog_group_content_item" @click="changeAlign('left')">
           <img src="../../icons/control-align-left.png" />
         </div>
-        <div class="ddei_editor_quick_sort_align_dialog_group_content_item"
-             @click="changeAlign('center')">
+        <div class="ddei_editor_quick_sort_align_dialog_group_content_item" @click="changeAlign('center')">
           <img src="../../icons/control-align-center.png" />
         </div>
-        <div class="ddei_editor_quick_sort_align_dialog_group_content_item"
-             @click="changeAlign('right')">
+        <div class="ddei_editor_quick_sort_align_dialog_group_content_item" @click="changeAlign('right')">
           <img src="../../icons/control-align-right.png" />
         </div>
-        <div class="ddei_editor_quick_sort_align_dialog_group_content_item"
-             @click="changeAlign('top')">
+        <div class="ddei_editor_quick_sort_align_dialog_group_content_item" @click="changeAlign('top')">
           <img src="../../icons/control-valign-top.png" />
         </div>
-        <div class="ddei_editor_quick_sort_align_dialog_group_content_item"
-             @click="changeAlign('middle')">
+        <div class="ddei_editor_quick_sort_align_dialog_group_content_item" @click="changeAlign('middle')">
           <img src="../../icons/control-valign-middle.png" />
         </div>
-        <div class="ddei_editor_quick_sort_align_dialog_group_content_item"
-             @click="changeAlign('bottom')">
+        <div class="ddei_editor_quick_sort_align_dialog_group_content_item" @click="changeAlign('bottom')">
           <img src="../../icons/control-valign-bottom.png" />
         </div>
       </div>
@@ -87,90 +80,89 @@
     <div class="ddei_editor_quick_sort_align_dialog_group">
       <div class="ddei_editor_quick_sort_align_dialog_group_title">等距分布:</div>
       <div class="ddei_editor_quick_sort_align_dialog_group_content">
-        <div class="ddei_editor_quick_sort_align_dialog_group_content_item"
-             @click="doAutoPos(2)">
+        <div class="ddei_editor_quick_sort_align_dialog_group_content_item" @click="doAutoPos(2)">
           <img src="../../icons/control-auto-pos-1.png" />
         </div>
-        <div class="ddei_editor_quick_sort_align_dialog_group_content_item"
-             @click="doAutoPos(1)">
+        <div class="ddei_editor_quick_sort_align_dialog_group_content_item" @click="doAutoPos(1)">
           <img src="../../icons/control-auto-pos-2.png" />
         </div>
       </div>
     </div>
 
   </div>
-  <div id="ddei_editor_quick_sort_merge_dialog"
-       class="ddei_editor_quick_sort_merge_dialog"
-       v-show="dialogShow == 'ddei_editor_quick_sort_merge_dialog'">
-    <div :class="{'ddei_editor_quick_sort_merge_dialog_item_disabled':!canMerge(),'ddei_editor_quick_sort_merge_dialog_item':canMerge()}"
-         @click="canMerge() && doMerge()">
+  <div id="ddei_editor_quick_sort_merge_dialog" class="ddei_editor_quick_sort_merge_dialog"
+    v-show="dialogShow == 'ddei_editor_quick_sort_merge_dialog'">
+    <div
+      :class="{ 'ddei_editor_quick_sort_merge_dialog_item_disabled': !canMerge(), 'ddei_editor_quick_sort_merge_dialog_item': canMerge() }"
+      @click="canMerge() && doMerge()">
       <img src="../../icons/icon-compose.png" />
       <div>组合</div>
     </div>
-    <div :class="{'ddei_editor_quick_sort_merge_dialog_item_disabled':!canCancelMerge(),'ddei_editor_quick_sort_merge_dialog_item':canCancelMerge()}"
-         @click="canCancelMerge() && doCancelMerge()">
-      <img src="../../icons/icon-cancel-compose.png"
-           style="width:19px;height:19px" />
+    <div
+      :class="{ 'ddei_editor_quick_sort_merge_dialog_item_disabled': !canCancelMerge(), 'ddei_editor_quick_sort_merge_dialog_item': canCancelMerge() }"
+      @click="canCancelMerge() && doCancelMerge()">
+      <img src="../../icons/icon-cancel-compose.png" style="width:19px;height:19px" />
       <div>取消组合</div>
     </div>
   </div>
-  <div id="ddei_editor_quick_sort_position_dialog"
-       class="ddei_editor_quick_sort_position_dialog"
-       v-show="dialogShow == 'ddei_editor_quick_sort_position_dialog'">
+  <div id="ddei_editor_quick_sort_position_dialog" class="ddei_editor_quick_sort_position_dialog"
+    v-show="dialogShow == 'ddei_editor_quick_sort_position_dialog'">
     <div class="ddei_editor_quick_sort_position_dialog_title">位置</div>
     <hr />
-    <div :class="{'ddei_editor_quick_sort_position_dialog_item_disabled':!canPush('top'),'ddei_editor_quick_sort_position_dialog_item':canPush('top')}"
-         @click="canPush('top') && doPush('top')">
+    <div
+      :class="{ 'ddei_editor_quick_sort_position_dialog_item_disabled': !canPush('top'), 'ddei_editor_quick_sort_position_dialog_item': canPush('top') }"
+      @click="canPush('top') && doPush('top')">
       <img src="../../icons/control-push-top.png" />
       <div>置于顶层</div>
     </div>
-    <div :class="{'ddei_editor_quick_sort_position_dialog_item_disabled':!canPush('bottom'),'ddei_editor_quick_sort_position_dialog_item':canPush('bottom')}"
-         @click="canPush('top') && doPush('bottom')">
+    <div
+      :class="{ 'ddei_editor_quick_sort_position_dialog_item_disabled': !canPush('bottom'), 'ddei_editor_quick_sort_position_dialog_item': canPush('bottom') }"
+      @click="canPush('top') && doPush('bottom')">
       <img src="../../icons/control-push-bottom.png" />
       <div>置于底层</div>
     </div>
-    <div :class="{'ddei_editor_quick_sort_position_dialog_item_disabled':!canPush('up'),'ddei_editor_quick_sort_position_dialog_item':canPush('up')}"
-         @click="canPush('up') && doPush('up')">
+    <div
+      :class="{ 'ddei_editor_quick_sort_position_dialog_item_disabled': !canPush('up'), 'ddei_editor_quick_sort_position_dialog_item': canPush('up') }"
+      @click="canPush('up') && doPush('up')">
       <img src="../../icons/control-push-up.png" />
       <div>上移一层</div>
     </div>
-    <div :class="{'ddei_editor_quick_sort_position_dialog_item_disabled':!canPush('down'),'ddei_editor_quick_sort_position_dialog_item':canPush('down')}"
-         @click="canPush('down') && doPush('down')">
+    <div
+      :class="{ 'ddei_editor_quick_sort_position_dialog_item_disabled': !canPush('down'), 'ddei_editor_quick_sort_position_dialog_item': canPush('down') }"
+      @click="canPush('down') && doPush('down')">
       <img src="../../icons/control-push-down.png" />
       <div>下移一层</div>
     </div>
   </div>
 
-  <div id="ddei_editor_quick_sort_rotate_dialog"
-       class="ddei_editor_quick_sort_rotate_dialog"
-       v-show="dialogShow == 'ddei_editor_quick_sort_rotate_dialog'">
+  <div id="ddei_editor_quick_sort_rotate_dialog" class="ddei_editor_quick_sort_rotate_dialog"
+    v-show="dialogShow == 'ddei_editor_quick_sort_rotate_dialog'">
     <div class="ddei_editor_quick_sort_rotate_dialog_title">翻转</div>
     <hr />
     <div class="ddei_editor_quick_sort_rotate_dialog_group">
       <div class="ddei_editor_quick_sort_rotate_dialog_group_title">镜像:</div>
       <div class="ddei_editor_quick_sort_rotate_dialog_group_content">
-        <div :class="{'ddei_editor_quick_sort_rotate_dialog_group_content_item':canMirror(),'ddei_editor_quick_sort_rotate_dialog_group_content_item_disabled':!canMirror()}"
-             @click="canMirror() && doMirror()">
+        <div
+          :class="{ 'ddei_editor_quick_sort_rotate_dialog_group_content_item': canMirror(), 'ddei_editor_quick_sort_rotate_dialog_group_content_item_disabled': !canMirror() }"
+          @click="canMirror() && doMirror()">
           <img src="../../icons/control-mirror-1.png" />
         </div>
-        <div :class="{'ddei_editor_quick_sort_rotate_dialog_group_content_item':canMirror(),'ddei_editor_quick_sort_rotate_dialog_group_content_item_disabled':!canMirror()}"
-             @click="canMirror() && doMirror()">
+        <div
+          :class="{ 'ddei_editor_quick_sort_rotate_dialog_group_content_item': canMirror(), 'ddei_editor_quick_sort_rotate_dialog_group_content_item_disabled': !canMirror() }"
+          @click="canMirror() && doMirror()">
           <img src="../../icons/control-mirror-2.png" />
         </div>
       </div>
       <hr />
       <div class="ddei_editor_quick_sort_rotate_dialog_group_title">旋转:</div>
       <div class="ddei_editor_quick_sort_rotate_dialog_group_content">
-        <div class="ddei_editor_quick_sort_rotate_dialog_group_content_item"
-             @click="doRotate(90)">
+        <div class="ddei_editor_quick_sort_rotate_dialog_group_content_item" @click="doRotate(90)">
           <img src="../../icons/control-rotate-90.png" />
         </div>
-        <div class="ddei_editor_quick_sort_rotate_dialog_group_content_item"
-             @click="doRotate(-90)">
+        <div class="ddei_editor_quick_sort_rotate_dialog_group_content_item" @click="doRotate(-90)">
           <img src="../../icons/control-rotate--90.png" />
         </div>
-        <div class="ddei_editor_quick_sort_rotate_dialog_group_content_item"
-             @click="doRotate(-1)">
+        <div class="ddei_editor_quick_sort_rotate_dialog_group_content_item" @click="doRotate(-1)">
           <img src="../../icons/control-rotate-0.png" />
         </div>
       </div>
@@ -195,7 +187,7 @@ export default {
   },
   computed: {},
   watch: {},
-  created() {},
+  created() { },
   mounted() {
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
   },
@@ -375,392 +367,75 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .ddei_editor_quick_sort {
-  width: 180px;
-  height: 90px;
-  border-right: 1px solid rgb(224, 224, 224);
-  grid-template-rows: 30px 30px 20px;
-  grid-template-columns: 1fr 1fr;
+  width: 237px;
+  height: 103px;
   display: grid;
-  gap: 4px;
-  padding-right: 4px;
-}
-
-.ddei_editor_quick_sort_item {
-  margin: auto;
-}
-
-.ddei_editor_quick_sort_item_text {
+  grid-template-rows: 23px 57px 23px;
+  grid-template-columns: 1fr;
   text-align: center;
-  font-family: "Microsoft YaHei";
-  font-size: 12px;
-  color: rgb(120, 120, 120);
-}
 
-.ddei_editor_quick_sort_item_box {
-  width: 70px;
-  height: 25px;
-  color: black;
-  text-align: center;
-  border-radius: 4px;
-  font-size: 13px;
-  padding-left: 5px;
-}
+  >content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-right: 1px solid #E2E2EB;
 
-.ddei_editor_quick_sort_item_box div {
-  float: left;
-  margin-left: 3px;
-  margin-top: 2px;
-}
+    >part {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
 
-.ddei_editor_quick_sort_item_box img {
-  margin-left: 2px;
-  filter: brightness(45%) drop-shadow(0.2px 0px 0.2px #000);
-  float: left;
-  margin-top: 2px;
-}
+      .button-v {
+        flex: 0 0 54px;
+        height: 48px;
+        border-radius: 4px;
+      }
 
-.ddei_editor_quick_sort_item_box_disabled {
-  width: 70px;
-  height: 25px;
-  color: grey;
-  text-align: center;
-  border-radius: 4px;
-  font-size: 13px;
-  padding-left: 5px;
-  cursor: not-allowed;
-}
+      .button-v:hover {
+        cursor: pointer;
+        background-color: #e6e6e6;
+      }
 
-.ddei_editor_quick_sort_item_box_disabled div {
-  float: left;
-  margin-left: 3px;
-  margin-top: 2px;
-}
+      .button-v-selected {
+        flex: 0 0 54px;
+        height: 48px;
+        background-color: #e6e6e6;
+        border-radius: 4px;
+      }
 
-.ddei_editor_quick_sort_item_box_disabled img {
-  margin-left: 2px;
-  filter: brightness(100%) drop-shadow(0.2px 0px 0.2px #000);
-  float: left;
-  margin-top: 2px;
-}
+      .button-v-disabled {
+        flex: 0 0 54px;
+        height: 48px;
+        cursor: not-allowed;
 
-.ddei_editor_quick_sort_item_box_selected {
-  width: 70px;
-  height: 25px;
-  text-align: center;
-  background-color: rgb(228, 228, 232);
-  border-radius: 4px;
-  color: black;
-  font-size: 13px;
-  padding-left: 5px;
-}
+        >span {
+          color: #bcbcbc;
+        }
 
-.ddei_editor_quick_sort_item_box_selected div {
-  float: left;
-  margin-left: 3px;
-  margin-top: 2px;
-}
+        .text {
+          color: #bcbcbc;
+        }
+      }
 
-.ddei_editor_quick_sort_item_box_selected img {
-  margin-left: 2px;
-  filter: brightness(45%) drop-shadow(0.2px 0px 0.2px #000);
-  float: left;
-  margin-top: 2px;
-}
+      .text {
+        height: 13px;
+        font-size: 12px;
+        font-family: "Microsoft YaHei";
+        font-weight: 400;
+        color: #000000;
+      }
+    }
+  }
 
-.ddei_editor_quick_sort_item_box:hover {
-  background-color: rgb(233, 233, 238);
-  border-radius: 4px;
-}
-
-/**以下是对齐按钮的弹出框 */
-.ddei_editor_quick_sort_align_dialog {
-  width: 160px;
-  position: absolute;
-  background-color: white;
-  height: 180px;
-  border-radius: 4px;
-  border: 0.5px solid rgb(220, 220, 220);
-  z-index: 999;
-  box-shadow: 3px 3px 3px hsl(0deg 0% 0% /0.25);
-  display: flex;
-  flex-direction: column;
-  font-size: 13px;
-}
-
-.ddei_editor_quick_sort_align_dialog_title {
-  color: black;
-  font-weight: bold;
-  flex: 0 0 30px;
-  padding-top: 5px;
-  padding-left: 7px;
-}
-
-.ddei_editor_quick_sort_align_dialog hr {
-  border: 0.5px solid rgb(240, 240, 240);
-  flex: 0 0 1px;
-}
-
-.ddei_editor_quick_sort_align_dialog_group {
-  color: black;
-  flex: 1 1 80px;
-  padding-left: 5px;
-}
-
-.ddei_editor_quick_sort_align_dialog_group_title {
-  padding-left: 10px;
-}
-
-.ddei_editor_quick_sort_align_dialog_group_content {
-  width: 100%;
-  height: 60px;
-  display: grid;
-  padding-left: 15px;
-  padding-right: 15px;
-  grid-template-rows: 50% 50%;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 4px;
-  margin-bottom: 10px;
-}
-.ddei_editor_quick_sort_align_dialog_group_content_item {
-  width: 30px;
-  height: 30px;
-  padding: 5px;
-  cursor: pointer;
-}
-.ddei_editor_quick_sort_align_dialog_group_content_item img {
-  width: 24px;
-  height: 24px;
-  filter: brightness(50%);
-  margin-left: -2px;
-  margin-top: -2px;
-}
-
-.ddei_editor_quick_sort_align_dialog_group_content_item:hover {
-  border-radius: 4px;
-  background-color: rgb(233, 233, 238);
-}
-
-/**以下是组合按钮的弹出框 */
-.ddei_editor_quick_sort_merge_dialog {
-  width: 110px;
-  position: absolute;
-  background-color: white;
-  height: 80px;
-  border-radius: 4px;
-  border: 0.5px solid rgb(220, 220, 220);
-  z-index: 999;
-  box-shadow: 3px 3px 3px hsl(0deg 0% 0% /0.25);
-  display: flex;
-  flex-direction: column;
-  font-size: 13px;
-}
-
-.ddei_editor_quick_sort_merge_dialog_item {
-  flex: 1;
-  cursor: pointer;
-}
-
-.ddei_editor_quick_sort_merge_dialog_item img {
-  float: left;
-  margin-top: 10px;
-  margin-left: 10px;
-  width: 18px;
-  height: 18px;
-  filter: brightness(40%) drop-shadow(0.2px 0px 0.2px #000);
-}
-
-.ddei_editor_quick_sort_merge_dialog_item div {
-  color: black;
-  float: left;
-  margin-top: 9px;
-  margin-left: 10px;
-  width: 60px;
-  height: 24px;
-}
-
-.ddei_editor_quick_sort_merge_dialog_item_disabled {
-  flex: 1;
-  cursor: not-allowed;
-}
-
-.ddei_editor_quick_sort_merge_dialog_item_disabled img {
-  float: left;
-  margin-top: 10px;
-  margin-left: 10px;
-  width: 18px;
-  height: 18px;
-  filter: brightness(100%) drop-shadow(0.2px 0px 0.2px #000);
-}
-
-.ddei_editor_quick_sort_merge_dialog_item_disabled div {
-  color: grey;
-  float: left;
-  margin-top: 9px;
-  margin-left: 10px;
-  width: 60px;
-  height: 24px;
-}
-
-.ddei_editor_quick_sort_merge_dialog_item:hover {
-  background-color: rgb(233, 233, 238);
-  border-radius: 4px;
-}
-
-/**以下是位置按钮的弹出框 */
-.ddei_editor_quick_sort_position_dialog {
-  width: 120px;
-  position: absolute;
-  background-color: white;
-  height: 160px;
-  border-radius: 4px;
-  border: 0.5px solid rgb(220, 220, 220);
-  z-index: 999;
-  box-shadow: 3px 3px 3px hsl(0deg 0% 0% /0.25);
-  display: flex;
-  flex-direction: column;
-  font-size: 13px;
-}
-
-.ddei_editor_quick_sort_position_dialog_title {
-  color: black;
-  font-weight: bold;
-  flex: 0 0 30px;
-  padding-top: 5px;
-  padding-left: 7px;
-}
-
-.ddei_editor_quick_sort_position_dialog hr {
-  border: 0.5px solid rgb(240, 240, 240);
-  flex: 0 0 1px;
-}
-
-.ddei_editor_quick_sort_position_dialog_item {
-  flex: 1;
-  cursor: pointer;
-}
-
-.ddei_editor_quick_sort_position_dialog_item img {
-  float: left;
-  margin-top: 5px;
-  margin-left: 20px;
-  width: 18px;
-  height: 18px;
-  filter: brightness(20%);
-}
-
-.ddei_editor_quick_sort_position_dialog_item div {
-  color: black;
-  float: left;
-  margin-top: 4px;
-  margin-left: 10px;
-  width: 60px;
-  height: 24px;
-}
-
-.ddei_editor_quick_sort_position_dialog_item_disabled {
-  flex: 1;
-  cursor: not-allowed;
-}
-
-.ddei_editor_quick_sort_position_dialog_item_disabled img {
-  float: left;
-  margin-top: 5px;
-  margin-left: 20px;
-  width: 18px;
-  height: 18px;
-  filter: brightness(100%) drop-shadow(0.2px 0px 0.2px #000);
-}
-
-.ddei_editor_quick_sort_position_dialog_item_disabled div {
-  color: grey;
-  float: left;
-  margin-top: 4px;
-  margin-left: 10px;
-  width: 60px;
-  height: 24px;
-}
-
-.ddei_editor_quick_sort_position_dialog_item:hover {
-  background-color: rgb(233, 233, 238);
-  border-radius: 4px;
-}
-
-/**以下是翻转按钮的弹出框 */
-.ddei_editor_quick_sort_rotate_dialog {
-  width: 180px;
-  position: absolute;
-  background-color: white;
-  height: 145px;
-  border-radius: 4px;
-  border: 0.5px solid rgb(220, 220, 220);
-  z-index: 999;
-  box-shadow: 3px 3px 3px hsl(0deg 0% 0% /0.25);
-  display: flex;
-  flex-direction: column;
-  font-size: 13px;
-}
-
-.ddei_editor_quick_sort_rotate_dialog_title {
-  color: black;
-  font-weight: bold;
-  flex: 0 0 30px;
-  padding-top: 5px;
-  padding-left: 7px;
-}
-
-.ddei_editor_quick_sort_rotate_dialog hr {
-  border: 0.5px solid rgb(240, 240, 240);
-  flex: 0 0 1px;
-}
-
-.ddei_editor_quick_sort_rotate_dialog_group {
-  color: black;
-  flex: 1 1 40px;
-  padding-left: 5px;
-}
-
-.ddei_editor_quick_sort_rotate_dialog_group_title {
-  padding-left: 10px;
-}
-
-.ddei_editor_quick_sort_rotate_dialog_group_content {
-  width: 100%;
-  height: 35px;
-  display: grid;
-  padding-left: 15px;
-  padding-right: 15px;
-  grid-template-rows: 100%;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 4px;
-}
-.ddei_editor_quick_sort_rotate_dialog_group_content_item {
-  width: 30px;
-  height: 30px;
-  padding: 5px;
-  cursor: pointer;
-}
-.ddei_editor_quick_sort_rotate_dialog_group_content_item img {
-  width: 20px;
-  height: 20px;
-  filter: brightness(50%);
-}
-
-.ddei_editor_quick_sort_rotate_dialog_group_content_item_disabled {
-  width: 30px;
-  height: 30px;
-  padding: 5px;
-  cursor: not-allowed;
-}
-.ddei_editor_quick_sort_rotate_dialog_group_content_item_disabled img {
-  width: 20px;
-  height: 20px;
-  filter: brightness(100%) drop-shadow(0.2px 0px 0.2px #000);
-}
-
-.ddei_editor_quick_sort_rotate_dialog_group_content_item:hover {
-  border-radius: 4px;
-  background-color: rgb(233, 233, 238);
+  >tail {
+    font-size: 12px;
+    font-family: "Microsoft YaHei";
+    font-weight: 400;
+    color: #9D9D9D;
+    border-right: 1px solid #E2E2EB;
+  }
 }
 </style>

@@ -1,42 +1,33 @@
 <template>
   <div class="ddei_editor_quick_tool">
-    <div class="ddei_editor_quick_tool_item">
-      <div :class="{'ddei_editor_quick_tool_item_box_selected':editor?.editMode == 1,'ddei_editor_quick_tool_item_box':editor?.editMode != 1}"
-           @click="changeEditMode(1)">
-        <img style="width:20px;height:20px;"
-             src="../../icons/icon-cursor.png" />
+    <div class="header"></div>
+    <div class="content">
+      <div class="part">
+        <div :class="{ 'button-v-selected': editor?.editMode == 1, 'button-v': editor?.editMode != 1 }" title="选择"
+          @click="changeEditMode(1)">
+          <span class="iconfont icon-a-ziyuan18"></span>
+          <div class="text">选择</div>
+        </div>
+      </div>
+      <div class="part">
+        <div :class="{ 'button-v-selected': editor?.editMode == 2, 'button-v': editor?.editMode != 2 }" title="平移画布"
+          @click="changeEditMode(2)">
+          <span class="iconfont icon-a-ziyuan59"></span>
+          <div class="text">平移画布</div>
+        </div>
+      </div>
+      <div class="part">
+        <div :class="{ 'button-v-selected': editor?.editMode == 4, 'button-v': editor?.editMode != 4 }" title="连接线"
+          @click="changeEditMode(4)">
+          <span class="iconfont icon-a-ziyuan141"></span>
+          <div class="text">连接线</div>
+        </div>
       </div>
     </div>
-    <div class="ddei_editor_quick_tool_item">
-      <div :class="{'ddei_editor_quick_tool_item_box_selected':editor?.editMode == 2,'ddei_editor_quick_tool_item_box':editor?.editMode != 2}"
-           @click="changeEditMode(2)">
-        <img style="width:20px;height:20px;"
-             src="../../icons/icon-hand.png" />
-      </div>
+    <div class="tail">
+      工具
     </div>
-    <div class="ddei_editor_quick_tool_item">
-      <div :class="{'ddei_editor_quick_tool_item_box_selected':editor?.editMode == 3,'ddei_editor_quick_tool_item_box':editor?.editMode != 3}"
-           @click="changeEditMode(3)">
-        <img style="width:20px;height:20px;"
-             src="../../icons/icon-text.png" />
-      </div>
-    </div>
-    <div class="ddei_editor_quick_tool_item">
-      <div :class="{'ddei_editor_quick_tool_item_box_selected':editor?.editMode == 4,'ddei_editor_quick_tool_item_box':editor?.editMode != 4}"
-           style="width:33px">
-        <img style="width:20px;height:20px;"
-             @click="changeEditMode(4)"
-             src="../../icons/icon-line-fold.png" />
-        <img style="margin-top:10px;width:6px;height:6px;"
-             src="../../icons/toolbox-expanded.png" />
-      </div>
-    </div>
-    <div class="ddei_editor_quick_tool_item"
-         style="grid-column:1/3;">
-      <div class="ddei_editor_quick_tool_item_text">
-        工具
-      </div>
-    </div>
+
   </div>
 </template>
 <script lang="ts">
@@ -54,7 +45,7 @@ export default {
   },
   computed: {},
   watch: {},
-  created() {},
+  created() { },
   mounted() {
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
   },
@@ -72,77 +63,75 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .ddei_editor_quick_tool {
-  width: 70px;
-  height: 90px;
-  border-right: 1px solid rgb(224, 224, 224);
-  grid-template-rows: 30px 30px 20px;
-  grid-template-columns: 1fr 1fr;
+  width: 169px;
+  height: 103px;
   display: grid;
-  gap: 4px;
-
-  padding-right: 4px;
-}
-
-.ddei_editor_quick_tool_item {
-  margin: auto;
-}
-
-.ddei_editor_quick_tool_item_text {
+  grid-template-rows: 23px 57px 23px;
+  grid-template-columns: 1fr;
   text-align: center;
-  font-family: "Microsoft YaHei";
-  font-size: 12px;
-  color: rgb(120, 120, 120);
-}
 
-.ddei_editor_quick_tool_item_box {
-  width: 25px;
-  height: 25px;
-  color: black;
-  text-align: center;
-  border-radius: 4px;
-  font-size: 14px;
-}
+  .content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-right: 1px solid #E2E2EB;
 
-.ddei_editor_quick_tool_item_box div {
-  float: left;
-  margin-left: 2px;
-  margin-top: 1px;
-}
+    .part {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
 
-.ddei_editor_quick_tool_item_box img {
-  margin-left: 2px;
-  filter: brightness(45%) drop-shadow(0.2px 0px 0.2px #000);
-  float: left;
-  margin-top: 2px;
-}
+      .button-v {
+        flex: 0 0 54px;
+        height: 48px;
+        border-radius: 4px;
+      }
 
-.ddei_editor_quick_tool_item_box_selected {
-  width: 25px;
-  height: 25px;
-  text-align: center;
-  background-color: rgb(228, 228, 232);
-  border-radius: 4px;
-  color: black;
-  font-size: 14px;
-}
+      .button-v:hover {
+        cursor: pointer;
+        background-color: #e6e6e6;
+      }
 
-.ddei_editor_quick_tool_item_box_selected div {
-  float: left;
-  margin-left: 2px;
-  margin-top: 1px;
-}
+      .button-v-selected {
+        flex: 0 0 54px;
+        height: 48px;
+        background-color: #e6e6e6;
+        border-radius: 4px;
+      }
 
-.ddei_editor_quick_tool_item_box_selected img {
-  margin-left: 2px;
-  filter: brightness(45%) drop-shadow(0.2px 0px 0.2px #000);
-  float: left;
-  margin-top: 2px;
-}
+      .button-v-disabled {
+        flex: 0 0 54px;
+        height: 48px;
+        cursor: not-allowed;
 
-.ddei_editor_quick_tool_item_box:hover {
-  background-color: rgb(233, 233, 238);
-  border-radius: 4px;
+        >span {
+          color: #bcbcbc;
+        }
+
+        .text {
+          color: #bcbcbc;
+        }
+      }
+
+      .text {
+        height: 13px;
+        font-size: 12px;
+        font-family: "Microsoft YaHei";
+        font-weight: 400;
+        color: #000000;
+      }
+    }
+  }
+
+  .tail {
+    font-size: 12px;
+    font-family: "Microsoft YaHei";
+    font-weight: 400;
+    color: #9D9D9D;
+    border-right: 1px solid #E2E2EB;
+  }
 }
 </style>
