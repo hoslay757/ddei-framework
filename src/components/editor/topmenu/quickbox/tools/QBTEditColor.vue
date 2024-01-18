@@ -1,8 +1,8 @@
 <template>
   <div :class="{ 'ddei_editor_quick_fat_item_box': true, 'ddei_editor_quick_fat_item_box_disabled': !attrDefine }"
     @click="attrDefine && showColor($el, $event)">
-    <img style="width:13px;height:13px" :src="img" />
-    <div :style="{ 'background-color': value, 'width': '13px', 'height': '10px', 'margin': '-2px auto' }"></div>
+    <span :class="img"></span>
+    <div :style="{ 'background-color': value, 'width': '15px', 'height': '10px', 'margin': '-2px auto' }"></div>
     <input v-if="refreshColorInput" ref="colorInput" type="color" v-model="value"
       @input="attrDefine && valueChange($el, $event)" style="width:1px;height:1px;display:block;margin-top:1px" />
   </div>
@@ -15,7 +15,6 @@ import DDeiEnumBusCommandType from '../../../../framework/js/enums/bus-command-t
 import { debounce } from 'lodash';
 import DDeiEnumOperateState from '@/components/framework/js/enums/operate-state';
 import DDeiModelArrtibuteValue from '@/components/framework/js/models/attribute/attribute-value';
-import DDeiEditorEnumBusCommandType from '@/components/editor/js/enums/editor-command-type';
 export default {
   name: "DDei-Editor-QBT-Color",
   extends: null,
@@ -195,45 +194,15 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .ddei_editor_quick_fat_item_box {
   width: 25px;
   height: 25px;
   overflow: hidden;
   text-align: center;
-}
 
-.ddei_editor_quick_fat_item_box img {
-  margin-top: 4px;
-  filter: brightness(40%) drop-shadow(0.3px 0px 0.3px #000);
-}
-
-.ddei_editor_quick_fat_item_box_selected {
-  width: 25px;
-  height: 25px;
-  text-align: center;
-  background-color: rgb(228, 228, 232);
-  border-radius: 4px;
-}
-
-.ddei_editor_quick_fat_item_box_disabled {
-  color: rgb(228, 228, 232);
-  filter: brightness(200%) !important;
-}
-
-.ddei_editor_quick_fat_item_box_disabled:hover {
-  background-color: transparent !important;
-  cursor: not-allowed;
-}
-
-.ddei_editor_quick_fat_item_box_selected img {
-  margin-top: 4px;
-  filter: brightness(40%) drop-shadow(0.3px 0px 0.3px #000);
-}
-
-
-.ddei_editor_quick_fat_item_box:hover {
-  background-color: rgb(233, 233, 238);
-  border-radius: 4px;
+  .iconfont {
+    font-size: 10px;
+  }
 }
 </style>

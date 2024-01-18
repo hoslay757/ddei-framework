@@ -298,7 +298,6 @@ export default {
 
 .ddei_editor_quick_fat_item_fontfamily {
   background-color: white;
-  border-radius: 4px;
   height: 24px;
 }
 

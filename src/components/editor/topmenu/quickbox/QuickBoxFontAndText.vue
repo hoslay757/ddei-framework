@@ -1,91 +1,106 @@
 <template>
   <div class="ddei_editor_quick_fat">
+    <div class="header"></div>
+    <div class="content">
+      <div class="buttons">
+        <div style="width:152px;margin-right:0px;">
+          <QBTFontFamily></QBTFontFamily>
+        </div>
+        <div style="width:59px;">
+          <QBTFontSize></QBTFontSize>
+        </div>
+        <div>
+          <QBTEditAddFontSize :addValue="1" attrCode="font.size" img="iconfont icon-a-ziyuan43"></QBTEditAddFontSize>
+        </div>
+        <div>
+          <QBTEditAddFontSize :addValue="-1" attrCode="font.size" img="iconfont icon-a-ziyuan42"></QBTEditAddFontSize>
+        </div>
 
-    <div class="ddei_editor_quick_fat_item" style="grid-column:1/6;">
-      <QBTFontFamily></QBTFontFamily>
-    </div>
-    <div class="ddei_editor_quick_fat_item" style="grid-column:6/9;">
-      <QBTFontSize></QBTFontSize>
-    </div>
-    <div class="ddei_editor_quick_fat_item">
-      <QBTEditAddFontSize :addValue="1" attrCode="font.size" :img="icons['icon-font-up']"></QBTEditAddFontSize>
-    </div>
-    <div class="ddei_editor_quick_fat_item">
-      <QBTEditAddFontSize :addValue="-1" attrCode="font.size" :img="icons['icon-font-down']"></QBTEditAddFontSize>
-    </div>
+        <div>
+          <QBTEditBox selectedValue="1" :supportQuickEdit="false" attrCode="textStyle.align"
+            img="iconfont icon-a-ziyuan93">
+          </QBTEditBox>
+        </div>
+        <div>
+          <QBTEditBox selectedValue="2" :supportQuickEdit="false" attrCode="textStyle.align"
+            img="iconfont icon-a-ziyuan90">
+          </QBTEditBox>
+        </div>
+        <div>
+          <QBTEditBox selectedValue="3" :supportQuickEdit="false" attrCode="textStyle.align"
+            img="iconfont icon-a-ziyuan92">
+          </QBTEditBox>
+        </div>
+        <div style="margin-right:0px;">
+          <QBTEditBox selectedValue="3" :supportQuickEdit="false" attrCode="textStyle.align"
+            img="iconfont icon-a-ziyuan87">
+          </QBTEditBox>
+        </div>
 
-    <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="1" :supportQuickEdit="false" attrCode="textStyle.align" :img="icons['text-align-left']">
-      </QBTEditBox>
-    </div>
-    <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="2" :supportQuickEdit="false" attrCode="textStyle.align"
-        :img="icons['text-align-center']">
-      </QBTEditBox>
-    </div>
-    <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="3" :supportQuickEdit="false" attrCode="textStyle.align" :img="icons['text-align-right']">
-      </QBTEditBox>
-    </div>
 
-    <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="1" attrCode="textStyle.bold" :img="icons['icon-font-bold']">
-      </QBTEditBox>
-    </div>
-    <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="1" attrCode="textStyle.italic" :img="icons['icon-font-italic']">
-      </QBTEditBox>
-    </div>
-    <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="1" attrCode="textStyle.underline" :img="icons['icon-text-underline']">
-      </QBTEditBox>
-    </div>
-    <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="1" attrCode="textStyle.deleteline" :img="icons['icon-text-deleteline']"></QBTEditBox>
-    </div>
-    <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="1" attrCode="textStyle.topline" :img="icons['icon-text-deleteline']">
-      </QBTEditBox>
-    </div>
-    <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="1" :onlyQuickEdit="true" attrCode="textStyle.subtype"
-        :img="icons['icon-text-superscript']">
-      </QBTEditBox>
-    </div>
-    <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="2" :onlyQuickEdit="true" attrCode="textStyle.subtype"
-        :img="icons['icon-text-superscript']">
-      </QBTEditBox>
-    </div>
-    <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="3" :onlyQuickEdit="true" attrCode="textStyle.subtype"
-        :img="icons['icon-text-subscript']">
-      </QBTEditBox>
-    </div>
-    <div class="ddei_editor_quick_fat_item">
-      <QBTEditColor attrCode="font.color" :img="icons['icon-font-color']"></QBTEditColor>
-    </div>
-    <div class="ddei_editor_quick_fat_item">
-      <QBTEditColor attrCode="textStyle.bgcolor" :img="icons['icon-font-color']"></QBTEditColor>
-    </div>
-
-    <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="1" :supportQuickEdit="false" attrCode="textStyle.valign" :img="icons['text-valign-top']">
-      </QBTEditBox>
-    </div>
-    <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="2" :supportQuickEdit="false" attrCode="textStyle.valign"
-        :img="icons['text-valign-middle']"></QBTEditBox>
-    </div>
-    <div class="ddei_editor_quick_fat_item">
-      <QBTEditBox selectedValue="3" :supportQuickEdit="false" attrCode="textStyle.valign"
-        :img="icons['text-valign-bottom']"></QBTEditBox>
-    </div>
-
-    <div class="ddei_editor_quick_fat_item" style="grid-column:1/11;">
-      <div class="ddei_editor_quick_fat_item_text">
-        字体和段落
       </div>
+      <div class="buttons">
+        <div>
+          <QBTEditBox selectedValue="1" attrCode="textStyle.bold" img="iconfont icon-a-ziyuan51">
+          </QBTEditBox>
+        </div>
+        <div>
+          <QBTEditBox selectedValue="1" attrCode="textStyle.italic" img="iconfont icon-a-ziyuan47">
+          </QBTEditBox>
+        </div>
+        <div>
+          <QBTEditBox selectedValue="1" attrCode="textStyle.underline" img="iconfont icon-a-ziyuan46">
+          </QBTEditBox>
+        </div>
+        <div>
+          <QBTEditBox selectedValue="1" attrCode="textStyle.deleteline" img="iconfont icon-a-ziyuan45">
+          </QBTEditBox>
+        </div>
+
+        <div>
+          <QBTEditBox selectedValue="1" :onlyQuickEdit="true" attrCode="textStyle.subtype" img="iconfont icon-a-ziyuan45">
+          </QBTEditBox>
+        </div>
+        <div>
+          <QBTEditBox selectedValue="2" :onlyQuickEdit="true" attrCode="textStyle.subtype" img="iconfont icon-a-ziyuan45">
+          </QBTEditBox>
+        </div>
+        <div style="margin-right:29px;">
+          <QBTEditBox selectedValue="3" :onlyQuickEdit="true" attrCode="textStyle.subtype" img="iconfont icon-a-ziyuan45">
+          </QBTEditBox>
+        </div>
+        <div style="margin-right:2px;margin-top:-4px">
+          <QBTEditColor attrCode="textStyle.bgcolor" img="iconfont icon-a-ziyuan55"></QBTEditColor>
+        </div>
+        <div style="margin-right:9px;margin-top:-4px">
+          <QBTEditColor attrCode="font.color" img="iconfont icon-a-ziyuan55"></QBTEditColor>
+        </div>
+
+
+        <div>
+          <QBTEditBox selectedValue="1" :supportQuickEdit="false" attrCode="textStyle.valign"
+            img="iconfont icon-a-ziyuan88">
+          </QBTEditBox>
+        </div>
+        <div>
+          <QBTEditBox selectedValue="2" :supportQuickEdit="false" attrCode="textStyle.valign"
+            img="iconfont icon-a-ziyuan88">
+          </QBTEditBox>
+        </div>
+        <div>
+          <QBTEditBox selectedValue="3" :supportQuickEdit="false" attrCode="textStyle.valign"
+            img="iconfont icon-a-ziyuan89">
+          </QBTEditBox>
+        </div>
+        <div style="margin-right:0px;">
+          <QBTEditBox selectedValue="3" :supportQuickEdit="false" attrCode="textStyle.valign"
+            img="iconfont icon-a-ziyuan86">
+          </QBTEditBox>
+        </div>
+      </div>
+    </div>
+    <div class="tail">
+      文本编辑
     </div>
   </div>
 </template>
@@ -125,87 +140,38 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .ddei_editor_quick_fat {
-  height: 90px;
-  border-right: 1px solid rgb(224, 224, 224);
-  grid-template-rows: 30px 30px 20px;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  width: 416px;
+  height: 103px;
   display: grid;
-  gap: 4px;
-  padding-right: 4px;
-}
-
-.ddei_editor_quick_fat_item {
-  margin-top: 3px;
-}
-
-.ddei_editor_quick_fat_item_text {
+  grid-template-rows: 23px 57px 23px;
+  grid-template-columns: 1fr;
   text-align: center;
-  font-family: "Microsoft YaHei";
-  font-size: 12px;
-  color: rgb(120, 120, 120);
-  margin-top: -3px;
-}
 
-/*字体大小设置框 */
+  .content {
+    display: flex;
+    flex-direction: column;
+    padding-left: 16px;
+    padding-right: 16px;
+    border-right: 1px solid #E2E2EB;
 
-.ddei_editor_quick_fat_item_fontsize {
-  background-color: white;
-  border-radius: 4px;
-  height: 24px;
-}
+    .buttons {
+      flex: 1;
 
-.ddei_editor_quick_fat_item_fontsize:hover {
-  border: 0.5px solid #017fff;
-  box-sizing: border-box;
-}
+      >div {
+        float: left;
+        margin-right: 14px;
+      }
+    }
+  }
 
-.ddei_editor_quick_fat_item_fontsize_input {
-  width: calc(100% - 20px);
-  border: transparent;
-  outline: none;
-  font-size: 13px;
-  margin-top: 3px;
-  background: transparent;
-  float: left;
-}
-
-.ddei_editor_quick_fat_item_fontsize_combox {
-  width: 8px;
-  margin-top: 8px;
-  margin-right: 4px;
-  margin-left: 4px;
-  height: 8px;
-  float: left;
-}
-
-.ddei_editor_quick_fat_item_box {
-  width: 25px;
-  height: 25px;
-  text-align: center;
-}
-
-.ddei_editor_quick_fat_item_box img {
-  margin-top: 4px;
-  filter: brightness(40%) drop-shadow(0.3px 0px 0.3px #000);
-}
-
-.ddei_editor_quick_fat_item_box_selected {
-  width: 25px;
-  height: 25px;
-  text-align: center;
-  background-color: rgb(228, 228, 232);
-  border-radius: 4px;
-}
-
-.ddei_editor_quick_fat_item_box_selected img {
-  margin-top: 4px;
-  filter: brightness(40%) drop-shadow(0.3px 0px 0.3px #000);
-}
-
-.ddei_editor_quick_fat_item_box:hover {
-  background-color: rgb(233, 233, 238);
-  border-radius: 4px;
+  .tail {
+    font-size: 12px;
+    font-family: "Microsoft YaHei";
+    font-weight: 400;
+    color: #9D9D9D;
+    border-right: 1px solid #E2E2EB;
+  }
 }
 </style>
