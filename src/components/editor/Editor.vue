@@ -523,7 +523,9 @@ export default {
 }
 
 .ddei_editor .bottom {
-  flex: 0 0 35px;
+  flex: 0 0 50px;
+  background: #F2F2F7;
+  border: 1px solid #D4D4D4;
 }
 
 .ddei_editor .body {

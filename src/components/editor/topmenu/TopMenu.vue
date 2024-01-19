@@ -97,7 +97,7 @@ export default {
 }
 
 .ddei_editor_topmenu_quickbox {
-  background-color: hsl(240, 24%, 96%);
+  background-color: #F5F5F5;
   width: 100%;
   height: 103px;
   display: flex;

@@ -9,14 +9,12 @@
       @dragover="fileDragOver($event)" @drop="fileDragDrop($event)" @dragleave="fileDragCancel($event)"
       v-for="(item, i) in editor?.files"
       v-show="i >= openIndex && ((i - openIndex + 1) * 160 + 40) <= editor?.middleWidth" :title="item.name">
-      <img src="../icons/icon-file.png" />
-      <span>
+      <span class="iconfont icon-a-ziyuan33 icon"></span>
+      <span class="textcontent">
         <div class="text" @dblclick="startChangeFileName(item, $event)">{{ item.name }}</div>
         <div class="dirty" v-show="item.state != 0">ꔷ</div>
       </span>
-      <div @click.prevent.stop="closeFile(item, $event)">
-        <img src="../icons/toolbox-close.png" />
-      </div>
+      <span @click.prevent.stop="closeFile(item, $event)" class="iconfont icon-a-ziyuan161 close"></span>
     </div>
     <div style="flex:1 1 1px"></div>
     <div class="ddei_editor_ofsview_movebox" v-show="editor?.files?.length > maxOpenSize" @click="moveItem(-1)">
@@ -469,9 +467,8 @@ export default {
 
 <style scoped>
 .ddei_editor_ofsview {
-  flex: 0 0 25px;
-  height: 25px;
-  background: rgb(254, 254, 254);
+  flex: 0 0 30px;
+  background: #F5F6F7;
   border-top: 1px solid rgb(235, 235, 239);
   border-bottom: 1px solid rgb(235, 235, 239);
   display: flex;
@@ -511,31 +508,41 @@ export default {
 }
 
 .ddei_editor_ofsview_item {
-  flex: 0 0 160px;
-  height: 25px;
+  flex: 0 0 195px;
+  background: #FFFFFF;
   display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.ddei_editor_ofsview_item img {
-  padding: 3px;
+.ddei_editor_ofsview_item .iconfont {
   flex: 0 0 25px;
 }
 
-.ddei_editor_ofsview_item span {
-  font-size: 13px;
-  margin-top: 1px;
-  flex: 0 0 110px;
-  width: 110px;
+.ddei_editor_ofsview_item .icon {
+  font-size: 14px;
+  margin-left: 15px;
+}
 
+.ddei_editor_ofsview_item .close {
+  font-size: 10px;
+}
+
+.ddei_editor_ofsview_item .textcontent {
+  font-size: 13px;
+  flex: 0 0 140px;
+  width: 140px;
   display: flex;
 }
 
-.ddei_editor_ofsview_item span .text {
+.ddei_editor_ofsview_item .textcontent .text {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
   color: black;
   flex: 1;
+  font-size: 14px;
+  font-weight: 400;
 }
 
 .ddei_editor_ofsview_item span .dirty {
@@ -544,19 +551,6 @@ export default {
   flex: 0 0 10px;
   font-size: 16px;
   margin-top: -2.5px;
-}
-
-.ddei_editor_ofsview_item div {
-  height: 25px;
-  flex: 0 0 25px;
-  margin: auto;
-}
-
-.ddei_editor_ofsview_item div img {
-  width: 12px;
-  height: 12px;
-  margin: auto;
-  padding: 0px;
 }
 
 .ddei_editor_ofsview_item div img:hover {
