@@ -65,7 +65,6 @@ export default {
 
 <style lang="less" scoped>
 .ddei_editor_quick_tool {
-  width: 169px;
   height: 103px;
   display: grid;
   grid-template-rows: 23px 57px 23px;
@@ -77,16 +76,18 @@ export default {
     justify-content: center;
     align-items: center;
     border-right: 1px solid #E2E2EB;
+    padding: 0px 4px;
 
     .part {
       flex: 1;
       display: flex;
       justify-content: center;
       align-items: center;
+      padding: 0px 2px;
 
       .button-v {
-        flex: 0 0 54px;
-        height: 48px;
+        flex: 1;
+        height: 50px;
         border-radius: 4px;
       }
 
@@ -96,15 +97,16 @@ export default {
       }
 
       .button-v-selected {
-        flex: 0 0 54px;
-        height: 48px;
+        flex: 1;
+        height: 50px;
         background-color: #e6e6e6;
         border-radius: 4px;
       }
 
       .button-v-disabled {
-        flex: 0 0 54px;
-        height: 48px;
+
+        flex: 1;
+        height: 50px;
         cursor: not-allowed;
 
         >span {
@@ -119,6 +121,7 @@ export default {
       .text {
         height: 13px;
         font-size: 12px;
+        white-space: nowrap;
         font-family: "Microsoft YaHei";
         font-weight: 400;
         color: #000000;

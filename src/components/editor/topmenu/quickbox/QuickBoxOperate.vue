@@ -45,6 +45,7 @@ import DDeiUtil from "../../../framework/js/util";
 import DDeiEditor from "../../js/editor";
 import DDeiEnumKeyActionInst from "../../js/enums/key-action-inst";
 
+
 export default {
   name: "DDei-Editor-Quick-CUT",
   extends: null,
@@ -135,7 +136,6 @@ export default {
 
 <style lang="less" scoped>
 .ddei_editor_cut {
-  width: 234px;
   height: 103px;
   display: grid;
   grid-template-rows: 23px 57px 23px;
@@ -147,15 +147,17 @@ export default {
     justify-content: center;
     align-items: center;
     border-right: 1px solid #E2E2EB;
+    padding: 0px 4px;
 
     .part {
+      padding: 0px 2px;
       flex: 1;
       display: flex;
       justify-content: center;
       align-items: center;
 
       .button-v {
-        flex: 0 0 36px;
+        flex: 1;
         height: 48px;
         border-radius: 4px;
       }
@@ -166,14 +168,14 @@ export default {
       }
 
       .button-v-selected {
-        flex: 0 0 36px;
+        flex: 1;
         height: 48px;
         background-color: #e6e6e6;
         border-radius: 4px;
       }
 
       .button-v-disabled {
-        flex: 0 0 36px;
+        flex: 1;
         height: 48px;
         cursor: not-allowed;
 
@@ -189,6 +191,7 @@ export default {
       .text {
         height: 13px;
         font-size: 12px;
+        white-space: nowrap;
         font-family: "Microsoft YaHei";
         font-weight: 400;
         color: #000000;

@@ -6,7 +6,7 @@
         :readonly="!attrDefine || (attrDefine && (attrDefine.readonly))" v-model="text" @input="inputValue()"
         :placeholder="defaultText" />
       <div class="ddei_editor_quick_fat_item_fontsize_combox" @click="attrDefine && !attrDefine.readonly && showDialog()">
-        <img :src="toolboxExpandedIcon">
+        <span class="iconfont icon-a-ziyuan71" style="font-size:4.5px"></span>
       </div>
 
     </div>
@@ -23,7 +23,6 @@
 <script lang="ts">
 import { debounce } from "lodash";
 import DDeiEditor from "../../../js/editor";
-import ICONS from "../../../js/icon";
 import DDeiEditorUtil from "../../../js/util/editor-util";
 import DDeiUtil from "../../../../framework/js/util";
 import DDeiEnumBusCommandType from "../../../../framework/js/enums/bus-command-type";
@@ -41,7 +40,6 @@ export default {
     return {
       //当前编辑器
       editor: null,
-      toolboxExpandedIcon: ICONS["toolbox-expanded"],
       controlDefine: null,
       attrDefine: null,
       dataSource: null,
@@ -328,7 +326,13 @@ export default {
 
 .ddei_editor_quick_fat_item_fontsize {
   background-color: white;
-  height: 24px;
+  height: 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border: 1px solid #D4D4D4;
 }
 
 .ddei_editor_quick_fat_item_fontsize:hover {
@@ -346,25 +350,16 @@ export default {
   border: transparent;
   outline: none;
   font-size: 13px;
-  margin-top: 3px;
   background: transparent;
-  float: left;
 }
 
 .ddei_editor_quick_fat_item_fontsize_combox {
-  width: 20px;
-  height: 20px;
-  float: left;
+  height: 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.ddei_editor_quick_fat_item_fontsize_combox img {
-  width: 8px;
-  margin-top: 8px;
-  margin-right: 4px;
-  margin-left: 4px;
-  height: 8px;
-  float: left;
-}
 
 .ddei_editor_quick_fat_item_box {
   width: 25px;
@@ -372,10 +367,6 @@ export default {
   text-align: center;
 }
 
-.ddei_editor_quick_fat_item_box img {
-  margin-top: 4px;
-  filter: brightness(40%) drop-shadow(0.3px 0px 0.3px #000);
-}
 
 .ddei_editor_quick_fat_item_box_disabled {
   color: rgb(228, 228, 232);
@@ -395,10 +386,6 @@ export default {
   border-radius: 4px;
 }
 
-.ddei_editor_quick_fat_item_box_selected img {
-  margin-top: 4px;
-  filter: brightness(40%) drop-shadow(0.3px 0px 0.3px #000);
-}
 
 .ddei_editor_quick_fat_item_box:hover {
   background-color: rgb(233, 233, 238);

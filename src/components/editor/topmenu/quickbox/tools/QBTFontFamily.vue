@@ -2,14 +2,13 @@
   <div>
     <div id="ddei_editor_quick_fat_item_fontfamily"
       :class="{ 'ddei_editor_quick_fat_item_fontfamily': true, 'ddei_editor_quick_fat_item_fontfamily_disabled': !attrDefine }">
-      <img width="16px" height="16px" class="ddei_editor_quick_fat_item_fontfamily_icon" :src="searchIcon">
       <input class="ddei_editor_quick_fat_item_fontfamily_input"
         :readonly="!attrDefine || (attrDefine && (attrDefine.readonly || !canSearch))" v-model="text"
         :placeholder="defaultText" @click="attrDefine && !attrDefine.readonly && !canSearch && showDialog()"
         @keydown="search($event)" />
       <div class="ddei_editor_quick_fat_item_fontfamily_combox"
         @click="attrDefine && !attrDefine.readonly && showDialog()">
-        <img :src="toolboxExpandedIcon">
+        <span class="iconfont icon-a-ziyuan71" style="font-size:4.5px"></span>
       </div>
     </div>
     <div id="ddei_editor_quick_fat_item_fontfamily_combox_dialog"
@@ -26,7 +25,6 @@
 <script lang="ts">
 import { debounce } from "lodash";
 import DDeiEditor from "../../../js/editor";
-import ICONS from "../../../js/icon";
 import DDeiEditorUtil from "../../../js/util/editor-util";
 import DDeiUtil from "../../../../framework/js/util";
 import DDeiEnumBusCommandType from "../../../../framework/js/enums/bus-command-type";
@@ -44,8 +42,6 @@ export default {
     return {
       //当前编辑器
       editor: null,
-      searchIcon: ICONS["icon-search"],
-      toolboxExpandedIcon: ICONS["toolbox-expanded"],
       controlDefine: null,
       attrDefine: null,
       dataSource: null,
@@ -298,7 +294,14 @@ export default {
 
 .ddei_editor_quick_fat_item_fontfamily {
   background-color: white;
-  height: 24px;
+  height: 22px;
+  display: flex;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #D4D4D4;
+  border-right: none;
 }
 
 .ddei_editor_quick_fat_item_fontfamily:hover {
@@ -311,36 +314,19 @@ export default {
   cursor: not-allowed !important;
 }
 
-.ddei_editor_quick_fat_item_fontfamily_icon {
-  width: 18px;
-  height: 18px;
-  margin: 3px;
-  float: left;
-}
-
 .ddei_editor_quick_fat_item_fontfamily_input {
-  width: calc(100% - 45px);
+  width: calc(100% - 20px);
   border: transparent;
   outline: none;
   font-size: 13px;
-  margin-top: 3px;
   background: transparent;
-  float: left;
 }
 
 .ddei_editor_quick_fat_item_fontfamily_combox {
-  width: 20px;
-  height: 20px;
-  float: left;
-}
-
-.ddei_editor_quick_fat_item_fontfamily_combox img {
-  width: 8px;
-  margin-top: 8px;
-  margin-right: 4px;
-  margin-left: 4px;
-  height: 8px;
-  float: left;
+  height: 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /*以下为弹出框内容*/

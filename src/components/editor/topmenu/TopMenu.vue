@@ -1,31 +1,30 @@
 <template>
   <div id="ddei_editor_topmenu" class="ddei_editor_topmenu" @mousedown="changeEditorFocus">
     <div id="ddei_editor_topmenu_quickbox" class="ddei_editor_topmenu_quickbox">
-      <div class="ddei_editor_topmenu_quickbox_group">
+      <div class="ddei_editor_topmenu_quickbox_group" style="flex:0 1 120px">
         <QuickBoxGoBack></QuickBoxGoBack>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group">
+      <div class="ddei_editor_topmenu_quickbox_group" style="flex:0 1 150px">
         <QuickBoxFileInfo></QuickBoxFileInfo>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group">
+      <div class="ddei_editor_topmenu_quickbox_group" style="flex:0 1 180px">
         <QuickBoxOperate></QuickBoxOperate>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group">
+      <div class="ddei_editor_topmenu_quickbox_group" style="flex:0 1 416px">
         <QuickBoxFontAndText></QuickBoxFontAndText>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group">
+      <div class="ddei_editor_topmenu_quickbox_group" style="flex:0 1 170px">
         <QuickBoxTool></QuickBoxTool>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group">
+      <div class="ddei_editor_topmenu_quickbox_group" style="flex:0 1 180px">
         <QuickBoxSort></QuickBoxSort>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group_empty">
-
-      </div>
-      <div class="ddei_editor_topmenu_quickbox_group">
+      <div class="ddei_editor_topmenu_quickbox_group" style="flex:0 1 131px">
         <QuickBoxEImport></QuickBoxEImport>
       </div>
-
+      <div class="ddei_editor_topmenu_quickbox_group" style="flex:1">
+        <QuickBoxRight></QuickBoxRight>
+      </div>
     </div>
 
   </div>
@@ -41,6 +40,7 @@ import QuickBoxFileInfo from "./quickbox/QuickBoxFileInfo.vue";
 import QuickBoxGoBack from "./quickbox/QuickBoxGoBack.vue";
 import QuickBoxSDP from "./quickbox/QuickBoxSDP.vue";
 import QuickBoxEImport from "./quickbox/QuickBoxEImport.vue";
+import QuickBoxRight from "./quickbox/QuickBoxRight.vue";
 import DDeiEditor from "../js/editor";
 import DDeiEditorState from "../js/enums/editor-state";
 import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
@@ -66,7 +66,8 @@ export default {
     QuickBoxSDP,
     QuickBoxFileInfo,
     QuickBoxEImport,
-    QuickBoxGoBack
+    QuickBoxGoBack,
+    QuickBoxRight
   },
   computed: {},
   watch: {},

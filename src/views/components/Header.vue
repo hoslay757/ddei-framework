@@ -1,16 +1,13 @@
 <template>
   <div class="header">
-    <div class="header-logo"
-         @click="handleLogoClick">
-      <img class="header-logo-icon"
-           src="@/assets/images/logo.png" />
+    <div class="header-logo" @click="handleLogoClick">
+      <img class="header-logo-icon" src="@/assets/images/logo.png" />
       <span class="header-title">{{ title + (version ? ' - V' + version : '') }}</span>
     </div>
     <div class="header-empty" />
     <div class="header-right">
       <div class="header-right-username">{{ form.username }}</div>
-      <div class="header-right-loginout"
-           @click="loginout">注销</div>
+      <div class="header-right-loginout" @click="loginout">注销</div>
     </div>
   </div>
 </template>
@@ -61,6 +58,7 @@ export default {
   background: #212121;
   border-bottom: 1px solid #080808;
 }
+
 .header-logo {
   margin-left: 20px;
   display: inline-block;
@@ -68,10 +66,12 @@ export default {
   cursor: pointer;
   line-height: 0px;
 }
+
 .header-title {
   font-size: 19px;
   color: #fff;
 }
+
 .header-logo-icon {
   width: 29px;
   height: 21px;
@@ -82,6 +82,7 @@ export default {
 .header-empty {
   flex: 1;
 }
+
 .header-right {
   flex: 0 0 130px;
 

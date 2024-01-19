@@ -1,34 +1,27 @@
 <template>
   <div class="ddei_editor_eip">
-    <div class="ddei_editor_eip_item"
-         style="grid-row:1/3">
-      <div class="ddei_editor_eip_item_box"
-           @click="openFile">
-        <img width="16px"
-             height="16px"
-             :src="icons['icon-export']" />
-        <div>导出</div>
-      </div>
-      <div class="ddei_editor_eip_item_box"
-           @click="download">
-        <img width="16px"
-             height="16px"
-             :src="icons['icon-download']" />
-        <div>下载</div>
-      </div>
-      <div class="ddei_editor_eip_item_box"
-           @click="publish">
-        <img width="16px"
-             height="16px"
-             :src="icons['icon-publish-1']" />
-        <div>发布</div>
-      </div>
-    </div>
-    <div class="ddei_editor_eip_item">
-      <div class="ddei_editor_eip_item_text">
-        发布
-      </div>
-    </div>
+    <header></header>
+    <content>
+      <part>
+        <div class="button-v" @click="openFile">
+          <span class="iconfont icon-a-ziyuan56"></span>
+          <div class="text">导出</div>
+        </div>
+      </part>
+      <part>
+        <div class="button-v" @click="download">
+          <span class="iconfont icon-a-ziyuan66"></span>
+          <div class="text">下载</div>
+        </div>
+      </part>
+      <part>
+        <div class="button-v" @click="publish">
+          <span class="iconfont icon-a-ziyuan116"></span>
+          <div class="text">发布</div>
+        </div>
+      </part>
+    </content>
+    <tail>发布</tail>
     <div class="ddei_editor_eip_file_dialog">
 
     </div>
@@ -61,7 +54,7 @@ export default {
   },
   computed: {},
   watch: {},
-  created() {},
+  created() { },
   mounted() {
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     for (let i in ICONS) {
@@ -112,57 +105,84 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .ddei_editor_eip {
-  width: 110px;
-  height: 90px;
-  border-right: 1px solid rgb(224, 224, 224);
-  grid-template-rows: 30px 30px 20px;
+  height: 103px;
+  display: grid;
+  grid-template-rows: 23px 57px 23px;
   grid-template-columns: 1fr;
-  display: grid;
-  gap: 4px;
-  padding-right: 4px;
-}
-
-.ddei_editor_eip_item {
-  margin: auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 4px;
-}
-
-.ddei_editor_eip_item_text {
   text-align: center;
-  font-family: "Microsoft YaHei";
-  font-size: 12px;
-  grid-column: 1/4;
-  color: rgb(120, 120, 120);
-}
 
-.ddei_editor_eip_item_box {
-  width: 30px;
-  height: 60px;
-  color: black;
-  border-radius: 4px;
-  font-size: 12px;
-  display: grid;
-  grid-template-rows: 25px 25px 10px;
-  grid-template-columns: 1fr;
-}
+  >content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-right: 1px solid #E2E2EB;
+    padding: 0px 4px;
 
-.ddei_editor_eip_item_box div {
-  margin: auto;
-}
+    >part {
+      flex: 1;
+      padding: 0px 2px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
 
-.ddei_editor_eip_item_box img {
-  filter: brightness(45%) drop-shadow(0.2px 0px 0.2px #000);
-  width: 16px;
-  height: 16px;
-  margin: auto;
-}
+      .button-v {
+        flex: 1;
+        height: 50px;
+        border-radius: 4px;
+        display: flex;
+        flex-direction: column;
+      }
 
-.ddei_editor_eip_item_box:hover {
-  background-color: rgb(233, 233, 238);
-  border-radius: 4px;
+      .button-v:hover {
+        cursor: pointer;
+        background-color: #e6e6e6;
+      }
+
+      .button-v-selected {
+        flex: 1;
+        height: 50px;
+        background-color: #e6e6e6;
+        border-radius: 4px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .button-v-disabled {
+        flex: 1;
+        height: 50px;
+        cursor: not-allowed;
+        display: flex;
+        flex-direction: column;
+
+        >span {
+          color: #bcbcbc;
+        }
+
+        .text {
+
+          color: #bcbcbc;
+        }
+      }
+
+      .text {
+        flex: 0 0 20px;
+        white-space: nowrap;
+        font-size: 12px;
+        font-family: "Microsoft YaHei";
+        font-weight: 400;
+        color: #000000;
+      }
+    }
+  }
+
+  >tail {
+    font-size: 12px;
+    font-family: "Microsoft YaHei";
+    font-weight: 400;
+    color: #9D9D9D;
+    border-right: 1px solid #E2E2EB;
+  }
 }
 </style>

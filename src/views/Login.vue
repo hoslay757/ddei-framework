@@ -306,7 +306,7 @@ export default {
 
 .content_right_login_form_login {
   width: 45%;
-  height: 60px;
+  height: 50px;
   background-color: #3662ec;
   border-color: #3662ec;
   cursor: pointer;
@@ -318,7 +318,7 @@ export default {
 
 .content_right_login_form_register {
   width: 45%;
-  height: 60px;
+  height: 50px;
   background-color: rgb(210, 210, 210);
   border-color: rgb(210, 210, 210);
   cursor: pointer;

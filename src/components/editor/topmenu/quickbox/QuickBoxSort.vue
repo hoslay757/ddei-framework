@@ -4,46 +4,41 @@
     <content>
       <part>
         <div
-          :class="{ 'button-v-disabled': !isButtonEnable(), 'button-v-selected': isButtonEnable() && dialogShow == 'ddei_editor_quick_sort_position_dialog', 'ddei_editor_quick_sort_item_box': isButtonEnable() && dialogShow != 'ddei_editor_quick_sort_position_dialog' }"
+          :class="{ 'button-v-disabled': !isButtonEnable(), 'button-v-selected': isButtonEnable() && dialogShow == 'ddei_editor_quick_sort_position_dialog', 'button-v': isButtonEnable() && dialogShow != 'ddei_editor_quick_sort_position_dialog' }"
           @click="isButtonEnable() && showDialog('ddei_editor_quick_sort_position_dialog', $event)">
-          <span class="iconfont icon-a-ziyuan18"></span>
+          <span class="iconfont icon-a-ziyuan34"></span>
           <div class="text">位置</div>
+          <span class="iconfont iconfont-small icon-a-ziyuan71"></span>
         </div>
       </part>
-      <div class="ddei_editor_quick_sort_item">
-        <div>
-          <img style="width:20px;height:20px" src="../../icons/icon-push-up.png" />
-          <div>位置</div>
-          <img style="width:6px;height:6px;margin-top:10px" src="../../icons/toolbox-expanded.png" />
-        </div>
-      </div>
-      <div class="ddei_editor_quick_sort_item">
+      <part>
         <div
-          :class="{ 'ddei_editor_quick_sort_item_box_disabled': !isButtonEnable(), 'ddei_editor_quick_sort_item_box_selected': isButtonEnable() && dialogShow == 'ddei_editor_quick_sort_merge_dialog', 'ddei_editor_quick_sort_item_box': isButtonEnable() && dialogShow != 'ddei_editor_quick_sort_merge_dialog' }"
-          @click="isButtonEnable() && showDialog('ddei_editor_quick_sort_merge_dialog', $event)">
-          <img style="width:20px;height:20px" src="../../icons/icon-compose.png" />
-          <div>组合</div>
-          <img style="width:6px;height:6px;margin-top:10px" src="../../icons/toolbox-expanded.png" />
-        </div>
-      </div>
-      <div class="ddei_editor_quick_sort_item">
-        <div
-          :class="{ 'ddei_editor_quick_sort_item_box_disabled': !isButtonEnable(2), 'ddei_editor_quick_sort_item_box_selected': isButtonEnable(2) && dialogShow == 'ddei_editor_quick_sort_align_dialog', 'ddei_editor_quick_sort_item_box': isButtonEnable(2) && dialogShow != 'ddei_editor_quick_sort_align_dialog' }"
+          :class="{ 'button-v-disabled': !isButtonEnable(2), 'button-v-selected': isButtonEnable(2) && dialogShow == 'ddei_editor_quick_sort_align_dialog', 'button-v': isButtonEnable(2) && dialogShow != 'ddei_editor_quick_sort_align_dialog' }"
           @click="isButtonEnable(2) && showDialog('ddei_editor_quick_sort_align_dialog', $event)">
-          <img style="width:24px;height:24px;margin-top:0px;margin-left:-2px" src="../../icons/control-align-left.png" />
-          <div>对齐</div>
-          <img style="width:6px;height:6px;margin-top:10px" src="../../icons/toolbox-expanded.png" />
+          <span class="iconfont  icon-a-ziyuan7"></span>
+          <div class="text">对齐</div>
+          <span class="iconfont iconfont-small icon-a-ziyuan71"></span>
         </div>
-      </div>
-      <div class="ddei_editor_quick_sort_item">
+      </part>
+      <part>
         <div
-          :class="{ 'ddei_editor_quick_sort_item_box_disabled': !isButtonEnable(), 'ddei_editor_quick_sort_item_box_selected': isButtonEnable() && dialogShow == 'ddei_editor_quick_sort_rotate_dialog', 'ddei_editor_quick_sort_item_box': isButtonEnable() && dialogShow != 'ddei_editor_quick_sort_rotate_dialog' }"
-          @click="isButtonEnable() && showDialog('ddei_editor_quick_sort_rotate_dialog', $event)">
-          <img style="width:20px;height:20px" src="../../icons/icon-turn-right.png" />
-          <div>翻转</div>
-          <img style="width:6px;height:6px;margin-top:10px" src="../../icons/toolbox-expanded.png" />
+          :class="{ 'button-v-disabled': !isButtonEnable(), 'button-v-selected': isButtonEnable() && dialogShow == 'ddei_editor_quick_sort_merge_dialog', 'button-v': isButtonEnable() && dialogShow != 'ddei_editor_quick_sort_merge_dialog' }"
+          @click="isButtonEnable() && showDialog('ddei_editor_quick_sort_merge_dialog', $event)">
+          <span class="iconfont icon-a-ziyuan28"></span>
+          <div class="text">组合</div>
+          <span class="iconfont iconfont-small icon-a-ziyuan71"></span>
         </div>
-      </div>
+      </part>
+
+      <part>
+        <div
+          :class="{ 'button-v-disabled': !isButtonEnable(), 'button-v-selected': isButtonEnable() && dialogShow == 'ddei_editor_quick_sort_rotate_dialog', 'button-v': isButtonEnable() && dialogShow != 'ddei_editor_quick_sort_rotate_dialog' }"
+          @click="isButtonEnable() && showDialog('ddei_editor_quick_sort_rotate_dialog', $event)">
+          <span class="iconfont icon-a-ziyuan101"></span>
+          <div class="text">翻转</div>
+          <span class="iconfont iconfont-small icon-a-ziyuan71"></span>
+        </div>
+      </part>
     </content>
     <tail>排列</tail>
 
@@ -369,7 +364,6 @@ export default {
 
 <style lang="less" scoped>
 .ddei_editor_quick_sort {
-  width: 237px;
   height: 103px;
   display: grid;
   grid-template-rows: 23px 57px 23px;
@@ -380,18 +374,22 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 0px 4px;
     border-right: 1px solid #E2E2EB;
 
     >part {
       flex: 1;
+      padding: 0px 2px;
       display: flex;
       justify-content: center;
       align-items: center;
 
       .button-v {
-        flex: 0 0 54px;
-        height: 48px;
+        flex: 1;
+        height: 50px;
         border-radius: 4px;
+        display: flex;
+        flex-direction: column;
       }
 
       .button-v:hover {
@@ -400,29 +398,35 @@ export default {
       }
 
       .button-v-selected {
-        flex: 0 0 54px;
-        height: 48px;
+        flex: 1;
+        height: 50px;
         background-color: #e6e6e6;
         border-radius: 4px;
+        display: flex;
+        flex-direction: column;
       }
 
       .button-v-disabled {
-        flex: 0 0 54px;
-        height: 48px;
+        flex: 1;
+        height: 50px;
         cursor: not-allowed;
+        display: flex;
+        flex-direction: column;
 
         >span {
           color: #bcbcbc;
         }
 
         .text {
+
           color: #bcbcbc;
         }
       }
 
       .text {
-        height: 13px;
+        flex: 0 0 20px;
         font-size: 12px;
+        white-space: nowrap;
         font-family: "Microsoft YaHei";
         font-weight: 400;
         color: #000000;

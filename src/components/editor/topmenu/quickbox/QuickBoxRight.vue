@@ -1,15 +1,15 @@
 <template>
-  <div class="ddei_editor_go_back">
-    <div class="header"></div>
+  <div class="ddei_editor_right">
+    <div class="header">
+      <div style="flex:1 1 100px"></div>
+      <span class="iconfont icon-a-ziyuan124" style="flex:0 0 22px;font-size:15px"></span>
+      <div style="flex:0 1 12px"></div>
+      <div class="userinfo">W</div>
+      <div style="flex:0 1 12px"></div>
+      <div class="loginout">注销</div>
+      <div style="flex:0 1 40px"></div>
+    </div>
     <div class="content">
-      <div class="goback">
-        <div class="out">
-          <span class="iconfont icon-a-ziyuan69" @click="goBackFileList"></span>
-        </div>
-      </div>
-      <div class="logo">
-        <img :src="icons['logo']">
-      </div>
     </div>
     <div class="tail">
     </div>
@@ -17,18 +17,16 @@
 </template>
 <script lang="ts">
 import DDeiEditor from "../../js/editor";
-import ICONS from "../../js/icon";
 import DDeiEditorUtil from "../../js/util/editor-util";
 
 export default {
-  name: "DDei-Editor-Go-Back",
+  name: "DDei-Editor-Right",
   extends: null,
   mixins: [],
   props: {},
   data() {
     return {
       editor: null,
-      icons: ICONS,
       file: {},
       fileNameEditing: false,
       fileDescEditing: false,
@@ -59,58 +57,46 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.ddei_editor_go_back {
+.ddei_editor_right {
   height: 103px;
   display: grid;
-  grid-template-rows: 23px 57px 23px;
+  grid-template-rows: 50px 23px 23px;
   grid-template-columns: 1fr;
 
-  .content {
+  .header {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-right: 1px solid #E2E2EB;
 
-    .goback {
-      flex: 0 1 36px;
+    .userinfo {
       display: flex;
       justify-content: center;
       align-items: center;
-
-      .out {
-        flex: 0 0 25px;
-        height: 36px;
-        background: #E9E7F0;
-        border-radius: 2px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        >span:hover {
-          filter: brightness(40%);
-          cursor: pointer;
-        }
-      }
-
-
+      width: 28px;
+      height: 28px;
+      background: #176EFF;
+      border-radius: 50%;
+      text-align: center;
+      flex: 0 0 28px;
+      font-size: 14px;
+      font-family: "Microsoft YaHei";
+      font-weight: 400;
+      color: #FFFFFF;
+      cursor: pointer;
     }
 
-    .logo {
-      flex: 0 1 65px;
+    .loginout {
       display: flex;
+      white-space: nowrap;
       justify-content: center;
       align-items: center;
-
-      >img {
-        width: 57px;
-        height: 57px;
-      }
+      flex: 0 1 28px;
+      height: 14px;
+      font-size: 14px;
+      font-family: Microsoft YaHei;
+      font-weight: 400;
+      color: #000000;
     }
-  }
-
-  .tail {
-    border-right: 1px solid #E2E2EB;
-
   }
 }
 </style>

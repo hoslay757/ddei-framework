@@ -231,7 +231,6 @@ export default {
 
 <style lang="less" scoped>
 .ddei_editor_file_info {
-  width: 169px;
   height: 103px;
   display: grid;
   grid-template-rows: 23px 57px 23px;
@@ -243,19 +242,21 @@ export default {
     justify-content: center;
     align-items: center;
     border-right: 1px solid #E2E2EB;
+    padding: 0px 4px;
 
     .part {
+      padding: 0px 2px;
       flex: 1;
       display: flex;
       justify-content: center;
       align-items: center;
 
       .button-v {
-        flex: 0 0 24px;
-        height: 48px;
+        flex: 1;
+        height: 50px;
 
         .text {
-          width: 24px;
+          white-space: nowrap;
           height: 13px;
           font-size: 12px;
           font-family: "Microsoft YaHei";
@@ -271,7 +272,8 @@ export default {
 
       .button-h {
         flex: 1;
-        height: 54px;
+        height: 50px;
+        margin-top: -5px;
         display: flex;
         flex-direction: column;
 
@@ -288,6 +290,7 @@ export default {
           }
 
           .text {
+            white-space: nowrap;
             flex: 0 0 25px;
             font-size: 12px;
             font-family: "Microsoft YaHei";

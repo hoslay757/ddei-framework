@@ -62,7 +62,7 @@ export default {
 
 .ddei_editor_quick_change_shape_item_box {
   width: 70px;
-  height: 60px;
+  height: 50px;
   color: black;
   border-radius: 4px;
   font-size: 13px;

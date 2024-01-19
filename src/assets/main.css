@@ -16,6 +16,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.iconfont-small {
+  font-size: 4px !important;
+}
+
 a,
 .green {
   text-decoration: none;
