@@ -12,18 +12,17 @@
     </div>
     <div class="searchbox">
       <div class="group">
+        <span class="iconfont icon-a-ziyuan175" @click="searchControl" title="搜索"></span>
         <input v-model="searchText" class="input" @keypress="searchInputEnter" placeholder="搜索控件">
-        <div class="button" @click="searchControl">搜索</div>
       </div>
     </div>
-    <hr />
+
     <div class="groups" :style="{ height: 'calc(100vh - ' + (editor?.topHeight + editor?.bottomHeight + 90) + 'px' }">
       <div v-for="group in groups" v-show="group.display == true" class="group">
         <div :class="{ 'box': true, 'expanded': group.expand }" @click="groupBoxExpand(group)">
-          <img class="expand" v-show="!group.expand" src="../icons/toolbox-unexpanded.png" />
-          <img class="expand" v-show="group.expand" src="../icons/toolbox-expanded.png" />
           <span class="title">{{ group.name }}</span>
-          <img v-if="!group.cannotClose" class="close" src="../icons/toolbox-close.png" @click="groupBoxClose(group)" />
+          <span v-if="!group.cannotClose" class="iconfont icon-a-ziyuan161 close" @click="groupBoxClose(group)"
+            title="关闭"></span>
         </div>
         <div class="item_panel" v-if="group.expand == true">
           <div class="item" :title="control.desc" draggable="true" @dragstart="createControlPrepare(control, $event)"
@@ -449,6 +448,56 @@ export default {
       font-size: 11px;
     }
   }
+
+  .searchbox {
+    flex: 0 0 52px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .group {
+      flex: 1;
+      margin: 0 25px;
+      height: 32px;
+      background: #F4F5F6;
+      border: 1px solid #D4D4D4;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      .iconfont {
+        font-size: 14px;
+        margin: 0 11px;
+      }
+
+      .input {
+        flex: 1 1 140px;
+        height: 28px;
+        width: 100%;
+        border: transparent;
+        outline: none;
+        background: transparent;
+        font-size: 14px;
+        font-weight: 400;
+        color: #B8B8B8;
+      }
+
+      .button {
+        flex: 0 0 42px;
+        height: 23px;
+        background-color: #017fff;
+        font-size: 14px;
+        color: white;
+        margin: auto 7px auto 5px;
+        border-radius: 4px;
+      }
+
+      .button:hover {
+        background-color: #0177f0;
+      }
+    }
+  }
 }
 
 /**以下为分割线 */
@@ -460,45 +509,6 @@ export default {
 }
 
 
-/**以下为搜索框 */
-.ddei_editor_toolbox .searchbox {
-  flex: 0 0 38px;
-  height: 38px;
-}
-
-.ddei_editor_toolbox .searchbox .group {
-  background-color: #f2f2f7;
-  width: 93%;
-  margin: auto 4px auto 7px;
-  display: flex;
-  height: 32px;
-  border-radius: 4px;
-}
-
-.ddei_editor_toolbox .searchbox .group .input {
-  flex: 1 1 140px;
-  height: 28px;
-  width: 100%;
-  border: transparent;
-  outline: none;
-  font-size: 13px;
-  margin: auto 0px auto 5px;
-  background: transparent;
-}
-
-.ddei_editor_toolbox .searchbox .group .button {
-  flex: 0 0 42px;
-  height: 23px;
-  background-color: #017fff;
-  font-size: 14px;
-  color: white;
-  margin: auto 7px auto 5px;
-  border-radius: 4px;
-}
-
-.ddei_editor_toolbox .searchbox .group .button:hover {
-  background-color: #0177f0;
-}
 
 /**以下为控件分组以及控件框 */
 
@@ -555,86 +565,79 @@ export default {
 
 .ddei_editor_toolbox .groups .group .box {
   display: flex;
-  height: 40px;
-  background-color: rgb(254, 254, 254);
+  height: 30px;
+  background: #F5F6F7;
   user-select: none;
-  border-radius: 4px;
+  justify-content: center;
+  align-items: center;
 }
 
 .ddei_editor_toolbox .groups .group .expanded {
-  background-color: rgb(240, 240, 240);
+  background-color: #F5F6F7;
 }
 
 .ddei_editor_toolbox .groups .group .box:hover {
-  background-color: rgb(244, 244, 244);
+  background-color: #F5F6F7;
 }
 
 .ddei_editor_toolbox .groups .group .box:active {
-  background-color: rgb(240, 240, 240);
+  background-color: #F5F6F7;
 }
 
-.ddei_editor_toolbox .groups .group .box .expand {
-  flex: 0 0 9px;
-  margin: auto 7px auto 7px;
-  width: 9px;
-  height: 9px;
-}
 
 .ddei_editor_toolbox .groups .group .box .title {
   flex: 1;
-  font-size: 13px;
-  text-align: left;
-  margin: auto;
   color: black;
+  text-align: left;
+  margin-left: 25px;
+  font-size: 14px;
+  font-weight: bold;
 }
 
 .ddei_editor_toolbox .groups .group .box .close {
-  flex: 0 0 12px;
-  margin: auto;
-  width: 12px;
-  height: 12px;
-  margin: auto 7px auto 7px;
+  margin-right: 15px;
+  font-size: 10px;
 }
 
 .ddei_editor_toolbox .groups .group .box .close:hover {
-  background-color: rgb(200, 200, 200);
+  color: rgb(200, 200, 200);
+  cursor: pointer;
 }
 
 .ddei_editor_toolbox .groups .group .item_panel {
   display: flex;
   flex-flow: row wrap;
-  background: rgb(254, 254, 254);
-  margin-bottom: 5px;
+  background: white;
+  padding: 15px 15px 15px 15px;
 }
 
 .ddei_editor_toolbox .groups .group .item_panel .item {
-  flex: 0 0 60px !important;
-  height: 66px;
-  width: 60px;
-  margin-top: 10px;
+  flex: 0 0 62px !important;
+  height: 60px;
+  margin: 15px 0px;
   display: flex;
+  overflow: hidden;
+  justify-content: center;
+  align-items: center;
   flex-flow: column;
-  border-radius: 4px;
 }
 
 .ddei_editor_toolbox .groups .group .item_panel .item:hover {
-  background-color: rgb(244, 244, 244);
+  background: #EDEFFF;
+  outline: 2px solid #BED0EF;
   cursor: all-scroll;
 }
 
 .ddei_editor_toolbox .groups .group .item_panel .item .text {
-  color: black;
-  font-size: 12px;
-  transform: scale(0.8);
-  margin-top: -5px;
   white-space: nowrap;
   text-align: center;
+  font-size: 12px;
+  font-weight: 400;
+  color: #000000;
 }
 
 .ddei_editor_toolbox .groups .group .item_panel .item .icon {
-  width: 50px;
-  white-space: nowrap;
-  margin: auto;
-  object-fit: none;
+  max-width: 40px;
+  margin: 3px 0px;
 }
 </style>
