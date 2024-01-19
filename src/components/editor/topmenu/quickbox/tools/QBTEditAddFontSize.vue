@@ -182,6 +182,7 @@ export default {
 .ddei_editor_quick_fat_item_box {
   width: 13px;
   height: 13px;
+  display: flex;
   text-align: center;
 
   .iconfont {

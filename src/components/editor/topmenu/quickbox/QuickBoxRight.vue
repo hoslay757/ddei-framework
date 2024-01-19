@@ -1,13 +1,13 @@
 <template>
   <div class="ddei_editor_right">
     <div class="header">
-      <div style="flex:1 1 100px"></div>
-      <span class="iconfont icon-a-ziyuan124" style="flex:0 0 22px;font-size:15px"></span>
-      <div style="flex:0 1 12px"></div>
+      <div class="h1"></div>
+      <span class="iconfont icon-a-ziyuan124 h2"></span>
+      <div class="h3"></div>
       <div class="userinfo">W</div>
-      <div style="flex:0 1 12px"></div>
+      <div class="h4"></div>
       <div class="loginout">注销</div>
-      <div style="flex:0 1 40px"></div>
+      <div class="h5"></div>
     </div>
     <div class="content">
     </div>
@@ -68,6 +68,27 @@ export default {
     justify-content: center;
     align-items: center;
 
+    .h1 {
+      flex: 1;
+    }
+
+    .h2 {
+      flex: 0 0 21px;
+      font-size: 20px
+    }
+
+    .h3 {
+      flex: 0 1 33px
+    }
+
+    .h4 {
+      flex: 0 1 12px
+    }
+
+    .h5 {
+      flex: 0 1 42px
+    }
+
     .userinfo {
       display: flex;
       justify-content: center;
@@ -79,7 +100,6 @@ export default {
       text-align: center;
       flex: 0 0 28px;
       font-size: 14px;
-      font-family: "Microsoft YaHei";
       font-weight: 400;
       color: #FFFFFF;
       cursor: pointer;
@@ -93,7 +113,6 @@ export default {
       flex: 0 1 28px;
       height: 14px;
       font-size: 14px;
-      font-family: Microsoft YaHei;
       font-weight: 400;
       color: #000000;
     }

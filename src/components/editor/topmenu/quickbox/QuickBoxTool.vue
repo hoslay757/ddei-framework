@@ -86,6 +86,8 @@ export default {
       padding: 0px 2px;
 
       .button-v {
+        display: flex;
+        flex-direction: column;
         flex: 1;
         height: 50px;
         border-radius: 4px;
@@ -98,6 +100,8 @@ export default {
 
       .button-v-selected {
         flex: 1;
+        display: flex;
+        flex-direction: column;
         height: 50px;
         background-color: #e6e6e6;
         border-radius: 4px;
@@ -106,6 +110,8 @@ export default {
       .button-v-disabled {
 
         flex: 1;
+        display: flex;
+        flex-direction: column;
         height: 50px;
         cursor: not-allowed;
 
@@ -119,7 +125,7 @@ export default {
       }
 
       .text {
-        height: 13px;
+        flex: 0 0 13px;
         font-size: 12px;
         white-space: nowrap;
         font-family: "Microsoft YaHei";

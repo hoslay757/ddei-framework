@@ -2,9 +2,9 @@
   <div :class="{ 'ddei_editor_quick_fat_item_box': true, 'ddei_editor_quick_fat_item_box_disabled': !attrDefine }"
     @click="attrDefine && showColor($el, $event)">
     <span :class="img"></span>
-    <div :style="{ 'background-color': value, 'width': '15px', 'height': '10px', 'margin': '-2px auto' }"></div>
+    <div class="colorbar" :style="{ 'background-color': value }"></div>
     <input v-if="refreshColorInput" ref="colorInput" type="color" v-model="value"
-      @input="attrDefine && valueChange($el, $event)" style="width:1px;height:1px;display:block;margin-top:1px" />
+      @input="attrDefine && valueChange($el, $event)" class="colinput" />
   </div>
 </template>
 
@@ -196,13 +196,26 @@ export default {
 
 <style lang="less" scoped>
 .ddei_editor_quick_fat_item_box {
-  width: 25px;
-  height: 25px;
+  width: 15px;
+  height: 22px;
   overflow: hidden;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
 
   .iconfont {
-    font-size: 10px;
+    font-size: 12px;
+    flex: 0 0 10px;
+  }
+
+  .colorbar {
+    flex: 0 0 10px;
+  }
+
+  .colinput {
+    width: 1px;
+    height: 1px;
+    display: block;
+    margin-top: 1px
   }
 }
 </style>

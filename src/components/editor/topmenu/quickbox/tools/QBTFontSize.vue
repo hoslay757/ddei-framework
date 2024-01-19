@@ -6,7 +6,7 @@
         :readonly="!attrDefine || (attrDefine && (attrDefine.readonly))" v-model="text" @input="inputValue()"
         :placeholder="defaultText" />
       <div class="ddei_editor_quick_fat_item_fontsize_combox" @click="attrDefine && !attrDefine.readonly && showDialog()">
-        <span class="iconfont icon-a-ziyuan71" style="font-size:4.5px"></span>
+        <span class="iconfont icon-a-ziyuan71 iconfont-45"></span>
       </div>
 
     </div>
@@ -321,7 +321,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 /*字体大小设置框 */
 
 .ddei_editor_quick_fat_item_fontsize {
@@ -351,6 +351,7 @@ export default {
   outline: none;
   font-size: 13px;
   background: transparent;
+
 }
 
 .ddei_editor_quick_fat_item_fontsize_combox {
@@ -358,6 +359,10 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+
+  .iconfont-45 {
+    font-size: 4.5px
+  }
 }
 
 

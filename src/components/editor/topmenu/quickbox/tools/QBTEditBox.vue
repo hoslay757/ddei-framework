@@ -225,6 +225,7 @@ export default {
   width: 15px;
   height: 15px;
   text-align: center;
+  display: flex;
 
   .iconfont {
     font-size: 13px;

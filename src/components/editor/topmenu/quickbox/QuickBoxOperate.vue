@@ -157,8 +157,10 @@ export default {
       align-items: center;
 
       .button-v {
+        display: flex;
+        flex-direction: column;
         flex: 1;
-        height: 48px;
+        height: 50px;
         border-radius: 4px;
       }
 
@@ -169,14 +171,18 @@ export default {
 
       .button-v-selected {
         flex: 1;
-        height: 48px;
+        height: 50px;
+        display: flex;
+        flex-direction: column;
         background-color: #e6e6e6;
         border-radius: 4px;
       }
 
       .button-v-disabled {
         flex: 1;
-        height: 48px;
+        height: 50px;
+        display: flex;
+        flex-direction: column;
         cursor: not-allowed;
 
         >span {

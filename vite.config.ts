@@ -21,7 +21,6 @@ export default defineConfig({
       plugins: [
         px2rem({
           remUnit: 192,
-          remUnit: 192
         })
       ]
     }

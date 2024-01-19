@@ -3,10 +3,10 @@
     <div class="header"></div>
     <div class="content">
       <div class="buttons">
-        <div style="width:152px;margin-right:0px;">
+        <div class="b1">
           <QBTFontFamily></QBTFontFamily>
         </div>
-        <div style="width:59px;">
+        <div class="b2">
           <QBTFontSize></QBTFontSize>
         </div>
         <div>
@@ -65,14 +65,14 @@
           <QBTEditBox selectedValue="2" :onlyQuickEdit="true" attrCode="textStyle.subtype" img="iconfont icon-a-ziyuan45">
           </QBTEditBox>
         </div>
-        <div style="margin-right:29px;">
+        <div class="b4">
           <QBTEditBox selectedValue="3" :onlyQuickEdit="true" attrCode="textStyle.subtype" img="iconfont icon-a-ziyuan45">
           </QBTEditBox>
         </div>
-        <div style="margin-right:2px;margin-top:-4px">
+        <div class="b5">
           <QBTEditColor attrCode="textStyle.bgcolor" img="iconfont icon-a-ziyuan55"></QBTEditColor>
         </div>
-        <div style="margin-right:9px;margin-top:-4px">
+        <div class="b6">
           <QBTEditColor attrCode="font.color" img="iconfont icon-a-ziyuan55"></QBTEditColor>
         </div>
 
@@ -142,7 +142,6 @@ export default {
 
 <style lang="less" scoped>
 .ddei_editor_quick_fat {
-  width: 416px;
   height: 103px;
   display: grid;
   grid-template-rows: 23px 57px 23px;
@@ -162,6 +161,28 @@ export default {
       >div {
         float: left;
         margin-right: 14px;
+      }
+
+      .b1 {
+        width: 152px;
+        margin-right: 0px;
+      }
+
+      .b2 {
+        width: 59px;
+      }
+
+      .b4 {
+        margin-right: 34px;
+      }
+
+      .b5 {
+        margin-top: 0px;
+        margin-right: 13px;
+      }
+
+      .b6 {
+        margin-top: 0px
       }
     }
   }

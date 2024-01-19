@@ -1,25 +1,25 @@
 <template>
   <div id="ddei_editor_topmenu" class="ddei_editor_topmenu" @mousedown="changeEditorFocus">
     <div id="ddei_editor_topmenu_quickbox" class="ddei_editor_topmenu_quickbox">
-      <div class="ddei_editor_topmenu_quickbox_group" style="flex:0 1 120px">
+      <div class="ddei_editor_topmenu_quickbox_group g1">
         <QuickBoxGoBack></QuickBoxGoBack>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group" style="flex:0 1 150px">
+      <div class="ddei_editor_topmenu_quickbox_group g2">
         <QuickBoxFileInfo></QuickBoxFileInfo>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group" style="flex:0 1 180px">
+      <div class="ddei_editor_topmenu_quickbox_group g3">
         <QuickBoxOperate></QuickBoxOperate>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group" style="flex:0 1 416px">
+      <div class="ddei_editor_topmenu_quickbox_group g4">
         <QuickBoxFontAndText></QuickBoxFontAndText>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group" style="flex:0 1 170px">
+      <div class="ddei_editor_topmenu_quickbox_group g5">
         <QuickBoxTool></QuickBoxTool>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group" style="flex:0 1 180px">
+      <div class="ddei_editor_topmenu_quickbox_group g6">
         <QuickBoxSort></QuickBoxSort>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group" style="flex:0 1 131px">
+      <div class="ddei_editor_topmenu_quickbox_group g7">
         <QuickBoxEImport></QuickBoxEImport>
       </div>
       <div class="ddei_editor_topmenu_quickbox_group" style="flex:1">
@@ -91,7 +91,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .ddei_editor_topmenu {
   background: rgb(225, 225, 225);
 }
@@ -106,6 +106,34 @@ export default {
 .ddei_editor_topmenu_quickbox_group {
   flex: 0;
   margin: auto 0;
+}
+
+.g1 {
+  flex: 0 1 120px
+}
+
+.g2 {
+  flex: 0 1 169px
+}
+
+.g3 {
+  flex: 0 1 234px
+}
+
+.g4 {
+  flex: 0 1 423px
+}
+
+.g5 {
+  flex: 0 1 200px
+}
+
+.g6 {
+  flex: 0 1 237px
+}
+
+.g7 {
+  flex: 0 1 200px
 }
 
 .ddei_editor_topmenu_quickbox_group_empty {

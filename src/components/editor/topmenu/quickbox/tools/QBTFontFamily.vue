@@ -8,7 +8,7 @@
         @keydown="search($event)" />
       <div class="ddei_editor_quick_fat_item_fontfamily_combox"
         @click="attrDefine && !attrDefine.readonly && showDialog()">
-        <span class="iconfont icon-a-ziyuan71" style="font-size:4.5px"></span>
+        <span class="iconfont icon-a-ziyuan71 iconfont-45"></span>
       </div>
     </div>
     <div id="ddei_editor_quick_fat_item_fontfamily_combox_dialog"
@@ -289,7 +289,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 /*字体选择框*/
 
 .ddei_editor_quick_fat_item_fontfamily {
@@ -327,6 +327,10 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+
+  .iconfont-45 {
+    font-size: 4.5px
+  }
 }
 
 /*以下为弹出框内容*/

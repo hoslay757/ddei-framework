@@ -254,10 +254,13 @@ export default {
       .button-v {
         flex: 1;
         height: 50px;
+        display: flex;
+        flex-direction: column;
+
 
         .text {
           white-space: nowrap;
-          height: 13px;
+          flex: 0 0 13px;
           font-size: 12px;
           font-family: "Microsoft YaHei";
           font-weight: 400;
@@ -272,8 +275,7 @@ export default {
 
       .button-h {
         flex: 1;
-        height: 50px;
-        margin-top: -5px;
+
         display: flex;
         flex-direction: column;
 
