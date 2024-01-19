@@ -1,11 +1,11 @@
 <template>
   <div>
     <div id="ddei_editor" class="ddei_editor" @mouseup="mouseUp" @mousemove="mouseMove" @mousedown="mouseDown">
-      <div style="flex:0 0 100px" class="top" id="ddei_editor_frame_top">
+      <div class="top" id="ddei_editor_frame_top">
         <TopMenu v-if="refreshTopMenuView"></TopMenu>
       </div>
       <div class="body">
-        <div style="flex:0 0 220px" id="ddei_editor_frame_left">
+        <div class="left" id="ddei_editor_frame_left">
           <Toolbox @createControlPrepare="createControlPrepare"></Toolbox>
         </div>
         <div class="middle" id="ddei_editor_frame_middle">
@@ -13,11 +13,11 @@
           <CanvasView id="ddei_editor_canvasview"></CanvasView>
           <QuickColorView v-if="allowQuickColor"></QuickColorView>
         </div>
-        <div style="flex:0 0 330px" class="right" id="ddei_editor_frame_right">
+        <div class="right" id="ddei_editor_frame_right">
           <PropertyView v-if="refreshPropertyView"></PropertyView>
         </div>
       </div>
-      <div style="flex: 0 0 35px;" class="bottom" id="ddei_editor_frame_bottom">
+      <div class="bottom" id="ddei_editor_frame_bottom">
         <BottomMenu v-if="refreshBottomMenu"></BottomMenu>
       </div>
     </div>
@@ -518,9 +518,21 @@ export default {
   background-color: rgb(240, 240, 240);
 }
 
+.ddei_editor .top {
+  flex: 0 0 103px
+}
+
+.ddei_editor .bottom {
+  flex: 0 0 35px;
+}
+
 .ddei_editor .body {
   display: flex;
   flex: 1;
+}
+
+.ddei_editor .body .left {
+  flex: 0 0 291px;
 }
 
 .ddei_editor .body .middle {
@@ -530,6 +542,7 @@ export default {
 }
 
 .ddei_editor .body .right {
+  flex: 0 0 300px;
   display: flex;
   flex-direction: column;
 }

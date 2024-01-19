@@ -1,3 +1,4 @@
+import "lib-flexible-computer";
 import './assets/main.css'
 
 import { createApp } from 'vue'

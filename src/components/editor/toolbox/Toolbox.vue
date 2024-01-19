@@ -1,7 +1,14 @@
 <template>
   <div id="ddei_editor_toolbox" v-show="editor?.leftWidth > 0" @mousedown="changeEditorFocus" class="ddei_editor_toolbox">
-    <div class="expandbox">
-      <img class="img" :src="expandLeftImg" @click="hiddenToolBox" />
+    <div class="header">
+      <div class="header-1"></div>
+      <span class="iconfont header-2 icon-a-ziyuan154"></span>
+      <div class="header-3"></div>
+      <div class="header-4">更多图形</div>
+      <div class="header-3"></div>
+      <span class="iconfont icon-a-ziyuan71 header-6"></span>
+      <div style="flex:1"></div>
+      <span class="iconfont icon-a-ziyuan68 header-7"></span>
     </div>
     <div class="searchbox">
       <div class="group">
@@ -395,7 +402,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .ddei_editor_toolbox {
   user-select: none;
   text-align: center;
@@ -404,6 +411,44 @@ export default {
   display: flex;
   flex-flow: column;
   height: 100%;
+
+  /**以下为收折框 */
+  .header {
+    background: #F5F6F7;
+    border: 1px solid #D5D5DF;
+    flex: 0 0 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0px 8px;
+
+    .header-1 {
+      flex: 0 1 17px
+    }
+
+    .header-2 {
+      font-size: 12px;
+    }
+
+    .header-3 {
+      flex: 0 1 8px
+    }
+
+    .header-4 {
+      font-size: 14px;
+      flex: 0 1 58px;
+      font-weight: bold;
+      color: #000000;
+    }
+
+    .header-6 {
+      font-size: 5px
+    }
+
+    .header-7 {
+      font-size: 11px;
+    }
+  }
 }
 
 /**以下为分割线 */
@@ -411,28 +456,9 @@ export default {
   border: 0.5px solid rgb(240, 240, 240);
   width: 93%;
   margin: auto 4px 5px 7px;
+
 }
 
-/**以下为收折框 */
-.ddei_editor_toolbox .expandbox {
-  flex: 0 0 38px;
-  height: 38px;
-  text-align: right;
-}
-
-.ddei_editor_toolbox .expandbox .img {
-  width: 30px;
-  height: 24px;
-  padding: 4px 4px;
-  margin-top: 6px;
-  margin-right: 2px;
-  border-radius: 4px;
-}
-
-.ddei_editor_toolbox .expandbox .img:hover {
-  background-color: rgb(244, 244, 244);
-  cursor: pointer;
-}
 
 /**以下为搜索框 */
 .ddei_editor_toolbox .searchbox {

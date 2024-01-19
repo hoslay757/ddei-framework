@@ -1,8 +1,10 @@
 import { fileURLToPath, URL } from 'node:url'
 
+
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'node:path'
+import px2rem from "postcss-px2rem"
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -14,6 +16,19 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
+  css: {
+    postcss: {
+      plugins: [
+        px2rem({
+          remUnit: 192,
+          remUnit: 192
+        })
+      ]
+    }
+  }
+
+
+
 
   // [vite库模式配置](https://cn.vitejs.dev/guide/build.html#library-mode)
   // build: {
