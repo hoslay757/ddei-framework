@@ -117,7 +117,6 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-right: 1px solid #E2E2EB;
     padding: 0px 4px;
 
     >part {
@@ -182,7 +181,6 @@ export default {
     font-family: "Microsoft YaHei";
     font-weight: 400;
     color: #9D9D9D;
-    border-right: 1px solid #E2E2EB;
   }
 }
 </style>

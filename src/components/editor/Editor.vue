@@ -534,7 +534,7 @@ export default {
 }
 
 .ddei_editor .body .left {
-  flex: 0 0 291px;
+  flex: 0 1 292px;
   border: 1px solid #D5D5DF;
 }
 
@@ -545,9 +545,8 @@ export default {
 }
 
 .ddei_editor .body .right {
-  flex: 0 0 300px;
-  display: flex;
-  flex-direction: column;
+  flex: 0 1 292px;
+  border: 1px solid #D5D5DF;
 }
 </style>
 <style>

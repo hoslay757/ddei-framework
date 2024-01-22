@@ -2,75 +2,80 @@
   <div id="ddei_editor_propertyview"
     :class="{ 'ddei_editor_propertyview': true, 'ddei_editor_propertyview_disabled': propertyDisabled }"
     @mousedown="changeEditorFocus">
-    <div class="ddei_editor_pv_group_view">
-      <div class="ddei_editor_pv_group_view_expandbox" @click="hidOrShowPV">
-        <img class="ddei_editor_pv_group_view_expandbox_img"
-          :src="editor?.rightWidth > 38 ? expandRightImg : expandLeftImg" />
-      </div>
-      <div class="ddei_editor_pv_group_view_items">
-        <div
-          :class="topGroup.selected ? 'ddei_editor_pv_group_view_items_item_selected' : 'ddei_editor_pv_group_view_items_item'"
-          v-for="topGroup in topGroups" v-show="!topGroup?.empty" @click="changeTopGroup(topGroup)"
-          :title="topGroup.name">
-          <img class="img" :src="topGroup.img" />
-        </div>
-      </div>
+    <div class="header">
+      <span class="iconfont icon-a-ziyuan68 header-7"></span>
+      <div style="flex:1"></div>
+      <span class="iconfont icon-a-ziyuan130 header-7" style="color:red"></span>
+      <div class="header-1"></div>
+      <span class="iconfont icon-a-ziyuan67 header-7"></span>
     </div>
-
-    <div class="ddei_editor_pv_subgroup_view" v-show="editor?.rightWidth > 38">
-      <div class="ddei_editor_pv_subgroup_view_tab_title">
-        <div
-          :class="currentTopGroup?.subGroups.length > 1 && subGroup.selected ? 'ddei_editor_pv_subgroup_view_tab_title_item_selected' : 'ddei_editor_pv_subgroup_view_tab_title_item'"
-          v-show="!subGroup.empty" v-for="subGroup in currentTopGroup?.subGroups" :title="subGroup.name"
-          @mouseup="changeSubGroup(subGroup)">{{
-            subGroup.name }}</div>
-      </div>
-      <div class="ddei_editor_pv_subgroup_view_tab_panel"
-        :style="{ height: 'calc(100vh - ' + (editor?.topHeight + editor?.bottomHeight + 40) + 'px' }">
-        <div
-          :class="{ 'ddei_editor_pv_subgroup_view_tab_panel_editors_column': attrDefine.display == 'column', 'ddei_editor_pv_subgroup_view_tab_panel_editors_row': attrDefine.display != 'column', 'empty_value': attrDefine.value ? false : true }"
-          v-for="attrDefine in currentSubGroup?.children" :title="attrDefine.desc"
-          v-show="attrDefine?.visiable && !attrDefine?.forceHidden">
-          <div class="title" v-if="!attrDefine.hiddenTitle && attrDefine?.visiable != false">{{ attrDefine.name }}<span
-              v-if="attrDefine.notNull">*</span>：
-          </div>
-          <div class="editor" v-if="attrDefine.visiable != false">
-            <PVTextEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
-              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'text'">
-            </PVTextEditor>
-            <PVTextAreaEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
-              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'textarea'">
-            </PVTextAreaEditor>
-            <PVRangeEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
-              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'range'"></PVRangeEditor>
-            <PVColorEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
-              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'color'"></PVColorEditor>
-            <PVRadioEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
-              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'radio'"></PVRadioEditor>
-            <PVFontSizeEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
-              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'font-size'">
-            </PVFontSizeEditor>
-            <PVAlignTypeEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
-              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'align-type'">
-            </PVAlignTypeEditor>
-            <PVComboxEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
-              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'combox'">
-            </PVComboxEditor>
-            <PVBorderTypeEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
-              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'border-type'">
-            </PVBorderTypeEditor>
-            <PVFillTypeEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
-              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'fill-type'">
-            </PVFillTypeEditor>
-            <PVExCheckboxEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
-              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'ex-checkbox'">
-            </PVExCheckboxEditor>
-            <PVSwitchCheckboxEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
-              v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'switch-checkbox'">
-            </PVSwitchCheckboxEditor>
+    <div class="content">
+      <div class="ddei_editor_pv_subgroup_view" v-show="editor?.rightWidth > 38">
+        <div class="ddei_editor_pv_subgroup_view_tab_title">
+          <div
+            :class="currentTopGroup?.subGroups.length > 1 && subGroup.selected ? 'ddei_editor_pv_subgroup_view_tab_title_item_selected' : 'ddei_editor_pv_subgroup_view_tab_title_item'"
+            v-show="!subGroup.empty" v-for="subGroup in currentTopGroup?.subGroups" :title="subGroup.name"
+            @mouseup="changeSubGroup(subGroup)">{{
+              subGroup.name }}</div>
+        </div>
+        <div class="ddei_editor_pv_subgroup_view_tab_panel" :style="panelStyle">
+          <div
+            :class="{ 'ddei_editor_pv_subgroup_view_tab_panel_editors_column': attrDefine.display == 'column', 'ddei_editor_pv_subgroup_view_tab_panel_editors_row': attrDefine.display != 'column', 'empty_value': attrDefine.value ? false : true }"
+            v-for="attrDefine in currentSubGroup?.children" :title="attrDefine.desc"
+            v-show="attrDefine?.visiable && !attrDefine?.forceHidden">
+            <div class="title" v-if="!attrDefine.hiddenTitle && attrDefine?.visiable != false">{{ attrDefine.name }}<span
+                v-if="attrDefine.notNull">*</span>：
+            </div>
+            <div class="editor" v-if="attrDefine.visiable != false">
+              <PVTextEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+                v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'text'">
+              </PVTextEditor>
+              <PVTextAreaEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+                v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'textarea'">
+              </PVTextAreaEditor>
+              <PVRangeEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+                v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'range'"></PVRangeEditor>
+              <PVColorEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+                v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'color'"></PVColorEditor>
+              <PVRadioEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+                v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'radio'"></PVRadioEditor>
+              <PVFontSizeEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+                v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'font-size'">
+              </PVFontSizeEditor>
+              <PVAlignTypeEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+                v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'align-type'">
+              </PVAlignTypeEditor>
+              <PVComboxEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+                v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'combox'">
+              </PVComboxEditor>
+              <PVBorderTypeEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+                v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'border-type'">
+              </PVBorderTypeEditor>
+              <PVFillTypeEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+                v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'fill-type'">
+              </PVFillTypeEditor>
+              <PVExCheckboxEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+                v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'ex-checkbox'">
+              </PVExCheckboxEditor>
+              <PVSwitchCheckboxEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+                v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'switch-checkbox'">
+              </PVSwitchCheckboxEditor>
+            </div>
           </div>
         </div>
       </div>
+      <div class="ddei_editor_pv_group_view">
+        <div class="ddei_editor_pv_group_view_items">
+          <div
+            :class="topGroup.selected ? 'ddei_editor_pv_group_view_items_item_selected' : 'ddei_editor_pv_group_view_items_item'"
+            v-for="topGroup in topGroups" v-show="!topGroup?.empty" @click="changeTopGroup(topGroup)"
+            :title="topGroup.name">
+            <span :class="'iconfont ' + 'img ' + topGroup.img"></span>
+          </div>
+        </div>
+      </div>
+
+
     </div>
   </div>
 </template>
@@ -95,7 +100,6 @@ import PVBorderTypeEditor from "./editors/PVBorderTypeEditor.vue";
 import PVFillTypeEditor from "./editors/PVFillTypeEditor.vue";
 import PVExCheckboxEditor from "./editors/PVExCheckboxEditor.vue";
 import PVSwitchCheckboxEditor from "./editors/PVSwitchCheckboxEditor.vue";
-import ICONS from "../js/icon";
 import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
 import DDeiEnumOperateType from "../../framework/js/enums/operate-type";
 export default {
@@ -107,8 +111,6 @@ export default {
     return {
       //当前编辑器
       editor: null,
-      expandLeftImg: ICONS["icon-expand-left"],
-      expandRightImg: ICONS["icon-expand-right"],
       //当前被选中控件的引用
       selectedModels: null,
       //属性定义的引用
@@ -118,7 +120,8 @@ export default {
       currentTopGroup: null,
       currentSubGroup: null,
       reFresh: true,
-      propertyDisabled: false
+      propertyDisabled: false,
+      panelStyle: "height:calc(100vh - 202px)"
     };
   },
   computed: {},
@@ -252,86 +255,20 @@ export default {
             attrDefine.model = layer;
           });
           firstControlDefine.groups.forEach(topGroup => {
-            topGroup.img = ICONS[topGroup.icon];
+            topGroup.img = topGroup.icon
           });
           layerControlDefine.groups.forEach(topGroup => {
-            topGroup.img = ICONS[topGroup.icon];
+            topGroup.img = topGroup.icon
           });
           topGroups = layerControlDefine.groups.concat(firstControlDefine.groups)
 
         }
-        //对table的包含属性进行特殊处理
-        // else if (firstControlDefine.type == "DDeiTable") {
-        //   if (firstControlDefine.subcontrol) {
-        //     //获取单元格子控件信息，叠加到当前控件定义中
-        //     let subControlDefine = cloneDeep(
-        //       controlOriginDefinies.get(firstControlDefine.subcontrol)
-        //     );
-        //     if (subControlDefine) {
-        //       //同步引用关系
-        //       firstControlDefine.styles.img = ICONS["icon-table"];
-        //       firstControlDefine.styles.name = "表格";
-        //       this.syncAttrsToGroup(
-        //         firstControlDefine,
-        //         firstControlDefine.styles
-        //       );
-        //       topGroups = [];
-
-        //       if (firstModel.curRow > -1 && firstModel.curCol > -1) {
-        //         let selectedCell =
-        //           firstModel.rows[firstModel.curRow][firstModel.curCol];
-        //         if (selectedCell) {
-        //           subControlDefine.attrDefineMap.forEach(
-        //             (attrDefine, attrKey) => {
-        //               //当前属性的定义
-        //               let curAttrDefine =
-        //                 subControlDefine.attrDefineMap.get(attrKey);
-        //               attrDefine.value = DDeiUtil.getDataByPathList(
-        //                 selectedCell,
-        //                 curAttrDefine.code,
-        //                 curAttrDefine.mapping
-        //               );
-        //               attrDefine.model = selectedCell;
-        //             }
-        //           );
-        //           this.syncAttrsToGroup(
-        //             subControlDefine,
-        //             subControlDefine.styles
-        //           );
-        //           this.syncAttrsToGroup(
-        //             subControlDefine,
-        //             subControlDefine.datas
-        //           );
-        //           this.syncAttrsToGroup(
-        //             subControlDefine,
-        //             subControlDefine.events
-        //           );
-        //           firstControlDefine.subStyles = subControlDefine.styles;
-        //           firstControlDefine.datas = subControlDefine.datas;
-        //           firstControlDefine.events = subControlDefine.events;
-        //           firstControlDefine.subStyles.img = ICONS["icon-fill"];
-        //           firstControlDefine.datas.img = ICONS["icon-data"];
-        //           firstControlDefine.events.img = ICONS["icon-event"];
-        //           topGroups.push(firstControlDefine.datas);
-        //           topGroups.push(firstControlDefine.subStyles);
-        //           topGroups.push(firstControlDefine.events);
-        //         }
-        //       }
-
-        //       topGroups.push(firstControlDefine.styles);
-        //     }
-        //   }
-        // } 
         else {
           //同步引用关系
           firstControlDefine.groups.forEach(topGroup => {
-            topGroup.img = ICONS[topGroup.icon];
+            topGroup.img = topGroup.icon
           });
           topGroups = firstControlDefine.groups
-          // //如果属性不存在，则读取下层元素的控件内容
-          // if (topGroups?.length == 0 && models.length == 1 && models[0].baseModelType == 'DDeiContainer' && models[0].layout == 'compose') {
-          //   topGroups = this.getFirstChildAttrsGroup(models[0])
-          // }
         }
         if (topGroups?.length > 0) {
           //上一次编辑的名称
@@ -405,6 +342,15 @@ export default {
         }
         this.editor.currentControlDefine = null;
       }
+      setTimeout(() => {
+        let e1 = document.getElementById("ddei_editor_frame_top")
+        let e2 = document.getElementById("ddei_editor_frame_bottom")
+        let e3 = document.getElementsByClassName("ddei_editor_ofsview")[0]
+        let e4 = document.getElementsByClassName("ddei_editor_pv_subgroup_view_tab_title")[0]
+
+        this.panelStyle = "height:calc(100vh - " + (e1.clientHeight + e2.clientHeight + e3.clientHeight + e4.clientHeight + 5) + "px"
+      }, 10);
+
     },
 
     getFirstChildAttrsGroup(control) {
@@ -638,14 +584,37 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .ddei_editor_propertyview {
-  flex: 1;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
   background: rgb(254, 254, 255);
-  border: 1pt solid rgb(235, 235, 239);
   display: flex;
   user-select: none;
+
+  .header {
+    background: #F5F6F7;
+    border-bottom: 1px solid #D5D5DF;
+    flex: 0 0 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0px 8px;
+
+    .header-1 {
+      flex: 0 1 8px
+    }
+
+    .header-7 {
+      font-size: 11px;
+    }
+
+  }
+
+  .content {
+    flex: 1;
+    display: flex;
+  }
 }
 
 .ddei_editor_propertyview_disabled {
@@ -659,65 +628,43 @@ export default {
 }
 
 .ddei_editor_pv_group_view {
-  flex: 0 0 36px;
+  flex: 0 0 21px;
   display: flex;
   flex-flow: column;
-  border-right: 1pt solid rgb(235, 235, 239);
-}
-
-.ddei_editor_pv_group_view_expandbox {
-  flex: 0 0 30px;
-  display: inherit;
-}
-
-.ddei_editor_pv_group_view_expandbox:hover {
-  background: rgb(235, 235, 239);
-  cursor: pointer;
-}
-
-.ddei_editor_pv_group_view_expandbox_img {
-  width: 34px;
-  height: 26px;
-  padding: 4px 4px;
-  margin-top: 2px;
-  margin-left: 1px;
-  filter: brightness(60%);
+  border-left: 1px solid #E0E3E9;
 }
 
 .ddei_editor_pv_group_view_items {
   flex: 1;
   display: flex;
   flex-flow: column;
+
+  .ddei_editor_pv_group_view_items_item {
+    flex: 0 0 16px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .ddei_editor_pv_group_view_items_item_selected {
+    flex: 0 0 16px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+
+    >span {
+      color: #1F72FF;
+    }
+  }
 }
 
-.ddei_editor_pv_group_view_items_item {
-  flex: 0 0 36px;
-  display: inherit;
-}
 
-.ddei_editor_pv_group_view_items_item .img {
-  width: 32px;
-  height: 32px;
-  padding: 4px 4px;
-  margin-top: 2px;
-  margin-left: 3px;
-  filter: brightness(50%);
-}
-
-.ddei_editor_pv_group_view_items_item_selected {
-  flex: 0 0 36px;
-  display: inherit;
-  background: rgb(1, 126, 255);
-}
-
-.ddei_editor_pv_group_view_items_item_selected .img {
-  width: 32px;
-  height: 32px;
-  padding: 4px 4px;
-  margin-top: 2px;
-  margin-left: 3px;
-  filter: brightness(100);
-}
 
 .ddei_editor_pv_subgroup_view {
   flex: 1;
@@ -726,7 +673,7 @@ export default {
 }
 
 .ddei_editor_pv_subgroup_view_tab_title {
-  flex: 0 0 30px;
+  flex: 0 0 35px;
   display: flex;
   border-bottom: 1pt solid rgb(235, 235, 239);
   color: grey;
@@ -735,24 +682,29 @@ export default {
 .ddei_editor_pv_subgroup_view_tab_title_item {
   flex: 1;
   text-align: center;
-  line-height: normal;
-  font-size: 15px;
-  margin: auto;
-  font-weight: bold;
+  font-size: 12px;
+  font-weight: 400;
+  color: #8D8D8D;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .ddei_editor_pv_subgroup_view_tab_title_item_selected {
   flex: 1;
   text-align: center;
-  line-height: normal;
-  font-size: 15px;
-  margin: auto;
-  font-weight: bold;
-  color: rgb(1, 126, 255);
+  font-size: 12px;
+  background-color: #F5F6F7;
+  font-weight: 400;
+  color: #1F72FF;
+  border-bottom: 3px solid #1F72FF;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .ddei_editor_pv_subgroup_view_tab_title_item:hover {
-  color: rgb(1, 126, 255);
+  color: #1F72FF;
   cursor: pointer;
 }
 

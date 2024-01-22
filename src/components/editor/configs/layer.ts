@@ -103,7 +103,7 @@ export default {
   groups: [
     {
       name: "背景",
-      icon: 'icon-background',
+      icon: 'icon-a-ziyuan83',
       subGroups: [
         {
           name: "背景",

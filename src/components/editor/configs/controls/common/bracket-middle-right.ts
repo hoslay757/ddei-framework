@@ -70,7 +70,7 @@ export default {
       groups: [
         {
           name: "样式",
-          icon: 'icon-config',
+          icon: 'icon-a-ziyuan26',
           subGroups: [
             {
               name: "线条",

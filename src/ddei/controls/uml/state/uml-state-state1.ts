@@ -21,7 +21,7 @@ export default {
       groups: [
         {
           name: "属性",
-          icon: 'icon-config',
+          icon: 'icon-a-ziyuan26',
           subGroups: [
 
             {

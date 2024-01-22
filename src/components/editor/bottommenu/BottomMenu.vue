@@ -204,7 +204,6 @@ export default {
       if (size > this.maxOpenSize && this.openIndex > 0) {
         this.openIndex--;
       }
-      console.log(size)
       this.maxOpenSize = size;
     });
 
@@ -984,7 +983,7 @@ export default {
   float: left;
   height: 21px;
   border-right: 1px solid #CACAD5;
-  width: 70px;
+  padding: 0 5px;
   text-align: center;
 }
 
@@ -997,7 +996,7 @@ export default {
   display: block;
 }
 
-.ddei_editor_bottommenu_page:hover {
+.ddei_editor_bottommenu_page span:hover {
   color: #1F72FF;
   cursor: pointer;
   background: #EBEBF5;
@@ -1008,6 +1007,7 @@ export default {
   height: 21px;
   border-right: 1px solid #CACAD5;
   width: 70px;
+  padding: 0 5px;
   text-align: center;
 }
 
