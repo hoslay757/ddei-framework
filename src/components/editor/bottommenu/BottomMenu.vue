@@ -1,67 +1,67 @@
 <template>
   <div id="ddei_editor_bottommenu" class="ddei_editor_bottommenu">
     <div class="ddei_editor_bottommenu_addpage" @click="newSheet" v-if="allowOpenMultSheets">
-      <div>
-        <img src="../icons/icon-add.png" />
-      </div>
+      <span class="iconfont icon-a-ziyuan148"></span>
     </div>
     <div class="ddei_editor_bottommenu_pages">
+      <div class="ddei_editor_bottommenu_page" v-if="!editor">
+        <span></span>
+      </div>
       <div draggable="true" v-if="allowOpenMultSheets" @dragstart="sheetDragStart(null, $event)"
         @click.left="changeSheet(index)" @click.right="showMenu(sheet, $event)" @dragover="sheetDragOver($event)"
         @drop="sheetDragDrop($event)" @dragleave="sheetDragCancel($event)" @dblclick="startChangeSheetName(sheet, $event)"
         v-show="index >= openIndex && index < openIndex + maxOpenSize"
         :class="{ 'ddei_editor_bottommenu_page': sheet.active == 0, 'ddei_editor_bottommenu_page_selected': sheet.active == 1 }"
         :title="sheet.name" v-for="(sheet, index) in  editor?.files[editor?.currentFileIndex]?.sheets ">
-        {{ sheet.name }}
+        <span>{{ sheet.name }}</span>
       </div>
 
       <div class="ddei_editor_bottommenu_pages_movebox"
         v-show="editor?.files[editor?.currentFileIndex]?.sheets?.length > maxOpenSize" @click="moveItem(-1)">
-        <img src="../icons/icon-left.png" />
+        <span class="iconfont icon-a-ziyuan74"></span>
       </div>
       <div class="ddei_editor_bottommenu_pages_movebox"
         v-show="editor?.files[editor?.currentFileIndex]?.sheets?.length > maxOpenSize" @click="moveItem(1)">
-        <img src="../icons/icon-right.png" />
+        <span class="iconfont icon-a-ziyuan73"></span>
       </div>
     </div>
+
     <div class="ddei_editor_bottommenu_shapecount">
-      <div>
-        形状数: {{ editor?.files[editor?.currentFileIndex]?.modelNumber }}
-      </div>
+      形状数: {{ editor?.files[editor?.currentFileIndex]?.modelNumber }}
     </div>
+
     <div class="ddei_editor_bottommenu_layers" v-if="allowOpenMultLayers"
       @click="showDialog('ddei_editor_bottommenu_other_layers_dialog', $event)">
-      <div>
-        <img src="../icons/icon-layers.png" />
+      <span class="iconfont icon-a-ziyuan58"></span>
+    </div>
+
+    <div class="ddei_editor_bottommenu_other_play">
+      <span class="iconfont icon-a-ziyuan117"></span>
+    </div>
+
+
+    <div class="ddei_editor_bottommenu_other_changesize" v-if="allowStageRatio">
+      <div class="ddei_editor_bottommenu_other_changesize_combox"
+        @click="showDialog('ddei_editor_bottommenu_other_changesize_dialog', $event)">
+        <span>
+          {{ parseInt(currentStage?.ratio * 100) }}%
+        </span>
+        <span class="iconfont iconfont-small icon-a-ziyuan71"></span>
+      </div>
+      <div @click="addRatio(-0.05)">
+        <span class="iconfont icon-a-ziyuan148"></span>
+      </div>
+      <input type="range" min="0.1" max="4" step="0.1" v-model="stageRatio" />
+      <div @click="addRatio(0.05)">
+        <span class="iconfont icon-a-ziyuan148"></span>
       </div>
     </div>
-    <div class="ddei_editor_bottommenu_other">
-      <div class="ddei_editor_bottommenu_other_play">
-        <div>
-          <img src="../icons/icon-play.png" />
-        </div>
-      </div>
-      <div class="ddei_editor_bottommenu_other_changesize" v-if="allowStageRatio">
-        <div class="ddei_editor_bottommenu_other_changesize_combox"
-          @click="showDialog('ddei_editor_bottommenu_other_changesize_dialog', $event)">
-          <span>
-            {{ parseInt(currentStage?.ratio * 100) }}%
-          </span>
-          <img style="width:8px;height:8px;margin-top:9px;" width="8px" height="8px"
-            src="../icons/toolbox-expanded.png" />
-        </div>
-        <div @click="addRatio(-0.05)">
-          <img src="../icons/icon-reduce.png" />
-        </div>
-        <input type="range" min="0.1" max="4" step="0.1" v-model="stageRatio" />
-        <div>
-          <img src="../icons/icon-add.png" @click="addRatio(0.05)" />
-        </div>
-        <div>
-          <img src="../icons/icon-screen-width.png" title="整页" @click="autoRatio(1)" />
-        </div>
-      </div>
+
+    <div class="ddei_editor_bottommenu_all_page_ratio" v-if="allowStageRatio" @click="autoRatio(1)" title="整页">
+      <span class="iconfont icon-a-ziyuan182"></span>
     </div>
+
+
     <div id="ddei_editor_bottommenu_other_changesize_dialog" v-if="allowStageRatio"
       class="ddei_editor_bottommenu_other_changesize_dialog"
       v-show="dialogShow == 'ddei_editor_bottommenu_other_changesize_dialog'">
@@ -142,6 +142,7 @@
         </div>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -189,10 +190,21 @@ export default {
   created() {
     // 监听obj对象中prop属性的变化
     this.$watch("editor.middleWidth", function (newVal, oldVal) {
-      let size = parseInt((document.body.offsetWidth - 770) / 67);
+      //获取单个tab大小
+      let pageEles = document.getElementsByClassName("ddei_editor_bottommenu_page")
+      let width = 0;
+
+      if (pageEles.length > 0) {
+        width = pageEles[0].clientWidth
+      }
+      if (!width) {
+        width = 70
+      }
+      let size = parseInt(newVal / width);
       if (size > this.maxOpenSize && this.openIndex > 0) {
         this.openIndex--;
       }
+      console.log(size)
       this.maxOpenSize = size;
     });
 
@@ -930,41 +942,28 @@ export default {
 </script>
 
 <style scoped>
+.iconfont {
+  font-size: 14px;
+}
+
 .ddei_editor_bottommenu {
-  background: rgb(225, 225, 225);
+  height: 38px;
   display: flex;
   color: black;
+  justify-content: center;
+  align-items: center;
 }
 
 .ddei_editor_bottommenu_addpage {
-  flex: 0 0 40px;
-  height: 35px;
-  padding-top: 5px;
-}
-
-.ddei_editor_bottommenu_addpage div {
-  height: 24px;
-  margin-left: 12px;
-  padding-right: 5px;
+  flex: 0 0 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   border-right: 1px solid rgb(235, 235, 235);
-}
-
-.ddei_editor_bottommenu_addpage img:hover {
-  filter: brightness(40%);
-  cursor: pointer;
-}
-
-.ddei_editor_bottommenu_addpage img {
-  filter: brightness(60%);
-  margin-top: 3px;
-  width: 18px;
-  height: 18px;
 }
 
 .ddei_editor_bottommenu_pages {
   flex: 1;
-  height: 35px;
-  padding-top: 5px;
   display: block;
   font-size: 13px;
   text-align: center;
@@ -972,7 +971,6 @@ export default {
 
 .ddei_editor_bottommenu_pages_movebox {
   width: 25px;
-  height: 25px;
   float: left;
   text-align: center;
 }
@@ -982,22 +980,17 @@ export default {
   cursor: pointer;
 }
 
-.ddei_editor_bottommenu_pages_movebox img {
-  filter: brightness(60%);
-  margin-top: 4px;
-  width: 16px;
-  height: 16px;
-}
-
 .ddei_editor_bottommenu_page {
   float: left;
-  height: 24px;
-  margin-left: 5px;
-  padding-right: 5px;
-  padding-left: 5px;
-  border-right: 1px solid rgb(235, 235, 235);
-  padding-top: 2px;
-  width: 65px;
+  height: 21px;
+  border-right: 1px solid #CACAD5;
+  width: 70px;
+  text-align: center;
+}
+
+.ddei_editor_bottommenu_page span {
+  height: 21px;
+  width: 60px;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -1005,140 +998,102 @@ export default {
 }
 
 .ddei_editor_bottommenu_page:hover {
-  color: #017fff;
+  color: #1F72FF;
   cursor: pointer;
+  background: #EBEBF5;
 }
 
 .ddei_editor_bottommenu_page_selected {
   float: left;
-  height: 24px;
-  margin-left: 5px;
-  padding-right: 5px;
-  padding-left: 5px;
-  color: #017fff;
-  font-weight: bold;
-  border-right: 1px solid rgb(235, 235, 235);
-  padding-top: 2px;
-  width: 65px;
+  height: 21px;
+  border-right: 1px solid #CACAD5;
+  width: 70px;
+  text-align: center;
+}
+
+.ddei_editor_bottommenu_page_selected span {
+  height: 21px;
+  width: 60px;
+  background: #EBEBF5;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+  display: block;
+  color: #1F72FF;
+  font-weight: bold;
 }
 
 .ddei_editor_bottommenu_shapecount {
   flex: 0 0 100px;
-  height: 35px;
-  padding-top: 5px;
   display: block;
   font-size: 14px;
   text-align: center;
 }
 
-.ddei_editor_bottommenu_shapecount div {
-  height: 24px;
-  padding-top: 1px;
-  border-right: 1px solid rgb(235, 235, 235);
-  border-left: 1px solid rgb(235, 235, 235);
-}
-
 .ddei_editor_bottommenu_layers {
   flex: 0 0 35px;
-  height: 35px;
-  padding-top: 5px;
-}
-
-.ddei_editor_bottommenu_layers div {
-  height: 24px;
-  margin-left: 5px;
-  padding-right: 5px;
-  border-right: 1px solid rgb(235, 235, 235);
-}
-
-.ddei_editor_bottommenu_layers img:hover {
-  filter: brightness(40%);
-  cursor: pointer;
-}
-
-.ddei_editor_bottommenu_layers img {
-  margin-top: 2px;
-  width: 22px;
-  height: 22px;
-}
-
-.ddei_editor_bottommenu_other {
-  height: 35px;
-  padding-top: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .ddei_editor_bottommenu_other_play {
-  float: left;
+  flex: 0 0 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.ddei_editor_bottommenu_other_play div {
-  float: left;
-  height: 24px;
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-top: 2px;
-  border-right: 1px solid rgb(235, 235, 235);
-}
+.ddei_editor_bottommenu_all_page_ratio {
+  flex: 0 0 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-.ddei_editor_bottommenu_other_play img:hover {
-  filter: brightness(20%);
-  cursor: pointer;
-}
-
-.ddei_editor_bottommenu_other_play img {
-  filter: brightness(40%);
-  width: 20px;
-  height: 20px;
 }
 
 .ddei_editor_bottommenu_other_changesize {
-  float: left;
+  flex: 0 0 157px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .ddei_editor_bottommenu_other_changesize span {
   float: left;
+  margin-left: 5px;
+  margin-right: 5px;
 }
 
 .ddei_editor_bottommenu_other_changesize div {
   float: left;
   padding-left: 5px;
   padding-right: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .ddei_editor_bottommenu_other_changesize_combox {
-  width: 60px;
+  float: left;
+  padding-left: 5px;
+  padding-right: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .ddei_editor_bottommenu_other_changesize_combox:hover {
   background-color: rgb(235, 235, 235);
-  float: left;
 
-  padding-left: 5px;
-  padding-right: 5px;
   cursor: pointer;
 }
+
 
 .ddei_editor_bottommenu_other_changesize input {
   float: left;
   width: 100px;
-  margin-top: 4px;
   border-radius: 4px;
-}
-
-.ddei_editor_bottommenu_other_changesize img {
-  filter: brightness(40%);
-  width: 20px;
-  height: 20px;
-  float: left;
-  margin-top: 2px;
-}
-
-.ddei_editor_bottommenu_other_changesize img:hover {
-  filter: brightness(20%);
-  cursor: pointer;
 }
 
 /**以下是设置缩放比例的弹出框 */

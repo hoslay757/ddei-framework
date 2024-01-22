@@ -1,7 +1,7 @@
 <template>
   <div id="ddei_editor_ofsview" @mousedown="changeEditorFocus()" class="ddei_editor_ofsview">
     <div v-show="this.editor?.leftWidth == 0" class="ddei_editor_ofsview_expandbox" @click="expandToolBox">
-      <img width="25" height="16" src="../icons/icon-expand-right.png" />
+      <span class="iconfont icon-a-ziyuan67"></span>
     </div>
     <div
       :class="item.active == 1 ? 'ddei_editor_ofsview_item ddei_editor_ofsview_item_selected' : 'ddei_editor_ofsview_item'"
@@ -439,10 +439,11 @@ export default {
      * 展开工具栏
      */
     expandToolBox() {
-      let deltaX = 220;
+
+      let deltaX = window.leftWidth;
       let frameLeftElement = document.getElementById("ddei_editor_frame_left");
-      this.editor.leftWidth = 220;
-      frameLeftElement.style.flexBasis = "220px";
+      this.editor.leftWidth = window.leftWidth;
+      frameLeftElement.style.flexBasis = window.leftWidth + "px";
       //重新设置画布大小
       this.editor.middleWidth -= deltaX;
       this.editor.ddInstance.render.setSize(
@@ -451,6 +452,7 @@ export default {
         0,
         0
       );
+      delete window.leftWidth
       this.editor.ddInstance.render.drawShape();
     },
     /**
@@ -477,8 +479,9 @@ export default {
 
 .ddei_editor_ofsview_expandbox {
   flex: 0 0 30px;
-  height: 25px;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .ddei_editor_ofsview_expandbox:hover {

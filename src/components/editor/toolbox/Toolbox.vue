@@ -8,7 +8,7 @@
       <div class="header-3"></div>
       <span class="iconfont icon-a-ziyuan71 header-6"></span>
       <div style="flex:1"></div>
-      <span class="iconfont icon-a-ziyuan68 header-7"></span>
+      <span class="iconfont icon-a-ziyuan68 header-7" @click="hiddenToolBox"></span>
     </div>
     <div class="searchbox">
       <div class="group">
@@ -110,6 +110,7 @@ export default {
     hiddenToolBox() {
       let deltaX = this.editor.leftWidth;
       let frameLeftElement = document.getElementById("ddei_editor_frame_left");
+      window.leftWidth = this.editor.leftWidth
       this.editor.leftWidth = 0;
       frameLeftElement.style.flexBasis = "0px";
       //重新设置画布大小
