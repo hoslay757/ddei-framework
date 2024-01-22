@@ -9,7 +9,7 @@
       @dragover="fileDragOver($event)" @drop="fileDragDrop($event)" @dragleave="fileDragCancel($event)"
       v-for="(item, i) in editor?.files"
       v-show="i >= openIndex && ((i - openIndex + 1) * 160 + 40) <= editor?.middleWidth" :title="item.name">
-      <span class="iconfont icon-a-ziyuan33 icon"></span>
+      <span class="iconfont icon-a-ziyuan22 icon"></span>
       <span class="textcontent">
         <div class="text" @dblclick="startChangeFileName(item, $event)">{{ item.name }}</div>
         <div class="dirty" v-show="item.state != 0">ꔷ</div>
@@ -18,10 +18,10 @@
     </div>
     <div style="flex:1 1 1px"></div>
     <div class="ddei_editor_ofsview_movebox" v-show="editor?.files?.length > maxOpenSize" @click="moveItem(-1)">
-      <img width="16" height="16" src="../icons/icon-left.png" />
+      <span class="iconfont icon-a-ziyuan74"></span>
     </div>
     <div class="ddei_editor_ofsview_movebox" v-show="editor?.files?.length > maxOpenSize" @click="moveItem(1)">
-      <img width="16" height="16" src="../icons/icon-right.png" />
+      <span class="iconfont icon-a-ziyuan73"></span>
     </div>
     <div id="close_file_confirm_dialog" class="close_file_confirm_dialog">
       <div class="close_file_confirm_dialog_content">
@@ -467,10 +467,10 @@ export default {
 
 <style scoped>
 .ddei_editor_ofsview {
-  flex: 0 0 30px;
+  flex: 0 0 30.5px;
   background: #F5F6F7;
-  border-top: 1px solid rgb(235, 235, 239);
-  border-bottom: 1px solid rgb(235, 235, 239);
+  border-top: 1px solid #E0E3E9;
+  border-bottom: 1px solid #E0E3E9;
   display: flex;
   user-select: none;
 }
@@ -493,8 +493,9 @@ export default {
 
 .ddei_editor_ofsview_movebox {
   flex: 0 0 25px;
-  height: 25px;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .ddei_editor_ofsview_movebox:hover {
@@ -509,10 +510,10 @@ export default {
 
 .ddei_editor_ofsview_item {
   flex: 0 0 195px;
-  background: #FFFFFF;
   display: flex;
   justify-content: center;
   align-items: center;
+  border-right: 1px solid #D5D5DF;
 }
 
 .ddei_editor_ofsview_item .iconfont {
@@ -521,7 +522,7 @@ export default {
 
 .ddei_editor_ofsview_item .icon {
   font-size: 14px;
-  margin-left: 15px;
+  margin-left: 25px;
 }
 
 .ddei_editor_ofsview_item .close {
@@ -533,6 +534,8 @@ export default {
   flex: 0 0 140px;
   width: 140px;
   display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .ddei_editor_ofsview_item .textcontent .text {
@@ -550,34 +553,25 @@ export default {
   width: 10px;
   flex: 0 0 10px;
   font-size: 16px;
-  margin-top: -2.5px;
-}
-
-.ddei_editor_ofsview_item div img:hover {
-  background: rgb(200, 200, 200);
-  cursor: pointer;
 }
 
 .ddei_editor_ofsview_item:hover {
-  background: rgb(247, 247, 247);
+  background: white;
 }
 
-.ddei_editor_ofsview_item_selected span .text {
+.ddei_editor_ofsview_item_selected {
+  background: white;
+}
+
+.ddei_editor_ofsview_item_selected .textcontent .text {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
   flex: 1;
-  color: #017fff;
+  color: black;
   font-weight: bold !important;
 }
 
-.ddei_editor_ofsview_item_selected span .dirty {
-  color: red;
-  width: 10px;
-  flex: 0 0 10px;
-  font-size: 16px;
-  margin-top: -2.5px;
-}
 
 /**以下为询问框的样式 */
 .close_file_confirm_dialog {

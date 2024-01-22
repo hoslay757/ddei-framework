@@ -406,7 +406,6 @@ export default {
   user-select: none;
   text-align: center;
   background: rgb(254, 254, 255);
-  border: 1pt solid rgb(235, 235, 239);
   display: flex;
   flex-flow: column;
   height: 100%;
@@ -414,7 +413,7 @@ export default {
   /**以下为收折框 */
   .header {
     background: #F5F6F7;
-    border: 1px solid #D5D5DF;
+    border-bottom: 1px solid #D5D5DF;
     flex: 0 0 30px;
     display: flex;
     justify-content: center;
@@ -561,6 +560,7 @@ export default {
 
 .ddei_editor_toolbox .groups .group {
   text-align: center;
+  margin-bottom: 1px;
 }
 
 .ddei_editor_toolbox .groups .group .box {

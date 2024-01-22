@@ -383,7 +383,7 @@ class DDeiStageCanvasRender {
       fontSize *= rat1
       ctx.font = fontSize + "px Microsoft YaHei"
       ctx.lineWidth = 1
-      ctx.strokeStyle = "rgb(190,190,190)"
+      ctx.strokeStyle = "#E0E3E9"
       ctx.fillStyle = "white"
       let cwidth = canvas.width;
       let cheight = canvas.height;
@@ -406,10 +406,16 @@ class DDeiStageCanvasRender {
       if (ruleDisplay == 1 || ruleDisplay == "1") {
         //横向尺子背景
         ctx.fillRect(0, 0, cwidth, weight)
-        ctx.strokeRect(0, 0, cwidth, weight)
+        ctx.moveTo(cwidth, 0)
+        ctx.lineTo(cwidth, weight)
+        ctx.lineTo(0, weight)
+        ctx.stroke()
         //纵向尺子背景
         ctx.fillRect(0, 0, weight, cheight)
-        ctx.strokeRect(0, 0, weight, cheight)
+        ctx.moveTo(0, cheight)
+        ctx.lineTo(weight, cheight)
+        ctx.lineTo(weight, 0)
+        ctx.stroke()
       }
 
 
@@ -594,7 +600,12 @@ class DDeiStageCanvasRender {
       //左上角空白
       ctx.fillStyle = 'white'
       ctx.fillRect(0, 0, weight, weight)
-      ctx.strokeRect(0, 0, weight, weight)
+      ctx.moveTo(0, weight)
+      ctx.lineTo(weight, weight)
+      ctx.stroke()
+      ctx.moveTo(weight, 0)
+      ctx.lineTo(weight, weight)
+      ctx.stroke()
 
       ctx.restore();
     }

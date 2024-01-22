@@ -535,6 +535,7 @@ export default {
 
 .ddei_editor .body .left {
   flex: 0 0 291px;
+  border: 1px solid #D5D5DF;
 }
 
 .ddei_editor .body .middle {
