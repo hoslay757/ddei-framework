@@ -10,7 +10,6 @@ import DDeiStage from "@/components/framework/js/models/stage";
 import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type";
 import DDeiEditorEnumBusCommandType from "../enums/editor-command-type";
 import DDeiEditorState from "../enums/editor-state";
-import { before } from "lodash";
 
 class DDeiEditorUtil {
 
@@ -437,6 +436,69 @@ class DDeiEditorUtil {
     } else {
       return DDeiEditor[key];
     }
+  }
+
+  /**
+   * 打开弹出框
+   * @param id 弹出框ID
+   * @param data 数据以及回调函数等选项
+   * @param pos 位置信息
+   * @param el 事件的➗元素
+   */
+  static showDialog(id: string, data: object, pos: object, el: object) {
+
+    let backEle = document.getElementById("dialog_background_div");
+    if (data.background) {
+      backEle.style.background = data.background;
+      backEle.style.display = "block";
+      if (data.opacity) {
+        backEle.style.opacity = data.opacity;
+      }
+    }
+    if (data.event == -1) {
+      backEle.style.pointerEvents = "auto";
+    } else {
+      backEle.style.pointerEvents = "";
+    }
+
+    let dialog = document.getElementById(id);
+    dialog.style.display = "block";
+    let msgEle = dialog?.getElementsByClassName("msg")[0];
+    msgEle.innerHTML = "";
+    if (data.msg) {
+      msgEle.innerHTML = data.msg;
+    }
+    if (!DDeiEditor.ACTIVE_INSTANCE.tempDialogData) {
+      DDeiEditor.ACTIVE_INSTANCE.tempDialogData = {}
+    }
+    //记录临时变量
+    DDeiEditor.ACTIVE_INSTANCE.tempDialogData[id] = data
+    //设置位置信息
+    if (pos?.type) {
+      switch (pos.type) {
+        //整页居中
+        case 1: {
+
+        } break;
+      }
+    }
+
+  }
+
+
+  /**
+   * 关闭弹出框
+   * @param id 
+   */
+  static closeDialog(id: string) {
+    let dialog = document.getElementById(id);
+    dialog.style.display = "none";
+    if (DDeiEditor.ACTIVE_INSTANCE.tempDialogData) {
+      DDeiEditor.ACTIVE_INSTANCE.tempDialogData[id] = null
+    }
+    let backEle = document.getElementById("dialog_background_div");
+    backEle.style.background = "none"
+    backEle.style.display = "none";
   }
 }
 

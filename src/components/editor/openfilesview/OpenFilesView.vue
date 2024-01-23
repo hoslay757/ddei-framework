@@ -23,19 +23,6 @@
     <div class="ddei_editor_ofsview_movebox" v-show="editor?.files?.length > maxOpenSize" @click="moveItem(1)">
       <span class="iconfont icon-a-ziyuan73"></span>
     </div>
-    <div id="close_file_confirm_dialog" class="close_file_confirm_dialog">
-      <div class="close_file_confirm_dialog_content">
-        当前文件已经被修改，是否保存？
-      </div>
-      <div class="close_file_confirm_dialog_button">
-        <div class="button" style="color:white;background-color: #017fff;" @click="saveAndCloseFileConfirmDialog">保 存
-        </div>
-        <div class="button" style="border-left:0.1px solid grey;border-right:0.1px solid grey;"
-          @click="abortAndCloseFileConfirmDialog">放 弃
-        </div>
-        <div class="button" @click="cancelCloseFileConfirmDialog">取 消</div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -328,21 +315,12 @@ export default {
       }
     },
 
-    /**
-     * 关闭确认弹框
-     */
-    cancelCloseFileConfirmDialog() {
-      let confirmDialog = document.getElementById("close_file_confirm_dialog");
-      confirmDialog.style.display = "none";
-    },
 
     /**
      * 放弃并关闭确认弹框
      */
     abortAndCloseFileConfirmDialog() {
       this.tempFile.state = DDeiFileState.NONE;
-      let confirmDialog = document.getElementById("close_file_confirm_dialog");
-      confirmDialog.style.display = "none";
       this.closeFile(this.tempFile);
     },
 
@@ -357,6 +335,7 @@ export default {
         if (file) {
           let json = file.toJSON();
           if (json) {
+
             //执行保存
             let storeIns = new DDeiStoreLocal();
             json.state = DDeiFileState.NONE;
@@ -364,10 +343,6 @@ export default {
               //回写ID
               file.id = data;
               file.state = DDeiFileState.NONE;
-              let confirmDialog = document.getElementById(
-                "close_file_confirm_dialog"
-              );
-              confirmDialog.style.display = "none";
               this.closeFile(this.tempFile);
             });
           }
@@ -385,14 +360,16 @@ export default {
         file.state == DDeiFileState.NEW ||
         file.state == DDeiFileState.MODIFY
       ) {
-        let confirmDialog = document.getElementById(
-          "close_file_confirm_dialog"
-        );
-        confirmDialog.style.display = "block";
-
-        let pos = DDeiUtil.getDomAbsPosition(evt.target);
-        confirmDialog.style.left = pos.left + 5 + "px";
-        confirmDialog.style.top = pos.top + 15 + "px";
+        DDeiEditorUtil.showDialog("close_file_confirm_dialog", {
+          msg: '是否保存对"' + file.name + '"的更改？',
+          callback: {
+            abort: this.abortAndCloseFileConfirmDialog,
+            ok: this.saveAndCloseFileConfirmDialog,
+          },
+          background: "white",
+          opacity: "1%",
+          event: -1
+        })
         this.tempFile = file;
       } else {
         //刷新画布
@@ -577,53 +554,5 @@ export default {
   overflow: hidden;
   flex: 1;
   color: black;
-}
-
-
-/**以下为询问框的样式 */
-.close_file_confirm_dialog {
-  width: 250px;
-  height: 120px;
-  background-color: white;
-  display: none;
-  position: absolute;
-  border: 1px solid #017fff;
-  border-radius: 6px;
-  overflow: hidden;
-  z-index: 999;
-}
-
-.close_file_confirm_dialog_content {
-  width: 100%;
-  height: 90px;
-  padding-top: 35px;
-  border-bottom: 0.3px solid grey;
-  color: black;
-  font-size: 15px;
-  font-weight: bold;
-  text-align: center;
-}
-
-.close_file_confirm_dialog_button {
-  width: 100%;
-  height: 30px;
-  color: black;
-  font-size: 15px;
-
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-}
-
-.close_file_confirm_dialog_button div {
-  width: 100%;
-  height: 30px;
-  text-align: center;
-  padding-top: 1px;
-  margin: auto;
-}
-
-.close_file_confirm_dialog_button div:hover {
-  font-weight: bolder;
-  cursor: pointer;
 }
 </style>

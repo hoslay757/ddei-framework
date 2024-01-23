@@ -1,32 +1,32 @@
 <template>
-  <div>
-    <div id="ddei_editor" class="ddei_editor" @mouseup="mouseUp" @mousemove="mouseMove" @mousedown="mouseDown">
-      <div class="top" id="ddei_editor_frame_top">
-        <TopMenu v-if="refreshTopMenuView"></TopMenu>
+  <div id="ddei_editor" class="ddei_editor" @mouseup="mouseUp" @mousemove="mouseMove" @mousedown="mouseDown">
+    <div class="top" id="ddei_editor_frame_top">
+      <TopMenu v-if="refreshTopMenuView"></TopMenu>
+    </div>
+    <div class="body">
+      <div class="left" id="ddei_editor_frame_left">
+        <Toolbox @createControlPrepare="createControlPrepare"></Toolbox>
       </div>
-      <div class="body">
-        <div class="left" id="ddei_editor_frame_left">
-          <Toolbox @createControlPrepare="createControlPrepare"></Toolbox>
-        </div>
-        <div class="middle" id="ddei_editor_frame_middle">
-          <OpenFilesView v-if="allowOpenMultFiles && refreshOpenFilesView"></OpenFilesView>
-          <CanvasView id="ddei_editor_canvasview"></CanvasView>
-          <QuickColorView v-if="allowQuickColor"></QuickColorView>
-        </div>
-        <div class="right" id="ddei_editor_frame_right">
-          <PropertyView v-if="refreshPropertyView"></PropertyView>
-        </div>
+      <div class="middle" id="ddei_editor_frame_middle">
+        <OpenFilesView v-if="allowOpenMultFiles && refreshOpenFilesView"></OpenFilesView>
+        <CanvasView id="ddei_editor_canvasview"></CanvasView>
+        <QuickColorView v-if="allowQuickColor"></QuickColorView>
       </div>
-      <div class="bottom" id="ddei_editor_frame_bottom">
-        <BottomMenu v-if="refreshBottomMenu"></BottomMenu>
+      <div class="right" id="ddei_editor_frame_right">
+        <PropertyView v-if="refreshPropertyView"></PropertyView>
       </div>
     </div>
-    <MenuDialog v-show="!refreshMenu"></MenuDialog>
+    <div class="bottom" id="ddei_editor_frame_bottom">
+      <BottomMenu v-if="refreshBottomMenu"></BottomMenu>
+    </div>
   </div>
+  <MenuDialog v-show="!refreshMenu"></MenuDialog>
+  <Dialogs></Dialogs>
 </template>
 
 <script lang="ts">
 import { debounce } from "lodash";
+import Dialogs from "./dialogs/Dialogs.vue";
 import DDeiEditor from "./js/editor";
 import TopMenu from "./topmenu/TopMenu.vue";
 import Toolbox from "./toolbox/Toolbox.vue";
@@ -85,6 +85,7 @@ export default {
     CanvasView,
     QuickColorView,
     MenuDialog,
+    Dialogs
   },
   computed: {},
   watch: {},
