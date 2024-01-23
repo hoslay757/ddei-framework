@@ -318,7 +318,7 @@ export default {
   width: calc(100% - 20px);
   border: transparent;
   outline: none;
-  font-size: 13px;
+  font-size: 15px;
   background: transparent;
 }
 
@@ -329,7 +329,7 @@ export default {
   align-items: center;
 
   .iconfont-45 {
-    font-size: 4.5px
+    font-size: 6px
   }
 }
 

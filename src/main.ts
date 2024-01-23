@@ -1,6 +1,5 @@
-import "lib-flexible-computer";
+import './utils/flexible.js';
 import './assets/main.css'
-
 import { createApp } from 'vue'
 import App from '@/App.vue'
 import router from '@/router'

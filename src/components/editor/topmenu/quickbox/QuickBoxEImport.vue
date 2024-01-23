@@ -109,7 +109,7 @@ export default {
 .ddei_editor_eip {
   height: 103px;
   display: grid;
-  grid-template-rows: 23px 57px 23px;
+  grid-template-rows: 20px 57px 26px;
   grid-template-columns: 1fr;
   text-align: center;
 
@@ -168,7 +168,7 @@ export default {
       .text {
         flex: 0 0 20px;
         white-space: nowrap;
-        font-size: 12px;
+        font-size: 14px;
         font-family: "Microsoft YaHei";
         font-weight: 400;
         color: #000000;
@@ -177,7 +177,10 @@ export default {
   }
 
   >tail {
-    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
     font-family: "Microsoft YaHei";
     font-weight: 400;
     color: #9D9D9D;

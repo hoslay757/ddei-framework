@@ -62,7 +62,7 @@ export default {
 .ddei_editor_go_back {
   height: 103px;
   display: grid;
-  grid-template-rows: 23px 57px 23px;
+  grid-template-rows: 20px 57px 26px;
   grid-template-columns: 1fr;
 
   .content {
@@ -96,14 +96,14 @@ export default {
     }
 
     .logo {
-      flex: 0 1 65px;
+      flex: 0 1 75px;
       display: flex;
       justify-content: center;
       align-items: center;
 
       >img {
-        width: 57px;
-        height: 57px;
+        width: 65px;
+        height: 65px;
       }
     }
   }

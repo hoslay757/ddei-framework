@@ -74,7 +74,7 @@ export default {
 
     .h2 {
       flex: 0 0 21px;
-      font-size: 20px
+      font-size: 22px
     }
 
     .h3 {
@@ -99,7 +99,7 @@ export default {
       border-radius: 50%;
       text-align: center;
       flex: 0 0 28px;
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 400;
       color: #FFFFFF;
       cursor: pointer;
@@ -112,7 +112,7 @@ export default {
       align-items: center;
       flex: 0 1 28px;
       height: 14px;
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 400;
       color: #000000;
     }
