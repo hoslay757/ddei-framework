@@ -426,7 +426,7 @@ export default {
     }
 
     .header-2 {
-      font-size: 12px;
+      font-size: 14px;
     }
 
     .header-3 {
@@ -434,18 +434,18 @@ export default {
     }
 
     .header-4 {
-      font-size: 14px;
-      flex: 0 1 58px;
+      font-size: 16px;
+      flex: 0 1 70px;
       font-weight: bold;
       color: #000000;
     }
 
     .header-6 {
-      font-size: 5px
+      font-size: 6px
     }
 
     .header-7 {
-      font-size: 11px;
+      font-size: 13px;
     }
   }
 
@@ -467,7 +467,7 @@ export default {
       align-items: center;
 
       .iconfont {
-        font-size: 14px;
+        font-size: 16px;
         margin: 0 11px;
       }
 
@@ -478,7 +478,7 @@ export default {
         border: transparent;
         outline: none;
         background: transparent;
-        font-size: 14px;
+        font-size: 16px;
         font-weight: 400;
         color: #B8B8B8;
       }
@@ -487,7 +487,7 @@ export default {
         flex: 0 0 42px;
         height: 23px;
         background-color: #017fff;
-        font-size: 14px;
+        font-size: 16px;
         color: white;
         margin: auto 7px auto 5px;
         border-radius: 4px;
@@ -566,7 +566,7 @@ export default {
 
 .ddei_editor_toolbox .groups .group .box {
   display: flex;
-  height: 30px;
+  height: 35px;
   background: #F5F6F7;
   user-select: none;
   justify-content: center;
@@ -591,13 +591,13 @@ export default {
   color: black;
   text-align: left;
   margin-left: 25px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: bold;
 }
 
 .ddei_editor_toolbox .groups .group .box .close {
   margin-right: 15px;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .ddei_editor_toolbox .groups .group .box .close:hover {
@@ -632,7 +632,7 @@ export default {
 .ddei_editor_toolbox .groups .group .item_panel .item .text {
   white-space: nowrap;
   text-align: center;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 400;
   color: #000000;
 }
