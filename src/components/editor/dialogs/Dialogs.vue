@@ -1,10 +1,14 @@
 <template>
   <div id="dialog_background_div" class="dialog_background_div"></div>
-  <CloseFileConfirmDialog></CloseFileConfirmDialog>
+  <CloseFileConfirmDialog v-if="refresh_close_file_confirm_dialog"></CloseFileConfirmDialog>
+  <QCViewDialog v-if="refresh_qcview_dialog"></QCViewDialog>
 </template>
 
 <script lang="ts">
 import CloseFileConfirmDialog from "./CloseFileConfirmDialog.vue";
+import QCViewDialog from "./QCViewDialog.vue";
+import DDeiEditorUtil from "../js/util/editor-util.ts";
+
 export default {
   name: "DDei-Editor-Dialogs",
   extends: null,
@@ -13,18 +17,28 @@ export default {
   data() {
     return {
       //当前编辑器
-      editor: null,
+      refresh_close_file_confirm_dialog: true,
+      refresh_qcview_dialog: true,
     };
   },
   computed: {},
   components: {
     CloseFileConfirmDialog,
+    QCViewDialog,
   },
   watch: {},
   created() { },
   mounted() {
+    DDeiEditorUtil.dialogViewer = this;
   },
   methods: {
+    //强行刷新dialog
+    forceRefreshDialog(dialogId) {
+      this["refresh_" + dialogId] = false;
+      this.$nextTick(() => {
+        this["refresh_" + dialogId] = true;
+      });
+    },
   }
 };
 </script>

@@ -446,42 +446,49 @@ class DDeiEditorUtil {
    * @param el 事件的➗元素
    */
   static showDialog(id: string, data: object, pos: object, el: object) {
-
-    let backEle = document.getElementById("dialog_background_div");
-    if (data.background) {
-      backEle.style.background = data.background;
-      backEle.style.display = "block";
-      if (data.opacity) {
-        backEle.style.opacity = data.opacity;
-      }
-    }
-    if (data.event == -1) {
-      backEle.style.pointerEvents = "auto";
-    } else {
-      backEle.style.pointerEvents = "";
-    }
-
-    let dialog = document.getElementById(id);
-    dialog.style.display = "block";
-    let msgEle = dialog?.getElementsByClassName("msg")[0];
-    msgEle.innerHTML = "";
-    if (data.msg) {
-      msgEle.innerHTML = data.msg;
-    }
     if (!DDeiEditor.ACTIVE_INSTANCE.tempDialogData) {
       DDeiEditor.ACTIVE_INSTANCE.tempDialogData = {}
     }
     //记录临时变量
     DDeiEditor.ACTIVE_INSTANCE.tempDialogData[id] = data
-    //设置位置信息
-    if (pos?.type) {
-      switch (pos.type) {
-        //整页居中
-        case 1: {
-
-        } break;
+    DDeiEditorUtil.dialogViewer.forceRefreshDialog(id)
+    setTimeout(() => {
+      let backEle = document.getElementById("dialog_background_div");
+      if (data.background) {
+        backEle.style.background = data.background;
+        backEle.style.display = "block";
+        if (data.opacity) {
+          backEle.style.opacity = data.opacity;
+        }
       }
-    }
+      if (data.event == -1) {
+        backEle.style.pointerEvents = "auto";
+      } else {
+        backEle.style.pointerEvents = "";
+      }
+      let dialog = document.getElementById(id);
+      dialog.style.display = "block";
+      let msgEle = dialog?.getElementsByClassName("msg")[0];
+      if (msgEle) {
+        msgEle.innerHTML = "";
+        if (data.msg) {
+          msgEle.innerHTML = data.msg;
+        }
+      }
+      //设置位置信息
+      if (pos?.type) {
+        switch (pos.type) {
+          //基于触发元素的底部
+          case 2: {
+            let absPos = DDeiUtil.getDomAbsPosition(el)
+            dialog.style.left = absPos.left + "px"
+            dialog.style.top = (absPos.top - dialog?.clientHeight - el.clientHeight) + "px"
+          } break;
+        }
+      }
+    }, 50);
+
+
 
   }
 

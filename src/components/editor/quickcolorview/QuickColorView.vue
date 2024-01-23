@@ -1,16 +1,9 @@
 <template>
   <div id="ddei_editor_qcview" class="ddei_editor_qcview" v-show="show">
-    <div class="ddei_editor_qcview_type" v-for="item in dataSource" v-show="item.value == mode"
-      @click="showDialog(!dialogShow)" :title="item.text">
+    <div class="ddei_editor_qcview_type" v-for="item in dataSource" v-show="item.value == mode" @click="showDialog($el)"
+      :title="item.text">
       <span :class="item.img" style="color:red"></span>
       <span class="iconfont iconfont-small icon-a-ziyuan71" style="color:red"></span>
-    </div>
-    <div class="ddei_editor_qcview_dialog" v-show="dialogShow">
-      <div class="ddei_editor_qcview_dialog_item" v-for="(item, index) in dataSource" v-show="item.value != mode"
-        :title="item.text" @click="changeMode(item.value)">
-        <span :class="item.img"></span>
-        <div>{{ item.text }}</div>
-      </div>
     </div>
     <div :class="{ 'ddei_editor_qcview_color': true }" v-for="color in  colors "
       :style="{ 'background-color': '' + color }"
@@ -22,6 +15,7 @@
 <script lang="ts">
 import DDeiEnumBusCommandType from "../../framework/js/enums/bus-command-type";
 import DDeiEditor from "../js/editor";
+import DDeiEditorUtil from "../js/util/editor-util";
 export default {
   name: "DDei-Editor-QuickColorMenu",
   extends: null,
@@ -38,7 +32,6 @@ export default {
         { value: 2, text: "边框", img: "iconfont icon-a-ziyuan203" },
         { value: 3, text: "字体", img: "iconfont icon-a-ziyuan189" },
       ],
-      dialogShow: false,
       show: true,
     };
   },
@@ -153,11 +146,25 @@ export default {
   },
   methods: {
     changeMode(m) {
-      this.mode = m;
-      this.showDialog(false);
+      this.mode = m.value;
     },
-    showDialog(show) {
-      this.dialogShow = show;
+
+
+    //打开弹出框
+    showDialog(el) {
+      let dataSource = []
+      this.dataSource.forEach(ds => {
+        if (ds.value != this.mode) {
+          dataSource.push(ds)
+        }
+      });
+      DDeiEditorUtil.showDialog("qcview_dialog", {
+        dataSource: dataSource,
+        callback: {
+          ok: this.changeMode,
+        }
+      },
+        { type: 2 }, el)
     },
     /**
      * 改变模型颜色
@@ -278,40 +285,5 @@ export default {
   outline: 0.5px solid #017fff;
   box-sizing: border-box;
   outline-offset: 0.5px;
-}
-
-.ddei_editor_qcview_dialog {
-  width: 80px;
-  position: absolute;
-  background-color: white;
-  left: 0px;
-  bottom: 16px;
-  height: 55px;
-}
-
-.ddei_editor_qcview_dialog_item {
-  height: 24px;
-  width: 80px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-
-
-.ddei_editor_qcview_dialog_item:hover {
-  background: rgb(235, 235, 239);
-  cursor: pointer;
-}
-
-.ddei_editor_qcview_dialog_item .iconfont {
-  flex: 0 0 20px;
-  padding: 0 5px;
-}
-
-.ddei_editor_qcview_dialog_item div {
-  color: black;
-  font-size: 13px;
-  flex: 1
 }
 </style>
