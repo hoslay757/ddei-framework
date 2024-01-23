@@ -228,7 +228,7 @@ export default {
   display: flex;
 
   .iconfont {
-    font-size: 13px;
+    font-size: 14px;
   }
 }
 </style>

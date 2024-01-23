@@ -1,32 +1,20 @@
 <template>
-  <div id="ddei_editor_qcview"
-       class="ddei_editor_qcview"
-       v-show="show">
-    <div class="ddei_editor_qcview_type"
-         v-for="item in dataSource"
-         v-show="item.value == mode"
-         @click="showDialog(!dialogShow)"
-         :title="item.text">
-      <img style="width:15px;height:15px; filter: brightness(50%);"
-           :src="item.img" />
-      <img style="width:6px;height:6px;margin-top:4px;"
-           src="../icons/toolbox-expanded.png" />
+  <div id="ddei_editor_qcview" class="ddei_editor_qcview" v-show="show">
+    <div class="ddei_editor_qcview_type" v-for="item in dataSource" v-show="item.value == mode"
+      @click="showDialog(!dialogShow)" :title="item.text">
+      <span :class="item.img" style="color:red"></span>
+      <span class="iconfont iconfont-small icon-a-ziyuan71" style="color:red"></span>
     </div>
-    <div class="ddei_editor_qcview_dialog"
-         v-show="dialogShow">
-      <div class="ddei_editor_qcview_dialog_item"
-           v-for="(item, index) in dataSource"
-           v-show="item.value != mode"
-           :title="item.text"
-           @click="changeMode(item.value)">
-        <img :src="item.img" />
+    <div class="ddei_editor_qcview_dialog" v-show="dialogShow">
+      <div class="ddei_editor_qcview_dialog_item" v-for="(item, index) in dataSource" v-show="item.value != mode"
+        :title="item.text" @click="changeMode(item.value)">
+        <span :class="item.img"></span>
         <div>{{ item.text }}</div>
       </div>
     </div>
-    <div :class="{ 'ddei_editor_qcview_color': true }"
-         v-for="color in  colors "
-         :style="{ 'background-color': '' + color }"
-         @click="editor?.ddInstance?.stage?.selectedModels?.size > 0 && changeModelColor(color, $event)">
+    <div :class="{ 'ddei_editor_qcview_color': true }" v-for="color in  colors "
+      :style="{ 'background-color': '' + color }"
+      @click="editor?.ddInstance?.stage?.selectedModels?.size > 0 && changeModelColor(color, $event)">
     </div>
   </div>
 </template>
@@ -34,8 +22,6 @@
 <script lang="ts">
 import DDeiEnumBusCommandType from "../../framework/js/enums/bus-command-type";
 import DDeiEditor from "../js/editor";
-import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
-import ICONS from "../js/icon";
 export default {
   name: "DDei-Editor-QuickColorMenu",
   extends: null,
@@ -48,9 +34,9 @@ export default {
       //当前编辑的模式，1填充，2边框，3字体
       mode: 1,
       dataSource: [
-        { value: 1, text: "填充", img: ICONS["icon-fill"] },
-        { value: 2, text: "边框", img: ICONS["icon-style-line"] },
-        { value: 3, text: "字体", img: ICONS["icon-font-color"] },
+        { value: 1, text: "填充", img: "iconfont icon-a-ziyuan148" },
+        { value: 2, text: "边框", img: "iconfont icon-a-ziyuan203" },
+        { value: 3, text: "字体", img: "iconfont icon-a-ziyuan189" },
       ],
       dialogShow: false,
       show: true,
@@ -253,7 +239,18 @@ export default {
   flex: 0 0 30px;
   height: 14px;
   width: 20px;
-  padding-left: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.iconfont {
+  font-size: 12px;
+}
+
+.iconfont-small {
+  margin-left: 4px;
+  font-size: 4px !important;
 }
 
 .ddei_editor_qcview_type:hover {
@@ -295,28 +292,26 @@ export default {
 .ddei_editor_qcview_dialog_item {
   height: 24px;
   width: 80px;
-  padding-left: 5px;
-  margin-bottom: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
+
 
 .ddei_editor_qcview_dialog_item:hover {
   background: rgb(235, 235, 239);
   cursor: pointer;
 }
 
-.ddei_editor_qcview_dialog_item img {
-  display: block;
-  float: left;
-  width: 22px;
-  height: 22px;
-  margin-right: 10px;
-  filter: brightness(50%);
+.ddei_editor_qcview_dialog_item .iconfont {
+  flex: 0 0 20px;
+  padding: 0 5px;
 }
 
 .ddei_editor_qcview_dialog_item div {
   color: black;
-  font-size: 12px;
-  float: left;
-  margin-top: 2px;
+  font-size: 13px;
+  flex: 1
 }
 </style>

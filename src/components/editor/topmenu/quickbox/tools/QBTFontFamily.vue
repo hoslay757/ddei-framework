@@ -294,7 +294,7 @@ export default {
 
 .ddei_editor_quick_fat_item_fontfamily {
   background-color: white;
-  height: 22px;
+  height: 24px;
   display: flex;
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
@@ -318,7 +318,7 @@ export default {
   width: calc(100% - 20px);
   border: transparent;
   outline: none;
-  font-size: 15px;
+  font-size: 14px;
   background: transparent;
 }
 
@@ -329,7 +329,7 @@ export default {
   align-items: center;
 
   .iconfont-45 {
-    font-size: 6px
+    font-size: 5px
   }
 }
 
@@ -344,7 +344,7 @@ export default {
   gap: 4px;
   overflow: auto;
   color: black;
-  font-size: 13px;
+  font-size: 14px;
   width: 170px;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 20px 20px 20px 20px 20px;
@@ -352,7 +352,7 @@ export default {
 
 .ddei_editor_quick_fat_item_fontfamily_combox_dialog .itembox {
   outline: none;
-  font-size: 13px;
+  font-size: 14px;
   margin: auto;
   background: transparent;
   display: table;

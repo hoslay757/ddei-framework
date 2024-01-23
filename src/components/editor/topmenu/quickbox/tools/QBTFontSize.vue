@@ -326,7 +326,7 @@ export default {
 
 .ddei_editor_quick_fat_item_fontsize {
   background-color: white;
-  height: 22px;
+  height: 24px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -349,7 +349,7 @@ export default {
   width: calc(100% - 20px);
   border: transparent;
   outline: none;
-  font-size: 13px;
+  font-size: 14px;
   background: transparent;
 
 }
@@ -361,7 +361,7 @@ export default {
   align-items: center;
 
   .iconfont-45 {
-    font-size: 4.5px
+    font-size: 5px
   }
 }
 

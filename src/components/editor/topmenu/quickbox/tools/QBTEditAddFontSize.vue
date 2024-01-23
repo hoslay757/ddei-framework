@@ -186,7 +186,7 @@ export default {
   text-align: center;
 
   .iconfont {
-    font-size: 13px;
+    font-size: 14px;
   }
 }
 </style>
