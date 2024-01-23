@@ -942,15 +942,16 @@ export default {
 
 <style scoped>
 .iconfont {
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .ddei_editor_bottommenu {
-  height: 38px;
+  height: 50px;
   display: flex;
   color: black;
   justify-content: center;
   align-items: center;
+  font-size: 16px;
 }
 
 .ddei_editor_bottommenu_addpage {
@@ -964,7 +965,6 @@ export default {
 .ddei_editor_bottommenu_pages {
   flex: 1;
   display: block;
-  font-size: 13px;
   text-align: center;
 }
 
@@ -981,19 +981,20 @@ export default {
 
 .ddei_editor_bottommenu_page {
   float: left;
-  height: 21px;
+  height: 27px;
   border-right: 1px solid #CACAD5;
-  padding: 0 5px;
+  padding: 0 10px;
   text-align: center;
 }
 
 .ddei_editor_bottommenu_page span {
-  height: 21px;
-  width: 60px;
+  height: 27px;
+  width: 80px;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  display: block;
+  display: inline-flex;
+  align-items: center;
 }
 
 .ddei_editor_bottommenu_page span:hover {
@@ -1004,29 +1005,28 @@ export default {
 
 .ddei_editor_bottommenu_page_selected {
   float: left;
-  height: 21px;
+  height: 27px;
   border-right: 1px solid #CACAD5;
-  width: 70px;
-  padding: 0 5px;
+  padding: 0 10px;
   text-align: center;
 }
 
 .ddei_editor_bottommenu_page_selected span {
-  height: 21px;
-  width: 60px;
+  height: 27px;
+  width: 80px;
   background: #EBEBF5;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  display: block;
   color: #1F72FF;
   font-weight: bold;
+  display: inline-flex;
+  align-items: center;
 }
 
 .ddei_editor_bottommenu_shapecount {
   flex: 0 0 100px;
   display: block;
-  font-size: 14px;
   text-align: center;
 }
 
@@ -1085,7 +1085,6 @@ export default {
 
 .ddei_editor_bottommenu_other_changesize_combox:hover {
   background-color: rgb(235, 235, 235);
-
   cursor: pointer;
 }
 

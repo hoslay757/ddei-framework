@@ -374,7 +374,7 @@ class DDeiStageCanvasRender {
       //标尺的固定显示大小
       let weight = 16 * rat1;
       ctx.save();
-      let fontSize = 11
+      let fontSize = 9.5
       if (stageRatio <= 0.5) {
         fontSize -= 1
       } else if (stageRatio <= 0.25) {

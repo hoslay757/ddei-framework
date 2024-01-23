@@ -673,7 +673,7 @@ export default {
 }
 
 .ddei_editor_pv_subgroup_view_tab_title {
-  flex: 0 0 35px;
+  flex: 0 0 46px;
   display: flex;
   border-bottom: 1pt solid rgb(235, 235, 239);
   color: grey;
@@ -682,7 +682,7 @@ export default {
 .ddei_editor_pv_subgroup_view_tab_title_item {
   flex: 1;
   text-align: center;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 400;
   color: #8D8D8D;
   display: flex;
@@ -693,11 +693,11 @@ export default {
 .ddei_editor_pv_subgroup_view_tab_title_item_selected {
   flex: 1;
   text-align: center;
-  font-size: 12px;
+  font-size: 16px;
   background-color: #F5F6F7;
   font-weight: 400;
   color: #1F72FF;
-  border-bottom: 3px solid #1F72FF;
+  border-bottom: 4px solid #1F72FF;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -779,6 +779,7 @@ export default {
   padding-left: 10px;
   margin: auto 0;
   margin-bottom: 5px;
+  font-size: 14px;
 }
 
 .ddei_editor_pv_subgroup_view_tab_panel_editors_column .editor {
@@ -803,6 +804,7 @@ export default {
   text-overflow: ellipsis;
   /*溢出部分用省略号表示*/
   margin: auto 0;
+  font-size: 14px;
 }
 
 .ddei_editor_pv_subgroup_view_tab_panel_editors_row .editor {

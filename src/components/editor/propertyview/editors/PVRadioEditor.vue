@@ -227,7 +227,7 @@ export default {
 .ddei_pv_editor_radio .itembox {
   height: 24px;
   outline: none;
-  font-size: 13px;
+  font-size: 14px;
   margin: 0;
   padding-top: 2px;
   background: transparent;
