@@ -167,10 +167,10 @@ export default {
       input.style.width = ele.offsetWidth + "px";
       input.style.height = ele.offsetHeight - 3 + "px";
       input.style.left = domPos.left + "px";
-      input.style.top = domPos.top + "px";
+      input.style.top = (domPos.top + 2) + "px";
       input.style.border = "none";
       input.style.outline = "none";
-      input.style.borderBottom = "2px solid #017fff";
+      input.style.borderBottom = "1px solid #1F72FF";
       input.style.borderRadius = "1px";
       input.value = file.name;
       input.style.display = "block";
@@ -221,14 +221,14 @@ export default {
                 e.clientX <= pos.left + children[targetIndex].offsetWidth
               ) {
                 this.changeFileIndex = targetIndex;
-                children[targetIndex].style.borderRight = "2px solid #017fff";
+                children[targetIndex].style.borderRight = "2px solid #1F72FF";
               } else {
                 this.changeFileIndex = targetIndex - 1;
-                children[targetIndex].style.borderLeft = "2px solid #017fff";
+                children[targetIndex].style.borderLeft = "2px solid #1F72FF";
               }
             } else {
               this.changeFileIndex = targetIndex - 1;
-              children[targetIndex].style.borderLeft = "2px solid #017fff";
+              children[targetIndex].style.borderLeft = "2px solid #1F72FF";
             }
           }
 
@@ -467,7 +467,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .ddei_editor_ofsview {
   flex: 0 0 30.5px;
   background: #F5F6F7;
@@ -516,26 +516,31 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  border-right: 1px solid #D5D5DF;
+  border-right: 1px solid #B3B4B4;
+
+
 }
+
 
 .ddei_editor_ofsview_item .iconfont {
   flex: 0 0 25px;
 }
 
 .ddei_editor_ofsview_item .icon {
-  font-size: 14px;
-  margin-left: 25px;
+  font-size: 16px;
+  flex: 0 0 42px;
+  text-align: center;
 }
 
 .ddei_editor_ofsview_item .close {
-  font-size: 10px;
+  font-size: 12px;
+  flex: 0 0 24px;
 }
 
 .ddei_editor_ofsview_item .textcontent {
-  font-size: 13px;
-  flex: 0 0 140px;
-  width: 140px;
+  font-size: 15px;
+  flex: 0 0 130px;
+  width: 130px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -547,7 +552,7 @@ export default {
   overflow: hidden;
   color: black;
   flex: 1;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 400;
 }
 
@@ -555,11 +560,11 @@ export default {
   color: red;
   width: 10px;
   flex: 0 0 10px;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .ddei_editor_ofsview_item:hover {
-  background: white;
+  background: #E9E7F0;
 }
 
 .ddei_editor_ofsview_item_selected {
@@ -572,7 +577,6 @@ export default {
   overflow: hidden;
   flex: 1;
   color: black;
-  font-weight: bold !important;
 }
 
 

@@ -1,52 +1,41 @@
 <template>
   <div class="ddei_pv_editor_aligntype">
-    <PVBaseCombox :attrDefine="attrDefine"
-                  ref="combox"
-                  :canSearch="false">
+    <PVBaseCombox :attrDefine="attrDefine" ref="combox" :canSearch="false">
       <div class="ddei_pv_editor_aligntype_items">
         <div :class="{ 'ddei_pv_editor_aligntype_item': true, 'ddei_pv_editor_aligntype_item_selected': value == 1 }"
-             style="text-align:left"
-             @click="valueChange(1, $event)">
+          style="text-align:left" @click="valueChange(1, $event)">
           <div style="vertical-align: top;">左上</div>
         </div>
         <div :class="{ 'ddei_pv_editor_aligntype_item': true, 'ddei_pv_editor_aligntype_item_selected': value == 2 }"
-             style="text-align:center"
-             @click="valueChange(2, $event)">
+          style="text-align:center" @click="valueChange(2, $event)">
           <div style="vertical-align: top;">中上</div>
         </div>
         <div :class="{ 'ddei_pv_editor_aligntype_item': true, 'ddei_pv_editor_aligntype_item_selected': value == 3 }"
-             style="text-align:right"
-             @click="valueChange(3, $event)">
+          style="text-align:right" @click="valueChange(3, $event)">
           <div style="vertical-align: top;">右上</div>
         </div>
         <div :class="{ 'ddei_pv_editor_aligntype_item': true, 'ddei_pv_editor_aligntype_item_selected': value == 4 }"
-             style="text-align:left"
-             @click="valueChange(4, $event)">
+          style="text-align:left" @click="valueChange(4, $event)">
           <div style="vertical-align: middle;">左中</div>
         </div>
         <div :class="{ 'ddei_pv_editor_aligntype_item': true, 'ddei_pv_editor_aligntype_item_selected': value == 5 }"
-             style="text-align:center"
-             @click="valueChange(5, $event)">
+          style="text-align:center" @click="valueChange(5, $event)">
           <div style="vertical-align: middle;">正中</div>
         </div>
         <div :class="{ 'ddei_pv_editor_aligntype_item': true, 'ddei_pv_editor_aligntype_item_selected': value == 6 }"
-             style="text-align:right"
-             @click="valueChange(6, $event)">
+          style="text-align:right" @click="valueChange(6, $event)">
           <div style="vertical-align: middle;">右中</div>
         </div>
         <div :class="{ 'ddei_pv_editor_aligntype_item': true, 'ddei_pv_editor_aligntype_item_selected': value == 7 }"
-             style="text-align:left"
-             @click="valueChange(7, $event)">
+          style="text-align:left" @click="valueChange(7, $event)">
           <div style="vertical-align: bottom;">左下</div>
         </div>
         <div :class="{ 'ddei_pv_editor_aligntype_item': true, 'ddei_pv_editor_aligntype_item_selected': value == 8 }"
-             style="text-align:center"
-             @click="valueChange(8, $event)">
+          style="text-align:center" @click="valueChange(8, $event)">
           <div style="vertical-align: bottom;">中下</div>
         </div>
         <div :class="{ 'ddei_pv_editor_aligntype_item': true, 'ddei_pv_editor_aligntype_item_selected': value == 9 }"
-             style="text-align:right"
-             @click="valueChange(9, $event)">
+          style="text-align:right" @click="valueChange(9, $event)">
           <div style="vertical-align: bottom;">右下</div>
         </div>
       </div>
@@ -93,7 +82,7 @@ export default {
     PVBaseCombox,
   },
   watch: {},
-  created() {},
+  created() { },
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
@@ -349,9 +338,7 @@ export default {
 
 <style scoped>
 /**以下为aligntype属性编辑器 */
-.ddei_pv_editor_aligntype {
-  margin-top: 4px;
-}
+.ddei_pv_editor_aligntype {}
 
 .ddei_pv_editor_aligntype_items {
   width: 200px;
@@ -365,7 +352,7 @@ export default {
 
 .ddei_pv_editor_aligntype_item {
   text-align: center;
-  font-size: 12px;
+  font-size: 16px;
   display: table;
   color: black;
   border: 0.5px solid grey;
@@ -375,6 +362,8 @@ export default {
 .ddei_pv_editor_aligntype_item div {
   display: table-cell;
 }
+
+
 
 .ddei_pv_editor_aligntype_item:hover {
   border: 1px solid #017fff;

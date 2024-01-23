@@ -606,7 +606,7 @@ export default {
     }
 
     .header-7 {
-      font-size: 11px;
+      font-size: 13px;
     }
 
   }
@@ -628,7 +628,7 @@ export default {
 }
 
 .ddei_editor_pv_group_view {
-  flex: 0 0 21px;
+  flex: 0 0 28px;
   display: flex;
   flex-flow: column;
   border-left: 1px solid #E0E3E9;
@@ -718,7 +718,7 @@ export default {
   flex-flow: column;
   flex: 1 1 auto;
   color: black;
-  font-size: 13px;
+  font-size: 15px;
   font-family: "Microsoft YaHei";
 }
 
@@ -779,7 +779,7 @@ export default {
   padding-left: 10px;
   margin: auto 0;
   margin-bottom: 5px;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .ddei_editor_pv_subgroup_view_tab_panel_editors_column .editor {
@@ -804,7 +804,7 @@ export default {
   text-overflow: ellipsis;
   /*溢出部分用省略号表示*/
   margin: auto 0;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .ddei_editor_pv_subgroup_view_tab_panel_editors_row .editor {

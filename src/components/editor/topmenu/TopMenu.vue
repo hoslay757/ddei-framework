@@ -113,7 +113,7 @@ export default {
 }
 
 .g2 {
-  flex: 0 1 171px
+  flex: 0 1 172px
 }
 
 .g3 {

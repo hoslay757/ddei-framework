@@ -1045,7 +1045,7 @@ export default {
 }
 
 .ddei_editor_bottommenu_all_page_ratio {
-  flex: 0 0 35px;
+  flex: 0 0 50px;
   display: flex;
   align-items: center;
   justify-content: center;

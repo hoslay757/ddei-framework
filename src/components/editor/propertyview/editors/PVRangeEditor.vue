@@ -1,20 +1,10 @@
 <template>
   <div :class="{ 'ddei_pv_editor_range': true, 'ddei_pv_editor_range_disabled': attrDefine.readonly }">
-    <input type="range"
-           :step="attrDefine.step"
-           class="range"
-           :min="attrDefine.min"
-           :max="attrDefine.max"
-           v-model="attrDefine.value"
-           :disabled="attrDefine.readonly" />
+    <input type="range" :step="attrDefine.step" class="range" :min="attrDefine.min" :max="attrDefine.max"
+      v-model="attrDefine.value" :disabled="attrDefine.readonly" />
     <div class="textinput">
-      <input type="number"
-             :step="attrDefine.step"
-             :min="attrDefine.min"
-             :max="attrDefine.max"
-             v-model="attrDefine.value"
-             :disabled="attrDefine.readonly"
-             :placeholder="attrDefine.defaultValue" />
+      <input type="number" :step="attrDefine.step" :min="attrDefine.min" :max="attrDefine.max" v-model="attrDefine.value"
+        :disabled="attrDefine.readonly" :placeholder="attrDefine.defaultValue" />
     </div>
   </div>
 </template>
@@ -187,13 +177,13 @@ export default {
 /**以下为range属性编辑器 */
 .ddei_pv_editor_range {
   border-radius: 4px;
-  height: 24px;
+  height: 28px;
   margin-right: 10px;
   display: flex;
 }
 
 .ddei_pv_editor_range .range {
-  height: 6px;
+  height: 7px;
   width: 60%;
   border: transparent;
   outline: none;
@@ -203,7 +193,7 @@ export default {
 }
 
 .ddei_pv_editor_range_disabled .range {
-  height: 6px;
+  height: 7px;
   width: 60%;
   border: transparent;
   outline: none;
@@ -245,7 +235,7 @@ export default {
   width: 100%;
   border: transparent;
   outline: none;
-  font-size: 13px;
+  font-size: 15px;
   margin: 0px 2%;
   background: transparent;
 }

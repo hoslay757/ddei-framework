@@ -1,8 +1,11 @@
 <template>
-  <div :class="{ 'ddei_pv_editor_switch_excheckbox': true, 'ddei_pv_editor_switch_excheckbox_disabled': attrDefine.readonly }"
-       @click="doCheck(attrDefine,$event)"
-       :style="{'pointer-events':attrDefine.readonly ? 'none':''}">
-    <div :class="{'chk_state':attrDefine.value != 1,'chk_state_checked':attrDefine.value == 1 || (attrDefine.value == null && attrDefine.defaultValue == 1)}"><span>{{attrDefine.value == 1 || (attrDefine.value == null && attrDefine.defaultValue == 1)?'✓':''}}</span></div>
+  <div
+    :class="{ 'ddei_pv_editor_switch_excheckbox': true, 'ddei_pv_editor_switch_excheckbox_disabled': attrDefine.readonly }"
+    @click="doCheck(attrDefine, $event)" :style="{ 'pointer-events': attrDefine.readonly ? 'none' : '' }">
+    <div
+      :class="{ 'chk_state': attrDefine.value != 1, 'chk_state_checked': attrDefine.value == 1 || (attrDefine.value == null && attrDefine.defaultValue == 1) }">
+      <span>{{ attrDefine.value == 1 || (attrDefine.value == null && attrDefine.defaultValue == 1) ? '✓' : '' }}</span>
+    </div>
     <div class="title">{{ attrDefine.name }}</div>
   </div>
 </template>
@@ -40,7 +43,7 @@ export default {
   },
   computed: {},
   watch: {},
-  created() {},
+  created() { },
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
@@ -176,10 +179,10 @@ export default {
 
 .ddei_pv_editor_switch_excheckbox .chk_state {
   border: 1px solid grey;
-  width: 13px;
-  height: 13px;
+  width: 15px;
+  height: 15px;
   margin-right: 10px;
-  margin-top: 4px;
+  margin-top: 5px;
   float: left;
 }
 
@@ -189,17 +192,18 @@ export default {
 
 .ddei_pv_editor_switch_excheckbox .chk_state_checked {
   border: 1px solid grey;
-  width: 13px;
-  height: 13px;
+  width: 15px;
+  height: 15px;
   margin-right: 10px;
-  margin-top: 4px;
+  margin-top: 5px;
   float: left;
   background-color: #017fff;
   color: #fff;
 }
+
 .ddei_pv_editor_switch_excheckbox .chk_state_checked span {
-  margin-top: -4px;
-  margin-left: 0.5px;
+  margin-top: -4.5px;
+  margin-left: 1px;
   display: block;
 }
 </style>

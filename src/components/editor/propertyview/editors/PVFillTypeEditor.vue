@@ -1,14 +1,9 @@
 <template>
   <div :class="{ 'ddei_pv_editor_filltype': true, 'ddei_pv_editor_filltype_disabled': attrDefine.readonly }"
-       :style="{'pointer-events':attrDefine.readonly ? 'none':''}">
-    <div class="itembox"
-         v-for="item in dataSource"
-         @click="checkRadioValue(attrDefine, $event)">
-      <input type="radio"
-             :disabled="attrDefine.readonly"
-             :name="attrDefine.id"
-             :value="item.value"
-             v-model="attrDefine.value" />
+    :style="{ 'pointer-events': attrDefine.readonly ? 'none' : '' }">
+    <div class="itembox" v-for="item in dataSource" @click="checkRadioValue(attrDefine, $event)">
+      <input type="radio" :disabled="attrDefine.readonly" :name="attrDefine.id" :value="item.value"
+        v-model="attrDefine.value" />
       <div>{{ item.text }}</div>
     </div>
   </div>
@@ -49,7 +44,7 @@ export default {
   },
   computed: {},
   watch: {},
-  created() {},
+  created() { },
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
@@ -289,23 +284,23 @@ export default {
 }
 
 .ddei_pv_editor_filltype .itembox {
+  display: flex;
+  justify-content: start;
+  align-items: center;
   height: 24px;
   outline: none;
-  font-size: 13px;
+  font-size: 15px;
   margin: 0;
   padding-top: 2px;
   background: transparent;
 }
 
 .ddei_pv_editor_filltype .itembox input {
-  float: left;
-  width: 14px;
-  height: 14px;
-  margin-top: 3px;
+  width: 16px;
+  height: 16px;
 }
 
 .ddei_pv_editor_filltype .itembox div {
-  float: left;
   margin-left: 15px;
 }
 

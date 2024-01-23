@@ -333,9 +333,7 @@ export default {
 
 <style scoped>
 /**以下为combox属性编辑器 */
-.ddei_pv_editor_combox {
-  margin-top: 4px;
-}
+.ddei_pv_editor_combox {}
 
 .ddei_pv_editor_combox_disabled {}
 

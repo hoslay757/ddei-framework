@@ -291,6 +291,7 @@ export default {
 .ddei_pv_editor_bordertype {
   border-radius: 4px;
   margin-right: 10px;
+
 }
 
 .ddei_pv_editor_bordertype_disabled {
@@ -298,23 +299,23 @@ export default {
 }
 
 .ddei_pv_editor_bordertype .itembox {
+  display: flex;
+  justify-content: start;
+  align-items: center;
   height: 24px;
   outline: none;
-  font-size: 13px;
+  font-size: 15px;
   margin: 0;
   padding-top: 2px;
   background: transparent;
 }
 
 .ddei_pv_editor_bordertype .itembox input {
-  float: left;
-  width: 14px;
-  height: 14px;
-  margin-top: 3px;
+  width: 16px;
+  height: 16px;
 }
 
 .ddei_pv_editor_bordertype .itembox div {
-  float: left;
   margin-left: 15px;
 }
 

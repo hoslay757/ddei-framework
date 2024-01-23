@@ -204,13 +204,13 @@ export default {
 /**以下为range属性编辑器 */
 .ddei_pv_editor_fontsize {
   border-radius: 4px;
-  height: 24px;
+  height: 28px;
   margin-right: 10px;
   display: flex;
 }
 
 .ddei_pv_editor_fontsize .range {
-  height: 6px;
+  height: 7px;
   width: 60%;
   border: transparent;
   outline: none;
@@ -220,7 +220,7 @@ export default {
 }
 
 .ddei_pv_editor_fontsize_disabled .range {
-  height: 6px;
+  height: 7px;
   width: 60%;
   border: transparent;
   outline: none;
@@ -236,6 +236,7 @@ export default {
   padding-right: 5px;
   border: 0.5px solid rgb(210, 210, 210);
   border-radius: 4px;
+  display: flex;
 }
 
 .ddei_pv_editor_fontsize .textinput:hover {
@@ -251,6 +252,7 @@ export default {
   background-color: rgb(210, 210, 210);
   border: 0.5px solid rgb(210, 210, 210);
   border-radius: 4px;
+  display: flex;
 }
 
 .ddei_pv_editor_fontsize_disabled .textinput:hover {
@@ -259,13 +261,11 @@ export default {
 }
 
 .ddei_pv_editor_fontsize .textinput input {
-  width: 50px;
+  flex: 1 1 50px;
   border: transparent;
   outline: none;
-  font-size: 13px;
+  font-size: 15px;
   margin: 0px 2%;
   background: transparent;
-  float: left;
-  margin-top: 3px;
 }
 </style>

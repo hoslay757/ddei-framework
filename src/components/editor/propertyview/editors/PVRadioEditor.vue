@@ -225,23 +225,23 @@ export default {
 }
 
 .ddei_pv_editor_radio .itembox {
+  display: flex;
+  justify-content: start;
+  align-items: center;
   height: 24px;
   outline: none;
-  font-size: 14px;
+  font-size: 15px;
   margin: 0;
   padding-top: 2px;
   background: transparent;
 }
 
 .ddei_pv_editor_radio .itembox input {
-  float: left;
-  width: 14px;
-  height: 14px;
-  margin-top: 3px;
+  width: 16px;
+  height: 16px;
 }
 
 .ddei_pv_editor_radio .itembox div {
-  float: left;
   margin-left: 15px;
 }
 

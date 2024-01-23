@@ -201,13 +201,13 @@ export default {
 /**以下为color属性编辑器 */
 .ddei_pv_editor_color {
   border-radius: 4px;
-  height: 24px;
+  height: 28px;
   margin-right: 10px;
   display: flex;
 }
 
 .ddei_pv_editor_color .color {
-  height: 32px;
+  height: 36px;
 
   width: 60%;
   border: transparent;
@@ -261,7 +261,7 @@ export default {
   width: 100%;
   border: transparent;
   outline: none;
-  font-size: 13px;
+  font-size: 15px;
   margin: 0px 2%;
   background: transparent;
 }
