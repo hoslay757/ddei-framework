@@ -56,14 +56,19 @@ class DDeiBusCommandModelCancelMerge extends DDeiBusCommand {
               insertIndex++
               ddInstance.bus.insert(DDeiEnumBusCommandType.ModelChangeSelect, { models: models, value: DDeiEnumControlState.SELECTED }, evt, insertIndex);
               insertIndex++
+              ddInstance.bus.insert(DDeiEnumBusCommandType.StageChangeSelectModels, null, evt, insertIndex);
+              insertIndex++
             }
           }
         });
+
         ddInstance.bus.insert(DDeiEnumBusCommandType.ClearTemplateVars, null, evt, insertIndex);
         insertIndex++
         ddInstance.bus.insert(DDeiEnumBusCommandType.AddHistroy, null, evt, insertIndex);
+
+        ddInstance.bus.insert(DDeiEnumBusCommandType.NodifyChange, null, evt, insertIndex);
         insertIndex++
-        ddInstance.bus.push(DDeiEnumBusCommandType.NodifyChange);
+
         //渲染图形
         ddInstance.bus.insert(DDeiEnumBusCommandType.RefreshShape, null, evt, insertIndex);
         return true

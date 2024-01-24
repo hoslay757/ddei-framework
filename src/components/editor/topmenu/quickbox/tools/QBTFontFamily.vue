@@ -286,12 +286,12 @@ export default {
   width: calc(100% - 20px);
   border: transparent;
   outline: none;
-  font-size: 14px;
+  font-size: 15px;
   background: transparent;
 }
 
 .ddei_editor_quick_fat_item_fontfamily_combox {
-  height: 22px;
+  height: 24px;
   display: flex;
   justify-content: center;
   align-items: center;

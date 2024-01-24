@@ -1,27 +1,27 @@
 <template>
   <div class="ddei_editor_eip">
-    <header></header>
-    <content>
-      <part>
+    <div class="header"></div>
+    <div class="content">
+      <div class="part">
         <div class="button-v" @click="openFile">
           <span class="iconfont icon-a-ziyuan56"></span>
           <div class="text">导出</div>
         </div>
-      </part>
-      <part>
+      </div>
+      <div class="part">
         <div class="button-v" @click="download">
           <span class="iconfont icon-a-ziyuan66"></span>
           <div class="text">下载</div>
         </div>
-      </part>
-      <part>
+      </div>
+      <div class="part">
         <div class="button-v" @click="publish">
           <span class="iconfont icon-a-ziyuan116"></span>
           <div class="text">发布</div>
         </div>
-      </part>
-    </content>
-    <tail>发布</tail>
+      </div>
+    </div>
+    <div class="tail">发布</div>
     <div class="ddei_editor_eip_file_dialog">
 
     </div>
@@ -113,13 +113,13 @@ export default {
   grid-template-columns: 1fr;
   text-align: center;
 
-  >content {
+  .content {
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 0px 4px;
 
-    >part {
+    .part {
       flex: 1;
       padding: 0px 2px;
       display: flex;
@@ -176,7 +176,7 @@ export default {
     }
   }
 
-  >tail {
+  .tail {
     display: flex;
     justify-content: center;
     align-items: center;

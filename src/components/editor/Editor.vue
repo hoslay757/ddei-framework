@@ -225,14 +225,8 @@ export default {
     },
 
     resetSize() {
-      let width =
-        window.innerWidth ||
-        document.documentElement.clientWidth ||
-        document.body.clientWidth;
-      let height =
-        window.innerHeight ||
-        document.documentElement.clientHeight ||
-        document.body.clientHeight;
+      let width = document.body.scrollWidth
+      let height = document.body.scrollHeight
       if (!window.upSizeWidth || !window.upSizeHeight) {
         window.upSizeWidth = width;
         window.upSizeHeight = height;
@@ -255,7 +249,6 @@ export default {
             this.editor.rightHeight +
             this.editor.middleHeight;
         }
-
         this.editor.ddInstance.render.setSize(
           this.editor.middleWidth,
           this.editor.middleHeight,
@@ -512,11 +505,13 @@ export default {
 
 <style scoped>
 .ddei_editor {
+
   width: 100%;
   height: calc(100vh);
   display: flex;
   flex-direction: column;
   background-color: rgb(240, 240, 240);
+  min-width: 1700px;
 }
 
 .ddei_editor .top {

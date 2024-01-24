@@ -2,7 +2,9 @@
   <div id="ddei_editor_toolbox" v-show="editor?.leftWidth > 0" @mousedown="changeEditorFocus" class="ddei_editor_toolbox">
     <div class="header">
       <div class="header-1"></div>
-      <span class="iconfont header-2 icon-a-ziyuan154"></span>
+      <svg class="icon" aria-hidden="true">
+        <use xlink:href="#icon-gengduotubiao-01"></use>
+      </svg>
       <div class="header-3"></div>
       <div class="header-4">更多图形</div>
       <div class="header-3"></div>

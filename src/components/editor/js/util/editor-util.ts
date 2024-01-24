@@ -436,7 +436,6 @@ class DDeiEditorUtil {
       return DDeiEditor[key];
     }
   }
-
   /**
    * 打开弹出框
    * @param id 弹出框ID

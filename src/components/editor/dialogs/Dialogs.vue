@@ -6,6 +6,10 @@
   <ManageLayersDialog v-if="refresh_managelayers_dialog"></ManageLayersDialog>
   <SelectFontDialog v-if="refresh_selectfont_dialog"></SelectFontDialog>
   <SelectFontSizeDialog v-if="refresh_selectfontsize_dialog"></SelectFontSizeDialog>
+  <PositionDialog v-if="refresh_position_dialog"></PositionDialog>
+  <AlignDialog v-if="refresh_align_dialog"></AlignDialog>
+  <MergeComposeDialog v-if="refresh_mergecompose_dialog"></MergeComposeDialog>
+  <RotateDialog v-if="refresh_rotate_dialog"></RotateDialog>
 </template>
 
 <script lang="ts">
@@ -14,6 +18,10 @@ import ChangeRatioDialog from "./ChangeRatioDialog.vue"
 import ManageLayersDialog from "./ManageLayersDialog.vue"
 import SelectFontDialog from "./SelectFontDialog.vue"
 import SelectFontSizeDialog from "./SelectFontSizeDialog.vue"
+import PositionDialog from "./PositionDialog.vue"
+import AlignDialog from "./AlignDialog.vue"
+import MergeComposeDialog from "./MergeComposeDialog.vue"
+import RotateDialog from "./RotateDialog.vue"
 import QCViewDialog from "./QCViewDialog.vue";
 import DDeiEditorUtil from "../js/util/editor-util.ts";
 
@@ -31,6 +39,10 @@ export default {
       refresh_managelayers_dialog: true,
       refresh_selectfont_dialog: true,
       refresh_selectfontsize_dialog: true,
+      refresh_position_dialog: true,
+      refresh_align_dialog: true,
+      refresh_mergecompose_dialog: true,
+      refresh_rotate_dialog: true,
     };
   },
   computed: {},
@@ -41,6 +53,10 @@ export default {
     ManageLayersDialog,
     SelectFontDialog,
     SelectFontSizeDialog,
+    PositionDialog,
+    AlignDialog,
+    MergeComposeDialog,
+    RotateDialog
   },
   watch: {},
   created() { },

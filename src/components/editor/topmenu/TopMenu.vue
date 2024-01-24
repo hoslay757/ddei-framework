@@ -94,11 +94,13 @@ export default {
 <style lang="less" scoped>
 .ddei_editor_topmenu {
   background: rgb(225, 225, 225);
+
 }
 
 .ddei_editor_topmenu_quickbox {
   background-color: #F5F5F5;
   width: 100%;
+
   height: 103px;
   display: flex;
 }

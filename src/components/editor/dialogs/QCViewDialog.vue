@@ -64,6 +64,7 @@ export default {
   bottom: 16px;
   height: 34px;
 
+
   .iconfont {
     font-size: 12px;
   }

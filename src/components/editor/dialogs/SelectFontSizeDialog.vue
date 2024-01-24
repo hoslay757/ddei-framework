@@ -72,6 +72,7 @@ export default {
   background-color: white;
   height: 310px;
   z-index: 999;
+  user-select: none;
 
   .content {
     width: 100%;

@@ -10,10 +10,10 @@
           <QBTFontSize></QBTFontSize>
         </div>
         <div>
-          <QBTEditAddFontSize :addValue="1" attrCode="font.size" img="iconfont icon-a-ziyuan43"></QBTEditAddFontSize>
+          <QBTEditAddFontSize :addValue="1" attrCode="font.size" img="iconfont icon-a-ziyuan310"></QBTEditAddFontSize>
         </div>
         <div>
-          <QBTEditAddFontSize :addValue="-1" attrCode="font.size" img="iconfont icon-a-ziyuan42"></QBTEditAddFontSize>
+          <QBTEditAddFontSize :addValue="-1" attrCode="font.size" img="iconfont icon-a-ziyuan210"></QBTEditAddFontSize>
         </div>
 
         <div>
@@ -58,19 +58,21 @@
         </div>
 
         <div>
-          <QBTEditBox selectedValue="1" :onlyQuickEdit="true" attrCode="textStyle.subtype" img="iconfont icon-a-ziyuan45">
+          <QBTEditBox selectedValue="1" :onlyQuickEdit="true" attrCode="textStyle.subtype"
+            img="iconfont icon-shangbiao-01-01">
           </QBTEditBox>
         </div>
         <div>
-          <QBTEditBox selectedValue="2" :onlyQuickEdit="true" attrCode="textStyle.subtype" img="iconfont icon-a-ziyuan45">
+          <QBTEditBox selectedValue="2" :onlyQuickEdit="true" attrCode="textStyle.subtype"
+            img="iconfont icon-zhongbiao-01">
           </QBTEditBox>
         </div>
         <div class="b4">
-          <QBTEditBox selectedValue="3" :onlyQuickEdit="true" attrCode="textStyle.subtype" img="iconfont icon-a-ziyuan45">
+          <QBTEditBox selectedValue="3" :onlyQuickEdit="true" attrCode="textStyle.subtype" img="iconfont icon-xiabiao-01">
           </QBTEditBox>
         </div>
         <div class="b5">
-          <QBTEditColor attrCode="textStyle.bgcolor" img="iconfont icon-a-ziyuan55"></QBTEditColor>
+          <QBTEditColor attrCode="textStyle.bgcolor" img="iconfont icon-tianse-01"></QBTEditColor>
         </div>
         <div class="b6">
           <QBTEditColor attrCode="font.color" img="iconfont icon-a-ziyuan55"></QBTEditColor>

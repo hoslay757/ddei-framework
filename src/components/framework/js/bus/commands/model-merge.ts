@@ -90,8 +90,10 @@ class DDeiBusCommandModelMerge extends DDeiBusCommand {
         ddInstance.bus.insert(DDeiEnumBusCommandType.ClearTemplateVars, null, evt, 3);
         ddInstance.bus.push(DDeiEnumBusCommandType.NodifyChange);
         ddInstance.bus.insert(DDeiEnumBusCommandType.AddHistroy, null, evt, 4);
+        ddInstance.bus.insert(DDeiEnumBusCommandType.StageChangeSelectModels, null, evt, 5);
+
         //渲染图形
-        ddInstance.bus.insert(DDeiEnumBusCommandType.RefreshShape, null, evt, 5);
+        ddInstance.bus.insert(DDeiEnumBusCommandType.RefreshShape, null, evt, 6);
         return true;
       }
     }

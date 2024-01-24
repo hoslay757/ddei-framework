@@ -367,13 +367,12 @@ export default {
     justify-content: center;
 
     .title {
-      padding-left: 10px;
       color: black;
       font-weight: bold;
       flex: 0 0 30px;
       width: 100%;
       display: flex;
-      justify-content: start;
+      justify-content: center;
       align-items: center;
       font-size: 16px;
       border-bottom: 1px solid rgb(240, 240, 240);
