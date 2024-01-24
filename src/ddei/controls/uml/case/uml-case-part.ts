@@ -16,7 +16,7 @@ export default {
       groups: [
         {
           name: "样式",
-          icon: 'icon-a-ziyuan26',
+          icon: 'icon-tianse-02-01',
           subGroups: [
             {
               name: "填充",

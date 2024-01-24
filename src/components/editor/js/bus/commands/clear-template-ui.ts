@@ -3,6 +3,7 @@ import type DDeiBus from '@/components/framework/js/bus/bus';
 import DDeiEditorEnumBusCommandType from '../../enums/editor-command-type';
 import DDeiBusCommand from '@/components/framework/js/bus/bus-command';
 import DDeiUtil from '@/components/framework/js/util';
+import DDeiEditorUtil from '../../util/editor-util';
 /**
  * 清理临时UI总线Command
  */
@@ -68,6 +69,10 @@ class DDeiEditorCommandClearTemplateUI extends DDeiBusCommand {
       })
     }
 
+    //清除弹框
+    {
+      DDeiEditorUtil.closeDialogs(["bottom-dialog"])
+    }
 
     //清除右键弹出框
     {

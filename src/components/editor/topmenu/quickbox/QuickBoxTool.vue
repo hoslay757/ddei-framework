@@ -19,7 +19,7 @@
       <div class="part">
         <div :class="{ 'button-v-selected': editor?.editMode == 4, 'button-v': editor?.editMode != 4 }" title="连接线"
           @click="changeEditMode(4)">
-          <span class="iconfont icon-a-ziyuan141" style="color:red"></span>
+          <span class="iconfont icon-tubiaozhizuomoban-01"></span>
           <div class="text">连接线</div>
         </div>
       </div>

@@ -16,8 +16,8 @@ export default {
   },
   computed: {},
   watch: {},
-  created() {},
-  mounted() {},
+  created() { },
+  mounted() { },
   methods: {},
 };
 </script>
@@ -31,5 +31,14 @@ body {
   margin: 0;
   display: block;
   max-width: 100%;
+}
+
+.icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
+  font-size: 18px;
 }
 </style>

@@ -2,8 +2,8 @@
   <div id="ddei_editor_qcview" class="ddei_editor_qcview" v-show="show">
     <div class="ddei_editor_qcview_type" v-for="item in dataSource" v-show="item.value == mode"
       @click="showDialog($event)" :title="item.text">
-      <span :class="item.img" style="color:red"></span>
-      <span class="iconfont iconfont-small icon-a-ziyuan71" style="color:red"></span>
+      <span :class="item.img"></span>
+      <span class="iconfont icon-zhankai-01"></span>
     </div>
     <div :class="{ 'ddei_editor_qcview_color': true }" v-for="color in  colors "
       :style="{ 'background-color': '' + color }"
@@ -28,7 +28,7 @@ export default {
       //当前编辑的模式，1填充，2边框，3字体
       mode: 1,
       dataSource: [
-        { value: 1, text: "填充", img: "iconfont icon-a-ziyuan148" },
+        { value: 1, text: "填充", img: "iconfont icon-tianse-01" },
         { value: 2, text: "边框", img: "iconfont icon-a-ziyuan203" },
         { value: 3, text: "字体", img: "iconfont icon-a-ziyuan189" },
       ],

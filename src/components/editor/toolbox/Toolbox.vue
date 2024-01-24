@@ -6,7 +6,7 @@
       <div class="header-3"></div>
       <div class="header-4">更多图形</div>
       <div class="header-3"></div>
-      <span class="iconfont icon-a-ziyuan71 header-6"></span>
+      <span class="iconfont icon-zhankai-01"></span>
       <div style="flex:1"></div>
       <span class="iconfont icon-a-ziyuan68 header-7" @click="hiddenToolBox"></span>
     </div>
@@ -438,10 +438,6 @@ export default {
       flex: 0 1 70px;
       font-weight: bold;
       color: #000000;
-    }
-
-    .header-6 {
-      font-size: 6px
     }
 
     .header-7 {

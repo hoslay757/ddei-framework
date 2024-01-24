@@ -9,7 +9,10 @@
       @dragover="fileDragOver($event)" @drop="fileDragDrop($event)" @dragleave="fileDragCancel($event)"
       v-for="(item, i) in editor?.files"
       v-show="i >= openIndex && ((i - openIndex + 1) * 160 + 40) <= editor?.middleWidth" :title="item.name">
-      <span class="iconfont icon-a-ziyuan22 icon"></span>
+      <svg class="icon" aria-hidden="true">
+        <use xlink:href="#icon-wenjian01"></use>
+      </svg>
+
       <span class="textcontent">
         <div class="text" @dblclick="startChangeFileName(item, $event)">{{ item.name }}</div>
         <div class="dirty" v-show="item.state != 0">ꔷ</div>

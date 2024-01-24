@@ -6,27 +6,33 @@
         <div
           :class="{ 'button-v-disabled': !isButtonEnable(), 'button-v-selected': isButtonEnable() && dialogShow == 'ddei_editor_quick_sort_position_dialog', 'button-v': isButtonEnable() && dialogShow != 'ddei_editor_quick_sort_position_dialog' }"
           @click="isButtonEnable() && showDialog('ddei_editor_quick_sort_position_dialog', $event)">
-          <span class="iconfont icon-a-ziyuan34"></span>
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan34"></use>
+          </svg>
           <div class="text">位置</div>
-          <span class="iconfont iconfont-small icon-a-ziyuan71"></span>
+          <span class="iconfont icon-zhankai-01"></span>
         </div>
       </part>
       <part>
         <div
           :class="{ 'button-v-disabled': !isButtonEnable(2), 'button-v-selected': isButtonEnable(2) && dialogShow == 'ddei_editor_quick_sort_align_dialog', 'button-v': isButtonEnable(2) && dialogShow != 'ddei_editor_quick_sort_align_dialog' }"
           @click="isButtonEnable(2) && showDialog('ddei_editor_quick_sort_align_dialog', $event)">
-          <span class="iconfont  icon-a-ziyuan7"></span>
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan7"></use>
+          </svg>
           <div class="text">对齐</div>
-          <span class="iconfont iconfont-small icon-a-ziyuan71"></span>
+          <span class="iconfont icon-zhankai-01"></span>
         </div>
       </part>
       <part>
         <div
           :class="{ 'button-v-disabled': !isButtonEnable(), 'button-v-selected': isButtonEnable() && dialogShow == 'ddei_editor_quick_sort_merge_dialog', 'button-v': isButtonEnable() && dialogShow != 'ddei_editor_quick_sort_merge_dialog' }"
           @click="isButtonEnable() && showDialog('ddei_editor_quick_sort_merge_dialog', $event)">
-          <span class="iconfont icon-a-ziyuan28"></span>
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan28"></use>
+          </svg>
           <div class="text">组合</div>
-          <span class="iconfont iconfont-small icon-a-ziyuan71"></span>
+          <span class="iconfont icon-zhankai-01"></span>
         </div>
       </part>
 
@@ -34,9 +40,11 @@
         <div
           :class="{ 'button-v-disabled': !isButtonEnable(), 'button-v-selected': isButtonEnable() && dialogShow == 'ddei_editor_quick_sort_rotate_dialog', 'button-v': isButtonEnable() && dialogShow != 'ddei_editor_quick_sort_rotate_dialog' }"
           @click="isButtonEnable() && showDialog('ddei_editor_quick_sort_rotate_dialog', $event)">
-          <span class="iconfont icon-a-ziyuan101"></span>
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan101"></use>
+          </svg>
           <div class="text">翻转</div>
-          <span class="iconfont iconfont-small icon-a-ziyuan71"></span>
+          <span class="iconfont icon-zhankai-01"></span>
         </div>
       </part>
     </content>
@@ -388,8 +396,9 @@ export default {
         flex: 1;
         height: 50px;
         border-radius: 4px;
-        display: flex;
-        flex-direction: column;
+        margin-top: 10px;
+
+
       }
 
       .button-v:hover {
@@ -402,29 +411,36 @@ export default {
         height: 50px;
         background-color: #e6e6e6;
         border-radius: 4px;
-        display: flex;
-        flex-direction: column;
+        margin-top: 10px;
+
       }
 
       .button-v-disabled {
         flex: 1;
         height: 50px;
+        margin-top: 10px;
         cursor: not-allowed;
-        display: flex;
-        flex-direction: column;
 
         >span {
           color: #bcbcbc;
         }
 
         .text {
-
           color: #bcbcbc;
         }
       }
 
+      .icon {
+        height: 20px;
+      }
+
+      .iconfont {
+        display: block;
+        margin-top: -10px;
+      }
+
       .text {
-        flex: 0 0 20px;
+        height: 20px;
         font-size: 14px;
         white-space: nowrap;
         font-family: "Microsoft YaHei";
