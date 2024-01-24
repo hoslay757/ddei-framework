@@ -2,10 +2,14 @@
   <div id="dialog_background_div" class="dialog_background_div"></div>
   <CloseFileConfirmDialog v-if="refresh_close_file_confirm_dialog"></CloseFileConfirmDialog>
   <QCViewDialog v-if="refresh_qcview_dialog"></QCViewDialog>
+  <ChangeRatioDialog v-if="refresh_changeratio_dialog"></ChangeRatioDialog>
+  <ManageLayersDialog v-if="refresh_managelayers_dialog"></ManageLayersDialog>
 </template>
 
 <script lang="ts">
 import CloseFileConfirmDialog from "./CloseFileConfirmDialog.vue";
+import ChangeRatioDialog from "./ChangeRatioDialog.vue"
+import ManageLayersDialog from "./ManageLayersDialog.vue"
 import QCViewDialog from "./QCViewDialog.vue";
 import DDeiEditorUtil from "../js/util/editor-util.ts";
 
@@ -19,12 +23,16 @@ export default {
       //当前编辑器
       refresh_close_file_confirm_dialog: true,
       refresh_qcview_dialog: true,
+      refresh_changeratio_dialog: true,
+      refresh_managelayers_dialog: true,
     };
   },
   computed: {},
   components: {
     CloseFileConfirmDialog,
     QCViewDialog,
+    ChangeRatioDialog,
+    ManageLayersDialog,
   },
   watch: {},
   created() { },

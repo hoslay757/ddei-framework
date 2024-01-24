@@ -6,6 +6,104 @@
   "description": "ddei的设计图库",
   "glyphs": [
     {
+      "icon_id": "39081025",
+      "name": "填色-01",
+      "font_class": "tianse-01",
+      "unicode": "e6fa",
+      "unicode_decimal": 59130
+    },
+    {
+      "icon_id": "39081024",
+      "name": "填色-02-01",
+      "font_class": "tianse-02-01",
+      "unicode": "e6fb",
+      "unicode_decimal": 59131
+    },
+    {
+      "icon_id": "39080974",
+      "name": "上标",
+      "font_class": "shangbiao-01-01",
+      "unicode": "e634",
+      "unicode_decimal": 58932
+    },
+    {
+      "icon_id": "39080973",
+      "name": "中标",
+      "font_class": "zhongbiao-01",
+      "unicode": "e6d3",
+      "unicode_decimal": 59091
+    },
+    {
+      "icon_id": "39080972",
+      "name": "下标",
+      "font_class": "xiabiao-01",
+      "unicode": "e6f9",
+      "unicode_decimal": 59129
+    },
+    {
+      "icon_id": "39080393",
+      "name": "ding-01",
+      "font_class": "ding-01",
+      "unicode": "e633",
+      "unicode_decimal": 58931
+    },
+    {
+      "icon_id": "39079895",
+      "name": "wenjian01",
+      "font_class": "wenjian01",
+      "unicode": "e632",
+      "unicode_decimal": 58930
+    },
+    {
+      "icon_id": "39079658",
+      "name": "zhankai-01",
+      "font_class": "zhankai-01",
+      "unicode": "e630",
+      "unicode_decimal": 58928
+    },
+    {
+      "icon_id": "39079659",
+      "name": "连接线",
+      "font_class": "tubiaozhizuomoban-01",
+      "unicode": "e631",
+      "unicode_decimal": 58929
+    },
+    {
+      "icon_id": "39076773",
+      "name": "更多图标-01",
+      "font_class": "gengduotubiao-01",
+      "unicode": "e62d",
+      "unicode_decimal": 58925
+    },
+    {
+      "icon_id": "39076771",
+      "name": "+-01",
+      "font_class": "a--01",
+      "unicode": "e62c",
+      "unicode_decimal": 58924
+    },
+    {
+      "icon_id": "39076772",
+      "name": "--01",
+      "font_class": "a---01",
+      "unicode": "e62e",
+      "unicode_decimal": 58926
+    },
+    {
+      "icon_id": "39058619",
+      "name": "A+",
+      "font_class": "a-ziyuan310",
+      "unicode": "e6f8",
+      "unicode_decimal": 59128
+    },
+    {
+      "icon_id": "39057093",
+      "name": "A-",
+      "font_class": "a-ziyuan210",
+      "unicode": "e6dd",
+      "unicode_decimal": 59101
+    },
+    {
       "icon_id": "38790264",
       "name": "资源 2",
       "font_class": "a-ziyuan2",
@@ -146,13 +244,6 @@
       "unicode_decimal": 59100
     },
     {
-      "icon_id": "38790290",
-      "name": "资源 42",
-      "font_class": "a-ziyuan42",
-      "unicode": "e6dd",
-      "unicode_decimal": 59101
-    },
-    {
       "icon_id": "38790298",
       "name": "资源 28",
       "font_class": "a-ziyuan28",
@@ -270,13 +361,6 @@
       "font_class": "a-ziyuan10",
       "unicode": "e635",
       "unicode_decimal": 58933
-    },
-    {
-      "icon_id": "38790293",
-      "name": "资源 43",
-      "font_class": "a-ziyuan43",
-      "unicode": "e6d3",
-      "unicode_decimal": 59091
     },
     {
       "icon_id": "38790311",

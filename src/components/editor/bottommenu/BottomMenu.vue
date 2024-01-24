@@ -30,8 +30,7 @@
       形状数: {{ editor?.files[editor?.currentFileIndex]?.modelNumber }}
     </div>
 
-    <div class="ddei_editor_bottommenu_layers" v-if="allowOpenMultLayers"
-      @click="showDialog('ddei_editor_bottommenu_other_layers_dialog', $event)">
+    <div class="ddei_editor_bottommenu_layers" v-if="allowOpenMultLayers" @click="showLayersDialog($event)">
       <span class="iconfont icon-a-ziyuan58"></span>
     </div>
 
@@ -41,108 +40,24 @@
 
 
     <div class="ddei_editor_bottommenu_other_changesize" v-if="allowStageRatio">
-      <div class="ddei_editor_bottommenu_other_changesize_combox"
-        @click="showDialog('ddei_editor_bottommenu_other_changesize_dialog', $event)">
+      <div class="ddei_editor_bottommenu_other_changesize_combox" @click="showChangeRatioDialog($event)">
         <span>
           {{ parseInt(currentStage?.ratio * 100) }}%
         </span>
-        <span class="iconfont iconfont-small icon-a-ziyuan71"></span>
+        <span class="iconfont icon-zhankai-01"></span>
       </div>
       <div @click="addRatio(-0.05)">
-        <span class="iconfont icon-a-ziyuan148"></span>
+        <span class="iconfont icon-a---01"></span>
       </div>
       <input type="range" min="0.1" max="4" step="0.1" v-model="stageRatio" />
       <div @click="addRatio(0.05)">
-        <span class="iconfont icon-a-ziyuan148"></span>
+        <span class="iconfont icon-a--01"></span>
       </div>
     </div>
 
     <div class="ddei_editor_bottommenu_all_page_ratio" v-if="allowStageRatio" @click="autoRatio(1)" title="整页">
       <span class="iconfont icon-a-ziyuan182"></span>
     </div>
-
-
-    <div id="ddei_editor_bottommenu_other_changesize_dialog" v-if="allowStageRatio"
-      class="ddei_editor_bottommenu_other_changesize_dialog"
-      v-show="dialogShow == 'ddei_editor_bottommenu_other_changesize_dialog'">
-      <div class="ddei_editor_bottommenu_other_changesize_dialog_title">缩放</div>
-      <hr />
-      <div class="ddei_editor_bottommenu_other_changesize_dialog_group">
-        <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content">
-          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item" @click="setRatio(4)">
-            400%
-          </div>
-          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item" @click="setRatio(2)">
-            200%
-          </div>
-          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item" @click="setRatio(1.5)">
-            150%
-          </div>
-
-          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item" @click="setRatio(1.25)">
-            125%
-          </div>
-          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item" @click="setRatio(1)">
-            100%
-          </div>
-          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item" @click="setRatio(0.75)">
-            75%
-          </div>
-          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item" @click="setRatio(0.5)">
-            50%
-          </div>
-          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item" @click="setRatio(0.25)">
-            25%
-          </div>
-          <hr />
-          <div class="ddei_editor_bottommenu_other_changesize_dialog_group_content_item">
-            百分比：<input type="number" min="25" max="1000" v-model="ratioInputValue"
-              @blur="ratioInputChange() && showDialog('ddei_editor_bottommenu_other_changesize_dialog')" />%
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div id="ddei_editor_bottommenu_other_layers_dialog" v-if="allowOpenMultLayers"
-      class="ddei_editor_bottommenu_other_layers_dialog"
-      v-show="dialogShow == 'ddei_editor_bottommenu_other_layers_dialog'">
-      <div class="ddei_editor_bottommenu_other_layers_dialog_title">图层</div>
-      <hr />
-      <div class="ddei_editor_bottommenu_other_layers_dialog_group">
-        <div class="ddei_editor_bottommenu_other_layers_dialog_group_content">
-          <div class="ddei_editor_bottommenu_other_layers_dialog_group_content_item" style="grid-template-rows:25px"
-            @click="createNewLayer(0)" v-show="allowAddLayer">
-            <span style="grid-column:1/8;">新建图层</span>
-            <img style="margin-top:2px;width:16px;height:16px;filter:brightness(0%)"
-              src="../icons/icon-plus-circle.png" />
-          </div>
-          <div
-            :class="{ 'ddei_editor_bottommenu_other_layers_dialog_group_content_item': true, 'current': currentStage?.layerIndex === index }"
-            v-for="(layer, index) in currentStage?.layers" draggable="true" @dragstart="layerDragStart(index, $event)"
-            @dragover="layerDragOver($event)" @drop="layerDragDrop($event)" @dragleave="layerDragCancel($event)">
-            <span style="grid-column:1/8;" @dblclick="startChangeLayerName(layer, $event)">{{ layer.name ? layer.name :
-              '图层' }}</span>
-            <img class="trash" style="margin-top:2px;width:16px;height:16px;filter:brightness(0%)"
-              src="../icons/icon-trash.png" @click="removeLayer(index)" />
-            <span style="grid-column:1/4;font-weight:normal">形状:{{ layer.modelNumber }}</span>
-            <img style="margin-top:2px;width:16px;height:16px;filter:brightness(0%)" src="../icons/icon-plus-circle.png"
-              @click="createNewLayer(index)" v-show="allowAddLayer" />
-            <img style="margin-top:2px;width:16px;height:16px;filter:brightness(0%)"
-              :src="layer.display == 0 && !layer.tempDisplay ? icons['icon-display-none'] : icons['icon-display']"
-              @click="displayOrShowLayer(layer)" />
-            <img style="margin-top:3px;width:14px;height:14px;filter:brightness(0%)"
-              :src="layer.lock ? icons['icon-lock'] : icons['icon-unlock']" @click="lockOrUnLockLayer(layer)" />
-            <input type="radio" :class="{ 'not_temp_display': !layer.tempDisplay }" name="rdo_layers" :value="layer.id"
-              style="width:14px;height:14px;margin-top:3px" @mousedown="changeLayer(index, $event)"
-              :checked="currentStage?.layerIndex === index" />
-            <img style="margin-top:1px;width:18px;height:18px;filter:brightness(0%)"
-              :src="layer.print ? icons['icon-print'] : icons['icon-not-print']" @click="printOrNoPrintLayer(layer)" />
-          </div>
-
-        </div>
-      </div>
-    </div>
-
   </div>
 </template>
 
@@ -156,8 +71,6 @@ import DDeiUtil from "../../framework/js/util";
 import DDeiEditorState from "../js/enums/editor-state";
 import DDeiAbstractShape from "../../framework/js/models/shape";
 import DDeiModelArrtibuteValue from "../../framework/js/models/attribute/attribute-value";
-import ICONS from "../js/icon";
-import { debounce } from "lodash";
 import DDeiEnumOperateType from "../../framework/js/enums/operate-type";
 import DDeiEditorUtil from "../js/util/editor-util";
 
@@ -175,10 +88,8 @@ export default {
       maxOpenSize: 1,
       //当前stage
       currentStage: {},
-      dialogShow: "",
       ratioInputValue: 0,
       stageRatio: 1,
-      icons: ICONS,
       allowOpenMultSheets: true,
       allowOpenMultLayers: true,
       allowStageRatio: true,
@@ -259,78 +170,6 @@ export default {
     );
   },
   methods: {
-    //创建新图层
-    createNewLayer(index: number) {
-      if (this.allowAddLayer) {
-        let newLayer = this.currentStage.addLayer(null, index);
-        newLayer.initRender();
-        this.editor.bus.push(
-          DDeiEnumBusCommandType.CancelCurLevelSelectedModels
-        );
-        this.editor.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
-        this.editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
-        this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
-        this.editor.bus.executeAll();
-        this.editor.editorViewer?.changeFileModifyDirty();
-        this.editor.changeState(DDeiEditorState.DESIGNING);
-      }
-    },
-
-    //移除图层
-    removeLayer(index: number) {
-      this.currentStage.removeLayer(index);
-      this.editor.bus.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels);
-      this.editor.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
-      this.editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
-      this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
-      this.editor.bus.executeAll();
-      this.editor.editorViewer?.changeFileModifyDirty();
-      this.editor.changeState(DDeiEditorState.DESIGNING);
-    },
-
-    //设置图层显示或隐藏
-    displayOrShowLayer(layer) {
-      if (layer.display == 0) {
-        layer.display = 1;
-      } else {
-        layer.display = 0;
-      }
-      this.editor.bus.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels);
-      this.editor.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
-      this.editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
-      this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
-      this.editor.bus.executeAll();
-      this.editor.editorViewer?.changeFileModifyDirty();
-      this.editor.changeState(DDeiEditorState.DESIGNING);
-    },
-
-    //设置图层锁定和解锁
-    lockOrUnLockLayer(layer) {
-      layer.lock = !layer.lock;
-    },
-
-    //设置图层打印或不打印
-    printOrNoPrintLayer(layer) {
-      layer.print = !layer.print;
-    },
-
-    //切换当前图层
-    changeLayer(index, evt) {
-      this.currentStage.changeLayer(index);
-      this.currentStage.displayLayer(null, true);
-
-      if (evt.target.className == "not_temp_display") {
-        this.currentStage.layers[index].tempDisplay = true;
-      } else {
-        this.currentStage.layers[index].tempDisplay = false;
-      }
-      this.editor.bus.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels);
-      this.editor.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
-      this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
-      this.editor.bus.executeAll();
-      this.editor.editorViewer?.changeFileModifyDirty();
-      this.editor.changeState(DDeiEditorState.DESIGNING);
-    },
 
     /**
      * sheet开始拖拽移动
@@ -436,116 +275,7 @@ export default {
       }
     },
 
-    /**
-     * layer开始拖拽移动
-     */
-    layerDragStart(layerEle, evt) {
-      this.dragLayerEle = evt.target;
-    },
 
-    /**
-     * 拖拽layer移动
-     */
-    layerDragOver(e) {
-      if (this.dragLayerEle) {
-        let parentDiv = this.dragLayerEle.parentElement;
-        let sourceIndex = -1;
-        let targetIndex = -1;
-        let children = parentDiv.children;
-
-        for (let i = 1; i < children.length; i++) {
-          children[i].style.borderTop = "";
-          children[i].style.borderBottom = "";
-          if (children[i] == this.dragLayerEle) {
-            sourceIndex = i;
-          } else if (e.target.parentElement == children[i]) {
-            targetIndex = i;
-          }
-        }
-
-        if (sourceIndex != -1 && targetIndex != -1) {
-          this.sourceLayerIndex = sourceIndex - 1;
-          if (targetIndex == children.length - 1) {
-            let pos = DDeiUtil.getDomAbsPosition(children[targetIndex]);
-            let halfPos = pos.top + children[targetIndex].offsetHeight / 2;
-            if (
-              halfPos <= e.clientY &&
-              e.clientY <= pos.top + children[targetIndex].offsetHeight
-            ) {
-              this.changeLayerIndex = targetIndex;
-              children[targetIndex].style.borderBottom = "2px solid #017fff";
-            } else {
-              this.changeLayerIndex = targetIndex - 1;
-              children[targetIndex].style.borderTop = "2px solid #017fff";
-            }
-          } else {
-            this.changeLayerIndex = targetIndex - 1;
-            children[targetIndex].style.borderTop = "2px solid #017fff";
-          }
-        }
-
-        e.preventDefault();
-      }
-    },
-
-    /**
-     * 拖拽layer放开
-     */
-    layerDragDrop(e) {
-      if (
-        (this.sourceLayerIndex || this.sourceLayerIndex == 0) &&
-        (this.changeLayerIndex || this.changeLayerIndex == 0)
-      ) {
-        //修改layer顺序
-        let layers = this.currentStage.layers;
-        let sourceLayer = this.currentStage.layers[this.sourceLayerIndex];
-        let currentLayer =
-          this.currentStage.layers[this.currentStage.layerIndex];
-        layers[this.sourceLayerIndex] = null;
-        layers.splice(this.changeLayerIndex, 0, sourceLayer);
-        for (let j = layers.length; j >= 0; j--) {
-          if (layers[j] == null) {
-            layers.splice(j, 1);
-          }
-        }
-        for (let j = layers.length; j >= 0; j--) {
-          if (currentLayer == layers[j]) {
-            this.currentStage.layerIndex = j;
-          }
-        }
-        this.editor.editorViewer?.changeFileModifyDirty();
-        this.editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
-        this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
-        this.editor.bus.executeAll();
-        this.editor.changeState(DDeiEditorState.DESIGNING);
-      }
-      //还原样式
-      let children = this.dragLayerEle.parentElement.children;
-      for (let i = 1; i < children.length; i++) {
-        children[i].style.borderTop = "";
-        children[i].style.borderBottom = "";
-      }
-      //刷新当前画布
-      this.dragLayerEle = null;
-      this.sourceLayerIndex = null;
-      this.changeLayerIndex = null;
-    },
-
-    /**
-     * 拖拽layer离开
-     */
-    layerDragCancel(e) {
-      if (this.dragLayerEle) {
-        //还原样式
-        let children = this.dragLayerEle.parentElement.children;
-        for (let i = 1; i < children.length; i++) {
-          children[i].style.borderTop = "";
-          children[i].style.borderBottom = "";
-        }
-        this.sourceLayerIndex = null;
-        this.changeLayerIndex = null;
-      }
-    },
 
     /**
      * 开始修改页标题
@@ -711,7 +441,6 @@ export default {
             null
           );
           this.editor?.bus?.executeAll();
-          this.editor.changeState(DDeiEditorState.DESIGNING);
         }
       }
     },
@@ -795,13 +524,7 @@ export default {
       this.stageRatio = this.currentStage.ratio;
     },
 
-    ratioInputChange(evt: Event) {
-      if (this.ratioInputValue >= 1000) {
-        this.ratioInputValue = 1000;
-      }
-      this.currentStage.setStageRatio(this.ratioInputValue / 100);
-      this.stageRatio = this.currentStage.ratio;
-    },
+
 
     /**
      * 在存在显示隐藏的情况下移动tab
@@ -909,32 +632,35 @@ export default {
       }
     },
 
-    /**
-     *  隐藏弹出框
-     */
-    hiddenDialog() {
-      this.dialogShow = "";
-    },
-    /**
-     * 显示弹出框
-     */
-    showDialog(id, evt: Event) {
-      if (this.dialogShow == id) {
-        this.dialogShow = "";
-        this.editor.changeState(DDeiEditorState.DESIGNING);
-      } else {
-        this.dialogShow = id;
-        let dialogEle = document.getElementById(id);
-        let srcElement = evt.target;
-        if (srcElement.className != "ddei_editor_quick_sort_item_box") {
-          srcElement = srcElement.parentElement;
-        }
-        //获取绝对坐标
-        let absPos = DDeiUtil.getDomAbsPosition(srcElement);
-        dialogEle.style.left = absPos.left - srcElement.offsetWidth + "px";
-        dialogEle.style.bottom = "35px";
+
+    showChangeRatioDialog(evt: Event) {
+      let srcElement = evt.currentTarget;
+      DDeiEditorUtil.showOrCloseDialog("changeratio_dialog", {
+        ratio: this.currentStage?.ratio,
+        callback: {
+          ok: this.setRatio,
+        },
+        group: "bottom-dialog"
+      }, { type: 2 }, srcElement)
+      if (DDeiEditor.ACTIVE_INSTANCE.tempDialogData && DDeiEditor.ACTIVE_INSTANCE.tempDialogData["changeratio_dialog"]) {
         this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
+      } else {
+        this.editor.changeState(DDeiEditorState.DESIGNING);
       }
+
+    },
+
+    showLayersDialog(evt: Event) {
+      let srcElement = evt.currentTarget;
+      DDeiEditorUtil.showOrCloseDialog("managelayers_dialog", {
+        group: "bottom-dialog"
+      }, { type: 3 }, srcElement)
+      if (DDeiEditor.ACTIVE_INSTANCE.tempDialogData && DDeiEditor.ACTIVE_INSTANCE.tempDialogData["managelayers_dialog"]) {
+        this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
+      } else {
+        this.editor.changeState(DDeiEditorState.DESIGNING);
+      }
+
     },
   },
 };
@@ -1093,153 +819,5 @@ export default {
   float: left;
   width: 100px;
   border-radius: 4px;
-}
-
-/**以下是设置缩放比例的弹出框 */
-.ddei_editor_bottommenu_other_changesize_dialog {
-  width: 170px;
-  position: absolute;
-  background-color: white;
-  height: 310px;
-  border-radius: 4px;
-  border: 0.5px solid rgb(220, 220, 220);
-  z-index: 999;
-  box-shadow: 3px 3px 3px hsl(0deg 0% 0% /0.25);
-  display: flex;
-  flex-direction: column;
-  font-size: 12px;
-}
-
-.ddei_editor_bottommenu_other_changesize_dialog_title {
-  color: black;
-  font-weight: bold;
-  flex: 0 0 30px;
-  padding-top: 5px;
-  padding-left: 7px;
-}
-
-.ddei_editor_bottommenu_other_changesize_dialog hr {
-  border: 0.5px solid rgb(240, 240, 240);
-  flex: 0 0 1px;
-}
-
-.ddei_editor_bottommenu_other_changesize_dialog_group {
-  color: black;
-  flex: 1 1 40px;
-  padding-left: 5px;
-}
-
-.ddei_editor_bottommenu_other_changesize_dialog_group_title {
-  padding-left: 10px;
-}
-
-.ddei_editor_bottommenu_other_changesize_dialog_group_content {
-  width: 100%;
-  height: 280px;
-  display: flex;
-  padding-left: 15px;
-  padding-right: 15px;
-  flex-direction: column;
-}
-
-.ddei_editor_bottommenu_other_changesize_dialog_group_content_item {
-  flex: 0 0 30px;
-  padding-top: 5px;
-  cursor: pointer;
-}
-
-.ddei_editor_bottommenu_other_changesize_dialog_group_content_item input {
-  border: none;
-  outline: none;
-}
-
-.ddei_editor_bottommenu_other_changesize_dialog_group_content_item:hover {
-  border-radius: 4px;
-  background-color: rgb(233, 233, 238);
-}
-
-/**以下是编辑图层的弹出框 */
-.ddei_editor_bottommenu_other_layers_dialog {
-  width: 240px;
-  position: absolute;
-  background-color: white;
-  height: 320px;
-  border-radius: 4px;
-  border: 0.5px solid rgb(220, 220, 220);
-  z-index: 999;
-  box-shadow: 3px 3px 3px hsl(0deg 0% 0% /0.25);
-  display: flex;
-  flex-direction: column;
-  font-size: 13px;
-  font-weight: bold;
-}
-
-.ddei_editor_bottommenu_other_layers_dialog_title {
-  color: black;
-  font-weight: bold;
-  flex: 0 0 30px;
-  padding-top: 5px;
-  padding-left: 7px;
-}
-
-.ddei_editor_bottommenu_other_layers_dialog hr {
-  border: 0.5px solid rgb(240, 240, 240);
-  flex: 0 0 1px;
-}
-
-.ddei_editor_bottommenu_other_layers_dialog_group {
-  color: black;
-  flex: 1 1 40px;
-  padding-left: 5px;
-}
-
-.ddei_editor_bottommenu_other_layers_dialog_group_title {
-  padding-left: 10px;
-}
-
-.ddei_editor_bottommenu_other_layers_dialog_group_content {
-  width: 100%;
-  height: 280px;
-  display: flex;
-  padding-left: 5px;
-  padding-right: 5px;
-  flex-direction: column;
-  overflow-y: auto;
-}
-
-.ddei_editor_bottommenu_other_layers_dialog_group_content_item {
-  flex: 0 0 30px;
-  padding-top: 5px;
-  display: grid;
-  gap: 2px;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-}
-
-.current {
-  background-color: rgb(220, 220, 220);
-  border-radius: 4px;
-}
-
-.not_temp_display:checked {
-  filter: opacity(10%);
-}
-
-.ddei_editor_bottommenu_other_layers_dialog_group_content_item span {
-  font-size: 13px;
-  font-weight: bold;
-}
-
-.ddei_editor_bottommenu_other_layers_dialog_group_content_item .trash {
-  display: none;
-}
-
-.ddei_editor_bottommenu_other_layers_dialog_group_content_item:hover {
-  border-radius: 4px;
-  background-color: rgb(233, 233, 238);
-  cursor: pointer;
-}
-
-.ddei_editor_bottommenu_other_layers_dialog_group_content_item:hover .trash {
-  display: block;
 }
 </style>

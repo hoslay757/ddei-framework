@@ -1,7 +1,7 @@
 <template>
   <div :id="dialogId" class="qcview_dialog">
     <div class="items">
-      <div class="item" :title="item.text" v-for="item in editor?.tempDialogData[dialogId]?.dataSource" @click="ok(item)">
+      <div class="item" :title="item.text" v-for="item in dataSource" @click="ok(item)">
         <span :class="item.img"></span>
         <div>{{ item.text }}</div>
       </div>
@@ -23,6 +23,7 @@ export default {
       dialogId: 'qcview_dialog',
       //当前编辑器
       editor: null,
+      dataSource: null,
     };
   },
   computed: {},
@@ -32,6 +33,9 @@ export default {
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
+    if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]?.dataSource) {
+      this.dataSource = this.editor?.tempDialogData[this.dialogId]?.dataSource;
+    }
   },
   methods: {
     ok(item) {

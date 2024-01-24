@@ -83,7 +83,6 @@ class DDeiEditorUtil {
             let ddInstance = editor?.ddInstance;
             if (ddInstance.stage.render.editorShadowControl) {
               DDeiEditorUtil.quickEditorToControl();
-
             }
           })
           inputEle.addEventListener("input", () => {
@@ -449,6 +448,17 @@ class DDeiEditorUtil {
     if (!DDeiEditor.ACTIVE_INSTANCE.tempDialogData) {
       DDeiEditor.ACTIVE_INSTANCE.tempDialogData = {}
     }
+    //查看是否有同一group的弹出框，如果有则关闭同一group的其它弹出框
+    if (data.group) {
+      for (let oid in DDeiEditor.ACTIVE_INSTANCE.tempDialogData) {
+        if (oid != id) {
+          let otherDialogData = DDeiEditor.ACTIVE_INSTANCE.tempDialogData[oid]
+          if (otherDialogData && otherDialogData.group == data.group) {
+            DDeiEditorUtil.closeDialog(oid)
+          }
+        }
+      }
+    }
     //记录临时变量
     DDeiEditor.ACTIVE_INSTANCE.tempDialogData[id] = data
     DDeiEditorUtil.dialogViewer.forceRefreshDialog(id)
@@ -481,8 +491,14 @@ class DDeiEditorUtil {
           //基于触发元素的底部
           case 2: {
             let absPos = DDeiUtil.getDomAbsPosition(el)
-            dialog.style.left = absPos.left + "px"
-            dialog.style.top = (absPos.top - dialog?.clientHeight - el.clientHeight) + "px"
+            dialog.style.left = absPos.left + (pos.dx ? pos.dx : 0) + "px"
+            dialog.style.top = (absPos.top - dialog?.clientHeight + (pos.dy ? pos.dy : 0)) + "px"
+          } break;
+          //基于触发元素的底部居中
+          case 3: {
+            let absPos = DDeiUtil.getDomAbsPosition(el)
+            dialog.style.left = absPos.left - (dialog.clientWidth / 2 - el.clientWidth / 2) + (pos.dx ? pos.dx : 0) + "px"
+            dialog.style.top = (absPos.top - dialog?.clientHeight + (pos.dy ? pos.dy : 0)) + "px"
           } break;
         }
       }
@@ -506,6 +522,30 @@ class DDeiEditorUtil {
     let backEle = document.getElementById("dialog_background_div");
     backEle.style.background = "none"
     backEle.style.display = "none";
+  }
+
+  static closeDialogs(groups: string[]) {
+    for (let oid in DDeiEditor.ACTIVE_INSTANCE.tempDialogData) {
+      let otherDialogData = DDeiEditor.ACTIVE_INSTANCE.tempDialogData[oid]
+      if (otherDialogData && (groups.indexOf(otherDialogData.group) != -1 || !groups || groups.length == 0)) {
+        DDeiEditorUtil.closeDialog(oid)
+      }
+    }
+  }
+
+  /**
+   * 打开或关闭弹出框
+   * @param id 
+   * @param data 
+   * @param pos 
+   * @param el 
+   */
+  static showOrCloseDialog(id: string, data: object, pos: object, el: object) {
+    if (DDeiEditor.ACTIVE_INSTANCE.tempDialogData && DDeiEditor.ACTIVE_INSTANCE.tempDialogData[id]) {
+      DDeiEditorUtil.closeDialog(id)
+    } else {
+      DDeiEditorUtil.showDialog(id, data, pos, el)
+    }
   }
 }
 

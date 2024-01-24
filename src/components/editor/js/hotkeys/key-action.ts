@@ -50,7 +50,6 @@ abstract class DDeiKeyAction {
    * 路由到合理的键行为实例上
    */
   static route(evt: Event): boolean {
-
     let editor = DDeiEditor.ACTIVE_INSTANCE;
     //获取实例
     let ddInstance: DDei = editor.ddInstance;

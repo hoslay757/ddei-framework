@@ -68,10 +68,6 @@ class DDeiEditorCommandClearTemplateUI extends DDeiBusCommand {
       })
     }
 
-    //清除bottom的弹框
-    {
-      bus.invoker?.bottomMenuViewer?.hiddenDialog()
-    }
 
     //清除右键弹出框
     {

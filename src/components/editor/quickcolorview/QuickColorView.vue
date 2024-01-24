@@ -1,7 +1,7 @@
 <template>
   <div id="ddei_editor_qcview" class="ddei_editor_qcview" v-show="show">
-    <div class="ddei_editor_qcview_type" v-for="item in dataSource" v-show="item.value == mode" @click="showDialog($el)"
-      :title="item.text">
+    <div class="ddei_editor_qcview_type" v-for="item in dataSource" v-show="item.value == mode"
+      @click="showDialog($event)" :title="item.text">
       <span :class="item.img" style="color:red"></span>
       <span class="iconfont iconfont-small icon-a-ziyuan71" style="color:red"></span>
     </div>
@@ -151,20 +151,21 @@ export default {
 
 
     //打开弹出框
-    showDialog(el) {
+    showDialog(evt: Event) {
       let dataSource = []
       this.dataSource.forEach(ds => {
         if (ds.value != this.mode) {
           dataSource.push(ds)
         }
       });
-      DDeiEditorUtil.showDialog("qcview_dialog", {
+      let el = evt.currentTarget;
+      DDeiEditorUtil.showOrCloseDialog("qcview_dialog", {
         dataSource: dataSource,
         callback: {
           ok: this.changeMode,
         }
       },
-        { type: 2 }, el)
+        { type: 2, dy: -el.clientHeight }, el)
     },
     /**
      * 改变模型颜色
