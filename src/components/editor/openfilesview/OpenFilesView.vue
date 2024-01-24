@@ -19,6 +19,7 @@
       </span>
       <span @click.prevent.stop="closeFile(item, $event)" class="iconfont icon-a-ziyuan161 close"></span>
     </div>
+    <span class="iconfont icon-a--01 addfile" @click="newFile"></span>
     <div style="flex:1 1 1px"></div>
     <div class="ddei_editor_ofsview_movebox" v-show="editor?.files?.length > maxOpenSize" @click="moveItem(-1)">
       <span class="iconfont icon-a-ziyuan74"></span>
@@ -40,6 +41,9 @@ import DDeiEditorUtil from "../js/util/editor-util";
 import DDeiStoreLocal from "@/components/framework/js/store/local-store";
 import DDeiEnumBusCommandType from "../../framework/js/enums/bus-command-type";
 import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
+
+import DDeiStage from "../../framework/js/models/stage";
+import DDeiSheet from "../js/sheet";
 
 export default {
   name: "DDei-Editor-OpenFielsView",
@@ -92,6 +96,70 @@ export default {
     this.editor.openFilesViewer = this;
   },
   methods: {
+
+    /**
+     * 新建文件
+     * @param evt
+     */
+    newFile(evt) {
+      if (this.editor?.ddInstance) {
+        let ddInstance = this.editor.ddInstance;
+        let file = DDeiFile.loadFromJSON(
+          {
+            name: "新建文件_NEW",
+            path: "/新建文件_NEW",
+            sheets: [
+              new DDeiSheet({
+                name: "页面-1",
+                desc: "页面-1",
+                stage: DDeiStage.initByJSON({ id: "stage_1" }),
+                active: DDeiActiveType.ACTIVE,
+              }),
+            ],
+            currentSheetIndex: 0,
+            state: DDeiFileState.NEW,
+            active: DDeiActiveType.ACTIVE,
+          },
+          { currentDdInstance: ddInstance }
+        );
+        //添加文件
+        if (this.editor.currentFileIndex != -1) {
+          this.editor.files[this.editor.currentFileIndex].active =
+            DDeiActiveType.NONE;
+        }
+        this.editor.addFile(file);
+        this.editor.currentFileIndex = this.editor.files.length - 1;
+        let sheets = file?.sheets;
+        if (file && sheets && ddInstance) {
+          let stage = sheets[0].stage;
+          stage.ddInstance = ddInstance;
+          //刷新页面
+          ddInstance.stage = stage;
+          //记录文件初始日志
+          file.initHistroy();
+          //设置视窗位置到中央
+          if (!stage.wpv) {
+            //缺省定位在画布中心点位置
+            stage.wpv = {
+              x: -(stage.width - ddInstance.render.container.clientWidth) / 2,
+              y: -(stage.height - ddInstance.render.container.clientHeight) / 2,
+              z: 0,
+            };
+          }
+          //加载场景渲染器
+          stage.initRender();
+          ddInstance.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+          ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
+          ddInstance.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
+            parts: ["bottommenu", "topmenu"],
+          });
+
+          this.editor.changeState(DDeiEditorState.DESIGNING);
+          ddInstance?.bus?.executeAll();
+        }
+      }
+    },
+
     /**
      * 修改文件标题
      */
@@ -457,6 +525,10 @@ export default {
   user-select: none;
 }
 
+.ddei_editor_ofsview .addfile {
+  margin: 0px 10px;
+}
+
 .ddei_editor_ofsview_expandbox {
   flex: 0 0 30px;
   display: flex;
@@ -505,6 +577,8 @@ export default {
 .ddei_editor_ofsview_item .iconfont {
   flex: 0 0 25px;
 }
+
+
 
 .ddei_editor_ofsview_item .icon {
   font-size: 16px;
