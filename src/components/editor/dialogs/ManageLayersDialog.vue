@@ -271,6 +271,76 @@ export default {
       this.editor.editorViewer?.changeFileModifyDirty();
       this.editor.changeState(DDeiEditorState.DESIGNING);
     },
+
+    /**
+     * 开始修改图层名称
+     */
+    startChangeLayerName(layer, evt) {
+      let ele = evt.target;
+      let domPos = DDeiUtil.getDomAbsPosition(ele);
+      let input = document.getElementById("change_layer_name_input");
+      this.currentChangeLayer = layer;
+      if (!input) {
+        input = document.createElement("input");
+        input.setAttribute("id", "change_layer_name_input");
+        input.style.position = "absolute";
+        document.body.appendChild(input);
+        const that = this;
+        input.onblur = function () {
+          //设置属性值
+          if (input.value) {
+            let editor = DDeiEditor.ACTIVE_INSTANCE;
+            if (input.value != that.currentChangeLayer.name) {
+              that.currentChangeLayer.name = input.value;
+              editor.editorViewer?.changeFileModifyDirty();
+              editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
+              editor.bus.executeAll();
+            }
+            input.style.display = "none";
+            input.style.left = "0px";
+            input.style.top = "0px";
+            input.value = "";
+          }
+        };
+        input.onkeydown = function (e) {
+          //回车
+          if (e.keyCode == 13) {
+            let editor = DDeiEditor.ACTIVE_INSTANCE;
+            if (input.value != that.currentChangeLayer.name) {
+              that.currentChangeLayer.name = input.value;
+              editor.editorViewer?.changeFileModifyDirty();
+              editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
+              editor.bus.executeAll();
+            }
+            input.style.display = "none";
+            input.style.left = "0px";
+            input.style.top = "0px";
+            input.value = "";
+          } else if (e.keyCode == 27) {
+            input.style.display = "none";
+            input.style.left = "0px";
+            input.style.top = "0px";
+            input.value = "";
+          }
+        };
+      }
+      input.style.width = ele.offsetWidth + "px";
+      input.style.height = ele.offsetHeight + "px";
+      input.style.left = domPos.left + "px";
+      input.style.fontSize = "12px";
+      input.style.top = domPos.top + "px";
+      input.style.outline = "1px solid #017fff";
+      input.style.border = "none";
+      input.style.borderRadius = "1px";
+      input.value = layer.name;
+      input.style.zIndex = 999;
+      input.style.display = "block";
+      input.selectionStart = 0; // 选中开始位置
+      input.selectionEnd = input.value.length; // 获取输入框里的长度。
+      input.focus();
+      //修改编辑器状态为快捷编辑中
+      this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
+    },
   }
 };
 </script>
@@ -319,8 +389,7 @@ export default {
         height: 280px;
         display: flex;
         flex-direction: column;
-        padding-left: 5px;
-        padding-right: 5px;
+
         overflow-y: auto;
 
         .item {
