@@ -1,5 +1,5 @@
 <template>
-  <div id="ddei_editor_bottommenu" class="ddei_editor_bottommenu">
+  <div id="ddei_editor_bottommenu" class="ddei_editor_bottommenu" @mousedown="changeEditorFocus">
     <div class="ddei_editor_bottommenu_addpage" @click="newSheet" v-if="allowOpenMultSheets">
       <span class="iconfont icon-a-ziyuan148"></span>
     </div>
@@ -170,6 +170,17 @@ export default {
     );
   },
   methods: {
+
+    /**
+     * 焦点进入当前区域
+     */
+    changeEditorFocus() {
+      if (this.editor.state != DDeiEditorState.BOTTOM_MENU_OPERATING && this.editor.state != DDeiEditorState.QUICK_EDITING) {
+        this.editor.changeState(DDeiEditorState.BOTTOM_MENU_OPERATING);
+      }
+      this.editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+      this.editor.bus.executeAll();
+    },
 
     /**
      * sheet开始拖拽移动

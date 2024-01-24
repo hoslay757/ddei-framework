@@ -8,14 +8,6 @@
       <div class="ddei_editor_quick_fat_item_fontsize_combox" @click="attrDefine && !attrDefine.readonly && showDialog()">
         <span class="iconfont icon-a-ziyuan71 iconfont-45"></span>
       </div>
-
-    </div>
-    <div id="ddei_editor_quick_fat_item_fontsize_combox_dialog" class="ddei_editor_quick_fat_item_fontsize_combox_dialog">
-      <div
-        :class="{ 'itembox': true, 'itembox_selected': item.value == attrDefine.value, 'itembox_deleted': item.deleted, 'itembox_disabled': item.disabled, 'itembox_underline': item.underline, 'itembox_bold': item.bold }"
-        v-for="item in dataSource" @click="!item.disabled && inputValue(item.value)" :title="item.desc">
-        <div class="itembox_text" v-if="item.text" :style="{ 'font-family': item.fontFamily }">{{ item.text }}</div>
-      </div>
     </div>
   </div>
 </template>
@@ -175,32 +167,16 @@ export default {
 
 
     //打开弹出框
-    showDialog(show: boolean = false, evt) {
-      let dialog = document.getElementById(
-        "ddei_editor_quick_fat_item_fontsize_combox_dialog"
-      );
-      let haveElement = false;
-      for (let i = 0; i < document.body.children.length; i++) {
-        if (document.body.children[i] == dialog) {
-          haveElement = true;
+    showDialog() {
+      let srcElement = document.getElementById("ddei_editor_quick_fat_item_fontsize");
+      DDeiEditorUtil.showOrCloseDialog("selectfontsize_dialog", {
+        dataSource: this.dataSource,
+        value: this.attrDefine.value,
+        group: "property-dialog",
+        callback: {
+          ok: this.inputValue
         }
-      }
-      if (!haveElement) {
-        document.body.appendChild(dialog);
-      }
-      if (dialog.style.display != "grid") {
-        dialog.style.display = "grid";
-        //获取父级控件绝对坐标
-        let attrEditor = document.getElementById(
-          "ddei_editor_quick_fat_item_fontsize"
-        );
-        let position = DDeiUtil.getDomAbsPosition(attrEditor);
-        dialog.style.left =
-          position.left - dialog.offsetWidth + attrEditor.offsetWidth + "px";
-        dialog.style.top = position.top + attrEditor.offsetHeight + "px";
-      } else {
-        dialog.style.display = "none";
-      }
+      }, { type: 5 }, srcElement)
     },
     /**
      * 根据值获取选项定义
@@ -307,16 +283,6 @@ export default {
         return this.dataSource;
       }
     },
-
-
-
-    closeDialog(evt) {
-      this.expanded = false;
-      let dialog = document.getElementById(
-        "ddei_editor_quick_fat_item_fontsize"
-      );
-      dialog.style.display = "none";
-    },
   },
 };
 </script>
@@ -395,70 +361,5 @@ export default {
 .ddei_editor_quick_fat_item_box:hover {
   background-color: rgb(233, 233, 238);
   border-radius: 4px;
-}
-
-/*以下为弹出框内容*/
-
-.ddei_editor_quick_fat_item_fontsize_combox_dialog {
-  border-radius: 4px;
-  margin-top: 4px;
-  display: none;
-  position: absolute;
-  background-color: white;
-  gap: 4px;
-  overflow: auto;
-  color: black;
-  font-size: 13px;
-  width: 170px;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 20px 20px 20px 20px 20px;
-}
-
-.ddei_editor_quick_fat_item_fontsize_combox_dialog .itembox {
-  outline: none;
-  font-size: 13px;
-  margin: auto;
-  background: transparent;
-  display: table;
-  border-radius: 4px;
-  width: 80px;
-  height: 20px;
-}
-
-.ddei_editor_quick_fat_item_fontsize_combox_dialog .itembox:hover {
-  background-color: rgb(245, 245, 245);
-  cursor: pointer;
-}
-
-.ddei_editor_quick_fat_item_fontsize_combox_dialog .itembox .itembox_text {
-  text-align: center;
-  display: table-cell;
-  width: 100%;
-  vertical-align: middle;
-}
-
-.ddei_editor_quick_fat_item_fontsize_combox_dialog .itembox_selected {
-  background-color: rgb(240, 240, 240) !important;
-}
-
-.ddei_editor_quick_fat_item_fontsize_combox_dialog .itembox_deleted {
-  text-decoration: line-through;
-}
-
-.ddei_editor_quick_fat_item_fontsize_combox_dialog .itembox_disabled {
-  color: rgb(210, 210, 210);
-  text-decoration: line-through;
-}
-
-.ddei_editor_quick_fat_item_fontsize_combox_dialog .itembox_disabled:hover {
-  cursor: not-allowed !important;
-}
-
-.ddei_editor_quick_fat_item_fontsize_combox_dialog .itembox_underline {
-  text-decoration: underline;
-}
-
-.ddei_editor_quick_fat_item_fontsize_combox_dialog .itembox_bold .itembox_text {
-  font-weight: bold;
 }
 </style>

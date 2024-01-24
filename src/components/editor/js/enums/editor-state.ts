@@ -17,6 +17,8 @@ enum DDeiEditorState {
   FRAME_CHANGING = "frame_changing",
   //上方菜单操作中
   TOP_MENU_OPERATING = "top_menu_operating",
+  //下方菜单操作中
+  BOTTOM_MENU_OPERATING = "bottom_menu_operating",
 }
 
 export default DDeiEditorState

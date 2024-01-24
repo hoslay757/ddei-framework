@@ -5,6 +5,7 @@
   <ChangeRatioDialog v-if="refresh_changeratio_dialog"></ChangeRatioDialog>
   <ManageLayersDialog v-if="refresh_managelayers_dialog"></ManageLayersDialog>
   <SelectFontDialog v-if="refresh_selectfont_dialog"></SelectFontDialog>
+  <SelectFontSizeDialog v-if="refresh_selectfontsize_dialog"></SelectFontSizeDialog>
 </template>
 
 <script lang="ts">
@@ -12,6 +13,7 @@ import CloseFileConfirmDialog from "./CloseFileConfirmDialog.vue";
 import ChangeRatioDialog from "./ChangeRatioDialog.vue"
 import ManageLayersDialog from "./ManageLayersDialog.vue"
 import SelectFontDialog from "./SelectFontDialog.vue"
+import SelectFontSizeDialog from "./SelectFontSizeDialog.vue"
 import QCViewDialog from "./QCViewDialog.vue";
 import DDeiEditorUtil from "../js/util/editor-util.ts";
 
@@ -28,6 +30,7 @@ export default {
       refresh_changeratio_dialog: true,
       refresh_managelayers_dialog: true,
       refresh_selectfont_dialog: true,
+      refresh_selectfontsize_dialog: true,
     };
   },
   computed: {},
@@ -36,7 +39,8 @@ export default {
     QCViewDialog,
     ChangeRatioDialog,
     ManageLayersDialog,
-    SelectFontDialog
+    SelectFontDialog,
+    SelectFontSizeDialog,
   },
   watch: {},
   created() { },

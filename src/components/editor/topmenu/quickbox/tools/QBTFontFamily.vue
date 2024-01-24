@@ -49,7 +49,6 @@ export default {
   created() {
     // 搜索框防抖
     this.search = debounce(this.search, 200);
-    this.closeDialog = debounce(this.closeDialog, 2000);
     // 监听obj对象中prop属性的变化
     this.$watch("editor.textEditorSelectedChange", function (newVal, oldVal) {
       if (newVal) {
@@ -251,13 +250,6 @@ export default {
         });
       }
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
-      this.editor.bus.executeAll();
-    },
-
-
-
-    closeDialog(evt) {
-      this.editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
       this.editor.bus.executeAll();
     },
 
