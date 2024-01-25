@@ -1,6 +1,5 @@
 import DDeiEditorArrtibute from '../js/attribute/editor-attribute';
 import { cloneDeep } from 'lodash'
-import ICONS from "../js/icon";
 import DDeiUtil from '@/components/framework/js/util';
 //已读取的配置组原始定义
 const groupOriginDefinies = [];
@@ -331,14 +330,6 @@ groupOriginDefinies.forEach((item, index) => {
   } else {
     item.expand = false;
   }
-  //处理control
-  item.controls.forEach((control) => {
-    if (control.icon) {
-      control.icon = ICONS[control.icon];
-
-    }
-
-  });
 });
 export default groupOriginDefinies;
 export { groupOriginDefinies, controlOriginDefinies };

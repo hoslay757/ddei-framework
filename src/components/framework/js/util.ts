@@ -73,6 +73,11 @@ class DDeiUtil {
   static recentlyChooseColors = null
 
   /**
+   * 图标
+   */
+  static ICONS = {}
+
+  /**
    * 记录鼠标位置
    * @param offsetX 
    * @param offsetY 

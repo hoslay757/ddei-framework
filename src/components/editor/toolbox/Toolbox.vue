@@ -29,7 +29,7 @@
         <div class="item_panel" v-if="group.expand == true">
           <div class="item" :title="control.desc" draggable="true" @dragstart="createControlPrepare(control, $event)"
             v-for="control in group.controls">
-            <img class="icon" :src="control.icon" />
+            <img class="icon" :src="icons[control.id]" />
             <div class="text">{{ control.name }}</div>
           </div>
         </div>
@@ -42,13 +42,12 @@
 import DDeiEditor from "../js/editor";
 import DDeiEnumOperateType from "@/components/framework/js/enums/operate-type";
 import DDei from "@/components/framework/js/ddei";
-import { groupOriginDefinies } from "../configs/toolgroup";
+import { groupOriginDefinies, controlOriginDefinies } from "../configs/toolgroup";
 import DDeiEditorState from "../js/enums/editor-state";
 import { cloneDeep, trim } from "lodash";
 import DDeiAbstractShape from "@/components/framework/js/models/shape";
 import DDeiEditorUtil from "../js/util/editor-util";
 import DDeiEnumControlState from "../../framework/js/enums/control-state";
-import ICONS from "../js/icon";
 import { Matrix3 } from "three";
 import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
 import DDeiUtil from "../../framework/js/util";
@@ -74,8 +73,7 @@ export default {
       controlCls: {},
       //创建时的图片
       creatingImg: new Image(),
-      //展开的图片
-      expandLeftImg: ICONS["icon-expand-left"],
+      icons: {},
     };
   },
   computed: {},
@@ -90,12 +88,10 @@ export default {
     //动态加载控件
     const control_ctx = import.meta.glob(
       "@/components/framework/js/models/*.ts"
-    );
+      , { eager: true })
     for (const path in control_ctx) {
-      control_ctx[path]().then((module) => {
-        let cls = module.default;
-        this.controlCls[cls.ClsName] = cls;
-      });
+      let cls = control_ctx[path].default;
+      this.controlCls[cls.ClsName] = cls;
     }
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
@@ -104,8 +100,63 @@ export default {
     this.groups = groupOriginDefinies
     this.searchOriginGroups = this.groups;
 
+    setTimeout(() => {
+      this.generateControlIcons();
+    }, 50);
+
   },
   methods: {
+
+    /**
+     * 生成控件的小图标
+     */
+    async generateControlIcons() {
+      if (this.editor.ddInstance) {
+        let promiseArr = []
+        let ddInstance = this.editor.ddInstance
+        this.groups.forEach((group, key) => {
+          group.controls.forEach(controlDefine => {
+            promiseArr.push(new Promise((resolve, reject) => {
+              try {
+                let canvas = document.createElement('canvas');
+                //获取缩放比例
+                let rat1 = ddInstance.render.ratio;
+                ddInstance.render.tempCanvas = canvas;
+
+
+                //创建图形对象
+                let models = this.createControl(controlDefine)
+                let outRect = DDeiAbstractShape.getOutRectByPV(models);
+                canvas.setAttribute("width", outRect.width * rat1)
+                canvas.setAttribute("height", outRect.height * rat1)
+                canvas.style.width = outRect.width * rat1 + 'px';
+                canvas.style.height = outRect.height * rat1 + 'px';
+                //获得 2d 上下文对象
+                let ctx = canvas.getContext('2d', { willReadFrequently: true });
+                ctx.translate(-outRect.x * rat1, -outRect.y * rat1)
+                models.forEach(model => {
+                  model.initRender()
+                  model.render.drawShape({ color: "black", weight: 2, width: 2, dash: [], rat1: rat1, border: { color: "black", width: 2 }, fill: { disabled: true } })
+                })
+                let dataURL = canvas.toDataURL("image/png");
+                DDeiUtil.ICONS[controlDefine.id] = dataURL
+              } catch (e) { console.error(e) }
+              resolve()
+            }));
+          });
+
+        });
+        Promise.all(promiseArr).then(all => {
+          this.icons = DDeiUtil.ICONS
+          ddInstance.render.tempCanvas = null;
+        })
+      } else {
+        setTimeout(() => {
+          this.generateControlIcons();
+        }, 50);
+      }
+    },
+
     /**
      * 隐藏工具栏
      */
@@ -636,7 +687,8 @@ export default {
 }
 
 .ddei_editor_toolbox .groups .group .item_panel .item .icon {
-  max-width: 40px;
-  margin: 3px 0px;
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
 }
 </style>
