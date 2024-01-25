@@ -3,15 +3,16 @@
     :class="{ 'ddei_pv_base_combox': true, 'ddei_pv_base_combox_disabled': !attrDefine || attrDefine.readonly }">
     <div
       :class="{ 'textinput': true, 'textinput_expanded': expanded, 'display_img': img && attrDefine?.itemStyle?.display == 'img', 'display_img_text': img && attrDefine?.itemStyle?.display == 'img-text' }">
-      <img :src="img"
+      <span :class="img"
         v-if="img && (attrDefine?.itemStyle?.display == 'img-text' || attrDefine?.itemStyle?.display == 'img')"
-        @click="attrDefine && !attrDefine.readonly && !canSearch && showDialog()" />
+        @click="attrDefine && !attrDefine.readonly && !canSearch && showDialog()"></span>
       <input type="text"
         v-if="!attrDefine?.itemStyle?.display || attrDefine?.itemStyle?.display == 'img-text' || attrDefine?.itemStyle?.display == 'text'"
         :readonly="attrDefine && (attrDefine.readonly || !canSearch)" v-model="text" :placeholder="defaultText"
         @click="attrDefine && !attrDefine.readonly && !canSearch && showDialog()" @keydown="search($event)" />
-      <div @click="attrDefine && !attrDefine.readonly && showDialog()"> <img
-          style="width:8px;height:8px;margin:auto;float:none;" src="../../icons/toolbox-expanded.png" />
+      <div style="display:flex;justify-content: center;align-items: center;"
+        @click="attrDefine && !attrDefine.readonly && showDialog()">
+        <span class="iconfont icon-a-ziyuan71 iconfont-45"></span>
       </div>
     </div>
     <div :id="getShowDialogId(attrDefine?.code)" :class="{ 'ddei_combox_show_dialog': true }">
@@ -157,12 +158,13 @@ export default {
 <style scoped>
 /**以下为range属性编辑器 */
 .ddei_pv_base_combox {
-  height: 24px;
+  height: 28px;
   padding-right: 10px;
 }
 
 .ddei_pv_base_combox_disabled .textinput {
   background-color: rgb(210, 210, 210);
+  height: 28px;
 }
 
 .ddei_pv_base_combox .textinput {
@@ -172,6 +174,7 @@ export default {
   border-radius: 4px;
   display: flex;
   padding-left: 5px;
+  height: 28px;
 }
 
 .ddei_pv_base_combox .textinput:hover {
@@ -227,5 +230,9 @@ export default {
   background: white;
   padding: 10px;
   box-shadow: 4px 4px 4px hsl(0deg 0% 0% /0.25);
+}
+
+.iconfont-45 {
+  font-size: 5px
 }
 </style>

@@ -23,7 +23,7 @@
             <span class="iconfont icon-a-ziyuan99"></span>
           </div>
           <div class="item" @click="doRotate(-1)">
-            <span class="iconfont icon-a-ziyuan99"></span>
+            <span class="iconfont icon-a-ziyuan42"></span>
           </div>
         </div>
       </div>

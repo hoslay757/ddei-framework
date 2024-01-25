@@ -6,7 +6,7 @@
         <div class="group_content">
           <div class="item" @click="createNewLayer(0)" v-show="allowAddLayer">
             <span style="grid-column:1/8;">新建图层</span>
-            <span class="iconfont icon-a--01"></span>
+            <span class="iconfont icon-a-ziyuan311"></span>
           </div>
           <div :class="{ 'item': true, 'current': currentStage?.layerIndex === index }"
             v-for="(layer, index) in currentStage?.layers" draggable="true" @dragstart="layerDragStart(index, $event)"
@@ -16,7 +16,7 @@
             <span class="iconfont icon-a-ziyuan207" @click="removeLayer(index)"></span>
             <span style="grid-column:1/4;font-weight:normal">形状:{{ layer.modelNumber }}</span>
 
-            <span class="iconfont icon-a--01" @click="createNewLayer(index)" v-show="allowAddLayer"></span>
+            <span class="iconfont icon-a-ziyuan311" @click="createNewLayer(index)" v-show="allowAddLayer"></span>
             <span
               :class="{ 'iconfont': true, 'icon-a-ziyuan80': layer.display == 0 && !layer.tempDisplay, 'icon-a-ziyuan81': !(layer.display == 0 && !layer.tempDisplay) }"
               @click="displayOrShowLayer(layer)"></span>

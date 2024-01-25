@@ -1,6 +1,6 @@
 import DDeiConfig from './config.js'
 import DDeiAbstractShape from './models/shape.js';
-import { clone, cloneDeep, isDate, isNumber, isString } from 'lodash'
+import { clone, cloneDeep, isDate, isNumber, isString, kebabCase } from 'lodash'
 import DDei from './ddei.js';
 import { Matrix3, Vector3 } from 'three';
 const expressBindValueReg = /#\{[^\{\}]*\}/;
@@ -68,6 +68,9 @@ class DDeiUtil {
 
 
   static PI2 = Math.PI * 2
+
+  //最新选择的颜色
+  static recentlyChooseColors = null
 
   /**
    * 记录鼠标位置
@@ -1197,12 +1200,27 @@ class DDeiUtil {
 
   // rgb转16进制
   static rgb2hex(color: string): string {
-    let rgb = color.split(',');
-    let r = parseInt(rgb[0].split('(')[1]);
-    let g = parseInt(rgb[1]);
-    let b = parseInt(rgb[2].split(')')[0]);
-    let hex = "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
-    return hex;
+    if (color.toLowerCase().startsWith("rgb")) {
+      let rgb = color.split(',');
+      let r = parseInt(rgb[0].split('(')[1]);
+      let g = parseInt(rgb[1]);
+      let b = parseInt(rgb[2].split(')')[0]);
+      let hex = "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+      return hex;
+    } else if (color.startsWith("#")) {
+      return color
+    }
+    switch (color) {
+      case "black": return "#000000";
+      case "white": return "#FFFFFF";
+      case "red": return "#FF0000";
+      case "green": return "#00FF00";
+      case "blue": return "#0000FF";
+      case "grey": return "#808080";
+      case "yellow": return "#FFFF00";
+    }
+    return "";
+
   }
 
   // 将颜色转换为可用颜色(rgb),其他情况原样返回
@@ -2510,6 +2528,37 @@ class DDeiUtil {
     m = Math.pow(10, Math.max(r1, r2));
     n = (r1 >= r2) ? r1 : r2;
     return parseFloat(((num1 * m - num2 * m) / m).toFixed(n));
+  }
+
+  /**
+   * 读取最近写入颜色
+   */
+  static readRecentlyChooseColors() {
+    let colorStrs = localStorage.getItem("ddei-recently-choose-colors");
+    if (colorStrs) {
+      let colors = colorStrs.split(",")
+      DDeiUtil.recentlyChooseColors = colors;
+    }
+  }
+
+  /**
+   * 写入最近选取颜色
+   */
+  static whiteRecentlyChooseColors(newValue) {
+    if (!DDeiUtil.recentlyChooseColors) {
+      DDeiUtil.recentlyChooseColors = []
+    }
+    if (DDeiUtil.recentlyChooseColors.indexOf(newValue) != -1) {
+      DDeiUtil.recentlyChooseColors.splice(DDeiUtil.recentlyChooseColors.indexOf(newValue), 1)
+    }
+
+    DDeiUtil.recentlyChooseColors.splice(0, 0, newValue)
+
+    if (DDeiUtil.recentlyChooseColors.length > 10) {
+      DDeiUtil.recentlyChooseColors.splice(10, 1)
+    }
+
+    localStorage.setItem("ddei-recently-choose-colors", DDeiUtil.recentlyChooseColors.toString());
   }
 }
 

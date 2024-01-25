@@ -6,6 +6,34 @@
   "description": "ddei的设计图库",
   "glyphs": [
     {
+      "icon_id": "39104592",
+      "name": "资源 1",
+      "font_class": "a-ziyuan1",
+      "unicode": "e6fc",
+      "unicode_decimal": 59132
+    },
+    {
+      "icon_id": "39104590",
+      "name": "资源 2",
+      "font_class": "a-ziyuan211",
+      "unicode": "e6fd",
+      "unicode_decimal": 59133
+    },
+    {
+      "icon_id": "39104593",
+      "name": "资源 4",
+      "font_class": "a-ziyuan42",
+      "unicode": "e6fe",
+      "unicode_decimal": 59134
+    },
+    {
+      "icon_id": "39104591",
+      "name": "资源 3",
+      "font_class": "a-ziyuan311",
+      "unicode": "e6ff",
+      "unicode_decimal": 59135
+    },
+    {
       "icon_id": "39081025",
       "name": "填色-01",
       "font_class": "tianse-01",

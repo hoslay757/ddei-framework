@@ -45,7 +45,7 @@ export default {
       'code': 'color',
       'name': '颜色',
       'desc': '线段的边框显示颜色',
-      'controlType': 'color',
+      'controlType': 'color-combo',
       'dataType': 'string',
       'defaultValue': 'black',
     },
@@ -64,7 +64,7 @@ export default {
       'code': 'fill.color',
       'name': '填充色',
       'desc': '线段的边框显示颜色',
-      'controlType': 'color',
+      'controlType': 'color-combo',
       'dataType': 'string',
       'defaultValue': 'black',
     },
@@ -224,7 +224,7 @@ export default {
   groups: [
     {
       name: "样式",
-      icon: 'icon-tianse-02-01',
+      icon: 'icon-a-ziyuan211',
       subGroups: [
 
         {

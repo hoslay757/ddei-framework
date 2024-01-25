@@ -35,7 +35,7 @@ export default {
       'code': 'bg.color',
       'name': '背景颜色',
       'desc': '背景的颜色',
-      'controlType': 'color',
+      'controlType': 'color-combo',
       'dataType': 'string',
       'defaultValue': 'white',
       'type': 1

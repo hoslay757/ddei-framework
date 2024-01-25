@@ -37,6 +37,9 @@
                 v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'range'"></PVRangeEditor>
               <PVColorEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
                 v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'color'"></PVColorEditor>
+              <PVColorComboEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+                v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'color-combo'">
+              </PVColorComboEditor>
               <PVRadioEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
                 v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'radio'"></PVRadioEditor>
               <PVFontSizeEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
@@ -92,6 +95,7 @@ import PVTextEditor from "./editors/PVTextEditor.vue";
 import PVTextAreaEditor from "./editors/PVTextAreaEditor.vue";
 import PVRangeEditor from "./editors/PVRangeEditor.vue";
 import PVColorEditor from "./editors/PVColorEditor.vue";
+import PVColorComboEditor from "./editors/PVColorComboEditor.vue";
 import PVRadioEditor from "./editors/PVRadioEditor.vue";
 import PVFontSizeEditor from "./editors/PVFontSizeEditor.vue";
 import PVAlignTypeEditor from "./editors/PVAlignTypeEditor.vue";
@@ -143,6 +147,7 @@ export default {
     PVExCheckboxEditor,
     PVTextAreaEditor,
     PVSwitchCheckboxEditor,
+    PVColorComboEditor
   },
   created() {
     // 监听obj对象中prop属性的变化

@@ -70,7 +70,7 @@ export const styles = {
       'name': '颜色',
       'desc': '图形的边框显示颜色，在高级设置中，可以分别设置不同方向边框的样式',
       'group': '边框',
-      'controlType': 'color',
+      'controlType': 'color-combo',
       'mapping': ["border.top.color", "border.right.color", "border.bottom.color", "border.left.color"],
       'dataType': 'string',
       'defaultValue': 'black',

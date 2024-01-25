@@ -71,7 +71,7 @@ export default {
       'code': 'borderColor',
       'name': '颜色',
       'desc': '图形的边框显示颜色，在高级设置中，可以分别设置不同方向边框的样式',
-      'controlType': 'color',
+      'controlType': 'color-combo',
       'mapping': ["border.color"],
       'dataType': 'string',
       'defaultValue': 'black',
@@ -156,7 +156,7 @@ export default {
       'code': 'fill.color',
       'name': '颜色',
       'desc': '图形的填充颜色',
-      'controlType': 'color',
+      'controlType': 'color-combo',
       'dataType': 'string',
       'defaultValue': 'white',
     },
@@ -216,7 +216,7 @@ export default {
       'code': 'font.color',
       'name': '颜色',
       'desc': '文本的颜色',
-      'controlType': 'color',
+      'controlType': 'color-combo',
       'dataType': 'string',
       'defaultValue': "#252525",
     },
@@ -304,7 +304,7 @@ export default {
       'code': 'textStyle.bgcolor',
       'name': '文字背景',
       'desc': '文本的背景颜色',
-      'controlType': 'color',
+      'controlType': 'color-combo',
       'dataType': 'string',
       'defaultValue': '',
     },
@@ -504,7 +504,7 @@ export default {
   groups: [
     {
       name: "样式",
-      icon: 'icon-tianse-02-01',
+      icon: 'icon-a-ziyuan211',
       subGroups: [
         {
           name: "布局",

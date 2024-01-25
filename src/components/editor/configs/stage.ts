@@ -153,7 +153,7 @@ export default {
       'code': 'mark.font.color',
       'name': '颜色',
       'desc': '文本的颜色',
-      'controlType': 'color',
+      'controlType': 'color-combo',
       'dataType': 'string',
       'defaultValue': "#252525",
     },

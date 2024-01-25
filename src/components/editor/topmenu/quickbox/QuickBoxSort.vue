@@ -7,7 +7,7 @@
           :class="{ 'button-v-disabled': !isButtonEnable(), 'button-v-selected': isButtonEnable() && dialogShow == 'ddei_editor_quick_sort_position_dialog', 'button-v': isButtonEnable() }"
           @click="isButtonEnable() && showPositionDialog($event)">
           <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-a-ziyuan34"></use>
+            <use xlink:href="#icon-a-ziyuan1"></use>
           </svg>
           <div class="text">位置</div>
           <span class="iconfont icon-zhankai-01"></span>

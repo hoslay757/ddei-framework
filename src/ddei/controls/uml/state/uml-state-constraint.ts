@@ -43,7 +43,7 @@ Body`,
       groups: [
         {
           name: "样式",
-          icon: 'icon-tianse-02-01',
+          icon: 'icon-a-ziyuan211',
           subGroups: [
             {
               name: "填充",
