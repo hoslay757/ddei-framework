@@ -151,6 +151,7 @@ export default {
       align-items: center;
       font-size: 16px;
       padding-left: 10px;
+      border-bottom: 1px solid #DBDBDB;
     }
 
     .group {
