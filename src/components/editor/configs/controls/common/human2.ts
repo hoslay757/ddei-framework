@@ -76,7 +76,8 @@ export default {
             pvs.push({x:0,y:-50,oppoint:1,type:0});
           }
         }`
-      ]
+      ],
+
     },
     //组合控件
     composes: [

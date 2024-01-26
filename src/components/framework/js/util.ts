@@ -75,7 +75,7 @@ class DDeiUtil {
   /**
    * 图标
    */
-  static ICONS = {}
+  static ICONS = null
 
   /**
    * 记录鼠标位置

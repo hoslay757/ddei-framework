@@ -61,7 +61,11 @@ export default {
             pvs.push({x:x0,y:y1,type:0,select:1});
           }
         }`,
-      ]
+      ],
+
+    },
+    iconPos: {
+      dx: -50
     }
   }
 }

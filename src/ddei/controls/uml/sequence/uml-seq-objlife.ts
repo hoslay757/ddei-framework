@@ -7,7 +7,10 @@ export default {
   'icon': 'toolbox-shape-rect',
   'define': {
     create: false,
-    initMerges: [0, 1]
+    initMerges: [0, 1],
+    iconPos: {
+      dy: -150
+    }
   },
   //其它同时创建的平级控件
   others: [

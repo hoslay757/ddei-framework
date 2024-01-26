@@ -1,8 +1,8 @@
 export default {
   'id': '303015',
-  'name': '角色',
+  'name': '角色生命线',
   'code': 'actor',
-  'desc': '角色',
+  'desc': '角色生命线',
   'from': '100000',
   'icon': 'toolbox-shape-rect',
   'define': {
@@ -14,6 +14,9 @@ export default {
 
 
       ]
+    },
+    iconPos: {
+      dy: -150
     }
   },
   //其它同时创建的平级控件

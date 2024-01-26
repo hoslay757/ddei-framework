@@ -57,6 +57,9 @@ export default {
             pvs.push({end:1,x:100-dr,y:-50,text:1})
         }`,
       ],
+
+    }, iconPos: {
+      dw: 15
     }
   }
 }

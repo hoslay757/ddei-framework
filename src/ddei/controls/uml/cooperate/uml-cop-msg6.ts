@@ -12,6 +12,10 @@ export default {
     ],
     iLinkModels: {
       "0": { type: 3, dx: 60, dy: 0 }
+    },
+    iconPos: {
+      dy: 50,
+      dx: -50
     }
   },
   others:

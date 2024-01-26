@@ -42,6 +42,9 @@ export default {
         }`,
 
       ]
+    },
+    iconPos: {
+      dx: -20
     }
   }
 }

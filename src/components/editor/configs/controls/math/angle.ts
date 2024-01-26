@@ -103,7 +103,12 @@ export default {
           model.text = disSita
           model.render?.setCachedValue("text",disSita)
         }`,
-      ]
+      ],
+
+    },
+    iconPos: {
+      dx: -50,
+      dy: 50
     },
     //操作点定义
     ovs: [

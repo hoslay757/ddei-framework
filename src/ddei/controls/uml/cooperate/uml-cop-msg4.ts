@@ -12,7 +12,7 @@ export default {
     ],
     iLinkModels: {
       "0": { type: 3, dx: 100, dy: 0 }
-    }
+    },
   },
   others:
     [

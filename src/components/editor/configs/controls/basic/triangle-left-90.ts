@@ -9,16 +9,16 @@ export default {
     width: 120,
     height: 90,
     pvs: [
-      { begin: 1, x: 0, y: 90, stroke: 1, clip: 1, fill: 1 },
-      { x: 120, y: 90, stroke: 1, clip: 1, fill: 1 },
-      { end: 1, x: 0, y: 0, stroke: 1, clip: 1, fill: 1 }
+      { begin: 1, x: -60, y: 45, stroke: 1, clip: 1, fill: 1 },
+      { x: 60, y: 45, stroke: 1, clip: 1, fill: 1 },
+      { end: 1, x: -60, y: -45, stroke: 1, clip: 1, fill: 1 }
     ],
-    cpv: { x: 60, y: 45 },
+    cpv: { x: 0, y: 0 },
     textArea: [
-      { begin: 1, x: 0, y: 45 },
-      { x: 60, y: 45 },
-      { x: 60, y: 90 },
-      { end: 1, x: 0, y: 90 },
+      { begin: 1, x: -60, y: 0 },
+      { x: 0, y: 0 },
+      { x: 0, y: 45 },
+      { end: 1, x: -60, y: 45 },
     ],
     hpv: [
       { x: 0, y: 0 },

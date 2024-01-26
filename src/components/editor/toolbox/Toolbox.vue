@@ -88,10 +88,14 @@ export default {
     //动态加载控件
     const control_ctx = import.meta.glob(
       "@/components/framework/js/models/*.ts"
-      , { eager: true })
+    )
+    let loadArray = []
     for (const path in control_ctx) {
-      let cls = control_ctx[path].default;
-      this.controlCls[cls.ClsName] = cls;
+      loadArray.push(control_ctx[path]().then(value => {
+        let cls = value.default;
+        this.controlCls[cls.ClsName] = cls;
+      }))
+
     }
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
@@ -99,10 +103,9 @@ export default {
     //加载工具栏
     this.groups = groupOriginDefinies
     this.searchOriginGroups = this.groups;
-
-    setTimeout(() => {
+    Promise.all(loadArray).then(x => {
       this.generateControlIcons();
-    }, 50);
+    })
 
   },
   methods: {
@@ -111,49 +114,90 @@ export default {
      * 生成控件的小图标
      */
     async generateControlIcons() {
-      if (this.editor.ddInstance) {
-        let promiseArr = []
-        let ddInstance = this.editor.ddInstance
-        this.groups.forEach((group, key) => {
-          group.controls.forEach(controlDefine => {
-            promiseArr.push(new Promise((resolve, reject) => {
-              try {
-                let canvas = document.createElement('canvas');
-                //获取缩放比例
-                let rat1 = ddInstance.render.ratio;
-                ddInstance.render.tempCanvas = canvas;
-
-
-                //创建图形对象
-                let models = this.createControl(controlDefine)
-                let outRect = DDeiAbstractShape.getOutRectByPV(models);
-                canvas.setAttribute("width", outRect.width * rat1)
-                canvas.setAttribute("height", outRect.height * rat1)
-                canvas.style.width = outRect.width * rat1 + 'px';
-                canvas.style.height = outRect.height * rat1 + 'px';
-                //获得 2d 上下文对象
-                let ctx = canvas.getContext('2d', { willReadFrequently: true });
-                ctx.translate(-outRect.x * rat1, -outRect.y * rat1)
-                models.forEach(model => {
-                  model.initRender()
-                  model.render.drawShape({ color: "black", weight: 2, width: 2, dash: [], rat1: rat1, border: { color: "black", width: 2 }, fill: { disabled: true } })
-                })
-                let dataURL = canvas.toDataURL("image/png");
-                DDeiUtil.ICONS[controlDefine.id] = dataURL
-              } catch (e) { console.error(e) }
-              resolve()
-            }));
-          });
-
-        });
-        Promise.all(promiseArr).then(all => {
-          this.icons = DDeiUtil.ICONS
-          ddInstance.render.tempCanvas = null;
-        })
+      if (DDeiUtil.ICONS) {
+        this.icons = DDeiUtil.ICONS
       } else {
-        setTimeout(() => {
-          this.generateControlIcons();
-        }, 50);
+        if (this.editor.ddInstance) {
+          let promiseArr = []
+          let ddInstance = this.editor.ddInstance
+          DDeiUtil.ICONS = {}
+          this.groups.forEach((group, key) => {
+            group.controls.forEach(controlDefine => {
+              promiseArr.push(new Promise((resolve, reject) => {
+                try {
+                  let canvas = document.createElement('canvas');
+                  //获取缩放比例
+                  let rat1 = ddInstance.render.ratio;
+                  ddInstance.render.tempCanvas = canvas;
+
+
+                  //创建图形对象
+                  let models = this.createControl(controlDefine)
+                  let iconPos = controlDefine?.define?.iconPos;
+                  let outRect = DDeiAbstractShape.getOutRectByPV(models);
+                  outRect.width += (iconPos?.dw ? iconPos.dw : 0)
+                  outRect.height += (iconPos?.dh ? iconPos.dh : 0)
+                  //基准大小
+                  let baseWidth = 50
+                  let baseHeight = 50
+
+                  //按高度缩放
+                  if (outRect.width > 0 && outRect.height > 0) {
+                    if (outRect.width > outRect.height) {
+                      baseWidth *= outRect.width / outRect.height
+                    } else {
+                      baseHeight *= outRect.height / outRect.width
+                    }
+
+                    //构建缩放矩阵，缩放到基准大小
+                    let scaleMatrix = new Matrix3(
+                      baseWidth / outRect.width, 0, 0,
+                      0, baseHeight / outRect.height, 0,
+                      0, 0, 1);
+                    models.forEach(model => {
+                      model.transVectors(scaleMatrix)
+                    });
+
+                    outRect = DDeiAbstractShape.getOutRectByPV(models);
+                  }
+                  if (!outRect.height) {
+                    outRect.height = baseHeight
+                  }
+                  if (!outRect.width) {
+                    outRect.width = baseWidth
+                  }
+                  outRect.width += (iconPos?.dw ? iconPos.dw : 0)
+                  outRect.height += (iconPos?.dh ? iconPos.dh : 0)
+                  let width = (outRect.width + 4) * rat1
+                  let height = (outRect.height + 4) * rat1
+                  // width = Math.max(width, height)
+                  // height = width
+                  canvas.setAttribute("width", width)
+                  canvas.setAttribute("height", height)
+                  canvas.style.width = width + 'px';
+                  canvas.style.height = height + 'px';
+                  //获得 2d 上下文对象
+
+                  let ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+                  ctx.translate(width / 2 + (iconPos?.dx ? iconPos.dx : 0), height / 2 + (iconPos?.dy ? iconPos.dy : 0))
+                  models.forEach(model => {
+                    model.initRender()
+                    model.render.drawShape({ weight: 3, border: { width: 1.5 } })
+                  })
+                  let dataURL = canvas.toDataURL("image/png");
+                  DDeiUtil.ICONS[controlDefine.id] = dataURL
+                } catch (e) { console.error(e) }
+                resolve()
+              }));
+            });
+
+          });
+          Promise.all(promiseArr).then(all => {
+            this.icons = DDeiUtil.ICONS
+            ddInstance.render.tempCanvas = null;
+          })
+        }
       }
     },
 

@@ -2,7 +2,7 @@ export default {
   'id': '308009',
   'name': '接收信号',
   'code': 'uarm',
-  'desc': '发送信号',
+  'desc': '接收信号',
   'from': '100500',
   'icon': 'toolbox-shape-rect',
   'define': {

@@ -75,7 +75,10 @@ export default {
           }
         }`
 
-      ]
+      ],
+      iconPos: {
+        dh: 5
+      }
     }
   }
 }

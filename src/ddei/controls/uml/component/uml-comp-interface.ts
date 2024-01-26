@@ -11,8 +11,9 @@ export default {
       type: -1
     },
     pvs: [
+      { x: -75, y: 0, z: 1 },
       { x: 0, y: 0, z: 1 },
-      { x: 150, y: 0, z: 1 },
+      { x: 75, y: 0, z: 1 },
     ],
     //组合控件
     composes: [

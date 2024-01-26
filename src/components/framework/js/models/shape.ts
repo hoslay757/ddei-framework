@@ -1867,8 +1867,9 @@ abstract class DDeiAbstractShape {
     //遍历所有点，求得最大、最小的x、y
     let points: object[] = [];
     models.forEach(item => {
+      let pvs = item.operatePVS ? item.operatePVS : item.pvs;
       //按圆心进行旋转rotate度，得到绘制出来的点位
-      points = points.concat(item.pvs)
+      points = points.concat(pvs)
     })
 
     return DDeiAbstractShape.pvsToOutRect(points);

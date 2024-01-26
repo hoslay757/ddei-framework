@@ -76,7 +76,12 @@ export default {
             pvs.push({end:1,x:50,y:-50,text:1})
           }
         }`,
-      ]
+      ],
+
+    },
+    iconPos: {
+      dx: 20,
+      dw: 10,
     },
     border: {
       round: 5

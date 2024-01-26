@@ -60,6 +60,9 @@ export default {
         }`,
       ]
     },
+    iconPos: {
+      dy: -10
+    },
     ext: {
       groups: [
         {

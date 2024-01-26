@@ -12,13 +12,13 @@ export default {
       type: 1
     },
     pvs: [
+      { x: -75, y: 0, z: 1 },
       { x: 0, y: 0, z: 1 },
       { x: 75, y: 0, z: 1 },
-      { x: 150, y: 0, z: 1 },
     ],
     iLinkModels: {
       "0": { type: 3, dx: 0, dy: -10 }
-    }
+    },
   },
   //其它同时创建的平级控件
   others: [
@@ -31,7 +31,7 @@ export default {
         fill: { type: 0 },
         border: { disabled: true },
         initCPV: {
-          x: 75, y: -10
+          x: 0, y: -10
         }
       }
     },

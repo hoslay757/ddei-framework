@@ -9,32 +9,27 @@ export default {
     {
       'id': '100001',
       'name': '正方形',
-      'text': '正方形',
       'orderNo': 1,
     },
     {
       'id': '100002',
       'name': '长方形',
-      'text': '长方形',
       'orderNo': 2
     },
 
     {
       'id': '100003',
       'name': '圆形',
-      'text': '圆形',
       'orderNo': 3
     },
     {
       'id': '100004',
       'name': '圆角正方形',
-      'text': '',
       'orderNo': 4
     },
     {
       'id': '100005',
       'name': '圆角矩形',
-      'text': '',
       'orderNo': 5
     },
     {
@@ -89,7 +84,6 @@ export default {
     {
       'id': '100020',
       'name': '五边形',
-      'text': '五边形',
       'orderNo': 20
     },
     {
@@ -113,7 +107,6 @@ export default {
     {
       'id': '100040',
       'name': '菱形',
-      'text': '菱形',
       'orderNo': 40
     },
     {

@@ -35,7 +35,11 @@ export default {
               pvs.push({begin:i == 0,end:i == 9,x:x,y:y,text:1});
             }
         }`,
-      ]
+      ],
+
+    },
+    iconPos: {
+      dy: 10
     }
   }
 }

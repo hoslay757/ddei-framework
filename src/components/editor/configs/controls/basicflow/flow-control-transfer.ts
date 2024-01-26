@@ -11,9 +11,13 @@ export default {
       type: 1
     },
     pvs: [
+      { x: -75, y: 0, z: 1 },
       { x: 0, y: 0, z: 1 },
-      { x: 150, y: 0, z: 1 },
+      { x: 75, y: 0, z: 1 },
     ],
+    cpv: {
+      x: 0, y: 0
+    },
     //组合控件
     composes: [
       {
@@ -22,14 +26,14 @@ export default {
         id: '100120',
         cIndex: 1,
         initCPV: {
-          x: 75, y: 0, z: 1
+          x: 0, y: 0, z: 1
         }
       },
     ],
     //操作点
     ovs: [
       {
-        x: 75, y: 0, ix: 75, iy: 0,
+        x: 0, y: 0, ix: 0, iy: 0,
         //约束，控制点的移动路径和位置
         constraint: {
           type: 1,//跟随线段
