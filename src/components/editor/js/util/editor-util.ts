@@ -15,6 +15,34 @@ class DDeiEditorUtil {
 
   // ============================ 静态方法 ============================
 
+  //最新使用的工具栏
+  static recentlyToolGroups = null
+
+  /**
+   * 读取最近工具栏
+   */
+  static readRecentlyToolGroups() {
+    let groups = localStorage.getItem("ddei-recently-tool-groups");
+    if (groups) {
+      try {
+        DDeiEditorUtil.recentlyToolGroups = JSON.parse(groups)
+      } catch (e) { }
+    }
+  }
+
+  /**
+   * 写入最近工具栏
+   */
+  static whiteRecentlyToolGroups(groups) {
+    DDeiEditorUtil.recentlyToolGroups = []
+    groups.forEach(group => {
+      if (group.display) {
+        DDeiEditorUtil.recentlyToolGroups.push({ id: group.id, expand: group.expand })
+      }
+    });
+    localStorage.setItem("ddei-recently-tool-groups", JSON.stringify(DDeiEditorUtil.recentlyToolGroups));
+  }
+
   /**
   * 获取线的初始化JSON定义
   */

@@ -101,7 +101,28 @@ export default {
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     this.editor.toolBarViewer = this;
     //加载工具栏
-    this.groups = groupOriginDefinies
+    DDeiEditorUtil.readRecentlyToolGroups()
+    let hisGroups = DDeiEditorUtil.recentlyToolGroups;
+    if (hisGroups?.length > 0) {
+      let groups = []
+      hisGroups.forEach(hg => {
+        let group = null;
+        for (let i = 0; i < groupOriginDefinies.length; i++) {
+          if (groupOriginDefinies[i].id == hg.id) {
+            group = groupOriginDefinies[i]
+            break;
+          }
+        }
+        if (group) {
+          group.expand = hg.expand
+          groups.push(group)
+        }
+      })
+      this.groups = groups;
+    } else {
+      this.groups = groupOriginDefinies
+      DDeiEditorUtil.whiteRecentlyToolGroups(this.groups)
+    }
     this.searchOriginGroups = this.groups;
     Promise.all(loadArray).then(x => {
       this.generateControlIcons();
@@ -227,6 +248,7 @@ export default {
     groupBoxExpand(group: object) {
       if (group) {
         group.expand = !group.expand;
+        DDeiEditorUtil.whiteRecentlyToolGroups(this.groups)
       }
     },
 
@@ -236,6 +258,7 @@ export default {
     groupBoxClose(group: object) {
       if (group) {
         group.display = false;
+        DDeiEditorUtil.whiteRecentlyToolGroups(this.groups)
       }
     },
 
