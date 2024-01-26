@@ -4,6 +4,7 @@ export default {
   'code': 'uml-deploy',
   'desc': 'UML2.0中的部署图',
   'orderNo': 304,
+  'subject': 'uml',
   //当前分组下所有控件
   'controls': [
     {

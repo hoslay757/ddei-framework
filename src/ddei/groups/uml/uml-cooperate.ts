@@ -4,6 +4,7 @@ export default {
   'code': 'uml-cooperate',
   'desc': 'UML2.0中的协作图',
   'orderNo': 306,
+  'subject': 'uml',
   //当前分组下所有控件
   'controls': [
     {

@@ -4,6 +4,7 @@ export default {
   'code': 'databases',
   'desc': '包含了数据库的各种类型',
   'orderNo': 21,
+  'subject': 'basic',
   //当前分组下所有控件
   'controls': [
     {

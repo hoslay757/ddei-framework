@@ -4,6 +4,7 @@ export default {
   'code': 'basic-shapes',
   'desc': '基础的绘图形状，包含了正方形、长方形、三角形、圆形、线条等基础形状',
   'orderNo': 1,
+  'subject': 'basic',
   //当前分组下所有控件
   'controls': [
     {

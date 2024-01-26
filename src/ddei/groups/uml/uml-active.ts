@@ -3,6 +3,7 @@ export default {
   'name': 'UML-活动',
   'code': 'uml-active',
   'desc': 'UML2.0中的活动图',
+  'subject': 'uml',
   'orderNo': 308,
   //当前分组下所有控件
   'controls': [

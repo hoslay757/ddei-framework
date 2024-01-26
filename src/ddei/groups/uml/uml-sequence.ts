@@ -4,6 +4,7 @@ export default {
   'code': 'uml-sequence',
   'desc': 'UML2.0中的序列图',
   'orderNo': 303,
+  'subject': 'uml',
   //当前分组下所有控件
   'controls': [
     {

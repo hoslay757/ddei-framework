@@ -4,6 +4,7 @@ export default {
   'code': 'uml-component',
   'desc': 'UML2.0中的组件图',
   'orderNo': 305,
+  'subject': 'uml',
   //当前分组下所有控件
   'controls': [
     {

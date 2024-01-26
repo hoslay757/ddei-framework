@@ -4,6 +4,7 @@ export default {
   'code': 'basic-flow-shapes',
   'desc': '基础的流程形状，包含了开始、结束、任务、分支等基础形状',
   'orderNo': 2,
+  'subject': 'basic',
   //当前分组下所有控件
   'controls': [
     {

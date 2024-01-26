@@ -6,9 +6,11 @@
         <use xlink:href="#icon-gengduotubiao-01"></use>
       </svg>
       <div class="header-3"></div>
-      <div class="header-4">更多图形</div>
-      <div class="header-3"></div>
-      <span class="iconfont icon-zhankai-01"></span>
+      <div class="morecontrol" @click="showChooseDialog($event)">
+        <div class="header-4">更多图形</div>
+        <div class="header-3"></div>
+        <span class="iconfont icon-zhankai-01"></span>
+      </div>
       <div style="flex:1"></div>
       <span class="iconfont icon-a-ziyuan68 header-7" @click="hiddenToolBox"></span>
     </div>
@@ -95,7 +97,6 @@ export default {
         let cls = value.default;
         this.controlCls[cls.ClsName] = cls;
       }))
-
     }
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
@@ -132,6 +133,27 @@ export default {
   methods: {
 
     /**
+     * 弹出选择控件Dialog
+     */
+    showChooseDialog(evt) {
+      let srcElement = evt.currentTarget;
+      let selectGroups = []
+      this.groups.forEach(group => {
+        if (group.display) {
+          selectGroups.push(group.id)
+        }
+      });
+      DDeiEditorUtil.showOrCloseDialog("choose_control_group_dialog", {
+        selectGroups: selectGroups,
+        callback: {
+          select: this.groupBoxChoose
+        },
+        group: "toolbox-dialog"
+      }, { type: 4 }, srcElement)
+
+    },
+
+    /**
      * 生成控件的小图标
      */
     async generateControlIcons() {
@@ -142,7 +164,7 @@ export default {
           let promiseArr = []
           let ddInstance = this.editor.ddInstance
           DDeiUtil.ICONS = {}
-          this.groups.forEach((group, key) => {
+          groupOriginDefinies.forEach((group, key) => {
             group.controls.forEach(controlDefine => {
               promiseArr.push(new Promise((resolve, reject) => {
                 try {
@@ -258,7 +280,40 @@ export default {
     groupBoxClose(group: object) {
       if (group) {
         group.display = false;
+        if (this.groups.indexOf(group) != -1) {
+          this.groups.splice(this.groups.indexOf(group), 1)
+        }
         DDeiEditorUtil.whiteRecentlyToolGroups(this.groups)
+      }
+    },
+    /**
+   * 关闭groupbox
+   */
+    groupBoxOpen(group: object) {
+      if (group) {
+        group.display = true;
+        if (this.groups.indexOf(group) == -1) {
+          this.groups.push(group)
+        }
+        DDeiEditorUtil.whiteRecentlyToolGroups(this.groups)
+      }
+    },
+
+    /**
+     * 选择groupBox
+     */
+    groupBoxChoose(groupid: object, choose: boolean) {
+      let group = null
+      for (let i = 0; i < groupOriginDefinies.length; i++) {
+        if (groupOriginDefinies[i].id == groupid) {
+          group = groupOriginDefinies[i]
+          break;
+        }
+      }
+      if (choose) {
+        this.groupBoxOpen(group)
+      } else {
+        this.groupBoxClose(group)
       }
     },
 
@@ -541,6 +596,30 @@ export default {
     align-items: center;
     padding: 0px 8px;
 
+    .morecontrol {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex: 0 1 110px;
+
+      .header-3 {
+        flex: 0 1 8px
+      }
+
+      .header-4 {
+        font-size: 16px;
+        flex: 0 1 70px;
+        font-weight: bold;
+        color: #000000;
+      }
+    }
+
+    .morecontrol:hover {
+      background-color: #e6e6e6;
+      cursor: pointer;
+    }
+
+
     .header-1 {
       flex: 0 1 17px
     }
@@ -549,16 +628,7 @@ export default {
       font-size: 14px;
     }
 
-    .header-3 {
-      flex: 0 1 8px
-    }
 
-    .header-4 {
-      font-size: 16px;
-      flex: 0 1 70px;
-      font-weight: bold;
-      color: #000000;
-    }
 
     .header-7 {
       font-size: 13px;

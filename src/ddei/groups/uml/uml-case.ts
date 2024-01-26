@@ -4,6 +4,7 @@ export default {
   'code': 'uml-case',
   'desc': 'UML2.0中的用例图',
   'orderNo': 302,
+  'subject': 'uml',
   //当前分组下所有控件
   'controls': [
     {

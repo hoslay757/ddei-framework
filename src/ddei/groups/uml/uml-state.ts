@@ -4,6 +4,7 @@ export default {
   'code': 'uml-state',
   'desc': 'UML2.0中的状态图',
   'orderNo': 301,
+  'subject': 'uml',
   //当前分组下所有控件
   'controls': [
     {
