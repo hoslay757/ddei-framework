@@ -77,17 +77,17 @@
 
         <div>
           <QBTEditBox selectedValue="1" :supportQuickEdit="false" attrCode="textStyle.valign"
-            img="iconfont icon-a-ziyuan88">
+            img="iconfont icon-a-ziyuan88" :unSelectValue="2">
           </QBTEditBox>
         </div>
         <div>
           <QBTEditBox selectedValue="2" :supportQuickEdit="false" attrCode="textStyle.valign"
-            img="iconfont icon-a-ziyuan88">
+            img="iconfont icon-a-ziyuan88" :unSelectValue="2">
           </QBTEditBox>
         </div>
         <div>
           <QBTEditBox selectedValue="3" :supportQuickEdit="false" attrCode="textStyle.valign"
-            img="iconfont icon-a-ziyuan89">
+            img="iconfont icon-a-ziyuan89" :unSelectValue="2">
           </QBTEditBox>
         </div>
 

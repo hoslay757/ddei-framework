@@ -4,9 +4,9 @@
       <div class="h1"></div>
       <span class="iconfont icon-a-ziyuan124 h2"></span>
       <div class="h3"></div>
-      <div class="userinfo">W</div>
+      <div class="userinfo">{{ userNameFirst }}</div>
       <div class="h4"></div>
-      <div class="loginout">注销</div>
+      <div class="loginout" @click="loginout">注销</div>
       <div class="h5"></div>
     </div>
     <div class="content">
@@ -18,7 +18,7 @@
 <script lang="ts">
 import DDeiEditor from "../../js/editor";
 import DDeiEditorUtil from "../../js/util/editor-util";
-
+import Cookies from 'js-cookie'
 export default {
   name: "DDei-Editor-Right",
   extends: null,
@@ -30,6 +30,7 @@ export default {
       file: {},
       fileNameEditing: false,
       fileDescEditing: false,
+      userNameFirst: 'U'
     };
   },
   computed: {},
@@ -39,8 +40,24 @@ export default {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     this.file = this.editor?.files[this.editor?.currentFileIndex];
+    try {
+      let userCookie = Cookies.get('user')
+      // 初始化用户信息
+      if (userCookie) {
+        let user = JSON.parse(userCookie)
+        if (user.name) {
+          this.userNameFirst = user.name.charAt(0).toUpperCase();
+        }
+      }
+    } catch (e) { }
   },
   methods: {
+
+    loginout() {
+      Cookies.remove('token')
+      this.$router.push('/login')
+    },
+
     goBackFileList() {
       //调用SPI进行保存
       let goBackFileList = DDeiEditorUtil.getConfigValue(
@@ -74,7 +91,8 @@ export default {
 
     .h2 {
       flex: 0 0 21px;
-      font-size: 22px
+      font-size: 22px;
+      cursor: pointer;
     }
 
     .h3 {
@@ -115,6 +133,11 @@ export default {
       font-size: 16px;
       font-weight: 400;
       color: #000000;
+      cursor: pointer;
+    }
+
+    .loginout:hover {
+      text-decoration: underline;
     }
   }
 }

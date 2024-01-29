@@ -12,15 +12,15 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import Cookies from 'js-cookie'
 export default {
   name: 'Header',
   props: {
-    title: { type: String, default: "中天规则引擎" },
-    version: { type: String, default: "2.1.0" }
+    title: { type: String, default: "DDei-在线设计器" },
+    version: { type: String, default: "1.0.0" }
   },
-  data () {
+  data() {
     return {
       form: {
         username: '',
@@ -28,8 +28,8 @@ export default {
       }
     }
   },
-  created () { },
-  mounted () {
+  created() { },
+  mounted() {
     let userCookie = Cookies.get('user')
     // 初始化用户信息
     if (userCookie) {
@@ -38,10 +38,10 @@ export default {
     }
   },
   methods: {
-    handleLogoClick () {
+    handleLogoClick() {
       this.$router.push('/')
     },
-    loginout () {
+    loginout() {
       Cookies.remove('token')
       this.$router.push('/login')
     }

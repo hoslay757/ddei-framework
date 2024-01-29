@@ -11,8 +11,7 @@
         <DirTree ref="dirTree" />
       </div>
       <div class="ddei_home_middle_right">
-        <FileList v-if="refreshFileList"
-                  ref="fileList" />
+        <FileList v-if="refreshFileList" ref="fileList" />
       </div>
     </div>
   </div>
@@ -79,13 +78,16 @@ export default {
   display: flex;
   flex-direction: column;
 }
+
 .ddei_home_header {
   flex: 0 0 48px;
 }
+
 .ddei_home_bar {
   flex: 0 0 48px;
   background: #2c2c2c;
 }
+
 .ddei_home_middle {
   flex: 1;
   background: #2c2c2c;
@@ -96,8 +98,8 @@ export default {
   flex: 0 0 300px;
   padding-left: 20px;
 }
+
 .ddei_home_middle_right {
   flex: 1;
   display: flex;
-}
-</style>
+}</style>
