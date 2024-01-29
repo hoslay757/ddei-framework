@@ -1,6 +1,7 @@
 import DDei from "../ddei";
 import { COMMANDS } from "../config/command"
 import DDeiEnumBusCommandType from "../enums/bus-command-type";
+import { clone } from "lodash";
 
 /**
  * DDeiBus图形框架的交换类，用于和其他外部应用进行数据交换
@@ -89,7 +90,7 @@ class DDeiBus {
   executeAll(): void {
     let result = true;
     //并行执行的commands
-
+    this.tempExecQueue = clone(this.queue)
     while (this?.queue?.length > 0 && result) {
       let paralCommands = [];
       let firstActionData = this.queue[0];
@@ -119,6 +120,12 @@ class DDeiBus {
     if (this?.drawQueue?.length > 0 && result) {
       result = this.executeDraw();
       this.drawQueue = [];
+    }
+  }
+
+  restoreQueue(): void {
+    if (this.tempExecQueue?.length > 0) {
+      this.queue = this.tempExecQueue;
     }
   }
 

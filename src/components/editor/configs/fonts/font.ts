@@ -1,4 +1,5 @@
 const isSupportFontFamily = function (f) {
+
   //    f是要检测的字体
   if (typeof f != "string") {
     return false
@@ -35,6 +36,13 @@ const isSupportFontFamily = function (f) {
   //    返回结果,如果h默认字体和输入待检测字体f.通过g函数检测得到的字符串不一致,说明自提生效
   return g(h).join("") !== g(f).join("");
 };
+
+
+const isSupportFontFamilySync = function (f) {
+  return new Promise((resolve, rejected) => {
+    resolve(isSupportFontFamily(f))
+  })
+}
 
 
 //穷举字体
@@ -421,15 +429,25 @@ for (let key in fontTypes) {
     // 检测是否为系统默认字体
 
     // let support = document.fonts.check("14px '" + fontEn + "'", "Abc123")
-    let support = isSupportFontFamily(fontEn)
-    if (support) {
-      if (fontEn.toLowerCase() === rootFontFamily.toLowerCase() || ("\"" + fontEn + "\"").toLowerCase() === rootFontFamily.toLowerCase()
-        || fontCh.toLowerCase() === rootFontFamily.toLowerCase() || ("\"" + fontCh + "\"").toLowerCase() === rootFontFamily.toLowerCase()) {
-        font.isSystemDefault = true;
+    // let support = isSupportFontFamily(fontEn)
+    // if (support) {
+    //   if (fontEn.toLowerCase() === rootFontFamily.toLowerCase() || ("\"" + fontEn + "\"").toLowerCase() === rootFontFamily.toLowerCase()
+    //     || fontCh.toLowerCase() === rootFontFamily.toLowerCase() || ("\"" + fontCh + "\"").toLowerCase() === rootFontFamily.toLowerCase()) {
+    //     font.isSystemDefault = true;
+    //   }
+    //   //加入数据源
+    //   FONTS.push(font)
+    // }
+    isSupportFontFamilySync(fontEn).then(support => {
+      if (support) {
+        if (fontEn.toLowerCase() === rootFontFamily.toLowerCase() || ("\"" + fontEn + "\"").toLowerCase() === rootFontFamily.toLowerCase()
+          || fontCh.toLowerCase() === rootFontFamily.toLowerCase() || ("\"" + fontCh + "\"").toLowerCase() === rootFontFamily.toLowerCase()) {
+          font.isSystemDefault = true;
+        }
+        //加入数据源
+        FONTS.push(font)
       }
-      //加入数据源
-      FONTS.push(font)
-    }
+    })
   });
 };
 

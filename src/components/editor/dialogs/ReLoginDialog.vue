@@ -1,0 +1,309 @@
+<template>
+  <div :id="dialogId" class="relogin_dialog">
+    <div class="content">
+      <div class="header">
+        <span class="iconfont icon-a-ziyuan4 icon"></span>
+        <span>当前登陆状态已失效，请重新登录.</span>
+        <div style="flex:1"></div>
+        <span class="iconfont close icon-a-ziyuan161" @click="abort"></span>
+      </div>
+      <div class="content_right_login_form">
+        <div class="content_right_form_msg">
+          {{ form.validMsg.username }}
+        </div>
+        <div class="content_right_login_form_title">用户名：</div>
+        <input v-model="form.username" class="content_right_login_form_input" placeholder="手机号/邮箱/账号" autofocus />
+        <div class="content_right_form_msg">
+          {{ form.validMsg.password }}
+        </div>
+        <div class="content_right_login_form_title">密码：</div>
+        <input v-model="form.password" class="content_right_login_form_input" placeholder="请输入密码" type="password"
+          @keydown.enter="login" />
+
+      </div>
+      <div class="tail">
+        <div class="button button-main" @click="ok">登陆</div>
+        <div class="button" @click="abort">取消</div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script lang="ts">
+import DDeiEditor from "../js/editor.ts";
+import DDeiEditorUtil from "../js/util/editor-util.ts";
+import { login, userinfo } from "@/lib/api/login";
+import Cookies from "js-cookie";
+export default {
+  name: "DDei-Editor-Confirm-ReLogin",
+  extends: null,
+  mixins: [],
+  props: {},
+  data() {
+    return {
+      dialogId: 'relogin_dialog',
+      //当前编辑器
+      editor: null,
+      loginMessage: "",
+      user: "",
+      form: {
+        username: "",
+        password: "",
+        validMsg: {},
+      },
+    };
+  },
+  computed: {},
+  components: {},
+  watch: {},
+  created() { },
+  mounted() {
+    //获取编辑器
+    this.editor = DDeiEditor.ACTIVE_INSTANCE;
+  },
+  methods: {
+    ok() {
+      this.login()
+    },
+
+    abort() {
+      if (this.editor?.tempDialogData[this.dialogId]?.callback?.abort) {
+        this.editor.tempDialogData[this.dialogId].callback.abort();
+      }
+      DDeiEditorUtil.closeDialog('relogin_dialog');
+    },
+
+    //登录
+    async login() {
+      //校验
+      this.form.validMsg = {};
+      if (!this.form.username) {
+        this.form.validMsg.username = "请输入用户名";
+      } else {
+        let uPattern = /^[a-zA-Z0-9_-]{6,20}$/;
+        if (!uPattern.test(this.form.username)) {
+          this.form.validMsg.username = "用户名为6至20位数字、字母下划线组合";
+        }
+      }
+      //密码
+      if (
+        !this.form.password ||
+        this.form.password.length < 6 ||
+        this.form.password.length > 20
+      ) {
+        this.form.validMsg.password = "请输入6-20位密码";
+      }
+
+      if (JSON.stringify(this.form.validMsg) == "{}") {
+        //执行登录
+        this.form.validMsg = {};
+        let loginData = await login(this.form);
+        if (loginData.status == 200) {
+          //登录成功
+          if (loginData.data?.code == 0) {
+            this.loginSuccess(loginData.data.data);
+          } else {
+            this.form.validMsg = { username: loginData.data.message };
+          }
+        } else {
+          this.form.validMsg = {
+            username: "服务端请求失败，请联系管理员",
+          };
+        }
+      }
+    },
+
+    loginSuccess(response) {
+      // 缓存 token
+      Cookies.set("token", response.token);
+      this.getUserInfo();
+
+    },
+
+    /**
+     * 获取登录用户信息
+     */
+    getUserInfo() {
+      userinfo()
+        .then((response) => {
+          let userJSON = response.data.data;
+          let user = JSON.stringify(userJSON, null, 4);
+          Cookies.set("user", user);
+          if (this.editor?.tempDialogData[this.dialogId]?.callback?.ok) {
+            this.editor.tempDialogData[this.dialogId].callback.ok();
+          }
+          DDeiEditorUtil.closeDialog('relogin_dialog');
+
+        })
+        .catch((e) => {
+          Cookies.remove("token");
+        });
+    },
+  }
+};
+</script>
+
+<style lang="less" scoped>
+/**以下为询问框的样式 */
+.relogin_dialog {
+  width: 420px;
+  height: 210px;
+  background: #FFFFFF;
+  border: 1px solid #E6E6E6;
+  box-shadow: 0px 2px 24px 0px #DBDBDB;
+  border-radius: 12px;
+  display: none;
+  position: absolute;
+  overflow: hidden;
+  z-index: 999;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  .content {
+    width: 420px;
+    height: 210px;
+    display: flex;
+    flex-direction: column;
+    padding: 0 24px;
+
+    .header {
+      flex: 0 0 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-family: "Microsoft YaHei";
+      font-weight: 400;
+      margin-top: 10px;
+      color: #000000;
+
+      >span {
+        margin: 0 2px;
+      }
+
+      .iconfont {
+        font-size: 16px;
+      }
+
+      .icon {
+        color: #F05B13;
+      }
+
+      .close {
+        font-size: 12px;
+      }
+    }
+
+
+    .content_right_login_form {
+      width: 90%;
+      height: 120px;
+      background: #fff;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .content_right_login_form_title {
+      width: 100px;
+      height: 30px;
+      font-size: 18px;
+      float: left;
+      text-align: right;
+    }
+
+    .content_right_login_form_input {
+      width: 70%;
+      height: 30px;
+      font-size: 18px;
+      float: left;
+    }
+
+    .content_right_form_msg {
+      width: 90%;
+      height: 24px;
+      font-size: 16px;
+      color: red;
+      text-align: right;
+      margin-left: 36px;
+      float: left;
+    }
+
+    .content_right_login_form_login {
+      width: 45%;
+      height: 50px;
+      background-color: #3662ec;
+      border-color: #3662ec;
+      cursor: pointer;
+      border-radius: 2px;
+      text-align: center;
+      float: left;
+      padding-top: 15px;
+    }
+
+    .content_right_login_form_register {
+      width: 45%;
+      height: 50px;
+      background-color: rgb(210, 210, 210);
+      border-color: rgb(210, 210, 210);
+      cursor: pointer;
+      border-radius: 2px;
+      text-align: center;
+      float: right;
+      padding-top: 15px;
+    }
+
+    .content_right_login_form_register span {
+      font-size: 19px;
+      color: black;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .content_right_login_form_login span {
+      font-size: 19px;
+      color: white;
+      text-align: center;
+      pointer-events: none;
+    }
+
+
+    .tail {
+      flex: 0 0 65px;
+      display: flex;
+      align-items: center;
+      text-align: center;
+      justify-content: end;
+    }
+
+    .button {
+      flex: 0 0 80px;
+      height: 36px;
+      background: #FFFFFF;
+      border: 1px solid #E6E6E6;
+      border-radius: 6px;
+      font-size: 17px;
+      font-family: "Microsoft YaHei";
+      font-weight: 400;
+      color: #040404;
+      margin-left: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+    }
+
+    .button:hover {
+      color: white;
+      background: #176EFF;
+      cursor: pointer;
+    }
+
+    .button-main {
+      color: white;
+      background: #176EFF;
+
+    }
+  }
+}
+</style>

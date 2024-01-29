@@ -12,6 +12,7 @@
   <RotateDialog v-if="refresh_rotate_dialog"></RotateDialog>
   <SelectColorDialog v-if="refresh_selectcolor_dialog"></SelectColorDialog>
   <ChooseControlGroupDialog v-if="refresh_choose_control_group_dialog"></ChooseControlGroupDialog>
+  <ReLoginDialog v-if="refresh_relogin_dialog"></ReLoginDialog>
 </template>
 
 <script lang="ts">
@@ -27,6 +28,7 @@ import RotateDialog from "./RotateDialog.vue"
 import QCViewDialog from "./QCViewDialog.vue";
 import SelectColorDialog from "./SelectColorDialog.vue";
 import ChooseControlGroupDialog from "./ChooseControlGroupDialog.vue";
+import ReLoginDialog from "./ReLoginDialog.vue";
 import DDeiEditorUtil from "../js/util/editor-util.ts";
 
 export default {
@@ -48,7 +50,8 @@ export default {
       refresh_mergecompose_dialog: true,
       refresh_selectcolor_dialog: true,
       refresh_rotate_dialog: true,
-      refresh_choose_control_group_dialog: true
+      refresh_choose_control_group_dialog: true,
+      refresh_relogin_dialog: true,
     };
   },
   computed: {},
@@ -64,7 +67,8 @@ export default {
     MergeComposeDialog,
     RotateDialog,
     SelectColorDialog,
-    ChooseControlGroupDialog
+    ChooseControlGroupDialog,
+    ReLoginDialog
   },
   watch: {},
   created() { },

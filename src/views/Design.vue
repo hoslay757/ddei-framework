@@ -26,6 +26,9 @@ import { userinfo } from "@/lib/api/login/index.js";
 import { loadfile, savefile, publishfile } from "@/lib/api/file";
 import Cookies from "js-cookie";
 import DDeiEditor from "../components/editor/Editor.vue";
+import DDeiEditorUtil from "@/components/editor/js/util/editor-util";
+import DDei from "@/components/framework/js/ddei";
+import DDeiEditorState from "@/components/editor/js/enums/editor-state";
 
 export default {
   props: {},
@@ -66,7 +69,7 @@ export default {
   },
   created() { },
   mounted() {
-    this.getUserInfo();
+
   },
   methods: {
     /**
@@ -166,21 +169,24 @@ export default {
      * 打开文件
      */
     async openFile() {
-      //获取参数
-      let fileId = this.$route.params.id;
-      //根据ID获取文件的设计以及文件的信息
-      let fileData = await loadfile({ id: fileId });
-      if (fileData.status == 200) {
-        if (fileData.data.code == 0) {
-          let returnData = fileData.data.data;
-          //DEMO 保存的业务ID
-          returnData.extData = { busiid: "busi_" + returnData.id };
-          let busiData = await this.loadBusiData();
-          returnData.busiData = busiData;
-          //加载业务信息，以用于显示填充数据
-          return returnData;
+      if (await this.getUserInfo()) {
+        //获取参数
+        let fileId = this.$route.params.id;
+        //根据ID获取文件的设计以及文件的信息
+        let fileData = await loadfile({ id: fileId });
+        if (fileData.status == 200) {
+          if (fileData.data.code == 0) {
+            let returnData = fileData.data.data;
+            //DEMO 保存的业务ID
+            returnData.extData = { busiid: "busi_" + returnData.id };
+            let busiData = await this.loadBusiData();
+            returnData.busiData = busiData;
+            //加载业务信息，以用于显示填充数据
+            return returnData;
+          }
         }
       }
+
     },
 
     /**
@@ -280,14 +286,29 @@ export default {
           desc: designdata.desc,
           content: JSON.stringify(designdata),
         };
-        let fileData = await savefile(postData);
-        if (fileData.status == 200) {
-          if (fileData.data.code == 0) {
-            return { result: 1, msg: "" };
-          } else {
-            return { result: 2, msg: "保存失败" };
+        if (await this.getUserInfo()) {
+          let fileData = await savefile(postData);
+          if (fileData.status == 200) {
+            if (fileData.data.code == 0) {
+              return { result: 1, msg: "" };
+            } else {
+              return { result: 2, msg: "保存失败" };
+            }
           }
+        } else {
+          return { result: 2, msg: "保存失败" };
         }
+
+      }
+    },
+
+    reExecFunc() {
+      if (this.serverFunc) {
+        this.serverFunc(this.serverFuncParam)
+      } else {
+        let ddInstance = DDei.INSTANCE_POOL['ddei_editor_view'];
+        ddInstance.bus.restoreQueue();
+        ddInstance.bus.executeAll();
       }
     },
 
@@ -295,36 +316,42 @@ export default {
      * 保存文件以及设计并发布文件
      */
     async publishFile(designdata) {
-      //根据ID获取文件的设计以及文件的信息
-      this.publishPostData = null;
-      if (designdata) {
-        let postData = {
-          id: designdata.id,
-          name: designdata.name,
-          code: designdata.code,
-          desc: designdata.desc,
-          version: designdata.version,
-          content: JSON.stringify(designdata),
-        };
-        this.publishPostData = Object.freeze(postData);
-        //缓存数据，弹出确认框进行确认
-        this.showPublishFileDialog();
-        //等待弹出框确认
-        let dialogResult = await this.waitingPublishDialog();
-        if (dialogResult == 1) {
-          if (this.publishPostData) {
-            let fileData = await publishfile(this.publishPostData);
-            if (fileData.status == 200) {
-              if (fileData.data.code == 0) {
-                this.showPublishFileDialog();
-                return { result: 1, msg: "" };
-              } else {
-                return { result: 2, msg: "发布失败" };
+      if (await this.getUserInfo()) {
+
+
+        //根据ID获取文件的设计以及文件的信息
+        this.publishPostData = null;
+        if (designdata) {
+          let postData = {
+            id: designdata.id,
+            name: designdata.name,
+            code: designdata.code,
+            desc: designdata.desc,
+            version: designdata.version,
+            content: JSON.stringify(designdata),
+          };
+          this.publishPostData = Object.freeze(postData);
+          //缓存数据，弹出确认框进行确认
+          this.showPublishFileDialog();
+          //等待弹出框确认
+          let dialogResult = await this.waitingPublishDialog();
+          if (dialogResult == 1) {
+            if (this.publishPostData) {
+              let fileData = await publishfile(this.publishPostData);
+              if (fileData.status == 200) {
+                if (fileData.data.code == 0) {
+                  this.showPublishFileDialog();
+                  return { result: 1, msg: "" };
+                } else {
+                  return { result: 2, msg: "发布失败" };
+                }
               }
             }
+          } else {
+            return { result: 3, msg: "发布取消" };
           }
         } else {
-          return { result: 3, msg: "发布取消" };
+          return { result: 2, msg: "发布失败" };
         }
       }
     },
@@ -369,20 +396,34 @@ export default {
     /**
      * 获取登录用户信息
      */
-    getUserInfo() {
-      userinfo()
-        .then((response) => {
-          let userJSON = response.data.data;
-          let user = JSON.stringify(userJSON, null, 4);
-          Cookies.set("user", user);
+    async getUserInfo() {
+      try {
+        let response = await userinfo()
+        let userJSON = response.data.data;
+        let user = JSON.stringify(userJSON, null, 4);
+        Cookies.set("user", user);
+        return true;
+      } catch (e) {
+        Cookies.remove("token");
+        //弹出登陆弹出框
+        DDeiEditorUtil.showDialog("relogin_dialog", {
+          callback: {
+            abort: this.toLogin,
+            ok: this.reExecFunc
+          },
+          background: "white",
+          opacity: "1%",
+          event: -1
         })
-        .catch((e) => {
-          Cookies.remove("token");
-          this.$router.push({
-            path: this.$route.query.redirect || "/login",
-          });
-        });
+        return false;
+      };
     },
+
+    toLogin() {
+      this.$router.push({
+        path: this.$route.query.redirect || "/login",
+      });
+    }
   },
 };
 </script>

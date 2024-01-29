@@ -38,7 +38,7 @@ import QuickColorView from "./quickcolorview/QuickColorView.vue";
 import DDeiEditorState from "./js/enums/editor-state";
 import DDeiAbstractShape from "../framework/js/models/shape";
 import DDeiEnumState from "../framework/js/enums/ddei-state";
-import { loadEditorCommands } from "./js/util/command";
+import "./js/util/command";
 import DDeiUtil from "../framework/js/util";
 import DDeiEnumBusCommandType from "../framework/js/enums/bus-command-type";
 import DDeiEditorEnumBusCommandType from "./js/enums/editor-command-type";
@@ -110,8 +110,6 @@ export default {
     );
   },
   mounted() {
-    //加载外部配置文件
-    loadEditorCommands();
 
     this.editor.editorViewer = this;
     this.editor.bindEvent();

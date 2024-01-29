@@ -488,6 +488,8 @@ class DDeiEditorUtil {
     }
     //记录临时变量
     DDeiEditor.ACTIVE_INSTANCE.tempDialogData[id] = data
+    //修改编辑器状态为快捷编辑中
+    DDeiEditor.ACTIVE_INSTANCE.changeState(DDeiEditorState.PROPERTY_EDITING);
     DDeiEditorUtil.dialogViewer.forceRefreshDialog(id)
     setTimeout(() => {
       let backEle = document.getElementById("dialog_background_div");
