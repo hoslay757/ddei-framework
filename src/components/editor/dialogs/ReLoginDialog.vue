@@ -12,7 +12,8 @@
           {{ form.validMsg.username }}
         </div>
         <div class="content_right_login_form_title">用户名：</div>
-        <input v-model="form.username" class="content_right_login_form_input" placeholder="手机号/邮箱/账号" autofocus />
+        <input v-model="form.username" ref="usernameinput" class="content_right_login_form_input" placeholder="手机号/邮箱/账号"
+          autofocus />
         <div class="content_right_form_msg">
           {{ form.validMsg.password }}
         </div>
@@ -60,6 +61,10 @@ export default {
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
+    setTimeout(() => {
+      this.$refs.usernameinput.focus()
+    }, 100);
+
   },
   methods: {
     ok() {

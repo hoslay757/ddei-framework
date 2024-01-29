@@ -55,7 +55,7 @@ export default {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     this.menuId = null
-    if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId].selectGroups) {
+    if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]?.selectGroups) {
       this.selectGroups = this.editor?.tempDialogData[this.dialogId].selectGroups
     }
   },
