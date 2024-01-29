@@ -35,6 +35,10 @@
 <script lang="ts">
 import DDeiEditor from "../js/editor.ts";
 import DDeiEnumBusCommandType from "../../framework/js/enums/bus-command-type";
+import DDeiAbstractShape from "@/components/framework/js/models/shape";
+import DDeiUtil from "@/components/framework/js/util";
+import DDeiConfig from "@/components/framework/js/config";
+import { Matrix3 } from 'three';
 
 export default {
   name: "DDei-Editor-Dialog-ChangeRotate",
@@ -75,14 +79,41 @@ export default {
       let stage = sheet?.stage;
       if (stage?.selectedModels?.size > 0) {
         stage.selectedModels.forEach((model) => {
-          if (rotate != -1) {
-            if (model.rotate) {
-              model.rotate = model.rotate + rotate;
-            } else {
-              model.rotate = rotate;
+          let oldRotate = model.rotate ? model.rotate : 0;
+          let newRotate = (oldRotate ? oldRotate : 0) + rotate;
+          if (rotate == -1) {
+            newRotate = 0;
+          }
+          if (oldRotate != newRotate) {
+            let m1 = new Matrix3()
+            let move1Matrix = new Matrix3(
+              1, 0, -model.cpv.x,
+              0, 1, -model.cpv.y,
+              0, 0, 1);
+            m1.premultiply(move1Matrix)
+            if (oldRotate) {
+              let angle = (oldRotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+              let rotateMatrix = new Matrix3(
+                Math.cos(angle), Math.sin(angle), 0,
+                -Math.sin(angle), Math.cos(angle), 0,
+                0, 0, 1);
+              m1.premultiply(rotateMatrix)
             }
-          } else {
-            delete model.rotate;
+
+            if (newRotate != 0) {
+              let angle1 = (-newRotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+              let rotate1Matrix = new Matrix3(
+                Math.cos(angle1), Math.sin(angle1), 0,
+                -Math.sin(angle1), Math.cos(angle1), 0,
+                0, 0, 1);
+              m1.premultiply(rotate1Matrix)
+            }
+            let move2Matrix = new Matrix3(
+              1, 0, model.cpv.x,
+              0, 1, model.cpv.y,
+              0, 0, 1);
+            m1.premultiply(move2Matrix)
+            model.transVectors(m1)
           }
         });
         this.editor.bus.push(DDeiEnumBusCommandType.NodifyChange);
