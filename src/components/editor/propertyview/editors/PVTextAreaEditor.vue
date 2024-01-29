@@ -200,8 +200,9 @@ export default {
   flex: 1;
   border: transparent;
   outline: none;
-  font-size: 13px;
+  font-size: 15px;
   margin: 1px 0;
+  width: 100%;
   background: transparent;
 }
 </style>

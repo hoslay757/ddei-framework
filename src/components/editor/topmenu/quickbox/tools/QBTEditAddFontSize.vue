@@ -11,6 +11,7 @@ import DDeiUtil from '../../../../framework/js/util';
 import DDeiEnumBusCommandType from '../../../../framework/js/enums/bus-command-type';
 import DDeiEnumOperateState from '@/components/framework/js/enums/operate-state';
 import DDeiModelArrtibuteValue from '@/components/framework/js/models/attribute/attribute-value';
+import DDeiEditorEnumBusCommandType from '@/components/editor/js/enums/editor-command-type';
 
 export default {
   name: "DDei-Editor-QBT-AddFontSize",
@@ -172,6 +173,9 @@ export default {
         });
       }
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
+      this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
+        parts: ["topmenu"],
+      });
       this.editor.bus.executeAll();
     }
   }
@@ -181,12 +185,16 @@ export default {
 <style lang="less" scoped>
 .ddei_editor_quick_fat_item_box {
   width: 13px;
-  height: 13px;
   display: flex;
   text-align: center;
 
   .iconfont {
     font-size: 14px;
   }
+}
+
+.ddei_editor_quick_fat_item_box:hover {
+  cursor: pointer;
+  background-color: #e6e6e6;
 }
 </style>

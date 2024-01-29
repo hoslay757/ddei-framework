@@ -219,4 +219,8 @@ export default {
     margin-top: 1px
   }
 }
+
+.ddei_editor_quick_fat_item_box:hover {
+  cursor: pointer;
+}
 </style>

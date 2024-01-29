@@ -18,17 +18,17 @@
 
         <div>
           <QBTEditBox selectedValue="1" :supportQuickEdit="false" attrCode="textStyle.align"
-            img="iconfont icon-a-ziyuan93">
+            img="iconfont icon-a-ziyuan93" :unSelectValue="2">
           </QBTEditBox>
         </div>
         <div>
           <QBTEditBox selectedValue="2" :supportQuickEdit="false" attrCode="textStyle.align"
-            img="iconfont icon-a-ziyuan90">
+            img="iconfont icon-a-ziyuan90" :unSelectValue="2">
           </QBTEditBox>
         </div>
         <div>
           <QBTEditBox selectedValue="3" :supportQuickEdit="false" attrCode="textStyle.align"
-            img="iconfont icon-a-ziyuan92">
+            img="iconfont icon-a-ziyuan92" :unSelectValue="2">
           </QBTEditBox>
         </div>
 
@@ -36,29 +36,29 @@
 
       </div>
       <div class="buttons">
-        <div>
+        <div class="mg16">
           <QBTEditBox selectedValue="1" attrCode="textStyle.bold" img="iconfont icon-a-ziyuan51">
           </QBTEditBox>
         </div>
-        <div>
+        <div class="mg16">
           <QBTEditBox selectedValue="1" attrCode="textStyle.italic" img="iconfont icon-a-ziyuan47">
           </QBTEditBox>
         </div>
-        <div>
+        <div class="mg16">
           <QBTEditBox selectedValue="1" attrCode="textStyle.underline" img="iconfont icon-a-ziyuan46">
           </QBTEditBox>
         </div>
-        <div>
+        <div class="mg16">
           <QBTEditBox selectedValue="1" attrCode="textStyle.deleteline" img="iconfont icon-a-ziyuan45">
           </QBTEditBox>
         </div>
 
-        <div>
+        <div class="mg16">
           <QBTEditBox selectedValue="1" :onlyQuickEdit="true" attrCode="textStyle.subtype"
             img="iconfont icon-shangbiao-01-01">
           </QBTEditBox>
         </div>
-        <div>
+        <div class="mg16">
           <QBTEditBox selectedValue="2" :onlyQuickEdit="true" attrCode="textStyle.subtype"
             img="iconfont icon-zhongbiao-01">
           </QBTEditBox>
@@ -146,7 +146,6 @@ export default {
     display: flex;
     flex-direction: column;
     padding-left: 16px;
-    padding-right: 16px;
     border-right: 1px solid #E2E2EB;
 
     .buttons {
@@ -154,7 +153,14 @@ export default {
 
       >div {
         float: left;
-        margin-right: 14px;
+        margin-right: 20px;
+
+      }
+
+
+
+      .mg16 {
+        margin-right: 16px;
       }
 
       .b1 {
@@ -167,16 +173,17 @@ export default {
       }
 
       .b4 {
-        margin-right: 34px;
+        margin-right: 29px;
       }
 
       .b5 {
         margin-top: 0px;
-        margin-right: 13px;
+        margin-right: 18px;
       }
 
       .b6 {
-        margin-top: 0px
+        margin-top: 0px;
+        margin-right: 19px;
       }
     }
   }

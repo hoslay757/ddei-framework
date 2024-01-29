@@ -480,15 +480,16 @@ export default {
       //移除属性
       removeKeys.forEach((item) => {
         firstControlDefine.attrDefineMap.delete(item);
-        this.deleteGroupAttrsByKey(firstControlDefine.styles, item);
-        this.deleteGroupAttrsByKey(firstControlDefine.datas, item);
-        this.deleteGroupAttrsByKey(firstControlDefine.events, item);
+        firstControlDefine.groups?.forEach(group => {
+          this.deleteGroupAttrsByKey(group, item);
+        });
+
       });
     },
 
     deleteGroupAttrsByKey(pData: object, key: string): void {
       let rmglist = [];
-      pData.groups.forEach((group) => {
+      pData.subGroups.forEach((group) => {
         let rmlist = [];
         for (let gci = 0; gci < group.children.length; gci++) {
           if (group.children[gci].code == key) {
@@ -507,9 +508,9 @@ export default {
         }
       });
       rmglist.forEach((rmg) => {
-        let index = pData.groups.indexOf(rmg);
+        let index = pData.subGroups.indexOf(rmg);
         if (index > -1) {
-          pData.groups.splice(index, 1);
+          pData.subGroups.splice(index, 1);
         }
       });
     },

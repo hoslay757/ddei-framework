@@ -12,6 +12,7 @@ import DDeiUtil from "../../../../framework/js/util";
 import DDeiEnumBusCommandType from "../../../../framework/js/enums/bus-command-type";
 import DDeiEnumOperateState from "@/components/framework/js/enums/operate-state";
 import DDeiModelArrtibuteValue from "@/components/framework/js/models/attribute/attribute-value";
+import DDeiEditorEnumBusCommandType from "@/components/editor/js/enums/editor-command-type";
 
 export default {
   name: "DDei-Editor-QBT-EditBox",
@@ -214,6 +215,9 @@ export default {
         });
       }
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+      this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
+        parts: ["topmenu"],
+      });
       this.editor.bus.executeAll();
     },
   },
@@ -223,12 +227,28 @@ export default {
 <style lang="less" scoped>
 .ddei_editor_quick_fat_item_box {
   width: 15px;
-  height: 15px;
-  text-align: center;
   display: flex;
+  justify-content: center;
+  align-items: center;
+
 
   .iconfont {
     font-size: 14px;
   }
+}
+
+.ddei_editor_quick_fat_item_box:hover {
+  cursor: pointer;
+  background-color: #e6e6e6;
+}
+
+.ddei_editor_quick_fat_item_box_selected {
+  background-color: #e6e6e6;
+}
+
+.ddei_editor_quick_fat_item_box_disabled {
+  pointer-events: none;
+  color: #e6e6e6;
+  cursor: not-allowed;
 }
 </style>

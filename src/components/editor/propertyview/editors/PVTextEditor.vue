@@ -1,9 +1,7 @@
 <template>
   <div :class="{ 'ddei_pv_editor_text': true, 'ddei_pv_editor_text_disabled': attrDefine.readonly }">
-    <input :type="attrDefine?.itemStyle?.type ? attrDefine?.itemStyle?.type : 'input'"
-           v-model="attrDefine.value"
-           :disabled="attrDefine.readonly"
-           :placeholder="attrDefine.defaultValue" />
+    <input :type="attrDefine?.itemStyle?.type ? attrDefine?.itemStyle?.type : 'input'" v-model="attrDefine.value"
+      :disabled="attrDefine.readonly" :placeholder="attrDefine.defaultValue" />
   </div>
 </template>
 
@@ -175,7 +173,7 @@ export default {
 .ddei_pv_editor_text {
   border-radius: 4px;
   border: 0.5px solid rgb(210, 210, 210);
-  height: 24px;
+  height: 28px;
   margin-right: 10px;
   padding: 0 5px;
 }
@@ -194,12 +192,11 @@ export default {
 }
 
 .ddei_pv_editor_text input {
-  height: 20px;
+  height: 24px;
   width: 100%;
   border: transparent;
   outline: none;
-  font-size: 13px;
-  margin: 1px 0;
+  font-size: 15px;
   background: transparent;
 }
 </style>
