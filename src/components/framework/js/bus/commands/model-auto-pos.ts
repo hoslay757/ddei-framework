@@ -1,9 +1,7 @@
 import DDeiEnumBusCommandType from '../../enums/bus-command-type';
-import { cloneDeep } from 'lodash'
+import { Matrix3 } from 'three';
 import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
-import DDeiTable from '../../models/table';
-import DDeiUtil from '../../util';
 import DDeiAbstractShape from '../../models/shape';
 /**
  * 多个控件等距离分布自动排版的总线Command
@@ -40,30 +38,42 @@ class DDeiBusCommandModelAutoPos extends DDeiBusCommand {
       if (models?.length > 1) {
         let weight = 10;
         let baseModel = models[0];
+        let baseOutRect = DDeiAbstractShape.getOutRectByPV([baseModel])
         let hasChange = false;
         let startValue = -Infinity;
         for (let i = 1; i < models.length; i++) {
           let model = models[i];
+          let outRect = DDeiAbstractShape.getOutRectByPV([model])
           if (data.value == 1) {
             if (startValue == -Infinity) {
-              startValue = baseModel.x + baseModel.width
+              startValue = baseOutRect.x + baseOutRect.width
             }
             startValue += weight
-            if (model.x != startValue) {
-              model.x = startValue;
+            if (outRect.x != startValue) {
+              let dx = startValue - outRect.x
+              let moveMatrix = new Matrix3(
+                1, 0, dx,
+                0, 1, 0,
+                0, 0, 1);
+              model.transVectors(moveMatrix);
               hasChange = true;
             }
-            startValue += model.width
+            startValue += outRect.width
           } else if (data.value == 2) {
             if (startValue == -Infinity) {
-              startValue = baseModel.y + baseModel.height
+              startValue = baseOutRect.y + baseOutRect.height
             }
             startValue += weight
-            if (model.y != startValue) {
-              model.y = startValue;
+            if (outRect.y != startValue) {
+              let dy = startValue - outRect.y
+              let moveMatrix = new Matrix3(
+                1, 0, 0,
+                0, 1, dy,
+                0, 0, 1);
+              model.transVectors(moveMatrix);
               hasChange = true;
             }
-            startValue += model.height
+            startValue += outRect.height
           }
         }
 
@@ -71,6 +81,7 @@ class DDeiBusCommandModelAutoPos extends DDeiBusCommand {
           bus.push(DDeiEnumBusCommandType.NodifyChange);
           bus.insert(DDeiEnumBusCommandType.AddHistroy);
         }
+        bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
         bus.push(DDeiEnumBusCommandType.RefreshShape);
         return true;
       }

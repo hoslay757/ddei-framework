@@ -31,11 +31,7 @@
             img="iconfont icon-a-ziyuan92">
           </QBTEditBox>
         </div>
-        <div style="margin-right:0px;">
-          <QBTEditBox selectedValue="3" :supportQuickEdit="false" attrCode="textStyle.align"
-            img="iconfont icon-a-ziyuan87">
-          </QBTEditBox>
-        </div>
+
 
 
       </div>
@@ -94,11 +90,7 @@
             img="iconfont icon-a-ziyuan89">
           </QBTEditBox>
         </div>
-        <div style="margin-right:0px;">
-          <QBTEditBox selectedValue="3" :supportQuickEdit="false" attrCode="textStyle.valign"
-            img="iconfont icon-a-ziyuan86">
-          </QBTEditBox>
-        </div>
+
       </div>
     </div>
     <div class="tail">

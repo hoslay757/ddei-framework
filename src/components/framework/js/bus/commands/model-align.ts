@@ -1,8 +1,8 @@
 import DDeiEnumBusCommandType from '../../enums/bus-command-type';
-import { cloneDeep } from 'lodash'
 import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
-import DDeiTable from '../../models/table';
+import { Matrix3 } from 'three';
+import DDeiAbstractShape from '../../models/shape';
 /**
  * 多个控件对齐的总线Command
  */
@@ -37,28 +37,46 @@ class DDeiBusCommandModelAlign extends DDeiBusCommand {
       let models = data.models;
       if (models?.length > 1) {
         let baseModel = models[0];
+        let baseOutRect = DDeiAbstractShape.getOutRectByPV([baseModel])
         let hasChange = false;
         for (let i = 1; i < models.length; i++) {
           let model = models[i];
-          let x = -Infinity, y = -Infinity;
+          let moveMatrix = null;
+          //取得外接矩形
+          let outRect = DDeiAbstractShape.getOutRectByPV([model])
           if (data.value == "left") {
-            x = baseModel.x;
+            moveMatrix = new Matrix3(
+              1, 0, baseOutRect.x - outRect.x,
+              0, 1, 0,
+              0, 0, 1);
           } else if (data.value == "center") {
-            x = baseModel.x + baseModel.width / 2 - model.width / 2
+            moveMatrix = new Matrix3(
+              1, 0, baseOutRect.x + baseOutRect.width / 2 - outRect.x - outRect.width / 2,
+              0, 1, 0,
+              0, 0, 1);
           } else if (data.value == "right") {
-            x = baseModel.x + baseModel.width - model.width
+            moveMatrix = new Matrix3(
+              1, 0, baseOutRect.x + baseOutRect.width - outRect.x - outRect.width,
+              0, 1, 0,
+              0, 0, 1);
           } else if (data.value == "top") {
-            y = baseModel.y;
+            moveMatrix = new Matrix3(
+              1, 0, 0,
+              0, 1, baseOutRect.y - outRect.y,
+              0, 0, 1);
           } else if (data.value == "middle") {
-            y = baseModel.y + baseModel.height / 2 - model.height / 2
+            moveMatrix = new Matrix3(
+              1, 0, 0,
+              0, 1, baseOutRect.y + baseOutRect.height / 2 - outRect.y - outRect.height / 2,
+              0, 0, 1);
           } else if (data.value == "bottom") {
-            y = baseModel.y + baseModel.height - model.height
+            moveMatrix = new Matrix3(
+              1, 0, 0,
+              0, 1, baseOutRect.y + baseOutRect.height - outRect.y - outRect.height,
+              0, 0, 1);
           }
-          if (model.x != x && x != -Infinity) {
-            model.x = x;
-            hasChange = true;
-          } else if (model.y != y && y != -Infinity) {
-            model.y = y;
+          if (moveMatrix) {
+            model.transVectors(moveMatrix)
             hasChange = true;
           }
 
@@ -68,6 +86,8 @@ class DDeiBusCommandModelAlign extends DDeiBusCommand {
           bus.push(DDeiEnumBusCommandType.NodifyChange);
           bus.insert(DDeiEnumBusCommandType.AddHistroy);
         }
+        bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
+        bus.push(DDeiEnumBusCommandType.RefreshShape);
         return true;
       }
     }
