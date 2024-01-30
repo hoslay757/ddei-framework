@@ -1,31 +1,100 @@
 <template>
   <div class="login">
+    <img src="../assets/images/login-back.jpg" class="bgimg" />
+    <div class="banquan">
+      <a href="https://beian.miit.gov.cn/">渝ICP备2024020863号</a>
+    </div>
     <div class="content">
-      <div class="content_left"></div>
-      <div class="content_right">
-        <div class="content_right_login_form">
-          <div class="content_right_login_form_title">中天规则引擎</div>
-          <div class="content_right_form_msg">
-            {{ form.validMsg.username }}
-          </div>
-          <input v-model="form.username" class="content_right_login_form_input" placeholder="手机号/邮箱/账号" autofocus />
-          <div class="content_right_form_msg">
-            {{ form.validMsg.password }}
-          </div>
-          <input v-model="form.password" class="content_right_login_form_input" placeholder="请输入密码" type="password"
-            @keydown.enter="login" />
-          <div class="content_right_login_form_buttons" style="margin-top:40px;">
-            <div class="content_right_login_form_login" @click="login">
-              <span>登录</span>
-            </div>
-            <div class="content_right_login_form_register" @click="showRegDialog">
-              <span>注册</span>
-            </div>
-          </div>
+      <div class="content_right_login_form" v-show="!regDialogShow">
+        <div class="content_right_login_form_title">欢迎来到DDei</div>
+        <div class="content_right_login_form_title_split"></div>
+        <div class="content_right_form_msg">
+          {{ form.validMsg.username }}
+        </div>
+        <div class="content_right_login_form_input">
+          <span class="iconfont icon-a-ziyuan166"></span>
+          <div class="split"></div>
+          <input v-model="form.username" placeholder="手机号/邮箱/账号" autofocus />
+        </div>
+        <div class="content_right_form_msg">
+          {{ form.validMsg.password }}
+        </div>
+        <div class="content_right_login_form_input">
+          <span class="iconfont icon-a-ziyuan185"></span>
+          <div class="split"></div>
+          <input v-model="form.password" placeholder="请输入密码" type="password" @keydown.enter="login" />
+        </div>
+        <div class="content_right_login_form_chkbox" @click="changeRememberPwd()"
+          style="user-select: none;cursor:pointer">
+          <input type="checkbox" v-model="rememberPwd" style="pointer-event:none" />记住密码
+        </div>
+        <div class="content_right_login_form_login" @click="login">
+          <span>登录</span>
+        </div>
+        <div class="regbtn" @click="gotoReg">
+          <span>注册</span>
+        </div>
+      </div>
+      <div class="content_right_login_form reg_form" v-show="regDialogShow">
+        <div class="content_right_login_form_title">新用户注册</div>
+        <div class="content_right_login_form_title_split"></div>
+        <div class="content_right_form_msg">
+          {{ reg.validMsg.mobile }}
+        </div>
+        <div class="content_right_login_form_input">
+          <span class="iconfont icon-a-ziyuan5"></span>
+          <div class="split"></div>
+          <input v-model="reg.mobile" id="reg_input_id" type="mobile" class="content_right_reg_form_input"
+            placeholder="手机号" />
+          <span class="content_right_reg_form_input_required">*</span>
+        </div>
+        <div class="content_right_form_msg">
+          {{ reg.validMsg.username }}
+        </div>
+        <div class="content_right_login_form_input">
+          <span class="iconfont icon-a-ziyuan166"></span>
+          <div class="split"></div>
+          <input v-model="reg.username" class="content_right_reg_form_input" placeholder="用户名,6-30位中文、英文、数字、下划线组合" />
+          <span class="content_right_reg_form_input_required">*</span>
+        </div>
+        <div class="content_right_form_msg">
+          {{ reg.validMsg.email }}
+        </div>
+        <div class="content_right_login_form_input">
+          <span class="iconfont icon-a-ziyuan201"></span>
+          <div class="split"></div>
+          <input v-model="reg.email" class="content_right_reg_form_input" placeholder="邮箱地址" type="email" />
+        </div>
+        <div class="content_right_form_msg">
+          {{ reg.validMsg.password }}
+        </div>
+        <div class="content_right_login_form_input">
+          <span class="iconfont icon-a-ziyuan185"></span>
+          <div class="split"></div>
+          <input v-model="reg.password" type="password" class="content_right_reg_form_input" placeholder="密码" />
+          <span class="content_right_reg_form_input_required">*</span>
+        </div>
+        <div class="content_right_form_msg">
+          {{ reg.validMsg.password1 }}
+        </div>
+        <div class="content_right_login_form_input">
+          <span class="iconfont icon-a-ziyuan185"></span>
+          <div class="split"></div>
+          <input v-model="reg.password1" type="password" class="content_right_reg_form_input" placeholder="确认密码" />
+          <span class="content_right_reg_form_input_required">*</span>
+        </div>
+
+        <div class="content_right_login_form_login" @click="userRegister">
+          <span>注册并登录</span>
+        </div>
+        <div class="regbtn" @click="gotoLogin">
+          <span>登录</span>
         </div>
       </div>
     </div>
-    <div class="register_dialog" v-show="regDialogShow">
+
+
+    <div class="register_dialog" v-show="false && regDialogShow">
       <div class="register_dialog_layer" />
       <div class="register_dialog_content">
         <div class="content_right_reg_form_title">
@@ -34,6 +103,7 @@
         <div class="content_right_form_msg">
           {{ reg.validMsg.mobile }}
         </div>
+
         <input v-model="reg.mobile" id="reg_input_id" type="mobile" class="content_right_reg_form_input"
           placeholder="手机号" />
         <span class="content_right_reg_form_input_required">*</span>
@@ -58,7 +128,7 @@
         <span class="content_right_reg_form_input_required">*</span>
         <div class="content_right_login_form_buttons">
           <div class="content_right_login_form_login" style="margin-top:20px;" @click="userRegister">
-            <span>注册并登陆</span>
+            <span>注册并登录</span>
           </div>
           <div class="content_right_login_form_register" style="margin-top:20px;" @click="showRegDialog">
             <span>取消</span>
@@ -92,15 +162,28 @@ export default {
         password1: "",
         validMsg: {},
       },
+      rememberPwd: false,
       regDialogShow: false,
     };
   },
   mounted() {
+    let remUserName = Cookies.get("remUserName");
+    let remPassword = Cookies.get("remPassword");
+    if (remUserName && remPassword) {
+      this.rememberPwd = true
+      this.form.username = remUserName;
+      this.form.password = remPassword;
+    }
     this.getUserInfo();
   },
   methods: {
-    showRegDialog() {
-      this.regDialogShow = !this.regDialogShow;
+
+    changeRememberPwd() {
+      this.rememberPwd = !this.rememberPwd
+    },
+
+    gotoReg() {
+      this.regDialogShow = true;
       this.reg.username = "";
       this.reg.email = "";
       this.reg.mobile = "";
@@ -112,6 +195,11 @@ export default {
           document.getElementById("reg_input_id").focus();
         }, 20);
       }
+    },
+
+    gotoLogin() {
+      this.regDialogShow = false;
+
     },
 
     //注册并登录
@@ -211,6 +299,7 @@ export default {
     },
 
     loginSuccess(response) {
+
       // 缓存 token
       Cookies.set("token", response.token);
       this.getUserInfo();
@@ -225,6 +314,11 @@ export default {
           let userJSON = response.data.data;
           let user = JSON.stringify(userJSON, null, 4);
           Cookies.set("user", user);
+          //记住密码
+          if (this.rememberPwd) {
+            Cookies.set("remUserName", this.form.username);
+            Cookies.set("remPassword", this.form.password);
+          }
           this.$router.push({
             path: this.$route.query.redirect || "/",
           });
@@ -237,7 +331,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .login {
   width: 100%;
   height: calc(100vh);
@@ -248,98 +342,221 @@ export default {
   height: calc(100vh);
   background: url("../assets/images/login-back.jpg");
   background-size: 100% 100%;
+
 }
 
-.content_left {
-  width: 60%;
+.bgimg {
+  width: 100%;
   height: calc(100vh);
-  float: left;
+  z-index: 99;
+  left: 0px;
+  top: 0px;
+  position: absolute;
 }
 
-.content_right {
-  width: 40%;
-  height: 100%;
-  float: left;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
+.banquan {
+  width: 100%;
+  z-index: 99;
+  left: 0px;
+  bottom: 45px;
+  text-align: center;
+  position: absolute;
+  height: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #000000;
+
+  >a {
+    text-decoration: none;
+    color: black;
+  }
 }
 
 .content_right_login_form {
-  width: 70%;
-  max-width: 500px;
-  height: 450px;
+  width: 440px;
+  height: 500px;
+  display: flex;
+  flex-direction: column;
   background: #fff;
-  margin-right: 139px;
-  border-radius: 10px;
   text-align: center;
+  box-shadow: 0px 0px 35px 0px rgba(34, 115, 191, 0.16);
+  border-radius: 10px;
+  overflow: hidden;
+  position: absolute;
+  right: 363px;
+  top: 210px;
+  z-index: 990;
+
+  .regbtn {
+    position: absolute;
+    -webkit-font-smoothing: antialiased;
+    background-color: #176EFF;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+    right: -60px;
+    top: -60px;
+    width: 120px;
+    height: 120px;
+    user-select: none;
+
+    cursor: pointer;
+
+    >span {
+      font-size: 21px;
+      line-height: 21px;
+      position: absolute;
+      font-weight: bold;
+      -webkit-font-smoothing: antialiased;
+      color: #fff;
+      right: 38px;
+      bottom: 11px;
+    }
+  }
 }
 
+.reg_form {
+  height: 650px;
+  top: 150px;
+
+  .content_right_login_form_login {
+    margin-top: 25px;
+  }
+}
+
+
+
 .content_right_login_form_title {
-  margin: 37px 0 17px 0;
-  font-size: 36px;
-  color: #3064e4;
-  font-weight: bold;
+  margin-top: 66px;
   text-align: center;
+  flex: 0 0 38px;
+  font-size: 24px;
+  font-family: "Microsoft YaHei";
+  font-weight: bold;
+  color: #434343;
+}
+
+.content_right_login_form_title_split {
+  margin: 3px auto 25px auto;
+  width: 40px;
+  flex: 0 0 4px;
+  background-color: #176EFF;
+  border-radius: 4px;
 }
 
 .content_right_login_form_input {
-  width: 80%;
-  height: 65px;
-  font-size: 18px;
+  margin: 0px auto 0px auto;
+  width: 300px;
+  flex: 0 0 52px;
+  background: #F2F4F9;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .split {
+    height: 26px;
+    flex: 0 0 1px;
+    margin-left: 18px;
+    background: #D6DAE7;
+  }
+
+  .iconfont {
+    font-size: 15px;
+    flex: 0 0 22px;
+    margin-left: 18px;
+    color: #a4b3d0;
+  }
+
+  >input {
+    margin-left: 18px;
+    flex: 1 1 92px;
+    height: 26px;
+    font-size: 16px;
+    font-family: "Microsoft YaHei";
+    font-weight: 400;
+    border: none;
+    outline: none;
+    background: none;
+
+    &::placeholder {
+      /* Chrome, Firefox, Opera, Safari 10.1+ */
+      color: #9CA4AF;
+    }
+
+    &::-webkit-input-placeholder {
+      /* WebKit browsers，webkit内核浏览器 */
+      color: #9CA4AF
+    }
+
+    &:-moz-placeholder {
+      /* Mozilla Firefox 4 to 18 */
+      color: #9CA4AF
+    }
+
+    &::-moz-placeholder {
+      /* Mozilla Firefox 19+ */
+      color: #9CA4AF
+    }
+
+    &:-ms-input-placeholder {
+      /* Internet Explorer 10-11 */
+      color: #9CA4AF
+    }
+
+    &::-ms-input-placeholder {
+      /* Microsoft Edge */
+      color: #9CA4AF
+    }
+
+  }
+
+  >span {
+    flex: 0 0 20px;
+    text-align: center;
+  }
 }
 
-.content_right_login_form_buttons {
-  width: 80%;
-  display: block;
-  margin: auto;
+.content_right_login_form_chkbox {
+  margin: 19px auto 35px auto;
+  width: 300px;
+  flex: 0 0 15px;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  font-size: 14px;
+
+  >* {
+    margin-right: 10px;
+  }
 }
 
 .content_right_form_msg {
-  width: 80%;
-  height: 18px;
-  font-size: 12px;
+  width: 300px;
+  flex: 0 0 23px;
+  font-size: 14px;
   color: red;
   text-align: right;
-  margin-left: 36px;
+  margin: 0 auto;
 }
 
 .content_right_login_form_login {
-  width: 45%;
-  height: 50px;
-  background-color: #3662ec;
-  border-color: #3662ec;
+  margin: 0 auto;
+  width: 300px;
+  flex: 0 0 52px;
+  background: #176EFF;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  border-radius: 2px;
-  text-align: center;
-  float: left;
-  padding-top: 15px;
-}
-
-.content_right_login_form_register {
-  width: 45%;
-  height: 50px;
-  background-color: rgb(210, 210, 210);
-  border-color: rgb(210, 210, 210);
-  cursor: pointer;
-  border-radius: 2px;
-  text-align: center;
-  float: right;
-  padding-top: 15px;
-}
-
-.content_right_login_form_register span {
-  font-size: 19px;
-  color: black;
-  text-align: center;
-  pointer-events: none;
 }
 
 .content_right_login_form_login span {
-  font-size: 19px;
-  color: white;
-  text-align: center;
-  pointer-events: none;
+  font-size: 16px;
+  font-family: Microsoft YaHei;
+  font-weight: 400;
+  color: #FFFFFF;
 }
 
 /**

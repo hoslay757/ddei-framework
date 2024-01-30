@@ -3,7 +3,7 @@
     <div class="content">
       <div class="header">
         <span class="iconfont icon-a-ziyuan4 icon"></span>
-        <span>当前登陆状态已失效，请重新登录.</span>
+        <span>当前登录状态已失效，请重新登录.</span>
         <div style="flex:1"></div>
         <span class="iconfont close icon-a-ziyuan161" @click="abort"></span>
       </div>
@@ -23,7 +23,7 @@
 
       </div>
       <div class="tail">
-        <div class="button button-main" @click="ok">登陆</div>
+        <div class="button button-main" @click="ok">登录</div>
         <div class="button" @click="abort">取消</div>
       </div>
     </div>

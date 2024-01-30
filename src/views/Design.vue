@@ -405,7 +405,7 @@ export default {
         return true;
       } catch (e) {
         Cookies.remove("token");
-        //弹出登陆弹出框
+        //弹出登录弹出框
         DDeiEditorUtil.showDialog("relogin_dialog", {
           callback: {
             abort: this.toLogin,
