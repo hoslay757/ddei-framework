@@ -170,7 +170,6 @@ export default {
       }
       if (hasDirty) {
         var e = window.event || e;
-        console.log(DDeiEditor.ACTIVE_INSTANCE)
         e.returnValue = ("确定离开当前页面吗（未保存数据将会丢失）？");
       }
     },
