@@ -67,11 +67,15 @@ export default {
   components: {
     DDeiEditor,
   },
-  created() { },
+  created() {
+
+  },
   mounted() {
 
   },
   methods: {
+
+
     /**
      * 查看前
      */

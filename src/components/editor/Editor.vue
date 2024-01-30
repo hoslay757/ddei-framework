@@ -49,6 +49,7 @@ import MenuDialog from "./menus/menudialog/MenuDialog.vue";
 import { throttle } from "lodash";
 import DDeiEnumOperateState from "../framework/js/enums/operate-state";
 import DDeiEditorUtil from "./js/util/editor-util";
+import DDeiFile from "./js/file";
 export default {
   name: "DDei-Editor",
   extends: null,
@@ -108,6 +109,8 @@ export default {
       "GLOBAL_ALLOW_QUICK_COLOR",
       this.editor
     );
+    window.onbeforeunload = this.beforeUnload;
+
   },
   mounted() {
 
@@ -154,6 +157,24 @@ export default {
     }
   },
   methods: {
+
+    beforeUnload(e) {
+      let files = this.editor?.files
+
+      let hasDirty = false;
+      for (let i = 0; i < files?.length; i++) {
+        if (files[i].state != DDeiFileState.NONE) {
+          hasDirty = true;
+          break;
+        }
+      }
+      if (hasDirty) {
+        var e = window.event || e;
+        console.log(DDeiEditor.ACTIVE_INSTANCE)
+        e.returnValue = ("确定离开当前页面吗（未保存数据将会丢失）？");
+      }
+    },
+
     forceRefreshBottomMenu() {
       this.refreshBottomMenu = false;
       this.$nextTick(() => {
