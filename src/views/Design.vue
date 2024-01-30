@@ -1,24 +1,5 @@
 <template>
   <DDeiEditor :config="ddeiConfig"></DDeiEditor>
-
-  <div class="publish_file_dialog" v-show="publishFileDialogShow">
-    <div class="content">
-      <div class="title">
-        发布文件
-      </div>
-      <div style="margin-top:10px;padding:10px;">
-        是否发布：【{{ publishPostData?.name + " V" + publishPostData?.version }}】？
-      </div>
-      <div class="buttons">
-        <div class="button_ok" style="margin-top:20px;" @click="submitPublishFile()">
-          <span>确定</span>
-        </div>
-        <div class="button_cancel" style="margin-top:20px;" @click="showPublishFileDialog()">
-          <span>取消</span>
-        </div>
-      </div>
-    </div>
-  </div>
 </template>
 
 <script lang="ts">
@@ -35,7 +16,6 @@ export default {
   data() {
     return {
       publishPostData: null,
-      publishFileDialogShow: false,
       ddeiConfig: Object.freeze({
         EVENT_LOAD_FILE: this.openFile,
         EVENT_SAVE_FILE: this.saveFile,
@@ -321,8 +301,6 @@ export default {
      */
     async publishFile(designdata) {
       if (await this.getUserInfo()) {
-
-
         //根据ID获取文件的设计以及文件的信息
         this.publishPostData = null;
         if (designdata) {
@@ -344,7 +322,6 @@ export default {
               let fileData = await publishfile(this.publishPostData);
               if (fileData.status == 200) {
                 if (fileData.data.code == 0) {
-                  this.showPublishFileDialog();
                   return { result: 1, msg: "" };
                 } else {
                   return { result: 2, msg: "发布失败" };
@@ -377,6 +354,12 @@ export default {
     submitPublishFile() {
       this.publishDialogState = 1;
     },
+    /**
+     * 取消发布文件
+     */
+    cancelPublishFile() {
+      this.publishDialogState = 2;
+    },
 
     /**
      * 返回文件列表页
@@ -391,11 +374,16 @@ export default {
      * 弹出发布文件弹出框
      */
     showPublishFileDialog() {
-      this.publishFileDialogShow = !this.publishFileDialogShow;
-      if (!this.publishFileDialogShow) {
-        this.publishPostData = null;
-        this.publishDialogState = -1;
-      }
+      DDeiEditorUtil.showDialog("publish_file_confirm_dialog", {
+        msg: '是否发布"' + this.publishPostData?.name + ' V' + this.publishPostData?.version + '"？',
+        callback: {
+          cancel: this.cancelPublishFile,
+          ok: this.submitPublishFile,
+        },
+        background: "white",
+        opacity: "1%",
+        event: -1
+      })
     },
     /**
      * 获取登录用户信息

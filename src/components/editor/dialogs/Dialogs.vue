@@ -13,6 +13,7 @@
   <SelectColorDialog v-if="refresh_selectcolor_dialog"></SelectColorDialog>
   <ChooseControlGroupDialog v-if="refresh_choose_control_group_dialog"></ChooseControlGroupDialog>
   <ReLoginDialog v-if="refresh_relogin_dialog"></ReLoginDialog>
+  <PublishFileConfirmDialog v-if="refresh_publish_file_confirm_dialog"></PublishFileConfirmDialog>
 </template>
 
 <script lang="ts">
@@ -29,6 +30,7 @@ import QCViewDialog from "./QCViewDialog.vue";
 import SelectColorDialog from "./SelectColorDialog.vue";
 import ChooseControlGroupDialog from "./ChooseControlGroupDialog.vue";
 import ReLoginDialog from "./ReLoginDialog.vue";
+import PublishFileConfirmDialog from "./PublishFileConfirmDialog.vue";
 import DDeiEditorUtil from "../js/util/editor-util.ts";
 
 export default {
@@ -52,6 +54,7 @@ export default {
       refresh_rotate_dialog: true,
       refresh_choose_control_group_dialog: true,
       refresh_relogin_dialog: true,
+      refresh_publish_file_confirm_dialog: true,
     };
   },
   computed: {},
@@ -68,7 +71,8 @@ export default {
     RotateDialog,
     SelectColorDialog,
     ChooseControlGroupDialog,
-    ReLoginDialog
+    ReLoginDialog,
+    PublishFileConfirmDialog
   },
   watch: {},
   created() { },

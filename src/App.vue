@@ -1,9 +1,6 @@
 <template>
   <router-view v-slot="{ Component, route }">
-    <transition :duration="300" leave-active-class="animate__animated animate__fadeInRight"
-      enter-active-class="animate__animated animate__fadeInLeft">
-      <component :is="Component" :key="route.path" />
-    </transition>
+    <component :is="Component" :key="route.path" />
   </router-view>
 </template>
 
