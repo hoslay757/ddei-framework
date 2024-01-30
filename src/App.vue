@@ -1,6 +1,12 @@
 <template>
-  <router-view />
+  <router-view v-slot="{ Component, route }">
+    <transition :duration="300" leave-active-class="animate__animated animate__fadeInRight"
+      enter-active-class="animate__animated animate__fadeInLeft">
+      <component :is="Component" :key="route.path" />
+    </transition>
+  </router-view>
 </template>
+
 <script lang="ts">
 export default {
   name: "APP-DDEI",

@@ -39,6 +39,7 @@
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false"
   },
   "dependencies": {
+    "animate.css": "^4.1.1",
     "axios": "^1.6.1",
     "flow": "^0.2.3",
     "js-cookie": "^3.0.5",

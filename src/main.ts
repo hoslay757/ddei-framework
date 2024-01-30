@@ -3,6 +3,7 @@ import './assets/main.css'
 import { createApp } from 'vue'
 import App from '@/App.vue'
 import router from '@/router'
+import 'animate.css'
 import './assets/fonts/iconfont/iconfont.css'
 import './assets/fonts/iconfont/iconfont.js'
 const app = createApp(App)
