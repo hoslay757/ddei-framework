@@ -1,10 +1,9 @@
 <template>
   <div :class="{ 'ddei_editor_quick_fat_item_box': true, 'ddei_editor_quick_fat_item_box_disabled': !attrDefine }"
-    @click="attrDefine && showColor($el, $event)">
+    @click="attrDefine && showColor($event)">
     <span :class="img"></span>
     <div class="colorbar" :style="{ 'background-color': value ? value : 'black' }"></div>
-    <input v-if="refreshColorInput" ref="colorInput" type="color" v-model="value"
-      @input="attrDefine && valueChange($el, $event)" class="colinput" />
+    <input ref="colorInput" type="color" v-model="value" class="colinput" />
   </div>
 </template>
 
@@ -15,6 +14,7 @@ import DDeiEnumBusCommandType from '../../../../framework/js/enums/bus-command-t
 import { debounce } from 'lodash';
 import DDeiEnumOperateState from '@/components/framework/js/enums/operate-state';
 import DDeiModelArrtibuteValue from '@/components/framework/js/models/attribute/attribute-value';
+import DDeiEditorUtil from '@/components/editor/js/util/editor-util';
 export default {
   name: "DDei-Editor-QBT-Color",
   extends: null,
@@ -37,8 +37,7 @@ export default {
       editor: null,
       controlDefine: null,
       attrDefine: null,
-      value: null,
-      refreshColorInput: true
+      value: null
     };
   },
   computed: {},
@@ -46,9 +45,6 @@ export default {
 
   },
   created() {
-    // 防抖
-    this.valueChange = debounce(this.valueChange, 200);
-    this.forceRefreshColorInput = debounce(this.forceRefreshColorInput, 1500);
     // 监听obj对象中prop属性的变化
     this.$watch("editor.textEditorSelectedChange", function (newVal, oldVal) {
       if (newVal) {
@@ -78,16 +74,19 @@ export default {
     },
 
 
-    forceRefreshColorInput() {
-      this.refreshColorInput = false;
-      this.$nextTick(() => {
-        this.refreshColorInput = true;
-      });
-    },
-
-    showColor(element, $event) {
+    showColor(evt) {
+      let editorState = this.editor.state
       let colorInput = this.$refs.colorInput
-      colorInput.showPicker()
+      // colorInput.showPicker()
+      let srcElement = evt.currentTarget;
+      DDeiEditorUtil.showOrCloseDialog("selectcolor_dialog", {
+        value: colorInput.value,
+        callback: {
+          ok: this.valueChange
+        },
+        group: "property-dialog"
+      }, { type: 5 }, srcElement)
+      this.editor.state = editorState
     },
 
 
@@ -139,9 +138,9 @@ export default {
     },
 
 
-    valueChange(el, evt) {
+    valueChange(value) {
 
-      let value = this.value;
+      this.value = value;
       this.attrDefine.value = value;
 
       //通过解析器获取有效值
@@ -177,14 +176,13 @@ export default {
             setTimeout(() => {
               editorText.focus();
             }, 20);
-            this.forceRefreshColorInput();
             hasEditSetted = true;
           }
         }
       }
       if (!hasEditSetted) {
         this.editor.ddInstance.stage.selectedModels.forEach(element => {
-          this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: parsedValue }, evt, true);
+          this.editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { mids: [element.id], paths: paths, value: parsedValue }, null, true);
         });
       }
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
