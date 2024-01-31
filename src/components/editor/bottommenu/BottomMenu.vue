@@ -123,13 +123,20 @@ export default {
       if (
         DDeiEditorUtil.getConfigValue("GLOBAL_ALLOW_STAGE_RATIO", this.editor)
       ) {
+
+
         if (!this.changeCurrentStage) {
           this.ratioInputValue = parseFloat(newVal) * 100;
           this.stageRatio = newVal;
-          this.changeRatio();
+          if (!this.tempSheetChange) {
+            this.changeRatio();
+          } else {
+            delete this.tempSheetChange
+          }
         } else {
           this.changeCurrentStage = false;
         }
+
       }
     });
     this.$watch("stageRatio", function (newVal, oldVal) {
@@ -527,6 +534,7 @@ export default {
         ddInstance.bus?.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
         ddInstance.bus?.push(DDeiEnumBusCommandType.RefreshShape);
         ddInstance.bus?.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+
         ddInstance.bus?.executeAll();
 
         //打开新文件
@@ -561,6 +569,7 @@ export default {
         ddInstance &&
         (index >= 0 || index < sheets.length)
       ) {
+        this.tempSheetChange = true;
         file.changeSheet(index);
         let stage = sheets[index].stage;
         stage.ddInstance = ddInstance;
