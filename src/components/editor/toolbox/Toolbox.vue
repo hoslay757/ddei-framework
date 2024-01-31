@@ -55,6 +55,7 @@ import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
 import DDeiUtil from "../../framework/js/util";
 import DDeiRectContainer from "@/components/framework/js/models/rect-container";
 import DDeiLineLink from "@/components/framework/js/models/linelink";
+import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type";
 
 export default {
   name: "DDei-Editor-Toolbox",
@@ -261,7 +262,8 @@ export default {
         0,
         0
       );
-      this.editor.ddInstance.render.drawShape();
+      this.editor.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape)
+      this.editor.ddInstance.bus.executeAll()
     },
 
     /**

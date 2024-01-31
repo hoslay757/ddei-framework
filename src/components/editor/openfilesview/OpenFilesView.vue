@@ -501,7 +501,8 @@ export default {
         0
       );
       delete window.leftWidth
-      this.editor.ddInstance.render.drawShape();
+      this.editor.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape)
+      this.editor.ddInstance.bus.executeAll()
     },
     /**
      * 焦点进入当前区域

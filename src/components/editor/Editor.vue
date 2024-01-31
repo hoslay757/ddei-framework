@@ -74,6 +74,8 @@ export default {
       refreshTopMenuView: true,
       allowOpenMultFiles: true,
       allowQuickColor: true,
+      initLeftWidth: 0,
+      initRightWidth: 0,
     };
   },
   //注册组件
@@ -133,6 +135,8 @@ export default {
     this.editor.bottomHeight = frameBottomElement.offsetHeight;
     this.editor.middleWidth = frameMiddleElement.offsetWidth;
     this.editor.middleHeight = frameMiddleElement.offsetHeight;
+    this.initLeftWidth = frameLeftElement.offsetWidth
+    this.initRightWidth = frameRightElement.offsetWidth
     this.editor.maxWidth =
       this.editor.leftWidth + this.editor.rightWidth + this.editor.middleWidth;
     //初始化拦截器
@@ -336,10 +340,10 @@ export default {
             break;
           case 2:
             if (deltaX != 0) {
-              if (
-                this.editor.middleWidth + deltaX >= 300 &&
-                frameRightElement.offsetWidth - deltaX > 330
-              ) {
+              if (frameRightElement.offsetWidth - deltaX < this.initRightWidth) {
+                deltaX = -this.initRightWidth + frameRightElement.offsetWidth
+              }
+              if (this.editor.middleWidth + deltaX >= 300 && deltaX != 0) {
                 frameRightElement.style.flexBasis =
                   frameRightElement.offsetWidth - deltaX + "px";
                 frameRightElement.style.flexShrink = "0";
@@ -353,16 +357,17 @@ export default {
                   0,
                   0
                 );
-                this.editor.ddInstance.render.drawShape();
+                this.editor.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape)
+                this.editor.ddInstance.bus.executeAll()
               }
             }
             break;
           case 4:
             if (deltaX != 0) {
-              if (
-                this.editor.middleWidth - deltaX >= 300 &&
-                frameLeftElement.offsetWidth + deltaX >= 140
-              ) {
+              if (frameLeftElement.offsetWidth + deltaX < this.initLeftWidth / 1.5) {
+                deltaX = parseInt(this.initLeftWidth / 1.5) - frameLeftElement.offsetWidth
+              }
+              if (this.editor.middleWidth - deltaX >= 300 && deltaX != 0) {
                 frameLeftElement.style.flexBasis =
                   frameLeftElement.offsetWidth + deltaX + "px";
                 frameLeftElement.style.flexShrink = "0";
@@ -377,7 +382,8 @@ export default {
                   0,
                   0
                 );
-                this.editor.ddInstance.render.drawShape();
+                this.editor.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape)
+                this.editor.ddInstance.bus.executeAll()
               }
             }
             break;

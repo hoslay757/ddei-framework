@@ -1,13 +1,13 @@
 <template>
-  <div id="ddei_editor_propertyview"
+  <div id="ddei_editor_propertyview" ref="ddei_editor_propertyview"
     :class="{ 'ddei_editor_propertyview': true, 'ddei_editor_propertyview_disabled': propertyDisabled }"
     @mousedown="changeEditorFocus">
     <div class="header">
-      <span class="iconfont icon-a-ziyuan68 header-7"></span>
+      <span
+        :class="{ 'iconfont header-7': true, 'icon-a-ziyuan67': propertyViewShow, 'icon-a-ziyuan68': !propertyViewShow }"
+        @click="hidOrShowPV"></span>
       <div style="flex:1"></div>
-      <span class="iconfont icon-ding-01"></span>
-      <div class="header-1"></div>
-      <span class="iconfont icon-a-ziyuan67 header-7"></span>
+      <span class="iconfont icon-ding-01" v-if="propertyViewShow"></span>
     </div>
     <div class="content">
       <div class="ddei_editor_pv_subgroup_view" v-show="editor?.rightWidth > 38">
@@ -67,7 +67,7 @@
           </div>
         </div>
       </div>
-      <div class="ddei_editor_pv_group_view">
+      <div class="ddei_editor_pv_group_view" ref="ddei_editor_pv_group_view">
         <div class="ddei_editor_pv_group_view_items">
           <div
             :class="topGroup.selected ? 'ddei_editor_pv_group_view_items_item_selected' : 'ddei_editor_pv_group_view_items_item'"
@@ -106,6 +106,7 @@ import PVExCheckboxEditor from "./editors/PVExCheckboxEditor.vue";
 import PVSwitchCheckboxEditor from "./editors/PVSwitchCheckboxEditor.vue";
 import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
 import DDeiEnumOperateType from "../../framework/js/enums/operate-type";
+import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type";
 export default {
   name: "DDei-Editor-PropertyView",
   extends: null,
@@ -125,6 +126,7 @@ export default {
       currentSubGroup: null,
       reFresh: true,
       propertyDisabled: false,
+      propertyViewShow: true,
       panelStyle: "height:calc(100vh - 202px)"
     };
   },
@@ -545,23 +547,31 @@ export default {
      * 隐藏or展示属性编辑器
      */
     hidOrShowPV() {
+      this.propertyViewShow = !this.propertyViewShow
       let rightWidth = this.editor.rightWidth;
-      if (rightWidth > 38) {
-        let deltaX = this.editor.rightWidth - 38;
+      //获取最右边区域的大小
+      let pvGroupViewEle = this.$refs.ddei_editor_pv_group_view
+      let pvGroupViewWidth = pvGroupViewEle.clientWidth
+
+      if (rightWidth > pvGroupViewWidth) {
+        let pvViewEle = this.$refs.ddei_editor_propertyview
+        this.pvGroupViewWidth = pvViewEle.clientWidth
+        let deltaX = this.editor.rightWidth - pvGroupViewWidth;
         let frameRightElement = document.getElementById(
           "ddei_editor_frame_right"
         );
-        this.editor.rightWidth = 38;
-        frameRightElement.style.flexBasis = "38px";
+        this.editor.rightWidth = pvGroupViewWidth;
+        frameRightElement.style.flexBasis = pvGroupViewWidth + "px";
         //重新设置画布大小
         this.editor.middleWidth += deltaX;
+
       } else {
-        let deltaX = 292;
+        let deltaX = this.pvGroupViewWidth - pvGroupViewWidth;
         let frameRightElement = document.getElementById(
           "ddei_editor_frame_right"
         );
-        this.editor.rightWidth = 330;
-        frameRightElement.style.flexBasis = "330px";
+        this.editor.rightWidth = this.pvGroupViewWidth;
+        frameRightElement.style.flexBasis = this.pvGroupViewWidth + "px";
         //重新设置画布大小
         this.editor.middleWidth -= deltaX;
       }
@@ -572,7 +582,8 @@ export default {
         0
       );
 
-      this.editor.ddInstance.render.drawShape();
+      this.editor.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape)
+      this.editor.ddInstance.bus.executeAll()
     },
 
     /**
@@ -605,11 +616,10 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0px 8px;
+    padding-left: 8px;
+    padding-right: 8px;
 
-    .header-1 {
-      flex: 0 1 8px
-    }
+
 
     .header-7 {
       font-size: 13px;
