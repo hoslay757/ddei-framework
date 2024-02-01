@@ -867,7 +867,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           textRowContainer.widths[rcIndex] = 0
           textRowContainer.heights[rcIndex] = 0
           textRowContainer.width = Math.max(0, usedWidth)
-          textRowContainer.height = Math.max(0, textRowContainer.height ? textRowContainer.height : 0, lastUnSubTypeFontSize * ratio)
+          textRowContainer.height = Math.max(0, textRowContainer.height ? textRowContainer.height : 0, lastUnSubTypeFontSize ? lastUnSubTypeFontSize * ratio + vspace : fontSize * ratio + vspace)
         } else {
           if (sptStyle[ti]) {
             let ftsize = sptStyle[ti]?.font?.size ? sptStyle[ti]?.font?.size - subtractionFontSize : fontSize;
@@ -910,7 +910,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           textRowContainer.widths[rcIndex] = fontShapeRect.width
           textRowContainer.heights[rcIndex] = fontHeight * ratio + vspace
           textRowContainer.width = usedWidth
-          textRowContainer.height = Math.max(fontHeight * ratio + vspace, textRowContainer.height ? textRowContainer.height : 0, lastUnSubTypeFontSize * ratio + vspace)
+          textRowContainer.height = Math.max(fontHeight * ratio + vspace, textRowContainer.height ? textRowContainer.height : 0, lastUnSubTypeFontSize ? lastUnSubTypeFontSize * ratio + vspace : fontSize * ratio + vspace)
         }
 
         //如果不自动换行也不缩小字体，则超过的话，就省略显示
@@ -1070,7 +1070,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         let width = textContainer[tci].widths[tj]
         let height = textContainer[tci].heights[tj]
         lastWidth = width
-        lastHeight = height ? height : textContainer[tci].height
+        lastHeight = height
         //获取样式
         ctx.save();
         //读取当前特殊样式，如果没有，则使用外部基本样式
@@ -1252,6 +1252,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
 
       usedY += rRect.height
     }
+
     //绘制光标
     if (this.isEditoring && Date.now() % 1000 >= 500) {
       if (cursorX != -Infinity && cursorY != -Infinity && curSIdx == curEIdx) {
@@ -1292,6 +1293,14 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         ctx.closePath();
         ctx.stroke();
       } else if (editorText?.selectionEnd == cText.length) {
+        if (!lastHeight) {
+          for (let tci = textContainer.length - 1; tci >= 0; tci--) {
+            if (textContainer[tci].height) {
+              lastHeight = textContainer[tci].height
+              break;
+            }
+          }
+        }
         ctx.strokeStyle = "black";
         ctx.lineWidth = 1.5;
         ctx.beginPath();
