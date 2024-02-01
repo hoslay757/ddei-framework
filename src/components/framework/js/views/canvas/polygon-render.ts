@@ -834,6 +834,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
             let ds = fontSize < 50 ? 0.5 : Math.floor(fontSize / 50)
             fontSize -= ds;
             vspace -= ds
+            if (vspace < 0) {
+              vspace = 0;
+            }
             continue;
           }
         }
@@ -851,6 +854,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         let lastUnSubTypeFontSize = 0;
         for (let ti = 0; ti < cText.length; ti++, rcIndex++) {
           let te = cText[ti];
+
           //读取当前特殊样式，如果没有，则使用外部基本样式
           let font = null
           let fontHeight = null
@@ -967,12 +971,13 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
                 }
                 break;
               }
+
               rcIndex = 0;
               textRowContainer = { text: te, widths: [], heights: [] };
               textRowContainer.widths[rcIndex] = fontShapeRect.width
-              textRowContainer.heights[rcIndex] = fontHeight * ratio
+              textRowContainer.heights[rcIndex] = fontHeight * ratio + vspace
               textRowContainer.width = usedWidth
-              textRowContainer.height = Math.max(fontHeight * ratio, lastUnSubTypeFontSize * ratio)
+              textRowContainer.height = Math.max(fontHeight * ratio + vspace, lastUnSubTypeFontSize * ratio + vspace)
               textContainer.push(textRowContainer);
             }
           }
@@ -987,6 +992,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           let ds = maxFontSize < 50 ? 0.5 : Math.floor(maxFontSize / 50)
           fontSize -= ds;
           vspace -= ds
+          if (vspace < 0) {
+            vspace = 0;
+          }
           subtractionFontSize += ds
         }
       }
