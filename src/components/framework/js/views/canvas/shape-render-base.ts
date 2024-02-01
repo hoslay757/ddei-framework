@@ -250,6 +250,7 @@ class DDeiAbstractShapeRender {
           let dy = dr * Math.sin(rotate * DDeiConfig.ROTATE_UNIT)
           let op1 = new Vector3(ex + dx, ey + dy, 1)
           op1.model = this.model
+          op1.oppoint = op.oppoint
           pots.push(op1)
           hasPoint = true;
         }

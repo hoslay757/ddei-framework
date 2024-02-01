@@ -609,8 +609,8 @@ class DDeiLayerCanvasRender {
       let isStop = false;
       if (opPoint) {
         //只有在控件内部才触发
-        let projPoint = opPoint.model.getProjPoint({ x: ex, y: ey }, { in: -3, out: 15 }, 1, 2);
-        if (projPoint != null) {
+        let projPoint = null;
+        if (opPoint.oppoint == 3 || (projPoint = opPoint.model.getProjPoint({ x: ex, y: ey }, { in: -3, out: 15 }, 1, 2)) != null) {
           isStop = true;
           //当前操作状态：线改变点中
           //记录当前的拖拽的x,y,写入dragObj作为临时变量
