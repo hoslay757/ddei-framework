@@ -285,14 +285,15 @@ export default {
                 let rat1 = ddInstance.render?.ratio;
                 let canvasWidth = ddInstance.render.canvas.width / rat1;
                 let canvasHeight = ddInstance.render.canvas.height / rat1;
+                let edgeWeight = 25;
                 //判断是否在边缘
-                if (ex1 < 50) {
+                if (ex1 < edgeWeight) {
                   ddInstance.render.inEdge = 4;
-                } else if (ex1 > canvasWidth - 50) {
+                } else if (ex1 > canvasWidth - edgeWeight) {
                   ddInstance.render.inEdge = 2;
-                } else if (ey1 < 50) {
+                } else if (ey1 < edgeWeight) {
                   ddInstance.render.inEdge = 1;
-                } else if (ey1 > canvasHeight - 50) {
+                } else if (ey1 > canvasHeight - edgeWeight) {
                   ddInstance.render.inEdge = 3;
                 } else {
                   ddInstance.render.inEdge = 0;

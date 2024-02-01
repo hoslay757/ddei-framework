@@ -668,7 +668,37 @@ export default {
         background: transparent;
         font-size: 16px;
         font-weight: 400;
-        color: #B8B8B8;
+        color: black;
+
+        &::placeholder {
+          /* Chrome, Firefox, Opera, Safari 10.1+ */
+          color: #B8B8B8;
+        }
+
+        &::-webkit-input-placeholder {
+          /* WebKit browsers，webkit内核浏览器 */
+          color: #B8B8B8
+        }
+
+        &:-moz-placeholder {
+          /* Mozilla Firefox 4 to 18 */
+          color: #B8B8B8
+        }
+
+        &::-moz-placeholder {
+          /* Mozilla Firefox 19+ */
+          color: #B8B8B8
+        }
+
+        &:-ms-input-placeholder {
+          /* Internet Explorer 10-11 */
+          color: #B8B8B8
+        }
+
+        &::-ms-input-placeholder {
+          /* Microsoft Edge */
+          color: #B8B8B8
+        }
       }
 
       .button {

@@ -1148,14 +1148,15 @@ class DDeiLayerCanvasRender {
     let rat1 = this.ddRender?.ratio;
     let canvasWidth = this.ddRender.canvas.width / rat1
     let canvasHeight = this.ddRender.canvas.height / rat1
+    let edgeWeight = 25;
     //判断是否在边缘
-    if (ex < 50) {
+    if (ex < edgeWeight) {
       this.ddRender.inEdge = 4;
-    } else if (ex > canvasWidth - 50) {
+    } else if (ex > canvasWidth - edgeWeight) {
       this.ddRender.inEdge = 2;
-    } else if (ey < 50) {
+    } else if (ey < edgeWeight) {
       this.ddRender.inEdge = 1;
-    } else if (ey > canvasHeight - 50) {
+    } else if (ey > canvasHeight - edgeWeight) {
       this.ddRender.inEdge = 3;
     } else {
       this.ddRender.inEdge = 0;
