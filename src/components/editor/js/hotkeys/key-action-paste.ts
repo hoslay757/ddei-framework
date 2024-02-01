@@ -36,41 +36,49 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
     //剪切板中的数据
     let blobData = null;
     let type = null;
-    if (DDeiConfig.ALLOW_CLIPBOARD) {
-      //读取剪切板数据
-      let items = await navigator.clipboard.read();
-      //优先级html>图片/文本
-      items[0].types.forEach(t => {
-        if (!type) {
-          type = t;
-        } else if (t = 'text/html') {
-          type = t;
-        }
-      });
-      //三种粘贴类型，文本、图片、HTML
-      blobData = await items[0].getType(type)
+
+    if (DDeiConfig.ALLOW_CLIPBOARD || DDeiConfig.ALLOW_CLIPBOARD == undefined) {
+      try {
+        //读取剪切板数据
+        let items = await navigator.clipboard.read();
+        //优先级html>图片/文本
+        items[0].types.forEach(t => {
+          if (!type) {
+            type = t;
+          } else if (t = 'text/html') {
+            type = t;
+          }
+        });
+        //三种粘贴类型，文本、图片、HTML
+        blobData = await items[0].getType(type)
+        DDeiConfig.ALLOW_CLIPBOARD = true
+      } catch (e) {
+        DDeiConfig.ALLOW_CLIPBOARD = false
+      }
     }
     //如果不支持剪切板，则从window.DDEI_CLIPBOARD取得数据
-    else {
+    if (!DDeiConfig.ALLOW_CLIPBOARD) {
       type = 'text/html'
       blobData = window.DDEI_CLIPBOARD
     }
-    switch (type) {
-      //剪切板中是文本
-      case 'text/plain': {
-        let dataText = await new Response(blobData).text()
-        this.textPaste(evt, ddInstance.stage, dataText);
-        break;
-      }
-      //剪切板中是图片
-      case 'image/png': {
-        this.imagePaste(evt, ddInstance.stage, blobData);
-        break;
-      }
-      //剪切板中是HTML
-      case 'text/html': {
-        let dataText = await new Response(blobData).text()
-        this.htmlPaste(evt, ddInstance.stage, dataText);
+    if (blobData) {
+      switch (type) {
+        //剪切板中是文本
+        case 'text/plain': {
+          let dataText = await new Response(blobData).text()
+          this.textPaste(evt, ddInstance.stage, dataText);
+          break;
+        }
+        //剪切板中是图片
+        case 'image/png': {
+          this.imagePaste(evt, ddInstance.stage, blobData);
+          break;
+        }
+        //剪切板中是HTML
+        case 'text/html': {
+          let dataText = await new Response(blobData).text()
+          this.htmlPaste(evt, ddInstance.stage, dataText);
+        }
       }
     }
   }

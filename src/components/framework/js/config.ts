@@ -81,7 +81,7 @@ class DDeiConfig {
   static GLOBAL_ADV_WEIGHT: number = 5;
 
   //是否允许访问外部剪切板
-  static ALLOW_CLIPBOARD: boolean = false;
+  static ALLOW_CLIPBOARD: boolean | undefined = undefined;
 
   //序列化配置
   static SERI_FIELDS: object = {
@@ -515,7 +515,6 @@ class DDeiConfig {
         break;
       }
     }
-    DDeiConfig.ALLOW_CLIPBOARD = DDeiConfig.getAllowClipboard();
 
   }
 
@@ -540,22 +539,6 @@ class DDeiConfig {
         }
       }
     }
-  }
-
-  /**
- * 获取是否支持剪切板
- */
-  static getAllowClipboard() {
-    try {
-      if (!DDeiUtil.isSafari() && navigator.clipboard) {
-        console.log("加载剪切板:" + ClipboardItem)
-        return true;
-      }
-
-    } catch (e) {
-      return false
-    }
-    return false
   }
 
 

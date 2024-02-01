@@ -64,17 +64,23 @@ class DDeiKeyActionCopy extends DDeiKeyAction {
         let blob = new Blob([copyHtml], {
           type: 'text/html'
         })
-        //如果不支持剪切板，则采用window对象存储，此时不允许外部复制粘贴
-        if (DDeiConfig.ALLOW_CLIPBOARD) {
 
-          let writeDatas = [new ClipboardItem({ "text/html": blob })]
-          let cbData = navigator.clipboard;
-          cbData.write(writeDatas).then(function () {
-            console.log("复制成功");
-          }, function (e) {
-            console.error("复制失败" + e);
-          });
-        } else {
+        //如果不支持剪切板，则采用window对象存储，此时不允许外部复制粘贴
+        if (DDeiConfig.ALLOW_CLIPBOARD || DDeiConfig.ALLOW_CLIPBOARD == undefined) {
+          try {
+            let writeDatas = [new ClipboardItem({ "text/html": blob })]
+            let cbData = navigator.clipboard;
+            cbData.write(writeDatas).then(function () {
+              console.log("复制成功");
+            }, function (e) {
+              console.error("复制失败" + e);
+            });
+          } catch (e) {
+            DDeiConfig.ALLOW_CLIPBOARD = false
+          }
+        }
+
+        if (!DDeiConfig.ALLOW_CLIPBOARD) {
           window.DDEI_CLIPBOARD = blob
         }
       }
