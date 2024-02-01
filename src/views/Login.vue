@@ -218,7 +218,7 @@ export default {
         this.reg.validMsg.mobile = "请输入手机号码";
       } else {
         let mPattern =
-          /^((13[0-9])|(14[0-9])|(15([0-9]))|(18[0-9])|(19[0-9])|(17[0-9]))\d{8}$/;
+          /^1([3-9])\d{9}$/
         if (!mPattern.test(this.reg.mobile)) {
           this.reg.validMsg.mobile = "请输入正确的手机号码";
         }
