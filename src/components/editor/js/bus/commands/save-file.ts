@@ -45,63 +45,67 @@ class DDeiEditorCommandSaveFile extends DDeiBusCommand {
           let oldState = file.state;
           file.lastUpdateTime = new Date().getTime()
           let json = file.toJSON();
-          json.state = DDeiFileState.NONE;
-          if (data.publish == 1) {
-            file.state = DDeiFileState.PUBLISHING
-            //调用SPI进行发布
-            let publishFile = DDeiEditorUtil.getConfigValue(
-              "EVENT_PUBLISH_FILE",
-              editor
-            );
-            if (publishFile) {
-              publishFile(json).then(data => {
-                if (data.result == 1) {
-                  file.state = DDeiFileState.NONE;
-                } else if (data.result != 4) {
-                  file.state = oldState
-                }
+          if (json) {
+            json.state = DDeiFileState.NONE;
+            let storeIns = new DDeiStoreLocal();
+            //本地保存一份
+            try {
+              storeIns.save(file.id, json).then((data) => {
+
               });
+            } catch (e) {
+              console.error(e);
             }
-          } else {
-            file.state = DDeiFileState.SAVING
-            //调用SPI进行保存
-            let saveFile = DDeiEditorUtil.getConfigValue(
-              "EVENT_SAVE_FILE",
-              editor
-            );
-            if (saveFile) {
-              saveFile(json).then(data => {
-                if (data.result == 1) {
-                  file.state = DDeiFileState.NONE;
-                } else if (data.result != 4) {
-                  file.state = oldState
-                }
-              });
+            if (data.publish == 1) {
+              file.state = DDeiFileState.PUBLISHING
+              //调用SPI进行发布
+              let publishFile = DDeiEditorUtil.getConfigValue(
+                "EVENT_PUBLISH_FILE",
+                editor
+              );
+              if (publishFile) {
+                publishFile(json).then(data => {
+                  if (data.result == 1) {
+                    file.state = DDeiFileState.NONE;
+                    //遍历histroy，修改当前的histroy记录为最新状态，去掉其它最新状态标记
+                    file.histroy.forEach(his => {
+                      if (his.isNew == true) {
+                        delete his.isNew
+                      }
+                    });
+                    //将当前的设置
+                    file.histroy[file.histroyIdx].isNew = true;
+                  } else if (data.result != 4) {
+                    file.state = oldState
+                  }
+                });
+              }
+            } else {
+              file.state = DDeiFileState.SAVING
+              //调用SPI进行保存
+              let saveFile = DDeiEditorUtil.getConfigValue(
+                "EVENT_SAVE_FILE",
+                editor
+              );
+              if (saveFile) {
+                saveFile(json).then(data => {
+                  if (data.result == 1) {
+                    file.state = DDeiFileState.NONE;
+                    //遍历histroy，修改当前的histroy记录为最新状态，去掉其它最新状态标记
+                    file.histroy.forEach(his => {
+                      if (his.isNew == true) {
+                        delete his.isNew
+                      }
+                    });
+                    //将当前的设置
+                    file.histroy[file.histroyIdx].isNew = true;
+                  } else if (data.result != 4) {
+                    file.state = oldState
+                  }
+                });
+              }
             }
           }
-
-
-          // if (json) {
-          //   //执行保存
-          //   let storeIns = new DDeiStoreLocal();
-          //   json.state = DDeiFileState.NONE;
-          //   storeIns.save(file.id, json).then((data) => {
-          //     //回写ID
-          //     if (!file.id) {
-          //       file.id = data;
-          //     }
-          //     file.state = DDeiFileState.NONE;
-          //     //遍历histroy，修改当前的histroy记录为最新状态，去掉其它最新状态标记
-          //     file.histroy.forEach(his => {
-          //       if (his.isNew == true) {
-          //         delete his.isNew
-          //       }
-          //     });
-          //     //将当前的设置
-          //     file.histroy[file.histroyIdx].isNew = true;
-          //     editor?.editorViewer?.forceRefreshOpenFilesView();
-          //   });
-          // }
         }
       }
     }

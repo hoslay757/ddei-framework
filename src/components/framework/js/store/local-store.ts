@@ -196,12 +196,14 @@ class DDeiStoreLocal extends DDeiStore {
           //不存在数据，执行新增
           else {
             this.getNextId("file").then((newId) => {
-              let id = newId;
-              //插入数据
-              data.id = id;
+              if (!data.id) {
+                let id = newId;
+                //插入数据
+                data.id = id;
+              }
               let storeData = JSON.stringify(data);
               let rowData = {
-                id: id,
+                id: data.id,
                 name: data.name,
                 path: data.path,
                 parentId: 0,
@@ -250,6 +252,8 @@ class DDeiStoreLocal extends DDeiStore {
       request.onsuccess = function (event) {
         if (request.result) {
           resolve(request.result);
+        } else {
+          resolve();
         }
       };
       request.onerror = function (event) {
