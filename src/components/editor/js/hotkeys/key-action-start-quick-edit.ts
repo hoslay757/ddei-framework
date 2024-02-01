@@ -179,12 +179,14 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
 
 
           inputEle.style.left = canvasPos.left + pos.x + ddInstance.stage.wpv.x + 1 + "px";
-          inputEle.style.top = canvasPos.top + pos.y + ddInstance.stage.wpv.y + 50 + "px";
-          inputEle.style.transform = "rotate(" + rotate + "deg)";
+          inputEle.style.top = canvasPos.top + pos.y + ddInstance.stage.wpv.y + 10 + "px";
+          // inputEle.style.transform = "rotate(" + rotate + "deg)";
           // inputEle.style.backgroundColor = "grey"
           inputEle.style.display = "block";
-          // inputEle.style.width = "0.1px"
-          // inputEle.style.height = "0.1px"
+
+          let textAreaRect = DDeiAbstractShape.pvsToOutRect(model.textArea);
+          inputEle.style.width = textAreaRect.width + "px"
+          inputEle.style.height = textAreaRect.height + "px"
           //创建编辑影子元素
           ddInstance.stage.render.editorShadowControl = DDeiUtil.getShadowControl(model);
           ddInstance.stage.render.editorShadowControl.render.isEditoring = true
