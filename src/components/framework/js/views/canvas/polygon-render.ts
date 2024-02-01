@@ -1301,11 +1301,24 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
             }
           }
         }
+        x = lastUsedX + lastWidth
+        if (textContainer[textContainer.length - 1].text == '' || textContainer[textContainer.length - 1].text == '\n') {
+
+          //绘制文字
+          if (align == 1) {
+            x = 5;
+          } else if (align == 2) {
+            x = (ratPos.width) * 0.5
+          } else if (align == 3) {
+            x = ratPos.width - 5;
+          }
+          x = x + ratPos.x
+        }
         ctx.strokeStyle = "black";
         ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.moveTo(lastUsedX + lastWidth, lastUsedY - 2);
-        ctx.lineTo(lastUsedX + lastWidth, lastUsedY + lastHeight + 2);
+        ctx.moveTo(x, lastUsedY - 2);
+        ctx.lineTo(x, lastUsedY + lastHeight + 2);
         ctx.closePath();
         ctx.stroke();
       }
