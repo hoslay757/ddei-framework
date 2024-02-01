@@ -81,6 +81,7 @@ class DDeiEditor {
     { keys: "27", times: 2, interval: 500, editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.CancelSelect },
     //删除
     { keys: "8", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.RemoveModels },
+    { keys: "46", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.RemoveModels },
     //F2快捷编辑
     { keys: "113", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.StartQuickEdit },
     //ESC取消快捷编辑

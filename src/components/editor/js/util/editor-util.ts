@@ -101,8 +101,9 @@ class DDeiEditorUtil {
             editor.bus?.executeAll();
 
           }
-          inputEle.onkeydown = function () {
+          inputEle.onkeydown = function (evt) {
             let editor = DDeiEditor.ACTIVE_INSTANCE;
+            console.log(evt.keyCode)
             editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
             editor.bus.executeAll();
           }

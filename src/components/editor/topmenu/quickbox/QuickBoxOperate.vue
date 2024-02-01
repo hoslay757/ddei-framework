@@ -118,15 +118,17 @@ export default {
       } else {
         let hasFocus = document.hasFocus();
         if (hasFocus) {
-          // 判断是否Safari浏览器
-          if (!DDeiUtil.isSafari()) {
-            if (DDeiConfig.ALLOW_CLIPBOARD) {
-              let items = await navigator.clipboard.read();
-              if (items?.length > 0) {
-                this.hasClipData = true;
+          try {
+            // 判断是否Safari浏览器
+            if (!DDeiUtil.isSafari()) {
+              if (DDeiConfig.ALLOW_CLIPBOARD) {
+                let items = await navigator.clipboard.read();
+                if (items?.length > 0) {
+                  this.hasClipData = true;
+                }
               }
             }
-          }
+          } catch (e) { }
         }
       }
     },
