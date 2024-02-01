@@ -136,7 +136,7 @@ class DDeiCanvasRender {
    */
   drawShape(): void {
     if (this.model.stage) {
-      if (this.model.stage.render?.refresh) {
+      if (this.model.stage.render?.refresh || this.model.stage.render?.editorShadowControl) {
         this.model.stage.render.drawShape();
         if (this.isSupportOffScreen) {
           const imageBitmap = this.canvas.transferToImageBitmap();
