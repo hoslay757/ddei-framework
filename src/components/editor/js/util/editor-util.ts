@@ -77,7 +77,7 @@ class DDeiEditorUtil {
         if (!inputEle) {
           inputEle = document.createElement("textarea")
           inputEle.setAttribute("id", inputId)
-          inputEle.setAttribute("style", "width:100px;filter: opacity(0);user-select: none;pointer-events: none;border:none;resize:none;padding:0;z-index:9999;position:fixed;left:0;top:0;display:none;outline:none;");
+          inputEle.setAttribute("style", "width:100px;filter: opacity(1);user-select: none;pointer-events: none;border:none;resize:none;padding:0;z-index:9999;position:fixed;left:0;top:0;display:none;outline:none;");
           document.body.appendChild(inputEle);
           editor.quickEditorInput = inputEle;
           inputEle.enterValue = function () {
@@ -101,9 +101,9 @@ class DDeiEditorUtil {
             editor.bus?.executeAll();
 
           }
-          inputEle.onkeydown = function (evt) {
+          inputEle.onkeyup = function (evt) {
             let editor = DDeiEditor.ACTIVE_INSTANCE;
-            console.log(evt.keyCode)
+            editor.bus.push(DDeiEnumBusCommandType.TextEditorChangeSelectPos);
             editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
             editor.bus.executeAll();
           }

@@ -127,6 +127,8 @@ export default {
               if (!(paths?.length > 0)) {
                 paths = [this.attrDefine.code];
               }
+
+
               let value = shadowControl.getSptStyle(curSIdx, curEIdx, paths)
               if (value === undefined) {
                 value = DDeiModelArrtibuteValue.getAttrValueByState(shadowControl, paths[0], true);
