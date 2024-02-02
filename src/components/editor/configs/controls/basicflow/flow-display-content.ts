@@ -1,6 +1,6 @@
 export default {
   'id': '102056',
-  'name': '推迟',
+  'name': '显示内容',
   'code': 'fdc',
   'desc': '显示内容',
   'from': '100500',
@@ -59,7 +59,7 @@ export default {
                 pvs.push({x:x,y:y,fill:1,stroke:1});
               break;
               case 3:
-                pvs.push({x:x-10,y:y,fill:1,stroke:1,r:er,rad:-rad90});
+                pvs.push({x:x-10,y:y,fill:1,stroke:1,r:er,rad:-rad90,rd:0});
                 pvs.push({r:er,dx:40,rad:rad90,stroke:1,type:4,direct:1,end:1});
                 pvs.push({r:25});
                 pvs.push({r:sample.r});

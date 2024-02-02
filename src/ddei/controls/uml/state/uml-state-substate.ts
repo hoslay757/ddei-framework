@@ -57,21 +57,19 @@ export default {
         //下方子图标
         `(i, sample, pvs, model, ovs){
           if(i == 0){
-            pvs.push({begin:1,x:40,y:40,stroke:1});
-            pvs.push({x:30,y:40,stroke:1});
-            pvs.push({x:30,y:30,stroke:1});
-            pvs.push({x:40,y:30,stroke:1,end:1});
-
-           
+            pvs.push({begin:1,x:40,y:40,stroke:1,rd:0});
+            pvs.push({x:30,y:40,stroke:1,rd:0});
+            pvs.push({x:30,y:30,stroke:1,rd:0});
+            pvs.push({x:40,y:30,stroke:1,end:1,rd:0});
           }
         }`,
         `(i, sample, pvs, model, ovs){
           if(i == 0){
 
-            pvs.push({begin:1,x:25,y:40,stroke:1});
-            pvs.push({x:15,y:40,stroke:1});
-            pvs.push({x:15,y:30,stroke:1});
-            pvs.push({x:25,y:30,stroke:1,end:1});
+            pvs.push({begin:1,x:25,y:40,stroke:1,rd:0});
+            pvs.push({x:15,y:40,stroke:1,rd:0});
+            pvs.push({x:15,y:30,stroke:1,rd:0});
+            pvs.push({x:25,y:30,stroke:1,end:1,rd:0});
           }
         }`,
         `(i, sample, pvs, model, ovs){

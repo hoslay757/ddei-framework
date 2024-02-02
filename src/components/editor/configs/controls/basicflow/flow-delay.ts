@@ -77,10 +77,11 @@ export default {
           }
         }`,
       ],
-      iconPos: {
-        dx: -20,
-        dw: 10
-      }
+
     },
+    iconPos: {
+      dx: -20,
+      dw: 10
+    }
   }
 }

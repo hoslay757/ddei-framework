@@ -184,11 +184,13 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
    * 绘制自身到最外层canvas
    */
   drawSelfToCanvas(composeRender) {
-    let canvas = this.getRenderCanvas(composeRender)
-    let ctx = canvas.getContext('2d');
-    let rat1 = this.ddRender.ratio;
-    let outRect = this.tempCanvas.outRect
-    ctx.drawImage(this.tempCanvas, 0, 0, outRect.width * rat1, outRect.height * rat1, outRect.x * rat1, outRect.y * rat1, outRect.width * rat1, outRect.height * rat1)
+    if (this.tempCanvas) {
+      let canvas = this.getRenderCanvas(composeRender)
+      let ctx = canvas.getContext('2d');
+      let rat1 = this.ddRender.ratio;
+      let outRect = this.tempCanvas.outRect
+      ctx.drawImage(this.tempCanvas, 0, 0, outRect.width * rat1, outRect.height * rat1, outRect.x * rat1, outRect.y * rat1, outRect.width * rat1, outRect.height * rat1)
+    }
 
   }
 
@@ -256,6 +258,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
    */
   getBorderPVS(pvs, tempShape) {
     let stageRatio = this.model.getStageRatio()
+    let rat1 = this.ddRender.ratio;
     let round = tempShape?.border?.round ? tempShape?.border?.round : this.getCachedValue("border.round");
     let disabled = tempShape?.border?.disabled || tempShape?.border?.disabled == false ? tempShape?.border?.disabled : this.getCachedValue("border.disabled");
     let width = tempShape?.border?.width ? tempShape?.border?.width : this.getCachedValue("border.width");
@@ -267,7 +270,11 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       round = 0
     }
     round = round * stageRatio
-    width = width / 2
+    if (pvs[0].rd || pvs[0].rd == 0) {
+      round = pvs[0].rd * stageRatio
+    }
+    //TODO 
+    round *= rat1
     let borderPVS = []
     let toZeroMatrix = new Matrix3(
       1, 0, -pvs[0].x,
@@ -276,16 +283,16 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     //归到原点，求夹角
     let p1 = new Vector3(pvs[1].x, pvs[1].y, 1)
     p1.applyMatrix3(toZeroMatrix)
-    let lineAngle = -(new Vector3(1, 0, 0).angleTo(p1) * 180 / Math.PI).toFixed(4);
+    let lineAngle = -new Vector3(1, 0, 0).angleTo(p1) * 180 / Math.PI
     let angle = 0;
     if (p1.x >= 0 && p1.y >= 0) {
-      angle = (lineAngle * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      angle = lineAngle * DDeiConfig.ROTATE_UNIT
     } else if (p1.x <= 0 && p1.y >= 0) {
-      angle = (lineAngle * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      angle = lineAngle * DDeiConfig.ROTATE_UNIT
     } else if (p1.x <= 0 && p1.y <= 0) {
-      angle = (- lineAngle * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      angle = - lineAngle * DDeiConfig.ROTATE_UNIT
     } else if (p1.x >= 0 && p1.y <= 0) {
-      angle = ((- lineAngle) * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      angle = - lineAngle * DDeiConfig.ROTATE_UNIT
     }
     let rotateMatrix = new Matrix3(
       Math.cos(angle), Math.sin(angle), 0,
@@ -296,6 +303,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     borderPVS[0] = clone(pvs[0]);//new Vector3(pvs[0].x + roundPVS.x, pvs[0].y + roundPVS.y, 1);
     borderPVS[0].x += roundPVS.x
     borderPVS[0].y += roundPVS.y
+
     //四个角的点，考虑边框的位置也要响应变小
     let lastType = 0
     for (let i = 1; i < pvs.length; i++) {
@@ -464,7 +472,11 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           ctx.bezierCurveTo(pvs[i1].x * rat1 + lineOffset, pvs[i1].y * rat1 + lineOffset, pvs[i2].x * rat1 + lineOffset, pvs[i2].y * rat1 + lineOffset, pvs[i3].x * rat1 + lineOffset, pvs[i3].y * rat1 + lineOffset);
         }
         else {
-          ctx.arcTo(pvs[s].x * rat1 + lineOffset, pvs[s].y * rat1 + lineOffset, pvs[e].x * rat1 + lineOffset, pvs[e].y * rat1 + lineOffset, round * rat1);
+          let rd = round * rat1
+          if (pvs[s].rd || pvs[s].rd == 0) {
+            rd = pvs[s].rd * rat1
+          }
+          ctx.arcTo(pvs[s].x * rat1 + lineOffset, pvs[s].y * rat1 + lineOffset, pvs[e].x * rat1 + lineOffset, pvs[e].y * rat1 + lineOffset, rd);
         }
         if (pv.end) {
           ctx.closePath()
@@ -539,7 +551,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let width = tempShape?.border?.width ? tempShape?.border?.width : this.getCachedValue("border.width");
     let drawLine = (!disabled && (!opacity || opacity > 0) && width > 0)
     if (drawLine) {
-      for (let i = 0; i < this.borderPVSS.length; i++) {
+      for (let i = 0; i < this.borderPVSS?.length; i++) {
         let pvs = this.borderPVSS[i];
         //创建path
         this.createPath(pvs, tempShape, true)

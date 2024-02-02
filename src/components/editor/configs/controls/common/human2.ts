@@ -107,7 +107,7 @@ export default {
             },
             {
               name: "线条",
-              attrs: ["borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
+              attrs: ["borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash"]
             },
 
 
