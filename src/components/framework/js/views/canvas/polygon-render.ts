@@ -228,6 +228,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
 
       let pvs = this.borderPVSS[i];
       if (!disabled && width > 0) {
+        let stageRatio = this.model.getStageRatio()
+        width *= stageRatio
         let rat1 = this.ddRender.ratio;
         if (pvs.length == 1) {
           pvs = cloneDeep(pvs)

@@ -35,13 +35,13 @@ export default {
               let er = sample.r+5
               let x = er * sample.cos
               let y = er * sample.sin
-              pvs.push({ x: x, y: y,r:er,clip:1,stroke:1,fill:1 });
+              pvs.push({begin:1,end:1, x: x, y: y,r:er,clip:1,stroke:1,fill:1 });
             }
         }`,
         //第二层圈
         `(i, sample, pvs, model, ovs){
             if(i == 0){
-              pvs.push({ x: sample.x, y: sample.y,r:sample.r,stroke:1,fill:1 });
+              pvs.push({begin:1,end:1, x: sample.x, y: sample.y,r:sample.r,stroke:1,fill:1 });
             }
         }`,
         //六边形外围
@@ -68,7 +68,7 @@ export default {
           }
         }`,
 
-      ]
-    }
+      ],
+    },
   }
 }
