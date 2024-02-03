@@ -1,7 +1,8 @@
 <template>
   <div class="ddei_home_dir_tree">
-    <div class="ddei_home_dir_tree_node"
-         v-for="folder in folders">
+    <div v-for="folder in folders"
+         :key="folder.id"
+         class="ddei_home_dir_tree_node">
       <div :class="{'ddei_home_dir_tree_node_content':true, 'selected':folder.isCurrent}"
            :style="{paddingLeft: `${folder.level * 25}px`}"
            v-show="folder.isShow">
@@ -318,10 +319,12 @@ export default {
 .ddei_home_dir_tree {
   flex: 1;
   overflow: auto;
-  height: calc(100vh - 120px);
-  background-color: #212121;
+  height: calc(100vh - 55px);
+  background-color: #F9FAFB;
+  border: 1px solid #E0E3E9;
+  border-top: 0px;
+  border-radius: 0 0 4px 4px;
   font-size: 14px;
-  padding: 10px 20px 10px 0px;
   cursor: pointer;
 }
 
@@ -336,11 +339,10 @@ export default {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  color: white;
 }
 
 .ddei_home_dir_tree_node_content.selected {
-  background: #414141;
+  background: #E4E7EC;
 }
 
 .ddei_home_dir_tree_node_buttons {
@@ -383,7 +385,7 @@ export default {
 
 .ddei_home_dir_tree span:hover {
   color: white;
-  background: #414141;
+  background: #E4E7EC;
 }
 
 /* .创建目录弹框 */

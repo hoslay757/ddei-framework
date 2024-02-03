@@ -1,32 +1,72 @@
 <template>
   <div class="ddei_home_fileview">
+    <div class="ddei_home_fileview_operations">
+      <div class="ddei_home_fileview_operate ddei_home_fileview_operate_dir_add">
+        <div class="ddei_home_fileview_operate_icon">
+          <img src="@/assets/images/icon-file-add.png" />
+        </div>
+        <div class="ddei_home_fileview_operate_name">
+          新建文件组
+        </div>
+        <div class="ddei_home_fileview_operate_plus">
+          +
+        </div>
+      </div>
+      <div class="ddei_home_fileview_operate ddei_home_fileview_operate_file_add"
+           @click="showFileDialog(null, 1)">
+        <div class="ddei_home_fileview_operate_icon">
+          <img src="@/assets/images/icon-file-add.png" />
+        </div>
+        <div class="ddei_home_fileview_operate_name">
+          新建文件
+        </div>
+        <div class="ddei_home_fileview_operate_plus">
+          +
+        </div>
+      </div>
+      <div class="ddei_home_fileview_operate ddei_home_fileview_operate_file_draft_add">
+        <div class="ddei_home_fileview_operate_icon">
+          <img src="@/assets/images/icon-file-add.png" />
+        </div>
+        <div class="ddei_home_fileview_operate_name">
+          新建草稿
+        </div>
+        <div class="ddei_home_fileview_operate_plus">
+          +
+        </div>
+      </div>
+    </div>
+    <div class="ddei_home_fileview_divide"></div>
     <div class="ddei_home_fileview_files">
-      <div class="ddei_home_fileview_file">
+      <!-- <div class="ddei_home_fileview_file">
         <div class="ddei_home_fileview_file_add"
              @click="showFileDialog(null, 1)">
           <span style="margin-top:-5px">+</span>
         </div>
-      </div>
-      <div class="ddei_home_fileview_file"
-           v-for="(file) in files">
-        <div class="ddei_home_fileview_file_info">
+      </div> -->
+      <div v-for="(file) in files"
+           :key="file.id"
+           class="ddei_home_fileview_file">
+        <div class="ddei_home_fileview_file_header">
           <div class="ddei_home_fileview_file_icon">
-            <img src="../../components/editor/icons/icon-basic-shape.png" />
+            <img src="@/components/editor/icons/icon-file-list-item.png">
           </div>
-          <div class="ddei_home_fileview_file_name">
-            {{ file.name }}
-          </div>
-          <div :class="{'ddei_home_fileview_file_version':file.publish != 1,'ddei_home_fileview_file_version_published':file.publish == 1}">
-            v{{ file.version }}
-          </div>
+          <div class="ddei_home_fileview_file_name">{{ file.name }}</div>
+          <!-- 
           <div class="ddei_home_fileview_file_code">
             {{ file.code }}
+          </div>
+           -->
+          <div :class="{'ddei_home_fileview_file_version': true, 'ddei_home_fileview_file_version_published':file.publish == 1}">
+            v{{ file.version }}
           </div>
           <div class="ddei_home_fileview_file_update">
             {{ getFileLastTime(file) }}
           </div>
-          <div class="ddei_home_fileview_file_desc">
-            {{ file.desc }}
+        </div>
+        <div class="ddei_home_fileview_file_info">
+          <div class="ddei_home_fileview_file_thumbnail">
+            <img src="@/assets/images/thumbnail_default.png" />
           </div>
         </div>
         <div class="ddei_home_fileview_file_buttons">
@@ -71,8 +111,9 @@
           </path>
         </svg>
       </div>
-      <div :class="{ 'number': pInfo.type == 1, 'more': pInfo.type == 2, 'current': pInfo.idx == page.num }"
-           v-for="pInfo in pages"
+      <div v-for="pInfo in pages"
+           :key="pInfo.id"
+           :class="{ 'number': pInfo.type == 1, 'more': pInfo.type == 2, 'current': pInfo.idx == page.num }"
            @click="pInfo.idx != page.num && listFile(pInfo.idx)">
         {{ pInfo.type == 1 ? pInfo.idx : '...' }}
       </div>
@@ -398,33 +439,64 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
+  padding: 24px 32px;
+  height: calc(100vh - 55px);
 }
 
 .ddei_home_fileview_files {
   flex: 1;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-template-rows: 200px 200px 200px;
-  padding: 0px 20px;
-  gap: 10px;
+  // display: grid;
+  // grid-template-columns: 1fr 1fr 1fr 1fr;
+  // grid-template-rows: 280px 280px 280px 280px;
+  // padding: 0px 20px;
+  // gap: 10px;
+  display: flex;
+  margin-top: -20px;
+  margin-left: -20px;
+  height: calc(100% - 95px)
 }
 
 .ddei_home_fileview_file {
-  width: 280px;
-  height: 180px;
-  background-color: #212121;
+  width: 283px;
+  height: 280px;
   border-radius: 4px;
   display: flex;
   flex-direction: column;
-  padding: 15px;
+  background: #FAFAFA;
+  color: #212121;
+  margin-left: 20px;
+  margin-top: 20px;
+}
+
+.ddei_home_fileview_file_header {
+  display: flex;
+  align-items: center;
+  border-radius: 4px 4px 0 0;
+  border: 1px solid #CED4DD;
+  background: #ffffff;
+  height: 48px;
+  padding: 0 20px;
 }
 
 .ddei_home_fileview_file_info {
   flex: 1;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-  grid-template-rows: 30px 30px 30px 30px;
   gap: 2px;
+  padding: 20px;
+  border: 1px solid #CED4DD;
+  border-top: 0;
+  border-bottom: 0;
+}
+
+.ddei_home_fileview_file_thumbnail {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
 }
 
 .ddei_home_fileview_file_add {
@@ -445,12 +517,6 @@ export default {
   border: 2px dashed #3662ec;
 }
 
-.ddei_home_fileview_file_name {
-  grid-column: 2/6;
-  padding-top: 4px;
-  color: white;
-}
-
 .ddei_home_fileview_file_code {
   color: #d55e43;
   font-size: 12px;
@@ -464,16 +530,22 @@ export default {
   text-align: right;
 }
 
+.ddei_home_fileview_file_name {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin-right: 8px;
+}
+
 .ddei_home_fileview_file_version {
   color: orange;
   text-align: right;
-  padding-top: 4px;
+  margin-right: 8px;
 }
 
 .ddei_home_fileview_file_version_published {
   color: green;
-  text-align: right;
-  padding-top: 4px;
 }
 
 .ddei_home_fileview_file_desc {
@@ -488,15 +560,18 @@ export default {
 }
 
 .ddei_home_fileview_file_icon img {
-  width: 36px;
-  height: 36px;
-  margin-top: 10px;
+  width: 20px;
+  height: 16px;
+  margin-right: 8px;
 }
 
 .ddei_home_fileview_file_buttons {
-  flex: 0 0 40px;
-  padding-top: 5px;
   display: flex;
+  align-items: center;
+  border-radius: 0 0 4px 4px;
+  border: 1px solid #CED4DD;
+  background: #ffffff;
+  height: 48px;
 }
 
 .ddei_home_fileview_file_button_split {
@@ -507,7 +582,7 @@ export default {
 
 .ddei_home_fileview_file_button {
   flex: 1;
-  margin-top: 2px;
+  margin-top: 6px;
   text-align: center;
 }
 
@@ -524,18 +599,24 @@ export default {
 .ddei_home_fileview_pages {
   flex: 0 0 50px;
   display: flex;
+  margin-top: 10px;
 
   .current {
     cursor: default !important;
     color: #1890ff !important;
   }
+  
 
   > div {
     height: 32px;
+    line-height: 32px;
     flex: 0 0 32px;
-    border: none;
-    background: #212121;
-    color: #fff;
+    border-radius: 4px;
+    border: 1px solid #898989;
+    // background: #212121;
+    background: #FAFAFA;
+    // color: #fff;
+    color: #2c2c2c;
     text-align: center;
 
     &:hover {
@@ -544,6 +625,10 @@ export default {
     }
 
     user-select: none;
+
+    &.empty {
+      border: none;
+    }
   }
 
   .empty {
@@ -554,7 +639,7 @@ export default {
 
   .number {
     margin-right: 10px;
-    padding-top: 4px;
+    // padding-top: 4px;
   }
 
   .more {
@@ -568,11 +653,13 @@ export default {
 
   .up {
     margin-right: 10px;
-    padding-top: 6px !important;
+    // padding-top: 6px !important;
+    vertical-align: middle;
   }
 
   .next {
-    padding-top: 6px !important;
+    // padding-top: 6px !important;
+    vertical-align: middle;
   }
 }
 
@@ -596,6 +683,8 @@ export default {
     text-align: center;
     font-size: 17px;
     color: black;
+    border: 1px solid #CED4DD;
+    border-radius: 4px;
 
     .title {
       width: 100%;
@@ -736,5 +825,66 @@ export default {
       }
     }
   }
+}
+
+.ddei_home_fileview_operations {
+  display: flex;
+}
+
+.ddei_home_fileview_divide {
+    display: block;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #CED4DD;
+}
+
+.ddei_home_fileview_operate {
+  width: 285px;
+  height: 64px;
+  margin-right: 40px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  box-sizing: border-box;
+  cursor: pointer;
+  border-radius: 4px;
+  background-repeat: no-repeat;
+  background-size: contain;
+
+  &_dir_add {
+    background-image: url(@/assets/images/icon-dir-add-bg.png)
+  }
+
+  &_file_add {
+    background-image: url(@/assets/images/icon-file-add-bg.png)
+  }
+
+  &_file_draft_add {
+    background-image: url(@/assets/images/icon-file-draft-add-bg.png)
+  }
+
+  &_icon {
+    width: 30px;
+    height: 30px;
+    margin-right: 14px;
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  &_name {
+    font-size: 14px;
+    color: #FFFFFF;
+    line-height: 64px;
+    flex: 1;
+  }
+
+   &_plus {
+    color: #FFFFFF;
+    font-size: 28px;
+    font-weight: bold;
+   }
 }
 </style>

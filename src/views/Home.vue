@@ -3,15 +3,13 @@
     <div class="ddei_home_header">
       <Headers />
     </div>
-    <div class="ddei_home_bar">
-      <HomeBar ref="homeBar" />
-    </div>
     <div class="ddei_home_middle">
       <div class="ddei_home_middle_left">
         <DirTree ref="dirTree" />
       </div>
       <div class="ddei_home_middle_right">
-        <FileList v-if="refreshFileList" ref="fileList" />
+        <FileList v-if="refreshFileList"
+                  ref="fileList" />
       </div>
     </div>
   </div>
@@ -70,27 +68,27 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style lang="less" scoped>
 .ddei_home {
   width: 100%;
   height: calc(100vh);
-  background: black;
+  // background: black;
   display: flex;
   flex-direction: column;
 }
 
 .ddei_home_header {
-  flex: 0 0 48px;
+  // flex: 0 0 48px;
 }
 
 .ddei_home_bar {
   flex: 0 0 48px;
-  background: #2c2c2c;
+  // background: #2c2c2c;
 }
 
 .ddei_home_middle {
   flex: 1;
-  background: #2c2c2c;
+  // background: #2c2c2c;
   display: flex;
 }
 
@@ -102,4 +100,5 @@ export default {
 .ddei_home_middle_right {
   flex: 1;
   display: flex;
-}</style>
+}
+</style>
