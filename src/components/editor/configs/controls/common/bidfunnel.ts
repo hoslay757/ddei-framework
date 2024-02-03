@@ -26,7 +26,7 @@ export default {
             let er = sample.r / Math.cos(45 * DDeiConfig.ROTATE_UNIT)
             let x = er * sample.cos
             let y = er * sample.sin
-            pvs.push({begin:i == 1,end:i == 5,x:x,y:y,select:1});
+            pvs.push({begin:i == 1,end:i == 5,x:x,y:y,select:1,clip:1});
           }
         }`,
         //主体图形

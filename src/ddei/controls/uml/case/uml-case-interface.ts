@@ -6,7 +6,7 @@ export default {
   'from': '100401',
   'icon': 'toolbox-shape-rect',
   'define': {
-    type: 2,
+    type: 1,
     sp: {
       type: 2,
       weight: 20
@@ -18,6 +18,6 @@ export default {
       { x: -75, y: 0, z: 1 },
       { x: 0, y: 0, z: 1 },
       { x: 75, y: 0, z: 1 },
-    ]
+    ],
   }
 }

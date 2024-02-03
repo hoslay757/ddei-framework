@@ -8,6 +8,6 @@ export default {
   'define': {
     width: 20,
     height: 20,
-
+    oppInner: 0,//禁止在内部触发oppoint的相关操作
   }
 }

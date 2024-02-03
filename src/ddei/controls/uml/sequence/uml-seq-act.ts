@@ -24,6 +24,7 @@ export default {
           }`,
         ]
       }
-    }
+    },
+    oppInner: 0,//禁止在内部触发oppoint的相关操作
   }
 }
