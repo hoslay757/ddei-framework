@@ -63,6 +63,9 @@
               <PVSwitchCheckboxEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
                 v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'switch-checkbox'">
               </PVSwitchCheckboxEditor>
+              <PVBorderDashComboEditor :controlDefine="controlDefine" :attrDefine="attrDefine"
+                v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'border-dash'">
+              </PVBorderDashComboEditor>
             </div>
           </div>
         </div>
@@ -104,6 +107,7 @@ import PVBorderTypeEditor from "./editors/PVBorderTypeEditor.vue";
 import PVFillTypeEditor from "./editors/PVFillTypeEditor.vue";
 import PVExCheckboxEditor from "./editors/PVExCheckboxEditor.vue";
 import PVSwitchCheckboxEditor from "./editors/PVSwitchCheckboxEditor.vue";
+import PVBorderDashComboEditor from "./editors/PVBorderDashComboEditor.vue";
 import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
 import DDeiEnumOperateType from "../../framework/js/enums/operate-type";
 import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type";
@@ -149,7 +153,8 @@ export default {
     PVExCheckboxEditor,
     PVTextAreaEditor,
     PVSwitchCheckboxEditor,
-    PVColorComboEditor
+    PVColorComboEditor,
+    PVBorderDashComboEditor
   },
   created() {
     // 监听obj对象中prop属性的变化

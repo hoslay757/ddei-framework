@@ -128,39 +128,28 @@ export default {
     showOrHiddenOtherAttrs(value) {
       //显示隐藏其他属性
       if (value == "0") {
-        DDeiEditorArrtibute.hiddenAttributesByCode(
-          this.controlDefine.styles,
-          "borderColor",
-          "borderOpacity",
-          "borderWidth",
-          "borderDash"
-        );
-        if (this.controlDefine.subStyles) {
+        this.controlDefine.groups.forEach(group => {
           DDeiEditorArrtibute.hiddenAttributesByCode(
-            this.controlDefine.subStyles,
+            group,
             "borderColor",
             "borderOpacity",
             "borderWidth",
-            "borderDash"
+            "borderDash",
+            "borderRound",
           );
-        }
+        });
+
       } else if (value == "1") {
-        DDeiEditorArrtibute.showAttributesByCode(
-          this.controlDefine.styles,
-          "borderColor",
-          "borderOpacity",
-          "borderWidth",
-          "borderDash"
-        );
-        if (this.controlDefine.subStyles) {
+        this.controlDefine.groups.forEach(group => {
           DDeiEditorArrtibute.showAttributesByCode(
-            this.controlDefine.subStyles,
+            group,
             "borderColor",
             "borderOpacity",
             "borderWidth",
-            "borderDash"
+            "borderDash",
+            "borderRound",
           );
-        }
+        });
       }
     },
 
