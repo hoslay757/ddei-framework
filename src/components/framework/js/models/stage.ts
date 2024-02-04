@@ -453,10 +453,10 @@ class DDeiStage {
   /**
    * 移除当前图层模型
    */
-  removeModel(model: DDeiAbstractShape): void {
+  removeModel(model: DDeiAbstractShape, destroy: boolean = false): void {
     if (this.layerIndex != -1) {
       if (this.layers[this.layerIndex]) {
-        this.layers[this.layerIndex].removeModel(model);
+        this.layers[this.layerIndex].removeModel(model, destroy);
       }
     }
   }

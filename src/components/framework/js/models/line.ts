@@ -358,6 +358,7 @@ class DDeiLine extends DDeiAbstractShape {
   refreshLinkModels() {
     //加载子模型
     if (this.linkModels?.has) {
+
       this.linkModels.forEach(lm => {
         if (lm.dm) {
           //同步坐标关系
@@ -784,7 +785,7 @@ class DDeiLine extends DDeiAbstractShape {
     //移除自身所有附属控件
     this.linkModels?.forEach(lm => {
       if (lm.dm) {
-        lm.dm.pModel.removeModel(lm.dm)
+        lm.dm.pModel.removeModel(lm.dm, true)
       }
     })
     this.linkModels?.clear()

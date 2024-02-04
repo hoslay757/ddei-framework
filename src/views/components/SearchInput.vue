@@ -1,24 +1,19 @@
 <script lang="ts" setup>
-import { ref, type Ref,  } from 'vue'
+import { ref, type Ref, } from 'vue'
 
 const emit = defineEmits(['change'])
 
-const queryText:Ref<string|null|undefined> = ref('')
+const queryText: Ref<string | null | undefined> = ref('')
 
-function doQuery () {
+function doQuery() {
   emit('change', queryText)
-  console.log(queryText.value)
 }
 </script>
 
 <template>
   <div class="ddei_home_bar_content_search">
-    <img src="../../components/editor/icons/icon-search-black.png"
-         @click="doQuery" />
-    <input v-model="queryText"
-           @keydown.enter="doQuery"
-           class="ddei_home_bar_content_search_input"
-           placeholder="名称/编码/备注">
+    <img src="../../components/editor/icons/icon-search-black.png" @click="doQuery" />
+    <input v-model="queryText" @keydown.enter="doQuery" class="ddei_home_bar_content_search_input" placeholder="名称/编码/备注">
   </div>
 </template>
 

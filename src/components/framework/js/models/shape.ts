@@ -1580,7 +1580,7 @@ abstract class DDeiAbstractShape {
     //删除链接
     sourceLinks?.forEach(link => {
       if (link.dm) {
-        link.dm.pModel.removeModel(link.dm)
+        link.dm.pModel.removeModel(link.dm, true)
       }
       this.stage?.removeLink(link);
     })

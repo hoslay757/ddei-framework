@@ -858,6 +858,7 @@ class DDeiLayerCanvasRender {
                       dmpath = "endPoint"
                     }
                   }
+
                   if (!skip) {
                     let distLinks = this.stage?.getDistModelLinks(model.id);
                     distLinks?.forEach(dl => {
@@ -905,6 +906,7 @@ class DDeiLayerCanvasRender {
                   model.pModel?.changeParentsBounds()
                 }
                 hasChange = true;
+                this.stage.refreshLinkCache()
               }
             }
 
@@ -1025,7 +1027,18 @@ class DDeiLayerCanvasRender {
                       } else if (lm.type == 2) {
                         point = line.endPoint;
                       } else if (lm.type == 3) {
-                        point = line.pvs[Math.floor(line.pvs.length / 2)];
+                        //奇数，取正中间
+                        let pi = Math.floor(line.pvs.length / 2)
+                        if (line.pvs.length % 3 == 0) {
+                          point = line.pvs[pi];
+                        }
+                        //偶数，取两边的中间点
+                        else {
+                          point = {
+                            x: (line.pvs[pi - 1].x + line.pvs[pi].x) / 2,
+                            y: (line.pvs[pi - 1].y + line.pvs[pi].y) / 2
+                          }
+                        }
                       }
                       lm.dx = model.cpv.x - point.x
                       lm.dy = model.cpv.y - point.y
