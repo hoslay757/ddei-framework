@@ -120,7 +120,10 @@ export default {
 
     loginSuccess(response) {
       // 缓存 token
-      Cookies.set("token", response.token);
+      Cookies.set('token', response.token)
+      Cookies.set('refreshToken', response.refreshToken)
+      Cookies.set('tokenExp', response.tokenExp)
+
       this.getUserInfo();
 
     },

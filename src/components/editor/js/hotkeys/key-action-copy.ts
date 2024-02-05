@@ -77,7 +77,6 @@ class DDeiKeyActionCopy extends DDeiKeyAction {
 
             let cbData = navigator.clipboard;
             cbData.write(writeDatas).then(function () {
-              console.log("复制成功");
             }, function (e) {
               console.error("复制失败" + e);
             });
