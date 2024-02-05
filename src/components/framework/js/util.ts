@@ -131,6 +131,43 @@ class DDeiUtil {
   }
 
   /**
+   * 绘制圆角矩形
+   * @param ctx 
+   * @param x x
+   * @param y y 
+   * @param width 宽度
+   * @param height 高度
+   * @param radius 圆角
+   * @param stroke 是否绘制
+   * @param strokeColor 绘制颜色
+   * @param fill 是否填充
+   * @param fillColor 填充颜色
+   */
+  static drawRectRound(ctx, x: number, y: number, width: number, height: number, radius: number = 0, stroke: boolean = true, strokeColor: string = "black", fill: boolean = true, fillColor: string = "white") {
+    if ((stroke || fill) && width > 0 && height > 0) {
+      ctx.save()
+      ctx.beginPath();
+      ctx.arc(x + radius, y + radius, radius, Math.PI, Math.PI * 3 / 2);
+      ctx.lineTo(width - radius + x, y);
+      ctx.arc(width - radius + x, radius + y, radius, Math.PI * 3 / 2, Math.PI * 2);
+      ctx.lineTo(width + x, height + y - radius);
+      ctx.arc(width - radius + x, height - radius + y, radius, 0, Math.PI * 1 / 2);
+      ctx.lineTo(radius + x, height + y);
+      ctx.arc(radius + x, height - radius + y, radius, Math.PI * 1 / 2, Math.PI);
+      ctx.closePath();
+      if (fill) {
+        ctx.fillStyle = fillColor
+        ctx.fill()
+      }
+      if (stroke) {
+        ctx.strokeStyle = strokeColor
+        ctx.stroke()
+      }
+      ctx.restore()
+    }
+  }
+
+  /**
    * 将一组控件按照从上到下从左到右的顺序进行排序，返回新的顺序
    * @param element 
    */

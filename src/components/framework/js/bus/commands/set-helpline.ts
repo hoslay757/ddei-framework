@@ -46,7 +46,7 @@ class DDeiBusCommandSetHelpLine extends DDeiBusCommand {
           models = Array.from(models.values());
         }
         if (models?.length > 0) {
-          let outPVS = null;
+          let outRect = null;
           let rotate = null;
           let apvs = []
           models.forEach(model => {
@@ -60,14 +60,14 @@ class DDeiBusCommandSetHelpLine extends DDeiBusCommand {
           } else {
             rotate = stage.render.selector.rotate
           }
+          outRect = DDeiAbstractShape.getOutRectByPV(models)
 
           // 获取计算并获取对齐的点，只获取一屏内的数据做对比
-
           let { hpoint, vpoint, hAds, vAds } = stage.getAlignData({ pvs: apvs, rotate: rotate }, data?.models)
           layer.render.helpLines = {
             hpoint: hpoint,
             vpoint: vpoint,
-            pvs: outPVS,
+            rect: outRect,
             hAds: hAds,
             vAds: vAds
           };

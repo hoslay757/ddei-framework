@@ -483,12 +483,9 @@ class DDeiLayerCanvasRender {
     if (this.helpLines) {
       let hpoint = this.helpLines.hpoint;
       let vpoint = this.helpLines.vpoint;
-      let pvs = this.helpLines.pvs;
+      let rect = this.helpLines.rect;
       let cpv = this.helpLines.cpv;
-      let textPV = cpv;
-      if (pvs?.length > 0) {
-        textPV = pvs[0];
-      }
+
 
       //获得 2d 上下文对象
       let canvas = this.ddRender.getCanvas();
@@ -500,16 +497,26 @@ class DDeiLayerCanvasRender {
       //保存状态
       ctx.save();
       //绘制提示文本
-      //设置所有文本的对齐方式，以便于后续所有的对齐都采用程序计算
-      ctx.textAlign = "left";
-      ctx.textBaseline = "top";
-      //设置字体
-      ctx.font = "bold 24px 宋体"
-      //设置字体颜色
-      ctx.fillStyle = "red"
-      //执行绘制
-      if (textPV) {
-        ctx.fillText(textPV.x.toFixed(0) + "," + textPV.y.toFixed(0), textPV.x * rat1 - 30, textPV.y * rat1 - 30);
+      if (rect) {
+        //设置所有文本的对齐方式，以便于后续所有的对齐都采用程序计算
+        ctx.textAlign = "left";
+        ctx.textBaseline = "top";
+        let fontSize = 12
+        let font = "bold " + (fontSize * rat1) + "px Microsoft YaHei"
+        //设置字体
+        ctx.font = font
+        //生成文本并计算文本大小
+        let text = "X:" + rect.x.toFixed(0) + ", Y:" + rect.y.toFixed(0)
+        let textRect = DDeiUtil.measureText(text, font, ctx)
+        let width = textRect.width / rat1 + 10
+        let height = fontSize + 4
+        let x = (rect.x - width / 2) * rat1
+        let y = (rect.y - height - 5) * rat1
+        width *= rat1
+        height *= rat1
+        DDeiUtil.drawRectRound(ctx, x, y, width, height, 5, false, "", true, "#1F72FF")
+        ctx.fillStyle = "white"
+        ctx.fillText(text, x + (width - textRect.width) / 2, y + (height - fontSize * rat1) / 2);
       }
       // 计算对齐辅助线
       if (DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
