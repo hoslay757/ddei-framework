@@ -113,6 +113,11 @@ class DDeiStageCanvasRender {
       this.clearStage();
       //绘制纸张，以及图层背景
       this.drawPaper();
+      if (this.forceRefresh) {
+        delete this.forceRefresh
+        this.drawShape();
+        return;
+      }
       //计算滚动条
       this.calScroll();
 
@@ -327,27 +332,32 @@ class DDeiStageCanvasRender {
       } else if ((this.model.height - ((startPaperY + fullPaperHeight) / rat1)) > paperHeight / rat1) {
         this.model.height -= parseInt((this.model.height * rat1 - startPaperY - fullPaperHeight) / paperHeight) * paperHeight / rat1
       }
-
+      let hScrollWidth = this.hScroll?.width ? this.hScroll.width : 0
+      let hScrollHeight = this.vScroll?.height ? this.vScroll.height : 0
       if (wpv.x > 0) {
         wpv.x = 0
-      } else if (wpv.x < -this.model.width) {
-        wpv.x = -this.model.width
+      } else if (wpv.x < -this.model.width + hScrollWidth) {
+        wpv.x = -this.model.width + hScrollWidth
+        this.forceRefresh = true;
       }
       if (wpv.y > 0) {
         wpv.y = 0
-      } else if (wpv.y < -this.model.height) {
-        wpv.y = -this.model.height
+      } else if (wpv.y < -this.model.height + hScrollHeight) {
+        wpv.y = -this.model.height + hScrollHeight
+        this.forceRefresh = true;
       }
 
 
       ctx.setLineDash([]);
-      ctx.lineWidth = 1
+      let lineWidth = 1;
+      ctx.lineWidth = lineWidth
       ctx.strokeStyle = "black"
-      ctx.strokeRect(posX + (-leftExtNum * paperWidth), posY + (-topExtNum * paperHeight), (rightExtNum + leftExtNum + 1) * paperWidth, (bottomExtNum + topExtNum + 1) * paperHeight)
+      ctx.strokeRect(posX + (-leftExtNum * paperWidth) - lineWidth, posY + (-topExtNum * paperHeight) - lineWidth, (rightExtNum + leftExtNum + 1) * paperWidth + 2 * lineWidth, (bottomExtNum + topExtNum + 1) * paperHeight + 2 * lineWidth)
       this.paperOutRect = {
         x: posX + (-leftExtNum * paperWidth), y: posY + (-topExtNum * paperHeight), w: (rightExtNum + leftExtNum + 1) * paperWidth, h: (bottomExtNum + topExtNum + 1) * paperHeight
       }
       ctx.restore();
+
     }
 
   }
