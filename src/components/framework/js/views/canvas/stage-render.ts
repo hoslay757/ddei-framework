@@ -107,13 +107,14 @@ class DDeiStageCanvasRender {
       this.ddRender.model,
       null
     )) {
-      //计算滚动条
-      this.calScroll();
+
 
       //清空画布，绘制场景大背景
       this.clearStage();
       //绘制纸张，以及图层背景
       this.drawPaper();
+      //计算滚动条
+      this.calScroll();
 
       //绘制网格
       this.drawGrid()
@@ -225,8 +226,9 @@ class DDeiStageCanvasRender {
       let ratio = rat1 * stageRatio;
 
       //当前的窗口位置（乘以了窗口缩放比例）
-      let wpvX = -this.model.wpv.x * rat1
-      let wpvY = -this.model.wpv.y * rat1
+      let wpv = this.model.wpv
+      let wpvX = -wpv.x * rat1
+      let wpvY = -wpv.y * rat1
       let offsetWidth = 1 * ratio / 2;
 
       //纸张的像素大小
@@ -253,6 +255,7 @@ class DDeiStageCanvasRender {
       maxOutRect.x1 = maxOutRect.x1 * rat1;
       maxOutRect.y = maxOutRect.y * rat1;
       maxOutRect.y1 = maxOutRect.y1 * rat1;
+
       //计算各个方向扩展的数量
       let leftExtNum = 0, rightExtNum = 0, topExtNum = 0, bottomExtNum = 0
       if (maxOutRect.width > 0 && maxOutRect.height > 0) {
@@ -291,9 +294,12 @@ class DDeiStageCanvasRender {
       ctx.fillStyle = "white"
       ctx.strokeStyle = "grey"
       ctx.setLineDash([5, 5]);
-
+      let fullPaperWidth = 0, fullPaperHeight = 0
       for (let i = -leftExtNum; i <= rightExtNum; i++) {
+        fullPaperHeight = 0
         for (let j = -topExtNum; j <= bottomExtNum; j++) {
+          fullPaperWidth += paperWidth
+          fullPaperHeight += paperHeight
           ctx.fillRect(posX + (i * paperWidth), posY + (j * paperHeight), paperWidth, paperHeight)
           //绘制当前纸张的每个图层背景
           let topDisplayIndex = -1;
@@ -310,6 +316,30 @@ class DDeiStageCanvasRender {
           ctx.strokeRect(posX + (i * paperWidth), posY + (j * paperHeight), paperWidth, paperHeight)
         }
       }
+
+      if ((startPaperX + fullPaperWidth) / rat1 > this.model.width) {
+        this.model.width = (startPaperX + fullPaperWidth + 0.5 * paperWidth) / rat1
+      } else if ((this.model.width - ((startPaperX + fullPaperWidth) / rat1)) > paperWidth / rat1) {
+        this.model.width -= parseInt((this.model.width * rat1 - startPaperX - fullPaperWidth) / paperWidth) * paperWidth / rat1
+      }
+      if ((startPaperY + fullPaperHeight) / rat1 > this.model.height) {
+        this.model.height = (startPaperY + fullPaperHeight + 0.5 * paperHeight) / rat1
+      } else if ((this.model.height - ((startPaperY + fullPaperHeight) / rat1)) > paperHeight / rat1) {
+        this.model.height -= parseInt((this.model.height * rat1 - startPaperY - fullPaperHeight) / paperHeight) * paperHeight / rat1
+      }
+
+      if (wpv.x > 0) {
+        wpv.x = 0
+      } else if (wpv.x < -this.model.width) {
+        wpv.x = -this.model.width
+      }
+      if (wpv.y > 0) {
+        wpv.y = 0
+      } else if (wpv.y < -this.model.height) {
+        wpv.y = -this.model.height
+      }
+
+
       ctx.setLineDash([]);
       ctx.lineWidth = 1
       ctx.strokeStyle = "black"
