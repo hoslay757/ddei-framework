@@ -40,6 +40,7 @@
   },
   "dependencies": {
     "animate.css": "^4.1.1",
+    "ant-design-vue": "4.x",
     "axios": "^1.6.1",
     "flow": "^0.2.3",
     "js-cookie": "^3.0.5",
@@ -65,6 +66,7 @@
     "npm-run-all": "^4.1.5",
     "px2rem-loader": "^0.1.9",
     "typescript": "~5.1.6",
+    "unplugin-vue-components": "^0.26.0",
     "vite": "^4.4.6",
     "vue-tsc": "^1.8.6"
   }

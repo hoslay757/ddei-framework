@@ -1,10 +1,15 @@
 <template>
-  <router-view v-slot="{ Component, route }">
-    <component :is="Component" :key="route.path" />
-  </router-view>
+  <a-config-provider :locale="locale">
+    <router-view v-slot="{ Component, route }">
+      <component :is="Component"
+                 :key="route.path" />
+    </router-view>
+  </a-config-provider>
 </template>
 
 <script lang="ts">
+import zhCN from 'ant-design-vue/es/locale/zh_CN';
+
 export default {
   name: "APP-DDEI",
   extends: null,
@@ -14,6 +19,7 @@ export default {
   components: {},
   data() {
     return {
+      locale: zhCN,
       layers: [],
     };
   },
