@@ -64,7 +64,7 @@ class DDeiBusCommandSetHelpLine extends DDeiBusCommand {
 
           // 获取计算并获取对齐的点，只获取一屏内的数据做对比
           let { hpoint, vpoint, hAds, vAds } = stage.getAlignData({ pvs: apvs, rotate: rotate }, data?.models)
-          layer.render.helpLines = {
+          stage.render.helpLines = {
             hpoint: hpoint,
             vpoint: vpoint,
             rect: outRect,
@@ -74,12 +74,12 @@ class DDeiBusCommandSetHelpLine extends DDeiBusCommand {
           return true;
         } else {
           //隐藏辅助对齐线、坐标文本等图形
-          layer.render.helpLines = null;
+          stage.render.helpLines = null;
           return true;
         }
       } else {
         //隐藏辅助对齐线、坐标文本等图形
-        layer.render.helpLines = null;
+        stage.render.helpLines = null;
         return true;
       }
     }

@@ -65,8 +65,8 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
       }
 
       //横纵吸附
-      let hAds = fModel.layer.render.helpLines?.hAds || fModel.layer.render.helpLines?.hAds == 0 ? fModel.layer.render.helpLines?.hAds : Infinity
-      let vAds = fModel.layer.render.helpLines?.vAds || fModel.layer.render.helpLines?.vAds == 0 ? fModel.layer.render.helpLines?.vAds : Infinity
+      let hAds = fModel.stage.render.helpLines?.hAds || fModel.stage.render.helpLines?.hAds == 0 ? fModel.stage.render.helpLines?.hAds : Infinity
+      let vAds = fModel.stage.render.helpLines?.vAds || fModel.stage.render.helpLines?.vAds == 0 ? fModel.stage.render.helpLines?.vAds : Infinity
       let hAdsValue = Infinity;
       let vAdsValue = Infinity;
       if (hAds != Infinity) {

@@ -160,6 +160,9 @@ class DDeiStageCanvasRender {
 
       //绘制标尺
       this.drawRuler()
+      //绘制辅助线
+      this.drawHelpLines()
+
 
       //绘制水印
       this.drawMark();
@@ -167,6 +170,9 @@ class DDeiStageCanvasRender {
 
       //绘制滚动条
       this.drawScroll();
+
+
+      this.helpLines = null;
 
 
       DDeiLine.calLineCrossSync(this.model.layers[this.model.layerIndex])
@@ -181,6 +187,114 @@ class DDeiStageCanvasRender {
           null
         )
       }
+    }
+  }
+
+  /**
+  * 显示辅助对齐线以及文本
+  */
+  drawHelpLines(): void {
+    // 未开启主线提示，则不再计算辅助线提示定位
+    if (this.helpLines) {
+      let hpoint = this.helpLines.hpoint;
+      let vpoint = this.helpLines.vpoint;
+      let rect = this.helpLines.rect;
+      let cpv = this.helpLines.cpv;
+
+      //获得 2d 上下文对象
+      let canvas = this.ddRender.getCanvas();
+      let ctx = canvas.getContext('2d');
+      //获取全局缩放比例
+      let rat1 = this.ddRender.ratio
+      let stageRatio = this.model.getStageRatio()
+      let ratio = rat1 * stageRatio;
+      //保存状态
+      ctx.save();
+
+      ctx.translate((this.model.wpv.x) * rat1, (this.model.wpv.y) * rat1)
+      //绘制提示文本
+      if (rect) {
+        ctx.save()
+        //设置所有文本的对齐方式，以便于后续所有的对齐都采用程序计算
+        ctx.textAlign = "left";
+        ctx.textBaseline = "top";
+        let fontSize = 12
+        let font = "bold " + (fontSize * rat1) + "px Microsoft YaHei"
+        //设置字体
+        ctx.font = font
+        //生成文本并计算文本大小
+        let text = "X:" + rect.x.toFixed(0) + ", Y:" + rect.y.toFixed(0)
+        let textRect = DDeiUtil.measureText(text, font, ctx)
+        let width = textRect.width / rat1 + 10
+        let height = fontSize + 4
+
+        let x = (rect.x - width / 2) * rat1
+        let y = (rect.y - height - 5) * rat1
+        width *= rat1
+        height *= rat1
+        DDeiUtil.drawRectRound(ctx, x, y, width, height, 5, false, "", true, "#1F72FF")
+        ctx.fillStyle = "white"
+        ctx.fillText(text, x + (width - textRect.width) / 2, y + (height - fontSize * rat1) / 2);
+
+        //如果正在移动，则在标尺上绘制标注区域
+        //横向
+        //设置所有文本的对齐方式，以便于后续所有的对齐都采用程序计算
+        ctx.strokeStyle = "#1F72FF";
+        let weight = 16 * rat1;
+        ctx.lineWidth = 1.5 * rat1
+        ctx.globalAlpha = 0.7
+        let x1 = (rect.x + this.model.wpv.x) * rat1
+        let y1 = (rect.y + this.model.wpv.y) * rat1
+        ctx.translate(-(this.model.wpv.x) * rat1, -(this.model.wpv.y) * rat1)
+        ctx.beginPath()
+        ctx.moveTo(x1, 0)
+        ctx.lineTo(x1, weight);
+        ctx.closePath();
+        ctx.stroke()
+        //纵向
+        ctx.beginPath()
+        ctx.moveTo(0, y1)
+        ctx.lineTo(weight, y1);
+        ctx.closePath();
+        ctx.stroke()
+        ctx.restore()
+      }
+      // 计算对齐辅助线
+      if (DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
+
+        //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
+        let lineOffset = 0//1 * ratio / 2;
+        ctx.lineWidth = 1 * ratio;
+        //线段、虚线样式
+        ctx.setLineDash([0, 1 * ratio, 1 * ratio]);
+        //颜色
+        ctx.strokeStyle = DDeiUtil.getColor(DDeiConfig.GLOBAL_HELP_LINE_ALIGN_COLOR);
+
+        if (hpoint) {
+          for (let y in hpoint) {
+
+            //画横线
+            ctx.beginPath();
+            ctx.moveTo(hpoint[y].sx * rat1 - 100, y * rat1 + lineOffset);
+            ctx.lineTo(hpoint[y].ex * rat1 + 100, y * rat1 + lineOffset);
+            ctx.stroke();
+          };
+        }
+        if (vpoint) {
+          for (let x in vpoint) {
+            //画竖线
+            ctx.beginPath();
+            ctx.moveTo(x * rat1 + lineOffset, vpoint[x].sy * rat1 - 100);
+            ctx.lineTo(x * rat1 + lineOffset, vpoint[x].ey * rat1 + 100);
+            ctx.stroke();
+          };
+        }
+
+      }
+
+      ctx.beginPath();
+      //恢复状态
+      ctx.restore();
     }
   }
 
@@ -375,7 +489,6 @@ class DDeiStageCanvasRender {
       let ctx = canvas.getContext('2d');
       let rat1 = this.ddRender.ratio;
       let stageRatio = this.model.getStageRatio()
-      let ratio = rat1 * stageRatio;
       let xDPI = this.ddRender.dpi.x;
       //标尺单位
       let unit = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.unit", true);
@@ -819,6 +932,7 @@ class DDeiStageCanvasRender {
         curY -= splitedWeight;
         y--
       }
+
       ctx.restore();
     }
   }

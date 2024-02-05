@@ -57,11 +57,6 @@ class DDeiLayerCanvasRender {
   stageRender: DDeiStageCanvasRender | null;
 
   /**
-   * 辅助线对象
-   */
-  helpLines: object = {};
-
-  /**
    * 用于绘图时缓存属性等信息
    */
   renderCacheData: Map<string, object> = new Map();
@@ -112,8 +107,7 @@ class DDeiLayerCanvasRender {
         //绘制拖拽影子控件
         this.drawShadowControls();
 
-        //绘制辅助线
-        this.drawHelpLines()
+
 
         this.modelChanged = false;
         if (this.viewAfter) {
@@ -474,87 +468,7 @@ class DDeiLayerCanvasRender {
     return movedBounds
   }
 
-  /**
-  * 显示辅助对齐线以及文本
-  * @param bounds 当前碰撞边框
-  */
-  drawHelpLines(): void {
-    // 未开启主线提示，则不再计算辅助线提示定位
-    if (this.helpLines) {
-      let hpoint = this.helpLines.hpoint;
-      let vpoint = this.helpLines.vpoint;
-      let rect = this.helpLines.rect;
-      let cpv = this.helpLines.cpv;
 
-
-      //获得 2d 上下文对象
-      let canvas = this.ddRender.getCanvas();
-      let ctx = canvas.getContext('2d');
-      //获取全局缩放比例
-      let rat1 = this.ddRender.ratio
-      let stageRatio = this.stage.getStageRatio()
-      let ratio = rat1 * stageRatio;
-      //保存状态
-      ctx.save();
-      //绘制提示文本
-      if (rect) {
-        //设置所有文本的对齐方式，以便于后续所有的对齐都采用程序计算
-        ctx.textAlign = "left";
-        ctx.textBaseline = "top";
-        let fontSize = 12
-        let font = "bold " + (fontSize * rat1) + "px Microsoft YaHei"
-        //设置字体
-        ctx.font = font
-        //生成文本并计算文本大小
-        let text = "X:" + rect.x.toFixed(0) + ", Y:" + rect.y.toFixed(0)
-        let textRect = DDeiUtil.measureText(text, font, ctx)
-        let width = textRect.width / rat1 + 10
-        let height = fontSize + 4
-        let x = (rect.x - width / 2) * rat1
-        let y = (rect.y - height - 5) * rat1
-        width *= rat1
-        height *= rat1
-        DDeiUtil.drawRectRound(ctx, x, y, width, height, 5, false, "", true, "#1F72FF")
-        ctx.fillStyle = "white"
-        ctx.fillText(text, x + (width - textRect.width) / 2, y + (height - fontSize * rat1) / 2);
-      }
-      // 计算对齐辅助线
-      if (DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
-
-        //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
-        let lineOffset = 0//1 * ratio / 2;
-        ctx.lineWidth = 1 * ratio;
-        //线段、虚线样式
-        ctx.setLineDash([0, 1 * ratio, 1 * ratio]);
-        //颜色
-        ctx.strokeStyle = DDeiUtil.getColor(DDeiConfig.GLOBAL_HELP_LINE_ALIGN_COLOR);
-        if (hpoint) {
-          for (let y in hpoint) {
-            //画横线
-            ctx.beginPath();
-            ctx.moveTo(hpoint[y].sx * rat1 - 100, y * rat1 + lineOffset);
-            ctx.lineTo(hpoint[y].ex * rat1 + 100, y * rat1 + lineOffset);
-            ctx.stroke();
-          };
-        }
-        if (vpoint) {
-          for (let x in vpoint) {
-            //画竖线
-            ctx.beginPath();
-            ctx.moveTo(x * rat1 + lineOffset, vpoint[x].sy * rat1 - 100);
-            ctx.lineTo(x * rat1 + lineOffset, vpoint[x].ey * rat1 + 100);
-            ctx.stroke();
-          };
-        }
-
-      }
-
-
-      //恢复状态
-      ctx.restore();
-      this.helpLines = null;
-    }
-  }
 
 
 
