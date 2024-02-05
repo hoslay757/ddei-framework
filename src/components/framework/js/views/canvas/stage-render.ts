@@ -237,27 +237,30 @@ class DDeiStageCanvasRender {
         ctx.fillText(text, x + (width - textRect.width) / 2, y + (height - fontSize * rat1) / 2);
 
         //如果正在移动，则在标尺上绘制标注区域
-        //横向
-        //设置所有文本的对齐方式，以便于后续所有的对齐都采用程序计算
-        ctx.strokeStyle = "#1F72FF";
-        let weight = 16 * rat1;
-        ctx.lineWidth = 1.5 * rat1
-        ctx.globalAlpha = 0.7
-        let x1 = (rect.x + this.model.wpv.x) * rat1
-        let y1 = (rect.y + this.model.wpv.y) * rat1
-        ctx.translate(-(this.model.wpv.x) * rat1, -(this.model.wpv.y) * rat1)
-        ctx.beginPath()
-        ctx.moveTo(x1, 0)
-        ctx.lineTo(x1, weight);
-        ctx.closePath();
-        ctx.stroke()
-        //纵向
-        ctx.beginPath()
-        ctx.moveTo(0, y1)
-        ctx.lineTo(weight, y1);
-        ctx.closePath();
-        ctx.stroke()
-        ctx.restore()
+        let ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
+
+        if (ruleDisplay == 1 || ruleDisplay == "1") {
+          //横向
+          ctx.strokeStyle = "red";
+          let weight = 16 * rat1;
+          ctx.lineWidth = 1.5 * rat1
+          ctx.globalAlpha = 0.5
+          let x1 = (rect.x + this.model.wpv.x) * rat1
+          let y1 = (rect.y + this.model.wpv.y) * rat1
+          ctx.translate(-(this.model.wpv.x) * rat1, -(this.model.wpv.y) * rat1)
+          ctx.beginPath()
+          ctx.moveTo(x1, 0)
+          ctx.lineTo(x1, weight);
+          ctx.closePath();
+          ctx.stroke()
+          //纵向
+          ctx.beginPath()
+          ctx.moveTo(0, y1)
+          ctx.lineTo(weight, y1);
+          ctx.closePath();
+          ctx.stroke()
+          ctx.restore()
+        }
       }
       // 计算对齐辅助线
       if (DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
@@ -759,6 +762,31 @@ class DDeiStageCanvasRender {
       ctx.moveTo(weight, 0)
       ctx.lineTo(weight, weight)
       ctx.stroke()
+
+
+      //绘制当前选中的图形标尺
+      let selectedModels = this.model.selectedModels;
+      if (selectedModels?.size > 0) {
+        let rect = DDeiAbstractShape.getOutRectByPV(Array.from(selectedModels?.values()));
+        //横向
+        ctx.strokeStyle = "#1F72FF";
+        let weight = 16 * rat1;
+        ctx.lineWidth = 1.5 * rat1
+        ctx.globalAlpha = 0.7
+        let x1 = (rect.x + this.model.wpv.x) * rat1
+        let y1 = (rect.y + this.model.wpv.y) * rat1
+        ctx.beginPath()
+        ctx.moveTo(x1, 0)
+        ctx.lineTo(x1, weight);
+        ctx.closePath();
+        ctx.stroke()
+        //纵向
+        ctx.beginPath()
+        ctx.moveTo(0, y1)
+        ctx.lineTo(weight, y1);
+        ctx.closePath();
+        ctx.stroke()
+      }
 
       ctx.restore();
     }
