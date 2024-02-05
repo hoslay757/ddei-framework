@@ -3,6 +3,9 @@
     <img src="../assets/images/login-back.jpg" class="bgimg" />
     <div class="banquan">
       <a href="https://beian.miit.gov.cn/">渝ICP备2024020863号</a>
+      <img src="../assets/images/gaba.png" />
+      <a href="https://beian.mps.gov.cn/#/query/webSearch?code=50011302222098" rel="noreferrer"
+        target="_blank">渝公网安备50011302222098</a>
     </div>
     <div class="content">
       <div class="content_right_login_form" v-show="!regDialogShow">
@@ -365,10 +368,19 @@ export default {
   font-size: 14px;
   font-weight: 500;
   color: #000000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   >a {
     text-decoration: none;
     color: black;
+  }
+
+  >img {
+    width: 18px;
+    height: 18px;
+    margin-left: 20px;
   }
 }
 
