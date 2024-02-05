@@ -12,7 +12,8 @@ class DDeiKeyActionCopyImage extends DDeiKeyAction {
 
   // ============================ 方法 ===============================
   action(evt: Event, ddInstance: DDei): void {
-    if (DDeiConfig.ALLOW_CLIPBOARD) {
+    if (DDeiConfig.ALLOW_CLIPBOARD || DDeiConfig.ALLOW_CLIPBOARD == undefined) {
+
       //修改当前操作控件坐标
       if (ddInstance && ddInstance.stage) {
         //当前激活的图层
@@ -23,50 +24,60 @@ class DDeiKeyActionCopyImage extends DDeiKeyAction {
           this.copyToImage(ddInstance, models)
         }
       }
+
+
     }
   }
 
-  copyToImage(ddInstance, models) {
-    //转换为图片
-    let canvas = document.createElement('canvas');
-    //获得 2d 上下文对象
-    let ctx = canvas.getContext('2d');
-    //获取缩放比例
-    let rat1 = DDeiUtil.getPixelRatio(ctx);
-    let stageRatio = ddInstance.stage.getStageRatio()
-    ddInstance.render.tempCanvas = canvas;
-    //所选择区域的最大范围
-    let outRect = DDeiAbstractShape.getOutRectByPV(models);
-    let lineOffset = 0//1 * rat1;
-    let addWidth = lineOffset
-    if (models.length > 1) {
-      addWidth = lineOffset * 2
-    }
+  copyToImage(ddInstance, models): Promise {
+    return new Promise((resolve, reject) => {
+      try {
+        //转换为图片
+        let canvas = document.createElement('canvas');
+        //获得 2d 上下文对象
+        let ctx = canvas.getContext('2d');
+        //获取缩放比例
+        let rat1 = DDeiUtil.getPixelRatio(ctx);
+        ddInstance.render.tempCanvas = canvas;
+        //所选择区域的最大范围
+        let outRect = DDeiAbstractShape.getOutRectByPV(models);
+        let lineOffset = models[0].render.getCachedValue("border.width");
+        let addWidth = 0;
+        if (lineOffset) {
+          addWidth = lineOffset * 2 * rat1
+          if (models.length > 1) {
+            addWidth = lineOffset * 2
+          }
+        }
 
-    canvas.setAttribute("width", outRect.width * rat1 + addWidth)
-    canvas.setAttribute("height", outRect.height * rat1 + addWidth)
-    canvas.style.width = outRect.width * rat1 + addWidth + 'px';
-    canvas.style.height = outRect.height * rat1 + addWidth + 'px';
-    ctx.translate(-outRect.x * rat1 - lineOffset, -outRect.y * rat1 - lineOffset)
+        canvas.setAttribute("width", outRect.width * rat1 + addWidth)
+        canvas.setAttribute("height", outRect.height * rat1 + addWidth)
+        canvas.style.width = outRect.width * rat1 + addWidth + 'px';
+        canvas.style.height = outRect.height * rat1 + addWidth + 'px';
+        ctx.translate(-outRect.x * rat1 + lineOffset / 2, -outRect.y * rat1 + lineOffset / 2)
 
-    models.forEach(item => {
-      item.render.drawShape();
-    })
+        models.forEach(item => {
+          item.render.drawShape();
+        })
 
-    canvas.toBlob(blob => {
-      let cbData = navigator.clipboard;
-      //得到blob对象
-      let writeDatas = [new ClipboardItem({ "image/png": Promise.resolve(blob) })]
-      cbData.write(writeDatas).then(function () {
-        console.log("复制成功");
-        //清空临时canvas
-        ddInstance.render.tempCanvas = null;
-      }, function (e) {
-        console.error("复制失败" + e);
-        //清空临时canvas
-        ddInstance.render.tempCanvas = null;
-      });
-    }, 'image/png', 1)
+        canvas.toBlob(blob => {
+          let cbData = navigator.clipboard;
+          //得到blob对象
+          let writeDatas = [new ClipboardItem({ "image/png": Promise.resolve(blob) })]
+          cbData.write(writeDatas).then(function () {
+            //清空临时canvas
+            ddInstance.render.tempCanvas = null;
+          }, function (e) {
+            //清空临时canvas
+            ddInstance.render.tempCanvas = null;
+          });
+        }, 'image/png', 1)
+      } catch (e) {
+        DDeiConfig.ALLOW_CLIPBOARD = false
+      }
+      resolve()
+    });
+
   }
 
 }
