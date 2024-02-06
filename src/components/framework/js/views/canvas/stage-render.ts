@@ -199,8 +199,6 @@ class DDeiStageCanvasRender {
       let hpoint = this.helpLines.hpoint;
       let vpoint = this.helpLines.vpoint;
       let rect = this.helpLines.rect;
-      let cpv = this.helpLines.cpv;
-
       //获得 2d 上下文对象
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
@@ -222,8 +220,38 @@ class DDeiStageCanvasRender {
         let font = "bold " + (fontSize * rat1) + "px Microsoft YaHei"
         //设置字体
         ctx.font = font
-        //生成文本并计算文本大小
-        let text = "X:" + rect.x.toFixed(0) + ", Y:" + rect.y.toFixed(0)
+
+        let xText = rect.x.toFixed(0);
+        let yText = rect.y.toFixed(0);
+
+        let ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
+        if (ruleDisplay == 1 || ruleDisplay == "1") {
+          let startBaseX = this.model.spv.x * rat1 + 1
+          let startBaseY = this.model.spv.y * rat1 + 1
+          //生成文本并计算文本大小
+          let stageRatio = this.model.getStageRatio()
+          let xDPI = this.ddRender.dpi.x;
+          //标尺单位
+          let unit = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.unit", true);
+          let rulerConfig = DDeiConfig.RULER[unit]
+          //尺子间隔单位
+          let unitWeight = DDeiUtil.unitToPix(rulerConfig.size, unit, xDPI) * rat1;
+          //根据缩放比率，对尺子间隔单位进行拆分
+          //基准每个部分的大小
+          let marginWeight = unitWeight * stageRatio
+          xText = (rect.x * rat1 - startBaseX) / marginWeight * rulerConfig.size
+          yText = (rect.y * rat1 - startBaseY) / marginWeight * rulerConfig.size
+          if (("" + xText).indexOf('.') != -1) {
+            xText = xText.toFixed(1)
+          }
+          if (("" + yText).indexOf('.') != -1) {
+            yText = yText.toFixed(1)
+          }
+          xText += rulerConfig.title
+          yText += rulerConfig.title
+
+        }
+        let text = "X: " + xText + " , Y: " + yText
         let textRect = DDeiUtil.measureText(text, font, ctx)
         let width = textRect.width / rat1 + 10
         let height = fontSize + 4
@@ -237,8 +265,6 @@ class DDeiStageCanvasRender {
         ctx.fillText(text, x + (width - textRect.width) / 2, y + (height - fontSize * rat1) / 2);
 
         //如果正在移动，则在标尺上绘制标注区域
-        let ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
-
         if (ruleDisplay == 1 || ruleDisplay == "1") {
           //横向
           ctx.strokeStyle = "red";
