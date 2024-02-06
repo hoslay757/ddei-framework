@@ -196,6 +196,7 @@ class DDeiStageCanvasRender {
   drawHelpLines(): void {
     // 未开启主线提示，则不再计算辅助线提示定位
     if (this.helpLines) {
+
       let hpoint = this.helpLines.hpoint;
       let vpoint = this.helpLines.vpoint;
       let rect = this.helpLines.rect;
@@ -220,11 +221,16 @@ class DDeiStageCanvasRender {
         let font = "bold " + (fontSize * rat1) + "px Microsoft YaHei"
         //设置字体
         ctx.font = font
-
-        let xText = rect.x.toFixed(0);
-        let yText = rect.y.toFixed(0);
-
         let ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
+        let xText = 0;
+        let yText = 0;
+        if (this.operateState == DDeiEnumOperateState.CONTROL_DRAGING) {
+          xText = rect.x.toFixed(0);
+          yText = rect.y.toFixed(0);
+        } else if (this.operateState == DDeiEnumOperateState.CONTROL_CHANGING_BOUND) {
+          xText = rect.width.toFixed(0);
+          yText = rect.height.toFixed(0);
+        }
         if (ruleDisplay == 1 || ruleDisplay == "1") {
           let startBaseX = this.model.spv.x * rat1 + 1
           let startBaseY = this.model.spv.y * rat1 + 1
@@ -239,8 +245,14 @@ class DDeiStageCanvasRender {
           //根据缩放比率，对尺子间隔单位进行拆分
           //基准每个部分的大小
           let marginWeight = unitWeight * stageRatio
-          xText = (rect.x * rat1 - startBaseX) / marginWeight * rulerConfig.size
-          yText = (rect.y * rat1 - startBaseY) / marginWeight * rulerConfig.size
+
+          if (this.operateState == DDeiEnumOperateState.CONTROL_DRAGING) {
+            xText = (rect.x * rat1 - startBaseX) / marginWeight * rulerConfig.size
+            yText = (rect.y * rat1 - startBaseY) / marginWeight * rulerConfig.size
+          } else if (this.operateState == DDeiEnumOperateState.CONTROL_CHANGING_BOUND) {
+            xText = rect.width * rat1 / marginWeight * rulerConfig.size
+            yText = rect.height * rat1 / marginWeight * rulerConfig.size
+          }
           if (("" + xText).indexOf('.') != -1) {
             xText = xText.toFixed(1)
           }
@@ -249,15 +261,24 @@ class DDeiStageCanvasRender {
           }
           xText += rulerConfig.title
           yText += rulerConfig.title
-
         }
-        let text = "X: " + xText + " , Y: " + yText
+        let text = "";
+        if (this.operateState == DDeiEnumOperateState.CONTROL_DRAGING) {
+          text = xText + " , " + yText
+        } else if (this.operateState == DDeiEnumOperateState.CONTROL_CHANGING_BOUND) {
+          text = xText + " x " + yText
+        }
         let textRect = DDeiUtil.measureText(text, font, ctx)
         let width = textRect.width / rat1 + 10
         let height = fontSize + 4
-
-        let x = (rect.x - width / 2) * rat1
-        let y = (rect.y - height - 5) * rat1
+        let x, y
+        if (this.operateState == DDeiEnumOperateState.CONTROL_DRAGING) {
+          x = (rect.x - width / 2) * rat1
+          y = (rect.y - height - 5) * rat1
+        } else if (this.operateState == DDeiEnumOperateState.CONTROL_CHANGING_BOUND) {
+          x = (rect.x + (rect.width - width) / 2) * rat1
+          y = (rect.y + rect.height + height / 2) * rat1
+        }
         width *= rat1
         height *= rat1
         DDeiUtil.drawRectRound(ctx, x, y, width, height, 5, false, "", true, "#1F72FF")
@@ -285,8 +306,9 @@ class DDeiStageCanvasRender {
           ctx.lineTo(weight, y1);
           ctx.closePath();
           ctx.stroke()
-          ctx.restore()
+
         }
+        ctx.restore()
       }
       // 计算对齐辅助线
       if (DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {

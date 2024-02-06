@@ -1758,9 +1758,6 @@ abstract class DDeiAbstractShape {
 
     //获取全局缩放比例
     let stageRatio = models[0].getStageRatio()
-    let rat1 = models[0].stage?.ddInstance.render.ratio;
-    let ratio = rat1 * stageRatio;
-
 
 
     //获取间距设定

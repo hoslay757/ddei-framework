@@ -436,11 +436,11 @@ class DDeiConfig {
 
   // 定义了在1.0缩放的，单位尺寸设置
   static RULER = {
-    'mm': { size: 10, parts: [2, 5], title: '毫米' },
-    'cm': { size: 1, parts: [2, 5], title: '厘米' },
-    'm': { size: 0.05, parts: [2, 5], title: '米' },
-    'inch': { size: 1, parts: [8], title: '英寸' },
-    'px': { size: 50, parts: [5, 10], title: '像素' },
+    'mm': { size: 10, parts: [2, 5], title: 'mm' },
+    'cm': { size: 1, parts: [2, 5], title: 'cm' },
+    'm': { size: 0.05, parts: [2, 5], title: 'm' },
+    'inch': { size: 1, parts: [8], title: 'in' },
+    'px': { size: 50, parts: [5, 10], title: 'px' },
   }
 
   // 定义了在各种常见纸张的大小以及名称
