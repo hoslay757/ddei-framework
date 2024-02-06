@@ -11,7 +11,9 @@
              :src="folder.expaned?icons['toolbox-expanded'] :icons['icon-tree-unexpaned']"
              @click="expandTree(folder)" />
         <span @click="setCurrentFolder(folder)">{{folder.name}}</span>
-        <div class="ddei_home_dir_tree_node_buttons">
+        <div class="
+             ddei_home_dir_tree_node_buttons"
+             v-show="folder.isCurrent">
           <img src="../../components/editor/icons/icon-plus-circle.png"
                title="新建子目录"
                @click="showFolderDialog(folder,1)" />
@@ -21,38 +23,69 @@
                v-show="folder.id != '0'" />
           <img src="../../components/editor/icons/icon-trash.png"
                title="移入回收站"
-               @click="deleteFolder(folder)"
+               @click="showDelFolderDialog(folder)"
                v-show="folder.id != '0'" />
         </div>
       </div>
     </div>
   </div>
+  <div class="create_folder_dialog"
+       v-show="folderDialogShow">
+    <div class="content">
+      <div class="title">
+        {{mod == 1 ? '创建' : '修改'}}目录
+      </div>
+      <div class="msg">
+        {{cf.validMsg?.name}}
+      </div>
+      <input v-model="cf.name"
+             id="create_folder_input_id"
+             type="text"
+             class="content_input"
+             placeholder="目录名称" />
+      <div class="buttons">
+        <div class="button_ok"
+             style="margin-top:20px;"
+             @click="sumbitFolder()">
+          <span>确定</span>
+        </div>
+        <div class="button_cancel"
+             style="margin-top:20px;"
+             @click="showFolderDialog">
+          <span>取消</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <AModal v-model:open="folderDialog.open"
-          :title="(folderDialog.mod == 1 ? '创建' : '修改') + '目录'"
-          :ok-button-props="{ loading: folderDialog.saving }"
-          width="400px"
-          @ok="sumbitFolder()">
-    <AForm ref="form"
-           :model="folderDialog.formData"
-           :rules="folderDialog.formRules"
-           autocomplete="off"
-           class="m-t-20">
-      <AFormItem name="name">
-        <AInput v-model:value="folderDialog.formData.name"
-                placeholder="目录名"
-                clearable></AInput>
-      </AFormItem>
-    </AForm>
-  </AModal>
+  <div class="create_folder_dialog"
+       v-show="delFolderDialogShow">
+    <div class="content">
+      <div class="title">
+        删除目录
+      </div>
+      <div style="margin-top:10px;padding:10px;">
+        是否删除：【{{curFolder?.name}}】？
+      </div>
+      <div class="buttons">
+        <div class="button_ok"
+             style="margin-top:20px;"
+             @click="deleteFolder()">
+          <span>确定</span>
+        </div>
+        <div class="button_cancel"
+             style="margin-top:20px;"
+             @click="showDelFolderDialog(null)">
+          <span>取消</span>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script type="ts">
-import { createVNode } from 'vue';
 import { loadfolder, createfolder, removefolder, renamefolder } from "@/lib/api/folder";
 import ICONS from '../../components/editor/js/icon';
-import { debounce } from 'lodash';
-import { message, Modal } from 'ant-design-vue';
 
 export default {
   name: 'DDei-Home-Dir-Tree',
@@ -64,19 +97,6 @@ export default {
       folders: [],
       folderDialogShow: false,
       delFolderDialogShow: false,
-      folderDialog: {
-        open: false,
-        saving: false,
-        mod: 1,
-        formData: {},
-        formRules: {
-          name: [
-            {
-              validator: debounce(this.checkDirName)
-            }
-          ]
-        }
-      },
       cf: {},
       icons: ICONS
     }
@@ -86,6 +106,21 @@ export default {
 
   },
   methods: {
+
+    async deleteFolder () {
+      if (this.curFolder) {
+        let folderData = await removefolder({ id: this.curFolder.id })
+        if (folderData.status == 200) {
+          //获取成功
+          if (folderData.data?.code == 0) {
+            this.loadFolder();
+            this.delFolderDialogShow = false;
+          }
+        }
+
+      }
+    },
+
     expandTree (pf) {
       //关闭
       pf.expaned = !pf.expaned;
@@ -122,76 +157,58 @@ export default {
       })
       folder.isCurrent = true
       this.$parent.forceRefreshFileList();
-      this.curFolder = folder
     },
 
     /**
      * 弹出新文件夹的弹出框
      */
     showFolderDialog (folder, mod) {
-      this.folderDialog.open = true
-      this.folderDialog.mod = mod
-      let formData
+
+      this.folderDialogShow = !this.folderDialogShow;
       if (mod == 1) {
-        formData = {
-          folder_id: folder.id
-        }
+        this.mod = mod
+        this.cf.name = "";
       } else if (mod == 2) {
-        formData = Object.assign({}, folder)
+        this.mod = mod
+        this.cf.name = folder.name;
       }
-      this.curFolder = folder
-      this.folderDialog.formData = formData
-    },
-
-    deleteFolder (folder) {
-      Modal.confirm({
-        title: '是否删除目录',
-        content: createVNode('div', { style: 'color:red;' }, folder.name),
-        okType: 'danger',
-        onOk: async () => {
-          let folderData = await removefolder({ id: folder.id })
-          if (folderData.status == 200) {
-            //获取成功
-            if (folderData.data?.code == 0) {
-              message.success('删除成功')
-              this.loadFolder();
-            }
-          }
-        }
-      });
-    },
-
-    checkDirName (rule, value, cb) {
-      if (!value) {
-        cb('请输入目录名')
-        return
+      this.curFolder = folder;
+      this.cf.parentId = folder?.id ? folder.id : "0"
+      this.cf.validMsg = {};
+      if (this.folderDialogShow) {
+        setTimeout(() => {
+          document.getElementById("create_folder_input_id").focus();
+        }, 20);
       }
-      let uPattern = /^[\u4e00-\u9fa5a-zA-Z0-9_-]{1,15}$/;
-        if (!uPattern.test(value)) {
-          cb("目录名为1至15位中文、字母、数字下划线组合");
-          return
-        }
-      cb()
     },
 
     /**
+    * 删除文件夹
+    */
+    showDelFolderDialog (folder) {
+      this.delFolderDialogShow = !this.delFolderDialogShow;
+      this.curFolder = folder;
+    },
+    /**
      * 创建/更新目录
      */
-    sumbitFolder () {
-      this.$refs.form.validate().then(async () => {
-        let folderData = null;
-        this.folderDialog.saving = true
-        if (this.folderDialog.mod == 1) {
-          folderData = await createfolder(this.folderDialog.formData)
-        } else if (this.folderDialog.mod == 2) {
-          folderData = await renamefolder(this.folderDialog.formData)
+    async sumbitFolder () {
+      //校验
+      this.cf.validMsg = {};
+      if (!this.cf.name) {
+        this.cf.validMsg.name = "请输入目录名";
+      } else {
+        let uPattern = /^[\u4e00-\u9fa5a-zA-Z0-9_-]{1,15}$/;
+        if (!uPattern.test(this.cf.name)) {
+          this.cf.validMsg.name = "目录名为1至15位中文、字母、数字下划线组合";
         }
-        if (folderData?.status == 200) {
-          //获取成功
-          if (folderData.data?.code == 0) {
-            message.success('保存成功')
-            this.folderDialog.open = false;
-            if (this.folderDialog.mod == 1) {
+      }
+      if (JSON.stringify(this.cf.validMsg) == "{}") {
+        if (this.mod == 1) {
+          let folderData = await createfolder(this.cf)
+          if (folderData.status == 200) {
+            //获取成功
+            if (folderData.data?.code == 0) {
               let index = this.folders.indexOf(this.curFolder);
               //找到当前目录的所有子目录的最后一个
               let level = this.curFolder.level;
@@ -219,16 +236,21 @@ export default {
               } else {
                 this.folders.push(folder);
               }
-            } else if (this.folderDialog.mod === 2) {
-              this.curFolder.name = this.folderDialog.formData.name
+              this.folderDialogShow = false;
+            }
+          }
+        } else if (this.mod == 2) {
+          this.cf.id = this.curFolder.id
+          let folderData = await renamefolder(this.cf)
+          if (folderData.status == 200) {
+            //获取成功
+            if (folderData.data?.code == 0) {
+              this.curFolder.name = this.cf.name
+              this.folderDialogShow = false;
             }
           }
         }
-        this.folderDialog.saving = false
-      }).catch(e => {
-        console.error(e)
-        this.folderDialog.saving = false
-      })
+      }
     },
 
     /**
@@ -284,9 +306,6 @@ export default {
           this.treeToList(folderList, folder.children, level + 1);
         }
       })
-    },
-    createFolder () {
-      this.showFolderDialog(this.curFolder || this.folders[0], 1)
     }
   },
   mounted () {
@@ -313,12 +332,6 @@ export default {
   width: 100%;
   padding-left: 20px;
   text-align: left;
-
-  &:hover {
-    .ddei_home_dir_tree_node_buttons {
-      display: grid;
-    }
-  }
 }
 
 .ddei_home_dir_tree_node_content {
@@ -347,7 +360,7 @@ export default {
 }
 
 .ddei_home_dir_tree_node_buttons img:hover {
-  filter: brightness(40%);
+  filter: brightness(200%);
 }
 
 .ddei_home_dir_tree_node_content.selected .ddei_home_dir_tree_node_buttons {
@@ -373,5 +386,91 @@ export default {
 .ddei_home_dir_tree span:hover {
   color: white;
   background: #E4E7EC;
+}
+
+/* .创建目录弹框 */
+.create_folder_dialog {
+  z-index: 99;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: calc(100vh);
+  .content {
+    position: absolute;
+    width: 300px;
+    height: 180px;
+    left: calc(30% - 150px);
+    top: calc(30% - 90px);
+    background: #fff;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 17px;
+    color: black;
+    .title {
+      width: 100%;
+      font-size: 20px;
+      color: #3662ec;
+      text-align: center;
+      margin-top: 15px;
+    }
+    .content_input {
+      width: 80%;
+      height: 30px;
+      font-size: 18px;
+    }
+    .msg {
+      width: 100%;
+      height: 20px;
+      font-size: 12px;
+      color: red;
+      text-align: right;
+      padding-right: 30px;
+    }
+    .buttons {
+      width: 80%;
+      display: block;
+      margin: auto;
+      > div {
+        width: 45%;
+        height: 40px;
+        cursor: pointer;
+        cursor: pointer;
+        border-radius: 2px;
+        text-align: center;
+        padding-top: 6px;
+        > span {
+          font-size: 15px;
+          color: white;
+          text-align: center;
+          pointer-events: none;
+        }
+      }
+      .button_ok {
+        background-color: #3662ec;
+        border-color: #3662ec;
+        float: left;
+      }
+
+      .button_cancel {
+        background-color: rgb(210, 210, 210);
+        border-color: rgb(210, 210, 210);
+        float: right;
+      }
+    }
+  }
+}
+.content_right_reg_form_input_required {
+  font-size: 19px;
+  color: red;
+  text-align: center;
+  pointer-events: none;
+}
+
+.content_right_reg_form_input {
+  width: 80%;
+  height: 40px;
+  font-size: 14px;
+  margin-left: 40px;
 }
 </style>
