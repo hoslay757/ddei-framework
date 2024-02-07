@@ -21,7 +21,8 @@
       </div>
     </div>
 
-    <div class="groups" :style="{ height: 'calc(100vh - ' + (editor?.topHeight + editor?.bottomHeight + 90) + 'px' }">
+    <div class="groups" @mousewheel="mousewheel($event)"
+      :style="{ height: 'calc(100vh - ' + (editor?.topHeight + editor?.bottomHeight + 90) + 'px' }">
       <div v-for="group in groups" v-show="group.display == true" class="group">
         <div :class="{ 'box': true, 'expanded': group.expand }" @click="groupBoxExpand(group)">
           <span class="title">{{ group.name }}</span>
@@ -132,7 +133,15 @@ export default {
 
   },
   methods: {
-
+    mousewheel(evt) {
+      if (Math.abs(evt.deltaY) < Math.abs(evt.deltaX) || Math.abs(evt.deltaY) <= 1) {
+        evt.preventDefault();
+        return false
+      } else {
+        evt.stopPropagation();
+        return true;
+      }
+    },
     /**
      * 弹出选择控件Dialog
      */
@@ -264,6 +273,8 @@ export default {
       );
       this.editor.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape)
       this.editor.ddInstance.bus.executeAll()
+      this.editor.changeState(DDeiEditorState.DESIGNING);
+
     },
 
     /**

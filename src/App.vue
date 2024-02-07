@@ -1,8 +1,7 @@
 <template>
   <a-config-provider :locale="locale">
     <router-view v-slot="{ Component, route }">
-      <component :is="Component"
-                 :key="route.path" />
+      <component :is="Component" :key="route.path" />
     </router-view>
   </a-config-provider>
 </template>
@@ -40,6 +39,7 @@ body {
   margin: 0;
   display: block;
   max-width: 100%;
+  touch-action: none;
 }
 
 .icon {

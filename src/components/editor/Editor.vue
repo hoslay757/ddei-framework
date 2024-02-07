@@ -1,5 +1,6 @@
 <template>
-  <div id="ddei_editor" class="ddei_editor" @mouseup="mouseUp" @mousemove="mouseMove" @mousedown="mouseDown">
+  <div id="ddei_editor" class="ddei_editor" @mousewheel.prevent @mouseup="mouseUp" @mousemove="mouseMove"
+    @mousedown="mouseDown">
     <div class="top" id="ddei_editor_frame_top">
       <TopMenu v-if="refreshTopMenuView"></TopMenu>
     </div>
@@ -161,6 +162,8 @@ export default {
     }
   },
   methods: {
+
+
 
     beforeUnload(e) {
       let files = this.editor?.files
