@@ -9,7 +9,8 @@
       </div>
       <div class="ddei_home_middle_right">
         <FileList v-if="refreshFileList"
-                  ref="fileList" />
+                  ref="fileList"
+                  @create-folder="onCreateFolder" />
       </div>
     </div>
   </div>
@@ -65,6 +66,10 @@ export default {
           });
         });
     },
+
+    onCreateFolder () {
+      this.$refs.dirTree?.createFolder()
+    }
   },
 };
 </script>

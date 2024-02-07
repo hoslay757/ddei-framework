@@ -1,7 +1,7 @@
 <template>
   <div class="ddei_home_fileview">
     <div class="ddei_home_fileview_operations">
-      <div class="ddei_home_fileview_operate ddei_home_fileview_operate_dir_add">
+      <div class="ddei_home_fileview_operate ddei_home_fileview_operate_dir_add" @click="onCreateFolderClick">
         <div class="ddei_home_fileview_operate_icon">
           <img src="@/assets/images/icon-file-add.png" />
         </div>
@@ -104,6 +104,7 @@
   <AModal v-model:open="fileDialog.open"
           :title="(fileDialog.mod == 1 ? '创建' : '修改') + '文件'"
           :ok-button-props="{ loading: fileDialog.saving }"
+          width="400px"
           @ok="submitFile()">
     <AForm ref="form"
            :model="fileDialog.formData"
@@ -230,15 +231,6 @@ export default {
     },
 
     /**
-    * 删除文件
-    */
-    showDelFileDialog (file, mod) {
-      this.mod = mod
-      this.delFileDialogShow = !this.delFileDialogShow;
-      this.curFile = file;
-    },
-
-    /**
      * 计算分页信息
      */
     calPages () {
@@ -320,7 +312,7 @@ export default {
           cb("文件名为1至15位中文、字母、数字下划线组合");
           return
         }
-      cb()        
+      cb()
     },
 
     checkFileCode (rule, value, cb) {
@@ -386,7 +378,7 @@ export default {
 
       this.curFile = file;
       let curFolder = this.$parent.$refs["dirTree"]?.getCurrentFolder()
-      let fid = curFolder?.id ? curFolder.id : "0"
+      let fid = curFolder?.id || "0"
       formData.folder_id = fid
       this.fileDialog.formData = formData
     },
@@ -407,8 +399,9 @@ export default {
       }
       return "";
     },
-
-
+    onCreateFolderClick () {
+      this.$emit('create-folder')
+    }
   }
 }
 </script>
