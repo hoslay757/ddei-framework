@@ -224,7 +224,7 @@ class DDeiStageCanvasRender {
         let ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
         let xText = 0;
         let yText = 0;
-        if (this.operateState == DDeiEnumOperateState.CONTROL_DRAGING) {
+        if (this.operateState == DDeiEnumOperateState.CONTROL_DRAGING || this.operateState == DDeiEnumOperateState.CONTROL_CREATING) {
           xText = rect.x.toFixed(0);
           yText = rect.y.toFixed(0);
         } else if (this.operateState == DDeiEnumOperateState.CONTROL_CHANGING_BOUND) {
@@ -263,7 +263,7 @@ class DDeiStageCanvasRender {
           yText += rulerConfig.title
         }
         let text = "";
-        if (this.operateState == DDeiEnumOperateState.CONTROL_DRAGING) {
+        if (this.operateState == DDeiEnumOperateState.CONTROL_DRAGING || this.operateState == DDeiEnumOperateState.CONTROL_CREATING) {
           text = xText + " , " + yText
         } else if (this.operateState == DDeiEnumOperateState.CONTROL_CHANGING_BOUND) {
           text = xText + " x " + yText
@@ -272,7 +272,7 @@ class DDeiStageCanvasRender {
         let width = textRect.width / rat1 + 10
         let height = fontSize + 4
         let x, y
-        if (this.operateState == DDeiEnumOperateState.CONTROL_DRAGING) {
+        if (this.operateState == DDeiEnumOperateState.CONTROL_DRAGING || this.operateState == DDeiEnumOperateState.CONTROL_CREATING) {
           x = (rect.x - width / 2) * rat1
           y = (rect.y - height - 5) * rat1
         } else if (this.operateState == DDeiEnumOperateState.CONTROL_CHANGING_BOUND) {
