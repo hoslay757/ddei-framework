@@ -717,6 +717,41 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
    */
   drawText(tempShape: object | null): void {
     //计算填充的原始区域
+    //以下样式为控件的整体样式，不能在文本中单独设置
+    //字体对齐信息
+    let align = this.getCachedValue("textStyle.align");
+    let valign = this.getCachedValue("textStyle.valign");
+    //缩小字体填充
+    let scale = this.getCachedValue("textStyle.scale");
+    //自动换行
+    let feed = this.getCachedValue("textStyle.feed");
+
+    //间距，间距随全局缩放比例变化，但与控件本身大小无关
+    //自动缩放字体时，间距也同步变小
+    let hspace = this.getCachedValue("textStyle.hspace");
+    let vspace = this.getCachedValue("textStyle.vspace");
+    //以上样式为控件的整体样式，不能在文本中单独设置
+    //以下样式：字体、颜色、大小、镂空、粗体、斜体、下划线、删除线、上标、下标等
+    //可以单独设置，未单独设置则使用整体样式
+    //字体信息
+    let fiFamily = this.getCachedValue("font.family");
+    let fiSize = this.getCachedValue("font.size");
+    let fiColor = this.getCachedValue("font.color");
+    //镂空
+    let hollow = this.getCachedValue("textStyle.hollow");
+    //粗体
+    let bold = this.getCachedValue("textStyle.bold");
+    //斜体
+    let italic = this.getCachedValue("textStyle.italic");
+    //下划线
+    let underline = this.getCachedValue("textStyle.underline");
+    //删除线
+    let deleteline = this.getCachedValue("textStyle.deleteline");
+    //删除线
+    let topline = this.getCachedValue("textStyle.topline");
+    //文本背景色
+    let textBgColor = this.getCachedValue("textStyle.bgcolor");
+
 
     if (!this.model.textArea || this.model.textArea.length < 4) {
       return;
@@ -753,19 +788,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       this.stageRender.editorShadowControl.tempCursorStart = curSIdx
       this.stageRender.editorShadowControl.tempCursorEnd = curEIdx
     }
-    //以下样式为控件的整体样式，不能在文本中单独设置
-    //字体对齐信息
-    let align = this.getCachedValue("textStyle.align");
-    let valign = this.getCachedValue("textStyle.valign");
-    //缩小字体填充
-    let scale = this.getCachedValue("textStyle.scale");
-    //自动换行
-    let feed = this.getCachedValue("textStyle.feed");
 
-    //间距，间距随全局缩放比例变化，但与控件本身大小无关
-    //自动缩放字体时，间距也同步变小
-    let hspace = this.getCachedValue("textStyle.hspace");
-    let vspace = this.getCachedValue("textStyle.vspace");
     if (!hspace) {
       hspace = 0
     }
@@ -777,28 +800,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
 
 
 
-    //以上样式为控件的整体样式，不能在文本中单独设置
 
-    //以下样式：字体、颜色、大小、镂空、粗体、斜体、下划线、删除线、上标、下标等
-    //可以单独设置，未单独设置则使用整体样式
-    //字体信息
-    let fiFamily = this.getCachedValue("font.family");
-    let fiSize = this.getCachedValue("font.size");
-    let fiColor = this.getCachedValue("font.color");
-    //镂空
-    let hollow = this.getCachedValue("textStyle.hollow");
-    //粗体
-    let bold = this.getCachedValue("textStyle.bold");
-    //斜体
-    let italic = this.getCachedValue("textStyle.italic");
-    //下划线
-    let underline = this.getCachedValue("textStyle.underline");
-    //删除线
-    let deleteline = this.getCachedValue("textStyle.deleteline");
-    //删除线
-    let topline = this.getCachedValue("textStyle.topline");
-    //文本背景色
-    let textBgColor = this.getCachedValue("textStyle.bgcolor");
+
+
 
     //保存状态
     ctx.save();
