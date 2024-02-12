@@ -535,6 +535,7 @@ export default {
   margin: 19px auto 35px auto;
   width: 300px;
   flex: 0 0 15px;
+  color: black;
   display: flex;
   justify-content: start;
   align-items: center;
