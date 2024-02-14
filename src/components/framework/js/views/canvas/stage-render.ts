@@ -844,172 +844,176 @@ class DDeiStageCanvasRender {
   * 绘制网格
   */
   drawGrid() {
-    let gridDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "grid.display", true);
-    if (gridDisplay == 1 || gridDisplay == '1') {
-      //绘制横向点
-      //获得 2d 上下文对象
-      let canvas = this.ddRender.getCanvas();
-      let ctx = canvas.getContext('2d');
-      let rat1 = this.ddRender.ratio;
-      let stageRatio = this.model.getStageRatio()
-      let ratio = rat1 * stageRatio;
-      let xDPI = this.ddRender.dpi.x;
-      //标尺单位
-      let unit = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.unit", true);
-      let rulerConfig = DDeiConfig.RULER[unit]
-      //尺子间隔单位
-      let unitWeight = DDeiUtil.unitToPix(rulerConfig.size, unit, xDPI) * rat1;
-      //根据缩放比率，对尺子间隔单位进行拆分
-      //基准每个部分的大小
-      let marginWeight = unitWeight * stageRatio
-      //找到最接近的区间
-      let timesNums = [0.25, 0.5, 1, 2, 4, 8]
-      //当前的衡量量级
-      let curTimes = 0.25;
-      for (let i = 1; i < timesNums.length; i++) {
-        if (stageRatio >= timesNums[i]) {
-          curTimes = timesNums[i]
-        }
-      }
-      let standWeight = curTimes * unitWeight;
-      //计算量级偏差与实际大小的百分比
-      let passPercent = Math.round((marginWeight - standWeight) / standWeight * 100)
-      let splitNumber = rulerConfig.parts[0];
-      if (passPercent > 0) {
-        let p = Math.round(1 / rulerConfig.parts.length * 100)
-        for (let i = 1; i < rulerConfig.parts.length; i++) {
-          if (passPercent >= i * p) {
-            splitNumber = rulerConfig.parts[i];
+    let paperType = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.type", true);
+    //获取纸张大小的定义
+    let paperConfig = DDeiConfig.PAPER[paperType];
+    if (paperConfig) {
+      let gridDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "grid.display", true);
+      if (gridDisplay == 1 || gridDisplay == '1') {
+        //绘制横向点
+        //获得 2d 上下文对象
+        let canvas = this.ddRender.getCanvas();
+        let ctx = canvas.getContext('2d');
+        let rat1 = this.ddRender.ratio;
+        let stageRatio = this.model.getStageRatio()
+        let xDPI = this.ddRender.dpi.x;
+        //标尺单位
+        let unit = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.unit", true);
+        let rulerConfig = DDeiConfig.RULER[unit]
+        //尺子间隔单位
+        let unitWeight = DDeiUtil.unitToPix(rulerConfig.size, unit, xDPI) * rat1;
+        //根据缩放比率，对尺子间隔单位进行拆分
+        //基准每个部分的大小
+        let marginWeight = unitWeight * stageRatio
+        //找到最接近的区间
+        let timesNums = [0.25, 0.5, 1, 2, 4, 8]
+        //当前的衡量量级
+        let curTimes = 0.25;
+        for (let i = 1; i < timesNums.length; i++) {
+          if (stageRatio >= timesNums[i]) {
+            curTimes = timesNums[i]
           }
         }
-      }
-
-      //切分后单个part大小
-      let splitedWeight = marginWeight / splitNumber;
-      //标尺的固定显示大小
-      let weight = 16 * rat1;
-      ctx.save();
-      //创建剪切区，只有在纸张范围内才显示网格线
-      ctx.beginPath();
-      ctx.moveTo(this.paperOutRect.x, this.paperOutRect.y);
-      ctx.lineTo(this.paperOutRect.x + this.paperOutRect.w, this.paperOutRect.y);
-      ctx.lineTo(this.paperOutRect.x + this.paperOutRect.w, this.paperOutRect.y + this.paperOutRect.h);
-      ctx.lineTo(this.paperOutRect.x, this.paperOutRect.y + this.paperOutRect.h);
-      ctx.stroke()
-
-      ctx.clip()
-      let fontSize = 11 * rat1
-      ctx.font = fontSize + "px Microsoft YaHei"
-      ctx.lineWidth = 1
-      ctx.strokeStyle = "rgb(190,190,190)"
-      ctx.fillStyle = "white"
-      let cwidth = canvas.width;
-      let cheight = canvas.height;
-
-      //纸张的像素大小
-      let paperSize = this.getPaperSize()
-      let paperWidth = paperSize.width;
-      let paperHeight = paperSize.height;
-      //基准位置0刻度
-
-      if (!this.model.spv) {
-        let sx = this.model.width / 2 - paperWidth / 2 / rat1
-        let sy = this.model.height / 2 - paperHeight / 2 / rat1
-        this.model.spv = new Vector3(sx, sy, 1)
-      }
-      let startBaseX = this.model.spv.x * rat1 + 1
-      let startBaseY = this.model.spv.y * rat1 + 1
-
-
-      //绘制竖线
-      let textOffset = 1 * rat1
-      ctx.fillStyle = "rgb(200,200,200)"
-      //当前的窗口位置（乘以了窗口缩放比例）
-      let wpvX = -this.model.wpv.x * rat1
-      let wpvY = -this.model.wpv.y * rat1
-      let x = 0;
-      let k = 0;
-      let curX = startBaseX - wpvX
-      while (curX <= cwidth) {
-        if (curX > weight) {
-          ctx.beginPath();
-          ctx.moveTo(curX, 0);
-          let nMod = x % splitNumber
-          if (nMod != 0) {
-            ctx.strokeStyle = "rgb(230,230,230)"
-          } else {
-            ctx.strokeStyle = "rgb(220,220,220)"
-            k++
+        let standWeight = curTimes * unitWeight;
+        //计算量级偏差与实际大小的百分比
+        let passPercent = Math.round((marginWeight - standWeight) / standWeight * 100)
+        let splitNumber = rulerConfig.parts[0];
+        if (passPercent > 0) {
+          let p = Math.round(1 / rulerConfig.parts.length * 100)
+          for (let i = 1; i < rulerConfig.parts.length; i++) {
+            if (passPercent >= i * p) {
+              splitNumber = rulerConfig.parts[i];
+            }
           }
-          ctx.lineTo(curX, cheight);
-          ctx.stroke()
         }
-        curX += splitedWeight;
-        x++
-      }
-      x = 0;
-      k = 0;
-      curX = startBaseX - wpvX
-      while (curX >= 0) {
-        if (curX > weight) {
-          ctx.beginPath();
-          ctx.moveTo(curX, 0);
-          let nMod = x % splitNumber
 
-          if (nMod != 0) {
-            ctx.strokeStyle = "rgb(230,230,230)"
-          } else {
-            ctx.strokeStyle = "rgb(220,220,220)"
-            k--
+        //切分后单个part大小
+        let splitedWeight = marginWeight / splitNumber;
+        //标尺的固定显示大小
+        let weight = 16 * rat1;
+        ctx.save();
+        //创建剪切区，只有在纸张范围内才显示网格线
+        ctx.beginPath();
+        ctx.moveTo(this.paperOutRect.x, this.paperOutRect.y);
+        ctx.lineTo(this.paperOutRect.x + this.paperOutRect.w, this.paperOutRect.y);
+        ctx.lineTo(this.paperOutRect.x + this.paperOutRect.w, this.paperOutRect.y + this.paperOutRect.h);
+        ctx.lineTo(this.paperOutRect.x, this.paperOutRect.y + this.paperOutRect.h);
+        ctx.stroke()
+
+        ctx.clip()
+        let fontSize = 11 * rat1
+        ctx.font = fontSize + "px Microsoft YaHei"
+        ctx.lineWidth = 1
+        ctx.strokeStyle = "rgb(190,190,190)"
+        ctx.fillStyle = "white"
+        let cwidth = canvas.width;
+        let cheight = canvas.height;
+
+        //纸张的像素大小
+        let paperSize = this.getPaperSize()
+        let paperWidth = paperSize.width;
+        let paperHeight = paperSize.height;
+        //基准位置0刻度
+
+        if (!this.model.spv) {
+          let sx = this.model.width / 2 - paperWidth / 2 / rat1
+          let sy = this.model.height / 2 - paperHeight / 2 / rat1
+          this.model.spv = new Vector3(sx, sy, 1)
+        }
+        let startBaseX = this.model.spv.x * rat1 + 1
+        let startBaseY = this.model.spv.y * rat1 + 1
+
+
+        //绘制竖线
+        let textOffset = 1 * rat1
+        ctx.fillStyle = "rgb(200,200,200)"
+        //当前的窗口位置（乘以了窗口缩放比例）
+        let wpvX = -this.model.wpv.x * rat1
+        let wpvY = -this.model.wpv.y * rat1
+        let x = 0;
+        let k = 0;
+        let curX = startBaseX - wpvX
+        while (curX <= cwidth) {
+          if (curX > weight) {
+            ctx.beginPath();
+            ctx.moveTo(curX, 0);
+            let nMod = x % splitNumber
+            if (nMod != 0) {
+              ctx.strokeStyle = "rgb(230,230,230)"
+            } else {
+              ctx.strokeStyle = "rgb(220,220,220)"
+              k++
+            }
+            ctx.lineTo(curX, cheight);
+            ctx.stroke()
           }
-          ctx.lineTo(curX, cheight);
-          ctx.stroke()
+          curX += splitedWeight;
+          x++
         }
-        curX -= splitedWeight;
+        x = 0;
+        k = 0;
+        curX = startBaseX - wpvX
+        while (curX >= 0) {
+          if (curX > weight) {
+            ctx.beginPath();
+            ctx.moveTo(curX, 0);
+            let nMod = x % splitNumber
 
-        x--
-      }
-
-      let curY = startBaseY - wpvY
-      let y = 0;
-      while (curY <= cheight) {
-        if (curY > weight) {
-          ctx.beginPath();
-          ctx.moveTo(0, curY);
-          let nMod = y % splitNumber
-          if (nMod != 0) {
-            ctx.strokeStyle = "rgb(230,230,230)"
-          } else {
-            ctx.strokeStyle = "rgb(220,220,220)"
+            if (nMod != 0) {
+              ctx.strokeStyle = "rgb(230,230,230)"
+            } else {
+              ctx.strokeStyle = "rgb(220,220,220)"
+              k--
+            }
+            ctx.lineTo(curX, cheight);
+            ctx.stroke()
           }
-          ctx.lineTo(cwidth, curY);
-          ctx.stroke();
+          curX -= splitedWeight;
+
+          x--
         }
-        curY += splitedWeight;
-        y++
-      }
-      curY = startBaseY - wpvY
-      y = 0
-      while (curY >= 0) {
-        if (curY > weight) {
-          ctx.beginPath();
-          ctx.moveTo(0, curY);
 
-          let nMod = y % splitNumber
-
-          if (nMod != 0) {
-            ctx.strokeStyle = "rgb(230,230,230)"
-          } else {
-            ctx.strokeStyle = "rgb(220,220,220)"
+        let curY = startBaseY - wpvY
+        let y = 0;
+        while (curY <= cheight) {
+          if (curY > weight) {
+            ctx.beginPath();
+            ctx.moveTo(0, curY);
+            let nMod = y % splitNumber
+            if (nMod != 0) {
+              ctx.strokeStyle = "rgb(230,230,230)"
+            } else {
+              ctx.strokeStyle = "rgb(220,220,220)"
+            }
+            ctx.lineTo(cwidth, curY);
+            ctx.stroke();
           }
-          ctx.lineTo(cwidth, curY);
-          ctx.stroke();
+          curY += splitedWeight;
+          y++
         }
-        curY -= splitedWeight;
-        y--
-      }
+        curY = startBaseY - wpvY
+        y = 0
+        while (curY >= 0) {
+          if (curY > weight) {
+            ctx.beginPath();
+            ctx.moveTo(0, curY);
 
-      ctx.restore();
+            let nMod = y % splitNumber
+
+            if (nMod != 0) {
+              ctx.strokeStyle = "rgb(230,230,230)"
+            } else {
+              ctx.strokeStyle = "rgb(220,220,220)"
+            }
+            ctx.lineTo(cwidth, curY);
+            ctx.stroke();
+          }
+          curY -= splitedWeight;
+          y--
+        }
+
+        ctx.restore();
+      }
     }
   }
 
