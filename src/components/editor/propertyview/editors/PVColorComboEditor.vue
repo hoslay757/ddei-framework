@@ -79,9 +79,12 @@ export default {
       if (this.attrDefine?.readonly) {
         return;
       }
-      let mds = Array.from(
-        this.editor?.ddInstance?.stage?.selectedModels?.values()
-      );
+      let mds = [];
+      if (this.editor?.ddInstance?.stage?.selectedModels?.size > 0) {
+        mds = Array.from(
+          this.editor?.ddInstance?.stage?.selectedModels?.values()
+        );
+      }
       if (this.attrDefine?.model && mds.indexOf(this.attrDefine.model) == -1) {
         mds.push(this.attrDefine.model);
       }
