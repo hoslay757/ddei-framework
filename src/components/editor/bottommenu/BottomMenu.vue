@@ -460,6 +460,7 @@ export default {
           this.setRatio(sc);
           setTimeout(() => {
             this.editor?.bus?.push(DDeiEnumBusCommandType.CenterStageWPV);
+            this.editor.changeState(DDeiEditorState.DESIGNING);
             this.editor?.bus?.executeAll(100);
           }, 10);
         }
@@ -478,6 +479,7 @@ export default {
       }
       this.currentStage.setStageRatio(newRatio);
       this.stageRatio = this.currentStage.ratio;
+      this.editor.changeState(DDeiEditorState.DESIGNING);
     },
 
     /**
@@ -549,11 +551,11 @@ export default {
             z: 0,
           };
         }
+        this.editor.changeState(DDeiEditorState.DESIGNING);
         ddInstance.bus?.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
         ddInstance.bus?.push(DDeiEnumBusCommandType.RefreshShape);
         ddInstance.bus?.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
-
-        ddInstance.bus?.executeAll();
+        ddInstance.bus.executeAll();
 
         //打开新文件
         let activeIndex = sheets.length - 1;

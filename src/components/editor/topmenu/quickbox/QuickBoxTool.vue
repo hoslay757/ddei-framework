@@ -39,6 +39,7 @@
 <script lang="ts">
 import DDeiEditor from "../../js/editor";
 import DDeiEditorEnumBusCommandType from "../../js/enums/editor-command-type";
+import DDeiEditorState from "../../js/enums/editor-state";
 export default {
   name: "DDei-Editor-Quick-Tool",
   extends: null,
@@ -64,6 +65,7 @@ export default {
         mode: mode,
       });
       this.editor.bus.executeAll();
+      this.editor.changeState(DDeiEditorState.DESIGNING);
     },
   },
 };

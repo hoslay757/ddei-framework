@@ -124,7 +124,7 @@ abstract class DDeiKeyAction {
               let times = DDeiEditor.KEY_DOWN_TIMES.get(m1Str);
               //如果在时间差内达到了次数，则触发，否则丢弃，并重新计算
               if (nowTime - startTime <= item.interval && times + 1 >= item.times) {
-                item.action.action(evt, ddInstance);
+                item.action.action(evt, ddInstance, editor);
                 //清空记录
                 DDeiEditor.KEY_DOWN_TIMES.delete(m1Str)
                 //记录开始时间
@@ -138,7 +138,7 @@ abstract class DDeiKeyAction {
               }
             }
           } else {
-            item.action.action(evt, ddInstance);
+            item.action.action(evt, ddInstance, editor);
             return true;
           }
         }

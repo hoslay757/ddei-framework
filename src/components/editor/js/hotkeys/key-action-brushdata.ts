@@ -48,6 +48,7 @@ class DDeiKeyActionBrushData extends DDeiKeyAction {
           editor.bus?.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
           editor.bus?.push(DDeiEnumBusCommandType.ChangeCursor, { image: 'cursor-brush' })
           editor.bus?.executeAll();
+
         }
 
       }

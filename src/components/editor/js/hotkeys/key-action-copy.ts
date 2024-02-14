@@ -3,6 +3,8 @@ import DDei from "@/components/framework/js/ddei";
 import DDeiAbstractShape from "@/components/framework/js/models/shape";
 import DDeiUtil from "@/components/framework/js/util";
 import DDeiEditor from "../editor";
+import DDeiEditorEnumBusCommandType from "../enums/editor-command-type";
+import DDeiEditorState from "../enums/editor-state";
 import DDeiKeyAction from "./key-action";
 
 /**
@@ -20,7 +22,7 @@ class DDeiKeyActionCopy extends DDeiKeyAction {
   mode: string;
 
   // ============================ 方法 ===============================
-  async action(evt: Event, ddInstance: DDei): void {
+  async action(evt: Event, ddInstance: DDei, editor: DDeiEditor): void {
     //修改当前操作控件坐标
     if (ddInstance && ddInstance.stage) {
       //当前激活的图层
@@ -77,6 +79,11 @@ class DDeiKeyActionCopy extends DDeiKeyAction {
 
             let cbData = navigator.clipboard;
             cbData.write(writeDatas).then(function () {
+              editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
+                parts: ["topmenu"],
+              });
+              editor.bus.executeAll();
+              editor.changeState(DDeiEditorState.DESIGNING);
             }, function (e) {
               console.error("复制失败" + e);
             });
