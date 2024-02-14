@@ -123,7 +123,7 @@ export default {
 }
 
 .g4 {
-  flex: 0 1 423px
+  flex: 0 1 418px
 }
 
 .g5 {

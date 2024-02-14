@@ -12,7 +12,9 @@
         @click="attrDefine && !attrDefine.readonly && !canSearch && showDialog()" @keydown="search($event)" />
       <div style="display:flex;justify-content: center;align-items: center;"
         @click="attrDefine && !attrDefine.readonly && showDialog()">
-        <span class="iconfont icon-a-ziyuan71 iconfont-45"></span>
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-a-ziyuan466"></use>
+        </svg>
       </div>
     </div>
     <div :id="getShowDialogId(attrDefine?.code)" :class="{ 'ddei_combox_show_dialog': true }">
@@ -232,7 +234,7 @@ export default {
   box-shadow: 4px 4px 4px hsl(0deg 0% 0% /0.25);
 }
 
-.iconfont-45 {
-  font-size: 5px
+.icon {
+  font-size: 16px
 }
 </style>

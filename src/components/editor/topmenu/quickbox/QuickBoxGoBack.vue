@@ -4,7 +4,9 @@
     <div class="content">
       <div class="goback">
         <div class="out">
-          <span class="iconfont icon-a-ziyuan69" @click="goBackFileList"></span>
+          <svg class="icon" aria-hidden="true" @click="goBackFileList">
+            <use xlink:href="#icon-a-ziyuan476"></use>
+          </svg>
         </div>
       </div>
       <div class="logo">
@@ -86,7 +88,7 @@ export default {
         justify-content: center;
         align-items: center;
 
-        >span:hover {
+        >svg:hover {
           filter: brightness(40%);
           cursor: pointer;
         }

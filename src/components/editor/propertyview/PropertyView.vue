@@ -3,11 +3,16 @@
     :class="{ 'ddei_editor_propertyview': true, 'ddei_editor_propertyview_disabled': propertyDisabled }"
     @mousedown="changeEditorFocus">
     <div class="header">
-      <span
-        :class="{ 'iconfont header-7': true, 'icon-a-ziyuan67': propertyViewShow, 'icon-a-ziyuan68': !propertyViewShow }"
-        @click="hidOrShowPV"></span>
+      <svg aria-hidden="true"
+        :class="{ 'icon': true, 'header-7': propertyViewShow, 'header-7-expand': !propertyViewShow }"
+        @click="hidOrShowPV">
+        <use v-if="propertyViewShow" xlink:href="#icon-a-ziyuan474"></use>
+        <use v-if="!propertyViewShow" xlink:href="#icon-a-ziyuan475"></use>
+      </svg>
       <div style="flex:1"></div>
-      <span class="iconfont icon-ding-01" v-if="propertyViewShow"></span>
+      <svg class="icon ding" aria-hidden="true" v-if="propertyViewShow">
+        <use xlink:href="#icon-a-ziyuan410"></use>
+      </svg>
     </div>
     <div class="content">
       <div class="ddei_editor_pv_subgroup_view" v-show="editor?.rightWidth > 38">
@@ -76,7 +81,9 @@
             :class="topGroup.selected ? 'ddei_editor_pv_group_view_items_item_selected' : 'ddei_editor_pv_group_view_items_item'"
             v-for="topGroup in topGroups" v-show="!topGroup?.empty" @click="changeTopGroup(topGroup)"
             :title="topGroup.name">
-            <span :class="'iconfont ' + 'img ' + topGroup.img"></span>
+            <svg class="icon img" aria-hidden="true">
+              <use :xlink:href="'#' + topGroup.img"></use>
+            </svg>
           </div>
         </div>
       </div>
@@ -633,13 +640,25 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-left: 8px;
-    padding-right: 8px;
 
 
 
     .header-7 {
-      font-size: 13px;
+      font-size: 18px;
+      margin-left: 8px;
+      margin-right: 4px;
+    }
+
+    .header-7-expand {
+      font-size: 18px;
+      margin-left: 4px;
+      margin-right: 4px;
+    }
+
+
+    .ding {
+      font-size: 20px;
+      margin-right: 4px;
     }
 
   }
@@ -691,7 +710,7 @@ export default {
     justify-content: center;
     align-items: center;
 
-    >span {
+    >svg {
       color: #1F72FF;
     }
   }

@@ -8,7 +8,9 @@
         @keydown="search($event)" />
       <div class="ddei_editor_quick_fat_item_fontfamily_combox"
         @click="attrDefine && !attrDefine.readonly && showDialog($event)">
-        <span class="iconfont icon-a-ziyuan71 iconfont-45"></span>
+        <svg class="icon iconfont-45" aria-hidden="true">
+          <use xlink:href="#icon-a-ziyuan478"></use>
+        </svg>
       </div>
     </div>
   </div>
@@ -297,7 +299,7 @@ export default {
   align-items: center;
 
   .iconfont-45 {
-    font-size: 5px
+    font-size: 13px
   }
 }
 </style>

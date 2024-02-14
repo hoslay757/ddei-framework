@@ -2,10 +2,14 @@
   <div :id="dialogId" class="publish_file_confirm_dialog">
     <div class="content">
       <div class="header">
-        <span class="iconfont icon-a-ziyuan4 icon"></span>
+        <svg class="icon warn" aria-hidden="true">
+          <use xlink:href="#icon-a-ziyuan425"></use>
+        </svg>
         <span>发布文件</span>
         <div style="flex:1"></div>
-        <span class="iconfont close icon-a-ziyuan161" @click="cancel"></span>
+        <svg class="icon close" aria-hidden="true" @click="cancel">
+          <use xlink:href="#icon-a-ziyuan422"></use>
+        </svg>
       </div>
       <div class="msg">
       </div>
@@ -95,16 +99,13 @@ export default {
         margin: 0 2px;
       }
 
-      .iconfont {
-        font-size: 14px;
-      }
-
-      .icon {
-        color: #F05B13;
-      }
 
       .close {
-        font-size: 12px;
+        font-size: 22px;
+      }
+
+      .warn {
+        font-size: 20px !important;
       }
     }
 

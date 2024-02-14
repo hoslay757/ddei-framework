@@ -7,10 +7,12 @@
           :class="{ 'button-v-disabled': !isButtonEnable(), 'button-v-selected': isButtonEnable() && dialogShow == 'ddei_editor_quick_sort_position_dialog', 'button-v': isButtonEnable() }"
           @click="isButtonEnable() && showPositionDialog($event)">
           <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-a-ziyuan1"></use>
+            <use xlink:href="#icon-a-ziyuan429"></use>
           </svg>
           <div class="text">位置</div>
-          <span class="iconfont icon-zhankai-01"></span>
+          <svg class="icon extbtn" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan466"></use>
+          </svg>
         </div>
       </div>
       <div class="part">
@@ -18,10 +20,12 @@
           :class="{ 'button-v-disabled': !isButtonEnable(2), 'button-v-selected': isButtonEnable(2) && dialogShow == 'ddei_editor_quick_sort_align_dialog', 'button-v': isButtonEnable(2) }"
           @click="isButtonEnable(2) && showAlignDialog($event)">
           <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-a-ziyuan7"></use>
+            <use xlink:href="#icon-a-ziyuan428"></use>
           </svg>
           <div class="text">对齐</div>
-          <span class="iconfont icon-zhankai-01"></span>
+          <svg class="icon extbtn" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan466"></use>
+          </svg>
         </div>
       </div>
       <div class="part">
@@ -29,10 +33,12 @@
           :class="{ 'button-v-disabled': !isButtonEnable(), 'button-v-selected': isButtonEnable() && dialogShow == 'ddei_editor_quick_sort_merge_dialog', 'button-v': isButtonEnable() }"
           @click="isButtonEnable() && showMergeDialog($event)">
           <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-a-ziyuan28"></use>
+            <use xlink:href="#icon-a-ziyuan427"></use>
           </svg>
           <div class="text">组合</div>
-          <span class="iconfont icon-zhankai-01"></span>
+          <svg class="icon extbtn" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan466"></use>
+          </svg>
         </div>
       </div>
 
@@ -41,10 +47,12 @@
           :class="{ 'button-v-disabled': !isButtonEnable(), 'button-v-selected': isButtonEnable() && dialogShow == 'ddei_editor_quick_sort_rotate_dialog', 'button-v': isButtonEnable() }"
           @click="isButtonEnable() && showRotateDialog($event)">
           <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-a-ziyuan101"></use>
+            <use xlink:href="#icon-a-ziyuan426"></use>
           </svg>
           <div class="text">翻转</div>
-          <span class="iconfont icon-zhankai-01"></span>
+          <svg class="icon extbtn" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan466"></use>
+          </svg>
         </div>
       </div>
     </div>
@@ -146,9 +154,6 @@ export default {
         flex: 1;
         height: 50px;
         border-radius: 4px;
-        margin-top: 10px;
-
-
       }
 
       .button-v:hover {
@@ -161,14 +166,11 @@ export default {
         height: 50px;
         background-color: #e6e6e6;
         border-radius: 4px;
-        margin-top: 10px;
-
       }
 
       .button-v-disabled {
         flex: 1;
         height: 50px;
-        margin-top: 10px;
         cursor: not-allowed;
 
         >span {
@@ -185,15 +187,6 @@ export default {
         }
       }
 
-      .icon {
-        height: 20px;
-      }
-
-      .iconfont {
-        display: block;
-        margin-top: -10px;
-      }
-
       .text {
         height: 20px;
         font-size: 14px;
@@ -201,6 +194,12 @@ export default {
         font-family: "Microsoft YaHei";
         font-weight: 400;
         color: #000000;
+        margin-top: -3px;
+      }
+
+      .extbtn {
+        font-size: 12px;
+        vertical-align: top;
       }
     }
   }

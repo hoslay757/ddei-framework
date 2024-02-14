@@ -6,29 +6,39 @@
         <div class="group_content">
           <div class="item" @click="createNewLayer(0)" v-show="allowAddLayer">
             <span style="grid-column:1/8;">新建图层</span>
-            <span class="iconfont icon-a-ziyuan311"></span>
+            <svg class="icon extbtn" aria-hidden="true">
+              <use xlink:href="#icon-a-ziyuan374"></use>
+            </svg>
           </div>
           <div :class="{ 'item': true, 'current': currentStage?.layerIndex === index }"
             v-for="(layer, index) in currentStage?.layers" draggable="true" @dragstart="layerDragStart(index, $event)"
             @dragover="layerDragOver($event)" @drop="layerDragDrop($event)" @dragleave="layerDragCancel($event)">
             <span style="grid-column:1/8;" @dblclick="startChangeLayerName(layer, $event)">{{ layer.name ? layer.name :
               '图层' }}</span>
-            <span class="iconfont icon-a-ziyuan207" @click="removeLayer(index)"></span>
+            <svg class="icon" aria-hidden="true" @click="removeLayer(index)">
+              <use xlink:href="#icon-a-ziyuan401"></use>
+            </svg>
             <span style="grid-column:1/4;font-weight:normal">形状:{{ layer.modelNumber }}</span>
+            <svg class="icon" aria-hidden="true" @click="createNewLayer(index)" v-show="allowAddLayer">
+              <use xlink:href="#icon-a-ziyuan374"></use>
+            </svg>
+            <svg class="icon" @click="displayOrShowLayer(layer)">
+              <use xlink:href="#icon-a-ziyuan387" v-if="layer.display == 0 && !layer.tempDisplay"></use>
+              <use xlink:href="#icon-a-ziyuan383" v-if="!(layer.display == 0 && !layer.tempDisplay)"></use>
+            </svg>
 
-            <span class="iconfont icon-a-ziyuan311" @click="createNewLayer(index)" v-show="allowAddLayer"></span>
-            <span
-              :class="{ 'iconfont': true, 'icon-a-ziyuan80': layer.display == 0 && !layer.tempDisplay, 'icon-a-ziyuan81': !(layer.display == 0 && !layer.tempDisplay) }"
-              @click="displayOrShowLayer(layer)"></span>
-
-            <span :class="{ 'iconfont': true, 'icon-a-ziyuan185': layer.lock, 'icon-a-ziyuan167': !layer.lock }"
-              @click="lockOrUnLockLayer(layer)"></span>
+            <svg class="icon" @click="lockOrUnLockLayer(layer)">
+              <use xlink:href="#icon-a-ziyuan415" v-if="layer.lock"></use>
+              <use xlink:href="#icon-a-ziyuan414" v-if="!layer.lock"></use>
+            </svg>
 
             <input type="radio" :class="{ 'not_temp_display': !layer.tempDisplay }" name="rdo_layers" :value="layer.id"
               @mousedown="changeLayer(index, $event)" :checked="currentStage?.layerIndex === index" />
 
-            <span :class="{ 'iconfont': true, 'icon-a-ziyuan179': layer.print, 'icon-a-ziyuan179': !layer.print }"
-              @click="printOrNoPrintLayer(layer)"></span>
+            <svg class="icon" @click="printOrNoPrintLayer(layer)">
+              <use xlink:href="#icon-a-ziyuan415" v-if="layer.print"></use>
+              <use xlink:href="#icon-a-ziyuan414" v-if="!layer.print"></use>
+            </svg>
 
           </div>
 
@@ -404,10 +414,13 @@ export default {
             font-weight: bold;
           }
 
+          .icon {
+            font-size: 22px;
+          }
+
           >input {
-            width: 16px;
             height: 16px;
-            margin-top: 3px
+            margin-top: 4px;
           }
         }
 

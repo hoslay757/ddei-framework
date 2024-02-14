@@ -6,7 +6,9 @@
         <div
           :class="{ 'button-v-selected': editor?.ddInstance?.stage?.copyMode == 'cut', 'button-v': editor?.ddInstance?.stage?.selectedModels?.size > 0, 'button-v-disabled': editor?.ddInstance?.stage?.selectedModels?.size == 0 || !editor?.ddInstance?.stage?.selectedModels }"
           title="剪切" @click="editor?.ddInstance?.stage?.selectedModels?.size > 0 && execShearAction($event)">
-          <span class="iconfont icon-a-ziyuan57"></span>
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan486"></use>
+          </svg>
           <div class="text">剪切</div>
         </div>
       </div>
@@ -15,13 +17,17 @@
         <div
           :class="{ 'button-v-selected': editor?.ddInstance?.stage?.copyMode == 'copy', 'button-v': editor?.ddInstance?.stage?.selectedModels?.size > 0, 'button-v-disabled': editor?.ddInstance?.stage?.selectedModels?.size == 0 || !editor?.ddInstance?.stage?.selectedModels }"
           title="复制" @click="editor?.ddInstance?.stage?.selectedModels?.size > 0 && execCopyAction($event)">
-          <span class="iconfont icon-a-ziyuan10"></span>
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan484"></use>
+          </svg>
           <div class="text">复制</div>
         </div>
       </div>
       <div class="part">
         <div :class="{ 'button-v': hasClipData, 'button-v-disabled': !hasClipData }" title="粘贴">
-          <span class="iconfont icon-a-ziyuan39"></span>
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan488"></use>
+          </svg>
           <div class="text">粘贴</div>
         </div>
       </div>
@@ -29,7 +35,9 @@
         <div
           :class="{ 'button-v-selected': editor?.ddInstance?.stage?.brushData, 'button-v': displayBrush, 'button-v-disabled': !displayBrush }"
           title="格式刷" @click="editor?.ddInstance?.stage?.selectedModels?.size == 1 && execBrushAction($event)">
-          <span class="iconfont icon-a-ziyuan85"></span>
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan485"></use>
+          </svg>
           <div class="text">格式刷</div>
         </div>
       </div>
@@ -164,6 +172,7 @@ export default {
         flex: 1;
         height: 50px;
         border-radius: 4px;
+        align-items: center;
       }
 
       .button-v:hover {
@@ -186,9 +195,11 @@ export default {
         display: flex;
         flex-direction: column;
         cursor: not-allowed;
+        align-items: center;
 
-        >span {
-          color: #bcbcbc;
+        .icon {
+          filter: grayscale(1);
+          opacity: 40%;
         }
 
         .text {
@@ -197,7 +208,6 @@ export default {
       }
 
       .text {
-        height: 13px;
         font-size: 14px;
         white-space: nowrap;
         font-family: "Microsoft YaHei";

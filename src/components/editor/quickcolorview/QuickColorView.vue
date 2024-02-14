@@ -2,8 +2,12 @@
   <div id="ddei_editor_qcview" class="ddei_editor_qcview" v-show="show">
     <div class="ddei_editor_qcview_type" v-for="item in dataSource" v-show="item.value == mode"
       @click="showDialog($event)" :title="item.text">
-      <span :class="item.img"></span>
-      <span class="iconfont icon-zhankai-01"></span>
+      <svg class="icon" aria-hidden="true">
+        <use :xlink:href="item.img"></use>
+      </svg>
+      <svg class="icon" aria-hidden="true">
+        <use xlink:href="#icon-a-ziyuan466"></use>
+      </svg>
     </div>
     <div :class="{ 'ddei_editor_qcview_color': true }" v-for="color in  colors "
       :style="{ 'background-color': '' + color }"
@@ -28,9 +32,9 @@ export default {
       //当前编辑的模式，1填充，2边框，3字体
       mode: 1,
       dataSource: [
-        { value: 1, text: "填充", img: "iconfont icon-tianse-01" },
-        { value: 2, text: "边框", img: "iconfont icon-a-ziyuan203" },
-        { value: 3, text: "字体", img: "iconfont icon-a-ziyuan189" },
+        { value: 1, text: "填充", img: "#icon-a-ziyuan453" },
+        { value: 2, text: "边框", img: "#icon-a-ziyuan463" },
+        { value: 3, text: "字体", img: "#icon-a-ziyuan463" },
       ],
       show: true,
     };
@@ -250,15 +254,6 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.iconfont {
-  font-size: 12px;
-}
-
-.iconfont-small {
-  margin-left: 4px;
-  font-size: 4px !important;
 }
 
 .ddei_editor_qcview_type:hover {

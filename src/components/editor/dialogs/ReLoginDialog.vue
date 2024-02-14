@@ -2,10 +2,14 @@
   <div :id="dialogId" class="relogin_dialog">
     <div class="content">
       <div class="header">
-        <span class="iconfont icon-a-ziyuan4 icon"></span>
+        <svg class="icon warn" aria-hidden="true">
+          <use xlink:href="#icon-a-ziyuan411"></use>
+        </svg>
         <span>当前登录状态已失效，请重新登录.</span>
         <div style="flex:1"></div>
-        <span class="iconfont close icon-a-ziyuan161" @click="abort"></span>
+        <svg class="icon close" aria-hidden="true" @click="abort">
+          <use xlink:href="#icon-a-ziyuan422"></use>
+        </svg>
       </div>
       <div class="content_right_login_form">
         <div class="content_right_form_msg">
@@ -190,16 +194,14 @@ export default {
         margin: 0 2px;
       }
 
-      .iconfont {
-        font-size: 16px;
-      }
-
-      .icon {
-        color: #F05B13;
-      }
 
       .close {
-        font-size: 12px;
+        font-size: 22px;
+      }
+
+      .warn {
+        font-size: 20px !important;
+        color: #F05B13;
       }
     }
 

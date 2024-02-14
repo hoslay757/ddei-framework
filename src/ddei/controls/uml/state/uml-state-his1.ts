@@ -82,7 +82,7 @@ export default {
       groups: [
         {
           name: "属性",
-          icon: 'icon-a-ziyuan211',
+          icon: 'icon-a-ziyuan375',
           subGroups: [
             {
               name: "填充",

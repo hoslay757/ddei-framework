@@ -43,7 +43,7 @@ Body`,
       groups: [
         {
           name: "样式",
-          icon: 'icon-a-ziyuan211',
+          icon: 'icon-a-ziyuan375',
           subGroups: [
             {
               name: "填充",

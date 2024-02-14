@@ -4,7 +4,9 @@
     <div class="textinput" @click="attrDefine && !attrDefine.readonly && showDialog($event)">
       <input type="color" :readonly="attrDefine && (attrDefine.readonly)" v-model="attrDefine.value" />
       <div style="display:flex;justify-content: center;align-items: center;">
-        <span class="iconfont icon-a-ziyuan71 iconfont-45"></span>
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-a-ziyuan466"></use>
+        </svg>
       </div>
     </div>
   </div>
@@ -237,7 +239,7 @@ export default {
 }
 
 
-.iconfont-45 {
-  font-size: 5px
+.icon {
+  font-size: 16px
 }
 </style>

@@ -6,10 +6,14 @@
         <div class="title">镜像:</div>
         <div class="group_content">
           <div :class="{ 'item': canMirror(), 'item_disabled': !canMirror() }" @click="canMirror() && doMirror()">
-            <span class="iconfont icon-a-ziyuan101"></span>
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-a-ziyuan441"></use>
+            </svg>
           </div>
           <div :class="{ 'item': canMirror(), 'item_disabled': !canMirror() }" @click="canMirror() && doMirror()">
-            <span class="iconfont icon-a-ziyuan102"></span>
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-a-ziyuan442"></use>
+            </svg>
           </div>
         </div>
       </div>
@@ -17,13 +21,19 @@
         <div class="title">旋转:</div>
         <div class="group_content">
           <div class="item" @click="doRotate(90)">
-            <span class="iconfont icon-a-ziyuan98"></span>
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-a-ziyuan377"></use>
+            </svg>
           </div>
           <div class="item" @click="doRotate(-90)">
-            <span class="iconfont icon-a-ziyuan99"></span>
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-a-ziyuan382"></use>
+            </svg>
           </div>
           <div class="item" @click="doRotate(-1)">
-            <span class="iconfont icon-a-ziyuan42"></span>
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-a-ziyuan373"></use>
+            </svg>
           </div>
         </div>
       </div>
@@ -212,7 +222,7 @@ export default {
           cursor: pointer;
           text-decoration: line-through;
 
-          .iconfont {
+          .icon {
             color: none;
           }
         }
@@ -233,7 +243,7 @@ export default {
         }
 
         .icon {
-          font-size: 20px;
+          font-size: 28px;
         }
 
       }

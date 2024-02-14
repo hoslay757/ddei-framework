@@ -4,25 +4,33 @@
     <div class="content">
       <div class="part">
         <div class="button-v" @click="newFile" title="新建">
-          <span class="iconfont icon-a-ziyuan193"></span>
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan490"></use>
+          </svg>
           <div class="text">新建</div>
         </div>
       </div>
       <div class="part">
         <div class="button-h">
           <div class="button" @click="openFile" title="打开">
-            <span class="iconfont icon-a-ziyuan133"></span>
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-a-ziyuan489"></use>
+            </svg>
             <div class="text">打开</div>
           </div>
           <div class="button" title="导入">
-            <span class="iconfont icon-a-ziyuan120"></span>
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-a-ziyuan371"></use>
+            </svg>
             <div class="text">导入</div>
           </div>
         </div>
       </div>
       <div class="part">
         <div class="button-v" @click="save" title="保存">
-          <span class="iconfont icon-a-ziyuan178"></span>
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan487"></use>
+          </svg>
           <div class="text">保存</div>
         </div>
       </div>
@@ -256,7 +264,7 @@ export default {
         height: 50px;
         display: flex;
         flex-direction: column;
-
+        align-items: center;
 
         .text {
           white-space: nowrap;
@@ -278,6 +286,7 @@ export default {
 
         display: flex;
         flex-direction: column;
+        margin-top: -2px;
 
         .button {
           flex: 1;
@@ -287,7 +296,8 @@ export default {
           border-radius: 4px;
 
 
-          .iconfont {
+          .icon {
+            font-size: 28px;
             flex: 1;
           }
 

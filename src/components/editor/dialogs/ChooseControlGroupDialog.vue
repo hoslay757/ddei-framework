@@ -4,14 +4,22 @@
       <div class="title">选择需要的图形</div>
       <div class="group">
         <div class="item" @mousemove="expandSubMenu('basic', $event)">
-          <span class="iconfont icon-a-ziyuan40 groupicon"></span>
+          <svg class="icon groupicon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan384"></use>
+          </svg>
           <div class="groupname">基本</div>
-          <span class="iconfont icon-zhankai-01 expand"></span>
+          <svg class="icon expand" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan465"></use>
+          </svg>
         </div>
         <div class="item" @mousemove="expandSubMenu('uml', $event)">
-          <span class="iconfont icon-a-ziyuan95 groupicon"></span>
+          <svg class="icon groupicon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan384"></use>
+          </svg>
           <div class="groupname">UML</div>
-          <span class="iconfont icon-zhankai-01 expand"></span>
+          <svg class="icon expand" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan465"></use>
+          </svg>
         </div>
       </div>
     </div>
@@ -171,7 +179,10 @@ export default {
         align-items: center;
         justify-content: center;
 
-        .groupicon {}
+        .groupicon {
+          width: 34px;
+          font-size: 26px;
+        }
 
         .groupname {
           flex: 0 1 160px;
@@ -179,7 +190,7 @@ export default {
         }
 
         .expand {
-          transform: rotate(-90deg)
+          font-size: 22px;
         }
       }
 

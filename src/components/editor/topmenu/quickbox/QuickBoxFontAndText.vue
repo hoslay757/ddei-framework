@@ -10,25 +10,27 @@
           <QBTFontSize></QBTFontSize>
         </div>
         <div>
-          <QBTEditAddFontSize :addValue="1" attrCode="font.size" img="iconfont icon-a-ziyuan310"></QBTEditAddFontSize>
+          <QBTEditAddFontSize :addValue="1" attrCode="font.size" img="icon-a-ziyuan456" extcls="magtop-2">
+          </QBTEditAddFontSize>
         </div>
         <div>
-          <QBTEditAddFontSize :addValue="-1" attrCode="font.size" img="iconfont icon-a-ziyuan210"></QBTEditAddFontSize>
+          <QBTEditAddFontSize :addValue="-1" attrCode="font.size" img="icon-a-ziyuan455" extcls="magtop-1">
+          </QBTEditAddFontSize>
         </div>
 
         <div>
-          <QBTEditBox selectedValue="1" :supportQuickEdit="false" attrCode="textStyle.align"
-            img="iconfont icon-a-ziyuan93" :unSelectValue="2">
+          <QBTEditBox selectedValue="1" :supportQuickEdit="false" attrCode="textStyle.align" img="icon-a-ziyuan440"
+            extcls="magtop-1" :unSelectValue="2">
           </QBTEditBox>
         </div>
         <div>
-          <QBTEditBox selectedValue="2" :supportQuickEdit="false" attrCode="textStyle.align"
-            img="iconfont icon-a-ziyuan90" :unSelectValue="2">
+          <QBTEditBox selectedValue="2" :supportQuickEdit="false" attrCode="textStyle.align" img="icon-a-ziyuan437"
+            extcls="magtop-1" :unSelectValue="2">
           </QBTEditBox>
         </div>
         <div>
-          <QBTEditBox selectedValue="3" :supportQuickEdit="false" attrCode="textStyle.align"
-            img="iconfont icon-a-ziyuan92" :unSelectValue="2">
+          <QBTEditBox selectedValue="3" :supportQuickEdit="false" attrCode="textStyle.align" img="icon-a-ziyuan439"
+            extcls="magtop-1" :unSelectValue="2">
           </QBTEditBox>
         </div>
 
@@ -36,58 +38,59 @@
 
       </div>
       <div class="buttons">
-        <div class="mg16">
-          <QBTEditBox selectedValue="1" attrCode="textStyle.bold" img="iconfont icon-a-ziyuan51">
+        <div class="mg14">
+          <QBTEditBox selectedValue="1" attrCode="textStyle.bold" img="icon-a-ziyuan461">
           </QBTEditBox>
         </div>
         <div class="mg16">
-          <QBTEditBox selectedValue="1" attrCode="textStyle.italic" img="iconfont icon-a-ziyuan47">
+          <QBTEditBox selectedValue="1" attrCode="textStyle.italic" img="icon-a-ziyuan459">
           </QBTEditBox>
         </div>
         <div class="mg16">
-          <QBTEditBox selectedValue="1" attrCode="textStyle.underline" img="iconfont icon-a-ziyuan46">
+          <QBTEditBox selectedValue="1" attrCode="textStyle.underline" img="icon-a-ziyuan457" extcls="colorred">
           </QBTEditBox>
         </div>
-        <div class="mg16">
-          <QBTEditBox selectedValue="1" attrCode="textStyle.deleteline" img="iconfont icon-a-ziyuan45">
+        <div class="mg165">
+          <QBTEditBox selectedValue="1" attrCode="textStyle.deleteline" img="icon-a-ziyuan457">
           </QBTEditBox>
         </div>
 
-        <div class="mg16">
-          <QBTEditBox selectedValue="1" :onlyQuickEdit="true" attrCode="textStyle.subtype"
-            img="iconfont icon-shangbiao-01-01">
+        <div class="mg17">
+          <QBTEditBox selectedValue="1" :onlyQuickEdit="true" attrCode="textStyle.subtype" img="icon-a-ziyuan394"
+            extcls="magtop-1">
           </QBTEditBox>
         </div>
-        <div class="mg16">
-          <QBTEditBox selectedValue="2" :onlyQuickEdit="true" attrCode="textStyle.subtype"
-            img="iconfont icon-zhongbiao-01">
+        <div class="mg17">
+          <QBTEditBox selectedValue="2" :onlyQuickEdit="true" attrCode="textStyle.subtype" img="icon-a-ziyuan393"
+            extcls="magtop-1">
           </QBTEditBox>
         </div>
         <div class="b4">
-          <QBTEditBox selectedValue="3" :onlyQuickEdit="true" attrCode="textStyle.subtype" img="iconfont icon-xiabiao-01">
+          <QBTEditBox selectedValue="3" :onlyQuickEdit="true" attrCode="textStyle.subtype" img="icon-a-ziyuan392"
+            extcls="magtop-1">
           </QBTEditBox>
         </div>
         <div class="b5">
-          <QBTEditColor attrCode="textStyle.bgcolor" img="iconfont icon-tianse-01"></QBTEditColor>
+          <QBTEditColor attrCode="textStyle.bgcolor" img="icon-a-ziyuan452"></QBTEditColor>
         </div>
         <div class="b6">
-          <QBTEditColor attrCode="font.color" img="iconfont icon-a-ziyuan55"></QBTEditColor>
+          <QBTEditColor attrCode="font.color" img="icon-a-ziyuan463"></QBTEditColor>
         </div>
 
 
         <div>
-          <QBTEditBox selectedValue="1" :supportQuickEdit="false" attrCode="textStyle.valign"
-            img="iconfont icon-a-ziyuan88" :unSelectValue="2">
+          <QBTEditBox selectedValue="1" :supportQuickEdit="false" attrCode="textStyle.valign" img="icon-a-ziyuan440"
+            extcls="rotate-90" :unSelectValue="2">
           </QBTEditBox>
         </div>
         <div>
-          <QBTEditBox selectedValue="2" :supportQuickEdit="false" attrCode="textStyle.valign"
-            img="iconfont icon-a-ziyuan88" :unSelectValue="2">
+          <QBTEditBox selectedValue="2" :supportQuickEdit="false" attrCode="textStyle.valign" img="icon-a-ziyuan437"
+            extcls="rotate-90" :unSelectValue="2">
           </QBTEditBox>
         </div>
         <div>
-          <QBTEditBox selectedValue="3" :supportQuickEdit="false" attrCode="textStyle.valign"
-            img="iconfont icon-a-ziyuan89" :unSelectValue="2">
+          <QBTEditBox selectedValue="3" :supportQuickEdit="false" attrCode="textStyle.valign" img="icon-a-ziyuan439"
+            extcls="rotate-90" :unSelectValue="2">
           </QBTEditBox>
         </div>
 
@@ -153,14 +156,27 @@ export default {
 
       >div {
         float: left;
-        margin-right: 20px;
+        margin-right: 10px;
 
       }
 
 
 
       .mg16 {
-        margin-right: 16px;
+        margin-right: 3px;
+      }
+
+      .mg165 {
+        margin-right: 5px;
+      }
+
+      .mg14 {
+        margin-right: 3px;
+        margin-left: -3px;
+      }
+
+      .mg17 {
+        margin-right: 8px;
       }
 
       .b1 {
@@ -169,21 +185,21 @@ export default {
       }
 
       .b2 {
-        width: 59px;
+        width: 64px;
       }
 
       .b4 {
-        margin-right: 29px;
+        margin-right: 33px;
       }
 
       .b5 {
-        margin-top: 0px;
-        margin-right: 18px;
+        margin-top: 1px;
+        margin-right: 17px;
       }
 
       .b6 {
-        margin-top: 0px;
-        margin-right: 19px;
+        margin-top: 1px;
+        margin-right: 15px;
       }
     }
   }

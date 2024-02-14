@@ -2,7 +2,6 @@
   <div class="ddei_editor_right">
     <div class="header">
       <div class="h1"></div>
-      <span class="iconfont icon-a-ziyuan124 h2"></span>
       <div class="h3"></div>
       <div class="userinfo">{{ userNameFirst }}</div>
       <div class="h4"></div>

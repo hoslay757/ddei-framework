@@ -1,7 +1,9 @@
 <template>
   <div :class="{ 'ddei_editor_quick_fat_item_box': true, 'ddei_editor_quick_fat_item_box_disabled': !attrDefine }"
     @click="attrDefine && showColor($event)">
-    <span :class="img"></span>
+    <svg :class="'icon ' + (extcls ? extcls : '')" aria-hidden="true">
+      <use :xlink:href="'#' + img"></use>
+    </svg>
     <div class="colorbar" :style="{ 'background-color': value ? value : 'black' }"></div>
     <input ref="colorInput" type="color" v-model="value" class="colinput" />
   </div>
@@ -29,7 +31,11 @@ export default {
     img: {
       type: String,
       default: null
-    }
+    },
+    extcls: {
+      type: String,
+      default: null,
+    },
   },
   data() {
     return {
@@ -198,15 +204,15 @@ export default {
   height: 24px;
   overflow: hidden;
   display: flex;
+  align-items: center;
   flex-direction: column;
 
-  .iconfont {
-    font-size: 13px;
-    flex: 0 0 14px;
-    height: 17px;
+  .icon {
+    flex: 0 0 16px;
   }
 
   .colorbar {
+    width: 100%;
     flex: 0 0 3px;
   }
 
@@ -214,8 +220,12 @@ export default {
     border: none;
     outline: none;
     display: block;
-    margin-top: 1px
+    margin-top: 5px
   }
+}
+
+.magtop-1 {
+  margin-top: -1px;
 }
 
 .ddei_editor_quick_fat_item_box:hover {

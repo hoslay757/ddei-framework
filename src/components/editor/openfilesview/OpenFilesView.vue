@@ -1,7 +1,9 @@
 <template>
   <div id="ddei_editor_ofsview" @mousedown="changeEditorFocus()" class="ddei_editor_ofsview">
     <div v-show="this.editor?.leftWidth == 0" class="ddei_editor_ofsview_expandbox" @click="expandToolBox">
-      <span class="iconfont icon-a-ziyuan67"></span>
+      <svg class="icon" aria-hidden="true">
+        <use xlink:href="#icon-a-ziyuan474"></use>
+      </svg>
     </div>
     <div
       :class="item.active == 1 ? 'ddei_editor_ofsview_item ddei_editor_ofsview_item_selected' : 'ddei_editor_ofsview_item'"
@@ -17,15 +19,23 @@
         <div class="text" @dblclick="startChangeFileName(item, $event)">{{ item.name }}</div>
         <div class="dirty" v-show="item.state != 0">ꔷ</div>
       </span>
-      <span @click.prevent.stop="closeFile(item, $event)" class="iconfont icon-a-ziyuan161 close"></span>
+      <svg @click.prevent.stop="closeFile(item, $event)" class="icon close" aria-hidden="true">
+        <use xlink:href="#icon-a-ziyuan422"></use>
+      </svg>
     </div>
-    <span class="iconfont icon-a--01 addfile" @click="newFile"></span>
+    <svg class="icon addfile" aria-hidden="true" @click="newFile">
+      <use xlink:href="#icon-a-ziyuan376"></use>
+    </svg>
     <div style="flex:1 1 1px"></div>
     <div class="ddei_editor_ofsview_movebox" v-show="editor?.files?.length > maxOpenSize" @click="moveItem(-1)">
-      <span class="iconfont icon-a-ziyuan74"></span>
+      <svg class="icon" aria-hidden="true">
+        <use xlink:href="#icon-a-ziyuan481"></use>
+      </svg>
     </div>
     <div class="ddei_editor_ofsview_movebox" v-show="editor?.files?.length > maxOpenSize" @click="moveItem(1)">
-      <span class="iconfont icon-a-ziyuan73"></span>
+      <svg class="icon" aria-hidden="true">
+        <use xlink:href="#icon-a-ziyuan480"></use>
+      </svg>
     </div>
   </div>
 </template>
@@ -524,10 +534,12 @@ export default {
   border-bottom: 1px solid #E0E3E9;
   display: flex;
   user-select: none;
+  align-items: center;
 }
 
 .ddei_editor_ofsview .addfile {
   margin: 0px 10px;
+  font-size: 24px;
 }
 
 .ddei_editor_ofsview_expandbox {
@@ -575,11 +587,6 @@ export default {
 }
 
 
-.ddei_editor_ofsview_item .iconfont {
-  flex: 0 0 25px;
-}
-
-
 
 .ddei_editor_ofsview_item .icon {
   font-size: 16px;
@@ -588,8 +595,9 @@ export default {
 }
 
 .ddei_editor_ofsview_item .close {
-  font-size: 12px;
+  font-size: 18px;
   flex: 0 0 24px;
+  margin-left: -5px;
 }
 
 .ddei_editor_ofsview_item .textcontent {
@@ -616,6 +624,7 @@ export default {
   width: 10px;
   flex: 0 0 10px;
   font-size: 18px;
+  text-align: right;
 }
 
 .ddei_editor_ofsview_item:hover {

@@ -485,7 +485,7 @@ export default {
   groups: [
     {
       name: "样式",
-      icon: 'icon-a-ziyuan211',
+      icon: 'icon-a-ziyuan375',
       subGroups: [
         {
           name: "填充",
@@ -506,7 +506,7 @@ export default {
     },
     {
       name: "数据",
-      icon: 'icon-a-ziyuan26',
+      icon: 'icon-a-ziyuan409',
       subGroups: [
         {
           name: "基础信息",

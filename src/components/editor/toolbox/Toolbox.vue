@@ -2,21 +2,27 @@
   <div id="ddei_editor_toolbox" v-show="editor?.leftWidth > 0" @mousedown="changeEditorFocus" class="ddei_editor_toolbox">
     <div class="header">
       <div class="header-1"></div>
-      <svg class="icon" aria-hidden="true">
-        <use xlink:href="#icon-gengduotubiao-01"></use>
+      <svg class="icon icon1" aria-hidden="true">
+        <use xlink:href="#icon-a-ziyuan417"></use>
       </svg>
       <div class="header-3"></div>
       <div class="morecontrol" @click="showChooseDialog($event)">
         <div class="header-4">更多图形</div>
         <div class="header-3"></div>
-        <span class="iconfont icon-zhankai-01"></span>
+        <svg class="icon icon2" aria-hidden="true">
+          <use xlink:href="#icon-a-ziyuan466"></use>
+        </svg>
       </div>
       <div style="flex:1"></div>
-      <span class="iconfont icon-a-ziyuan68 header-7" @click="hiddenToolBox"></span>
+      <svg class="icon header-7" aria-hidden="true" @click="hiddenToolBox">
+        <use xlink:href="#icon-a-ziyuan475"></use>
+      </svg>
     </div>
     <div class="searchbox">
       <div class="group">
-        <span class="iconfont icon-a-ziyuan175" @click="searchControl" title="搜索"></span>
+        <svg class="icon" aria-hidden="true" @click="searchControl" title="搜索">
+          <use xlink:href="#icon-a-ziyuan416"></use>
+        </svg>
         <input v-model="searchText" class="input" @keypress="searchInputEnter" placeholder="搜索控件">
       </div>
     </div>
@@ -26,8 +32,9 @@
       <div v-for="group in groups" v-show="group.display == true" class="group">
         <div :class="{ 'box': true, 'expanded': group.expand }" @click="groupBoxExpand(group)">
           <span class="title">{{ group.name }}</span>
-          <span v-if="!group.cannotClose" class="iconfont icon-a-ziyuan161 close" @click="groupBoxClose(group)"
-            title="关闭"></span>
+          <svg v-if="!group.cannotClose" class="icon close" aria-hidden="true" @click="groupBoxClose(group)" title="关闭">
+            <use xlink:href="#icon-a-ziyuan422"></use>
+          </svg>
         </div>
         <div class="item_panel" v-if="group.expand == true">
           <div class="item" :title="control.desc" draggable="true" @dragstart="createControlPrepare(control, $event)"
@@ -613,7 +620,7 @@ export default {
       display: flex;
       justify-content: center;
       align-items: center;
-      flex: 0 1 110px;
+      flex: 0 1 100px;
 
       .header-3 {
         flex: 0 1 8px
@@ -625,6 +632,8 @@ export default {
         font-weight: bold;
         color: #000000;
       }
+
+
     }
 
     .morecontrol:hover {
@@ -644,7 +653,15 @@ export default {
 
 
     .header-7 {
-      font-size: 13px;
+      font-size: 18px;
+    }
+
+    .icon1 {
+      font-size: 23px;
+    }
+
+    .icon2 {
+      font-size: 16px;
     }
   }
 
@@ -665,9 +682,9 @@ export default {
       justify-content: center;
       align-items: center;
 
-      .iconfont {
-        font-size: 16px;
-        margin: 0 11px;
+      .icon {
+        font-size: 24px;
+        margin: 0 6px;
       }
 
       .input {
@@ -825,8 +842,8 @@ export default {
 }
 
 .ddei_editor_toolbox .groups .group .box .close {
-  margin-right: 15px;
-  font-size: 12px;
+  margin-right: 10px;
+  font-size: 18px;
 }
 
 .ddei_editor_toolbox .groups .group .box .close:hover {

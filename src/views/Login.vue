@@ -15,7 +15,9 @@
           {{ form.validMsg.username }}
         </div>
         <div class="content_right_login_form_input">
-          <span class="iconfont icon-a-ziyuan166"></span>
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan413"></use>
+          </svg>
           <div class="split"></div>
           <input v-model="form.username" placeholder="手机号/邮箱/账号" autofocus />
         </div>
@@ -23,7 +25,9 @@
           {{ form.validMsg.password }}
         </div>
         <div class="content_right_login_form_input">
-          <span class="iconfont icon-a-ziyuan185"></span>
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan415"></use>
+          </svg>
           <div class="split"></div>
           <input v-model="form.password" placeholder="请输入密码" type="password" @keydown.enter="login" />
         </div>
@@ -45,7 +49,9 @@
           {{ reg.validMsg.mobile }}
         </div>
         <div class="content_right_login_form_input">
-          <span class="iconfont icon-a-ziyuan5"></span>
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan412"></use>
+          </svg>
           <div class="split"></div>
           <input v-model="reg.mobile" id="reg_input_id" type="mobile" class="content_right_reg_form_input"
             placeholder="手机号" />
@@ -55,7 +61,9 @@
           {{ reg.validMsg.username }}
         </div>
         <div class="content_right_login_form_input">
-          <span class="iconfont icon-a-ziyuan166"></span>
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan413"></use>
+          </svg>
           <div class="split"></div>
           <input v-model="reg.username" class="content_right_reg_form_input" placeholder="用户名,6-30位中文、英文、数字、下划线组合" />
           <span class="content_right_reg_form_input_required">*</span>
@@ -64,7 +72,9 @@
           {{ reg.validMsg.email }}
         </div>
         <div class="content_right_login_form_input">
-          <span class="iconfont icon-a-ziyuan201"></span>
+          <svg class="icon" style="color:red" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan412"></use>
+          </svg>
           <div class="split"></div>
           <input v-model="reg.email" class="content_right_reg_form_input" placeholder="邮箱地址" type="email" />
         </div>
@@ -72,7 +82,9 @@
           {{ reg.validMsg.password }}
         </div>
         <div class="content_right_login_form_input">
-          <span class="iconfont icon-a-ziyuan185"></span>
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan415"></use>
+          </svg>
           <div class="split"></div>
           <input v-model="reg.password" type="password" class="content_right_reg_form_input" placeholder="密码" />
           <span class="content_right_reg_form_input_required">*</span>
@@ -81,7 +93,9 @@
           {{ reg.validMsg.password1 }}
         </div>
         <div class="content_right_login_form_input">
-          <span class="iconfont icon-a-ziyuan185"></span>
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan414"></use>
+          </svg>
           <div class="split"></div>
           <input v-model="reg.password1" type="password" class="content_right_reg_form_input" placeholder="确认密码" />
           <span class="content_right_reg_form_input_required">*</span>
@@ -475,8 +489,7 @@ export default {
     background: #D6DAE7;
   }
 
-  .iconfont {
-    font-size: 15px;
+  .icon {
     flex: 0 0 22px;
     margin-left: 18px;
     color: #a4b3d0;

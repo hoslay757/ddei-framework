@@ -7,32 +7,32 @@
         <div class="group_content">
           <div class="item" @click="changeAlign('left')">
             <svg class="icon" aria-hidden="true">
-              <use xlink:href="#icon-a-ziyuan110"></use>
+              <use xlink:href="#icon-a-ziyuan450"></use>
             </svg>
           </div>
           <div class="item" @click="changeAlign('center')">
             <svg class="icon" aria-hidden="true">
-              <use xlink:href="#icon-a-ziyuan104"></use>
+              <use xlink:href="#icon-a-ziyuan444"></use>
             </svg>
           </div>
           <div class="item" @click="changeAlign('right')">
             <svg class="icon" aria-hidden="true">
-              <use xlink:href="#icon-a-ziyuan109"></use>
+              <use xlink:href="#icon-a-ziyuan449"></use>
             </svg>
           </div>
           <div class="item" @click="changeAlign('top')">
             <svg class="icon" aria-hidden="true">
-              <use xlink:href="#icon-a-ziyuan106"></use>
+              <use xlink:href="#icon-a-ziyuan446"></use>
             </svg>
           </div>
           <div class="item" @click="changeAlign('middle')">
             <svg class="icon" aria-hidden="true">
-              <use xlink:href="#icon-a-ziyuan103"></use>
+              <use xlink:href="#icon-a-ziyuan443"></use>
             </svg>
           </div>
           <div class="item" @click="changeAlign('bottom')">
             <svg class="icon" aria-hidden="true">
-              <use xlink:href="#icon-a-ziyuan105"></use>
+              <use xlink:href="#icon-a-ziyuan445"></use>
             </svg>
           </div>
         </div>
@@ -42,12 +42,12 @@
         <div class="group_content">
           <div class="item" @click="doAutoPos(2)">
             <svg class="icon" aria-hidden="true">
-              <use xlink:href="#icon-a-ziyuan107"></use>
+              <use xlink:href="#icon-a-ziyuan447"></use>
             </svg>
           </div>
           <div class="item" @click="doAutoPos(1)">
             <svg class="icon" aria-hidden="true">
-              <use xlink:href="#icon-a-ziyuan108"></use>
+              <use xlink:href="#icon-a-ziyuan448"></use>
             </svg>
           </div>
         </div>
@@ -213,7 +213,7 @@ export default {
         }
 
         .icon {
-          font-size: 20px;
+          font-size: 28px;
         }
 
       }

@@ -222,7 +222,7 @@ export default {
   groups: [
     {
       name: "样式",
-      icon: 'icon-a-ziyuan211',
+      icon: 'icon-a-ziyuan375',
       subGroups: [
 
         {
@@ -235,7 +235,7 @@ export default {
     },
     {
       name: "属性",
-      icon: 'icon-a-ziyuan26',
+      icon: 'icon-a-ziyuan409',
       subGroups: [
         {
           name: "属性",

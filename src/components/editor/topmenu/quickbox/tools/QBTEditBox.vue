@@ -2,7 +2,9 @@
   <div
     :class="{ 'ddei_editor_quick_fat_item_box': true, 'ddei_editor_quick_fat_item_box_selected': value, 'ddei_editor_quick_fat_item_box_disabled': !attrDefine }"
     @click="attrDefine && valueChange($event)">
-    <span :class="img"></span>
+    <svg :class="'icon ' + (extcls ? extcls : '')" aria-hidden="true">
+      <use :xlink:href="'#' + img"></use>
+    </svg>
   </div>
 </template>
 
@@ -40,6 +42,10 @@ export default {
       default: null,
     },
     img: {
+      type: String,
+      default: null,
+    },
+    extcls: {
       type: String,
       default: null,
     },
@@ -228,15 +234,30 @@ export default {
 
 <style lang="less" scoped>
 .ddei_editor_quick_fat_item_box {
-  width: 15px;
+  width: 24px;
   display: flex;
   justify-content: center;
   align-items: center;
+}
 
+.rotate-90 {
+  transform: rotate(90deg);
+}
 
-  .iconfont {
-    font-size: 14px;
-  }
+.colorred {
+  color: red
+}
+
+.magtop-1 {
+  margin-top: -1px;
+}
+
+.magtop-2 {
+  margin-top: -2px;
+}
+
+.magtop-3 {
+  margin-top: -3px;
 }
 
 .ddei_editor_quick_fat_item_box:hover {

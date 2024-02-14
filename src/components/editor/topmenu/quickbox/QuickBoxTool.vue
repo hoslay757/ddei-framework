@@ -5,21 +5,27 @@
       <div class="part">
         <div :class="{ 'button-v-selected': editor?.editMode == 1, 'button-v': editor?.editMode != 1 }" title="选择"
           @click="changeEditMode(1)">
-          <span class="iconfont icon-a-ziyuan18"></span>
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan432"></use>
+          </svg>
           <div class="text">选择</div>
         </div>
       </div>
       <div class="part">
         <div :class="{ 'button-v-selected': editor?.editMode == 2, 'button-v': editor?.editMode != 2 }" title="平移画布"
           @click="changeEditMode(2)">
-          <span class="iconfont icon-a-ziyuan59"></span>
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan431"></use>
+          </svg>
           <div class="text">平移画布</div>
         </div>
       </div>
       <div class="part">
         <div :class="{ 'button-v-selected': editor?.editMode == 4, 'button-v': editor?.editMode != 4 }" title="连接线"
           @click="changeEditMode(4)">
-          <span class="iconfont icon-tubiaozhizuomoban-01"></span>
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan430"></use>
+          </svg>
           <div class="text">连接线</div>
         </div>
       </div>
@@ -91,6 +97,7 @@ export default {
         flex: 1;
         height: 50px;
         border-radius: 4px;
+        align-items: center;
       }
 
       .button-v:hover {
@@ -105,6 +112,7 @@ export default {
         height: 50px;
         background-color: #e6e6e6;
         border-radius: 4px;
+        align-items: center;
       }
 
       .button-v-disabled {
@@ -114,6 +122,7 @@ export default {
         flex-direction: column;
         height: 50px;
         cursor: not-allowed;
+        align-items: center;
 
         >span {
           color: #bcbcbc;

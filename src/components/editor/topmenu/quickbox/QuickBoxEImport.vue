@@ -4,19 +4,25 @@
     <div class="content">
       <div class="part">
         <div class="button-v" @click="openFile">
-          <span class="iconfont icon-a-ziyuan56"></span>
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan423"></use>
+          </svg>
           <div class="text">导出</div>
         </div>
       </div>
       <div class="part">
         <div class="button-v" @click="download">
-          <span class="iconfont icon-a-ziyuan66"></span>
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan424"></use>
+          </svg>
           <div class="text">下载</div>
         </div>
       </div>
       <div class="part">
         <div class="button-v" @click="publish">
-          <span class="iconfont icon-a-ziyuan116"></span>
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan425"></use>
+          </svg>
           <div class="text">发布</div>
         </div>
       </div>
@@ -132,6 +138,7 @@ export default {
         border-radius: 4px;
         display: flex;
         flex-direction: column;
+        align-items: center;
       }
 
       .button-v:hover {
@@ -146,6 +153,7 @@ export default {
         border-radius: 4px;
         display: flex;
         flex-direction: column;
+        align-items: center;
       }
 
       .button-v-disabled {
@@ -154,6 +162,7 @@ export default {
         cursor: not-allowed;
         display: flex;
         flex-direction: column;
+        align-items: center;
 
         >span {
           color: #bcbcbc;

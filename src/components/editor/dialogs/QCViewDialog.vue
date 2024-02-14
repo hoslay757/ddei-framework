@@ -2,7 +2,9 @@
   <div :id="dialogId" class="qcview_dialog">
     <div class="items">
       <div class="item" :title="item.text" v-for="item in dataSource" @click="ok(item)">
-        <span :class="item.img"></span>
+        <svg class="icon" aria-hidden="true">
+          <use :xlink:href="item.img"></use>
+        </svg>
         <div>{{ item.text }}</div>
       </div>
     </div>
@@ -65,13 +67,8 @@ export default {
   height: 34px;
 
 
-  .iconfont {
-    font-size: 12px;
-  }
-
-  .iconfont-small {
-    margin-left: 4px;
-    font-size: 4px !important;
+  .icon {
+    font-size: 18px;
   }
 
   .items {
@@ -81,11 +78,6 @@ export default {
       display: flex;
       justify-content: center;
       align-items: center;
-
-      .iconfont {
-        flex: 0 0 20px;
-        padding: 0 5px;
-      }
 
       >div {
         color: black;

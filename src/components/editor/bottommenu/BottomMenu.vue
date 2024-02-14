@@ -1,7 +1,9 @@
 <template>
   <div id="ddei_editor_bottommenu" class="ddei_editor_bottommenu" @mousedown="changeEditorFocus">
     <div class="ddei_editor_bottommenu_addpage" @click="newSheet" v-if="allowOpenMultSheets">
-      <span class="iconfont icon-a-ziyuan148"></span>
+      <svg class="icon" aria-hidden="true">
+        <use xlink:href="#icon-a-ziyuan376"></use>
+      </svg>
     </div>
     <div class="ddei_editor_bottommenu_pages">
       <div class="ddei_editor_bottommenu_page" v-if="!editor">
@@ -18,11 +20,15 @@
 
       <div class="ddei_editor_bottommenu_pages_movebox"
         v-show="editor?.files[editor?.currentFileIndex]?.sheets?.length > maxOpenSize" @click="moveItem(-1)">
-        <span class="iconfont icon-a-ziyuan74"></span>
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-a-ziyuan481"></use>
+        </svg>
       </div>
       <div class="ddei_editor_bottommenu_pages_movebox"
         v-show="editor?.files[editor?.currentFileIndex]?.sheets?.length > maxOpenSize" @click="moveItem(1)">
-        <span class="iconfont icon-a-ziyuan73"></span>
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-a-ziyuan480"></use>
+        </svg>
       </div>
     </div>
 
@@ -31,11 +37,15 @@
     </div>
 
     <div class="ddei_editor_bottommenu_layers" v-if="allowOpenMultLayers" @click="showLayersDialog($event)">
-      <span class="iconfont icon-a-ziyuan58"></span>
+      <svg class="icon" aria-hidden="true">
+        <use xlink:href="#icon-a-ziyuan402"></use>
+      </svg>
     </div>
 
     <div class="ddei_editor_bottommenu_other_play">
-      <span class="iconfont icon-a-ziyuan117"></span>
+      <svg class="icon" aria-hidden="true">
+        <use xlink:href="#icon-a-ziyuan379"></use>
+      </svg>
     </div>
 
 
@@ -44,19 +54,27 @@
         <span>
           {{ parseInt(currentStage?.ratio * 100) }}%
         </span>
-        <span class="iconfont icon-zhankai-01"></span>
+        <svg class="icon expbtn" aria-hidden="true">
+          <use xlink:href="#icon-a-ziyuan466"></use>
+        </svg>
       </div>
       <div @click="addRatio(-0.05)">
-        <span class="iconfont icon-a---01"></span>
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-a-ziyuan420"></use>
+        </svg>
       </div>
       <input type="range" min="0.1" max="4" step="0.1" v-model="stageRatio" />
       <div @click="addRatio(0.05)">
-        <span class="iconfont icon-a--01"></span>
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-a-ziyuan376"></use>
+        </svg>
       </div>
     </div>
 
     <div class="ddei_editor_bottommenu_all_page_ratio" v-if="allowStageRatio" @click="autoRatio(1)" title="整页">
-      <span class="iconfont icon-a-ziyuan182"></span>
+      <svg class="icon" aria-hidden="true">
+        <use xlink:href="#icon-a-ziyuan391"></use>
+      </svg>
     </div>
   </div>
 </template>
@@ -620,8 +638,12 @@ export default {
 </script>
 
 <style scoped>
-.iconfont {
-  font-size: 16px;
+.icon {
+  font-size: 22px;
+}
+
+.expbtn {
+  font-size: 14px;
 }
 
 .ddei_editor_bottommenu {
@@ -634,11 +656,11 @@ export default {
 }
 
 .ddei_editor_bottommenu_addpage {
-  flex: 0 0 50px;
+  flex: 0 0 40px;
   display: flex;
   justify-content: center;
   align-items: center;
-  border-right: 1px solid rgb(235, 235, 235);
+  margin-left: 10px;
 }
 
 .ddei_editor_bottommenu_pages {

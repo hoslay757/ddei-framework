@@ -210,7 +210,7 @@ export default {
   groups: [
     {
       name: "样式",
-      icon: 'icon-a-ziyuan124',
+      icon: 'icon-a-ziyuan418',
       subGroups: [
         {
           name: "纸张",
