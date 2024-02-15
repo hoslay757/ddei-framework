@@ -200,6 +200,7 @@ class DDeiStageCanvasRender {
       let hpoint = this.helpLines.hpoint;
       let vpoint = this.helpLines.vpoint;
       let rect = this.helpLines.rect;
+
       //获得 2d 上下文对象
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
@@ -246,7 +247,7 @@ class DDeiStageCanvasRender {
           //基准每个部分的大小
           let marginWeight = unitWeight * stageRatio
 
-          if (this.operateState == DDeiEnumOperateState.CONTROL_DRAGING) {
+          if (this.operateState == DDeiEnumOperateState.CONTROL_DRAGING || this.operateState == DDeiEnumOperateState.CONTROL_CREATING) {
             xText = (rect.x * rat1 - startBaseX) / marginWeight * rulerConfig.size
             yText = (rect.y * rat1 - startBaseY) / marginWeight * rulerConfig.size
           } else if (this.operateState == DDeiEnumOperateState.CONTROL_CHANGING_BOUND) {
