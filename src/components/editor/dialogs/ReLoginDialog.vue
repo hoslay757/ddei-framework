@@ -220,6 +220,7 @@ export default {
       font-size: 18px;
       float: left;
       text-align: right;
+      color: black;
     }
 
     .content_right_login_form_input {

@@ -199,9 +199,19 @@ export default {
           }
         }
 
+        //如果dialog未关闭就直接触发了canvas的mousedown事件，此时不下发mousedown，只关闭dialog和修改状态
+        let isDialogOpen = false;
+        for (let oid in DDeiEditor.ACTIVE_INSTANCE.tempDialogData) {
+          if (DDeiEditor.ACTIVE_INSTANCE.tempDialogData[oid]) {
+            isDialogOpen = true
+            break;
+          }
+        }
         this.changeEditorFocus();
         this.editor.ddInstance.state = DDeiEnumState.NONE;
-        this.editor.ddInstance.render.mouseDown(evt);
+        if (!isDialogOpen) {
+          this.editor.ddInstance.render.mouseDown(evt);
+        }
       }
     },
 

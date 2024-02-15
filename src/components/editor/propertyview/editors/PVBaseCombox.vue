@@ -97,10 +97,9 @@ export default {
     },
 
     //打开弹出框
-    showDialog(show: boolean = false, evt) {
-      let dialog = document.getElementById(
-        this.getShowDialogId(this.attrDefine.code)
-      );
+    showDialog(show: boolean = false, evt: Event) {
+      let dialogId = this.getShowDialogId(this.attrDefine.code)
+      let dialog = document.getElementById(dialogId);
       let haveElement = false;
       for (let i = 0; i < document.body.children.length; i++) {
         if (document.body.children[i] == dialog) {
@@ -127,9 +126,17 @@ export default {
         dialog.style.top = position.top + attrEditor.offsetHeight + "px";
 
         this.expanded = true;
+        if (!DDeiEditor.ACTIVE_INSTANCE.tempDialogData) {
+          DDeiEditor.ACTIVE_INSTANCE.tempDialogData = {}
+        }
+        //记录临时变量
+        DDeiEditor.ACTIVE_INSTANCE.tempDialogData[dialogId] = { group: "property-dialog" }
       } else {
         dialog.style.display = "none";
         this.expanded = false;
+        if (DDeiEditor.ACTIVE_INSTANCE.tempDialogData) {
+          DDeiEditor.ACTIVE_INSTANCE.tempDialogData[dialogId] = null
+        }
       }
     },
 
