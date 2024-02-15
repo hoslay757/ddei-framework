@@ -573,6 +573,7 @@ class DDeiEditorUtil {
     let backEle = document.getElementById("dialog_background_div");
     backEle.style.background = "none"
     backEle.style.display = "none";
+    DDeiEditor.ACTIVE_INSTANCE.changeState(DDeiEditorState.DESIGNING);
   }
 
   static closeDialogs(groups: string[]) {
