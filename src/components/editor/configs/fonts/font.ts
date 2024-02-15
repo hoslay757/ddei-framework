@@ -422,34 +422,29 @@ const fontTypes = {
 const rootFontFamily = (document.documentElement.currentStyle ? document.documentElement.currentStyle : window.getComputedStyle(document.documentElement)).fontFamily;
 //支持的字体
 const FONTS = []
-for (let key in fontTypes) {
-  let fontType = fontTypes[key];
-  fontType.forEach(font => {
-    let fontEn = font.en, fontCh = font.ch;
-    // 检测是否为系统默认字体
-
-    // let support = document.fonts.check("14px '" + fontEn + "'", "Abc123")
-    // let support = isSupportFontFamily(fontEn)
-    // if (support) {
-    //   if (fontEn.toLowerCase() === rootFontFamily.toLowerCase() || ("\"" + fontEn + "\"").toLowerCase() === rootFontFamily.toLowerCase()
-    //     || fontCh.toLowerCase() === rootFontFamily.toLowerCase() || ("\"" + fontCh + "\"").toLowerCase() === rootFontFamily.toLowerCase()) {
-    //     font.isSystemDefault = true;
-    //   }
-    //   //加入数据源
-    //   FONTS.push(font)
-    // }
-    isSupportFontFamilySync(fontEn).then(support => {
-      if (support) {
-        if (fontEn.toLowerCase() === rootFontFamily.toLowerCase() || ("\"" + fontEn + "\"").toLowerCase() === rootFontFamily.toLowerCase()
-          || fontCh.toLowerCase() === rootFontFamily.toLowerCase() || ("\"" + fontCh + "\"").toLowerCase() === rootFontFamily.toLowerCase()) {
-          font.isSystemDefault = true;
+const loadFonts = function () {
+  for (let key in fontTypes) {
+    let fontType = fontTypes[key];
+    fontType.forEach(font => {
+      let fontEn = font.en, fontCh = font.ch;
+      isSupportFontFamilySync(fontEn).then(support => {
+        if (support) {
+          if (fontEn.toLowerCase() === rootFontFamily.toLowerCase() || ("\"" + fontEn + "\"").toLowerCase() === rootFontFamily.toLowerCase()
+            || fontCh.toLowerCase() === rootFontFamily.toLowerCase() || ("\"" + fontCh + "\"").toLowerCase() === rootFontFamily.toLowerCase()) {
+            font.isSystemDefault = true;
+          }
+          //加入数据源
+          FONTS.push(font)
         }
-        //加入数据源
-        FONTS.push(font)
-      }
-    })
-  });
-};
+      })
+    });
+  };
+}
+
+setTimeout(() => {
+  loadFonts()
+}, 500);
+
 
 export default FONTS;
 
