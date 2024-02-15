@@ -477,6 +477,7 @@ class DDeiStageCanvasRender {
             if (this.model.layers[l].tempDisplay) {
               topDisplayIndex = l;
             } else if (this.model.layers[l].display == 1) {
+
               this.model.layers[l].render.drawBackground(posX + (i * paperWidth), posY + (j * paperHeight), paperWidth, paperHeight);
             }
           }

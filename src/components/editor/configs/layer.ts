@@ -24,9 +24,9 @@ export default {
       'controlType': 'radio',
       'dataType': 'string',
       'dataSource': [{ 'text': '无', 'value': 0 }, { 'text': '纯色', 'value': 1 }, { 'text': '图片', 'value': 2 }],
-      'defaultValue': 0,
+      'defaultValue': 1,
       'type': 1,
-      'cascadeDisplay': { 1: { show: ['bg.color'], hidden: ['bg.image', 'bg.imageMode', 'bg.imageScale', 'bg.imageAlign'] }, 2: { show: ['bg.image', 'bg.imageMode', 'bg.imageScale', 'bg.imageAlign'], hidden: ['bg.color'] }, empty: { hidden: ['bg.image', 'bg.imageMode', 'bg.imageScale', 'bg.imageAlign'] } },
+      'cascadeDisplay': { 1: { show: ['bg.color', 'bg.opacity'], hidden: ['bg.image', 'bg.imageMode', 'bg.imageScale', 'bg.imageAlign'] }, 2: { show: ['bg.image', 'bg.imageMode', 'bg.imageScale', 'bg.imageAlign'], hidden: ['bg.color'] }, 0: { hidden: ['bg.opacity', 'bg.color', 'bg.image', 'bg.imageMode', 'bg.imageScale', 'bg.imageAlign'] }, default: { show: ['bg.color', 'bg.opacity'], hidden: ['bg.image', 'bg.imageMode', 'bg.imageScale', 'bg.imageAlign'] } },
       'hiddenTitle': true,
       'display': 'column',
 

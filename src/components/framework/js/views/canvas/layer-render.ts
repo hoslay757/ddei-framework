@@ -142,6 +142,7 @@ class DDeiLayerCanvasRender {
       //根据背景的设置绘制图层
       //获取属性配置
       let bgInfoType = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.type", true);
+
       // 绘制纯色背景
       if (bgInfoType == 1) {
         let bgInfoColor = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.color", true);
