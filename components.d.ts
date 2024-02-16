@@ -15,6 +15,8 @@ declare module 'vue' {
     AModal: typeof import('ant-design-vue/es')['Modal']
     APagination: typeof import('ant-design-vue/es')['Pagination']
     ATextarea: typeof import('ant-design-vue/es')['Textarea']
+    ATree: typeof import('ant-design-vue/es')['Tree']
+    ATreeSelect: typeof import('ant-design-vue/es')['TreeSelect']
     BottomMenu: typeof import('./src/components/editor/bottommenu/BottomMenu.vue')['default']
     CanvasView: typeof import('./src/components/editor/canvasview/CanvasView.vue')['default']
     ChangeRatioDialog: typeof import('./src/components/editor/dialogs/ChangeRatioDialog.vue')['default']

@@ -8,9 +8,7 @@
         <DirTree ref="dirTree" />
       </div>
       <div class="ddei_home_middle_right">
-        <FileList v-if="refreshFileList"
-                  ref="fileList"
-                  @create-folder="onCreateFolder" />
+        <FileList ref="fileList" @create-folder="onCreateFolder" />
       </div>
     </div>
   </div>
@@ -43,10 +41,7 @@ export default {
   },
   methods: {
     forceRefreshFileList() {
-      this.refreshFileList = false;
-      this.$nextTick(() => {
-        this.refreshFileList = true;
-      });
+      this.$refs.fileList?.listFile(1)
     },
 
     /**
@@ -67,7 +62,7 @@ export default {
         });
     },
 
-    onCreateFolder () {
+    onCreateFolder() {
       this.$refs.dirTree?.createFolder()
     }
   },
@@ -98,8 +93,10 @@ export default {
 }
 
 .ddei_home_middle_left {
-  flex: 0 0 300px;
-  padding-left: 20px;
+  // flex: 0 0 300px;
+  width: 280px;
+  padding-left: 10px;
+
 }
 
 .ddei_home_middle_right {

@@ -12,8 +12,7 @@
           +
         </div>
       </div>
-      <div class="ddei_home_fileview_operate ddei_home_fileview_operate_file_add"
-           @click="showFileDialog(null, 1)">
+      <div class="ddei_home_fileview_operate ddei_home_fileview_operate_file_add" @click="showFileDialog(null, 1)">
         <div class="ddei_home_fileview_operate_icon">
           <img src="@/assets/images/icon-file-add.png" />
         </div>
@@ -44,9 +43,7 @@
           <span style="margin-top:-5px">+</span>
         </div>
       </div> -->
-      <div v-for="(file) in files"
-           :key="file.id"
-           class="ddei_home_fileview_file">
+      <div v-for="(file) in files" :key="file.id" class="ddei_home_fileview_file">
         <div class="ddei_home_fileview_file_header">
           <div class="ddei_home_fileview_file_icon">
             <img src="@/components/editor/icons/icon-file-list-item.png">
@@ -57,7 +54,8 @@
             {{ file.code }}
           </div>
            -->
-          <div :class="{'ddei_home_fileview_file_version': true, 'ddei_home_fileview_file_version_published':file.publish == 1}">
+          <div
+            :class="{ 'ddei_home_fileview_file_version': true, 'ddei_home_fileview_file_version_published': file.publish == 1 }">
             v{{ file.version }}
           </div>
           <div class="ddei_home_fileview_file_update">
@@ -71,60 +69,46 @@
         </div>
         <div class="ddei_home_fileview_file_buttons">
           <div class="ddei_home_fileview_file_button">
-            <img src="../../components/editor/icons/icon-file.png"
-                 @click="showFileDialog(file, 2)" />
+            <img src="../../components/editor/icons/icon-file.png" @click="showFileDialog(file, 2)" />
           </div>
           <div class="ddei_home_fileview_file_button_split">
           </div>
           <div class="ddei_home_fileview_file_button">
-            <img src="../../components/editor/icons/icon-style-line.png"
-                 @click="gotoDesign(file)" />
+            <img src="../../components/editor/icons/icon-style-line.png" @click="gotoDesign(file)" />
           </div>
           <div class="ddei_home_fileview_file_button_split">
           </div>
           <div class="ddei_home_fileview_file_button">
-            <img src="../../components/editor/icons/icon-copy.png"
-                 @click="copyFile(file)" />
+            <img src="../../components/editor/icons/icon-copy.png" @click="copyFile(file)" />
           </div>
           <div class="ddei_home_fileview_file_button_split">
           </div>
           <div class="ddei_home_fileview_file_button">
-            <img src="../../components/editor/icons/icon-trash.png"
-                 @click="deleteFile(file)" />
+            <img src="../../components/editor/icons/icon-trash.png" @click="deleteFile(file)" />
           </div>
         </div>
       </div>
     </div>
-    <APagination v-model:current="page.num"
-                 :total="page.total"
-                 show-less-items
-                 class="m-h-auto m-t-10"
-                 @change="listFile" />
+    <APagination v-model:current="page.num" :total="page.total" show-less-items class="m-h-auto m-t-10"
+      @change="listFile" />
   </div>
-  <AModal v-model:open="fileDialog.open"
-          :title="(fileDialog.mod == 1 ? '创建' : '修改') + '文件'"
-          :ok-button-props="{ loading: fileDialog.saving }"
-          width="400px"
-          @ok="submitFile()">
-    <AForm ref="form"
-           :model="fileDialog.formData"
-           :rules="fileDialog.formRules"
-           autocomplete="off"
-           class="m-t-20">
+  <AModal v-model:open="fileDialog.open" :title="(fileDialog.mod == 1 ? '创建' : '修改') + '文件'"
+    :ok-button-props="{ loading: fileDialog.saving }" width="400px" @ok="submitFile()">
+    <AForm ref="form" :model="fileDialog.formData" :rules="fileDialog.formRules" autocomplete="off" class="m-t-20">
       <AFormItem name="name">
-        <AInput v-model:value="fileDialog.formData.name"
-                placeholder="文件名"
-                clearable></AInput>
+        <AInput v-model:value="fileDialog.formData.name" placeholder="文件名" clearable></AInput>
       </AFormItem>
       <AFormItem name="code">
-        <AInput v-model:value="fileDialog.formData.code"
-                placeholder="编码"
-                clearable></AInput>
+        <AInput v-model:value="fileDialog.formData.code" placeholder="编码" clearable></AInput>
+      </AFormItem>
+      <AFormItem name="folder_id">
+        <ATreeSelect v-model:value="fileDialog.formData.folder_id" show-search style="width: 100%"
+          :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }" placeholder="所属目录" allow-clear
+          tree-default-expand-all :tree-data="folderSelectTreeData" :field-names="treeFieldNames"
+          tree-node-filter-prop="label"></ATreeSelect>
       </AFormItem>
       <AFormItem name="desc">
-        <ATextarea v-model:value="fileDialog.formData.desc"
-                   placeholder="备注"
-                   :rows="4" />
+        <ATextarea v-model:value="fileDialog.formData.desc" placeholder="备注" :rows="4" />
       </AFormItem>
     </AForm>
   </AModal>
@@ -132,14 +116,16 @@
 
 <script type="ts">
 import Cookies from 'js-cookie'
-import { listfile, createfile, savefilebasic, removefile, copyfile } from "@/lib/api/file";
-import ICONS from '../../components/editor/js/icon';
+import { listfile, createfile, savefilebasic, removefile, copyfile } from "@/lib/api/file"
+import ICONS from '../../components/editor/js/icon'
 import { debounce } from 'lodash'
 import { createVNode } from 'vue'
-import { message, Modal } from 'ant-design-vue';
+import { message, Modal } from 'ant-design-vue'
 
 export default {
   name: 'DDei-Home-Filelist',
+  emits: ['createFolder'],
+  expose: ['listFile'],
   props: {
 
   },
@@ -175,13 +161,16 @@ export default {
       files: [
 
       ],
+      folderSelectTreeData: [],
+      menuTreeExpandedKeys: ['0'],
+      treeFieldNames: { children: 'children', key: 'id', title: 'name', label: 'name', value: 'id' },
       queryText: "",
       page: { size: 11, num: 1, total: 0 }
     }
   },
   created () { },
   mounted () {
-    this.listFile();
+    this.listFile()
   },
   methods: {
 
@@ -192,7 +181,7 @@ export default {
       this.$router.push({
         path: '/design/' + file.id,
 
-      });
+      })
     },
 
     deleteFile (file) {
@@ -210,7 +199,7 @@ export default {
             }
           }
         }
-      });
+      })
     },
 
     copyFile (file) {
@@ -227,7 +216,7 @@ export default {
             }
           }
         }
-      });
+      })
     },
 
     /**
@@ -236,16 +225,16 @@ export default {
     calPages () {
       let pageCount = parseInt(this.page.total / this.page.size) + (this.page.total % this.page.size == 0 ? 0 : 1)
 
-      let pages = [];
+      let pages = []
       //计算开始页码和结束页码
       if (pageCount <= 7) {
         for (let i = 1; i <= pageCount; i++) {
           pages.push({ type: 1, idx: i })
         }
       } else {
-        let left = this.page.num - 1;
+        let left = this.page.num - 1
 
-        let basesize = 4;
+        let basesize = 4
         let appendRight = 0
         if (left > basesize) {
           pages.push({ type: 1, idx: 1 })
@@ -278,7 +267,7 @@ export default {
 
       }
       this.page.count = pageCount
-      this.pages = pages;
+      this.pages = pages
     },
 
     /**
@@ -286,7 +275,7 @@ export default {
      */
     async listFile (pageNumber) {
       if (pageNumber) {
-        this.page.num = pageNumber;
+        this.page.num = pageNumber
       } else if (pageNumber > this.page.count) {
         this.page.num = this.page.count
       } else if (pageNumber < 1) {
@@ -299,7 +288,7 @@ export default {
       this.files = listData
       this.page.total = fileData.data.data.count
       //计算分页和页码信息
-      this.calPages();
+      this.calPages()
     },
 
     checkFileName (rule, value, cb) {
@@ -307,11 +296,11 @@ export default {
         cb('请输入文件名')
         return
       }
-      let uPattern = /^[\u4e00-\u9fa5a-zA-Z0-9_-]{1,15}$/;
-        if (!uPattern.test(value)) {
-          cb("文件名为1至15位中文、字母、数字下划线组合");
-          return
-        }
+      let uPattern = /^[\u4e00-\u9fa5a-zA-Z0-9_-]{1,15}$/
+      if (!uPattern.test(value)) {
+        cb("文件名为1至15位中文、字母、数字下划线组合")
+        return
+      }
       cb()
     },
 
@@ -320,11 +309,11 @@ export default {
         cb()
         return
       }
-      let uPattern = /^[a-zA-Z0-9_.-]{0,20}$/;
-        if (!uPattern.test(value)) {
-          cb("编码为0至20位字母、数字、_.组合");
-          return
-        }
+      let uPattern = /^[a-zA-Z0-9_.-]{0,20}$/
+      if (!uPattern.test(value)) {
+        cb("编码为0至20位字母、数字、_.组合")
+        return
+      }
       cb()
     },
 
@@ -334,7 +323,7 @@ export default {
         return
       }
       if (value.length > 50) {
-        cb("描述请稍微简短一点, 不要超过50个字");
+        cb("描述请稍微简短一点, 不要超过50个字")
         return
       }
       cb()
@@ -345,7 +334,7 @@ export default {
      */
     submitFile () {
       this.$refs.form.validate().then(async () => {
-        let fileData = null;
+        let fileData = null
         this.fileDialog.saving = true
         if (this.fileDialog.mod == 1) {
           fileData = await createfile(this.fileDialog.formData)
@@ -358,7 +347,7 @@ export default {
             message.success('保存成功')
             //刷新列表
             this.listFile(this.page.num)
-            this.fileDialog.open = false;
+            this.fileDialog.open = false
           }
         }
         this.fileDialog.saving = false
@@ -372,11 +361,12 @@ export default {
     * 弹出新文件的弹出框
     */
     showFileDialog (file, mod) {
+      this.folderSelectTreeData = this.$parent.$refs["dirTree"]?.getFolderTreeData()
       this.fileDialog.open = true
       this.fileDialog.mod = mod
       let formData = Object.assign({}, file)
 
-      this.curFile = file;
+      this.curFile = file
       let curFolder = this.$parent.$refs["dirTree"]?.getCurrentFolder()
       let fid = curFolder?.id || "0"
       formData.folder_id = fid
@@ -387,7 +377,7 @@ export default {
      */
     getFileLastTime (file) {
       if (file?.last_update_time) {
-        let date = file.last_update_time;
+        let date = file.last_update_time
 
         if (date && date.length > 10 && date.indexOf("-") != -1) {
           let d = date.substring(date.indexOf("-") + 1, date.indexOf("T"))
@@ -397,7 +387,7 @@ export default {
           return d
         }
       }
-      return "";
+      return ""
     },
     onCreateFolderClick () {
       this.$emit('create-folder')
@@ -568,10 +558,10 @@ export default {
 }
 
 .ddei_home_fileview_divide {
-    display: block;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #CED4DD;
+  display: block;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #CED4DD;
 }
 
 .ddei_home_fileview_operate {
@@ -617,10 +607,10 @@ export default {
     flex: 1;
   }
 
-   &_plus {
+  &_plus {
     color: #FFFFFF;
     font-size: 28px;
     font-weight: bold;
-   }
+  }
 }
 </style>

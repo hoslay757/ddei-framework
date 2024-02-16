@@ -1,67 +1,108 @@
 <template>
-  <div class="ddei_home_dir_tree">
-    <div v-for="folder in folders"
-         :key="folder.id"
-         class="ddei_home_dir_tree_node">
-      <div :class="{'ddei_home_dir_tree_node_content':true, 'selected':folder.isCurrent}"
-           :style="{paddingLeft: `${folder.level * 25}px`}"
-           v-show="folder.isShow">
-        <img class="ddei_home_dir_tree_node_icon"
-             v-show="folder.hasChildren"
-             :src="folder.expaned?icons['toolbox-expanded'] :icons['icon-tree-unexpaned']"
-             @click="expandTree(folder)" />
-        <span @click="setCurrentFolder(folder)">{{folder.name}}</span>
-        <div class="ddei_home_dir_tree_node_buttons">
-          <img src="../../components/editor/icons/icon-plus-circle.png"
-               title="新建子目录"
-               @click="showFolderDialog(folder,1)" />
-          <img src="../../components/editor/icons/icon-style-line.png"
-               title="重命名"
-               @click="showFolderDialog(folder,2)"
-               v-show="folder.id != '0'" />
-          <img src="../../components/editor/icons/icon-trash.png"
-               title="移入回收站"
-               @click="deleteFolder(folder)"
-               v-show="folder.id != '0'" />
-        </div>
+  <div class="ddei_home_dir_tree_wrapper">
+    <!-- 固定目录 -->
+    <div class="ddei_home_dir_tree">
+      <div v-for="folder in menus" class="ddei_home_dir_tree_node" :class="{ 'is-active': folder.id === curMenu?.id }"
+        @click="setCurrentMenu(folder)">
+        <img v-if="folder.icon" class="ddei_home_dir_tree_node_icon" :src="folder.icon" />
+        <div class="ddei_home_dir_tree_node_title">{{ folder.name }}</div>
       </div>
     </div>
+
+    <!-- 知识库目录 -->
+    <ATree v-model:selectedKeys="menuTreeSelectedKeys" v-model:expandedKeys="menuTreeExpandedKeys"
+      class="ddei_home_dir_tree" block-node :tree-data="folderTreeData" :field-names="treeFieldNames"
+      @select="setCurrentFolder">
+      <template #title="folder">
+        <div class="ddei_home_dir_tree_node">
+          <img v-if="folder.icon" class="ddei_home_dir_tree_node_icon" :src="folder.icon" />
+          <div v-else class="ddei_home_dir_tree_node_icon__point"></div>
+          <div class="ddei_home_dir_tree_node_title">{{ folder.name }}</div>
+          <div class="ddei_home_dir_tree_node_buttons">
+            <img src="../../components/editor/icons/icon-plus-circle.png" title="新建子目录"
+              class="ddei_home_dir_tree_node_button" @click.stop="showFolderDialog(folder, 1)" />
+            <img v-if="folder.id !== '0'" src="../../components/editor/icons/icon-style-line.png" title="修改"
+              class="ddei_home_dir_tree_node_button" @click.stop="showFolderDialog(folder, 2)" />
+            <img v-if="folder.id !== '0'" src="../../components/editor/icons/icon-trash.png" title="删除"
+              class="ddei_home_dir_tree_node_button" @click.stop="deleteFolder(folder)" />
+          </div>
+        </div>
+      </template>
+    </ATree>
   </div>
 
-  <AModal v-model:open="folderDialog.open"
-          :title="(folderDialog.mod == 1 ? '创建' : '修改') + '目录'"
-          :ok-button-props="{ loading: folderDialog.saving }"
-          width="400px"
-          @ok="sumbitFolder()">
-    <AForm ref="form"
-           :model="folderDialog.formData"
-           :rules="folderDialog.formRules"
-           autocomplete="off"
-           class="m-t-20">
+  <AModal v-model:open="folderDialog.open" :title="(folderDialog.mod == 1 ? '创建' : '修改') + '目录'"
+    :ok-button-props="{ loading: folderDialog.saving }" width="400px" @ok="sumbitFolder()">
+    <AForm ref="form" :model="folderDialog.formData" :rules="folderDialog.formRules" autocomplete="off" class="m-t-20">
       <AFormItem name="name">
-        <AInput v-model:value="folderDialog.formData.name"
-                placeholder="目录名"
-                clearable></AInput>
+        <AInput v-model:value="folderDialog.formData.name" placeholder="目录名" clearable></AInput>
+      </AFormItem>
+      <AFormItem name="parent_id">
+        <ATreeSelect v-model:value="folderDialog.formData.parent_id" show-search style="width: 100%"
+          :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }" placeholder="父目录" allow-clear tree-default-expand-all
+          :tree-data="folderSelectTreeData" :field-names="treeFieldNames" tree-node-filter-prop="label"></ATreeSelect>
       </AFormItem>
     </AForm>
   </AModal>
 </template>
 
 <script type="ts">
-import { createVNode } from 'vue';
-import { loadfolder, createfolder, removefolder, renamefolder } from "@/lib/api/folder";
-import ICONS from '../../components/editor/js/icon';
-import { debounce } from 'lodash';
-import { message, Modal } from 'ant-design-vue';
+import { createVNode } from 'vue'
+import { loadfolder, createfolder, removefolder, renamefolder } from "@/lib/api/folder"
+import ICONS from '../../components/editor/js/icon'
+import { debounce, cloneDeep } from 'lodash'
+import { message, Modal } from 'ant-design-vue'
+// 引入图标
+import IconHomeBlack from '@/components/editor/icons/icon-home-black.png'
+import IconMenuBlack from '@/components/editor/icons/icon-menu-black.png'
+import IconFolderBlack from '@/components/editor/icons/icon-folder-black.png'
+import IconTrash from '@/components/editor/icons/icon-trash.png'
+import IconDocumentBlack from '@/components/editor/icons/icon-document-black.png'
 
 export default {
   name: 'DDei-Home-Dir-Tree',
+  expose: ['createFolder', 'getCurrentFolder', 'setCurrentFolder', 'getFolderTreeData'],
   props: {
 
   },
   data () {
+    let rootFolder = { name: "知识库", id: "0", icon: IconDocumentBlack, isShow: true, allowDelete: false, allowModify: false }
     return {
-      folders: [],
+      menus: [
+        {
+          id: 'Main',
+          name: '主页',
+          icon: IconHomeBlack,
+          visible: true
+        },
+        {
+          id: 'All',
+          name: '全部',
+          icon: IconMenuBlack,
+          visible: true
+        },
+        {
+          id: 'MyFile',
+          name: '我的文件',
+          icon: IconFolderBlack,
+          visible: true
+        },
+        // todo 需要回收站图标
+        {
+          id: 'RecycleBin',
+          name: '回收站',
+          icon: IconTrash,
+          visible: true
+        }
+      ],
+      rootFolder: rootFolder,
+      folders: [rootFolder],
+      folderTreeData: [rootFolder],
+      menuTreeSelectedKeys: [],
+      menuTreeExpandedKeys: ['0'],
+      treeFieldNames: { children: 'children', key: 'id', title: 'name', label: 'name', value: 'id' },
+      curMenu: undefined,
+      curFolder: undefined,
       folderDialogShow: false,
       delFolderDialogShow: false,
       folderDialog: {
@@ -81,48 +122,53 @@ export default {
       icons: ICONS
     }
   },
+  computed: {
+    folderSelectTreeData () {
+      // 不允许选择本目录和下级目录作为父目录
+      let curFolderId = this.folderDialog.formData.id
+      if (curFolderId) {
+        let tree = cloneDeep(this.folderTreeData)
+        let queue = [].concat(tree)
+        while (queue.length) {
+          let item = queue.shift()
+          if (item.children) {
+            item.children = item.children.filter(item => item.id !== curFolderId)
+            queue = queue.concat(item.children)
+          }
+        }
+        return tree
+      }
+      return this.folderTreeData
+    }
+  },
   created () { },
   mounted () {
 
   },
   methods: {
-    expandTree (pf) {
-      //关闭
-      pf.expaned = !pf.expaned;
-      let index = this.folders.indexOf(pf);
-      //找到当前目录的所有子目录的最后一个
-      let level = pf.level;
-      for (let i = index + 1; i < this.folders.length; i++) {
-        if (this.folders[i].level <= level) {
-          break;
-        }
-        this.folders[i].expaned = pf.expaned
-        this.folders[i].isShow = pf.expaned;
-      }
-
-
-    },
-
     getCurrentFolder () {
-      let folder = null
-      this.folders.forEach(f => {
-        if (f.isCurrent) {
-          folder = f
-        }
-      })
-      return folder
+      return this.curFolder
     },
 
     /**
      * 设置当前目录
      */
-    setCurrentFolder (folder) {
-      this.folders.forEach(f => {
-        f.isCurrent = false
-      })
-      folder.isCurrent = true
-      this.$parent.forceRefreshFileList();
-      this.curFolder = folder
+    setCurrentFolder ([folderId] = []) {
+      this.menuTreeSelectedKeys = [folderId]
+      this.curFolder = this.folders.find(item => item.id === folderId)
+      this.curMenu = undefined
+      this.$parent.forceRefreshFileList()
+    },
+
+    setCurrentMenu (menu) {
+      this.menuTreeSelectedKeys = []
+      this.curFolder = undefined
+      this.curMenu = menu
+      this.$parent.forceRefreshFileList()
+    },
+
+    getFolderTreeData () {
+      return this.folderTreeData
     },
 
     /**
@@ -134,10 +180,15 @@ export default {
       let formData
       if (mod == 1) {
         formData = {
-          folder_id: folder.id
+          // 要么是根目录，要不是下级目录
+          parent_id: folder?.id || '0'
         }
       } else if (mod == 2) {
-        formData = Object.assign({}, folder)
+        formData = {
+          parent_id: folder.parent_id,
+          id: folder.id,
+          name: folder.name
+        }
       }
       this.curFolder = folder
       this.folderDialog.formData = formData
@@ -154,11 +205,11 @@ export default {
             //获取成功
             if (folderData.data?.code == 0) {
               message.success('删除成功')
-              this.loadFolder();
+              this.loadFolder()
             }
           }
         }
-      });
+      })
     },
 
     checkDirName (rule, value, cb) {
@@ -166,11 +217,11 @@ export default {
         cb('请输入目录名')
         return
       }
-      let uPattern = /^[\u4e00-\u9fa5a-zA-Z0-9_-]{1,15}$/;
-        if (!uPattern.test(value)) {
-          cb("目录名为1至15位中文、字母、数字下划线组合");
-          return
-        }
+      let uPattern = /^[\u4e00-\u9fa5a-zA-Z0-9_-]{1,15}$/
+      if (!uPattern.test(value)) {
+        cb("目录名为1至15位中文、字母、数字下划线组合")
+        return
+      }
       cb()
     },
 
@@ -179,7 +230,7 @@ export default {
      */
     sumbitFolder () {
       this.$refs.form.validate().then(async () => {
-        let folderData = null;
+        let folderData = null
         this.folderDialog.saving = true
         if (this.folderDialog.mod == 1) {
           folderData = await createfolder(this.folderDialog.formData)
@@ -190,38 +241,9 @@ export default {
           //获取成功
           if (folderData.data?.code == 0) {
             message.success('保存成功')
-            this.folderDialog.open = false;
-            if (this.folderDialog.mod == 1) {
-              let index = this.folders.indexOf(this.curFolder);
-              //找到当前目录的所有子目录的最后一个
-              let level = this.curFolder.level;
-              if (isNaN(level)) {
-                level = -1;
-              }
-              this.curFolder.hasChildren = true;
-              this.curFolder.expaned = true;
-              let iIndex = -1;
-              for (let i = index + 1; i < this.folders.length; i++) {
-                if (this.folders[i].level <= level) {
-                  iIndex = i;
-                  break;
-                }
-                this.folders[i].isShow = true;
-              }
-              let folder = folderData.data.data;
-
-              folder.level = level + 1;
-              folder.expaned = false
-              folder.hasChildren = false;
-              folder.isShow = true;
-              if (iIndex != -1) {
-                this.folders.splice(iIndex, 0, folder);
-              } else {
-                this.folders.push(folder);
-              }
-            } else if (this.folderDialog.mod === 2) {
-              this.curFolder.name = this.folderDialog.formData.name
-            }
+            this.folderDialog.open = false
+            // 加载数据，设置默认展开
+            this.loadFolder()
           }
         }
         this.folderDialog.saving = false
@@ -239,14 +261,11 @@ export default {
       if (folderData.status == 200) {
         //获取成功
         if (folderData.data?.code == 0) {
-          let folderList = folderData.data.data
-          let folders = []
-          this.folderToTree(folders, folderList, 0);
-          //遍历生成树的层级为列表，简易输出
-          let fl = [{ name: "全部", id: "0", isShow: true }]
-          this.treeToList(fl, folders)
-          this.folders = fl;
-
+          let folders = folderData.data.data || []
+          this.folders = [this.rootFolder].concat(folders)
+          folders = this.folderToTree(folders)
+          this.folders[0].children = folders
+          this.folderTreeData = [this.folders[0]]
         }
       }
 
@@ -255,35 +274,24 @@ export default {
     /**
      * 将folderList转换为树结构，并返回
      */
-    folderToTree (folders, folderList, parentId) {
-      folderList.forEach(folder => {
-        if (folder.parent_id == parentId) {
-          folders.push(folder)
-          folder.children = []
-
-          this.folderToTree(folder.children, folderList, folder.id)
-        }
-      });
-    },
-
-    /**
-    * 将folderList转换为树结构，并返回
-    */
-    treeToList (folderList, folders, level = 0) {
+    folderToTree (folders) {
+      // 生成map
+      let tree = []
+      let cache = {}
+      folders.forEach(item => {
+        cache[item.id] = item
+      })
       folders.forEach(folder => {
-        folder.level = level;
-        folder.expaned = false;
-        if (level == 0) {
-          folder.isShow = true;
+        folder.parent_id = folder.parent_id || '0'
+        let parent = cache[folder.parent_id]
+        if (parent) {
+          parent.children = parent.children || []
+          parent.children.push(folder)
         } else {
-          folder.isShow = false;
-        }
-        folderList.push(folder);
-        if (folder.children?.length > 0) {
-          folder.hasChildren = true;
-          this.treeToList(folderList, folder.children, level + 1);
+          tree.push(folder)
         }
       })
+      return tree
     },
     createFolder () {
       this.showFolderDialog(this.curFolder || this.folders[0], 1)
@@ -297,81 +305,126 @@ export default {
 </script>
 
 <style lang='less' scoped>
-.ddei_home_dir_tree {
-  flex: 1;
-  overflow: auto;
+.ddei_home_dir_tree_wrapper {
   height: calc(100vh - 55px);
+  overflow-x: hidden;
+  overflow-y: auto;
   background-color: #F9FAFB;
   border: 1px solid #E0E3E9;
   border-top: 0px;
   border-radius: 0 0 4px 4px;
-  font-size: 14px;
-  cursor: pointer;
+  padding: 20px 10px;
 }
 
-.ddei_home_dir_tree_node {
-  width: 100%;
-  padding-left: 20px;
-  text-align: left;
+.ddei_home_dir_tree {
+  flex: 1;
+  font-size: 14px;
+  cursor: pointer;
 
-  &:hover {
-    .ddei_home_dir_tree_node_buttons {
-      display: grid;
+  /deep/ &.ant-tree {
+    background-color: transparent;
+    margin-left: -10px;
+
+    .ant-tree-treenode {
+
+      .ant-tree-switcher,
+      .ant-tree-node-content-wrapper {
+        line-height: 40px;
+      }
+
+      .ant-tree-node-content-wrapper {
+        padding: 0px;
+        overflow: hidden;
+      }
+
+      .ant-tree-node-content-wrapper {
+        width: 100%;
+
+        &.ant-tree-node-selected {
+          background: #E4E7EC;
+        }
+      }
+
+      .ddei_home_dir_tree_node {
+        padding: 0 6px;
+      }
     }
   }
 }
 
-.ddei_home_dir_tree_node_content {
+.ddei_home_dir_tree_node {
   width: 100%;
+  padding: 0 14px 0 20px;
+  text-align: left;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  height: 40px;
+  line-height: 40px;
+  border-radius: 4px;
+
+  &:hover {
+    background: #E4E7EC;
+
+    .ddei_home_dir_tree_node_buttons {
+      display: flex;
+    }
+  }
+
+  &.is-active {
+    background: #E4E7EC;
+  }
 }
 
-.ddei_home_dir_tree_node_content.selected {
-  background: #E4E7EC;
+.ddei_home_dir_tree_node_content {}
+
+.ddei_home_dir_tree_node_icon {
+  width: 14px;
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+
+.ddei_home_dir_tree_node_icon__point {
+  width: 14px;
+  margin-right: 6px;
+  flex-shrink: 0;
+  text-align: center;
+
+  &::after {
+    display: inline-block;
+    content: ' ';
+    vertical-align: middle;
+    width: 4px;
+    height: 4px;
+    background: #176EFF;
+    border-radius: 50%;
+  }
+}
+
+.ddei_home_dir_tree_node_title {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .ddei_home_dir_tree_node_buttons {
   display: none;
+  align-items: center;
   height: 20px;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 4px;
-  flex: 0 0 60px;
+  width: auto;
 }
 
-.ddei_home_dir_tree_node_buttons img {
+.ddei_home_dir_tree_node_button {
+  display: block;
   width: 14px;
   height: 14px;
-  margin-top: 3px;
+
+  +.ddei_home_dir_tree_node_button {
+    margin-left: 6px;
+  }
 }
 
-.ddei_home_dir_tree_node_buttons img:hover {
+.ddei_home_dir_tree_node_button:hover {
   filter: brightness(40%);
-}
-
-.ddei_home_dir_tree_node_content.selected .ddei_home_dir_tree_node_buttons {
-  display: grid;
-}
-
-.ddei_home_dir_tree span {
-  margin: 4px auto;
-  flex: 1;
-}
-
-.ddei_home_dir_tree_node_icon {
-  height: 12px;
-  margin-right: 5px;
-  flex: 0 0 12px;
-  cursor: pointer;
-}
-
-.ddei_home_dir_tree_node_icon:hover {
-  filter: brightness(200%);
-}
-
-.ddei_home_dir_tree span:hover {
-  color: white;
-  background: #E4E7EC;
 }
 </style>
