@@ -77,33 +77,34 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   }
 
   createTemeShape() {
-    let rat1 = this.ddRender.ratio;
-    //测试剪切图形
-    //转换为图片
-    if (!this.tempCanvas) {
-      this.tempCanvas = document.createElement('canvas');
-      this.tempCanvas.setAttribute("style", "-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
+    if (DDeiUtil.DRAW_TEMP_CANVAS) {
+      let rat1 = this.ddRender.ratio;
+      //测试剪切图形
+      //转换为图片
+      if (!this.tempCanvas) {
+        this.tempCanvas = document.createElement('canvas');
+        this.tempCanvas.setAttribute("style", "-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
+      }
+      let tempCanvas = this.tempCanvas
+      let pvs = this.model.operatePVS ? this.model.operatePVS : this.model.pvs
+
+      let outRect = DDeiAbstractShape.pvsToOutRect(pvs)
+      let weight = 5
+      outRect.x -= weight
+      outRect.x1 += weight
+      outRect.y -= weight
+      outRect.y1 += weight
+      outRect.width += 2 * weight
+      outRect.height += 2 * weight
+      tempCanvas.setAttribute("width", outRect.width * rat1)
+      tempCanvas.setAttribute("height", outRect.height * rat1)
+      //获得 2d 上下文对象
+      let tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
+      tempCanvas.tx = -outRect.x * rat1
+      tempCanvas.ty = -outRect.y * rat1
+      tempCanvas.outRect = outRect
+      tempCtx.translate(tempCanvas.tx, tempCanvas.ty)
     }
-    let tempCanvas = this.tempCanvas
-    let pvs = this.model.operatePVS ? this.model.operatePVS : this.model.pvs
-
-    let outRect = DDeiAbstractShape.pvsToOutRect(pvs)
-    let weight = 5
-    outRect.x -= weight
-    outRect.x1 += weight
-    outRect.y -= weight
-    outRect.y1 += weight
-    outRect.width += 2 * weight
-    outRect.height += 2 * weight
-    tempCanvas.setAttribute("width", outRect.width * rat1)
-    tempCanvas.setAttribute("height", outRect.height * rat1)
-    //获得 2d 上下文对象
-    let tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
-    tempCanvas.tx = -outRect.x * rat1
-    tempCanvas.ty = -outRect.y * rat1
-    tempCanvas.outRect = outRect
-    tempCtx.translate(tempCanvas.tx, tempCanvas.ty)
-
   }
 
   /**
@@ -184,7 +185,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
    * 绘制自身到最外层canvas
    */
   drawSelfToCanvas(composeRender) {
-    if (this.tempCanvas) {
+    if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
       let canvas = this.getRenderCanvas(composeRender)
       let ctx = canvas.getContext('2d');
       let rat1 = this.ddRender.ratio;
@@ -203,8 +204,12 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   }
 
   getCanvas() {
-    // return this.getRenderCanvas()
-    return this.tempCanvas;
+    if (DDeiUtil.DRAW_TEMP_CANVAS) {
+      return this.tempCanvas;
+    } else {
+      return this.getRenderCanvas()
+    }
+
   }
 
   /**

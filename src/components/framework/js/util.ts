@@ -72,6 +72,10 @@ class DDeiUtil {
   //最新选择的颜色
   static recentlyChooseColors = null
 
+
+  //向临时canvas输出
+  static DRAW_TEMP_CANVAS = false;
+
   /**
    * 图标
    */
@@ -2601,6 +2605,21 @@ class DDeiUtil {
     }
 
     localStorage.setItem("ddei-recently-choose-colors", DDeiUtil.recentlyChooseColors.toString());
+  }
+
+  static canvasToImage(canvas): Promise {
+    return new Promise((resolve, rejected) => {
+      let dataURL = canvas.toDataURL("image/png");//转为base64格式的字符串
+      let img = new Image()
+      img.src = dataURL;
+      img.onload = function () {
+        resolve(img)
+      }
+      img.onerror = function () {
+        rejected(img)
+      }
+
+    })
   }
 }
 
