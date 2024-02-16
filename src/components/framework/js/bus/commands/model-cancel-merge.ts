@@ -58,6 +58,8 @@ class DDeiBusCommandModelCancelMerge extends DDeiBusCommand {
               insertIndex++
               ddInstance.bus.insert(DDeiEnumBusCommandType.StageChangeSelectModels, null, evt, insertIndex);
               insertIndex++
+              ddInstance.bus.insert(DDeiEnumBusCommandType.ModelRemove, { models: [item], destroy: true }, evt, insertIndex);
+              insertIndex++
             }
           }
         });
