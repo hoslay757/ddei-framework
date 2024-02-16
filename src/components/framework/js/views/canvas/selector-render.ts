@@ -52,7 +52,6 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       //绘制编辑边框
       this.drawEditBorder()
     } else {
-
       //绘制边框
       this.drawBorder();
 
@@ -131,8 +130,8 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
 
 
       //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
-      let lineOffset = 1 * ratio / 2;
-      let lineWidth = 1.5 * ratio;
+      let lineOffset = 0;//1 * ratio / 2;
+      let lineWidth = 1.25 * ratio;
 
       ctx.lineWidth = lineWidth;
       ctx.beginPath();
@@ -396,7 +395,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
                 ctx.arc(opvs[9].x * ratio + lineOffset, opvs[9].y * ratio + lineOffset, halfWidth, 50, Math.PI * 1.6)
                 ctx.stroke()
               }
-            } else if (i == 10 && selectedModels.size == 1 && (firstModel.baseModelType == 'DDeiContainer' || firstModel.baseModelType == 'DDeiTable')) {
+            } else if (i == 10 && selectedModels.size == 1 && firstModel.baseModelType == 'DDeiTable') {
 
               ctx.fillStyle = DDeiUtil.getColor(color);
               //填充一个圆形
