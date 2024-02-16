@@ -230,16 +230,26 @@ class DDeiCanvasRender {
         this.mouseScale(evt.wheelDeltaY, evt)
       }
     }
-    //滚动平移
+
     else if (evt.wheelDeltaX || evt.wheelDeltaY) {
-      let dx = 0
-      let dy = 0
-      if (Math.abs(evt.wheelDeltaX) > Math.abs(evt.wheelDeltaY)) {
-        dx = evt.wheelDeltaX
-      } else {
-        dy = evt.wheelDeltaY
+      //放大缩小
+      let ctrl = evt.ctrlKey || evt.metaKey;
+      if (DDeiUtil.getConfigValue("GLOBAL_ALLOW_STAGE_RATIO", this.model) && ctrl && evt.wheelDeltaY) {
+        this.mouseScale(-evt.wheelDeltaY, evt)
       }
-      this.mouseWPV(dx, dy, evt)
+      //滚动平移
+      else {
+
+
+        let dx = 0
+        let dy = 0
+        if (Math.abs(evt.wheelDeltaX) > Math.abs(evt.wheelDeltaY)) {
+          dx = evt.wheelDeltaX
+        } else {
+          dy = evt.wheelDeltaY
+        }
+        this.mouseWPV(dx, dy, evt)
+      }
     }
 
   }
@@ -279,11 +289,12 @@ class DDeiCanvasRender {
    */
   mouseWPV(dx: number, dy: number, evt: Event) {
     let stage = this.model.stage;
+    let rat1 = this.ratio;
     let stageRatio = stage.getStageRatio();
     if (stage) {
-      let maxMove = 75 * stageRatio
-      dx *= stageRatio
-      dy *= stageRatio
+      let maxMove = 75 * stageRatio * rat1
+      dx *= stageRatio * rat1
+      dy *= stageRatio * rat1
       if (dx > maxMove) {
         dx = maxMove
       } else if (dx < -maxMove) {
