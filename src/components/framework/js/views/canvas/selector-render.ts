@@ -187,10 +187,10 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         let type = DDeiModelArrtibuteValue.getAttrValueByState(lineModel, "type", true);
         let weight = DDeiModelArrtibuteValue.getAttrValueByState(lineModel, "weight", true);
         let w10 = 1.3 * weight * ratio
-        if (w10 > 10) {
-          w10 = 10
-        } else if (w10 < 4) {
-          w10 = 4
+        if (w10 > 5 * rat1) {
+          w10 = 5 * rat1
+        } else if (w10 < 2 * rat1) {
+          w10 = 2 * rat1
         }
 
         let w15 = 1.5 * w10

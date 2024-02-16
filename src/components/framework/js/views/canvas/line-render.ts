@@ -549,7 +549,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         //圆形
         let wl = weight * stageRatio;
         ctx.beginPath()
-        ctx.ellipse((point.x - wl / 2) * rat1 - lineWidth / 2, point.y * rat1, wl, wl, 0, 0, Math.PI * 2)
+        ctx.ellipse((point.x - wl / 2) * rat1 - lineWidth / 2, point.y * rat1, wl / 2 * rat1, wl / 2 * rat1, 0, 0, Math.PI * 2)
         ctx.closePath()
         ctx.stroke();
         if (fillWeight > 0 || type == 21 || tempLine) {
@@ -623,7 +623,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         //半圆
         let wl = weight * stageRatio / 2;
         ctx.beginPath()
-        ctx.ellipse((point.x - wl / 2) * rat1 - lineWidth / 2, point.y * rat1, wl, wl, 0, 0.4 * Math.PI, Math.PI * 1.6)
+        ctx.ellipse((point.x - wl / 2) * rat1 - lineWidth / 2, point.y * rat1, wl * rat1, wl * rat1, 0, 0.4 * Math.PI, Math.PI * 1.6)
 
         ctx.stroke();
         if (fillWeight > 0 || type == 61 || tempLine) {

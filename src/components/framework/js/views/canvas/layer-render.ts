@@ -319,17 +319,16 @@ class DDeiLayerCanvasRender {
       //获得 2d 上下文对象
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
-      let ratio = this.ddRender.ratio;
+      let ratio = this.ddRender?.ratio;
       //保存状态
       ctx.save();
-      let lineOffset = 0//1 * ratio / 2;
       this.model?.opPoints.forEach(point => {
         if (point.mode == 3) {
-          let weight = 8;
+          let weight = 4;
           ctx.fillStyle = "white"
           ctx.strokeStyle = "#017fff"
           ctx.beginPath();
-          ctx.ellipse(point.x * ratio + lineOffset, point.y * ratio + lineOffset, weight, weight, 0, 0, Math.PI * 2)
+          ctx.ellipse(point.x * ratio, point.y * ratio, weight * ratio, weight * ratio, 0, 0, Math.PI * 2)
           ctx.fill();
           ctx.stroke();
           ctx.closePath();
@@ -337,13 +336,13 @@ class DDeiLayerCanvasRender {
       });
       this.model?.opPoints.forEach(point => {
         if (point.mode != 3) {
-          let weight = 8;
+          let weight = 4;
           if (point.isMiddle) {
-            weight = 10;
+            weight = 5;
           }
           ctx.fillStyle = "white"
           ctx.beginPath();
-          ctx.ellipse(point.x * ratio + lineOffset, point.y * ratio + lineOffset, weight + 2, weight + 2, 0, 0, Math.PI * 2)
+          ctx.ellipse(point.x * ratio, point.y * ratio, (weight + 1) * ratio, (weight + 1) * ratio, 0, 0, Math.PI * 2)
           ctx.fill();
           ctx.closePath();
           if (point.mode == 1) {
@@ -352,7 +351,7 @@ class DDeiLayerCanvasRender {
             ctx.fillStyle = "#017fff"
           }
           ctx.beginPath();
-          ctx.ellipse(point.x * ratio + lineOffset, point.y * ratio + lineOffset, weight, weight, 0, 0, Math.PI * 2)
+          ctx.ellipse(point.x * ratio, point.y * ratio, weight * ratio, weight * ratio, 0, 0, Math.PI * 2)
           ctx.fill();
           ctx.closePath();
         }
