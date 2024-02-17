@@ -1,6 +1,6 @@
 <template>
-  <div id="ddei_editor" class="ddei_editor" @mousewheel.prevent @mouseup="mouseUp" @mousemove="mouseMove"
-    @mousedown="mouseDown">
+  <div id="ddei_editor" class="ddei_editor" @contextmenu.prevent @mousewheel.prevent @mouseup="mouseUp"
+    @mousemove="mouseMove" @mousedown="mouseDown">
     <div class="top" id="ddei_editor_frame_top">
       <TopMenu v-if="refreshTopMenuView"></TopMenu>
     </div>
@@ -446,15 +446,13 @@ export default {
      * 准备拖拽
      */
     mouseDown(e: Event) {
+
       //判断落点是否在某个区域的拖拽区附近
       let frameLeftElement = document.getElementById("ddei_editor_frame_left");
       let frameRightElement = document.getElementById(
         "ddei_editor_frame_right"
       );
       let frameTopElement = document.getElementById("ddei_editor_frame_top");
-      let frameMiddleElement = document.getElementById(
-        "ddei_editor_frame_middle"
-      );
       let ex = e.clientX
       let ey = e.clientY
       //判断鼠标落点是否在框架上

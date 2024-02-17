@@ -185,6 +185,7 @@ export default {
         }
 
         .groupname {
+          white-space: nowrap;
           flex: 0 1 160px;
           margin: 0 10px;
         }
@@ -246,6 +247,7 @@ export default {
         }
 
         .groupname {
+          white-space: nowrap;
           flex: 0 1 120px;
           margin-left: 10px;
 
