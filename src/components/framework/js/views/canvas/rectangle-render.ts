@@ -598,7 +598,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
             //记录最大字体大小
             maxFontSize = Math.max(maxFontSize, fontHeight)
 
-            let rc1 = DDeiUtil.measureText(te, font, ctx);
+            let rc1 = DDeiUtil.measureText(te, font, ctx, fontHeight);
             fontShapeRect = { width: rc1.width * ratio, height: rc1.height * ratio }
             usedWidth += fontShapeRect.width;
 

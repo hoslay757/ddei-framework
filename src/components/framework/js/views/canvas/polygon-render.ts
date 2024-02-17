@@ -846,7 +846,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       let usedWidth = 0;
       let usedHeight = 0;
       //行容器
-      let textRowContainer = { text: "", widths: [], heights: [] };
+      let textRowContainer = { text: "", widths: [], heights: [], dHeights: [] };
       textContainer.push(textRowContainer);
       //是否超出输出长度标志
       let isOutSize = false;
@@ -924,16 +924,17 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           //记录最大字体大小
           maxFontSize = Math.max(maxFontSize, fontHeight)
 
-          let rc1 = DDeiUtil.measureText(te, font, ctx);
+          let rc1 = DDeiUtil.measureText(te, font, ctx, fontHeight);
 
-          fontShapeRect = { width: rc1.width * ratio + hspace, height: rc1.height * ratio }
+          fontShapeRect = { width: rc1.width * ratio + hspace, height: rc1.height * ratio, dHeight: rc1.dHeight * ratio }
           usedWidth += fontShapeRect.width;
 
           textRowContainer.text += te;
           textRowContainer.widths[rcIndex] = fontShapeRect.width
-          textRowContainer.heights[rcIndex] = fontHeight * ratio + vspace
+          textRowContainer.heights[rcIndex] = fontShapeRect.height + vspace//fontHeight * ratio + vspace
+          textRowContainer.dHeights[rcIndex] = fontShapeRect.dHeight
           textRowContainer.width = usedWidth
-          textRowContainer.height = Math.max(fontHeight * ratio + vspace, textRowContainer.height ? textRowContainer.height : 0, lastUnSubTypeFontSize ? lastUnSubTypeFontSize * ratio + vspace : fontSize * ratio + vspace)
+          textRowContainer.height = Math.max(fontShapeRect.height + vspace, textRowContainer.height ? textRowContainer.height : 0, lastUnSubTypeFontSize ? lastUnSubTypeFontSize * ratio + vspace : fontSize * ratio + vspace)
         }
 
         //如果不自动换行也不缩小字体，则超过的话，就省略显示
@@ -970,7 +971,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
             }
             rcIndex = -1;
             let lastRowHeight = textRowContainer.height;
-            textRowContainer = { text: '', widths: [], heights: [] };
+            textRowContainer = { text: '', widths: [], heights: [], dHeights: [] };
             textRowContainer.width = usedWidth
             textRowContainer.height = lastRowHeight
             textContainer.push(textRowContainer);
@@ -997,11 +998,12 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
             }
 
             rcIndex = 0;
-            textRowContainer = { text: te, widths: [], heights: [] };
+            textRowContainer = { text: te, widths: [], heights: [], dHeights: [] };
             textRowContainer.widths[rcIndex] = fontShapeRect.width
-            textRowContainer.heights[rcIndex] = fontHeight * ratio + vspace
+            textRowContainer.heights[rcIndex] = fontShapeRect.height + vspace
+            textRowContainer.dHeights[rcIndex] = fontShapeRect.dHeight
             textRowContainer.width = usedWidth
-            textRowContainer.height = Math.max(fontHeight * ratio + vspace, lastUnSubTypeFontSize * ratio + vspace)
+            textRowContainer.height = Math.max(fontShapeRect.height + vspace, lastUnSubTypeFontSize * ratio + vspace)
             textContainer.push(textRowContainer);
           }
         }
@@ -1225,8 +1227,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         let tTopline = textContainer[tci].tTopline[tj];;
         let tFontColor = textContainer[tci].tFontColor[tj];
         let font = textContainer[tci].font[tj];
-        let subScriptOffY = textContainer[tci].subScriptOffY[tj];;
-        let ofY = rRect.height - height + subScriptOffY
+        let subScriptOffY = textContainer[tci].subScriptOffY[tj];
+        let dfh = textContainer[tci].dHeights[tj];
+        let ofY = rRect.height - height + subScriptOffY + dfh
 
         //设置字体颜色
         ctx.fillStyle = tFontColor

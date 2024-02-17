@@ -269,7 +269,7 @@ class DDeiStageCanvasRender {
         } else if (this.operateState == DDeiEnumOperateState.CONTROL_CHANGING_BOUND) {
           text = xText + " x " + yText
         }
-        let textRect = DDeiUtil.measureText(text, font, ctx)
+        let textRect = DDeiUtil.measureText(text, font, ctx, fontSize * rat1)
         let width = textRect.width / rat1 + 10
         let height = fontSize + 4
         let x, y

@@ -124,14 +124,19 @@ class DDeiUtil {
   /**
    * 计算文字的高度和宽度
    */
-  static measureText(text: string, font, ctx): object {
+  static measureText(text: string, font, ctx, fontSize): object {
 
     let key = text + "_" + font
     if (!DDeiUtil.cacheTextCharSize.has(key)) {
       //特殊字体
       ctx.font = font;
       let rect = ctx.measureText(text);
-      DDeiUtil.cacheTextCharSize.set(key, { width: rect.width, height: ctx.fontSize })
+
+      //计算修正值
+      //实际高度
+      let actHeight = rect.fontBoundingBoxAscent + rect.fontBoundingBoxDescent
+      let dHeight = rect.fontBoundingBoxAscent
+      DDeiUtil.cacheTextCharSize.set(key, { width: rect.width, height: actHeight, dHeight: dHeight })
     }
     return DDeiUtil.cacheTextCharSize.get(key);
   }
