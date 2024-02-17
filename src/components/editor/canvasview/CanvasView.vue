@@ -1,7 +1,7 @@
 <template>
   <div :id="id" class="ddei_editor_canvasview" @mousedown="mouseDown($event)" ondragstart="return false;"
-    @mousewheel="mouseWheel($event)" @dragover="createControlOver" @drop="createControlDrop"
-    @dragleave="createControlCancel" @dblclick="canvasDBClick" @contextmenu.prevent>
+    @wheel="mouseWheel($event)" @dragover="createControlOver" @drop="createControlDrop" @dragleave="createControlCancel"
+    @dblclick="canvasDBClick" @contextmenu.prevent>
   </div>
 </template>
 
@@ -18,7 +18,7 @@ import DDeiEnumState from "../../framework/js/enums/ddei-state";
 import DDeiUtil from "../../framework/js/util";
 import DDeiFile from "../js/file";
 import DDeiSheet from "../js/sheet";
-import { MODEL_CLS } from "../../framework/js/config";
+import DDeiConfig, { MODEL_CLS } from "../../framework/js/config";
 import DDeiFileState from "../js/enums/file-state";
 import DDeiActiveType from "../js/enums/active-type";
 import { throttle } from "lodash";
@@ -336,7 +336,7 @@ export default {
                     },
                     e
                   );
-                  let isAlt = DDeiEditor.KEY_DOWN_STATE.get("alt");
+                  let isAlt = DDeiConfig.KEY_DOWN_STATE.get("alt");
                   this.editor.bus.push(
                     DDeiEnumBusCommandType.ChangeSelectorPassIndex,
                     { passIndex: 10 },
@@ -389,7 +389,7 @@ export default {
         ex -= stage.wpv.x;
         ey -= stage.wpv.y;
         if (this.editor.creatingControls) {
-          let isAlt = DDeiEditor.KEY_DOWN_STATE.get("alt");
+          let isAlt = DDeiConfig.KEY_DOWN_STATE.get("alt");
           let ddInstance: DDei = this.editor.ddInstance;
           ddInstance.stage.idIdx++;
           let layer = ddInstance.stage.layers[ddInstance.stage.layerIndex];

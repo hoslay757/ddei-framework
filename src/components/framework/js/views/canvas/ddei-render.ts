@@ -225,7 +225,9 @@ class DDeiCanvasRender {
    */
   mouseWheel(evt: Event) {
     //放大缩小
-    if ((evt.wheelDeltaY == 240 || evt.wheelDeltaY == -240)) {
+    let wheelDeltaY = evt.wheelDeltaY
+    let wheelDeltaYAbs = Math.abs(wheelDeltaY)
+    if (wheelDeltaYAbs >= 120 && (wheelDeltaYAbs == 240 || wheelDeltaYAbs == 120)) {
       if (DDeiUtil.getConfigValue("GLOBAL_ALLOW_STAGE_RATIO", this.model)) {
         this.mouseScale(evt.wheelDeltaY, evt)
       }
@@ -233,7 +235,7 @@ class DDeiCanvasRender {
 
     else if (evt.wheelDeltaX || evt.wheelDeltaY) {
       //放大缩小
-      let ctrl = evt.ctrlKey || evt.metaKey;
+      let ctrl = DDeiConfig.KEY_DOWN_STATE.get("ctrl");
       if (DDeiUtil.getConfigValue("GLOBAL_ALLOW_STAGE_RATIO", this.model) && ctrl && evt.wheelDeltaY) {
         this.mouseScale(-evt.wheelDeltaY, evt)
       }

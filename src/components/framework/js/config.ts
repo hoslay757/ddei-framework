@@ -12,6 +12,8 @@ const MODEL_CLS = {}
 const RENDER_CLS = {}
 
 
+
+
 //动态加载控件
 const control_ctx = import.meta.glob('./models/*.ts', { eager: true })
 for (let i in control_ctx) {
@@ -82,6 +84,23 @@ class DDeiConfig {
 
   //是否允许访问外部剪切板
   static ALLOW_CLIPBOARD: boolean | undefined = undefined;
+
+  /**
+  * 所有特殊按键的按下状态，当键盘按下时会触发事件，并修改当前全局状态
+  * 通过全局状态可以判断一些键鼠组合操作，如按下ctrl和鼠标左键时追加选择
+  * Editor的此转台会传导到DDei上
+  */
+  static KEY_DOWN_STATE: Map<string, boolean> = new Map();
+
+  /**
+   * 所有特殊按键的计时器，记录了上一次按下按键的时间
+   */
+  static KEY_DOWN_INTERVAL: Map<string, number> = new Map();
+
+  /**
+   * 所有特殊按键的计数器，记录了有效时间内事件的执行次数
+   */
+  static KEY_DOWN_TIMES: Map<string, number> = new Map();
 
   //序列化配置
   static SERI_FIELDS: object = {

@@ -70,9 +70,10 @@ import { debounce } from "lodash";
     if (width / dpr < 1440) {
       width = 1440 * dpr;
     }
-    if (width / dpr > 1920) {
-      width = 1920 * dpr;
-    }
+    // console.log(width + " . " + dpr)
+    // if (width / dpr >= 2560) {
+    //   width = 2560 * dpr;
+    // }
     const rem = width / 10;
     docEl.style.fontSize = rem + 'px';
     flexible.rem = win.rem = rem;

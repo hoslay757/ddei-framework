@@ -1,3 +1,4 @@
+import DDeiConfig from '@/components/framework/js/config';
 import DDei from '@/components/framework/js/ddei';
 import DDeiEditor from '../editor'
 /**
@@ -25,24 +26,24 @@ abstract class DDeiKeyAction {
     let shift = evt.shiftKey;
     let alt = evt.altKey
     if (ctrl == true) {
-      DDeiEditor.KEY_DOWN_STATE.set("ctrl", true);
+      DDeiConfig.KEY_DOWN_STATE.set("ctrl", true);
     } else {
-      DDeiEditor.KEY_DOWN_STATE.set("ctrl", false);
+      DDeiConfig.KEY_DOWN_STATE.set("ctrl", false);
     }
     if (shift == true) {
-      DDeiEditor.KEY_DOWN_STATE.set("shift", true);
+      DDeiConfig.KEY_DOWN_STATE.set("shift", true);
     } else {
-      DDeiEditor.KEY_DOWN_STATE.set("shift", false);
+      DDeiConfig.KEY_DOWN_STATE.set("shift", false);
     }
     if (alt == true) {
-      DDeiEditor.KEY_DOWN_STATE.set("alt", true);
+      DDeiConfig.KEY_DOWN_STATE.set("alt", true);
     } else {
-      DDeiEditor.KEY_DOWN_STATE.set("alt", false);
+      DDeiConfig.KEY_DOWN_STATE.set("alt", false);
     }
     if (evt.keyCode != 93 && evt.keyCode != 18 && evt.keyCode != 16 && evt.keyCode != 17) {
-      DDeiEditor.KEY_DOWN_STATE.set("" + evt.keyCode, true);
+      DDeiConfig.KEY_DOWN_STATE.set("" + evt.keyCode, true);
     }
-    DDei.syncKeyDownState(DDeiEditor.KEY_DOWN_STATE);
+    DDei.syncKeyDownState(DDeiConfig.KEY_DOWN_STATE);
   }
 
   /**
@@ -111,30 +112,30 @@ abstract class DDeiKeyAction {
         //处理计数器,如果设置了计数器，则必须满足计数器触发条件
         if (!item.modelType || (item.modelType && item.modelType == onlySelectModel?.baseModelType)) {
           if (item.times && item.times > 1 && item.interval && item.interval > 0) {
-            if (!DDeiEditor.KEY_DOWN_TIMES.has(m1Str)) {
+            if (!DDeiConfig.KEY_DOWN_TIMES.has(m1Str)) {
               //记录开始次数1
-              DDeiEditor.KEY_DOWN_TIMES.set(m1Str, 1)
+              DDeiConfig.KEY_DOWN_TIMES.set(m1Str, 1)
               //记录开始时间
-              DDeiEditor.KEY_DOWN_INTERVAL.set(m1Str, Date.now())
+              DDeiConfig.KEY_DOWN_INTERVAL.set(m1Str, Date.now())
             } else {
               //开始时间
-              let startTime = DDeiEditor.KEY_DOWN_INTERVAL.get(m1Str);
+              let startTime = DDeiConfig.KEY_DOWN_INTERVAL.get(m1Str);
               let nowTime = Date.now()
               //已达到的次数，不算当次
-              let times = DDeiEditor.KEY_DOWN_TIMES.get(m1Str);
+              let times = DDeiConfig.KEY_DOWN_TIMES.get(m1Str);
               //如果在时间差内达到了次数，则触发，否则丢弃，并重新计算
               if (nowTime - startTime <= item.interval && times + 1 >= item.times) {
                 item.action.action(evt, ddInstance, editor);
                 //清空记录
-                DDeiEditor.KEY_DOWN_TIMES.delete(m1Str)
+                DDeiConfig.KEY_DOWN_TIMES.delete(m1Str)
                 //记录开始时间
-                DDeiEditor.KEY_DOWN_INTERVAL.delete(m1Str)
+                DDeiConfig.KEY_DOWN_INTERVAL.delete(m1Str)
                 break;
               } else {
                 //记录开始次数1
-                DDeiEditor.KEY_DOWN_TIMES.set(m1Str, 1)
+                DDeiConfig.KEY_DOWN_TIMES.set(m1Str, 1)
                 //记录开始时间
-                DDeiEditor.KEY_DOWN_INTERVAL.set(m1Str, nowTime)
+                DDeiConfig.KEY_DOWN_INTERVAL.set(m1Str, nowTime)
               }
             }
           } else {
