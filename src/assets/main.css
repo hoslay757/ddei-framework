@@ -65,6 +65,14 @@ a,
 }
 
 /* 常用样式 */
+.m-t-80 {
+  margin-top: 80px;
+}
+
+.m-t-40 {
+  margin-top: 40px;
+}
+
 .m-t-20 {
   margin-top: 20px;
 }

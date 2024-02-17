@@ -66,34 +66,35 @@ export default {
 
   },
   data () {
-    let rootFolder = { name: "知识库", id: "0", icon: IconDocumentBlack, isShow: true, allowDelete: false, allowModify: false }
+    // let rootFolder = { name: "知识库", id: "0", icon: IconDocumentBlack, isShow: true, allowDelete: false, allowModify: false }
+    let rootFolder = { name: "我的文件", id: "0", icon: IconFolderBlack, isShow: true, allowDelete: false, allowModify: false }
     return {
       menus: [
-        {
-          id: 'Main',
-          name: '主页',
-          icon: IconHomeBlack,
-          visible: true
-        },
+        // {
+        //   id: 'Main',
+        //   name: '主页',
+        //   icon: IconHomeBlack,
+        //   visible: true
+        // },
         {
           id: 'All',
           name: '全部',
           icon: IconMenuBlack,
           visible: true
         },
-        {
-          id: 'MyFile',
-          name: '我的文件',
-          icon: IconFolderBlack,
-          visible: true
-        },
+        // {
+        //   id: 'MyFile',
+        //   name: '我的文件',
+        //   icon: IconFolderBlack,
+        //   visible: true
+        // },
         // todo 需要回收站图标
-        {
-          id: 'RecycleBin',
-          name: '回收站',
-          icon: IconTrash,
-          visible: true
-        }
+        // {
+        //   id: 'RecycleBin',
+        //   name: '回收站',
+        //   icon: IconTrash,
+        //   visible: true
+        // }
       ],
       rootFolder: rootFolder,
       folders: [rootFolder],
@@ -195,6 +196,11 @@ export default {
     },
 
     deleteFolder (folder) {
+      if (folder.children?.length) {
+        // 不允许删除有下级目录的目录
+        message.warning('当前目录存在下级目录，不能直接删除！')
+        return
+      }
       Modal.confirm({
         title: '是否删除目录',
         content: createVNode('div', { style: 'color:red;' }, folder.name),
@@ -347,6 +353,7 @@ export default {
 
       .ddei_home_dir_tree_node {
         padding: 0 6px;
+        margin-bottom: 0;
       }
     }
   }
@@ -361,6 +368,7 @@ export default {
   height: 40px;
   line-height: 40px;
   border-radius: 4px;
+  margin-bottom: 4px;
 
   &:hover {
     background: #E4E7EC;

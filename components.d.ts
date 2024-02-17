@@ -8,12 +8,14 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AConfigProvider: typeof import('ant-design-vue/es')['ConfigProvider']
+    AEmpty: typeof import('ant-design-vue/es')['Empty']
     AForm: typeof import('ant-design-vue/es')['Form']
     AFormItem: typeof import('ant-design-vue/es')['FormItem']
     AInput: typeof import('ant-design-vue/es')['Input']
     AlignDialog: typeof import('./src/components/editor/dialogs/AlignDialog.vue')['default']
     AModal: typeof import('ant-design-vue/es')['Modal']
     APagination: typeof import('ant-design-vue/es')['Pagination']
+    ASpin: typeof import('ant-design-vue/es')['Spin']
     ATextarea: typeof import('ant-design-vue/es')['Textarea']
     ATree: typeof import('ant-design-vue/es')['Tree']
     ATreeSelect: typeof import('ant-design-vue/es')['TreeSelect']
