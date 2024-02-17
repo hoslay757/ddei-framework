@@ -140,6 +140,7 @@ export default {
     this.initRightWidth = frameRightElement.offsetWidth
     this.editor.maxWidth =
       this.editor.leftWidth + this.editor.rightWidth + this.editor.middleWidth;
+
     //初始化拦截器
     //以下为拦截器的配置
     this.editor.bus.interceptor[DDeiEnumBusCommandType.NodifyChange] = {
@@ -454,53 +455,54 @@ export default {
       let frameMiddleElement = document.getElementById(
         "ddei_editor_frame_middle"
       );
-
+      let ex = e.clientX
+      let ey = e.clientY
       //判断鼠标落点是否在框架上
       if (
-        frameLeftElement.offsetTop <= e.clientY &&
+        frameLeftElement.offsetTop <= ey &&
         frameLeftElement.offsetTop + frameLeftElement.offsetHeight >=
-        e.clientY &&
+        ey &&
         Math.abs(
-          e.clientX -
+          ex -
           (frameLeftElement.offsetLeft + frameLeftElement.offsetWidth)
         ) <= 5
       ) {
         this.changeIndex = 4;
         this.dragObj = {
-          x: e.clientX / window.remRatio,
-          y: e.clientY / window.remRatio,
-          originX: e.offsetX / window.remRatio,
-          originY: e.offsetY / window.remRatio,
+          x: ex,
+          y: ey,
+          originX: e.offsetX,
+          originY: e.offsetY,
         };
         this.editor.state = DDeiEditorState.FRAME_CHANGING;
         this.editor.ddInstance.state = DDeiEnumState.IN_ACTIVITY;
       } else if (
-        frameRightElement.offsetTop <= e.clientY &&
+        frameRightElement.offsetTop <= ey &&
         frameRightElement.offsetTop + frameRightElement.offsetHeight >=
-        e.clientY &&
-        e.clientX - frameRightElement.offsetLeft >= -5 &&
-        e.clientX - frameRightElement.offsetLeft <= -1
+        ey &&
+        ex - frameRightElement.offsetLeft >= -5 &&
+        ex - frameRightElement.offsetLeft <= -1
       ) {
         this.changeIndex = 2;
         this.dragObj = {
-          x: e.clientX / window.remRatio,
-          y: e.clientY / window.remRatio,
-          originX: e.offsetX / window.remRatio,
-          originY: e.offsetY / window.remRatio,
+          x: ex,
+          y: ey,
+          originX: e.offsetX,
+          originY: e.offsetY,
         };
         this.editor.state = DDeiEditorState.FRAME_CHANGING;
         this.editor.ddInstance.state = DDeiEnumState.IN_ACTIVITY;
       } else if (
         Math.abs(
-          e.clientY - (frameTopElement.offsetTop + frameTopElement.offsetHeight)
+          ey - (frameTopElement.offsetTop + frameTopElement.offsetHeight)
         ) <= 5
       ) {
         this.changeIndex = 1;
         this.dragObj = {
-          x: e.clientX / window.remRatio,
-          y: e.clientY / window.remRatio,
-          originX: e.offsetX / window.remRatio,
-          originY: e.offsetY / window.remRatio,
+          x: ex,
+          y: ey,
+          originX: e.offsetX,
+          originY: e.offsetY,
         };
         this.editor.state = DDeiEditorState.FRAME_CHANGING;
         this.editor.ddInstance.state = DDeiEnumState.IN_ACTIVITY;

@@ -1143,8 +1143,7 @@ class DDeiUtil {
       context.msBackingStorePixelRatio ||
       context.oBackingStorePixelRatio ||
       context.backingStorePixelRatio || 1;
-
-    window.remRatio = window.rem > 192 ? window.rem / 192 : 1
+    window.remRatio = window.rem > 168 ? window.rem / 168 : 1
     return (window.devicePixelRatio || 1) / backingStore;
   }
 
