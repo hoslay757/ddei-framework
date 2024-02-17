@@ -457,6 +457,8 @@ class DDeiLayerCanvasRender {
   getMovedPositionDelta(evt): object {
     let ex = evt.offsetX;
     let ey = evt.offsetY;
+    ex /= window.remRatio
+    ey /= window.remRatio
     let stageRatio = this.stage.getStageRatio()
     ex -= this.stage.wpv.x;
     ey -= this.stage.wpv.y
@@ -492,8 +494,11 @@ class DDeiLayerCanvasRender {
     //判断当前鼠标坐标是否落在选择器控件的区域内
     let ex = evt.offsetX;
     let ey = evt.offsetY;
+    ex /= window.remRatio
+    ey /= window.remRatio
     ex -= this.stage.wpv.x;
     ey -= this.stage.wpv.y;
+
     if (this.stageRender?.operateState == DDeiEnumOperateState.QUICK_EDITING) {
       //如果在画布范围内，但不在编辑的控件上，则确认解除快捷编辑状态
       if (evt.target == this.ddRender.canvas && (!this.stageRender.editorShadowControl || !this.stageRender.editorShadowControl?.isInAreaLoose(ex, ey))) {
@@ -650,6 +655,8 @@ class DDeiLayerCanvasRender {
     let isAlt = DDei.KEY_DOWN_STATE.get("alt");
     let ex = evt.offsetX;
     let ey = evt.offsetY;
+    ex /= window.remRatio
+    ey /= window.remRatio
     let stageRatio = this.stage.getStageRatio()
     ex -= this.stage.wpv.x;
     ey -= this.stage.wpv.y
@@ -1081,6 +1088,8 @@ class DDeiLayerCanvasRender {
 
     let ex = evt.offsetX;
     let ey = evt.offsetY;
+    ex /= window.remRatio
+    ey /= window.remRatio
     let rat1 = this.ddRender?.ratio;
     let canvasWidth = this.ddRender.canvas.width / rat1
     let canvasHeight = this.ddRender.canvas.height / rat1
@@ -1099,6 +1108,7 @@ class DDeiLayerCanvasRender {
     }
     ex -= this.stage.wpv.x;
     ey -= this.stage.wpv.y;
+
     //判断当前操作状态
     switch (this.stageRender.operateState) {
       //控件状态确认中

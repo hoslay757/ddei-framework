@@ -202,6 +202,8 @@ class DDeiAbstractShapeRender {
     if (this.layer) {
       let ex = evt.offsetX;
       let ey = evt.offsetY;
+      ex /= window.remRatio
+      ey /= window.remRatio
       ex -= this.stage.wpv.x;
       ey -= this.stage.wpv.y
       this.changeOpPoints(ex, ey);

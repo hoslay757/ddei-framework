@@ -496,6 +496,8 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
   mouseMove(evt: Event): void {
     let ex = evt.offsetX;
     let ey = evt.offsetY;
+    ex /= window.remRatio
+    ey /= window.remRatio
     ex -= this.stage.wpv.x;
     ey -= this.stage.wpv.y
     //判断当前坐标是否位于操作按钮上
@@ -599,6 +601,8 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
   mouseDown(evt: Event): void {
     let ex = evt.offsetX;
     let ey = evt.offsetY;
+    ex /= window.remRatio
+    ey /= window.remRatio
     ex -= this.stage.wpv.x;
     ey -= this.stage.wpv.y
     //当前操作对象为线

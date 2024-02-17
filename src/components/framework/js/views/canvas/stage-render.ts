@@ -1403,6 +1403,8 @@ class DDeiStageCanvasRender {
       let rat1 = this.ddRender.ratio;
       let ex = evt.offsetX;
       let ey = evt.offsetY;
+      ex /= window.remRatio
+      ey /= window.remRatio
       //判断是否在滚动条区间
       let scrollWeight = 15;
       let cwidth = canvas.width / rat1 - scrollWeight;
@@ -1449,8 +1451,8 @@ class DDeiStageCanvasRender {
     if (!this.model.ddInstance.eventCancel) {
       if (this.operateState == DDeiEnumOperateState.STAGE_SCROLL_WORKING) {
         let canvasPos = DDeiUtil.getDomAbsPosition(this.ddRender?.canvas)
-        let ex = evt.clientX - canvasPos.left;
-        let ey = evt.clientY - canvasPos.top;
+        let ex = evt.clientX / window.remRatio - canvasPos.left;
+        let ey = evt.clientY / window.remRatio - canvasPos.top;
         if (this.dragObj?.scroll == 1) {
           let width = this.hScroll.width;
           //原始鼠标位置在操作区域的位置

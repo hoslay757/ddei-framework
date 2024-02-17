@@ -5,12 +5,13 @@
         <use xlink:href="#icon-a-ziyuan474"></use>
       </svg>
     </div>
+    <div class="ddei_editor_ofsview_item" v-if="!editor?.files"></div>
     <div
       :class="item.active == 1 ? 'ddei_editor_ofsview_item ddei_editor_ofsview_item_selected' : 'ddei_editor_ofsview_item'"
       @click="changeFile(item)" draggable="true" @dragstart="fileDragStart(index, $event)"
       @dragover="fileDragOver($event)" @drop="fileDragDrop($event)" @dragleave="fileDragCancel($event)"
       v-for="(item, i) in editor?.files"
-      v-show="i >= openIndex && ((i - openIndex + 1) * 160 + 40) <= editor?.middleWidth" :title="item.name">
+      v-show="i >= openIndex && ((i - openIndex + 1) * unitFileWidth + 120) <= editor?.middleWidth" :title="item.name">
       <svg class="icon" aria-hidden="true">
         <use xlink:href="#icon-wenjian01"></use>
       </svg>
@@ -69,6 +70,7 @@ export default {
       //最大可以打开的数量
       maxOpenSize: 1,
       tempFile: null,
+      unitFileWidth: 160,
     };
   },
   computed: {},
@@ -76,7 +78,17 @@ export default {
   created() {
     // 监听obj对象中prop属性的变化
     this.$watch("editor.middleWidth", function (newVal, oldVal) {
-      let size = parseInt((newVal - 40) / 160);
+      //获取单个tab大小
+      let fileEles = document.getElementsByClassName("ddei_editor_ofsview_item")
+      let width = 0;
+      if (fileEles.length > 0) {
+        width = fileEles[0].clientWidth
+      }
+      if (!width) {
+        width = 160
+      }
+      this.unitFileWidth = width
+      let size = parseInt((newVal - 120) / width);
       if (size > this.maxOpenSize && this.openIndex > 0) {
         this.openIndex--;
       }

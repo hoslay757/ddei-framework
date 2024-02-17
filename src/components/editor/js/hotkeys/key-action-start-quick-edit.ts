@@ -34,6 +34,8 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
         if (evt.offsetX || evt.offsetY) {
           ex = evt.offsetX
           ey = evt.offsetY
+          ex /= window.remRatio
+          ey /= window.remRatio
           ex -= stage.wpv.x;
           ey -= stage.wpv.y;
 

@@ -160,6 +160,8 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
       if (this.model.models) {
         let ex = evt.offsetX;
         let ey = evt.offsetY;
+        ex /= window.remRatio
+        ey /= window.remRatio
         let stageRatio = this.stage.getStageRatio()
         ex -= this.stage.wpv.x;
         ey -= this.stage.wpv.y

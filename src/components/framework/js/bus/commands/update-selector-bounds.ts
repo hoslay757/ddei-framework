@@ -43,6 +43,9 @@ class DDeiBusCommandUpdateSelectorBounds extends DDeiBusCommand {
           if (data?.operateState == DDeiEnumOperateState.SELECT_WORKING) {
             let ex = evt.offsetX;
             let ey = evt.offsetY;
+
+            ex /= window.remRatio
+            ey /= window.remRatio
             ex -= stage.wpv.x;
             ey -= stage.wpv.y;
             let x = selector.startX;

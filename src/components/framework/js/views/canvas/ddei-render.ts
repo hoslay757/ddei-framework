@@ -76,7 +76,7 @@ class DDeiCanvasRender {
         this.realCanvas.setAttribute("width", this.container.clientWidth * ratio);
         this.realCanvas.setAttribute("height", this.container.clientHeight * ratio);
 
-        this.ratio = ratio;
+        this.ratio = ratio * window.remRatio;
 
         //获取dpi
         this.dpi = DDeiUtil.getDPI();
@@ -207,8 +207,12 @@ class DDeiCanvasRender {
   mouseMove(evt: Event): void {
     let ex = evt.offsetX;
     let ey = evt.offsetY;
+    ex /= window.remRatio
+    ey /= window.remRatio
     let sx = evt.screenX;
     let sy = evt.screenY;
+    sx /= window.remRatio
+    sy /= window.remRatio
     let stage = this.model.stage
     ex -= stage.wpv.x;
     ey -= stage.wpv.y;

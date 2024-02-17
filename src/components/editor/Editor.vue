@@ -467,10 +467,10 @@ export default {
       ) {
         this.changeIndex = 4;
         this.dragObj = {
-          x: e.clientX,
-          y: e.clientY,
-          originX: e.offsetX,
-          originY: e.offsetY,
+          x: e.clientX / window.remRatio,
+          y: e.clientY / window.remRatio,
+          originX: e.offsetX / window.remRatio,
+          originY: e.offsetY / window.remRatio,
         };
         this.editor.state = DDeiEditorState.FRAME_CHANGING;
         this.editor.ddInstance.state = DDeiEnumState.IN_ACTIVITY;
@@ -483,10 +483,10 @@ export default {
       ) {
         this.changeIndex = 2;
         this.dragObj = {
-          x: e.clientX,
-          y: e.clientY,
-          originX: e.offsetX,
-          originY: e.offsetY,
+          x: e.clientX / window.remRatio,
+          y: e.clientY / window.remRatio,
+          originX: e.offsetX / window.remRatio,
+          originY: e.offsetY / window.remRatio,
         };
         this.editor.state = DDeiEditorState.FRAME_CHANGING;
         this.editor.ddInstance.state = DDeiEnumState.IN_ACTIVITY;
@@ -497,10 +497,10 @@ export default {
       ) {
         this.changeIndex = 1;
         this.dragObj = {
-          x: e.clientX,
-          y: e.clientY,
-          originX: e.offsetX,
-          originY: e.offsetY,
+          x: e.clientX / window.remRatio,
+          y: e.clientY / window.remRatio,
+          originX: e.offsetX / window.remRatio,
+          originY: e.offsetY / window.remRatio,
         };
         this.editor.state = DDeiEditorState.FRAME_CHANGING;
         this.editor.ddInstance.state = DDeiEnumState.IN_ACTIVITY;

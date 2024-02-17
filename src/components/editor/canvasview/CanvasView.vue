@@ -132,6 +132,8 @@ export default {
             let rat1 = stage.ddInstance.render.ratio;
             let ex = evt.offsetX;
             let ey = evt.offsetY;
+            ex /= window.remRatio
+            ey /= window.remRatio
             ex -= stage.wpv.x;
             ey -= stage.wpv.y;
             let shadowControl =
@@ -227,6 +229,8 @@ export default {
         let stage = ddInstance.stage;
         let ex = e.offsetX;
         let ey = e.offsetY;
+        ex /= window.remRatio
+        ey /= window.remRatio
         ex -= stage.wpv.x;
         ey -= stage.wpv.y;
         if (this.editor.creatingControls) {
@@ -290,8 +294,9 @@ export default {
                 isExec = false;
               }
               if (isExec) {
-                let ex1 = e.offsetX;
-                let ey1 = e.offsetY;
+                let ex1 = e.offsetX / window.remRatio;
+                let ey1 = e.offsetY / window.remRatio;
+
                 let rat1 = ddInstance.render?.ratio;
                 let canvasWidth = ddInstance.render.canvas.width / rat1;
                 let canvasHeight = ddInstance.render.canvas.height / rat1;
@@ -384,8 +389,8 @@ export default {
       if (this.editor.state == DDeiEditorState.CONTROL_CREATING) {
         let ddInstance = this.editor.ddInstance;
         let stage = ddInstance.stage;
-        let ex = e.offsetX;
-        let ey = e.offsetY;
+        let ex = e.offsetX / window.remRatio;
+        let ey = e.offsetY / window.remRatio;
         ex -= stage.wpv.x;
         ey -= stage.wpv.y;
         if (this.editor.creatingControls) {
