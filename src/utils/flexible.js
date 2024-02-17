@@ -67,8 +67,19 @@ import { debounce } from "lodash";
 
   let refreshRem = function () {
     let width = docEl.getBoundingClientRect().width;
-    if (width / dpr < 1440) {
-      width = 1440 * dpr;
+    //转换为图片
+    let canvas = document.createElement('canvas');
+    //获得 2d 上下文对象
+    let context = canvas.getContext('2d');
+    let backingStore = context.backingStorePixelRatio ||
+      context.webkitBackingStorePixelRatio ||
+      context.mozBackingStorePixelRatio ||
+      context.msBackingStorePixelRatio ||
+      context.oBackingStorePixelRatio ||
+      context.backingStorePixelRatio || 1;
+    let ratio = (window.devicePixelRatio || 1) / backingStore;
+    if (width / dpr * ratio < 1440) {
+      width = 1440 * dpr / ratio;
     }
     // console.log(width + " . " + dpr)
     // if (width / dpr >= 2560) {
