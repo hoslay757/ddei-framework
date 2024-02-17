@@ -15,7 +15,7 @@
       </svg>
     </div>
     <div class="content">
-      <div class="ddei_editor_pv_subgroup_view" v-show="editor?.rightWidth > 38">
+      <div class="ddei_editor_pv_subgroup_view" v-show="editor?.rightWidth > pvGroupWidth">
         <div class="ddei_editor_pv_subgroup_view_tab_title">
           <div
             :class="currentTopGroup?.subGroups.length > 1 && subGroup.selected ? 'ddei_editor_pv_subgroup_view_tab_title_item_selected' : 'ddei_editor_pv_subgroup_view_tab_title_item'"
@@ -138,6 +138,7 @@ export default {
       reFresh: true,
       propertyDisabled: false,
       propertyViewShow: true,
+      pvGroupWidth: 0,
       panelStyle: "height:calc(100vh - 202px)"
     };
   },
@@ -571,25 +572,25 @@ export default {
      */
     hidOrShowPV() {
       this.propertyViewShow = !this.propertyViewShow
-      let rightWidth = this.editor.rightWidth;
+      let rightWidth = this.editor.rightWidth
+
       //获取最右边区域的大小
       let pvGroupViewEle = this.$refs.ddei_editor_pv_group_view
-      let pvGroupViewWidth = pvGroupViewEle.clientWidth
-
-      if (rightWidth > pvGroupViewWidth) {
+      this.pvGroupWidth = pvGroupViewEle.clientWidth
+      if (rightWidth > this.pvGroupWidth) {
         let pvViewEle = this.$refs.ddei_editor_propertyview
         this.pvGroupViewWidth = pvViewEle.clientWidth
-        let deltaX = this.editor.rightWidth - pvGroupViewWidth;
+        let deltaX = this.editor.rightWidth - this.pvGroupWidth;
         let frameRightElement = document.getElementById(
           "ddei_editor_frame_right"
         );
-        this.editor.rightWidth = pvGroupViewWidth;
-        frameRightElement.style.flexBasis = pvGroupViewWidth + "px";
+        this.editor.rightWidth = this.pvGroupWidth;
+        frameRightElement.style.flexBasis = this.pvGroupWidth + "px";
         //重新设置画布大小
         this.editor.middleWidth += deltaX;
 
       } else {
-        let deltaX = this.pvGroupViewWidth - pvGroupViewWidth;
+        let deltaX = this.pvGroupViewWidth - this.pvGroupWidth;
         let frameRightElement = document.getElementById(
           "ddei_editor_frame_right"
         );
@@ -598,6 +599,8 @@ export default {
         //重新设置画布大小
         this.editor.middleWidth -= deltaX;
       }
+
+
       this.editor.ddInstance.render.setSize(
         this.editor.middleWidth,
         this.editor.middleHeight,

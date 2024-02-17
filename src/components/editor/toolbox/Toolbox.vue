@@ -266,9 +266,6 @@ export default {
      */
     hiddenToolBox() {
       let deltaX = this.editor.leftWidth;
-      console.log(this.editor.leftWidth)
-      console.log(this.editor.middleWidth)
-      console.log(this.editor.rightWidth)
       let frameLeftElement = document.getElementById("ddei_editor_frame_left");
       window.leftWidth = this.editor.leftWidth
       this.editor.leftWidth = 0;
