@@ -610,6 +610,7 @@ class DDeiStageCanvasRender {
       let startBaseX = this.model.spv.x * rat1 + 1
       let startBaseY = this.model.spv.y * rat1 + 1
       if (ruleDisplay == 1 || ruleDisplay == "1") {
+        ctx.beginPath()
         //横向尺子背景
         ctx.fillRect(0, 0, cwidth, weight)
         ctx.moveTo(cwidth, 0)
@@ -617,6 +618,7 @@ class DDeiStageCanvasRender {
         ctx.lineTo(0, weight)
         ctx.stroke()
         //纵向尺子背景
+        ctx.beginPath()
         ctx.fillRect(0, 0, weight, cheight)
         ctx.moveTo(0, cheight)
         ctx.lineTo(weight, cheight)
