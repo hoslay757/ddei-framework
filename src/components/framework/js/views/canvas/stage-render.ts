@@ -1451,13 +1451,13 @@ class DDeiStageCanvasRender {
     if (!this.model.ddInstance.eventCancel) {
       if (this.operateState == DDeiEnumOperateState.STAGE_SCROLL_WORKING) {
         let canvasPos = DDeiUtil.getDomAbsPosition(this.ddRender?.canvas)
-        let ex = evt.clientX / window.remRatio - canvasPos.left;
-        let ey = evt.clientY / window.remRatio - canvasPos.top;
+        let ex = evt.clientX - canvasPos.left;
+        let ey = evt.clientY - canvasPos.top;
         if (this.dragObj?.scroll == 1) {
           let width = this.hScroll.width;
           //原始鼠标位置在操作区域的位置
           //当前鼠标位置在滚动条的比例位置
-          let posRat = (ex - this.dragObj.dx) / width;
+          let posRat = (ex / window.remRatio - this.dragObj.dx) / width;
           this.model.wpv.x = -this.model.width * posRat;
           let hScrollWidth = this.hScroll?.width ? this.hScroll?.width : 0
           if (this.model.wpv.x > 0) {
@@ -1469,7 +1469,7 @@ class DDeiStageCanvasRender {
           let height = this.vScroll.height;
           //原始鼠标位置在操作区域的位置
           //当前鼠标位置在滚动条的比例位置
-          let posRat = (ey - this.dragObj.dy) / height;
+          let posRat = (ey / window.remRatio - this.dragObj.dy) / height;
           this.model.wpv.y = -this.model.height * posRat;
           let vScrollHeight = this.vScroll?.height ? this.vScroll?.height : 0
           if (this.model.wpv.y > 0) {
