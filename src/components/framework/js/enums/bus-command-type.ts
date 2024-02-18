@@ -39,6 +39,7 @@ enum DDeiEnumBusCommandType {
   ChangeLinePoint = "change-line-point",
   TextEditorChangeSelectPos = "texteditor-change-select-pos",
   OVSChangePosition = "ovs-change-position",
+  UpdatePaperArea = "update-paper-area",//更新纸张区域
 }
 
 export default DDeiEnumBusCommandType

@@ -113,11 +113,7 @@ class DDeiStageCanvasRender {
       this.clearStage();
       //绘制纸张，以及图层背景
       this.drawPaper();
-      if (this.forceRefresh) {
-        delete this.forceRefresh
-        this.drawShape();
-        return;
-      }
+
       //计算滚动条
       this.calScroll();
 
@@ -403,7 +399,7 @@ class DDeiStageCanvasRender {
       let offsetWidth = 1 * ratio / 2;
 
       //纸张的像素大小
-      let paperSize = this.getPaperSize()
+      let paperSize = DDeiUtil.getPaperSize(this.model)
 
       let paperWidth = paperSize.width;
       let paperHeight = paperSize.height;
@@ -465,12 +461,10 @@ class DDeiStageCanvasRender {
       ctx.fillStyle = "white"
       ctx.strokeStyle = "grey"
       ctx.setLineDash([5, 5]);
-      let fullPaperWidth = 0, fullPaperHeight = 0
+      // let fullPaperWidth = (rightExtNum + leftExtNum + 1) * paperWidth
+      // let fullPaperHeight = (bottomExtNum + topExtNum + 1) * paperHeight
       for (let i = -leftExtNum; i <= rightExtNum; i++) {
-        fullPaperHeight = 0
         for (let j = -topExtNum; j <= bottomExtNum; j++) {
-          fullPaperWidth += paperWidth
-          fullPaperHeight += paperHeight
           ctx.fillRect(posX + (i * paperWidth), posY + (j * paperHeight), paperWidth, paperHeight)
           //绘制当前纸张的每个图层背景
           let topDisplayIndex = -1;
@@ -489,30 +483,30 @@ class DDeiStageCanvasRender {
         }
       }
 
-      if ((startPaperX + fullPaperWidth) / rat1 > this.model.width) {
-        this.model.width = (startPaperX + fullPaperWidth + 0.5 * paperWidth) / rat1
-      } else if ((this.model.width - ((startPaperX + fullPaperWidth) / rat1)) > paperWidth / rat1) {
-        this.model.width -= parseInt((this.model.width * rat1 - startPaperX - fullPaperWidth) / paperWidth) * paperWidth / rat1
-      }
-      if ((startPaperY + fullPaperHeight) / rat1 > this.model.height) {
-        this.model.height = (startPaperY + fullPaperHeight + 0.5 * paperHeight) / rat1
-      } else if ((this.model.height - ((startPaperY + fullPaperHeight) / rat1)) > paperHeight / rat1) {
-        this.model.height -= parseInt((this.model.height * rat1 - startPaperY - fullPaperHeight) / paperHeight) * paperHeight / rat1
-      }
-      let hScrollWidth = this.hScroll?.width ? this.hScroll.width : 0
-      let hScrollHeight = this.vScroll?.height ? this.vScroll.height : 0
-      if (wpv.x > 0) {
-        wpv.x = 0
-      } else if (wpv.x < -this.model.width + hScrollWidth) {
-        wpv.x = -this.model.width + hScrollWidth
-        this.forceRefresh = true;
-      }
-      if (wpv.y > 0) {
-        wpv.y = 0
-      } else if (wpv.y < -this.model.height + hScrollHeight) {
-        wpv.y = -this.model.height + hScrollHeight
-        this.forceRefresh = true;
-      }
+      // if ((startPaperX + fullPaperWidth) / rat1 > this.model.width) {
+      //   this.model.width = (startPaperX + fullPaperWidth + 0.5 * paperWidth) / rat1
+      // } else if ((this.model.width - ((startPaperX + fullPaperWidth) / rat1)) > paperWidth / rat1) {
+      //   this.model.width -= parseInt((this.model.width * rat1 - startPaperX - fullPaperWidth) / paperWidth) * paperWidth / rat1
+      // }
+      // if ((startPaperY + fullPaperHeight) / rat1 > this.model.height) {
+      //   this.model.height = (startPaperY + fullPaperHeight + 0.5 * paperHeight) / rat1
+      // } else if ((this.model.height - ((startPaperY + fullPaperHeight) / rat1)) > paperHeight / rat1) {
+      //   this.model.height -= parseInt((this.model.height * rat1 - startPaperY - fullPaperHeight) / paperHeight) * paperHeight / rat1
+      // }
+      // let hScrollWidth = this.hScroll?.width ? this.hScroll.width : 0
+      // let hScrollHeight = this.vScroll?.height ? this.vScroll.height : 0
+      // if (wpv.x > 0) {
+      //   wpv.x = 0
+      // } else if (wpv.x < -this.model.width + hScrollWidth) {
+      //   wpv.x = -this.model.width + hScrollWidth
+      //   this.forceRefresh = true;
+      // }
+      // if (wpv.y > 0) {
+      //   wpv.y = 0
+      // } else if (wpv.y < -this.model.height + hScrollHeight) {
+      //   wpv.y = -this.model.height + hScrollHeight
+      //   this.forceRefresh = true;
+      // }
 
 
       ctx.setLineDash([]);
@@ -595,7 +589,7 @@ class DDeiStageCanvasRender {
       let cheight = canvas.height;
 
       //纸张的像素大小
-      let paperSize = this.getPaperSize()
+      let paperSize = DDeiUtil.getPaperSize(this.model)
       let paperWidth = paperSize.width;
       let paperHeight = paperSize.height;
 
@@ -914,7 +908,7 @@ class DDeiStageCanvasRender {
         let cheight = canvas.height;
 
         //纸张的像素大小
-        let paperSize = this.getPaperSize()
+        let paperSize = DDeiUtil.getPaperSize(this.model)
         let paperWidth = paperSize.width;
         let paperHeight = paperSize.height;
         //基准位置0刻度
@@ -1348,51 +1342,7 @@ class DDeiStageCanvasRender {
     this.selector.resetState(evt.offsetX - this.model.wpv.x, evt.offsetY - this.model.wpv.y);
   }
 
-  /**
-   * 根据属性获取纸张大小
-   */
-  getPaperSize(): object {
-    //纸张的像素大小
-    let paperWidth = 0;
-    let paperHeight = 0;
-    //获取纸张大小的定义
-    let paperType = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.type", true);
-    let paperConfig = DDeiConfig.PAPER[paperType];
-    if (paperConfig) {
-      let rat1 = this.ddRender.ratio;
-      let stageRatio = this.model.getStageRatio()
-      let ratio = rat1 * stageRatio;
-      let xDPI = this.ddRender.dpi.x;
-      let paperDirect = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.direct", true);
-      let w = paperConfig.width;
-      let h = paperConfig.height;
-      let unit = paperConfig.unit;
-      if (paperType == '自定义') {
-        //获取自定义属性以及单位
-        let custWidth = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.width", true);
-        if (custWidth || custWidth == 0) {
-          w = custWidth;
-        }
-        let custHeight = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.height", true);
-        if (custHeight || custHeight == 0) {
-          h = custHeight;
-        }
-        let custUnit = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.unit", true);
-        if (custUnit) {
-          unit = custUnit;
-        }
-      }
 
-      if (paperDirect == 1 || paperDirect == '1') {
-        paperWidth = DDeiUtil.unitToPix(w, unit, xDPI) * ratio;
-        paperHeight = DDeiUtil.unitToPix(h, unit, xDPI) * ratio;
-      } else {
-        paperHeight = DDeiUtil.unitToPix(w, unit, xDPI) * ratio;
-        paperWidth = DDeiUtil.unitToPix(h, unit, xDPI) * ratio;
-      }
-    }
-    return { width: paperWidth, height: paperHeight }
-  }
 
   // ============================== 事件 ===============================
   /**

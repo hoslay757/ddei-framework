@@ -3,6 +3,8 @@ import DDeiAbstractShape from './models/shape.js';
 import { clone, cloneDeep, isDate, isNumber, isString, kebabCase } from 'lodash'
 import DDei from './ddei.js';
 import { Matrix3, Vector3 } from 'three';
+import DDeiModelArrtibuteValue from './models/attribute/attribute-value.js';
+import DDeiStage from './models/stage.js';
 const expressBindValueReg = /#\{[^\{\}]*\}/;
 const contentSplitReg = /\+|\-|\*|\//;
 const isNumberReg = /^[+-]?\d*(\.\d*)?(e[+-]?\d+)?$/;
@@ -128,15 +130,10 @@ class DDeiUtil {
 
     let key = text + "_" + font
     if (!DDeiUtil.cacheTextCharSize.has(key)) {
-      //特殊字体
       ctx.font = font;
       let rect = ctx.measureText(text);
-
-      //计算修正值
-      //实际高度
-      let actHeight = rect.fontBoundingBoxAscent + rect.fontBoundingBoxDescent
-      let dHeight = rect.fontBoundingBoxAscent
-      DDeiUtil.cacheTextCharSize.set(key, { width: rect.width, height: actHeight, dHeight: dHeight })
+      //计算修正值和实际高度
+      DDeiUtil.cacheTextCharSize.set(key, { width: rect.width, height: rect.fontBoundingBoxAscent + rect.fontBoundingBoxDescent, dHeight: rect.fontBoundingBoxAscent })
     }
     return DDeiUtil.cacheTextCharSize.get(key);
   }
@@ -2628,6 +2625,52 @@ class DDeiUtil {
       }
 
     })
+  }
+
+  /**
+   * 根据属性获取纸张大小
+   */
+  static getPaperSize(stage: DDeiStage): object {
+    //纸张的像素大小
+    let paperWidth = 0;
+    let paperHeight = 0;
+    //获取纸张大小的定义
+    let paperType = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.type", true);
+    let paperConfig = DDeiConfig.PAPER[paperType];
+    if (paperConfig) {
+      let rat1 = stage.render.ddRender.ratio;
+      let stageRatio = stage.getStageRatio()
+      let ratio = rat1 * stageRatio;
+      let xDPI = stage.render.ddRender.dpi.x;
+      let paperDirect = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.direct", true);
+      let w = paperConfig.width;
+      let h = paperConfig.height;
+      let unit = paperConfig.unit;
+      if (paperType == '自定义') {
+        //获取自定义属性以及单位
+        let custWidth = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.width", true);
+        if (custWidth || custWidth == 0) {
+          w = custWidth;
+        }
+        let custHeight = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.height", true);
+        if (custHeight || custHeight == 0) {
+          h = custHeight;
+        }
+        let custUnit = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.unit", true);
+        if (custUnit) {
+          unit = custUnit;
+        }
+      }
+
+      if (paperDirect == 1 || paperDirect == '1') {
+        paperWidth = DDeiUtil.unitToPix(w, unit, xDPI) * ratio;
+        paperHeight = DDeiUtil.unitToPix(h, unit, xDPI) * ratio;
+      } else {
+        paperHeight = DDeiUtil.unitToPix(w, unit, xDPI) * ratio;
+        paperWidth = DDeiUtil.unitToPix(h, unit, xDPI) * ratio;
+      }
+    }
+    return { width: paperWidth, height: paperHeight }
   }
 }
 

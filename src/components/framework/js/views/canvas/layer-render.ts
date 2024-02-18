@@ -997,6 +997,7 @@ class DDeiLayerCanvasRender {
             }
           }
           if (hasChange) {
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdatePaperArea);
             this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.StageChangeSelectModels);
             this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
             this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.NodifyChange);

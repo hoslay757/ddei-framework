@@ -99,19 +99,18 @@ class DDeiBusCommandUpdatePaperArea extends DDeiBusCommand {
         }
       }
       //从spv.x 开始，左边和右边的宽度
-      let paperW = paperWidth / rat1
-      let leftPaperWidth = (leftExtNum + 0.5) * paperW
-      let rightPaperWidth = (rightExtNum + 1.5) * paperW
+      let leftPaperWidth = (leftExtNum + 0.5) * paperWidth
+      let rightPaperWidth = (rightExtNum + 1.5) * paperWidth
       let leftSpace = stage.spv.x
       let rightSpace = stage.width - stage.spv.x
 
       if (rightPaperWidth > rightSpace) {
         console.log("右扩展")
-      } else if ((rightSpace - rightPaperWidth) > paperW) {
+      } else if ((rightSpace - rightPaperWidth) > paperWidth) {
         console.log("右收缩")
       } else if (leftPaperWidth > leftSpace) {
         console.log("左扩展")
-      } else if ((leftSpace - leftPaperWidth) > paperW) {
+      } else if ((leftSpace - leftPaperWidth) > paperWidth) {
         console.log("左收缩")
       }
 
