@@ -65,7 +65,7 @@
             <use xlink:href="#icon-a-ziyuan413"></use>
           </svg>
           <div class="split"></div>
-          <input v-model="reg.username" class="content_right_reg_form_input" placeholder="用户名,6-30位中文、英文、数字、下划线组合" />
+          <input v-model="reg.username" class="content_right_reg_form_input" placeholder="用户名,4-20位中文、英文、数字、下划线" />
           <span class="content_right_reg_form_input_required">*</span>
         </div>
         <div class="content_right_form_msg">
@@ -127,7 +127,7 @@
         <div class="content_right_form_msg">
           {{ reg.validMsg.username }}
         </div>
-        <input v-model="reg.username" class="content_right_reg_form_input" placeholder="用户名,6-30位中文、英文、数字、下划线组合" />
+        <input v-model="reg.username" class="content_right_reg_form_input" placeholder="用户名,4-20位中文、英文、数字、下划线" />
         <span class="content_right_reg_form_input_required">*</span>
         <div class="content_right_form_msg">
           {{ reg.validMsg.email }}
@@ -226,9 +226,9 @@ export default {
       if (!this.reg.username) {
         this.reg.validMsg.username = "请输入用户名";
       } else {
-        let uPattern = /^[a-zA-Z0-9_-]{6,20}$/;
+        let uPattern = /^[\u4e00-\u9fa5a-zA-Z0-9_-]{4,20}$/;
         if (!uPattern.test(this.reg.username)) {
-          this.reg.validMsg.username = "用户名为6至20位数字、字母下划线组合";
+          this.reg.validMsg.username = "用户名为4至20位,请勿输入特殊字符";
         }
       }
       if (!this.reg.mobile) {
@@ -282,9 +282,9 @@ export default {
       if (!this.form.username) {
         this.form.validMsg.username = "请输入用户名";
       } else {
-        let uPattern = /^[a-zA-Z0-9_-]{6,20}$/;
+        let uPattern = /^[\u4e00-\u9fa5a-zA-Z0-9_-]{4,20}$/;
         if (!uPattern.test(this.form.username)) {
-          this.form.validMsg.username = "用户名为6至20位数字、字母下划线组合";
+          this.reg.validMsg.username = "用户名为4至20位,请勿输入特殊字符";
         }
       }
       //密码
