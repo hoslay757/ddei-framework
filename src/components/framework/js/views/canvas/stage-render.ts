@@ -128,6 +128,9 @@ class DDeiStageCanvasRender {
       ctx.save();
 
       ctx.translate((this.model.wpv.x) * rat1, (this.model.wpv.y) * rat1)
+
+      this.drawTest();
+
       let topDisplayIndex = -1;
       for (let i = this.model.layers.length - 1; i >= 0; i--) {
         if (this.model.layers[i].tempDisplay) {
@@ -492,6 +495,84 @@ class DDeiStageCanvasRender {
       ctx.restore();
 
     }
+
+  }
+
+  drawTest() {
+    if (this.model.selectedModels?.size > 1) {
+      let selectedModels = Array.from(this.model.selectedModels?.values())
+      //构造传入参数
+      let ignoreModelIds = [selectedModels[0].id, selectedModels[1].id]
+      let allModels = this.model.getLayerModels(ignoreModelIds)
+      let obis = []
+      allModels.forEach(model => {
+        obis.push({ points: model.operatePVS })
+      })
+
+      let linePathData = DDeiUtil.calAutoLinePath(
+        { points: selectedModels[0].operatePVS },
+        { points: selectedModels[1].operatePVS },
+        obis)
+      if (linePathData) {
+        let corssPoints = linePathData.corssPoints
+        //获得 2d 上下文对象
+        let canvas = this.ddRender.getCanvas();
+        let ctx = canvas.getContext('2d');
+        let rat1 = this.ddRender.ratio;
+        let stageRatio = this.model.getStageRatio()
+        let ratio = rat1 * stageRatio
+        ctx.save()
+        corssPoints.forEach(point => {
+          let weight = 4;
+          if (!point.color) {
+            ctx.fillStyle = "white"
+            ctx.strokeStyle = "green"
+          } else {
+            ctx.fillStyle = point.color
+            ctx.strokeStyle = point.color
+          }
+
+          ctx.beginPath();
+          ctx.ellipse(point.x * ratio, point.y * ratio, weight * ratio, weight * ratio, 0, 0, Math.PI * 2)
+          ctx.fill();
+          ctx.stroke();
+          ctx.closePath();
+        });
+
+        let extLines = linePathData.extLines
+        ctx.lineWidth = 1
+        ctx.strokeStyle = "red"
+        ctx.globalAlpha = 0.25
+        extLines.forEach(extLine => {
+
+          ctx.beginPath();
+          ctx.moveTo(extLine[0].x * ratio, extLine[0].y * ratio)
+          if (extLine[0].x == extLine[1].x) {
+            if (extLine[0].y >= extLine[1].y) {
+              ctx.lineTo(extLine[1].x * ratio, (extLine[1].y - 1000) * ratio)
+            } else {
+              ctx.lineTo(extLine[1].x * ratio, (extLine[1].y + 1000) * ratio)
+            }
+
+          } else if (extLine[0].y == extLine[1].y) {
+            if (extLine[0].x >= extLine[1].x) {
+              ctx.lineTo((extLine[1].x - 1000) * ratio, extLine[1].y * ratio)
+            } else {
+              ctx.lineTo((extLine[1].x + 1000) * ratio, extLine[1].y * ratio)
+            }
+          }
+
+
+          ctx.stroke();
+          ctx.closePath();
+        });
+        ctx.globalAlpha = 1
+
+
+        ctx.restore()
+      }
+    }
+
 
   }
 

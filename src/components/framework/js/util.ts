@@ -2685,6 +2685,128 @@ class DDeiUtil {
     }
     return { width: paperWidth, height: paperHeight }
   }
+
+
+  /**
+   * 计算自动连线的路径
+   * @param sd 开始物体信息，包含了外接点、开始方向1上/2右/3下/4左
+   * @param ed 结束物体信息，包含了外接点、结束方向1上/2右/3下/4左
+   * @param obis 障碍物，包含了外接点
+   */
+  static calAutoLinePath(sd: { points: object[], direct: number }, ed: { points: object[], direct: number }, obis: object[]): object {
+    //所有图形的外接矩形
+    let outRects = []
+    //延长线
+    let extLines = []
+    //1.生成棋盘上的交叉点
+    let corssPoints = []
+
+    //1.1规则：开始物体、结束物体、障碍物的所有点、所有物体外接矩形扩大四分之一点、所有物体之间的中心点
+    corssPoints = corssPoints.concat(sd.points);
+    DDeiUtil.getAutoLineItemExtPoints(corssPoints, outRects, extLines, sd, "blue")
+    corssPoints = corssPoints.concat(ed.points);
+    DDeiUtil.getAutoLineItemExtPoints(corssPoints, outRects, extLines, ed, "blue")
+    obis.forEach(obi => {
+      corssPoints = corssPoints.concat(obi.points);
+      DDeiUtil.getAutoLineItemExtPoints(corssPoints, outRects, extLines, obi, "blue")
+    })
+    //1.2规则：根据点生成点的延长线，延长线的交点
+    for (let i = 0; i < extLines.length; i++) {
+      let linei = extLines[i];
+      let lineil = [linei[0]]
+      if (linei[0].x == linei[1].x) {
+        if (linei[0].y >= linei[1].y) {
+          lineil.push({ x: linei[1].x, y: linei[1].y - 1000 })
+        } else {
+          lineil.push({ x: linei[1].x, y: linei[1].y + 1000 })
+        }
+
+      } else if (linei[0].y == linei[1].y) {
+        if (linei[0].x >= linei[1].x) {
+          lineil.push({ x: linei[1].x - 1000, y: linei[1].y })
+        } else {
+          lineil.push({ x: linei[1].x + 1000, y: linei[1].y })
+        }
+      }
+      for (let j = 0; j < extLines.length; j++) {
+        let linej = extLines[j];
+        if (linei != linej) {
+          let linejl = [linej[0]]
+          if (linej[0].x == linej[1].x) {
+            if (linej[0].y >= linej[1].y) {
+              linejl.push({ x: linej[1].x, y: linej[1].y - 1000 })
+            } else {
+              linejl.push({ x: linej[1].x, y: linej[1].y + 1000 })
+            }
+
+          } else if (linej[0].y == linej[1].y) {
+            if (linej[0].x >= linej[1].x) {
+              linejl.push({ x: linej[1].x - 1000, y: linej[1].y })
+            } else {
+              linejl.push({ x: linej[1].x + 1000, y: linej[1].y })
+            }
+          }
+
+
+          let cp = DDeiUtil.getLineCorssPoint(lineil[0], lineil[1], linejl[0], linejl[1])
+          if (cp) {
+
+            corssPoints.push(cp)
+          }
+        }
+      }
+    }
+
+    return { corssPoints: corssPoints, extLines: extLines }
+  }
+
+  //获取元素的扩展点以及延长线
+  static getAutoLineItemExtPoints(corssPoints, outRects, extLines, dbi, color) {
+    //外接矩形扩展区域大小
+    let outRectExtRate = 0.25
+    let outRect = DDeiAbstractShape.pvsToOutRect(dbi.points)
+    let perWidth = outRect.width * outRectExtRate
+    let perHeight = outRect.height * outRectExtRate
+    //左边
+    corssPoints.push({ x: outRect.x - perWidth, y: outRect.y, color: color })
+    corssPoints.push({ x: outRect.x - perWidth, y: outRect.y + outRect.height * 0.5, color: color })
+    corssPoints.push({ x: outRect.x - perWidth, y: outRect.y1, color: color })
+
+    extLines.push([{ x: outRect.x, y: outRect.y }, { x: outRect.x - perWidth, y: outRect.y }])
+    extLines.push([{ x: outRect.x, y: outRect.y + outRect.height * 0.5 }, { x: outRect.x - perWidth, y: outRect.y + outRect.height * 0.5 }])
+    extLines.push([{ x: outRect.x, y: outRect.y1 }, { x: outRect.x - perWidth, y: outRect.y1 }])
+
+    //右边
+    corssPoints.push({ x: outRect.x1 + perWidth, y: outRect.y, color: color })
+    corssPoints.push({ x: outRect.x1 + perWidth, y: outRect.y + outRect.height * 0.5, color: color })
+    corssPoints.push({ x: outRect.x1 + perWidth, y: outRect.y1, color: color })
+
+    extLines.push([{ x: outRect.x1, y: outRect.y }, { x: outRect.x1 + perWidth, y: outRect.y }])
+    extLines.push([{ x: outRect.x1, y: outRect.y + outRect.height * 0.5 }, { x: outRect.x1 + perWidth, y: outRect.y + outRect.height * 0.5 }])
+    extLines.push([{ x: outRect.x1, y: outRect.y1 }, { x: outRect.x1 + perWidth, y: outRect.y1 }])
+    //上边
+    corssPoints.push({ x: outRect.x, y: outRect.y - perHeight, color: color })
+    corssPoints.push({ x: outRect.x + outRect.width / 2, y: outRect.y - perHeight, color: color })
+    corssPoints.push({ x: outRect.x1, y: outRect.y - perHeight, color: color })
+
+
+    extLines.push([{ x: outRect.x, y: outRect.y }, { x: outRect.x, y: outRect.y - perHeight }])
+    extLines.push([{ x: outRect.x + outRect.width / 2, y: outRect.y }, { x: outRect.x + outRect.width / 2, y: outRect.y - perHeight }])
+    extLines.push([{ x: outRect.x1, y: outRect.y }, { x: outRect.x1, y: outRect.y - perHeight }])
+
+
+
+    //下边
+    corssPoints.push({ x: outRect.x, y: outRect.y1 + perHeight, color: color })
+    corssPoints.push({ x: outRect.x + outRect.width / 2, y: outRect.y1 + perHeight, color: color })
+    corssPoints.push({ x: outRect.x1, y: outRect.y1 + perHeight, color: color })
+
+    extLines.push([{ x: outRect.x, y: outRect.y1 }, { x: outRect.x, y: outRect.y1 + perHeight }])
+    extLines.push([{ x: outRect.x + outRect.width / 2, y: outRect.y1 }, { x: outRect.x + outRect.width / 2, y: outRect.y1 + perHeight }])
+    extLines.push([{ x: outRect.x1, y: outRect.y1 }, { x: outRect.x1, y: outRect.y1 + perHeight }])
+
+    outRects.push(outRect)
+  }
 }
 
 export default DDeiUtil
