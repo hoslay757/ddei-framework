@@ -2701,16 +2701,48 @@ class DDeiUtil {
     //1.生成棋盘上的交叉点
     let corssPoints = []
 
-    //1.1规则：开始物体、结束物体、障碍物的所有点、所有物体外接矩形扩大四分之一点、所有物体之间的中心点
+    //1.1规则：开始物体、结束物体、障碍物的所有点、所有物体外接矩形扩大四分之一点
     corssPoints = corssPoints.concat(sd.points);
-    DDeiUtil.getAutoLineItemExtPoints(corssPoints, outRects, extLines, sd, "blue")
+    DDeiUtil.getAutoLineItemExtPoints(corssPoints, outRects, extLines, sd, "grey")
     corssPoints = corssPoints.concat(ed.points);
-    DDeiUtil.getAutoLineItemExtPoints(corssPoints, outRects, extLines, ed, "blue")
+    DDeiUtil.getAutoLineItemExtPoints(corssPoints, outRects, extLines, ed, "grey")
     obis.forEach(obi => {
       corssPoints = corssPoints.concat(obi.points);
-      DDeiUtil.getAutoLineItemExtPoints(corssPoints, outRects, extLines, obi, "blue")
+      DDeiUtil.getAutoLineItemExtPoints(corssPoints, outRects, extLines, obi, "grey")
     })
-    //1.2规则：根据点生成点的延长线，延长线的交点
+    //1.2规则:所有物体外接矩形之间的中心点
+    for (let i = 0; i < outRects.length; i++) {
+      let octi = outRects[i];
+      for (let j = 1; j < outRects.length; j++) {
+        if (i != j) {
+          let octj = outRects[j];
+          //上下
+          if (octj.y1 < octi.y) {
+            let mdy = octj.y1 + (octi.y - octj.y1) / 2
+            extLines.push([{ x: octj.x - 50000, y: mdy, color: "green" }, { x: octj.x + 50000, y: mdy }])
+          }
+          else if (octj.y > octi.y1) {
+            let mdy = octi.y1 + (octj.y - octi.y1) / 2
+            extLines.push([{ x: octj.x - 50000, y: mdy, color: "green" }, { x: octj.x + 50000, y: mdy }])
+          }
+          //左右
+          if (octj.x1 < octi.x) {
+            let mdx = octj.x1 + (octi.x - octj.x1) / 2
+            extLines.push([{ x: mdx, y: octj.y - 50000, color: "green" }, { x: mdx, y: octj.y + 50000 }])
+          }
+          else if (octj.x > octi.x1) {
+            let mdx = octi.x1 + (octj.x - octi.x1) / 2
+            extLines.push([{ x: mdx, y: octj.y - 50000, color: "green" }, { x: mdx, y: octj.y + 50000 }])
+          }
+
+
+
+
+        }
+
+      }
+    }
+    //1.3规则：根据点生成点的延长线，延长线的交点
     for (let i = 0; i < extLines.length; i++) {
       let linei = extLines[i];
       let lineil = [linei[0]]
@@ -2728,9 +2760,9 @@ class DDeiUtil {
           lineil.push({ x: linei[1].x + 1000, y: linei[1].y })
         }
       }
-      for (let j = 0; j < extLines.length; j++) {
-        let linej = extLines[j];
-        if (linei != linej) {
+      for (let j = 1; j < extLines.length; j++) {
+        if (i != j) {
+          let linej = extLines[j];
           let linejl = [linej[0]]
           if (linej[0].x == linej[1].x) {
             if (linej[0].y >= linej[1].y) {
@@ -2750,12 +2782,18 @@ class DDeiUtil {
 
           let cp = DDeiUtil.getLineCorssPoint(lineil[0], lineil[1], linejl[0], linejl[1])
           if (cp) {
+            if (lineil[0].color) {
+              cp.color = lineil[0].color
+            } else {
+              cp.color = "#FFC0CB"
+            }
 
             corssPoints.push(cp)
           }
         }
       }
     }
+
 
     return { corssPoints: corssPoints, extLines: extLines }
   }

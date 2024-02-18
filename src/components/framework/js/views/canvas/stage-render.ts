@@ -533,7 +533,7 @@ class DDeiStageCanvasRender {
           }
 
           ctx.beginPath();
-          ctx.ellipse(point.x * ratio, point.y * ratio, weight * ratio, weight * ratio, 0, 0, Math.PI * 2)
+          ctx.ellipse(point.x * rat1, point.y * rat1, weight * ratio, weight * ratio, 0, 0, Math.PI * 2)
           ctx.fill();
           ctx.stroke();
           ctx.closePath();
@@ -541,24 +541,28 @@ class DDeiStageCanvasRender {
 
         let extLines = linePathData.extLines
         ctx.lineWidth = 1
-        ctx.strokeStyle = "red"
-        ctx.globalAlpha = 0.25
-        extLines.forEach(extLine => {
 
+        extLines.forEach(extLine => {
+          ctx.strokeStyle = "red"
+          ctx.globalAlpha = 0.1
           ctx.beginPath();
-          ctx.moveTo(extLine[0].x * ratio, extLine[0].y * ratio)
+          ctx.moveTo(extLine[0].x * rat1, extLine[0].y * rat1)
+          if (extLine[0].color) {
+            ctx.strokeStyle = extLine[0].color
+            ctx.globalAlpha = 0.3
+          }
           if (extLine[0].x == extLine[1].x) {
             if (extLine[0].y >= extLine[1].y) {
-              ctx.lineTo(extLine[1].x * ratio, (extLine[1].y - 1000) * ratio)
+              ctx.lineTo(extLine[1].x * rat1, (extLine[1].y - 1000) * rat1)
             } else {
-              ctx.lineTo(extLine[1].x * ratio, (extLine[1].y + 1000) * ratio)
+              ctx.lineTo(extLine[1].x * rat1, (extLine[1].y + 1000) * rat1)
             }
 
           } else if (extLine[0].y == extLine[1].y) {
             if (extLine[0].x >= extLine[1].x) {
-              ctx.lineTo((extLine[1].x - 1000) * ratio, extLine[1].y * ratio)
+              ctx.lineTo((extLine[1].x - 1000) * rat1, extLine[1].y * rat1)
             } else {
-              ctx.lineTo((extLine[1].x + 1000) * ratio, extLine[1].y * ratio)
+              ctx.lineTo((extLine[1].x + 1000) * rat1, extLine[1].y * rat1)
             }
           }
 
