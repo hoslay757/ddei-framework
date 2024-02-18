@@ -1,9 +1,9 @@
 import axios from 'axios'
 import Cookies from 'js-cookie'
 const request = axios.create({
-  // baseURL: 'https://www.ddei.top/api',
+  baseURL: 'https://www.ddei.top/api',
   // baseURL: 'https://www.hoslay.store:28000/api',
-  baseURL: 'http://localhost:8100',
+  // baseURL: 'http://localhost:8100',
 
   timeout: 3000
 })
@@ -12,8 +12,8 @@ request.interceptors.request.use(
     if (
       config.url.includes(
         '/refresh/token' ||
-          config.url.includes('/user/login') ||
-          config.url.includes('/user/register')
+        config.url.includes('/user/login') ||
+        config.url.includes('/user/register')
       )
     ) {
       return config
@@ -30,8 +30,8 @@ request.interceptors.request.use(
       request
         .post(
           config.baseURL +
-            '/v1/refresh/token?refreshToken=' +
-            Cookies.get('refreshToken')
+          '/v1/refresh/token?refreshToken=' +
+          Cookies.get('refreshToken')
         )
         .then((res) => {
           Cookies.set('token', res.data.data.token)

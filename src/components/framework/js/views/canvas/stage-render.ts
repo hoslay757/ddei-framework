@@ -461,8 +461,6 @@ class DDeiStageCanvasRender {
       ctx.fillStyle = "white"
       ctx.strokeStyle = "grey"
       ctx.setLineDash([5, 5]);
-      // let fullPaperWidth = (rightExtNum + leftExtNum + 1) * paperWidth
-      // let fullPaperHeight = (bottomExtNum + topExtNum + 1) * paperHeight
       for (let i = -leftExtNum; i <= rightExtNum; i++) {
         for (let j = -topExtNum; j <= bottomExtNum; j++) {
           ctx.fillRect(posX + (i * paperWidth), posY + (j * paperHeight), paperWidth, paperHeight)
@@ -482,32 +480,6 @@ class DDeiStageCanvasRender {
           ctx.strokeRect(posX + (i * paperWidth), posY + (j * paperHeight), paperWidth, paperHeight)
         }
       }
-
-      // if ((startPaperX + fullPaperWidth) / rat1 > this.model.width) {
-      //   this.model.width = (startPaperX + fullPaperWidth + 0.5 * paperWidth) / rat1
-      // } else if ((this.model.width - ((startPaperX + fullPaperWidth) / rat1)) > paperWidth / rat1) {
-      //   this.model.width -= parseInt((this.model.width * rat1 - startPaperX - fullPaperWidth) / paperWidth) * paperWidth / rat1
-      // }
-      // if ((startPaperY + fullPaperHeight) / rat1 > this.model.height) {
-      //   this.model.height = (startPaperY + fullPaperHeight + 0.5 * paperHeight) / rat1
-      // } else if ((this.model.height - ((startPaperY + fullPaperHeight) / rat1)) > paperHeight / rat1) {
-      //   this.model.height -= parseInt((this.model.height * rat1 - startPaperY - fullPaperHeight) / paperHeight) * paperHeight / rat1
-      // }
-      // let hScrollWidth = this.hScroll?.width ? this.hScroll.width : 0
-      // let hScrollHeight = this.vScroll?.height ? this.vScroll.height : 0
-      // if (wpv.x > 0) {
-      //   wpv.x = 0
-      // } else if (wpv.x < -this.model.width + hScrollWidth) {
-      //   wpv.x = -this.model.width + hScrollWidth
-      //   this.forceRefresh = true;
-      // }
-      // if (wpv.y > 0) {
-      //   wpv.y = 0
-      // } else if (wpv.y < -this.model.height + hScrollHeight) {
-      //   wpv.y = -this.model.height + hScrollHeight
-      //   this.forceRefresh = true;
-      // }
-
 
       ctx.setLineDash([]);
       let lineWidth = 1;

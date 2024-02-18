@@ -6,7 +6,7 @@ import DDeiModelArrtibuteValue from '../../models/attribute/attribute-value';
 import DDeiUtil from '../../util';
 import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
-import { Vector3 } from 'three';
+import { Vector3, Matrix3 } from 'three';
 import DDeiAbstractShape from '../../models/shape';
 /**
  * 更新纸张区域信息
@@ -41,17 +41,15 @@ class DDeiBusCommandUpdatePaperArea extends DDeiBusCommand {
     //获取纸张大小的定义
     let paperConfig = DDeiConfig.PAPER[paperType];
     if (paperConfig) {
-
+      let rat1 = bus.ddInstance.render.ratio
       //当前的窗口位置（乘以了窗口缩放比例）
       let wpv = stage.wpv
-      let wpvX = -wpv.x
-      let wpvY = -wpv.y
 
       //纸张的像素大小
       let paperSize = DDeiUtil.getPaperSize(stage)
 
-      let paperWidth = paperSize.width;
-      let paperHeight = paperSize.height;
+      let paperWidth = paperSize.width / rat1;
+      let paperHeight = paperSize.height / rat1;
 
       //第一张纸开始位置
       if (!stage.spv) {
@@ -104,61 +102,73 @@ class DDeiBusCommandUpdatePaperArea extends DDeiBusCommand {
       let leftSpace = stage.spv.x
       let rightSpace = stage.width - stage.spv.x
 
+      let topPaperWidth = (topExtNum + 0.5) * paperHeight
+      let bottomPaperWidth = (bottomExtNum + 1.5) * paperHeight
+      let topSpace = stage.spv.y
+      let bottomSpace = stage.height - stage.spv.y
+      let extW = 0, extH = 0
+      let needMoveX = false, needMoveY = false
       if (rightPaperWidth > rightSpace) {
-        console.log("右扩展")
-      } else if ((rightSpace - rightPaperWidth) > paperWidth) {
-        console.log("右收缩")
-      } else if (leftPaperWidth > leftSpace) {
-        console.log("左扩展")
-      } else if ((leftSpace - leftPaperWidth) > paperWidth) {
-        console.log("左收缩")
+        extW = rightPaperWidth - rightSpace
+
+      } else if ((rightSpace - rightPaperWidth) >= paperWidth) {
+        extW = -parseInt((rightSpace - rightPaperWidth) / paperWidth) * paperWidth
+
+      }
+      if (leftPaperWidth > leftSpace) {
+        extW = leftPaperWidth - leftSpace
+        needMoveX = true
+      } else if (parseFloat((leftSpace - leftPaperWidth).toFixed(2)) >= parseFloat(paperWidth.toFixed(2))) {
+        extW = - parseInt((leftSpace - leftPaperWidth) / paperWidth) * paperWidth
+        needMoveX = true
+      }
+
+
+      if (bottomPaperWidth > bottomSpace) {
+        extH = bottomPaperWidth - bottomSpace
+      } else if ((bottomSpace - bottomPaperWidth) >= paperHeight) {
+        extH = -parseInt((bottomSpace - bottomPaperWidth) / paperHeight) * paperHeight
+      }
+      if (topPaperWidth > topSpace) {
+        extH = topPaperWidth - topSpace
+        needMoveY = true
+      } else if (parseFloat((topSpace - topPaperWidth).toFixed(2)) >= parseFloat(paperHeight.toFixed(2))) {
+        extH = - parseInt((topSpace - topPaperWidth) / paperHeight) * paperHeight
+        needMoveY = true
       }
 
 
 
-      //画布宽度=半张纸宽度+纸张总宽度+半张纸宽度
-      //画布高度=半张纸宽度+纸张总宽度+半张纸宽度
-      // stage.width = (fullPaperWidth + paperWidth) / rat1
-      // stage.height = (fullPaperHeight + paperHeight) / rat1
 
+      if (extW || extH) {
+        stage.width += extW
+        stage.height += extH
+        let mx = 0, my = 0
+        if (needMoveX) {
+          mx = extW
+        }
+        if (needMoveY) {
+          my = extH
+        }
+        if (mx || my) {
+          let moveMatrix = new Matrix3(
+            1, 0, mx,
+            0, 1, my,
+            0, 0, 1,
+          );
+          stage?.spv.applyMatrix3(moveMatrix)
+          let mds = stage.getLayerModels([]);
+          mds.forEach(item => {
+            item.transVectors(moveMatrix)
+          });
 
+          stage.render.selector?.transVectors(moveMatrix)
 
-      // let hScrollWidth = stage.render.hScroll?.width ? stage.render.hScroll.width : 0
-      // let hScrollHeight = stage.render.vScroll?.height ? stage.render.vScroll.height : 0
-      // if (wpv.x > 0) {
-      //   wpv.x = 0
-      // } else if (wpv.x < -stage.width + hScrollWidth) {
-      //   wpv.x = -stage.width + hScrollWidth
-      // }
-      // if (wpv.y > 0) {
-      //   wpv.y = 0
-      // } else if (wpv.y < -stage.height + hScrollHeight) {
-      //   wpv.y = -stage.height + hScrollHeight
-      // }
+          wpv.x -= mx
+          wpv.y -= my
+        }
 
-
-      // //画布宽度=半张纸宽度+纸张总宽度+半张纸宽度
-      // //画布高度=半张纸宽度+纸张总宽度+半张纸宽度
-      // let extW = (fullPaperWidth + paperWidth) / rat1 - stage?.width
-      // let extH = (fullPaperHeight + paperHeight) / rat1 - stage?.height
-
-      // if (extW || extH) {
-      //   stage.width += extW
-      //   stage.height += extH
-      //   let moveMatrix = new Matrix3(
-      //     1, 0, extW,
-      //     0, 1, extH,
-      //     0, 0, 1,
-      //   );
-      //   stage?.spv.applyMatrix3(moveMatrix)
-      //   let mds = stage.getLayerModels([]);
-      //   mds.forEach(item => {
-      //     item.transVectors(moveMatrix)
-      //   });
-
-      //   stage.render.selector?.transVectors(moveMatrix)
-
-      // }
+      }
     }
     return true
   }
