@@ -1,7 +1,8 @@
 <template>
   <div class="ddei_home_fileview">
     <div class="ddei_home_fileview_operations">
-      <div class="ddei_home_fileview_operate ddei_home_fileview_operate_dir_add" @click="onCreateFolderClick">
+      <div v-if="false" class="ddei_home_fileview_operate ddei_home_fileview_operate_dir_add"
+        @click="onCreateFolderClick">
         <div class="ddei_home_fileview_operate_icon">
           <img src="@/assets/images/icon-file-add.png" />
         </div>
@@ -23,7 +24,7 @@
           +
         </div>
       </div>
-      <div class="ddei_home_fileview_operate ddei_home_fileview_operate_file_draft_add">
+      <div v-if="false" class="ddei_home_fileview_operate ddei_home_fileview_operate_file_draft_add">
         <div class="ddei_home_fileview_operate_icon">
           <img src="@/assets/images/icon-file-add.png" />
         </div>
@@ -36,59 +37,63 @@
       </div>
     </div>
     <div class="ddei_home_fileview_divide"></div>
-    <div class="ddei_home_fileview_files">
-      <!-- <div class="ddei_home_fileview_file">
+    <ASpin wrapper-class-name="ddei_home_fileview_files_spin" :spinning="loading">
+      <div v-if="files?.length" class="ddei_home_fileview_files">
+
+        <!-- <div class="ddei_home_fileview_file">
         <div class="ddei_home_fileview_file_add"
              @click="showFileDialog(null, 1)">
           <span style="margin-top:-5px">+</span>
         </div>
       </div> -->
-      <div v-for="(file) in files" :key="file.id" class="ddei_home_fileview_file">
-        <div class="ddei_home_fileview_file_header">
-          <div class="ddei_home_fileview_file_icon">
-            <img src="@/components/editor/icons/icon-file-list-item.png">
-          </div>
-          <div class="ddei_home_fileview_file_name">{{ file.name }}</div>
-          <!-- 
+        <div v-for="(file) in files" :key="file.id" class="ddei_home_fileview_file">
+          <div class="ddei_home_fileview_file_header">
+            <div class="ddei_home_fileview_file_icon">
+              <img src="@/components/editor/icons/icon-file-list-item.png">
+            </div>
+            <div class="ddei_home_fileview_file_name">{{ file.name }}</div>
+            <!-- 
           <div class="ddei_home_fileview_file_code">
             {{ file.code }}
           </div>
            -->
-          <div
-            :class="{ 'ddei_home_fileview_file_version': true, 'ddei_home_fileview_file_version_published': file.publish == 1 }">
-            v{{ file.version }}
+            <div
+              :class="{ 'ddei_home_fileview_file_version': true, 'ddei_home_fileview_file_version_published': file.publish == 1 }">
+              v{{ file.version }}
+            </div>
+            <div class="ddei_home_fileview_file_update">
+              {{ getFileLastTime(file) }}
+            </div>
           </div>
-          <div class="ddei_home_fileview_file_update">
-            {{ getFileLastTime(file) }}
+          <div class="ddei_home_fileview_file_info">
+            <div class="ddei_home_fileview_file_thumbnail">
+              <img src="@/assets/images/thumbnail_default.png" />
+            </div>
           </div>
-        </div>
-        <div class="ddei_home_fileview_file_info">
-          <div class="ddei_home_fileview_file_thumbnail">
-            <img src="@/assets/images/thumbnail_default.png" />
-          </div>
-        </div>
-        <div class="ddei_home_fileview_file_buttons">
-          <div class="ddei_home_fileview_file_button">
-            <img src="../../components/editor/icons/icon-file.png" @click="showFileDialog(file, 2)" />
-          </div>
-          <div class="ddei_home_fileview_file_button_split">
-          </div>
-          <div class="ddei_home_fileview_file_button">
-            <img src="../../components/editor/icons/icon-style-line.png" @click="gotoDesign(file)" />
-          </div>
-          <div class="ddei_home_fileview_file_button_split">
-          </div>
-          <div class="ddei_home_fileview_file_button">
-            <img src="../../components/editor/icons/icon-copy.png" @click="copyFile(file)" />
-          </div>
-          <div class="ddei_home_fileview_file_button_split">
-          </div>
-          <div class="ddei_home_fileview_file_button">
-            <img src="../../components/editor/icons/icon-trash.png" @click="deleteFile(file)" />
+          <div class="ddei_home_fileview_file_buttons">
+            <div class="ddei_home_fileview_file_button">
+              <img src="../../components/editor/icons/icon-file.png" @click="showFileDialog(file, 2)" />
+            </div>
+            <div class="ddei_home_fileview_file_button_split">
+            </div>
+            <div class="ddei_home_fileview_file_button">
+              <img src="../../components/editor/icons/icon-style-line.png" @click="gotoDesign(file)" />
+            </div>
+            <div class="ddei_home_fileview_file_button_split">
+            </div>
+            <div class="ddei_home_fileview_file_button">
+              <img src="../../components/editor/icons/icon-copy.png" @click="copyFile(file)" />
+            </div>
+            <div class="ddei_home_fileview_file_button_split">
+            </div>
+            <div class="ddei_home_fileview_file_button">
+              <img src="../../components/editor/icons/icon-trash.png" @click="deleteFile(file)" />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+      <AEmpty v-else class="m-t-80"></AEmpty>
+    </ASpin>
     <APagination v-model:current="page.num" :total="page.total" show-less-items class="m-h-auto m-t-10"
       @change="listFile" />
   </div>
@@ -131,6 +136,7 @@ export default {
   },
   data () {
     return {
+      loading: false,
       fileDialogShow: false,
       delFileDialogShow: false,
       fileDialog: {
@@ -220,57 +226,6 @@ export default {
     },
 
     /**
-     * 计算分页信息
-     */
-    calPages () {
-      let pageCount = parseInt(this.page.total / this.page.size) + (this.page.total % this.page.size == 0 ? 0 : 1)
-
-      let pages = []
-      //计算开始页码和结束页码
-      if (pageCount <= 7) {
-        for (let i = 1; i <= pageCount; i++) {
-          pages.push({ type: 1, idx: i })
-        }
-      } else {
-        let left = this.page.num - 1
-
-        let basesize = 4
-        let appendRight = 0
-        if (left > basesize) {
-          pages.push({ type: 1, idx: 1 })
-          pages.push({ type: 2 })
-          for (let i = this.page.num - basesize + 2; i <= this.page.num - 1; i++) {
-            pages.push({ type: 1, idx: i })
-          }
-        } else {
-          for (let i = 1; i <= this.page.num - 1; i++) {
-            pages.push({ type: 1, idx: i })
-          }
-          appendRight = basesize - left
-        }
-        for (let i = this.page.num; i <= this.page.num + appendRight; i++) {
-          pages.push({ type: 1, idx: i })
-        }
-        let right = pageCount - this.page.num + appendRight
-        if (right > basesize) {
-          for (let i = this.page.num + appendRight + 1; i <= pageCount - 2; i++) {
-            pages.push({ type: 1, idx: i })
-          }
-          pages.push({ type: 2 })
-          pages.push({ type: 1, idx: pageCount })
-        } else {
-          for (let i = this.page.num + appendRight + 1; i <= pageCount; i++) {
-            pages.push({ type: 1, idx: i })
-          }
-        }
-
-
-      }
-      this.page.count = pageCount
-      this.pages = pages
-    },
-
-    /**
      * 加载文件
      */
     async listFile (pageNumber) {
@@ -283,12 +238,19 @@ export default {
       }
       let curFolder = this.$parent.$refs["dirTree"]?.getCurrentFolder()
       let fid = curFolder?.id ? curFolder.id : "0"
-      let fileData = await listfile({ folder_id: fid, pageSize: this.page.size, pageNum: this.page.num, text: this.queryText })
-      const listData = fileData.data.data.data
+      this.loading = true
+      let fileData
+      let listData
+      try {
+        fileData = await listfile({ folder_id: fid, pageSize: this.page.size, pageNum: this.page.num, text: this.queryText })
+        listData = fileData.data.data.data
+        this.page.total = fileData.data.data.count
+      } catch (e) {
+        listData = []
+        this.page.total = 0
+      }
       this.files = listData
-      this.page.total = fileData.data.data.count
-      //计算分页和页码信息
-      this.calPages()
+      this.loading = false
     },
 
     checkFileName (rule, value, cb) {
@@ -405,12 +367,16 @@ export default {
   height: calc(100vh - 55px);
 }
 
-.ddei_home_fileview_files {
+.ddei_home_fileview_files_spin {
   flex: 1;
+  height: calc(100% - 105px);
+}
+
+.ddei_home_fileview_files {
   display: flex;
   margin-top: -20px;
   margin-left: -20px;
-  height: calc(100% - 105px)
+  height: 100%;
 }
 
 .ddei_home_fileview_file {
