@@ -4,7 +4,8 @@
       v-model="attrDefine.value" :disabled="attrDefine.readonly" />
     <div class="textinput">
       <input type="number" :step="attrDefine.step" :min="attrDefine.min" :max="attrDefine.max" v-model="attrDefine.value"
-        :disabled="attrDefine.readonly" :placeholder="attrDefine.defaultValue" autocomplete="off" />
+        :disabled="attrDefine.readonly" :placeholder="attrDefine.defaultValue"
+        :name="'ddei_pv_editor_range_' + attrDefine.code" autocomplete="off" />
     </div>
   </div>
 </template>

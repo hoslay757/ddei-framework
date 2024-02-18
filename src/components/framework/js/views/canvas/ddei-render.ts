@@ -241,12 +241,14 @@ class DDeiCanvasRender {
       //放大缩小
       let ctrl = DDeiConfig.KEY_DOWN_STATE.get("ctrl");
       if (DDeiUtil.getConfigValue("GLOBAL_ALLOW_STAGE_RATIO", this.model) && ctrl && evt.wheelDeltaY) {
-        this.mouseScale(-evt.wheelDeltaY, evt)
+        if (DDeiUtil.USER_OS == 'MAC') {
+          this.mouseScale(-evt.wheelDeltaY, evt)
+        } else {
+          this.mouseScale(evt.wheelDeltaY, evt)
+        }
       }
       //滚动平移
       else {
-
-
         let dx = 0
         let dy = 0
         if (Math.abs(evt.wheelDeltaX) > Math.abs(evt.wheelDeltaY)) {

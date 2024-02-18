@@ -83,6 +83,19 @@ class DDeiUtil {
    */
   static ICONS = null
 
+  /**
+   * 当前用户的操作系统
+   */
+  static USER_OS: string = ""
+  static {
+    let userAgent = navigator.userAgent; // 获取User Agent字符串
+    DDeiUtil.USER_OS = "WIN"
+    if (/Mac|iPod|iPhone|iPad/.test(userAgent)) {
+      DDeiUtil.USER_OS = "MAC"
+    } else if (/Linux/.test(userAgent)) {
+      DDeiUtil.USER_OS = "LINUX"
+    }
+  }
 
 
   /**
