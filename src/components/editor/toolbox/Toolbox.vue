@@ -23,7 +23,8 @@
         <svg class="icon" aria-hidden="true" @click="searchControl" title="搜索">
           <use xlink:href="#icon-a-ziyuan416"></use>
         </svg>
-        <input v-model="searchText" class="input" @keypress="searchInputEnter" placeholder="搜索控件">
+        <input v-model="searchText" class="input" @keypress="searchInputEnter" placeholder="搜索控件" autocomplete="off"
+          name="ddei_toolbox_search_input">
       </div>
     </div>
 

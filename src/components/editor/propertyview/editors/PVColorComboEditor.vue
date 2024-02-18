@@ -2,7 +2,7 @@
   <div :id="getEditorId(attrDefine?.code)"
     :class="{ 'ddei_pv_color_combox': true, 'ddei_pv_color_combox_disabled': !attrDefine || attrDefine.readonly }">
     <div class="textinput" @click="attrDefine && !attrDefine.readonly && showDialog($event)">
-      <input type="color" :readonly="attrDefine && (attrDefine.readonly)" v-model="attrDefine.value" />
+      <input type="color" :readonly="attrDefine && (attrDefine.readonly)" v-model="attrDefine.value" autocomplete="off" />
       <div style="display:flex;justify-content: center;align-items: center;">
         <svg class="icon" aria-hidden="true">
           <use xlink:href="#icon-a-ziyuan466"></use>

@@ -27,8 +27,8 @@
       <div class="group">
         <div class="title">已选颜色</div>
         <div class="group_content color3">
-          <input type="color" v-model="value" class="colorinput">
-          <input type="text" v-model="value">
+          <input type="color" v-model="value" class="colorinput" autocomplete="off">
+          <input type="text" v-model="value" autocomplete="off">
         </div>
       </div>
       <div class="tail">

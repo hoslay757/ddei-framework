@@ -5,7 +5,7 @@
       <input class="ddei_editor_quick_fat_item_fontfamily_input"
         :readonly="!attrDefine || (attrDefine && (attrDefine.readonly || !canSearch))" v-model="text"
         :placeholder="defaultText" @click="attrDefine && !attrDefine.readonly && !canSearch && showDialog($event)"
-        @keydown="search($event)" />
+        @keydown="search($event)" autocomplete="off" />
       <div class="ddei_editor_quick_fat_item_fontfamily_combox"
         @click="attrDefine && !attrDefine.readonly && showDialog($event)">
         <svg class="icon iconfont-45" aria-hidden="true">

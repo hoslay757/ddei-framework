@@ -13,7 +13,8 @@ function doQuery() {
 <template>
   <div class="ddei_home_bar_content_search">
     <img src="../../components/editor/icons/icon-search-black.png" @click="doQuery" />
-    <input v-model="queryText" @keydown.enter="doQuery" class="ddei_home_bar_content_search_input" placeholder="名称/编码/备注">
+    <input v-model="queryText" name="ddei_home_bar_content_search_input" @keydown.enter="doQuery"
+      class="ddei_home_bar_content_search_input" placeholder="名称/编码/备注" autocomplete="off">
   </div>
 </template>
 

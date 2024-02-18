@@ -26,7 +26,8 @@
     <div class="subcontent" id="choose_control_group_dialog_subcontent">
       <div class="group">
         <div class="item" v-for="group in subGroups" @click="chooseGroup(group.id)">
-          <input type="checkbox" v-model="group.selected" style="pointer-events: none;" :name="group.id">
+          <input type="checkbox" v-model="group.selected" style="pointer-events: none;" :name="group.id"
+            autocomplete="off">
           <div class="groupname">{{ group.name }}</div>
         </div>
       </div>

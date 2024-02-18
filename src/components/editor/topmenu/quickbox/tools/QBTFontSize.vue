@@ -4,7 +4,7 @@
       :class="{ 'ddei_editor_quick_fat_item_fontsize': true, 'ddei_editor_quick_fat_item_fontsize_disabled': !attrDefine }">
       <input class="ddei_editor_quick_fat_item_fontsize_input"
         :readonly="!attrDefine || (attrDefine && (attrDefine.readonly))" v-model="text" @input="inputValue()"
-        :placeholder="defaultText" />
+        :placeholder="defaultText" autocomplete="off" />
       <div class="ddei_editor_quick_fat_item_fontsize_combox" @click="attrDefine && !attrDefine.readonly && showDialog()">
         <svg class="icon iconfont-45" aria-hidden="true">
           <use xlink:href="#icon-a-ziyuan478"></use>

@@ -2,10 +2,10 @@
   <div :class="{ 'ddei_pv_editor_fontsize': true, 'ddei_pv_editor_fontsize_disabled': attrDefine.readonly }"
     :style="{ 'pointer-events': attrDefine.readonly ? 'none' : '' }">
     <input type="range" :step="attrDefine.step" class="range" :min="attrDefine.min" :max="attrDefine.max"
-      v-model="attrDefine.value" :disabled="attrDefine.readonly" />
+      v-model="attrDefine.value" :disabled="attrDefine.readonly" autocomplete="off" />
     <div class="textinput">
       <input type="number" :step="attrDefine.step" :min="attrDefine.min" :max="attrDefine.max" v-model="attrDefine.value"
-        :disabled="attrDefine.readonly" :placeholder="attrDefine.defaultValue" />
+        :disabled="attrDefine.readonly" :placeholder="attrDefine.defaultValue" autocomplete="off" />
       <div style="float:left">px</div>
     </div>
   </div>

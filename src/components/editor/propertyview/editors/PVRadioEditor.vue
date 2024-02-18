@@ -3,7 +3,7 @@
     :style="{ 'pointer-events': attrDefine.readonly ? 'none' : '' }">
     <div class="itembox" v-for="item in dataSource" @click="checkRadioValue(attrDefine, $event)">
       <input type="radio" :disabled="attrDefine.readonly" :name="attrDefine.id" :value="item.value"
-        v-model="attrDefine.value" />
+        v-model="attrDefine.value" autocomplete="off" />
 
       <div>{{ item.text }}</div>
     </div>

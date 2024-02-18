@@ -1,12 +1,9 @@
 <template>
   <div class="ddei_home_bar_content">
     <div class="ddei_home_bar_content_search">
-      <input v-model="queryText"
-             @keydown.enter="doQuery"
-             class="ddei_home_bar_content_search_input"
-             placeholder="名称/编码/备注">
-      <img src="../../components/editor/icons/icon-search.png"
-           @click="doQuery" />
+      <input v-model="queryText" @keydown.enter="doQuery" autocomplete="off" name="ddei_home_bar_content_search_input"
+        class="ddei_home_bar_content_search_input" placeholder="名称/编码/备注">
+      <img src="../../components/editor/icons/icon-search.png" @click="doQuery" />
     </div>
   </div>
 </template>

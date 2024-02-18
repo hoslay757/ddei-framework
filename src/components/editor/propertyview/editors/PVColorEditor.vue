@@ -1,9 +1,9 @@
 <template>
   <div :class="{ 'ddei_pv_editor_color': true, 'ddei_pv_editor_color_disabled': attrDefine.readonly }">
-    <input type="color" :step="attrDefine.step" class="color" v-model="attrDefine.value"
+    <input type="color" :step="attrDefine.step" class="color" v-model="attrDefine.value" autocomplete="off"
       :disabled="attrDefine.readonly" />
     <div class="textinput">
-      <input type="text" v-model="attrDefine.value" :disabled="attrDefine.readonly"
+      <input type="text" v-model="attrDefine.value" :disabled="attrDefine.readonly" autocomplete="off"
         :placeholder="attrDefine.defaultValue" />
     </div>
   </div>

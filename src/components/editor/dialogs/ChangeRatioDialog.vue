@@ -29,7 +29,8 @@
             25%
           </div>
           <div class="item" style="flex:1;border-top: 1px solid rgb(240, 240, 240);">
-            百分比：<input type="number" min="25" max="1000" v-model="ratioInputValue" @blur="ratioInputChange()" />%
+            百分比：<input type="number" min="25" max="1000" v-model="ratioInputValue" @blur="ratioInputChange()"
+              autocomplete="off" name="ddei_bottom_input" />%
           </div>
         </div>
       </div>

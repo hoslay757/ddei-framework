@@ -6,7 +6,7 @@
       <span :class="img"
         v-if="img && (attrDefine?.itemStyle?.display == 'img-text' || attrDefine?.itemStyle?.display == 'img')"
         @click="attrDefine && !attrDefine.readonly && !canSearch && showDialog()"></span>
-      <input type="text"
+      <input type="text" autocomplete="off"
         v-if="!attrDefine?.itemStyle?.display || attrDefine?.itemStyle?.display == 'img-text' || attrDefine?.itemStyle?.display == 'text'"
         :readonly="attrDefine && (attrDefine.readonly || !canSearch)" v-model="text" :placeholder="defaultText"
         @click="attrDefine && !attrDefine.readonly && !canSearch && showDialog()" @keydown="search($event)" />

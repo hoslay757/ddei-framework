@@ -63,7 +63,8 @@
           <use xlink:href="#icon-a-ziyuan420"></use>
         </svg>
       </div>
-      <input type="range" min="0.1" max="4" step="0.1" v-model="stageRatio" />
+      <input type="range" min="0.1" max="4" step="0.1" v-model="stageRatio" autocomplete="off"
+        name="ddei_bottom_input_range" />
       <div @click="addRatio(0.05)">
         <svg class="icon" aria-hidden="true">
           <use xlink:href="#icon-a-ziyuan376"></use>

@@ -4,7 +4,7 @@
       v-model="attrDefine.value" :disabled="attrDefine.readonly" />
     <div class="textinput">
       <input type="number" :step="attrDefine.step" :min="attrDefine.min" :max="attrDefine.max" v-model="attrDefine.value"
-        :disabled="attrDefine.readonly" :placeholder="attrDefine.defaultValue" />
+        :disabled="attrDefine.readonly" :placeholder="attrDefine.defaultValue" autocomplete="off" />
     </div>
   </div>
 </template>

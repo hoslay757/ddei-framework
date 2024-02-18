@@ -2,7 +2,7 @@
   <div :class="{ 'ddei_pv_editor_bordertype': true, 'ddei_pv_editor_bordertype_disabled': attrDefine.readonly }"
     :style="{ 'pointer-events': attrDefine.readonly ? 'none' : '' }">
     <div class="itembox" v-for="item in dataSource" @click="checkRadioValue(attrDefine, $event)">
-      <input type="radio" :disabled="attrDefine.readonly" :name="attrDefine.id" :value="item.value"
+      <input type="radio" :disabled="attrDefine.readonly" :name="attrDefine.id" :value="item.value" autocomplete="off"
         v-model="attrDefine.value" />
       <div>{{ item.text }}</div>
     </div>

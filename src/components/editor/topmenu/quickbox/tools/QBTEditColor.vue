@@ -5,7 +5,7 @@
       <use :xlink:href="'#' + img"></use>
     </svg>
     <div class="colorbar" :style="{ 'background-color': value ? value : 'black' }"></div>
-    <input ref="colorInput" type="color" v-model="value" class="colinput" />
+    <input ref="colorInput" type="color" v-model="value" class="colinput" autocomplete="off" />
   </div>
 </template>
 

@@ -33,7 +33,7 @@
             </svg>
 
             <input type="radio" :class="{ 'not_temp_display': !layer.tempDisplay }" name="rdo_layers" :value="layer.id"
-              @mousedown="changeLayer(index, $event)" :checked="currentStage?.layerIndex === index" />
+              @mousedown="changeLayer(index, $event)" :checked="currentStage?.layerIndex === index" autocomplete="off" />
 
             <svg class="icon" @click="printOrNoPrintLayer(layer)">
               <use xlink:href="#icon-a-ziyuan415" v-if="layer.print"></use>
@@ -367,7 +367,7 @@ export default {
   border: 1px solid #E6E6E6;
   box-shadow: 0px 2px 24px 0px #DBDBDB;
   border-radius: 6px;
-
+  user-select: none;
 
   .content {
     width: 240px;
