@@ -501,17 +501,34 @@ class DDeiStageCanvasRender {
   drawTest() {
     if (this.model.selectedModels?.size > 1) {
       let selectedModels = Array.from(this.model.selectedModels?.values())
+
+
       //构造传入参数
-      let ignoreModelIds = [selectedModels[0].id, selectedModels[1].id]
-      let allModels = this.model.getLayerModels(ignoreModelIds)
+      let allModels = this.model.getLayerModels()
       let obis = []
       allModels.forEach(model => {
-        obis.push({ points: model.operatePVS })
+        let obj = { points: model.operatePVS }
+        if (model.id == selectedModels[0].id || model.id == selectedModels[1].id) {
+          obj.isStartOrEnd = true
+        }
+        obis.push(obj)
       })
 
       let linePathData = DDeiUtil.calAutoLinePath(
-        { points: selectedModels[0].operatePVS },
-        { points: selectedModels[1].operatePVS },
+        {
+          point: {
+            x: (selectedModels[0].operatePVS[0].x + selectedModels[0].operatePVS[1].x) / 2,
+            y: selectedModels[0].operatePVS[0].y,
+          },
+          direct: 3
+        },
+        {
+          point: {
+            x: (selectedModels[1].operatePVS[2].x + selectedModels[1].operatePVS[3].x) / 2,
+            y: selectedModels[1].operatePVS[2].y,
+          },
+          direct: 1
+        },
         obis)
       if (linePathData) {
         let corssPoints = linePathData.corssPoints
@@ -522,6 +539,7 @@ class DDeiStageCanvasRender {
         let stageRatio = this.model.getStageRatio()
         let ratio = rat1 * stageRatio
         ctx.save()
+        ctx.font = "bold " + (12 * ratio) + "px Microsoft YaHei"
         corssPoints.forEach(point => {
           let weight = 4;
           if (!point.color) {
@@ -533,9 +551,15 @@ class DDeiStageCanvasRender {
           }
 
           ctx.beginPath();
-          ctx.ellipse(point.x * rat1, point.y * rat1, weight * ratio, weight * ratio, 0, 0, Math.PI * 2)
-          ctx.fill();
-          ctx.stroke();
+
+          // ctx.ellipse(point.x * rat1, point.y * rat1, weight * ratio, weight * ratio, 0, 0, Math.PI * 2)
+          // ctx.fill();
+          // ctx.stroke();
+          if (point.prio) {
+            ctx.fillStyle = "black"
+            ctx.fillText(point.prio, point.x * rat1 - 8, point.y * rat1 + 8)
+          }
+
           ctx.closePath();
         });
 
@@ -571,6 +595,21 @@ class DDeiStageCanvasRender {
           ctx.closePath();
         });
         ctx.globalAlpha = 1
+
+        //绘制寻路的路径
+        let pathPoints = linePathData.pathPoints
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "green"
+        ctx.beginPath();
+        for (let i = 0; i < pathPoints.length - 1; i++) {
+          let sPoint = pathPoints[i]
+          let ePoint = pathPoints[i + 1]
+          if (i == 0) {
+            ctx.moveTo(sPoint.x * rat1, sPoint.y * rat1)
+          }
+          ctx.lineTo(ePoint.x * rat1, ePoint.y * rat1)
+        }
+        ctx.stroke();
 
 
         ctx.restore()
