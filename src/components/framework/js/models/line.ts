@@ -485,6 +485,7 @@ class DDeiLine extends DDeiAbstractShape {
     if (id.indexOf("_shadow") != -1) {
       id = id.substring(0, id.lastIndexOf("_shadow"))
     }
+
     let lineLinks = this.stage?.getDistModelLinks(id);
     let startLink = null;
     let endLink = null;
@@ -497,45 +498,139 @@ class DDeiLine extends DDeiAbstractShape {
     })
     let sAngle = null;
     let eAngle = null;
-    if (startLink?.sm?.getPointAngle) {
-      sAngle = startLink.sm.getPointAngle(this.startPoint)
+
+    let startModel = startLink?.sm ? startLink?.sm : this.stage.tempStartOPpoint?.model
+    let endModel = endLink?.sm ? endLink?.sm : this.stage.tempEndOPpoint?.model
+
+    let startRect, endRect;
+    if (startModel?.operatePVS?.length > 0) {
+      startRect = DDeiAbstractShape.pvsToOutRect(startModel.operatePVS)
+    }
+    if (endModel?.operatePVS?.length > 0) {
+      endRect = DDeiAbstractShape.pvsToOutRect(endModel.operatePVS)
+    }
+
+    if (startModel?.getPointAngle) {
+      sAngle = startModel.getPointAngle(this.startPoint)
       sAngle = this.calSpecilPointAngle(sAngle)
     }
-    if (endLink?.sm?.getPointAngle) {
-      eAngle = endLink.sm.getPointAngle(this.endPoint)
+    if (endModel?.getPointAngle) {
+      eAngle = endModel.getPointAngle(this.endPoint)
       eAngle = this.calSpecilPointAngle(eAngle)
     }
 
 
 
-    //解析movepath，生成点
-    let middlePaths = []
+
+
+    //获取推荐路径,TODO
+    let recommendPaths = []
     //获取移动路径
-    let movePath = DDeiUtil.getMovePath(sAngle, eAngle, this.startPoint, this.endPoint)
+    let movePath = DDeiUtil.getMovePath1(sAngle, eAngle, this.startPoint, this.endPoint)
+    console.log(movePath)
     if (movePath) {
       let mPaths = movePath.split(",")
-      let cPoint = { x: this.startPoint.x, y: this.startPoint.y }
-      let h = Math.abs(this.startPoint.y - this.endPoint.y)
-      let w = Math.abs(this.startPoint.x - this.endPoint.x)
+
       mPaths.forEach(mPath => {
         let mpa = mPath.split(":");
         let opType = mpa[0];
         let opSize = parseFloat(mpa[1]);
-        if (opType == 'x') {
-          cPoint.x += opSize * w
-        } else if (opType == 'y') {
-          cPoint.y += opSize * h
+        let cPoint = {}
+        switch (opType) {
+          case 'x':
+            // cPoint.x += opSize * w
+            break;
+          case 'y':
+            // cPoint.y += opSize * h
+            break;
+          case 'sx':
+            cPoint.x = this.startPoint.x + opSize * startRect.width
+            cPoint.y = this.startPoint.y
+            cPoint.type = 'x'
+            break;
+          case 'sy':
+            cPoint.y = this.startPoint.y + opSize * startRect.height
+            cPoint.x = this.startPoint.x
+            cPoint.type = 'y'
+            break;
+          case 'ex':
+            cPoint.x = this.endPoint.x + opSize * endRect.width
+            cPoint.y = this.endPoint.y
+            cPoint.type = 'x'
+            break;
+          case 'ey':
+            cPoint.y = this.endPoint.y + opSize * endRect.height
+            cPoint.x = this.endPoint.x
+            cPoint.type = 'y'
+            break;
         }
-        //生成中间点
-        middlePaths.push(new Vector3(cPoint.x, cPoint.y, 1))
+
+        recommendPaths.push(cPoint)
       });
     }
+
+    //动态构建路径
+
+    let allModels = this.layer.getSubModels([this.id], 1)
+    let obis = []
+    allModels.forEach(model => {
+      if (model.baseModelType != "DDeiLine" && model.operatePVS?.length > 0) {
+        let obj = { points: model.operatePVS }
+        if (model.id == startModel?.id || model.id == endModel?.id) {
+          obj.isStartOrEnd = true
+        }
+        obis.push(obj)
+      }
+    })
+    //开始方向和结束方向
+    let startDirect = 3;
+    let endDirect = 1;
+    switch (sAngle) {
+      case -90: startDirect = 1; break;
+      case 0: startDirect = 2; break;
+      case 90: startDirect = 3; break;
+      case 180: startDirect = 4; break;
+    }
+    switch (eAngle) {
+      case -90: endDirect = 1; break;
+      case 0: endDirect = 2; break;
+      case 90: endDirect = 3; break;
+      case 180: endDirect = 4; break;
+    }
+
+    let linePathData = DDeiUtil.calAutoLinePath(
+      {
+        point: {
+          x: this.startPoint.x,
+          y: this.startPoint.y
+        },
+        rect: startRect,
+        direct: startDirect
+      },
+      {
+        point: {
+          x: this.endPoint.x,
+          y: this.endPoint.y,
+        },
+        rect: endRect,
+        direct: endDirect
+      },
+      obis,
+      recommendPaths)
+
+
     //更新中间节点
     this.pvs = [this.startPoint]
-    if (middlePaths?.length > 0) {
-      middlePaths.forEach(mp => {
-        this.pvs.push(mp)
-      });
+    if (linePathData && this.stage?.render) {
+      this.stage.render.linePathData = linePathData
+    }
+    if (linePathData?.pathPoints?.length > 2) {
+
+      for (let i = 1; i < linePathData.pathPoints.length - 1; i++) {
+        let mp = linePathData.pathPoints[i]
+        this.pvs.push(new Vector3(mp.x, mp.y, 1))
+      }
+
     }
     this.pvs.push(this.endPoint)
   }

@@ -15,6 +15,7 @@ import DDeiCanvasRender from './ddei-render.js';
 import DDeiStageCanvasRender from './stage-render.js';
 import { Vector3, Matrix3 } from 'three';
 import DDeiLink from '../../models/link.js';
+import layer from '@/components/editor/configs/layer.js';
 /**
  * DDeiLayer的渲染器类，用于渲染文件
  * 渲染器必须要有模型才可以初始化
@@ -1225,6 +1226,7 @@ class DDeiLayerCanvasRender {
             lineJson.pvs = [lineJson.cpv, new Vector3((lineJson.cpv.x + ex) / 2, lineJson.cpv.y, 1), new Vector3((lineJson.cpv.x + ex) / 2, ey, 1), new Vector3(ex, ey, 1)]
           }
           //初始化开始点和结束点
+
           let ddeiLine = DDeiLine.initByJSON(lineJson, { currentStage: this.stage, currentLayer: this.model, currentContainer: this.model });
           let lineShadow = DDeiUtil.getShadowControl(ddeiLine);
           this.model.shadowControls.push(lineShadow);
@@ -1232,6 +1234,7 @@ class DDeiLayerCanvasRender {
           this.stageRender.currentOperateShape = lineShadow
           //建立连接关系
           if (opPoint) {
+            this.stage.tempStartOPpoint = opPoint
             let smodel = opPoint.model;
             //创建连接点
             let id = "_" + DDeiUtil.getUniqueCode()
@@ -1273,6 +1276,7 @@ class DDeiLayerCanvasRender {
         }
         //判定是否到达了另一个控件的操作点
         this.model.opPoints = [];
+        delete this.stage.tempEndOPpoint
         //判断当前鼠标坐标是否落在选择器控件的区域内
         // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
         let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, ex, ey, true, true);

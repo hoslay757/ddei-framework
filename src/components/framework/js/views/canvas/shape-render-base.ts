@@ -220,6 +220,7 @@ class DDeiAbstractShapeRender {
       projPoint.model = this.model
       projPoint.mode = pointMode
       hasPoint = true;
+
       pots.push(projPoint);
     }
     let centerOpPoints = this.model.getCenterOpPoints()
@@ -261,6 +262,7 @@ class DDeiAbstractShapeRender {
         let angle = DDeiUtil.getLineAngle(this.model.cpv.x, this.model.cpv.y, op.x, op.y)
         angle -= (this.model.rotate ? this.model.rotate : 0)
         op.sita = angle
+        this.stage.tempEndOPpoint = op
         this.layer.opPoints.push(op);
       }
     })
@@ -281,10 +283,12 @@ class DDeiAbstractShapeRender {
         let angle = DDeiUtil.getLineAngle(this.model.cpv.x, this.model.cpv.y, po.x, po.y)
         angle -= (this.model.rotate ? this.model.rotate : 0)
         po.sita = angle
+        this.stage.tempEndOPpoint = po
         this.layer.opPoints.push(po);
       }
     })
     if (hasPoint) {
+
       this.stage.ddInstance.bus.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'pointer' });
     }
   }

@@ -499,121 +499,75 @@ class DDeiStageCanvasRender {
   }
 
   drawTest() {
-    if (this.model.selectedModels?.size > 1) {
-      let selectedModels = Array.from(this.model.selectedModels?.values())
-
-
-      //构造传入参数
-      let allModels = this.model.getLayerModels()
-      let obis = []
-      allModels.forEach(model => {
-        let obj = { points: model.operatePVS }
-        if (model.id == selectedModels[0].id || model.id == selectedModels[1].id) {
-          obj.isStartOrEnd = true
+    let linePathData = this.linePathData
+    if (linePathData) {
+      let corssPoints = linePathData.corssPoints
+      //获得 2d 上下文对象
+      let canvas = this.ddRender.getCanvas();
+      let ctx = canvas.getContext('2d');
+      let rat1 = this.ddRender.ratio;
+      let stageRatio = this.model.getStageRatio()
+      let ratio = rat1 * stageRatio
+      ctx.save()
+      ctx.font = "bold " + (12 * ratio) + "px Microsoft YaHei"
+      corssPoints.forEach(point => {
+        let weight = 4;
+        if (!point.color) {
+          ctx.fillStyle = "white"
+          ctx.strokeStyle = "green"
+        } else {
+          ctx.fillStyle = point.color
+          ctx.strokeStyle = point.color
         }
-        obis.push(obj)
-      })
 
-      let linePathData = DDeiUtil.calAutoLinePath(
-        {
-          point: {
-            x: (selectedModels[0].operatePVS[0].x + selectedModels[0].operatePVS[1].x) / 2,
-            y: selectedModels[0].operatePVS[0].y,
-          },
-          direct: 3
-        },
-        {
-          point: {
-            x: (selectedModels[1].operatePVS[2].x + selectedModels[1].operatePVS[3].x) / 2,
-            y: selectedModels[1].operatePVS[2].y,
-          },
-          direct: 1
-        },
-        obis)
-      if (linePathData) {
-        let corssPoints = linePathData.corssPoints
-        //获得 2d 上下文对象
-        let canvas = this.ddRender.getCanvas();
-        let ctx = canvas.getContext('2d');
-        let rat1 = this.ddRender.ratio;
-        let stageRatio = this.model.getStageRatio()
-        let ratio = rat1 * stageRatio
-        ctx.save()
-        ctx.font = "bold " + (12 * ratio) + "px Microsoft YaHei"
-        corssPoints.forEach(point => {
-          let weight = 4;
-          if (!point.color) {
-            ctx.fillStyle = "white"
-            ctx.strokeStyle = "green"
-          } else {
-            ctx.fillStyle = point.color
-            ctx.strokeStyle = point.color
-          }
-
-          ctx.beginPath();
-
-          // ctx.ellipse(point.x * rat1, point.y * rat1, weight * ratio, weight * ratio, 0, 0, Math.PI * 2)
-          // ctx.fill();
-          // ctx.stroke();
-          if (point.prio) {
-            ctx.fillStyle = "black"
-            ctx.fillText(point.prio, point.x * rat1 - 8, point.y * rat1 + 8)
-          }
-
-          ctx.closePath();
-        });
-
-        let extLines = linePathData.extLines
-        ctx.lineWidth = 1
-
-        extLines.forEach(extLine => {
-          ctx.strokeStyle = "red"
-          ctx.globalAlpha = 0.1
-          ctx.beginPath();
-          ctx.moveTo(extLine[0].x * rat1, extLine[0].y * rat1)
-          if (extLine[0].color) {
-            ctx.strokeStyle = extLine[0].color
-            ctx.globalAlpha = 0.3
-          }
-          if (extLine[0].x == extLine[1].x) {
-            if (extLine[0].y >= extLine[1].y) {
-              ctx.lineTo(extLine[1].x * rat1, (extLine[1].y - 1000) * rat1)
-            } else {
-              ctx.lineTo(extLine[1].x * rat1, (extLine[1].y + 1000) * rat1)
-            }
-
-          } else if (extLine[0].y == extLine[1].y) {
-            if (extLine[0].x >= extLine[1].x) {
-              ctx.lineTo((extLine[1].x - 1000) * rat1, extLine[1].y * rat1)
-            } else {
-              ctx.lineTo((extLine[1].x + 1000) * rat1, extLine[1].y * rat1)
-            }
-          }
-
-
-          ctx.stroke();
-          ctx.closePath();
-        });
-        ctx.globalAlpha = 1
-
-        //绘制寻路的路径
-        let pathPoints = linePathData.pathPoints
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = "green"
         ctx.beginPath();
-        for (let i = 0; i < pathPoints.length - 1; i++) {
-          let sPoint = pathPoints[i]
-          let ePoint = pathPoints[i + 1]
-          if (i == 0) {
-            ctx.moveTo(sPoint.x * rat1, sPoint.y * rat1)
-          }
-          ctx.lineTo(ePoint.x * rat1, ePoint.y * rat1)
+
+        // ctx.ellipse(point.x * rat1, point.y * rat1, weight * ratio, weight * ratio, 0, 0, Math.PI * 2)
+        // ctx.fill();
+        // ctx.stroke();
+        if (point.prio) {
+          ctx.fillStyle = "black"
+          ctx.fillText(point.prio, point.x * rat1 - 8, point.y * rat1 + 8)
         }
+
+        ctx.closePath();
+      });
+
+      let extLines = linePathData.extLines
+      ctx.lineWidth = 1
+
+      extLines.forEach(extLine => {
+        ctx.strokeStyle = "red"
+        ctx.globalAlpha = 0.1
+        ctx.beginPath();
+        ctx.moveTo(extLine[0].x * rat1, extLine[0].y * rat1)
+        if (extLine[0].color) {
+          ctx.strokeStyle = extLine[0].color
+          ctx.globalAlpha = 0.3
+        }
+        if (extLine[0].x == extLine[1].x) {
+          if (extLine[0].y >= extLine[1].y) {
+            ctx.lineTo(extLine[1].x * rat1, (extLine[1].y - 1000) * rat1)
+          } else {
+            ctx.lineTo(extLine[1].x * rat1, (extLine[1].y + 1000) * rat1)
+          }
+
+        } else if (extLine[0].y == extLine[1].y) {
+          if (extLine[0].x >= extLine[1].x) {
+            ctx.lineTo((extLine[1].x - 1000) * rat1, extLine[1].y * rat1)
+          } else {
+            ctx.lineTo((extLine[1].x + 1000) * rat1, extLine[1].y * rat1)
+          }
+        }
+
+
         ctx.stroke();
+        ctx.closePath();
+      });
 
 
-        ctx.restore()
-      }
+      ctx.restore()
+
     }
 
 
