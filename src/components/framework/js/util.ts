@@ -3199,6 +3199,11 @@ class DDeiUtil {
    */
   static calAutoLinePath(sd: object, ed: object, obis: object[], recommendPaths: object[]): object {
 
+    //权重配置，规划不同点的权重级别
+    let startWeight = 0,endWeight = 1000,startExt = 0,endExt = 100
+    let rectExtWeight =10,recomWeight=500,rectMidWeight = 50
+
+
     //所有图形的外接矩形
     let outRects = []
     //延长线
@@ -3209,57 +3214,57 @@ class DDeiUtil {
     //1.1规则：开始物体、结束物体、障碍物的所有点、所有物体外接矩形扩大四分之一点
     sd.point.color = "red"
     ed.point.color = "red"
-    ed.point.prio = 1000
+    ed.point.prio = endWeight
     ed.point.isEnd = true
-    sd.point.prio = 0
+    sd.point.prio = startWeight
     sd.point.isStart = true
     corssPoints.push(sd.point)
     corssPoints.push(ed.point)
     //生成起点、终点的延长线
-    function genSEExtLine(ed) {
+    function genSEExtLine(ed,extWeight) {
       switch (ed.direct) {
         case 1:
-          corssPoints.push({ x: ed.point.x, y: ed.point.y - (ed.rect?.height > 0 ? ed.rect.height / 4 : 50), prio: 100 })
-          extLines.push([{ x: ed.point.x, y: ed.point.y, prio: 100 }, { x: ed.point.x, y: ed.point.y - 50000 }])
+          corssPoints.push({ x: ed.point.x, y: ed.point.y - (ed.rect?.height > 0 ? ed.rect.height / 4 : 50), prio: extWeight })
+          extLines.push([{ x: ed.point.x, y: ed.point.y, prio: extWeight }, { x: ed.point.x, y: ed.point.y - 50000 }])
           if (!ed.rect) {
-            extLines.push([{ x: ed.point.x - 50000, y: ed.point.y, prio: 100 }, { x: ed.point.x + 50000, y: ed.point.y }])
+            extLines.push([{ x: ed.point.x - 50000, y: ed.point.y, prio: extWeight }, { x: ed.point.x + 50000, y: ed.point.y }])
           }
           break;
         case 2:
-          corssPoints.push({ y: ed.point.y, x: ed.point.x + (ed.rect?.width > 0 ? ed.rect.width / 4 : 50), prio: 100 })
-          extLines.push([{ x: ed.point.x, y: ed.point.y, prio: 100 }, { x: ed.point.x + 50000, y: ed.point.y }])
+          corssPoints.push({ y: ed.point.y, x: ed.point.x + (ed.rect?.width > 0 ? ed.rect.width / 4 : 50), prio: extWeight })
+          extLines.push([{ x: ed.point.x, y: ed.point.y, prio: extWeight }, { x: ed.point.x + 50000, y: ed.point.y }])
           if (!ed.rect) {
-            extLines.push([{ x: ed.point.x, y: ed.point.y - 50000, prio: 100 }, { x: ed.point.x, y: ed.point.y + 50000 }])
+            extLines.push([{ x: ed.point.x, y: ed.point.y - 50000, prio: extWeight }, { x: ed.point.x, y: ed.point.y + 50000 }])
           }
           break;
         case 3:
-          corssPoints.push({ x: ed.point.x, y: ed.point.y + (ed.rect?.height > 0 ? ed.rect.height / 4 : 50), prio: 100 })
-          extLines.push([{ x: ed.point.x, y: ed.point.y, prio: 100 }, { x: ed.point.x, y: ed.point.y + 50000 }])
+          corssPoints.push({ x: ed.point.x, y: ed.point.y + (ed.rect?.height > 0 ? ed.rect.height / 4 : 50), prio: extWeight })
+          extLines.push([{ x: ed.point.x, y: ed.point.y, prio: extWeight }, { x: ed.point.x, y: ed.point.y + 50000 }])
           if (!ed.rect) {
-            extLines.push([{ x: ed.point.x - 50000, y: ed.point.y, prio: 100 }, { x: ed.point.x + 50000, y: ed.point.y }])
+            extLines.push([{ x: ed.point.x - 50000, y: ed.point.y, prio: extWeight }, { x: ed.point.x + 50000, y: ed.point.y }])
           }
           break;
         case 4:
-          corssPoints.push({ y: ed.point.y, x: ed.point.x - (ed.rect?.width > 0 ? ed.rect.width / 4 : 50), prio: 100 })
-          extLines.push([{ x: ed.point.x, y: ed.point.y, prio: 100 }, { x: ed.point.x - 50000, y: ed.point.y }])
+          corssPoints.push({ y: ed.point.y, x: ed.point.x - (ed.rect?.width > 0 ? ed.rect.width / 4 : 50), prio: extWeight })
+          extLines.push([{ x: ed.point.x, y: ed.point.y, prio: extWeight }, { x: ed.point.x - 50000, y: ed.point.y }])
           if (!ed.rect) {
-            extLines.push([{ x: ed.point.x, y: ed.point.y - 50000, prio: 100 }, { x: ed.point.x, y: ed.point.y + 50000 }])
+            extLines.push([{ x: ed.point.x, y: ed.point.y - 50000, prio: extWeight }, { x: ed.point.x, y: ed.point.y + 50000 }])
           }
           break;
       }
     }
-    genSEExtLine(sd)
-    genSEExtLine(ed)
+    genSEExtLine(sd,startExt)
+    genSEExtLine(ed,endExt)
 
     obis.forEach(obi => {
-      DDeiUtil.getAutoLineItemExtPoints(corssPoints, outRects, extLines, obi, "grey")
+      DDeiUtil.getAutoLineItemExtPoints(corssPoints, outRects, extLines, obi,rectExtWeight, "grey")
     })
     //1.2规则：获取推荐路径，路径上所有点提高权限
     recommendPaths.forEach(point => {
       if (point.type == 'x') {
-        extLines.push([{ x: point.x, y: point.y - 50000, prio: 127 }, { x: point.x, y: point.y + 50000 }])
+        extLines.push([{ x: point.x, y: point.y - 50000, prio: recomWeight }, { x: point.x, y: point.y + 50000 }])
       } else if (point.type == 'y') {
-        extLines.push([{ x: point.x - 50000, y: point.y, prio: 127 }, { x: point.x + 50000, y: point.y }])
+        extLines.push([{ x: point.x - 50000, y: point.y, prio: recomWeight }, { x: point.x + 50000, y: point.y }])
       }
     })
     //1.3规则:所有物体外接矩形之间的中心点
@@ -3268,27 +3273,23 @@ class DDeiUtil {
       for (let j = 1; j < outRects.length; j++) {
         if (i != j) {
           let octj = outRects[j];
-          let prio = 5
-          if (octi.isStartOrEnd && octj.isStartOrEnd) {
-            prio = 10
-          }
           //上下
           if (octj.y1 < octi.y) {
             let mdy = octj.y1 + (octi.y - octj.y1) / 2
-            extLines.push([{ x: octj.x - 50000, y: mdy, color: "green", prio: prio }, { x: octj.x + 50000, y: mdy }])
+            extLines.push([{ x: octj.x - 50000, y: mdy, color: "green", prio: rectMidWeight }, { x: octj.x + 50000, y: mdy }])
           }
           else if (octj.y > octi.y1) {
             let mdy = octi.y1 + (octj.y - octi.y1) / 2
-            extLines.push([{ x: octj.x - 50000, y: mdy, color: "green", prio: prio }, { x: octj.x + 50000, y: mdy }])
+            extLines.push([{ x: octj.x - 50000, y: mdy, color: "green", prio: rectMidWeight }, { x: octj.x + 50000, y: mdy }])
           }
           //左右
           if (octj.x1 < octi.x) {
             let mdx = octj.x1 + (octi.x - octj.x1) / 2
-            extLines.push([{ x: mdx, y: octj.y - 50000, color: "green", prio: prio }, { x: mdx, y: octj.y + 50000 }])
+            extLines.push([{ x: mdx, y: octj.y - 50000, color: "green", prio: rectMidWeight }, { x: mdx, y: octj.y + 50000 }])
           }
           else if (octj.x > octi.x1) {
             let mdx = octi.x1 + (octj.x - octi.x1) / 2
-            extLines.push([{ x: mdx, y: octj.y - 50000, color: "green", prio: prio }, { x: mdx, y: octj.y + 50000 }])
+            extLines.push([{ x: mdx, y: octj.y - 50000, color: "green", prio: rectMidWeight }, { x: mdx, y: octj.y + 50000 }])
           }
 
         }
@@ -3372,9 +3373,10 @@ class DDeiUtil {
             arr[i].isStart = point.isStart
           if (point.isEnd)
             arr[i].isEnd = point.isEnd
-          if (point.prio) {
-            arr[i].prio = (arr[i].prio ? arr[i].prio : 0) + point.prio
-          }
+          // if (point.prio) {
+          //   arr[i].prio = (arr[i].prio ? arr[i].prio : 0) + point.prio
+          // }
+          arr[i].prio = Math.max(arr[i].prio, + point.prio)
           idx = i
           break;
         }
@@ -3397,16 +3399,17 @@ class DDeiUtil {
             arr[i].isStart = point.isStart
           if (point.isEnd)
             arr[i].isEnd = point.isEnd
-          if (point.prio) {
-            arr[i].prio = (arr[i].prio ? arr[i].prio : 0) + point.prio
-          }
+          // if (point.prio) {
+          //   arr[i].prio = (arr[i].prio ? arr[i].prio : 0) + point.prio
+          // }
+          arr[i].prio = Math.max(arr[i].prio, + point.prio)
           idx = i
           break;
         }
       }
       if (idx == -1) {
         arr.push(point)
-      }
+      } 
     })
     //2.寻路,沿开始点，向开始方向开始寻路，横向用xIndex纵向用yIndex
     let fullPathTreeData = DDeiUtil.getLookForPath(sd.point, ed.point, sd.direct, outRects, xIntIndex, yIntIndex, 1, 'root')
@@ -3806,7 +3809,7 @@ class DDeiUtil {
   }
 
   //获取元素的扩展点以及延长线
-  static getAutoLineItemExtPoints(corssPoints, outRects, extLines, dbi, color) {
+  static getAutoLineItemExtPoints(corssPoints, outRects, extLines, dbi,prio, color) {
     //外接矩形扩展区域大小
     let outRectExtRate = 0.25
     let outRect = DDeiAbstractShape.pvsToOutRect(dbi.points)
@@ -3821,26 +3824,26 @@ class DDeiUtil {
       corssPoints.push(point)
     });
     //左边
-    corssPoints.push({ x: outRect.x - perWidth, y: outRect.y, color: color, prio: 3 })
-    corssPoints.push({ x: outRect.x - perWidth, y: outRect.y + outRect.height * 0.5, color: color, prio: 3 })
-    corssPoints.push({ x: outRect.x - perWidth, y: outRect.y1, color: color, prio: 3 })
+    corssPoints.push({ x: outRect.x - perWidth, y: outRect.y, color: color, prio: prio })
+    corssPoints.push({ x: outRect.x - perWidth, y: outRect.y + outRect.height * 0.5, color: color, prio: prio })
+    corssPoints.push({ x: outRect.x - perWidth, y: outRect.y1, color: color, prio: prio })
 
     extLines.push([{ x: outRect.x, y: outRect.y }, { x: outRect.x - perWidth, y: outRect.y }])
     extLines.push([{ x: outRect.x, y: outRect.y + outRect.height * 0.5 }, { x: outRect.x - perWidth, y: outRect.y + outRect.height * 0.5 }])
     extLines.push([{ x: outRect.x, y: outRect.y1 }, { x: outRect.x - perWidth, y: outRect.y1 }])
 
     //右边
-    corssPoints.push({ x: outRect.x1 + perWidth, y: outRect.y, color: color, prio: 3 })
-    corssPoints.push({ x: outRect.x1 + perWidth, y: outRect.y + outRect.height * 0.5, color: color, prio: 3 })
-    corssPoints.push({ x: outRect.x1 + perWidth, y: outRect.y1, color: color, prio: 3 })
+    corssPoints.push({ x: outRect.x1 + perWidth, y: outRect.y, color: color, prio: prio })
+    corssPoints.push({ x: outRect.x1 + perWidth, y: outRect.y + outRect.height * 0.5, color: color, prio: prio })
+    corssPoints.push({ x: outRect.x1 + perWidth, y: outRect.y1, color: color, prio: prio })
 
     extLines.push([{ x: outRect.x1, y: outRect.y }, { x: outRect.x1 + perWidth, y: outRect.y }])
     extLines.push([{ x: outRect.x1, y: outRect.y + outRect.height * 0.5 }, { x: outRect.x1 + perWidth, y: outRect.y + outRect.height * 0.5 }])
     extLines.push([{ x: outRect.x1, y: outRect.y1 }, { x: outRect.x1 + perWidth, y: outRect.y1 }])
     //上边
-    corssPoints.push({ x: outRect.x, y: outRect.y - perHeight, color: color, prio: 3 })
-    corssPoints.push({ x: outRect.x + outRect.width / 2, y: outRect.y - perHeight, color: color, prio: 3 })
-    corssPoints.push({ x: outRect.x1, y: outRect.y - perHeight, color: color, prio: 3 })
+    corssPoints.push({ x: outRect.x, y: outRect.y - perHeight, color: color, prio: prio })
+    corssPoints.push({ x: outRect.x + outRect.width / 2, y: outRect.y - perHeight, color: color, prio: prio })
+    corssPoints.push({ x: outRect.x1, y: outRect.y - perHeight, color: color, prio: prio })
 
 
     extLines.push([{ x: outRect.x, y: outRect.y }, { x: outRect.x, y: outRect.y - perHeight }])
@@ -3850,9 +3853,9 @@ class DDeiUtil {
 
 
     //下边
-    corssPoints.push({ x: outRect.x, y: outRect.y1 + perHeight, color: color, prio: 3 })
-    corssPoints.push({ x: outRect.x + outRect.width / 2, y: outRect.y1 + perHeight, color: color, prio: 3 })
-    corssPoints.push({ x: outRect.x1, y: outRect.y1 + perHeight, color: color, prio: 3 })
+    corssPoints.push({ x: outRect.x, y: outRect.y1 + perHeight, color: color, prio: prio })
+    corssPoints.push({ x: outRect.x + outRect.width / 2, y: outRect.y1 + perHeight, color: color, prio: prio })
+    corssPoints.push({ x: outRect.x1, y: outRect.y1 + perHeight, color: color, prio: prio })
 
     extLines.push([{ x: outRect.x, y: outRect.y1 }, { x: outRect.x, y: outRect.y1 + perHeight }])
     extLines.push([{ x: outRect.x + outRect.width / 2, y: outRect.y1 }, { x: outRect.x + outRect.width / 2, y: outRect.y1 + perHeight }])
@@ -3860,42 +3863,6 @@ class DDeiUtil {
 
     outRects.push(outRect)
   }
-
-  //按照xy坐标对点进行快速排序
-  // static quickSortPointByPosition(arr, type) {
-  //   if (arr.length <= 1) return arr; // 如果数组长度小于等于1，则直接返回原数组
-
-  //   const pivotIndex = Math.floor(arr.length / 2); // 选取基准元素（pivot）所在位置
-  //   const pivot = arr[pivotIndex]; // 获取基准元素值
-
-  //   let leftArr = []; // 存放比基准元素小的元素
-  //   let rightArr = []; // 存放比基准元素大的元素
-  //   switch (type) {
-  //     case 1: {
-  //       for (let i = 0; i < arr.length; i++) {
-  //         if (i === pivotIndex) continue; // 跳过基准元素本身
-  //         if (parseInt(arr[i].x) < parseInt(pivot.x)) {
-  //           leftArr.push(arr[i]); // 将比基准元素小的元素添加到左侧数组
-  //         } else {
-  //           rightArr.push(arr[i]); // 将比基准元素大的元素添加到右侧数组
-  //         }
-  //       }
-  //     } break;
-  //     case 2: {
-  //       for (let i = 0; i < arr.length; i++) {
-  //         if (i === pivotIndex) continue; // 跳过基准元素本身
-  //         if (parseInt(arr[i].y) < parseInt(pivot.y)) {
-  //           leftArr.push(arr[i]); // 将比基准元素小的元素添加到左侧数组
-  //         } else {
-  //           rightArr.push(arr[i]); // 将比基准元素大的元素添加到右侧数组
-  //         }
-  //       }
-  //     } break;
-  //   }
-
-
-  //   return [...DDeiUtil.quickSortPointByPosition(leftArr, type), pivot, ...DDeiUtil.quickSortPointByPosition(rightArr, type)]; // 合并左、右两部分结果及基准元素
-  // }
 
 }
 
