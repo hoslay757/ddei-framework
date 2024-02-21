@@ -525,10 +525,10 @@ class DDeiStageCanvasRender {
         // ctx.ellipse(point.x * rat1, point.y * rat1, weight * ratio, weight * ratio, 0, 0, Math.PI * 2)
         // ctx.fill();
         // ctx.stroke();
-        if (point.prio) {
-          ctx.fillStyle = "black"
-          ctx.fillText(point.prio, point.x * rat1 - 8, point.y * rat1 + 8)
-        }
+        // if (point.prio) {
+        //   ctx.fillStyle = "black"
+        //   ctx.fillText(point.prio, point.x * rat1 - 8, point.y * rat1 + 8)
+        // }
 
         ctx.closePath();
       });

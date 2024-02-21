@@ -518,6 +518,17 @@ class DDeiLine extends DDeiAbstractShape {
       eAngle = endModel.getPointAngle(this.endPoint)
       eAngle = this.calSpecilPointAngle(eAngle)
     }
+    let outRect = null
+    if (startRect && endRect) {
+      outRect = {
+        x: Math.min(startRect.x, endRect.x),
+        x1: Math.max(startRect.x1, endRect.x1),
+        y: Math.min(startRect.y, endRect.y),
+        y1: Math.max(startRect.y1, endRect.y1),
+      }
+      outRect.width = outRect.x1 - outRect.x
+      outRect.height = outRect.y1 - outRect.y
+    }
 
 
 
@@ -527,7 +538,6 @@ class DDeiLine extends DDeiAbstractShape {
     let recommendPaths = []
     //获取移动路径
     let movePath = DDeiUtil.getMovePath1(sAngle, eAngle, this.startPoint, this.endPoint)
-    console.log(movePath)
     if (movePath) {
       let mPaths = movePath.split(",")
 
@@ -537,12 +547,6 @@ class DDeiLine extends DDeiAbstractShape {
         let opSize = parseFloat(mpa[1]);
         let cPoint = {}
         switch (opType) {
-          case 'x':
-            // cPoint.x += opSize * w
-            break;
-          case 'y':
-            // cPoint.y += opSize * h
-            break;
           case 'sx':
             cPoint.x = this.startPoint.x + opSize * startRect.width
             cPoint.y = this.startPoint.y
@@ -558,14 +562,164 @@ class DDeiLine extends DDeiAbstractShape {
             cPoint.y = this.endPoint.y
             cPoint.type = 'x'
             break;
+
+          case 'sxmid':
+            cPoint.y = this.startPoint.y
+            if (outRect) {
+              cPoint.x = outRect.x + outRect.width / 2
+            } else {
+              cPoint.x = (this.startPoint.x + this.endPoint.x) / 2
+            }
+            cPoint.type = 'x'
+            break;
+          case 'symid':
+            cPoint.x = this.startPoint.x
+            if (outRect) {
+              cPoint.y = outRect.y + outRect.height / 2
+            } else {
+              cPoint.y = (this.startPoint.y + this.endPoint.y) / 2
+            }
+            cPoint.type = 'y'
+            break;
+          case 'exmid':
+            cPoint.y = this.endPoint.y
+            if (outRect) {
+              cPoint.x = outRect.x + outRect.width / 2
+            } else {
+              cPoint.x = (this.startPoint.x + this.endPoint.x) / 2
+            }
+            cPoint.type = 'x'
+            break;
+          case 'eymid':
+            cPoint.x = this.endPoint.x
+            if (outRect) {
+              cPoint.y = outRect.y + outRect.height / 2
+            } else {
+              cPoint.y = (this.endPoint.y + this.endPoint.y) / 2
+            }
+            cPoint.type = 'y'
+            break;
+          case 'sx1':
+            cPoint.y = this.startPoint.y
+            cPoint.x = startRect.x + startRect.width * opSize
+            cPoint.type = 'x'
+            break;
+          case 'sx2':
+            cPoint.y = this.startPoint.y
+            cPoint.x = startRect.x1 + startRect.width * opSize
+            cPoint.type = 'x'
+            break;
+          case 'ex1':
+            cPoint.y = this.endPoint.y
+            cPoint.x = endRect.x + endRect.width * opSize
+            cPoint.type = 'x'
+            break;
+          case 'ex2':
+            cPoint.y = this.endPoint.y
+            cPoint.x = endRect.x1 + endRect.width * opSize
+            cPoint.type = 'x'
+            break;
+          case 'sy1':
+            cPoint.x = this.startPoint.x
+            cPoint.y = startRect.y + startRect.height * opSize
+            cPoint.type = 'y'
+            break;
+          case 'sy2':
+            cPoint.x = this.startPoint.x
+            cPoint.y = startRect.y1 + startRect.height * opSize
+            cPoint.type = 'y'
+            break;
           case 'ey':
             cPoint.y = this.endPoint.y + opSize * endRect.height
             cPoint.x = this.endPoint.x
             cPoint.type = 'y'
             break;
+          case 'ey1':
+            cPoint.x = this.endPoint.x
+            cPoint.y = endRect.y + endRect.height * opSize
+            cPoint.type = 'y'
+            break;
+          case 'ey2':
+            cPoint.x = this.endPoint.x
+            cPoint.y = endRect.y1 + endRect.height * opSize
+            cPoint.type = 'y'
+            break;
+          case 'rx-s':
+            if (outRect) {
+              cPoint.x = outRect.x + startRect.width * opSize
+              cPoint.y = outRect.y
+              cPoint.type = 'x'
+            } else {
+              cPoint = null
+            }
+            break;
+          case 'rx1-s':
+            if (outRect) {
+              cPoint.x = outRect.x1 + startRect.width * opSize
+              cPoint.y = outRect.y
+              cPoint.type = 'x'
+            } else {
+              cPoint = null
+            }
+            break;
+          case 'rx-e':
+            if (outRect) {
+              cPoint.x = outRect.x + endRect.width * opSize
+              cPoint.y = outRect.y
+              cPoint.type = 'x'
+            } else {
+              cPoint = null
+            }
+            break;
+          case 'rx1-e':
+            if (outRect) {
+              cPoint.x = outRect.x1 + endRect.width * opSize
+              cPoint.y = outRect.y
+              cPoint.type = 'x'
+            } else {
+              cPoint = null
+            }
+            break;
+          case 'ry-s':
+            if (outRect) {
+              cPoint.y = outRect.y + startRect.height * opSize
+              cPoint.x = outRect.x
+              cPoint.type = 'y'
+            } else {
+              cPoint = null
+            }
+            break;
+          case 'ry1-s':
+            if (outRect) {
+              cPoint.y = outRect.y1 + startRect.height * opSize
+              cPoint.x = outRect.x
+              cPoint.type = 'y'
+            } else {
+              cPoint = null
+            }
+            break;
+          case 'ry-e':
+            if (outRect) {
+              cPoint.y = outRect.y + endRect.height * opSize
+              cPoint.x = outRect.x
+              cPoint.type = 'y'
+            } else {
+              cPoint = null
+            }
+            break;
+          case 'ry1-e':
+            if (outRect) {
+              cPoint.y = outRect.y1 + endRect.height * opSize
+              cPoint.x = outRect.x
+              cPoint.type = 'y'
+            } else {
+              cPoint = null
+            }
+            break;
         }
-
-        recommendPaths.push(cPoint)
+        if (cPoint) {
+          recommendPaths.push(cPoint)
+        }
       });
     }
 

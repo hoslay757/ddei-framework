@@ -1030,87 +1030,85 @@ class DDeiUtil {
    * 获取移动路径
    */
   static getMovePath1(sAngle, eAngle, startPoint, endPoint): string {
-    console.log(sAngle + " .  " + eAngle)
     let movePath = ""
-    //开始点为左边线的各种情况
+
     switch (sAngle) {
+      //开始点为右边线的各种情况
       case 0: {
         switch (eAngle) {
           case 180: {
             //Y相等
             if (Math.abs(startPoint.y - endPoint.y) <= 1) {
               if (startPoint.x > endPoint.x) {
-                movePath = "x:0.25,y:-0.25,x:-1.5,y:0.25"
+                movePath = "sx:0.25,ex:-0.25"
               }
             }
             //开始高于结束
             else if (startPoint.y > endPoint.y) {
               if (startPoint.x > endPoint.x) {
-                movePath = "x:0.25,y:-0.5,x:-1.5,y:-0.5"
-              }
-              else {
-                movePath = "x:0.5,y:-1"
+                movePath = "sx:0.25,ex:-0.25"
               }
             }
             //结束高于开始
             else {
               if (startPoint.x > endPoint.x) {
-                movePath = "x:0.25,y:0.5,x:-1.5,y:0.5"
-              }
-              else {
-                movePath = "x:0.5,y:1"
+                movePath = "sx:0.25,ex:-0.25"
               }
             }
           } break;
           case -90: {
             //Y相等
             if (Math.abs(startPoint.y - endPoint.y) <= 1) {
-              if (startPoint.x > endPoint.x) {
-                movePath = "x:0.25,y:-0.25,x:-1.25"
-              }
+
             }
             //开始高于结束
             else if (startPoint.y > endPoint.y) {
               if (startPoint.x > endPoint.x) {
-                movePath = "x:0.25,y:-1.25,x:-1.25"
+                movePath = "sx:0.25,ey:-0.25"
               }
               else {
-                movePath = "x:0.5,y:-1.25,x:0.5"
+                movePath = "ey:-0.25"
               }
             }
             //结束高于开始
             else {
-              if (startPoint.x > endPoint.x) {
-                movePath = "x:0.25,y:0.5,x:-1.25"
+              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+                movePath = "sx:0.25"
+              } else if (startPoint.x > endPoint.x) {
+                movePath = "sx:0.25"
               }
-              else {
-                movePath = "x:1"
-              }
+
             }
           } break;
           case 90: {
             //Y相等
             if (Math.abs(startPoint.y - endPoint.y) <= 1) {
               if (startPoint.x > endPoint.x) {
-                movePath = "x:0.25,y:0.25,x:-1.25,y:-0.25"
+                movePath = "sx:0.25,sy2:0.25"
+              } else {
+                movePath = "ey:0.25"
               }
             }
             //开始高于结束
             else if (startPoint.y > endPoint.y) {
-              if (startPoint.x > endPoint.x) {
-                movePath = "x:0.25,y:-0.5,x:-1.25"
+              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+                movePath = "sx:0.25"
+              } else if (startPoint.x > endPoint.x) {
+                movePath = "sx:0.25"
               }
               else {
-                movePath = "x:1"
+
               }
             }
             //结束高于开始
             else {
-              if (startPoint.x > endPoint.x) {
-                movePath = "x:0.25,y:1.25,x:-1.25"
+              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+
+              } else if (startPoint.x > endPoint.x) {
+                movePath = "sx:0.25,ey:0.25"
               }
               else {
-                movePath = "x:0.5,y:1.25,x:0.5"
+                movePath = "ey:0.25"
               }
             }
           }
@@ -1118,30 +1116,35 @@ class DDeiUtil {
           case 0: {
             //Y相等
             if (Math.abs(startPoint.y - endPoint.y) <= 1) {
-              movePath = "x:0.25,y:0.25,x:-1.25,y:-0.25"
+              if (startPoint.x > endPoint.x) {
+                movePath = "sx:0.25,sy1:-0.25"
+              }
+              else {
+                movePath = "ey1:-0.25"
+              }
             }
             //开始高于结束
             else if (startPoint.y > endPoint.y) {
               if (Math.abs(startPoint.x - endPoint.x) <= 1) {
-                movePath = "x:0.25,y:-1"
+                movePath = "sx:0.25"
               }
               else if (startPoint.x > endPoint.x) {
-                movePath = "x:0.25,y:-1"
+                movePath = "sx:0.25"
               }
               else {
-                movePath = "x:1.25,y:-1"
+                movePath = "ex:0.25"
               }
             }
             //结束高于开始
             else {
               if (Math.abs(startPoint.x - endPoint.x) <= 1) {
-                movePath = "x:0.25,y:1"
+                movePath = "sx:0.25"
               }
               else if (startPoint.x > endPoint.x) {
-                movePath = "x:0.25,y:1"
+                movePath = "sx:0.25"
               }
               else {
-                movePath = "x:1.25,y:1"
+                movePath = "ex:0.25"
               }
             }
           } break;
@@ -1154,28 +1157,27 @@ class DDeiUtil {
             //Y相等
             if (Math.abs(startPoint.y - endPoint.y) <= 1) {
               if (startPoint.x > endPoint.x) {
-                movePath = ""
               }
               else {
-                movePath = "x:-0.25,y:-0.25,x:1.5,y:0.25"
+                movePath = "sx:-0.25,ey1:-0.25,ex:0.25"
               }
             }
             //开始高于结束
             else if (startPoint.y > endPoint.y) {
               if (startPoint.x > endPoint.x) {
-                movePath = "x:-0.25,y:-1"
+
               }
               else {
-                movePath = "x:-0.25,y:-0.5,x:1.5,y:-0.5"
+                movePath = "sx:-0.25,ex:0.25"
               }
             }
             //结束高于开始
             else {
               if (startPoint.x > endPoint.x) {
-                movePath = "x:-0.25,y:1"
+
               }
               else {
-                movePath = "x:-0.25,y:0.5,x:1.5,y:0.5"
+                movePath = "sx:-0.25,ex:0.25"
               }
             }
           }
@@ -1184,25 +1186,27 @@ class DDeiUtil {
             //Y相等
             if (Math.abs(startPoint.y - endPoint.y) <= 1) {
               if (startPoint.x < endPoint.x) {
-                movePath = "x:-0.25,y:-0.25,x:1.25,y:0.25"
+                movePath = "sx:-0.25,ry-s:-0.25"
+              } else {
+                movePath = "sx:-0.25,ry-s:-0.25"
               }
             }
             //开始高于结束
             else if (startPoint.y > endPoint.y) {
               if (startPoint.x > endPoint.x) {
-                movePath = "x:-0.5,y:-1.25,x:-0.5"
+                movePath = "sx:-0.25,ey:-0.25"
               }
               else {
-                movePath = "x:-0.25,y:-1.25,x:1.25"
+                movePath = "sx:-0.25,ey:-0.25"
               }
             }
             //结束高于开始
             else {
               if (startPoint.x > endPoint.x) {
-                movePath = "x:-1"
+
               }
               else {
-                movePath = "x:-0.25,y:0.5,x:1.25"
+                movePath = "sx:-0.25"
               }
             }
           }
@@ -1211,26 +1215,32 @@ class DDeiUtil {
             //Y相等
             if (Math.abs(startPoint.y - endPoint.y) <= 1) {
               if (startPoint.x < endPoint.x) {
-                movePath = "x:-0.25,y:0.25,x:1.25"
+                movePath = "rx-s:-0.25,ry1-e:0.25"
+              } else {
+                movePath = "ey2:0.25"
               }
             }
             //开始高于结束
             else if (startPoint.y > endPoint.y) {
               if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+
               } else if (startPoint.x > endPoint.x) {
-                movePath = "x:-1"
+
               }
               else {
-                movePath = "x:-0.25,y:-0.5,x:1.25"
+                movePath = "sx:-0.25"
               }
             }
             //结束高于开始
             else {
-              if (startPoint.x > endPoint.x) {
-                movePath = "x:-0.5,y:1.25,x:-0.5"
+              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+                movePath = "ex2:-0.25,ey2:0.25"
+              }
+              else if (startPoint.x > endPoint.x) {
+                movePath = "ey:0.25"
               }
               else {
-                movePath = "x:-0.5,y:1.25,x:1.5"
+                movePath = "sx:-0.25,ey:0.25"
               }
             }
           } break;
@@ -1238,77 +1248,72 @@ class DDeiUtil {
             //Y相等
             if (Math.abs(startPoint.y - endPoint.y) <= 1) {
               if (startPoint.x > endPoint.x) {
-                movePath = "x:-0.25,y:-0.25,x:-1,y:0.25"
+                movePath = "ey1:-0.25,ex:-0.25"
               } else {
-                movePath = "x:-0.25,y:-0.25,x:1,y:0.25"
+                movePath = "sx:-0.25,ey1:-0.25"
               }
 
             }
             //开始高于结束
             else if (startPoint.y > endPoint.y) {
               if (Math.abs(startPoint.x - endPoint.x) <= 1) {
-                movePath = "x:-0.25,y:-1"
+                movePath = "sx:-0.25"
               }
               else if (startPoint.x > endPoint.x) {
-                movePath = "x:-1.25,y:-1"
+                movePath = "ex:-0.25"
               }
               else {
-                movePath = "x:-0.25,y:-1"
+                movePath = "sx:-0.25"
               }
             }
             //结束高于开始
             else {
               if (Math.abs(startPoint.x - endPoint.x) <= 1) {
-                movePath = "x:-0.25,y:1"
+                movePath = "sx:-0.25"
               }
               else if (startPoint.x > endPoint.x) {
-                movePath = "x:-1.25,y:1"
+                movePath = "ex:-0.25"
               }
               else {
-                movePath = "x:-0.25,y:1"
+                movePath = "sx:-0.25"
               }
             }
           } break;
         }
       } break;
-
       case -90: {
         switch (eAngle) {
           //开始点为上边线的各种情况
-          case 90: {
-            //Y相等
-            if (Math.abs(startPoint.y - endPoint.y) <= 1) {
-            }
-            //开始高于结束
-            else if (startPoint.y > endPoint.y) {
-              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+          case 90:
+            //OK
+            {
+              //Y相等
+              if (Math.abs(startPoint.y - endPoint.y) <= 1) {
+                movePath = "sy:-0.25,ey:0.25"
+              }
+              //开始高于结束
+              else if (startPoint.y > endPoint.y) {
 
-              } else if (startPoint.x > endPoint.x) {
-                movePath = "y:-0.5,x:-1"
               }
+              //结束高于开始
               else {
-                movePath = "y:-0.5,x:1"
+                if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+                  movePath = "sy:-0.25,sx1:-0.25,ey:0.25"
+                } else {
+                  movePath = "sy:-0.25,ey:0.25"
+                }
               }
             }
-            //结束高于开始
-            else {
-              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
-                movePath = "y:-0.25,x:-0.5,y:1.5,x:-0.5"
-              }
-              else if (startPoint.x > endPoint.x) {
-                movePath = "y:-0.25,x:-0.5,y:1.5,x:-0.5"
-              }
-              else {
-                movePath = "y:-0.25,x:0.5,y:1.5,x:0.5"
-              }
-            }
-          }
             break;
           case 0: {
+            //OK
             //Y相等
             if (Math.abs(startPoint.y - endPoint.y) <= 1) {
-              if (startPoint.x < endPoint.x) {
-                movePath = "y:-0.5,x:1.25,y:0.5"
+              if (startPoint.x > endPoint.x) {
+                movePath = "sy:-0.25"
+              }
+              else {
+                movePath = "sy:-0.25"
               }
             }
             //开始高于结束
@@ -1316,22 +1321,22 @@ class DDeiUtil {
               if (Math.abs(startPoint.x - endPoint.x) <= 1) {
 
               } else if (startPoint.x > endPoint.x) {
-                movePath = "y:-1"
+
               }
               else {
-                movePath = "y:-0.5,x:1.25,y:-0.5"
+                movePath = "ex:0.25"
               }
             }
             //结束高于开始
             else {
               if (Math.abs(startPoint.x - endPoint.x) <= 1) {
-                movePath = "y:-0.25,x:0.5,y:1.25"
+                movePath = "sy:-0.25,sx2:0.25"
               }
               else if (startPoint.x > endPoint.x) {
-                movePath = "y:-0.25,x:-0.5,y:1.25"
+                movePath = "sy:-0.25,sx2:0.25"
               }
               else {
-                movePath = "y:-0.25,x:1.25,y:1.25"
+                movePath = "sy:-0.25,ex:0.25"
               }
             }
           }
@@ -1340,68 +1345,68 @@ class DDeiUtil {
             //Y相等
             if (Math.abs(startPoint.y - endPoint.y) <= 1) {
               if (startPoint.x > endPoint.x) {
-                movePath = "y:-0.5,x:-1.25,y:0.5"
+                movePath = "sy:-0.25"
+              }
+              else {
+                movePath = "sy:-0.25"
               }
             }
             //开始高于结束
             else if (startPoint.y > endPoint.y) {
               if (Math.abs(startPoint.x - endPoint.x) <= 1) {
-
+                movePath = "sx:-0.25"
               } else if (startPoint.x > endPoint.x) {
-                movePath = "y:-0.5,x:-1.25,y:-0.5"
+                movePath = "ex:-0.25"
               }
               else {
-                movePath = "y:-1"
+
               }
             }
             //结束高于开始
             else {
               if (Math.abs(startPoint.x - endPoint.x) <= 1) {
-                movePath = "y:-0.25,x:-0.5,y:1.25"
+                movePath = "sy:-0.25,rx-s:-0.25"
               }
               else if (startPoint.x > endPoint.x) {
-                movePath = "y:-0.25,x:-1.25,y:1.25"
+                movePath = "sy:-0.25,ex:-0.25"
               }
               else {
-                movePath = "y:-0.25,x:0.5,y:1.25"
+                movePath = "sy:-0.25"
               }
             }
           }
             break;
-          case -90: {
-            //Y相等
-            if (Math.abs(startPoint.y - endPoint.y) <= 1) {
-              if (startPoint.x > endPoint.x) {
-                movePath = "y:-0.25,x:-1"
+          case -90:
+            //OK
+            {
+              //Y相等
+              if (Math.abs(startPoint.y - endPoint.y) <= 1) {
+                movePath = "sy:-0.25,ex:0"
               }
+              //开始高于结束
+              else if (startPoint.y > endPoint.y) {
+                if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+                  movePath = "ey:-0.25"
+                } else if (startPoint.x > endPoint.x) {
+                  movePath = "ey:-0.25,ex:0"
+                }
+                else {
+                  movePath = "ey:-0.25,ex:0"
+                }
+              }
+              //结束高于开始
               else {
-                movePath = "y:-0.25,x:1"
+                if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+                  movePath = "sy:-0.25,sx1:-0.25,exmid"
+                }
+                else if (startPoint.x > endPoint.x) {
+                  movePath = "sy:-0.25,ex:0"
+                }
+                else {
+                  movePath = "sy:-0.25,ex:0"
+                }
               }
             }
-            //开始高于结束
-            else if (startPoint.y > endPoint.y) {
-              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
-                movePath = "sy:-0.25,sx:-0.5,ey:-0.25,ex:0"
-              } else if (startPoint.x > endPoint.x) {
-                movePath = "ey:-0.25,ex:0"
-              }
-              else {
-                movePath = "ey:-0.25,ex:0"
-              }
-            }
-            //结束高于开始
-            else {
-              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
-                movePath = "y:-0.25,x:-0.5,y:1.25,x:0.5"
-              }
-              else if (startPoint.x > endPoint.x) {
-                movePath = "y:-0.25,x:-1"
-              }
-              else {
-                movePath = "y:-0.25,x:1"
-              }
-            }
-          }
             break;
         }
       } break;
@@ -1409,48 +1414,47 @@ class DDeiUtil {
         switch (eAngle) {
           //开始点为下边线的各种情况
           case -90: {
+            //OK
             //Y相等
             if (Math.abs(startPoint.y - endPoint.y) <= 1) {
+              if (startPoint.x > endPoint.x) {
+                movePath = "sy:0.25,ey:-0.25"
+              }
+              else {
+                movePath = "sy:0.25,ey:-0.25"
+              }
             }
             //开始高于结束
             else if (startPoint.y > endPoint.y) {
               if (Math.abs(startPoint.x - endPoint.x) <= 1) {
-                movePath = "y:0.25,x:0.5,y:-1.5,x:-0.5"
+                movePath = "sy:0.25,ey:-0.25"
               } else if (startPoint.x > endPoint.x) {
-                movePath = "y:0.25,x:-0.5,y:-1.5,x:-0.5"
+                movePath = "sy:0.25,ey:-0.25"
               }
               else {
-                movePath = "y:0.25,x:0.5,y:-1.5,x:0.5"
+                movePath = "sy:0.25,ey:-0.25"
               }
             }
             //结束高于开始
             else {
-              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
 
-              }
-              else if (startPoint.x > endPoint.x) {
-                movePath = "y:0.5,x:-1"
-              }
-              else {
-                movePath = "y:0.5,x:1"
-              }
             }
           } break;
           case 0: {
+            //OK
             //Y相等
             if (Math.abs(startPoint.y - endPoint.y) <= 1) {
-              if (startPoint.x < endPoint.x) {
-                movePath = "y:0.5,x:1.25,y:-0.5"
-              }
+              movePath = "sy:0.25"
             }
             //开始高于结束
             else if (startPoint.y > endPoint.y) {
               if (Math.abs(startPoint.x - endPoint.x) <= 1) {
+                movePath = "sy:0.25,ex:0.25"
               } else if (startPoint.x > endPoint.x) {
-                movePath = "y:0.25,x:-0.5,y:-1.25"
+                movePath = "sy:0.25"
               }
               else {
-                movePath = "y:0.25,x:1.25,y:-1.25"
+                movePath = "sy:0.25,ex:0.25"
               }
             }
             //结束高于开始
@@ -1459,69 +1463,62 @@ class DDeiUtil {
 
               }
               else if (startPoint.x > endPoint.x) {
-                movePath = "y:1"
+
               }
               else {
-                movePath = "y:0.5,x:1.25,y:0.5"
+                movePath = "ex:0.25"
               }
             }
           } break;
           case 180: {
             //Y相等
             if (Math.abs(startPoint.y - endPoint.y) <= 1) {
-              if (startPoint.x > endPoint.x) {
-                movePath = "y:0.5,x:-1.25,y:-0.5"
-              }
+              movePath = "sy:0.25"
             }
             //开始高于结束
             else if (startPoint.y > endPoint.y) {
               if (Math.abs(startPoint.x - endPoint.x) <= 1) {
               } else if (startPoint.x > endPoint.x) {
-                movePath = "y:0.25,x:-1.25,y:-1.25"
+                movePath = "sy:0.25,ex:-0.25"
               }
               else {
-                movePath = "y:0.25,x:0.5,y:-1.25"
+                movePath = "sy:0.25"
               }
             }
             //结束高于开始
             else {
-              if (Math.abs(startPoint.x - endPoint.x) <= 1) {
-
-              }
-              else if (startPoint.x > endPoint.x) {
-                movePath = "y:0.5,x:-1.25,y:0.5"
-              }
-              else {
-                movePath = "y:1"
+              if (startPoint.x > endPoint.x) {
+                movePath = "ex:-0.25"
               }
             }
           } break;
           case 90: {
+            //OK
             //Y相等
             if (Math.abs(startPoint.y - endPoint.y) <= 1) {
-
+              movePath = "sy:0.25"
             }
             //开始高于结束
             else if (startPoint.y > endPoint.y) {
               if (Math.abs(startPoint.x - endPoint.x) <= 1) {
-                movePath = "y:0.25,x:-0.5,y:-1,x:0.5"
+                movePath = "sy:0.25,sx1:-0.25"
               } else if (startPoint.x > endPoint.x) {
-                movePath = "y:0.25,x:-1"
+                movePath = "sy:0.25"
               }
               else {
-                movePath = "y:0.25,x:1"
+                movePath = "sy:0.25"
               }
             }
             //结束高于开始
             else {
               if (Math.abs(startPoint.x - endPoint.x) <= 1) {
-                movePath = "y:0.25,x:0.5,y:1,x:-0.5"
+                movePath = "ex2:0.25,ey:0.25"
               }
               else if (startPoint.x > endPoint.x) {
-                movePath = "y:1.25,x:-1"
+                movePath = "ey:0.25"
               }
               else {
-                movePath = "y:1.25,x:1"
+                movePath = "ey:0.25"
               }
             }
           } break;
@@ -3213,7 +3210,9 @@ class DDeiUtil {
     sd.point.color = "red"
     ed.point.color = "red"
     ed.point.prio = 1000
+    ed.point.isEnd = true
     sd.point.prio = 0
+    sd.point.isStart = true
     corssPoints.push(sd.point)
     corssPoints.push(ed.point)
     //生成起点、终点的延长线
@@ -3363,8 +3362,19 @@ class DDeiUtil {
       let arr = yIntIndex[intY]
       let idx = -1;
       for (let i = 0; i < arr.length; i++) {
-        if (intX <= parseInt(arr[i].x)) {
+        if (intX < parseInt(arr[i].x)) {
           arr.splice(i, 0, point)
+          idx = i
+          break;
+        } else if (intX == parseInt(arr[i].x)) {
+
+          if (point.isStart)
+            arr[i].isStart = point.isStart
+          if (point.isEnd)
+            arr[i].isEnd = point.isEnd
+          if (point.prio) {
+            arr[i].prio = (arr[i].prio ? arr[i].prio : 0) + point.prio
+          }
           idx = i
           break;
         }
@@ -3378,8 +3388,18 @@ class DDeiUtil {
       arr = xIntIndex[intX]
       idx = -1;
       for (let i = 0; i < arr.length; i++) {
-        if (intY <= parseInt(arr[i].y)) {
+        if (intY < parseInt(arr[i].y)) {
           arr.splice(i, 0, point)
+          idx = i
+          break;
+        } else if (intY == parseInt(arr[i].y)) {
+          if (point.isStart)
+            arr[i].isStart = point.isStart
+          if (point.isEnd)
+            arr[i].isEnd = point.isEnd
+          if (point.prio) {
+            arr[i].prio = (arr[i].prio ? arr[i].prio : 0) + point.prio
+          }
           idx = i
           break;
         }
@@ -3389,8 +3409,7 @@ class DDeiUtil {
       }
     })
     //2.寻路,沿开始点，向开始方向开始寻路，横向用xIndex纵向用yIndex
-    let fullPathTreeData = DDeiUtil.getLookForPath(sd.point, ed.point, sd.direct, outRects, xIntIndex, yIntIndex, 1)
-    console.log(ed)
+    let fullPathTreeData = DDeiUtil.getLookForPath(sd.point, ed.point, sd.direct, outRects, xIntIndex, yIntIndex, 1, 'root')
     console.log(fullPathTreeData)
     // 返回最短路径结果
     let pathPoints = DDeiUtil.generatePaths(fullPathTreeData)
@@ -3467,7 +3486,7 @@ class DDeiUtil {
   /**
    * 执行单次，单方向寻路
    */
-  static getLookForPath(curPoint, endPoint, curDirect, outRects, xIntIndex, yIntIndex, level): object {
+  static getLookForPath(curPoint, endPoint, curDirect, outRects, xIntIndex, yIntIndex, level, fullpath): object {
 
 
     let intX = parseInt(curPoint.x)
@@ -3478,20 +3497,80 @@ class DDeiUtil {
       pathPoints.push(curPoint)
     }
     //判断是否遇到障碍
-    function isCorssRect(obiLine: object): boolean {
+    function isCorssRect(obiLine: object, direct: number, spt: object, ept: object): boolean {
       for (let o = 0; o < outRects.length; o++) {
         let outRect = outRects[o]
-        if (parseInt(outRect.y) <= obiLine.y2 && parseInt(outRect.y1) >= obiLine.y2
-          && parseInt(outRect.x) <= obiLine.x2 && parseInt(outRect.x1) >= obiLine.x2) {
-          return true
-        } else if (DDeiUtil.isLineCross(obiLine, { x1: outRect.x, y1: outRect.y, x2: outRect.x1, y2: outRect.y1 })) {
-          return true
+        let l2
+        switch (direct) {
+          case 1:
+            l2 = { x1: parseInt(outRect.x), y1: parseInt(outRect.y1), x2: parseInt(outRect.x1), y2: parseInt(outRect.y1) };
+            if (DDeiUtil.isLineCross(obiLine, l2)) {
+              if (!ept.isEnd && !spt.isStart) {
+                return true
+              } else {
+
+                if (ept.isEnd && parseInt(obiLine.y2) == parseInt(l2.y2)) {
+
+                } else if (spt.isStart && parseInt(obiLine.y1) == parseInt(l2.y2)) {
+
+                } else {
+                  return true;
+                }
+              }
+            } break;
+          case 2:
+            l2 = { x1: parseInt(outRect.x), y1: parseInt(outRect.y), x2: parseInt(outRect.x), y2: parseInt(outRect.y1) }
+            if (DDeiUtil.isLineCross(obiLine, l2)) {
+              if (!ept.isEnd && !spt.isStart) {
+                return true
+              } else {
+                if (ept.isEnd && parseInt(obiLine.x2) == parseInt(l2.x2)) {
+
+                } else if (spt.isStart && parseInt(obiLine.x1) == parseInt(l2.x2)) {
+
+                } else {
+                  return true;
+                }
+              }
+            } break;
+          case 3:
+            l2 = { x1: parseInt(outRect.x), y1: parseInt(outRect.y), x2: parseInt(outRect.x1), y2: parseInt(outRect.y) }
+            if (DDeiUtil.isLineCross(obiLine, l2)) {
+              if (!ept.isEnd && !spt.isStart) {
+                return true
+              } else {
+                if (ept.isEnd && parseInt(obiLine.y2) == parseInt(l2.y2)) {
+
+                } else if (spt.isStart && parseInt(obiLine.y1) == parseInt(l2.y2)) {
+
+                } else {
+                  return true;
+                }
+              }
+            } break;
+          case 4:
+            l2 = { x1: parseInt(outRect.x1), y1: parseInt(outRect.y), x2: parseInt(outRect.x1), y2: parseInt(outRect.y1) }
+            if (DDeiUtil.isLineCross(obiLine, l2)) {
+
+              if (!ept.isEnd && !spt.isStart) {
+                return true
+              } else {
+                if (ept.isEnd && parseInt(obiLine.x2) == parseInt(l2.x2)) {
+
+                } else if (spt.isStart && parseInt(obiLine.x1) == parseInt(l2.x2)) {
+
+                } else {
+                  return true;
+                }
+              }
+            } break;
         }
       }
       return false;
     }
 
     switch (curDirect) {
+
       case 1: {
         //向上寻路
         let maxPrio = 0, maxPrioIndex = -1, maxPrioNumber = 0
@@ -3504,11 +3583,12 @@ class DDeiUtil {
           }
           else if (intY > ppIntY) {
             //遇到障碍终止
-            let obiLine = { x1: intX, y1: xIntIndex[intX][startIndex].y, x2: intX, y2: ppIntY }
-            let isCorss = isCorssRect(obiLine)
+            let obiLine = { x1: intX, y1: parseInt(xIntIndex[intX][startIndex].y), x2: intX, y2: ppIntY }
+            let isCorss = isCorssRect(obiLine, curDirect, xIntIndex[intX][startIndex], pathPoint)
             if (isCorss) {
               break;
             }
+
             let prio = pathPoint.prio - (startIndex - i)
             if (maxPrio < prio) {
               maxPrio = prio
@@ -3517,12 +3597,18 @@ class DDeiUtil {
             } else if (maxPrio == prio) {
               maxPrioNumber++
             }
+            if (pathPoint.isEnd) {
+              break;
+            }
           }
         }
         //确定路径
         if (maxPrioIndex != -1) {
           pathPoints.push(xIntIndex[intX][maxPrioIndex])
           curPoint = xIntIndex[intX][maxPrioIndex]
+        } else {
+
+          curPoint = null
         }
 
       } break;
@@ -3538,11 +3624,12 @@ class DDeiUtil {
           }
           else if (intX < ppIntX) {
             //遇到障碍终止
-            let obiLine = { x1: yIntIndex[intY][startIndex].x, y1: intY, x2: ppIntX, y2: intY }
-            let isCorss = isCorssRect(obiLine)
+            let obiLine = { x1: parseInt(yIntIndex[intY][startIndex].x), y1: intY, x2: ppIntX, y2: intY }
+            let isCorss = isCorssRect(obiLine, curDirect, yIntIndex[intY][startIndex], pathPoint)
             if (isCorss) {
               break;
             }
+
             let prio = pathPoint.prio - (i - startIndex)
             if (maxPrio < prio) {
               maxPrio = prio
@@ -3550,6 +3637,9 @@ class DDeiUtil {
               maxPrioNumber = 0
             } else if (maxPrio == prio) {
               maxPrioNumber++
+            }
+            if (pathPoint.isEnd) {
+              break;
             }
           }
         }
@@ -3557,28 +3647,33 @@ class DDeiUtil {
         if (maxPrioIndex != -1) {
           pathPoints.push(yIntIndex[intY][maxPrioIndex])
           curPoint = yIntIndex[intY][maxPrioIndex]
+        } else {
+          curPoint = null
         }
       } break;
       case 3: {
         //向下寻路
         let maxPrio = 0, maxPrioIndex = -1, maxPrioNumber = 0
-        let startIndex = -1, endIndex = -1
+        let startIndex = -1
         for (let i = 0; i < xIntIndex[intX].length; i++) {
           let pathPoint = xIntIndex[intX][i]
           let ppIntY = parseInt(pathPoint.y)
-          if (endIndex != -1) {
-            break;
-          }
           if (intY == ppIntY) {
             startIndex = i
           }
           else if (intY < ppIntY) {
+            // if (fullpath == 'root-left-down' && ppIntY >= 2018) {
+            //   // console.log("end is " + endPoint.x + " .  " + endPoint.y)
+            //   debugger
+            // }
+
             //遇到障碍终止
-            let obiLine = { x1: intX, y1: xIntIndex[intX][startIndex].y, x2: intX, y2: ppIntY }
-            let isCorss = isCorssRect(obiLine)
+            let obiLine = { x1: intX, y1: parseInt(xIntIndex[intX][startIndex].y), x2: intX, y2: ppIntY }
+            let isCorss = isCorssRect(obiLine, curDirect, xIntIndex[intX][startIndex], pathPoint)
             if (isCorss) {
               break;
             }
+
             let prio = pathPoint.prio - (i - startIndex)
             if (maxPrio < prio) {
               maxPrio = prio
@@ -3587,16 +3682,21 @@ class DDeiUtil {
             } else if (maxPrio == prio) {
               maxPrioNumber++
             }
+            if (pathPoint.isEnd) {
+              break;
+            }
           }
         }
         //确定路径
         if (maxPrioIndex != -1) {
           pathPoints.push(xIntIndex[intX][maxPrioIndex])
           curPoint = xIntIndex[intX][maxPrioIndex]
+        } else {
+          curPoint = null
         }
       } break;
       case 4: {
-        //向右寻路
+        //向左寻路
         let maxPrio = 0, maxPrioIndex = -1, maxPrioNumber = 0
         let startIndex = -1, endIndex = -1
         for (let i = yIntIndex[intY].length - 1; i > -1; i--) {
@@ -3610,11 +3710,12 @@ class DDeiUtil {
           }
           else if (intX > ppIntX) {
             //遇到障碍终止
-            let obiLine = { x1: yIntIndex[intY][startIndex].x, y1: intY, x2: ppIntX, y2: intY }
-            let isCorss = isCorssRect(obiLine)
+            let obiLine = { x1: parseInt(yIntIndex[intY][startIndex].x), y1: intY, x2: ppIntX, y2: intY }
+            let isCorss = isCorssRect(obiLine, curDirect, yIntIndex[intY][startIndex], pathPoint)
             if (isCorss) {
               break;
             }
+
             let prio = pathPoint.prio - (startIndex - i)
             if (maxPrio < prio) {
               maxPrio = prio
@@ -3623,12 +3724,17 @@ class DDeiUtil {
             } else if (maxPrio == prio) {
               maxPrioNumber++
             }
+            if (pathPoint.isEnd) {
+              break;
+            }
           }
         }
         //确定路径
         if (maxPrioIndex != -1) {
           pathPoints.push(yIntIndex[intY][maxPrioIndex])
           curPoint = yIntIndex[intY][maxPrioIndex]
+        } else {
+          curPoint = null
         }
       } break;
     }
@@ -3639,28 +3745,29 @@ class DDeiUtil {
       || parseInt(curPoint.y) != parseInt(endPoint.y))) {
 
       let leftTreeData, rightTreeData, upTreeData, downTreeData
-      if (level > 5) {
+      if (level > 7) {
         return { level: level, state: -1, end: 1 }
       } else {
+
         switch (curDirect) {
           case 1: {
-            leftTreeData = DDeiUtil.getLookForPath(curPoint, endPoint, 2, outRects, xIntIndex, yIntIndex, level + 1)
-            rightTreeData = DDeiUtil.getLookForPath(curPoint, endPoint, 4, outRects, xIntIndex, yIntIndex, level + 1)
+            leftTreeData = DDeiUtil.getLookForPath(curPoint, endPoint, 4, outRects, xIntIndex, yIntIndex, level + 1, fullpath + "-left")
+            rightTreeData = DDeiUtil.getLookForPath(curPoint, endPoint, 2, outRects, xIntIndex, yIntIndex, level + 1, fullpath + "-right")
             break;
           }
           case 2: {
-            upTreeData = DDeiUtil.getLookForPath(curPoint, endPoint, 1, outRects, xIntIndex, yIntIndex, level + 1)
-            downTreeData = DDeiUtil.getLookForPath(curPoint, endPoint, 3, outRects, xIntIndex, yIntIndex, level + 1)
+            upTreeData = DDeiUtil.getLookForPath(curPoint, endPoint, 1, outRects, xIntIndex, yIntIndex, level + 1, fullpath + "-up")
+            downTreeData = DDeiUtil.getLookForPath(curPoint, endPoint, 3, outRects, xIntIndex, yIntIndex, level + 1, fullpath + "-down")
             break;
           }
           case 3: {
-            leftTreeData = DDeiUtil.getLookForPath(curPoint, endPoint, 2, outRects, xIntIndex, yIntIndex, level + 1)
-            rightTreeData = DDeiUtil.getLookForPath(curPoint, endPoint, 4, outRects, xIntIndex, yIntIndex, level + 1)
+            leftTreeData = DDeiUtil.getLookForPath(curPoint, endPoint, 4, outRects, xIntIndex, yIntIndex, level + 1, fullpath + "-left")
+            rightTreeData = DDeiUtil.getLookForPath(curPoint, endPoint, 2, outRects, xIntIndex, yIntIndex, level + 1, fullpath + "-right")
             break;
           }
           case 4: {
-            upTreeData = DDeiUtil.getLookForPath(curPoint, endPoint, 1, outRects, xIntIndex, yIntIndex, level + 1)
-            downTreeData = DDeiUtil.getLookForPath(curPoint, endPoint, 3, outRects, xIntIndex, yIntIndex, level + 1)
+            upTreeData = DDeiUtil.getLookForPath(curPoint, endPoint, 1, outRects, xIntIndex, yIntIndex, level + 1, fullpath + "-up")
+            downTreeData = DDeiUtil.getLookForPath(curPoint, endPoint, 3, outRects, xIntIndex, yIntIndex, level + 1, fullpath + "-down")
             break;
           }
         }
@@ -3675,14 +3782,14 @@ class DDeiUtil {
         state = -1
       }
 
-      return { level: level, state: state, pathPoints: pathPoints, left: leftTreeData, right: rightTreeData, up: upTreeData, down: downTreeData }
+      return { path: fullpath, level: level, state: state, pathPoints: pathPoints, left: leftTreeData, right: rightTreeData, up: upTreeData, down: downTreeData }
     } else {
       if (!curPoint) {
         state = -1
       } else {
         state = 1
       }
-      return { level: level, pathPoints: pathPoints, state: 1, end: 1 }
+      return { path: fullpath, level: level, pathPoints: pathPoints, state: state, end: 1 }
     }
   }
 
