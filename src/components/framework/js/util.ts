@@ -3200,8 +3200,8 @@ class DDeiUtil {
   static calAutoLinePath(sd: object, ed: object, obis: object[], recommendPaths: object[]): object {
 
     //权重配置，规划不同点的权重级别
-    let startWeight = 0,endWeight = 1000,startExt = 0,endExt = 100
-    let rectExtWeight =10,recomWeight=500,rectMidWeight = 50
+    let startWeight = 0, endWeight = 1000, startExt = 0, endExt = 100
+    let rectExtWeight = 10, recomWeight = 500, rectMidWeight = 50
 
 
     //所有图形的外接矩形
@@ -3212,8 +3212,6 @@ class DDeiUtil {
     let corssPoints = []
 
     //1.1规则：开始物体、结束物体、障碍物的所有点、所有物体外接矩形扩大四分之一点
-    sd.point.color = "red"
-    ed.point.color = "red"
     ed.point.prio = endWeight
     ed.point.isEnd = true
     sd.point.prio = startWeight
@@ -3221,7 +3219,7 @@ class DDeiUtil {
     corssPoints.push(sd.point)
     corssPoints.push(ed.point)
     //生成起点、终点的延长线
-    function genSEExtLine(ed,extWeight) {
+    function genSEExtLine(ed, extWeight) {
       switch (ed.direct) {
         case 1:
           corssPoints.push({ x: ed.point.x, y: ed.point.y - (ed.rect?.height > 0 ? ed.rect.height / 4 : 50), prio: extWeight })
@@ -3253,11 +3251,11 @@ class DDeiUtil {
           break;
       }
     }
-    genSEExtLine(sd,startExt)
-    genSEExtLine(ed,endExt)
+    genSEExtLine(sd, startExt)
+    genSEExtLine(ed, endExt)
 
     obis.forEach(obi => {
-      DDeiUtil.getAutoLineItemExtPoints(corssPoints, outRects, extLines, obi,rectExtWeight, "grey")
+      DDeiUtil.getAutoLineItemExtPoints(corssPoints, outRects, extLines, obi, rectExtWeight)
     })
     //1.2规则：获取推荐路径，路径上所有点提高权限
     recommendPaths.forEach(point => {
@@ -3276,20 +3274,20 @@ class DDeiUtil {
           //上下
           if (octj.y1 < octi.y) {
             let mdy = octj.y1 + (octi.y - octj.y1) / 2
-            extLines.push([{ x: octj.x - 50000, y: mdy, color: "green", prio: rectMidWeight }, { x: octj.x + 50000, y: mdy }])
+            extLines.push([{ x: octj.x - 50000, y: mdy, prio: rectMidWeight }, { x: octj.x + 50000, y: mdy }])
           }
           else if (octj.y > octi.y1) {
             let mdy = octi.y1 + (octj.y - octi.y1) / 2
-            extLines.push([{ x: octj.x - 50000, y: mdy, color: "green", prio: rectMidWeight }, { x: octj.x + 50000, y: mdy }])
+            extLines.push([{ x: octj.x - 50000, y: mdy, prio: rectMidWeight }, { x: octj.x + 50000, y: mdy }])
           }
           //左右
           if (octj.x1 < octi.x) {
             let mdx = octj.x1 + (octi.x - octj.x1) / 2
-            extLines.push([{ x: mdx, y: octj.y - 50000, color: "green", prio: rectMidWeight }, { x: mdx, y: octj.y + 50000 }])
+            extLines.push([{ x: mdx, y: octj.y - 50000, prio: rectMidWeight }, { x: mdx, y: octj.y + 50000 }])
           }
           else if (octj.x > octi.x1) {
             let mdx = octi.x1 + (octj.x - octi.x1) / 2
-            extLines.push([{ x: mdx, y: octj.y - 50000, color: "green", prio: rectMidWeight }, { x: mdx, y: octj.y + 50000 }])
+            extLines.push([{ x: mdx, y: octj.y - 50000, prio: rectMidWeight }, { x: mdx, y: octj.y + 50000 }])
           }
 
         }
@@ -3336,12 +3334,6 @@ class DDeiUtil {
 
         let cp = DDeiUtil.getLineCorssPoint(lineil[0], lineil[1], linejl[0], linejl[1])
         if (cp) {
-          if (lineil[0].color) {
-            cp.color = lineil[0].color
-          } else {
-            cp.color = "#FFC0CB"
-          }
-
           cp.prio = (lineil[0].prio ? lineil[0].prio : 1) + (linejl[0].prio ? linejl[0].prio : 1)
           corssPoints.push(cp)
         }
@@ -3376,7 +3368,7 @@ class DDeiUtil {
           // if (point.prio) {
           //   arr[i].prio = (arr[i].prio ? arr[i].prio : 0) + point.prio
           // }
-          arr[i].prio = Math.max(arr[i].prio, + point.prio)
+          // arr[i].prio = Math.max(arr[i].prio, + point.prio)
           idx = i
           break;
         }
@@ -3402,20 +3394,31 @@ class DDeiUtil {
           // if (point.prio) {
           //   arr[i].prio = (arr[i].prio ? arr[i].prio : 0) + point.prio
           // }
-          arr[i].prio = Math.max(arr[i].prio, + point.prio)
+          // arr[i].prio = Math.max(arr[i].prio, + point.prio)
           idx = i
           break;
         }
       }
       if (idx == -1) {
         arr.push(point)
-      } 
+      }
     })
+    let successPaths = []
     //2.寻路,沿开始点，向开始方向开始寻路，横向用xIndex纵向用yIndex
-    let fullPathTreeData = DDeiUtil.getLookForPath(sd.point, ed.point, sd.direct, outRects, xIntIndex, yIntIndex, 1, 'root')
-    console.log(fullPathTreeData)
+    console.time("lookfor")
+    DDeiUtil.getLookForPath(null, sd.point, ed.point, 0, outRects, xIntIndex, yIntIndex, 0, 'root', [], successPaths)
+    console.timeEnd("lookfor")
+    let minPath, minTurnNum = 0, pathPoints = null
+    for (let i = 0; i < successPaths.length; i++) {
+      if (!minPath || minPath.length > successPaths[i].fullpath.length) {
+        minPath = successPaths[i].fullpath
+        minTurnNum = successPaths[i].turnNum
+        pathPoints = successPaths[i].pathPoints
+      }
+    }
+    console.log(minPath + " . " + minTurnNum)
     // 返回最短路径结果
-    let pathPoints = DDeiUtil.generatePaths(fullPathTreeData)
+    // let pathPoints = DDeiUtil.generatePaths(fullPathTreeData)
 
 
 
@@ -3488,17 +3491,78 @@ class DDeiUtil {
 
   /**
    * 执行单次，单方向寻路
+   * @param upPoint 上一个节点，第一个节点传入null
+   * @param curPoint 当前点
+   * @param endPoint 结束点
+   * @param fromDirect 来源方向，第一个节点传入0
+   * @param outRects 障碍物外接矩形
+   * @param xIntIndex x-y点索引
+   * @param yIntIndex y-x点索引
+   * @param turnNum 转弯次数
+   * @param fullpath 当前的路径
+   * @param successPaths 成功的路径
    */
-  static getLookForPath(curPoint, endPoint, curDirect, outRects, xIntIndex, yIntIndex, level, fullpath): object {
+  static getLookForPath(upPoint, curPoint, endPoint, fromDirect, outRects, xIntIndex, yIntIndex, turnNum, fullpath, passPoints, successPaths): object {
+    if (!curPoint) {
+      return { state: -1, end: 1, fullpath: fullpath };
+    }
 
-
+    if (turnNum >= 5 || turnNum > endPoint.minTurnNum) {
+      return { state: -1 };
+    }
     let intX = parseInt(curPoint.x)
     let intY = parseInt(curPoint.y)
 
-    let pathPoints = []
-    if (level == 1) {
-      pathPoints.push(curPoint)
+    if (isNaN(intX) || isNaN(intY)) {
+      return { state: -1, end: 1, fullpath: fullpath };
     }
+    //得到当前点在索引中的坐标
+    let xyIndex = xIntIndex[intX].indexOf(curPoint)
+    let yxIndex = yIntIndex[intY].indexOf(curPoint)
+
+    /*
+     * 对当前点进行判定
+     * 1.当前节点超越了界限，查找失败
+     * 2.当前点为查找目标节点，查找成功
+     * 3.当前节点的四个方向均已关闭，终止查找
+     * 4.检测是否遇到障碍，终止寻找
+     * 5.除来源方向，其它方向的情况
+     */
+    //1.当前节点超越了界限，查找失败
+    if (xyIndex == -1 || yxIndex == -1) {
+      return { state: -1, end: 1, fullpath: fullpath };
+    }
+    else if (passPoints.indexOf(curPoint) != -1) {
+      return { state: -1, end: 1, fullpath: fullpath };
+    }
+    //3.当前节点的四个方向均已关闭，终止查找
+    else if (curPoint.isClose == 1) {
+      return { state: 0, close: 1, fullpath: fullpath };
+    }
+    //2.当前节点已到达
+    else if (curPoint == endPoint || curPoint.isEnd || parseInt(endPoint.x) == intX && parseInt(endPoint.y) == intY) {
+      endPoint.minTurnNum = Math.min(endPoint.minTurnNum ? endPoint.minTurnNum : 10, turnNum)
+      successPaths.push({ fullpath: fullpath, turnNum, pathPoints: [...passPoints, curPoint] })
+      return { state: 1, end: 1, fullpath: fullpath };
+    }
+    //4.检测是否遇到障碍
+    else if (upPoint) {
+      let obiLine = { x1: parseInt(upPoint.x), y1: parseInt(upPoint.y), x2: intX, y2: intY }
+      let dr = 0
+      switch (fromDirect) {
+        case 1: dr = 3; break;
+        case 2: dr = 4; break;
+        case 3: dr = 1; break;
+        case 4: dr = 2; break;
+      }
+      let isCorss = isCorssRect(obiLine, dr, upPoint, curPoint)
+      if (isCorss) {
+        curPoint.isClose = 1
+        return { state: 0, close: 1, fullpath: fullpath };
+      }
+    }
+
+    //5.除来源方向，其它方向的情况
     //判断是否遇到障碍
     function isCorssRect(obiLine: object, direct: number, spt: object, ept: object): boolean {
       for (let o = 0; o < outRects.length; o++) {
@@ -3571,229 +3635,85 @@ class DDeiUtil {
       }
       return false;
     }
-
-    switch (curDirect) {
-
-      case 1: {
-        //向上寻路
-        let maxPrio = 0, maxPrioIndex = -1, maxPrioNumber = 0
-        let startIndex = -1
-        for (let i = xIntIndex[intX].length - 1; i > -1; i--) {
-          let pathPoint = xIntIndex[intX][i]
-          let ppIntY = parseInt(pathPoint.y)
-          if (intY == ppIntY) {
-            startIndex = i
-          }
-          else if (intY > ppIntY) {
-            //遇到障碍终止
-            let obiLine = { x1: intX, y1: parseInt(xIntIndex[intX][startIndex].y), x2: intX, y2: ppIntY }
-            let isCorss = isCorssRect(obiLine, curDirect, xIntIndex[intX][startIndex], pathPoint)
-            if (isCorss) {
-              break;
-            }
-
-            let prio = pathPoint.prio - (startIndex - i)
-            if (maxPrio < prio) {
-              maxPrio = prio
-              maxPrioIndex = i
-              maxPrioNumber = 0
-            } else if (maxPrio == prio) {
-              maxPrioNumber++
-            }
-            if (pathPoint.isEnd) {
-              break;
-            }
-          }
-        }
-        //确定路径
-        if (maxPrioIndex != -1) {
-          pathPoints.push(xIntIndex[intX][maxPrioIndex])
-          curPoint = xIntIndex[intX][maxPrioIndex]
-        } else {
-
-          curPoint = null
-        }
-
-      } break;
-      case 2: {
-        //向右寻路
-        let maxPrio = 0, maxPrioIndex = -1, maxPrioNumber = 0
-        let startIndex = -1
-        for (let i = 0; i < yIntIndex[intY].length; i++) {
-          let pathPoint = yIntIndex[intY][i]
-          let ppIntX = parseInt(pathPoint.x)
-          if (intX == ppIntX) {
-            startIndex = i
-          }
-          else if (intX < ppIntX) {
-            //遇到障碍终止
-            let obiLine = { x1: parseInt(yIntIndex[intY][startIndex].x), y1: intY, x2: ppIntX, y2: intY }
-            let isCorss = isCorssRect(obiLine, curDirect, yIntIndex[intY][startIndex], pathPoint)
-            if (isCorss) {
-              break;
-            }
-
-            let prio = pathPoint.prio - (i - startIndex)
-            if (maxPrio < prio) {
-              maxPrio = prio
-              maxPrioIndex = i
-              maxPrioNumber = 0
-            } else if (maxPrio == prio) {
-              maxPrioNumber++
-            }
-            if (pathPoint.isEnd) {
-              break;
-            }
-          }
-        }
-        //确定路径
-        if (maxPrioIndex != -1) {
-          pathPoints.push(yIntIndex[intY][maxPrioIndex])
-          curPoint = yIntIndex[intY][maxPrioIndex]
-        } else {
-          curPoint = null
-        }
-      } break;
-      case 3: {
-        //向下寻路
-        let maxPrio = 0, maxPrioIndex = -1, maxPrioNumber = 0
-        let startIndex = -1
-        for (let i = 0; i < xIntIndex[intX].length; i++) {
-          let pathPoint = xIntIndex[intX][i]
-          let ppIntY = parseInt(pathPoint.y)
-          if (intY == ppIntY) {
-            startIndex = i
-          }
-          else if (intY < ppIntY) {
-            // if (fullpath == 'root-left-down' && ppIntY >= 2018) {
-            //   // console.log("end is " + endPoint.x + " .  " + endPoint.y)
-            //   debugger
-            // }
-
-            //遇到障碍终止
-            let obiLine = { x1: intX, y1: parseInt(xIntIndex[intX][startIndex].y), x2: intX, y2: ppIntY }
-            let isCorss = isCorssRect(obiLine, curDirect, xIntIndex[intX][startIndex], pathPoint)
-            if (isCorss) {
-              break;
-            }
-
-            let prio = pathPoint.prio - (i - startIndex)
-            if (maxPrio < prio) {
-              maxPrio = prio
-              maxPrioIndex = i
-              maxPrioNumber = 0
-            } else if (maxPrio == prio) {
-              maxPrioNumber++
-            }
-            if (pathPoint.isEnd) {
-              break;
-            }
-          }
-        }
-        //确定路径
-        if (maxPrioIndex != -1) {
-          pathPoints.push(xIntIndex[intX][maxPrioIndex])
-          curPoint = xIntIndex[intX][maxPrioIndex]
-        } else {
-          curPoint = null
-        }
-      } break;
-      case 4: {
-        //向左寻路
-        let maxPrio = 0, maxPrioIndex = -1, maxPrioNumber = 0
-        let startIndex = -1, endIndex = -1
-        for (let i = yIntIndex[intY].length - 1; i > -1; i--) {
-          let pathPoint = yIntIndex[intY][i]
-          let ppIntX = parseInt(pathPoint.x)
-          if (endIndex != -1) {
-            break;
-          }
-          if (intX == ppIntX) {
-            startIndex = i
-          }
-          else if (intX > ppIntX) {
-            //遇到障碍终止
-            let obiLine = { x1: parseInt(yIntIndex[intY][startIndex].x), y1: intY, x2: ppIntX, y2: intY }
-            let isCorss = isCorssRect(obiLine, curDirect, yIntIndex[intY][startIndex], pathPoint)
-            if (isCorss) {
-              break;
-            }
-
-            let prio = pathPoint.prio - (startIndex - i)
-            if (maxPrio < prio) {
-              maxPrio = prio
-              maxPrioIndex = i
-              maxPrioNumber = 0
-            } else if (maxPrio == prio) {
-              maxPrioNumber++
-            }
-            if (pathPoint.isEnd) {
-              break;
-            }
-          }
-        }
-        //确定路径
-        if (maxPrioIndex != -1) {
-          pathPoints.push(yIntIndex[intY][maxPrioIndex])
-          curPoint = yIntIndex[intY][maxPrioIndex]
-        } else {
-          curPoint = null
-        }
-      } break;
-    }
-    //判断是否满足循环结束条件，如果满足则退出
-    let state = 0;
-
-    if (curPoint && (parseInt(curPoint.x) != parseInt(endPoint.x)
-      || parseInt(curPoint.y) != parseInt(endPoint.y))) {
-
-      let leftTreeData, rightTreeData, upTreeData, downTreeData
-      if (level > 7) {
-        return { level: level, state: -1, end: 1 }
+    //关闭来源方向
+    // switch (fromDirect) {
+    //   case 1: curPoint.upClose = 1; break;
+    //   case 2: curPoint.rightClose = 1; break;
+    //   case 3: curPoint.downClose = 1; break;
+    //   case 4: curPoint.leftClose = 1; break;
+    // }
+    //寻找不同来源方向的下一个节点
+    let upClose, rightClose, downClose, leftClose
+    // if (!curPoint.upClose)
+    {
+      let nextPointXYIndex = xyIndex - 1
+      if (nextPointXYIndex < 0) {
+        upClose = 1
       } else {
-
-        switch (curDirect) {
-          case 1: {
-            leftTreeData = DDeiUtil.getLookForPath(curPoint, endPoint, 4, outRects, xIntIndex, yIntIndex, level + 1, fullpath + "-left")
-            rightTreeData = DDeiUtil.getLookForPath(curPoint, endPoint, 2, outRects, xIntIndex, yIntIndex, level + 1, fullpath + "-right")
-            break;
-          }
-          case 2: {
-            upTreeData = DDeiUtil.getLookForPath(curPoint, endPoint, 1, outRects, xIntIndex, yIntIndex, level + 1, fullpath + "-up")
-            downTreeData = DDeiUtil.getLookForPath(curPoint, endPoint, 3, outRects, xIntIndex, yIntIndex, level + 1, fullpath + "-down")
-            break;
-          }
-          case 3: {
-            leftTreeData = DDeiUtil.getLookForPath(curPoint, endPoint, 4, outRects, xIntIndex, yIntIndex, level + 1, fullpath + "-left")
-            rightTreeData = DDeiUtil.getLookForPath(curPoint, endPoint, 2, outRects, xIntIndex, yIntIndex, level + 1, fullpath + "-right")
-            break;
-          }
-          case 4: {
-            upTreeData = DDeiUtil.getLookForPath(curPoint, endPoint, 1, outRects, xIntIndex, yIntIndex, level + 1, fullpath + "-up")
-            downTreeData = DDeiUtil.getLookForPath(curPoint, endPoint, 3, outRects, xIntIndex, yIntIndex, level + 1, fullpath + "-down")
-            break;
-          }
+        let nextPoint = xIntIndex[intX][nextPointXYIndex]
+        //下一次转弯值
+        let nextTurnNum = fromDirect == 0 || fromDirect == 3 ? turnNum : turnNum + 1
+        let nextPointResult = DDeiUtil.getLookForPath(curPoint, nextPoint, endPoint, 3, outRects, xIntIndex, yIntIndex, nextTurnNum, fullpath + "-up", [...passPoints, curPoint], successPaths)
+        if (nextPointResult?.close == 1 || nextPointResult?.state == -1) {
+          upClose = 1
         }
       }
-      let leftState = leftTreeData?.state
-      let rightState = rightTreeData?.state
-      let upState = upTreeData?.state
-      let downState = downTreeData?.state
-      if (leftState == 1 || rightState == 1 || upState == 1 || downState == 1) {
-        state = 1
-      } else if ((leftState == -1 && rightState == -1) || (upState == -1 && downState == -1)) {
-        state = -1
-      }
-
-      return { path: fullpath, level: level, state: state, pathPoints: pathPoints, left: leftTreeData, right: rightTreeData, up: upTreeData, down: downTreeData }
-    } else {
-      if (!curPoint) {
-        state = -1
-      } else {
-        state = 1
-      }
-      return { path: fullpath, level: level, pathPoints: pathPoints, state: state, end: 1 }
     }
+    //向下寻路
+    // if (!curPoint.downClose) 
+    {
+      let nextPointXYIndex = xyIndex + 1
+      if (nextPointXYIndex >= xIntIndex[intX].length) {
+        downClose = 1
+      } else {
+        let nextPoint = xIntIndex[intX][nextPointXYIndex]
+        //下一次转弯值
+        let nextTurnNum = fromDirect == 0 || fromDirect == 1 ? turnNum : turnNum + 1
+        let nextPointResult = DDeiUtil.getLookForPath(curPoint, nextPoint, endPoint, 1, outRects, xIntIndex, yIntIndex, nextTurnNum, fullpath + "-down", [...passPoints, curPoint], successPaths)
+        if (nextPointResult?.close == 1 || nextPointResult?.state == -1) {
+          downClose = 1
+        }
+      }
+    }
+
+    //向左寻路
+    // if (!curPoint.leftClose)
+    {
+      let nextPointYXIndex = yxIndex - 1
+      if (nextPointYXIndex >= yIntIndex[intY].length) {
+        leftClose = 1
+      } else {
+        let nextPoint = yIntIndex[intY][nextPointYXIndex]
+        //下一次转弯值
+        let nextTurnNum = fromDirect == 0 || fromDirect == 2 ? turnNum : turnNum + 1
+        let nextPointResult = DDeiUtil.getLookForPath(curPoint, nextPoint, endPoint, 2, outRects, xIntIndex, yIntIndex, nextTurnNum, fullpath + "-left", [...passPoints, curPoint], successPaths)
+        if (nextPointResult?.close == 1 || nextPointResult?.state == -1) {
+          leftClose = 1
+        }
+      }
+    }
+
+    //向右寻路
+    // if (!curPoint.rightClose) 
+    {
+      let nextPointYXIndex = yxIndex + 1
+      if (nextPointYXIndex >= yIntIndex[intY].length) {
+        rightClose = 1
+      } else {
+        let nextPoint = yIntIndex[intY][nextPointYXIndex]
+        let nextTurnNum = fromDirect == 0 || fromDirect == 4 ? turnNum : turnNum + 1
+        let nextPointResult = DDeiUtil.getLookForPath(curPoint, nextPoint, endPoint, 4, outRects, xIntIndex, yIntIndex, nextTurnNum, fullpath + "-right", [...passPoints, curPoint], successPaths)
+        if (nextPointResult?.close == 1 || nextPointResult?.state == -1) {
+          rightClose = 1
+        }
+      }
+    }
+
+    if (upClose && downClose && leftClose && rightClose) {
+      return { state: -1, close: 1, fullpath: fullpath };
+    }
+
+    return { state: 0, fullpath: fullpath };
   }
 
   /**
@@ -3809,7 +3729,7 @@ class DDeiUtil {
   }
 
   //获取元素的扩展点以及延长线
-  static getAutoLineItemExtPoints(corssPoints, outRects, extLines, dbi,prio, color) {
+  static getAutoLineItemExtPoints(corssPoints, outRects, extLines, dbi, prio, color) {
     //外接矩形扩展区域大小
     let outRectExtRate = 0.25
     let outRect = DDeiAbstractShape.pvsToOutRect(dbi.points)
@@ -3824,10 +3744,11 @@ class DDeiUtil {
       corssPoints.push(point)
     });
     //左边
-    corssPoints.push({ x: outRect.x - perWidth, y: outRect.y, color: color, prio: prio })
-    corssPoints.push({ x: outRect.x - perWidth, y: outRect.y + outRect.height * 0.5, color: color, prio: prio })
-    corssPoints.push({ x: outRect.x - perWidth, y: outRect.y1, color: color, prio: prio })
+    corssPoints.push({ x: outRect.x - perWidth, y: outRect.y, prio: prio })
+    corssPoints.push({ x: outRect.x - perWidth, y: outRect.y + outRect.height * 0.5, prio: prio })
+    corssPoints.push({ x: outRect.x - perWidth, y: outRect.y1, prio: prio })
 
+    extLines.push([{ x: outRect.x - perWidth, y: outRect.y - 50000, prio: prio }, { x: outRect.x - perWidth, y: outRect.y + 50000 }])
     extLines.push([{ x: outRect.x, y: outRect.y }, { x: outRect.x - perWidth, y: outRect.y }])
     extLines.push([{ x: outRect.x, y: outRect.y + outRect.height * 0.5 }, { x: outRect.x - perWidth, y: outRect.y + outRect.height * 0.5 }])
     extLines.push([{ x: outRect.x, y: outRect.y1 }, { x: outRect.x - perWidth, y: outRect.y1 }])
@@ -3837,6 +3758,7 @@ class DDeiUtil {
     corssPoints.push({ x: outRect.x1 + perWidth, y: outRect.y + outRect.height * 0.5, color: color, prio: prio })
     corssPoints.push({ x: outRect.x1 + perWidth, y: outRect.y1, color: color, prio: prio })
 
+    extLines.push([{ x: outRect.x1 + perWidth, y: outRect.y - 50000, prio: prio }, { x: outRect.x1 + perWidth, y: outRect.y + 50000 }])
     extLines.push([{ x: outRect.x1, y: outRect.y }, { x: outRect.x1 + perWidth, y: outRect.y }])
     extLines.push([{ x: outRect.x1, y: outRect.y + outRect.height * 0.5 }, { x: outRect.x1 + perWidth, y: outRect.y + outRect.height * 0.5 }])
     extLines.push([{ x: outRect.x1, y: outRect.y1 }, { x: outRect.x1 + perWidth, y: outRect.y1 }])
@@ -3845,7 +3767,7 @@ class DDeiUtil {
     corssPoints.push({ x: outRect.x + outRect.width / 2, y: outRect.y - perHeight, color: color, prio: prio })
     corssPoints.push({ x: outRect.x1, y: outRect.y - perHeight, color: color, prio: prio })
 
-
+    extLines.push([{ x: outRect.x - 50000, y: outRect.y - perHeight, color: color, prio: prio }, { x: outRect.x + 50000, y: outRect.y - perHeight }])
     extLines.push([{ x: outRect.x, y: outRect.y }, { x: outRect.x, y: outRect.y - perHeight }])
     extLines.push([{ x: outRect.x + outRect.width / 2, y: outRect.y }, { x: outRect.x + outRect.width / 2, y: outRect.y - perHeight }])
     extLines.push([{ x: outRect.x1, y: outRect.y }, { x: outRect.x1, y: outRect.y - perHeight }])
@@ -3857,6 +3779,7 @@ class DDeiUtil {
     corssPoints.push({ x: outRect.x + outRect.width / 2, y: outRect.y1 + perHeight, color: color, prio: prio })
     corssPoints.push({ x: outRect.x1, y: outRect.y1 + perHeight, color: color, prio: prio })
 
+    extLines.push([{ x: outRect.x - 50000, y: outRect.y1 + perHeight, prio: prio }, { x: outRect.x + 50000, y: outRect.y1 + perHeight }])
     extLines.push([{ x: outRect.x, y: outRect.y1 }, { x: outRect.x, y: outRect.y1 + perHeight }])
     extLines.push([{ x: outRect.x + outRect.width / 2, y: outRect.y1 }, { x: outRect.x + outRect.width / 2, y: outRect.y1 + perHeight }])
     extLines.push([{ x: outRect.x1, y: outRect.y1 }, { x: outRect.x1, y: outRect.y1 + perHeight }])

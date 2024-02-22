@@ -511,20 +511,17 @@ class DDeiStageCanvasRender {
       ctx.save()
       ctx.font = "bold " + (12 * ratio) + "px Microsoft YaHei"
       corssPoints.forEach(point => {
-        let weight = 4;
-        if (!point.color) {
-          ctx.fillStyle = "white"
-          ctx.strokeStyle = "green"
-        } else {
-          ctx.fillStyle = point.color
-          ctx.strokeStyle = point.color
-        }
+        let weight = 3;
+
+        ctx.fillStyle = "grey"
+        ctx.strokeStyle = "green"
+
 
         ctx.beginPath();
 
-        // ctx.ellipse(point.x * rat1, point.y * rat1, weight * ratio, weight * ratio, 0, 0, Math.PI * 2)
-        // ctx.fill();
-        // ctx.stroke();
+        ctx.ellipse(point.x * rat1, point.y * rat1, weight * ratio, weight * ratio, 0, 0, Math.PI * 2)
+        ctx.fill();
+        ctx.stroke();
         // if (point.prio) {
         //   ctx.fillStyle = "black"
         //   ctx.fillText(point.prio, point.x * rat1 - 8, point.y * rat1 + 8)
