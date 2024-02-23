@@ -321,7 +321,6 @@ class DDeiLine extends DDeiAbstractShape {
     this.endPoint = this.pvs[this.pvs.length - 1]
 
     //根据开始节点和结束节点的关系，自动计算中间节点路径的坐标
-    this.calPoints();
     this.calLoosePVS();
     //联动更新链接控件
     this.refreshLinkModels()
@@ -330,6 +329,20 @@ class DDeiLine extends DDeiAbstractShape {
       compose.initPVS()
     });
 
+  }
+
+  /**
+   * 重新计算线路径并更新图形
+   */
+  refreshLinePoints() {
+    this.calPoints();
+    this.calLoosePVS();
+    //联动更新链接控件
+    this.refreshLinkModels()
+    //处理composes
+    this.composes?.forEach(compose => {
+      compose.initPVS()
+    });
   }
 
   /**
@@ -412,6 +425,7 @@ class DDeiLine extends DDeiAbstractShape {
    * 根据开始节点和结束节点的关系，自动计算中间节点路径的坐标
    */
   calPoints(): void {
+    console.log("重新计算")
     if (this.freeze != 1) {
       switch (this.type) {
         case 1: {
@@ -534,7 +548,7 @@ class DDeiLine extends DDeiAbstractShape {
 
 
 
-    //获取推荐路径,TODO
+    //获取推荐路径
     let recommendPaths = []
     //获取移动路径
     let movePath = DDeiUtil.getMovePath1(sAngle, eAngle, this.startPoint, this.endPoint)
@@ -722,10 +736,14 @@ class DDeiLine extends DDeiAbstractShape {
         }
       });
     }
-
+    let ignoreIds = [this.id]
+    this.linkModels.forEach(link => {
+      if (link.dm?.id) {
+        ignoreIds.push(link.dm?.id)
+      }
+    })
     //动态构建路径
-
-    let allModels = this.layer.getSubModels([this.id], 1)
+    let allModels = this.layer.getSubModels(ignoreIds, 1)
     let obis = []
     allModels.forEach(model => {
       if (model.baseModelType != "DDeiLine" && model.operatePVS?.length > 0) {
@@ -739,6 +757,7 @@ class DDeiLine extends DDeiAbstractShape {
     //开始方向和结束方向
     let startDirect = 3;
     let endDirect = 1;
+
     switch (sAngle) {
       case -90: startDirect = 1; break;
       case 0: startDirect = 2; break;

@@ -3208,6 +3208,7 @@ class DDeiUtil {
    * @param extConfig.recomWeight 推荐路径权重，默认100
    */
   static calAutoLinePath(sd: object, ed: object, obis: object[], extConfig: { recomWeight: 100, rectMidWeight: 50 }): object {
+
     if (!extConfig) {
       extConfig = {}
     }
@@ -3227,6 +3228,7 @@ class DDeiUtil {
 
     ed.point.isEnd = true
     sd.point.isStart = true
+
     corssPoints.push(sd.point)
     corssPoints.push(ed.point)
     //生成起点、终点的延长线
@@ -3344,7 +3346,6 @@ class DDeiUtil {
 
         let cp = DDeiUtil.getLineCorssPoint(lineil[0], lineil[1], linejl[0], linejl[1])
         if (cp) {
-
           cp.prio = (lineil[0].prio ? lineil[0].prio : 1) + (linejl[0].prio ? linejl[0].prio : 1)
           corssPoints.push(cp)
         }
@@ -3488,33 +3489,31 @@ class DDeiUtil {
       pathPoints = newPaths[0]
       let minDiff = Infinity, bestI = -1
       for (let i = 0; i < newPaths.length; i++) {
-
         let paths = newPaths[i]
-        //找到切割最均匀的路径,这里必然path>2
-        let maxDiffY = 0, maxDiffX = 0
-        //第一根线是横线还是竖线
-        let d = parseInt(paths[0].x) == parseInt(paths[1].x) ? 2 : 1
-        for (let j = 2; j < paths.length; j++) {
-          //第一根线是竖线，比较y增量
-          if (d == 2) {
-            if (maxDiffY < Math.abs(paths[j - 2].y - paths[j].y)) {
-              maxDiffY = Math.abs(paths[j - 2].y - paths[j].y)
+        if (paths.length > 2) {
+          //找到切割最均匀的路径,这里必然path>2
+          let maxDiffY = 0, maxDiffX = 0
+          //第一根线是横线还是竖线
+          let d = parseInt(paths[0].x) == parseInt(paths[1].x) ? 2 : 1
+          for (let j = 2; j < paths.length; j++) {
+            //第一根线是竖线，比较y增量
+            if (d == 2) {
+              if (maxDiffY < Math.abs(paths[j - 2].y - paths[j].y)) {
+                maxDiffY = Math.abs(paths[j - 2].y - paths[j].y)
+              }
+            }
+            //比较横线
+            else {
+              if (maxDiffX < Math.abs(paths[j - 2].x - paths[j].x)) {
+                maxDiffX = Math.abs(paths[j - 2].x - paths[j].x)
+              }
             }
           }
-          //比较横线
-          else {
-            if (maxDiffX < Math.abs(paths[j - 2].x - paths[j].x)) {
-              maxDiffX = Math.abs(paths[j - 2].x - paths[j].x)
-            }
+          if (minDiff > maxDiffY + maxDiffX) {
+            minDiff = maxDiffY + maxDiffX
+            bestI = i
           }
         }
-
-        if (minDiff > maxDiffY + maxDiffX) {
-          minDiff = maxDiffY + maxDiffX
-          bestI = i
-        }
-
-
       }
       pathPoints = newPaths[bestI]
     }

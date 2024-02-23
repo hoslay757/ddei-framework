@@ -22,7 +22,7 @@ export default {
       rules: [
         //选中区域
         `(i, sample, pvs, model, ovs){
-            let er  = sample.r / Math.cos(45 * DDeiConfig.ROTATE_UNIT) + 2
+            let er  = sample.r / Math.cos(45 * DDeiConfig.ROTATE_UNIT)
             let x = er * sample.cos
             let y = er * sample.sin
             pvs.push({x:x,y:y,r:er,select:1});

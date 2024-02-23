@@ -871,7 +871,7 @@ abstract class DDeiAbstractShape {
           dpv.y = spv.y
           dpv.z = spv.z
 
-          link.dm.initPVS()
+          link.dm.refreshLinePoints()
           link.dm.updateOVS()
           let pvs = link.dm.pvs
           link.dm.setLineType1PointPosition(0, pvs[0].x, pvs[0].y)
