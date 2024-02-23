@@ -1,9 +1,7 @@
 <template>
   <div class="header">
-    <div class="header-logo"
-         @click="handleLogoClick">
-      <img class="header-logo-icon"
-           src="@/assets/images/logo.png" />
+    <div class="header-logo" @click="handleLogoClick">
+      <img class="header-logo-icon" src="@/assets/images/logo.png" />
       <span class="header-title">{{ title + (version ? ' - V' + version : '') }}</span>
     </div>
     <div class="header-center">
@@ -11,15 +9,11 @@
     </div>
     <div class="header-right">
       <div class="header-right-avator">
-        <img v-if="form.avator"
-             :src="form.avator"
-             class="header-right-avator-img" />
-        <div v-else
-             class="header-right-avator-img header-right-avator-text">{{form.username.substring(0, 1)}}</div>
+        <img v-if="form.avator" :src="form.avator" class="header-right-avator-img" />
+        <div v-else class="header-right-avator-img header-right-avator-text">{{ form.username.substring(0, 1) }}</div>
       </div>
       <div class="header-right-username">{{ form.username }}</div>
-      <div class="header-right-loginout"
-           @click="loginout">注销</div>
+      <div class="header-right-loginout" @click="loginout">注销</div>
     </div>
   </div>
 </template>
@@ -69,12 +63,11 @@ export default {
 <style lang="less" scoped>
 .header {
   width: 100%;
-  height: 40px;
+  height: 50px;
   display: flex;
   align-items: center;
-  // background: #212121;
-  // border-bottom: 1px solid #080808;
   border-bottom: 1px solid #DDDDDF;
+  color: black;
 }
 
 .header-logo {
@@ -88,13 +81,13 @@ export default {
 }
 
 .header-title {
-  font-size: 14px;
-  // color: #fff;
+  font-size: 16px;
+
 }
 
 .header-logo-icon {
-  width: 22px;
-  height: 21px;
+  width: 30px;
+  height: 30px;
   margin-right: 10px;
   vertical-align: sub;
 }
@@ -110,8 +103,8 @@ export default {
 }
 
 .header-right-avator {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
 }
 
 .header-right-avator-img {
@@ -123,20 +116,20 @@ export default {
 
 .header-right-avator-text {
   color: #fff;
-  font-size: 24px;
-  line-height: 24px;
+  font-size: 28px;
+  line-height: 28px;
   text-align: center;
 }
 
 .header-right-username {
-  font-size: 14px;
+  font-size: 16px;
   margin-left: 10px;
 }
 
 .header-right-loginout {
-   margin-left: 10px;
+  margin-left: 10px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 16px;
 
   &:hover {
     color: #3662ec;

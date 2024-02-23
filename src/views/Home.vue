@@ -72,7 +72,7 @@ export default {
 .ddei_home {
   width: 100%;
   height: calc(100vh);
-  // background: black;
+  background: white;
   display: flex;
   flex-direction: column;
 }

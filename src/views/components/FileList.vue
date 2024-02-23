@@ -10,7 +10,9 @@
           新建文件组
         </div>
         <div class="ddei_home_fileview_operate_plus">
-          +
+          <svg class="icon" aria-hidden="true" @click="doQuery">
+            <use xlink:href="#icon-a-ziyuan376"></use>
+          </svg>
         </div>
       </div>
       <div class="ddei_home_fileview_operate ddei_home_fileview_operate_file_add" @click="showFileDialog(null, 1)">
@@ -21,7 +23,9 @@
           新建文件
         </div>
         <div class="ddei_home_fileview_operate_plus">
-          +
+          <svg class="icon" aria-hidden="true" @click="doQuery">
+            <use xlink:href="#icon-a-ziyuan376"></use>
+          </svg>
         </div>
       </div>
       <div v-if="false" class="ddei_home_fileview_operate ddei_home_fileview_operate_file_draft_add">
@@ -32,7 +36,9 @@
           新建草稿
         </div>
         <div class="ddei_home_fileview_operate_plus">
-          +
+          <svg class="icon" aria-hidden="true" @click="doQuery">
+            <use xlink:href="#icon-a-ziyuan376"></use>
+          </svg>
         </div>
       </div>
     </div>
@@ -567,16 +573,19 @@ export default {
   }
 
   &_name {
-    font-size: 14px;
+    font-size: 16px;
     color: #FFFFFF;
     line-height: 64px;
     flex: 1;
   }
 
   &_plus {
-    color: #FFFFFF;
-    font-size: 28px;
-    font-weight: bold;
+    .icon {
+      color: #FFFFFF;
+      font-size: 26px;
+      font-weight: bold;
+      filter: brightness(100%);
+    }
   }
 }
 </style>

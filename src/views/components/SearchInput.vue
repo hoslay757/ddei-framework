@@ -12,7 +12,9 @@ function doQuery() {
 
 <template>
   <div class="ddei_home_bar_content_search">
-    <img src="../../components/editor/icons/icon-search-black.png" @click="doQuery" />
+    <svg class="icon" aria-hidden="true" @click="doQuery">
+      <use xlink:href="#icon-a-ziyuan416"></use>
+    </svg>
     <input v-model="queryText" name="ddei_home_bar_content_search_input" @keydown.enter="doQuery"
       class="ddei_home_bar_content_search_input" placeholder="名称/编码/备注" autocomplete="off">
   </div>
@@ -27,7 +29,7 @@ function doQuery() {
 .ddei_home_bar_content_search {
   margin-left: 20px;
   width: 260px;
-  height: 26px;
+  height: 32px;
   background: #F2F4F7;
   border-radius: 2px;
   justify-content: center;
@@ -41,19 +43,19 @@ function doQuery() {
   background: transparent;
   border: none;
   outline: none;
+  height: 24px;
 }
 
 .ddei_home_bar_content_search input::-webkit-input-placeholder {
   color: #B8B8B8;
 }
 
-.ddei_home_bar_content_search img {
-  height: 18px;
-  flex: 0 0 18px;
-  margin-right: 10px;
-  width: 15px;
-  height: 15px;
+.ddei_home_bar_content_search svg {
+  flex: 0 0 24px;
+  margin-right: 6px;
+  width: 24px;
+  height: 24px;
   cursor: pointer;
-  filter: brightness(200%);
+  filter: brightness(300%);
 }
 </style>

@@ -19,12 +19,19 @@
           <div v-else class="ddei_home_dir_tree_node_icon__point"></div>
           <div class="ddei_home_dir_tree_node_title">{{ folder.name }}</div>
           <div class="ddei_home_dir_tree_node_buttons">
-            <img src="../../components/editor/icons/icon-plus-circle.png" title="新建子目录"
-              class="ddei_home_dir_tree_node_button" @click.stop="showFolderDialog(folder, 1)" />
-            <img v-if="folder.id !== '0'" src="../../components/editor/icons/icon-style-line.png" title="修改"
-              class="ddei_home_dir_tree_node_button" @click.stop="showFolderDialog(folder, 2)" />
-            <img v-if="folder.id !== '0'" src="../../components/editor/icons/icon-trash.png" title="删除"
-              class="ddei_home_dir_tree_node_button" @click.stop="deleteFolder(folder)" />
+            <svg aria-hidden="true" class="icon ddei_home_dir_tree_node_button" title="新建子目录"
+              @click.stop="showFolderDialog(folder, 1)">
+              <use xlink:href="#icon-a-ziyuan374"></use>
+            </svg>
+            <svg v-if="folder.id !== '0'" aria-hidden="true" class="icon ddei_home_dir_tree_node_button" title="修改"
+              @click.stop="showFolderDialog(folder, 2)">
+              <use xlink:href="#icon-a-ziyuan484"></use>
+            </svg>
+            <svg v-if="folder.id !== '0'" aria-hidden="true" class="icon ddei_home_dir_tree_node_button" title="删除"
+              @click.stop="deleteFolder(folder)">
+              <use xlink:href="#icon-a-ziyuan401"></use>
+            </svg>
+
           </div>
         </div>
       </template>
@@ -375,6 +382,7 @@ export default {
 
     .ddei_home_dir_tree_node_buttons {
       display: flex;
+
     }
   }
 
@@ -386,13 +394,13 @@ export default {
 .ddei_home_dir_tree_node_content {}
 
 .ddei_home_dir_tree_node_icon {
-  width: 14px;
+  width: 16px;
   margin-right: 6px;
   flex-shrink: 0;
 }
 
 .ddei_home_dir_tree_node_icon__point {
-  width: 14px;
+  width: 16px;
   margin-right: 6px;
   flex-shrink: 0;
   text-align: center;
@@ -412,6 +420,8 @@ export default {
   flex: 1;
   overflow: hidden;
   white-space: nowrap;
+  color: black;
+  font-size: 16px !important;
   text-overflow: ellipsis;
 }
 
@@ -424,8 +434,8 @@ export default {
 
 .ddei_home_dir_tree_node_button {
   display: block;
-  width: 14px;
-  height: 14px;
+  width: 18px;
+  height: 18px;
 
   +.ddei_home_dir_tree_node_button {
     margin-left: 6px;
