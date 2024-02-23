@@ -770,7 +770,7 @@ class DDeiLine extends DDeiAbstractShape {
         direct: endDirect
       },
       obis,
-      recommendPaths)
+      { recommendPaths: recommendPaths, recomWeight: 100, rectMidWeight: 50 })
 
 
     //更新中间节点
