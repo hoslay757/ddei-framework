@@ -10,7 +10,7 @@
           新建文件组
         </div>
         <div class="ddei_home_fileview_operate_plus">
-          <svg class="icon" aria-hidden="true" @click="doQuery">
+          <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-a-ziyuan376"></use>
           </svg>
         </div>
@@ -23,7 +23,7 @@
           新建文件
         </div>
         <div class="ddei_home_fileview_operate_plus">
-          <svg class="icon" aria-hidden="true" @click="doQuery">
+          <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-a-ziyuan376"></use>
           </svg>
         </div>
@@ -36,7 +36,7 @@
           新建草稿
         </div>
         <div class="ddei_home_fileview_operate_plus">
-          <svg class="icon" aria-hidden="true" @click="doQuery">
+          <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-a-ziyuan376"></use>
           </svg>
         </div>
@@ -55,7 +55,9 @@
         <div v-for="(file) in files" :key="file.id" class="ddei_home_fileview_file">
           <div class="ddei_home_fileview_file_header">
             <div class="ddei_home_fileview_file_icon">
-              <img src="@/components/editor/icons/icon-file-list-item.png">
+              <svg class="icon" aria-hidden="true">
+                <use xlink:href="#icon-wenjian01"></use>
+              </svg>
             </div>
             <div class="ddei_home_fileview_file_name">{{ file.name }}</div>
 
@@ -493,10 +495,10 @@ export default {
   padding: 2px;
 }
 
-.ddei_home_fileview_file_icon img {
-  width: 20px;
-  height: 16px;
-  margin-right: 8px;
+.ddei_home_fileview_file_icon .icon {
+  width: 21px;
+  height: 21px;
+  margin-right: 6px;
 }
 
 .ddei_home_fileview_file_buttons {
@@ -507,6 +509,7 @@ export default {
   border: 1px solid #CED4DD;
   background: #ffffff;
   height: 48px;
+  cursor: pointer;
 }
 
 .ddei_home_fileview_file_button_split {

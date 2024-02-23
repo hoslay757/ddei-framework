@@ -10,7 +10,7 @@
         </div>
       </div>
       <div class="logo">
-        <img :src="icons['logo']">
+        <img src="@/assets/images/logo.png">
       </div>
     </div>
     <div class="tail">
@@ -19,7 +19,6 @@
 </template>
 <script lang="ts">
 import DDeiEditor from "../../js/editor";
-import ICONS from "../../js/icon";
 import DDeiEditorUtil from "../../js/util/editor-util";
 
 export default {
@@ -30,7 +29,6 @@ export default {
   data() {
     return {
       editor: null,
-      icons: ICONS,
       file: {},
       fileNameEditing: false,
       fileDescEditing: false,

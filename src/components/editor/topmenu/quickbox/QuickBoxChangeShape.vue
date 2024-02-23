@@ -2,9 +2,9 @@
   <div class="ddei_editor_quick_change_shape">
     <div class="ddei_editor_quick_change_shape_item" style="grid-row:1/3">
       <div class="ddei_editor_quick_change_shape_item_box">
-        <img width="16px" height="16px" src="../../icons/icon-change-shape.png" />
+        <!-- <img width="16px" height="16px" src="../../icons/icon-change-shape.png" />
         <div>替换图形</div>
-        <img width="6px" height="6px" src="../../icons/toolbox-expanded.png" />
+        <img width="6px" height="6px" src="../../icons/toolbox-expanded.png" /> -->
       </div>
     </div>
     <div class="ddei_editor_quick_change_shape_item">

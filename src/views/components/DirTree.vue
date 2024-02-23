@@ -4,7 +4,9 @@
     <div class="ddei_home_dir_tree">
       <div v-for="folder in menus" class="ddei_home_dir_tree_node" :class="{ 'is-active': folder.id === curMenu?.id }"
         @click="setCurrentMenu(folder)">
-        <img v-if="folder.icon" class="ddei_home_dir_tree_node_icon" :src="folder.icon" />
+        <svg v-if="folder.icon" class="icon ddei_home_dir_tree_node_icon" aria-hidden="true">
+          <use :xlink:href="folder.icon"></use>
+        </svg>
         <div class="ddei_home_dir_tree_node_title">{{ folder.name }}</div>
       </div>
     </div>
@@ -15,7 +17,9 @@
       @select="setCurrentFolder">
       <template #title="folder">
         <div class="ddei_home_dir_tree_node">
-          <img v-if="folder.icon" class="ddei_home_dir_tree_node_icon" :src="folder.icon" />
+          <svg v-if="folder.icon" class="icon ddei_home_dir_tree_node_icon" aria-hidden="true">
+            <use :xlink:href="folder.icon"></use>
+          </svg>
           <div v-else class="ddei_home_dir_tree_node_icon__point"></div>
           <div class="ddei_home_dir_tree_node_title">{{ folder.name }}</div>
           <div class="ddei_home_dir_tree_node_buttons">
@@ -56,15 +60,12 @@
 <script type="ts">
 import { createVNode } from 'vue'
 import { loadfolder, createfolder, removefolder, renamefolder } from "@/lib/api/folder"
-import ICONS from '../../components/editor/js/icon'
 import { debounce, cloneDeep } from 'lodash'
 import { message, Modal } from 'ant-design-vue'
 // 引入图标
-import IconHomeBlack from '@/components/editor/icons/icon-home-black.png'
-import IconMenuBlack from '@/components/editor/icons/icon-menu-black.png'
-import IconFolderBlack from '@/components/editor/icons/icon-folder-black.png'
-import IconTrash from '@/components/editor/icons/icon-trash.png'
-import IconDocumentBlack from '@/components/editor/icons/icon-document-black.png'
+// import IconFolderBlack from '@/components/editor/icons/icon-folder-black.png'
+// import IconTrash from '@/components/editor/icons/icon-trash.png'
+// import IconDocumentBlack from '@/components/editor/icons/icon-document-black.png'
 
 export default {
   name: 'DDei-Home-Dir-Tree',
@@ -74,7 +75,7 @@ export default {
   },
   data () {
     // let rootFolder = { name: "知识库", id: "0", icon: IconDocumentBlack, isShow: true, allowDelete: false, allowModify: false }
-    let rootFolder = { name: "我的文件", id: "0", icon: IconFolderBlack, isShow: true, allowDelete: false, allowModify: false }
+    let rootFolder = { name: "我的文件", id: "0", icon: '#icon-a-ziyuan489', isShow: true, allowDelete: false, allowModify: false }
     return {
       menus: [
         // {
@@ -86,7 +87,7 @@ export default {
         {
           id: 'All',
           name: '全部',
-          icon: IconMenuBlack,
+          icon: '#icon-a-ziyuan384',
           visible: true
         },
         // {
@@ -126,8 +127,7 @@ export default {
           ]
         }
       },
-      cf: {},
-      icons: ICONS
+      cf: {}
     }
   },
   computed: {
@@ -394,7 +394,7 @@ export default {
 .ddei_home_dir_tree_node_content {}
 
 .ddei_home_dir_tree_node_icon {
-  width: 16px;
+  width: 24px;
   margin-right: 6px;
   flex-shrink: 0;
 }
