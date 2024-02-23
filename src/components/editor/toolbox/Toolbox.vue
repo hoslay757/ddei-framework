@@ -183,75 +183,79 @@ export default {
           let promiseArr = []
           let ddInstance = this.editor.ddInstance
           DDeiUtil.ICONS = {}
-          groupOriginDefinies.forEach((group, key) => {
+          this.groups?.forEach((group, key) => {
             group.controls.forEach(controlDefine => {
-              promiseArr.push(new Promise((resolve, reject) => {
-                try {
-                  let canvas = document.createElement('canvas');
-                  //获取缩放比例
-                  let rat1 = ddInstance.render.ratio;
-                  ddInstance.render.tempCanvas = canvas;
+              let cacheData = localStorage.getItem("ICON-CACHE-" + controlDefine.id)
+              if (cacheData) {
+                DDeiUtil.ICONS[controlDefine.id] = cacheData
+                return;
+              } else {
+                promiseArr.push(new Promise((resolve, reject) => {
+                  try {
+                    let canvas = document.createElement('canvas');
+                    //获取缩放比例
+                    let rat1 = ddInstance.render.ratio;
+                    ddInstance.render.tempCanvas = canvas;
+                    //创建图形对象
+                    let models = this.createControl(controlDefine)
+                    let iconPos = controlDefine?.define?.iconPos;
+                    let outRect = DDeiAbstractShape.getOutRectByPV(models);
+                    outRect.width += (iconPos?.dw ? iconPos.dw : 0)
+                    outRect.height += (iconPos?.dh ? iconPos.dh : 0)
+                    //基准大小
+                    let baseWidth = 50
+                    let baseHeight = 50
 
+                    //按高度缩放
+                    if (outRect.width > 0 && outRect.height > 0) {
+                      if (outRect.width > outRect.height) {
+                        baseWidth *= outRect.width / outRect.height
+                      } else {
+                        baseHeight *= outRect.height / outRect.width
+                      }
 
-                  //创建图形对象
-                  let models = this.createControl(controlDefine)
-                  let iconPos = controlDefine?.define?.iconPos;
-                  let outRect = DDeiAbstractShape.getOutRectByPV(models);
-                  outRect.width += (iconPos?.dw ? iconPos.dw : 0)
-                  outRect.height += (iconPos?.dh ? iconPos.dh : 0)
-                  //基准大小
-                  let baseWidth = 50
-                  let baseHeight = 50
+                      //构建缩放矩阵，缩放到基准大小
+                      let scaleMatrix = new Matrix3(
+                        baseWidth / outRect.width, 0, 0,
+                        0, baseHeight / outRect.height, 0,
+                        0, 0, 1);
+                      models.forEach(model => {
+                        model.transVectors(scaleMatrix)
+                      });
 
-                  //按高度缩放
-                  if (outRect.width > 0 && outRect.height > 0) {
-                    if (outRect.width > outRect.height) {
-                      baseWidth *= outRect.width / outRect.height
-                    } else {
-                      baseHeight *= outRect.height / outRect.width
+                      outRect = DDeiAbstractShape.getOutRectByPV(models);
                     }
+                    if (!outRect.height) {
+                      outRect.height = baseHeight
+                    }
+                    if (!outRect.width) {
+                      outRect.width = baseWidth
+                    }
+                    outRect.width += (iconPos?.dw ? iconPos.dw : 0)
+                    outRect.height += (iconPos?.dh ? iconPos.dh : 0)
+                    let width = (outRect.width + 4) * rat1
+                    let height = (outRect.height + 4) * rat1
 
-                    //构建缩放矩阵，缩放到基准大小
-                    let scaleMatrix = new Matrix3(
-                      baseWidth / outRect.width, 0, 0,
-                      0, baseHeight / outRect.height, 0,
-                      0, 0, 1);
+                    canvas.setAttribute("width", width)
+                    canvas.setAttribute("height", height)
+                    canvas.style.width = width + 'px';
+                    canvas.style.height = height + 'px';
+                    //获得 2d 上下文对象
+
+                    let ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+                    ctx.translate(width / 2 + (iconPos?.dx ? iconPos.dx : 0), height / 2 + (iconPos?.dy ? iconPos.dy : 0))
                     models.forEach(model => {
-                      model.transVectors(scaleMatrix)
-                    });
-
-                    outRect = DDeiAbstractShape.getOutRectByPV(models);
-                  }
-                  if (!outRect.height) {
-                    outRect.height = baseHeight
-                  }
-                  if (!outRect.width) {
-                    outRect.width = baseWidth
-                  }
-                  outRect.width += (iconPos?.dw ? iconPos.dw : 0)
-                  outRect.height += (iconPos?.dh ? iconPos.dh : 0)
-                  let width = (outRect.width + 4) * rat1
-                  let height = (outRect.height + 4) * rat1
-                  // width = Math.max(width, height)
-                  // height = width
-                  canvas.setAttribute("width", width)
-                  canvas.setAttribute("height", height)
-                  canvas.style.width = width + 'px';
-                  canvas.style.height = height + 'px';
-                  //获得 2d 上下文对象
-
-                  let ctx = canvas.getContext('2d', { willReadFrequently: true });
-
-                  ctx.translate(width / 2 + (iconPos?.dx ? iconPos.dx : 0), height / 2 + (iconPos?.dy ? iconPos.dy : 0))
-                  models.forEach(model => {
-                    model.initRender()
-                    model.render.drawShape({ weight: 3, border: { width: 1.5 } })
-                  })
-                  let dataURL = canvas.toDataURL("image/png");
-                  DDeiUtil.ICONS[controlDefine.id] = dataURL
-                } catch (e) { console.error(e) }
-                resolve()
-              }));
+                      model.initRender()
+                      model.render.drawShape({ weight: 3, border: { width: 1.5 } })
+                    })
+                    let dataURL = canvas.toDataURL("image/png");
+                    localStorage.setItem("ICON-CACHE-" + controlDefine.id, dataURL)
+                    DDeiUtil.ICONS[controlDefine.id] = dataURL
+                  } catch (e) { console.error(e) }
+                  resolve()
+                }));
+              }
             });
 
           });

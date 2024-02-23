@@ -421,24 +421,37 @@ const fontTypes = {
 // 系统默认字体
 const rootFontFamily = (document.documentElement.currentStyle ? document.documentElement.currentStyle : window.getComputedStyle(document.documentElement)).fontFamily;
 //支持的字体
+
 const FONTS = []
+
 const loadFonts = function () {
-  for (let key in fontTypes) {
-    let fontType = fontTypes[key];
-    fontType.forEach(font => {
-      let fontEn = font.en, fontCh = font.ch;
-      isSupportFontFamilySync(fontEn).then(support => {
-        if (support) {
-          if (fontEn.toLowerCase() === rootFontFamily.toLowerCase() || ("\"" + fontEn + "\"").toLowerCase() === rootFontFamily.toLowerCase()
-            || fontCh.toLowerCase() === rootFontFamily.toLowerCase() || ("\"" + fontCh + "\"").toLowerCase() === rootFontFamily.toLowerCase()) {
-            font.isSystemDefault = true;
-          }
-          //加入数据源
-          FONTS.push(font)
-        }
-      })
+  let fontData = null
+  let fontJSON = localStorage.getItem('DDEI-CACHE-FONT')
+  if (fontJSON) {
+    fontData = JSON.parse(fontJSON)
+    fontData.forEach(fd => {
+      FONTS.push(fd)
     });
-  };
+  }
+  if (FONTS.length == 0) {
+    for (let key in fontTypes) {
+      let fontType = fontTypes[key];
+      fontType.forEach(font => {
+        let fontEn = font.en, fontCh = font.ch;
+        isSupportFontFamilySync(fontEn).then(support => {
+          if (support) {
+            if (fontEn.toLowerCase() === rootFontFamily.toLowerCase() || ("\"" + fontEn + "\"").toLowerCase() === rootFontFamily.toLowerCase()
+              || fontCh.toLowerCase() === rootFontFamily.toLowerCase() || ("\"" + fontCh + "\"").toLowerCase() === rootFontFamily.toLowerCase()) {
+              font.isSystemDefault = true;
+            }
+            //加入数据源
+            FONTS.push(font)
+            localStorage.setItem('DDEI-CACHE-FONT', JSON.stringify(FONTS))
+          }
+        })
+      });
+    };
+  }
 }
 
 setTimeout(() => {
