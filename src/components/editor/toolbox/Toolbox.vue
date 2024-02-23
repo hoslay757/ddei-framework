@@ -65,6 +65,7 @@ import DDeiUtil from "../../framework/js/util";
 import DDeiRectContainer from "@/components/framework/js/models/rect-container";
 import DDeiLineLink from "@/components/framework/js/models/linelink";
 import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type";
+import { clone } from 'lodash'
 
 export default {
   name: "DDei-Editor-Toolbox",
@@ -131,7 +132,7 @@ export default {
       })
       this.groups = groups;
     } else {
-      this.groups = groupOriginDefinies
+      this.groups = clone(groupOriginDefinies)
       DDeiEditorUtil.whiteRecentlyToolGroups(this.groups)
     }
     this.searchOriginGroups = this.groups;
