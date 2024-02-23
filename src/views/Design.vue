@@ -268,8 +268,11 @@ export default {
           name: designdata.name,
           code: designdata.code,
           desc: designdata.desc,
-          content: JSON.stringify(designdata),
+          thumb: designdata.thumb,
         };
+        //删除提交数据中的缩略图
+        delete designdata.thumb
+        postData.content = JSON.stringify(designdata)
         if (await this.getUserInfo()) {
           let fileData = await savefile(postData);
           if (fileData.status == 200) {
@@ -310,8 +313,11 @@ export default {
             code: designdata.code,
             desc: designdata.desc,
             version: designdata.version,
-            content: JSON.stringify(designdata),
+            thumb: designdata.thumb
           };
+          //删除提交数据中的缩略图
+          delete designdata.thumb
+          postData.content = JSON.stringify(designdata)
           this.publishPostData = Object.freeze(postData);
           //缓存数据，弹出确认框进行确认
           this.showPublishFileDialog();

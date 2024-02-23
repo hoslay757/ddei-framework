@@ -58,11 +58,7 @@
               <img src="@/components/editor/icons/icon-file-list-item.png">
             </div>
             <div class="ddei_home_fileview_file_name">{{ file.name }}</div>
-            <!-- 
-          <div class="ddei_home_fileview_file_code">
-            {{ file.code }}
-          </div>
-           -->
+
             <div
               :class="{ 'ddei_home_fileview_file_version': true, 'ddei_home_fileview_file_version_published': file.publish == 1 }">
               v{{ file.version }}
@@ -71,29 +67,37 @@
               {{ getFileLastTime(file) }}
             </div>
           </div>
-          <div class="ddei_home_fileview_file_info">
+          <div class="ddei_home_fileview_file_info" @click="gotoDesign(file)">
             <div class="ddei_home_fileview_file_thumbnail">
-              <img src="@/assets/images/thumbnail_default.png" />
+              <img v-if="file.thumb" :src="file.thumb" />
+              <img v-if="!file.thumb" src="@/assets/images/thumbnail_default.png">
             </div>
           </div>
           <div class="ddei_home_fileview_file_buttons">
-            <div class="ddei_home_fileview_file_button">
-              <img src="../../components/editor/icons/icon-file.png" @click="showFileDialog(file, 2)" />
+            <div class="ddei_home_fileview_file_button" @click="showFileDialog(file, 2)">
+              <svg class="icon" aria-hidden="true">
+                <use xlink:href="#icon-a-ziyuan409"></use>
+              </svg>
+              <span>编辑</span>
             </div>
             <div class="ddei_home_fileview_file_button_split">
             </div>
-            <div class="ddei_home_fileview_file_button">
-              <img src="../../components/editor/icons/icon-style-line.png" @click="gotoDesign(file)" />
+
+            <div class="ddei_home_fileview_file_button_split">
+            </div>
+            <div class="ddei_home_fileview_file_button" @click="copyFile(file)">
+              <svg class="icon" aria-hidden="true">
+                <use xlink:href="#icon-a-ziyuan488"></use>
+              </svg>
+              <span>复制</span>
             </div>
             <div class="ddei_home_fileview_file_button_split">
             </div>
-            <div class="ddei_home_fileview_file_button">
-              <img src="../../components/editor/icons/icon-copy.png" @click="copyFile(file)" />
-            </div>
-            <div class="ddei_home_fileview_file_button_split">
-            </div>
-            <div class="ddei_home_fileview_file_button">
-              <img src="../../components/editor/icons/icon-trash.png" @click="deleteFile(file)" />
+            <div class="ddei_home_fileview_file_button" @click="deleteFile(file)">
+              <svg class="icon" aria-hidden="true">
+                <use xlink:href="#icon-a-ziyuan401"></use>
+              </svg>
+              <span>删除</span>
             </div>
           </div>
         </div>
@@ -415,6 +419,7 @@ export default {
   border: 1px solid #CED4DD;
   border-top: 0;
   border-bottom: 0;
+  cursor: pointer;
 }
 
 .ddei_home_fileview_file_thumbnail {
@@ -497,6 +502,7 @@ export default {
 .ddei_home_fileview_file_buttons {
   display: flex;
   align-items: center;
+
   border-radius: 0 0 4px 4px;
   border: 1px solid #CED4DD;
   background: #ffffff;
@@ -511,13 +517,22 @@ export default {
 
 .ddei_home_fileview_file_button {
   flex: 1;
-  margin-top: 6px;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
 }
 
-.ddei_home_fileview_file_button img {
-  width: 16px;
-  height: 16px;
+.ddei_home_fileview_file_button .icon {
+  width: 22px;
+  height: 22px;
+  margin-right: 4px;
+  margin-left: 4px;
+}
+
+.ddei_home_fileview_file_button span {
+  font-size: 16px;
+  margin-right: 10px;
 }
 
 .ddei_home_fileview_file_button img:hover {

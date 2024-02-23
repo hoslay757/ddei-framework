@@ -9,6 +9,7 @@ import DDeiEditor from '../../editor';
 import DDeiFile from '../../file';
 import DDeiConfig from '@/components/framework/js/config';
 import DDeiEditorUtil from '../../util/editor-util';
+import DDeiUtil from '@/components/framework/js/util';
 /**
  * 保存文件的总线Command
  */
@@ -64,6 +65,11 @@ class DDeiEditorCommandSaveFile extends DDeiBusCommand {
                 editor
               );
               if (publishFile) {
+                //生成缩略图
+                let thumbBase64 = DDeiUtil.stageScreenToImage(bus.ddInstance)
+                if (thumbBase64) {
+                  json.thumb = thumbBase64
+                }
                 publishFile(json).then(data => {
                   if (data.result == 1) {
                     file.state = DDeiFileState.NONE;
@@ -88,6 +94,11 @@ class DDeiEditorCommandSaveFile extends DDeiBusCommand {
                 editor
               );
               if (saveFile) {
+                //生成缩略图
+                let thumbBase64 = DDeiUtil.stageScreenToImage(bus.ddInstance)
+                if (thumbBase64) {
+                  json.thumb = thumbBase64
+                }
                 saveFile(json).then(data => {
                   if (data.result == 1) {
                     file.state = DDeiFileState.NONE;

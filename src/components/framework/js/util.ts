@@ -3149,6 +3149,21 @@ class DDeiUtil {
     })
   }
 
+
+  /**
+   * 将当前实例的stage转换为image
+   * @param editor 
+   * @param ddInstance 
+   * @param models 
+   */
+  static stageScreenToImage(ddInstance) {
+    let imgBase64 = ddInstance.render.realCanvas.toDataURL("image/png");
+    console.log(imgBase64)
+    return imgBase64
+  }
+
+
+
   /**
    * 根据属性获取纸张大小
    */
