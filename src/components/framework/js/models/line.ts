@@ -38,8 +38,6 @@ class DDeiLine extends DDeiAbstractShape {
 
     this.spvs = props.spvs ? props.spvs : [];
 
-    this.freeze = props.freeze ? props.freeze : 0;
-
     this.fill = props.fill
 
     this.linkModels = props.linkModels ? props.linkModels : new Map();
@@ -280,8 +278,6 @@ class DDeiLine extends DDeiAbstractShape {
 
   //交错点，用于在绘制线段时截断线段，并生成条线效果，不序列化
   clps: object = {};
-  //冻结，冻结后不会自动计算位置以及坐标
-  freeze: 0;
 
   // ============================ 方法 ===============================
 
@@ -425,64 +421,62 @@ class DDeiLine extends DDeiAbstractShape {
    * 根据开始节点和结束节点的关系，自动计算中间节点路径的坐标
    */
   calPoints(): void {
-    console.log("重新计算")
-    if (this.freeze != 1) {
-      switch (this.type) {
-        case 1: {
-          this.pvs = [this.startPoint, this.endPoint]
-        } break;
-        case 2: {
-          this.calLineType3();
-        } break;
-        case 3: {
-          this.calLineType3();
-          //需要拆分的点数量，实际情况为1或者2
-          if (this.pvs.length < 4) {
+    switch (this.type) {
+      case 1: {
+        this.pvs = [this.startPoint, this.endPoint]
+      } break;
+      case 2: {
+        this.calLineType3();
+      } break;
+      case 3: {
+        this.calLineType3();
+        //需要拆分的点数量，实际情况为1或者2
+        if (this.pvs.length < 4) {
 
-            if (this.pvs.length == 2) {
-              let x1 = this.pvs[0].x + (this.pvs[1].x - this.pvs[0].x) * 0.33
-              let y1 = this.pvs[0].y + (this.pvs[1].y - this.pvs[0].y) * 0.33
-              let x2 = this.pvs[0].x + (this.pvs[1].x - this.pvs[0].x) * 0.66
-              let y2 = this.pvs[0].y + (this.pvs[1].y - this.pvs[0].y) * 0.66
-              this.pvs = [this.pvs[0], new Vector3(x1, y1, 1), new Vector3(x2, y2, 1), this.pvs[1]]
-            } else if (this.pvs.length == 3) {
-              let x1 = this.pvs[0].x + (this.pvs[1].x - this.pvs[0].x) * 0.66
-              let y1 = this.pvs[0].y + (this.pvs[1].y - this.pvs[0].y) * 0.66
-              let x2 = this.pvs[1].x + (this.pvs[2].x - this.pvs[1].x) * 0.33
-              let y2 = this.pvs[1].y + (this.pvs[2].y - this.pvs[1].y) * 0.33
-              this.pvs = [this.pvs[0], new Vector3(x1, y1, 1), new Vector3(x2, y2, 1), this.pvs[2]]
-            }
-          } else if (this.pvs.length > 4) {
-            let appendPointSize = 3 - (this.pvs.length - 4) % 3
-
-            for (let i = 0; i < appendPointSize; i++) {
-              //逆向，寻找最长的一条线
-              let maxS = -1;
-              let maxlength = 0;
-              for (let j = 2; j < this.pvs.length - 1; j++) {
-                let p1 = this.pvs[j]
-                let p2 = this.pvs[j + 1]
-                let l = DDeiUtil.getPointDistance(p1.x, p1.y, p2.x, p2.y)
-                if (!maxlength) {
-                  maxlength = l
-                  maxS = j
-                } else if (l > maxlength) {
-                  maxlength = l
-                  maxS = j
-                }
-              }
-              let s = maxS
-              let e = maxS + 1
-              let x1 = this.pvs[s].x + (this.pvs[e].x - this.pvs[s].x) * 0.5
-              let y1 = this.pvs[s].y + (this.pvs[e].y - this.pvs[s].y) * 0.5
-              this.pvs.splice(s + 1, 0, new Vector3(x1, y1, 1))
-            }
+          if (this.pvs.length == 2) {
+            let x1 = this.pvs[0].x + (this.pvs[1].x - this.pvs[0].x) * 0.33
+            let y1 = this.pvs[0].y + (this.pvs[1].y - this.pvs[0].y) * 0.33
+            let x2 = this.pvs[0].x + (this.pvs[1].x - this.pvs[0].x) * 0.66
+            let y2 = this.pvs[0].y + (this.pvs[1].y - this.pvs[0].y) * 0.66
+            this.pvs = [this.pvs[0], new Vector3(x1, y1, 1), new Vector3(x2, y2, 1), this.pvs[1]]
+          } else if (this.pvs.length == 3) {
+            let x1 = this.pvs[0].x + (this.pvs[1].x - this.pvs[0].x) * 0.66
+            let y1 = this.pvs[0].y + (this.pvs[1].y - this.pvs[0].y) * 0.66
+            let x2 = this.pvs[1].x + (this.pvs[2].x - this.pvs[1].x) * 0.33
+            let y2 = this.pvs[1].y + (this.pvs[2].y - this.pvs[1].y) * 0.33
+            this.pvs = [this.pvs[0], new Vector3(x1, y1, 1), new Vector3(x2, y2, 1), this.pvs[2]]
           }
+        } else if (this.pvs.length > 4) {
+          let appendPointSize = 3 - (this.pvs.length - 4) % 3
 
-        } break;
-      }
+          for (let i = 0; i < appendPointSize; i++) {
+            //逆向，寻找最长的一条线
+            let maxS = -1;
+            let maxlength = 0;
+            for (let j = 2; j < this.pvs.length - 1; j++) {
+              let p1 = this.pvs[j]
+              let p2 = this.pvs[j + 1]
+              let l = DDeiUtil.getPointDistance(p1.x, p1.y, p2.x, p2.y)
+              if (!maxlength) {
+                maxlength = l
+                maxS = j
+              } else if (l > maxlength) {
+                maxlength = l
+                maxS = j
+              }
+            }
+            let s = maxS
+            let e = maxS + 1
+            let x1 = this.pvs[s].x + (this.pvs[e].x - this.pvs[s].x) * 0.5
+            let y1 = this.pvs[s].y + (this.pvs[e].y - this.pvs[s].y) * 0.5
+            this.pvs.splice(s + 1, 0, new Vector3(x1, y1, 1))
+          }
+        }
 
+      } break;
     }
+
+
     DDeiLine.calLineCrossSync(this.layer);
   }
 
@@ -770,7 +764,12 @@ class DDeiLine extends DDeiAbstractShape {
       case 90: endDirect = 3; break;
       case 180: endDirect = 4; break;
     }
-
+    let forcePaths = []
+    this.spvs?.forEach(pv => {
+      if (pv) {
+        forcePaths.push(pv)
+      }
+    })
     let linePathData = DDeiUtil.calAutoLinePath(
       {
         point: {
@@ -789,7 +788,7 @@ class DDeiLine extends DDeiAbstractShape {
         direct: endDirect
       },
       obis,
-      { recommendPaths: recommendPaths, recomWeight: 100, rectMidWeight: 50 })
+      { recommendPaths: recommendPaths, forcePaths: forcePaths, recomWeight: 100, rectMidWeight: 50 })
 
 
     //更新中间节点
@@ -1064,9 +1063,6 @@ class DDeiLine extends DDeiAbstractShape {
 
   syncVectors(source: DDeiAbstractShape, clonePV: boolean = false): void {
     super.syncVectors(source, clonePV)
-    if (source.freeze != null && source.freeze != undefined) {
-      this.freeze = source.freeze;
-    }
     this.startPoint = this.pvs[0]
     this.endPoint = this.pvs[this.pvs.length - 1]
 

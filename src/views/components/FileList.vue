@@ -59,7 +59,7 @@
                 <use xlink:href="#icon-wenjian01"></use>
               </svg>
             </div>
-            <div class="ddei_home_fileview_file_name">{{ file.name }}</div>
+            <div class="ddei_home_fileview_file_name" :title="file.name">{{ file.name }}</div>
 
             <div
               :class="{ 'ddei_home_fileview_file_version': true, 'ddei_home_fileview_file_version_published': file.publish == 1 }">
@@ -355,9 +355,9 @@ export default {
 
         if (date && date.length > 10 && date.indexOf("-") != -1) {
           let d = date.substring(date.indexOf("-") + 1, date.indexOf("T"))
-          if (date.indexOf("T") != -1 && date.indexOf(":", date.indexOf(":") + 1) != -1) {
-            d += " " + date.substring(date.indexOf("T") + 1, date.indexOf(":", date.indexOf(":") + 1))
-          }
+          // if (date.indexOf("T") != -1 && date.indexOf(":", date.indexOf(":") + 1) != -1) {
+          //   d += " " + date.substring(date.indexOf("T") + 1, date.indexOf(":", date.indexOf(":") + 1))
+          // }
           return d
         }
       }

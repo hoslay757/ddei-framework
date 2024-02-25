@@ -1624,7 +1624,8 @@ abstract class DDeiAbstractShape {
         if (toJSONFields && toJSONFields.indexOf(i) != -1 && this[i]) {
           if (Array.isArray(this[i])) {
             let array = [];
-            this[i].forEach(element => {
+            for (let xi = 0; xi < this[i].length; xi++) {
+              let element = this[i][xi]
               if (Array.isArray(element)) {
                 let subArray = [];
                 element.forEach(subEle => {
@@ -1641,7 +1642,7 @@ abstract class DDeiAbstractShape {
               } else {
                 array.push(element);
               }
-            });
+            }
             if (array.length > 0) {
               json[i] = array;
             }
@@ -1665,7 +1666,8 @@ abstract class DDeiAbstractShape {
         } else {
           if (Array.isArray(this[i])) {
             let array = [];
-            this[i].forEach(element => {
+            for (let xi = 0; xi < this[i].length; xi++) {
+              let element = this[i][xi];
               if (Array.isArray(element)) {
                 let subArray = [];
                 element.forEach(subEle => {
@@ -1679,14 +1681,14 @@ abstract class DDeiAbstractShape {
                 array.push(subArray);
               } else if (element?.toJSON) {
                 array.push(element.toJSON());
-              } else if (element.isVector3) {
+              } else if (element?.isVector3) {
                 let dt = clone(element);
                 delete dt.z
                 array.push(dt);
               } else {
                 array.push(element);
               }
-            });
+            }
             if (array.length > 0) {
               json[i] = array;
             }
@@ -1719,6 +1721,7 @@ abstract class DDeiAbstractShape {
         }
       }
     }
+
     return json;
   }
 

@@ -3179,16 +3179,16 @@ class DDeiUtil {
         }
         let scaleW = 1, scaleH = 1
         if (outRect.width * rat1 > width * rat1) {
-          scaleW = width / (outRect.width * rat1)
+          scaleW = width / (outRect.width)
         }
         if (outRect.height * rat1 > height * rat1) {
-          scaleH = height / (outRect.height * rat1)
+          scaleH = height / (outRect.height)
         }
         if (scaleW != 1 || scaleH != 1) {
-          canvas.setAttribute("width", width + addWidth)
-          canvas.setAttribute("height", height + addWidth)
-          canvas.style.width = width + addWidth + 'px';
-          canvas.style.height = height + addWidth + 'px';
+          canvas.setAttribute("width", width * rat1 + addWidth)
+          canvas.setAttribute("height", height * rat1 + addWidth)
+          canvas.style.width = width * rat1 + addWidth + 'px';
+          canvas.style.height = height * rat1 + addWidth + 'px';
 
           ctx.translate(-outRect.x * rat1 * scaleW + lineOffset / 2, -outRect.y * rat1 * scaleH + lineOffset / 2)
           ctx.scale(scaleW, scaleH)
@@ -3203,8 +3203,10 @@ class DDeiUtil {
           item.render.drawShape();
         })
         let base64 = canvas.toDataURL("image/png")
+        ddInstance.render.tempCanvas = null
         resolve(base64)
       } catch (e) {
+        ddInstance.render.tempCanvas = null
         rejected('')
       }
     })
@@ -3367,6 +3369,15 @@ class DDeiUtil {
         extLines.push([{ x: point.x, y: point.y - 50000, isRecommend: 1, prio: extConfig.recomWeight, color: "blue" }, { x: point.x, y: point.y + 50000 }])
       } else if (point.type == 'y') {
         extLines.push([{ x: point.x - 50000, y: point.y, isRecommend: 1, prio: extConfig.recomWeight, color: "blue" }, { x: point.x + 50000, y: point.y }])
+      }
+    })
+
+    //获取强制路径，强制路径上所有点，拥有极高权限
+    extConfig?.forcePaths?.forEach(point => {
+      if (point.x) {
+        extLines.push([{ x: point.x, y: point.y - 50000, isForce: 1, prio: 9999, color: "orange" }, { x: point.x, y: point.y + 50000 }])
+      } else if (point.y) {
+        extLines.push([{ x: point.x - 50000, y: point.y, isForce: 1, prio: 9999, color: "orange" }, { x: point.x + 50000, y: point.y }])
       }
     })
 

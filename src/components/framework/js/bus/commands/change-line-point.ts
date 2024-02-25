@@ -47,7 +47,6 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
       let pvs = lineModel.pvs;
       let create = stageRender.dragObj.create
       //取得线段定义中的约束
-
       switch (lineModel.type) {
         case 1: {
           //直线
@@ -74,8 +73,6 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
             }
             pvs[0].x = ex
             pvs[0].y = ey
-            //解冻
-            lineModel.freeze = 0;
 
           }
           //结束点
@@ -97,8 +94,6 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
               pvs[pvs.length - 1].y = ey
 
             }
-            //解冻
-            lineModel.freeze = 0;
           } else if (passIndex == 2) {
             //相邻的两个点的坐标处理
             let cIndex = parseInt(opvsIndex / 2)
@@ -109,24 +104,25 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
             if (Math.abs(cp.x - bp.x) <= 1) {
               bp.x = ex
               bp.x = ex
+              lineModel.spvs[cIndex] = { x: ex, y: 0 }
             } else {
               bp.y = ey
               bp.y = ey
+              lineModel.spvs[cIndex] = { x: 0, y: ey }
             }
             //TODO 旋转的情况下，需要把旋转归0判断，x相等
             if (Math.abs(cp.x - ap.x) <= 1) {
               ap.x = ex
               ap.x = ex
+              lineModel.spvs[cIndex + 1] = { x: ex, y: 0 }
             } else {
               ap.y = ey
               ap.y = ey
+              lineModel.spvs[cIndex + 1] = { x: 0, y: ey }
             }
 
             cp.x = ex;
             cp.y = ey;
-            lineModel.spvs[cIndex] = true
-            //冻结
-            lineModel.freeze = 1
           } else if (passIndex == 3) {
             //相邻的两个点的坐标处理
             let sIndex = parseInt(opvsIndex / 2)
@@ -136,14 +132,12 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
             if (Math.abs(sp.x - ep.x) <= 1) {
               sp.x = ex
               ep.x = ex
+              lineModel.spvs[sIndex + 1] = { x: ex, y: 0 }
             } else {
               sp.y = ey
               ep.y = ey
+              lineModel.spvs[sIndex + 1] = { x: 0, y: ey }
             }
-            lineModel.spvs[sIndex] = true
-            lineModel.spvs[sIndex + 1] = true
-            //冻结
-            lineModel.freeze = 1
           }
         } break;
         case 3: {
@@ -159,8 +153,6 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
               pvs[pvs.length - 1].x = ex
               pvs[pvs.length - 1].y = ey
             }
-            //解冻
-            lineModel.freeze = 0;
           }
           //控制点
           else if (passIndex == 4) {
@@ -206,8 +198,6 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
 
               lineModel.spvs[i2] = true
             }
-            //冻结
-            lineModel.freeze = 1;
           }
 
         } break;
