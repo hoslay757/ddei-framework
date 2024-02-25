@@ -66,25 +66,28 @@ class DDeiEditorCommandSaveFile extends DDeiBusCommand {
               );
               if (publishFile) {
                 //生成缩略图
-                let thumbBase64 = DDeiUtil.stageScreenToImage(bus.ddInstance)
-                if (thumbBase64) {
-                  json.thumb = thumbBase64
-                }
-                publishFile(json).then(data => {
-                  if (data.result == 1) {
-                    file.state = DDeiFileState.NONE;
-                    //遍历histroy，修改当前的histroy记录为最新状态，去掉其它最新状态标记
-                    file.histroy.forEach(his => {
-                      if (his.isNew == true) {
-                        delete his.isNew
-                      }
-                    });
-                    //将当前的设置
-                    file.histroy[file.histroyIdx].isNew = true;
-                  } else if (data.result != 4) {
-                    file.state = oldState
+                DDeiUtil.stageScreenToImage(bus.ddInstance, 400, 240).then(thumbBase64 => {
+                  if (thumbBase64) {
+                    json.thumb = thumbBase64
                   }
-                });
+                  publishFile(json).then(data => {
+                    if (data.result == 1) {
+                      file.state = DDeiFileState.NONE;
+                      //遍历histroy，修改当前的histroy记录为最新状态，去掉其它最新状态标记
+                      file.histroy.forEach(his => {
+                        if (his.isNew == true) {
+                          delete his.isNew
+                        }
+                      });
+                      //将当前的设置
+                      file.histroy[file.histroyIdx].isNew = true;
+                    } else if (data.result != 4) {
+                      file.state = oldState
+                    }
+                  });
+                })
+
+
               }
             } else {
               file.state = DDeiFileState.SAVING
@@ -95,25 +98,28 @@ class DDeiEditorCommandSaveFile extends DDeiBusCommand {
               );
               if (saveFile) {
                 //生成缩略图
-                let thumbBase64 = DDeiUtil.stageScreenToImage(bus.ddInstance)
-                if (thumbBase64) {
-                  json.thumb = thumbBase64
-                }
-                saveFile(json).then(data => {
-                  if (data.result == 1) {
-                    file.state = DDeiFileState.NONE;
-                    //遍历histroy，修改当前的histroy记录为最新状态，去掉其它最新状态标记
-                    file.histroy.forEach(his => {
-                      if (his.isNew == true) {
-                        delete his.isNew
-                      }
-                    });
-                    //将当前的设置
-                    file.histroy[file.histroyIdx].isNew = true;
-                  } else if (data.result != 4) {
-                    file.state = oldState
+                DDeiUtil.stageScreenToImage(bus.ddInstance, 400, 240).then(thumbBase64 => {
+                  if (thumbBase64) {
+                    json.thumb = thumbBase64
                   }
-                });
+                  saveFile(json).then(data => {
+                    if (data.result == 1) {
+                      file.state = DDeiFileState.NONE;
+                      //遍历histroy，修改当前的histroy记录为最新状态，去掉其它最新状态标记
+                      file.histroy.forEach(his => {
+                        if (his.isNew == true) {
+                          delete his.isNew
+                        }
+                      });
+                      //将当前的设置
+                      file.histroy[file.histroyIdx].isNew = true;
+                    } else if (data.result != 4) {
+                      file.state = oldState
+                    }
+                  });
+                })
+
+
               }
             }
           }

@@ -3156,10 +3156,58 @@ class DDeiUtil {
    * @param ddInstance 
    * @param models 
    */
-  static stageScreenToImage(ddInstance) {
-    let imgBase64 = ddInstance.render.realCanvas.toDataURL("image/png");
-    console.log(imgBase64)
-    return imgBase64
+  static stageScreenToImage(ddInstance, width, height) {
+    return new Promise((resolve, rejected) => {
+      try {
+        //转换为图片
+        let canvas = document.createElement('canvas');
+        //获得 2d 上下文对象
+        let ctx = canvas.getContext('2d');
+        //获取缩放比例
+        let rat1 = DDeiUtil.getPixelRatio(ctx);
+        ddInstance.render.tempCanvas = canvas;
+        //所选择区域的最大范围
+        let models = ddInstance.stage.getLayerModels();
+        let outRect = DDeiAbstractShape.getOutRectByPV(models);
+        let lineOffset = models[0].render.getCachedValue("border.width");
+        let addWidth = 0;
+        if (lineOffset) {
+          addWidth = lineOffset * 2 * rat1
+          if (models.length > 1) {
+            addWidth = lineOffset * 2
+          }
+        }
+        let scaleW = 1, scaleH = 1
+        if (outRect.width * rat1 > width * rat1) {
+          scaleW = width / (outRect.width * rat1)
+        }
+        if (outRect.height * rat1 > height * rat1) {
+          scaleH = height / (outRect.height * rat1)
+        }
+        if (scaleW != 1 || scaleH != 1) {
+          canvas.setAttribute("width", width + addWidth)
+          canvas.setAttribute("height", height + addWidth)
+          canvas.style.width = width + addWidth + 'px';
+          canvas.style.height = height + addWidth + 'px';
+
+          ctx.translate(-outRect.x * rat1 * scaleW + lineOffset / 2, -outRect.y * rat1 * scaleH + lineOffset / 2)
+          ctx.scale(scaleW, scaleH)
+        } else {
+          canvas.setAttribute("width", outRect.width * rat1 + addWidth)
+          canvas.setAttribute("height", outRect.height * rat1 + addWidth)
+          canvas.style.width = outRect.width * rat1 + addWidth + 'px';
+          canvas.style.height = outRect.height * rat1 + addWidth + 'px';
+          ctx.translate(-outRect.x * rat1 + lineOffset / 2, -outRect.y * rat1 + lineOffset / 2)
+        }
+        models.forEach(item => {
+          item.render.drawShape();
+        })
+        let base64 = canvas.toDataURL("image/png")
+        resolve(base64)
+      } catch (e) {
+        rejected('')
+      }
+    })
   }
 
 

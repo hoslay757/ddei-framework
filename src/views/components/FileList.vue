@@ -409,12 +409,12 @@ export default {
   border-radius: 4px 4px 0 0;
   border: 1px solid #CED4DD;
   background: #ffffff;
-  height: 48px;
+  flex: 0 0 48px;
   padding: 0 20px;
 }
 
 .ddei_home_fileview_file_info {
-  flex: 1;
+  flex: 0 0 184px;
   display: grid;
   gap: 2px;
   padding: 20px;
@@ -422,6 +422,7 @@ export default {
   border-top: 0;
   border-bottom: 0;
   cursor: pointer;
+  overflow: hidden;
 }
 
 .ddei_home_fileview_file_thumbnail {
@@ -508,7 +509,7 @@ export default {
   border-radius: 0 0 4px 4px;
   border: 1px solid #CED4DD;
   background: #ffffff;
-  height: 48px;
+  flex: 0 0 48px;
   cursor: pointer;
 }
 
