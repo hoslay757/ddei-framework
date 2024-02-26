@@ -36,17 +36,45 @@ class DDeiBusCommandModelAutoPos extends DDeiBusCommand {
     if (stage && data?.models?.length > 0 && data?.value) {
       let models = data.models;
       if (models?.length > 1) {
-        let weight = 10;
-        let baseModel = models[0];
-        let baseOutRect = DDeiAbstractShape.getOutRectByPV([baseModel])
+        let weight = 0;
         let hasChange = false;
         let startValue = -Infinity;
-        for (let i = 1; i < models.length; i++) {
-          let model = models[i];
+        let ourRects = []
+        for (let i = 0; i < models.length; i++) {
+          let model = models[i]
           let outRect = DDeiAbstractShape.getOutRectByPV([model])
+          outRect.model = model
+          ourRects.push(outRect)
+        }
+        if (data.value == 1) {
+          // 内部控件排序,按照X排序
+          ourRects.sort((m1, m2) => {
+            return m1.model.x - m2.model.x
+          })
+        } else if (data.value == 2) {
+          // 内部控件排序,按照Y排序
+          ourRects.sort((m1, m2) => {
+            return m1.model.y - m2.model.y
+          })
+        }
+
+        let sumWeight = 0
+        for (let i = 0; i < ourRects.length - 1; i++) {
+          let m1 = ourRects[i]
+          let m2 = ourRects[i + 1]
+          if (data.value == 1) {
+            sumWeight += m2.x - (m1.x + m1.width)
+          } else if (data.value == 2) {
+            sumWeight += m2.y - (m1.y + m1.height)
+          }
+        }
+        weight = sumWeight / (models.length - 1)
+        for (let i = 1; i < ourRects.length; i++) {
+          let outRect = ourRects[i]
+          let model = outRect.model;
           if (data.value == 1) {
             if (startValue == -Infinity) {
-              startValue = baseOutRect.x + baseOutRect.width
+              startValue = ourRects[0].x1
             }
             startValue += weight
             if (outRect.x != startValue) {
@@ -56,12 +84,13 @@ class DDeiBusCommandModelAutoPos extends DDeiBusCommand {
                 0, 1, 0,
                 0, 0, 1);
               model.transVectors(moveMatrix);
+              model.updateLinkModels();
               hasChange = true;
             }
             startValue += outRect.width
           } else if (data.value == 2) {
             if (startValue == -Infinity) {
-              startValue = baseOutRect.y + baseOutRect.height
+              startValue = ourRects[0].y1
             }
             startValue += weight
             if (outRect.y != startValue) {
@@ -71,6 +100,7 @@ class DDeiBusCommandModelAutoPos extends DDeiBusCommand {
                 0, 1, dy,
                 0, 0, 1);
               model.transVectors(moveMatrix);
+              model.updateLinkModels();
               hasChange = true;
             }
             startValue += outRect.height

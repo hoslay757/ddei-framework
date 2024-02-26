@@ -1495,7 +1495,7 @@ class DDeiStageCanvasRender {
       case DDeiEnumOperateState.CONTROL_CREATING:
       case DDeiEnumOperateState.CONTROL_DRAGING: {
         //鼠标悬停于边缘时的拖拽
-        if (inEdge && inEdgeTime > 300) {
+        if (inEdge && inEdgeTime > 400) {
           let pContainerModel = null;
           //当前控件的上层控件
           if (this.currentOperateShape.id.indexOf("_shadow") != -1) {

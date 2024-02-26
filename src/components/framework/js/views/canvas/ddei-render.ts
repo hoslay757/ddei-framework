@@ -2,6 +2,7 @@ import DDeiConfig from '../../config.js';
 import DDei from '../../ddei.js';
 import DDeiEnumBusCommandType from '../../enums/bus-command-type.js';
 import DDeiUtil from '../../util.js'
+import { throttle } from "lodash";
 
 /**
  * DDei图形框架的渲染器类，用于渲染图形框架
@@ -12,6 +13,7 @@ class DDeiCanvasRender {
   // ============================ 构造函数 ============================
   constructor(props: object) {
     this.model = props.model;
+    this.mouseScale = throttle(this.mouseScale, 60)
   }
   // ============================== 静态方法 ============================
   // 通过一个JSON反向序列化成对象，模型数据与JSON完全一样
