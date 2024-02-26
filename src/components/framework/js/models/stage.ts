@@ -533,9 +533,10 @@ class DDeiStage {
    * 获取多个图层之间的所有对齐模型
    * @param data 判定的数据
    * @param souceModels 源模型,可能包含多个
+   * @param points 判定的点，如果传入，则直接以这个点作为判定点，忽略其他点
    * @returns 
    */
-  getAlignData(data: object, souceModels: Map<string, DDeiAbstractShape> | Array<DDeiAbstractShape>): object {
+  getAlignData(data: object, souceModels: Map<string, DDeiAbstractShape> | Array<DDeiAbstractShape>, points: object[] = null): object {
     //若干条横线和竖线
     let hpoint = {}
     let vpoint = {}
@@ -573,16 +574,19 @@ class DDeiStage {
     let curLevelModels = fModel.pModel.getSubModels(sourceModelKeys, 1, { x: x, y: y, x1: x1, y1: y1 });
     curLevelModels.forEach(model => {
       //判定每一个点以及中心点,如果旋转角度不同，则只判断中心点
-      let outPVS = data.pvs
+
+      let outPVS = points?.length > 0 ? points : data.pvs
       let inPVS = model.getAPVS()
+
       outPVS.forEach(pv => {
         inPVS?.forEach(mpv => {
+
           //横向相等
           let pvy = pv.y
           let pvx = pv.x
           let mpvy = mpv.y
           let mpvx = mpv.x
-          if (pvy == mpvy) {
+          if (Math.abs(pvy - mpvy) < 1) {
             hasH = true;
             if (!hpoint[pvy]) {
               hpoint[pvy] = { sx: Math.min(pvx, mpvx), ex: Math.max(pvx, mpvx) }
@@ -595,7 +599,7 @@ class DDeiStage {
             hAds = pvy - mpvy;
           }
           //纵向相等
-          if (pvx == mpvx) {
+          if (Math.abs(pvx - mpvx) < 1) {
             hasV = true;
             if (!vpoint[pvx]) {
               vpoint[pvx] = { sy: Math.min(pvy, mpvy), ey: Math.max(pvy, mpvy) }
@@ -604,6 +608,7 @@ class DDeiStage {
               vpoint[pvx].ey = Math.max(vpoint[pvx].sy, pvy, mpvy)
             }
           }
+
           if (vAds == Infinity && Math.abs(pvx - mpvx) <= DDeiConfig.GLOBAL_ADV_WEIGHT) {
             vAds = pvx - mpvx;
           }

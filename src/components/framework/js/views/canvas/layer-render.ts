@@ -1338,15 +1338,48 @@ class DDeiLayerCanvasRender {
       //控件改变大小中
       case DDeiEnumOperateState.CONTROL_CHANGING_BOUND: {
         //得到改变后的新坐标以及大小，按下ctrl则等比放大缩小
+        let points = []
+
+        switch (this.stageRender.selector.passIndex) {
+          case 1: {
+            points.push({ x: this.stageRender.selector.x + this.stageRender.selector.width / 2, y: this.stageRender.selector.y })
+          } break;
+          case 2: {
+            points.push({ x: this.stageRender.selector.x + this.stageRender.selector.width, y: this.stageRender.selector.y })
+          } break;
+          case 3: {
+            points.push({ x: this.stageRender.selector.x + this.stageRender.selector.width, y: this.stageRender.selector.y + this.stageRender.selector.height / 2 })
+          } break;
+          case 4: {
+            points.push({ x: this.stageRender.selector.x + this.stageRender.selector.width, y: this.stageRender.selector.y + this.stageRender.selector.height })
+          } break;
+          case 5: {
+            points.push({ x: this.stageRender.selector.x + this.stageRender.selector.width / 2, y: this.stageRender.selector.y + this.stageRender.selector.height })
+          } break;
+          case 6: {
+            points.push({ x: this.stageRender.selector.x, y: this.stageRender.selector.y + this.stageRender.selector.height })
+          } break;
+          case 7: {
+            points.push({ x: this.stageRender.selector.x, y: this.stageRender.selector.y + this.stageRender.selector.height / 2 })
+          } break;
+          case 8: {
+            points.push({ x: this.stageRender.selector.x, y: this.stageRender.selector.y })
+          } break;
+        }
+        let stageRatio = this.model.getStageRatio()
+        points.forEach(point => {
+          point.x = point.x * stageRatio
+          point.y = point.y * stageRatio
+        })
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.SetHelpLine, { models: this.model.shadowControls, points: points }, evt);
+        this.stage?.ddInstance?.bus?.executeAll()
         let movedBounds = this.stageRender.selector.render.getMovedBounds(ex, ey, isCtrl || this.stageRender.selector.eqrat);
         if (movedBounds) {
           let selector = this.stageRender.selector;
-          let stageRatio = this.model.getStageRatio()
+
           let pushData = { x: ex, y: ey, deltaX: movedBounds.x - selector.x * stageRatio, deltaY: movedBounds.y - selector.y * stageRatio, deltaWidth: movedBounds.width - selector.width * stageRatio, deltaHeight: movedBounds.height - selector.height * stageRatio, selector: selector, models: this.model.shadowControls };
           this.model.opPoints = [];
           //更新dragObj临时变量中的数值,确保坐标对应关系一致
-          //修改辅助线
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.SetHelpLine, { models: this.model.shadowControls }, evt);
           //修改所有选中控件坐标
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeBounds, pushData, evt);
           //渲染图形

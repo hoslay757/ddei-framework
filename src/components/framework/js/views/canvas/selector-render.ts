@@ -747,10 +747,58 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     }
 
     let wbh = returnBounds.width / returnBounds.height;
+
+    //判定吸附
+    let stage = this.model.stage
+    //横纵吸附
+    let hAds = stage.render.helpLines?.hAds || stage.render.helpLines?.hAds == 0 ? stage.render.helpLines?.hAds : Infinity
+    let vAds = stage.render.helpLines?.vAds || stage.render.helpLines?.vAds == 0 ? stage.render.helpLines?.vAds : Infinity
+    let hAdsValue = Infinity;
+    let vAdsValue = Infinity;
+    if (hAds != Infinity) {
+      //退出吸附状态
+      if (stage.render.isHAds && Math.abs(stage.render.hAdsY - y) > DDeiConfig.GLOBAL_ADV_WEIGHT) {
+        stage.render.isHAds = false
+        stage.render.hAdsY = Infinity
+      }
+      //持续吸附状态
+      else if (stage.render.isHAds) {
+        hAdsValue = 0
+      }
+      //进入吸附状态
+      else {
+        stage.render.isHAds = true
+        hAdsValue = -hAds
+        stage.render.hAdsY = y
+      }
+    }
+    if (vAds != Infinity) {
+
+      //退出吸附状态
+      if (stage.render.isVAds && Math.abs(stage.render.vAdsX - x) > DDeiConfig.GLOBAL_ADV_WEIGHT) {
+        stage.render.isVAds = false
+        stage.render.vAdsX = Infinity
+      }
+      //持续吸附状态
+      else if (stage.render.isVAds) {
+        vAdsValue = 0;
+      }
+      //进入吸附状态
+      else {
+        stage.render.isVAds = true
+        vAdsValue = -vAds
+        stage.render.vAdsX = x
+      }
+    }
+
+
     switch (this.model.passIndex) {
       //上中
       case 1: {
         let dy = y - (centerPointVector.y - returnBounds.height / 2)
+        if (hAdsValue != Infinity) {
+          dy = hAdsValue
+        }
         returnBounds.y = returnBounds.y + dy
         returnBounds.height = returnBounds.height - dy
         if (er) {
@@ -763,6 +811,12 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       case 2: {
         let dy = y - (centerPointVector.y - returnBounds.height / 2)
         let dx = x - centerPointVector.x - returnBounds.width / 2
+        if (hAdsValue != Infinity) {
+          dy = hAdsValue
+        }
+        if (vAdsValue != Infinity) {
+          dx = vAdsValue
+        }
         returnBounds.y = returnBounds.y + dy
         returnBounds.height = returnBounds.height - dy
         returnBounds.width = returnBounds.width + dx
@@ -776,19 +830,34 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       }
       //中右
       case 3: {
+
         let dx = x - centerPointVector.x - returnBounds.width / 2
+        if (vAdsValue != Infinity) {
+          dx = vAdsValue
+        }
         returnBounds.width = returnBounds.width + dx
 
+
+
         if (er) {
+
           returnBounds.y = returnBounds.y - (dx / wbh / 2)
           returnBounds.height = returnBounds.height + (dx / wbh)
         }
+
+
         break;
       }
       //下右
       case 4: {
         let dx = x - centerPointVector.x - returnBounds.width / 2
         let dy = y - centerPointVector.y - returnBounds.height / 2
+        if (hAdsValue != Infinity) {
+          dy = hAdsValue
+        }
+        if (vAdsValue != Infinity) {
+          dx = vAdsValue
+        }
         returnBounds.width = returnBounds.width + dx
         returnBounds.height = returnBounds.height + dy
         if (er) {
@@ -802,6 +871,9 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       //下中
       case 5: {
         let dy = y - centerPointVector.y - returnBounds.height / 2
+        if (hAdsValue != Infinity) {
+          dy = hAdsValue
+        }
         returnBounds.height = returnBounds.height + dy
         if (er) {
           returnBounds.x = returnBounds.x - dy * wbh / 2
@@ -813,6 +885,12 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       case 6: {
         let dy = y - centerPointVector.y - returnBounds.height / 2
         let dx = -((centerPointVector.x - x) - returnBounds.width / 2)
+        if (hAdsValue != Infinity) {
+          dy = hAdsValue
+        }
+        if (vAdsValue != Infinity) {
+          dx = vAdsValue
+        }
         returnBounds.x = returnBounds.x + dx
         returnBounds.width = returnBounds.width - dx
         returnBounds.height = returnBounds.height + dy
@@ -827,6 +905,9 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       //中左
       case 7: {
         let dx = -((centerPointVector.x - x) - returnBounds.width / 2)
+        if (vAdsValue != Infinity) {
+          dx = vAdsValue
+        }
         returnBounds.x = returnBounds.x + dx
         returnBounds.width = returnBounds.width - dx
         if (er) {
@@ -839,6 +920,12 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       case 8: {
         let dy = y - (centerPointVector.y - returnBounds.height / 2)
         let dx = -((centerPointVector.x - x) - returnBounds.width / 2)
+        if (hAdsValue != Infinity) {
+          dy = hAdsValue
+        }
+        if (vAdsValue != Infinity) {
+          dx = vAdsValue
+        }
         returnBounds.x = returnBounds.x + dx
         returnBounds.width = returnBounds.width - dx
         returnBounds.y = returnBounds.y + dy
@@ -855,6 +942,8 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         break;
       }
     }
+
+
     return returnBounds;
   }
 
