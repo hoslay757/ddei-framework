@@ -153,6 +153,8 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
               pvs[pvs.length - 1].x = ex
               pvs[pvs.length - 1].y = ey
             }
+            //解冻
+            lineModel.freeze = 0;
           }
           //控制点
           else if (passIndex == 4) {
@@ -198,6 +200,8 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
 
               lineModel.spvs[i2] = true
             }
+            //冻结
+            lineModel.freeze = 1;
           }
 
         } break;
