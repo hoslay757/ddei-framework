@@ -72,8 +72,8 @@
           {{ reg.validMsg.email }}
         </div>
         <div class="content_right_login_form_input">
-          <svg class="icon" style="color:red" aria-hidden="true">
-            <use xlink:href="#icon-a-ziyuan412"></use>
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-youjian-01-01"></use>
           </svg>
           <div class="split"></div>
           <input v-model="reg.email" class="content_right_reg_form_input" placeholder="邮箱地址" type="email" />

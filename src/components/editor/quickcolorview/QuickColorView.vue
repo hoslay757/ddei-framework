@@ -33,7 +33,7 @@ export default {
       mode: 1,
       dataSource: [
         { value: 1, text: "填充", img: "#icon-a-ziyuan453" },
-        { value: 2, text: "边框", img: "#icon-a-ziyuan463" },
+        { value: 2, text: "边框", img: "#icon-border-pencil" },
         { value: 3, text: "字体", img: "#icon-a-ziyuan463" },
       ],
       show: true,
@@ -238,7 +238,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .ddei_editor_qcview {
   height: 16px;
   background: rgb(245, 245, 245);

@@ -1,9 +1,9 @@
 @font-face {
   font-family: "iconfont";
   /* Project id 4428875 */
-  src: url('iconfont.woff2?t=1707701037226') format('woff2'),
-    url('iconfont.woff?t=1707701037226') format('woff'),
-    url('iconfont.ttf?t=1707701037226') format('truetype');
+  src: url('iconfont.woff2?t=1708941124723') format('woff2'),
+    url('iconfont.woff?t=1708941124723') format('woff'),
+    url('iconfont.ttf?t=1708941124723') format('truetype');
 }
 
 .icon {
@@ -13,6 +13,62 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-icon-text-underline:before {
+  content: "\e700";
+}
+
+.icon-a-ziyuan504:before {
+  content: "\e6d4";
+}
+
+.icon-a-ziyuan503:before {
+  content: "\e6d5";
+}
+
+.icon-a-ziyuan502:before {
+  content: "\e6d6";
+}
+
+.icon-a-ziyuan500:before {
+  content: "\e6d7";
+}
+
+.icon-a-ziyuan501:before {
+  content: "\e6d8";
+}
+
+.icon-a-ziyuan499:before {
+  content: "\e6d9";
+}
+
+.icon-youjian-01-01:before {
+  content: "\e645";
+}
+
+.icon-border-pencil:before {
+  content: "\e6da";
+}
+
+.icon-icon-copy-file:before {
+  content: "\e63e";
+}
+
+.icon-add-file1-icon:before {
+  content: "\e63f";
+}
+
+.icon-add-folder-icon:before {
+  content: "\e640";
+}
+
+.icon-icon-edit-file:before {
+  content: "\e641";
+}
+
+.icon-add-file-icon:before {
+  content: "\e642";
 }
 
 .icon-wenjian01:before {

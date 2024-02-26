@@ -6,6 +6,104 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "39184664",
+      "name": "资源 46-copy",
+      "font_class": "icon-text-underline",
+      "unicode": "e700",
+      "unicode_decimal": 59136
+    },
+    {
+      "icon_id": "39331788",
+      "name": "资源 504",
+      "font_class": "a-ziyuan504",
+      "unicode": "e6d4",
+      "unicode_decimal": 59092
+    },
+    {
+      "icon_id": "39331789",
+      "name": "资源 503",
+      "font_class": "a-ziyuan503",
+      "unicode": "e6d5",
+      "unicode_decimal": 59093
+    },
+    {
+      "icon_id": "39331786",
+      "name": "资源 502",
+      "font_class": "a-ziyuan502",
+      "unicode": "e6d6",
+      "unicode_decimal": 59094
+    },
+    {
+      "icon_id": "39331787",
+      "name": "资源 500",
+      "font_class": "a-ziyuan500",
+      "unicode": "e6d7",
+      "unicode_decimal": 59095
+    },
+    {
+      "icon_id": "39331785",
+      "name": "资源 501",
+      "font_class": "a-ziyuan501",
+      "unicode": "e6d8",
+      "unicode_decimal": 59096
+    },
+    {
+      "icon_id": "39331784",
+      "name": "资源 499",
+      "font_class": "a-ziyuan499",
+      "unicode": "e6d9",
+      "unicode_decimal": 59097
+    },
+    {
+      "icon_id": "39325900",
+      "name": "youjian-01-01",
+      "font_class": "youjian-01-01",
+      "unicode": "e645",
+      "unicode_decimal": 58949
+    },
+    {
+      "icon_id": "39341434",
+      "name": "border-pencil",
+      "font_class": "border-pencil",
+      "unicode": "e6da",
+      "unicode_decimal": 59098
+    },
+    {
+      "icon_id": "39325876",
+      "name": "新增图标04",
+      "font_class": "icon-copy-file",
+      "unicode": "e63e",
+      "unicode_decimal": 58942
+    },
+    {
+      "icon_id": "39325872",
+      "name": "新增图标",
+      "font_class": "add-file1-icon",
+      "unicode": "e63f",
+      "unicode_decimal": 58943
+    },
+    {
+      "icon_id": "39325875",
+      "name": "新增图标02",
+      "font_class": "add-folder-icon",
+      "unicode": "e640",
+      "unicode_decimal": 58944
+    },
+    {
+      "icon_id": "39325873",
+      "name": "新增图标05",
+      "font_class": "icon-edit-file",
+      "unicode": "e641",
+      "unicode_decimal": 58945
+    },
+    {
+      "icon_id": "39325874",
+      "name": "新增图标03",
+      "font_class": "add-file-icon",
+      "unicode": "e642",
+      "unicode_decimal": 58946
+    },
+    {
       "icon_id": "39184592",
       "name": "wenjian01",
       "font_class": "wenjian01",

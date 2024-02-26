@@ -246,8 +246,9 @@ export default {
   transform: rotate(90deg);
 }
 
-.colorred {
-  color: red
+.ext-underline {
+  margin-top: 5.5px;
+  font-size: 16px;
 }
 
 .magtop-1 {

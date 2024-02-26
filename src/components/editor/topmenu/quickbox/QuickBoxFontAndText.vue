@@ -47,7 +47,8 @@
           </QBTEditBox>
         </div>
         <div class="mg16">
-          <QBTEditBox selectedValue="1" attrCode="textStyle.underline" img="icon-a-ziyuan457" extcls="colorred">
+          <QBTEditBox selectedValue="1" attrCode="textStyle.underline" img="icon-icon-text-underline"
+            extcls="ext-underline">
           </QBTEditBox>
         </div>
         <div class="mg165">

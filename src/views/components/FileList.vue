@@ -4,7 +4,9 @@
       <div v-if="false" class="ddei_home_fileview_operate ddei_home_fileview_operate_dir_add"
         @click="onCreateFolderClick">
         <div class="ddei_home_fileview_operate_icon">
-          <img src="@/assets/images/icon-file-add.png" />
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-add-folder-icon"></use>
+          </svg>
         </div>
         <div class="ddei_home_fileview_operate_name">
           新建文件组
@@ -17,7 +19,9 @@
       </div>
       <div class="ddei_home_fileview_operate ddei_home_fileview_operate_file_add" @click="showFileDialog(null, 1)">
         <div class="ddei_home_fileview_operate_icon">
-          <img src="@/assets/images/icon-file-add.png" />
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-add-file-icon"></use>
+          </svg>
         </div>
         <div class="ddei_home_fileview_operate_name">
           新建文件
@@ -30,7 +34,9 @@
       </div>
       <div v-if="false" class="ddei_home_fileview_operate ddei_home_fileview_operate_file_draft_add">
         <div class="ddei_home_fileview_operate_icon">
-          <img src="@/assets/images/icon-file-add.png" />
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-add-file1-icon"></use>
+          </svg>
         </div>
         <div class="ddei_home_fileview_operate_name">
           新建草稿
@@ -45,13 +51,6 @@
     <div class="ddei_home_fileview_divide"></div>
     <ASpin wrapper-class-name="ddei_home_fileview_files_spin" :spinning="loading">
       <div v-if="files?.length" class="ddei_home_fileview_files">
-
-        <!-- <div class="ddei_home_fileview_file">
-        <div class="ddei_home_fileview_file_add"
-             @click="showFileDialog(null, 1)">
-          <span style="margin-top:-5px">+</span>
-        </div>
-      </div> -->
         <div v-for="(file) in files" :key="file.id" class="ddei_home_fileview_file">
           <div class="ddei_home_fileview_file_header">
             <div class="ddei_home_fileview_file_icon">
@@ -78,7 +77,7 @@
           <div class="ddei_home_fileview_file_buttons">
             <div class="ddei_home_fileview_file_button" @click="showFileDialog(file, 2)">
               <svg class="icon" aria-hidden="true">
-                <use xlink:href="#icon-a-ziyuan409"></use>
+                <use xlink:href="#icon-icon-edit-file"></use>
               </svg>
               <span>编辑</span>
             </div>
@@ -89,14 +88,14 @@
             </div>
             <div class="ddei_home_fileview_file_button" @click="copyFile(file)">
               <svg class="icon" aria-hidden="true">
-                <use xlink:href="#icon-a-ziyuan488"></use>
+                <use xlink:href="#icon-icon-copy-file"></use>
               </svg>
               <span>复制</span>
             </div>
             <div class="ddei_home_fileview_file_button_split">
             </div>
             <div class="ddei_home_fileview_file_button" @click="deleteFile(file)">
-              <svg class="icon" aria-hidden="true">
+              <svg class="icon" style="color:red" aria-hidden="true">
                 <use xlink:href="#icon-a-ziyuan401"></use>
               </svg>
               <span>删除</span>
@@ -528,8 +527,8 @@ export default {
 }
 
 .ddei_home_fileview_file_button .icon {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   margin-right: 4px;
   margin-left: 4px;
 }
@@ -581,13 +580,12 @@ export default {
   }
 
   &_icon {
-    width: 30px;
-    height: 30px;
-    margin-right: 14px;
+    width: 48px;
+    height: 48px;
 
-    img {
-      width: 100%;
-      height: 100%;
+    .icon {
+      width: 48px;
+      height: 48px;
     }
   }
 

@@ -29,15 +29,15 @@
 
             <svg class="icon" @click="lockOrUnLockLayer(layer)">
               <use xlink:href="#icon-a-ziyuan415" v-if="layer.lock"></use>
-              <use xlink:href="#icon-a-ziyuan414" v-if="!layer.lock"></use>
+              <use xlink:href="#icon-a-ziyuan499" v-if="!layer.lock"></use>
             </svg>
 
             <input type="radio" :class="{ 'not_temp_display': !layer.tempDisplay }" name="rdo_layers" :value="layer.id"
               @mousedown="changeLayer(index, $event)" :checked="currentStage?.layerIndex === index" autocomplete="off" />
 
             <svg class="icon" @click="printOrNoPrintLayer(layer)">
-              <use xlink:href="#icon-a-ziyuan415" v-if="layer.print"></use>
-              <use xlink:href="#icon-a-ziyuan414" v-if="!layer.print"></use>
+              <use xlink:href="#icon-a-ziyuan500" v-if="layer.print"></use>
+              <use xlink:href="#icon-a-ziyuan501" v-if="!layer.print"></use>
             </svg>
 
           </div>
