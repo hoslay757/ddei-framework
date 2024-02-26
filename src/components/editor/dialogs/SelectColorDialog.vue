@@ -5,14 +5,14 @@
         <div class="title">最近使用的颜色</div>
         <div class="group_content color1">
           <div :class="{ 'item': true, 'item-selected': color == value }" v-for="color in ds1"
-            @click="selectColor($event)" :style="{ 'background': color }">
+            @click="selectColor($event)" :style="{ 'background': color }" @dblclick="selectConfirmColor($event)">
           </div>
         </div>
       </div>
       <div class="group">
         <div class="group_content color2">
           <div :class="{ 'item': true, 'item-selected': color == value }" v-for="color in ds2"
-            @click="selectColor($event)" :style="{ 'background': color }">
+            @click="selectColor($event)" :style="{ 'background': color }" @dblclick="selectConfirmColor($event)">
           </div>
         </div>
       </div>
@@ -20,7 +20,7 @@
         <div class="title">标准颜色</div>
         <div class="group_content color1">
           <div :class="{ 'item': true, 'item-selected': color == value }" v-for="color in ds3"
-            @click="selectColor($event)" :style="{ 'background': color }">
+            @click="selectColor($event)" :style="{ 'background': color }" @dblclick="selectConfirmColor($event)">
           </div>
         </div>
       </div>
@@ -29,6 +29,7 @@
         <div class="group_content color3">
           <input type="color" v-model="value" class="colorinput" autocomplete="off">
           <input type="text" v-model="value" autocomplete="off">
+          <div class="button button-small" @click="clear">清空</div>
         </div>
       </div>
       <div class="tail">
@@ -190,14 +191,25 @@ export default {
       let srcElement = evt.currentTarget;
       this.value = DDeiUtil.rgb2hex(srcElement.style.backgroundColor)
     },
+    selectConfirmColor(evt) {
+      let srcElement = evt.currentTarget;
+      this.value = DDeiUtil.rgb2hex(srcElement.style.backgroundColor)
+      this.ok()
+    },
+
     ok() {
+      if (this.editor?.tempDialogData[this.dialogId]?.callback?.ok) {
+        this.editor?.tempDialogData[this.dialogId]?.callback?.ok(this.value);
+      }
+
       if (this.value) {
-        if (this.editor?.tempDialogData[this.dialogId]?.callback?.ok) {
-          this.editor?.tempDialogData[this.dialogId]?.callback?.ok(this.value);
-        }
         DDeiUtil.whiteRecentlyChooseColors(this.value)
       }
       DDeiEditorUtil.closeDialog(this.dialogId);
+    },
+
+    clear() {
+      this.value = null
     },
 
     cancel() {
@@ -345,6 +357,20 @@ export default {
     color: white;
     background: #176EFF;
 
+  }
+
+  .button-small {
+    height: 26px;
+    flex: 0 0 55px;
+    font-size: 15px;
+    color: black;
+  }
+
+  .button-small:hover {
+    color: black;
+    font-weight: bold;
+    background: white;
+    cursor: pointer;
   }
 }
 </style>
