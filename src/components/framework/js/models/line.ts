@@ -7,7 +7,7 @@ import DDeiLineLink from './linelink';
 import DDeiLayer from './layer';
 import DDeiEnumBusCommandType from '../enums/bus-command-type';
 import DDeiModelArrtibuteValue from './attribute/attribute-value';
-import { calAutoLinePath, getRecommendPath } from '@/autolink/autolink'
+import { calAutoLinePath, getRecommendPath } from 'ddei-autolink'
 /**
  * line（连线）
  * 主要样式属性：颜色、宽度、开始和结束节点样式、虚线、字体、文本样式
