@@ -24,13 +24,13 @@ class DDeiBusCommandModelChangeRotate extends DDeiBusCommand {
    * @param evt 事件对象引用
    */
   before(data: object, bus: DDeiBus, evt: Event): boolean {
-    if (data?.deltaX && data?.container) {
+    if ((data.ex || data.ey) && data?.container) {
+      //更改已选择控件的旋转
       //更改已选择控件的旋转
       let selector = bus.ddInstance.stage.render.selector;
-      let movedNumber = data.deltaX;
       let pContainerModel = data.container;
       let selectedModels = pContainerModel.getSelectedModels();
-      if (!selectedModels || selector.passIndex == -1 || movedNumber == 0) {
+      if (!selectedModels || selector.passIndex == -1) {
         return false;
       }
       if (selectedModels.set) {
@@ -56,30 +56,36 @@ class DDeiBusCommandModelChangeRotate extends DDeiBusCommand {
    * @param evt 事件对象引用
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
-    if (data?.deltaX && data?.container) {
+    if ((data.ex || data.ey) && data?.container) {
+      let stage = bus.ddInstance.stage
       //更改已选择控件的旋转
-      let selector = bus.ddInstance.stage.render.selector;
-      let dragObj = bus.ddInstance.stage.render.dragObj
-      let movedNumber = data.deltaX;
+      let selector = stage.render.selector;
+      //鼠标的当前位置
+      let x = data.ex ? data.ex : 0, y = data.ey ? data.ey : 0
       let pContainerModel = data.container;
       let selectedModels = pContainerModel.getSelectedModels();
 
       let models: DDeiAbstractShape[] = Array.from(selectedModels.values());
       //基于中心构建旋转矩阵，旋转所有向量点
-      //计算旋转角度
-      let rotate = movedNumber;
-      let angle = -DDeiUtil.preciseTimes(rotate, DDeiConfig.ROTATE_UNIT)
+      //计算selector的中心坐标与鼠标当前坐标的角度关系
+      let scx = selector.x + selector.width / 2
+      let scy = selector.y + selector.height / 2
+      let selectorAngle = Math.round(DDeiUtil.getLineAngle(scx, scy, x, y))
+
+      let rotate = selectorAngle + 90
+      let selectorRotate = selector.rotate
+      let angle = -DDeiUtil.preciseTimes(rotate - selectorRotate, DDeiConfig.ROTATE_UNIT)
       let move1Matrix = new Matrix3(
-        1, 0, -dragObj.cx,
-        0, 1, -dragObj.cy,
+        1, 0, -scx,
+        0, 1, -scy,
         0, 0, 1);
       let rotateMatrix = new Matrix3(
         Math.cos(angle), Math.sin(angle), 0,
         -Math.sin(angle), Math.cos(angle), 0,
         0, 0, 1);
       let move2Matrix = new Matrix3(
-        1, 0, dragObj.cx,
-        0, 1, dragObj.cy,
+        1, 0, scx,
+        0, 1, scy,
         0, 0, 1);
 
       let m1 = new Matrix3().premultiply(move1Matrix).premultiply(rotateMatrix).premultiply(move2Matrix);
@@ -93,6 +99,7 @@ class DDeiBusCommandModelChangeRotate extends DDeiBusCommand {
 
       //同步更新上层容器其大小和坐标
       pContainerModel.changeParentsBounds()
+      stage.render.helpLines = { rect: { x: scx, y: scy, rotate: rotate < 0 ? 360 + rotate : rotate } }
       return true
     }
     return false;

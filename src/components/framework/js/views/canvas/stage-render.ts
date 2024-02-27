@@ -195,7 +195,6 @@ class DDeiStageCanvasRender {
   drawHelpLines(): void {
     // 未开启主线提示，则不再计算辅助线提示定位
     if (this.helpLines) {
-
       let hpoint = this.helpLines.hpoint;
       let vpoint = this.helpLines.vpoint;
       let rect = this.helpLines.rect;
@@ -230,6 +229,8 @@ class DDeiStageCanvasRender {
         } else if (this.operateState == DDeiEnumOperateState.CONTROL_CHANGING_BOUND) {
           xText = rect.width.toFixed(0);
           yText = rect.height.toFixed(0);
+        } else if (this.operateState == DDeiEnumOperateState.CONTROL_ROTATE) {
+          xText = rect.rotate.toFixed(1);
         }
         if (ruleDisplay == 1 || ruleDisplay == "1") {
           let startBaseX = this.model.spv.x * rat1 + 1
@@ -267,6 +268,8 @@ class DDeiStageCanvasRender {
           text = xText + " , " + yText
         } else if (this.operateState == DDeiEnumOperateState.CONTROL_CHANGING_BOUND) {
           text = xText + " x " + yText
+        } else if (this.operateState == DDeiEnumOperateState.CONTROL_ROTATE) {
+          text = xText + "°"
         }
         let textRect = DDeiUtil.measureText(text, font, ctx, fontSize * rat1)
         let width = textRect.width / rat1 + 10
@@ -278,6 +281,9 @@ class DDeiStageCanvasRender {
         } else if (this.operateState == DDeiEnumOperateState.CONTROL_CHANGING_BOUND) {
           x = (rect.x + (rect.width - width) / 2) * rat1
           y = (rect.y + rect.height + height / 2) * rat1
+        } else if (this.operateState == DDeiEnumOperateState.CONTROL_ROTATE) {
+          x = (rect.x) * rat1
+          y = (rect.y) * rat1
         }
         width *= rat1
         height *= rat1

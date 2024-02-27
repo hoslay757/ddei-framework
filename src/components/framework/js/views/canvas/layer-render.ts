@@ -1390,22 +1390,22 @@ class DDeiLayerCanvasRender {
       //控件旋转
       case DDeiEnumOperateState.CONTROL_ROTATE: {
         //获取当前移动的坐标量
-        let movedPos = this.getMovedPositionDelta(evt);
-        if (movedPos.x != 0) {
-          //计算上级控件的大小
-          let pContainerModel = this.stageRender?.currentOperateContainer;
-          if (!pContainerModel) {
-            pContainerModel = this.model;
-          }
-
-          //更新旋转
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeRotate, { deltaX: movedPos.x, container: pContainerModel }, evt);
-          //更新dragObj临时变量中的数值,确保坐标对应关系一致
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { deltaX: movedPos.x, deltaY: 0 }, evt);
-          //渲染图形
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
-
+        // let movedPos = this.getMovedPositionDelta(evt);
+        // if (movedPos.x != 0) {
+        //计算上级控件的大小
+        let pContainerModel = this.stageRender?.currentOperateContainer;
+        if (!pContainerModel) {
+          pContainerModel = this.model;
         }
+
+        //更新旋转
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeRotate, { ex: ex, ey: ey, container: pContainerModel }, evt);
+        // //更新dragObj临时变量中的数值,确保坐标对应关系一致
+        // this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { deltaX: movedPos.x, deltaY: 0 }, evt);
+        //渲染图形
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+
+        // }
         break;
       }
       //快捷编辑中
