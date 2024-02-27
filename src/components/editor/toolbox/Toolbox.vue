@@ -1,5 +1,6 @@
 <template>
-  <div id="ddei_editor_toolbox" v-show="editor?.leftWidth > 0" @mousedown="changeEditorFocus" class="ddei_editor_toolbox">
+  <div id="ddei_editor_toolbox" v-show="editor?.leftWidth > 0" @mousedown="changeEditorFocus"
+    @mouseup="cancelCreateControl($event)" class="ddei_editor_toolbox">
     <div class="header">
       <div class="header-1"></div>
       <svg class="icon icon1" aria-hidden="true">
@@ -38,7 +39,7 @@
           </svg>
         </div>
         <div class="item_panel" v-if="group.expand == true">
-          <div class="item" :title="control.desc" draggable="true" @dragstart="createControlPrepare(control, $event)"
+          <div class="item" :title="control.desc" @mousedown="createControlPrepare(control, $event)"
             v-for="control in group.controls">
             <img class="icon" :src="icons[control.id]" />
             <div class="text">{{ control.name }}</div>
@@ -84,8 +85,6 @@ export default {
       editor: null,
       //用于缓存动态引入的控件
       controlCls: {},
-      //创建时的图片
-      creatingImg: new Image(),
       icons: {},
     };
   },
@@ -94,10 +93,6 @@ export default {
   created() { },
   emits: ["createControlPrepare"],
   mounted() {
-    //空图片
-    this.creatingImg.src =
-      "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-    this.creatingImg.style.visibility = "hidden";
     //动态加载控件
     const control_ctx = import.meta.glob(
       "@/components/framework/js/models/*.ts"
@@ -142,6 +137,28 @@ export default {
 
   },
   methods: {
+    cancelCreateControl(e) {
+      if (this.editor.state == DDeiEditorState.CONTROL_CREATING) {
+        if (this.editor.creatingControls) {
+          let ddInstance: DDei = this.editor.ddInstance;
+          let layer = ddInstance.stage.layers[ddInstance.stage.layerIndex];
+          //从layer中移除控件
+          layer.removeModels(this.editor.creatingControls);
+
+          //清除临时变量
+          this.editor.bus.push(DDeiEnumBusCommandType.ClearTemplateVars);
+          //渲染图形
+          this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, e);
+        }
+        this.editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+        this.editor.changeState(DDeiEditorState.TOOLBOX_ACTIVE);
+        this.editor.bus.executeAll();
+        e.preventDefault()
+        e.cancelBubble = true
+      }
+
+    },
+
     mousewheel(evt) {
       if (Math.abs(evt.deltaY) < Math.abs(evt.deltaX) || Math.abs(evt.deltaY) <= 1) {
         evt.preventDefault();
@@ -405,10 +422,9 @@ export default {
           model.setState(DDeiEnumControlState.CREATING);
         })
 
-
-        e.dataTransfer.setDragImage(this.creatingImg, 0, 0);
-
         this.$emit("createControlPrepare", models);
+        e.preventDefault()
+        e.cancelBubble = true
       }
     },
 

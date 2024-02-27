@@ -1,6 +1,6 @@
 <template>
   <div :id="id" class="ddei_editor_canvasview" @mousedown="mouseDown($event)" ondragstart="return false;"
-    @wheel="mouseWheel($event)" @dragover="createControlOver" @drop="createControlDrop" @dragleave="createControlCancel"
+    @wheel="mouseWheel($event)" @mousemove="createControlOver($event)" @mouseup="createControlDrop"
     @dblclick="canvasDBClick" @contextmenu.prevent>
   </div>
 </template>
@@ -57,6 +57,8 @@ export default {
       }
     });
     this.mouseWheelThrottle = throttle(this.mouseWheelThrottle, 10);
+    this.createControlOver = throttle(this.createControlOver, 20);
+
   },
   mounted() {
     //获取编辑器
@@ -283,97 +285,86 @@ export default {
 
               this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
             } else {
-              let dt = new Date().getTime();
-              let isExec = true;
-              //控制帧率
-              if (!window.upTime) {
-                window.upTime = dt;
-              } else if (dt - window.upTime > 20) {
-                window.upTime = dt;
+              let ex1 = e.offsetX / window.remRatio;
+              let ey1 = e.offsetY / window.remRatio;
+
+              let rat1 = ddInstance.render?.ratio;
+              let canvasWidth = ddInstance.render.canvas.width / rat1;
+              let canvasHeight = ddInstance.render.canvas.height / rat1;
+              let edgeWeight = 25;
+              //判断是否在边缘
+              if (ex1 < edgeWeight) {
+                ddInstance.render.inEdge = 4;
+              } else if (ex1 > canvasWidth - edgeWeight) {
+                ddInstance.render.inEdge = 2;
+              } else if (ey1 < edgeWeight) {
+                ddInstance.render.inEdge = 1;
+              } else if (ey1 > canvasHeight - edgeWeight) {
+                ddInstance.render.inEdge = 3;
               } else {
-                isExec = false;
+                ddInstance.render.inEdge = 0;
               }
-              if (isExec) {
-                let ex1 = e.offsetX / window.remRatio;
-                let ey1 = e.offsetY / window.remRatio;
-
-                let rat1 = ddInstance.render?.ratio;
-                let canvasWidth = ddInstance.render.canvas.width / rat1;
-                let canvasHeight = ddInstance.render.canvas.height / rat1;
-                let edgeWeight = 25;
-                //判断是否在边缘
-                if (ex1 < edgeWeight) {
-                  ddInstance.render.inEdge = 4;
-                } else if (ex1 > canvasWidth - edgeWeight) {
-                  ddInstance.render.inEdge = 2;
-                } else if (ey1 < edgeWeight) {
-                  ddInstance.render.inEdge = 1;
-                } else if (ey1 > canvasHeight - edgeWeight) {
-                  ddInstance.render.inEdge = 3;
-                } else {
-                  ddInstance.render.inEdge = 0;
-                }
-                if (!ddInstance.render.inEdge) {
-                  //显示辅助对齐线、坐标文本等图形
-                  let selectedModels: Map<string, DDeiAbstractShape> =
-                    new Map();
-                  controls.forEach(control => {
-                    selectedModels.set(control.id, control);
-                  });
+              if (!ddInstance.render.inEdge) {
+                //显示辅助对齐线、坐标文本等图形
+                let selectedModels: Map<string, DDeiAbstractShape> =
+                  new Map();
+                controls.forEach(control => {
+                  selectedModels.set(control.id, control);
+                });
 
 
-                  //修改辅助线
-                  this.editor?.bus?.push(
-                    DDeiEnumBusCommandType.SetHelpLine,
-                    { models: selectedModels },
-                    e
-                  );
+                //修改辅助线
+                this.editor?.bus?.push(
+                  DDeiEnumBusCommandType.SetHelpLine,
+                  { models: selectedModels },
+                  e
+                );
 
-                  this.editor.bus.push(
-                    DDeiEnumBusCommandType.ModelChangePosition,
-                    {
-                      models: controls,
-                      x: ex,
-                      y: ey,
-                      dx: 0,
-                      dy: 0,
-                      dragObj: ddInstance.stage.render.dragObj,
-                    },
-                    e
-                  );
-                  let isAlt = DDeiConfig.KEY_DOWN_STATE.get("alt");
-                  this.editor.bus.push(
-                    DDeiEnumBusCommandType.ChangeSelectorPassIndex,
-                    { passIndex: 10 },
-                    e
-                  );
-                  let lastOnContainer = layer;
-                  if (isAlt) {
-                    //寻找鼠标落点当前所在的容器
-                    let mouseOnContainers =
-                      DDeiAbstractShape.findBottomContainersByArea(
-                        layer,
-                        ex,
-                        ey
-                      );
-                    if (mouseOnContainers && mouseOnContainers.length > 0) {
-                      lastOnContainer =
-                        mouseOnContainers[mouseOnContainers.length - 1];
-                    }
-                    //如果最小层容器不是当前容器，则修改鼠标样式，代表可能要移入
-                    if (lastOnContainer != layer) {
-                      this.editor.bus.push(
-                        DDeiEnumBusCommandType.ChangeSelectorPassIndex,
-                        { passIndex: 11 },
-                        e
-                      );
-                    }
+                this.editor.bus.push(
+                  DDeiEnumBusCommandType.ModelChangePosition,
+                  {
+                    models: controls,
+                    x: ex,
+                    y: ey,
+                    dx: 0,
+                    dy: 0,
+                    dragObj: ddInstance.stage.render.dragObj,
+                  },
+                  e
+                );
+                let isAlt = DDeiConfig.KEY_DOWN_STATE.get("alt");
+                this.editor.bus.push(
+                  DDeiEnumBusCommandType.ChangeSelectorPassIndex,
+                  { passIndex: 10 },
+                  e
+                );
+                let lastOnContainer = layer;
+                if (isAlt) {
+                  //寻找鼠标落点当前所在的容器
+                  let mouseOnContainers =
+                    DDeiAbstractShape.findBottomContainersByArea(
+                      layer,
+                      ex,
+                      ey
+                    );
+                  if (mouseOnContainers && mouseOnContainers.length > 0) {
+                    lastOnContainer =
+                      mouseOnContainers[mouseOnContainers.length - 1];
                   }
-
-                  //渲染图形
-                  this.editor?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
+                  //如果最小层容器不是当前容器，则修改鼠标样式，代表可能要移入
+                  if (lastOnContainer != layer) {
+                    this.editor.bus.push(
+                      DDeiEnumBusCommandType.ChangeSelectorPassIndex,
+                      { passIndex: 11 },
+                      e
+                    );
+                  }
                 }
+
+                //渲染图形
+                this.editor?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
               }
+
             }
             this.editor.bus.executeAll();
             e.preventDefault();
@@ -447,34 +438,11 @@ export default {
           this.editor.state = DDeiEditorState.DESIGNING;
           this.editor.bus.executeAll();
         }
+        e.preventDefault()
       }
     },
 
 
-
-    /**
-     * 拖拽元素离开，清空元素
-     */
-    createControlCancel(e) {
-      if (this.editor.state == DDeiEditorState.CONTROL_CREATING) {
-        if (this.editor.creatingControls) {
-          let ddInstance: DDei = this.editor.ddInstance;
-          let layer = ddInstance.stage.layers[ddInstance.stage.layerIndex];
-          //从layer中移除控件
-          layer.removeModels(this.editor.creatingControls);
-
-          //清除临时变量
-          this.editor.bus.push(
-            DDeiEnumBusCommandType.ClearTemplateVars,
-            null,
-            e
-          );
-          //渲染图形
-          this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, e);
-          this.editor.bus.executeAll();
-        }
-      }
-    },
   },
 };
 </script>

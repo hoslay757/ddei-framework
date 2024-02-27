@@ -513,6 +513,7 @@ export default {
      */
     createControlPrepare(models: DDeiAbstractShape[]): void {
       if (models?.length > 0) {
+
         let ddInstance = this.editor.ddInstance;
         let stage = ddInstance.stage;
         if (stage?.render?.operateState == DDeiEnumOperateState.QUICK_EDITING && stage?.render?.editorShadowControl) {
