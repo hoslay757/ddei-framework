@@ -14,6 +14,7 @@ import DDeiCanvasRender from './ddei-render.js';
 import DDeiLayerCanvasRender from './layer-render.js';
 import DDeiStageCanvasRender from './stage-render.js';
 import { Vector3 } from 'three';
+import DDeiEnumOperateState from '../../enums/operate-state.js';
 /**
  * 缺省的图形渲染器，默认实现的了监听等方法
  */
@@ -214,7 +215,13 @@ class DDeiAbstractShapeRender {
   changeOpPoints(ex: number, ey: number, pointMode: number | null = null) {
     //获取直线连接操作点
     let hasPoint = false;
-    let projPoint = this.model.getProjPoint({ x: ex, y: ey });
+    let projPoint;
+    if (this.stageRender?.operateState == DDeiEnumOperateState.LINE_POINT_CHANGING) {
+      projPoint = this.model.getProjPoint({ x: ex, y: ey }, { in: -8, out: 15 });
+    } else {
+      projPoint = this.model.getProjPoint({ x: ex, y: ey });
+    }
+
     let pots = []
     if (projPoint) {
       projPoint.model = this.model
