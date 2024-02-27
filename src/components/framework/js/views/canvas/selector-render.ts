@@ -43,7 +43,14 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     if (this.stage?.selectedModels?.size > 0) {
       models = Array.from(this.stage.selectedModels.values())
     }
-    if (models?.length == 1 && models[0]?.baseModelType == "DDeiLine") {
+    if (this.stageRender.operateState == DDeiEnumOperateState.SELECT_WORKING) {
+      //绘制边框
+      this.drawBorder();
+
+      //绘制边框上的操作图形
+      this.drawOperatorShape();
+    }
+    else if (models?.length == 1 && models[0]?.baseModelType == "DDeiLine") {
       //绘制线的选中效果
       this.drawLine();
       //绘制操作图形

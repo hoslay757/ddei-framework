@@ -7,6 +7,7 @@ import DDeiAbstractShape from './shape';
 import { clone, cloneDeep } from 'lodash'
 import { Matrix3, Vector3 } from 'three';
 import DDeiModelArrtibuteValue from './attribute/attribute-value';
+import DDeiEnumOperateState from '../enums/operate-state';
 
 /**
  * selector选择器，用来选择界面上的控件，选择器不是一个实体控件,不会被序列化
@@ -275,19 +276,7 @@ class DDeiSelector extends DDeiRectangle {
     if (this.stage?.selectedModels?.size > 0) {
       models = Array.from(this.stage.selectedModels.values())
     }
-    if ((models?.length == 1 && models[0]?.baseModelType == "DDeiLine") || tempPVS.length == 2) {
-      this.width = (tempPVS[1].x - tempPVS[0].x) / stageRatio
-      this.height = (tempPVS[1].y - tempPVS[0].y) / stageRatio
-      //记录缩放后的大小以及坐标
-      this.essBounds = { x: tempPVS[0].x, y: tempPVS[0].y, width: tempPVS[1].x - tempPVS[0].x, height: tempPVS[1].y - tempPVS[0].y }
-      this.loosePVS = []
-      this.loosePVS[0] = new Vector3(tempPVS[0].x - looseWeight, tempPVS[0].y - looseWeight, 1)
-      this.loosePVS[1] = new Vector3(tempPVS[1].x + looseWeight, tempPVS[0].y - looseWeight, 1)
-      this.loosePVS[2] = new Vector3(tempPVS[1].x + looseWeight, tempPVS[1].y + looseWeight, 1)
-      this.loosePVS[3] = new Vector3(tempPVS[0].x - looseWeight, tempPVS[1].y + looseWeight, 1)
-
-
-    } else {
+    if (this.stage.render.operateState == DDeiEnumOperateState.SELECT_WORKING || !((models?.length == 1 && models[0]?.baseModelType == "DDeiLine") || tempPVS.length == 2)) {
       this.width = (tempPVS[1].x - tempPVS[0].x) / stageRatio
       this.height = (tempPVS[3].y - tempPVS[0].y) / stageRatio
       //记录缩放后的大小以及坐标
@@ -301,6 +290,17 @@ class DDeiSelector extends DDeiRectangle {
       this.loosePVS[5] = new Vector3(tempPVS[1].x + looseWeight, tempPVS[1].y - looseWeight, 1)
       this.loosePVS[6] = new Vector3(this.loosePVS[5].x, tempPVS[2].y + looseWeight, 1)
       this.loosePVS[7] = new Vector3(tempPVS[3].x - looseWeight, this.loosePVS[6].y, 1)
+    } else if ((models?.length == 1 && models[0]?.baseModelType == "DDeiLine") || tempPVS.length == 2) {
+      this.width = (tempPVS[1].x - tempPVS[0].x) / stageRatio
+      this.height = (tempPVS[1].y - tempPVS[0].y) / stageRatio
+      //记录缩放后的大小以及坐标
+      this.essBounds = { x: tempPVS[0].x, y: tempPVS[0].y, width: tempPVS[1].x - tempPVS[0].x, height: tempPVS[1].y - tempPVS[0].y }
+      this.loosePVS = []
+      this.loosePVS[0] = new Vector3(tempPVS[0].x - looseWeight, tempPVS[0].y - looseWeight, 1)
+      this.loosePVS[1] = new Vector3(tempPVS[1].x + looseWeight, tempPVS[0].y - looseWeight, 1)
+      this.loosePVS[2] = new Vector3(tempPVS[1].x + looseWeight, tempPVS[1].y + looseWeight, 1)
+      this.loosePVS[3] = new Vector3(tempPVS[0].x - looseWeight, tempPVS[1].y + looseWeight, 1)
+
 
     }
 

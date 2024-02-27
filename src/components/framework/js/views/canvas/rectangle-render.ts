@@ -264,7 +264,6 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     //绘制四个方向的边框
     //如果边框未被disabled，则绘制边框
     if (!disabled && color && (!opacity || opacity > 0) && width > 0) {
-
       //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
       let lineOffset = 1 * ratio / 2;
       let lineWidth = width * ratio;

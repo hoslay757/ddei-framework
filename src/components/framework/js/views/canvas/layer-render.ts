@@ -921,22 +921,29 @@ class DDeiLayerCanvasRender {
             if (!pContainerModel.layoutManager || pContainerModel.layoutManager.canChangePosition(ex, ey, this.model.shadowControls)) {
               let operateModels = []
               let lines = this.stage?.getModelsByBaseType("DDeiLine");
-              //同步影子元素的坐标大小等状态到当前模型
+              let moveOriginModels = []
               this.model.shadowControls.forEach(item => {
                 let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
-                let model = this.stage?.getModelById(id)
+                moveOriginModels.push(this.stage?.getModelById(id))
+              });
+              //同步影子元素的坐标大小等状态到当前模
+              for (let i = 0; i < this.model.shadowControls.length; i++) {
+                let item = this.model.shadowControls[i];
+                let model = moveOriginModels[i]
                 model.syncVectors(item)
                 hasChange = true;
                 operateModels.push(model)
-                //有两种情况，第一种：直接移动了线，此时断开已有连接
+                //有两种情况，第一种：直接移动了线，此时断开被移动控件之外的已有连接
                 if (model.modelType == 'DDeiLine') {
                   //如果原有的关联存在，取消原有的关联
                   let distLinks = this.stage?.getDistModelLinks(model.id);
                   distLinks?.forEach(dl => {
-                    this.stage?.removeLink(dl);
-                    //删除源点
-                    if (dl?.sm && dl?.smpath) {
-                      eval("delete dl.sm." + dl.smpath)
+                    if (!dl.sm || moveOriginModels.indexOf(dl.sm) == -1) {
+                      this.stage?.removeLink(dl);
+                      //删除源点
+                      if (dl?.sm && dl?.smpath) {
+                        eval("delete dl.sm." + dl.smpath)
+                      }
                     }
                   })
                   //依附于线段存在的子控件，跟着线段移动
@@ -975,7 +982,7 @@ class DDeiLayerCanvasRender {
                   })
                 }
 
-              })
+              }
               //重新计算错线
               lines?.forEach(line => {
                 line.clps = []
