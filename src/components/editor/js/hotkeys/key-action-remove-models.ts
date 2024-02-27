@@ -26,14 +26,17 @@ class DDeiKeyActionRemoveModels extends DDeiKeyAction {
         );
 
         if (!removeBefore || removeBefore(DDeiEnumOperateType.DEL, Array.from(selectedModels.values()), null, ddInstance, evt)) {
-          optContainer.removeModels(Array.from(selectedModels.values()), true)
+          let models = Array.from(selectedModels.values())
+          models[0].layer.opPoints = [];
+          optContainer.removeModels(models, true)
           optContainer.cascadeRemoveSelf()
+
           ddInstance.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels);
-          ddInstance.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds, null, evt);
+          ddInstance.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
           ddInstance.bus.push(DDeiEnumBusCommandType.NodifyChange);
-          ddInstance.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
+          ddInstance.bus.push(DDeiEnumBusCommandType.AddHistroy);
           //渲染图形
-          ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+          ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
 
           ddInstance.bus.executeAll();
           //加载事件的配置

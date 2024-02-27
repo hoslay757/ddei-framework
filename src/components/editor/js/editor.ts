@@ -71,6 +71,8 @@ class DDeiEditor {
     { keys: "27", editorState: DDeiEditorState.QUICK_EDITING, action: DDeiEnumKeyActionInst.CancelQuickEdit },
     //ESC取消控件创建
     { keys: "27", editorState: DDeiEditorState.CONTROL_CREATING, action: DDeiEnumKeyActionInst.CancelControlCreating },
+    //ESC取消当前的正在进行的动作
+    { keys: "27", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.CancelCurrentAction },
     //Enter确定快捷编辑
     { keys: "13", shift: 1, editorState: DDeiEditorState.QUICK_EDITING, action: DDeiEnumKeyActionInst.EnterQuickEdit },
     //表格内部回车，往下一行

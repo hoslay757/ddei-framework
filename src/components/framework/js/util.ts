@@ -3207,7 +3207,7 @@ class DDeiUtil {
         resolve(base64)
       } catch (e) {
         ddInstance.render.tempCanvas = null
-        rejected('')
+        resolve('')
       }
     })
   }

@@ -36,6 +36,7 @@ class MenuRemoveSheet {
         //加载场景渲染器
         stage.initRender();
         editor.changeState(DDeiEditorState.DESIGNING);
+        editor.editorViewer?.changeFileModifyDirty();
         editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, null);
         //记录日志
         editor.bus.push(DDeiEnumBusCommandType.AddHistroy)

@@ -553,6 +553,7 @@ export default {
           };
         }
         this.editor.changeState(DDeiEditorState.DESIGNING);
+        this.editor.editorViewer?.changeFileModifyDirty();
         ddInstance.bus?.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
         ddInstance.bus?.push(DDeiEnumBusCommandType.RefreshShape);
         ddInstance.bus?.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);

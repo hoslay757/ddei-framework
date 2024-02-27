@@ -20,6 +20,7 @@ import DDeiKeyActionRevoke from "../hotkeys/key-action-revoke";
 import DDeiKeyActionReRevoke from "../hotkeys/key-action-rerevoke";
 import DDeiKeyActionSaveFile from "../hotkeys/key-action-save-file";
 import DDeiKeyActionCancelControlCreate from "../hotkeys/key-action-cancel-control-create";
+import DDeiKeyActionCancelCurrentAction from "../hotkeys/key-action-cancel-current-action";
 
 /**
  * 所有key实例的枚举
@@ -54,6 +55,8 @@ enum DDeiEnumKeyActionInst {
   ReRevoke = new DDeiKeyActionReRevoke({ code: "key-action-rerevokea", name: "反撤销", desc: "撤销前一次撤销操作" }),
   SaveFile = new DDeiKeyActionSaveFile({ code: "key-action-save-file", name: "保存", desc: "保存当前文件至存储，根据配置和扩展可以保存到本地、服务端等" }),
   CancelControlCreating = new DDeiKeyActionCancelControlCreate({ code: "key-action-cancel-control-create", name: "取消创建控件", desc: "取消控件的创建动作" }),
+  CancelCurrentAction = new DDeiKeyActionCancelCurrentAction({ code: "key-action-cancel-current-action", name: "取消当前执行的动作", desc: "取消当前执行的动作" }),
+
 }
 
 export default DDeiEnumKeyActionInst
