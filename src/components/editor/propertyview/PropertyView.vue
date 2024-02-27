@@ -139,7 +139,8 @@ export default {
       propertyDisabled: false,
       propertyViewShow: true,
       pvGroupWidth: 0,
-      panelStyle: "height:calc(100vh - 202px)"
+      panelStyle: "height:calc(100vh - 202px)",
+      rightRate: 0,//右边部分所占的比例
     };
   },
   computed: {},
@@ -167,6 +168,12 @@ export default {
   created() {
     // 监听obj对象中prop属性的变化
     this.$watch("editor.ddInstance.stage.selectedModels", this.refreshAttrs);
+    // 监听obj对象中prop属性的变化
+    this.$watch("editor.maxWidth", function (newVal, oldVal) {
+      if (this.rightRate == 0) {
+        this.rightRate = this.editor.rightWidth / document.body.clientWidth
+      }
+    });
   },
   mounted() {
     //获取编辑器
@@ -572,15 +579,12 @@ export default {
      */
     hidOrShowPV() {
       this.propertyViewShow = !this.propertyViewShow
-      let rightWidth = this.editor.rightWidth
-
+      let pvFullWidth = document.body.clientWidth * this.rightRate;
       //获取最右边区域的大小
       let pvGroupViewEle = this.$refs.ddei_editor_pv_group_view
       this.pvGroupWidth = pvGroupViewEle.clientWidth
-      if (rightWidth > this.pvGroupWidth) {
-        let pvViewEle = this.$refs.ddei_editor_propertyview
-        this.pvGroupViewWidth = pvViewEle.clientWidth
-        let deltaX = this.editor.rightWidth - this.pvGroupWidth;
+      if (this.editor.rightWidth > this.pvGroupWidth) {
+        let deltaX = pvFullWidth - this.pvGroupWidth;
         let frameRightElement = document.getElementById(
           "ddei_editor_frame_right"
         );
@@ -588,14 +592,13 @@ export default {
         frameRightElement.style.flexBasis = this.pvGroupWidth + "px";
         //重新设置画布大小
         this.editor.middleWidth += deltaX;
-
       } else {
-        let deltaX = this.pvGroupViewWidth - this.pvGroupWidth;
+        let deltaX = pvFullWidth - this.pvGroupWidth;
         let frameRightElement = document.getElementById(
           "ddei_editor_frame_right"
         );
-        this.editor.rightWidth = this.pvGroupViewWidth;
-        frameRightElement.style.flexBasis = this.pvGroupViewWidth + "px";
+        this.editor.rightWidth = pvFullWidth;
+        frameRightElement.style.flexBasis = pvFullWidth + "px";
         //重新设置画布大小
         this.editor.middleWidth -= deltaX;
       }
