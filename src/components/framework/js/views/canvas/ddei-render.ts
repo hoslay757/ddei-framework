@@ -241,14 +241,13 @@ class DDeiCanvasRender {
 
     else if (evt.wheelDeltaX || evt.wheelDeltaY) {
       //放大缩小
-      console.log()
       let ctrl = DDei.KEY_DOWN_STATE.get("ctrl");
       if (DDeiUtil.getConfigValue("GLOBAL_ALLOW_STAGE_RATIO", this.model) && ctrl && evt.wheelDeltaY) {
-        if (DDeiUtil.USER_OS == 'MAC') {
-          this.mouseScale(-evt.wheelDeltaY, evt)
-        } else {
-          this.mouseScale(evt.wheelDeltaY, evt)
-        }
+        // if (DDeiUtil.USER_OS == 'MAC') {
+        //   this.mouseScale(-evt.wheelDeltaY, evt)
+        // } else {
+        this.mouseScale(evt.wheelDeltaY, evt)
+        // }
       }
       //滚动平移
       else {
