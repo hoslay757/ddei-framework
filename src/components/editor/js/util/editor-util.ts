@@ -282,12 +282,12 @@ class DDeiEditorUtil {
           {
             'code': 'copy-sheet',
             'name': '复制',
-            'icon': 'icon-insert-row',
+            'icon': '#icon-a-ziyuan488',
           },
           {
             'code': 'remove-sheet',
             'name': '删除',
-            'icon': 'icon-insert-col',
+            'icon': '#icon-a-ziyuan401',
           }
         ]
         return menus

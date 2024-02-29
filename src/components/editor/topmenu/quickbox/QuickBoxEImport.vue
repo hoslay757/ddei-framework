@@ -3,19 +3,19 @@
     <div class="header"></div>
     <div class="content">
       <div class="part">
-        <div class="button-v" @click="openFile">
-          <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-a-ziyuan423"></use>
-          </svg>
-          <div class="text">导出</div>
-        </div>
-      </div>
-      <div class="part">
         <div class="button-v" @click="download">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-a-ziyuan424"></use>
           </svg>
           <div class="text">下载</div>
+        </div>
+      </div>
+      <div class="part">
+        <div class="button-v" @click="showShareDialog($event)">
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan378"></use>
+          </svg>
+          <div class="text">分享</div>
         </div>
       </div>
       <div class="part">
@@ -46,6 +46,7 @@ import DDeiFileState from "../../js/enums/file-state";
 import DDeiEnumBusCommandType from "../../../framework/js/enums/bus-command-type";
 import DDeiEditorEnumBusCommandType from "../../js/enums/editor-command-type";
 import DDeiEditorState from "../../js/enums/editor-state";
+import DDeiEditorUtil from "../../js/util/editor-util";
 
 export default {
   name: "DDei-Editor-Quick-EImport",
@@ -68,6 +69,25 @@ export default {
     }
   },
   methods: {
+
+    showShareDialog(evt: Event) {
+      let srcElement = evt.currentTarget;
+      DDeiEditorUtil.showOrCloseDialog("create_share_dialog", {
+        callback: {
+        },
+        group: "top-dialog",
+        background: "white",
+        opacity: "1%",
+        event: -1
+      }, {}, srcElement)
+
+
+      if (DDeiEditor.ACTIVE_INSTANCE.tempDialogData && DDeiEditor.ACTIVE_INSTANCE.tempDialogData["create_share_dialog"]) {
+        this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
+      } else {
+        this.editor.changeState(DDeiEditorState.DESIGNING);
+      }
+    },
     /**
      * 发布
      * @param evt

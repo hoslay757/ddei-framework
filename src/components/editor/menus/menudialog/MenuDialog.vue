@@ -4,7 +4,9 @@
       :class="{ 'ddei_editor_menu_dialog_hr': menu.code == 'split', 'ddei_editor_menu_dialog_item': menu.code != 'split' }"
       v-for="menu in editor?.currentMenuData" @click="execMenuAction(menu, $event)">
       <div v-if="menu.code != 'split'" class="ddei_editor_menu_dialog_item_icon">
-        <img v-if="menu.icon" :src="icons[menu.icon]" />
+        <svg v-if="menu.icon" class="icon" aria-hidden="true">
+          <use :xlink:href="menu.icon"></use>
+        </svg>
       </div>
       <div v-if="menu.code != 'split'" class="ddei_editor_menu_dialog_item_content">
         {{ menu.name }}
@@ -18,7 +20,6 @@
 
 <script lang="ts">
 import DDeiEditor from "../../js/editor";
-import ICONS from "../../js/icon";
 import DDeiEditorConfig from "../../js/resource";
 import DDeiEnumBusCommandType from "../../../framework/js/enums/bus-command-type";
 import DDeiEnumOperateState from "../../../framework/js/enums/operate-state";
@@ -31,7 +32,6 @@ export default {
     return {
       //当前编辑器
       editor: null,
-      icons: ICONS,
     };
   },
   computed: {},
@@ -110,18 +110,23 @@ export default {
 
 .ddei_editor_menu_dialog_item_icon {
   flex: 0 0 34px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.ddei_editor_menu_dialog_item_icon img {
-  width: 24px;
-  height: 24px;
-  margin: 4px 3px 4px 3px;
+.ddei_editor_menu_dialog_item_icon .icon {
+  width: 22px;
+  height: 22px;
+  margin: 0px 3px 0px 3px;
   filter: brightness(60%);
 }
 
 .ddei_editor_menu_dialog_item_content {
   flex: 1;
-  padding-top: 6px;
+  display: flex;
+  justify-content: start;
+  align-items: center;
 }
 
 .ddei_editor_menu_dialog_item_desc {

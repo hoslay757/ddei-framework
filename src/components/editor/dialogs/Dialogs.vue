@@ -15,6 +15,7 @@
   <ReLoginDialog v-if="refresh_relogin_dialog"></ReLoginDialog>
   <PublishFileConfirmDialog v-if="refresh_publish_file_confirm_dialog"></PublishFileConfirmDialog>
   <SelectBorderDashDialog v-if="refresh_select_border_dash_dialog"></SelectBorderDashDialog>
+  <CreateShareDialog v-if="refresh_create_share_dialog"></CreateShareDialog>
 </template>
 
 <script lang="ts">
@@ -33,6 +34,7 @@ import ChooseControlGroupDialog from "./ChooseControlGroupDialog.vue";
 import ReLoginDialog from "./ReLoginDialog.vue";
 import PublishFileConfirmDialog from "./PublishFileConfirmDialog.vue";
 import SelectBorderDashDialog from "./SelectBorderDashDialog.vue";
+import CreateShareDialog from "./CreateShareDialog.vue";
 import DDeiEditorUtil from "../js/util/editor-util.ts";
 
 export default {
@@ -58,6 +60,7 @@ export default {
       refresh_relogin_dialog: true,
       refresh_publish_file_confirm_dialog: true,
       refresh_select_border_dash_dialog: true,
+      refresh_create_share_dialog: true,
     };
   },
   computed: {},
@@ -76,7 +79,8 @@ export default {
     ChooseControlGroupDialog,
     ReLoginDialog,
     PublishFileConfirmDialog,
-    SelectBorderDashDialog
+    SelectBorderDashDialog,
+    CreateShareDialog
   },
   watch: {},
   created() { },
