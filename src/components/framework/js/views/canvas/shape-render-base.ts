@@ -219,7 +219,12 @@ class DDeiAbstractShapeRender {
     if (this.stageRender?.operateState == DDeiEnumOperateState.LINE_POINT_CHANGING) {
       projPoint = this.model.getProjPoint({ x: ex, y: ey }, { in: -8, out: 15 });
     } else {
-      projPoint = this.model.getProjPoint({ x: ex, y: ey });
+      let modelWeight = Math.min(this.model.width, this.model.height)
+      let inWeight = -8
+      if (modelWeight < 20) {
+        inWeight = 0
+      }
+      projPoint = this.model.getProjPoint({ x: ex, y: ey }, { in: inWeight, out: 15 });
     }
 
     let pots = []
