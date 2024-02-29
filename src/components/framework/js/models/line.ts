@@ -516,7 +516,6 @@ class DDeiLine extends DDeiAbstractShape {
 
     let startModel = startLink?.sm ? startLink?.sm : this.stage.tempStartOPpoint?.model
     let endModel = endLink?.sm ? endLink?.sm : this.stage.tempEndOPpoint?.model
-
     let startRect, endRect;
     if (startModel?.operatePVS?.length > 0) {
       startRect = DDeiAbstractShape.pvsToOutRect(startModel.operatePVS)
@@ -524,13 +523,21 @@ class DDeiLine extends DDeiAbstractShape {
     if (endModel?.operatePVS?.length > 0) {
       endRect = DDeiAbstractShape.pvsToOutRect(endModel.operatePVS)
     }
+    let startPoint = this.startPoint
+    let endPoint = this.endPoint
+
+    if (this == this.stage.render.currentOperateShape) {
+      startPoint = this.stage.tempStartOPpoint ? this.stage.tempStartOPpoint : this.startPoint
+      endPoint = this.stage.tempEndOPpoint ? this.stage.tempEndOPpoint : this.endPoint
+    }
+
 
     if (startModel?.getPointAngle) {
-      sAngle = startModel.getPointAngle(this.startPoint)
+      sAngle = startModel.getPointAngle(startPoint)
       sAngle = this.calSpecilPointAngle(sAngle)
     }
     if (endModel?.getPointAngle) {
-      eAngle = endModel.getPointAngle(this.endPoint)
+      eAngle = endModel.getPointAngle(endPoint)
       eAngle = this.calSpecilPointAngle(eAngle)
     }
     let outRect = null
@@ -546,7 +553,7 @@ class DDeiLine extends DDeiAbstractShape {
     }
 
     //获取推荐路径
-    let recommendPaths = getRecommendPath(sAngle, eAngle, this.startPoint, this.endPoint, startRect, endRect)
+    let recommendPaths = getRecommendPath(sAngle, eAngle, startPoint, endPoint, startRect, endRect)
 
     //构建障碍物
     let ignoreIds = [this.id]
@@ -579,16 +586,16 @@ class DDeiLine extends DDeiAbstractShape {
     let linePathData = calAutoLinePath(
       {
         point: {
-          x: this.startPoint.x,
-          y: this.startPoint.y
+          x: startPoint.x,
+          y: startPoint.y
         },
         rect: startRect,
         angle: sAngle
       },
       {
         point: {
-          x: this.endPoint.x,
-          y: this.endPoint.y,
+          x: endPoint.x,
+          y: endPoint.y,
         },
         rect: endRect,
         angle: eAngle
