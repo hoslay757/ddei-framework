@@ -36,7 +36,7 @@ export default {
                  pvs.push({x:-50,y:-50,fill:1,clip:1,text:1,select:1,oppoint:2,stroke:1});
               break;
               case 3:
-               pvs.push({x:50,y:-50,fill:1,stroke:1,text:1,clip:1,oppoint:2,select:1,end:1});
+               pvs.push({x:50,y:-50,fill:1,stroke:1,text:1,clip:1,oppoint:2,op2close:1,select:1,end:1});
               break;
             }
         }`,

@@ -35,7 +35,7 @@ export default {
         //内部连线
         `(i, sample, pvs, model, ovs){
              pvs.push({begin:1,x:-50,y:-50,stroke:1});
-             pvs.push({x:50,y:-50,stroke:1,oppoint:2});
+             pvs.push({x:50,y:-50,stroke:1,oppoint:2,op2close:1});
              pvs.push({x:55,y:-60,stroke:1});
              pvs.push({x:-50,y:-50,type:3});
              pvs.push({x:50,y:-50,stroke:1});

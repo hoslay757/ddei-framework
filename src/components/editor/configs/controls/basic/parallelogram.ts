@@ -32,7 +32,7 @@ export default {
               pvs.push({x:sample.x,y:sample.y,r:sample.r,select:1,clip:1,oppoint:2,stroke:1,fill:1});
             break;
             case 3:
-              pvs.push({end:1,x:sample.x,y:sample.y,r:sample.r,select:1,clip:1,oppoint:2,stroke:1,fill:1});
+              pvs.push({end:1,x:sample.x,y:sample.y,r:sample.r,select:1,clip:1,oppoint:2,op2close:1,stroke:1,fill:1});
               pvs[0].y = pvs[1].y
               pvs[1].x = pvs[2].x
               pvs[2].y = pvs[3].y

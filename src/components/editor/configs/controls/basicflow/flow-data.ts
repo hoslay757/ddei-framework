@@ -25,7 +25,8 @@ export default {
             let ds = i == 2 || i ==3 ? 5: -5
             let x = sample.x+ds
             let y = sample.y
-            pvs.push({begin:i==0,end:i==3, x: x, y: y,select:1,clip:1,fill:1,stroke:1,oppoint:2 });
+            let op2close = i == 3 ? 1 :0
+            pvs.push({begin:i==0,end:i==3, x: x, y: y,select:1,clip:1,fill:1,stroke:1,oppoint:2,op2close:op2close });
         }`,
         `(i,sample, pvs, model){
             let ds = i == 1 || i ==2 ? 5: -5

@@ -235,12 +235,13 @@ class DDeiAbstractShapeRender {
       op.model = this.model
       op.mode = 3
       //只响应点的操作点，如果距离小于10，则变大
-      // if (op.oppoint == 1 || op.oppoint == 3) {
-      let dist = DDeiUtil.getPointDistance(op.x, op.y, ex, ey);
-      if (Math.abs(dist) <= 5) {
-        op.isMiddle = true
-        delete op.mode
-        hasPoint = true;
+      if (op.oppoint == 1 || op.oppoint == 3) {
+        let dist = DDeiUtil.getPointDistance(op.x, op.y, ex, ey);
+        if (Math.abs(dist) <= 5) {
+          op.isMiddle = true
+          delete op.mode
+          hasPoint = true;
+        }
       }
       //判定是否圆心，判定点到圆心的距离
       if (op.oppoint == 3) {
@@ -264,8 +265,7 @@ class DDeiAbstractShapeRender {
           pots.push(op1)
           hasPoint = true;
         }
-      }
-      if (op.oppoint != 3) {
+      } else {
         let angle = DDeiUtil.getLineAngle(this.model.cpv.x, this.model.cpv.y, op.x, op.y)
         angle -= (this.model.rotate ? this.model.rotate : 0)
         op.sita = angle
@@ -279,12 +279,14 @@ class DDeiAbstractShapeRender {
       let insert = true;
       for (let i = 0; i < centerOpPoints.length; i++) {
         let co = centerOpPoints[i]
+
         if (co.isMiddle) {
           let dist = DDeiUtil.getPointDistance(po.x, po.y, co.x, co.y);
           if (Math.abs(dist) <= 5) {
             insert = false
           }
         }
+
       }
       if (insert) {
         let angle = DDeiUtil.getLineAngle(this.model.cpv.x, this.model.cpv.y, po.x, po.y)

@@ -33,7 +33,7 @@ export default {
               break;
               case 3:
                 pvs.push({x:-pvs[0].x,y:sample.y,select:1,clip:1,text:1,oppoint:2,stroke:1,fill:1});
-                pvs.push({x:pvs[0].x,y:sample.y,select:1,clip:1,text:1,oppoint:2,stroke:1,fill:1,end:1});
+                pvs.push({x:pvs[0].x,y:sample.y,select:1,clip:1,text:1,oppoint:2,op2close:1,stroke:1,fill:1,end:1});
                
               break;
             }

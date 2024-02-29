@@ -323,20 +323,43 @@ class DDeiLayerCanvasRender {
       let ratio = this.ddRender?.ratio;
       //保存状态
       ctx.save();
+      let firstOp2Point, beforeOp2Point
       this.model?.opPoints.forEach(point => {
         if (point.mode == 3) {
-          let weight = 4;
-          ctx.fillStyle = "white"
-          ctx.strokeStyle = "#017fff"
-          ctx.beginPath();
-          ctx.ellipse(point.x * ratio, point.y * ratio, weight * ratio, weight * ratio, 0, 0, Math.PI * 2)
-          ctx.fill();
-          ctx.stroke();
-          ctx.closePath();
-        }
-      });
-      this.model?.opPoints.forEach(point => {
-        if (point.mode != 3) {
+          if (point.oppoint == 2 || point.oppoint == 4) {
+            if (!beforeOp2Point) {
+              beforeOp2Point = point
+              firstOp2Point = point
+            } else {
+              let weight = 4;
+              ctx.fillStyle = "white"
+              ctx.strokeStyle = "#017fff"
+              ctx.beginPath();
+              ctx.ellipse((point.x + beforeOp2Point.x) / 2 * ratio, (point.y + beforeOp2Point.y) / 2 * ratio, weight * ratio, weight * ratio, 0, 0, Math.PI * 2)
+              ctx.fill();
+              ctx.stroke();
+              ctx.closePath();
+              beforeOp2Point = point;
+              if (point.op2close == 1) {
+                ctx.beginPath();
+                ctx.ellipse((point.x + firstOp2Point.x) / 2 * ratio, (point.y + firstOp2Point.y) / 2 * ratio, weight * ratio, weight * ratio, 0, 0, Math.PI * 2)
+                ctx.fill();
+                ctx.stroke();
+                ctx.closePath();
+              }
+            }
+          } else {
+            let weight = 4;
+            ctx.fillStyle = "white"
+            ctx.strokeStyle = "#017fff"
+            ctx.beginPath();
+            ctx.ellipse(point.x * ratio, point.y * ratio, weight * ratio, weight * ratio, 0, 0, Math.PI * 2)
+            ctx.fill();
+            ctx.stroke();
+            ctx.closePath();
+          }
+        } else {
+
           let weight = 4;
           if (point.isMiddle) {
             weight = 5;
@@ -355,6 +378,7 @@ class DDeiLayerCanvasRender {
           ctx.ellipse(point.x * ratio, point.y * ratio, weight * ratio, weight * ratio, 0, 0, Math.PI * 2)
           ctx.fill();
           ctx.closePath();
+
         }
       });
 

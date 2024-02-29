@@ -31,7 +31,7 @@ export default {
             pvs.push({x:-50,y:-50,stroke:1,fill:1,clip:1,oppoint:2,select:1});
             pvs.push({x:(ovs[1].x-ovs[1].ovi.x-50),y:-50,stroke:1,fill:1,clip:1,oppoint:2,select:1});
             pvs.push({x:(ovs[1].x-ovs[1].ovi.x-50),y:(ovs[0].y-model.cpv.y),stroke:1,fill:1,clip:1,oppoint:2,select:1});
-            pvs.push({x:50,y:(ovs[0].y-model.cpv.y),stroke:1,fill:1,clip:1,oppoint:2,select:1,end:1});
+            pvs.push({x:50,y:(ovs[0].y-model.cpv.y),stroke:1,fill:1,clip:1,oppoint:2,op2close:1,select:1,end:1});
         }`,
         `(i, sample, pvs, model,ovs){
             pvs.push({begin:1,x:-50,y:(ovs[0].y-model.cpv.y),stroke:1,type:1});

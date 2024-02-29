@@ -26,7 +26,7 @@ export default {
             let er  = sample.r * 1.25
             let x = er * sample.cos
             let y = er * sample.sin
-            let begin = 0,end = 0
+            let begin = 0,end = 0,op2close = 0
             switch(i){
               case 0:
                 begin = 1
@@ -38,12 +38,13 @@ export default {
                 pvs[1].x=x
               break;
               case 3:
+                op2close = 1
                 pvs[2].y=y 
                x = pvs[0].x
                end = 1
               break;
             }
-            pvs.push({begin:begin,end:end,x:x,y:y,r:er,select:1,clip:1,oppoint:2});
+            pvs.push({begin:begin,end:end,x:x,y:y,r:er,select:1,clip:1,oppoint:2,op2close:op2close});
         }`,
 
         `(i, sample, pvs, model, ovs){

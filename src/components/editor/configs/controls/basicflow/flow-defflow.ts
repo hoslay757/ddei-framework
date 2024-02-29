@@ -29,15 +29,8 @@ export default {
             let er  = sample.r
             let x = sample.x
             let y = sample.y
-            pvs.push({x:x,y:y,r:er,type:0,oppoint:2});
-             if(i ==1 || i ==3){
-              let ny = er * Math.sin((sample.sita+90) * DDeiConfig.ROTATE_UNIT)
-              y = (y+ny)/2
-            }else{
-              let nx = er * Math.cos((sample.sita+90) * DDeiConfig.ROTATE_UNIT)
-              x = (x+nx)/2
-            }
-            pvs.push({x:x,y:y,r:er,type:0,oppoint:2});
+            let op2close = i == 3?1:0
+            pvs.push({x:x,y:y,r:er,type:0,oppoint:2,op2close:op2close});
            
         }`,
 

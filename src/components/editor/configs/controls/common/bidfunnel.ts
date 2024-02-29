@@ -40,10 +40,10 @@ export default {
             break;
             case 2:
               pvs.push({x:x,y:y,oppoint:2,clip:1,stroke:1,fill:1});
-              pvs.push({x:0,y:0,oppoint:2,clip:1,stroke:1,fill:1});
+              pvs.push({x:0,y:0,oppoint:1,clip:1,stroke:1,fill:1});
             break;
             case 4:
-              pvs.push({end:1,x:x,y:y,oppoint:2,clip:1,stroke:1,fill:1});
+              pvs.push({end:1,x:x,y:y,oppoint:2,op2close:1,clip:1,stroke:1,fill:1});
             break;
             case 5:
               pvs.splice(3,0,{x:x,y:y,oppoint:2,clip:1,stroke:1,fill:1})

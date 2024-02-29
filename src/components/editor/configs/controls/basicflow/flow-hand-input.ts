@@ -38,7 +38,7 @@ export default {
                 pvs[2].y=sample.y+weight
                 
                 sample.x = pvs[0].x
-                pvs.push({x:sample.x,y:sample.y,select:1,clip:1,stroke:1,fill:1,oppoint:2,end:1});
+                pvs.push({x:sample.x,y:sample.y,select:1,clip:1,stroke:1,fill:1,oppoint:2,op2close:1,end:1});
                 pvs.push({x:sample.x,y:pvs[2].y,text:1,type:0});
                
               break;

@@ -23,7 +23,7 @@ export default {
       //采样的规则，多组采样返回多组规则
       rules: [
         `(i, sample, pvs, model, ovs){
-          let start = 0,end = 0
+          let start = 0,end = 0,op2close = 0
             switch(i){
               case 0:
                 start = 1  
@@ -36,12 +36,13 @@ export default {
                 sample.x+=20
               break;
               case 3:
+                op2close = 1
                 pvs[2].y=sample.y 
                 sample.x = pvs[0].x-20
                 end = 1
               break;
             }
-            pvs.push({begin:start,end:end,x:sample.x,y:sample.y,oppoint:2,select:1,clip:1,stroke:1,fill:1});
+            pvs.push({begin:start,end:end,x:sample.x,y:sample.y,oppoint:2,op2close:op2close,select:1,clip:1,stroke:1,fill:1});
         }`,
 
         `(i, sample, pvs, model, ovs){

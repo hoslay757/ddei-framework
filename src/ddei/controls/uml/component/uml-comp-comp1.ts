@@ -64,7 +64,7 @@ export default {
             
             pvs.push({x:-25,y:-50,stroke:1,fill:1,oppoint:2});
     
-            pvs.push({end:1,x:50,y:-50,stroke:1,fill:1,oppoint:2});
+            pvs.push({end:1,x:50,y:-50,stroke:1,fill:1,oppoint:2,op2close:1});
 
           }
             

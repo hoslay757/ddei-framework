@@ -41,7 +41,7 @@ export default {
                 pvs[2].y=y
                 x = pvs[0].x
                 pvs.push({x:x-weight,y:y,select:1,clip:1,stroke:1,oppoint:2,fill:1});
-                pvs.push({x:x,y:y+weight,select:1,clip:1,stroke:1,oppoint:2,fill:1,end:1});
+                pvs.push({x:x,y:y+weight,select:1,clip:1,stroke:1,oppoint:2,op2close:1,fill:1,end:1});
                
               break;
             }

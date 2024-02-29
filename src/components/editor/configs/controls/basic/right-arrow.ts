@@ -22,7 +22,11 @@ export default {
       rules: [
         `(i, sample, pvs, model, ovs){
             if(i % 4 == 0){
-              pvs.push({begin:i == 0,end:i == 8,x:sample.x,y:sample.y,select:1,clip:1,oppoint:2,stroke:1,fill:1});
+              let op2close = 0
+              if(i == 8){
+                op2close = 1
+              }
+              pvs.push({begin:i == 0,end:i == 8,x:sample.x,y:sample.y,select:1,clip:1,oppoint:2,op2close:op2close,stroke:1,fill:1});
             }
         }`
       ]
