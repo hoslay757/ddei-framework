@@ -1742,6 +1742,7 @@ abstract class DDeiAbstractShape {
         0, 0, 1);
       models.forEach(m => {
         m.transVectors(moveMatrix)
+        m.updateLinkModels()
       })
     }
   }
