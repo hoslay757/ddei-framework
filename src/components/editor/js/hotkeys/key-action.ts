@@ -26,24 +26,23 @@ abstract class DDeiKeyAction {
     let shift = evt.shiftKey;
     let alt = evt.altKey
     if (ctrl == true) {
-      DDeiConfig.KEY_DOWN_STATE.set("ctrl", true);
+      DDei.KEY_DOWN_STATE.set("ctrl", true);
     } else {
-      DDeiConfig.KEY_DOWN_STATE.set("ctrl", false);
+      DDei.KEY_DOWN_STATE.set("ctrl", false);
     }
     if (shift == true) {
-      DDeiConfig.KEY_DOWN_STATE.set("shift", true);
+      DDei.KEY_DOWN_STATE.set("shift", true);
     } else {
-      DDeiConfig.KEY_DOWN_STATE.set("shift", false);
+      DDei.KEY_DOWN_STATE.set("shift", false);
     }
     if (alt == true) {
-      DDeiConfig.KEY_DOWN_STATE.set("alt", true);
+      DDei.KEY_DOWN_STATE.set("alt", true);
     } else {
-      DDeiConfig.KEY_DOWN_STATE.set("alt", false);
+      DDei.KEY_DOWN_STATE.set("alt", false);
     }
     if (evt.keyCode != 93 && evt.keyCode != 18 && evt.keyCode != 16 && evt.keyCode != 17) {
-      DDeiConfig.KEY_DOWN_STATE.set("" + evt.keyCode, true);
+      DDei.KEY_DOWN_STATE.set("" + evt.keyCode, true);
     }
-    DDei.syncKeyDownState(DDeiConfig.KEY_DOWN_STATE);
   }
 
   /**

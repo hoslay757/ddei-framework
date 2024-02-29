@@ -332,7 +332,7 @@ export default {
                   },
                   e
                 );
-                let isAlt = DDeiConfig.KEY_DOWN_STATE.get("alt");
+                let isAlt = DDei.KEY_DOWN_STATE.get("alt");
                 this.editor.bus.push(
                   DDeiEnumBusCommandType.ChangeSelectorPassIndex,
                   { passIndex: 10 },
@@ -385,7 +385,7 @@ export default {
         ex -= stage.wpv.x;
         ey -= stage.wpv.y;
         if (this.editor.creatingControls) {
-          let isAlt = DDeiConfig.KEY_DOWN_STATE.get("alt");
+          let isAlt = DDei.KEY_DOWN_STATE.get("alt");
           let ddInstance: DDei = this.editor.ddInstance;
           ddInstance.stage.idIdx++;
           let layer = ddInstance.stage.layers[ddInstance.stage.layerIndex];

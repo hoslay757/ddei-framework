@@ -394,10 +394,12 @@ class DDeiEditor {
    * 绑定事件
    */
   bindEvent(): void {
+    window.removeEventListener('blur', this.blur);
     document.removeEventListener('keydown', this.keyDown);
     document.removeEventListener('keyup', this.keyUp);
     document.addEventListener('keydown', this.keyDown);
     document.addEventListener('keyup', this.keyUp);
+    window.addEventListener('blur', this.blur);
   }
 
 
@@ -429,6 +431,14 @@ class DDeiEditor {
    */
   keyUp(evt: Event): void {
     DDeiKeyAction.updateKeyState(evt);
+  }
+
+
+  /**
+   * 失去焦点
+   */
+  blur(): void {
+    DDei.KEY_DOWN_STATE.clear()
   }
 }
 

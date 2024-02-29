@@ -305,6 +305,7 @@ export default {
         this.editor.ddInstance.render.mouseUp(e);
       }
     },
+
     /**
      * 判断是否移动到拖拽区
      */

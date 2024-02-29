@@ -17,8 +17,8 @@ class DDeiKeyActionPushModels extends DDeiKeyAction {
       let stageRender = ddInstance.stage.render;
       let optContainer = stageRender.currentOperateContainer;
       if (optContainer) {
-        let isCtrl = DDeiConfig.KEY_DOWN_STATE.get("ctrl");
-        let isShift = DDeiConfig.KEY_DOWN_STATE.get("shift");
+        let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
+        let isShift = DDei.KEY_DOWN_STATE.get("shift");
         //同时按下ctrl和shift
         if (isCtrl && isShift) {
           //上

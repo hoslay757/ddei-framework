@@ -36,18 +36,6 @@ class DDei {
 
   // ============================ 静态方法 ============================
 
-  /**
-   * 同步KEY_DOWN_STATE状态
-   * @param stateMap 状态
-   */
-  static syncKeyDownState(stateMap: Map<string, boolean>) {
-    if (stateMap) {
-      DDei.KEY_DOWN_STATE.clear();
-      stateMap.forEach((item, key) => {
-        DDei.KEY_DOWN_STATE.set(key, item);
-      });
-    }
-  }
 
   /**
    * 选中前，一般用于校验，默认根据权限配置参数进行校验
