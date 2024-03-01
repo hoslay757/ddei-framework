@@ -221,7 +221,7 @@ class DDeiAbstractShapeRender {
     } else {
       let modelWeight = Math.min(this.model.width, this.model.height)
       let inWeight = -8
-      if (modelWeight < 20) {
+      if (modelWeight <= 24) {
         inWeight = 0
       }
       projPoint = this.model.getProjPoint({ x: ex, y: ey }, { in: inWeight, out: 15 });
@@ -300,7 +300,7 @@ class DDeiAbstractShapeRender {
         this.stage.tempEndOPpoint = po
         this.stage.tempCursorOPpoint = po
         this.layer.opPoints.push(po);
-        
+
       }
     })
     if (hasPoint) {

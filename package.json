@@ -42,7 +42,7 @@
     "animate.css": "^4.1.1",
     "ant-design-vue": "4.x",
     "axios": "^1.6.1",
-    "ddei-autolink": "^1.0.0",
+    "ddei-autolink": "^1.1.0",
     "flow": "^0.2.3",
     "js-cookie": "^3.0.5",
     "jsx": "^0.9.89",

@@ -129,7 +129,7 @@ class DDeiStageCanvasRender {
 
       ctx.translate((this.model.wpv.x) * rat1, (this.model.wpv.y) * rat1)
 
-      // this.drawTest();
+      this.drawTest();
 
       let topDisplayIndex = -1;
       for (let i = this.model.layers.length - 1; i >= 0; i--) {
