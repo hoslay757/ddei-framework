@@ -7,7 +7,8 @@ import DDeiLineLink from './linelink';
 import DDeiLayer from './layer';
 import DDeiEnumBusCommandType from '../enums/bus-command-type';
 import DDeiModelArrtibuteValue from './attribute/attribute-value';
-import { calAutoLinePath, getRecommendPath } from 'ddei-autolink'
+// import { calAutoLinePath, getRecommendPath } from 'ddei-autolink'
+import { calAutoLinePath, getRecommendPath } from '@/components/autolink'
 /**
  * line（连线）
  * 主要样式属性：颜色、宽度、开始和结束节点样式、虚线、字体、文本样式
@@ -525,19 +526,20 @@ class DDeiLine extends DDeiAbstractShape {
     }
     let startPoint = this.startPoint
     let endPoint = this.endPoint
-    
     if (this == this.stage.render.currentOperateShape) {
       let passIndex = this.stage.render.dragObj?.passIndex;
       let opvsIndex = this.stage.render.dragObj?.opvsIndex;
-      if(passIndex == 1 && opvsIndex == 0){
-        startPoint = this.stage.tempCursorOPpoint ? this.stage.tempCursorOPpoint : this.startPoint
-        this.startPoint.x = startPoint.x
-        this.startPoint.y = startPoint.y
-      }else if(passIndex == 1 && opvsIndex ==  this.stage.render.dragObj?.opvs?.length -1 ){
-        endPoint = this.stage.tempCursorOPpoint ? this.stage.tempCursorOPpoint : this.endPoint
-        this.endPoint.x = endPoint.x
-        this.endPoint.y = endPoint.y
-      }
+      if(passIndex == 1){
+        if( opvsIndex == 0){
+          startPoint = this.stage.tempCursorOPpoint ? this.stage.tempCursorOPpoint : this.startPoint
+          this.startPoint.x = startPoint.x
+          this.startPoint.y = startPoint.y
+        }else if(opvsIndex ==  this.stage.render.dragObj?.opvs?.length -1 ){
+          endPoint = this.stage.tempCursorOPpoint ? this.stage.tempCursorOPpoint : this.endPoint
+          this.endPoint.x = endPoint.x
+          this.endPoint.y = endPoint.y
+        }
+    }
     }
 
 
@@ -590,7 +592,6 @@ class DDeiLine extends DDeiAbstractShape {
         forcePaths.push(pv)
       }
     })
-    
     //执行自动路径生成
     let linePathData = calAutoLinePath(
       {
@@ -610,12 +611,13 @@ class DDeiLine extends DDeiAbstractShape {
         angle: eAngle
       },
       obis,
-      { recommendPaths: recommendPaths, forcePaths: forcePaths, recomWeight: 100, rectMidWeight: 50 },this.stage.render?.linePathData)
+      { recommendPaths: recommendPaths, forcePaths: forcePaths, recomWeight: 100, rectMidWeight: 50 })
 
-
+    
     //更新中间节点
     this.pvs = [this.startPoint]
     if(linePathData){
+      console.log("总时间:"+linePathData.totalTime+" = "+linePathData.buildPointTime+" + "+linePathData.lookForTime+" + "+linePathData.selectPathTime)
       //记录缓存数据
       if (this.stage?.render) {
         this.stage.render.linePathData = linePathData
