@@ -590,7 +590,7 @@ class DDeiLine extends DDeiAbstractShape {
         forcePaths.push(pv)
       }
     })
-
+    
     //执行自动路径生成
     let linePathData = calAutoLinePath(
       {
@@ -610,21 +610,23 @@ class DDeiLine extends DDeiAbstractShape {
         angle: eAngle
       },
       obis,
-      { recommendPaths: recommendPaths, forcePaths: forcePaths, recomWeight: 100, rectMidWeight: 50 })
+      { recommendPaths: recommendPaths, forcePaths: forcePaths, recomWeight: 100, rectMidWeight: 50 },this.stage.render?.linePathData)
 
 
     //更新中间节点
     this.pvs = [this.startPoint]
-    if (linePathData && this.stage?.render) {
-      this.stage.render.linePathData = linePathData
-    }
-    if (linePathData?.pathPoints?.length > 2) {
-
-      for (let i = 1; i < linePathData.pathPoints.length - 1; i++) {
-        let mp = linePathData.pathPoints[i]
-        this.pvs.push(new Vector3(mp.x, mp.y, 1))
+    if(linePathData){
+      //记录缓存数据
+      if (this.stage?.render) {
+        this.stage.render.linePathData = linePathData
       }
-
+      if (linePathData.pathPoints?.length > 2) {
+        for (let i = 1; i < linePathData.pathPoints.length - 1; i++) {
+          let mp = linePathData.pathPoints[i]
+          this.pvs.push(new Vector3(mp.x, mp.y, 1))
+        }
+  
+      }
     }
     this.pvs.push(this.endPoint)
   }
