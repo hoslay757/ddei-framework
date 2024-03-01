@@ -77,7 +77,7 @@ class DDeiUtil {
 
 
   //向临时canvas输出
-  static DRAW_TEMP_CANVAS = false;
+  static DRAW_TEMP_CANVAS = true;
 
   /**
    * 图标

@@ -83,7 +83,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       //转换为图片
       if (!this.tempCanvas) {
         this.tempCanvas = document.createElement('canvas');
-        this.tempCanvas.setAttribute("style", "-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
+        this.tempCanvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
+        document.body.appendChild(this.tempCanvas)
       }
       let tempCanvas = this.tempCanvas
       let pvs = this.model.operatePVS ? this.model.operatePVS : this.model.pvs
@@ -186,6 +187,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
    */
   drawSelfToCanvas(composeRender) {
     if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
+      console.log(1)
       let canvas = this.getRenderCanvas(composeRender)
       let ctx = canvas.getContext('2d');
       let rat1 = this.ddRender.ratio;

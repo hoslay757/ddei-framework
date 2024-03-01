@@ -51,7 +51,7 @@ class DDeiKeyActionCopyImage extends DDeiKeyAction {
           addWidth = lineOffset * 2
         }
       }
-      canvas.setAttribute("style", "-webkit-font-smoothing:initial;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
+      canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
       canvas.setAttribute("width", outRect.width * rat1 + addWidth)
       canvas.setAttribute("height", outRect.height * rat1 + addWidth)
       ctx.translate(-outRect.x * rat1 + addWidth / 2, -outRect.y * rat1 + addWidth / 2)
