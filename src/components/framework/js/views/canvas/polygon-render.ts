@@ -84,7 +84,6 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       if (!this.tempCanvas) {
         this.tempCanvas = document.createElement('canvas');
         this.tempCanvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
-        document.body.appendChild(this.tempCanvas)
       }
       let tempCanvas = this.tempCanvas
       let pvs = this.model.operatePVS ? this.model.operatePVS : this.model.pvs
