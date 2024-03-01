@@ -2670,7 +2670,7 @@ class DDeiUtil {
         let lineOffset = models[0].render.getCachedValue("border.width");
         let addWidth = 0;
         if (lineOffset) {
-          addWidth = lineOffset * 2 * rat1
+          addWidth = lineOffset * rat1
           if (models.length > 1) {
             addWidth = lineOffset * 2
           }
@@ -2682,20 +2682,16 @@ class DDeiUtil {
         if (outRect.height * rat1 > height * rat1) {
           scaleH = height / (outRect.height)
         }
+        canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
         if (scaleW != 1 || scaleH != 1) {
           canvas.setAttribute("width", width * rat1 + addWidth)
           canvas.setAttribute("height", height * rat1 + addWidth)
-          canvas.style.width = width * rat1 + addWidth + 'px';
-          canvas.style.height = height * rat1 + addWidth + 'px';
-
-          ctx.translate(-outRect.x * rat1 * scaleW + lineOffset / 2, -outRect.y * rat1 * scaleH + lineOffset / 2)
+          ctx.translate(-outRect.x * rat1 * scaleW + addWidth / 2, -outRect.y * rat1 * scaleH + addWidth / 2)
           ctx.scale(scaleW, scaleH)
         } else {
           canvas.setAttribute("width", outRect.width * rat1 + addWidth)
           canvas.setAttribute("height", outRect.height * rat1 + addWidth)
-          canvas.style.width = outRect.width * rat1 + addWidth + 'px';
-          canvas.style.height = outRect.height * rat1 + addWidth + 'px';
-          ctx.translate(-outRect.x * rat1 + lineOffset / 2, -outRect.y * rat1 + lineOffset / 2)
+          ctx.translate(-outRect.x * rat1 + addWidth / 2, -outRect.y * rat1 + addWidth / 2)
         }
         models.forEach(item => {
           item.render.drawShape();
