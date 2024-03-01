@@ -572,7 +572,7 @@ class DDeiLine extends DDeiAbstractShape {
         ignoreIds.push(link.dm?.id)
       }
     })
-    let allModels = this.layer.getSubModels(ignoreIds, 1)
+    let allModels = this.layer.getSubModels(ignoreIds, 10)
     let obis = []
     allModels.forEach(model => {
       if (model.baseModelType != "DDeiLine" && model.operatePVS?.length > 0) {
@@ -583,6 +583,20 @@ class DDeiLine extends DDeiAbstractShape {
         obis.push(obj)
       }
     })
+
+    let marr = [startModel, endModel]
+    //开始或结束如果有上层容器，则将上层容器移除出障碍物
+    marr.forEach(model => {
+      if (model) {
+        let modelConts = model.getParents()
+        modelConts.forEach(contModel => {
+          let rmIdx = allModels.indexOf(contModel)
+          if (rmIdx != -1) {
+            allModels.splice(rmIdx, 1)
+          }
+        });
+      }
+    });
 
     //获取强制路径
     let forcePaths = []
@@ -616,7 +630,7 @@ class DDeiLine extends DDeiAbstractShape {
     //更新中间节点
     this.pvs = [this.startPoint]
     if (linePathData) {
-      console.log("总时间:" + linePathData.totalTime + " = " + linePathData.buildPointTime + " + " + linePathData.lookForTime + " + " + linePathData.selectPathTime)
+      // console.log("总时间:" + linePathData.totalTime + " = " + linePathData.buildPointTime + " + " + linePathData.lookForTime + " + " + linePathData.selectPathTime)
       //记录缓存数据
       if (this.stage?.render) {
         this.stage.render.linePathData = linePathData
