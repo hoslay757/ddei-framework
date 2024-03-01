@@ -46,17 +46,15 @@ class DDeiKeyActionCopyImage extends DDeiKeyAction {
       let lineOffset = models[0].render.getCachedValue("border.width");
       let addWidth = 0;
       if (lineOffset) {
-        addWidth = lineOffset * 2 * rat1
+        addWidth = lineOffset * rat1
         if (models.length > 1) {
           addWidth = lineOffset * 2
         }
       }
-
+      canvas.setAttribute("style", "-webkit-font-smoothing:initial;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
       canvas.setAttribute("width", outRect.width * rat1 + addWidth)
       canvas.setAttribute("height", outRect.height * rat1 + addWidth)
-      canvas.style.width = outRect.width * rat1 + addWidth + 'px';
-      canvas.style.height = outRect.height * rat1 + addWidth + 'px';
-      ctx.translate(-outRect.x * rat1 + lineOffset / 2, -outRect.y * rat1 + lineOffset / 2)
+      ctx.translate(-outRect.x * rat1 + addWidth / 2, -outRect.y * rat1 + addWidth / 2)
 
       models.forEach(item => {
         item.render.drawShape();
