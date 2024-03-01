@@ -515,7 +515,7 @@ class DDeiLine extends DDeiAbstractShape {
     let eAngle = null;
 
     let startModel = startLink?.sm ? startLink?.sm : this.stage.tempStartOPpoint?.model
-    let endModel = endLink?.sm ? endLink?.sm : this.stage.tempEndOPpoint?.model
+    let endModel = endLink?.sm ? endLink?.sm : this.stage.tempCursorOPpoint?.model
     let startRect, endRect;
     if (startModel?.operatePVS?.length > 0) {
       startRect = DDeiAbstractShape.pvsToOutRect(startModel.operatePVS)
@@ -525,10 +525,19 @@ class DDeiLine extends DDeiAbstractShape {
     }
     let startPoint = this.startPoint
     let endPoint = this.endPoint
-
+    
     if (this == this.stage.render.currentOperateShape) {
-      startPoint = this.stage.tempStartOPpoint ? this.stage.tempStartOPpoint : this.startPoint
-      endPoint = this.stage.tempEndOPpoint ? this.stage.tempEndOPpoint : this.endPoint
+      let passIndex = this.stage.render.dragObj?.passIndex;
+      let opvsIndex = this.stage.render.dragObj?.opvsIndex;
+      if(passIndex == 1 && opvsIndex == 0){
+        startPoint = this.stage.tempCursorOPpoint ? this.stage.tempCursorOPpoint : this.startPoint
+        this.startPoint.x = startPoint.x
+        this.startPoint.y = startPoint.y
+      }else if(passIndex == 1 && opvsIndex ==  this.stage.render.dragObj?.opvs?.length -1 ){
+        endPoint = this.stage.tempCursorOPpoint ? this.stage.tempCursorOPpoint : this.endPoint
+        this.endPoint.x = endPoint.x
+        this.endPoint.y = endPoint.y
+      }
     }
 
 

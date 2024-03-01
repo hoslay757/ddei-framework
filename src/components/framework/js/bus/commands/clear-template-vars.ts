@@ -53,6 +53,7 @@ class DDeiBusCommandClearTemplateVars extends DDeiBusCommand {
 
       delete stage.tempStartOPpoint
       delete stage.tempEndOPpoint
+      delete stage.tempCursorOPpoint
     }
     return true;
 

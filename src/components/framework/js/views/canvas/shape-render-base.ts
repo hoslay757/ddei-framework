@@ -298,7 +298,9 @@ class DDeiAbstractShapeRender {
         angle -= (this.model.rotate ? this.model.rotate : 0)
         po.sita = angle
         this.stage.tempEndOPpoint = po
+        this.stage.tempCursorOPpoint = po
         this.layer.opPoints.push(po);
+        
       }
     })
     if (hasPoint) {
