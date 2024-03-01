@@ -6,6 +6,7 @@ import DDeiAbstractShape from "@/components/framework/js/models/shape";
 import DDeiEnumControlState from "@/components/framework/js/enums/control-state";
 import DDeiModelArrtibuteValue from "@/components/framework/js/models/attribute/attribute-value";
 import DDeiUtil from "@/components/framework/js/util";
+import DDeiLine from "@/components/framework/js/models/line";
 
 /**
  * 键行为:移动模型
@@ -113,20 +114,25 @@ class DDeiKeyActionDownMoveModels extends DDeiKeyAction {
           }
           deltaX = moveSize - mod
         }
+        let stage = ddInstance.stage
 
         DDeiAbstractShape.moveModels(models, deltaX, deltaY);
-        let stage = ddInstance.stage
+
         stage.layers[stage.layerIndex].opPoints = []
+        stage.render.refreshJumpLine = false
         ddInstance.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
         ddInstance.bus.push(DDeiEnumBusCommandType.NodifyChange);
         ddInstance.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
         ddInstance.bus.push(DDeiEnumBusCommandType.ClearTemplateVars);
+        //渲染图形
+        ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+
+        ddInstance.bus.executeAll();
+
+
 
       }
-      //渲染图形
-      ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
 
-      ddInstance.bus.executeAll();
 
     }
   }
