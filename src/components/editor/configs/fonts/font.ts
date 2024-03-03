@@ -453,7 +453,6 @@ const loadFonts = function () {
     };
   }
 }
-
 setTimeout(() => {
   loadFonts()
 }, 500);

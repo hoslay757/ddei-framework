@@ -331,5 +331,6 @@ groupOriginDefinies.forEach((item, index) => {
     item.expand = false;
   }
 });
+
 export default groupOriginDefinies;
 export { groupOriginDefinies, controlOriginDefinies };

@@ -136,6 +136,8 @@ import { listfile, createfile, savefilebasic, removefile, copyfile } from "@/lib
 import ICONS from '../../components/editor/js/icon'
 import { debounce } from 'lodash'
 import { createVNode } from 'vue'
+import FONTS from "@/components/editor/configs/fonts/font"
+import { groupOriginDefinies, controlOriginDefinies } from "@/components/editor/configs/toolgroup";
 import { message, Modal } from 'ant-design-vue'
 
 export default {
@@ -428,10 +430,19 @@ export default {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  text-align: center;
 
   img {
-    width: 100%;
-    height: 100%;
+    max-width: 100%; /* 设置图片的最大宽度为父元素宽度的100% */
+    max-height: 100%; /* 同上，最大高度也为100% */
+
+    width: auto; /* 宽度设为auto，使图片按比例缩放 */
+
+    height: auto; /* 高度同上，按比例缩放 */
+
+    min-width: 160px; /* 如果图片小于父元素，最小宽度应设置为100px，以保持等比缩放效果 */
+
+    min-height: 100px; /* 同上，最小高度也应为100px */
   }
 }
 

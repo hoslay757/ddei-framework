@@ -9,7 +9,6 @@ import Cookies from "js-cookie";
 import DDeiEditor from "../components/editor/Editor.vue";
 import DDeiEditorUtil from "@/components/editor/js/util/editor-util";
 import DDei from "@/components/framework/js/ddei";
-import DDeiEditorState from "@/components/editor/js/enums/editor-state";
 
 export default {
   props: {},
