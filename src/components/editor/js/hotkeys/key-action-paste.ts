@@ -116,7 +116,13 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
               createControl = false
             }
           } else {
-            table.setImgBase64(imgBase64);
+            if (!table.fill) {
+              table.fill = { type: 2 }
+
+            }
+            table.fill.type = 2
+            table.fill.image = imgBase64
+            // table.setImgBase64(imgBase64);
             hasChange = true;
             createControl = false
           }
@@ -131,7 +137,12 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
           if (isSimpleControl) {
             createControl = false;
             stage.selectedModels?.forEach(item => {
-              item.setImgBase64(imgBase64);
+              if (!item.fill) {
+                item.fill = { type: 2 }
+
+              }
+              item.fill.type = 2
+              item.fill.image = imgBase64
             })
             hasChange = true;
           }
@@ -1021,6 +1032,7 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
     dataJson.text = "";
     dataJson.border = { disabled: true };
     dataJson.fill = { type: 2 };
+    dataJson.fill.image = imgBase64
     dataJson.width = image.width / rat1 / stageRatio;
     dataJson.height = image.height / rat1 / stageRatio;
     //如果有from则根据from读取属性
@@ -1040,7 +1052,7 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
     )
 
     model.transVectors(moveMatrix)
-    model.setImgBase64(imgBase64);
+    // model.setImgBase64(imgBase64);
 
     stage.ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeContainer, { newContainer: container, models: [model] }, evt);
     stage.ddInstance.bus.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);

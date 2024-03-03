@@ -186,7 +186,6 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
    */
   drawSelfToCanvas(composeRender) {
     if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
-      console.log(1)
       let canvas = this.getRenderCanvas(composeRender)
       let ctx = canvas.getContext('2d');
       let rat1 = this.ddRender.ratio;
@@ -641,7 +640,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
       ctx.translate(-this.model.cpv.x * rat1, -this.model.cpv.y * rat1)
       //绘制图片
-      ctx.drawImage(this.imgObj, (this.model.cpv.x - fillRect.width / 2) * rat1 + lineOffset, (this.model.cpv.y - fillRect.height / 2) * rat1 + lineOffset, fillRect.width * rat1, fillRect.height * rat1);
+
+      ctx.imageSmoothingQuality = "high"
+      ctx.drawImage(this.imgObj, 0, 0, this.imgObj.width, this.imgObj.height, (this.model.cpv.x - fillRect.width / 2) * rat1 + lineOffset, (this.model.cpv.y - fillRect.height / 2) * rat1 + lineOffset, fillRect.width * rat1, fillRect.height * rat1);
 
       //恢复状态
       ctx.restore();

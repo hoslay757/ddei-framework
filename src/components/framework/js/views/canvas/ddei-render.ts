@@ -89,6 +89,115 @@ class DDeiCanvasRender {
     } else {
       throw new Error("容器" + this.model.containerid + "不存在");
     }
+
+    // this.webglTest()
+
+  }
+
+  webglTest() {
+
+    let canvas = document.createElement('canvas');
+    canvas.setAttribute("width", 480)
+    canvas.setAttribute("height", 240)
+    canvas.setAttribute("style", "border:1px solid red;position:absolute;left:0;top:400px;")
+    document.body.appendChild(canvas)
+    let gl = canvas.getContext('webgl')
+    gl.viewport(0, 0, 480, 240)
+
+    //创建顶点着色器
+    const vertexShader = gl.createShader(gl.VERTEX_SHADER)
+    //创建片元着色器
+    const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER)
+    //顶点着色器代码
+    const vertexShaderSource = `
+          attribute vec4 a_pos;
+          void main() {
+              gl_Position = a_pos;
+          }
+      `
+    //片元着色器代码
+    const fragmentShaderSource = `
+          void main() {
+              gl_FragColor = vec4(0.0,0.0,0.0,1.0);
+          }
+      `
+
+    //绑定数据源
+    gl.shaderSource(vertexShader, vertexShaderSource)
+    gl.shaderSource(fragmentShader, fragmentShaderSource)
+
+
+    // 编译着色器
+    gl.compileShader(vertexShader)
+    gl.compileShader(fragmentShader)
+    // 创建着色器程序
+    const program = gl.createProgram()
+    gl.attachShader(program, vertexShader)
+    gl.attachShader(program, fragmentShader)
+    // 链接 并使用着色器
+    gl.linkProgram(program)
+    gl.useProgram(program)
+    gl.program = program
+
+    // //错误输出日志
+    // const success = gl.getProgramParameter(program, gl.LINK_STATUS)
+    // if (success) {
+    //   gl.useProgram(program)
+    //   return program
+    // }
+    // console.error(gl.getProgramInfoLog(program), 'test---')
+    // gl.deleteProgram(program)
+
+    //抗锯齿
+    // gl.enable(gl.MULTISAMPLE)
+
+    //创建顶点缓冲对象
+    const buffer = gl.createBuffer()
+
+    //把标识符buffer设置为当前缓冲区，后面的所有的数据都会都会被放入当前缓冲区，直到bindBuffer绑定另一个当前缓冲区
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+
+    //构造三角形的点
+    let data = new Float32Array([-0.2, 0.5,
+    -0.5, -0.3,
+      0, -0.3,
+      0.29, 0.5])
+    gl.bufferData(gl.ARRAY_BUFFER, data, gl?.DYNAMIC_DRAW)
+
+
+    //从刚才创建的GLSL着色程序中找到这个属性值所在的位置。
+    const aposlocation = gl.getAttribLocation(program, 'a_pos')
+
+    gl.enableVertexAttribArray(aposlocation)
+    //从缓冲中读取数据绑定给被激活的aposlocation的位置
+    gl.vertexAttribPointer(aposlocation, 2, gl.FLOAT, false, 2 * 4, 0 * 4)
+
+    //渲染
+    //清空颜色
+    gl.clearColor(1, 1, 1, 1)
+    gl.clear(gl.COLOR_BUFFER_BIT)
+    // gl.drawArrays(gl?.LINE_LOOP, 0, 4) 
+
+    //索引缓冲区,可以控制绘制的顺序
+    let indexArr = new Uint16Array([
+      0, 1, 2,
+      0, 3, 1,
+    ]);
+    let indexBuffer = gl?.createBuffer()
+    gl?.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer)
+    gl?.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArr, gl.STATIC_DRAW)
+    gl?.drawElements(gl.TRIANGLES, indexArr.length, gl.UNSIGNED_SHORT, 0)
+    let indexArr1 = new Uint16Array([
+      1, 2, 3
+    ]);
+    gl?.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer)
+    gl?.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArr1, gl.STATIC_DRAW)
+    gl?.drawElements(gl.LINE_LOOP, indexArr1.length, gl.UNSIGNED_SHORT, 0)
+
+    // data = new Float32Array([0.3, 0.5, 0.1, -0.3, 0.5, -0.3])
+    // gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW)
+    // gl.drawArrays(gl?.LINE_LOOP, 0, 3)
+    // gl.drawArrays(gl?.TRIANGLES, 0, 3)
   }
 
   /**

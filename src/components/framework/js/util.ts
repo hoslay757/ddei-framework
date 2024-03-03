@@ -77,7 +77,7 @@ class DDeiUtil {
 
 
   //向临时canvas输出
-  static DRAW_TEMP_CANVAS = true;
+  static DRAW_TEMP_CANVAS = false;
 
   /**
    * 图标
@@ -2662,7 +2662,8 @@ class DDeiUtil {
         //获得 2d 上下文对象
         let ctx = canvas.getContext('2d');
         //获取缩放比例
-        let rat1 = DDeiUtil.getPixelRatio(ctx);
+        let rat1 = ddInstance.render.ratio
+        let rat2 = DDeiUtil.getPixelRatio(ctx);
         ddInstance.render.tempCanvas = canvas;
         //所选择区域的最大范围
         let models = ddInstance.stage.getLayerModels();
@@ -2682,7 +2683,7 @@ class DDeiUtil {
         if (outRect.height * rat1 > height * rat1) {
           scaleH = height / (outRect.height)
         }
-        canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
+        canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat2) + ");display:block;zoom:" + (1 / rat2));
         if (scaleW != 1 || scaleH != 1) {
           canvas.setAttribute("width", width * rat1 + addWidth)
           canvas.setAttribute("height", height * rat1 + addWidth)
@@ -2755,6 +2756,18 @@ class DDeiUtil {
   }
 
 
+  static dataURLtoBlob(dataurl) {
+    let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+      bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new Blob([u8arr], { type: mime });
+  }
+
 }
+
+
+
 
 export default DDeiUtil

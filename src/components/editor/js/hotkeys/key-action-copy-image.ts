@@ -39,7 +39,8 @@ class DDeiKeyActionCopyImage extends DDeiKeyAction {
       //获得 2d 上下文对象
       let ctx = canvas.getContext('2d');
       //获取缩放比例
-      let rat1 = DDeiUtil.getPixelRatio(ctx);
+      let rat1 = ddInstance.render.ratio
+      let rat2 = DDeiUtil.getPixelRatio(ctx);
       ddInstance.render.tempCanvas = canvas;
       //所选择区域的最大范围
       let outRect = DDeiAbstractShape.getOutRectByPV(models);
@@ -51,11 +52,12 @@ class DDeiKeyActionCopyImage extends DDeiKeyAction {
           addWidth = lineOffset * 2
         }
       }
-      canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
-      canvas.setAttribute("width", outRect.width * rat1 + addWidth)
-      canvas.setAttribute("height", outRect.height * rat1 + addWidth)
+      canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat2) + ");display:block;zoom:" + (1 / rat2));
+      let cW = outRect.width * rat1 + addWidth
+      let cH = outRect.height * rat1 + addWidth
+      canvas.setAttribute("width", cW)
+      canvas.setAttribute("height", cH)
       ctx.translate(-outRect.x * rat1 + addWidth / 2, -outRect.y * rat1 + addWidth / 2)
-
       models.forEach(item => {
         item.render.drawShape();
       })
