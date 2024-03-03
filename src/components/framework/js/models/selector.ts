@@ -158,6 +158,7 @@ class DDeiSelector extends DDeiRectangle {
     if (!models) {
       models = this.stage?.selectedModels;
     }
+
     if (!models) {
       let pContainerModel = this.stage.layers[this.stage.layerIndex];
       models = pContainerModel.getSelectedModels();

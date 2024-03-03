@@ -23,6 +23,7 @@
   </div>
   <MenuDialog v-show="!refreshMenu"></MenuDialog>
   <Dialogs></Dialogs>
+  <div id="ddei-cut-img-div" class="ddei-cut-img-div"></div>
 </template>
 
 <script lang="ts">
@@ -589,5 +590,12 @@ export default {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+
+
+.ddei-cut-img-div{
+  width:0.1px;
+  height:0.1px;
+  display:flex;
 }
 </style>

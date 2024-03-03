@@ -52,34 +52,58 @@ class DDeiKeyActionCopyImage extends DDeiKeyAction {
           addWidth = lineOffset * 2
         }
       }
+      let containerDiv = document.getElementById("ddei-cut-img-div")
+
       canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat2) + ");display:block;zoom:" + (1 / rat2));
       let cW = outRect.width * rat1 + addWidth
       let cH = outRect.height * rat1 + addWidth
       canvas.setAttribute("width", cW)
       canvas.setAttribute("height", cH)
       ctx.translate(-outRect.x * rat1 + addWidth / 2, -outRect.y * rat1 + addWidth / 2)
+      containerDiv.appendChild(canvas)
       models.forEach(item => {
         item.render.drawShape();
       })
 
-      canvas.toBlob(blob => {
-        let cbData = navigator.clipboard;
-        //得到blob对象
-        let writeDatas = [new ClipboardItem({ "image/png": Promise.resolve(blob) })]
-        cbData.write(writeDatas).then(function () {
-          //清空临时canvas
-          ddInstance.render.tempCanvas = null;
-          editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
-            parts: ["topmenu"],
-          });
-          editor.bus.executeAll();
-          editor.changeState(DDeiEditorState.DESIGNING);
-        }, function (e) {
-          //清空临时canvas
-          ddInstance.render.tempCanvas = null;
+      let dataURL = canvas.toDataURL()
+      // let img = new Image()
+      // img.setAttribute("style", "position:absolute;left:320px;top:300px;")
+      // img.src = dataURL
+      // img.onload = function () {
+      //   document.body.appendChild(img)
+      // }
+      containerDiv.removeChild(canvas)
+
+      let blob = DDeiUtil.dataURLtoBlob(dataURL)
+
+      // let img1 = new Image()
+      // img1.setAttribute("style", "position:absolute;left:420px;top:300px;")
+      // img1.src = URL.createObjectURL(blob);
+      // img1.onload = function () {
+      //   document.body.appendChild(img1)
+      // }
+
+      // canvas.toBlob(blob => {
+      let cbData = navigator.clipboard;
+      //得到blob对象
+
+      let writeDatas = [new ClipboardItem({ [blob.type]: blob })]
+      cbData.write(writeDatas).then(function () {
+
+        //清空临时canvas
+        ddInstance.render.tempCanvas = null;
+        editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
+          parts: ["topmenu"],
         });
-      }, 'image/png', 1)
+        editor.bus.executeAll();
+        editor.changeState(DDeiEditorState.DESIGNING);
+      }, function (e) {
+        //清空临时canvas
+        ddInstance.render.tempCanvas = null;
+      });
+      // }, 'image/png', 1)
     } catch (e) {
+      console.error(e)
       DDeiConfig.ALLOW_CLIPBOARD = false
     }
 

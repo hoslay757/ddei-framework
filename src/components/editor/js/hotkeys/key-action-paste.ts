@@ -1056,7 +1056,8 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
 
     stage.ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeContainer, { newContainer: container, models: [model] }, evt);
     stage.ddInstance.bus.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
-    stage.ddInstance.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, { models: [model], value: DDeiEnumControlState.SELECTED }, evt);
+    stage.ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeSelect, { models: [model], value: DDeiEnumControlState.SELECTED }, evt);
+    stage.ddInstance.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels);
   }
 }
 
