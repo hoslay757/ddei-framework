@@ -28,14 +28,14 @@
         </div>
         <div class="row">
           <div class="title">权限：</div>
-          <div class="field" @click="checkOrUnCheckView">
-            <input type="checkbox" v-model="canView">查看
+          <div class="field" @click="checkOrUnCheckEdit">
+            <input type="checkbox" v-model="canEdit">编辑
+          </div>
+          <div class="field" @click="checkOrUnCheckDown">
+            <input type="checkbox" v-model="canDown">下载
           </div>
           <div class="field" @click="checkOrUnCheckColl">
             <input type="checkbox" v-model="canColl">收藏
-          </div>
-          <div class="field" @click="checkOrUnCheckEdit">
-            <input type="checkbox" v-model="canEdit">编辑
           </div>
         </div>
       </div>
@@ -50,8 +50,12 @@
         </div>
         <div class="row row-large">
           <div class="link-end">
-            <!-- <span style="color:green">2024-01-01 过期</span> -->
-            <span style="color:red">已过期</span>
+            <span v-if="linkData?.state != 0 && linkData?.endType == 99" style="color:green">永久生效</span>
+            <span v-if="linkData?.state != 0 && linkData?.endType != 99 && linkData?.endDate" style="color:green">{{
+              linkData?.endDate }}
+              过期</span>
+            <span v-if="linkData?.state == 0" style="color:red">已过期</span>
+            <!-- <span v-if="linkData?.endType != 99 && linkData?.endDate" style="color:red">已过期</span> -->
           </div>
           <div class="link-code-title">提取码：</div>
           <div class="link-code">
@@ -80,6 +84,9 @@ import DDeiEditor from "../js/editor.ts";
 import DDeiEditorUtil from "../js/util/editor-util.ts";
 import { login, userinfo } from "@/lib/api/login";
 import Cookies from "js-cookie";
+import { createshortlink } from "@/lib/api/shortlink"
+import DDeiUtil from "@/components/framework/js/util";
+import { now } from "lodash";
 export default {
   name: "DDei-Editor-Create-Share-Dialog",
   extends: null,
@@ -100,7 +107,7 @@ export default {
         { value: 3, text: '一月' },
         { value: 99, text: '永久' },
       ],
-      canView: true,//查看权限
+      canDown: false,//下载权限
       canColl: false,//收藏权限
       canEdit: false,//编辑权限
       shareDate: 1,//分享日期
@@ -118,8 +125,8 @@ export default {
   },
   methods: {
 
-    checkOrUnCheckView() {
-      this.canView = !this.canView
+    checkOrUnCheckDown() {
+      this.canDown = !this.canDown
     },
     checkOrUnCheckColl() {
       this.canColl = !this.canColl
@@ -134,14 +141,54 @@ export default {
     selectShareEnd(code) {
       this.shareDate = code
     },
+
     /**
      * 生成链接
      */
-    generateLink() {
-      this.linkData = {
-        url: "https://www.ddei.top/ss/4Bp2B1233",
-        pwd: "1234"
+    async generateLink() {
+      //构建数据
+
+      //获取当前激活文件
+      if (this.editor.files.length > 0 && this.editor.currentFileIndex != -1) {
+        let file = this.editor.files[this.editor.currentFileIndex];
+        if (file) {
+          let postData = {
+            pwd_code: this.shareCode ? 1 : 0,
+            end_type: this.shareDate,
+            can_down: this.canDown ? 1 : 0,
+            can_edit: this.canEdit ? 1 : 0,
+            can_coll: this.canColl ? 1 : 0,
+            file_id: file.id,
+            version: file.version
+          }
+          let linkData = await createshortlink(postData);
+          if (linkData.status == 200) {
+            if (linkData.data.code == 0) {
+              let data = linkData.data.data
+
+              let returnData = {
+                url: window.origin + "/ss/" + data.url,
+                pwd: data.pwd_code,
+                endType: data.end_type,
+                state: 1
+              }
+              if (data.end_type != 99 && data.end_time?.length > 10) {
+
+                let nowTimeStr = DDeiUtil.formatDate(new Date(), "yyyy-MM-ddThh:MM:ss")
+                returnData.endDate = data.end_time.substring(0, 10)
+                if (nowTimeStr >= data.end_time) {
+                  returnData.state = 0
+                }
+              }
+              this.linkData = returnData
+            }
+          }
+        }
       }
+
+
+
+
     },
 
     /**
@@ -247,6 +294,20 @@ export default {
           justify-content: center;
           align-items: center;
           user-select: none;
+
+          >input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-top: 1px;
+            margin-right: 3px;
+          }
+
+          >input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            margin-top: 1px;
+            margin-right: 3px;
+          }
         }
       }
 

@@ -15,4 +15,10 @@ export const routes = [
     component: () => import('@/views/Design.vue')
 
   },
+  {
+    path: '/ss/:url',
+    name: 'Design-SS',
+    component: () => import('@/views/Design.vue')
+
+  },
 ]

@@ -2,7 +2,7 @@
   <div class="ddei_editor_eip">
     <div class="header"></div>
     <div class="content">
-      <div class="part">
+      <div v-show="file?.extData?.owner == 1 || sslink?.can_down == 1" class="part">
         <div class="button-v" @click="download">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-a-ziyuan424"></use>
@@ -10,7 +10,7 @@
           <div class="text">下载</div>
         </div>
       </div>
-      <div class="part">
+      <div v-show="file?.extData?.owner == 1" class="part">
         <div class="button-v" @click="showShareDialog($event)">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-a-ziyuan378"></use>
@@ -18,7 +18,15 @@
           <div class="text">分享</div>
         </div>
       </div>
-      <div class="part">
+      <div v-show="file?.extData?.owner != 1 && sslink?.can_coll == 1" class="part">
+        <div class="button-v" @click="showShareDialog($event)">
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan378"></use>
+          </svg>
+          <div class="text">收藏</div>
+        </div>
+      </div>
+      <div v-show="file?.extData?.owner == 1" class="part">
         <div class="button-v" @click="publish">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-a-ziyuan425"></use>
@@ -34,19 +42,11 @@
   </div>
 </template>
 <script lang="ts">
-import DDeiStoreLocal from "@/components/framework/js/store/local-store";
 import DDeiEditor from "../../js/editor";
-import ICONS from "../../js/icon";
-import DDei from "../../../framework/js/ddei";
-import DDeiStage from "../../../framework/js/models/stage";
-import DDeiActiveType from "../../js/enums/active-type";
-import DDeiFile from "../../js/file";
-import DDeiSheet from "../../js/sheet";
-import DDeiFileState from "../../js/enums/file-state";
-import DDeiEnumBusCommandType from "../../../framework/js/enums/bus-command-type";
 import DDeiEditorEnumBusCommandType from "../../js/enums/editor-command-type";
 import DDeiEditorState from "../../js/enums/editor-state";
 import DDeiEditorUtil from "../../js/util/editor-util";
+import Cookies from "js-cookie";
 
 export default {
   name: "DDei-Editor-Quick-EImport",
@@ -56,7 +56,9 @@ export default {
   data() {
     return {
       editor: null,
-      icons: {},
+      file: null,
+      user: null,
+      sslink: null
     };
   },
   computed: {},
@@ -64,9 +66,15 @@ export default {
   created() { },
   mounted() {
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
-    for (let i in ICONS) {
-      this.icons[i] = ICONS[i];
+    let userCookie = Cookies.get("user");
+    if (userCookie) {
+      this.user = JSON.parse(userCookie)
+      if (this.user?.sslinks?.length > 0) {
+        this.sslink = this.user.sslinks[0]
+      }
     }
+    this.file = this.editor?.files[this.editor?.currentFileIndex];
+
   },
   methods: {
 

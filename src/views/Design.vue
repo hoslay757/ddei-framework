@@ -1,20 +1,58 @@
 <template>
-  <DDeiEditor :config="ddeiConfig"></DDeiEditor>
+  <DDeiEditor v-if="loadMode == 1 || loadMode == 2" :config="ddeiConfig"></DDeiEditor>
+  <div v-if="loadMode == 3" class="ddei_sslink_outtime">
+    <div class="content">
+      <div class="header">
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-a-ziyuan388"></use>
+        </svg>
+        <span>很抱歉，当前链接已失效</span>
+        <div class="goback" @click="goBackLogin">返回</div>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="loadMode == 4" class="ddei_sslink_enterpwd">
+    <div class="content">
+      <div class="header">
+        <svg class="icon warn" aria-hidden="true">
+          <use xlink:href="#icon-a-ziyuan378"></use>
+        </svg>
+        <span>请输入提取码</span>
+      </div>
+      <div class="field">
+        <div class="link-code-title">提取码：</div>
+        <div class="link-code">
+          <input v-model="inputPwdCode" @keydown.enter="enterPwdCode">
+        </div>
+      </div>
+
+      <div class="button" @click="enterPwdCode">确定</div>
+
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
 import { userinfo } from "@/lib/api/login/index.js";
 import { loadfile, savefile, publishfile } from "@/lib/api/file";
+import { shortlinklogin } from "@/lib/api/shortlink";
 import Cookies from "js-cookie";
 import DDeiEditor from "../components/editor/Editor.vue";
 import DDeiEditorUtil from "@/components/editor/js/util/editor-util";
 import DDei from "@/components/framework/js/ddei";
+import DDeiUtil from "@/components/framework/js/util";
+
+import FONTS from "@/components/editor/configs/fonts/font"
+import { groupOriginDefinies, controlOriginDefinies } from "@/components/editor/configs/toolgroup";
 
 export default {
   props: {},
   data() {
     return {
       publishPostData: null,
+      inputPwdCode: "",
+      loadMode: 0,//加载模式0，不加载
       ddeiConfig: Object.freeze({
         EVENT_LOAD_FILE: this.openFile,
         EVENT_SAVE_FILE: this.saveFile,
@@ -22,7 +60,7 @@ export default {
         EVENT_PUBLISH_FILE: this.publishFile,
         // AC_DESIGN_SELECT: false,
         // AC_DESIGN_DRAG: false,
-        // AC_DESIGN_EDIT: true,
+        // AC_DESIGN_EDIT: false,
         // AC_DESIGN_CREATE_DDeiRectangle: true,
         // AC_DESIGN_SELECT_DDeiRectangle: true,
         // AC_DESIGN_DRAG_DDeiRectangle: false,
@@ -49,12 +87,76 @@ export default {
   created() {
 
   },
+  beforeMount() {
+    let routePath = decodeURIComponent(this.$route.path)
+    if (routePath.startsWith("/ss/")) {
+      //获取短链接码
+      let ssUrl = routePath.substring(4)
+      let pwdCode = ''
+      //获取URL中的验证码
+      if (ssUrl.indexOf("码") != -1) {
+        pwdCode = ssUrl.substring(ssUrl.indexOf(":") + 1)
+        ssUrl = ssUrl.substring(0, ssUrl.indexOf("提"))
+      }
+      //加载获取短链接信息
+      this.makeShortLinkLogin(ssUrl, pwdCode)
+    } else {
+      this.loadMode = 1
+    }
+  },
   mounted() {
 
   },
   methods: {
+    /**
+     * 执行短链接登陆
+     * @param ssUrl 
+     * @param pwdCode 
+     */
+    makeShortLinkLogin(ssUrl, pwdCode) {
+      shortlinklogin(ssUrl, pwdCode).then(ssResult => {
+        if (ssResult.status == 200 && ssResult.data.code == 0 && ssResult.data.data) {
+          // 缓存 token
+          Cookies.set('token', ssResult.data.data.token)
+          Cookies.set('refreshToken', ssResult.data.data.refreshToken)
+          Cookies.set('tokenExp', ssResult.data.data.tokenExp)
+          this.ssUrl = ssUrl
+          this.getUserInfo().then(result => {
+            let loadMode = 1
+            if (result) {
+              let userCookie = Cookies.get("user");
+              if (userCookie) {
+                let user = JSON.parse(userCookie)
+                if (user.sslinks?.length > 0) {
+                  let sslink = user.sslinks[0]
+                  if (sslink?.state == 1 && sslink?.url == this.ssUrl) {
+                    loadMode = 2
+                  } else if (sslink?.url == this.ssUrl) {
+                    //校验是否过期、是否输入了验证码等信息
+                    if (sslink.end_type != 99) {
+                      let nowTimeStr = DDeiUtil.formatDate(new Date(), "yyyy-MM-ddThh:MM:ss")
+                      if (nowTimeStr >= sslink.end_time) {
+                        loadMode = 3//超期
+                      }
+                    }
+                    if (loadMode != 3 && sslink.state == 0) {
+                      loadMode = 4//未输入验证码，要求输入验证码
+                    }
+                  }
+                }
+              }
+            }
+            this.loadMode = loadMode
+          })
+        } else {
+          this.loadMode = 1
+        }
+      })
+    },
 
-
+    enterPwdCode() {
+      this.makeShortLinkLogin(this.ssUrl, this.inputPwdCode)
+    },
     /**
      * 查看前
      */
@@ -152,23 +254,38 @@ export default {
      * 打开文件
      */
     async openFile() {
-      if (await this.getUserInfo()) {
-        //获取参数
-        let fileId = this.$route.params.id;
+      if (await this.getUserInfo(this.ssUrl)) {
+        //普通文件打开
+        let loadFileJSON = {}
+        if (this.loadMode == 1) {
+          //获取参数
+          let fileId = this.$route.params.id;
+          loadFileJSON.id = fileId
+        } else if (this.loadMode == 2) {
+          //获取参数
+          let userCookie = Cookies.get("user");
+          let user = JSON.parse(userCookie)
+          let sslink = user.sslinks[0]
+          loadFileJSON.fv_id = sslink.fv_id
+        }
+
         //根据ID获取文件的设计以及文件的信息
-        let fileData = await loadfile({ id: fileId });
+        let fileData = await loadfile(loadFileJSON);
         if (fileData.status == 200) {
           if (fileData.data.code == 0) {
             let returnData = fileData.data.data;
-            //DEMO 保存的业务ID
-            returnData.extData = { busiid: "busi_" + returnData.id };
+            //保存的业务ID
+            returnData.extData = { busiid: "busi_" + returnData.id, owner: returnData.owner };
             let busiData = await this.loadBusiData();
             returnData.busiData = busiData;
             //加载业务信息，以用于显示填充数据
             return returnData;
           }
         }
+
       }
+
+
 
     },
 
@@ -375,6 +492,14 @@ export default {
       });
     },
 
+    goBackLogin() {
+      Cookies.remove("token");
+      Cookies.remove("user");
+      this.$router.push({
+        path: "/login",
+      });
+    },
+
     /**
      * 弹出发布文件弹出框
      */
@@ -395,7 +520,7 @@ export default {
      */
     async getUserInfo() {
       try {
-        let response = await userinfo()
+        let response = await userinfo(this.ssUrl)
         let userJSON = response.data.data;
         let user = JSON.stringify(userJSON, null, 4);
         Cookies.set("user", user);
@@ -504,5 +629,155 @@ export default {
       }
     }
   }
+}
+
+/**以下为询问框的样式 */
+.ddei_sslink_outtime {
+  width: 100%;
+  height: calc(100vh);
+  color: black;
+  background: #FFFFFF;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .content {
+    display: flex;
+    flex-direction: column;
+
+    .header {
+      flex: 0 0 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-family: "Microsoft YaHei";
+      font-weight: 400;
+      margin-top: 10px;
+      color: #000000;
+
+      .icon {
+        font-size: 30px;
+        margin-right: 10px;
+      }
+
+      .goback {
+        margin-left: 10px;
+        cursor: pointer;
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+
+
+.ddei_sslink_enterpwd {
+  width: 100%;
+  height: calc(100vh);
+  color: black;
+  background: #FFFFFF;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .content {
+    border: 2px solid #176EFF;
+    border-radius: 4px;
+    width: 420px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0 24px;
+
+    .header {
+      flex: 0 0 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-family: "Microsoft YaHei";
+      font-weight: 400;
+      margin-top: 10px;
+      color: #000000;
+
+      .icon {
+        font-size: 30px;
+      }
+
+
+
+    }
+
+
+    .field {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      user-select: none;
+
+
+      .link-code-title {
+        flex: 0 0 100px;
+        height: 30px;
+        padding-left: 10px;
+        text-align: left;
+        font-size: 20px;
+      }
+
+
+      .link-code {
+        flex: 0 0 120px;
+        border: 1px solid #176EFF;
+        border-radius: 4px;
+        height: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        >input {
+          flex: 0 0 80px;
+          outline: none;
+          background: none;
+          border: none;
+          width: 80px;
+          font-size: 20px;
+        }
+      }
+    }
+
+    .button {
+      width: 200px;
+      height: 40px;
+      background: #FFFFFF;
+      border: 1px solid #E6E6E6;
+      border-radius: 6px;
+      font-size: 20px;
+      font-family: "Microsoft YaHei";
+      font-weight: 400;
+      color: #040404;
+      margin-left: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      background: #176EFF;
+      margin-bottom: 10px;
+
+    }
+
+    .button:hover {
+      cursor: pointer;
+    }
+
+  }
+
+
+
 }
 </style>

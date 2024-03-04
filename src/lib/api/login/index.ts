@@ -11,6 +11,10 @@ export function login(loginInfo = {}) {
 }
 
 // 获取用户信息
-export function userinfo() {
-  return request.get('/v1/user/info')
+export function userinfo(url) {
+  let u = "/v1/user/info"
+  if (url) {
+    u += "?url=" + url
+  }
+  return request.get(u)
 }

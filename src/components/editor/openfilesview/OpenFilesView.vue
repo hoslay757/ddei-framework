@@ -52,7 +52,7 @@ import DDeiEditorUtil from "../js/util/editor-util";
 import DDeiStoreLocal from "@/components/framework/js/store/local-store";
 import DDeiEnumBusCommandType from "../../framework/js/enums/bus-command-type";
 import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
-
+import Cookies from "js-cookie";
 import DDeiStage from "../../framework/js/models/stage";
 import DDeiSheet from "../js/sheet";
 
@@ -102,6 +102,7 @@ export default {
         for (let i = 0; i < this.editor.files.length; i++) {
           if (this.editor.files[i].active == DDeiActiveType.ACTIVE) {
             activeIndex = i;
+            this.applyFilePromise(this.editor.files[i])
             break;
           }
         }
@@ -406,8 +407,50 @@ export default {
           ddInstance.bus.executeAll();
         }
       }
+      this.applyFilePromise(file)
     },
 
+    /**
+     * 设置文件权限
+     */
+    applyFilePromise(file) {
+      if (file) {
+        let ddInstance = this.editor.ddInstance;
+        if (file.extData?.owner != 1) {
+          let canEdit = 0
+          let userCookie = Cookies.get("user");
+          if (userCookie) {
+            let user = JSON.parse(userCookie)
+            if (user?.sslinks?.length > 0) {
+              let sslink = user?.sslinks[0]
+              if (sslink?.can_edit == 1) {
+                canEdit = 1
+              }
+            }
+          }
+          if (!canEdit) {
+            ddInstance["AC_DESIGN_CREATE"] = false
+            ddInstance["AC_DESIGN_EDIT"] = false
+            ddInstance["AC_DESIGN_DRAG"] = false
+            ddInstance["AC_DESIGN_SELECT"] = false
+            ddInstance["AC_DESIGN_LINK"] = false
+          } else {
+            ddInstance["AC_DESIGN_CREATE"] = true
+            ddInstance["AC_DESIGN_EDIT"] = true
+            ddInstance["AC_DESIGN_DRAG"] = true
+            ddInstance["AC_DESIGN_SELECT"] = true
+            ddInstance["AC_DESIGN_LINK"] = true
+
+          }
+        } else {
+          ddInstance["AC_DESIGN_CREATE"] = true
+          ddInstance["AC_DESIGN_EDIT"] = true
+          ddInstance["AC_DESIGN_DRAG"] = true
+          ddInstance["AC_DESIGN_SELECT"] = true
+          ddInstance["AC_DESIGN_LINK"] = true
+        }
+      }
+    },
 
     /**
      * 放弃并关闭确认弹框
