@@ -1,6 +1,7 @@
 <template>
   <div id="ddei_editor_bottommenu" class="ddei_editor_bottommenu" @mousedown="changeEditorFocus">
-    <div class="ddei_editor_bottommenu_addpage" @click="newSheet" v-if="allowOpenMultSheets">
+    <div class="ddei_editor_bottommenu_addpage" v-show="file?.extData?.owner == 1 || sslink?.can_edit == 1"
+      @click="newSheet" v-if="allowOpenMultSheets">
       <svg class="icon" aria-hidden="true">
         <use xlink:href="#icon-a-ziyuan376"></use>
       </svg>
@@ -10,9 +11,10 @@
         <span></span>
       </div>
       <div draggable="true" v-if="allowOpenMultSheets" @dragstart="sheetDragStart(null, $event)"
-        @click.left="changeSheet(index)" @click.right="showMenu(sheet, $event)" @dragover="sheetDragOver($event)"
-        @drop="sheetDragDrop($event)" @dragleave="sheetDragCancel($event)" @dblclick="startChangeSheetName(sheet, $event)"
-        v-show="index >= openIndex && index < openIndex + maxOpenSize"
+        @click.left="changeSheet(index)"
+        @click.right="(file?.extData?.owner == 1 || sslink?.can_edit == 1) && showMenu(sheet, $event)"
+        @dragover="sheetDragOver($event)" @drop="sheetDragDrop($event)" @dragleave="sheetDragCancel($event)"
+        @dblclick="startChangeSheetName(sheet, $event)" v-show="index >= openIndex && index < openIndex + maxOpenSize"
         :class="{ 'ddei_editor_bottommenu_page': sheet.active == 0, 'ddei_editor_bottommenu_page_selected': sheet.active == 1 }"
         :title="sheet.name" v-for="(sheet, index) in  editor?.files[editor?.currentFileIndex]?.sheets ">
         <span>{{ sheet.name }}</span>
@@ -92,6 +94,7 @@ import DDeiAbstractShape from "../../framework/js/models/shape";
 import DDeiModelArrtibuteValue from "../../framework/js/models/attribute/attribute-value";
 import DDeiEnumOperateType from "../../framework/js/enums/operate-type";
 import DDeiEditorUtil from "../js/util/editor-util";
+import Cookies from "js-cookie";
 
 export default {
   name: "DDei-Editor-BottomMenu",
@@ -113,6 +116,9 @@ export default {
       allowOpenMultLayers: true,
       allowStageRatio: true,
       allowAddLayer: true,
+      sslink: null,
+      user: null,
+      file: null,
     };
   },
   computed: {},
@@ -194,6 +200,20 @@ export default {
       "GLOBAL_ALLOW_STAGE_RATIO",
       this.editor
     );
+
+
+    let userCookie = Cookies.get("user");
+    if (userCookie && file) {
+      this.user = JSON.parse(userCookie)
+      for (let i = 0; i < this.user?.sslinks?.length; i++) {
+        if (this.user.sslinks[i].file_id == file.id) {
+          this.sslink = this.user.sslinks[i]
+          break;
+        }
+      }
+
+    }
+    this.file = file
   },
   methods: {
 

@@ -4,7 +4,8 @@
       <div class="title">图层</div>
       <div class="group">
         <div class="group_content">
-          <div class="item" @click="createNewLayer(0)" v-show="allowAddLayer">
+          <div class="item" @click="createNewLayer(0)"
+            v-show="(file?.extData?.owner == 1 || sslink?.can_edit == 1) && allowAddLayer">
             <span style="grid-column:1/8;">新建图层</span>
             <svg class="icon extbtn" aria-hidden="true">
               <use xlink:href="#icon-a-ziyuan374"></use>
@@ -15,11 +16,13 @@
             @dragover="layerDragOver($event)" @drop="layerDragDrop($event)" @dragleave="layerDragCancel($event)">
             <span style="grid-column:1/8;" @dblclick="startChangeLayerName(layer, $event)">{{ layer.name ? layer.name :
               '图层' }}</span>
-            <svg class="icon" aria-hidden="true" @click="removeLayer(index)">
+            <svg class="icon" aria-hidden="true" v-show="file?.extData?.owner == 1 || sslink?.can_edit == 1"
+              @click="removeLayer(index)">
               <use xlink:href="#icon-a-ziyuan401"></use>
             </svg>
             <span style="grid-column:1/4;font-weight:normal">形状:{{ layer.modelNumber }}</span>
-            <svg class="icon" aria-hidden="true" @click="createNewLayer(index)" v-show="allowAddLayer">
+            <svg class="icon" aria-hidden="true" @click="createNewLayer(index)"
+              v-show="(file?.extData?.owner == 1 || sslink?.can_edit == 1) && allowAddLayer">
               <use xlink:href="#icon-a-ziyuan374"></use>
             </svg>
             <svg class="icon" @click="displayOrShowLayer(layer)">
@@ -60,6 +63,7 @@ import DDeiAbstractShape from "../../framework/js/models/shape";
 import DDeiModelArrtibuteValue from "../../framework/js/models/attribute/attribute-value";
 import DDeiEnumOperateType from "../../framework/js/enums/operate-type";
 import DDeiEditorUtil from "../js/util/editor-util";
+import Cookies from "js-cookie";
 export default {
   name: "DDei-Editor-Dialog-ManageLayers",
   extends: null,
@@ -73,6 +77,9 @@ export default {
       allowAddLayer: true,
       allowOpenMultLayers: true,
       currentStage: null,
+      sslink: null,
+      user: null,
+      file: null,
     };
   },
   computed: {},
@@ -96,6 +103,20 @@ export default {
     let file = this.editor?.files[this.editor?.currentFileIndex];
     let sheet = file?.sheets[file?.currentSheetIndex];
     this.currentStage = sheet?.stage;
+
+    let userCookie = Cookies.get("user");
+
+    if (userCookie && file) {
+      this.user = JSON.parse(userCookie)
+      for (let i = 0; i < this.user?.sslinks?.length; i++) {
+        if (this.user.sslinks[i].file_id == file.id) {
+          this.sslink = this.user.sslinks[i]
+          break;
+        }
+      }
+
+    }
+    this.file = file
   },
   methods: {
     /**

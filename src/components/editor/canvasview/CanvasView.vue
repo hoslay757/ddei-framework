@@ -450,5 +450,6 @@ export default {
 <style scoped>
 .ddei_editor_canvasview {
   flex: 1;
+  overflow: hidden;
 }
 </style>

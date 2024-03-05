@@ -74,7 +74,7 @@ class DDeiCanvasRender {
         } else {
           this.canvas = this.realCanvas
         }
-        this.realCanvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / ratio) + ");display:block;zoom:" + (1 / ratio));
+        this.realCanvas.setAttribute("style", "position:fixed;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / ratio) + ");display:block;zoom:" + (1 / ratio));
         this.realCanvas.setAttribute("width", this.container.clientWidth * ratio);
         this.realCanvas.setAttribute("height", this.container.clientHeight * ratio);
 

@@ -5,15 +5,16 @@
       <TopMenu v-if="refreshTopMenuView"></TopMenu>
     </div>
     <div class="body">
-      <div class="left" id="ddei_editor_frame_left">
-        <Toolbox @createControlPrepare="createControlPrepare"></Toolbox>
+      <div class="left" v-show="toolboxShow" id="ddei_editor_frame_left">
+        <Toolbox v-if="refreshToolBox" @createControlPrepare="createControlPrepare"></Toolbox>
       </div>
+
       <div class="middle" id="ddei_editor_frame_middle">
         <OpenFilesView v-if="allowOpenMultFiles && refreshOpenFilesView"></OpenFilesView>
         <CanvasView id="ddei_editor_canvasview"></CanvasView>
         <QuickColorView v-if="allowQuickColor"></QuickColorView>
       </div>
-      <div class="right" id="ddei_editor_frame_right">
+      <div class="right" v-show="propertyViewShow" id="ddei_editor_frame_right">
         <PropertyView v-if="refreshPropertyView"></PropertyView>
       </div>
     </div>
@@ -72,12 +73,15 @@ export default {
       refreshBottomMenu: true,
       refreshOpenFilesView: true,
       refreshPropertyView: true,
+      refreshToolBox: true,
       refreshMenu: true,
       refreshTopMenuView: true,
       allowOpenMultFiles: true,
       allowQuickColor: true,
       initLeftWidth: 0,
       initRightWidth: 0,
+      toolboxShow: true,
+      propertyViewShow: true
     };
   },
   //注册组件
@@ -162,6 +166,30 @@ export default {
     if (!DDeiUtil.setCurrentMenu) {
       DDeiUtil.setCurrentMenu = this.setCurrentMenu;
     }
+
+    // 获取要监听的 div 元素
+    let middleCanvas = document.getElementById("ddei_editor_canvasview");
+    // 创建 ResizeObserver 实例
+    const resizeObserver = new ResizeObserver(entries => {
+      // entries 是一个 ResizeObserverEntry 对象数组，包含目标元素的大小信息
+      for (const entry of entries) {
+        // 获取宽度和高度
+        const { width, height } = entry.contentRect;
+        this.editor.ddInstance.render.setSize(
+          width,
+          height,
+          0,
+          0
+        );
+        this.editor.ddInstance.bus.push(DDeiEditorEnumBusCommandType);
+        this.editor.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
+        this.editor.ddInstance.bus.executeAll();
+
+      }
+    });
+
+    // 开始监听目标元素的大小变化
+    resizeObserver.observe(middleCanvas);
   },
   methods: {
 
@@ -194,6 +222,13 @@ export default {
       this.refreshPropertyView = false;
       this.$nextTick(() => {
         this.refreshPropertyView = true;
+      });
+    },
+
+    forceToolBox() {
+      this.refreshToolBox = false;
+      this.$nextTick(() => {
+        this.refreshToolBox = true;
       });
     },
 
@@ -593,9 +628,9 @@ export default {
 }
 
 
-.ddei-cut-img-div{
-  width:0.1px;
-  height:0.1px;
-  display:flex;
+.ddei-cut-img-div {
+  width: 0.1px;
+  height: 0.1px;
+  display: flex;
 }
 </style>

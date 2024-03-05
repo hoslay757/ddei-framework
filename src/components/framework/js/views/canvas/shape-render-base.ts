@@ -201,13 +201,21 @@ class DDeiAbstractShapeRender {
   mouseMove(evt: Event): void {
     //获取操作点，如果有则添加到其Layer
     if (this.layer) {
-      let ex = evt.offsetX;
-      let ey = evt.offsetY;
-      ex /= window.remRatio
-      ey /= window.remRatio
-      ex -= this.stage.wpv.x;
-      ey -= this.stage.wpv.y
-      this.changeOpPoints(ex, ey);
+
+      let modeName = DDeiUtil.getConfigValue("MODE_NAME", this.ddRender?.model);
+      let accessLink = DDeiUtil.isAccess(
+        DDeiEnumOperateType.LINK, [this.model], null, modeName,
+        this.ddRender?.model
+      );
+      if (accessLink) {
+        let ex = evt.offsetX;
+        let ey = evt.offsetY;
+        ex /= window.remRatio
+        ey /= window.remRatio
+        ex -= this.stage.wpv.x;
+        ey -= this.stage.wpv.y
+        this.changeOpPoints(ex, ey);
+      }
     }
 
   }

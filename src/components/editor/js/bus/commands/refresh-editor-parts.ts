@@ -45,11 +45,16 @@ class DDeiEditorCommandRefreshEditorParts extends DDeiBusCommand {
       if (data.parts?.indexOf("property") != -1) {
         editor.editorViewer?.forcePropertyView();
       }
+      if (data.parts?.indexOf("toolbox") != -1) {
+        editor.editorViewer?.forceToolBox();
+      }
+
     } else {
       editor.editorViewer?.forceRefreshBottomMenu();
       editor.editorViewer?.forceRefreshOpenFilesView();
       editor.editorViewer?.forceRefreshTopMenuView();
       editor.editorViewer?.forcePropertyView();
+      editor.editorViewer?.forceToolBox();
 
     }
     return true;

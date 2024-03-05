@@ -104,6 +104,11 @@ export default {
           if (this.editor.files[i].active == DDeiActiveType.ACTIVE) {
             activeIndex = i;
             this.applyFilePromise(this.editor.files[i])
+
+            this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
+              parts: ["toolbox", "property"]
+            });
+            this.editor.bus.executeAll();
             break;
           }
         }
@@ -409,10 +414,14 @@ export default {
           ddInstance.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
             parts: ["bottommenu", "topmenu"],
           });
+
           ddInstance.bus.executeAll();
+
         }
       }
       this.applyFilePromise(file)
+      ddInstance.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {});
+      ddInstance.bus.executeAll();
     },
 
     /**

@@ -21,8 +21,7 @@ export default {
       //采样的规则，多组采样返回多组规则
       rules: [
         `(i, sample, pvs, model, ovs){
-            let op2close = i == 3 ? 1 : 0
-            pvs.push({begin:i==0,end:i==3,x:sample.x,y:sample.y,select:1,oppoint:2,op2close:op2close,stroke:1,fill:1,clip:1});
+            pvs.push({begin:i==0,end:i==3,x:sample.x,y:sample.y,select:1,oppoint:1,stroke:1,fill:1,clip:1});
         }`,
         `(i, sample, pvs, model, ovs){
             let er = sample.r * Math.cos(45)

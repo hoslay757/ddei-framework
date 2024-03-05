@@ -24,7 +24,15 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
   action(evt: Event, ddInstance: DDei): void {
     //修改当前操作控件坐标
     if (ddInstance && ddInstance.stage) {
-      this.doPaste(evt, ddInstance);
+      let modeName = DDeiUtil.getConfigValue("MODE_NAME", ddInstance);
+      let accessCreate = DDeiUtil.isAccess(
+        DDeiEnumOperateType.CREATE, null, null, modeName,
+        ddInstance
+      );
+      //校验权限
+      if (accessCreate) {
+        this.doPaste(evt, ddInstance);
+      }
     }
   }
 
@@ -216,10 +224,8 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
 
     }
 
-
-
     //如果没有粘贴到表格在最外层容器的鼠标位置，创建rectangle控件
-    if (createControl) {
+    if (this.accessCreate && createControl) {
       stage.idIdx++
       hasChange = true;
 
@@ -910,6 +916,7 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
       }
     });
     //加载事件的配置
+
     let createBefore = DDeiUtil.getConfigValue(
       "EVENT_CONTROL_CREATE_BEFORE",
       stage.ddInstance

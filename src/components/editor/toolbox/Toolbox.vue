@@ -85,7 +85,7 @@ export default {
       editor: null,
       //用于缓存动态引入的控件
       controlCls: {},
-      icons: {},
+      icons: {}
     };
   },
   computed: {},
@@ -134,7 +134,16 @@ export default {
     Promise.all(loadArray).then(x => {
       this.generateControlIcons();
     })
+    let ddInstance: DDei = this.editor.ddInstance;
+    if (ddInstance) {
+      let modeName = DDeiUtil.getConfigValue("MODE_NAME", ddInstance);
+      let accessCreate = DDeiUtil.isAccess(
+        DDeiEnumOperateType.CREATE, null, null, modeName,
+        ddInstance
+      );
+      this.editor.editorViewer.toolboxShow = accessCreate
 
+    }
   },
   methods: {
     cancelCreateControl(e) {

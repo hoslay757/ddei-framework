@@ -52,6 +52,12 @@ export default {
         .then((response) => {
           let userJSON = response.data.data;
           let user = JSON.stringify(userJSON, null, 4);
+          if (userJSON.id == "-99") {
+            Cookies.remove("token");
+            this.$router.push({
+              path: this.$route.query.redirect || "/login",
+            });
+          }
           Cookies.set("user", user);
         })
         .catch((e) => {

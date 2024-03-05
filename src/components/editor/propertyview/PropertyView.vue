@@ -180,6 +180,15 @@ export default {
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     this.editor.properyViewer = this;
     this.refreshAttrs();
+    let ddInstance: DDei = this.editor.ddInstance;
+    if (ddInstance && this.editor.editorViewer) {
+      let modeName = DDeiUtil.getConfigValue("MODE_NAME", ddInstance);
+      let accessEdit = DDeiUtil.isAccess(
+        DDeiEnumOperateType.EDIT, null, null, modeName,
+        ddInstance
+      );
+      this.editor.editorViewer.propertyViewShow = accessEdit
+    }
   },
   methods: {
 

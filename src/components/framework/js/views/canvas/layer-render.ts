@@ -564,12 +564,20 @@ class DDeiLayerCanvasRender {
         //是否允许在内部触发
         let oppInner = DDeiUtil.getControlDefine(opPoint.model)?.define?.oppInner;
         if (opPoint.oppoint == 3 || (oppInner == 0 && (projPoint = opPoint.model.getProjPoint({ x: ex, y: ey }, { in: -3, out: 15 }, 1, 2))) != null) {
-          isStop = true;
-          //当前操作状态：线改变点中
-          //记录当前的拖拽的x,y,写入dragObj作为临时变量
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { opPoint: opPoint } }, evt);
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
-          this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING_CONFIRM
+
+          let modeName = DDeiUtil.getConfigValue("MODE_NAME", ddInstance);
+          let accessLink = DDeiUtil.isAccess(
+            DDeiEnumOperateType.LINK, null, null, modeName,
+            ddInstance
+          );
+          if (accessLink) {
+            isStop = true;
+            //当前操作状态：线改变点中
+            //记录当前的拖拽的x,y,写入dragObj作为临时变量
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { opPoint: opPoint } }, evt);
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
+            this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING_CONFIRM
+          }
         }
       }
 
@@ -640,12 +648,19 @@ class DDeiLayerCanvasRender {
               clearSelect = true;
             }
             case 4: {
-              //当前操作状态：线改变点中
-              //记录当前的拖拽的x,y,写入dragObj作为临时变量
-              this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { dx: ex, dy: ey } }, evt);
-              this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING
+              let modeName = DDeiUtil.getConfigValue("MODE_NAME", this.stage?.ddInstance);
+              let accessLink = DDeiUtil.isAccess(
+                DDeiEnumOperateType.LINK, null, null, modeName,
+                this.stage?.ddInstance
+              );
+              if (accessLink) {
+                //当前操作状态：线改变点中
+                //记录当前的拖拽的x,y,写入dragObj作为临时变量
+                this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { dx: ex, dy: ey } }, evt);
+                this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING
 
-              clearSelect = true
+                clearSelect = true
+              }
             }
           }
           if (clearSelect) {
@@ -1313,6 +1328,7 @@ class DDeiLayerCanvasRender {
         let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, ex, ey, true, true);
         if (operateControls != null && operateControls.length > 0) {
           operateControls[0].render.changeOpPoints(ex, ey, 1);
+
         }
         break;
       }
