@@ -24,7 +24,7 @@
         <use xlink:href="#icon-a-ziyuan422"></use>
       </svg>
     </div>
-    <svg class="icon addfile" aria-hidden="true" @click="newFile">
+    <svg class="icon addfile" v-show="user?.id != '-99'" aria-hidden="true" @click="newFile">
       <use xlink:href="#icon-a-ziyuan376"></use>
     </svg>
     <div style="flex:1 1 1px"></div>
@@ -71,6 +71,7 @@ export default {
       maxOpenSize: 1,
       tempFile: null,
       unitFileWidth: 160,
+      user: null
     };
   },
   computed: {},
@@ -117,6 +118,10 @@ export default {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     this.editor.openFilesViewer = this;
+    let userCookie = Cookies.get("user");
+    if (userCookie) {
+      this.user = JSON.parse(userCookie)
+    }
   },
   methods: {
 
@@ -421,11 +426,15 @@ export default {
           let userCookie = Cookies.get("user");
           if (userCookie) {
             let user = JSON.parse(userCookie)
-            if (user?.sslinks?.length > 0) {
-              let sslink = user?.sslinks[0]
-              if (sslink?.can_edit == 1) {
-                canEdit = 1
+            let sslink
+            for (let i = 0; i < user?.sslinks?.length; i++) {
+              if (user.sslinks[i].file_id == file.id) {
+                sslink = user.sslinks[i]
+                break;
               }
+            }
+            if (sslink?.can_edit == 1) {
+              canEdit = 1
             }
           }
           if (!canEdit) {

@@ -1,22 +1,20 @@
 <template>
-  <div :id="dialogId" class="close_file_confirm_dialog" @keydown.esc="abort">
+  <div :id="dialogId" class="coll_file_confirm_dialog" @keydown.esc="cancel">
     <div class="content">
       <div class="header">
         <svg class="icon warn" aria-hidden="true">
-          <use xlink:href="#icon-a-ziyuan411"></use>
+          <use xlink:href="#icon-shoucang"></use>
         </svg>
-        <span>是否保存文件？</span>
+        <span>收藏文件</span>
         <div style="flex:1"></div>
         <svg class="icon close" aria-hidden="true" @click="cancel">
           <use xlink:href="#icon-a-ziyuan422"></use>
         </svg>
       </div>
       <div class="msg">
-
       </div>
       <div class="tail">
-        <div class="button button-main" @click="ok">保存</div>
-        <div class="button" @click="abort">不保存</div>
+        <div class="button button-main" @click="ok">确定</div>
         <div class="button" @click="cancel">取消</div>
       </div>
     </div>
@@ -28,13 +26,13 @@ import DDeiEditor from "../js/editor.ts";
 import DDeiEditorUtil from "../js/util/editor-util.ts";
 
 export default {
-  name: "DDei-Editor-Confirm-CloseFile",
+  name: "DDei-Editor-Confirm-CollFile",
   extends: null,
   mixins: [],
   props: {},
   data() {
     return {
-      dialogId: 'close_file_confirm_dialog',
+      dialogId: 'coll_file_confirm_dialog',
       //当前编辑器
       editor: null,
     };
@@ -52,19 +50,13 @@ export default {
       if (this.editor?.tempDialogData[this.dialogId]?.callback?.ok) {
         this.editor?.tempDialogData[this.dialogId]?.callback?.ok();
       }
-      DDeiEditorUtil.closeDialog('close_file_confirm_dialog');
+      DDeiEditorUtil.closeDialog('coll_file_confirm_dialog');
     },
     cancel() {
       if (this.editor?.tempDialogData[this.dialogId]?.callback?.cancel) {
         this.editor.tempDialogData[this.dialogId].callback.cancel();
       }
-      DDeiEditorUtil.closeDialog('close_file_confirm_dialog');
-    },
-    abort() {
-      if (this.editor?.tempDialogData[this.dialogId]?.callback?.abort) {
-        this.editor.tempDialogData[this.dialogId].callback.abort();
-      }
-      DDeiEditorUtil.closeDialog('close_file_confirm_dialog');
+      DDeiEditorUtil.closeDialog('coll_file_confirm_dialog');
     },
   }
 };
@@ -72,7 +64,7 @@ export default {
 
 <style lang="less" scoped>
 /**以下为询问框的样式 */
-.close_file_confirm_dialog {
+.coll_file_confirm_dialog {
   width: 420px;
   height: 165px;
   background: #FFFFFF;
@@ -114,7 +106,6 @@ export default {
 
       .warn {
         font-size: 20px !important;
-        color: #F05B13;
       }
     }
 

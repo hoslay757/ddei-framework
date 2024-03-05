@@ -1,65 +1,113 @@
 <template>
-  <div :id="dialogId" class="relogin_dialog" @keydown.esc="abort">
-    <div class="content">
-      <div class="header">
-        <svg class="icon warn" aria-hidden="true">
-          <use :xlink:href="icon"></use>
-        </svg>
-        <span class="msg">
-        </span>
-        <div style="flex:1"></div>
-        <svg class="icon close" aria-hidden="true" @click="abort">
-          <use xlink:href="#icon-a-ziyuan422"></use>
-        </svg>
-      </div>
-      <form>
+  <div :id="dialogId" class="user_registry_dialog" @keydown.esc="abort">
+    <form>
+      <div class="content">
+        <div class="header">
+          <svg class="icon warn" aria-hidden="true">
+            <use :xlink:href="icon"></use>
+          </svg>
+          <span class="msg">
+          </span>
+          <div style="flex:1"></div>
+          <svg class="icon close" aria-hidden="true" @click="abort">
+            <use xlink:href="#icon-a-ziyuan422"></use>
+          </svg>
+        </div>
+
         <div class="content_right_login_form">
+          <div class="content_right_form_msg">
+            {{ form.validMsg.mobile }}
+          </div>
+          <div class="content_right_login_form_input">
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-a-ziyuan412"></use>
+            </svg>
+
+            <input v-model="form.mobile" ref="reg_input_id" type="mobile" class="content_right_reg_form_input"
+              placeholder="手机号" />
+            <span class="content_right_reg_form_input_required">*</span>
+          </div>
           <div class="content_right_form_msg">
             {{ form.validMsg.username }}
           </div>
-          <div class="content_right_login_form_title">用户名：</div>
-          <input v-model="form.username" ref="usernameinput" class="content_right_login_form_input"
-            placeholder="手机号/邮箱/账号" autofocus />
+          <div class="content_right_login_form_input">
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-a-ziyuan413"></use>
+            </svg>
+
+            <input v-model="form.username" class="content_right_reg_form_input" placeholder="用户名,4-20位中文、英文、数字、下划线" />
+            <span class="content_right_reg_form_input_required">*</span>
+          </div>
+          <div class="content_right_form_msg">
+            {{ form.validMsg.email }}
+          </div>
+          <div class="content_right_login_form_input">
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-youjian-01-01"></use>
+            </svg>
+
+            <input v-model="form.email" class="content_right_reg_form_input" placeholder="邮箱地址" type="email" />
+          </div>
           <div class="content_right_form_msg">
             {{ form.validMsg.password }}
           </div>
-          <div class="content_right_login_form_title">密码：</div>
-          <input v-model="form.password" class="content_right_login_form_input" placeholder="请输入密码" type="password"
-            @keydown.enter="login" autocomplete="on" />
+          <div class="content_right_login_form_input">
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-a-ziyuan415"></use>
+            </svg>
+
+            <input v-model="form.password" type="password" autocomplete="on" class="content_right_reg_form_input"
+              placeholder="密码" />
+            <span class="content_right_reg_form_input_required">*</span>
+          </div>
+          <div class="content_right_form_msg">
+            {{ form.validMsg.password1 }}
+          </div>
+          <div class="content_right_login_form_input">
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-a-ziyuan414"></use>
+            </svg>
+
+            <input v-model="form.password1" type="password" autocomplete="on" class="content_right_reg_form_input"
+              placeholder="确认密码" />
+            <span class="content_right_reg_form_input_required">*</span>
+          </div>
 
         </div>
         <div class="tail">
-          <div class="button button-main" @click="ok">登录</div>
-          <div class="button" @click="registry">注册</div>
+          <div class="button button-main" @click="ok">注册</div>
           <div class="button" @click="abort">取消</div>
         </div>
-      </form>
-    </div>
+
+      </div>
+    </form>
   </div>
 </template>
 
 <script lang="ts">
 import DDeiEditor from "../js/editor.ts";
 import DDeiEditorUtil from "../js/util/editor-util.ts";
-import { login, userinfo } from "@/lib/api/login";
+import { register, userinfo } from "@/lib/api/login";
 import Cookies from "js-cookie";
-import DDeiEditorState from "../js/enums/editor-state";
 export default {
-  name: "DDei-Editor-Confirm-ReLogin",
+  name: "DDei-Editor-Dialog-UserRegistry",
   extends: null,
   mixins: [],
   props: {},
   data() {
     return {
-      dialogId: 'relogin_dialog',
+      dialogId: 'user_registry_dialog',
       icon: null,
       //当前编辑器
       editor: null,
       loginMessage: "",
       user: "",
       form: {
+        mobile: "",
         username: "",
+        email: "",
         password: "",
+        password1: "",
         validMsg: {},
       },
     };
@@ -78,70 +126,71 @@ export default {
       this.icon = this.editor?.tempDialogData[this.dialogId].icon
     }
     setTimeout(() => {
-      this.$refs.usernameinput.focus()
+      this.$refs.reg_input_id.focus()
     }, 100);
-    this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
 
   },
   methods: {
-    registry() {
-      let callback = this.editor?.tempDialogData[this.dialogId]?.callback;
-      DDeiEditorUtil.closeDialog('relogin_dialog');
-      setTimeout(() => {
-        //弹出登录弹出框
-        DDeiEditorUtil.showDialog("user_registry_dialog", {
-          icon: "#icon-a-ziyuan413",
-          msg: "新用户注册",
-          callback: callback,
-          background: "white",
-          opacity: "1%",
-          event: -1
-        })
-      }, 50);
-    },
 
     ok() {
-      this.login()
+      this.registry()
     },
 
     abort() {
       if (this.editor?.tempDialogData[this.dialogId]?.callback?.abort) {
         this.editor.tempDialogData[this.dialogId].callback.abort();
       }
-      DDeiEditorUtil.closeDialog('relogin_dialog');
+      DDeiEditorUtil.closeDialog('user_registry_dialog');
     },
 
-    //登录
-    async login() {
+    //注册并登录
+    async registry() {
       //校验
       this.form.validMsg = {};
       if (!this.form.username) {
         this.form.validMsg.username = "请输入用户名";
       } else {
-        let uPattern = /^[a-zA-Z0-9_-]{6,20}$/;
+        let uPattern = /^[\u4e00-\u9fa5a-zA-Z0-9_-]{4,20}$/;
         if (!uPattern.test(this.form.username)) {
-          this.form.validMsg.username = "用户名为6至20位数字、字母下划线组合";
+          this.form.validMsg.username = "用户名为4至20位,请勿输入特殊字符";
         }
       }
-      //密码
+      if (!this.form.mobile) {
+        this.form.validMsg.mobile = "请输入手机号码";
+      } else {
+        let mPattern =
+          /^1([3-9])\d{9}$/
+        if (!mPattern.test(this.form.mobile)) {
+          this.form.validMsg.mobile = "请输入正确的手机号码";
+        }
+      }
+      if (this.form.email) {
+        let ePattern =
+          /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+        if (!ePattern.test(this.form.email)) {
+          this.form.validMsg.email = "请输入正确的邮箱地址";
+        }
+      }
+
       if (
         !this.form.password ||
         this.form.password.length < 6 ||
         this.form.password.length > 20
       ) {
         this.form.validMsg.password = "请输入6-20位密码";
+      } else if (this.form.password != this.form.password1) {
+        this.form.validMsg.password1 = "前后输入的密码不一致";
       }
-
       if (JSON.stringify(this.form.validMsg) == "{}") {
-        //执行登录
+        //执行注册并登录
         this.form.validMsg = {};
-        let loginData = await login(this.form);
-        if (loginData.status == 200) {
+        let regData = await register(this.form);
+        if (regData.status == 200) {
           //登录成功
-          if (loginData.data?.code == 0) {
-            this.loginSuccess(loginData.data.data);
+          if (regData.data?.code == 0) {
+            this.loginSuccess(regData.data.data);
           } else {
-            this.form.validMsg = { username: loginData.data.message };
+            this.form.validMsg = { username: regData.data.message };
           }
         } else {
           this.form.validMsg = {
@@ -176,7 +225,7 @@ export default {
           if (this.editor?.tempDialogData[this.dialogId]?.callback?.ok) {
             this.editor.tempDialogData[this.dialogId].callback.ok();
           }
-          DDeiEditorUtil.closeDialog('relogin_dialog');
+          DDeiEditorUtil.closeDialog('user_registry_dialog');
         }
       })
 
@@ -208,9 +257,9 @@ export default {
 
 <style lang="less" scoped>
 /**以下为询问框的样式 */
-.relogin_dialog {
-  width: 420px;
-  height: 210px;
+.user_registry_dialog {
+  width: 320px;
+  height: 380px;
   background: #FFFFFF;
   border: 1px solid #E6E6E6;
   box-shadow: 0px 2px 24px 0px #DBDBDB;
@@ -224,8 +273,8 @@ export default {
   transform: translate(-50%, -50%);
 
   .content {
-    width: 420px;
-    height: 210px;
+    width: 320px;
+    height: 380px;
     display: flex;
     flex-direction: column;
     padding: 0 24px;
@@ -257,27 +306,34 @@ export default {
 
 
     .content_right_login_form {
-      width: 90%;
-      height: 120px;
+      height: 300px;
       background: #fff;
       border-radius: 10px;
       text-align: center;
     }
 
-    .content_right_login_form_title {
-      width: 100px;
-      height: 30px;
-      font-size: 18px;
-      float: left;
-      text-align: right;
-      color: black;
-    }
-
     .content_right_login_form_input {
-      width: 70%;
+
       height: 30px;
       font-size: 18px;
       float: left;
+      display: flex;
+      justify-content: start;
+      align-items: center;
+
+      .icon {
+        flex: 0 0 30px;
+      }
+
+      >input {
+        flex: 0 0 220px;
+      }
+
+      >span {
+        flex: 0 0 10px;
+        color: red;
+      }
+
     }
 
     .content_right_form_msg {
@@ -288,6 +344,7 @@ export default {
       text-align: right;
       margin-left: 36px;
       float: left;
+      padding-right: 30px;
     }
 
     .content_right_login_form_login {

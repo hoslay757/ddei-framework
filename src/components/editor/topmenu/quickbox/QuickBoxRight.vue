@@ -3,9 +3,11 @@
     <div class="header">
       <div class="h1"></div>
       <div class="h3"></div>
-      <div class="userinfo">{{ userNameFirst }}</div>
+      <div class="userinfo" v-show="user?.id != '-99'">{{ userNameFirst }}</div>
       <div class="h4"></div>
-      <div class="loginout" @click="loginout">注销</div>
+      <div class="loginout" v-show="user?.id != '-99'" @click="loginout">注销</div>
+      <div class="registry" v-show="user?.id == '-99'" @click="registry">注册</div>
+      <div class="login" v-show="user?.id == '-99'" @click="login">登录</div>
       <div class="h5"></div>
     </div>
     <div class="content">
@@ -18,6 +20,7 @@
 import DDeiEditor from "../../js/editor";
 import DDeiEditorUtil from "../../js/util/editor-util";
 import Cookies from 'js-cookie'
+import DDeiEditorEnumBusCommandType from "../../js/enums/editor-command-type";
 export default {
   name: "DDei-Editor-Right",
   extends: null,
@@ -29,7 +32,8 @@ export default {
       file: {},
       fileNameEditing: false,
       fileDescEditing: false,
-      userNameFirst: 'U'
+      userNameFirst: 'U',
+      user: null
     };
   },
   computed: {},
@@ -47,12 +51,46 @@ export default {
         if (user.name) {
           this.userNameFirst = user.name.charAt(0).toUpperCase();
         }
+        this.user = user
       }
     } catch (e) { }
   },
   methods: {
 
+    refreshEditor() {
+      this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts);
+      this.editor.bus.executeAll()
+    },
+
+    registry() {
+      //弹出登录弹出框
+      DDeiEditorUtil.showDialog("user_registry_dialog", {
+        icon: "#icon-a-ziyuan413",
+        msg: "新用户注册",
+        callback: {
+          ok: this.refreshEditor
+        },
+        background: "white",
+        opacity: "1%",
+        event: -1
+      })
+    },
+
+    login() {
+      //弹出登录弹出框
+      DDeiEditorUtil.showDialog("relogin_dialog", {
+        icon: "#icon-a-ziyuan413",
+        msg: '用户登录',
+        callback: {
+          ok: this.refreshEditor
+        },
+        background: "white",
+        opacity: "1%",
+        event: -1
+      })
+    },
     loginout() {
+      this.editor.files = []
       Cookies.remove('token')
       this.$router.push('/login')
     },
@@ -136,6 +174,43 @@ export default {
     }
 
     .loginout:hover {
+      text-decoration: underline;
+    }
+
+
+    .registry {
+      display: flex;
+      white-space: nowrap;
+      justify-content: center;
+      align-items: center;
+      flex: 0 1 28px;
+      height: 14px;
+      font-size: 16px;
+      font-weight: 400;
+      color: #000000;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .registry:hover {
+      text-decoration: underline;
+    }
+
+
+    .login {
+      display: flex;
+      white-space: nowrap;
+      justify-content: center;
+      align-items: center;
+      flex: 0 1 28px;
+      height: 14px;
+      font-size: 16px;
+      font-weight: 400;
+      color: #000000;
+      cursor: pointer;
+    }
+
+    .login:hover {
       text-decoration: underline;
     }
   }

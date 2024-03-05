@@ -142,6 +142,8 @@ class DDeiEditor {
  */
   static EVENT_PUBLISH_FILE: Function;
 
+
+
   /**
    * 返回文件列表，此方法为外部传入的勾子函数
    */

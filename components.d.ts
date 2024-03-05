@@ -24,6 +24,8 @@ declare module 'vue' {
     ChangeRatioDialog: typeof import('./src/components/editor/dialogs/ChangeRatioDialog.vue')['default']
     ChooseControlGroupDialog: typeof import('./src/components/editor/dialogs/ChooseControlGroupDialog.vue')['default']
     CloseFileConfirmDialog: typeof import('./src/components/editor/dialogs/CloseFileConfirmDialog.vue')['default']
+    CollFileConfirmDialog: typeof import('./src/components/editor/dialogs/CollFileConfirmDialog.vue')['default']
+    copy: typeof import('./src/components/editor/dialogs/PublishFileConfirmDialog copy.vue')['default']
     CreateShareDialog: typeof import('./src/components/editor/dialogs/CreateShareDialog.vue')['default']
     Dialogs: typeof import('./src/components/editor/dialogs/Dialogs.vue')['default']
     Editor: typeof import('./src/components/editor/Editor.vue')['default']
@@ -63,6 +65,7 @@ declare module 'vue' {
     QuickBoxOperate: typeof import('./src/components/editor/topmenu/quickbox/QuickBoxOperate.vue')['default']
     QuickBoxRight: typeof import('./src/components/editor/topmenu/quickbox/QuickBoxRight.vue')['default']
     QuickBoxSDP: typeof import('./src/components/editor/topmenu/quickbox/QuickBoxSDP.vue')['default']
+    QuickBoxShare: typeof import('./src/components/editor/topmenu/quickbox/QuickBoxShare.vue')['default']
     QuickBoxSort: typeof import('./src/components/editor/topmenu/quickbox/QuickBoxSort.vue')['default']
     QuickBoxStyle: typeof import('./src/components/editor/topmenu/quickbox/QuickBoxStyle.vue')['default']
     QuickBoxTool: typeof import('./src/components/editor/topmenu/quickbox/QuickBoxTool.vue')['default']
@@ -77,5 +80,6 @@ declare module 'vue' {
     SelectFontSizeDialog: typeof import('./src/components/editor/dialogs/SelectFontSizeDialog.vue')['default']
     Toolbox: typeof import('./src/components/editor/toolbox/Toolbox.vue')['default']
     TopMenu: typeof import('./src/components/editor/topmenu/TopMenu.vue')['default']
+    UserRegistryDialog: typeof import('./src/components/editor/dialogs/UserRegistryDialog.vue')['default']
   }
 }

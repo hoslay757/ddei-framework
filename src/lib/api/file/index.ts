@@ -41,6 +41,11 @@ export function savefile(json = {}) {
   return request.post('/v1/file/save', json)
 }
 
+// 收藏文件到自己的私人文件夹
+export function collfile(json = {}) {
+  return request.post('/v1/file/coll', json)
+}
+
 // 保存文件内容，包括设计信息，然后发布文件
 export function publishfile(json = {}) {
   return request.post('/v1/file/publish', json)

@@ -2,7 +2,7 @@
   <div class="ddei_editor_eip">
     <div class="header"></div>
     <div class="content">
-      <div v-show="file?.extData?.owner == 1 || sslink?.can_down == 1" class="part">
+      <div class="part">
         <div class="button-v" @click="download">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-a-ziyuan424"></use>
@@ -10,7 +10,7 @@
           <div class="text">下载</div>
         </div>
       </div>
-      <div v-show="file?.extData?.owner == 1" class="part">
+      <div class="part">
         <div class="button-v" @click="showShareDialog($event)">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-a-ziyuan378"></use>
@@ -18,15 +18,8 @@
           <div class="text">分享</div>
         </div>
       </div>
-      <div v-show="file?.extData?.owner != 1 && sslink?.can_coll == 1" class="part">
-        <div class="button-v" @click="showShareDialog($event)">
-          <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-a-ziyuan378"></use>
-          </svg>
-          <div class="text">收藏</div>
-        </div>
-      </div>
-      <div v-show="file?.extData?.owner == 1" class="part">
+
+      <div class="part">
         <div class="button-v" @click="publish">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-a-ziyuan425"></use>
@@ -56,9 +49,7 @@ export default {
   data() {
     return {
       editor: null,
-      file: null,
-      user: null,
-      sslink: null
+      user: null
     };
   },
   computed: {},
@@ -69,11 +60,7 @@ export default {
     let userCookie = Cookies.get("user");
     if (userCookie) {
       this.user = JSON.parse(userCookie)
-      if (this.user?.sslinks?.length > 0) {
-        this.sslink = this.user.sslinks[0]
-      }
     }
-    this.file = this.editor?.files[this.editor?.currentFileIndex];
 
   },
   methods: {

@@ -16,6 +16,8 @@
   <PublishFileConfirmDialog v-if="refresh_publish_file_confirm_dialog"></PublishFileConfirmDialog>
   <SelectBorderDashDialog v-if="refresh_select_border_dash_dialog"></SelectBorderDashDialog>
   <CreateShareDialog v-if="refresh_create_share_dialog"></CreateShareDialog>
+  <UserRegistryDialog v-if="refresh_user_registry_dialog"></UserRegistryDialog>
+  <CollFileConfirmDialog v-if="refresh_coll_file_confirm_dialog"></CollFileConfirmDialog>
 </template>
 
 <script lang="ts">
@@ -35,6 +37,8 @@ import ReLoginDialog from "./ReLoginDialog.vue";
 import PublishFileConfirmDialog from "./PublishFileConfirmDialog.vue";
 import SelectBorderDashDialog from "./SelectBorderDashDialog.vue";
 import CreateShareDialog from "./CreateShareDialog.vue";
+import UserRegistryDialog from "./UserRegistryDialog.vue";
+import CollFileConfirmDialog from "./CollFileConfirmDialog.vue";
 import DDeiEditorUtil from "../js/util/editor-util.ts";
 
 export default {
@@ -61,6 +65,8 @@ export default {
       refresh_publish_file_confirm_dialog: true,
       refresh_select_border_dash_dialog: true,
       refresh_create_share_dialog: true,
+      refresh_user_registry_dialog: true,
+      refresh_coll_file_confirm_dialog: true,
     };
   },
   computed: {},
@@ -80,7 +86,9 @@ export default {
     ReLoginDialog,
     PublishFileConfirmDialog,
     SelectBorderDashDialog,
-    CreateShareDialog
+    CreateShareDialog,
+    UserRegistryDialog,
+    CollFileConfirmDialog
   },
   watch: {},
   created() { },

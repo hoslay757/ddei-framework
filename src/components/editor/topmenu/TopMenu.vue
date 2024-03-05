@@ -4,8 +4,11 @@
       <div class="ddei_editor_topmenu_quickbox_group g1">
         <QuickBoxGoBack></QuickBoxGoBack>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group g2">
+      <div class="ddei_editor_topmenu_quickbox_group g2" v-show="file?.extData?.owner == 1">
         <QuickBoxFileInfo></QuickBoxFileInfo>
+      </div>
+      <div class="ddei_editor_topmenu_quickbox_group g2" v-show="file?.extData?.owner == 0">
+        <QuickBoxShare></QuickBoxShare>
       </div>
       <div class="ddei_editor_topmenu_quickbox_group g3">
         <QuickBoxOperate></QuickBoxOperate>
@@ -19,7 +22,7 @@
       <div class="ddei_editor_topmenu_quickbox_group g6">
         <QuickBoxSort></QuickBoxSort>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group g7">
+      <div class="ddei_editor_topmenu_quickbox_group g7" v-show="file?.extData?.owner == 1">
         <QuickBoxEImport></QuickBoxEImport>
       </div>
       <div class="ddei_editor_topmenu_quickbox_group" style="flex:1">
@@ -37,6 +40,7 @@ import QuickBoxStyle from "./quickbox/QuickBoxStyle.vue";
 import QuickBoxSort from "./quickbox/QuickBoxSort.vue";
 import QuickBoxChangeShape from "./quickbox/QuickBoxChangeShape.vue";
 import QuickBoxFileInfo from "./quickbox/QuickBoxFileInfo.vue";
+import QuickBoxShare from "./quickbox/QuickBoxShare.vue";
 import QuickBoxGoBack from "./quickbox/QuickBoxGoBack.vue";
 import QuickBoxSDP from "./quickbox/QuickBoxSDP.vue";
 import QuickBoxEImport from "./quickbox/QuickBoxEImport.vue";
@@ -44,6 +48,7 @@ import QuickBoxRight from "./quickbox/QuickBoxRight.vue";
 import DDeiEditor from "../js/editor";
 import DDeiEditorState from "../js/enums/editor-state";
 import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
+import Cookies from "js-cookie";
 
 export default {
   name: "DDei-Editor-TopMenu",
@@ -53,6 +58,9 @@ export default {
   data() {
     return {
       editor: null,
+      file: null,
+      sslink: null,
+      user: null,
     };
   },
   //注册组件
@@ -67,7 +75,8 @@ export default {
     QuickBoxFileInfo,
     QuickBoxEImport,
     QuickBoxGoBack,
-    QuickBoxRight
+    QuickBoxRight,
+    QuickBoxShare
   },
   computed: {},
   watch: {},
@@ -75,6 +84,19 @@ export default {
   mounted() {
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     this.editor.topMenuViewer = this;
+    let userCookie = Cookies.get("user");
+    let file = this.editor?.files[this.editor?.currentFileIndex];
+    if (userCookie && file) {
+      this.user = JSON.parse(userCookie)
+      for (let i = 0; i < this.user?.sslinks?.length; i++) {
+        if (this.user.sslinks[i].file_id == file.id) {
+          this.sslink = this.user.sslinks[i]
+          break;
+        }
+      }
+
+    }
+    this.file = file
   },
   methods: {
     /**

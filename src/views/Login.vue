@@ -1,158 +1,163 @@
 <template>
   <div class="login">
-    <img src="../assets/images/login-back.jpg" class="bgimg" />
-    <div class="banquan">
-      <a href="https://beian.miit.gov.cn/">渝ICP备2024020863号</a>
-      <img src="../assets/images/gaba.png" />
-      <a href="https://beian.mps.gov.cn/#/query/webSearch?code=50011302222098" rel="noreferrer"
-        target="_blank">渝公网安备50011302222098</a>
-    </div>
-    <div class="content">
-      <div class="content_right_login_form" v-show="!regDialogShow">
-        <div class="content_right_login_form_title">欢迎来到DDei</div>
-        <div class="content_right_login_form_title_split"></div>
-        <div class="content_right_form_msg">
-          {{ form.validMsg.username }}
+    <form>
+      <img src="../assets/images/login-back.jpg" class="bgimg" />
+      <div class="banquan">
+        <a href="https://beian.miit.gov.cn/">渝ICP备2024020863号</a>
+        <img src="../assets/images/gaba.png" />
+        <a href="https://beian.mps.gov.cn/#/query/webSearch?code=50011302222098" rel="noreferrer"
+          target="_blank">渝公网安备50011302222098</a>
+      </div>
+      <div class="content">
+        <div class="content_right_login_form" v-show="!regDialogShow">
+          <div class="content_right_login_form_title">欢迎来到DDei</div>
+          <div class="content_right_login_form_title_split"></div>
+          <div class="content_right_form_msg">
+            {{ form.validMsg.username }}
+          </div>
+          <div class="content_right_login_form_input">
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-a-ziyuan413"></use>
+            </svg>
+            <div class="split"></div>
+            <input v-model="form.username" placeholder="手机号/邮箱/账号" autofocus />
+          </div>
+          <div class="content_right_form_msg">
+            {{ form.validMsg.password }}
+          </div>
+          <div class="content_right_login_form_input">
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-a-ziyuan415"></use>
+            </svg>
+            <div class="split"></div>
+            <input v-model="form.password" placeholder="请输入密码" type="password" @keydown.enter="login" />
+          </div>
+          <div class="content_right_login_form_chkbox" @click="changeRememberPwd()"
+            style="user-select: none;cursor:pointer">
+            <input type="checkbox" v-model="rememberPwd" style="pointer-event:none" />记住密码
+          </div>
+          <div class="content_right_login_form_login" @click="login">
+            <span>登录</span>
+          </div>
+          <div class="regbtn" @click="gotoReg">
+            <span>注册</span>
+          </div>
         </div>
-        <div class="content_right_login_form_input">
-          <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-a-ziyuan413"></use>
-          </svg>
-          <div class="split"></div>
-          <input v-model="form.username" placeholder="手机号/邮箱/账号" autofocus />
-        </div>
-        <div class="content_right_form_msg">
-          {{ form.validMsg.password }}
-        </div>
-        <div class="content_right_login_form_input">
-          <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-a-ziyuan415"></use>
-          </svg>
-          <div class="split"></div>
-          <input v-model="form.password" placeholder="请输入密码" type="password" @keydown.enter="login" />
-        </div>
-        <div class="content_right_login_form_chkbox" @click="changeRememberPwd()"
-          style="user-select: none;cursor:pointer">
-          <input type="checkbox" v-model="rememberPwd" style="pointer-event:none" />记住密码
-        </div>
-        <div class="content_right_login_form_login" @click="login">
-          <span>登录</span>
-        </div>
-        <div class="regbtn" @click="gotoReg">
-          <span>注册</span>
+        <div class="content_right_login_form reg_form" v-show="regDialogShow">
+          <div class="content_right_login_form_title">新用户注册</div>
+          <div class="content_right_login_form_title_split"></div>
+          <div class="content_right_form_msg">
+            {{ reg.validMsg.mobile }}
+          </div>
+          <div class="content_right_login_form_input">
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-a-ziyuan412"></use>
+            </svg>
+            <div class="split"></div>
+            <input v-model="reg.mobile" id="reg_input_id" type="mobile" class="content_right_reg_form_input"
+              placeholder="手机号" />
+            <span class="content_right_reg_form_input_required">*</span>
+          </div>
+          <div class="content_right_form_msg">
+            {{ reg.validMsg.username }}
+          </div>
+          <div class="content_right_login_form_input">
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-a-ziyuan413"></use>
+            </svg>
+            <div class="split"></div>
+            <input v-model="reg.username" class="content_right_reg_form_input" placeholder="用户名,4-20位中文、英文、数字、下划线" />
+            <span class="content_right_reg_form_input_required">*</span>
+          </div>
+          <div class="content_right_form_msg">
+            {{ reg.validMsg.email }}
+          </div>
+          <div class="content_right_login_form_input">
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-youjian-01-01"></use>
+            </svg>
+            <div class="split"></div>
+            <input v-model="reg.email" class="content_right_reg_form_input" placeholder="邮箱地址" type="email" />
+          </div>
+          <div class="content_right_form_msg">
+            {{ reg.validMsg.password }}
+          </div>
+          <div class="content_right_login_form_input">
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-a-ziyuan415"></use>
+            </svg>
+            <div class="split"></div>
+            <input v-model="reg.password" type="password" autocomplete="on" class="content_right_reg_form_input"
+              placeholder="密码" />
+            <span class="content_right_reg_form_input_required">*</span>
+          </div>
+          <div class="content_right_form_msg">
+            {{ reg.validMsg.password1 }}
+          </div>
+          <div class="content_right_login_form_input">
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-a-ziyuan414"></use>
+            </svg>
+            <div class="split"></div>
+            <input v-model="reg.password1" type="password" autocomplete="on" class="content_right_reg_form_input"
+              placeholder="确认密码" />
+            <span class="content_right_reg_form_input_required">*</span>
+          </div>
+
+          <div class="content_right_login_form_login" @click="userRegister">
+            <span>注册并登录</span>
+          </div>
+          <div class="regbtn" @click="gotoLogin">
+            <span>登录</span>
+          </div>
         </div>
       </div>
-      <div class="content_right_login_form reg_form" v-show="regDialogShow">
-        <div class="content_right_login_form_title">新用户注册</div>
-        <div class="content_right_login_form_title_split"></div>
-        <div class="content_right_form_msg">
-          {{ reg.validMsg.mobile }}
-        </div>
-        <div class="content_right_login_form_input">
-          <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-a-ziyuan412"></use>
-          </svg>
-          <div class="split"></div>
+
+
+      <div class="register_dialog" v-show="false && regDialogShow">
+        <div class="register_dialog_layer" />
+        <div class="register_dialog_content">
+          <div class="content_right_reg_form_title">
+            新用户注册
+          </div>
+          <div class="content_right_form_msg">
+            {{ reg.validMsg.mobile }}
+          </div>
+
           <input v-model="reg.mobile" id="reg_input_id" type="mobile" class="content_right_reg_form_input"
             placeholder="手机号" />
           <span class="content_right_reg_form_input_required">*</span>
-        </div>
-        <div class="content_right_form_msg">
-          {{ reg.validMsg.username }}
-        </div>
-        <div class="content_right_login_form_input">
-          <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-a-ziyuan413"></use>
-          </svg>
-          <div class="split"></div>
+          <div class="content_right_form_msg">
+            {{ reg.validMsg.username }}
+          </div>
           <input v-model="reg.username" class="content_right_reg_form_input" placeholder="用户名,4-20位中文、英文、数字、下划线" />
           <span class="content_right_reg_form_input_required">*</span>
-        </div>
-        <div class="content_right_form_msg">
-          {{ reg.validMsg.email }}
-        </div>
-        <div class="content_right_login_form_input">
-          <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-youjian-01-01"></use>
-          </svg>
-          <div class="split"></div>
+          <div class="content_right_form_msg">
+            {{ reg.validMsg.email }}
+          </div>
           <input v-model="reg.email" class="content_right_reg_form_input" placeholder="邮箱地址" type="email" />
-        </div>
-        <div class="content_right_form_msg">
-          {{ reg.validMsg.password }}
-        </div>
-        <div class="content_right_login_form_input">
-          <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-a-ziyuan415"></use>
-          </svg>
-          <div class="split"></div>
-          <input v-model="reg.password" type="password" class="content_right_reg_form_input" placeholder="密码" />
+          <div class="content_right_form_msg">
+            {{ reg.validMsg.password }}
+          </div>
+          <input v-model="reg.password" type="password" autocomplete="on" class="content_right_reg_form_input"
+            placeholder="密码" />
           <span class="content_right_reg_form_input_required">*</span>
-        </div>
-        <div class="content_right_form_msg">
-          {{ reg.validMsg.password1 }}
-        </div>
-        <div class="content_right_login_form_input">
-          <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-a-ziyuan414"></use>
-          </svg>
-          <div class="split"></div>
+          <div class="content_right_form_msg">
+            {{ reg.validMsg.password1 }}
+          </div>
           <input v-model="reg.password1" type="password" class="content_right_reg_form_input" placeholder="确认密码" />
           <span class="content_right_reg_form_input_required">*</span>
-        </div>
-
-        <div class="content_right_login_form_login" @click="userRegister">
-          <span>注册并登录</span>
-        </div>
-        <div class="regbtn" @click="gotoLogin">
-          <span>登录</span>
-        </div>
-      </div>
-    </div>
-
-
-    <div class="register_dialog" v-show="false && regDialogShow">
-      <div class="register_dialog_layer" />
-      <div class="register_dialog_content">
-        <div class="content_right_reg_form_title">
-          新用户注册
-        </div>
-        <div class="content_right_form_msg">
-          {{ reg.validMsg.mobile }}
-        </div>
-
-        <input v-model="reg.mobile" id="reg_input_id" type="mobile" class="content_right_reg_form_input"
-          placeholder="手机号" />
-        <span class="content_right_reg_form_input_required">*</span>
-        <div class="content_right_form_msg">
-          {{ reg.validMsg.username }}
-        </div>
-        <input v-model="reg.username" class="content_right_reg_form_input" placeholder="用户名,4-20位中文、英文、数字、下划线" />
-        <span class="content_right_reg_form_input_required">*</span>
-        <div class="content_right_form_msg">
-          {{ reg.validMsg.email }}
-        </div>
-        <input v-model="reg.email" class="content_right_reg_form_input" placeholder="邮箱地址" type="email" />
-        <div class="content_right_form_msg">
-          {{ reg.validMsg.password }}
-        </div>
-        <input v-model="reg.password" type="password" class="content_right_reg_form_input" placeholder="密码" />
-        <span class="content_right_reg_form_input_required">*</span>
-        <div class="content_right_form_msg">
-          {{ reg.validMsg.password1 }}
-        </div>
-        <input v-model="reg.password1" type="password" class="content_right_reg_form_input" placeholder="确认密码" />
-        <span class="content_right_reg_form_input_required">*</span>
-        <div class="content_right_login_form_buttons">
-          <div class="content_right_login_form_login" style="margin-top:20px;" @click="userRegister">
-            <span>注册并登录</span>
-          </div>
-          <div class="content_right_login_form_register" style="margin-top:20px;" @click="showRegDialog">
-            <span>取消</span>
+          <div class="content_right_login_form_buttons">
+            <div class="content_right_login_form_login" style="margin-top:20px;" @click="userRegister">
+              <span>注册并登录</span>
+            </div>
+            <div class="content_right_login_form_register" style="margin-top:20px;" @click="showRegDialog">
+              <span>取消</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </form>
   </div>
 </template>
 

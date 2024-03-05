@@ -127,21 +127,25 @@ export default {
               let userCookie = Cookies.get("user");
               if (userCookie) {
                 let user = JSON.parse(userCookie)
-                if (user.sslinks?.length > 0) {
-                  let sslink = user.sslinks[0]
-                  if (sslink?.state == 1 && sslink?.url == this.ssUrl) {
-                    loadMode = 2
-                  } else if (sslink?.url == this.ssUrl) {
-                    //校验是否过期、是否输入了验证码等信息
-                    if (sslink.end_type != 99) {
-                      let nowTimeStr = DDeiUtil.formatDate(new Date(), "yyyy-MM-ddThh:MM:ss")
-                      if (nowTimeStr >= sslink.end_time) {
-                        loadMode = 3//超期
-                      }
+                let sslink
+                for (let i = 0; i < user?.sslinks?.length; i++) {
+                  if (user.sslinks[i].url == this.ssUrl) {
+                    sslink = user.sslinks[i]
+                    break;
+                  }
+                }
+                if (sslink?.state == 1) {
+                  loadMode = 2
+                } else if (sslink) {
+                  //校验是否过期、是否输入了验证码等信息
+                  if (sslink.end_type != 99) {
+                    let nowTimeStr = DDeiUtil.formatDate(new Date(), "yyyy-MM-ddThh:MM:ss")
+                    if (nowTimeStr >= sslink.end_time) {
+                      loadMode = 3//超期
                     }
-                    if (loadMode != 3 && sslink.state == 0) {
-                      loadMode = 4//未输入验证码，要求输入验证码
-                    }
+                  }
+                  if (loadMode != 3 && sslink.state == 0) {
+                    loadMode = 4//未输入验证码，要求输入验证码
                   }
                 }
               }
@@ -265,7 +269,13 @@ export default {
           //获取参数
           let userCookie = Cookies.get("user");
           let user = JSON.parse(userCookie)
-          let sslink = user.sslinks[0]
+          let sslink
+          for (let i = 0; i < user.sslinks?.length; i++) {
+            if (user.sslinks[i].url == this.ssUrl) {
+              sslink = user.sslinks[i]
+              break;
+            }
+          }
           loadFileJSON.fv_id = sslink.fv_id
         }
 
@@ -529,6 +539,8 @@ export default {
         Cookies.remove("token");
         //弹出登录弹出框
         DDeiEditorUtil.showDialog("relogin_dialog", {
+          icon: "#icon-a-ziyuan411",
+          msg: "当前登录状态已失效，请重新登录.",
           callback: {
             abort: this.toLogin,
             ok: this.reExecFunc

@@ -11,9 +11,9 @@ request.interceptors.request.use(
   (config) => {
     if (
       config.url.includes(
-        '/refresh/token' ||
-        config.url.includes('/user/login') ||
-        config.url.includes('/user/register')
+        '/refresh/token'
+        // config.url.includes('/user/login') ||
+        // config.url.includes('/user/register')
       )
     ) {
       return config

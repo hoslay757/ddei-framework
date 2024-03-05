@@ -1,5 +1,5 @@
 <template>
-  <div :id="dialogId" class="create_share_dialog">
+  <div :id="dialogId" class="create_share_dialog" @keydown.esc="abort">
     <div class="content">
       <div class="header">
         <svg class="icon warn" aria-hidden="true">
@@ -196,7 +196,11 @@ export default {
      */
     async copyLink() {
       if (this.linkData) {
-        let copyText = this.linkData.url + "\r\n" + "提取码:" + this.linkData.pwd
+
+        let copyText = this.linkData.url
+        if (this.linkData.pwd) {
+          copyText += "\r\n" + "提取码:" + this.linkData.pwd
+        }
         await navigator.clipboard.writeText(copyText);
       }
     },
