@@ -20,7 +20,10 @@ export default defineConfig({
         }),
       ],
     }),
-    viteCompression()
+    viteCompression({
+      // gzip静态资源压缩
+      threshold: 5120, //压缩前最小文件大小
+    })
   ],
   resolve: {
     alias: {

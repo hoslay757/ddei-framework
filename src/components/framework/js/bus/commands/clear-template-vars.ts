@@ -54,7 +54,6 @@ class DDeiBusCommandClearTemplateVars extends DDeiBusCommand {
       stage.render.selector.setPassIndex("", -1, -1);
 
       delete stage.tempStartOPpoint
-      delete stage.tempEndOPpoint
       delete stage.tempCursorOPpoint
       delete stage.render.linePathData
     }

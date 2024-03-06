@@ -68,12 +68,13 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
 
       }
 
-      //绘制选中控件特效
-      this.drawIncludedStyle();
 
       //绘制特殊操作点
       this.drawOvsPoints();
     }
+    //绘制选中控件特效
+    this.drawIncludedStyle();
+
     ctx.restore();
 
   }

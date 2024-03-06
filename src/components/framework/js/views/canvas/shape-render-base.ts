@@ -252,6 +252,7 @@ class DDeiAbstractShapeRender {
         let dist = DDeiUtil.getPointDistance(op.x, op.y, ex, ey);
         if (Math.abs(dist) <= 5) {
           op.isMiddle = true
+          this.stage.tempCursorOPpoint = op
           delete op.mode
           hasPoint = true;
         }
@@ -282,7 +283,6 @@ class DDeiAbstractShapeRender {
         let angle = DDeiUtil.getLineAngle(this.model.cpv.x, this.model.cpv.y, op.x, op.y)
         angle -= (this.model.rotate ? this.model.rotate : 0)
         op.sita = angle
-        this.stage.tempEndOPpoint = op
         this.layer.opPoints.push(op);
       }
     })
@@ -305,7 +305,6 @@ class DDeiAbstractShapeRender {
         let angle = DDeiUtil.getLineAngle(this.model.cpv.x, this.model.cpv.y, po.x, po.y)
         angle -= (this.model.rotate ? this.model.rotate : 0)
         po.sita = angle
-        this.stage.tempEndOPpoint = po
         this.stage.tempCursorOPpoint = po
         this.layer.opPoints.push(po);
 

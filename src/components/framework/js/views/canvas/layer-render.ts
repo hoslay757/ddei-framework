@@ -1320,7 +1320,6 @@ class DDeiLayerCanvasRender {
         }
         //判定是否到达了另一个控件的操作点
         this.model.opPoints = [];
-        delete this.stage.tempEndOPpoint
         delete this.stage.tempCursorOPpoint
         //判断当前鼠标坐标是否落在选择器控件的区域内
         // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
