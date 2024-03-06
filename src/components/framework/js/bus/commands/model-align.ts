@@ -35,12 +35,18 @@ class DDeiBusCommandModelAlign extends DDeiBusCommand {
     let stage = bus.ddInstance.stage;
     if (stage && data?.models?.length > 0 && data?.value) {
       let models = data.models;
-      if (models?.length > 1) {
-        let baseModel = models[0];
+      let filtedModels = []
+      models.forEach(m => {
+        if (m.baseModelType != 'DDeiLine') {
+          filtedModels.push(m)
+        }
+      });
+      if (filtedModels?.length > 1) {
+        let baseModel = filtedModels[0];
         let baseOutRect = DDeiAbstractShape.getOutRectByPV([baseModel])
         let hasChange = false;
-        for (let i = 1; i < models.length; i++) {
-          let model = models[i];
+        for (let i = 1; i < filtedModels.length; i++) {
+          let model = filtedModels[i];
           let moveMatrix = null;
           //取得外接矩形
           let outRect = DDeiAbstractShape.getOutRectByPV([model])
@@ -77,6 +83,7 @@ class DDeiBusCommandModelAlign extends DDeiBusCommand {
           }
           if (moveMatrix) {
             model.transVectors(moveMatrix)
+            model.updateLinkModels()
             hasChange = true;
           }
 

@@ -367,7 +367,7 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
         stage.ddInstance.bus.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
         stage.ddInstance.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels, {}, evt);
         stage.ddInstance.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds, {}, evt);
-        stage.ddInstance.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts);
+        // stage.ddInstance.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts);
       }
       stage.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
       stage.ddInstance.bus?.executeAll();

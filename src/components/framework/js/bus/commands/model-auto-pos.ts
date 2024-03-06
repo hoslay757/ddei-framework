@@ -35,13 +35,19 @@ class DDeiBusCommandModelAutoPos extends DDeiBusCommand {
     let stage = bus.ddInstance.stage;
     if (stage && data?.models?.length > 0 && data?.value) {
       let models = data.models;
-      if (models?.length > 1) {
+      let filtedModels = []
+      models.forEach(m => {
+        if (m.baseModelType != 'DDeiLine') {
+          filtedModels.push(m)
+        }
+      });
+      if (filtedModels?.length > 1) {
         let weight = 0;
         let hasChange = false;
         let startValue = -Infinity;
         let ourRects = []
-        for (let i = 0; i < models.length; i++) {
-          let model = models[i]
+        for (let i = 0; i < filtedModels.length; i++) {
+          let model = filtedModels[i]
           let outRect = DDeiAbstractShape.getOutRectByPV([model])
           outRect.model = model
           ourRects.push(outRect)
@@ -68,7 +74,7 @@ class DDeiBusCommandModelAutoPos extends DDeiBusCommand {
             sumWeight += m2.y - (m1.y + m1.height)
           }
         }
-        weight = sumWeight / (models.length - 1)
+        weight = sumWeight / (ourRects.length - 1)
         for (let i = 1; i < ourRects.length; i++) {
           let outRect = ourRects[i]
           let model = outRect.model;

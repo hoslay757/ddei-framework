@@ -564,11 +564,10 @@ class DDeiLayerCanvasRender {
         //是否允许在内部触发
         let oppInner = DDeiUtil.getControlDefine(opPoint.model)?.define?.oppInner;
         if (opPoint.oppoint == 3 || (oppInner == 0 && (projPoint = opPoint.model.getProjPoint({ x: ex, y: ey }, { in: -3, out: 15 }, 1, 2))) != null) {
-
-          let modeName = DDeiUtil.getConfigValue("MODE_NAME", ddInstance);
+          let modeName = DDeiUtil.getConfigValue("MODE_NAME", this.stage.ddInstance);
           let accessLink = DDeiUtil.isAccess(
             DDeiEnumOperateType.LINK, null, null, modeName,
-            ddInstance
+            this.stage.ddInstance
           );
           if (accessLink) {
             isStop = true;

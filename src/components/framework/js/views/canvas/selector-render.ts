@@ -49,29 +49,31 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
 
       //绘制边框上的操作图形
       this.drawOperatorShape();
+    } else if (this.stageRender.operateState != DDeiEnumOperateState.LINE_POINT_CHANGING) {
+      if (models?.length == 1 && models[0]?.baseModelType == "DDeiLine") {
+        //绘制线的选中效果
+        this.drawLine();
+        //绘制操作图形
+        this.drawOperatorShapeLine();
+      } else if (this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING || this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING_TEXT_SELECTING) {
+        //绘制编辑边框
+        this.drawEditBorder()
+      } else {
+
+        //绘制边框
+        this.drawBorder();
+
+        //绘制边框上的操作图形
+        this.drawOperatorShape();
+
+      }
+
+      //绘制选中控件特效
+      this.drawIncludedStyle();
+
+      //绘制特殊操作点
+      this.drawOvsPoints();
     }
-    else if (models?.length == 1 && models[0]?.baseModelType == "DDeiLine") {
-      //绘制线的选中效果
-      this.drawLine();
-      //绘制操作图形
-      this.drawOperatorShapeLine();
-    } else if (this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING || this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING_TEXT_SELECTING) {
-      //绘制编辑边框
-      this.drawEditBorder()
-    } else {
-      //绘制边框
-      this.drawBorder();
-
-      //绘制边框上的操作图形
-      this.drawOperatorShape();
-
-    }
-
-    //绘制选中控件特效
-    this.drawIncludedStyle();
-
-    //绘制特殊操作点
-    this.drawOvsPoints();
     ctx.restore();
 
   }
