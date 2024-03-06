@@ -29,7 +29,7 @@ export default {
   },
   props: {
     title: { type: String, default: "DDei-在线设计器" },
-    version: { type: String, default: "1.0.0" }
+    version: { type: String, default: "1.0.2" }
   },
   data() {
     return {
