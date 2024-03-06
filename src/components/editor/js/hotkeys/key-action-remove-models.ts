@@ -28,6 +28,7 @@ class DDeiKeyActionRemoveModels extends DDeiKeyAction {
         if (!removeBefore || removeBefore(DDeiEnumOperateType.DEL, Array.from(selectedModels.values()), null, ddInstance, evt)) {
           let models = Array.from(selectedModels.values())
           models[0].layer.opPoints = [];
+          models[0].layer.opLine = null;
           optContainer.removeModels(models, true)
           optContainer.cascadeRemoveSelf()
 

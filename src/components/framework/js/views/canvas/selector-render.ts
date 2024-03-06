@@ -692,6 +692,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         let layer = Array.from(selectedModels?.values())[0].layer;
         //清除临时操作点
         layer.opPoints = [];
+        layer.opLine = null;
         //中心点坐标
         //当前控件的上层控件，可能是一个layer也可能是容器
         let centerPointVector = this.model.cpv;

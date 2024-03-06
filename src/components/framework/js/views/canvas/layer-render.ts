@@ -16,6 +16,7 @@ import DDeiStageCanvasRender from './stage-render.js';
 import { Vector3, Matrix3 } from 'three';
 import DDeiLink from '../../models/link.js';
 import layer from '@/components/editor/configs/layer.js';
+import { reduce } from 'lodash';
 /**
  * DDeiLayer的渲染器类，用于渲染文件
  * 渲染器必须要有模型才可以初始化
@@ -99,8 +100,8 @@ class DDeiLayerCanvasRender {
         this.drawChildrenShapes();
         //绘制操作点
         this.drawOpPoints();
-
-
+        //绘制操作线
+        this.drawOpLine();
 
         //绘制移入移出效果图形
         this.drawDragInOutPoints();
@@ -381,6 +382,28 @@ class DDeiLayerCanvasRender {
 
         }
       });
+
+
+      //恢复状态
+      ctx.restore();
+    }
+  }
+
+  /**
+   * 绘制操作线
+   */
+  drawOpLine(): void {
+    if (this.model.opLine) {
+      //获得 2d 上下文对象
+      let canvas = this.ddRender.getCanvas();
+      let ctx = canvas.getContext('2d');
+      let ratio = this.ddRender?.ratio;
+      //保存状态
+      ctx.save();
+      let lineRender = this.model.opLine.render
+      let color = lineRender.getCachedValue("color");
+      let weight = lineRender.getCachedValue("weight");
+      this.model.opLine.render.drawShape({ color: "red", opacity: 0.5, weight: weight * 1.5 })
 
 
       //恢复状态
@@ -711,6 +734,7 @@ class DDeiLayerCanvasRender {
       }
       //清除临时操作点
       this.model.opPoints = [];
+      this.model.opLine = null;
       this.model.shadowControls = [];
     } else {
       //判断当前操作状态
@@ -1165,6 +1189,7 @@ class DDeiLayerCanvasRender {
         }
         //清除临时操作点
         this.model.opPoints = [];
+        this.model.opLine = null;
         //中心点坐标
         let operateControl = this.stageRender.currentOperateShape
         //当前控件的上层控件，可能是一个layer也可能是容器
@@ -1320,6 +1345,7 @@ class DDeiLayerCanvasRender {
         }
         //判定是否到达了另一个控件的操作点
         this.model.opPoints = [];
+        this.model.opLine = null;
         delete this.stage.tempCursorOPpoint
         //判断当前鼠标坐标是否落在选择器控件的区域内
         // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
@@ -1375,6 +1401,7 @@ class DDeiLayerCanvasRender {
       //表格内部拖拽中
       case DDeiEnumOperateState.TABLE_INNER_DRAG: {
         this.model.opPoints = []
+        this.model.opLine = null;
         let table = this.stageRender.currentOperateShape;
         table.render.mouseMove(evt);
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
@@ -1424,6 +1451,7 @@ class DDeiLayerCanvasRender {
 
           let pushData = { x: ex, y: ey, deltaX: movedBounds.x - selector.x * stageRatio, deltaY: movedBounds.y - selector.y * stageRatio, deltaWidth: movedBounds.width - selector.width * stageRatio, deltaHeight: movedBounds.height - selector.height * stageRatio, selector: selector, models: this.model.shadowControls };
           this.model.opPoints = [];
+          this.model.opLine = null;
           //更新dragObj临时变量中的数值,确保坐标对应关系一致
           //修改所有选中控件坐标
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeBounds, pushData, evt);
@@ -1545,6 +1573,7 @@ class DDeiLayerCanvasRender {
       default: {
         //清空当前opPoints
         this.model.opPoints = [];
+        this.model.opLine = null;
         //判断当前鼠标坐标是否落在选择器控件的区域内
         let inSelector = false
         if (this.stageRender.selector &&
