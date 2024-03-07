@@ -48,96 +48,98 @@ class DDeiEditorCommandLoadFile extends DDeiBusCommand {
     );
     if (loadFile) {
       loadFile().then((fileData) => {
-        //当前已打开的文件
-        let file = null;
-        //查看当前file是否已打开
-        for (let x = 0; x < editor.files.length; x++) {
-          if (editor.files[x].id == fileData.id) {
-            file = editor.files[x];
+        if (fileData) {
+          //当前已打开的文件
+          let file = null;
+          //查看当前file是否已打开
+          for (let x = 0; x < editor.files.length; x++) {
+            if (editor.files[x].id == fileData.id) {
+              file = editor.files[x];
+            }
+            editor.files[x].active = DDeiActiveType.NONE;
           }
-          editor.files[x].active = DDeiActiveType.NONE;
-        }
-        //加载文件
-        if (!file) {
-          if (fileData?.content) {
-            file = DDeiFile.loadFromJSON(JSON.parse(fileData?.content), {
-              currentDdInstance: editor.ddInstance,
-            });
-            file.id = fileData.id;
-            file.publish = fileData.publish;
-            file.name = fileData.name;
-            file.path = fileData.path;
-            file.desc = fileData.desc;
-            file.version = fileData.version;
-            file.extData = fileData.extData;
-            file.busiData = fileData.busiData;
-          } else {
-            file = new DDeiFile({
-              id: fileData.id,
-              publish: fileData.publish,
-              name: fileData.name,
-              path: fileData.path,
-              desc: fileData.desc,
-              version: fileData.version,
-              extData: fileData.extData,
-              busiData: fileData.busiData,
-              sheets: [
-                new DDeiSheet({
-                  name: "新建页面",
-                  desc: "新建页面",
-                  stage: DDeiStage.initByJSON(
-                    { id: "stage_1" },
-                    { currentDdInstance: ddInstance }
-                  ),
-                  active: DDeiActiveType.ACTIVE,
-                }),
-              ],
-              currentSheetIndex: 0,
-              state: DDeiFileState.NEW,
-              active: DDeiActiveType.ACTIVE,
-            });
+          //加载文件
+          if (!file) {
+            if (fileData?.content) {
+              file = DDeiFile.loadFromJSON(JSON.parse(fileData?.content), {
+                currentDdInstance: editor.ddInstance,
+              });
+              file.id = fileData.id;
+              file.publish = fileData.publish;
+              file.name = fileData.name;
+              file.path = fileData.path;
+              file.desc = fileData.desc;
+              file.version = fileData.version;
+              file.extData = fileData.extData;
+              file.busiData = fileData.busiData;
+            } else {
+              file = new DDeiFile({
+                id: fileData.id,
+                publish: fileData.publish,
+                name: fileData.name,
+                path: fileData.path,
+                desc: fileData.desc,
+                version: fileData.version,
+                extData: fileData.extData,
+                busiData: fileData.busiData,
+                sheets: [
+                  new DDeiSheet({
+                    name: "新建页面",
+                    desc: "新建页面",
+                    stage: DDeiStage.initByJSON(
+                      { id: "stage_1" },
+                      { currentDdInstance: ddInstance }
+                    ),
+                    active: DDeiActiveType.ACTIVE,
+                  }),
+                ],
+                currentSheetIndex: 0,
+                state: DDeiFileState.NEW,
+                active: DDeiActiveType.ACTIVE,
+              });
+            }
+
+            editor.addFile(file);
+            file.state = DDeiFileState.NONE;
           }
 
-          editor.addFile(file);
-          file.state = DDeiFileState.NONE;
-        }
+          editor.currentFileIndex = editor.files.indexOf(file);
+          file.active = DDeiActiveType.ACTIVE;
+          let sheets = file?.sheets;
+          if (file && sheets && ddInstance) {
+            file.changeSheet(file.currentSheetIndex);
 
-        editor.currentFileIndex = editor.files.indexOf(file);
-        file.active = DDeiActiveType.ACTIVE;
-        let sheets = file?.sheets;
-        if (file && sheets && ddInstance) {
-          file.changeSheet(file.currentSheetIndex);
-
-          let stage = sheets[file.currentSheetIndex].stage;
-          stage.ddInstance = ddInstance;
-          //记录文件初始日志
-          file.initHistroy();
-          //刷新页面
-          ddInstance.stage = stage;
-          //加载场景渲染器
-          stage.initRender();
-          //设置视窗位置到中央
-          if (!stage.wpv) {
-            //缺省定位在画布中心点位置
-            stage.wpv = {
-              x:
-                -(
-                  stage.width -
-                  ddInstance.render.canvas.width / ddInstance.render.ratio
-                ) / 2,
-              y:
-                -(
-                  stage.height -
-                  ddInstance.render.canvas.height / ddInstance.render.ratio
-                ) / 2,
-              z: 0,
-            };
+            let stage = sheets[file.currentSheetIndex].stage;
+            stage.ddInstance = ddInstance;
+            //记录文件初始日志
+            file.initHistroy();
+            //刷新页面
+            ddInstance.stage = stage;
+            //加载场景渲染器
+            stage.initRender();
+            //设置视窗位置到中央
+            if (!stage.wpv) {
+              //缺省定位在画布中心点位置
+              stage.wpv = {
+                x:
+                  -(
+                    stage.width -
+                    ddInstance.render.canvas.width / ddInstance.render.ratio
+                  ) / 2,
+                y:
+                  -(
+                    stage.height -
+                    ddInstance.render.canvas.height / ddInstance.render.ratio
+                  ) / 2,
+                z: 0,
+              };
+            }
+            editor.changeState(DDeiEditorState.DESIGNING);
+            ddInstance.bus.insert(DDeiEditorEnumBusCommandType.ClearTemplateUI, 0);
+            ddInstance.bus.insert(DDeiEnumBusCommandType.RefreshShape, 1);
+            ddInstance.bus.insert(DDeiEditorEnumBusCommandType.RefreshEditorParts, 2);
+            ddInstance.bus.executeAll();
           }
-          editor.changeState(DDeiEditorState.DESIGNING);
-          ddInstance.bus.insert(DDeiEditorEnumBusCommandType.ClearTemplateUI, 0);
-          ddInstance.bus.insert(DDeiEnumBusCommandType.RefreshShape, 1);
-          ddInstance.bus.insert(DDeiEditorEnumBusCommandType.RefreshEditorParts, 2);
-          ddInstance.bus.executeAll();
         }
       });
     }

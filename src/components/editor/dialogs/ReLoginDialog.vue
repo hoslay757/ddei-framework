@@ -78,7 +78,7 @@ export default {
       this.icon = this.editor?.tempDialogData[this.dialogId].icon
     }
     setTimeout(() => {
-      this.$refs.usernameinput.focus()
+      this.$refs.usernameinput?.focus()
     }, 100);
     this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
 

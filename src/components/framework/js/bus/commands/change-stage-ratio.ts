@@ -58,6 +58,21 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
           layer.midList.forEach(mid => {
             let model = layer.models.get(mid);
             model.transVectors(scaleMatrix)
+            if (model.baseModelType == 'DDeiLine') {
+              model.linkModels?.forEach(lm => {
+                lm.dx = lm.dx * scaleSize
+                lm.dy = lm.dy * scaleSize
+              })
+              //折线，同步特殊点位
+              if (model.type == 2) {
+                model.spvs?.forEach(spv => {
+                  if (spv) {
+                    spv.x *= scaleSize
+                    spv.y *= scaleSize
+                  }
+                })
+              }
+            }
             //更新线段
             DDeiBusCommandChangeStageRatio.calLineCross(layer)
           })

@@ -24,7 +24,9 @@ export default {
   },
   computed: {},
   watch: {},
-  created() { },
+  created() {
+    document.body.style.overscrollBehaviorX = "none"
+  },
   mounted() { },
   methods: {},
 };

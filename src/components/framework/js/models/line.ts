@@ -387,7 +387,7 @@ class DDeiLine extends DDeiAbstractShape {
           } else if (lm.type == 3) {
             //奇数，取正中间
             let pi = Math.floor(this.pvs.length / 2)
-            if (this.pvs.length % 3 == 0) {
+            if (this.pvs.length % 2 == 1) {
               point = this.pvs[pi];
             }
             //偶数，取两边的中间点
@@ -602,7 +602,15 @@ class DDeiLine extends DDeiAbstractShape {
     let forcePaths = []
     this.spvs?.forEach(pv => {
       if (pv) {
-        forcePaths.push(pv)
+
+        let newPV = { x: 0, y: 0 }
+        if (pv.x) {
+          newPV.x = pv.x + this.startPoint.x
+        }
+        if (pv.y) {
+          newPV.y = pv.y + this.startPoint.y
+        }
+        forcePaths.push(newPV)
       }
     })
     //执行自动路径生成
@@ -831,6 +839,8 @@ class DDeiLine extends DDeiAbstractShape {
     })
     this.hpv[0].applyMatrix3(matrix)
     this.hpv[1].applyMatrix3(matrix)
+
+
     this.calRotate()
     this.calLoosePVS();
     this.composes?.forEach(compose => {

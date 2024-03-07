@@ -45,6 +45,7 @@ import DDeiUtil from "@/components/framework/js/util";
 
 import FONTS from "@/components/editor/configs/fonts/font"
 import { groupOriginDefinies, controlOriginDefinies } from "@/components/editor/configs/toolgroup";
+import DDeiEditorEnumBusCommandType from "@/components/editor/js/enums/editor-command-type";
 
 export default {
   props: {},
@@ -257,8 +258,14 @@ export default {
     /**
      * 打开文件
      */
-    async openFile() {
-      if (await this.getUserInfo(this.ssUrl)) {
+    async openFile(isReExec) {
+      this.serverFunc = this.openFile
+      this.serverFuncParam = 1
+      if (isReExec) {
+        let ddInstance = DDei.INSTANCE_POOL['ddei_editor_view'];
+        ddInstance.bus.push(DDeiEditorEnumBusCommandType.LoadFile)
+        ddInstance.bus.executeAll();
+      } else if (await this.getUserInfo(this.ssUrl)) {
         //普通文件打开
         let loadFileJSON = {}
         if (this.loadMode == 1) {
@@ -418,6 +425,8 @@ export default {
     reExecFunc() {
       if (this.serverFunc) {
         this.serverFunc(this.serverFuncParam)
+        delete this.serverFunc
+        delete this.serverFuncParam
       } else {
         let ddInstance = DDei.INSTANCE_POOL['ddei_editor_view'];
         ddInstance.bus.restoreQueue();

@@ -100,30 +100,32 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
             let cp = pvs[cIndex]
             let bp = pvs[cIndex - 1]
             let ap = pvs[cIndex + 1]
+            let startPoint = lineModel.startPoint;
             //TODO 旋转的情况下，需要把旋转归0判断，x相等
             if (Math.abs(cp.x - bp.x) <= 1) {
               bp.x = ex
               bp.x = ex
-              lineModel.spvs[cIndex] = { x: ex, y: 0 }
+              lineModel.spvs[cIndex] = { x: ex - startPoint.x, y: 0 }
             } else {
               bp.y = ey
               bp.y = ey
-              lineModel.spvs[cIndex] = { x: 0, y: ey }
+              lineModel.spvs[cIndex] = { x: 0, y: ey - startPoint.y }
             }
             //TODO 旋转的情况下，需要把旋转归0判断，x相等
             if (Math.abs(cp.x - ap.x) <= 1) {
               ap.x = ex
               ap.x = ex
-              lineModel.spvs[cIndex + 1] = { x: ex, y: 0 }
+              lineModel.spvs[cIndex + 1] = { x: ex - startPoint.x, y: 0 }
             } else {
               ap.y = ey
               ap.y = ey
-              lineModel.spvs[cIndex + 1] = { x: 0, y: ey }
+              lineModel.spvs[cIndex + 1] = { x: 0, y: ey - startPoint.y }
             }
 
             cp.x = ex;
             cp.y = ey;
           } else if (passIndex == 3) {
+            let startPoint = lineModel.startPoint;
             //相邻的两个点的坐标处理
             let sIndex = parseInt(opvsIndex / 2)
             let sp = pvs[sIndex]
@@ -132,11 +134,11 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
             if (Math.abs(sp.x - ep.x) <= 1) {
               sp.x = ex
               ep.x = ex
-              lineModel.spvs[sIndex + 1] = { x: ex, y: 0 }
+              lineModel.spvs[sIndex + 1] = { x: ex - startPoint.x, y: 0 }
             } else {
               sp.y = ey
               ep.y = ey
-              lineModel.spvs[sIndex + 1] = { x: 0, y: ey }
+              lineModel.spvs[sIndex + 1] = { x: 0, y: ey - startPoint.y }
             }
           }
         } break;
