@@ -6,11 +6,16 @@ import DDeiBusCommand from '../bus-command';
 import { Matrix3, Vector3 } from 'three';
 import DDeiUtil from '../../util';
 import DDeiLine from '../../models/line';
+import { debounce } from 'lodash';
 /**
  * 缩放画布总线Command
  * 图形类Command一般在普通Command之后执行
  */
 class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
+  static {
+    DDeiBusCommandChangeStageRatio.calLineCross = debounce(DDeiLine.calLineCross, 30)
+  }
+
   // ============================ 构造函数 ============================
 
   // ============================ 静态方法 ============================
@@ -50,7 +55,7 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
             let model = layer.models.get(mid);
             model.transVectors(scaleMatrix)
             //更新线段
-            DDeiLine.calLineCross(layer)
+            DDeiBusCommandChangeStageRatio.calLineCross(layer)
           })
         });
         let vbn = stage.wpv.y / stage.height;

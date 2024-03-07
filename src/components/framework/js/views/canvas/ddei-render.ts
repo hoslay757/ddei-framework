@@ -13,7 +13,7 @@ class DDeiCanvasRender {
   // ============================ 构造函数 ============================
   constructor(props: object) {
     this.model = props.model;
-    this.mouseScale = throttle(this.mouseScale, 60)
+    // this.mouseScale = throttle(this.mouseScale, 60)
   }
   // ============================== 静态方法 ============================
   // 通过一个JSON反向序列化成对象，模型数据与JSON完全一样
