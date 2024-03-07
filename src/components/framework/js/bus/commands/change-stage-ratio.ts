@@ -42,6 +42,7 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
   action(data: object, bus: DDeiBus, evt: Event): boolean {
     if (DDeiUtil.getConfigValue("GLOBAL_ALLOW_STAGE_RATIO", bus.ddInstance)) {
       let stage = bus.ddInstance.stage;
+
       if (stage && data.oldValue && data.newValue && data.oldValue != data.newValue) {
         let scaleSize = data.newValue / data.oldValue
         //缩放矩阵
@@ -51,6 +52,9 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
           0, 0, 1);
         stage?.spv.applyMatrix3(scaleMatrix)
         stage.layers.forEach(layer => {
+          layer.opPoints = []
+          delete layer.opLine
+          layer.shadowControls = []
           layer.midList.forEach(mid => {
             let model = layer.models.get(mid);
             model.transVectors(scaleMatrix)
@@ -58,13 +62,49 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
             DDeiBusCommandChangeStageRatio.calLineCross(layer)
           })
         });
-        let vbn = stage.wpv.y / stage.height;
-        let hbn = stage.wpv.x / stage.width;
+
+
+        let oldWidth = stage.width
+        let oldHeight = stage.height
         stage.width = stage.width * scaleSize
         stage.height = stage.height * scaleSize
-        //计算位置比例,保持位置比例
-        stage.wpv.y = stage.height * vbn
-        stage.wpv.x = stage.width * hbn
+        let dw = stage.width - oldWidth
+        let dh = stage.height - oldHeight
+
+        let wpvX = -stage.wpv.x
+        let wpvY = -stage.wpv.y
+
+
+        let ex = null, ey = null
+        if (window.event?.type == 'wheel') {
+          let evt = window.event
+          ex = evt.offsetX;
+          ey = evt.offsetY;
+        }
+        //没鼠标，默认选择中心
+        let ox = dw / 2
+        let oy = dh / 2
+
+        //有鼠标，则以鼠标位置
+        if (ex && ey) {
+          let ddRender = bus.ddInstance.render
+          let rat1 = ddRender.ratio;
+          //视窗的大小
+          let canvasHeight = ddRender.realCanvas.height / rat1;
+          let canvasWidth = ddRender.realCanvas.width / rat1;
+
+          ox = dw * ex / canvasWidth
+          oy = dh * ey / canvasHeight
+        }
+
+
+        stage.wpv.x = -wpvX - ox
+        stage.wpv.y = -wpvY - oy
+
+
+
+
+
 
 
 

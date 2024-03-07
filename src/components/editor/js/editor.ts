@@ -441,7 +441,7 @@ class DDeiEditor {
    */
   blur(): void {
     DDei.KEY_DOWN_STATE.clear()
-    if (this.ddInstance.render) {
+    if (this.ddInstance?.render) {
       this.ddInstance.render.inEdge = 0;
     }
   }
