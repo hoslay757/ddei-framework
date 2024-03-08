@@ -1455,9 +1455,10 @@ class DDeiStageCanvasRender {
     //分发到当前图层的mouseUp
     if (!this.model.ddInstance.eventCancel) {
       if (this.operateState == DDeiEnumOperateState.STAGE_SCROLL_WORKING) {
-        let canvasPos = DDeiUtil.getDomAbsPosition(this.ddRender?.canvas)
+        let canvasPos = DDeiUtil.getDomAbsPosition(this.ddRender?.canvas?.parentElement)
         let ex = evt.clientX - canvasPos.left;
         let ey = evt.clientY - canvasPos.top;
+
         if (this.dragObj?.scroll == 1) {
           let width = this.hScroll.width;
           //原始鼠标位置在操作区域的位置
