@@ -118,7 +118,7 @@ class DDeiBusCommandUpdatePaperArea extends DDeiBusCommand {
       if (leftPaperWidth > leftSpace) {
         extW = leftPaperWidth - leftSpace
         needMoveX = true
-      } else if (parseFloat((leftSpace - leftPaperWidth).toFixed(2)) >= parseFloat(paperWidth.toFixed(2))) {
+      } else if (parseFloat((leftSpace - leftPaperWidth).toFixed(2)) > parseFloat(paperWidth.toFixed(2))) {
         extW = - parseInt((leftSpace - leftPaperWidth) / paperWidth) * paperWidth
         needMoveX = true
       }
@@ -132,7 +132,7 @@ class DDeiBusCommandUpdatePaperArea extends DDeiBusCommand {
       if (topPaperWidth > topSpace) {
         extH = topPaperWidth - topSpace
         needMoveY = true
-      } else if (parseFloat((topSpace - topPaperWidth).toFixed(2)) >= parseFloat(paperHeight.toFixed(2))) {
+      } else if (parseFloat((topSpace - topPaperWidth).toFixed(2)) > parseFloat(paperHeight.toFixed(2))) {
         extH = - parseInt((topSpace - topPaperWidth) / paperHeight) * paperHeight
         needMoveY = true
       }

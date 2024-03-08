@@ -32,6 +32,7 @@ class DDeiKeyActionRemoveModels extends DDeiKeyAction {
           optContainer.removeModels(models, true)
           optContainer.cascadeRemoveSelf()
 
+          ddInstance.bus.push(DDeiEnumBusCommandType.UpdatePaperArea);
           ddInstance.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels);
           ddInstance.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
           ddInstance.bus.push(DDeiEnumBusCommandType.NodifyChange);

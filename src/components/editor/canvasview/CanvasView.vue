@@ -422,11 +422,14 @@ export default {
               value: DDeiEnumControlState.SELECTED,
             }]
           );
+         
           this.editor.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels);
 
+          this.editor.bus.push(DDeiEnumBusCommandType.UpdatePaperArea);
           this.editor.bus.push(DDeiEnumBusCommandType.NodifyControlCreated, {
             models: this.editor.creatingControls,
           });
+         
           //清除临时变量
           this.editor.bus.push(DDeiEnumBusCommandType.ClearTemplateVars);
           this.editor.bus.push(DDeiEnumBusCommandType.NodifyChange);

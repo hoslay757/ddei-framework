@@ -33,6 +33,7 @@ class DDeiKeyActionCopy extends DDeiKeyAction {
         let copyHtml = '<html><head>';
         copyHtml += '<meta source="ddei">'
         let jsonStr = '['
+        let jsonLinksStr = '['
         let innerHTML = ''
         selectedControls?.forEach((model, key) => {
           if (selectedControls?.size == 1) {
@@ -53,12 +54,31 @@ class DDeiKeyActionCopy extends DDeiKeyAction {
             let json = model.toJSON();
             jsonStr += JSON.stringify(json) + ","
           }
+          //如果控件为线段，则复制linkModels
+          if (model.baseModelType == "DDeiLine") {
+            let distModelLinks = ddInstance.stage?.getDistModelLinks(model.id)
+            //如果被复制的控件也在linkmodels里面，则需要复制linkModel信息
+            distModelLinks?.forEach(link => {
+              if (selectedControls?.has(link?.sm?.id)) {
+                jsonLinksStr += JSON.stringify(link) + ","
+              }
+            })
+            //需要进一步复制其linkModels
+          }
         })
         if (jsonStr.length > 1) {
+
           jsonStr = jsonStr.substring(0, jsonStr.length - 1)
           jsonStr += ']'
           ddInstance.stage.copyMode = this.mode
-          jsonStr = '{"mode":"' + this.mode + '","data":' + jsonStr + '}'
+          jsonStr = '{"mode":"' + this.mode + '","data":' + jsonStr
+          if (jsonLinksStr.length > 1) {
+            jsonLinksStr = jsonLinksStr.substring(0, jsonLinksStr.length - 1)
+            jsonLinksStr += ']'
+            jsonStr += " , \"links\":" + jsonLinksStr
+          }
+          jsonStr += "}"
+
         } else {
           jsonStr = "";
         }
@@ -73,9 +93,6 @@ class DDeiKeyActionCopy extends DDeiKeyAction {
           try {
             let writeDatas = []
             writeDatas.push(new ClipboardItem({ "text/html": blob }));
-            // //获取图片
-            // let imgData = await this.copyToImage(ddInstance, Array.from(selectedControls?.values()));
-            // writeDatas.push(imgData);
 
             let cbData = navigator.clipboard;
             cbData.write(writeDatas).then(function () {
@@ -97,40 +114,6 @@ class DDeiKeyActionCopy extends DDeiKeyAction {
         }
       }
     }
-  }
-
-  async copyToImage(ddInstance, models): ClipboardItem {
-    //转换为图片
-    let canvas = document.createElement('canvas');
-    //获得 2d 上下文对象
-    let ctx = canvas.getContext('2d');
-    //获取缩放比例
-    let rat1 = DDeiUtil.getPixelRatio(ctx);
-    ddInstance.render.tempCanvas = canvas;
-    //所选择区域的最大范围
-    let outRect = DDeiAbstractShape.getOutRectByPV(models);
-    let lineOffset = models[0].render.getCachedValue("border.width");
-    let addWidth = 0;
-    if (lineOffset) {
-      addWidth = lineOffset * 2 * rat1
-      if (models.length > 1) {
-        addWidth = lineOffset * 2
-      }
-    }
-
-    canvas.setAttribute("width", outRect.width * rat1 + addWidth)
-    canvas.setAttribute("height", outRect.height * rat1 + addWidth)
-    canvas.style.width = outRect.width * rat1 + addWidth + 'px';
-    canvas.style.height = outRect.height * rat1 + addWidth + 'px';
-    ctx.translate(-outRect.x * rat1 + lineOffset / 2, -outRect.y * rat1 + lineOffset / 2)
-
-    models.forEach(item => {
-      item.render.drawShape();
-    })
-    const blob = await new Promise(resolve => canvas.toBlob(resolve));
-
-    return new ClipboardItem({ "image/png": Promise.resolve(blob) })
-
   }
 
 }

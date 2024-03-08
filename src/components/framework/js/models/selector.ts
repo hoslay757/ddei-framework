@@ -340,161 +340,161 @@ class DDeiSelector extends DDeiRectangle {
     let models = null;
     if (this.stage?.selectedModels?.size > 0) {
       models = Array.from(this.stage.selectedModels.values())
+    }
+    if (models?.length == 1 && models[0]?.baseModelType == "DDeiLine") {
+      //计算线的操作点
+      let lineModel = models[0];
+      let type = DDeiModelArrtibuteValue.getAttrValueByState(lineModel, "type", true);
+      let { startDX, startDY, endDX, endDY } = lineModel.render.getPointShapeSize();
+      let opvs = [];
+      let opvsType = [];
+      //开始点
+      let pvs = lineModel.pvs;
+      opvs.push(pvs[0])
+      opvsType.push(1);
 
-      if (models?.length == 1 && models[0]?.baseModelType == "DDeiLine") {
-        //计算线的操作点
-        let lineModel = models[0];
-        let type = DDeiModelArrtibuteValue.getAttrValueByState(lineModel, "type", true);
-        let { startDX, startDY, endDX, endDY } = lineModel.render.getPointShapeSize();
-        let opvs = [];
-        let opvsType = [];
-        //开始点
-        let pvs = lineModel.pvs;
-        opvs.push(pvs[0])
-        opvsType.push(1);
+      switch (type) {
+        case 2: {
+          for (let i = 1; i < pvs.length; i++) {
+            let x = (pvs[i].x + pvs[i - 1].x) / 2
+            let y = (pvs[i].y + pvs[i - 1].y) / 2
 
-        switch (type) {
-          case 2: {
-            for (let i = 1; i < pvs.length; i++) {
-              let x = (pvs[i].x + pvs[i - 1].x) / 2
-              let y = (pvs[i].y + pvs[i - 1].y) / 2
+            opvs.push(new Vector3(x, y, 1))
+            opvsType.push(3);
 
-              opvs.push(new Vector3(x, y, 1))
-              opvsType.push(3);
-
-              if (i != pvs.length - 1) {
-                opvs.push(pvs[i])
-                opvsType.push(2);
-              }
+            if (i != pvs.length - 1) {
+              opvs.push(pvs[i])
+              opvsType.push(2);
             }
-            break;
           }
-          case 3: {
-            if (pvs.length >= 4) {
-              //曲线
-              for (let i = 4; i <= pvs.length; i += 3) {
-                let i0 = i - 4;
-                let i1 = i - 3;
-                let i2 = i - 2;
-                let i3 = i - 1;
-                //输出中间控制点
-                if (i0 != 0) {
-                  opvs.push(new Vector3(pvs[i0].x, pvs[i0].y, 1))
-                  opvsType.push(4);
-                }
-                let stratX = pvs[i0].x
-                let stratY = pvs[i0].y
-                let endX = pvs[i3].x
-                let endY = pvs[i3].y
-                if (i0 == 0) {
-                  stratX = pvs[i0].x + startDX
-                  stratY = pvs[i0].y + startDY
-                }
-                if (i == pvs.length) {
-                  endX = pvs[i3].x + endDX
-                  endY = pvs[i3].y + endDY
-                }
-                //计算三次贝赛尔曲线的落点，通过落点来操作图形
-                let btx = stratX * DDeiUtil.p331t3 + DDeiUtil.p331t2t3 * pvs[i1].x + DDeiUtil.p33t21t3 * pvs[i2].x + DDeiUtil.p33t3 * endX
-                let bty = stratY * DDeiUtil.p331t3 + DDeiUtil.p331t2t3 * pvs[i1].y + DDeiUtil.p33t21t3 * pvs[i2].y + DDeiUtil.p33t3 * endY
-                opvs.push(new Vector3(btx, bty, 1))
+          break;
+        }
+        case 3: {
+          if (pvs.length >= 4) {
+            //曲线
+            for (let i = 4; i <= pvs.length; i += 3) {
+              let i0 = i - 4;
+              let i1 = i - 3;
+              let i2 = i - 2;
+              let i3 = i - 1;
+              //输出中间控制点
+              if (i0 != 0) {
+                opvs.push(new Vector3(pvs[i0].x, pvs[i0].y, 1))
                 opvsType.push(4);
-                btx = stratX * DDeiUtil.p661t3 + DDeiUtil.p661t2t3 * pvs[i1].x + DDeiUtil.p66t21t3 * pvs[i2].x + DDeiUtil.p66t3 * endX
-                bty = stratY * DDeiUtil.p661t3 + DDeiUtil.p661t2t3 * pvs[i1].y + DDeiUtil.p66t21t3 * pvs[i2].y + DDeiUtil.p66t3 * endY
-                opvs.push(new Vector3(btx, bty, 1))
-                opvsType.push(4);
-
               }
+              let stratX = pvs[i0].x
+              let stratY = pvs[i0].y
+              let endX = pvs[i3].x
+              let endY = pvs[i3].y
+              if (i0 == 0) {
+                stratX = pvs[i0].x + startDX
+                stratY = pvs[i0].y + startDY
+              }
+              if (i == pvs.length) {
+                endX = pvs[i3].x + endDX
+                endY = pvs[i3].y + endDY
+              }
+              //计算三次贝赛尔曲线的落点，通过落点来操作图形
+              let btx = stratX * DDeiUtil.p331t3 + DDeiUtil.p331t2t3 * pvs[i1].x + DDeiUtil.p33t21t3 * pvs[i2].x + DDeiUtil.p33t3 * endX
+              let bty = stratY * DDeiUtil.p331t3 + DDeiUtil.p331t2t3 * pvs[i1].y + DDeiUtil.p33t21t3 * pvs[i2].y + DDeiUtil.p33t3 * endY
+              opvs.push(new Vector3(btx, bty, 1))
+              opvsType.push(4);
+              btx = stratX * DDeiUtil.p661t3 + DDeiUtil.p661t2t3 * pvs[i1].x + DDeiUtil.p66t21t3 * pvs[i2].x + DDeiUtil.p66t3 * endX
+              bty = stratY * DDeiUtil.p661t3 + DDeiUtil.p661t2t3 * pvs[i1].y + DDeiUtil.p66t21t3 * pvs[i2].y + DDeiUtil.p66t3 * endY
+              opvs.push(new Vector3(btx, bty, 1))
+              opvsType.push(4);
+
             }
-            break;
           }
+          break;
         }
-        //结束点
-        opvs.push(pvs[pvs.length - 1])
-        opvsType.push(1);
-        this.opvs = opvs;
-        this.opvsType = opvsType;
-      } else {
-        //计算矩形的操作点
-        let pvs = this.pvs;
-        let opvs = [];
-        let opvsType = []
-
-
-
-        if (pvs?.length > 0) {
-          opvs[1] = { x: (pvs[0].x + pvs[1].x) / 2, y: (pvs[0].y + pvs[1].y) / 2 };
-          opvs[3] = { x: (pvs[1].x + pvs[2].x) / 2, y: (pvs[1].y + pvs[2].y) / 2 };
-          opvs[5] = { x: (pvs[2].x + pvs[3].x) / 2, y: (pvs[2].y + pvs[3].y) / 2 };
-          opvs[7] = { x: (pvs[0].x + pvs[3].x) / 2, y: (pvs[0].y + pvs[3].y) / 2 };
-          if (!this.eqrat) {
-            opvs[2] = { x: pvs[1].x, y: pvs[1].y };
-            opvs[4] = { x: pvs[2].x, y: pvs[2].y };
-            opvs[6] = { x: pvs[3].x, y: pvs[3].y };
-            opvs[8] = { x: pvs[0].x, y: pvs[0].y };
-          }
-          let v1 = new Vector3(pvs[1].x, pvs[1].y, 1);
-          let moveMatrix = new Matrix3(
-            1, 0, -(pvs[0].x + pvs[1].x) / 2,
-            0, 1, -(pvs[0].y + pvs[1].y) / 2,
-            0, 0, 1);
-          //归到原点，求夹角
-          v1.applyMatrix3(moveMatrix)
-          //基于构建一个向量，经过旋转90度+角度，再平移到目标位置
-          let angle1 = (new Vector3(1, 0, 0).angleTo(new Vector3(v1.x, v1.y, 0)) * 180 / Math.PI).toFixed(4);
-
-          //判断移动后的线属于第几象限
-          //B.构建旋转矩阵。旋转linvV和pointV
-          let angle = 0;
-          if (v1.x >= 0 && v1.y >= 0) {
-            angle = (angle1 * DDeiConfig.ROTATE_UNIT).toFixed(4);
-          } else if (v1.x <= 0 && v1.y >= 0) {
-            angle = (angle1 * DDeiConfig.ROTATE_UNIT).toFixed(4);
-          } else if (v1.x <= 0 && v1.y <= 0) {
-            angle = (- angle1 * DDeiConfig.ROTATE_UNIT).toFixed(4);
-          } else if (v1.x >= 0 && v1.y <= 0) {
-            angle = ((- angle1) * DDeiConfig.ROTATE_UNIT).toFixed(4);
-          }
-          let angleR1 = (90 * DDeiConfig.ROTATE_UNIT).toFixed(4) - angle
-          v1 = new Vector3(20, 0, 1)
-
-          let rotateMatrix = new Matrix3(
-            Math.cos(angleR1), Math.sin(angleR1), 0,
-            -Math.sin(angleR1), Math.cos(angleR1), 0,
-            0, 0, 1);
-          v1.applyMatrix3(rotateMatrix);
-
-
-          let removeMatrix = new Matrix3(
-            1, 0, (pvs[0].x + pvs[1].x) / 2,
-            0, 1, (pvs[0].y + pvs[1].y) / 2,
-            0, 0, 1);
-
-
-          v1.applyMatrix3(removeMatrix);
-          opvs[9] = v1;
-
-          let v2 = new Vector3(25, 0, 1)
-          let angleR2 = (135 * DDeiConfig.ROTATE_UNIT).toFixed(4) - angle
-          let rotateMatrix2 = new Matrix3(
-            Math.cos(angleR2), Math.sin(angleR2), 0,
-            -Math.sin(angleR2), Math.cos(angleR2), 0,
-            0, 0, 1);
-          v2.applyMatrix3(rotateMatrix2);
-
-          let removeMatrix2 = new Matrix3(
-            1, 0, pvs[0].x,
-            0, 1, pvs[0].y,
-            0, 0, 1);
-
-
-          v2.applyMatrix3(removeMatrix2);
-          opvs[10] = v2;
-          this.opvs = opvs;
-          this.opvsType = opvsType
-        }
-
       }
+      //结束点
+      opvs.push(pvs[pvs.length - 1])
+      opvsType.push(1);
+      this.opvs = opvs;
+      this.opvsType = opvsType;
+    } else {
+      //计算矩形的操作点
+      let pvs = this.pvs;
+      let opvs = [];
+      let opvsType = []
+
+
+
+      if (pvs?.length > 0) {
+        opvs[1] = { x: (pvs[0].x + pvs[1].x) / 2, y: (pvs[0].y + pvs[1].y) / 2 };
+        opvs[3] = { x: (pvs[1].x + pvs[2].x) / 2, y: (pvs[1].y + pvs[2].y) / 2 };
+        opvs[5] = { x: (pvs[2].x + pvs[3].x) / 2, y: (pvs[2].y + pvs[3].y) / 2 };
+        opvs[7] = { x: (pvs[0].x + pvs[3].x) / 2, y: (pvs[0].y + pvs[3].y) / 2 };
+        if (!this.eqrat) {
+          opvs[2] = { x: pvs[1].x, y: pvs[1].y };
+          opvs[4] = { x: pvs[2].x, y: pvs[2].y };
+          opvs[6] = { x: pvs[3].x, y: pvs[3].y };
+          opvs[8] = { x: pvs[0].x, y: pvs[0].y };
+        }
+        let v1 = new Vector3(pvs[1].x, pvs[1].y, 1);
+        let moveMatrix = new Matrix3(
+          1, 0, -(pvs[0].x + pvs[1].x) / 2,
+          0, 1, -(pvs[0].y + pvs[1].y) / 2,
+          0, 0, 1);
+        //归到原点，求夹角
+        v1.applyMatrix3(moveMatrix)
+        //基于构建一个向量，经过旋转90度+角度，再平移到目标位置
+        let angle1 = (new Vector3(1, 0, 0).angleTo(new Vector3(v1.x, v1.y, 0)) * 180 / Math.PI).toFixed(4);
+
+        //判断移动后的线属于第几象限
+        //B.构建旋转矩阵。旋转linvV和pointV
+        let angle = 0;
+        if (v1.x >= 0 && v1.y >= 0) {
+          angle = (angle1 * DDeiConfig.ROTATE_UNIT).toFixed(4);
+        } else if (v1.x <= 0 && v1.y >= 0) {
+          angle = (angle1 * DDeiConfig.ROTATE_UNIT).toFixed(4);
+        } else if (v1.x <= 0 && v1.y <= 0) {
+          angle = (- angle1 * DDeiConfig.ROTATE_UNIT).toFixed(4);
+        } else if (v1.x >= 0 && v1.y <= 0) {
+          angle = ((- angle1) * DDeiConfig.ROTATE_UNIT).toFixed(4);
+        }
+        let angleR1 = (90 * DDeiConfig.ROTATE_UNIT).toFixed(4) - angle
+        v1 = new Vector3(20, 0, 1)
+
+        let rotateMatrix = new Matrix3(
+          Math.cos(angleR1), Math.sin(angleR1), 0,
+          -Math.sin(angleR1), Math.cos(angleR1), 0,
+          0, 0, 1);
+        v1.applyMatrix3(rotateMatrix);
+
+
+        let removeMatrix = new Matrix3(
+          1, 0, (pvs[0].x + pvs[1].x) / 2,
+          0, 1, (pvs[0].y + pvs[1].y) / 2,
+          0, 0, 1);
+
+
+        v1.applyMatrix3(removeMatrix);
+        opvs[9] = v1;
+
+        let v2 = new Vector3(25, 0, 1)
+        let angleR2 = (135 * DDeiConfig.ROTATE_UNIT).toFixed(4) - angle
+        let rotateMatrix2 = new Matrix3(
+          Math.cos(angleR2), Math.sin(angleR2), 0,
+          -Math.sin(angleR2), Math.cos(angleR2), 0,
+          0, 0, 1);
+        v2.applyMatrix3(rotateMatrix2);
+
+        let removeMatrix2 = new Matrix3(
+          1, 0, pvs[0].x,
+          0, 1, pvs[0].y,
+          0, 0, 1);
+
+
+        v2.applyMatrix3(removeMatrix2);
+        opvs[10] = v2;
+        this.opvs = opvs;
+        this.opvsType = opvsType
+      }
+
+
     }
   }
 
@@ -531,7 +531,7 @@ class DDeiSelector extends DDeiRectangle {
    * @param y
    */
   isOpvOn(direct: number, x: number, y: number): boolean {
-    if (this.opvs[direct]) {
+    if (this.opvs && this.opvs[direct]) {
       let pv = this.opvs[direct];
       if (pv) {
         //操作图标的宽度
