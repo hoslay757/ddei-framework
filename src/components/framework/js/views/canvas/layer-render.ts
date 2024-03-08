@@ -984,9 +984,14 @@ class DDeiLayerCanvasRender {
               let operateModels = []
               let lines = this.stage?.getModelsByBaseType("DDeiLine");
               let moveOriginModels = []
+              let moveOriginLines = []
               this.model.shadowControls.forEach(item => {
                 let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
-                moveOriginModels.push(this.stage?.getModelById(id))
+                let momodel = this.stage?.getModelById(id)
+                if (momodel?.baseModelType == 'DDeiLine') {
+                  moveOriginLines.push(momodel.id)
+                }
+                moveOriginModels.push(momodel)
               });
               //同步影子元素的坐标大小等状态到当前模
               for (let i = 0; i < this.model.shadowControls.length; i++) {
@@ -1014,7 +1019,7 @@ class DDeiLayerCanvasRender {
                 //第二种情况，移动了非线控件，此时要判断两种情况
                 else {
                   //情况A移动的是独立的控件，则更新其已连接线段的点，以确保线段始终连接当前图形
-                  model.updateLinkModels();
+                  model.updateLinkModels(moveOriginLines);
                   //情况B移动的是依附于线段存在的子控件，更新和线段的关系
                   lines?.forEach(line => {
                     if (line.linkModels?.has(model.id)) {

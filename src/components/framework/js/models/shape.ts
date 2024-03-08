@@ -5,6 +5,7 @@ import DDeiEnumControlState from '../enums/control-state'
 import DDeiUtil from '../util'
 import { Matrix3, Vector3 } from 'three';
 import { cloneDeep, clone, isNumber } from 'lodash'
+import type DDei from '../ddei'
 /**
  * 抽象的图形类，定义了大多数图形都有的属性和方法
  */
@@ -257,7 +258,10 @@ abstract class DDeiAbstractShape {
     this.composes?.forEach(compose => {
       compose.initPVS()
     });
-    this.updateExPvs();
+    if (!this.isShadowControl) {
+      this.updateExPvs();
+    }
+
   }
 
   /**
@@ -857,13 +861,12 @@ abstract class DDeiAbstractShape {
   /**
    * 更新关联图形
    */
-  updateLinkModels(): void {
+  updateLinkModels(ignoreModelIds: string[]): void {
     //如果存在关联控件，同步修改关联控件坐标
     let links = this.stage.getSourceModelLinks(this.id);
-    if (links?.length > 0) {
-      //同步调整链接控件的数据
-
-      links.forEach(link => {
+    //同步调整链接控件的数据
+    links?.forEach(link => {
+      if (ignoreModelIds?.indexOf(link.dm?.id) == -1) {
         let dpv = link.getDistPV();
         if (dpv) {
           let spv = link.getSourcePV();
@@ -879,8 +882,8 @@ abstract class DDeiAbstractShape {
             link.dm.pModel?.changeParentsBounds()
           }
         }
-      })
-    }
+      }
+    })
   }
   /**
    * 单独修改向量导致两点关系发生变化后同步调整exPvs点的位置
