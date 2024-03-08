@@ -464,30 +464,42 @@ class DDeiStageCanvasRender {
           }
         }
       }
+      let paperOutRect = {
+        x: posX + (-leftExtNum * paperWidth), y: posY + (-topExtNum * paperHeight), w: (rightExtNum + leftExtNum + 1) * paperWidth, h: (bottomExtNum + topExtNum + 1) * paperHeight
+      }
+      this.paperOutRect = paperOutRect;
       //绘制矩形纸张
       ctx.save();
       ctx.lineWidth = 1
       ctx.fillStyle = "white"
       ctx.strokeStyle = "grey"
       ctx.setLineDash([5, 5]);
-      for (let i = -leftExtNum; i <= rightExtNum; i++) {
-        for (let j = -topExtNum; j <= bottomExtNum; j++) {
-          ctx.fillRect(posX + (i * paperWidth), posY + (j * paperHeight), paperWidth, paperHeight)
-          //绘制当前纸张的每个图层背景
-          let topDisplayIndex = -1;
-          for (let l = this.model.layers.length - 1; l >= 0; l--) {
-            if (this.model.layers[l].tempDisplay) {
-              topDisplayIndex = l;
-            } else if (this.model.layers[l].display == 1) {
-
-              this.model.layers[l].render.drawBackground(posX + (i * paperWidth), posY + (j * paperHeight), paperWidth, paperHeight);
-            }
-          }
-          if (topDisplayIndex != -1) {
-            this.model.layers[topDisplayIndex].render.drawBackground(posX + (i * paperWidth), posY + (j * paperHeight), paperWidth, paperHeight);
-          }
-          ctx.strokeRect(posX + (i * paperWidth), posY + (j * paperHeight), paperWidth, paperHeight)
+      ctx.fillRect(paperOutRect.x, paperOutRect.y, paperOutRect.w, paperOutRect.h)
+      //绘制当前纸张的每个图层背景
+      let topDisplayIndex = -1;
+      for (let l = this.model.layers.length - 1; l >= 0; l--) {
+        if (this.model.layers[l].tempDisplay) {
+          topDisplayIndex = l;
+        } else if (this.model.layers[l].display == 1) {
+          this.model.layers[l].render.drawBackground(paperOutRect.x, paperOutRect.y, paperOutRect.w, paperOutRect.h);
         }
+      }
+      if (topDisplayIndex != -1) {
+        this.model.layers[topDisplayIndex].render.drawBackground(paperOutRect.x, paperOutRect.y, paperOutRect.w, paperOutRect.h);
+      }
+      //绘制分割虚线
+
+      for (let i = -leftExtNum + 1; i <= rightExtNum; i++) {
+        ctx.beginPath()
+        ctx.moveTo(posX + (i * paperWidth), paperOutRect.y)
+        ctx.lineTo(posX + (i * paperWidth), paperOutRect.y + paperOutRect.h)
+        ctx.stroke()
+      }
+      for (let i = -topExtNum + 1; i <= bottomExtNum; i++) {
+        ctx.beginPath()
+        ctx.moveTo(paperOutRect.x, posY + (i * paperHeight))
+        ctx.lineTo(paperOutRect.x + paperOutRect.w, posY + (i * paperHeight))
+        ctx.stroke()
       }
 
       ctx.setLineDash([]);
@@ -495,9 +507,7 @@ class DDeiStageCanvasRender {
       ctx.lineWidth = lineWidth
       ctx.strokeStyle = "black"
       ctx.strokeRect(posX + (-leftExtNum * paperWidth) - lineWidth, posY + (-topExtNum * paperHeight) - lineWidth, (rightExtNum + leftExtNum + 1) * paperWidth + 2 * lineWidth, (bottomExtNum + topExtNum + 1) * paperHeight + 2 * lineWidth)
-      this.paperOutRect = {
-        x: posX + (-leftExtNum * paperWidth), y: posY + (-topExtNum * paperHeight), w: (rightExtNum + leftExtNum + 1) * paperWidth, h: (bottomExtNum + topExtNum + 1) * paperHeight
-      }
+
       ctx.restore();
 
     }
@@ -900,7 +910,7 @@ class DDeiStageCanvasRender {
     let paperConfig = DDeiConfig.PAPER[paperType];
     if (paperConfig) {
       let gridDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "grid.display", true);
-      if (gridDisplay == 1 || gridDisplay == '1') {
+      if (gridDisplay == 1 || gridDisplay == '1' || gridDisplay == 2 || gridDisplay == '2') {
         //绘制横向点
         //获得 2d 上下文对象
         let canvas = this.ddRender.getCanvas();
@@ -937,18 +947,17 @@ class DDeiStageCanvasRender {
             }
           }
         }
-
+        let paperOutRect = this.paperOutRect
         //切分后单个part大小
         let splitedWeight = marginWeight / splitNumber;
         //标尺的固定显示大小
-        let weight = 16 * rat1;
         ctx.save();
         //创建剪切区，只有在纸张范围内才显示网格线
         ctx.beginPath();
-        ctx.moveTo(this.paperOutRect.x, this.paperOutRect.y);
-        ctx.lineTo(this.paperOutRect.x + this.paperOutRect.w, this.paperOutRect.y);
-        ctx.lineTo(this.paperOutRect.x + this.paperOutRect.w, this.paperOutRect.y + this.paperOutRect.h);
-        ctx.lineTo(this.paperOutRect.x, this.paperOutRect.y + this.paperOutRect.h);
+        ctx.moveTo(paperOutRect.x, paperOutRect.y);
+        ctx.lineTo(paperOutRect.x + paperOutRect.w, paperOutRect.y);
+        ctx.lineTo(paperOutRect.x + paperOutRect.w, paperOutRect.y + paperOutRect.h);
+        ctx.lineTo(paperOutRect.x, paperOutRect.y + paperOutRect.h);
         ctx.stroke()
 
         ctx.clip()
@@ -957,111 +966,48 @@ class DDeiStageCanvasRender {
         ctx.lineWidth = 1
         ctx.strokeStyle = "rgb(190,190,190)"
         ctx.fillStyle = "white"
-        let cwidth = canvas.width;
-        let cheight = canvas.height;
 
-        //纸张的像素大小
-        let paperSize = DDeiUtil.getPaperSize(this.model)
-        let paperWidth = paperSize.width;
-        let paperHeight = paperSize.height;
-        //基准位置0刻度
-
-        if (!this.model.spv) {
-          let sx = this.model.width / 2 - paperWidth / 2 / rat1
-          let sy = this.model.height / 2 - paperHeight / 2 / rat1
-          this.model.spv = new Vector3(sx, sy, 1)
-        }
-        let startBaseX = this.model.spv.x * rat1 + 1
-        let startBaseY = this.model.spv.y * rat1 + 1
-
-
-        //绘制竖线
-        let textOffset = 1 * rat1
-        ctx.fillStyle = "rgb(200,200,200)"
-        //当前的窗口位置（乘以了窗口缩放比例）
-        let wpvX = -this.model.wpv.x * rat1
-        let wpvY = -this.model.wpv.y * rat1
-        let x = 0;
-        let k = 0;
-        let curX = startBaseX - wpvX
-        while (curX <= cwidth) {
-          if (curX > weight) {
-            ctx.beginPath();
-            ctx.moveTo(curX, 0);
-            let nMod = x % splitNumber
-            if (nMod != 0) {
-              ctx.strokeStyle = "rgb(230,230,230)"
-            } else {
-              ctx.strokeStyle = "rgb(220,220,220)"
-              k++
-            }
-            ctx.lineTo(curX, cheight);
-            ctx.stroke()
-          }
-          curX += splitedWeight;
-          x++
-        }
-        x = 0;
-        k = 0;
-        curX = startBaseX - wpvX
-        while (curX >= 0) {
-          if (curX > weight) {
-            ctx.beginPath();
-            ctx.moveTo(curX, 0);
-            let nMod = x % splitNumber
-
-            if (nMod != 0) {
-              ctx.strokeStyle = "rgb(230,230,230)"
-            } else {
-              ctx.strokeStyle = "rgb(220,220,220)"
-              k--
-            }
-            ctx.lineTo(curX, cheight);
-            ctx.stroke()
-          }
-          curX -= splitedWeight;
-
-          x--
-        }
-
-        let curY = startBaseY - wpvY
-        let y = 0;
-        while (curY <= cheight) {
-          if (curY > weight) {
-            ctx.beginPath();
-            ctx.moveTo(0, curY);
-            let nMod = y % splitNumber
-            if (nMod != 0) {
-              ctx.strokeStyle = "rgb(230,230,230)"
-            } else {
-              ctx.strokeStyle = "rgb(220,220,220)"
-            }
-            ctx.lineTo(cwidth, curY);
+        let ex = paperOutRect.x + paperOutRect.w
+        let ey = paperOutRect.y + paperOutRect.h
+        if (gridDisplay == 2 || gridDisplay == '2') {
+          //纸张开始的位置
+          ctx.strokeStyle = "rgb(121,121,121)"
+          ctx.lineWidth = 2 * stageRatio
+          ctx.setLineDash([2 * stageRatio, splitedWeight - stageRatio])
+          for (let sx = paperOutRect.x; sx <= ex; sx = sx + splitedWeight) {
+            ctx.beginPath()
+            ctx.moveTo(sx, paperOutRect.y);
+            ctx.lineTo(sx, ey);
             ctx.stroke();
           }
-          curY += splitedWeight;
-          y++
-        }
-        curY = startBaseY - wpvY
-        y = 0
-        while (curY >= 0) {
-          if (curY > weight) {
-            ctx.beginPath();
-            ctx.moveTo(0, curY);
-
-            let nMod = y % splitNumber
-
+        } else if (gridDisplay == 1 || gridDisplay == '1') {
+          for (let sx = paperOutRect.x, n = 0; sx <= ex; sx = sx + splitedWeight, n++) {
+            let nMod = n % splitNumber
             if (nMod != 0) {
               ctx.strokeStyle = "rgb(230,230,230)"
             } else {
               ctx.strokeStyle = "rgb(220,220,220)"
             }
-            ctx.lineTo(cwidth, curY);
+            ctx.beginPath()
+            ctx.moveTo(sx, paperOutRect.y);
+            ctx.lineTo(sx, ey);
             ctx.stroke();
           }
-          curY -= splitedWeight;
-          y--
+          for (let sy = paperOutRect.y, n = 0; sy <= ey; sy = sy + splitedWeight, n++) {
+            let nMod = n % splitNumber
+            if (nMod != 0) {
+              ctx.strokeStyle = "rgb(230,230,230)"
+            } else {
+              ctx.strokeStyle = "rgb(220,220,220)"
+            }
+            ctx.beginPath()
+            ctx.moveTo(paperOutRect.x, sy);
+            ctx.lineTo(ex, sy);
+            ctx.stroke();
+
+          }
         }
+
 
         ctx.restore();
       }
