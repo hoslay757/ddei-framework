@@ -13,6 +13,7 @@ import DDeiEnumOperateType from "@/components/framework/js/enums/operate-type";
 import DDeiEditorEnumBusCommandType from "../enums/editor-command-type";
 import DDeiPolygon from "@/components/framework/js/models/polygon";
 import DDeiLink from "@/components/framework/js/models/link";
+import DDeiLineLink from "@/components/framework/js/models/linelink";
 /**
  * 键行为:粘贴
  * 粘贴剪切板内容
@@ -998,6 +999,21 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
           item.exPvs = {}
           if (appendExPvs[item.id]) {
             item.exPvs = appendExPvs[item.id]
+          }
+          //处理linkmodels
+          if (item.baseModelType == 'DDeiLine') {
+            let linkModels: Map<string, DDeiLineLink> = new Map<string, DDeiLineLink>();
+            for (let key in item.linkModels) {
+              let lkItem = item.linkModels[key];
+              if (lkItem?.dmid) {
+                let dm = oldIdMap[lkItem.dmid]
+                lkItem.dm = dm
+                lkItem.line = item;
+                let lm = new DDeiLineLink(lkItem);
+                linkModels.set(dm.id, lm)
+              }
+            }
+            item.linkModels = linkModels
           }
         })
 

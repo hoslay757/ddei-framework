@@ -64,6 +64,15 @@ class DDeiKeyActionCopy extends DDeiKeyAction {
               }
             })
             //需要进一步复制其linkModels
+            model.linkModels?.forEach(lineLM => {
+              if (lineLM.dm) {
+                if (!selectedControls.has(lineLM.dm.id)) {
+                  //添加到复制的model中
+                  let json = lineLM.dm.toJSON();
+                  jsonStr += JSON.stringify(json) + ","
+                }
+              }
+            });
           }
         })
         if (jsonStr.length > 1) {
