@@ -2124,18 +2124,19 @@ abstract class DDeiAbstractShape {
     }
     //对控件进行排序，按照zIndex > 添加顺序
     if (controls.length > 1) {
+
       controls.sort(function (a, b) {
         let anumber = -1
         let bnumber = -1
         if (a.baseModelType == 'DDeiLine') {
-          anumber = 1000 + (a.zIndex ? b.zIndex : 0)
-        } else {
           anumber = 2000 + (a.zIndex ? b.zIndex : 0)
+        } else {
+          anumber = 1000 + (a.zIndex ? b.zIndex : 0)
         }
         if (b.baseModelType == 'DDeiLine') {
-          bnumber = 1000 + (b.zIndex ? b.zIndex : 0)
-        } else {
           bnumber = 2000 + (b.zIndex ? b.zIndex : 0)
+        } else {
+          bnumber = 1000 + (b.zIndex ? b.zIndex : 0)
         }
         if (a.state == DDeiEnumControlState.SELECTED) {
           anumber += 10000
@@ -2154,6 +2155,7 @@ abstract class DDeiAbstractShape {
 
       });
     }
+
     return controls;
   }
 
