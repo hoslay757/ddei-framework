@@ -1,4 +1,4 @@
-import { MODEL_CLS } from '../../config';
+import DDeiConfig, { MODEL_CLS } from '../../config';
 import DDeiEnumBusCommandType from '../../enums/bus-command-type';
 import DDeiEnumOperateState from '../../enums/operate-state';
 import DDeiBus from '../bus';
@@ -71,13 +71,17 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
                 otherP.y = ey
               }
             }
+
+
             pvs[0].x = ex
             pvs[0].y = ey
 
           }
           //结束点
           else if (passIndex == 1 && opvsIndex == opvs.length - 1) {
+
             if (create) {
+
               pvs[pvs.length - 1].x = ex;
               pvs[pvs.length - 1].y = ey;
             } else {
@@ -90,8 +94,11 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
                   otherP.y = ey
                 }
               }
+
               pvs[pvs.length - 1].x = ex
               pvs[pvs.length - 1].y = ey
+
+
 
             }
           } else if (passIndex == 2) {

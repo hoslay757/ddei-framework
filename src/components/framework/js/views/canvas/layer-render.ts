@@ -1396,6 +1396,28 @@ class DDeiLayerCanvasRender {
         }
         //如果操作控件存在，修改线段的点
         else {
+          let lineModel = this.stageRender.dragObj.model
+          let passIndex = this.stageRender.dragObj.passIndex
+          let opvsIndex = this.stageRender.dragObj.opvsIndex
+          let opvs = this.stageRender.dragObj.opvs
+
+          if (passIndex == 1 && opvsIndex == 0) {
+            let endPoint = lineModel.endPoint;
+            if (Math.abs(endPoint.x - ex) <= DDeiConfig.GLOBAL_ADV_WEIGHT) {
+              ex = endPoint.x
+            } else if (Math.abs(endPoint.y - ey) <= DDeiConfig.GLOBAL_ADV_WEIGHT) {
+              ey = endPoint.y
+            }
+          } else if (passIndex == 1 && opvsIndex == opvs.length - 1) {
+            let startPoint = lineModel.startPoint;
+            if (Math.abs(startPoint.x - ex) <= DDeiConfig.GLOBAL_ADV_WEIGHT) {
+              ex = startPoint.x
+            } else if (Math.abs(startPoint.y - ey) <= DDeiConfig.GLOBAL_ADV_WEIGHT) {
+              ey = startPoint.y
+            }
+          }
+
+
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeLinePoint, { ex: ex, ey: ey });
           //渲染图形
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
