@@ -984,6 +984,7 @@ class DDeiLayerCanvasRender {
               let operateModels = []
               let lines = this.stage?.getModelsByBaseType("DDeiLine");
               let moveOriginModels = []
+              let moveOriginModelIds = []
               let moveOriginLines = []
               this.model.shadowControls.forEach(item => {
                 let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
@@ -992,6 +993,7 @@ class DDeiLayerCanvasRender {
                   moveOriginLines.push(momodel.id)
                 }
                 moveOriginModels.push(momodel)
+                moveOriginModelIds.push(momodel.id)
               });
               //同步影子元素的坐标大小等状态到当前模
               for (let i = 0; i < this.model.shadowControls.length; i++) {
@@ -1017,7 +1019,7 @@ class DDeiLayerCanvasRender {
                   let lineInModelsStart = DDeiAbstractShape.findBottomModelsByArea(this.model, model.startPoint.x, model.startPoint.y, true, true);
                   if (lineInModelsStart.length > 0) {
                     for (let li = 0; li < lineInModelsStart.length; li++) {
-                      if (!model.linkModels?.has(lineInModelsStart[li].id)) {
+                      if (!model.linkModels?.has(lineInModelsStart[li].id) && moveOriginModelIds.indexOf(lineInModelsStart[li].id) == -1) {
                         addLineLink(model, lineInModelsStart[li], model.startPoint, 1)
                       }
                       break
@@ -1025,8 +1027,9 @@ class DDeiLayerCanvasRender {
                   }
                   let lineInModelsEnd = DDeiAbstractShape.findBottomModelsByArea(this.model, model.endPoint.x, model.endPoint.y, true, true);
                   if (lineInModelsEnd.length > 0) {
+
                     for (let li = 0; li < lineInModelsEnd.length; li++) {
-                      if (!model.linkModels?.has(lineInModelsEnd[li].id)) {
+                      if (!model.linkModels?.has(lineInModelsEnd[li].id) && moveOriginModelIds.indexOf(lineInModelsEnd[li].id) == -1) {
                         addLineLink(model, lineInModelsEnd[li], model.endPoint, 2)
                       }
                       break

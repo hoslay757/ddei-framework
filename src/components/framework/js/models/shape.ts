@@ -864,26 +864,40 @@ abstract class DDeiAbstractShape {
   updateLinkModels(ignoreModelIds: string[]): void {
     //如果存在关联控件，同步修改关联控件坐标
     let links = this.stage.getSourceModelLinks(this.id);
+    if (this.id == 'state_53') {
+      console.log(links)
+    }
     //同步调整链接控件的数据
+    let removeLinks = []
     links?.forEach(link => {
       if (!ignoreModelIds || ignoreModelIds?.indexOf(link.dm?.id) == -1) {
         let dpv = link.getDistPV();
         if (dpv) {
           let spv = link.getSourcePV();
-          dpv.x = spv.x
-          dpv.y = spv.y
-          dpv.z = spv.z
+          if (spv) {
+            dpv.x = spv.x
+            dpv.y = spv.y
+            dpv.z = spv.z
 
-          link.dm.refreshLinePoints()
-          link.dm.updateOVS()
-          let pvs = link.dm.pvs
-          link.dm.setLineType1PointPosition(0, pvs[0].x, pvs[0].y)
-          if (link.dm.pModel?.modelType != 'DDeiLayer') {
-            link.dm.pModel?.changeParentsBounds()
+            link.dm.refreshLinePoints()
+            link.dm.updateOVS()
+            let pvs = link.dm.pvs
+            link.dm.setLineType1PointPosition(0, pvs[0].x, pvs[0].y)
+            if (link.dm.pModel?.modelType != 'DDeiLayer') {
+              link.dm.pModel?.changeParentsBounds()
+            }
+          } else {
+            //删除无效的links
+            removeLinks.push(link)
           }
         }
       }
     })
+    if (removeLinks.length > 0) {
+
+      this.stage.removeLink(removeLinks)
+    }
+
   }
   /**
    * 单独修改向量导致两点关系发生变化后同步调整exPvs点的位置
