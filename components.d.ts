@@ -25,7 +25,6 @@ declare module 'vue' {
     ChooseControlGroupDialog: typeof import('./src/components/editor/dialogs/ChooseControlGroupDialog.vue')['default']
     CloseFileConfirmDialog: typeof import('./src/components/editor/dialogs/CloseFileConfirmDialog.vue')['default']
     CollFileConfirmDialog: typeof import('./src/components/editor/dialogs/CollFileConfirmDialog.vue')['default']
-    copy: typeof import('./src/components/editor/propertyview/editors/PVRangeEditor copy.vue')['default']
     CreateShareDialog: typeof import('./src/components/editor/dialogs/CreateShareDialog.vue')['default']
     Dialogs: typeof import('./src/components/editor/dialogs/Dialogs.vue')['default']
     Editor: typeof import('./src/components/editor/Editor.vue')['default']

@@ -179,6 +179,10 @@ export default {
             evt,
             true
           );
+          //清空图片
+          if(element.render){
+            element.render.imgObj = null
+          }
         });
       }
       this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
