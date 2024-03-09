@@ -432,6 +432,8 @@ class DDeiStageCanvasRender {
 
       let posX = startPaperX - wpvX + offsetWidth;
       let posY = startPaperY - wpvY + offsetWidth;
+      this.paperStartX = posX
+      this.paperStartY = posY
 
       //获取最大的有效范围，自动扩展纸张
       let maxOutRect = DDeiAbstractShape.getOutRectByPV(this.model.getLayerModels())
@@ -982,14 +984,20 @@ class DDeiStageCanvasRender {
           ctx.strokeStyle = "rgb(121,121,121)"
           ctx.lineWidth = 2 * stageRatio
           ctx.setLineDash([2 * stageRatio, splitedWeight - stageRatio])
-          for (let sx = paperOutRect.x; sx <= ex; sx = sx + splitedWeight) {
+          for (let sx = this.paperStartX; sx <= ex; sx = sx + splitedWeight) {
+            ctx.beginPath()
+            ctx.moveTo(sx, paperOutRect.y);
+            ctx.lineTo(sx, ey);
+            ctx.stroke();
+          }
+          for (let sx = this.paperStartX; sx >= paperOutRect.x; sx = sx - splitedWeight) {
             ctx.beginPath()
             ctx.moveTo(sx, paperOutRect.y);
             ctx.lineTo(sx, ey);
             ctx.stroke();
           }
         } else if (gridDisplay == 1 || gridDisplay == '1') {
-          for (let sx = paperOutRect.x, n = 0; sx <= ex; sx = sx + splitedWeight, n++) {
+          for (let sx = this.paperStartX, n = 0; sx <= ex; sx = sx + splitedWeight, n++) {
             let nMod = n % splitNumber
             if (nMod != 0) {
               ctx.strokeStyle = "rgb(230,230,230)"
@@ -1001,7 +1009,32 @@ class DDeiStageCanvasRender {
             ctx.lineTo(sx, ey);
             ctx.stroke();
           }
-          for (let sy = paperOutRect.y, n = 0; sy <= ey; sy = sy + splitedWeight, n++) {
+          for (let sx = this.paperStartX, n = 0; sx >= paperOutRect.x; sx = sx - splitedWeight, n++) {
+            let nMod = n % splitNumber
+            if (nMod != 0) {
+              ctx.strokeStyle = "rgb(230,230,230)"
+            } else {
+              ctx.strokeStyle = "rgb(220,220,220)"
+            }
+            ctx.beginPath()
+            ctx.moveTo(sx, paperOutRect.y);
+            ctx.lineTo(sx, ey);
+            ctx.stroke();
+          }
+          for (let sy = this.paperStartY, n = 0; sy <= ey; sy = sy + splitedWeight, n++) {
+            let nMod = n % splitNumber
+            if (nMod != 0) {
+              ctx.strokeStyle = "rgb(230,230,230)"
+            } else {
+              ctx.strokeStyle = "rgb(220,220,220)"
+            }
+            ctx.beginPath()
+            ctx.moveTo(paperOutRect.x, sy);
+            ctx.lineTo(ex, sy);
+            ctx.stroke();
+
+          }
+          for (let sy = this.paperStartY, n = 0; sy >= paperOutRect.y; sy = sy - splitedWeight, n++) {
             let nMod = n % splitNumber
             if (nMod != 0) {
               ctx.strokeStyle = "rgb(230,230,230)"

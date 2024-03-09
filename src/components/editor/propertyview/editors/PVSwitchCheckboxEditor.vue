@@ -128,7 +128,7 @@ export default {
       let value = parser.parseValue(this.attrDefine.value);
       DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, value);
       this.attrDefine.doCascadeDisplayByValue();
-      this.editor.ddInstance.stage.selectedModels.forEach((element) => {
+      this.editor.ddInstance.stage.selectedModels?.forEach((element) => {
         //推送信息进入总线
         this.editor.bus.push(
           DDeiEnumBusCommandType.ModelChangeValue,
