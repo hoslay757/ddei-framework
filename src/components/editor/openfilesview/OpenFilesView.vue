@@ -155,6 +155,8 @@ export default {
           },
           { currentDdInstance: ddInstance }
         );
+        file.extData.owner = 1
+        file.local = 1
         //添加文件
         if (this.editor.currentFileIndex != -1) {
           this.editor.files[this.editor.currentFileIndex].active =
@@ -389,11 +391,9 @@ export default {
     changeFile(file) {
       let ddInstance = this.editor?.ddInstance;
       if (!file) {
-        ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
-        ddInstance.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
-          parts: ["bottommenu", "topmenu"],
-        });
-        ddInstance?.bus?.executeAll();
+        ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
+        ddInstance.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {});
+        ddInstance.bus.executeAll();
       } else if (file.active != DDeiActiveType.ACTIVE) {
         this.editor.files.forEach((item) => {
           item.active = DDeiActiveType.NONE;
@@ -411,17 +411,12 @@ export default {
           //加载场景渲染器
           stage.initRender();
           ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
-          ddInstance.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
-            parts: ["bottommenu", "topmenu"],
-          });
-
-          ddInstance.bus.executeAll();
-
         }
+        this.applyFilePromise(file)
+        ddInstance.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {});
+        ddInstance.bus.executeAll();
       }
-      this.applyFilePromise(file)
-      ddInstance.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {});
-      ddInstance.bus.executeAll();
+     
     },
 
     /**

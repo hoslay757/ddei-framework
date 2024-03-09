@@ -102,7 +102,7 @@ class DDeiEditorCommandSaveFile extends DDeiBusCommand {
                   if (thumbBase64) {
                     json.thumb = thumbBase64
                   }
-                  saveFile(json).then(data => {
+                  saveFile(json, file).then(data => {
                     if (data.result == 1) {
                       file.state = DDeiFileState.NONE;
                       //遍历histroy，修改当前的histroy记录为最新状态，去掉其它最新状态标记

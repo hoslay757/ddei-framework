@@ -393,30 +393,53 @@ export default {
     /**
      * 保存文件以及设计
      */
-    async saveFile(designdata) {
+    async saveFile(designdata,file) {
       //根据ID获取文件的设计以及文件的信息
       if (designdata) {
-        let postData = {
-          id: designdata.id,
-          name: designdata.name,
-          code: designdata.code,
-          desc: designdata.desc,
-          thumb: designdata.thumb,
-        };
-        //删除提交数据中的缩略图
-        delete designdata.thumb
-        postData.content = JSON.stringify(designdata)
-        if (await this.getUserInfo()) {
-          let fileData = await savefile(postData);
-          if (fileData.status == 200) {
-            if (fileData.data.code == 0) {
-              return { result: 1, msg: "" };
-            } else {
-              return { result: 2, msg: "保存失败" };
+      
+        if(designdata.id && file.local != 1){
+          let postData = {
+            id: designdata.id,
+            name: designdata.name,
+            code: designdata.code,
+            desc: designdata.desc,
+            thumb: designdata.thumb,
+          };
+          //删除提交数据中的缩略图
+          delete designdata.thumb
+          postData.content = JSON.stringify(designdata)
+          if (await this.getUserInfo()) {
+            let fileData = await savefile(postData);
+            if (fileData.status == 200) {
+              if (fileData.data.code == 0) {
+                return { result: 1, msg: "" };
+              } else {
+                return { result: 2, msg: "保存失败" };
+              }
             }
+          } else {
+            return { result: 2, msg: "保存失败" };
           }
-        } else {
-          return { result: 2, msg: "保存失败" };
+        }
+        //保存到本地还是服务器
+        else{
+          if(!file.localFileHandler){
+            file.localFileHandler = await showSaveFilePicker({
+              description: "DDei Design File",
+              suggestedName: designdata.name+".dei",
+                types: [{
+                    accept: {
+                        "text/plain": [".dei"]
+                    }
+                  }]
+            });
+          }
+          file.local = 1
+          const w$ = await file.localFileHandler.createWritable();
+          await w$.write(JSON.stringify(designdata));
+          await w$.close();
+
+          return { result: 1, msg: "" };
         }
 
       }

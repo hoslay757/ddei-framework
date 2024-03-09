@@ -93,9 +93,7 @@ export default {
             accept: {
                 'image/*': ['.png', '.gif', '.jpeg', '.jpg', '.webp']
             }
-        }],
-        // 可以选择多个图片
-        multiple: true})
+        }]})
       //获取图片数据  这个file其实就是和input元素<input type="file" id="file">，document.querySelector("#file").files[0]一样
       let file=await arrFileHandle[0].getFile();
       //转成base64
