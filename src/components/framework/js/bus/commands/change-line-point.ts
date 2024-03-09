@@ -39,7 +39,7 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
     let stageRender = stage?.render
     let ex = data?.ex ? data.ex : 0;
     let ey = data?.ey ? data.ey : 0;
-    if (stageRender?.dragObj && (ex || ey)) {
+    if (stageRender?.dragObj && stageRender.dragObj?.model && (ex || ey)) {
       let lineModel = stageRender.dragObj.model
       let passIndex = stageRender.dragObj.passIndex;
       let opvsIndex = stageRender.dragObj.opvsIndex;

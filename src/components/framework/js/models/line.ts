@@ -563,7 +563,7 @@ class DDeiLine extends DDeiAbstractShape {
     }
 
     //获取推荐路径
-    let recommendPaths = getRecommendPath(sAngle, eAngle, startPoint, endPoint, startRect, endRect)
+    let recommendPaths = getRecommendPath(sAngle, eAngle, startPoint, endPoint, startRect, endRect, outRect)
 
     //构建障碍物
     let ignoreIds = [this.id]
