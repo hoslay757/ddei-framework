@@ -866,7 +866,7 @@ abstract class DDeiAbstractShape {
     let links = this.stage.getSourceModelLinks(this.id);
     //同步调整链接控件的数据
     links?.forEach(link => {
-      if (ignoreModelIds?.indexOf(link.dm?.id) == -1) {
+      if (!ignoreModelIds || ignoreModelIds?.indexOf(link.dm?.id) == -1) {
         let dpv = link.getDistPV();
         if (dpv) {
           let spv = link.getSourcePV();

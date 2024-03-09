@@ -530,10 +530,10 @@ class DDeiRectContainer extends DDeiRectangle {
   /**
    * 更新关联图形
    */
-  updateLinkModels(): void {
-    super.updateLinkModels();
+  updateLinkModels(ignoreModelIds: string[]): void {
+    super.updateLinkModels(ignoreModelIds);
     this.models.forEach(model => {
-      model.updateLinkModels();
+      model.updateLinkModels(ignoreModelIds);
     })
   }
 
