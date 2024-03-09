@@ -182,8 +182,11 @@ class DDeiSelector extends DDeiRectangle {
           pvs = cloneDeep(models[0].pvs);
           this.cpv = cloneDeep(models[0].cpv)
         } else {
-          pvs = DDeiAbstractShape.getOutPV(models)
-          this.cpv = cloneDeep(models[0].cpv)
+          pvs = DDeiUtil.pointsToZero(models[0].operatePVS, models[0].cpv, models[0].rotate)
+          let oct = DDeiAbstractShape.pvsToOutRect(pvs);
+          pvs = [new Vector3(oct.x, oct.y, 1), new Vector3(oct.x1, oct.y, 1), new Vector3(oct.x1, oct.y1, 1), new Vector3(oct.x, oct.y1, 1)]
+          pvs = DDeiUtil.zeroToPoints(pvs, models[0].cpv, models[0].rotate)
+          this.cpv = clone(models[0].cpv)
           let defineSample = DDeiUtil.getControlDefine(models[0])?.define?.sample;
           this.eqrat = models[0]?.sample?.eqrat || defineSample?.eqrat
         }
@@ -213,6 +216,7 @@ class DDeiSelector extends DDeiRectangle {
       this.pvs = pvs;
       this.initHPV()
       this.calRotate();
+
       this.calOPVS();
       this.calLoosePVS();
       //设置选择器状态为选中后

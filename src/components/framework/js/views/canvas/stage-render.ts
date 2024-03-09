@@ -230,9 +230,9 @@ class DDeiStageCanvasRender {
           xText = rect.width.toFixed(0);
           yText = rect.height.toFixed(0);
         } else if (this.operateState == DDeiEnumOperateState.CONTROL_ROTATE) {
-          xText = rect.rotate.toFixed(1);
+          xText = rect.rotate.toFixed(0);
         }
-        if (ruleDisplay == 1 || ruleDisplay == "1") {
+        if ((ruleDisplay == 1 || ruleDisplay == "1") && this.operateState != DDeiEnumOperateState.CONTROL_ROTATE) {
           let startBaseX = this.model.spv.x * rat1 + 1
           let startBaseY = this.model.spv.y * rat1 + 1
           //生成文本并计算文本大小
@@ -254,22 +254,30 @@ class DDeiStageCanvasRender {
             xText = rect.width * rat1 / marginWeight * rulerConfig.size
             yText = rect.height * rat1 / marginWeight * rulerConfig.size
           }
-          if (("" + xText).indexOf('.') != -1) {
-            xText = xText.toFixed(1)
+          if (xText) {
+            if (("" + xText).indexOf('.') != -1) {
+              xText = xText.toFixed(1)
+            }
+
+            xText += rulerConfig.title
           }
-          if (("" + yText).indexOf('.') != -1) {
-            yText = yText.toFixed(1)
+          if (yText) {
+            if (("" + yText).indexOf('.') != -1) {
+              yText = yText.toFixed(1)
+            }
+
+            yText += rulerConfig.title
           }
-          xText += rulerConfig.title
-          yText += rulerConfig.title
         }
         let text = "";
-        if (this.operateState == DDeiEnumOperateState.CONTROL_DRAGING || this.operateState == DDeiEnumOperateState.CONTROL_CREATING) {
-          text = xText + " , " + yText
-        } else if (this.operateState == DDeiEnumOperateState.CONTROL_CHANGING_BOUND) {
-          text = xText + " x " + yText
-        } else if (this.operateState == DDeiEnumOperateState.CONTROL_ROTATE) {
-          text = xText + "°"
+        if (xText || yText) {
+          if (this.operateState == DDeiEnumOperateState.CONTROL_DRAGING || this.operateState == DDeiEnumOperateState.CONTROL_CREATING) {
+            text = xText + " , " + yText
+          } else if (this.operateState == DDeiEnumOperateState.CONTROL_CHANGING_BOUND) {
+            text = xText + " x " + yText
+          } else if (this.operateState == DDeiEnumOperateState.CONTROL_ROTATE) {
+            text = xText + "°"
+          }
         }
         let textRect = DDeiUtil.measureText(text, font, ctx, fontSize * rat1)
         let width = textRect.width / rat1 + 10

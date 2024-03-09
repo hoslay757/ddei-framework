@@ -64,12 +64,12 @@ class DDeiBusCommandModelChangeRotate extends DDeiBusCommand {
       let x = data.ex ? data.ex : 0, y = data.ey ? data.ey : 0
       let pContainerModel = data.container;
       let selectedModels = pContainerModel.getSelectedModels();
-
+      let ratio = stage?.getStageRatio()
       let models: DDeiAbstractShape[] = Array.from(selectedModels.values());
       //基于中心构建旋转矩阵，旋转所有向量点
       //计算selector的中心坐标与鼠标当前坐标的角度关系
-      let scx = selector.x + selector.width / 2
-      let scy = selector.y + selector.height / 2
+      let scx = selector.x * ratio + selector.width / 2 * ratio
+      let scy = selector.y * ratio + selector.height / 2 * ratio
       let selectorAngle = Math.round(DDeiUtil.getLineAngle(scx, scy, x, y))
 
       let rotate = selectorAngle + 90
