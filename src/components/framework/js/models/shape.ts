@@ -864,9 +864,6 @@ abstract class DDeiAbstractShape {
   updateLinkModels(ignoreModelIds: string[]): void {
     //如果存在关联控件，同步修改关联控件坐标
     let links = this.stage.getSourceModelLinks(this.id);
-    if (this.id == 'state_53') {
-      console.log(links)
-    }
     //同步调整链接控件的数据
     let removeLinks = []
     links?.forEach(link => {

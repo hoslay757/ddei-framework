@@ -5,7 +5,7 @@
         <div class="title">选择线段类型</div>
         <div class="group_content">
           <div :class="{ 'item': true, 'item-selected': JSON.stringify(value) == JSON.stringify(data.value) }"
-            v-for="data in dataSource" @click="select(data.value)" title="data.text">
+            v-for="data in dataSource" @click="select(data.value)" @dblclick="selectAndConfirm(data.value)">
             <svg class="div_input">
               <line x1=0 y1=0 x2="100%" y2=0 stroke="black" fill="white" stroke-width="3" :stroke-dasharray="data.value">
               </line>
@@ -59,6 +59,11 @@ export default {
     select(value) {
       this.value = value
     },
+    selectAndConfirm(value) {
+      this.value = value
+      this.ok()
+    },
+
     ok() {
       if (this.value) {
         if (this.editor?.tempDialogData[this.dialogId]?.callback?.ok) {

@@ -1,0 +1,278 @@
+<template>
+  <div :class="{ 'ddei_pv_editor_image': true, 'ddei_pv_editor_image_disabled': attrDefine.readonly }">
+    <div class="textinput">
+      <input type="text" v-model="attrDefine.value"
+        :disabled="attrDefine.readonly" :placeholder="attrDefine.defaultValue"
+        :name="'ddei_pv_editor_image_' + attrDefine.code" autocomplete="off" />
+  
+      <svg @click="attrDefine && !attrDefine.readonly && chooseFile()" class="icon" aria-hidden="true">
+        <use xlink:href="#icon-a-ziyuan389"></use>
+      </svg>
+     
+
+    </div>
+  </div>
+</template>
+
+<script lang="ts">
+import { debounce } from "lodash";
+import DDeiEditorArrtibute from "../../js/attribute/editor-attribute";
+import DDeiEditor from "../../js/editor";
+import DDeiEnumBusCommandType from "../../../framework/js/enums/bus-command-type";
+import DDeiAbstractArrtibuteParser from "../../../framework/js/models/attribute/parser/attribute-parser";
+import DDeiEditorEnumBusCommandType from "../../js/enums/editor-command-type";
+import DDeiUtil from "../../../framework/js/util";
+import { throttle } from "lodash";
+import DDeiEnumOperateType from "../../../framework/js/enums/operate-type";
+export default {
+  name: "DDei-Editor-PV-Image-Editor",
+  extends: null,
+  mixins: [],
+  props: {
+    //当前属性定义
+    attrDefine: {
+      type: DDeiEditorArrtibute,
+      default: null,
+    },
+    //当前控件定义
+    controlDefine: {
+      type: Object,
+      default: null,
+    },
+  },
+  data() {
+    return {
+      //当前编辑器
+      editor: null,
+    };
+  },
+  computed: {},
+  watch: {},
+  created() {
+    // 监听obj对象中prop属性的变化
+    this.$watch("attrDefine.value", function (newVal, oldVal) {
+      this.valueChange();
+    });
+  },
+  mounted() {
+    //获取编辑器
+    this.editor = DDeiEditor.ACTIVE_INSTANCE;
+    //判断当前属性是否可编辑
+    this.editBefore = DDeiUtil.getConfigValue(
+      "EVENT_CONTROL_EDIT_BEFORE",
+      this.editor.ddInstance
+    );
+
+    if (
+      this.editBefore &&
+      this.editor?.ddInstance?.stage?.selectedModels?.size > 0
+    ) {
+      let mds = [];
+      if (this.editor?.ddInstance?.stage?.selectedModels?.size > 0) {
+        mds = Array.from(
+          this.editor?.ddInstance?.stage?.selectedModels?.values()
+        );
+      }
+      if (this.attrDefine?.model && mds.indexOf(this.attrDefine.model) == -1) {
+        mds.push(this.attrDefine.model);
+      }
+      this.attrDefine.readonly = !this.editBefore(
+        DDeiEnumOperateType.EDIT,
+        mds,
+        this.attrDefine?.code,
+        this.editor.ddInstance,
+        null
+      );
+    }
+  },
+  methods: {
+
+    async chooseFile(){
+      const arrFileHandle = await showOpenFilePicker({
+        types: [{
+            accept: {
+                'image/*': ['.png', '.gif', '.jpeg', '.jpg', '.webp']
+            }
+        }],
+        // 可以选择多个图片
+        multiple: true})
+      //获取图片数据  这个file其实就是和input元素<input type="file" id="file">，document.querySelector("#file").files[0]一样
+      let file=await arrFileHandle[0].getFile();
+      //转成base64
+      let read= new FileReader();
+      read.readAsDataURL(file);
+      read.onload=()=>{
+        //创建img，插入页面中
+        let result = read.result;
+        if(result.indexOf("data:image") != -1){
+          this.attrDefine.value = result
+        }
+      }
+      
+    },
+    valueChange(evt) {
+      if (this.attrDefine?.readonly) {
+        return;
+      }
+      let mds = [];
+      if (this.editor?.ddInstance?.stage?.selectedModels?.size > 0) {
+        mds = Array.from(
+          this.editor?.ddInstance?.stage?.selectedModels?.values()
+        );
+      }
+      if (this.attrDefine?.model && mds.indexOf(this.attrDefine.model) == -1) {
+        mds.push(this.attrDefine.model);
+      }
+      if (
+        this.editBefore &&
+        !this.editBefore(
+          DDeiEnumOperateType.EDIT,
+          mds,
+          this.attrDefine?.code,
+          this.editor.ddInstance,
+          null
+        )
+      ) {
+        return;
+      }
+      //获取属性路径
+      let paths = [];
+      this.attrDefine?.mapping?.forEach((element) => {
+        paths.push(element);
+      });
+      if (!(paths?.length > 0)) {
+        paths = [this.attrDefine.code];
+      }
+
+      //通过解析器获取有效值
+      let parser: DDeiAbstractArrtibuteParser = this.attrDefine.getParser();
+      //属性值
+      let value = parser.parseValue(this.attrDefine.value);
+      DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, value);
+      if (
+        this.attrDefine.model.modelType == "DDeiStage" ||
+        this.attrDefine.model.modelType == "DDeiLayer"
+      ) {
+        //推送信息进入总线
+        this.editor.bus.push(
+          DDeiEnumBusCommandType.ModelChangeValue,
+          {
+            mids: [this.attrDefine.model.modelType],
+            paths: paths,
+            value: value,
+            attrDefine: this.attrDefine,
+          },
+          evt,
+          true
+        );
+      } else {
+        this.editor.ddInstance.stage.selectedModels.forEach((element) => {
+          //推送信息进入总线
+          this.editor.bus.push(
+            DDeiEnumBusCommandType.ModelChangeValue,
+            {
+              mids: [element.id],
+              paths: paths,
+              value: value,
+              attrDefine: this.attrDefine,
+            },
+            evt,
+            true
+          );
+        });
+      }
+      this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
+        parts: ["topmenu"],
+      });
+      this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
+      this.editor.bus.executeAll();
+      //编辑完成后的回调函数
+      if (!this.editAfter) {
+        this.editAfter = DDeiUtil.getConfigValue(
+          "EVENT_CONTROL_EDIT_AFTER",
+          this.editor.ddInstance
+        );
+      }
+      if (this.editAfter) {
+        this.editAfter(
+          DDeiEnumOperateType.EDIT,
+          mds,
+          this.attrDefine?.code,
+          this.editor.ddInstance,
+          null
+        );
+      }
+    },
+  },
+};
+</script>
+
+<style  scoped>
+/**以下为range属性编辑器 */
+.ddei_pv_editor_image {
+  border-radius: 4px;
+  height: 28px;
+  margin-right: 10px;
+}
+
+
+.ddei_pv_editor_image .textinput {
+  width:100%;
+  height: 28px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border: 0.5px solid rgb(210, 210, 210);
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ddei_pv_editor_image .textinput:hover {
+  border: 1px solid #017fff;
+  box-sizing: border-box;
+}
+
+.ddei_pv_editor_image_disabled .textinput {
+  width:100%;
+  height: 28px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border: 0.5px solid rgb(210, 210, 210);
+  border-radius: 4px;
+  display: flex;
+  background-color: rgb(210, 210, 210);
+  justify-content: center;
+  align-items: center;
+}
+
+.ddei_pv_editor_image_disabled .textinput:hover {
+  border: 1px solid grey !important;
+  box-sizing: border-box;
+}
+
+.ddei_pv_editor_image .textinput input {
+  flex: 1 1 calc(100% - 20px);
+  width: calc(100% - 20px);
+  border: transparent;
+  outline: none;
+  font-size: 16px;
+  margin: 0px 2%;
+  background: transparent;
+}
+
+.ddei_pv_editor_image .textinput .icon {
+  flex: 0 0 20px;
+  font-size: 16px
+}
+
+.ddei_pv_editor_image .textinput .icon:hover {
+  cursor: pointer;
+  background: rgb(240, 240, 240);
+}
+
+
+.textinput .fileinput{
+  display: none;
+}
+</style>

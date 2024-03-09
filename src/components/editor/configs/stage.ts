@@ -92,7 +92,7 @@ export default {
       'code': 'mark.data',
       'name': '水印',
       'desc': '当水印类型为1时，此字段将显示文本，当类行为2时，此字段显示为图片',
-      'controlType': 'text',
+      'controlType': 'image',
       'dataType': 'string',
       'defaultValue': '',
       'type': 1,

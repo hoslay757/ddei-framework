@@ -145,7 +145,7 @@ export default {
       'code': 'fill.image',
       'name': '图片',
       'desc': '图形的填充图片',
-      'controlType': 'text',
+      'controlType': 'image',
       'dataType': 'string',
       'defaultValue': '',
       'type': 1,

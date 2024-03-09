@@ -44,7 +44,7 @@ export default {
       'code': 'bg.image',
       'name': '背景图片',
       'desc': '背景的图片',
-      'controlType': 'text',
+      'controlType': 'image',
       'dataType': 'string',
       'defaultValue': '',
       'type': 1

@@ -697,7 +697,7 @@ class DDeiConfig {
       let data = DDeiConfig.PAPER[i];
       data.desc = data.desc
       if (!data.desc && data.width && data.height) {
-        data.desc = data.width + " ✖️ " + data.height + data.unit
+        data.desc = data.width + " x " + data.height + data.unit
       }
       data.code = i
       data.name = i
