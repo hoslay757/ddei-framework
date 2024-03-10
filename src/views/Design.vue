@@ -434,11 +434,9 @@ export default {
                   }]
             });
           }
+          delete designdata.thumb
           file.local = 1
-          const w$ = await file.localFileHandler.createWritable();
-          await w$.write(JSON.stringify(designdata));
-          await w$.close();
-
+          await file.writeLocalFile(JSON.stringify(designdata))
           return { result: 1, msg: "" };
         }
 

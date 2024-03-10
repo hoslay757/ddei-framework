@@ -22,6 +22,8 @@ class DDeiFile {
     this.desc = props.desc ? props.desc : ""
     this.extData = props.extData ? props.extData : {}
     this.busiData = props.busiData
+
+    this.closeLocalFile = debounce(this.closeLocalFile, 1000)
   }
   // ============================ 静态变量 ============================
 
@@ -168,6 +170,40 @@ class DDeiFile {
       return this.histroy[this.histroyIdx];
     }
   }
+
+  /**
+   * 写入本地文件
+   */
+  async writeLocalFile(data) {
+    if (!this.writeLocalQueue) {
+      this.writeLocalQueue = []
+    }
+    if (this.localWriteLock == 1) {
+      this.writeLocalQueue.push(data)
+    } else {
+      if (!this.localFileWriter) {
+        this.localFileWriter = await this.localFileHandler.createWritable();
+      }
+      await this.localFileWriter.write(data)
+      this.closeLocalFile()
+    }
+  }
+
+  async closeLocalFile() {
+
+    if (this.localFileWriter) {
+      this.localWriteLock = 1
+      await this.localFileWriter.close();
+      delete this.localFileWriter
+      this.localWriteLock = 0
+      if (this.writeLocalQueue.length > 0) {
+        this.writeLocalFile(this.writeLocalQueue[this.writeLocalQueue.length - 1])
+        this.writeLocalQueue = []
+      }
+    }
+
+  }
+
   /**
      * 将模型转换为JSON
      */
