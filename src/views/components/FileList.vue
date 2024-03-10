@@ -184,7 +184,7 @@ export default {
       menuTreeExpandedKeys: ['0'],
       treeFieldNames: { children: 'children', key: 'id', title: 'name', label: 'name', value: 'id' },
       queryText: "",
-      page: { size: 11, num: 1, total: 0 }
+      page: { size: 10, num: 1, total: 0 }
     }
   },
   created () { },
@@ -206,7 +206,7 @@ export default {
     deleteFile (file) {
       Modal.confirm({
         title: '是否删除文件',
-        content: createVNode('div', { style: 'color:red;' }, file.name),
+        content: createVNode('div', { }, file.name),
         okType: 'danger',
         onOk: async () => {
           let fileData = await removefile({ id: file.id })
@@ -386,14 +386,14 @@ export default {
 }
 
 .ddei_home_fileview_files {
-  display: flex;
+
   margin-top: -20px;
   margin-left: -20px;
   height: 100%;
 }
 
 .ddei_home_fileview_file {
-  width: 283px;
+  width: 295px;
   height: 280px;
   border-radius: 4px;
   display: flex;
@@ -402,6 +402,7 @@ export default {
   color: #212121;
   margin-left: 20px;
   margin-top: 20px;
+  float:left;
 }
 
 .ddei_home_fileview_file_header {
@@ -562,6 +563,7 @@ export default {
   display: block;
   margin-top: 20px;
   margin-bottom: 20px;
+  margin-right:20px;
   border-bottom: 1px solid #CED4DD;
 }
 
