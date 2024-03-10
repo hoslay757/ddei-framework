@@ -728,7 +728,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     //字体对齐信息
     let align = this.getCachedValue("textStyle.align");
     let valign = this.getCachedValue("textStyle.valign");
-    //缩小字体填充
+    //文本的超出范围后的策略
     let scale = this.getCachedValue("textStyle.scale");
     //自动换行
     let feed = this.getCachedValue("textStyle.feed");
@@ -840,6 +840,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let contentWidth = ratPos.width;
     //累计减去的字体大小
     let subtractionFontSize = 0;
+    let isOutSize = false
+    let dotRect = null;
     while (loop) {
       //记录使用过的宽度和高度
       let usedWidth = 0;
@@ -848,7 +850,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       let textRowContainer = { text: "", widths: [], heights: [], dHeights: [] };
       textContainer.push(textRowContainer);
       //是否超出输出长度标志
-      let isOutSize = false;
+      isOutSize = false
       let maxFontSize = 0;
 
       if (fontSize + vspace > ratPos.height) {
@@ -924,7 +926,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           maxFontSize = Math.max(maxFontSize, fontHeight)
 
           let rc1 = DDeiUtil.measureText(te, font, ctx, fontHeight);
-
+          if (!dotRect) {
+            dotRect = DDeiUtil.measureText("...", font, ctx, fontHeight);
+          }
           fontShapeRect = { width: rc1.width * ratio + hspace, height: rc1.height * ratio, dHeight: rc1.dHeight * ratio }
           usedWidth += fontShapeRect.width;
 
@@ -939,9 +943,11 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         //如果不自动换行也不缩小字体，则超过的话，就省略显示
         if (feed == 0) {
           //如果具备缩小字体填充，并且usedWidth超出了单行大小,则跳出循环，重新生成
-          if (scale == 1 && usedWidth > contentWidth) {
-            isOutSize = true;
-            break;
+          if (usedWidth > contentWidth) {
+            if (scale == 1 || scale == 2 || scale == 3) {
+              isOutSize = true;
+              break;
+            }
           }
           //省略显示,除去一个字符，重新计算大小
           else if (usedWidth > contentWidth) {
@@ -963,8 +969,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
             //换行的情况下，如果行高度超出，则不输出
             if (usedHeight + textRowContainer.height > ratPos.height) {
               //如果具备缩小字体填充，则重新生成
-              if (scale == 1) {
+              if (scale == 1 || scale == 2 || scale == 3) {
                 isOutSize = true;
+                break;
               }
               break;
             }
@@ -990,8 +997,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
             //换行的情况下，如果行高度超出，则不输出
             if (usedHeight + textRowContainer.height > ratPos.height) {
               //如果具备缩小字体填充，则重新生成
-              if (scale == 1) {
+              if (scale == 1 || scale == 2 || scale == 3) {
                 isOutSize = true;
+                break;
               }
               break;
             }
@@ -1011,8 +1019,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       if (!isOutSize) {
         loop = false;
       }
-      //如果超出，清空生成的字段，缩小字体重新输出
-      else {
+      //如果超出，清空生成的字段，且策略为缩小字体，则重新输出
+      else if (scale == 1) {
         textContainer = [];
         let ds = maxFontSize < 50 ? 0.5 : Math.floor(maxFontSize / 50)
         fontSize -= ds;
@@ -1021,8 +1029,34 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           vspace = 0;
         }
         subtractionFontSize += ds
+      } else {
+        loop = false;
       }
     }
+    if (isOutSize) {
+      if (scale == 2) {
+        if (textContainer.length > 0) {
+          let lastText = textContainer[textContainer.length - 1].text
+          let widths = textContainer[textContainer.length - 1].widths
+          let heights = textContainer[textContainer.length - 1].heights
+          let dHeights = textContainer[textContainer.length - 1].dHeights
+          let dotWidth = dotRect.width / 3;
+          if (lastText.length > 0) {
+            textContainer[textContainer.length - 1].width = textContainer[textContainer.length - 1].width - widths[widths.length - 1] + dotRect.width;
+            lastText = lastText.substring(0, lastText.length - 1);
+            widths.splice(widths.length - 1, 1, dotWidth, dotWidth, dotWidth)
+            heights.splice(heights.length - 1, 1, heights[heights.length - 1], heights[heights.length - 1], heights[heights.length - 1])
+            dHeights.splice(dHeights.length - 1, 1, dHeights[dHeights.length - 1], dHeights[dHeights.length - 1], dHeights[dHeights.length - 1])
+            lastText += "..."
+            textContainer[textContainer.length - 1].text = lastText
+          }
+        }
+      } else if (scale == 3) {
+
+      }
+
+    }
+
     // 计算文字整体区域位置
     let containerRect = { width: 0, height: 0 };
     for (let i = 0; i < textContainer.length; i++) {
@@ -1076,7 +1110,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         x1 = x;
         y1 = y + usedY
       } else if (align == 2) {
-        x1 = rat1 + ratPos.x + (ratPos.width - rRect.width) * 0.5;
+        x1 = ratPos.x + (ratPos.width - rRect.width) * 0.5;
         y1 = y + usedY
       } else if (align == 3) {
         x1 = ratPos.x + (ratPos.width - rRect.width);
