@@ -613,7 +613,6 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
    */
   drawImage(): void {
     //如果有图片，则绘制
-    debugger
     let bgImage = DDeiUtil.getReplacibleValue(this.model, "fill.image");
     if (!this.imgObj || bgImage != this.upFillImage) {
       this.initImage();

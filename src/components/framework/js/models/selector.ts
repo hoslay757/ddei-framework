@@ -179,10 +179,17 @@ class DDeiSelector extends DDeiRectangle {
       let pvs = null;
       let exeCalLoosePVS = true
       if (models.length == 1) {
+
         if (models[0].baseModelType == "DDeiLine") {
           exeCalLoosePVS = false
           pvs = cloneDeep(models[0].pvs);
           this.cpv = cloneDeep(models[0].cpv)
+        } else if (models[0].baseModelType == "DDeiContainer" && models[0].layout == 'compose') {
+
+          pvs = cloneDeep(models[0].pvs)
+          this.cpv = cloneDeep(models[0].cpv)
+          let defineSample = DDeiUtil.getControlDefine(models[0])?.define?.sample;
+          this.eqrat = models[0]?.sample?.eqrat || defineSample?.eqrat
         } else {
           pvs = DDeiUtil.pointsToZero(models[0].operatePVS, models[0].cpv, models[0].rotate)
           let oct = DDeiAbstractShape.pvsToOutRect(pvs);

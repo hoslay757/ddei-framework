@@ -280,28 +280,29 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       }
       //颜色
       ctx.strokeStyle = DDeiUtil.getColor(color);
-      if (ctx.roundRect) {
-        ctx.translate(this.model.cpv.x * rat1, this.model.cpv.y * rat1)
-        ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
-        ctx.translate(-this.model.cpv.x * rat1, -this.model.cpv.y * rat1)
-        //绘制图片
-        let essBounds = this.model.essBounds;
-        ctx.roundRect((essBounds.x + width / 2) * rat1, (essBounds.y + width / 2) * rat1, (essBounds.width - width) * rat1, (essBounds.height - width) * rat1, round * rat1);
-        ctx.translate(this.model.cpv.x * rat1, this.model.cpv.y * rat1)
-        ctx.rotate(-this.model.rotate * DDeiConfig.ROTATE_UNIT);
-        ctx.translate(-this.model.cpv.x * rat1, -this.model.cpv.y * rat1)
-      } else {
-        //加载边框的矩阵
-        this.getBorderPVS(tempBorder);
-        let pvs = this.borderPVS;
-        if (pvs?.length > 0) {
-          ctx.moveTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset);
-          ctx.arcTo(pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset, pvs[2].x * rat1 + lineOffset, pvs[2].y * rat1 + lineOffset, round * rat1);
-          ctx.arcTo(pvs[2].x * rat1 + lineOffset, pvs[2].y * rat1 + lineOffset, pvs[3].x * rat1 + lineOffset, pvs[3].y * rat1 + lineOffset, round * rat1);
-          ctx.arcTo(pvs[3].x * rat1 + lineOffset, pvs[3].y * rat1 + lineOffset, pvs[4].x * rat1 + lineOffset, pvs[4].y * rat1 + lineOffset, round * rat1);
-          ctx.arcTo(pvs[4].x * rat1 + lineOffset, pvs[4].y * rat1 + lineOffset, pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset, round * rat1);
-        }
+      // if (ctx.roundRect) {
+      //   ctx.translate(this.model.cpv.x * rat1, this.model.cpv.y * rat1)
+      //   ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
+      //   ctx.translate(-this.model.cpv.x * rat1, -this.model.cpv.y * rat1)
+      //   //绘制图片
+      //   let essBounds = this.model.essBounds;
+      //   ctx.roundRect((essBounds.x + width / 2) * rat1, (essBounds.y + width / 2) * rat1, (essBounds.width - width) * rat1, (essBounds.height - width) * rat1, round * rat1);
+      //   ctx.translate(this.model.cpv.x * rat1, this.model.cpv.y * rat1)
+      //   ctx.rotate(-this.model.rotate * DDeiConfig.ROTATE_UNIT);
+      //   ctx.translate(-this.model.cpv.x * rat1, -this.model.cpv.y * rat1)
+      // } else {
+      //加载边框的矩阵
+      this.getBorderPVS(tempBorder);
+      let pvs = this.borderPVS;
+      if (pvs?.length > 0) {
+        lineOffset = 0
+        ctx.moveTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset);
+        ctx.arcTo(pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset, pvs[2].x * rat1 + lineOffset, pvs[2].y * rat1 + lineOffset, round * rat1);
+        ctx.arcTo(pvs[2].x * rat1 + lineOffset, pvs[2].y * rat1 + lineOffset, pvs[3].x * rat1 + lineOffset, pvs[3].y * rat1 + lineOffset, round * rat1);
+        ctx.arcTo(pvs[3].x * rat1 + lineOffset, pvs[3].y * rat1 + lineOffset, pvs[4].x * rat1 + lineOffset, pvs[4].y * rat1 + lineOffset, round * rat1);
+        ctx.arcTo(pvs[4].x * rat1 + lineOffset, pvs[4].y * rat1 + lineOffset, pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset, round * rat1);
       }
+      // }
       ctx.stroke();
       if (this.clip) {
         ctx.clip();

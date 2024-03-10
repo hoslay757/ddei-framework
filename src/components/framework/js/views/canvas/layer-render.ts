@@ -578,7 +578,8 @@ class DDeiLayerCanvasRender {
       ((this.stageRender.selector.passIndex >= 1 && this.stageRender.selector.passIndex <= 9) || this.stageRender.selector.passIndex == 13)) {
       //派发给selector的mousedown事件，在事件中对具体坐标进行判断
       this.stageRender.selector.render.mouseDown(evt);
-    } else {
+    }
+    else {
       let opPoint = this.model.getOpPointByPos(ex, ey);
       let isStop = false;
       if (opPoint) {

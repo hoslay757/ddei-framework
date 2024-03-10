@@ -2149,12 +2149,13 @@ abstract class DDeiAbstractShape {
         } else {
           bnumber = 1000 + (b.zIndex ? b.zIndex : 0)
         }
-        if (a.state == DDeiEnumControlState.SELECTED) {
-          anumber += 10000
-        }
-        if (b.state == DDeiEnumControlState.SELECTED) {
-          bnumber += 10000
-        }
+        //2024-03-10 去掉选中的优先
+        // if (a.state == DDeiEnumControlState.SELECTED) {
+        //   anumber += 10000
+        // }
+        // if (b.state == DDeiEnumControlState.SELECTED) {
+        //   bnumber += 10000
+        // }
         //如果是compose的容器，则优先级最低
         if (a.baseModelType == 'DDeiContainer' && a.layout == 'compose') {
           anumber -= 5000

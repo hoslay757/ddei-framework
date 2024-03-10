@@ -59,7 +59,6 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         //绘制编辑边框
         this.drawEditBorder()
       } else {
-
         //绘制边框
         this.drawBorder();
 
