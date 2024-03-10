@@ -572,7 +572,7 @@ export default {
           icon: "#icon-a-ziyuan411",
           msg: "当前登录状态已失效，请重新登录.",
           callback: {
-            abort: this.toLogin,
+            abort: this.clearServerFunc,
             ok: this.reExecFunc
           },
           background: "white",
@@ -583,6 +583,11 @@ export default {
       };
     },
 
+    
+    clearServerFunc(){
+        delete this.serverFunc
+        delete this.serverFuncParam
+    },
     toLogin() {
       this.$router.push({
         path: this.$route.query.redirect || "/login",

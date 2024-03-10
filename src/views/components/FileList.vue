@@ -207,7 +207,6 @@ export default {
       Modal.confirm({
         title: '是否删除文件',
         content: createVNode('div', { }, file.name),
-        okType: 'danger',
         onOk: async () => {
           let fileData = await removefile({ id: file.id })
           if (fileData.status == 200) {

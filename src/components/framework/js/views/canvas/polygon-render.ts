@@ -829,12 +829,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let sptStyle = null;
     if (this.isEditoring) {
       sptStyle = this.model.sptStyle
-      feed = "1"
-      scale = "1"
       cText = this.getCachedValue("text")
     } else {
       cText = DDeiUtil.getReplacibleValue(this.model, "text", true, true);
-
       sptStyle = this.tempSptStyle ? this.tempSptStyle : this.model.sptStyle;
     }
     if (!cText) {
