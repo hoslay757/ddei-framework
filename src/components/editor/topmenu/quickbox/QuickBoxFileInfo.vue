@@ -103,7 +103,7 @@ export default {
       //转成base64
       let read= new FileReader();
       read.readAsText(openFile);
-      read.onload=()=>{
+      read.onload=async ()=>{
         //创建img，插入页面中
         let result = read.result;
         let resultJSON = JSON.parse(result);
@@ -111,57 +111,94 @@ export default {
         let file = DDeiFile.loadFromJSON(resultJSON, {
           currentDdInstance: ddInstance,
         });
-        file.localFileHandler = openFileHandle[0]
-        file.local = 1
-        file.extData.owner = 1
-        this.editor.addFile(file);
-        for (let x = 0; x < this.editor.files.length; x++) {
-          this.editor.files[x].active = DDeiActiveType.NONE;
-        }
-        this.editor.currentFileIndex = this.editor.files.length - 1;
-        file.state = DDeiFileState.NONE;
-        file.active = DDeiActiveType.ACTIVE;
-        let sheets = file?.sheets;
-
-        if (file && sheets && ddInstance) {
-          file.changeSheet(file.currentSheetIndex);
-
-          let stage = sheets[file.currentSheetIndex].stage;
-          stage.ddInstance = ddInstance;
-          //记录文件初始日志
-          file.initHistroy();
-          file.histroy[0].isNew = true;
-          //刷新页面
-          ddInstance.stage = stage;
-          //加载场景渲染器
-          stage.initRender();
-          //设置视窗位置到中央
-          if (!stage.wpv) {
-            //缺省定位在画布中心点位置
-            stage.wpv = {
-              x:
-                -(
-                  stage.width -
-                  ddInstance.render.container.clientWidth
-                ) / 2,
-              y:
-                -(
-                  stage.height -
-                  ddInstance.render.container.clientHeight
-                ) / 2,
-              z: 0,
-            };
+        let openedFiles = this.editor.files;
+        let openedFileIndex = -1
+  
+          for(let fi = 0;fi < openedFiles.length;fi++){
+            if(openedFiles[fi].id == file.id){
+              openedFileIndex = fi
+              break;
+            }
           }
-          this.editor.changeState(DDeiEditorState.DESIGNING);
-          ddInstance.bus.push(
-            DDeiEditorEnumBusCommandType.ClearTemplateUI
-          );
-          ddInstance.bus.push(
-            DDeiEditorEnumBusCommandType.RefreshEditorParts,
-            { parts: ["bottommenu", "topmenu"] }
-          );
-          ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
-          ddInstance?.bus?.executeAll();
+        if(openedFileIndex == -1){
+          file.localFileHandler = openFileHandle[0]
+          file.local = 1
+          file.extData.owner = 1
+          this.editor.addFile(file);
+          for (let x = 0; x < this.editor.files.length; x++) {
+            this.editor.files[x].active = DDeiActiveType.NONE;
+          }
+          this.editor.currentFileIndex = this.editor.files.length - 1;
+          file.state = DDeiFileState.NONE;
+          file.active = DDeiActiveType.ACTIVE;
+          let sheets = file?.sheets;
+
+          if (file && sheets && ddInstance) {
+            file.changeSheet(file.currentSheetIndex);
+
+            let stage = sheets[file.currentSheetIndex].stage;
+            stage.ddInstance = ddInstance;
+            //记录文件初始日志
+            file.initHistroy();
+            file.histroy[0].isNew = true;
+            //刷新页面
+            ddInstance.stage = stage;
+            //加载场景渲染器
+            stage.initRender();
+            //设置视窗位置到中央
+            if (!stage.wpv) {
+              //缺省定位在画布中心点位置
+              stage.wpv = {
+                x:
+                  -(
+                    stage.width -
+                    ddInstance.render.container.clientWidth
+                  ) / 2,
+                y:
+                  -(
+                    stage.height -
+                    ddInstance.render.container.clientHeight
+                  ) / 2,
+                z: 0,
+              };
+            }
+            this.editor.changeState(DDeiEditorState.DESIGNING);
+            ddInstance.bus.push(
+              DDeiEditorEnumBusCommandType.ClearTemplateUI
+            );
+            ddInstance.bus.push(
+              DDeiEditorEnumBusCommandType.RefreshEditorParts,
+              { parts: ["bottommenu", "topmenu"] }
+            );
+            ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
+            ddInstance?.bus?.executeAll();
+          }
+        }else{
+          
+          file = this.editor.files[openedFileIndex]
+          if (file && ddInstance) {
+            for (let x = 0; x < this.editor.files.length; x++) {
+              this.editor.files[x].active = DDeiActiveType.NONE;
+            }
+            file.active = DDeiActiveType.ACTIVE
+            this.editor.currentFileIndex = openedFileIndex;
+            let stage = file.sheets[file.currentSheetIndex].stage;
+            stage.ddInstance = ddInstance;
+            //刷新页面
+            ddInstance.stage = stage;
+            //加载场景渲染器
+            stage.initRender();
+            this.editor.changeState(DDeiEditorState.DESIGNING);
+            ddInstance.bus.push(
+              DDeiEditorEnumBusCommandType.ClearTemplateUI
+            );
+            ddInstance.bus.push(
+              DDeiEditorEnumBusCommandType.RefreshEditorParts,
+              { parts: ["bottommenu", "topmenu"] }
+            );
+            ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
+            ddInstance?.bus?.executeAll();
+          }
         }
       }
     },
