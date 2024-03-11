@@ -176,8 +176,8 @@ export default {
           if (!stage.wpv) {
             //缺省定位在画布中心点位置
             stage.wpv = {
-              x: -(stage.width - ddInstance.render.container.clientWidth) / 2,
-              y: -(stage.height - ddInstance.render.container.clientHeight) / 2,
+              x: -(stage.width - ddInstance.render.canvas.width/ ddInstance.render.ratio) / 2,
+              y: -(stage.height - ddInstance.render.canvas.height/ ddInstance.render.ratio) / 2,
               z: 0,
             };
           }

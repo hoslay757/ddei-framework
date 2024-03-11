@@ -175,15 +175,17 @@ export default {
       for (const entry of entries) {
         // 获取宽度和高度
         const { width, height } = entry.contentRect;
-        this.editor.ddInstance.render.setSize(
-          width,
-          height,
-          0,
-          0
-        );
-        this.editor.ddInstance.bus.push(DDeiEditorEnumBusCommandType);
-        this.editor.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
-        this.editor.ddInstance.bus.executeAll();
+        if(width != 0 && height != 0){
+          this.editor.ddInstance.render.setSize(
+            width,
+            height,
+            0,
+            0
+          );
+          this.editor.ddInstance.bus.push(DDeiEditorEnumBusCommandType);
+          this.editor.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
+          this.editor.ddInstance.bus.executeAll();
+        }
 
       }
     });

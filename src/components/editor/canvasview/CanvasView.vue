@@ -51,6 +51,7 @@ export default {
     // 监听obj对象中prop属性的变化
     this.$watch("editor.files.length", function (newVal, oldVal) {
       if (newVal == 0) {
+        
         this.editor.ddInstance.render.hidden();
       } else {
         this.editor.ddInstance.render.show();
