@@ -4,7 +4,7 @@ export default {
   'code': 'comment',
   'desc': '注释备注',
   'from': '100500',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 110,
     height: 70,

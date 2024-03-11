@@ -4,7 +4,7 @@ export default {
   'code': 'switch',
   'desc': '流程的分支节点',
   'from': '102020',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     border: {
       round: 5

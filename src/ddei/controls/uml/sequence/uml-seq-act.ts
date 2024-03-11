@@ -4,7 +4,7 @@ export default {
   'code': 'act',
   'desc': '激活',
   'from': '100008',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 20,
     height: 200,

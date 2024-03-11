@@ -68,10 +68,10 @@ class DDeiBusCommandModelMerge extends DDeiBusCommand {
           layout: "compose",
           modelCode: "100202",
           fill: {
-            disabled: true
+            type: 0
           },
           border: {
-            top: { disabled: true }
+            top: { type: 0 }
           },
           width: outRect.width / stageRatio,
           height: outRect.height / stageRatio

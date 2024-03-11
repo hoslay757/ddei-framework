@@ -4,7 +4,7 @@ export default {
   'code': 'actor',
   'desc': '角色',
   'from': '103006',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     //初始化时合并
     initMerges: [0],
@@ -24,7 +24,7 @@ export default {
         },
         text: "Actor",
         fill: { type: 0 },
-        border: { disabled: true },
+        border: { type: 0 },
         initCPV: {
           x: 0, y: 60
         }

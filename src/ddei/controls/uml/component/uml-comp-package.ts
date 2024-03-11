@@ -51,7 +51,7 @@ export default {
         cIndex: 2,
         text: "Package",
         fill: { type: 0 },
-        border: { disabled: true },
+        border: { type: 0 },
         textStyle: {
           feed: 1,
           scale: 1,
@@ -70,7 +70,7 @@ export default {
         id: '100002',
         cIndex: 2,
         fill: { type: 0 },
-        border: { disabled: true },
+        border: { type: 0 },
         text: "Attribute",
         textStyle: {
           feed: 1,
@@ -146,7 +146,7 @@ export default {
             },
             {
               name: "线条",
-              attrs: ["borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
+              attrs: ["border.type", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
             },
             {
               name: "文本",

@@ -4,7 +4,7 @@ export default {
   'code': 'life',
   'desc': '生命线',
   'from': '100401',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     type: 1,
     ep: {

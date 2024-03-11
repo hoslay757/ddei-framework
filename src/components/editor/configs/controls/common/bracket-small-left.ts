@@ -4,7 +4,7 @@ export default {
   'code': 'bs',
   'desc': '由极坐标系构造的左小括号，不带任何文本',
   'from': '104101',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     ext: {
       sample: {

@@ -5,7 +5,7 @@ export default {
   'code': 'obj',
   'desc': 'UML的对象节点',
   'from': '100008',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 160,
     height: 100,
@@ -33,7 +33,7 @@ export default {
             },
             {
               name: "线条",
-              attrs: ["borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
+              attrs: ["border.type", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
             },
             {
               name: "文本",
@@ -64,7 +64,7 @@ export default {
           type: 0
         },
         border: {
-          disabled: true
+          type: 0
         },
         initCPV: {
           x: 0, y: -35
@@ -90,7 +90,7 @@ export default {
           type: 0
         },
         border: {
-          disabled: true
+          type: 0
         },
         initCPV: {
           x: 0, y: 15

@@ -5,7 +5,7 @@ export default {
   'desc': '用于组合关系的容器',
   'type': 'DDeiRectContainer',
   'from': '100201',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     ext: {
       groups: []

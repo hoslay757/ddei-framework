@@ -4,7 +4,7 @@ export default {
   'code': 'triangle',
   'desc': '由三个点构成的三角形',
   'from': '100011',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
 
     border: {

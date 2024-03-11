@@ -4,7 +4,7 @@ export default {
   'code': 'database',
   'desc': '数据库图标',
   'from': '100500',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 110,
     height: 70,

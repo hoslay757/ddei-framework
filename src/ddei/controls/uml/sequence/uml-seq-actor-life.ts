@@ -4,7 +4,7 @@ export default {
   'code': 'actor',
   'desc': '角色生命线',
   'from': '100000',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     create: false,
     initMerges: [0, 1],

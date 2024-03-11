@@ -4,7 +4,7 @@ export default {
   'code': 'rectange_container',
   'desc': '矩形形状的容器，能够包含其他容器',
   'type': 'DDeiRectContainer',
-  'icon': 'toolbox-shape-rect',
+
   /**
    * 定义组件属性
    * 样式属性会影响图形的显示，修改样式属性也会刷新图形
@@ -55,7 +55,7 @@ export default {
     },
     {
       'id': '100500003',
-      'code': 'borderType',
+      'code': 'border.type',
       'name': '边框类型',
       'desc': '用来快速选择边框的类型，以便于套用相关的样式',
       'controlType': 'border-type',
@@ -64,7 +64,6 @@ export default {
       'defaultValue': '1',
       'hiddenTitle': true,
       'display': 'column',
-      'exmapping': ['border.disabled'],
     },
     {
       'id': '100500004',
@@ -515,7 +514,7 @@ export default {
         },
         {
           name: "线条",
-          attrs: ["borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
+          attrs: ["border.type", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
         },
       ]
     },

@@ -4,7 +4,7 @@ export default {
   'code': 'cls',
   'desc': 'UML的活动类节点',
   'from': '102040',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 180,
     height: 115,

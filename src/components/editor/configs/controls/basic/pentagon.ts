@@ -4,7 +4,7 @@ export default {
   'code': 'pentagon',
   'desc': '由五个点构成的五边形',
   'from': '100500',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 154,
     height: 154,

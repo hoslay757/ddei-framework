@@ -39,19 +39,19 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
     let ratPos = this.getBorderRatPos();
 
     //如果被选中，使用选中的边框，否则使用缺省边框
-    let borderDisabled = null;
+    let borderType = null;
     let borderColor = null;
     let borderOpac = null;
     let borderWidth = null;
     let borderDash = null;
     if (tempBorder) {
-      borderDisabled = tempBorder?.disabled
+      borderType = tempBorder?.type
       borderColor = tempBorder?.color
       borderOpac = tempBorder?.opacity
       borderWidth = tempBorder?.width
       borderDash = tempBorder?.dash
     } else {
-      borderDisabled = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.disabled", true);
+      borderType = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.type", true);
       borderColor = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.color", true);
       borderOpac = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.opacity", true);
       borderWidth = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.width", true);
@@ -62,7 +62,7 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
 
     //绘制四个方向的边框
     //如果边框未被disabled，则绘制边框
-    if (!borderDisabled && borderColor && (!borderOpac || borderOpac > 0) && borderWidth > 0) {
+    if ((borderType == 1 || borderType == '1') && borderColor && (!borderOpac || borderOpac > 0) && borderWidth > 0) {
       //保存状态
       ctx.save();
       //设置旋转角度
@@ -413,14 +413,14 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
    */
   getFillArea(): object {
     //获取边框区域，实际填充区域=坐标-边框区域
-    let borderDisabled = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.disabled", true);
+    let borderType = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.type", true);
     let borderColor = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.color", true);
     let borderOpac = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.opacity", true);
     let borderWidth = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "border.width", true);
 
 
     //计算填充的原始区域
-    if (!(!borderDisabled && borderColor && (!borderOpac || borderOpac > 0) && borderWidth > 0)) {
+    if (!((borderType == 1 || borderType == '1') && borderColor && (!borderOpac || borderOpac > 0) && borderWidth > 0)) {
       borderWidth = 0
     }
     let absBounds = this.model.getAbsBounds();

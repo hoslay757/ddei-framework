@@ -552,7 +552,7 @@ export default {
               type: 0
             },
             border: {
-              top: { disabled: true }
+              top: { type: 0 }
             },
             width: outRect.width / stageRatio,
             height: outRect.height / stageRatio

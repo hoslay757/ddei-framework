@@ -4,7 +4,7 @@ export default {
   'code': 'custom',
   'desc': '自定义片段',
   'from': '303008',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     ext: {
       composes: [

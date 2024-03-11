@@ -4,7 +4,7 @@ export default {
   'code': 'hexagon',
   'desc': '由六个点构成的六边形',
   'from': '100500',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 100,
     height: 100,

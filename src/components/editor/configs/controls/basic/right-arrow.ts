@@ -4,7 +4,7 @@ export default {
   'code': 'arr-r',
   'desc': '指向左边的箭头',
   'from': '100500',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 100,
     height: 100,

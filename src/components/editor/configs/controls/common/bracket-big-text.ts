@@ -4,7 +4,7 @@ export default {
   'code': 'bmt',
   'desc': '左右大括号，带文本编辑',
   'from': '100500',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 160,
     height: 100,
@@ -80,7 +80,7 @@ export default {
           x: 0, y: 0, z: 1
         },
         border: {
-          disabled: true
+          type: 0
         },
         fill: {
           type: 0
@@ -106,7 +106,7 @@ export default {
           subGroups: [
             {
               name: "线条",
-              attrs: ["borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
+              attrs: ["border.type", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
             },
 
             {

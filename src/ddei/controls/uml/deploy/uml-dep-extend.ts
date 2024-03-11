@@ -4,7 +4,7 @@ export default {
   'code': 'extend',
   'desc': '继承',
   'from': '100401',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     type: 2,
     ep: {

@@ -4,7 +4,7 @@ export default {
   'code': 'obj',
   'desc': '序列对象',
   'from': '100002',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 120,
     height: 60,

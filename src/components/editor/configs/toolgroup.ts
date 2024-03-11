@@ -7,7 +7,7 @@ const groupOriginDefinies = [];
 //已读取的控件原始定义
 const controlOriginDefinies = new Map();
 
-const ToDefaultPropertys = ["fill.type", "fill.color", "fill.image", "fill.opacity", "borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound",
+const ToDefaultPropertys = ["fill.type", "fill.color", "fill.image", "fill.opacity", "border.type", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound",
   "font.family", "font.size", "font.color", "fontAlign", "textStyle.feed"
   , "textStyle.scale", "textStyle.hollow", "textStyle.bold", "textStyle.italic"
   , "textStyle.underline", "textStyle.deleteline", "textStyle.topline", "textStyle.hspace", "textStyle.vspace"]

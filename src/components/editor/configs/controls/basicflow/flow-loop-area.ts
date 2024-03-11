@@ -4,7 +4,7 @@ export default {
   'code': 'fla',
   'desc': '流程的循环界限',
   'from': '100500',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 110,
     height: 70,

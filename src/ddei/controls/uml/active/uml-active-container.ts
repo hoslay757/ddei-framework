@@ -4,5 +4,5 @@ export default {
   'code': 'uc',
   'desc': '容器',
   'from': '302003',
-  'icon': 'toolbox-shape-rect',
+
 }

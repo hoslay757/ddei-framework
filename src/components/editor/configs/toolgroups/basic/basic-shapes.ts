@@ -8,6 +8,11 @@ export default {
   //当前分组下所有控件
   'controls': [
     {
+      'id': '100200',
+      'name': '文本',
+      'orderNo': 0,
+    },
+    {
       'id': '100001',
       'name': '正方形',
       'orderNo': 1,

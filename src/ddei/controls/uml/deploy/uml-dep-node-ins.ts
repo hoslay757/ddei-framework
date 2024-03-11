@@ -4,7 +4,7 @@ export default {
   'code': 'nodeins',
   'desc': 'UML的节点实例',
   'from': '305002',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     text: `Node Instance`,
     textStyle: {

@@ -4,7 +4,7 @@ export default {
   'code': 'act',
   'desc': 'UML的对象节点',
   'from': '102010',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     text: "Object"
   }

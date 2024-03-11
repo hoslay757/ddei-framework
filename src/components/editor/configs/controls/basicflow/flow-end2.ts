@@ -4,7 +4,7 @@ export default {
   'code': 'end',
   'desc': '流程的开始节点',
   'from': '100003',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 40,
     height: 40,
@@ -12,7 +12,7 @@ export default {
       color: 'red'
     },
     border: {
-      disabled: true
+      type: 0
     },
     ext: {
       groups: [
@@ -26,7 +26,7 @@ export default {
             },
             {
               name: "线条",
-              attrs: ["borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
+              attrs: ["border.type", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
             },
           ]
         },

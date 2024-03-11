@@ -4,7 +4,7 @@ export default {
   'code': 'rect',
   'desc': '带边框的矩形',
   'from': '100002',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 160,
     height: 80,

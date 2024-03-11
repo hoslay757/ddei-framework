@@ -4,7 +4,7 @@ export default {
   'code': 'uarm',
   'desc': '接收信号',
   'from': '100500',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 110,
     height: 70,

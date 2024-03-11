@@ -4,7 +4,7 @@ export default {
   'code': 'edge',
   'desc': '边界',
   'from': '100500',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 60,
     height: 60,
@@ -75,7 +75,7 @@ export default {
             },
             {
               name: "线条",
-              attrs: ["borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
+              attrs: ["border.type", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
             }
           ]
         },
@@ -93,7 +93,7 @@ export default {
         height: 25,
         text: "Boundary",
         fill: { type: 0 },
-        border: { disabled: true },
+        border: { type: 0 },
         initCPV: {
           x: 0, y: 42
         }

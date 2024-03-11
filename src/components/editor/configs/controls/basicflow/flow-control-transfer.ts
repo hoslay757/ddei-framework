@@ -4,7 +4,7 @@ export default {
   'code': 'ctran',
   'desc': '控制传递',
   'from': '100401',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     type: 2,
     ep: {

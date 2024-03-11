@@ -4,7 +4,7 @@ export default {
   'code': 'constraint',
   'desc': 'UML的类图约束节点',
   'from': '104125',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     ext: {
       composes: [

@@ -4,7 +4,7 @@ export default {
   'code': 'act',
   'desc': 'UML的活动节点',
   'from': '100500',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 110,
     height: 50,

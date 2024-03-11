@@ -4,7 +4,7 @@ export default {
   'code': 'circle',
   'desc': '由极坐标系构造的圆形',
   'from': '100500',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 100,
     height: 100,
@@ -57,7 +57,7 @@ export default {
             },
             {
               name: "线条",
-              attrs: ["borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash"]
+              attrs: ["border.type", "borderColor", "borderOpacity", "borderWidth", "borderDash"]
             }
           ]
         },

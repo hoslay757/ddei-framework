@@ -147,14 +147,14 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           let ctx = canvas.getContext('2d');
           if (!tempShape && this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING || this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING_TEXT_SELECTING) {
             if (this.isEditoring) {
-              tempShape = { border: { dash: [10, 10], width: 1.25, color: "#017fff" } }
+              tempShape = { border: { type: 1, dash: [10, 10], width: 1.25, color: "#017fff" } }
             } else if (this.stage.render?.editorShadowControl) {
               if (this.model.id + "_shadow" == this.stage.render.editorShadowControl.id) {
                 return;
               }
             }
           } else if (!tempShape && this.stage?.selectedModels?.size == 1 && Array.from(this.stage?.selectedModels.values())[0].id == this.model.id) {
-            tempShape = { border: { width: 1, color: "#017fff", dash: [10, 5] } }
+            tempShape = { border: { type: 1, width: 1, color: "#017fff", dash: [10, 5] } }
           }
           //去掉当前被编辑控件的边框显示
 
@@ -242,11 +242,11 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     }
     if (createClip) {
       //由于绘制边框时宽度的一半会超出pvs的范围，导致最外部边框只显示一半，因此构造一个缩放矩阵，使剪切区域刚好可以容纳边框区域
-      let disabled = tempShape?.border?.disabled || tempShape?.border?.disabled == false ? tempShape?.border?.disabled : this.getCachedValue("border.disabled");
+      let type = tempShape?.border?.type || tempShape?.border?.type == 0 ? tempShape?.border?.type : this.getCachedValue("border.type");
       let width = tempShape?.border?.width ? tempShape?.border?.width : this.getCachedValue("border.width");
 
       let pvs = this.borderPVSS[i];
-      if (!disabled && width > 0) {
+      if ((type == 1 || type == '1') && width > 0) {
         let stageRatio = this.model.getStageRatio()
         width *= stageRatio
         let rat1 = this.ddRender.ratio;
@@ -281,10 +281,10 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let stageRatio = this.model.getStageRatio()
     let rat1 = this.ddRender.ratio;
     let round = tempShape?.border?.round ? tempShape?.border?.round : this.getCachedValue("border.round");
-    let disabled = tempShape?.border?.disabled || tempShape?.border?.disabled == false ? tempShape?.border?.disabled : this.getCachedValue("border.disabled");
+    let type = tempShape?.border?.type || tempShape?.border?.type == 0 ? tempShape?.border?.type : this.getCachedValue("border.type");
     let width = tempShape?.border?.width ? tempShape?.border?.width : this.getCachedValue("border.width");
 
-    if (disabled) {
+    if (!type) {
       width = 0
     }
     if (!round) {
@@ -402,14 +402,14 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let rat1 = this.ddRender.ratio;
     let ratio = rat1 * stageRatio;
     //如果被选中，使用选中的边框，否则使用缺省边框
-    let disabled = tempShape?.border?.disabled || tempShape?.border?.disabled == false ? tempShape?.border?.disabled : this.getCachedValue("border.disabled")
+    let type = tempShape?.border?.type || tempShape?.border?.type == 0 ? tempShape?.border?.type : this.getCachedValue("border.type")
     let color = tempShape?.border?.color ? tempShape?.border?.color : this.getCachedValue("border.color")
     let opacity = tempShape?.border?.opacity ? tempShape?.border?.opacity : this.getCachedValue("border.opacity");
     let width = tempShape?.border?.width ? tempShape?.border?.width : this.getCachedValue("border.width");
     let dash = tempShape?.border?.dash ? tempShape?.border?.dash : this.getCachedValue("border.dash");
     //加载边框的矩阵
     let lineWidth = width * ratio;
-    drawLine = drawLine && (!disabled && (!opacity || opacity > 0) && width > 0)
+    drawLine = drawLine && ((type == 1 || type == '1') && (!opacity || opacity > 0) && width > 0)
     let round = tempShape?.border?.round ? tempShape?.border?.round : this.getCachedValue("border.round");
     if (!round) {
       round = 0
@@ -567,10 +567,10 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
    */
   drawBorder(tempShape: object | null): void {
     // //如果被选中，使用选中的边框，否则使用缺省边框
-    let disabled = tempShape?.border?.disabled || tempShape?.border?.disabled == false ? tempShape?.border?.disabled : this.getCachedValue("border.disabled")
+    let type = tempShape?.border?.type || tempShape?.border?.type == 0 ? tempShape?.border?.type : this.getCachedValue("border.type")
     let opacity = tempShape?.border?.opacity || tempShape?.border?.opacity == 0 ? tempShape?.border?.opacity : this.getCachedValue("border.opacity");
     let width = tempShape?.border?.width || tempShape?.border?.width == 0 ? tempShape?.border?.width : this.getCachedValue("border.width");
-    let drawLine = (!disabled && (!opacity || opacity > 0) && width > 0)
+    let drawLine = ((type == 1 || type == '1') && (!opacity || opacity > 0) && width > 0)
     if (drawLine) {
       for (let i = 0; i < this.borderPVSS?.length; i++) {
         let pvs = this.borderPVSS[i];
@@ -1581,7 +1581,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       let textArea = DDeiUtil.pointsToZero(this.model.textArea, this.model.cpv, this.model.rotate)
       let textAreaOutRect = DDeiAbstractShape.pvsToOutRect(textArea)
       let nowOutRect = { width: textAreaWidth / rat1, height: textAreaHeight / rat1 }
-      if (nowOutRect.width > 40 && nowOutRect.height > 20) {
+      if (nowOutRect.width > 40 * stageRatio && nowOutRect.height > fontSize) {
         let scaleX = nowOutRect.width / textAreaOutRect.width
         let scaleY = nowOutRect.height / textAreaOutRect.height
         if (lockExtWidth == 1 || lockExtWidth == '1') {

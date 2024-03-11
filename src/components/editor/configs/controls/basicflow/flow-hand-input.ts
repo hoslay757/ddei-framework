@@ -4,7 +4,7 @@ export default {
   'code': 'fhi',
   'desc': '流程的手动输入节点',
   'from': '100500',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 110,
     height: 70,

@@ -4,7 +4,7 @@ export default {
   'code': 'erl',
   'desc': 'UML类关联关系',
   'from': '100401',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     type: 2,
     ep: {

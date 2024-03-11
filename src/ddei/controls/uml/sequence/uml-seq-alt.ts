@@ -5,7 +5,7 @@ export default {
   'code': 'alt',
   'desc': '抉择片段',
   'from': '303008',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     ext: {
       composes: [

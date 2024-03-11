@@ -4,7 +4,7 @@ export default {
   'code': 'datatype',
   'desc': 'UML的数据类型',
   'from': '100002',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 110,
     height: 70,

@@ -4,7 +4,7 @@ export default {
   'code': 'case',
   'desc': 'UML的用例节点',
   'from': '100009',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 140,
     height: 90,
@@ -24,7 +24,7 @@ export default {
             },
             {
               name: "线条",
-              attrs: ["borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
+              attrs: ["border.type", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
             },
             {
               name: "文本",
@@ -46,7 +46,7 @@ export default {
         cIndex: 2,
         id: '100002',
         border: {
-          disabled: true
+          type: 0
         },
         fill: {
           type: 0
@@ -70,7 +70,7 @@ export default {
           feed: 1
         },
         border: {
-          disabled: true
+          type: 0
         },
         fill: {
           type: 0,

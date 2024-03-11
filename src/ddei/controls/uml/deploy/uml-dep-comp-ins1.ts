@@ -4,7 +4,7 @@ export default {
   'code': 'compins',
   'desc': 'UML的组件实例',
   'from': '304006',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
 
     text: `<<component>>

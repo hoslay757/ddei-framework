@@ -101,7 +101,7 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
             //根据control的定义，初始化临时控件，并推送至上层Editor
             let dataJson = {
 
-              modelCode: "100002",
+              modelCode: "100200",
 
             };
             let controlDefine = DDeiUtil.getControlDefine(dataJson)
@@ -111,8 +111,6 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
             dataJson["id"] = "lsm_" + (stage.idIdx++)
             dataJson["width"] = 80
             dataJson["height"] = 25
-            dataJson["fill"] = { type: 0 }
-            dataJson["border"] = { disabled: true }
             dataJson["font"] = { size: 12 }
             realModel = MODEL_CLS["DDeiPolygon"].initByJSON(
               dataJson,

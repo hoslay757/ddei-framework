@@ -4,7 +4,7 @@ export default {
   'code': 'bs',
   'desc': '由极坐标系构造的右小括号，不带任何文本',
   'from': '100500',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 50,
     height: 100,
@@ -72,7 +72,7 @@ export default {
           subGroups: [
             {
               name: "线条",
-              attrs: ["borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
+              attrs: ["border.type", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
             }
           ]
         }

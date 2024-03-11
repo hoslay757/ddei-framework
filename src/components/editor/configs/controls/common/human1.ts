@@ -4,7 +4,7 @@ export default {
   'code': 'human',
   'desc': '人形图标',
   'from': '100500',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 60,
     height: 85,
@@ -89,7 +89,7 @@ export default {
             },
             {
               name: "线条",
-              attrs: ["borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash"]
+              attrs: ["border.type", "borderColor", "borderOpacity", "borderWidth", "borderDash"]
             },
 
 

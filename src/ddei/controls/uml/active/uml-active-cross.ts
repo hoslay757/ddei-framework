@@ -4,6 +4,6 @@ export default {
   'code': 'cross',
   'desc': '水平交叉',
   'from': '301012',
-  'icon': 'toolbox-shape-rect',
+
 
 }

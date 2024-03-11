@@ -4,7 +4,7 @@ export default {
   'code': 'gen',
   'desc': '泛化关系',
   'from': '100401',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     type: 2,
     pvs: [

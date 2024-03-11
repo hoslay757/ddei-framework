@@ -4,7 +4,7 @@ export default {
   'code': 'impl',
   'desc': '实现关系',
   'from': '100401',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     type: 2,
     dash: [10, 10],

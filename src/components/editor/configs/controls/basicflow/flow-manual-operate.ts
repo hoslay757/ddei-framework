@@ -4,7 +4,7 @@ export default {
   'code': 'fmo',
   'desc': '由人工手动完成的节点',
   'from': '100500',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 140,
     height: 70,

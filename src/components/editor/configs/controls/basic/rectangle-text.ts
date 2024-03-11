@@ -4,7 +4,7 @@ export default {
   'code': 'rect',
   'desc': '由4个点组成的长方形',
   'from': '100008',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     ext: {
       sample: {

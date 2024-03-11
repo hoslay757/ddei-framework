@@ -4,7 +4,7 @@ export default {
   'code': 'trans',
   'desc': '过渡',
   'from': '100401',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     type: 2,
     dash: [20, 10],

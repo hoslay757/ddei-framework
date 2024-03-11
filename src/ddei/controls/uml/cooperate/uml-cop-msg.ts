@@ -4,7 +4,7 @@ export default {
   'code': 'msg',
   'desc': '消息',
   'from': '305015',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     dash: [],
     ep: {

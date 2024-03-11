@@ -4,7 +4,7 @@ export default {
   'code': 'start',
   'desc': '流程的开始节点',
   'from': '102001',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 100,
     height: 50,

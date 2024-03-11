@@ -4,7 +4,7 @@ export default {
   'code': 'together',
   'desc': '组合关系',
   'from': '305017',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
 
     sp: {

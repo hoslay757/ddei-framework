@@ -4,7 +4,7 @@ export default {
   'code': 'diamond',
   'desc': '圆角的菱形',
   'from': '100040',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
 
     border: {

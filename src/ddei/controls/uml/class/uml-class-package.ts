@@ -4,7 +4,7 @@ export default {
   'code': 'package',
   'desc': 'UML的包节点',
   'from': '305003',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     ext: {
       composes: [

@@ -4,7 +4,7 @@ export default {
   'code': 'arr-l',
   'desc': '指向左边的箭头',
   'from': '100120',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     //采样信息
     ext: {

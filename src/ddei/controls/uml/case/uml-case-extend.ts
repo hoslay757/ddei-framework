@@ -4,7 +4,7 @@ export default {
   'code': 'ext',
   'desc': '扩展',
   'from': '100401',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     type: 2,
     dash: [10, 10],
@@ -29,7 +29,7 @@ export default {
         height: 20,
         text: "<<extend>>",
         fill: { type: 0 },
-        border: { disabled: true },
+        border: { type: 0 },
         initCPV: {
           x: 0, y: -10
         }

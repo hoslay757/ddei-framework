@@ -4,7 +4,7 @@ export default {
   'code': 'state',
   'desc': 'UML的状态机节点',
   'from': '100009',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 140,
     height: 90,
@@ -26,7 +26,7 @@ export default {
 
             {
               name: "样式",
-              attrs: ["fill.type", "fill.color", "fill.image", "fill.opacity", "borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash"]
+              attrs: ["fill.type", "fill.color", "fill.image", "fill.opacity", "border.type", "borderColor", "borderOpacity", "borderWidth", "borderDash"]
             },
             {
               name: "文本",
@@ -48,7 +48,7 @@ export default {
         cIndex: 2,
         id: '100002',
         border: {
-          disabled: true
+          type: 0
         },
         fill: {
           type: 0
@@ -75,7 +75,7 @@ export default {
           feed: 1
         },
         border: {
-          disabled: true
+          type: 0
         },
         fill: {
           type: 0,

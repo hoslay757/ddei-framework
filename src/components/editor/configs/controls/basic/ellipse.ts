@@ -4,7 +4,7 @@ export default {
   'code': 'ellipse',
   'desc': '由极坐标系构造的椭圆形',
   'from': '100500',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 160,
     height: 80,

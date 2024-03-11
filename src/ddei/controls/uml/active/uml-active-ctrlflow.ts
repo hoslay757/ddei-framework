@@ -4,7 +4,7 @@ export default {
   'code': 'ctrlflow',
   'desc': '接收事件',
   'from': '100401',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     type: 1,
     ep: {

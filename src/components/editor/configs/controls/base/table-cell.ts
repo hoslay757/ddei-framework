@@ -49,7 +49,7 @@ export const styles = {
     },
     {
       'id': '100302003',
-      'code': 'borderType',
+      'code': 'border.type',
       'name': '边框类型',
       'desc': '用来快速选择边框的类型，以便于套用相关的样式',
       'group': '边框',

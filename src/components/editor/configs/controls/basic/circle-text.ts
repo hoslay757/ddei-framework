@@ -5,7 +5,7 @@ export default {
   'desc': '由极坐标系构造的圆形，带有text',
   'from': '100103',
 
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     ext: {
       //采样信息
@@ -29,7 +29,7 @@ export default {
             },
             {
               name: "线条",
-              attrs: ["borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash"]
+              attrs: ["border.type", "borderColor", "borderOpacity", "borderWidth", "borderDash"]
             },
             {
               name: "文本",

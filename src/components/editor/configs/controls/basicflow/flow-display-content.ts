@@ -4,7 +4,7 @@ export default {
   'code': 'fdc',
   'desc': '显示内容',
   'from': '100500',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 80,
     height: 80,

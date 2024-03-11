@@ -5,7 +5,7 @@ export default {
   'code': 'cls',
   'desc': 'UML的类节点',
   'from': '100008',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 240,
     height: 160,
@@ -42,7 +42,7 @@ export default {
             },
             {
               name: "线条",
-              attrs: ["borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
+              attrs: ["border.type", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
             },
             {
               name: "文本",
@@ -71,7 +71,7 @@ export default {
           type: 0
         },
         border: {
-          disabled: true
+          type: 0
         },
         initCPV: {
           x: 0, y: -65
@@ -99,7 +99,7 @@ export default {
           type: 0
         },
         border: {
-          disabled: true
+          type: 0
         },
         initCPV: {
           x: 0, y: -17
@@ -127,7 +127,7 @@ export default {
           type: 0
         },
         border: {
-          disabled: true
+          type: 0
         },
         initCPV: {
           x: 0, y: 47

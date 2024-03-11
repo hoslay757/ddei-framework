@@ -266,7 +266,7 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
         dataJson[i] = ccDefine?.define[i];
       }
       dataJson.text = textData;
-      dataJson.border = { disabled: true };
+      dataJson.border = { type: 0 };
       dataJson.fill = { type: 0 }
       dataJson.width = size.width;
       dataJson.height = size.height;
@@ -1106,7 +1106,7 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
       dataJson[i] = ccDefine?.define[i];
     }
     dataJson.text = "";
-    dataJson.border = { disabled: true };
+    dataJson.border = { type: 0 };
     dataJson.fill = { type: 2 };
     dataJson.fill.image = imgBase64
     dataJson.width = image.width / rat1 / stageRatio;

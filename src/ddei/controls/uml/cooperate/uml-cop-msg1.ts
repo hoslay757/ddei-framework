@@ -4,7 +4,7 @@ export default {
   'code': 'msg',
   'desc': '消息',
   'from': '306003',
-  'icon': 'toolbox-shape-rect',
+
   define: {
     ep: {
       type: 51,
@@ -23,7 +23,7 @@ export default {
           height: 20,
           text: "Operation A()",
           fill: { type: 0 },
-          border: { disabled: true },
+          border: { type: 0 },
           initCPV: {
             x: -60, y: 0
           }

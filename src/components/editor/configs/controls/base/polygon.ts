@@ -4,7 +4,7 @@ export default {
   'code': 'polygon',
   'desc': '多个3-N边构成的多边形',
   'type': 'DDeiPolygon',
-  'icon': 'toolbox-shape-rect',
+
   /**
    * 定义组件属性
    * 样式属性会影响图形的显示，修改样式属性也会刷新图形
@@ -37,17 +37,16 @@ export default {
       'defaultValue': "150",
     },
     {
-      'code': 'borderType',
+      'code': 'border.type',
       'name': '边框类型',
       'desc': '用来快速选择边框的类型，以便于套用相关的样式',
-      'controlType': 'border-type',
-      'dataSource': [{ 'text': '无线条', 'value': '0' }, { 'text': '实线', 'value': '1' }],
+      'controlType': 'radio',
       'dataType': 'string',
-      'defaultValue': '1',
+      'dataSource': [{ 'text': '无线条', 'value': 0 }, { 'text': '实线', 'value': 1 }],
+      'defaultValue': 1,
       'hiddenTitle': true,
       'display': 'column',
-
-      'exmapping': ['border.disabled'],
+      'cascadeDisplay': { 1: { show: ["borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"], hidden: [] }, default: { show: ["borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"], hidden: [] }, empty: { hidden: ["borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"] } },
     },
     {
       'code': 'borderColor',
@@ -505,7 +504,7 @@ export default {
         },
         {
           name: "线条",
-          attrs: ["borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
+          attrs: ["border.type", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
         },
 
         {

@@ -4,7 +4,7 @@ export default {
   'code': 'paralgram',
   'desc': '由4个点组成的平行四边形',
   'from': '100050',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
 
     border: {

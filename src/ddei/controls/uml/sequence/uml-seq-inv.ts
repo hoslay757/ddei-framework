@@ -4,7 +4,7 @@ export default {
   'code': 'inv',
   'desc': '调用',
   'from': '100401',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     type: 2,
     ep: {

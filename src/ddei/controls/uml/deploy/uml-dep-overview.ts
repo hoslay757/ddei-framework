@@ -4,7 +4,7 @@ export default {
   'code': 'node',
   'desc': 'UML的部署概述',
   'from': '100002',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     text: `<<deployment spec>>`,
   }

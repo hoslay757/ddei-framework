@@ -4,7 +4,7 @@ export default {
   'code': 'node',
   'desc': 'UML的节点',
   'from': '305002',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     text: `Node`,
     textStyle: {

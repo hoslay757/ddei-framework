@@ -4,7 +4,7 @@ export default {
   'code': 'recevt',
   'desc': '接收事件',
   'from': '103007',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 70,
     height: 70,
@@ -20,7 +20,7 @@ export default {
             },
             {
               name: "线条",
-              attrs: ["borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
+              attrs: ["border.type", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
             }
           ]
         },

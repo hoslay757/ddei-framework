@@ -4,7 +4,7 @@ export default {
   'code': 'fct',
   'desc': '流程的卡片',
   'from': '100500',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 110,
     height: 70,

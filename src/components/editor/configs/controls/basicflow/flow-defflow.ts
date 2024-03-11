@@ -4,7 +4,7 @@ export default {
   'code': 'defflow',
   'desc': '流程的子流程节点',
   'from': '100500',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 160,
     height: 100,

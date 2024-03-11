@@ -4,7 +4,7 @@ export default {
   'code': 'state',
   'desc': 'UML的状态机节点',
   'from': '100500',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 110,
     height: 50,

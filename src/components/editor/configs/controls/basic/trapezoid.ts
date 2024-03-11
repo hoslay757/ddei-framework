@@ -4,7 +4,7 @@ export default {
   'code': 'trapezoid',
   'desc': '由4个点组成的梯形',
   'from': '100500',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
 
     width: 160,

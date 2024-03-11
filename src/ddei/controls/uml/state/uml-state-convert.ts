@@ -4,7 +4,7 @@ export default {
   'code': 'conv',
   'desc': '转换',
   'from': '100401',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     type: 2,
     ep: {

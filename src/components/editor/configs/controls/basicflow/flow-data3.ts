@@ -4,7 +4,7 @@ export default {
   'code': 'sqdata',
   'desc': '流程的顺序数据节点',
   'from': '100500',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 100,
     height: 100,

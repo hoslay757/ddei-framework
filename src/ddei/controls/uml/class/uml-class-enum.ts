@@ -4,7 +4,7 @@ export default {
   'code': 'enum',
   'desc': 'UML的枚举',
   'from': '100002',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 110,
     height: 70,

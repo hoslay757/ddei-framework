@@ -4,7 +4,7 @@ export default {
   'code': 'async',
   'desc': '异步消息',
   'from': '100401',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     type: 2,
     ep: {

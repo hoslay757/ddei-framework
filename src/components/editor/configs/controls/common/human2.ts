@@ -4,7 +4,7 @@ export default {
   'code': 'human',
   'desc': '人形图标',
   'from': '100500',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 50,
     height: 100,
@@ -12,7 +12,7 @@ export default {
     poly: 2,
     cIndex: 1,
     fill: {
-      disabled: true
+      type: 0
     },
     //采样信息
     sample: {
@@ -107,7 +107,7 @@ export default {
             },
             {
               name: "线条",
-              attrs: ["borderType", "borderColor", "borderOpacity", "borderWidth", "borderDash"]
+              attrs: ["border.type", "borderColor", "borderOpacity", "borderWidth", "borderDash"]
             },
 
 

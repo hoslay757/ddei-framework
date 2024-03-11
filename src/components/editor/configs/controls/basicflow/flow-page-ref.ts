@@ -4,7 +4,7 @@ export default {
   'code': 'fpr',
   'desc': '流程的跨页引用',
   'from': '100500',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 70,
     height: 70,

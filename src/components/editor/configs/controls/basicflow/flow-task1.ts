@@ -4,7 +4,7 @@ export default {
   'code': 'task',
   'desc': '流程的任务节点',
   'from': '102010',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     border: {
       round: 5

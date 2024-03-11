@@ -4,7 +4,7 @@ export default {
   'code': 'rect',
   'desc': '由4个点组成的长方形，从中间横向/纵向切割开',
   'from': '100008',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     //扩展采样信息，用于在原有的基础上增加采样，或者覆盖采样的部分信息
     ext: {

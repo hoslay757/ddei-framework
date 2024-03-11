@@ -4,7 +4,7 @@ export default {
   'code': 'ovins',
   'desc': 'UML的部署概述实例',
   'from': '100002',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     text: `<<deployment spec>>
 Deployment

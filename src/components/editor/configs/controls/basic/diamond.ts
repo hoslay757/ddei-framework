@@ -4,7 +4,7 @@ export default {
   'code': 'diamond',
   'desc': '标准的菱形',
   'from': '100500',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 160,
     height: 80,

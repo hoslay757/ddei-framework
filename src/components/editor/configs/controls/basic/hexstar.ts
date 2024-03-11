@@ -4,7 +4,7 @@ export default {
   'code': 'hexstar',
   'desc': '由极坐标系构造的六芒星',
   'from': '100500',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 100,
     height: 100,

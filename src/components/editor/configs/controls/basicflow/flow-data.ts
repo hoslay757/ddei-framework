@@ -4,7 +4,7 @@ export default {
   'code': 'fdata',
   'desc': '流程的数据节点',
   'from': '100500',
-  'icon': 'toolbox-shape-rect',
+
   'define': {
     width: 150,
     height: 90,
