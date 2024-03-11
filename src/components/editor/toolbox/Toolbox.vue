@@ -1,6 +1,6 @@
 <template>
   <div id="ddei_editor_toolbox" v-show="editor?.leftWidth > 0" @mousedown="changeEditorFocus"
-    @mouseup="cancelCreateControl($event)" class="ddei_editor_toolbox">
+    @mouseup="cancelCreateControl($event)"  class="ddei_editor_toolbox">
     <div class="header">
       <div class="header-1"></div>
       <svg class="icon icon1" aria-hidden="true">
@@ -29,7 +29,7 @@
       </div>
     </div>
 
-    <div class="groups"
+    <div class="groups"  @mousewheel="mouseWheel($event)"
       :style="{ height: 'calc(100vh - ' + (editor?.topHeight + editor?.bottomHeight + 90) + 'px' }">
       <div v-for="group in groups" v-show="group.display == true" class="group">
         <div :class="{ 'box': true, 'expanded': group.expand }" @click="groupBoxExpand(group)">
@@ -146,6 +146,14 @@ export default {
     }
   },
   methods: {
+
+    mouseWheel(evt) {
+      if(evt.currentTarget.clientHeight < evt.currentTarget.scrollHeight){
+        evt.cancelBubble = true;
+        return false;
+      }
+    },
+
     cancelCreateControl(e) {
       if (this.editor.state == DDeiEditorState.CONTROL_CREATING) {
         if (this.editor.creatingControls) {

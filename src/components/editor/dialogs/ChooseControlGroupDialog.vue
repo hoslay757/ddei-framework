@@ -189,6 +189,7 @@ export default {
           white-space: nowrap;
           flex: 0 1 160px;
           margin: 0 10px;
+          font-size: 16px;
         }
 
         .expand {
@@ -245,12 +246,15 @@ export default {
 
         >input {
           flex: 0 0 20px;
+          width:14px;
+          height:14px;
         }
 
         .groupname {
           white-space: nowrap;
           flex: 0 1 120px;
           margin-left: 10px;
+          font-size: 16px;
 
         }
 

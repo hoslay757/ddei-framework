@@ -358,7 +358,7 @@ export default {
       input.style.width = ele.offsetWidth + "px";
       input.style.height = ele.offsetHeight + "px";
       input.style.left = domPos.left + "px";
-      input.style.fontSize = "12px";
+      input.style.fontSize = "16px";
       input.style.top = domPos.top + "px";
       input.style.outline = "1px solid #017fff";
       input.style.border = "none";

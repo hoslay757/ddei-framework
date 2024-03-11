@@ -23,7 +23,7 @@
             @mouseup="changeSubGroup(subGroup)">{{
               subGroup.name }}</div>
         </div>
-        <div class="ddei_editor_pv_subgroup_view_tab_panel" :style="panelStyle">
+        <div class="ddei_editor_pv_subgroup_view_tab_panel"  @mousewheel="mouseWheel($event)" :style="panelStyle">
           <div
             :class="{ 'ddei_editor_pv_subgroup_view_tab_panel_editors_column': attrDefine.display == 'column', 'ddei_editor_pv_subgroup_view_tab_panel_editors_row': attrDefine.display != 'column', 'empty_value': attrDefine.value ? false : true }"
             v-for="attrDefine in currentSubGroup?.children" :title="attrDefine.desc"
@@ -196,7 +196,12 @@ export default {
     }
   },
   methods: {
-
+    mouseWheel(evt) {
+      if(evt.currentTarget.clientHeight < evt.currentTarget.scrollHeight){
+        evt.cancelBubble = true;
+        return false;
+      }
+    },
     forceRefresh() {
       this.reFresh = false;
       this.propertyDisabled = false
