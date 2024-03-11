@@ -1,5 +1,5 @@
 <template>
-  <div id="ddei_editor" class="ddei_editor" @contextmenu.prevent @mousewheel.prevent @mouseup="mouseUp"
+  <div id="ddei_editor" class="ddei_editor" @contextmenu.prevent  @mouseup="mouseUp"
     @mousemove="mouseMove" @mousedown="mouseDown">
     <div class="top" id="ddei_editor_frame_top">
       <TopMenu v-if="refreshTopMenuView"></TopMenu>

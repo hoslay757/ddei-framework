@@ -95,6 +95,10 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
           let evt = window.event
           ex = evt.offsetX;
           ey = evt.offsetY;
+          ex /= window.remRatio
+          ey /= window.remRatio
+          ex -= stage.wpv.x;
+          ey -= stage.wpv.y
         }
         //没鼠标，默认选择中心
         let ox = dw / 2
@@ -102,25 +106,13 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
 
         //有鼠标，则以鼠标位置
         if (ex && ey) {
-          let ddRender = bus.ddInstance.render
-          let rat1 = ddRender.ratio;
-          //视窗的大小
-          let canvasHeight = ddRender.realCanvas.height / rat1;
-          let canvasWidth = ddRender.realCanvas.width / rat1;
-
-          ox = dw * ex / canvasWidth
-          oy = dh * ey / canvasHeight
+          ox = dw * ex / oldWidth
+          oy = dh * ey / oldHeight
         }
 
 
         stage.wpv.x = -wpvX - ox
         stage.wpv.y = -wpvY - oy
-
-
-
-
-
-
 
 
         return true;
