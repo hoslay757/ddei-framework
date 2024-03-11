@@ -1122,7 +1122,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         x1 = x;
         y1 = y + usedY
       } else if (align == 2) {
-        x1 = rat1 + ratPos.x + (ratPos.width - rRect.width) * 0.5;
+        x1 = ratPos.x + (ratPos.width - rRect.width) * 0.5;
         y1 = y + usedY
       } else if (align == 3) {
         x1 = ratPos.x + (ratPos.width - rRect.width);
