@@ -57,10 +57,12 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         this.drawOperatorShapeLine();
       } else if (this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING || this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING_TEXT_SELECTING) {
         //绘制编辑边框
-        this.drawEditBorder()
+        // this.drawEditBorder()
       } else {
         //绘制边框
-        this.drawBorder();
+        if (this.stage?.selectedModels?.size > 1) {
+          this.drawBorder();
+        }
 
         //绘制边框上的操作图形
         this.drawOperatorShape();

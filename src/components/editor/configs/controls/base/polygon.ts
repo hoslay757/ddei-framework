@@ -226,6 +226,18 @@ export default {
       'dataType': 'string',
       'dataSource': [{ 'text': '隐藏', 'value': '0' }, { 'text': '省略', 'value': '2' }, { 'text': '缩小', 'value': '1' }, { 'text': '扩展', 'value': '3' }],
       'defaultValue': '0',
+      'cascadeDisplay': { 3: { show: ['textStyle.lockWidth'], hidden: [] }, default: { hidden: ['textStyle.lockWidth'] }, empty: { hidden: ['textStyle.lockWidth'] }, notempty: { hidden: ['textStyle.lockWidth'] } }
+    },
+    {
+      'code': 'textStyle.lockWidth',
+      'name': '锁定宽度',
+      'desc': '超范围自动扩展的情况下锁定宽度',
+      'controlType': 'switch-checkbox',
+      'dataType': 'integer',
+      'defaultValue': 0,
+      'hiddenTitle': true,
+      'display': 'column',
+      'type': [1, 2]
     },
     {
       'code': 'textStyle.hollow',
@@ -499,7 +511,7 @@ export default {
         {
           name: "文本",
           attrs: ["font.family", "font.size", "font.color", "fontAlign", "textStyle.feed"
-            , "textStyle.scale", "textStyle.hollow", "textStyle.bold", "textStyle.italic"
+            , "textStyle.scale", "textStyle.lockWidth", "textStyle.hollow", "textStyle.bold", "textStyle.italic"
             , "textStyle.underline", "textStyle.deleteline", "textStyle.topline", "textStyle.hspace", "textStyle.vspace"]
         },
       ]

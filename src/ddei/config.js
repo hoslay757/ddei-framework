@@ -46,7 +46,7 @@ const config = {
       color: "red",
       selected: {
         width: 1,
-        color: "blue",
+        color: "#017fff",
       },
     },
   },

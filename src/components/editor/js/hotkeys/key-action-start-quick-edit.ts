@@ -191,6 +191,9 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
           inputEle.style.height = textAreaRect.height + "px"
           //创建编辑影子元素
           ddInstance.stage.render.editorShadowControl = DDeiUtil.getShadowControl(model);
+          //清空当前opPoints
+          model.layer.opPoints = [];
+          model.layer.opLine = null;
           ddInstance.stage.render.editorShadowControl.render.isEditoring = true
           inputEle.focus()
 

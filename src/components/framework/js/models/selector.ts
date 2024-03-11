@@ -434,19 +434,32 @@ class DDeiSelector extends DDeiRectangle {
       let pvs = this.pvs;
       let opvs = [];
       let opvsType = []
-
-
+      let lockWidth = 0
+      let scale = 0
+      if (models?.length == 1) {
+        scale = models[0].render.getCachedValue("textStyle.scale");
+        if (scale == 3) {
+          lockWidth = models[0].render.getCachedValue("textStyle.lockWidth");
+        }
+      }
 
       if (pvs?.length > 0) {
-        opvs[1] = { x: (pvs[0].x + pvs[1].x) / 2, y: (pvs[0].y + pvs[1].y) / 2 };
-        opvs[3] = { x: (pvs[1].x + pvs[2].x) / 2, y: (pvs[1].y + pvs[2].y) / 2 };
-        opvs[5] = { x: (pvs[2].x + pvs[3].x) / 2, y: (pvs[2].y + pvs[3].y) / 2 };
-        opvs[7] = { x: (pvs[0].x + pvs[3].x) / 2, y: (pvs[0].y + pvs[3].y) / 2 };
-        if (!this.eqrat) {
-          opvs[2] = { x: pvs[1].x, y: pvs[1].y };
-          opvs[4] = { x: pvs[2].x, y: pvs[2].y };
-          opvs[6] = { x: pvs[3].x, y: pvs[3].y };
-          opvs[8] = { x: pvs[0].x, y: pvs[0].y };
+        if (scale == 3) {
+          if (lockWidth == 1) {
+            opvs[3] = { x: (pvs[1].x + pvs[2].x) / 2, y: (pvs[1].y + pvs[2].y) / 2 };
+            opvs[7] = { x: (pvs[0].x + pvs[3].x) / 2, y: (pvs[0].y + pvs[3].y) / 2 };
+          }
+        } else {
+          opvs[1] = { x: (pvs[0].x + pvs[1].x) / 2, y: (pvs[0].y + pvs[1].y) / 2 };
+          opvs[3] = { x: (pvs[1].x + pvs[2].x) / 2, y: (pvs[1].y + pvs[2].y) / 2 };
+          opvs[5] = { x: (pvs[2].x + pvs[3].x) / 2, y: (pvs[2].y + pvs[3].y) / 2 };
+          opvs[7] = { x: (pvs[0].x + pvs[3].x) / 2, y: (pvs[0].y + pvs[3].y) / 2 };
+          if (!this.eqrat) {
+            opvs[2] = { x: pvs[1].x, y: pvs[1].y };
+            opvs[4] = { x: pvs[2].x, y: pvs[2].y };
+            opvs[6] = { x: pvs[3].x, y: pvs[3].y };
+            opvs[8] = { x: pvs[0].x, y: pvs[0].y };
+          }
         }
         let v1 = new Vector3(pvs[1].x, pvs[1].y, 1);
         let moveMatrix = new Matrix3(

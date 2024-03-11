@@ -1567,6 +1567,9 @@ class DDeiLayerCanvasRender {
       //快捷编辑中
       case DDeiEnumOperateState.QUICK_EDITING: {
         if (this.stageRender.editorShadowControl) {
+          //清空当前opPoints
+          this.model.opPoints = [];
+          this.model.opLine = null;
           let shadowControl = this.stageRender.editorShadowControl;
           if (shadowControl?.isInTextArea(ex, ey)) {
             this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'text' }, evt);

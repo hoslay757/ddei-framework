@@ -6,6 +6,7 @@ import { clone, trim, cloneDeep } from 'lodash'
 import { Matrix3, Vector3 } from 'three';
 import DDeiEnumOperateType from '../../enums/operate-type.js';
 import DDeiAbstractShape from '../../models/shape.js';
+import DDeiEnumOperateState from '../../enums/operate-state.js';
 
 
 /**
@@ -144,6 +145,20 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           //获得 2d 上下文对象
           let canvas = this.getCanvas();
           let ctx = canvas.getContext('2d');
+          if (!tempShape && this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING || this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING_TEXT_SELECTING) {
+            if (this.isEditoring) {
+              tempShape = { border: { dash: [10, 10], width: 1.25, color: "#017fff" } }
+            } else if (this.stage.render?.editorShadowControl) {
+              if (this.model.id + "_shadow" == this.stage.render.editorShadowControl.id) {
+                return;
+              }
+            }
+          } else if (!tempShape && this.stage?.selectedModels?.size == 1 && Array.from(this.stage?.selectedModels.values())[0].id == this.model.id) {
+            tempShape = { border: { width: 1, color: "#017fff", dash: [10, 5] } }
+          }
+          //去掉当前被编辑控件的边框显示
+
+          this.calScaleType3Size(tempShape);
           ctx.save();
           //拆分并计算pvss
           this.calPVSS(tempShape)
@@ -156,9 +171,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           this.drawText(tempShape);
           //根据pvss绘制边框
           this.drawBorder(tempShape);
-
-
           ctx.restore();
+
         } else {
           //绘制组合控件的内容
           c.render.drawShape(tempShape, true)
@@ -554,8 +568,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   drawBorder(tempShape: object | null): void {
     // //如果被选中，使用选中的边框，否则使用缺省边框
     let disabled = tempShape?.border?.disabled || tempShape?.border?.disabled == false ? tempShape?.border?.disabled : this.getCachedValue("border.disabled")
-    let opacity = tempShape?.border?.opacity ? tempShape?.border?.opacity : this.getCachedValue("border.opacity");
-    let width = tempShape?.border?.width ? tempShape?.border?.width : this.getCachedValue("border.width");
+    let opacity = tempShape?.border?.opacity || tempShape?.border?.opacity == 0 ? tempShape?.border?.opacity : this.getCachedValue("border.opacity");
+    let width = tempShape?.border?.width || tempShape?.border?.width == 0 ? tempShape?.border?.width : this.getCachedValue("border.width");
     let drawLine = (!disabled && (!opacity || opacity > 0) && width > 0)
     if (drawLine) {
       for (let i = 0; i < this.borderPVSS?.length; i++) {
@@ -764,7 +778,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       return;
     }
 
-    let fillRect = DDeiAbstractShape.pvsToOutRect(DDeiUtil.pointsToZero(this.model.textArea, this.model.cpv, this.model.rotate))
+    let fillRect = this.tempFillRect
     if (!fillRect || fillRect.width == -Infinity || fillRect == -Infinity) {
       return;
     }
@@ -838,223 +852,221 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       cText = ""
     }
     let contentWidth = ratPos.width;
+
     //累计减去的字体大小
     let subtractionFontSize = 0;
     let isOutSize = false
     let dotRect = null;
-    while (loop) {
-      //记录使用过的宽度和高度
-      let usedWidth = 0;
-      let usedHeight = 0;
-      //行容器
-      let textRowContainer = { text: "", widths: [], heights: [], dHeights: [] };
-      textContainer.push(textRowContainer);
-      //是否超出输出长度标志
-      isOutSize = false
-      let maxFontSize = 0;
 
-      if (fontSize + vspace > ratPos.height) {
-        if (scale == 1) {
+    if (scale == 3) {
+      textContainer = this.tempTextContainer
+    } else {
+      while (loop) {
+        //记录使用过的宽度和高度
+        let usedWidth = 0;
+        let usedHeight = 0;
+        //行容器
+        let textRowContainer = { text: "", widths: [], heights: [], dHeights: [] };
+        textContainer.push(textRowContainer);
+        //是否超出输出长度标志
+        isOutSize = false
+        let maxFontSize = 0;
+
+        if (fontSize + vspace > ratPos.height) {
+          if (scale == 1) {
+            textContainer = [];
+            let ds = fontSize < 50 ? 0.5 : Math.floor(fontSize / 50)
+            fontSize -= ds;
+            vspace -= ds
+            if (vspace < 0) {
+              vspace = 0;
+            }
+            continue;
+          }
+        }
+        //设置字体
+        let baseFont = fontSize + "px " + fiFamily;
+        if (bold == '1') {
+          baseFont = "bold " + baseFont;
+        }
+        if (italic == '1') {
+          baseFont = "italic " + baseFont;
+        }
+
+        //循环每一个字符，计算和记录大小
+        let rcIndex = 0;
+        let lastUnSubTypeFontSize = 0;
+        for (let ti = 0; ti < cText.length; ti++, rcIndex++) {
+          let te = cText[ti];
+
+          //读取当前特殊样式，如果没有，则使用外部基本样式
+          let font = null
+          let fontHeight = null
+          let isEnter = false;
+          let fontShapeRect = null;
+          if ((feed == 1 || feed == '1') && te == '\n') {
+            isEnter = true;
+            textRowContainer.text += te;
+            textRowContainer.widths[rcIndex] = 0
+            textRowContainer.heights[rcIndex] = 0
+            textRowContainer.width = Math.max(0, usedWidth)
+            textRowContainer.height = Math.max(0, textRowContainer.height ? textRowContainer.height : 0, lastUnSubTypeFontSize ? lastUnSubTypeFontSize * ratio + vspace : fontSize * ratio + vspace)
+          } else {
+            if (sptStyle[ti]) {
+              let ftsize = sptStyle[ti]?.font?.size ? sptStyle[ti]?.font?.size - subtractionFontSize : fontSize;
+
+              //如果显示的是标注，则当前字体的大小取决于前面最后一个未设置标注的字体大小（包括缺省大小）
+              if (sptStyle[ti].textStyle?.subtype) {
+                if (!lastUnSubTypeFontSize) {
+                  lastUnSubTypeFontSize = ftsize
+                }
+                ftsize = lastUnSubTypeFontSize / 2
+              } else if (ftsize < 1) {
+                ftsize = 2
+              }
+              let ftfamily = sptStyle[ti]?.font?.family ? sptStyle[ti]?.font?.family : fiFamily;
+              font = ftsize + "px " + ftfamily
+              if (sptStyle[ti]?.textStyle?.bold == '1') {
+                font = "bold " + font;
+              }
+              if (sptStyle[ti]?.textStyle?.italic == '1') {
+                font = "italic " + font;
+              }
+              fontHeight = ftsize
+            }
+            if (!font) {
+              font = baseFont;
+              fontHeight = fontSize
+            }
+            if (!sptStyle[ti]?.textStyle?.subtype) {
+              lastUnSubTypeFontSize = fontHeight
+            }
+            //记录最大字体大小
+            maxFontSize = Math.max(maxFontSize, fontHeight)
+
+            let rc1 = DDeiUtil.measureText(te, font, ctx, fontHeight);
+            if (!dotRect) {
+              dotRect = DDeiUtil.measureText("...", font, ctx, fontHeight);
+            }
+
+            fontShapeRect = { width: rc1.width * ratio + hspace, height: rc1.height * ratio, dHeight: rc1.dHeight * ratio }
+            usedWidth += fontShapeRect.width;
+
+            textRowContainer.text += te;
+            textRowContainer.widths[rcIndex] = fontShapeRect.width
+            textRowContainer.heights[rcIndex] = fontShapeRect.height + vspace//fontHeight * ratio + vspace
+            textRowContainer.dHeights[rcIndex] = fontShapeRect.dHeight
+            textRowContainer.width = usedWidth
+            textRowContainer.height = Math.max(fontShapeRect.height + vspace, textRowContainer.height ? textRowContainer.height : 0, lastUnSubTypeFontSize ? lastUnSubTypeFontSize * ratio + vspace : fontSize * ratio + vspace)
+          }
+
+          //如果不自动换行也不缩小字体，则超过的话，就省略显示
+          if (feed == 0) {
+            //如果具备缩小字体填充，并且usedWidth超出了单行大小,则跳出循环，重新生成
+            if (usedWidth > contentWidth) {
+              if (scale == 1 || scale == 2) {
+                isOutSize = true;
+                break;
+              }
+            }
+          }
+
+          //处理换行
+          else if (feed == 1 || feed == '1') {
+            //如果回车
+            if (isEnter) {
+              //新开一行重新开始
+              usedWidth = 0;
+              usedHeight += textRowContainer.height;
+
+              //换行的情况下，如果行高度超出，则不输出
+              if (usedHeight + textRowContainer.height > ratPos.height) {
+                //如果具备缩小字体填充，则重新生成
+                if (scale == 1 || scale == 2) {
+                  isOutSize = true;
+                  break;
+                }
+                break;
+              }
+              rcIndex = -1;
+              let lastRowHeight = textRowContainer.height;
+              textRowContainer = { text: '', widths: [], heights: [], dHeights: [] };
+              textRowContainer.width = usedWidth
+              textRowContainer.height = lastRowHeight
+              textContainer.push(textRowContainer);
+            }
+            //如果插入本字符后的大小，大于了容器的大小，则需要换行
+            else if (usedWidth > contentWidth) {
+              //先使当前行字符-1
+              textRowContainer.text = textRowContainer.text.substring(0, textRowContainer.text.length - 1)
+              textRowContainer.width -= fontShapeRect.width;
+
+              textRowContainer.widths.splice(rcIndex, 1)
+              textRowContainer.heights.splice(rcIndex, 1)
+              //新开一行重新开始
+              usedWidth = fontShapeRect.width;
+              usedHeight += textRowContainer.height;
+
+              //换行的情况下，如果行高度超出，则不输出
+              if (usedHeight + textRowContainer.height > ratPos.height) {
+                //如果具备缩小字体填充，则重新生成
+                if (scale == 1 || scale == 2) {
+                  isOutSize = true;
+                  break;
+                }
+                break;
+              }
+
+              rcIndex = 0;
+              textRowContainer = { text: te, widths: [], heights: [], dHeights: [] };
+              textRowContainer.widths[rcIndex] = fontShapeRect.width
+              textRowContainer.heights[rcIndex] = fontShapeRect.height + vspace
+              textRowContainer.dHeights[rcIndex] = fontShapeRect.dHeight
+              textRowContainer.width = usedWidth
+              textRowContainer.height = Math.max(fontShapeRect.height + vspace, lastUnSubTypeFontSize * ratio + vspace)
+              textContainer.push(textRowContainer);
+            }
+          }
+        }
+        //如果没有超出，则输出完毕
+        if (!isOutSize) {
+          loop = false;
+        }
+        //如果超出，清空生成的字段，且策略为缩小字体，则重新输出
+        else if (scale == 1) {
           textContainer = [];
-          let ds = fontSize < 50 ? 0.5 : Math.floor(fontSize / 50)
+          let ds = maxFontSize < 50 ? 0.5 : Math.floor(maxFontSize / 50)
           fontSize -= ds;
           vspace -= ds
           if (vspace < 0) {
             vspace = 0;
           }
-          continue;
-        }
-      }
-      //设置字体
-      let baseFont = fontSize + "px " + fiFamily;
-      if (bold == '1') {
-        baseFont = "bold " + baseFont;
-      }
-      if (italic == '1') {
-        baseFont = "italic " + baseFont;
-      }
-
-      //循环每一个字符，计算和记录大小
-      let rcIndex = 0;
-      let lastUnSubTypeFontSize = 0;
-      for (let ti = 0; ti < cText.length; ti++, rcIndex++) {
-        let te = cText[ti];
-
-        //读取当前特殊样式，如果没有，则使用外部基本样式
-        let font = null
-        let fontHeight = null
-        let isEnter = false;
-        let fontShapeRect = null;
-        if ((feed == 1 || feed == '1') && te == '\n') {
-          isEnter = true;
-          textRowContainer.text += te;
-          textRowContainer.widths[rcIndex] = 0
-          textRowContainer.heights[rcIndex] = 0
-          textRowContainer.width = Math.max(0, usedWidth)
-          textRowContainer.height = Math.max(0, textRowContainer.height ? textRowContainer.height : 0, lastUnSubTypeFontSize ? lastUnSubTypeFontSize * ratio + vspace : fontSize * ratio + vspace)
+          subtractionFontSize += ds
         } else {
-          if (sptStyle[ti]) {
-            let ftsize = sptStyle[ti]?.font?.size ? sptStyle[ti]?.font?.size - subtractionFontSize : fontSize;
-
-            //如果显示的是标注，则当前字体的大小取决于前面最后一个未设置标注的字体大小（包括缺省大小）
-            if (sptStyle[ti].textStyle?.subtype) {
-              if (!lastUnSubTypeFontSize) {
-                lastUnSubTypeFontSize = ftsize
-              }
-              ftsize = lastUnSubTypeFontSize / 2
-            } else if (ftsize < 1) {
-              ftsize = 2
-            }
-            let ftfamily = sptStyle[ti]?.font?.family ? sptStyle[ti]?.font?.family : fiFamily;
-            font = ftsize + "px " + ftfamily
-            if (sptStyle[ti]?.textStyle?.bold == '1') {
-              font = "bold " + font;
-            }
-            if (sptStyle[ti]?.textStyle?.italic == '1') {
-              font = "italic " + font;
-            }
-            fontHeight = ftsize
-          }
-          if (!font) {
-            font = baseFont;
-            fontHeight = fontSize
-          }
-          if (!sptStyle[ti]?.textStyle?.subtype) {
-            lastUnSubTypeFontSize = fontHeight
-          }
-          //记录最大字体大小
-          maxFontSize = Math.max(maxFontSize, fontHeight)
-
-          let rc1 = DDeiUtil.measureText(te, font, ctx, fontHeight);
-          if (!dotRect) {
-            dotRect = DDeiUtil.measureText("...", font, ctx, fontHeight);
-          }
-          fontShapeRect = { width: rc1.width * ratio + hspace, height: rc1.height * ratio, dHeight: rc1.dHeight * ratio }
-          usedWidth += fontShapeRect.width;
-
-          textRowContainer.text += te;
-          textRowContainer.widths[rcIndex] = fontShapeRect.width
-          textRowContainer.heights[rcIndex] = fontShapeRect.height + vspace//fontHeight * ratio + vspace
-          textRowContainer.dHeights[rcIndex] = fontShapeRect.dHeight
-          textRowContainer.width = usedWidth
-          textRowContainer.height = Math.max(fontShapeRect.height + vspace, textRowContainer.height ? textRowContainer.height : 0, lastUnSubTypeFontSize ? lastUnSubTypeFontSize * ratio + vspace : fontSize * ratio + vspace)
-        }
-
-        //如果不自动换行也不缩小字体，则超过的话，就省略显示
-        if (feed == 0) {
-          //如果具备缩小字体填充，并且usedWidth超出了单行大小,则跳出循环，重新生成
-          if (usedWidth > contentWidth) {
-            if (scale == 1 || scale == 2 || scale == 3) {
-              isOutSize = true;
-              break;
-            }
-          }
-          //省略显示,除去一个字符，重新计算大小
-          else if (usedWidth > contentWidth) {
-            textRowContainer.text = textRowContainer.text.substring(0, textRowContainer.text.length - 1)
-            usedWidth -= fontShapeRect.width;
-            textRowContainer.width = usedWidth
-            break;
-          }
-        }
-
-        //处理换行
-        else if (feed == 1 || feed == '1') {
-          //如果回车
-          if (isEnter) {
-            //新开一行重新开始
-            usedWidth = 0;
-            usedHeight += textRowContainer.height;
-
-            //换行的情况下，如果行高度超出，则不输出
-            if (usedHeight + textRowContainer.height > ratPos.height) {
-              //如果具备缩小字体填充，则重新生成
-              if (scale == 1 || scale == 2 || scale == 3) {
-                isOutSize = true;
-                break;
-              }
-              break;
-            }
-            rcIndex = -1;
-            let lastRowHeight = textRowContainer.height;
-            textRowContainer = { text: '', widths: [], heights: [], dHeights: [] };
-            textRowContainer.width = usedWidth
-            textRowContainer.height = lastRowHeight
-            textContainer.push(textRowContainer);
-          }
-          //如果插入本字符后的大小，大于了容器的大小，则需要换行
-          else if (usedWidth > contentWidth) {
-            //先使当前行字符-1
-            textRowContainer.text = textRowContainer.text.substring(0, textRowContainer.text.length - 1)
-            textRowContainer.width -= fontShapeRect.width;
-
-            textRowContainer.widths.splice(rcIndex, 1)
-            textRowContainer.heights.splice(rcIndex, 1)
-            //新开一行重新开始
-            usedWidth = fontShapeRect.width;
-            usedHeight += textRowContainer.height;
-
-            //换行的情况下，如果行高度超出，则不输出
-            if (usedHeight + textRowContainer.height > ratPos.height) {
-              //如果具备缩小字体填充，则重新生成
-              if (scale == 1 || scale == 2 || scale == 3) {
-                isOutSize = true;
-                break;
-              }
-              break;
-            }
-
-            rcIndex = 0;
-            textRowContainer = { text: te, widths: [], heights: [], dHeights: [] };
-            textRowContainer.widths[rcIndex] = fontShapeRect.width
-            textRowContainer.heights[rcIndex] = fontShapeRect.height + vspace
-            textRowContainer.dHeights[rcIndex] = fontShapeRect.dHeight
-            textRowContainer.width = usedWidth
-            textRowContainer.height = Math.max(fontShapeRect.height + vspace, lastUnSubTypeFontSize * ratio + vspace)
-            textContainer.push(textRowContainer);
-          }
+          loop = false;
         }
       }
-      //如果没有超出，则输出完毕
-      if (!isOutSize) {
-        loop = false;
-      }
-      //如果超出，清空生成的字段，且策略为缩小字体，则重新输出
-      else if (scale == 1) {
-        textContainer = [];
-        let ds = maxFontSize < 50 ? 0.5 : Math.floor(maxFontSize / 50)
-        fontSize -= ds;
-        vspace -= ds
-        if (vspace < 0) {
-          vspace = 0;
-        }
-        subtractionFontSize += ds
-      } else {
-        loop = false;
-      }
-    }
-    if (isOutSize) {
-      if (scale == 2) {
-        if (textContainer.length > 0) {
-          let lastText = textContainer[textContainer.length - 1].text
-          let widths = textContainer[textContainer.length - 1].widths
-          let heights = textContainer[textContainer.length - 1].heights
-          let dHeights = textContainer[textContainer.length - 1].dHeights
-          let dotWidth = dotRect.width / 3;
-          if (lastText.length > 0) {
-            textContainer[textContainer.length - 1].width = textContainer[textContainer.length - 1].width - widths[widths.length - 1] + dotRect.width;
-            lastText = lastText.substring(0, lastText.length - 1);
-            widths.splice(widths.length - 1, 1, dotWidth, dotWidth, dotWidth)
-            heights.splice(heights.length - 1, 1, heights[heights.length - 1], heights[heights.length - 1], heights[heights.length - 1])
-            dHeights.splice(dHeights.length - 1, 1, dHeights[dHeights.length - 1], dHeights[dHeights.length - 1], dHeights[dHeights.length - 1])
-            lastText += "..."
-            textContainer[textContainer.length - 1].text = lastText
+      if (isOutSize) {
+        if (scale == 2) {
+          if (textContainer.length > 0) {
+            let lastText = textContainer[textContainer.length - 1].text
+            let widths = textContainer[textContainer.length - 1].widths
+            let heights = textContainer[textContainer.length - 1].heights
+            let dHeights = textContainer[textContainer.length - 1].dHeights
+            let dotWidth = dotRect.width / 3;
+            if (lastText.length > 0) {
+              textContainer[textContainer.length - 1].width = textContainer[textContainer.length - 1].width - widths[widths.length - 1] + dotRect.width;
+              lastText = lastText.substring(0, lastText.length - 1);
+              widths.splice(widths.length - 1, 1, dotWidth, dotWidth, dotWidth)
+              heights.splice(heights.length - 1, 1, heights[heights.length - 1], heights[heights.length - 1], heights[heights.length - 1])
+              dHeights.splice(dHeights.length - 1, 1, dHeights[dHeights.length - 1], dHeights[dHeights.length - 1], dHeights[dHeights.length - 1])
+              lastText += "..."
+              textContainer[textContainer.length - 1].text = lastText
+            }
           }
         }
-      } else if (scale == 3) {
 
       }
-
     }
 
     // 计算文字整体区域位置
@@ -1110,7 +1122,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         x1 = x;
         y1 = y + usedY
       } else if (align == 2) {
-        x1 = ratPos.x + (ratPos.width - rRect.width) * 0.5;
+        x1 = rat1 + ratPos.x + (ratPos.width - rRect.width) * 0.5;
         y1 = y + usedY
       } else if (align == 3) {
         x1 = ratPos.x + (ratPos.width - rRect.width);
@@ -1389,6 +1401,239 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     //恢复状态
     ctx.restore();
 
+  }
+
+  /**
+   * 如果缩放类别为3，则自动计算并将计算的区域缓存到当前对象中，如果不为3则不会进行任何处理
+   */
+  calScaleType3Size(): boolean {
+    //文本的超出范围后的策略
+    let scale = this.getCachedValue("textStyle.scale");
+    let fillRect = DDeiAbstractShape.pvsToOutRect(DDeiUtil.pointsToZero(this.model.textArea, this.model.cpv, this.model.rotate))
+    if (scale == 3) {
+      let lockExtWidth = this.getCachedValue("textStyle.lockWidth");
+      //获得 2d 上下文对象
+      let canvas = this.getCanvas();
+      let ctx = canvas.getContext('2d');
+      ctx.save()
+      ctx.textAlign = "left";
+      ctx.textBaseline = "top";
+      //获取全局缩放比例
+      let stageRatio = this.model.getStageRatio()
+      let rat1 = this.ddRender.ratio;
+      let ratio = rat1 * stageRatio;
+      let ratPos = DDeiUtil.getRatioPosition(fillRect, rat1)
+      //自动换行
+      let feed = this.getCachedValue("textStyle.feed");
+
+      //间距，间距随全局缩放比例变化，但与控件本身大小无关
+      //自动缩放字体时，间距也同步变小
+      let hspace = this.getCachedValue("textStyle.hspace");
+      let vspace = this.getCachedValue("textStyle.vspace");
+      //以上样式为控件的整体样式，不能在文本中单独设置
+      //以下样式：字体、颜色、大小、镂空、粗体、斜体、下划线、删除线、上标、下标等
+      //可以单独设置，未单独设置则使用整体样式
+      //字体信息
+      let fiFamily = this.getCachedValue("font.family");
+      let fiSize = this.getCachedValue("font.size");
+      //粗体
+      let bold = this.getCachedValue("textStyle.bold");
+      //斜体
+      let italic = this.getCachedValue("textStyle.italic");
+      //循环进行分段输出,整体容器，代表了一个整体的文本大小区域
+      let textContainer = []
+      let fontSize = fiSize;
+      //获取值替换后的文本信息
+      let cText = null;
+      let sptStyle = null;
+      if (this.isEditoring) {
+        sptStyle = this.model.sptStyle
+        cText = this.getCachedValue("text")
+      } else {
+        cText = DDeiUtil.getReplacibleValue(this.model, "text", true, true);
+        sptStyle = this.tempSptStyle ? this.tempSptStyle : this.model.sptStyle;
+      }
+      if (!cText) {
+        cText = ""
+      }
+
+      //内容的宽度
+      let contentWidth = ratPos.width;
+      //记录使用过的宽度和高度
+      let usedWidth = 0;
+      let usedHeight = 0;
+      //行容器
+      let textRowContainer = { text: "", widths: [], heights: [], dHeights: [] };
+      textContainer.push(textRowContainer);
+      let maxFontSize = 0;
+
+      //设置字体
+      let baseFont = fontSize + "px " + fiFamily;
+      if (bold == '1') {
+        baseFont = "bold " + baseFont;
+      }
+      if (italic == '1') {
+        baseFont = "italic " + baseFont;
+      }
+
+      //循环每一个字符，计算和记录大小
+      let rcIndex = 0;
+      let lastUnSubTypeFontSize = 0;
+      for (let ti = 0; ti < cText.length; ti++, rcIndex++) {
+        let te = cText[ti];
+        //读取当前特殊样式，如果没有，则使用外部基本样式
+        let font = null
+        let fontHeight = null
+        let isEnter = false;
+        let fontShapeRect = null;
+        if ((feed == 1 || feed == '1') && te == '\n') {
+          isEnter = true;
+          textRowContainer.text += te;
+          textRowContainer.widths[rcIndex] = 0
+          textRowContainer.heights[rcIndex] = 0
+          textRowContainer.width = Math.max(0, usedWidth)
+          textRowContainer.height = Math.max(0, textRowContainer.height ? textRowContainer.height : 0, lastUnSubTypeFontSize ? lastUnSubTypeFontSize * ratio + vspace : fontSize * ratio + vspace)
+        } else {
+          if (sptStyle[ti]) {
+            let ftsize = sptStyle[ti]?.font?.size ? sptStyle[ti]?.font?.size : fontSize;
+
+            //如果显示的是标注，则当前字体的大小取决于前面最后一个未设置标注的字体大小（包括缺省大小）
+            if (sptStyle[ti].textStyle?.subtype) {
+              if (!lastUnSubTypeFontSize) {
+                lastUnSubTypeFontSize = ftsize
+              }
+              ftsize = lastUnSubTypeFontSize / 2
+            } else if (ftsize < 1) {
+              ftsize = 2
+            }
+            let ftfamily = sptStyle[ti]?.font?.family ? sptStyle[ti]?.font?.family : fiFamily;
+            font = ftsize + "px " + ftfamily
+            if (sptStyle[ti]?.textStyle?.bold == '1') {
+              font = "bold " + font;
+            }
+            if (sptStyle[ti]?.textStyle?.italic == '1') {
+              font = "italic " + font;
+            }
+            fontHeight = ftsize
+          }
+          if (!font) {
+            font = baseFont;
+            fontHeight = fontSize
+          }
+          if (!sptStyle[ti]?.textStyle?.subtype) {
+            lastUnSubTypeFontSize = fontHeight
+          }
+          //记录最大字体大小
+          maxFontSize = Math.max(maxFontSize, fontHeight)
+
+          let rc1 = DDeiUtil.measureText(te, font, ctx, fontHeight);
+
+          fontShapeRect = { width: rc1.width * ratio + hspace, height: rc1.height * ratio, dHeight: rc1.dHeight * ratio }
+          usedWidth += fontShapeRect.width;
+          textRowContainer.text += te;
+          textRowContainer.widths[rcIndex] = fontShapeRect.width
+          textRowContainer.heights[rcIndex] = fontShapeRect.height + vspace//fontHeight * ratio + vspace
+          textRowContainer.dHeights[rcIndex] = fontShapeRect.dHeight
+          textRowContainer.width = usedWidth
+          textRowContainer.height = Math.max(fontShapeRect.height + vspace, textRowContainer.height ? textRowContainer.height : 0, lastUnSubTypeFontSize ? lastUnSubTypeFontSize * ratio + vspace : fontSize * ratio + vspace)
+        }
+
+        //如果允许换行且有回车的情况，则需要新启一行计算大小
+        if (feed == 1 || feed == '1') {
+          if (isEnter) {
+            //新开一行重新开始
+            usedWidth = 0;
+            usedHeight += textRowContainer.height;
+            rcIndex = -1;
+            let lastRowHeight = textRowContainer.height;
+            textRowContainer = { text: '', widths: [], heights: [], dHeights: [] };
+            textRowContainer.width = usedWidth
+            textRowContainer.height = lastRowHeight
+            textContainer.push(textRowContainer);
+          } else if ((lockExtWidth == 1 || lockExtWidth == '1') && usedWidth > contentWidth) {
+            //先使当前行字符-1
+            textRowContainer.text = textRowContainer.text.substring(0, textRowContainer.text.length - 1)
+            textRowContainer.width -= fontShapeRect.width;
+
+            textRowContainer.widths.splice(rcIndex, 1)
+            textRowContainer.heights.splice(rcIndex, 1)
+            //新开一行重新开始
+            usedWidth = fontShapeRect.width;
+            usedHeight += textRowContainer.height;
+            rcIndex = 0;
+            textRowContainer = { text: te, widths: [], heights: [], dHeights: [] };
+            textRowContainer.widths[rcIndex] = fontShapeRect.width
+            textRowContainer.heights[rcIndex] = fontShapeRect.height + vspace
+            textRowContainer.dHeights[rcIndex] = fontShapeRect.dHeight
+            textRowContainer.width = usedWidth
+            textRowContainer.height = Math.max(fontShapeRect.height + vspace, lastUnSubTypeFontSize * ratio + vspace)
+            textContainer.push(textRowContainer);
+          }
+        }
+      }
+      let textAreaWidth = 0, textAreaHeight = 0
+      for (let ri = 0; ri < textContainer.length; ri++) {
+        textAreaWidth = Math.max(textAreaWidth, textContainer[ri].width)
+        textAreaHeight += textContainer[ri].height
+      }
+
+      //比较大小，如果超出文本区域则按照超出区域的实际大小进行扩展
+      let textArea = DDeiUtil.pointsToZero(this.model.textArea, this.model.cpv, this.model.rotate)
+      let textAreaOutRect = DDeiAbstractShape.pvsToOutRect(textArea)
+      let nowOutRect = { width: textAreaWidth / rat1, height: textAreaHeight / rat1 }
+      if (nowOutRect.width > 40 && nowOutRect.height > 20) {
+        let scaleX = nowOutRect.width / textAreaOutRect.width
+        let scaleY = nowOutRect.height / textAreaOutRect.height
+        if (lockExtWidth == 1 || lockExtWidth == '1') {
+          scaleX = 1
+        }
+
+        if (scaleX.toFixed(4) != "1.0000" || scaleY.toFixed(4) != "1.0000") {
+          let m1 = new Matrix3()
+          //构建缩放矩阵，缩放到基准大小
+          let moveMatrix = new Matrix3(
+            1, 0, -this.model.cpv.x,
+            0, 1, -this.model.cpv.y,
+            0, 0, 1
+          )
+          m1.premultiply(moveMatrix)
+          if (this.model.rotate) {
+            let angle = DDeiUtil.preciseTimes(this.model.rotate, DDeiConfig.ROTATE_UNIT)
+            let rotateMatrix = new Matrix3(
+              Math.cos(angle), Math.sin(angle), 0,
+              -Math.sin(angle), Math.cos(angle), 0,
+              0, 0, 1);
+            m1.premultiply(rotateMatrix)
+          }
+          let scaleMatrix = new Matrix3(
+            scaleX, 0, 0,
+            0, scaleY, 0,
+            0, 0, 1);
+          m1.premultiply(scaleMatrix)
+
+          if (this.model.rotate) {
+            let angle = DDeiUtil.preciseTimes(-this.model.rotate, DDeiConfig.ROTATE_UNIT)
+            let rotateMatrix = new Matrix3(
+              Math.cos(angle), Math.sin(angle), 0,
+              -Math.sin(angle), Math.cos(angle), 0,
+              0, 0, 1);
+            m1.premultiply(rotateMatrix)
+          }
+          let move1Matrix = new Matrix3(
+            1, 0, this.model.cpv.x,
+            0, 1, this.model.cpv.y,
+            0, 0, 1
+          )
+          m1.premultiply(move1Matrix)
+          this.model.transVectors(m1)
+          this.model.updateLinkModels()
+          fillRect = DDeiAbstractShape.pvsToOutRect(DDeiUtil.pointsToZero(this.model.textArea, this.model.cpv, this.model.rotate))
+        }
+      }
+      this.tempTextContainer = textContainer
+      ctx.restore()
+    }
+    this.tempFillRect = fillRect
   }
 
 
