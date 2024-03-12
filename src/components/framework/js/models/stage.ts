@@ -330,6 +330,12 @@ class DDeiStage {
       x: posX + (-leftExtNum * paperWidth), y: posY + (-topExtNum * paperHeight), w: (rightExtNum + leftExtNum + 1) * paperWidth, h: (bottomExtNum + topExtNum + 1) * paperHeight
       , unitWidth: paperWidth, unitHeight: paperHeight
     }
+    paperOutRect.x /= stageRatio
+    paperOutRect.y /= stageRatio
+    paperOutRect.w /= stageRatio
+    paperOutRect.h /= stageRatio
+    paperOutRect.unitWidth /= stageRatio
+    paperOutRect.unitHeight /= stageRatio
 
     return paperOutRect;
   }

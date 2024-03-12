@@ -39,8 +39,13 @@ class DDeiKeyActionCopyImage extends DDeiKeyAction {
       //获得 2d 上下文对象
       let ctx = canvas.getContext('2d');
       //获取缩放比例
-      let rat1 = ddInstance.render.ratio
-      let rat2 = DDeiUtil.getPixelRatio(ctx);
+      let oldRat1 = ddInstance.render.ratio
+
+      //如果高清屏，rat一般大于2印此系数为1保持不变，如果非高清则扩大为2倍保持清晰
+      let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
+      let rat1 = oldRat1 * scaleSize
+      let rat2 = oldRat1 / window.remRatio
+      ddInstance.render.ratio = rat1
       ddInstance.render.tempCanvas = canvas;
       //所选择区域的最大范围
       let outRect = DDeiAbstractShape.getOutRectByPV(models);
@@ -55,16 +60,19 @@ class DDeiKeyActionCopyImage extends DDeiKeyAction {
       let containerDiv = document.getElementById("ddei-cut-img-div")
 
       canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat2) + ");display:block;zoom:" + (1 / rat2));
-      let cW = outRect.width * rat1 + addWidth
-      let cH = outRect.height * rat1 + addWidth
+      let cW = outRect.width * oldRat1 + addWidth
+      let cH = outRect.height * oldRat1 + addWidth
       canvas.setAttribute("width", cW)
       canvas.setAttribute("height", cH)
+      ctx.scale(1 / scaleSize, 1 / scaleSize)
       ctx.translate(-outRect.x * rat1 + addWidth / 2, -outRect.y * rat1 + addWidth / 2)
+
       containerDiv.appendChild(canvas)
       models.forEach(item => {
         item.render.drawShape();
       })
 
+      ddInstance.render.ratio = oldRat1
       let dataURL = canvas.toDataURL()
       // let img = new Image()
       // img.setAttribute("style", "position:absolute;left:320px;top:300px;")

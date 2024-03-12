@@ -178,7 +178,7 @@ export default {
 
           let exportName = file.name
           if(file.version){
-            exportName += "v"+file.version+".pdf"
+            exportName += "-v"+file.version+".pdf"
           }
           pdf.save(exportName)
         }

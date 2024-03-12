@@ -2720,10 +2720,10 @@ class DDeiUtil {
         let ctx = canvas.getContext('2d');
         //获取缩放比例
         let oldRat1 = ddInstance.render.ratio
-        let rat1 = oldRat1 * 2//ddInstance.render.ratio
-        let rat2 = rat1 / window.remRatio
+        //如果高清屏，rat一般大于2印此系数为1保持不变，如果非高清则扩大为2倍保持清晰
+        let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
+        let rat1 = oldRat1 * scaleSize
         let stageRatio = stage.getStageRatio()
-        let ratio = rat1 * stageRatio
         ddInstance.render.tempCanvas = canvas;
 
         ddInstance.render.ratio = rat1
@@ -2740,9 +2740,9 @@ class DDeiUtil {
 
         let containerDiv = document.getElementById("ddei-cut-img-div")
 
-        canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat2) + ");display:block;zoom:" + (1 / rat2));
-        canvas.setAttribute("width", width * rat1 + addWidth)
-        canvas.setAttribute("height", height * rat1 + addWidth)
+        canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / oldRat1) + ");display:block;zoom:" + (1 / oldRat1));
+        canvas.setAttribute("width", width * oldRat1 + addWidth)
+        canvas.setAttribute("height", height * oldRat1 + addWidth)
 
 
         containerDiv.appendChild(canvas)
@@ -2750,12 +2750,15 @@ class DDeiUtil {
         //输出canvas
         for (let i = sy; ey > i || Math.abs((ey - height) - i) <= 0.01; i = i + height) {
           for (let j = sx; ex > j || Math.abs((ex - width) - j) <= 0.01; j = j + width) {
+            ctx.save();
             ctx.clearRect(0, 0, width * rat1 + addWidth, height * rat1 + addWidth)
+            ctx?.scale(1 / scaleSize, 1 / scaleSize)
             ctx.translate(-j * rat1, -i * rat1)
+            ctx?.scale(1 / stageRatio, 1 / stageRatio)
             models.forEach(item => {
               item.render.drawShape();
             })
-            ctx.translate(j * rat1, i * rat1)
+            ctx.restore()
             let base64 = canvas.toDataURL("image/png")
             imagesBase64.push(base64)
           }
