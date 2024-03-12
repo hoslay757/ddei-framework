@@ -2708,6 +2708,70 @@ class DDeiUtil {
   }
 
 
+  /**
+   * 将当前实例的stage按一定大小比例剪切为多张图片
+   */
+  static async cutStageToImages(ddInstance, stage, width, height, sx, sy, ex, ey) {
+    return new Promise((resolve, rejected) => {
+      try {
+        //转换为图片
+        let canvas = document.createElement('canvas');
+        //获得 2d 上下文对象
+        let ctx = canvas.getContext('2d');
+        //获取缩放比例
+        let oldRat1 = ddInstance.render.ratio
+        let rat1 = oldRat1 * 2//ddInstance.render.ratio
+        let rat2 = rat1 / window.remRatio
+        let stageRatio = stage.getStageRatio()
+        let ratio = rat1 * stageRatio
+        ddInstance.render.tempCanvas = canvas;
+
+        ddInstance.render.ratio = rat1
+        //所选择区域的最大范围
+        let models = stage.getLayerModels();
+        let lineOffset = models[0].render.getCachedValue("border.width");
+        let addWidth = 0;
+        if (lineOffset) {
+          addWidth = lineOffset * rat1
+          if (models.length > 1) {
+            addWidth = lineOffset * 2
+          }
+        }
+
+        let containerDiv = document.getElementById("ddei-cut-img-div")
+
+        canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat2) + ");display:block;zoom:" + (1 / rat2));
+        canvas.setAttribute("width", width * rat1 + addWidth)
+        canvas.setAttribute("height", height * rat1 + addWidth)
+
+
+        containerDiv.appendChild(canvas)
+        let imagesBase64 = []
+        //输出canvas
+        for (let i = sy; ey > i || Math.abs((ey - height) - i) <= 0.01; i = i + height) {
+          for (let j = sx; ex > j || Math.abs((ex - width) - j) <= 0.01; j = j + width) {
+            ctx.clearRect(0, 0, width * rat1 + addWidth, height * rat1 + addWidth)
+            ctx.translate(-j * rat1, -i * rat1)
+            models.forEach(item => {
+              item.render.drawShape();
+            })
+            ctx.translate(j * rat1, i * rat1)
+            let base64 = canvas.toDataURL("image/png")
+            imagesBase64.push(base64)
+          }
+        }
+        ddInstance.render.ratio = oldRat1
+        ddInstance.render.tempCanvas = null
+        containerDiv.removeChild(canvas)
+        resolve(imagesBase64)
+      } catch (e) {
+        ddInstance.render.tempCanvas = null
+        resolve('')
+      }
+    })
+  }
+
+
 
   /**
    * 根据属性获取纸张大小

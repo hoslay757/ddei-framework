@@ -157,7 +157,7 @@ export default {
 }
 
 .g7 {
-  flex: 0 1 200px
+  flex: 0 1 260px
 }
 
 .ddei_editor_topmenu_quickbox_group_empty {

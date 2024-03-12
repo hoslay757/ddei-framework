@@ -45,6 +45,7 @@
     "ddei-autolink": "^1.1.1",
     "flow": "^0.2.3",
     "js-cookie": "^3.0.5",
+    "jspdf": "^2.5.1",
     "jsx": "^0.9.89",
     "less": "^4.2.0",
     "lib-flexible": "^0.3.2",

@@ -266,6 +266,74 @@ class DDeiStage {
     }
   }
 
+  getPaperArea() {
+    let rat1 = this.ddInstance.render.ratio;
+    let stageRatio = this.getStageRatio()
+    let offsetWidth = 1 * stageRatio / 2;
+
+    //纸张的像素大小
+    let paperSize = DDeiUtil.getPaperSize(this)
+
+    let paperWidth = paperSize.width / rat1;
+    let paperHeight = paperSize.height / rat1;
+
+    //第一张纸开始位置
+    if (!this.spv) {
+      let sx = this.width / 2 - paperWidth / 2
+      let sy = this.height / 2 - paperHeight / 2
+      this.spv = new Vector3(sx, sy, 1)
+    }
+    let startPaperX = this.spv.x + 1
+    let startPaperY = this.spv.y + 1
+
+    let posX = startPaperX + offsetWidth;
+    let posY = startPaperY + offsetWidth;
+    this.paperStartX = posX
+    this.paperStartY = posY
+
+    //获取最大的有效范围，自动扩展纸张
+    let maxOutRect = DDeiAbstractShape.getOutRectByPV(this.getLayerModels())
+
+    //计算各个方向扩展的数量
+    let leftExtNum = 0, rightExtNum = 0, topExtNum = 0, bottomExtNum = 0
+    if (maxOutRect.width > 0 && maxOutRect.height > 0) {
+      if (maxOutRect.x < startPaperX) {
+        //计算要扩展的数量
+        leftExtNum = parseInt((startPaperX - maxOutRect.x) / paperWidth)
+        if (Math.abs((startPaperX - maxOutRect.x) % paperWidth) > 1) {
+          leftExtNum++
+        }
+      }
+      if (maxOutRect.x1 > startPaperX + paperWidth) {
+        //计算要扩展的数量
+        rightExtNum = parseInt((maxOutRect.x1 - startPaperX - paperWidth) / paperWidth)
+        if (Math.abs((maxOutRect.x1 - startPaperX - paperWidth) % paperWidth) > 1) {
+          rightExtNum++
+        }
+      }
+      if (maxOutRect.y < startPaperY) {
+        //计算要扩展的数量
+        topExtNum = parseInt((startPaperY - maxOutRect.y) / paperHeight)
+        if (Math.abs((startPaperY - maxOutRect.y) % paperHeight) > 1) {
+          topExtNum++
+        }
+      }
+      if (maxOutRect.y1 > startPaperY + paperHeight) {
+        //计算要扩展的数量
+        bottomExtNum = parseInt((maxOutRect.y1 - startPaperY - paperHeight) / paperHeight)
+        if (Math.abs((maxOutRect.y1 - startPaperY - paperHeight) % paperHeight) > 1) {
+          bottomExtNum++
+        }
+      }
+    }
+    let paperOutRect = {
+      x: posX + (-leftExtNum * paperWidth), y: posY + (-topExtNum * paperHeight), w: (rightExtNum + leftExtNum + 1) * paperWidth, h: (bottomExtNum + topExtNum + 1) * paperHeight
+      , unitWidth: paperWidth, unitHeight: paperHeight
+    }
+
+    return paperOutRect;
+  }
+
   /**
    * 获取目标模型的链接
    * @param modelId 模型ID
