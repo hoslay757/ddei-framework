@@ -159,11 +159,12 @@ export default {
           //剪切成多张图片
           let first = true
           let sheets = file.sheets
+          let scaleSize = 2
           for(let i = 0;i < sheets.length;i++){
             let sheet = sheets[i]
             //计算纸张的有效区域大小
             let paperArea = sheet.stage.getPaperArea()
-            let stageImages = await DDeiUtil.cutStageToImages(this.editor.ddInstance,sheet.stage, paperArea.unitWidth,paperArea.unitHeight,paperArea.x,paperArea.y,paperArea.x+paperArea.w,paperArea.y+paperArea.h)
+            let stageImages = await DDeiUtil.cutStageToImages(this.editor.ddInstance,sheet.stage, paperArea.unitWidth,paperArea.unitHeight,paperArea.x,paperArea.y,paperArea.x+paperArea.w,paperArea.y+paperArea.h,scaleSize)
             for(let k = 0;k < stageImages.length;k++){
               let imageBase64 = stageImages[k]
               if(imageBase64){

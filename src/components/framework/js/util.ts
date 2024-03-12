@@ -2711,7 +2711,7 @@ class DDeiUtil {
   /**
    * 将当前实例的stage按一定大小比例剪切为多张图片
    */
-  static async cutStageToImages(ddInstance, stage, width, height, sx, sy, ex, ey) {
+  static async cutStageToImages(ddInstance, stage, width, height, sx, sy, ex, ey, scaleSize = 2) {
     return new Promise((resolve, rejected) => {
       try {
         //转换为图片
@@ -2721,11 +2721,10 @@ class DDeiUtil {
         //获取缩放比例
         let oldRat1 = ddInstance.render.ratio
         //如果高清屏，rat一般大于2印此系数为1保持不变，如果非高清则扩大为2倍保持清晰
-        let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
-        let rat1 = oldRat1 * scaleSize
+        let rat1 = scaleSize ? scaleSize : oldRat1
+
         let stageRatio = stage.getStageRatio()
         ddInstance.render.tempCanvas = canvas;
-
         ddInstance.render.ratio = rat1
         //所选择区域的最大范围
         let models = stage.getLayerModels();
@@ -2739,10 +2738,9 @@ class DDeiUtil {
         }
 
         let containerDiv = document.getElementById("ddei-cut-img-div")
-
-        canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / oldRat1) + ");display:block;zoom:" + (1 / oldRat1));
-        canvas.setAttribute("width", width * oldRat1 + addWidth)
-        canvas.setAttribute("height", height * oldRat1 + addWidth)
+        canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
+        canvas.setAttribute("width", width * rat1 + addWidth)
+        canvas.setAttribute("height", height * rat1 + addWidth)
 
 
         containerDiv.appendChild(canvas)
@@ -2752,7 +2750,6 @@ class DDeiUtil {
           for (let j = sx; ex > j || Math.abs((ex - width) - j) <= 0.01; j = j + width) {
             ctx.save();
             ctx.clearRect(0, 0, width * rat1 + addWidth, height * rat1 + addWidth)
-            ctx?.scale(1 / scaleSize, 1 / scaleSize)
             ctx.translate(-j * rat1, -i * rat1)
             ctx?.scale(1 / stageRatio, 1 / stageRatio)
             models.forEach(item => {
