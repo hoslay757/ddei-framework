@@ -11,7 +11,7 @@
         </div>
       </div>
        <div class="part">
-        <div class="button-v" @click="exportFile">
+        <div class="button-v" @click="showExportDialog($event)">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-a-ziyuan423"></use>
           </svg>
@@ -76,6 +76,24 @@ export default {
 
   },
   methods: {
+
+    showExportDialog(evt: Event) {
+      let srcElement = evt.currentTarget;
+      DDeiEditorUtil.showOrCloseDialog("export_option_dialog", {
+        callback: {
+        },
+        group: "top-dialog",
+        background: "white",
+        opacity: "1%",
+        event: -1
+      }, {}, srcElement)
+
+      if (DDeiEditor.ACTIVE_INSTANCE.tempDialogData && DDeiEditor.ACTIVE_INSTANCE.tempDialogData["export_option_dialog"]) {
+        this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
+      } else {
+        this.editor.changeState(DDeiEditorState.DESIGNING);
+      }
+    },
 
     showShareDialog(evt: Event) {
       let srcElement = evt.currentTarget;

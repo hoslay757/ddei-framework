@@ -69,6 +69,8 @@ class DDeiEditor {
     { keys: "113", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.StartQuickEdit },
     //ESC取消快捷编辑
     { keys: "27", editorState: DDeiEditorState.QUICK_EDITING, action: DDeiEnumKeyActionInst.CancelQuickEdit },
+    //ESC关闭弹出框
+    { keys: "27", editorState: DDeiEditorState.PROPERTY_EDITING, action: DDeiEnumKeyActionInst.CloseDialog },
     //ESC取消控件创建
     { keys: "27", editorState: DDeiEditorState.CONTROL_CREATING, action: DDeiEnumKeyActionInst.CancelControlCreating },
     //ESC取消当前的正在进行的动作

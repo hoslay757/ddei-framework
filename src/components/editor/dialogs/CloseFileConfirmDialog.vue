@@ -1,5 +1,5 @@
 <template>
-  <div :id="dialogId" class="close_file_confirm_dialog" @keydown.esc="abort">
+  <div :id="dialogId" class="close_file_confirm_dialog">
     <div class="content">
       <div class="header">
         <svg class="icon warn" aria-hidden="true">

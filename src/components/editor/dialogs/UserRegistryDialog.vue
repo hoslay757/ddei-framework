@@ -1,5 +1,5 @@
 <template>
-  <div :id="dialogId" class="user_registry_dialog" @keydown.esc="abort">
+  <div :id="dialogId" class="user_registry_dialog">
     <form>
       <div class="content">
         <div class="header">

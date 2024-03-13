@@ -1,11 +1,11 @@
 <template>
-  <div :id="dialogId" class="create_share_dialog" >
+  <div :id="dialogId" class="export_option_dialog">
     <div class="content">
       <div class="header">
         <svg class="icon warn" aria-hidden="true">
-          <use xlink:href="#icon-a-ziyuan378"></use>
+          <use xlink:href="#icon-a-ziyuan423"></use>
         </svg>
-        <span>分享链接</span>
+        <span>导出PDF</span>
         <div style="flex:1"></div>
         <svg class="icon close" aria-hidden="true" @click="abort">
           <use xlink:href="#icon-a-ziyuan422"></use>
@@ -88,13 +88,13 @@ import { createshortlink } from "@/lib/api/shortlink"
 import DDeiUtil from "@/components/framework/js/util";
 import { now } from "lodash";
 export default {
-  name: "DDei-Editor-Create-Share-Dialog",
+  name: "DDei-Editor-Export-Option-Dialog",
   extends: null,
   mixins: [],
   props: {},
   data() {
     return {
-      dialogId: 'create_share_dialog',
+      dialogId: 'export_option_dialog',
       //当前编辑器
       editor: null,
       ds1: [
@@ -211,7 +211,7 @@ export default {
       }
     },
     abort() {
-      DDeiEditorUtil.closeDialog('create_share_dialog');
+      DDeiEditorUtil.closeDialog('export_option_dialog');
     },
   }
 };
@@ -219,7 +219,7 @@ export default {
 
 <style lang="less" scoped>
 /**以下为询问框的样式 */
-.create_share_dialog {
+.export_option_dialog {
   width: 420px;
   height: 260px;
   color: black;

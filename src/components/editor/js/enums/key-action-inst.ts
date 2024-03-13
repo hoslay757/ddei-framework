@@ -21,6 +21,7 @@ import DDeiKeyActionReRevoke from "../hotkeys/key-action-rerevoke";
 import DDeiKeyActionSaveFile from "../hotkeys/key-action-save-file";
 import DDeiKeyActionCancelControlCreate from "../hotkeys/key-action-cancel-control-create";
 import DDeiKeyActionCancelCurrentAction from "../hotkeys/key-action-cancel-current-action";
+import DDeiKeyActionCloseDialog from "../hotkeys/key-action-close-dialog";
 
 /**
  * 所有key实例的枚举
@@ -37,6 +38,7 @@ enum DDeiEnumKeyActionInst {
   EnterQuickEdit = new DDeiKeyActionEnterQuickEdit({ code: "key-action-enter-quick-edit", name: "确认快捷编辑", desc: "当某个控件具备快捷编辑的特性时，将快捷编辑框的内容写入实际控件" }),
   NewRowQuickEdit = new DDeiKeyActionNewRowQuickEdit({ code: "key-action-newrow-quick-edit", name: "创建新行", desc: "在快捷编辑过程中创建新行" }),
   CancelQuickEdit = new DDeiKeyActionCancelQuickEdit({ code: "key-action-cancel-quick-edit", name: "取消快捷编辑", desc: "当某个控件具备快捷编辑的特性时，取消快捷编辑框" }),
+  CloseDialog = new DDeiKeyActionCloseDialog({ code: "key-action-close-dialog", name: "关闭主动打开弹出框", desc: "当有弹出框时，按下esc关闭所有主动打开打开的弹出框" }),
   MakeCompose = new DDeiKeyActionCompose({ code: "key-action-make-compose", name: "组合", desc: "选择多个控件时，将其组合成一个控件" }),
   CancelCompose = new DDeiKeyActionCancelCompose({ code: "key-action-cancel-compose", name: "取消组合", desc: "将一个组合控件打散成为多个控件" }),
   PushUpModels = new DDeiKeyActionPushModels({ code: "key-action-push-up-models", name: "置于上层", desc: "将选中图形置于上层" }),
