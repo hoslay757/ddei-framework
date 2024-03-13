@@ -77,14 +77,19 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     }
   }
 
-  createTemeShape() {
+  createTempShape() {
     if (DDeiUtil.DRAW_TEMP_CANVAS) {
-      let rat1 = this.ddRender.ratio;
+      //如果高清屏，rat一般大于2印此系数为1保持不变，如果非高清则扩大为2倍保持清晰
+      //获取缩放比例
+      let oldRat1 = this.ddRender.ratio
+      let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
+      let rat1 = oldRat1 * scaleSize
       //测试剪切图形
       //转换为图片
       if (!this.tempCanvas) {
         this.tempCanvas = document.createElement('canvas');
         this.tempCanvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
+        document.body.appendChild(this.tempCanvas)
       }
       let tempCanvas = this.tempCanvas
       let pvs = this.model.operatePVS ? this.model.operatePVS : this.model.pvs
@@ -99,6 +104,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       outRect.height += 2 * weight
       tempCanvas.setAttribute("width", outRect.width * rat1)
       tempCanvas.setAttribute("height", outRect.height * rat1)
+
       //获得 2d 上下文对象
       let tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
       tempCanvas.tx = -outRect.x * rat1
@@ -111,7 +117,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   /**
    * 绘制图形
    */
-  drawShape(tempShape, composeRender: boolean = false): void {
+  drawShape(tempShape, composeRender: number = 0): void {
     if (composeRender || !this.viewBefore || this.viewBefore(
       DDeiEnumOperateType.VIEW,
       [this.model],
@@ -121,7 +127,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     )) {
 
       //创建准备图形
-      this.createTemeShape();
+      this.createTempShape();
       //将当前控件以及composes按照zindex顺序排列并输出
       let rendList = [];
       if (this.model.composes?.length > 0) {
@@ -145,6 +151,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           //获得 2d 上下文对象
           let canvas = this.getCanvas();
           let ctx = canvas.getContext('2d');
+
+
           if (!tempShape && this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING || this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING_TEXT_SELECTING) {
             if (this.isEditoring) {
               tempShape = { border: { type: 1, dash: [10, 10], width: 1.25, color: "#017fff" } }
@@ -156,8 +164,16 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           } else if (!tempShape && this.stage?.selectedModels?.size == 1 && Array.from(this.stage?.selectedModels.values())[0].id == this.model.id) {
             tempShape = { border: { type: 1, width: 1, color: "#017fff", dash: [10, 5] } }
           }
-          //去掉当前被编辑控件的边框显示
+          let oldRat1 = this.ddRender.ratio
+          this.ddRender.oldRatio = oldRat1
+          //获取缩放比例
+          if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
 
+            let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
+            let rat1 = oldRat1 * scaleSize
+            //去掉当前被编辑控件的边框显示
+            this.ddRender.ratio = rat1
+          }
           this.calScaleType3Size(tempShape);
           ctx.save();
           //拆分并计算pvss
@@ -172,10 +188,14 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           //根据pvss绘制边框
           this.drawBorder(tempShape);
           ctx.restore();
+          if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
+            this.ddRender.ratio = oldRat1
+            delete this.ddRender.oldRatio
+          }
 
         } else {
           //绘制组合控件的内容
-          c.render.drawShape(tempShape, true)
+          c.render.drawShape(tempShape, composeRender + 1)
         }
       })
 
@@ -202,9 +222,14 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
       let canvas = this.getRenderCanvas(composeRender)
       let ctx = canvas.getContext('2d');
-      let rat1 = this.ddRender.ratio;
+      let oldRat1 = this.ddRender.ratio;
+      let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
+      let rat1 = oldRat1 * scaleSize
       let outRect = this.tempCanvas.outRect
-      ctx.drawImage(this.tempCanvas, 0, 0, outRect.width * rat1, outRect.height * rat1, outRect.x * rat1, outRect.y * rat1, outRect.width * rat1, outRect.height * rat1)
+      if (composeRender > 0) {
+        oldRat1 = rat1
+      }
+      ctx.drawImage(this.tempCanvas, 0, 0, outRect.width * rat1, outRect.height * rat1, outRect.x * oldRat1, outRect.y * oldRat1, outRect.width * oldRat1, outRect.height * oldRat1)
     }
 
   }
@@ -606,7 +631,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         return 0
       }
     })
-    this.createTemeShape()
+    this.createTempShape()
     rendList.forEach(c => {
       if (c == this.model) {
         //根据pvss绘制边框
@@ -635,9 +660,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
       //获取全局缩放比例
-      let stageRatio = this.model.getStageRatio()
-      let rat1 = this.ddRender.ratio;
-      let ratio = rat1 * stageRatio;
+      let rat1 = this.ddRender.oldRatio ? this.ddRender.oldRatio : this.ddRender.ratio;
       let fillRect = this.model.essBounds
       //缩放填充区域
       //保存状态

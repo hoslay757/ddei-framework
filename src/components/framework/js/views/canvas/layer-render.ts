@@ -86,7 +86,7 @@ class DDeiLayerCanvasRender {
   /**
    * 绘制图形
    */
-  drawShape(inRect:boolean = true): void {
+  drawShape(inRect: boolean = true): void {
     //只有当显示时才绘制图层
     if (this.model.display || this.model.tempDisplay) {
       if (!this.viewBefore || this.viewBefore(
@@ -293,7 +293,7 @@ class DDeiLayerCanvasRender {
   /**
    * 绘制子元素
    */
-  drawChildrenShapes(inRect:boolean = true): void {
+  drawChildrenShapes(inRect: boolean = true): void {
     if (this.model.models) {
       let canvas = this.ddRender.getCanvas();
       //获取全局缩放比例
@@ -1584,7 +1584,6 @@ class DDeiLayerCanvasRender {
 
         let shadowControl = this.stageRender.editorShadowControl;
         if (shadowControl?.isInTextArea(ex, ey)) {
-
           let cx = (ex - shadowControl.cpv.x) * rat1;
           let cy = (ey - shadowControl.cpv.y) * rat1;
           //先判断行，再判断具体位置
@@ -1592,15 +1591,21 @@ class DDeiLayerCanvasRender {
           let startIndex = 0;
           let sx = 0;
           let i = 0;
+          //由于绘制缓存中的文本位置乘以了调整系数，因此这里判断时，需要利用这个系数反向判断
+          let scaleSize = DDeiUtil.DRAW_TEMP_CANVAS && rat1 < 2 ? 2 / rat1 : 1
           for (; i < shadowControl.render.textUsedArea.length; i++) {
             let rowData = shadowControl.render.textUsedArea[i];
-            if (cy >= rowData.y && cy <= rowData.y + rowData.height) {
-              if (cx >= rowData.x && cx <= rowData.x + rowData.width) {
+            let ry = rowData.y / scaleSize
+            let rh = rowData.height / scaleSize
+            let rx = rowData.x / scaleSize
+            let rw = rowData.width / scaleSize
+            if (cy >= ry && cy <= ry + rh) {
+              if (cx >= rx && cx <= rx + rw) {
                 //判断位于第几个字符，求出光标的开始位置
                 let endI = startIndex + rowData.text.length;
                 for (let x = startIndex; x < endI; x++) {
-                  let fx = shadowControl.render.textUsedArea[0].textPosCache[x].x;
-                  let lx = x < endI - 1 ? shadowControl.render.textUsedArea[0].textPosCache[x + 1].x : rowData.x + rowData.width
+                  let fx = shadowControl.render.textUsedArea[0].textPosCache[x].x / scaleSize;
+                  let lx = x < endI - 1 ? shadowControl.render.textUsedArea[0].textPosCache[x + 1].x / scaleSize : rx + rw
                   let halfW = (lx - fx) / 2
                   if (cx >= fx && cx < lx) {
                     if (cx > fx + halfW) {

@@ -338,34 +338,34 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       let firstModel = Array.from(selectedModels?.values())[0];
       for (let i = 1; i <= 10; i++) {
         //如果被选中，使用选中的边框，否则使用缺省边框
-        let disabled = null;
+        let type = null;
         let color = null;
         let opacity = null;
         let bWidth = null;
         if (i <= 2 || i >= 9) {
-          disabled = this.getBorderInfo(tempBorder, 1, "disabled");
+          type = this.getBorderInfo(tempBorder, 1, "type");
           color = this.getBorderInfo(tempBorder, 1, "color");
           opacity = this.getBorderInfo(tempBorder, 1, "opacity");
           bWidth = this.getBorderInfo(tempBorder, 1, "width");
         } else if (i <= 4) {
-          disabled = this.getBorderInfo(tempBorder, 2, "disabled");
+          type = this.getBorderInfo(tempBorder, 2, "type");
           color = this.getBorderInfo(tempBorder, 2, "color");
           opacity = this.getBorderInfo(tempBorder, 2, "opacity");
           bWidth = this.getBorderInfo(tempBorder, 2, "width");
         } else if (i <= 6) {
-          disabled = this.getBorderInfo(tempBorder, 3, "disabled");
+          type = this.getBorderInfo(tempBorder, 3, "type");
           color = this.getBorderInfo(tempBorder, 3, "color");
           opacity = this.getBorderInfo(tempBorder, 3, "opacity");
           bWidth = this.getBorderInfo(tempBorder, 3, "width");
         } else if (i <= 8) {
-          disabled = this.getBorderInfo(tempBorder, 4, "disabled");
+          type = this.getBorderInfo(tempBorder, 4, "type");
           color = this.getBorderInfo(tempBorder, 4, "color");
           opacity = this.getBorderInfo(tempBorder, 4, "opacity");
           bWidth = this.getBorderInfo(tempBorder, 4, "width");
         }
 
         //如果边框未被disabled，则绘制边框
-        if (!disabled && color && (!opacity || opacity > 0) && bWidth > 0) {
+        if (!(type == 0 || type == '0') && color && (!opacity || opacity > 0) && bWidth > 0) {
 
           //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
           let lineOffset = 0//bWidth * ratio / 2;

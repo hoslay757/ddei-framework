@@ -136,24 +136,24 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     // let rightRound = this.getBorderInfo(tempBorder, 2, "round");
     // let bottomRound = this.getBorderInfo(tempBorder, 3, "round");
     // let leftRound = this.getBorderInfo(tempBorder, 4, "round");
-    let topDisabled = this.getBorderInfo(tempBorder, 1, "disabled");
+    let topType = this.getBorderInfo(tempBorder, 1, "type");
     let topWidth = this.getBorderInfo(tempBorder, 1, "width");
-    let rightDisabled = this.getBorderInfo(tempBorder, 2, "disabled");
+    let rightType = this.getBorderInfo(tempBorder, 2, "type");
     let rightWidth = this.getBorderInfo(tempBorder, 2, "width");
-    let bottomDisabled = this.getBorderInfo(tempBorder, 3, "disabled");
+    let bottomType = this.getBorderInfo(tempBorder, 3, "type");
     let bottomWidth = this.getBorderInfo(tempBorder, 3, "width");
-    let leftDisabled = this.getBorderInfo(tempBorder, 4, "disabled");
+    let leftType = this.getBorderInfo(tempBorder, 4, "type");
     let leftWidth = this.getBorderInfo(tempBorder, 4, "width");
-    if (topDisabled) {
+    if (!topType) {
       topWidth = 0
     }
-    if (rightDisabled) {
+    if (rightType) {
       rightWidth = 0
     }
-    if (bottomDisabled) {
+    if (bottomType) {
       bottomWidth = 0
     }
-    if (leftDisabled) {
+    if (leftType) {
       leftWidth = 0
     }
     leftWidth = leftWidth / 2
@@ -254,7 +254,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     let ratio = rat1 * stageRatio;
     //1,2,3,4 上，右，下，左
     //如果被选中，使用选中的边框，否则使用缺省边框
-    let disabled = this.getBorderInfo(tempBorder, 1, "disabled");
+    let type = this.getBorderInfo(tempBorder, 1, "type");
     let color = this.getBorderInfo(tempBorder, 1, "color");
     let opacity = this.getBorderInfo(tempBorder, 1, "opacity");
     let width = this.getBorderInfo(tempBorder, 1, "width");
@@ -263,7 +263,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
 
     //绘制四个方向的边框
     //如果边框未被disabled，则绘制边框
-    if (!disabled && color && (!opacity || opacity > 0) && width > 0) {
+    if (!(type == 0 || type == '0') && color && (!opacity || opacity > 0) && width > 0) {
       //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
       let lineOffset = 1 * ratio / 2;
       let lineWidth = width * ratio;
@@ -974,13 +974,13 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
    */
   getFillArea(): object {
     //获取边框区域，实际填充区域=坐标-边框区域
-    let disabled = this.getBorderInfo(null, 1, "disabled");
+    let type = this.getBorderInfo(null, 1, "type");
     let color = this.getBorderInfo(null, 1, "color");
     let opacity = this.getBorderInfo(null, 1, "opacity");
     let width = this.getBorderInfo(null, 1, "width");
 
     //计算填充的原始区域
-    if (!(!disabled && color && (!opacity || opacity > 0) && width > 0)) {
+    if (!(!(type == 0 || type == '0') && color && (!opacity || opacity > 0) && width > 0)) {
       width = 0
     }
     return {

@@ -130,8 +130,12 @@ export default {
         if (this.editor.state == DDeiEditorState.QUICK_EDITING) {
           //判定落点是否在正在编辑的影子控件上，如果是则识别坐标，制作选中效果
           if (this.editor?.ddInstance?.stage?.render?.editorShadowControl) {
+           
             let stage = this.editor?.ddInstance?.stage;
             let rat1 = stage.ddInstance.render.ratio;
+
+            //由于绘制缓存中的文本位置乘以了调整系数，因此这里判断时，需要利用这个系数反向判断
+            let scaleSize = DDeiUtil.DRAW_TEMP_CANVAS && rat1 < 2 ? 2 / rat1 : 1
             let ex = evt.offsetX;
             let ey = evt.offsetY;
             ex /= window.remRatio
@@ -148,16 +152,22 @@ export default {
               let startIndex = 0;
               let sx = 0;
               let i = 0;
+              
               for (; i < shadowControl.render.textUsedArea.length; i++) {
                 let rowData = shadowControl.render.textUsedArea[i];
-                if (cy >= rowData.y && cy <= rowData.y + rowData.height) {
-                  if (cx >= rowData.x && cx <= rowData.x + rowData.width) {
+                let ry = rowData.y/scaleSize
+                let rh = rowData.height/scaleSize
+                let rx = rowData.x/scaleSize
+                let rw = rowData.width/scaleSize
+         
+                if (cy >= ry && cy <= ry + rh) {
+                  if (cx >= rx && cx <= rx + rw) {
                     //判断位于第几个字符，求出光标的开始位置
                     let endI = startIndex + rowData.text.length;
                     for (let x = startIndex; x < endI; x++) {
-                      let fx = shadowControl.render.textUsedArea[0].textPosCache[x].x;
+                      let fx = shadowControl.render.textUsedArea[0].textPosCache[x].x/scaleSize;
 
-                      let lx = x < endI - 1 ? shadowControl.render.textUsedArea[0].textPosCache[x + 1].x : rowData.x + rowData.width
+                      let lx = x < endI - 1 ? shadowControl.render.textUsedArea[0].textPosCache[x + 1].x/scaleSize : rx + rw
                       let halfW = (lx - fx) / 2
                       if (cx >= fx && cx < lx) {
                         if (cx > fx + halfW) {
