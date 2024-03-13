@@ -3,29 +3,38 @@
     <div class="header"></div>
     <div class="content">
       <div class="part">
-        <div class="button-v" @click="newFile" title="新建">
-          <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-a-ziyuan490"></use>
-          </svg>
-          <div class="text">新建</div>
-        </div>
-      </div>
-      <div class="part">
         <div class="button-h">
+          <div class="button" @click="newFile" title="新建">
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-a-ziyuan490"></use>
+            </svg>
+            <div class="text">新建</div>
+          </div>
           <div class="button" @click="openFile" title="打开">
             <svg class="icon" aria-hidden="true">
               <use xlink:href="#icon-a-ziyuan489"></use>
             </svg>
             <div class="text">打开</div>
           </div>
+        </div>
+      </div>
+      <div class="part">
+        <div class="button-h">
           <div class="button" title="导入">
             <svg class="icon" aria-hidden="true">
               <use xlink:href="#icon-a-ziyuan371"></use>
             </svg>
             <div class="text">导入</div>
           </div>
+          <div class="button" @click="showExportDialog($event)" title="导出">
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-a-ziyuan423"></use>
+            </svg>
+            <div class="text">导出</div>
+          </div>
         </div>
       </div>
+      
       <div class="part">
         <div class="button-v" @click="save" title="保存">
           <svg class="icon" aria-hidden="true">
@@ -51,6 +60,7 @@ import DDeiFileState from "../../js/enums/file-state";
 import DDeiFile from "../../js/file";
 import DDeiStage from "../../../framework/js/models/stage";
 import DDeiSheet from "../../js/sheet";
+import DDeiEditorUtil from "../../js/util/editor-util.ts";
 
 export default {
   name: "DDei-Editor-File-Info",
@@ -74,6 +84,25 @@ export default {
     this.file = this.editor?.files[this.editor?.currentFileIndex];
   },
   methods: {
+
+    showExportDialog(evt: Event) {
+      let srcElement = evt.currentTarget;
+      DDeiEditorUtil.showOrCloseDialog("export_option_dialog", {
+        callback: {
+        },
+        mode:1,
+        group: "top-dialog",
+        background: "white",
+        opacity: "1%",
+        event: -1
+      }, {}, srcElement)
+
+      if (DDeiEditor.ACTIVE_INSTANCE.tempDialogData && DDeiEditor.ACTIVE_INSTANCE.tempDialogData["export_option_dialog"]) {
+        this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
+      } else {
+        this.editor.changeState(DDeiEditorState.DESIGNING);
+      }
+    },
     /**
      * 保存
      * @param evt

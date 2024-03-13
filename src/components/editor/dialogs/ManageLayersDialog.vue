@@ -39,8 +39,8 @@
               @mousedown="changeLayer(index, $event)" :checked="currentStage?.layerIndex === index" autocomplete="off" />
 
             <svg class="icon" @click="printOrNoPrintLayer(layer)">
-              <use xlink:href="#icon-a-ziyuan500" v-if="layer.print"></use>
-              <use xlink:href="#icon-a-ziyuan501" v-if="!layer.print"></use>
+              <use xlink:href="#icon-a-ziyuan500" v-if="!layer.print"></use>
+              <use xlink:href="#icon-a-ziyuan501" v-if="layer.print"></use>
             </svg>
 
           </div>

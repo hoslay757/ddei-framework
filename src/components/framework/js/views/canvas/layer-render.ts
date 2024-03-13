@@ -86,7 +86,7 @@ class DDeiLayerCanvasRender {
   /**
    * 绘制图形
    */
-  drawShape(): void {
+  drawShape(inRect:boolean = true): void {
     //只有当显示时才绘制图层
     if (this.model.display || this.model.tempDisplay) {
       if (!this.viewBefore || this.viewBefore(
@@ -97,7 +97,7 @@ class DDeiLayerCanvasRender {
         null
       )) {
         //绘制子元素
-        this.drawChildrenShapes();
+        this.drawChildrenShapes(inRect);
         //绘制操作点
         this.drawOpPoints();
         //绘制操作线
@@ -293,7 +293,7 @@ class DDeiLayerCanvasRender {
   /**
    * 绘制子元素
    */
-  drawChildrenShapes(): void {
+  drawChildrenShapes(inRect:boolean = true): void {
     if (this.model.models) {
       let canvas = this.ddRender.getCanvas();
       //获取全局缩放比例
@@ -306,7 +306,7 @@ class DDeiLayerCanvasRender {
       this.model.midList.forEach(key => {
         let item = this.model.models.get(key);
         //判定控件是否在绘制区间，如果在则绘制
-        if (item?.isInRect(x, y, x1, y1)) {
+        if (!inRect || item?.isInRect(x, y, x1, y1)) {
           item.render.drawShape();
         }
       });

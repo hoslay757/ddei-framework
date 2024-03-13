@@ -2711,7 +2711,7 @@ class DDeiUtil {
   /**
    * 将当前实例的stage按一定大小比例剪切为多张图片
    */
-  static async cutStageToImages(ddInstance, stage, width, height, sx, sy, ex, ey, scaleSize = 2) {
+  static async cutStageToImages(ddInstance, stage, width, height, sx, sy, ex, ey, scaleSize = 2, bg = false, mask = false, autoScale = false) {
     return new Promise((resolve, rejected) => {
       try {
         //转换为图片
@@ -2727,37 +2727,79 @@ class DDeiUtil {
         ddInstance.render.tempCanvas = canvas;
         ddInstance.render.ratio = rat1
         //所选择区域的最大范围
-        let models = stage.getLayerModels();
-        let lineOffset = models[0].render.getCachedValue("border.width");
-        let addWidth = 0;
-        if (lineOffset) {
-          addWidth = lineOffset * rat1
-          if (models.length > 1) {
-            addWidth = lineOffset * 2
-          }
-        }
+
 
         let containerDiv = document.getElementById("ddei-cut-img-div")
         canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
-        canvas.setAttribute("width", width * rat1 + addWidth)
-        canvas.setAttribute("height", height * rat1 + addWidth)
+        canvas.setAttribute("width", width * rat1)
+        canvas.setAttribute("height", height * rat1)
 
 
         containerDiv.appendChild(canvas)
         let imagesBase64 = []
+        let forceBreak = false;
         //输出canvas
-        for (let i = sy; ey > i || Math.abs((ey - height) - i) <= 0.01; i = i + height) {
-          for (let j = sx; ex > j || Math.abs((ex - width) - j) <= 0.01; j = j + width) {
+        for (let i = sy; (ey > i || Math.abs((ey - height) - i) <= 0.01) && !forceBreak; i = i + height) {
+          for (let j = sx; (ex > j || Math.abs((ex - width) - j) <= 0.01) && !forceBreak; j = j + width) {
             ctx.save();
-            ctx.clearRect(0, 0, width * rat1 + addWidth, height * rat1 + addWidth)
-            ctx.translate(-j * rat1, -i * rat1)
-            ctx?.scale(1 / stageRatio, 1 / stageRatio)
-            models.forEach(item => {
-              item.render.drawShape();
-            })
+            ctx.clearRect(0, 0, width * rat1, height * rat1)
+            ctx.translate(-j * rat1 , -i * rat1 )
+
+            //输出背景
+            for (let li = stage.layers.length - 1; li >= 0; li--) {
+              if (stage.layers[li].display == 1 && stage.layers[li].print != false) {
+                //输出背景
+                if (bg) {
+                  stage.layers[li].render.drawBackground(sx * rat1, sy * rat1, (ex - sx) * rat1, (ey - sy) * rat1);
+                }
+              }
+            }
+            ctx.restore();
+            ctx.save();
+
+
+            //强制缩放
+            if (autoScale) {
+
+              //强制缩放，让所有内容都输出到当前单张纸张大小
+              let models = stage.getLayerModels()
+              let outRect = DDeiAbstractShape.getOutRectByPV(models)
+              let scaleW = outRect.width/stageRatio  / width
+              let scaleH = outRect.height/stageRatio  / height
+              ctx.scale(1 / scaleW , 1 / scaleH )
+              ctx.translate(-outRect.x * rat1/stageRatio , -outRect.y * rat1/stageRatio )
+
+              
+
+              //强制缩放只需要输出一次
+              forceBreak = true
+            }else{
+              ctx.translate(-j * rat1 , -i * rat1 )
+            }
+           
+            ctx.scale(1 / stageRatio , 1 / stageRatio )
+            //输出各层的控件
+            let hasPrint = true
+            for (let li = stage.layers.length - 1; li >= 0; li--) {
+              if (stage.layers[li].display == 1 && stage.layers[li].print != false) {
+
+                stage.layers[li].render.drawShape(false);
+                hasPrint = true;
+              }
+            }
+
             ctx.restore()
-            let base64 = canvas.toDataURL("image/png")
-            imagesBase64.push(base64)
+            //输出水印
+            if (mask) {
+              ctx.save()
+              ctx.scale(1 / stageRatio , 1 / stageRatio )
+              stage.render.drawMark()
+              ctx.restore()
+            }
+            if (hasPrint) {
+              let base64 = canvas.toDataURL("image/png")
+              imagesBase64.push(base64)
+            }
           }
         }
         ddInstance.render.ratio = oldRat1
@@ -2776,12 +2818,14 @@ class DDeiUtil {
   /**
    * 根据属性获取纸张大小
    */
-  static getPaperSize(stage: DDeiStage): object {
+  static getPaperSize(stage: DDeiStage, paperType: string): object {
     //纸张的像素大小
     let paperWidth = 0;
     let paperHeight = 0;
     //获取纸张大小的定义
-    let paperType = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.type", true);
+    if (!paperType) {
+      paperType = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.type", true);
+    }
     let paperConfig = DDeiConfig.PAPER[paperType];
     if (paperConfig) {
       let rat1 = stage.render.ddRender.ratio;

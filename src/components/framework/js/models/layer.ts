@@ -23,7 +23,7 @@ class DDeiLayer {
     this.display = props.display || props.display == 0 ? props.display : 1;
     this.tempDisplay = props.tempDisplay ? props.tempDisplay : false;
     this.lock = props.lock ? props.lock : false;
-    this.print = props.print ? props.print : false;
+    this.print = props.print ? props.print : true;
     this.unicode = props.unicode ? props.unicode : DDeiUtil.getUniqueCode()
     this.bg = props.bg
 

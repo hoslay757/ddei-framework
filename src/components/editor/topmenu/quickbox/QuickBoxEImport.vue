@@ -13,9 +13,9 @@
        <div class="part">
         <div class="button-v" @click="showExportDialog($event)">
           <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-a-ziyuan423"></use>
+            <use xlink:href="#icon-a-ziyuan501"></use>
           </svg>
-          <div class="text">导出</div>
+          <div class="text">打印</div>
         </div>
       </div>
       <div class="part">
@@ -82,6 +82,7 @@ export default {
       DDeiEditorUtil.showOrCloseDialog("export_option_dialog", {
         callback: {
         },
+        mode:2,
         group: "top-dialog",
         background: "white",
         opacity: "1%",
@@ -153,55 +154,7 @@ export default {
       }
     },
 
-    /**
-     * 导出pdf
-     */
-    async exportFile(){
-      let file = this.editor?.files[this.editor?.currentFileIndex];
-        if (file) {
-          let stage = this.editor?.ddInstance.stage
-          //获取纸张信息
-          let paperType = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.type", true);
-          let paperDirect = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.direct", true);
-          let paperConfig = DDeiConfig.PAPER[paperType];
-          //获取缩放比例
-          let paperWidth,paperHeight
-          if (paperDirect == 1 || paperDirect == '1') {
-            paperWidth = paperConfig.width
-            paperHeight = paperConfig.height
-          } else {
-            paperHeight = paperConfig.width
-            paperWidth = paperConfig.height
-          }
-          let pdf = new JsPDF(paperDirect == 2 || paperDirect == '2' ? 'l':'' , paperConfig.unit, paperConfig.code)
-          //剪切成多张图片
-          let first = true
-          let sheets = file.sheets
-          let scaleSize = 2
-          for(let i = 0;i < sheets.length;i++){
-            let sheet = sheets[i]
-            //计算纸张的有效区域大小
-            let paperArea = sheet.stage.getPaperArea()
-            let stageImages = await DDeiUtil.cutStageToImages(this.editor.ddInstance,sheet.stage, paperArea.unitWidth,paperArea.unitHeight,paperArea.x,paperArea.y,paperArea.x+paperArea.w,paperArea.y+paperArea.h,scaleSize)
-            for(let k = 0;k < stageImages.length;k++){
-              let imageBase64 = stageImages[k]
-              if(imageBase64){
-                if(!first){
-                  pdf.addPage()
-                }
-                pdf.addImage(imageBase64, 'PNG', 0, 0, paperWidth,paperHeight)
-                first = false
-              }
-            }
-          }
-
-          let exportName = file.name
-          if(file.version){
-            exportName += "-v"+file.version+".pdf"
-          }
-          pdf.save(exportName)
-        }
-    }
+   
   },
 };
 </script>
