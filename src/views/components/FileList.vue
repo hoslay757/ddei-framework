@@ -483,6 +483,7 @@ export default {
   white-space: nowrap;
   text-overflow: ellipsis;
   margin-right: 8px;
+  font-size:16px;
 }
 
 .ddei_home_fileview_file_version {

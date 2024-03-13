@@ -2743,7 +2743,7 @@ class DDeiUtil {
           for (let j = sx; (ex > j || Math.abs((ex - width) - j) <= 0.01) && !forceBreak; j = j + width) {
             ctx.save();
             ctx.clearRect(0, 0, width * rat1, height * rat1)
-            ctx.translate(-j * rat1 , -i * rat1 )
+            ctx.translate(-j * rat1, -i * rat1)
 
             //输出背景
             for (let li = stage.layers.length - 1; li >= 0; li--) {
@@ -2764,25 +2764,28 @@ class DDeiUtil {
               //强制缩放，让所有内容都输出到当前单张纸张大小
               let models = stage.getLayerModels()
               let outRect = DDeiAbstractShape.getOutRectByPV(models)
-              let scaleW = outRect.width/stageRatio  / width
-              let scaleH = outRect.height/stageRatio  / height
-              ctx.scale(1 / scaleW , 1 / scaleH )
-              ctx.translate(-outRect.x * rat1/stageRatio , -outRect.y * rat1/stageRatio )
+              let scaleW = outRect.width / stageRatio / width
+              let scaleH = outRect.height / stageRatio / height
+              ctx.scale(1 / scaleW, 1 / scaleH)
+              ctx.translate(-outRect.x * rat1 / stageRatio, -outRect.y * rat1 / stageRatio)
 
-              
+
 
               //强制缩放只需要输出一次
               forceBreak = true
-            }else{
-              ctx.translate(-j * rat1 , -i * rat1 )
+            } else {
+              ctx.translate(-j * rat1, -i * rat1)
             }
-           
-            ctx.scale(1 / stageRatio , 1 / stageRatio )
+
+            ctx.scale(1 / stageRatio, 1 / stageRatio)
             //输出各层的控件
             let hasPrint = true
+            stage.render.selector.resetState()
             for (let li = stage.layers.length - 1; li >= 0; li--) {
               if (stage.layers[li].display == 1 && stage.layers[li].print != false) {
-
+                stage.layers[li].opPoints = []
+                delete stage.layers[li].opLine
+                stage.layers[li].shadowControls = []
                 stage.layers[li].render.drawShape(false);
                 hasPrint = true;
               }
@@ -2792,7 +2795,7 @@ class DDeiUtil {
             //输出水印
             if (mask) {
               ctx.save()
-              ctx.scale(1 / stageRatio , 1 / stageRatio )
+              ctx.scale(1 / stageRatio, 1 / stageRatio)
               stage.render.drawMark()
               ctx.restore()
             }
