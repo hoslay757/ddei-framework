@@ -632,6 +632,15 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       }
     })
     this.createTempShape()
+    let oldRat1 = this.ddRender.ratio
+    //获取缩放比例
+    if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
+
+      let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
+      let rat1 = oldRat1 * scaleSize
+      //去掉当前被编辑控件的边框显示
+      this.ddRender.ratio = rat1
+    }
     rendList.forEach(c => {
       if (c == this.model) {
         //根据pvss绘制边框
@@ -639,10 +648,15 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       } else {
         //绘制组合控件的内容
         c.render.drawBorder(tempShape, true)
-        c.render.drawSelfToCanvas(true);
+        c.render.drawSelfToCanvas(1);
       }
     })
-    this.drawSelfToCanvas();
+    if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
+      this.ddRender.ratio = oldRat1
+      delete this.ddRender.oldRatio
+    }
+    this.drawSelfToCanvas(0);
+
   }
 
 
