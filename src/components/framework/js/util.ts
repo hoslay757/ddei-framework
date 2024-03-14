@@ -360,6 +360,29 @@ class DDeiUtil {
   }
 
   /**
+   * 返回空间模型在dom下的绝对坐标
+   * @param element 
+   */
+  static getModelsDomAbsPosition(models: DDeiAbstractShape[]): object {
+    if (models?.length > 0) {
+      let outRect = DDeiAbstractShape.getOutRectByPV(models);
+      let wpv = models[0].stage.wpv
+      let domEle = models[0].stage.ddInstance.render.realCanvas.parentElement
+      let canvasPos = DDeiUtil.getDomAbsPosition(domEle)
+      //返回结果
+      outRect.left = canvasPos.left + outRect.x + wpv.x
+      outRect.top = canvasPos.top + outRect.y + wpv.y
+      outRect.cLeft = canvasPos.left
+      outRect.cTop = canvasPos.top
+      outRect.cWidth = domEle.clientWidth
+      outRect.cHeight = domEle.clientHeight
+      return outRect
+    } else {
+      return null
+    }
+  }
+
+  /**
    * 设置样式属性，自动创建不存在的层级
    * @param model 模型
    * @param paths 样式路径,支持传入多个

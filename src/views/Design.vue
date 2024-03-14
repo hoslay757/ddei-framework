@@ -40,12 +40,14 @@ import { shortlinklogin } from "@/lib/api/shortlink";
 import Cookies from "js-cookie";
 import DDeiEditor from "../components/editor/Editor.vue";
 import DDeiEditorUtil from "@/components/editor/js/util/editor-util";
+import DDeiEditorCls from "@/components/editor/js/editor";
 import DDei from "@/components/framework/js/ddei";
 import DDeiUtil from "@/components/framework/js/util";
 
 import FONTS from "@/components/editor/configs/fonts/font"
 import { groupOriginDefinies, controlOriginDefinies } from "@/components/editor/configs/toolgroup";
 import DDeiEditorEnumBusCommandType from "@/components/editor/js/enums/editor-command-type";
+import DDeiEditorState from "@/components/editor/js/enums/editor-state";
 
 export default {
   props: {},
@@ -59,6 +61,7 @@ export default {
         EVENT_SAVE_FILE: this.saveFile,
         EVENT_GOBACK_FILE_LIST: this.goBackFileList,
         EVENT_PUBLISH_FILE: this.publishFile,
+        EVENT_CONTROL_SELECT_AFTER: this.showQuickEditPicker,
         // AC_DESIGN_SELECT: false,
         // AC_DESIGN_DRAG: false,
         // AC_DESIGN_EDIT: false,
@@ -70,7 +73,6 @@ export default {
         // AC_DESIGN_EDIT_DDeiRectangle: true,
         // AC_DESIGN_EDIT_DDeiRectangle_text: false,
         // EVENT_CONTROL_SELECT_BEFORE: this.selectBefore,
-        // EVENT_CONTROL_SELECT_AFTER: this.selectAfter,
         // EVENT_CONTROL_CREATE_BEFORE: this.createBefore,
         // EVENT_CONTROL_CREATE_AFTER: this.createAfter,
         // EVENT_CONTROL_DRAG_AFTER: this.dragAfter,
@@ -250,10 +252,39 @@ export default {
     },
 
     /**
-     * 选择后
+     * 选择后，在选择控件的合适位置显示快捷编辑框
      */
-    selectAfter() {
-      console.log("选择后");
+   showQuickEditPicker(operateType,models,propName,ddInstance,evt) { 
+      //隐藏弹出框
+      DDeiEditorUtil.closeDialog("canvas_quick_dialog")
+      
+      //显示弹出框
+      if(models?.length > 0){
+        let height = 100;
+        //计算弹出框的显示位置，这里需要把模型的坐标转换为dom的坐标
+        let modelPos = DDeiUtil.getModelsDomAbsPosition(models)
+        let left = modelPos.left+20
+        let top = modelPos.top
+        if(modelPos.top - height <= modelPos.cTop){
+          if(modelPos.height > 400){
+            top = top+height+20
+          }else{
+            top = top+modelPos.height+20;
+          }
+        }else{
+          top = top-height;
+        }
+        if(top < 0){
+          top = modelPos.cTop+modelPos.cHeight/2
+        }
+        
+
+        DDeiEditorUtil.showDialog("canvas_quick_dialog", {
+          group: "canvas-pop"
+        }, { type: 99,left:left,top:top ,hiddenMask:true},null,true)
+        DDeiEditorCls.ACTIVE_INSTANCE.changeState(DDeiEditorState.DESIGNING);
+        
+      }
     },
     /**
      * 打开文件

@@ -485,7 +485,6 @@ export default {
      * 准备拖拽
      */
     mouseDown(e: Event) {
-
       //判断落点是否在某个区域的拖拽区附近
       let frameLeftElement = document.getElementById("ddei_editor_frame_left");
       let frameRightElement = document.getElementById(

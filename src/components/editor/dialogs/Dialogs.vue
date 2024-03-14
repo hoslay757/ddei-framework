@@ -19,6 +19,8 @@
   <UserRegistryDialog v-if="refresh_user_registry_dialog"></UserRegistryDialog>
   <CollFileConfirmDialog v-if="refresh_coll_file_confirm_dialog"></CollFileConfirmDialog>
   <ExportOptionDialog v-if="refresh_export_option_dialog"></ExportOptionDialog>
+  <CanvasQuickDialog v-if="refresh_canvas_quick_dialog"></CanvasQuickDialog>
+
 </template>
 
 <script lang="ts">
@@ -41,6 +43,7 @@ import CreateShareDialog from "./CreateShareDialog.vue";
 import ExportOptionDialog from "./ExportOptionDialog.vue";
 import UserRegistryDialog from "./UserRegistryDialog.vue";
 import CollFileConfirmDialog from "./CollFileConfirmDialog.vue";
+import CanvasQuickDialog from "./CanvasQuickDialog.vue";
 import DDeiEditorUtil from "../js/util/editor-util.ts";
 
 export default {
@@ -69,7 +72,8 @@ export default {
       refresh_create_share_dialog: true,
       refresh_user_registry_dialog: true,
       refresh_coll_file_confirm_dialog: true,
-      refresh_export_option_dialog: true
+      refresh_export_option_dialog: true,
+      refresh_canvas_quick_dialog: true
     };
   },
   computed: {},
@@ -91,7 +95,9 @@ export default {
     SelectBorderDashDialog,
     CreateShareDialog,
     UserRegistryDialog,
-    CollFileConfirmDialog
+    CollFileConfirmDialog,
+    ExportOptionDialog,
+    CanvasQuickDialog
   },
   watch: {},
   created() { },

@@ -472,39 +472,55 @@ class DDeiEditorUtil {
    * @param pos 位置信息
    * @param el 事件的➗元素
    */
-  static showDialog(id: string, data: object, pos: object, el: object) {
-    if (!DDeiEditor.ACTIVE_INSTANCE.tempDialogData) {
+  static showDialog(id: string, data: object, pos: object, el: object, isPop: boolean = false) {
+    if (!isPop && !DDeiEditor.ACTIVE_INSTANCE.tempDialogData) {
       DDeiEditor.ACTIVE_INSTANCE.tempDialogData = {}
+    } else if (isPop && !DDeiEditor.ACTIVE_INSTANCE.tempPopData) {
+      DDeiEditor.ACTIVE_INSTANCE.tempPopData = {}
     }
     //查看是否有同一group的弹出框，如果有则关闭同一group的其它弹出框
     if (data.group) {
-      for (let oid in DDeiEditor.ACTIVE_INSTANCE.tempDialogData) {
+      let loopData
+      if (isPop) {
+        loopData = DDeiEditor.ACTIVE_INSTANCE.tempPopData
+      } else {
+        loopData = DDeiEditor.ACTIVE_INSTANCE.tempDialogData
+      }
+      for (let oid in loopData) {
         if (oid != id) {
-          let otherDialogData = DDeiEditor.ACTIVE_INSTANCE.tempDialogData[oid]
+          let otherDialogData = loopData[oid]
           if (otherDialogData && otherDialogData.group == data.group) {
             DDeiEditorUtil.closeDialog(oid)
           }
         }
       }
+
     }
     //记录临时变量
-    DDeiEditor.ACTIVE_INSTANCE.tempDialogData[id] = data
+    if (isPop) {
+      DDeiEditor.ACTIVE_INSTANCE.tempPopData[id] = data
+    } else {
+      DDeiEditor.ACTIVE_INSTANCE.tempDialogData[id] = data
+      DDeiEditor.ACTIVE_INSTANCE.changeState(DDeiEditorState.PROPERTY_EDITING);
+    }
+
     //修改编辑器状态为快捷编辑中
-    DDeiEditor.ACTIVE_INSTANCE.changeState(DDeiEditorState.PROPERTY_EDITING);
     DDeiEditorUtil.dialogViewer.forceRefreshDialog(id)
     setTimeout(() => {
-      let backEle = document.getElementById("dialog_background_div");
-      if (data.background) {
-        backEle.style.background = data.background;
-        backEle.style.display = "block";
-        if (data.opacity) {
-          backEle.style.opacity = data.opacity;
+      if (!pos?.hiddenMask) {
+        let backEle = document.getElementById("dialog_background_div");
+        if (data.background) {
+          backEle.style.background = data.background;
+          backEle.style.display = "block";
+          if (data.opacity) {
+            backEle.style.opacity = data.opacity;
+          }
         }
-      }
-      if (data.event == -1) {
-        backEle.style.pointerEvents = "auto";
-      } else {
-        backEle.style.pointerEvents = "";
+        if (data.event == -1) {
+          backEle.style.pointerEvents = "auto";
+        } else {
+          backEle.style.pointerEvents = "";
+        }
       }
       let dialog = document.getElementById(id);
       dialog.style.display = "block";
@@ -519,6 +535,11 @@ class DDeiEditorUtil {
       if (pos?.type) {
         let left, top
         switch (pos.type) {
+          //自由设置位置
+          case 99: {
+            left = pos.left
+            top = pos.top
+          } break;
           //基于触发元素的底部
           case 2: {
             let absPos = DDeiUtil.getDomAbsPosition(el)
@@ -564,11 +585,14 @@ class DDeiEditorUtil {
    * 关闭弹出框
    * @param id 
    */
-  static closeDialog(id: string) {
+  static closeDialog(id: string, isPop: boolean = false) {
     let dialog = document.getElementById(id);
     dialog.style.display = "none";
-    if (DDeiEditor.ACTIVE_INSTANCE.tempDialogData) {
+
+    if (!isPop && DDeiEditor.ACTIVE_INSTANCE.tempDialogData) {
       DDeiEditor.ACTIVE_INSTANCE.tempDialogData[id] = null
+    } else if (isPop && DDeiEditor.ACTIVE_INSTANCE.tempPopData) {
+      DDeiEditor.ACTIVE_INSTANCE.tempPopData[id] = null
     }
     let backEle = document.getElementById("dialog_background_div");
     backEle.style.background = "none"
@@ -576,11 +600,20 @@ class DDeiEditorUtil {
     DDeiEditor.ACTIVE_INSTANCE.changeState(DDeiEditorState.DESIGNING);
   }
 
-  static closeDialogs(groups: string[]) {
-    for (let oid in DDeiEditor.ACTIVE_INSTANCE.tempDialogData) {
-      let otherDialogData = DDeiEditor.ACTIVE_INSTANCE.tempDialogData[oid]
-      if (otherDialogData && (groups.indexOf(otherDialogData.group) != -1 || !groups || groups.length == 0)) {
-        DDeiEditorUtil.closeDialog(oid)
+  static closeDialogs(groups: string[], isPop: boolean = false) {
+    if (isPop) {
+      for (let oid in DDeiEditor.ACTIVE_INSTANCE.tempPopData) {
+        let otherDialogData = DDeiEditor.ACTIVE_INSTANCE.tempPopData[oid]
+        if (otherDialogData && (groups.indexOf(otherDialogData.group) != -1 || !groups || groups.length == 0)) {
+          DDeiEditorUtil.closeDialog(oid, isPop)
+        }
+      }
+    } else {
+      for (let oid in DDeiEditor.ACTIVE_INSTANCE.tempDialogData) {
+        let otherDialogData = DDeiEditor.ACTIVE_INSTANCE.tempDialogData[oid]
+        if (otherDialogData && (groups.indexOf(otherDialogData.group) != -1 || !groups || groups.length == 0)) {
+          DDeiEditorUtil.closeDialog(oid, isPop)
+        }
       }
     }
   }
@@ -592,13 +625,20 @@ class DDeiEditorUtil {
    * @param pos 
    * @param el 
    */
-  static showOrCloseDialog(id: string, data: object, pos: object, el: object) {
-    if (DDeiEditor.ACTIVE_INSTANCE.tempDialogData && DDeiEditor.ACTIVE_INSTANCE.tempDialogData[id]) {
-      DDeiEditorUtil.closeDialog(id)
+  static showOrCloseDialog(id: string, data: object, pos: object, el: object, isPop: boolean = false) {
+    if (!isPop && DDeiEditor.ACTIVE_INSTANCE.tempDialogData && DDeiEditor.ACTIVE_INSTANCE.tempDialogData[id]) {
+      DDeiEditorUtil.closeDialog(id, isPop)
+    } else if (isPop && DDeiEditor.ACTIVE_INSTANCE.tempPopData && DDeiEditor.ACTIVE_INSTANCE.tempPopData[id]) {
+      DDeiEditorUtil.closeDialog(id, isPop)
     } else {
-      DDeiEditorUtil.showDialog(id, data, pos, el)
+      DDeiEditorUtil.showDialog(id, data, pos, el, isPop)
     }
   }
+
+
+
+
+
 }
 
 export default DDeiEditorUtil

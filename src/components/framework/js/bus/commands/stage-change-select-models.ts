@@ -3,6 +3,8 @@ import DDeiEnumBusCommandType from '../../enums/bus-command-type';
 import DDeiEnumOperateState from '../../enums/operate-state';
 import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
+import DDeiUtil from '../../util';
+import DDeiEnumOperateType from '../../enums/operate-type';
 /**
  * 改变Stage已选控件的总线Command
  */
@@ -42,6 +44,10 @@ class DDeiBusCommandStageChangeSelectModels extends DDeiBusCommand {
       }
       let selectedModels = optContainer.getSelectedModels();
       stage.changeSelecetdModels(selectedModels);
+      let selectAfter = DDeiUtil.getConfigValue("EVENT_CONTROL_SELECT_AFTER", bus.ddInstance);
+      if (selectAfter) {
+        selectAfter(DDeiEnumOperateType.SELECT, Array.from(selectedModels.values()), null, bus.ddInstance, evt);
+      }
       return true;
     }
   }
@@ -56,6 +62,7 @@ class DDeiBusCommandStageChangeSelectModels extends DDeiBusCommand {
     bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
       parts: ["topmenu"],
     });
+
     return true;
   }
 

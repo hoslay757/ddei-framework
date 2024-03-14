@@ -779,6 +779,7 @@ class DDeiLayerCanvasRender {
             includedModels.forEach((model, key) => {
               pushDatas.push({ id: model.id, value: DDeiEnumControlState.SELECTED });
             });
+
             this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, pushDatas, evt);
             this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.StageChangeSelectModels);
           } else {
