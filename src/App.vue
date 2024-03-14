@@ -34,6 +34,7 @@ export default {
 <style>
 body {
   display: block;
+  overflow-y: hidden;
 }
 
 #app {
