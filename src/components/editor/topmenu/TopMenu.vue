@@ -7,7 +7,7 @@
       <div class="ddei_editor_topmenu_quickbox_group g2" v-show="file?.extData?.owner == 1">
         <QuickBoxFileInfo></QuickBoxFileInfo>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group g2" v-show="file?.extData?.owner == 0">
+      <div class="ddei_editor_topmenu_quickbox_group g2_share" v-show="file?.extData?.owner == 0">
         <QuickBoxShare></QuickBoxShare>
       </div>
       <div class="ddei_editor_topmenu_quickbox_group g3">
@@ -138,6 +138,10 @@ export default {
 
 .g2 {
   flex: 0 1 172px
+}
+
+.g2_share {
+  flex: 0 1 250px
 }
 
 .g3 {

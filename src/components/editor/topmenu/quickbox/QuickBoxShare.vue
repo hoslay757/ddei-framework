@@ -3,12 +3,12 @@
     <div class="header"></div>
     <div class="content">
       <div class="part">
-        <div :class="{ 'button-v': sslink?.can_down == 1, 'button-v-disabled': sslink?.can_down != 1 }"
-          @click="sslink?.can_down == 1 && download($event)" title="下载">
+        <div :class="{ 'button-v': sslink?.can_edit, 'button-v-disabled': !sslink?.can_edit }"
+          @click="sslink?.can_edit && save($event)" title="保存">
           <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-a-ziyuan424"></use>
+            <use xlink:href="#icon-a-ziyuan487"></use>
           </svg>
-          <div class="text">下载</div>
+          <div class="text">保存</div>
         </div>
       </div>
       <div class="part">
@@ -21,12 +21,30 @@
         </div>
       </div>
       <div class="part">
-        <div :class="{ 'button-v': sslink?.can_edit, 'button-v-disabled': !sslink?.can_edit }"
-          @click="sslink?.can_edit && save($event)" title="保存">
+        <div :class="{ 'button-v': sslink?.can_down == 1, 'button-v-disabled': sslink?.can_down != 1 }"
+          @click="sslink?.can_down == 1 && download($event)" title="下载">
           <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-a-ziyuan487"></use>
+            <use xlink:href="#icon-a-ziyuan424"></use>
           </svg>
-          <div class="text">保存</div>
+          <div class="text">下载</div>
+        </div>
+      </div>
+      <div class="part">
+        <div :class="{ 'button-v': sslink?.can_coll, 'button-v-disabled': !sslink?.can_coll }"
+          @click="sslink?.can_down && showExportDialog($event,1)" title="导出">
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan423"></use>
+          </svg>
+          <div class="text">导出</div>
+        </div>
+      </div>
+      <div class="part">
+        <div :class="{ 'button-v': sslink?.can_coll, 'button-v-disabled': !sslink?.can_coll }"
+          @click="sslink?.can_down && showExportDialog($event,2)" title="打印">
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan501"></use>
+          </svg>
+          <div class="text">打印</div>
         </div>
       </div>
     </div>
@@ -81,6 +99,26 @@ export default {
     this.file = file
   },
   methods: {
+
+    showExportDialog(evt: Event,mode) {
+      let srcElement = evt.currentTarget;
+      DDeiEditorUtil.showOrCloseDialog("export_option_dialog", {
+        callback: {
+        },
+        mode:mode,
+        group: "top-dialog",
+        background: "white",
+        opacity: "1%",
+        event: -1
+      }, {}, srcElement)
+
+      if (DDeiEditor.ACTIVE_INSTANCE.tempDialogData && DDeiEditor.ACTIVE_INSTANCE.tempDialogData["export_option_dialog"]) {
+        this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
+      } else {
+        this.editor.changeState(DDeiEditorState.DESIGNING);
+      }
+    },
+
     /**
      * 保存
      * @param evt
