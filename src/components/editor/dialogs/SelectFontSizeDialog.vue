@@ -5,7 +5,7 @@
         <div class="group_content">
           <div
             :class="{ 'itembox': true, 'itembox_selected': item.value == value, 'itembox_deleted': item.deleted, 'itembox_disabled': item.disabled, 'itembox_underline': item.underline, 'itembox_bold': item.bold }"
-            v-for="item in dataSource" @click="!item.disabled && ok(item.value)" :title="item.desc">
+            v-for="item in dataSource" @dblclick="!item.disabled && ok(item.value)" @click="!item.disabled && select(item.value)" :title="item.desc">
             <div class="itembox_text" v-if="item.text" :style="{ 'font-family': item.fontFamily }">{{ item.text }}</div>
           </div>
         </div>
@@ -16,7 +16,7 @@
 
 <script lang="ts">
 import DDeiEditor from "../js/editor.ts";
-import DDeiEditorUtil from "../js/util/editor-util.ts";
+import DDeiEditorUtil from "../js/util/editor-util.js";
 
 export default {
   name: "DDei-Editor-Dialog-SelectFontSize",
@@ -53,6 +53,15 @@ export default {
       if (this.editor?.tempDialogData[this.dialogId]?.callback?.ok) {
         this.editor?.tempDialogData[this.dialogId]?.callback?.ok(data);
       }
+      DDeiEditorUtil.closeDialog("selectfontsize_dialog")
+    },
+
+    select(data) {
+      this.value = data
+      if (this.editor?.tempDialogData[this.dialogId]?.callback?.ok) {
+        this.editor?.tempDialogData[this.dialogId]?.callback?.ok(data);
+      }
+      
     },
   }
 };

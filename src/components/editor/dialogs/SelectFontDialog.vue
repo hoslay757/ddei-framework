@@ -5,7 +5,7 @@
         <div class="group_content">
           <div
             :class="{ 'item': true, 'item_selected': item.value == value, 'item_deleted': item.deleted, 'item_disabled': item.disabled, 'item_underline': item.underline, 'item_bold': item.bold }"
-            v-for="item in dataSource" @click="!item.disabled && ok(item.value)" :title="item.desc">
+            v-for="item in dataSource" @dblclick="!item.disabled && ok(item.value)" @click="!item.disabled && select(item.value)" :title="item.desc">
             <div class="text" v-if="item.text" :style="{ 'font-family': item.fontFamily }">{{ item.text }}</div>
           </div>
         </div>
@@ -53,6 +53,15 @@ export default {
       if (this.editor?.tempDialogData[this.dialogId]?.callback?.ok) {
         this.editor?.tempDialogData[this.dialogId]?.callback?.ok(data);
       }
+      DDeiEditorUtil.closeDialog("selectfont_dialog")
+    },
+
+    select(data) {
+      this.value = data
+      if (this.editor?.tempDialogData[this.dialogId]?.callback?.ok) {
+        this.editor?.tempDialogData[this.dialogId]?.callback?.ok(data);
+      }
+      
     },
   }
 };

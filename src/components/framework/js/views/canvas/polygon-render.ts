@@ -1259,8 +1259,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         //绘制光标和选中效果
         if (tempIdx >= curSIdx && tempIdx < curEIdx) {
           ctx.save();
-          ctx.fillStyle = "#017fff";
-          ctx.globalAlpha = 0.4
+          ctx.fillStyle = "#97bdf2";
+          ctx.globalAlpha = 1
           ctx.fillRect(usedX - 0.5, y1 + ofY, width + 1, height)
           ctx.restore();
         }
