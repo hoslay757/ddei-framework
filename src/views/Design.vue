@@ -255,35 +255,39 @@ export default {
      * 选择后，在选择控件的合适位置显示快捷编辑框
      */
    showQuickEditPicker(operateType,models,propName,ddInstance,evt) { 
-      //隐藏弹出框
-      DDeiEditorUtil.closeDialog("canvas_quick_dialog")
-      
-      //显示弹出框
-      if(models?.length > 0){
-        let height = 100;
-        //计算弹出框的显示位置，这里需要把模型的坐标转换为dom的坐标
-        let modelPos = DDeiUtil.getModelsDomAbsPosition(models)
-        let left = modelPos.left+20
-        let top = modelPos.top
-        if(modelPos.top - height <= modelPos.cTop){
-          if(modelPos.height > 400){
-            top = top+height+20
+      let editor = DDeiEditorCls.ACTIVE_INSTANCE;
+      if(editor?.state != DDeiEditorState.QUICK_EDITING){
+        
+        //隐藏弹出框
+        DDeiEditorUtil.closeDialog("canvas_quick_dialog")
+        
+        //显示弹出框
+        if(models?.length > 0){
+          let height = 100;
+          //计算弹出框的显示位置，这里需要把模型的坐标转换为dom的坐标
+          let modelPos = DDeiUtil.getModelsDomAbsPosition(models)
+          let left = modelPos.left+20
+          let top = modelPos.top
+          if(modelPos.top - height <= modelPos.cTop){
+            if(modelPos.height > 400){
+              top = top+height+20
+            }else{
+              top = top+modelPos.height+20;
+            }
           }else{
-            top = top+modelPos.height+20;
+            top = top-height;
           }
-        }else{
-          top = top-height;
-        }
-        if(top < 0){
-          top = modelPos.cTop+modelPos.cHeight/2
-        }
-        
+          if(top < 0){
+            top = modelPos.cTop+modelPos.cHeight/2
+          }
+          
 
-        DDeiEditorUtil.showDialog("canvas_quick_dialog", {
-          group: "canvas-pop"
-        }, { type: 99,left:left,top:top ,hiddenMask:true},null,true)
-        DDeiEditorCls.ACTIVE_INSTANCE.changeState(DDeiEditorState.DESIGNING);
-        
+          DDeiEditorUtil.showDialog("canvas_quick_dialog", {
+            group: "canvas-pop"
+          }, { type: 99,left:left,top:top ,hiddenMask:true},null,true)
+          DDeiEditorCls.ACTIVE_INSTANCE.changeState(DDeiEditorState.DESIGNING);
+          
+        }
       }
     },
     /**

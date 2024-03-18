@@ -472,7 +472,7 @@ class DDeiEditorUtil {
    * @param pos 位置信息
    * @param el 事件的➗元素
    */
-  static showDialog(id: string, data: object, pos: object, el: object, isPop: boolean = false) {
+  static showDialog(id: string, data: object, pos: object, el: object, isPop: boolean = false, keepState: boolean = false) {
     if (!isPop && !DDeiEditor.ACTIVE_INSTANCE.tempDialogData) {
       DDeiEditor.ACTIVE_INSTANCE.tempDialogData = {}
     } else if (isPop && !DDeiEditor.ACTIVE_INSTANCE.tempPopData) {
@@ -497,11 +497,16 @@ class DDeiEditorUtil {
 
     }
     //记录临时变量
+    if (data) {
+      data.keepState = keepState
+    }
     if (isPop) {
       DDeiEditor.ACTIVE_INSTANCE.tempPopData[id] = data
     } else {
       DDeiEditor.ACTIVE_INSTANCE.tempDialogData[id] = data
-      DDeiEditor.ACTIVE_INSTANCE.changeState(DDeiEditorState.PROPERTY_EDITING);
+      if (!keepState) {
+        DDeiEditor.ACTIVE_INSTANCE.changeState(DDeiEditorState.PROPERTY_EDITING);
+      }
     }
 
     //修改编辑器状态为快捷编辑中
@@ -588,16 +593,20 @@ class DDeiEditorUtil {
   static closeDialog(id: string, isPop: boolean = false) {
     let dialog = document.getElementById(id);
     dialog.style.display = "none";
-
+    let dialogData
     if (!isPop && DDeiEditor.ACTIVE_INSTANCE.tempDialogData) {
+      dialogData = DDeiEditor.ACTIVE_INSTANCE.tempDialogData[id]
       DDeiEditor.ACTIVE_INSTANCE.tempDialogData[id] = null
     } else if (isPop && DDeiEditor.ACTIVE_INSTANCE.tempPopData) {
+      dialogData = DDeiEditor.ACTIVE_INSTANCE.tempPopData[id]
       DDeiEditor.ACTIVE_INSTANCE.tempPopData[id] = null
     }
     let backEle = document.getElementById("dialog_background_div");
     backEle.style.background = "none"
     backEle.style.display = "none";
-    DDeiEditor.ACTIVE_INSTANCE.changeState(DDeiEditorState.DESIGNING);
+    if (!dialogData || !dialogData.keepState) {
+      DDeiEditor.ACTIVE_INSTANCE.changeState(DDeiEditorState.DESIGNING);
+    }
   }
 
   static closeDialogs(groups: string[], isPop: boolean = false) {
@@ -625,13 +634,13 @@ class DDeiEditorUtil {
    * @param pos 
    * @param el 
    */
-  static showOrCloseDialog(id: string, data: object, pos: object, el: object, isPop: boolean = false) {
+  static showOrCloseDialog(id: string, data: object, pos: object, el: object, isPop: boolean = false, keepState: boolean = false) {
     if (!isPop && DDeiEditor.ACTIVE_INSTANCE.tempDialogData && DDeiEditor.ACTIVE_INSTANCE.tempDialogData[id]) {
       DDeiEditorUtil.closeDialog(id, isPop)
     } else if (isPop && DDeiEditor.ACTIVE_INSTANCE.tempPopData && DDeiEditor.ACTIVE_INSTANCE.tempPopData[id]) {
       DDeiEditorUtil.closeDialog(id, isPop)
     } else {
-      DDeiEditorUtil.showDialog(id, data, pos, el, isPop)
+      DDeiEditorUtil.showDialog(id, data, pos, el, isPop, keepState)
     }
   }
 

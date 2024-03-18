@@ -147,7 +147,6 @@ export default {
               setTimeout(() => {
                 editorText.focus();
               }, 20);
-              this.editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
             }
             hasEditSetted = true;
           }
@@ -178,7 +177,7 @@ export default {
         callback: {
           ok: this.inputValue
         }
-      }, { type: 5 }, srcElement)
+      }, { type: 5 }, srcElement,false,true)
     },
     /**
      * 根据值获取选项定义

@@ -103,7 +103,6 @@
   </div>
 </template>
 <script lang="ts">
-import ICONS from "../../js/icon";
 import QBTFontFamily from "./tools/QBTFontFamily.vue";
 import QBTFontSize from "./tools/QBTFontSize.vue";
 import QBTEditBox from "./tools/QBTEditBox.vue";
@@ -117,7 +116,6 @@ export default {
   props: {},
   data() {
     return {
-      icons: {},
     };
   },
   computed: {},
@@ -131,9 +129,6 @@ export default {
   watch: {},
   created() { },
   mounted() {
-    for (let i in ICONS) {
-      this.icons[i] = ICONS[i];
-    }
   },
 };
 </script>

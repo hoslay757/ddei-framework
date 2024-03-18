@@ -184,7 +184,9 @@ export default {
         parts: ["topmenu"],
       });
       this.editor.bus.executeAll();
-      this.editor.changeState(DDeiEditorState.DESIGNING);
+      if (this.editor.state != DDeiEditorState.QUICK_EDITING) {
+        this.editor.changeState(DDeiEditorState.DESIGNING);
+      }
     }
   }
 };

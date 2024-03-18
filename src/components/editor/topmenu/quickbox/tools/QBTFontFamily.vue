@@ -111,7 +111,7 @@ export default {
         callback: {
           ok: this.valueChange
         }
-      }, { type: 5 }, srcElement)
+      }, { type: 5 }, srcElement,false,true)
     },
     /**
      * 根据值获取选项定义
@@ -217,6 +217,7 @@ export default {
       let hasEditSetted = false;
       //文本编辑状态
       if (this.editor.ddInstance.stage.render.operateState == DDeiEnumOperateState.QUICK_EDITING) {
+        
         //读取文本的一部分修改其样式
         let shadowControl = this.editor.ddInstance.stage.render.editorShadowControl
         if (shadowControl?.render.isEditoring) {
@@ -236,7 +237,6 @@ export default {
               editorText.focus();
             }, 20);
 
-            this.closeDialog();
             hasEditSetted = true;
           }
         }

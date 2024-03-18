@@ -43,11 +43,27 @@ class DDeiBusCommandStageChangeSelectModels extends DDeiBusCommand {
         optContainer = stage.layers[stage.layerIndex]
       }
       let selectedModels = optContainer.getSelectedModels();
+      let oldSelectModels = stage.selectedModels
       stage.changeSelecetdModels(selectedModels);
+      let hasChange = false;
+      let newSelectModels = stage.selectedModels
+      if (oldSelectModels?.size !== newSelectModels?.size) {
+        hasChange = true;
+      }
+      if (!hasChange) {
+        for (let key of oldSelectModels?.keys()) {
+          if (oldSelectModels?.get(key) !== newSelectModels?.get(key)) {
+            hasChange = false;
+            break;
+          }
+        }
+      }
+      // if (hasChange) {
       let selectAfter = DDeiUtil.getConfigValue("EVENT_CONTROL_SELECT_AFTER", bus.ddInstance);
       if (selectAfter) {
         selectAfter(DDeiEnumOperateType.SELECT, Array.from(selectedModels.values()), null, bus.ddInstance, evt);
       }
+      // }
       return true;
     }
   }
