@@ -102,8 +102,8 @@ export default {
     },
 
     //打开弹出框
-    showDialog() {
-      let srcElement = document.getElementById("ddei_editor_quick_fat_item_fontfamily");
+    showDialog(evt:Event) {
+      let srcElement = evt.currentTarget;
       DDeiEditorUtil.showOrCloseDialog("selectfont_dialog", {
         dataSource: this.dataSource,
         value: this.attrDefine.value,

@@ -26,7 +26,7 @@ export default {
 
             {
               name: "样式",
-              attrs: ["fill.type", "fill.color", "fill.image", "fill.opacity", "border.type", "borderColor", "borderOpacity", "borderWidth", "borderDash"]
+              attrs: ["fill.type", "fill.color", "fill.image", "fill.opacity", "border.type", "border.color", "borderOpacity", "borderWidth", "borderDash"]
             },
             {
               name: "文本",

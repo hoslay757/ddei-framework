@@ -80,7 +80,7 @@ class DDeiCircleCanvasRender extends DDeiRectangleCanvasRender {
         ctx.globalAlpha = borderOpac
       }
       //颜色
-      ctx.strokeStyle = DDeiUtil.getColor(borderColor);
+      ctx.strokeStyle = DDeiUtil.getColor(border.color);
       //绘制一个椭圆
       ctx.ellipse(ratPos.x + ratPos.width * 0.5 + 0.5, ratPos.y + ratPos.height * 0.5 + 0.5, ratPos.width * 0.5, ratPos.height * 0.5, 0, 0, Math.PI * 2)
       ctx.stroke();

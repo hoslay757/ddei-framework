@@ -30,7 +30,7 @@ export default {
             },
             {
               name: "边框",
-              attrs: ["border.type", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
+              attrs: ["border.type", "border.color", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
             },
             {
               name: "填充",

@@ -65,7 +65,7 @@ export const styles = {
     },
     {
       'id': '100302004',
-      'code': 'borderColor',
+      'code': 'border.color',
       'name': '颜色',
       'desc': '图形的边框显示颜色，在高级设置中，可以分别设置不同方向边框的样式',
       'group': '边框',

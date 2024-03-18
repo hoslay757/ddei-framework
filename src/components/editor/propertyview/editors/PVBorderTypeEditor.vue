@@ -134,7 +134,7 @@ export default {
         this.controlDefine.groups.forEach(group => {
           DDeiEditorArrtibute.hiddenAttributesByCode(
             group,
-            "borderColor",
+            "border.color",
             "borderOpacity",
             "borderWidth",
             "borderDash",
@@ -146,7 +146,7 @@ export default {
         this.controlDefine.groups.forEach(group => {
           DDeiEditorArrtibute.showAttributesByCode(
             group,
-            "borderColor",
+            "border.color",
             "borderOpacity",
             "borderWidth",
             "borderDash",

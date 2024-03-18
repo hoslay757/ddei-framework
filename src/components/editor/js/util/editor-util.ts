@@ -620,7 +620,7 @@ class DDeiEditorUtil {
     } else {
       for (let oid in DDeiEditor.ACTIVE_INSTANCE.tempDialogData) {
         let otherDialogData = DDeiEditor.ACTIVE_INSTANCE.tempDialogData[oid]
-        if (otherDialogData && (groups.indexOf(otherDialogData.group) != -1 || !groups || groups.length == 0)) {
+        if (otherDialogData && (groups && groups.indexOf(otherDialogData.group) != -1 || !groups || groups.length == 0)) {
           DDeiEditorUtil.closeDialog(oid, isPop)
         }
       }

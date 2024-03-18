@@ -72,7 +72,7 @@ export default {
           subGroups: [
             {
               name: "线条",
-              attrs: ["border.type", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
+              attrs: ["border.type", "border.color", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
             }
           ]
         }

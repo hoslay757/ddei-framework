@@ -46,14 +46,14 @@ export default {
       'defaultValue': 1,
       'hiddenTitle': true,
       'display': 'column',
-      'cascadeDisplay': { 1: { show: ["borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"], hidden: [] }, default: { show: ["borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"], hidden: [] }, empty: { hidden: ["borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"] } },
+      'cascadeDisplay': { 1: { show: ["border.color", "borderOpacity", "borderWidth", "borderDash", "borderRound"], hidden: [] }, default: { show: ["border.color", "borderOpacity", "borderWidth", "borderDash", "borderRound"], hidden: [] }, empty: { hidden: ["border.color", "borderOpacity", "borderWidth", "borderDash", "borderRound"] } },
     },
     {
-      'code': 'borderColor',
+      'code': 'border.color',
       'name': '颜色',
       'desc': '图形的边框显示颜色，在高级设置中，可以分别设置不同方向边框的样式',
       'controlType': 'color-combo',
-      'mapping': ["border.color"],
+
       'dataType': 'string',
       'defaultValue': 'black',
     },
@@ -504,7 +504,7 @@ export default {
         },
         {
           name: "线条",
-          attrs: ["border.type", "borderColor", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
+          attrs: ["border.type", "border.color", "borderOpacity", "borderWidth", "borderDash", "borderRound"]
         },
 
         {

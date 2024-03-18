@@ -57,8 +57,12 @@ export default {
       let file = this.editor?.files[this.editor.currentFileIndex];
       let sheet = file?.sheets[file?.currentSheetIndex];
       let stage = sheet?.stage;
+      
       if (stage?.selectedModels?.size > 0) {
-        return true;
+        let models = Array.from(stage?.selectedModels.values())
+        if(models[0].baseModelType == 'DDeiContainer' && models[0].layout == "compose"){
+          return true;
+        }
       }
       return false;
     },
