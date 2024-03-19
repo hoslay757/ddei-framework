@@ -59,22 +59,18 @@
     </div>
     <div v-if="operateState!=50 && allLine" class="content">
       <div class="panel6">
-        <div class="panel6-content1">
-          <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-a-ziyuan485"></use>
-          </svg>
-          <div class="text">起点箭头</div>
+        <div class="panel6-content1 pointtype">
+          <QBTLinePointType attrCode="sp.type"></QBTLinePointType>
+          <div class="text">起点</div>
         </div>
-        <div class="panel6-content1">
+        <div class="panel6-content1 exchange">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-a-ziyuan485"></use>
           </svg>
         </div>
-        <div class="panel6-content1">
-          <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-a-ziyuan485"></use>
-          </svg>
-          <div class="text">终点箭头</div>
+        <div class="panel6-content1 pointtype">
+          <QBTLinePointType attrCode="ep.type"></QBTLinePointType>
+          <div class="text">终点</div>
         </div>
       </div>
       <div class="panel6" style="border-left:1px solid #E2E2EB;">
@@ -216,6 +212,7 @@ import QBTEditTextAlignBox from"../topmenu/quickbox/tools/QBTEditTextAlignBox.vu
 import QBTEditColor from"../topmenu/quickbox/tools/QBTEditColor.vue";
 import QBTBorderDash from "../topmenu/quickbox/tools/QBTBorderDash.vue";
 import QBTLineType from "../topmenu/quickbox/tools/QBTLineType.vue";
+import QBTLinePointType from "../topmenu/quickbox/tools/QBTLinePointType.vue"
 import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type.js";
 import DDeiEnumKeyActionInst from "../js/enums/key-action-inst.js";
 import DDeiEditorUtil from "../js/util/editor-util.js";
@@ -641,6 +638,8 @@ export default {
       }
 
       .type{
+        padding-left: 10px;
+        padding-right: 10px;
         .ddei_pv_line_type_combox {
           width:22px;
           height:28px;
@@ -653,6 +652,8 @@ export default {
       }
 
       .color2{
+        padding-left: 10px;
+        padding-right: 10px;
         .ddei_editor_quick_fat_item_box {
           width:22px;
           height:28px;
@@ -668,6 +669,17 @@ export default {
         width:50px;
         margin-top:4px;
       }
+
+      .pointtype{
+        width:70px;
+        margin-top:4px;
+      }
+      .exchange{
+        flex:0 0 20px !important;
+        margin-top: -20px;
+      }
+
+      
 
 
       &-content:hover{

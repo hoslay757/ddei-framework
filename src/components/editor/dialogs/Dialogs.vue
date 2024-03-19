@@ -23,7 +23,7 @@
   <TextAlignDialog v-if="refresh_text_align_dialog"></TextAlignDialog>
   <QuickSetStyleDialog v-if="refresh_quick_setstyle_dialog"></QuickSetStyleDialog>
   <LineTypeDialog v-if="refresh_line_type_dialog"></LineTypeDialog>
-
+  <LinePointTypeDialog v-if="refresh_linepoint_type_dialog"></LinePointTypeDialog>
   
 
 </template>
@@ -51,6 +51,7 @@ import CollFileConfirmDialog from "./CollFileConfirmDialog.vue";
 import CanvasQuickDialog from "./CanvasQuickDialog.vue";
 import TextAlignDialog from "./TextAlignDialog.vue";
 import QuickSetStyleDialog from "./QuickSetStyleDialog.vue";
+import LinePointTypeDialog from "./LinePointTypeDialog.vue";
 import LineTypeDialog from "./LineTypeDialog.vue"
 import DDeiEditorUtil from "../js/util/editor-util.ts";
 
@@ -85,6 +86,7 @@ export default {
       refresh_text_align_dialog:true,
       refresh_quick_setstyle_dialog:false,
       refresh_line_type_dialog:false,
+      refresh_linepoint_type_dialog:false,
     };
   },
   computed: {},
@@ -111,7 +113,8 @@ export default {
     CanvasQuickDialog,
     TextAlignDialog,
     QuickSetStyleDialog,
-    LineTypeDialog
+    LineTypeDialog,
+    LinePointTypeDialog
   },
   watch: {},
   created() { },
