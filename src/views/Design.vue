@@ -43,11 +43,10 @@ import DDeiEditorUtil from "@/components/editor/js/util/editor-util";
 import DDeiEditorCls from "@/components/editor/js/editor";
 import DDei from "@/components/framework/js/ddei";
 import DDeiUtil from "@/components/framework/js/util";
+import { debounce } from "lodash";
 
-import FONTS from "@/components/editor/configs/fonts/font"
-import { groupOriginDefinies, controlOriginDefinies } from "@/components/editor/configs/toolgroup";
 import DDeiEditorEnumBusCommandType from "@/components/editor/js/enums/editor-command-type";
-import DDeiEditorState from "@/components/editor/js/enums/editor-state";
+
 
 export default {
   props: {},
@@ -62,6 +61,8 @@ export default {
         EVENT_GOBACK_FILE_LIST: this.goBackFileList,
         EVENT_PUBLISH_FILE: this.publishFile,
         EVENT_CONTROL_SELECT_AFTER: this.showQuickEditPicker,
+        EVENT_STAGE_CHANGE_WPV: this.changeWPV,
+        EVENT_STAGE_CHANGE_RATIO: this.changeRatio,
         // AC_DESIGN_SELECT: false,
         // AC_DESIGN_DRAG: false,
         // AC_DESIGN_EDIT: false,
@@ -88,7 +89,7 @@ export default {
     DDeiEditor,
   },
   created() {
-
+    this.displayQuickDialog =  debounce(this.displayQuickDialog, 200, { trailing: true, leading: false });
   },
   beforeMount() {
     let routePath = decodeURIComponent(this.$route.path)
@@ -255,37 +256,41 @@ export default {
      * 选择后，在选择控件的合适位置显示快捷编辑框
      */
    showQuickEditPicker(operateType,models,propName,ddInstance,evt) { 
-      let editor = DDeiEditorCls.ACTIVE_INSTANCE;
-      let curState = editor.state
+      if(ddInstance && ddInstance["AC_DESIGN_EDIT"]){
+        let editor = DDeiEditorCls.ACTIVE_INSTANCE;
+        let curState = editor.state
         
-      //隐藏弹出框
-      DDeiEditorUtil.closeDialog("canvas_quick_dialog")
-      
-      //显示弹出框
-      if(models?.length > 0){
-        let height = 100;
-        //计算弹出框的显示位置，这里需要把模型的坐标转换为dom的坐标
-        let modelPos = DDeiUtil.getModelsDomAbsPosition(models)
-        let left = modelPos.left+20
-        let top = modelPos.top
-        if(modelPos.top - height <= modelPos.cTop){
-          if(modelPos.height > 400){
-            top = top+height+20
+        //隐藏弹出框
+        DDeiEditorUtil.closeDialog("canvas_quick_dialog")
+        
+        //显示弹出框
+        if(models?.length > 0){
+          let height = 100;
+          //计算弹出框的显示位置，这里需要把模型的坐标转换为dom的坐标
+          let modelPos = DDeiUtil.getModelsDomAbsPosition(models)
+          let left = modelPos.left+20
+          let top = modelPos.top
+          if(modelPos.top - height <= modelPos.cTop){
+            if(modelPos.height > 400){
+              top = top+height+20
+            }else{
+              top = top+modelPos.height+20;
+            }
           }else{
-            top = top+modelPos.height+20;
+            top = top-height;
           }
-        }else{
-          top = top-height;
+          if(top < 0){
+            top = modelPos.cTop+modelPos.cHeight/2
+          }
+          
+          if(left < 0){
+              left = 0
+          }
+          DDeiEditorUtil.showDialog("canvas_quick_dialog", {
+            group: "canvas-pop"
+          }, { type: 99,left:left,top:top ,hiddenMask:true},null,true,true)
+          editor?.changeState(curState)
         }
-        if(top < 0){
-          top = modelPos.cTop+modelPos.cHeight/2
-        }
-        
-
-        DDeiEditorUtil.showDialog("canvas_quick_dialog", {
-          group: "canvas-pop"
-        }, { type: 99,left:left,top:top ,hiddenMask:true},null,true,true)
-        editor?.changeState(curState)
       }
     },
     /**
@@ -541,6 +546,58 @@ export default {
         await new Promise((resolve) => setTimeout(resolve, 10));
       }
       return this.publishDialogState;
+    },
+
+    /**
+     * 移动滚动条
+     */
+    changeWPV(oldValue,newValue,ddInstance){
+      if(ddInstance && ddInstance["AC_DESIGN_EDIT"]){
+        DDeiEditorUtil.hiddenDialog("canvas_quick_dialog")
+        this.displayQuickDialog();
+      }
+    },
+
+    displayQuickDialog(){
+      let editor = DDeiEditorCls.ACTIVE_INSTANCE;
+      if(editor?.ddInstance?.stage?.selectedModels?.size > 0){
+        let models = Array.from(editor.ddInstance.stage?.selectedModels.values())
+        if(models?.length > 0){
+          let height = 100;
+          //计算弹出框的显示位置，这里需要把模型的坐标转换为dom的坐标
+          let modelPos = DDeiUtil.getModelsDomAbsPosition(models)
+          let left = modelPos.left+20
+          let top = modelPos.top
+          if(modelPos.top - height <= modelPos.cTop){
+            if(modelPos.height > 400){
+              top = top+height+20
+            }else{
+              top = top+modelPos.height+20;
+            }
+          }else{
+            top = top-height;
+          }
+          if(top < 0){
+            top = modelPos.cTop+modelPos.cHeight/2
+          }
+          if(left < 0){
+            left = 0
+          }
+          
+
+          DDeiEditorUtil.displayDialog("canvas_quick_dialog", null, { type: 99,left:left,top:top ,hiddenMask:true})
+        }
+      }
+    },
+
+    /**
+     * 改变缩放大小
+     */
+    changeRatio(oldValue,newValue,ddInstance){
+      if(ddInstance && ddInstance["AC_DESIGN_EDIT"]){
+        DDeiEditorUtil.hiddenDialog("canvas_quick_dialog")
+        this.displayQuickDialog();
+      }
     },
 
     /**

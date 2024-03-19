@@ -1,6 +1,8 @@
+import { clone } from 'lodash';
 import { MODEL_CLS } from '../../config';
 import DDeiEnumBusCommandType from '../../enums/bus-command-type';
 import DDeiEnumOperateState from '../../enums/operate-state';
+import DDeiUtil from '../../util';
 import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
 import { Matrix3, Vector3 } from 'three';
@@ -40,7 +42,7 @@ class DDeiBusCommandChangeStageWPV extends DDeiBusCommand {
 
       let hScrollWidth = stage.render.hScroll?.width ? stage.render.hScroll?.width : 0
       let vScrollHeight = stage.render.vScroll?.height ? stage.render.vScroll?.height : 0
-
+      let oldWPV = clone(stage.wpv)
       //修改stage的视窗位置
       let x = data.x;
       let y = data.y;
@@ -61,6 +63,14 @@ class DDeiBusCommandChangeStageWPV extends DDeiBusCommand {
         stage.wpv.y = 0
       } else if (stage.wpv.y < -stage.height + vScrollHeight) {
         stage.wpv.y = -stage.height + vScrollHeight
+      }
+      //调用SPI
+      let changeWPVSPI = DDeiUtil.getConfigValue(
+        "EVENT_STAGE_CHANGE_WPV",
+        stage.ddInstance
+      );
+      if (changeWPVSPI) {
+        changeWPVSPI(oldWPV, stage.wpv, bus.ddInstance);
       }
       return true;
     } else {

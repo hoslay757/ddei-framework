@@ -470,7 +470,7 @@ class DDeiEditorUtil {
    * @param id 弹出框ID
    * @param data 数据以及回调函数等选项
    * @param pos 位置信息
-   * @param el 事件的➗元素
+   * @param el 事件的元素
    */
   static showDialog(id: string, data: object, pos: object, el: object, isPop: boolean = false, keepState: boolean = false) {
     if (!isPop && !DDeiEditor.ACTIVE_INSTANCE.tempDialogData) {
@@ -585,6 +585,95 @@ class DDeiEditorUtil {
 
   }
 
+  /**
+   * 显示弹出框
+   * @param id 弹出框ID
+   * @param pos 位置信息
+   * @param el 事件的元素
+   */
+  static displayDialog(id: string, data: object, pos: object, el: object) {
+    if (!pos?.hiddenMask) {
+      let backEle = document.getElementById("dialog_background_div");
+      if (data.background) {
+        backEle.style.background = data.background;
+        backEle.style.display = "block";
+        if (data.opacity) {
+          backEle.style.opacity = data.opacity;
+        }
+      }
+      if (data.event == -1) {
+        backEle.style.pointerEvents = "auto";
+      } else {
+        backEle.style.pointerEvents = "";
+      }
+    }
+    let dialog = document.getElementById(id);
+    dialog.style.display = "block";
+
+    //设置位置信息
+    if (pos?.type) {
+      let left, top
+      switch (pos.type) {
+        //自由设置位置
+        case 99: {
+          left = pos.left
+          top = pos.top
+        } break;
+        //基于触发元素的底部
+        case 2: {
+          let absPos = DDeiUtil.getDomAbsPosition(el)
+          left = absPos.left + (pos.dx ? pos.dx : 0)
+          top = (absPos.top - dialog?.clientHeight + (pos.dy ? pos.dy : 0))
+        } break;
+        //基于触发元素的底部居中
+        case 3: {
+          let absPos = DDeiUtil.getDomAbsPosition(el)
+          left = absPos.left - (dialog.clientWidth / 2 - el.clientWidth / 2) + (pos.dx ? pos.dx : 0)
+          top = (absPos.top - dialog?.clientHeight + (pos.dy ? pos.dy : 0))
+        } break;
+        //基于触发元素的顶部
+        case 4: {
+          let absPos = DDeiUtil.getDomAbsPosition(el)
+          left = absPos.left + (pos.dx ? pos.dx : 0)
+          top = (absPos.top + el.clientHeight + (pos.dy ? pos.dy : 0))
+        } break;
+        //基于触发元素的顶部居中
+        case 5: {
+          let absPos = DDeiUtil.getDomAbsPosition(el)
+          left = absPos.left - (dialog.clientWidth / 2 - el.clientWidth / 2) + (pos.dx ? pos.dx : 0)
+          top = (absPos.top + el.clientHeight + (pos.dy ? pos.dy : 0))
+        } break;
+      }
+      if (left + dialog?.clientWidth > document.body.scrollWidth) {
+        left = document.body.scrollWidth - dialog?.clientWidth - 10
+      }
+      if (top + dialog?.clientHeight > document.body.scrollHeight) {
+        top = document.body.scrollHeight - dialog?.clientHeight - 10
+      }
+      dialog.style.left = left + "px"
+      dialog.style.top = top + "px"
+    }
+
+
+
+  }
+
+  /**
+   * 隐藏弹出框
+   * @param id 弹出框ID
+   */
+  static hiddenDialog(id: string) {
+
+    let backEle = document.getElementById("dialog_background_div");
+    if (backEle) {
+      backEle.style.display = "none"
+    }
+    let dialogEle = document.getElementById(id);
+    if (dialogEle) {
+      dialogEle.style.display = "none"
+    }
+  }
+
 
   /**
    * 关闭弹出框
@@ -643,6 +732,9 @@ class DDeiEditorUtil {
       DDeiEditorUtil.showDialog(id, data, pos, el, isPop, keepState)
     }
   }
+
+
+
 
 
 

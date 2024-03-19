@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts">
-import { debounce } from "lodash";
+
 import Dialogs from "./dialogs/Dialogs.vue";
 import DDeiEditor from "./js/editor";
 import TopMenu from "./topmenu/TopMenu.vue";

@@ -113,7 +113,14 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
 
         stage.wpv.x = -wpvX - ox
         stage.wpv.y = -wpvY - oy
-
+        //调用SPI
+        let changeRatioSPI = DDeiUtil.getConfigValue(
+          "EVENT_STAGE_CHANGE_RATIO",
+          stage.ddInstance
+        );
+        if (changeRatioSPI) {
+          changeRatioSPI(data.oldValue, data.newValue, bus.ddInstance);
+        }
 
         return true;
       }

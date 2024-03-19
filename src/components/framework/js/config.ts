@@ -678,6 +678,16 @@ class DDeiConfig {
    */
   static EVENT_CONTROL_VIEW_AFTER: Function;
 
+  /**
+   * 移动视窗，此方法为外部传入的勾子函数
+   */
+  static EVENT_STAGE_CHANGE_WPV: Function;
+
+  /**
+   * 全剧缩放，此方法为外部传入的勾子函数
+   */
+  static EVENT_STAGE_CHANGE_RATIO: Function;
+
 
 
 
