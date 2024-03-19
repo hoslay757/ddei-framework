@@ -58,7 +58,61 @@
       </div>
     </div>
     <div v-if="operateState!=50 && allLine" class="content">
-      全是线
+      <div class="panel6">
+        <div class="panel6-content1">
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan485"></use>
+          </svg>
+          <div class="text">起点箭头</div>
+        </div>
+        <div class="panel6-content1">
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan485"></use>
+          </svg>
+        </div>
+        <div class="panel6-content1">
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan485"></use>
+          </svg>
+          <div class="text">终点箭头</div>
+        </div>
+      </div>
+      <div class="panel6" style="border-left:1px solid #E2E2EB;">
+        <div class="panel6-content type">
+          <QBTLineType attrCode="type" img="icon-a-ziyuan430"></QBTLineType>
+          <div class="text">类型</div>
+        </div>
+        <div class="panel6-content color2">
+          <QBTEditColor attrCode="color" img="icon-border-pencil"></QBTEditColor>
+          <div class="text">颜色</div>
+        </div>
+        <div class="panel6-content">
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan485"></use>
+          </svg>
+          <div class="text">粗细</div>
+        </div>
+        <div class="panel6-content dash">
+          <QBTBorderDash attrCode="dash"></QBTBorderDash>
+          <div class="text">虚线</div>
+        </div>
+      </div>
+      <div class="panel6" style="border-left:1px solid #E2E2EB;">
+        <div class="panel6-content">
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan485"></use>
+          </svg>
+          <div class="text">格式刷</div>
+        </div>
+      </div>
+      <div class="panel6" style="border-left:1px solid #E2E2EB;">
+        <div class="panel6-content">
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan407"></use>
+          </svg>
+          <div class="text">插入图形</div>
+        </div>
+      </div>
     </div>
      <div v-if="operateState!=50 && !allLine" class="content">
       <div class="panel1">
@@ -160,6 +214,8 @@ import QBTEditAddFontSize from"../topmenu/quickbox/tools/QBTEditAddFontSize.vue"
 import QBTEditBox from"../topmenu/quickbox/tools/QBTEditBox.vue";
 import QBTEditTextAlignBox from"../topmenu/quickbox/tools/QBTEditTextAlignBox.vue";
 import QBTEditColor from"../topmenu/quickbox/tools/QBTEditColor.vue";
+import QBTBorderDash from "../topmenu/quickbox/tools/QBTBorderDash.vue";
+import QBTLineType from "../topmenu/quickbox/tools/QBTLineType.vue";
 import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type.js";
 import DDeiEnumKeyActionInst from "../js/enums/key-action-inst.js";
 import DDeiEditorUtil from "../js/util/editor-util.js";
@@ -553,6 +609,77 @@ export default {
         background-color: #e6e6e6;
         cursor:pointer
       }
+    }
+
+    .panel6{
+      margin-top: 10px;
+      padding-left:10px;
+      height:60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+
+      &-content1{
+        margin-right:10px;
+        white-space: nowrap;
+        flex:1;
+        .icon{
+          margin-top:2px;
+          margin-bottom:1px;
+        }
+        border-radius: 4px;
+      }
+
+      &-content{
+        margin-right:10px;
+        .icon{
+          margin-top:2px;
+          margin-bottom:1px;
+        }
+        border-radius: 4px;
+      }
+
+      .type{
+        .ddei_pv_line_type_combox {
+          width:22px;
+          height:28px;
+          margin:0 auto;
+          margin-top:4px;
+          :deep(.icon){
+              flex: 0 0 26px !important;
+          }
+        }
+      }
+
+      .color2{
+        .ddei_editor_quick_fat_item_box {
+          width:22px;
+          height:28px;
+          margin:0 auto;
+          margin-top:4px;
+          :deep(.icon){
+              flex: 0 0 26px !important;
+          }
+        }
+      }
+
+      .dash{
+        width:50px;
+        margin-top:4px;
+      }
+
+
+      &-content:hover{
+        background-color: #e6e6e6;
+        cursor:pointer
+      }
+
+       &-content1:hover{
+        background-color: #e6e6e6;
+        cursor:pointer
+      }
+      
     }
 
   }

@@ -334,7 +334,7 @@ export default {
   font-size: 14px;
   cursor: pointer;
 
-  /deep/ &.ant-tree {
+:deep(&.ant-tree) {
     background-color: transparent;
     margin-left: -10px;
 

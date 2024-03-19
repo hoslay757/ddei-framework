@@ -63,6 +63,7 @@ export default {
         EVENT_CONTROL_SELECT_AFTER: this.showQuickEditPicker,
         EVENT_STAGE_CHANGE_WPV: this.changeWPV,
         EVENT_STAGE_CHANGE_RATIO: this.changeRatio,
+        EVENT_CONTROL_DRAG_BEFORE: this.dragBefore,
         // AC_DESIGN_SELECT: false,
         // AC_DESIGN_DRAG: false,
         // AC_DESIGN_EDIT: false,
@@ -224,9 +225,9 @@ export default {
      * 拖拽后
      */
     dragAfter(operate, models, propName, ddInstance, evt) {
-      models.forEach((model) => {
-        console.log("拖拽:" + model.id);
-      });
+     if(ddInstance && ddInstance["AC_DESIGN_EDIT"]){
+        this.displayQuickDialog();
+      }
     },
 
     /**
@@ -546,6 +547,19 @@ export default {
         await new Promise((resolve) => setTimeout(resolve, 10));
       }
       return this.publishDialogState;
+    },
+
+    /**
+     * 拖拽前
+     */
+    dragBefore(operate, models, propName, ddInstance, evt) {
+      if(DDei.beforeOperateValid(operate,models,propName,ddInstance,evt)){
+        if(ddInstance && ddInstance["AC_DESIGN_EDIT"]){
+          DDeiEditorUtil.hiddenDialog("canvas_quick_dialog")
+        }
+        return true
+      }
+      return false
     },
 
     /**
