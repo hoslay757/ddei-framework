@@ -20,6 +20,7 @@
   <CollFileConfirmDialog v-if="refresh_coll_file_confirm_dialog"></CollFileConfirmDialog>
   <ExportOptionDialog v-if="refresh_export_option_dialog"></ExportOptionDialog>
   <CanvasQuickDialog v-if="refresh_canvas_quick_dialog"></CanvasQuickDialog>
+  <TextAlignDialog v-if="refresh_text_align_dialog"></TextAlignDialog>
 
 </template>
 
@@ -44,6 +45,7 @@ import ExportOptionDialog from "./ExportOptionDialog.vue";
 import UserRegistryDialog from "./UserRegistryDialog.vue";
 import CollFileConfirmDialog from "./CollFileConfirmDialog.vue";
 import CanvasQuickDialog from "./CanvasQuickDialog.vue";
+import TextAlignDialog from "./TextAlignDialog.vue";
 import DDeiEditorUtil from "../js/util/editor-util.ts";
 
 export default {
@@ -73,7 +75,8 @@ export default {
       refresh_user_registry_dialog: true,
       refresh_coll_file_confirm_dialog: true,
       refresh_export_option_dialog: true,
-      refresh_canvas_quick_dialog: true
+      refresh_canvas_quick_dialog: true,
+      refresh_text_align_dialog:true,
     };
   },
   computed: {},
@@ -97,7 +100,8 @@ export default {
     UserRegistryDialog,
     CollFileConfirmDialog,
     ExportOptionDialog,
-    CanvasQuickDialog
+    CanvasQuickDialog,
+    TextAlignDialog
   },
   watch: {},
   created() { },

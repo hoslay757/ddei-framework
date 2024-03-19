@@ -77,9 +77,9 @@
           </QBTEditBox>
          </div>
         <div class="panel1-content-3">
-            <QBTEditBox selectedValue="1" :supportQuickEdit="false" attrCode="textStyle.align" img="icon-a-ziyuan440"
-             :unSelectValue="2">
-          </QBTEditBox>
+          <QBTEditTextAlignBox img="icon-a-ziyuan440">
+          </QBTEditTextAlignBox>
+          
         </div>
         <div class="panel1-split-3 panel1-content-4 panel1-split-4">
           <QBTEditColor attrCode="textStyle.bgcolor" img="icon-a-ziyuan452"></QBTEditColor>
@@ -158,6 +158,7 @@ import QBTFontFamily from "../topmenu/quickbox/tools/QBTFontFamily.vue";
 import QBTFontSize from"../topmenu/quickbox/tools/QBTFontSize.vue";
 import QBTEditAddFontSize from"../topmenu/quickbox/tools/QBTEditAddFontSize.vue";
 import QBTEditBox from"../topmenu/quickbox/tools/QBTEditBox.vue";
+import QBTEditTextAlignBox from"../topmenu/quickbox/tools/QBTEditTextAlignBox.vue";
 import QBTEditColor from"../topmenu/quickbox/tools/QBTEditColor.vue";
 import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type.js";
 import DDeiEnumKeyActionInst from "../js/enums/key-action-inst.js";
@@ -213,8 +214,12 @@ export default {
       let srcElement = evt.currentTarget;
       DDeiEditorUtil.showOrCloseDialog("align_dialog", {
         group: "top-dialog"
-      }, { type: 5 }, srcElement)
+      }, { type: 5 }, srcElement,false,true)
     },
+
+    
+
+    
 
     //是否可以取消组合
     canCancelMerge() {
