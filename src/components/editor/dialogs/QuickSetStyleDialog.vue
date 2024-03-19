@@ -245,7 +245,7 @@ export default {
        
 
         .item:hover {
-          background-color: rgb(233, 233, 238);
+          filter: brightness(150%);
         }
 
         .text {

@@ -10,6 +10,8 @@ import DDeiUtil from '../../util.js';
 import DDeiRectangleCanvasRender from './rectangle-render.js';
 import { Matrix3, Vector3 } from 'three';
 import { clone, now } from 'lodash'
+import DDeiEnumOperateType from '../../enums/operate-type.js';
+import line from '@/components/editor/configs/controls/base/line.js';
 
 /**
  * DDeiSelector的渲染器类，用于渲染选择器
@@ -628,7 +630,6 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         layer.shadowControls.push(lineShadow);
         this.stageRender.currentOperateShape = lineShadow
         this.stageRender.currentOperateShape.dragPoint = dragPoint
-
         let dragObj = {
           x: ex,
           y: ey,
@@ -638,11 +639,19 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
           passIndex: this.model.passIndex,
           opvs: this.model.opvs
         }
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
-        //改变光标
-        this.stage?.ddInstance?.bus?.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: "grabbing" }, evt);
-        this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING
+        //加载事件的配置
+        let dragBefore = DDeiUtil.getConfigValue(
+          "EVENT_LINE_DRAG_BEFORE",
+          this.stage.ddInstance
+        );
+        if (!dragBefore || dragBefore(DDeiEnumOperateType.DRAG, dragObj, this.stage.ddInstance, evt)) {
 
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
+          //改变光标
+          this.stage?.ddInstance?.bus?.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: "grabbing" }, evt);
+
+          this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING
+        }
       }
     } else {
       //判断当前坐标是否位于操作按钮上,如果是则改变状态为响应状态

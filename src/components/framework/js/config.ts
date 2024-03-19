@@ -648,6 +648,16 @@ class DDeiConfig {
   static EVENT_CONTROL_DRAG_AFTER: Function;
 
   /**
+   * 线段拖拽前，此方法为外部传入的勾子函数
+   */
+  static EVENT_LINE_DRAG_BEFORE: Function;
+
+  /**
+   * 线段拖拽后，此方法为外部传入的勾子函数
+   */
+  static EVENT_LINE_DRAG_AFTER: Function;
+
+  /**
    * 控件删除前，此方法为外部传入的勾子函数
    */
   static EVENT_CONTROL_DEL_BEFORE: Function;

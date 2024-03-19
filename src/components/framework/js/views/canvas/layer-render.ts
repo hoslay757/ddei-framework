@@ -805,101 +805,110 @@ class DDeiLayerCanvasRender {
               let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
               let model = this.stage?.getModelById(id)
               let isStop = false;
-              if (model) {
-                model.syncVectors(item)
-              } else {
-                let opPoint = this.model.getOpPointByPos(ex, ey);
-                //如果长度小于15，终止创建
-                let maxLength = 0
-                if (!opPoint?.model) {
-                  for (let i = 0; i < item.pvs.length - 1; i++) {
-                    maxLength += DDeiUtil.getPointDistance(item.pvs[i].x, item.pvs[i].y, item.pvs[i + 1].x, item.pvs[i + 1].y)
-                  }
-                }
-                if ((opPoint?.model && (Math.abs(opPoint.x - item.startPoint.x) >= 1 || Math.abs(opPoint.y - item.startPoint.y) >= 1)) || maxLength >= 15) {
-                  //影子控件转变为真实控件并创建
-                  item.id = id
-                  this.model.addModel(item)
-                  item.initRender();
-                  model = item;
-                  delete model.isShadowControl
+              //加载事件的配置
+              let dragAfter = DDeiUtil.getConfigValue(
+                "EVENT_LINE_DRAG_AFTER",
+                this.stage.ddInstance
+              );
+
+              if (!dragAfter || dragAfter(DDeiEnumOperateType.DRAG, this.stageRender.dragObj, this.stage.ddInstance, evt)) {
+
+                if (model) {
+                  model.syncVectors(item)
                 } else {
-                  isStop = true;
-                }
-              }
-              if (!isStop) {
-                let passIndex = this.stageRender.dragObj.passIndex;
-                //如果是开始或结束节点的拖拽，判断落点是否在操作点上，如果在且满足关联条件，则关联
-                if (passIndex == 1) {
-                  //如果原有的关联存在，取消原有的关联
-                  //取得线段定义中的约束
-                  let skip = false
-                  let constraint = DDeiUtil.getControlDefine(model)?.define?.constraint;
-                  let opvsIndex = this.stageRender.dragObj.opvsIndex;
-                  let dmpath = ""
-                  //判断开始点还是结束点
-                  if (opvsIndex == 0) {
-                    if (constraint?.sp && constraint.sp.link == false) {
-                      skip = true;
-                    } else {
-                      dmpath = "startPoint"
+                  let opPoint = this.model.getOpPointByPos(ex, ey);
+                  //如果长度小于15，终止创建
+                  let maxLength = 0
+                  if (!opPoint?.model) {
+                    for (let i = 0; i < item.pvs.length - 1; i++) {
+                      maxLength += DDeiUtil.getPointDistance(item.pvs[i].x, item.pvs[i].y, item.pvs[i + 1].x, item.pvs[i + 1].y)
                     }
+                  }
+                  if ((opPoint?.model && (Math.abs(opPoint.x - item.startPoint.x) >= 1 || Math.abs(opPoint.y - item.startPoint.y) >= 1)) || maxLength >= 15) {
+                    //影子控件转变为真实控件并创建
+                    item.id = id
+                    this.model.addModel(item)
+                    item.initRender();
+                    model = item;
+                    delete model.isShadowControl
                   } else {
-                    if (constraint?.ep && constraint.ep.link == false) {
-                      skip = true;
-                    } else {
-                      dmpath = "endPoint"
-                    }
+                    isStop = true;
                   }
-
-                  if (!skip) {
-                    let distLinks = this.stage?.getDistModelLinks(model.id);
-                    distLinks?.forEach(dl => {
-                      if (dl.dmpath == dmpath) {
-                        this.stage?.removeLink(dl);
-                        //删除源点
-                        if (dl?.sm && dl?.smpath) {
-                          eval("delete dl.sm." + dl.smpath)
-                        }
+                }
+                if (!isStop) {
+                  let passIndex = this.stageRender.dragObj.passIndex;
+                  //如果是开始或结束节点的拖拽，判断落点是否在操作点上，如果在且满足关联条件，则关联
+                  if (passIndex == 1) {
+                    //如果原有的关联存在，取消原有的关联
+                    //取得线段定义中的约束
+                    let skip = false
+                    let constraint = DDeiUtil.getControlDefine(model)?.define?.constraint;
+                    let opvsIndex = this.stageRender.dragObj.opvsIndex;
+                    let dmpath = ""
+                    //判断开始点还是结束点
+                    if (opvsIndex == 0) {
+                      if (constraint?.sp && constraint.sp.link == false) {
+                        skip = true;
+                      } else {
+                        dmpath = "startPoint"
                       }
-                    })
+                    } else {
+                      if (constraint?.ep && constraint.ep.link == false) {
+                        skip = true;
+                      } else {
+                        dmpath = "endPoint"
+                      }
+                    }
 
-                    let opPoint = this.model.getOpPointByPos(ex, ey);
-                    if (opPoint) {
+                    if (!skip) {
+                      let distLinks = this.stage?.getDistModelLinks(model.id);
+                      distLinks?.forEach(dl => {
+                        if (dl.dmpath == dmpath) {
+                          this.stage?.removeLink(dl);
+                          //删除源点
+                          if (dl?.sm && dl?.smpath) {
+                            eval("delete dl.sm." + dl.smpath)
+                          }
+                        }
+                      })
 
-                      //建立关联
-                      let smodel = opPoint.model;
-                      //创建连接点
-                      let id = "_" + DDeiUtil.getUniqueCode()
-                      smodel.exPvs[id] = new Vector3(opPoint.x, opPoint.y, opPoint.z)
-                      smodel.exPvs[id].rate = opPoint.rate
-                      smodel.exPvs[id].sita = opPoint.sita
-                      smodel.exPvs[id].index = opPoint.index
-                      smodel.exPvs[id].id = id
-                      let link = new DDeiLink({
-                        sm: smodel,
-                        dm: model,
-                        smpath: "exPvs." + id,
-                        dmpath: dmpath,
-                        stage: this.stage
-                      });
-                      this.stage?.addLink(link)
-                      model?.initPVS()
-                      smodel.updateLinkModels();
+                      let opPoint = this.model.getOpPointByPos(ex, ey);
+                      if (opPoint) {
+
+                        //建立关联
+                        let smodel = opPoint.model;
+                        //创建连接点
+                        let id = "_" + DDeiUtil.getUniqueCode()
+                        smodel.exPvs[id] = new Vector3(opPoint.x, opPoint.y, opPoint.z)
+                        smodel.exPvs[id].rate = opPoint.rate
+                        smodel.exPvs[id].sita = opPoint.sita
+                        smodel.exPvs[id].index = opPoint.index
+                        smodel.exPvs[id].id = id
+                        let link = new DDeiLink({
+                          sm: smodel,
+                          dm: model,
+                          smpath: "exPvs." + id,
+                          dmpath: dmpath,
+                          stage: this.stage
+                        });
+                        this.stage?.addLink(link)
+                        model?.initPVS()
+                        smodel.updateLinkModels();
+                      }
                     }
                   }
-                }
-                model.initPVS()
-                model.updateOVS()
-                //重新计算错线
-                model.clps = []
+                  model.initPVS()
+                  model.updateOVS()
+                  //重新计算错线
+                  model.clps = []
 
-                this.stageRender.refreshJumpLine = false
-                if (model.pModel != this.model) {
-                  model.pModel?.changeParentsBounds()
+                  this.stageRender.refreshJumpLine = false
+                  if (model.pModel != this.model) {
+                    model.pModel?.changeParentsBounds()
+                  }
+                  hasChange = true;
+                  this.stage.refreshLinkCache()
                 }
-                hasChange = true;
-                this.stage.refreshLinkCache()
               }
             }
 
@@ -1325,14 +1334,15 @@ class DDeiLayerCanvasRender {
           dx = this.stageRender.dragObj.dx
           dy = this.stageRender.dragObj.dy
         }
+
         if (Math.abs(ex - dx) >= 10 || Math.abs(ey - dy) >= 10) {
           this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING
         }
+
         break;
       }
       //线段修改点中
       case DDeiEnumOperateState.LINE_POINT_CHANGING: {
-
         //如果当前操作控件不存在，创建线段,生成影子控件，并把影子线段作为当前操作控件
         if (!this.stageRender.currentOperateShape) {
           let lineJson = DDeiUtil.getLineInitJSON();

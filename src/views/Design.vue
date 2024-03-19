@@ -64,6 +64,8 @@ export default {
         EVENT_STAGE_CHANGE_WPV: this.changeWPV,
         EVENT_STAGE_CHANGE_RATIO: this.changeRatio,
         EVENT_CONTROL_DRAG_BEFORE: this.dragBefore,
+        EVENT_LINE_DRAG_BEFORE: this.dragLineBefore,
+        EVENT_LINE_DRAG_AFTER: this.dragLineAfter,
         // AC_DESIGN_SELECT: false,
         // AC_DESIGN_DRAG: false,
         // AC_DESIGN_EDIT: false,
@@ -220,14 +222,6 @@ export default {
       models.forEach((model) => {
         console.log("删除:" + model.id);
       });
-    },
-    /**
-     * 拖拽后
-     */
-    dragAfter(operate, models, propName, ddInstance, evt) {
-     if(ddInstance && ddInstance["AC_DESIGN_EDIT"]){
-        this.displayQuickDialog();
-      }
     },
 
     /**
@@ -560,6 +554,29 @@ export default {
         return true
       }
       return false
+    },
+
+    /**
+     * 拖拽线节点前
+     */
+    dragLineBefore(operate, dragObj, ddInstance, evt) {
+      if(DDei.beforeOperateValid(operate,[dragObj?.model],null,ddInstance,evt)){
+        if(ddInstance && ddInstance["AC_DESIGN_EDIT"]){
+          DDeiEditorUtil.hiddenDialog("canvas_quick_dialog")
+        }
+        return true
+      }
+      return false
+    },
+
+    /**
+     * 拖拽线节点后
+     */
+    dragLineAfter(operate, dragObj, ddInstance, evt) {
+      if(ddInstance && ddInstance["AC_DESIGN_EDIT"]){
+        this.displayQuickDialog()
+      }
+      return true
     },
 
     /**
