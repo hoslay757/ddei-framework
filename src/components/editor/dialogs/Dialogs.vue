@@ -21,6 +21,9 @@
   <ExportOptionDialog v-if="refresh_export_option_dialog"></ExportOptionDialog>
   <CanvasQuickDialog v-if="refresh_canvas_quick_dialog"></CanvasQuickDialog>
   <TextAlignDialog v-if="refresh_text_align_dialog"></TextAlignDialog>
+  <QuickSetStyleDialog v-if="refresh_quick_setstyle_dialog"></QuickSetStyleDialog>
+
+  
 
 </template>
 
@@ -46,6 +49,7 @@ import UserRegistryDialog from "./UserRegistryDialog.vue";
 import CollFileConfirmDialog from "./CollFileConfirmDialog.vue";
 import CanvasQuickDialog from "./CanvasQuickDialog.vue";
 import TextAlignDialog from "./TextAlignDialog.vue";
+import QuickSetStyleDialog from "./QuickSetStyleDialog.vue";
 import DDeiEditorUtil from "../js/util/editor-util.ts";
 
 export default {
@@ -77,6 +81,7 @@ export default {
       refresh_export_option_dialog: true,
       refresh_canvas_quick_dialog: true,
       refresh_text_align_dialog:true,
+      refresh_quick_setstyle_dialog:false,
     };
   },
   computed: {},
@@ -101,7 +106,8 @@ export default {
     CollFileConfirmDialog,
     ExportOptionDialog,
     CanvasQuickDialog,
-    TextAlignDialog
+    TextAlignDialog,
+    QuickSetStyleDialog
   },
   watch: {},
   created() { },

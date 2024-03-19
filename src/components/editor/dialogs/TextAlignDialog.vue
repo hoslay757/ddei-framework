@@ -181,25 +181,11 @@ export default {
         }
 
         
-        .itembox_disabled {
-          color: rgb(210, 210, 210);
-          text-decoration: line-through;
-        }
-
-        .itembox_disabled:hover {
-          cursor: not-allowed !important;
-        }
 
         .item:hover {
           background-color: rgb(233, 233, 238);
         }
 
-        .text {
-          flex: 1;
-          text-align: center;
-          white-space: nowrap;
-          width: 100%;
-        }
 
         .icon {
           font-size: 28px;

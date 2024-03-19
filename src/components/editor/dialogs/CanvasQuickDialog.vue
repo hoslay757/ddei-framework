@@ -98,7 +98,7 @@
         </div>
       </div>
       <div class="panel3">
-         <div class="panel3-content i1">
+         <div class="panel3-content i1" @click="showSetStyleDialog($event)">
             <svg class="icon" aria-hidden="true">
               <use xlink:href="#icon-a-ziyuan94"></use>
             </svg>
@@ -205,6 +205,14 @@ export default {
     }
   },
   methods: {
+
+    
+    showSetStyleDialog(evt: Event) {
+      let srcElement = evt.currentTarget;
+      DDeiEditorUtil.showOrCloseDialog("quick_setstyle_dialog", {
+        group: "top-dialog"
+      }, { type: 5 }, srcElement,false,true)
+    },
 
     closeAllDialog(){
       DDeiEditorUtil.closeDialogs()
