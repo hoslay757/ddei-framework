@@ -37,6 +37,7 @@ class MenuCopySheet {
       editor.bus.push(DDeiEnumBusCommandType.AddHistroy)
       editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, { parts: ["bottommenu"] })
       editor.bus?.executeAll();
+      editor.editorViewer?.changeFileModifyDirty();
     }
   }
 
