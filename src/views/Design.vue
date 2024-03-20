@@ -92,7 +92,7 @@ export default {
     DDeiEditor,
   },
   created() {
-    this.displayQuickDialog =  debounce(this.displayQuickDialog, 200, { trailing: true, leading: false });
+    this.displayQuickDialog = debounce(this.displayQuickDialog, 200, { trailing: true, leading: false });
   },
   beforeMount() {
     let routePath = decodeURIComponent(this.$route.path)
@@ -250,40 +250,40 @@ export default {
     /**
      * 选择后，在选择控件的合适位置显示快捷编辑框
      */
-   showQuickEditPicker(operateType,models,propName,ddInstance,evt) { 
-      if(ddInstance && ddInstance["AC_DESIGN_EDIT"]){
+    showQuickEditPicker(operateType, models, propName, ddInstance, evt) {
+      if (ddInstance && ddInstance["AC_DESIGN_EDIT"]) {
         let editor = DDeiEditorCls.ACTIVE_INSTANCE;
         let curState = editor.state
-        
+
         //隐藏弹出框
         DDeiEditorUtil.closeDialog("canvas_quick_dialog")
-        
+
         //显示弹出框
-        if(models?.length > 0){
+        if (models?.length > 0) {
           let height = 100;
           //计算弹出框的显示位置，这里需要把模型的坐标转换为dom的坐标
           let modelPos = DDeiUtil.getModelsDomAbsPosition(models)
-          let left = modelPos.left+20
-          let top = modelPos.top
-          if(modelPos.top - height <= modelPos.cTop){
-            if(modelPos.height > 400){
-              top = top+height+20
-            }else{
-              top = top+modelPos.height+20;
+          let left = modelPos.left + (modelPos.width / 2)
+          let top = modelPos.top + (modelPos.height / 2)
+          if (modelPos.top - height <= modelPos.cTop) {
+            if (modelPos.height > 400) {
+              top = top + height + 20
+            } else {
+              top = top + modelPos.height / 2 + 20;
             }
-          }else{
-            top = top-height;
+          } else {
+            top = top - height;
           }
-          if(top < 0){
-            top = modelPos.cTop+modelPos.cHeight/2
+          if (top < 0) {
+            top = modelPos.cTop + modelPos.cHeight / 2
           }
-          
-          if(left < 0){
-              left = 0
+
+          if (left < 0) {
+            left = 0
           }
           DDeiEditorUtil.showDialog("canvas_quick_dialog", {
             group: "canvas-pop"
-          }, { type: 99,left:left,top:top ,hiddenMask:true},null,true,true)
+          }, { type: 99, left: left, top: top, hiddenMask: true }, null, true, true)
           editor?.changeState(curState)
         }
       }
@@ -426,11 +426,11 @@ export default {
     /**
      * 保存文件以及设计
      */
-    async saveFile(designdata,file) {
+    async saveFile(designdata, file) {
       //根据ID获取文件的设计以及文件的信息
       if (designdata) {
-      
-        if(designdata.id && file.local != 1){
+
+        if (designdata.id && file.local != 1) {
           let postData = {
             id: designdata.id,
             name: designdata.name,
@@ -455,16 +455,16 @@ export default {
           }
         }
         //保存到本地还是服务器
-        else{
-          if(!file.localFileHandler){
+        else {
+          if (!file.localFileHandler) {
             file.localFileHandler = await showSaveFilePicker({
               description: "DDei Design File",
-              suggestedName: designdata.name+".dei",
-                types: [{
-                    accept: {
-                        "text/plain": [".dei"]
-                    }
-                  }]
+              suggestedName: designdata.name + ".dei",
+              types: [{
+                accept: {
+                  "text/plain": [".dei"]
+                }
+              }]
             });
           }
           delete designdata.thumb
@@ -547,8 +547,8 @@ export default {
      * 拖拽前
      */
     dragBefore(operate, models, propName, ddInstance, evt) {
-      if(DDei.beforeOperateValid(operate,models,propName,ddInstance,evt)){
-        if(ddInstance && ddInstance["AC_DESIGN_EDIT"]){
+      if (DDei.beforeOperateValid(operate, models, propName, ddInstance, evt)) {
+        if (ddInstance && ddInstance["AC_DESIGN_EDIT"]) {
           DDeiEditorUtil.hiddenDialog("canvas_quick_dialog")
         }
         return true
@@ -560,8 +560,8 @@ export default {
      * 拖拽线节点前
      */
     dragLineBefore(operate, dragObj, ddInstance, evt) {
-      if(DDei.beforeOperateValid(operate,[dragObj?.model],null,ddInstance,evt)){
-        if(ddInstance && ddInstance["AC_DESIGN_EDIT"]){
+      if (DDei.beforeOperateValid(operate, [dragObj?.model], null, ddInstance, evt)) {
+        if (ddInstance && ddInstance["AC_DESIGN_EDIT"]) {
           DDeiEditorUtil.hiddenDialog("canvas_quick_dialog")
         }
         return true
@@ -573,7 +573,7 @@ export default {
      * 拖拽线节点后
      */
     dragLineAfter(operate, dragObj, ddInstance, evt) {
-      if(ddInstance && ddInstance["AC_DESIGN_EDIT"]){
+      if (ddInstance && ddInstance["AC_DESIGN_EDIT"]) {
         this.displayQuickDialog()
       }
       return true
@@ -582,41 +582,41 @@ export default {
     /**
      * 移动滚动条
      */
-    changeWPV(oldValue,newValue,ddInstance){
-      if(ddInstance && ddInstance["AC_DESIGN_EDIT"]){
+    changeWPV(oldValue, newValue, ddInstance) {
+      if (ddInstance && ddInstance["AC_DESIGN_EDIT"]) {
         DDeiEditorUtil.hiddenDialog("canvas_quick_dialog")
         this.displayQuickDialog();
       }
     },
 
-    displayQuickDialog(){
+    displayQuickDialog() {
       let editor = DDeiEditorCls.ACTIVE_INSTANCE;
-      if(editor?.ddInstance?.stage?.selectedModels?.size > 0){
+      if (editor?.ddInstance?.stage?.selectedModels?.size > 0) {
         let models = Array.from(editor.ddInstance.stage?.selectedModels.values())
-        if(models?.length > 0){
+        if (models?.length > 0) {
           let height = 100;
           //计算弹出框的显示位置，这里需要把模型的坐标转换为dom的坐标
           let modelPos = DDeiUtil.getModelsDomAbsPosition(models)
-          let left = modelPos.left+20
+          let left = modelPos.left + 20
           let top = modelPos.top
-          if(modelPos.top - height <= modelPos.cTop){
-            if(modelPos.height > 400){
-              top = top+height+20
-            }else{
-              top = top+modelPos.height+20;
+          if (modelPos.top - height <= modelPos.cTop) {
+            if (modelPos.height > 400) {
+              top = top + height + 20
+            } else {
+              top = top + modelPos.height + 20;
             }
-          }else{
-            top = top-height;
+          } else {
+            top = top - height;
           }
-          if(top < 0){
-            top = modelPos.cTop+modelPos.cHeight/2
+          if (top < 0) {
+            top = modelPos.cTop + modelPos.cHeight / 2
           }
-          if(left < 0){
+          if (left < 0) {
             left = 0
           }
-          
 
-          DDeiEditorUtil.displayDialog("canvas_quick_dialog", null, { type: 99,left:left,top:top ,hiddenMask:true})
+
+          DDeiEditorUtil.displayDialog("canvas_quick_dialog", null, { type: 99, left: left, top: top, hiddenMask: true })
         }
       }
     },
@@ -624,8 +624,8 @@ export default {
     /**
      * 改变缩放大小
      */
-    changeRatio(oldValue,newValue,ddInstance){
-      if(ddInstance && ddInstance["AC_DESIGN_EDIT"]){
+    changeRatio(oldValue, newValue, ddInstance) {
+      if (ddInstance && ddInstance["AC_DESIGN_EDIT"]) {
         DDeiEditorUtil.hiddenDialog("canvas_quick_dialog")
         this.displayQuickDialog();
       }
@@ -704,10 +704,10 @@ export default {
       };
     },
 
-    
-    clearServerFunc(){
-        delete this.serverFunc
-        delete this.serverFuncParam
+
+    clearServerFunc() {
+      delete this.serverFunc
+      delete this.serverFuncParam
     },
     toLogin() {
       this.$router.push({

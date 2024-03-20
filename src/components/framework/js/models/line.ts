@@ -334,6 +334,39 @@ class DDeiLine extends DDeiAbstractShape {
   }
 
   /**
+   * 交换开始和结束节点
+   */
+  exchangeStartAndEnd() {
+    //交换节点与数据
+    let startPoint = this.startPoint
+    let endPoint = this.endPoint
+
+    //如果原有的关联存在，取消原有的关联
+    let distLinks = this.stage?.getDistModelLinks(this.id);
+    let sms = []
+    distLinks?.forEach(dl => {
+      if (dl.dmpath == 'startPoint') {
+        dl.dmpath = 'endPoint'
+      } else if (dl.dmpath == 'endPoint') {
+        dl.dmpath = 'startPoint'
+      }
+      if (dl.sm) {
+        sms.push(dl.sm)
+      }
+    })
+    this.startPoint = endPoint
+    this.endPoint = startPoint
+    this.cpv = this.startPoint
+
+    this.pvs[0] = this.startPoint
+    this.pvs[this.pvs.length - 1] = this.endPoint
+    sms.forEach(sm => {
+      sm.updateLinkModels()
+    });
+
+  }
+
+  /**
    * 重新计算线路径并更新图形
    */
   refreshLinePoints() {

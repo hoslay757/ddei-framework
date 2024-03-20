@@ -1,7 +1,6 @@
-
 <template>
   <div v-show="selectedModels?.size > 0" :id="dialogId" @mousedown="closeAllDialog()" class="canvas_quick_dialog">
-    <div v-if="operateState==50" class="content">
+    <div v-if="operateState == 50" class="content">
       <div class="panel12">
         <div class="panel12-content-1">
           <QBTFontFamily></QBTFontFamily>
@@ -10,11 +9,11 @@
           <QBTFontSize></QBTFontSize>
         </div>
         <div class="panel12-content-5">
-           <QBTEditAddFontSize :addValue="1" attrCode="font.size" img="icon-a-ziyuan456" extcls="magtop-2">
+          <QBTEditAddFontSize :addValue="1" attrCode="font.size" img="icon-a-ziyuan456" extcls="magtop-2">
           </QBTEditAddFontSize>
         </div>
         <div class="panel12-content-5">
-           <QBTEditAddFontSize :addValue="-1" attrCode="font.size" img="icon-a-ziyuan455" extcls="magtop-1">
+          <QBTEditAddFontSize :addValue="-1" attrCode="font.size" img="icon-a-ziyuan455" extcls="magtop-1">
           </QBTEditAddFontSize>
         </div>
 
@@ -22,19 +21,19 @@
           <QBTEditBox selectedValue="1" attrCode="textStyle.bold" img="icon-a-ziyuan461">
           </QBTEditBox>
         </div>
-         <div class="panel12-content-3">
+        <div class="panel12-content-3">
           <QBTEditBox selectedValue="1" attrCode="textStyle.italic" img="icon-a-ziyuan459">
           </QBTEditBox>
-         </div>
-         <div class="panel12-content-3">
+        </div>
+        <div class="panel12-content-3">
           <QBTEditBox selectedValue="1" attrCode="textStyle.underline" img="icon-icon-text-underline"
             extcls="ext-underline">
           </QBTEditBox>
-         </div>
-         <div class="panel12-content-3">
+        </div>
+        <div class="panel12-content-3">
           <QBTEditBox selectedValue="1" attrCode="textStyle.deleteline" img="icon-a-ziyuan457">
           </QBTEditBox>
-         </div>
+        </div>
         <div class="panel12-content-3">
           <QBTEditBox selectedValue="1" :onlyQuickEdit="true" attrCode="textStyle.subtype" img="icon-a-ziyuan394"
             extcls="magtop-1">
@@ -44,11 +43,10 @@
           <QBTEditColor attrCode="textStyle.bgcolor" img="icon-a-ziyuan452"></QBTEditColor>
         </div>
         <div class="panel12-content-4">
-           <QBTEditColor attrCode="font.color" img="icon-a-ziyuan463"></QBTEditColor>
+          <QBTEditColor attrCode="font.color" img="icon-a-ziyuan463"></QBTEditColor>
         </div>
       </div>
-       <div class="panel2"
-          title="格式刷" @click="execBrushAction($event)">
+      <div class="panel2" title="格式刷" @click="execBrushAction($event)">
         <div class="panel2-content">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-a-ziyuan485"></use>
@@ -57,15 +55,15 @@
         </div>
       </div>
     </div>
-    <div v-if="operateState!=50 && allLine" class="content">
+    <div v-if="operateState != 50 && allLine" class="content">
       <div class="panel6">
         <div class="panel6-content1 pointtype">
           <QBTLinePointType attrCode="sp.type"></QBTLinePointType>
           <div class="text">起点</div>
         </div>
-        <div class="panel6-content1 exchange">
+        <div class="panel6-content1 exchange" @click="exchangeLinePoint">
           <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-a-ziyuan485"></use>
+            <use xlink:href="#icon-zhihuan"></use>
           </svg>
         </div>
         <div class="panel6-content1 pointtype">
@@ -82,10 +80,8 @@
           <QBTEditColor attrCode="color" img="icon-border-pencil"></QBTEditColor>
           <div class="text">颜色</div>
         </div>
-        <div class="panel6-content">
-          <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-a-ziyuan485"></use>
-          </svg>
+        <div class="panel6-content dash">
+          <QBTBorderWeight attrCode="weight"></QBTBorderWeight>
           <div class="text">粗细</div>
         </div>
         <div class="panel6-content dash">
@@ -110,7 +106,7 @@
         </div>
       </div>
     </div>
-     <div v-if="operateState!=50 && !allLine" class="content">
+    <div v-if="operateState != 50 && !allLine" class="content">
       <div class="panel1">
         <div class="panel1-content-1">
           <QBTFontFamily></QBTFontFamily>
@@ -122,24 +118,23 @@
           <QBTEditBox selectedValue="1" attrCode="textStyle.bold" img="icon-a-ziyuan461">
           </QBTEditBox>
         </div>
-         <div class="panel1-content-3">
+        <div class="panel1-content-3">
           <QBTEditBox selectedValue="1" attrCode="textStyle.italic" img="icon-a-ziyuan459">
           </QBTEditBox>
-         </div>
+        </div>
         <div class="panel1-content-3">
           <QBTEditTextAlignBox img="icon-a-ziyuan440">
           </QBTEditTextAlignBox>
-          
+
         </div>
         <div class="panel1-split-3 panel1-content-4 panel1-split-4">
           <QBTEditColor attrCode="textStyle.bgcolor" img="icon-a-ziyuan452"></QBTEditColor>
         </div>
         <div class="panel1-content-4 ">
-           <QBTEditColor attrCode="font.color" img="icon-a-ziyuan463"></QBTEditColor>
+          <QBTEditColor attrCode="font.color" img="icon-a-ziyuan463"></QBTEditColor>
         </div>
       </div>
-      <div class="panel2"
-          title="格式刷" @click="execBrushAction($event)">
+      <div class="panel2" title="格式刷" @click="execBrushAction($event)">
         <div class="panel2-content">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-a-ziyuan485"></use>
@@ -148,55 +143,55 @@
         </div>
       </div>
       <div class="panel3">
-         <div class="panel3-content i1" @click="showSetStyleDialog($event)">
-            <svg class="icon" aria-hidden="true">
-              <use xlink:href="#icon-a-ziyuan94"></use>
-            </svg>
-            <div class="text">样式</div>
-         </div>
-         <div class="panel3-content i2">
-            <QBTEditColor attrCode="fill.color" img="icon-a-ziyuan419"></QBTEditColor>
-            <div class="text">填充</div>
-         </div>
-         <div class="panel3-content i3">
-             <QBTEditColor attrCode="border.color" img="icon-border-pencil"></QBTEditColor>
-            <div class="text">线条</div>
-         </div>
+        <div class="panel3-content i1" @click="showSetStyleDialog($event)">
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan94"></use>
+          </svg>
+          <div class="text">样式</div>
+        </div>
+        <div class="panel3-content i2">
+          <QBTEditColor attrCode="fill.color" img="icon-a-ziyuan419"></QBTEditColor>
+          <div class="text">填充</div>
+        </div>
+        <div class="panel3-content i3">
+          <QBTEditColor attrCode="border.color" img="icon-border-pencil"></QBTEditColor>
+          <div class="text">线条</div>
+        </div>
       </div>
       <div class="panel4">
-         <div class="panel4-content" @click="doPush('top')">
-            <svg class="icon" aria-hidden="true">
-              <use xlink:href="#icon-a-ziyuan435"></use>
-            </svg>
-            <div class="text">置于顶层</div>
-         </div>
-         <div class="panel4-content" @click="doPush('bottom')">
-            <svg class="icon" aria-hidden="true">
-              <use xlink:href="#icon-a-ziyuan436"></use>
-            </svg>
-            <div class="text">置于底层</div>
-         </div>
-         
+        <div class="panel4-content" @click="doPush('top')">
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan435"></use>
+          </svg>
+          <div class="text">置于顶层</div>
+        </div>
+        <div class="panel4-content" @click="doPush('bottom')">
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan436"></use>
+          </svg>
+          <div class="text">置于底层</div>
+        </div>
+
       </div>
-      <div class="panel5" :style="{'display': canMerge()||canCancelMerge() ? '' : 'none'}">
-         <div class="panel5-content"  v-show="canMerge()" @click="canMerge() && doMerge()">
-            <svg class="icon" aria-hidden="true" >
-              <use xlink:href="#icon-a-ziyuan406"></use>
-            </svg>
-            <div class="text">组合</div>
-         </div>
-         <div class="panel5-content" v-show="canCancelMerge()" @click="canCancelMerge() && doCancelMerge()">
-            <svg class="icon" aria-hidden="true">
-              <use xlink:href="#icon-a-ziyuan405"></use>
-            </svg>
-            <div class="text">取消组合</div>
-         </div>
-          <div class="panel5-content"  v-show="canMerge()" @click="canMerge() && showAlignDialog($event)">
-            <svg class="icon" aria-hidden="true">
-              <use xlink:href="#icon-a-ziyuan450"></use>
-            </svg>
-            <div class="text">对齐</div>
-         </div>
+      <div class="panel5" :style="{ 'display': canMerge() || canCancelMerge() ? '' : 'none' }">
+        <div class="panel5-content" v-show="canMerge()" @click="canMerge() && doMerge()">
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan406"></use>
+          </svg>
+          <div class="text">组合</div>
+        </div>
+        <div class="panel5-content" v-show="canCancelMerge()" @click="canCancelMerge() && doCancelMerge()">
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan405"></use>
+          </svg>
+          <div class="text">取消组合</div>
+        </div>
+        <div class="panel5-content" v-show="canMerge()" @click="canMerge() && showAlignDialog($event)">
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan450"></use>
+          </svg>
+          <div class="text">对齐</div>
+        </div>
       </div>
     </div>
   </div>
@@ -205,12 +200,13 @@
 <script lang="ts">
 import DDeiEditor from "../js/editor.ts";
 import QBTFontFamily from "../topmenu/quickbox/tools/QBTFontFamily.vue";
-import QBTFontSize from"../topmenu/quickbox/tools/QBTFontSize.vue";
-import QBTEditAddFontSize from"../topmenu/quickbox/tools/QBTEditAddFontSize.vue";
-import QBTEditBox from"../topmenu/quickbox/tools/QBTEditBox.vue";
-import QBTEditTextAlignBox from"../topmenu/quickbox/tools/QBTEditTextAlignBox.vue";
-import QBTEditColor from"../topmenu/quickbox/tools/QBTEditColor.vue";
+import QBTFontSize from "../topmenu/quickbox/tools/QBTFontSize.vue";
+import QBTEditAddFontSize from "../topmenu/quickbox/tools/QBTEditAddFontSize.vue";
+import QBTEditBox from "../topmenu/quickbox/tools/QBTEditBox.vue";
+import QBTEditTextAlignBox from "../topmenu/quickbox/tools/QBTEditTextAlignBox.vue";
+import QBTEditColor from "../topmenu/quickbox/tools/QBTEditColor.vue";
 import QBTBorderDash from "../topmenu/quickbox/tools/QBTBorderDash.vue";
+import QBTBorderWeight from "../topmenu/quickbox/tools/QBTBorderWeight.vue"
 import QBTLineType from "../topmenu/quickbox/tools/QBTLineType.vue";
 import QBTLinePointType from "../topmenu/quickbox/tools/QBTLinePointType.vue"
 import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type.js";
@@ -228,11 +224,11 @@ export default {
       //当前编辑器
       editor: null,
       //当前选中的控件
-      selectedModels:null,
+      selectedModels: null,
       //当前操作
-      operateState:null,
+      operateState: null,
       //全部都是线条
-      allLine:false
+      allLine: false
     };
   },
   computed: {},
@@ -243,13 +239,13 @@ export default {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     let stage = this.editor.ddInstance.stage
-    if(stage){
+    if (stage) {
       this.selectedModels = stage.selectedModels
       this.operateState = stage.render.operateState
-      if(this.selectedModels?.size > 0){
+      if (this.selectedModels?.size > 0) {
         let allLine = true
         this.selectedModels.forEach(model => {
-          if(model.baseModelType != 'DDeiLine'){
+          if (model.baseModelType != 'DDeiLine') {
             allLine = false
           }
         });
@@ -259,15 +255,27 @@ export default {
   },
   methods: {
 
-    
+    exchangeLinePoint() {
+
+      this.selectedModels?.forEach(model => {
+        if (model.baseModelType == "DDeiLine") {
+          model.exchangeStartAndEnd();
+        }
+      });
+      this.editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
+      this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
+      this.editor.bus.executeAll();
+      this.editor.editorViewer?.changeFileModifyDirty();
+    },
+
     showSetStyleDialog(evt: Event) {
       let srcElement = evt.currentTarget;
       DDeiEditorUtil.showOrCloseDialog("quick_setstyle_dialog", {
         group: "top-dialog"
-      }, { type: 5 }, srcElement,false,true)
+      }, { type: 5 }, srcElement, false, true)
     },
 
-    closeAllDialog(){
+    closeAllDialog() {
       DDeiEditorUtil.closeDialogs()
     },
 
@@ -275,12 +283,12 @@ export default {
       let srcElement = evt.currentTarget;
       DDeiEditorUtil.showOrCloseDialog("align_dialog", {
         group: "top-dialog"
-      }, { type: 5 }, srcElement,false,true)
+      }, { type: 5 }, srcElement, false, true)
     },
 
-    
 
-    
+
+
 
     //是否可以取消组合
     canCancelMerge() {
@@ -288,18 +296,18 @@ export default {
       let file = this.editor?.files[this.editor.currentFileIndex];
       let sheet = file?.sheets[file?.currentSheetIndex];
       let stage = sheet?.stage;
-       if (stage?.selectedModels?.size > 0) {
+      if (stage?.selectedModels?.size > 0) {
         let models = Array.from(stage?.selectedModels.values())
-        if(models[0].baseModelType == 'DDeiContainer' && models[0].layout == "compose"){
+        if (models[0].baseModelType == 'DDeiContainer' && models[0].layout == "compose") {
           return true;
         }
-      
+
       }
       return false;
     },
     //是否可以组合
     canMerge() {
-      return this.operateState!=50 && !this.allLine && this.selectedModels?.size > 1
+      return this.operateState != 50 && !this.allLine && this.selectedModels?.size > 1
     },
 
     /**
@@ -350,9 +358,9 @@ export default {
       }
     },
 
-     /**
-     * 执行格式刷
-     */
+    /**
+    * 执行格式刷
+    */
     execBrushAction(evt: Event) {
       DDeiEnumKeyActionInst.BrushData.action(evt, this.editor.ddInstance, this.editor);
     },
@@ -374,324 +382,353 @@ export default {
   height: 80px;
   z-index: 990;
   user-select: none;
-  color:black;
+  color: black;
 
   .content {
     width: 100%;
     max-height: 70px;
     overflow-y: hidden;
-    display:flex;
+    display: flex;
     justify-content: start;
     align-items: center;
-    
 
-    .panel1{
-      margin-top:20px;
-      width:170px;
-      height:70px;
+
+    .panel1 {
+      margin-top: 20px;
+      width: 170px;
+      height: 70px;
       border-right: 1px solid #E2E2EB;
 
-      .panel1-content-1{
-        width:100px;
-        margin-left:10px;
-        float:left;
-      }
-      .panel1-content-2{
-        width:50px;
-        float:left;
-      }
-      .panel1-content-3{
-        width:30px;
-        padding-left:10px;
-        margin-top:10px;
-        float:left;
-      }
-      .panel1-split-3{
-        margin-left:15px;
+      .panel1-content-1 {
+        width: 100px;
+        margin-left: 10px;
+        float: left;
       }
 
-      .panel1-content-4{
-        padding:0px 5px;
-        margin-top:12px;
-        float:left;
+      .panel1-content-2 {
+        width: 50px;
+        float: left;
+      }
+
+      .panel1-content-3 {
+        width: 30px;
+        padding-left: 10px;
+        margin-top: 10px;
+        float: left;
+      }
+
+      .panel1-split-3 {
+        margin-left: 15px;
+      }
+
+      .panel1-content-4 {
+        padding: 0px 5px;
+        margin-top: 12px;
+        float: left;
         border-radius: 2px;
       }
-      .panel1-split-4{
-        margin-right:5px;
+
+      .panel1-split-4 {
+        margin-right: 5px;
       }
-      .panel1-content-4:hover{
+
+      .panel1-content-4:hover {
         background-color: #e6e6e6;
-        cursor:pointer
+        cursor: pointer
       }
     }
 
-    .panel2{
+    .panel2 {
       margin-top: 10px;
-      width:60px;
-      height:60px;
+      width: 60px;
+      height: 60px;
       display: flex;
       justify-content: center;
       align-items: center;
       text-align: center;
-      border-right:1px solid #E2E2EB;
-      
-      .panel2-content{
-        flex:1;
+      border-right: 1px solid #E2E2EB;
+
+      .panel2-content {
+        flex: 1;
         border-radius: 4px;
       }
-      .panel2-content:hover{
+
+      .panel2-content:hover {
         background-color: #e6e6e6;
-        cursor:pointer
+        cursor: pointer
       }
     }
 
-    .panel3{
+    .panel3 {
       margin-top: 10px;
-      width:150px;
-      height:60px;
+      width: 150px;
+      height: 60px;
       display: flex;
       justify-content: center;
       align-items: center;
       text-align: center;
-      border-right:1px solid #E2E2EB;
+      border-right: 1px solid #E2E2EB;
 
-      .panel3-content{
-        flex:1;
+      .panel3-content {
+        flex: 1;
         border-radius: 4px;
       }
-      .panel3-content:hover{
+
+      .panel3-content:hover {
         background-color: #e6e6e6;
-        cursor:pointer
+        cursor: pointer
       }
 
-      .i1{
-        .icon{
-          font-size:20px;
-          margin-top:5px;
-          margin-bottom:2px;
+      .i1 {
+        .icon {
+          font-size: 20px;
+          margin-top: 5px;
+          margin-bottom: 2px;
         }
       }
 
-      .i2{
+      .i2 {
         .ddei_editor_quick_fat_item_box {
-          width:22px;
-          height:26px;
-          margin:0 auto;
-          margin-top:4px;
-          :deep(.icon){
-              flex: 0 0 22px !important;
+          width: 22px;
+          height: 26px;
+          margin: 0 auto;
+          margin-top: 4px;
+
+          :deep(.icon) {
+            flex: 0 0 22px !important;
           }
         }
       }
-      .i3{
-        .ddei_editor_quick_fat_item_box {
-          width:22px;
-          height:28px;
-          margin:0 auto;
-          margin-top:3px;
 
-          :deep(.icon){
-              flex: 0 0 24px !important;
+      .i3 {
+        .ddei_editor_quick_fat_item_box {
+          width: 22px;
+          height: 28px;
+          margin: 0 auto;
+          margin-top: 3px;
+
+          :deep(.icon) {
+            flex: 0 0 24px !important;
           }
         }
       }
     }
 
-    .panel4{
+    .panel4 {
       margin-top: 10px;
-      padding-left:10px;
-      height:60px;
+      padding-left: 10px;
+      height: 60px;
       display: flex;
       justify-content: center;
       align-items: center;
       text-align: center;
 
-      .panel4-content{
-        margin-right:10px;
-        flex:1;
-        .icon{
-          margin-top:2px;
-          margin-bottom:1px;
+      .panel4-content {
+        margin-right: 10px;
+        flex: 1;
+
+        .icon {
+          margin-top: 2px;
+          margin-bottom: 1px;
         }
 
         border-radius: 4px;
       }
 
 
-      .panel4-content:hover{
+      .panel4-content:hover {
         background-color: #e6e6e6;
-        cursor:pointer
+        cursor: pointer
       }
-      
+
     }
 
-    .panel5{
+    .panel5 {
       margin-top: 10px;
-      height:60px;
-      padding-left:10px;
+      height: 60px;
+      padding-left: 10px;
       display: flex;
       justify-content: center;
       align-items: center;
       text-align: center;
 
-       border-left: 1px solid #E2E2EB;
+      border-left: 1px solid #E2E2EB;
 
-      .panel5-content{
-        margin-right:10px;
-        flex:1;
-        .text{
+      .panel5-content {
+        margin-right: 10px;
+        flex: 1;
+
+        .text {
           white-space: nowrap;
         }
-        .icon{
-          margin-top:2px;
-          margin-bottom:1px;
+
+        .icon {
+          margin-top: 2px;
+          margin-bottom: 1px;
         }
 
         border-radius: 4px;
       }
 
 
-      .panel5-content:hover{
+      .panel5-content:hover {
         background-color: #e6e6e6;
-        cursor:pointer
+        cursor: pointer
       }
-      
+
     }
 
-    .panel12{
-      margin-top:20px;
-      width:225px;
-      height:70px;
+    .panel12 {
+      margin-top: 20px;
+      width: 225px;
+      height: 70px;
       border-right: 1px solid #E2E2EB;
 
-      .panel12-content-1{
-        width:100px;
-        margin-left:10px;
-        float:left;
-      }
-      .panel12-content-2{
-        width:50px;
-        float:left;
-      }
-     
-      .panel12-content-5{
-     
-        padding-left:5px;
-        float:left;
+      .panel12-content-1 {
+        width: 100px;
+        margin-left: 10px;
+        float: left;
       }
 
-      .panel12-content-3{
-        width:30px;
-        padding-left:10px;
-        margin-top:10px;
-        float:left;
+      .panel12-content-2 {
+        width: 50px;
+        float: left;
       }
 
-      
-      .panel12-split-3{
-        margin-left:12px !important;
+      .panel12-content-5 {
+
+        padding-left: 5px;
+        float: left;
       }
 
-      .panel12-content-4{
-        padding:0px 5px;
-        margin-left:2px;
-        margin-top:12px;
-        float:left;
+      .panel12-content-3 {
+        width: 30px;
+        padding-left: 10px;
+        margin-top: 10px;
+        float: left;
+      }
+
+
+      .panel12-split-3 {
+        margin-left: 12px !important;
+      }
+
+      .panel12-content-4 {
+        padding: 0px 5px;
+        margin-left: 2px;
+        margin-top: 12px;
+        float: left;
         border-radius: 2px;
       }
-      .panel12-split-4{
-        margin-right:5px;
+
+      .panel12-split-4 {
+        margin-right: 5px;
       }
-      .panel12-content-4:hover{
+
+      .panel12-content-4:hover {
         background-color: #e6e6e6;
-        cursor:pointer
+        cursor: pointer
       }
     }
 
-    .panel6{
+    .panel6 {
       margin-top: 10px;
-      padding-left:10px;
-      height:60px;
+      padding-left: 10px;
+      height: 60px;
       display: flex;
       justify-content: center;
       align-items: center;
       text-align: center;
 
-      &-content1{
-        margin-right:10px;
+      &-content1 {
+        margin-right: 10px;
         white-space: nowrap;
-        flex:1;
-        .icon{
-          margin-top:2px;
-          margin-bottom:1px;
+        flex: 1;
+
+        .icon {
+          margin-top: 2px;
+          margin-bottom: 1px;
         }
+
         border-radius: 4px;
       }
 
-      &-content{
-        margin-right:10px;
-        .icon{
-          margin-top:2px;
-          margin-bottom:1px;
+      &-content {
+        margin-right: 10px;
+
+        .icon {
+          margin-top: 2px;
+          margin-bottom: 1px;
         }
+
         border-radius: 4px;
       }
 
-      .type{
+      .type {
         padding-left: 10px;
         padding-right: 10px;
+
         .ddei_pv_line_type_combox {
-          width:22px;
-          height:28px;
-          margin:0 auto;
-          margin-top:4px;
-          :deep(.icon){
-              flex: 0 0 26px !important;
+          width: 22px;
+          height: 28px;
+          margin: 0 auto;
+          margin-top: 4px;
+
+          :deep(.icon) {
+            flex: 0 0 26px !important;
           }
         }
       }
 
-      .color2{
+      .color2 {
         padding-left: 10px;
         padding-right: 10px;
+
         .ddei_editor_quick_fat_item_box {
-          width:22px;
-          height:28px;
-          margin:0 auto;
-          margin-top:4px;
-          :deep(.icon){
-              flex: 0 0 26px !important;
+          width: 22px;
+          height: 28px;
+          margin: 0 auto;
+          margin-top: 4px;
+
+          :deep(.icon) {
+            flex: 0 0 26px !important;
           }
         }
       }
 
-      .dash{
-        width:50px;
-        margin-top:4px;
+      .dash {
+        width: 50px;
+        margin-top: 4px;
       }
 
-      .pointtype{
-        width:70px;
-        margin-top:4px;
+      .pointtype {
+        width: 70px;
+        margin-top: 4px;
       }
-      .exchange{
-        flex:0 0 20px !important;
+
+      .exchange {
+        flex: 0 0 20px !important;
         margin-top: -20px;
+        padding: 0px 2px;
+
+        .icon {
+          font-size: 22px;
+        }
       }
 
-      
 
 
-      &-content:hover{
+
+      &-content:hover {
         background-color: #e6e6e6;
-        cursor:pointer
+        cursor: pointer
       }
 
-       &-content1:hover{
+      &-content1:hover {
         background-color: #e6e6e6;
-        cursor:pointer
+        cursor: pointer
       }
-      
+
     }
 
   }

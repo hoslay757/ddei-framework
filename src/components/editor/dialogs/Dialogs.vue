@@ -24,7 +24,7 @@
   <QuickSetStyleDialog v-if="refresh_quick_setstyle_dialog"></QuickSetStyleDialog>
   <LineTypeDialog v-if="refresh_line_type_dialog"></LineTypeDialog>
   <LinePointTypeDialog v-if="refresh_linepoint_type_dialog"></LinePointTypeDialog>
-  
+  <SelectBorderWeightDialog v-if="refresh_select_border_weight_dialog"></SelectBorderWeightDialog>
 
 </template>
 
@@ -52,6 +52,7 @@ import CanvasQuickDialog from "./CanvasQuickDialog.vue";
 import TextAlignDialog from "./TextAlignDialog.vue";
 import QuickSetStyleDialog from "./QuickSetStyleDialog.vue";
 import LinePointTypeDialog from "./LinePointTypeDialog.vue";
+import SelectBorderWeightDialog from "./SelectBorderWeightDialog.vue";
 import LineTypeDialog from "./LineTypeDialog.vue"
 import DDeiEditorUtil from "../js/util/editor-util.ts";
 
@@ -87,6 +88,7 @@ export default {
       refresh_quick_setstyle_dialog:false,
       refresh_line_type_dialog:false,
       refresh_linepoint_type_dialog:false,
+      refresh_select_border_weight_dialog: false,
     };
   },
   computed: {},
@@ -114,7 +116,8 @@ export default {
     TextAlignDialog,
     QuickSetStyleDialog,
     LineTypeDialog,
-    LinePointTypeDialog
+    LinePointTypeDialog,
+    SelectBorderWeightDialog
   },
   watch: {},
   created() { },
