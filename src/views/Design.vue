@@ -66,6 +66,7 @@ export default {
         EVENT_CONTROL_DRAG_BEFORE: this.dragBefore,
         EVENT_LINE_DRAG_BEFORE: this.dragLineBefore,
         EVENT_LINE_DRAG_AFTER: this.dragLineAfter,
+        EVENT_CONTROL_CREATE_BEFORE: this.dragBefore,
         // AC_DESIGN_SELECT: false,
         // AC_DESIGN_DRAG: false,
         // AC_DESIGN_EDIT: false,
@@ -224,21 +225,7 @@ export default {
       });
     },
 
-    /**
-     * 创建后
-     */
-    createAfter(operate, models, propName, ddInstance, evt) {
-      models.forEach((model) => {
-        console.log("创建后:" + model.id);
-      });
-    },
-    /**
-     * 创建前
-     */
-    createBefore() {
-      console.log("创建前");
-      return true;
-    },
+
     /**
      * 选择前
      */
