@@ -160,17 +160,55 @@ class DDeiBusCommandModelCopyStyle extends DDeiBusCommand {
    * @param sourceModel 
    */
   cloneStyle(model, sourceModel) {
-    if (sourceModel.font) {
-      model.font = cloneDeep(sourceModel.font);
-    }
-    if (sourceModel.textStyle) {
-      model.textStyle = cloneDeep(sourceModel.textStyle);
-    }
-    if (sourceModel.fill) {
-      model.fill = cloneDeep(sourceModel.fill);
-    }
-    if (sourceModel.border) {
-      model.border = cloneDeep(sourceModel.border);
+    if (model.baseModelType == 'DDeiLine') {
+
+      if (sourceModel.fill) {
+        model.fill = cloneDeep(sourceModel.fill);
+      } else {
+        delete model.fill
+      }
+      if (sourceModel.color) {
+        model.color = sourceModel.color
+      } else {
+        delete model.color
+      }
+      if (sourceModel.dash) {
+        model.dash = sourceModel.dash
+      } else {
+        delete model.dash
+      }
+
+      if (sourceModel.opacity) {
+        model.opacity = sourceModel.opacity
+      } else {
+        delete model.opacity
+      }
+      if (sourceModel.weight) {
+        model.weight = sourceModel.weight
+      } else {
+        delete model.weight
+      }
+    } else {
+      if (sourceModel.font) {
+        model.font = cloneDeep(sourceModel.font);
+      } else {
+        delete model.font
+      }
+      if (sourceModel.textStyle) {
+        model.textStyle = cloneDeep(sourceModel.textStyle);
+      } else {
+        delete model.textStyle
+      }
+      if (sourceModel.fill) {
+        model.fill = cloneDeep(sourceModel.fill);
+      } else {
+        delete model.fill
+      }
+      if (sourceModel.border) {
+        model.border = cloneDeep(sourceModel.border);
+      } else {
+        delete model.border
+      }
     }
     model.render?.renderCacheData.clear();
   }
