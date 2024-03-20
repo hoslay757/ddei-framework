@@ -91,7 +91,7 @@ export default {
           ok: this.valueChange
         },
         group: "property-dialog"
-      }, { type: 5 }, srcElement,false,true)
+      }, { type: 5 }, srcElement, false, true)
       this.editor.state = editorState
     },
 

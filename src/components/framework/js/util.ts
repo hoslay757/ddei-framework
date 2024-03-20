@@ -295,6 +295,8 @@ class DDeiUtil {
     sourceModel.pvs.forEach(pv => {
       returnModel.pvs.push(clone(pv));
     });
+    returnModel.sptStyle = cloneDeep(sourceModel.sptStyle)
+
     returnModel.textArea = []
     sourceModel.textArea?.forEach(pv => {
       returnModel.textArea.push(clone(pv));

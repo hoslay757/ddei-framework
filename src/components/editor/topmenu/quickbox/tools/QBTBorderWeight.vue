@@ -6,7 +6,7 @@
         <line x1=0 y1=0 x2="100%" y2=0 stroke="black" fill="white" :stroke-width="attrDefine?.value">
         </line>
       </svg>
-      <div v-if="!hiddenCombo" style="display:flex;justify-content: center;align-items: center;">
+      <div v-if="hiddenCombo != '1'" style="display:flex;justify-content: center;align-items: center;">
         <svg class="icon" aria-hidden="true">
           <use xlink:href="#icon-a-ziyuan466"></use>
         </svg>
@@ -35,8 +35,8 @@ export default {
       default: null
     },
     hiddenCombo: {
-      type: Number,
-      default: 0
+      type: String,
+      default: '0'
     },
 
     extcls: {

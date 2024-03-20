@@ -7,7 +7,7 @@
           :stroke-dasharray="attrDefine?.value">
         </line>
       </svg>
-      <div v-if="!hiddenCombo" style="display:flex;justify-content: center;align-items: center;">
+      <div v-if="hiddenCombo != '1'" style="display:flex;justify-content: center;align-items: center;">
         <svg class="icon" aria-hidden="true">
           <use xlink:href="#icon-a-ziyuan466"></use>
         </svg>
@@ -37,8 +37,8 @@ export default {
     },
 
     hiddenCombo: {
-      type: Number,
-      default: 0
+      type: String,
+      default: '0'
     },
 
     extcls: {

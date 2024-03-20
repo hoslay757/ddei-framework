@@ -406,7 +406,7 @@ export default {
       .panel1-content-3 {
         width: 30px;
         padding-left: 10px;
-        margin-top: 10px;
+        margin-top: 7px;
         float: left;
       }
 
@@ -416,7 +416,7 @@ export default {
 
       .panel1-content-4 {
         padding: 0px 5px;
-        margin-top: 12px;
+        margin-top: 10px;
         float: left;
         border-radius: 2px;
       }
