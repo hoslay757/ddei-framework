@@ -5,9 +5,9 @@
       <div class="h3"></div>
       <div class="userinfo" v-show="user?.id != '-99'">{{ userNameFirst }}</div>
       <div class="h4"></div>
-      <div class="loginout" v-show="user?.id != '-99'" @click="loginout">注销</div>
+      <div class="loginout" v-show="user && user.id != '-99'" @click="loginout">注销</div>
       <div class="registry" v-show="user?.id == '-99'" @click="registry">注册</div>
-      <div class="login" v-show="user?.id == '-99'" @click="login">登录</div>
+      <div class="login" v-show="user?.id == '-99' || !user" @click="login">登录</div>
       <div class="h5"></div>
     </div>
     <div class="content">
@@ -90,9 +90,14 @@ export default {
       })
     },
     loginout() {
-      this.editor.files = []
       Cookies.remove('token')
-      this.$router.push('/login')
+      Cookies.remove('user')
+
+      this.refreshEditor()
+
+
+
+      // this.editor.files = files
     },
 
     goBackFileList() {
