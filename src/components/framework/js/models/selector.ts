@@ -437,9 +437,9 @@ class DDeiSelector extends DDeiRectangle {
       let lockWidth = 0
       let scale = 0
       if (models?.length == 1) {
-        scale = models[0].render.getCachedValue("textStyle.scale");
+        scale = models[0]?.render?.getCachedValue("textStyle.scale");
         if (scale == 3) {
-          lockWidth = models[0].render.getCachedValue("textStyle.lockWidth");
+          lockWidth = models[0]?.render?.getCachedValue("textStyle.lockWidth");
         }
       }
 

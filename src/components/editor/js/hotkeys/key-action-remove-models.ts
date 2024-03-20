@@ -32,11 +32,15 @@ class DDeiKeyActionRemoveModels extends DDeiKeyAction {
           optContainer.removeModels(models, true)
           optContainer.cascadeRemoveSelf()
 
+
           ddInstance.bus.push(DDeiEnumBusCommandType.UpdatePaperArea);
           ddInstance.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels);
           ddInstance.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
           ddInstance.bus.push(DDeiEnumBusCommandType.NodifyChange);
           ddInstance.bus.push(DDeiEnumBusCommandType.AddHistroy);
+          ddInstance.bus.push(DDeiEnumBusCommandType.ChangeStageWPV, {
+            dragObj: { dx: 0, dy: 0 }, x: 0, y: 0
+          })
           //渲染图形
           ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
 
