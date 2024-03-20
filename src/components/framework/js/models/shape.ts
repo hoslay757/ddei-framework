@@ -2141,14 +2141,14 @@ abstract class DDeiAbstractShape {
         let bnumber = -1
 
         if (a.baseModelType == 'DDeiLine') {
-          anumber = 2000 + (a.zIndex ? b.zIndex : 0)
+          anumber = 1000 + (a.zIndex ? b.zIndex : 0)
         } else if (a.id.startsWith("lsm_")) {
           anumber = 2100 + (a.zIndex ? b.zIndex : 0)
         } else {
           anumber = 1000 + (a.zIndex ? b.zIndex : 0)
         }
         if (b.baseModelType == 'DDeiLine') {
-          bnumber = 2000 + (b.zIndex ? b.zIndex : 0)
+          bnumber = 1000 + (b.zIndex ? b.zIndex : 0)
         } else if (b.id.startsWith("lsm_")) {
           bnumber = 2100 + (b.zIndex ? b.zIndex : 0)
         } else {

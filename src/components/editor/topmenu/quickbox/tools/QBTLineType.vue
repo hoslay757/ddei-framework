@@ -26,7 +26,7 @@ export default {
       type: String,
       default: null
     },
-    
+
     extcls: {
       type: String,
       default: null,
@@ -50,7 +50,7 @@ export default {
 
   },
   created() {
-    
+
   },
   mounted() {
     //获取编辑器
@@ -84,7 +84,7 @@ export default {
           ok: this.valueChange
         },
         group: "property-dialog"
-      }, { type: 5 }, srcElement,false,true)
+      }, { type: 5 }, srcElement, false, true)
     },
 
     //获取数据值
@@ -212,7 +212,4 @@ export default {
   color: #e6e6e6;
   cursor: not-allowed;
 }
-
-
-
 </style>

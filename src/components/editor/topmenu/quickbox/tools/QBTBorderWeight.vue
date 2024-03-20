@@ -1,12 +1,12 @@
 <template>
-  <div 
+  <div
     :class="{ 'ddei_pv_border_weight_combox': true, 'ddei_pv_border_weight_combox_disabled': !attrDefine || attrDefine.readonly }">
     <div class="textinput" @click="attrDefine && !attrDefine.readonly && showDialog($event)">
-      <svg class="div_input" >
+      <svg class="div_input">
         <line x1=0 y1=0 x2="100%" y2=0 stroke="black" fill="white" :stroke-width="attrDefine?.value">
         </line>
       </svg>
-      <div style="display:flex;justify-content: center;align-items: center;">
+      <div v-if="!hiddenCombo" style="display:flex;justify-content: center;align-items: center;">
         <svg class="icon" aria-hidden="true">
           <use xlink:href="#icon-a-ziyuan466"></use>
         </svg>
@@ -24,7 +24,7 @@ import DDeiEnumOperateState from '@/components/framework/js/enums/operate-state'
 import DDeiModelArrtibuteValue from '@/components/framework/js/models/attribute/attribute-value';
 import DDeiEditorUtil from '@/components/editor/js/util/editor-util';
 export default {
-  name: "DDei-Editor-QBT-Border-Dash",
+  name: "DDei-Editor-QBT-Border-Weight",
   extends: null,
   mixins: [],
   components: {
@@ -34,7 +34,11 @@ export default {
       type: String,
       default: null
     },
-    
+    hiddenCombo: {
+      type: Number,
+      default: 0
+    },
+
     extcls: {
       type: String,
       default: null,
@@ -55,7 +59,7 @@ export default {
 
   },
   created() {
-    
+
   },
   mounted() {
     //获取编辑器
@@ -72,7 +76,7 @@ export default {
           if (valueDefine && !valueDefine.isDefault) {
             this.value = valueDefine.value;
           }
-          
+
         } else {
           this.attrDefine = null
         }
@@ -86,30 +90,30 @@ export default {
 
         value: this.attrDefine.value,
         dataSource: [
-          {value:"0.1"},
-          {value:"0.5"},
-          {value:"1"},
-          {value:"2"},
-          {value:"3"},
-          {value:"4"},
-          {value:"5"},
-          {value:"6"},
-          {value:"8"},
-          {value:"10"},
-          {value:"12"},
-        ],  
+          { value: "0.1" },
+          { value: "0.5" },
+          { value: "1" },
+          { value: "2" },
+          { value: "3" },
+          { value: "4" },
+          { value: "5" },
+          { value: "6" },
+          { value: "8" },
+          { value: "10" },
+          { value: "12" },
+        ],
         callback: {
           ok: this.valueChange
         },
         group: "property-dialog"
-      }, { type: 5 }, srcElement,false,true)
+      }, { type: 5 }, srcElement, false, true)
     },
 
     //获取数据值
     getDataValue() {
       if (this.attrDefine) {
         //文本编辑状态
-       
+
         let dataValue = this.attrDefine.value;
         if (!dataValue) {
           dataValue = DDeiUtil.getDataByPathList(this.attrDefine.model, this.attrDefine.code, this.attrDefine.mapping);
@@ -210,8 +214,8 @@ export default {
   .div_input {
     flex: 1 1 calc(100% - 10px);
     width: calc(100% - 10px);
-    height:3px;
-    
+    height: 3px;
+
   }
 }
 

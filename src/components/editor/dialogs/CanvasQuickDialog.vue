@@ -81,30 +81,23 @@
           <div class="text">颜色</div>
         </div>
         <div class="panel6-content dash">
-          <QBTBorderWeight attrCode="weight"></QBTBorderWeight>
+          <QBTBorderWeight attrCode="weight" hiddenCombo="1"></QBTBorderWeight>
           <div class="text">粗细</div>
         </div>
         <div class="panel6-content dash">
-          <QBTBorderDash attrCode="dash"></QBTBorderDash>
+          <QBTBorderDash attrCode="dash" hiddenCombo="1"></QBTBorderDash>
           <div class="text">虚线</div>
         </div>
       </div>
       <div class="panel6" style="border-left:1px solid #E2E2EB;">
-        <div class="panel6-content">
+        <div class="panel6-content brush" @click="execBrushAction($event)">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-a-ziyuan485"></use>
           </svg>
           <div class="text">格式刷</div>
         </div>
       </div>
-      <div class="panel6" style="border-left:1px solid #E2E2EB;">
-        <div class="panel6-content">
-          <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-a-ziyuan407"></use>
-          </svg>
-          <div class="text">插入图形</div>
-        </div>
-      </div>
+
     </div>
     <div v-if="operateState != 50 && !allLine" class="content">
       <div class="panel1">
@@ -665,14 +658,13 @@ export default {
       }
 
       .type {
-        padding-left: 10px;
-        padding-right: 10px;
+        padding-left: 5px;
+        padding-right: 5px;
 
         .ddei_pv_line_type_combox {
           width: 22px;
           height: 28px;
-          margin: 0 auto;
-          margin-top: 4px;
+          margin: 5px auto 1px auto;
 
           :deep(.icon) {
             flex: 0 0 26px !important;
@@ -681,14 +673,14 @@ export default {
       }
 
       .color2 {
-        padding-left: 10px;
-        padding-right: 10px;
+
+        padding-left: 5px;
+        padding-right: 5px;
 
         .ddei_editor_quick_fat_item_box {
           width: 22px;
           height: 28px;
-          margin: 0 auto;
-          margin-top: 4px;
+          margin: 5px auto 3px auto;
 
           :deep(.icon) {
             flex: 0 0 26px !important;
@@ -697,6 +689,11 @@ export default {
       }
 
       .dash {
+        width: 50px;
+        margin-top: 8px;
+      }
+
+      .brush {
         width: 50px;
         margin-top: 4px;
       }

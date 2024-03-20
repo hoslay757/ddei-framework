@@ -1,12 +1,13 @@
 <template>
-  <div 
+  <div
     :class="{ 'ddei_pv_border_dash_combox': true, 'ddei_pv_border_dash_combox_disabled': !attrDefine || attrDefine.readonly }">
     <div class="textinput" @click="attrDefine && !attrDefine.readonly && showDialog($event)">
       <svg class="div_input">
-        <line x1=0 y1=0 x2="100%" y2=0 stroke="black" fill="white" stroke-width="3" :stroke-dasharray="attrDefine?.value">
+        <line x1=0 y1=0 x2="100%" y2=0 stroke="black" fill="white" stroke-width="3"
+          :stroke-dasharray="attrDefine?.value">
         </line>
       </svg>
-      <div style="display:flex;justify-content: center;align-items: center;">
+      <div v-if="!hiddenCombo" style="display:flex;justify-content: center;align-items: center;">
         <svg class="icon" aria-hidden="true">
           <use xlink:href="#icon-a-ziyuan466"></use>
         </svg>
@@ -34,7 +35,12 @@ export default {
       type: String,
       default: null
     },
-    
+
+    hiddenCombo: {
+      type: Number,
+      default: 0
+    },
+
     extcls: {
       type: String,
       default: null,
@@ -54,7 +60,7 @@ export default {
 
   },
   created() {
-    
+
   },
   mounted() {
     //获取编辑器
@@ -88,7 +94,7 @@ export default {
           ok: this.valueChange
         },
         group: "property-dialog"
-      }, { type: 5 }, srcElement,false,true)
+      }, { type: 5 }, srcElement, false, true)
     },
 
     //获取数据值
