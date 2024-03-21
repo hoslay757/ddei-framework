@@ -430,21 +430,33 @@ class DDeiLayer {
   * @returns 操作点
   */
   getOpPointByPos(x: number = 0, y: number = 0): object {
+    let minLength = Infinity
+    let minPoint = null
     if (x && y && (this.opPoints?.length > 0 || this.centerOpPoints?.length > 0)) {
       for (let i = 0; i < this.opPoints?.length; i++) {
         let point = this.opPoints[i]
-        if (Math.abs(x - point.x) <= 8 && Math.abs(y - point.y) <= 8) {
-          return point;
+        let absX = Math.abs(x - point.x)
+        let absY = Math.abs(y - point.y)
+        if (absX <= 8 && absY <= 8) {
+          if (absX + absY < minLength) {
+            minLength = absX + absY
+            minPoint = point
+          }
         }
       }
       for (let i = 0; i < this.centerOpPoints?.length; i++) {
         let point = this.centerOpPoints[i]
-        if (Math.abs(x - point.x) <= 8 && Math.abs(y - point.y) <= 8) {
-          return point;
+        let absX = Math.abs(x - point.x)
+        let absY = Math.abs(y - point.y)
+        if (absX <= 8 && absY <= 8) {
+          if (absX + absY < minLength) {
+            minLength = absX + absY
+            minPoint = point
+          }
         }
       }
     }
-    return null;
+    return minPoint;
   }
 
 

@@ -836,6 +836,7 @@ class DDeiLayerCanvasRender {
                   }
                 }
                 if (!isStop) {
+
                   let passIndex = this.stageRender.dragObj.passIndex;
                   //如果是开始或结束节点的拖拽，判断落点是否在操作点上，如果在且满足关联条件，则关联
                   if (passIndex == 1) {
@@ -861,6 +862,7 @@ class DDeiLayerCanvasRender {
                     }
 
                     if (!skip) {
+
                       let distLinks = this.stage?.getDistModelLinks(model.id);
                       distLinks?.forEach(dl => {
                         if (dl.dmpath == dmpath) {
@@ -879,6 +881,7 @@ class DDeiLayerCanvasRender {
                         let smodel = opPoint.model;
                         //创建连接点
                         let id = "_" + DDeiUtil.getUniqueCode()
+
                         smodel.exPvs[id] = new Vector3(opPoint.x, opPoint.y, opPoint.z)
                         smodel.exPvs[id].rate = opPoint.rate
                         smodel.exPvs[id].sita = opPoint.sita
@@ -891,6 +894,7 @@ class DDeiLayerCanvasRender {
                           dmpath: dmpath,
                           stage: this.stage
                         });
+
                         this.stage?.addLink(link)
                         model?.initPVS()
                         smodel.updateLinkModels();
