@@ -84,6 +84,7 @@ class DDeiEditorUtil {
             //设置属性值
             let editor = DDeiEditor.ACTIVE_INSTANCE;
             let ddInstance = editor?.ddInstance;
+            delete ddInstance.stage.brushDataText
             if (editor.quickEditorModel) {
               editor.quickEditorModel.sptStyle = ddInstance.stage.render.editorShadowControl.sptStyle
               ddInstance.stage.render.editorShadowControl = null;

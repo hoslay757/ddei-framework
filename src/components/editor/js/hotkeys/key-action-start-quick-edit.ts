@@ -199,6 +199,7 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
           inputEle.selectionEnd = inputEle.value.length // 获取输入框里的长度。
           //修改编辑器状态为快捷编辑中
           editor.changeState(DDeiEditorState.QUICK_EDITING);
+          delete ddInstance.stage.brushData
           ddInstance.stage.render.operateState = DDeiEnumOperateState.QUICK_EDITING
           //发出通知，选中的焦点发生变化
           editor.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels);

@@ -46,8 +46,9 @@
           <QBTEditColor attrCode="font.color" img="icon-a-ziyuan463"></QBTEditColor>
         </div>
       </div>
+
       <div class="panel2" title="格式刷" @click="execBrushAction($event)">
-        <div class="panel2-content">
+        <div :class="{ 'panel2-content': true, 'brush-selected': editor?.ddInstance?.stage?.brushDataText }">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-a-ziyuan485"></use>
           </svg>
@@ -90,7 +91,8 @@
         </div>
       </div>
       <div class="panel6" style="border-left:1px solid #E2E2EB;">
-        <div class="panel6-content brush" @click="execBrushAction($event)">
+        <div :class="{ 'panel6-content brush': true, 'brush-selected': editor?.ddInstance?.stage?.brushData }"
+          @click="execBrushAction($event)">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-a-ziyuan485"></use>
           </svg>
@@ -128,7 +130,7 @@
         </div>
       </div>
       <div class="panel2" title="格式刷" @click="execBrushAction($event)">
-        <div class="panel2-content">
+        <div :class="{ 'panel2-content': true, 'brush-selected': editor?.ddInstance?.stage?.brushData }">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-a-ziyuan485"></use>
           </svg>
@@ -205,6 +207,7 @@ import QBTLinePointType from "../topmenu/quickbox/tools/QBTLinePointType.vue"
 import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type.js";
 import DDeiEnumKeyActionInst from "../js/enums/key-action-inst.js";
 import DDeiEditorUtil from "../js/util/editor-util.js";
+import DDeiEditorState from "../js/enums/editor-state.js";
 
 export default {
   name: "DDei-Editor-Canvas-Quick-Pop",
@@ -226,8 +229,12 @@ export default {
   },
   computed: {},
   components: {},
-  watch: {},
-  created() { },
+  watch: {
+
+  },
+  created() {
+
+  },
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
@@ -355,7 +362,19 @@ export default {
     * 执行格式刷
     */
     execBrushAction(evt: Event) {
-      DDeiEnumKeyActionInst.BrushData.action(evt, this.editor.ddInstance, this.editor);
+      if (this.editor.state == DDeiEditorState.QUICK_EDITING) {
+        if (!this.editor?.ddInstance?.stage?.brushDataText) {
+          DDeiEnumKeyActionInst.BrushData.action(evt, this.editor.ddInstance, this.editor);
+        } else {
+          delete this.editor.ddInstance.stage.brushDataText
+        }
+      } else {
+        if (!this.editor?.ddInstance?.stage?.brushData) {
+          DDeiEnumKeyActionInst.BrushData.action(evt, this.editor.ddInstance, this.editor);
+        } else {
+          delete this.editor.ddInstance.stage.brushData
+        }
+      }
     },
   }
 };
@@ -729,5 +748,11 @@ export default {
     }
 
   }
+
+  .brush-selected {
+    background-color: #e6e6e6;
+  }
+
+
 }
 </style>

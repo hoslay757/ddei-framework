@@ -16,7 +16,7 @@ import DDeiStageCanvasRender from './stage-render.js';
 import { Vector3, Matrix3 } from 'three';
 import DDeiLink from '../../models/link.js';
 import layer from '@/components/editor/configs/layer.js';
-import { reduce } from 'lodash';
+import { cloneDeep } from 'lodash'
 /**
  * DDeiLayer的渲染器类，用于渲染文件
  * 渲染器必须要有模型才可以初始化
@@ -1186,7 +1186,34 @@ class DDeiLayerCanvasRender {
           this.model.shadowControls = [];
           break;
         case DDeiEnumOperateState.QUICK_EDITING_TEXT_SELECTING:
+          delete this.stage.brushData
+          //执行粘贴样式动作
+          if (this.stage.brushDataText?.length > 0) {
+            let shadowControl = this.stage.render.editorShadowControl
+            if (shadowControl) {
+              let editorText = DDeiUtil.getEditorText();
+              //开始光标与结束光标
+              let curSIdx = -1
+              let curEIdx = -1
+              if (editorText) {
 
+                curSIdx = editorText.selectionStart
+                curEIdx = editorText.selectionEnd
+                let tempI = 0;
+                if (curSIdx > -1 && curEIdx > -1 && curSIdx <= curEIdx) {
+                  for (; curSIdx < curEIdx; curSIdx++) {
+                    shadowControl.sptStyle[curSIdx] = cloneDeep(this.stage.brushDataText[tempI])
+                    tempI++
+                    if (tempI >= this.stage.brushDataText.length) {
+                      tempI = 0
+                    }
+                  }
+
+                }
+              }
+            }
+            delete this.stage.brushDataText
+          }
           this.stageRender.operateState = DDeiEnumOperateState.QUICK_EDITING;
           //发出通知，选中的焦点发生变化
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.TextEditorChangeSelectPos);
@@ -1592,7 +1619,10 @@ class DDeiLayerCanvasRender {
           this.model.opLine = null;
           let shadowControl = this.stageRender.editorShadowControl;
           if (shadowControl?.isInTextArea(ex, ey)) {
+
             this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'text' }, evt);
+
+
           } else {
             this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
           }

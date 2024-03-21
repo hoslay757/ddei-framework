@@ -672,6 +672,22 @@ abstract class DDeiAbstractShape {
   }
 
   /**
+   * 获取特殊文本样式，返回所有的样式
+   * @param sIdx 开始文本坐标
+   * @param eIdx 结束文本坐标
+   */
+  getSptAllStyles(sIdx: number, eIdx: number) {
+    let returnArray = []
+    if (sIdx > -1 && eIdx > -1 && sIdx <= eIdx) {
+      for (; sIdx < eIdx; sIdx++) {
+        let v = DDeiUtil.getDataByPathList(this, "sptStyle." + sIdx);
+        returnArray.push(v)
+      }
+    }
+    return returnArray;
+  }
+
+  /**
    * 清空特殊文本样式
    */
   clearSptStyle() {
