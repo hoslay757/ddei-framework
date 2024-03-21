@@ -1449,6 +1449,7 @@ class DDeiLayerCanvasRender {
         // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
         let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, ex, ey, true, true);
         if (operateControls != null && operateControls.length > 0) {
+
           operateControls[0].render.changeOpPoints(ex, ey, 1);
 
         }
@@ -1693,7 +1694,10 @@ class DDeiLayerCanvasRender {
         //光标所属位置是否有控件
         //有控件：分发事件到当前控件
         if (operateControls != null && operateControls.length > 0) {
-          operateControls[0].render.mouseMove(evt);
+          operateControls.forEach(control => {
+            control.render.mouseMove(evt)
+          })
+          // operateControls[0].render.mouseMove(evt);
           this.stage.ddInstance.bus.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'all-scroll' }, evt);
         } else if (!inSelector || this.stageRender.selector.passIndex == -1) {
           if (this.stage.ddInstance?.editMode == 1) {
