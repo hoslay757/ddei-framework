@@ -326,7 +326,11 @@ class DDeiLayerCanvasRender {
       ctx.save();
       let firstOp2Point, beforeOp2Point
       this.model?.opPoints.forEach(point => {
-        if (point.mode == 3) {
+        if (!point || point.isSplit) {
+          beforeOp2Point = null
+          firstOp2Point = null
+
+        } else if (point.mode == 3) {
           if (point.oppoint == 2 || point.oppoint == 4) {
             if (!beforeOp2Point) {
               beforeOp2Point = point

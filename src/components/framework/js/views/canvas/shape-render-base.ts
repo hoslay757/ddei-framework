@@ -223,6 +223,7 @@ class DDeiAbstractShapeRender {
 
   changeOpPoints(ex: number, ey: number, pointMode: number | null = null) {
     //获取直线连接操作点
+    let appendPoints = []
     let hasPoint = false;
     let projPoint;
     if (this.stageRender?.operateState == DDeiEnumOperateState.LINE_POINT_CHANGING) {
@@ -284,7 +285,7 @@ class DDeiAbstractShapeRender {
         let angle = DDeiUtil.getLineAngle(this.model.cpv.x, this.model.cpv.y, op.x, op.y)
         angle -= (this.model.rotate ? this.model.rotate : 0)
         op.sita = angle
-        this.layer.opPoints.push(op);
+        appendPoints.push(op)
       }
     })
 
@@ -307,12 +308,16 @@ class DDeiAbstractShapeRender {
         angle -= (this.model.rotate ? this.model.rotate : 0)
         po.sita = angle
         this.stage.tempCursorOPpoint = po
-        this.layer.opPoints.push(po);
-
+        appendPoints.push(po)
       }
     })
+    if (appendPoints.length > 0) {
+      appendPoints.forEach(po => {
+        this.layer.opPoints.push(po);
+      })
+      this.layer.opPoints.push({ isSplit: 1 })
+    }
     if (hasPoint) {
-
       this.stage.ddInstance.bus.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'pointer' });
     }
   }

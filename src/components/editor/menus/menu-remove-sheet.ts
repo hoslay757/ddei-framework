@@ -2,6 +2,8 @@ import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-
 import DDeiEditor from "../js/editor";
 import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
 import DDeiEditorState from "../js/enums/editor-state";
+import DDeiUtil from "@/components/framework/js/util";
+import DDeiEditorUtil from "../js/util/editor-util";
 
 /**
  * 插入列菜单
@@ -35,13 +37,48 @@ class MenuRemoveSheet {
         ddInstance.stage = stage;
         //加载场景渲染器
         stage.initRender();
-        editor.changeState(DDeiEditorState.DESIGNING);
+
         editor.editorViewer?.changeFileModifyDirty();
         editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, null);
         //记录日志
         editor.bus.push(DDeiEnumBusCommandType.AddHistroy)
         editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, { parts: ["bottommenu"] })
         editor.bus?.executeAll();
+        MenuRemoveSheet.showPopPicker(stage)
+        editor.changeState(DDeiEditorState.DESIGNING);
+      }
+    }
+  }
+
+  static showPopPicker(stage) {
+    //显示弹出框
+    if (stage.selectedModels?.size > 0) {
+      let models = Array.from(stage.selectedModels.values())
+      if (models?.length > 0) {
+        let height = 100;
+        //计算弹出框的显示位置，这里需要把模型的坐标转换为dom的坐标
+        let modelPos = DDeiUtil.getModelsDomAbsPosition(models)
+        let left = modelPos.left + (modelPos.width / 2)
+        let top = modelPos.top + (modelPos.height / 2)
+        if (modelPos.top - height <= modelPos.cTop) {
+          if (modelPos.height > 400) {
+            top = top + height + 20
+          } else {
+            top = top + modelPos.height / 2 + 20;
+          }
+        } else {
+          top = top - height;
+        }
+        if (top < 0) {
+          top = modelPos.cTop + modelPos.cHeight / 2
+        }
+
+        if (left < 0) {
+          left = 0
+        }
+        DDeiEditorUtil.showDialog("canvas_quick_dialog", {
+          group: "canvas-pop"
+        }, { type: 99, left: left, top: top, hiddenMask: true }, null, true, true)
       }
     }
   }

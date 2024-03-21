@@ -572,12 +572,16 @@ export default {
             z: 0,
           };
         }
+
         this.editor.changeState(DDeiEditorState.DESIGNING);
         this.editor.editorViewer?.changeFileModifyDirty();
         ddInstance.bus?.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
         ddInstance.bus?.push(DDeiEnumBusCommandType.RefreshShape);
         ddInstance.bus?.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
         ddInstance.bus.executeAll();
+
+        DDeiEditorUtil.closeDialogs(null, true)
+        DDeiEditorUtil.closeDialogs(null, false)
 
         //打开新文件
         let activeIndex = sheets.length - 1;
@@ -620,10 +624,49 @@ export default {
         this.currentStage = stage;
         //加载场景渲染器
         stage.initRender();
-        this.editor.changeState(DDeiEditorState.DESIGNING);
+
         ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
         ddInstance.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
         ddInstance.bus.executeAll();
+
+        DDeiEditorUtil.closeDialogs(null, true)
+        DDeiEditorUtil.closeDialogs(null, false)
+        this.showPopPicker(stage)
+        this.editor.changeState(DDeiEditorState.DESIGNING);
+
+      }
+    },
+
+    showPopPicker(stage) {
+      //显示弹出框
+      if (stage.selectedModels?.size > 0) {
+        let models = Array.from(stage.selectedModels.values())
+        if (models?.length > 0) {
+          let height = 100;
+          //计算弹出框的显示位置，这里需要把模型的坐标转换为dom的坐标
+          let modelPos = DDeiUtil.getModelsDomAbsPosition(models)
+          let left = modelPos.left + (modelPos.width / 2)
+          let top = modelPos.top + (modelPos.height / 2)
+          if (modelPos.top - height <= modelPos.cTop) {
+            if (modelPos.height > 400) {
+              top = top + height + 20
+            } else {
+              top = top + modelPos.height / 2 + 20;
+            }
+          } else {
+            top = top - height;
+          }
+          if (top < 0) {
+            top = modelPos.cTop + modelPos.cHeight / 2
+          }
+
+          if (left < 0) {
+            left = 0
+          }
+          DDeiEditorUtil.showDialog("canvas_quick_dialog", {
+            group: "canvas-pop"
+          }, { type: 99, left: left, top: top, hiddenMask: true }, null, true, true)
+        }
       }
     },
 
