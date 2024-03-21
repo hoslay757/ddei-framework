@@ -669,6 +669,9 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         //获取当前层次选择的控件
         //计算移动后的坐标以及大小
         let pContainerModel = this.stage.render.currentOperateContainer;
+        if (!pContainerModel) {
+          pContainerModel = this.stage.layers[this.stage.layerIndex]
+        }
         let selectedModels = pContainerModel.getSelectedModels();
         let layer = this.stage.layers[this.stage.layerIndex]
         selectedModels.forEach(m => {

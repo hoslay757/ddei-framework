@@ -37,6 +37,9 @@ class DDeiBusCommandCancelCurLevelSelectedModels extends DDeiBusCommand {
       if (!optContainer) {
         optContainer = stage.render.currentOperateContainer;
       }
+      if (!optContainer) {
+        optContainer = stage.layers[stage.layerIndex]
+      }
       if (optContainer) {
         if (data?.curLevel == true) {
           optContainer.cancelSelectModels(null, ignoreModels);
