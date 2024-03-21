@@ -73,7 +73,12 @@ class DDeiKeyActionDownMoveModels extends DDeiKeyAction {
           //辅助对齐线宽度
           moveSize = 10;
         }
-
+        let moveOriginLines = []
+        models.forEach(md => {
+          if (md.baseModelType == 'DDeiLine') {
+            moveOriginLines.push(md.id)
+          }
+        });
         let outRect = DDeiAbstractShape.getOutRectByPV(models);
         let deltaX, deltaY
         //上
@@ -116,7 +121,7 @@ class DDeiKeyActionDownMoveModels extends DDeiKeyAction {
         }
         let stage = ddInstance.stage
 
-        DDeiAbstractShape.moveModels(models, deltaX, deltaY);
+        DDeiAbstractShape.moveModels(models, deltaX, deltaY, moveOriginLines);
 
         stage.layers[stage.layerIndex].opPoints = []
         stage.layers[stage.layerIndex].opLine = null;

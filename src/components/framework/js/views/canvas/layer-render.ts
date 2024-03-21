@@ -584,10 +584,14 @@ class DDeiLayerCanvasRender {
       let isStop = false;
       if (opPoint) {
         //只有在控件内部才触发
-        let projPoint = null;
-        //是否允许在内部触发
-        let oppInner = DDeiUtil.getControlDefine(opPoint.model)?.define?.oppInner;
-        if (opPoint.oppoint == 3 || (oppInner == 0 && (projPoint = opPoint.model.getProjPoint({ x: ex, y: ey }, { in: -3, out: 15 }, 1, 2))) != null) {
+        let projPoint = null
+
+        let innerSize = 0
+        let outRect = DDeiAbstractShape.getOutRectByPV([opPoint.model])
+        if (outRect.height > 20 && outRect.width > 20) {
+          innerSize = -5;
+        }
+        if (opPoint.oppoint == 3 || (projPoint = opPoint.model.getProjPoint({ x: ex, y: ey }, { in: innerSize, out: 15 }, 1, 2))) {
           let modeName = DDeiUtil.getConfigValue("MODE_NAME", this.stage.ddInstance);
           let accessLink = DDeiUtil.isAccess(
             DDeiEnumOperateType.LINK, null, null, modeName,

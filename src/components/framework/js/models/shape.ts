@@ -1748,7 +1748,7 @@ abstract class DDeiAbstractShape {
    * @param dx 
    * @param dy 
    */
-  static moveModels(models: DDeiAbstractShape[], dx: number = 0, dy: number = 0) {
+  static moveModels(models: DDeiAbstractShape[], dx: number = 0, dy: number = 0, ignoreModelIds: string[]) {
     if ((dx != 0 || dy != 0) && models?.length > 0) {
       let moveMatrix = new Matrix3(
         1, 0, dx,
@@ -1756,7 +1756,7 @@ abstract class DDeiAbstractShape {
         0, 0, 1);
       models.forEach(m => {
         m.transVectors(moveMatrix)
-        m.updateLinkModels()
+        m.updateLinkModels(ignoreModelIds)
       })
     }
   }
