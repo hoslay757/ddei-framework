@@ -50,6 +50,22 @@ class DDeiBusCommandModelChangeContainer extends DDeiBusCommand {
           if (!oldContainer && operateModels[0].pModel) {
             oldContainer = operateModels[0].pModel;
           }
+          if (oldContainer) {
+            let sortOperateModels = []
+            let appendTailModels = []
+            operateModels.forEach(md => {
+              let index = oldContainer?.midList.indexOf(md.id)
+              if (index != -1) {
+                sortOperateModels[index] = md
+              } else {
+                appendTailModels.push(md)
+              }
+            })
+            appendTailModels.forEach(m => {
+              sortOperateModels.push(m)
+            })
+            operateModels = sortOperateModels
+          }
           if (newContainer.baseModelType == "DDeiLayer" && !newContainer.layoutManager) {
             let freeLayoutManager = DDeiLayoutManagerFactory.getLayoutInstance("free");
             freeLayoutManager.container = newContainer;

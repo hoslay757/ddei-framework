@@ -249,11 +249,11 @@ class DDeiLayer {
       model.destroyed();
     }
     //清除原有的zindex属性
-    model.zIndex = null;
+    // model.zIndex = null;
     model.layer = null;
     model.stage = null;
     model.render = null;
-    this.resortModelByZIndex();
+    // this.resortModelByZIndex();
     //重新计算错线
     if (this.stage?.render) {
       this.stage.render.refreshJumpLine = false
