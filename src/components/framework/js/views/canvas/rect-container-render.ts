@@ -22,6 +22,12 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
   //类名，用于反射和动态加载
   static ClsName: string = "DDeiRectContainerCanvasRender";
   // ============================== 方法 ===============================
+
+  enableRefreshShape() {
+    this.model.models?.forEach(model => {
+      model.render?.enableRefreshShape()
+    })
+  }
   /**
      * 创建图形
      */

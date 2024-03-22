@@ -54,7 +54,7 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
       let changeContainer = data.changeContainer ? data.changeContainer : false;
       let newContainer = data.newContainer;
       let oldContainer = data.oldContainer;
-
+      let sample = data.sample
       let models = data.models;
       let stage = bus.ddInstance.stage;
       let fModel = null
@@ -127,10 +127,7 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
           0, 1, ym,
           0, 0, 1,
         );
-
-        model.transVectors(moveMatrix);
-
-
+        model.transVectors(moveMatrix, { skipSample: sample == 1 ? false : true });
       });
 
       models[0].layer.dragInPoints = []

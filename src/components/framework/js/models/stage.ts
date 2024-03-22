@@ -266,13 +266,13 @@ class DDeiStage {
     }
   }
 
-  getPaperArea(paperType:string) {
+  getPaperArea(paperType: string) {
     let rat1 = this.ddInstance.render.ratio;
     let stageRatio = this.getStageRatio()
     let offsetWidth = 1 * stageRatio / 2;
 
     //纸张的像素大小
-    let paperSize = DDeiUtil.getPaperSize(this,paperType)
+    let paperSize = DDeiUtil.getPaperSize(this, paperType)
 
     let paperWidth = paperSize.width / rat1;
     let paperHeight = paperSize.height / rat1;
@@ -589,6 +589,12 @@ class DDeiStage {
    */
   changeSelecetdModels(selectedModels: Map<string, DDeiAbstractShape> | null) {
     if (this.selectedModels != selectedModels) {
+      this.selectedModels?.forEach(item => {
+        item.render?.enableRefreshShape()
+      })
+      selectedModels?.forEach(item => {
+        item.render?.enableRefreshShape()
+      })
       this.selectedModels = selectedModels;
     }
   }

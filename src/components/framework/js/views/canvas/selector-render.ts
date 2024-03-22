@@ -490,6 +490,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         let ctx = canvas.getContext('2d');
         //保存状态
         ctx.save();
+        model.render.enableRefreshShape()
         if (model.baseModelType == "DDeiLine") {
           model.render.drawLine({ color: "red", dash: [] });
         } else {

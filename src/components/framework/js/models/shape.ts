@@ -6,6 +6,7 @@ import DDeiUtil from '../util'
 import { Matrix3, Vector3 } from 'three';
 import { cloneDeep, clone, isNumber } from 'lodash'
 import type DDei from '../ddei'
+import DDeiEnumOperateState from '../enums/operate-state'
 /**
  * 抽象的图形类，定义了大多数图形都有的属性和方法
  */
@@ -464,7 +465,6 @@ abstract class DDeiAbstractShape {
 
       this.apvs = apvs
     }
-
   }
 
   getOperatePVS(compose: boolean = false) {
@@ -517,6 +517,7 @@ abstract class DDeiAbstractShape {
       }
 
       this.executeSample();
+
     } else {
       if (clonePV) {
         this.pvs = cloneDeep(source.pvs)
@@ -538,42 +539,68 @@ abstract class DDeiAbstractShape {
       let tcop = this.composes[i]
       tcop.syncVectors(scop, clonePV)
     }
-
+    this.render?.enableRefreshShape()
   }
 
   /**
    * 变换向量
    */
-  transVectors(matrix: Matrix3, params: { ignoreBPV: boolean, ignoreOVS: boolean, ignoreHPV: boolean, ignoreComposes: boolean }): void {
+  transVectors(matrix: Matrix3, params: { skipSample: boolean, ignoreBPV: boolean, ignoreOVS: boolean, ignoreHPV: boolean, ignoreComposes: boolean }): void {
 
     this.cpv.applyMatrix3(matrix);
     if (this.poly == 2) {
-      if (!params?.ignoreHPV) {
-        this.hpv.forEach(pv => {
-          pv.applyMatrix3(matrix);
-        })
-      }
-      for (let i in this.exPvs) {
-        let pv = this.exPvs[i];
-        pv.applyMatrix3(matrix)
-      };
-      if (!params?.ignoreBPV) {
-        this.bpv.applyMatrix3(matrix);
-      }
-      if (!params?.ignoreOVS) {
-        this.ovs?.forEach(pv => {
-          pv.applyMatrix3(matrix);
-          if (pv.ovi) {
-            pv.ovi.applyMatrix3(matrix);
-          }
-        })
-      }
+      //重新计算
+      if (!params?.skipSample) {
+        if (!params?.ignoreHPV) {
+          this.hpv.forEach(pv => {
+            pv.applyMatrix3(matrix);
+          })
+        }
+        for (let i in this.exPvs) {
+          let pv = this.exPvs[i];
+          pv.applyMatrix3(matrix)
+        };
+        if (!params?.ignoreBPV) {
+          this.bpv.applyMatrix3(matrix);
+        }
+        if (!params?.ignoreOVS) {
+          this.ovs?.forEach(pv => {
+            pv.applyMatrix3(matrix);
+            if (pv.ovi) {
+              pv.ovi.applyMatrix3(matrix);
+            }
+          })
+        }
 
-      this.initHPV();
-      this.calRotate()
-      this.executeSample();
-      this.calLoosePVS();
-
+        this.initHPV();
+        this.calRotate()
+        this.executeSample();
+        this.calLoosePVS();
+      } else {
+        if (!params?.ignoreHPV) {
+          this.hpv.forEach(pv => {
+            pv.applyMatrix3(matrix);
+          })
+        }
+        for (let i in this.exPvs) {
+          let pv = this.exPvs[i];
+          pv.applyMatrix3(matrix)
+        };
+        this.pvs.forEach(pv => {
+          pv.applyMatrix3(matrix)
+        });
+        if (!params?.ignoreBPV) {
+          this.bpv.applyMatrix3(matrix);
+        }
+        if (!params?.ignoreOVS) {
+          this.ovs?.forEach(pv => {
+            pv.applyMatrix3(matrix);
+            if (pv.ovi) {
+              pv.ovi.applyMatrix3(matrix);
+            }
+          })
+        }
+      }
     } else {
       this.pvs.forEach(pv => {
         pv.applyMatrix3(matrix)
@@ -1623,6 +1650,11 @@ abstract class DDeiAbstractShape {
       }
     })
 
+    if (this.render.tempCanvas) {
+      this.render.tempCanvas.remove()
+      delete this.render.tempCanvas
+    }
+
     this.render = null
   }
   /**
@@ -1860,6 +1892,9 @@ abstract class DDeiAbstractShape {
 
 
       item.initPVS()
+
+      item.render?.enableRefreshShape()
+
     })
   }
 
@@ -2184,6 +2219,8 @@ abstract class DDeiAbstractShape {
         if (b.baseModelType == 'DDeiContainer' && b.layout == 'compose') {
           bnumber -= 5000
         }
+
+
         return bnumber - anumber; //降序排序
 
       });

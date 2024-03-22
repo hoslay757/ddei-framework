@@ -84,6 +84,19 @@ class DDeiLayerCanvasRender {
   }
 
   /**
+   * 清空shadowControl
+   */
+  clearShadowControls(): void {
+    //清空shadows
+    this.model.shadowControls?.forEach(c => {
+      if (c.isShadowControl) {
+        c.destroyed()
+      }
+    })
+    this.model.shadowControls = [];
+  }
+
+  /**
    * 绘制图形
    */
   drawShape(inRect: boolean = true): void {
@@ -273,6 +286,7 @@ class DDeiLayerCanvasRender {
         //保存状态
         ctx.save();
         item.render.drawShape();
+        item.render.enableRefreshShape()
         if (item.modelType == 'DDeiLine') {
           item.render.drawShape({ color: "#017fff", dash: [], opacity: 0.7, fill: { color: '#017fff', opacity: 0.7 } });
         } else {
@@ -307,7 +321,7 @@ class DDeiLayerCanvasRender {
         let item = this.model.models.get(key);
         //判定控件是否在绘制区间，如果在则绘制
         if (!inRect || item?.isInRect(x, y, x1, y1)) {
-          item.render.drawShape();
+          item.render?.drawShape();
         }
       });
     }
@@ -744,7 +758,8 @@ class DDeiLayerCanvasRender {
       //清除临时操作点
       this.model.opPoints = [];
       this.model.opLine = null;
-      this.model.shadowControls = [];
+      //清空shadows
+      this.clearShadowControls()
     } else {
       //判断当前操作状态
       switch (this.stageRender.operateState) {
@@ -761,12 +776,15 @@ class DDeiLayerCanvasRender {
           }
         }
         case DDeiEnumOperateState.CONTROL_CONFIRMING: {
-          this.model.shadowControls = [];
+
+
           this.stageRender.currentOperateShape.render.mouseUp(evt);
           //如果有格式刷
           if (this.stage?.brushData) {
             this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CopyStyle, { models: [this.stageRender.currentOperateShape], brushData: this.stage.brushData }, evt)
           }
+          //清空shadows
+          this.clearShadowControls()
           break;
         }
         //选择器工作中
@@ -933,7 +951,8 @@ class DDeiLayerCanvasRender {
             }
             //改变光标
             this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: "grab" }, evt);
-            this.model.shadowControls = [];
+            //清空shadows
+            this.clearShadowControls()
             break;
           }
         //控件拖拽中
@@ -1156,7 +1175,8 @@ class DDeiLayerCanvasRender {
             this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.NodifyChange);
             this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy);
           }
-          this.model.shadowControls = [];
+          //清空shadows
+          this.clearShadowControls()
           break;
         //表格内部拖拽中
         case DDeiEnumOperateState.TABLE_INNER_DRAG:
@@ -1187,7 +1207,8 @@ class DDeiLayerCanvasRender {
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.NodifyChange);
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy, null, evt);
           this.stageRender.selector.updatePVSByModels(operateModels)
-          this.model.shadowControls = [];
+          //清空shadows
+          this.clearShadowControls()
           break;
         case DDeiEnumOperateState.QUICK_EDITING_TEXT_SELECTING:
           delete this.stage.brushData

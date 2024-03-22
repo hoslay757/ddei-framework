@@ -55,6 +55,7 @@ class DDeiBusCommandModelChangeSelect extends DDeiBusCommand {
       if (models) {
         models.forEach(item => {
           item.state = state;
+          item.render?.enableRefreshShape()
         });
       }
 

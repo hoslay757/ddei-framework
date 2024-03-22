@@ -59,6 +59,19 @@ class DDeiAbstractShapeRender {
    */
   renderCacheData: Map<string, object> = new Map();
 
+  /**
+   * 刷新当前图形，只有当为true时才刷新，刷新后会变为false，重新采样后会为true
+   */
+  refreshShape: boolean = true;
+
+
+  enableRefreshShape() {
+    this.refreshShape = true
+    this.model.composes?.forEach(comp => {
+      comp.render?.enableRefreshShape()
+    })
+  }
+
 
   /**
    * 获取html

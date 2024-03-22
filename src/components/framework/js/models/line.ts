@@ -515,7 +515,7 @@ class DDeiLine extends DDeiAbstractShape {
 
       } break;
     }
-
+    this.render?.enableRefreshShape()
 
     DDeiLine.calLineCrossSync(this.layer);
   }

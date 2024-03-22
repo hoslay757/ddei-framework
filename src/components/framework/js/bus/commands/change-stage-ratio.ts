@@ -54,6 +54,9 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
         stage.layers.forEach(layer => {
           layer.opPoints = []
           delete layer.opLine
+          layer.shadowControls?.forEach(c => {
+            c.destroyed()
+          })
           layer.shadowControls = []
           layer.midList.forEach(mid => {
             let model = layer.models.get(mid);

@@ -130,7 +130,7 @@ export default {
         if (this.editor.state == DDeiEditorState.QUICK_EDITING) {
           //判定落点是否在正在编辑的影子控件上，如果是则识别坐标，制作选中效果
           if (this.editor?.ddInstance?.stage?.render?.editorShadowControl) {
-           
+
             let stage = this.editor?.ddInstance?.stage;
             let rat1 = stage.ddInstance.render.ratio;
 
@@ -152,22 +152,22 @@ export default {
               let startIndex = 0;
               let sx = 0;
               let i = 0;
-              
+
               for (; i < shadowControl.render.textUsedArea.length; i++) {
                 let rowData = shadowControl.render.textUsedArea[i];
-                let ry = rowData.y/scaleSize
-                let rh = rowData.height/scaleSize
-                let rx = rowData.x/scaleSize
-                let rw = rowData.width/scaleSize
-         
+                let ry = rowData.y / scaleSize
+                let rh = rowData.height / scaleSize
+                let rx = rowData.x / scaleSize
+                let rw = rowData.width / scaleSize
+
                 if (cy >= ry && cy <= ry + rh) {
                   if (cx >= rx && cx <= rx + rw) {
                     //判断位于第几个字符，求出光标的开始位置
                     let endI = startIndex + rowData.text.length;
                     for (let x = startIndex; x < endI; x++) {
-                      let fx = shadowControl.render.textUsedArea[0].textPosCache[x].x/scaleSize;
+                      let fx = shadowControl.render.textUsedArea[0].textPosCache[x].x / scaleSize;
 
-                      let lx = x < endI - 1 ? shadowControl.render.textUsedArea[0].textPosCache[x + 1].x/scaleSize : rx + rw
+                      let lx = x < endI - 1 ? shadowControl.render.textUsedArea[0].textPosCache[x + 1].x / scaleSize : rx + rw
                       let halfW = (lx - fx) / 2
                       if (cx >= fx && cx < lx) {
                         if (cx > fx + halfW) {
@@ -287,6 +287,7 @@ export default {
                   models: controls,
                   x: ex,
                   y: ey,
+                  sample: 1,
                   dragObj: dragObj,
                 },
                 e
@@ -338,6 +339,7 @@ export default {
                     y: ey,
                     dx: 0,
                     dy: 0,
+                    sample: 1,
                     dragObj: ddInstance.stage.render.dragObj,
                   },
                   e
@@ -432,14 +434,14 @@ export default {
               value: DDeiEnumControlState.SELECTED,
             }]
           );
-         
+
           this.editor.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels);
 
           this.editor.bus.push(DDeiEnumBusCommandType.UpdatePaperArea);
           this.editor.bus.push(DDeiEnumBusCommandType.NodifyControlCreated, {
             models: this.editor.creatingControls,
           });
-         
+
           //清除临时变量
           this.editor.bus.push(DDeiEnumBusCommandType.ClearTemplateVars);
           this.editor.bus.push(DDeiEnumBusCommandType.NodifyChange);

@@ -109,6 +109,7 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
                 DDeiUtil.setAttrValueByPath(model, paths, value)
                 model.render?.setCachedValue(paths, value)
               }
+              model.render?.enableRefreshShape()
             }
           });
           bus.executeAll();

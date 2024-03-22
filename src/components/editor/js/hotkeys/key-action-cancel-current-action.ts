@@ -20,6 +20,10 @@ class DDeiKeyActionCancelCurrentAction extends DDeiKeyAction {
       if (layer) {
         layer.opPoints = []
         layer.opLine = null;
+        //清空shadows
+        layer.shadowControls?.forEach(c => {
+          c.destroyed()
+        })
         layer.shadowControls = [];
         stage.render.operateState = DDeiEnumOperateState.NONE;
         //清空临时变量

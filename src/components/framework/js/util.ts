@@ -2810,6 +2810,9 @@ class DDeiUtil {
               if (stage.layers[li].display == 1 && stage.layers[li].print != false) {
                 stage.layers[li].opPoints = []
                 delete stage.layers[li].opLine
+                stage.layers[li].shadowControls?.forEach(c => {
+                  c.destroyed()
+                })
                 stage.layers[li].shadowControls = []
                 stage.layers[li].render.drawShape(false);
                 hasPrint = true;

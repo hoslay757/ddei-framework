@@ -102,6 +102,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       outRect.y1 += weight
       outRect.width += 2 * weight
       outRect.height += 2 * weight
+      tempCanvas.style.width = outRect.width
+      tempCanvas.style.height = outRect.height
       tempCanvas.setAttribute("width", outRect.width * rat1)
       tempCanvas.setAttribute("height", outRect.height * rat1)
 
@@ -110,9 +112,13 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       tempCanvas.tx = -outRect.x * rat1
       tempCanvas.ty = -outRect.y * rat1
       tempCanvas.outRect = outRect
+
       tempCtx.translate(tempCanvas.tx, tempCanvas.ty)
     }
   }
+
+
+
 
   /**
    * 绘制图形
@@ -125,79 +131,84 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       this.ddRender.model,
       null
     )) {
-
-      //创建准备图形
-      this.createTempShape();
-      //将当前控件以及composes按照zindex顺序排列并输出
-      let rendList = [];
-      if (this.model.composes?.length > 0) {
-        rendList = rendList.concat(this.model.composes);
-      }
-      rendList.push(this.model)
-      rendList.sort((a, b) => {
-
-        if ((a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
-          return a.cIndex - b.cIndex
-        } else if ((a.cIndex || a.cIndex == 0) && !(b.cIndex || b.cIndex == 0)) {
-          return 1
-        } else if (!(a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
-          return -1
-        } else {
-          return 0
+      if (this.refreshShape || this.isEditoring) {
+        //创建准备图形
+        this.createTempShape();
+        //将当前控件以及composes按照zindex顺序排列并输出
+        let rendList = [];
+        if (this.model.composes?.length > 0) {
+          rendList = rendList.concat(this.model.composes);
         }
-      })
-      rendList.forEach(c => {
-        if (c == this.model) {
-          //获得 2d 上下文对象
-          let canvas = this.getCanvas();
-          let ctx = canvas.getContext('2d');
+        rendList.push(this.model)
+        rendList.sort((a, b) => {
+
+          if ((a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+            return a.cIndex - b.cIndex
+          } else if ((a.cIndex || a.cIndex == 0) && !(b.cIndex || b.cIndex == 0)) {
+            return 1
+          } else if (!(a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+            return -1
+          } else {
+            return 0
+          }
+        })
+        rendList.forEach(c => {
+          if (c == this.model) {
+            //获得 2d 上下文对象
+            let canvas = this.getCanvas();
+            let ctx = canvas.getContext('2d');
 
 
-          if (!tempShape && this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING || this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING_TEXT_SELECTING) {
-            if (this.isEditoring) {
-              tempShape = { border: { type: 1, dash: [10, 10], width: 1.25, color: "#017fff" } }
-            } else if (this.stage.render?.editorShadowControl) {
-              if (this.model.id + "_shadow" == this.stage.render.editorShadowControl.id) {
-                return;
+            if (!tempShape && this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING || this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING_TEXT_SELECTING) {
+              if (this.isEditoring) {
+                tempShape = { border: { type: 1, dash: [10, 10], width: 1.25, color: "#017fff" } }
+              } else if (this.stage.render?.editorShadowControl) {
+                if (this.model.id + "_shadow" == this.stage.render.editorShadowControl.id) {
+                  return;
+                }
               }
+            } else if (!tempShape && this.stage?.selectedModels?.size == 1 && Array.from(this.stage?.selectedModels.values())[0].id == this.model.id) {
+              tempShape = { border: { type: 1, width: 1, color: "#017fff", dash: [10, 5] } }
             }
-          } else if (!tempShape && this.stage?.selectedModels?.size == 1 && Array.from(this.stage?.selectedModels.values())[0].id == this.model.id) {
-            tempShape = { border: { type: 1, width: 1, color: "#017fff", dash: [10, 5] } }
-          }
-          let oldRat1 = this.ddRender.ratio
-          this.ddRender.oldRatio = oldRat1
-          //获取缩放比例
-          if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
+            let oldRat1 = this.ddRender.ratio
+            this.ddRender.oldRatio = oldRat1
+            //获取缩放比例
+            if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
 
-            let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
-            let rat1 = oldRat1 * scaleSize
-            //去掉当前被编辑控件的边框显示
-            this.ddRender.ratio = rat1
-          }
-          this.calScaleType3Size(tempShape);
-          ctx.save();
-          //拆分并计算pvss
-          this.calPVSS(tempShape)
-          //创建剪切区
-          this.createClip(tempShape);
+              let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
+              let rat1 = oldRat1 * scaleSize
+              //去掉当前被编辑控件的边框显示
+              this.ddRender.ratio = rat1
+            }
+            this.calScaleType3Size(tempShape);
+            ctx.save();
+            //拆分并计算pvss
+            this.calPVSS(tempShape)
+            //创建剪切区
+            this.createClip(tempShape);
 
-          //绘制填充
-          this.drawFill(tempShape);
-          //绘制文本
-          this.drawText(tempShape);
-          //根据pvss绘制边框
-          this.drawBorder(tempShape);
-          ctx.restore();
-          if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
-            this.ddRender.ratio = oldRat1
-            delete this.ddRender.oldRatio
-          }
+            //绘制填充
+            this.drawFill(tempShape);
+            //绘制文本
+            this.drawText(tempShape);
+            //根据pvss绘制边框
+            this.drawBorder(tempShape);
+            ctx.restore();
+            if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
+              this.ddRender.ratio = oldRat1
+              delete this.ddRender.oldRatio
+            }
 
-        } else {
-          //绘制组合控件的内容
-          c.render.drawShape(tempShape, composeRender + 1)
+          } else {
+            //绘制组合控件的内容
+            c.render.drawShape(tempShape, composeRender + 1)
+          }
+        })
+
+        if (!this.isEditoring) {
+          this.refreshShape = false
         }
-      })
+      }
 
       //外部canvas
       this.drawSelfToCanvas(composeRender)
@@ -212,6 +223,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           null
         )
       }
+
     }
   }
 
@@ -229,7 +241,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       if (composeRender > 0) {
         oldRat1 = rat1
       }
-      ctx.drawImage(this.tempCanvas, 0, 0, outRect.width * rat1, outRect.height * rat1, outRect.x * oldRat1, outRect.y * oldRat1, outRect.width * oldRat1, outRect.height * oldRat1)
+      ctx.drawImage(this.tempCanvas, 0, 0, outRect.width * rat1, outRect.height * rat1, (this.model.cpv.x - outRect.width / 2) * oldRat1, (this.model.cpv.y - outRect.height / 2) * oldRat1, outRect.width * oldRat1, outRect.height * oldRat1)
     }
 
   }

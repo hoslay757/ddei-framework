@@ -94,8 +94,11 @@ class DDeiBusCommandModelChangeRotate extends DDeiBusCommand {
         let item = models[i]
         item.transVectors(m1)
         item.updateLinkModels();
+        item.render?.enableRefreshShape()
       }
       selector.transVectors(m1)
+
+
 
       //同步更新上层容器其大小和坐标
       pContainerModel.changeParentsBounds()
