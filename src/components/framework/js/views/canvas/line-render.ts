@@ -205,7 +205,9 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
 
     //获得 2d 上下文对象
     let canvas = this.getCanvas();
-
+    if (!canvas) {
+      return;
+    }
     let ctx = tempCtx ? tempCtx : canvas.getContext('2d');
 
     //获取全局缩放比例
@@ -466,6 +468,9 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
   drawPoint(tempLine, tempCtx): void {
     //获得 2d 上下文对象
     let canvas = this.getCanvas();
+    if (!canvas) {
+      return;
+    }
     let ctx = tempCtx ? tempCtx : canvas.getContext('2d');
 
     //获取绘图属性

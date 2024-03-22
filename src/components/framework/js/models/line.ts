@@ -879,6 +879,7 @@ class DDeiLine extends DDeiAbstractShape {
     this.composes?.forEach(compose => {
       compose.transVectors(matrix, params)
     });
+    this.render?.enableRefreshShape()
   }
 
   /**

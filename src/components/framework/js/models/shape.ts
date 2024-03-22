@@ -1650,7 +1650,7 @@ abstract class DDeiAbstractShape {
       }
     })
 
-    if (this.render.tempCanvas) {
+    if (this.render?.tempCanvas) {
       this.render.tempCanvas.remove()
       delete this.render.tempCanvas
     }
