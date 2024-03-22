@@ -633,6 +633,11 @@ class DDeiConfig {
   static EVENT_CONTROL_CREATE_BEFORE: Function;
 
   /**
+   * 当前正在执行鼠标相关的动作，此方法为外部传入的钩子函数
+   */
+  static EVENT_MOUSE_OPERATING: Function;
+
+  /**
    * 控件创建后，此方法为外部传入的勾子函数
    */
   static EVENT_CONTROL_CREATE_AFTER: Function;

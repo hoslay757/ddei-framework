@@ -1354,6 +1354,13 @@ class DDeiLayerCanvasRender {
             sms.push(this.stageRender.currentOperateShape)
           }
           if (!dragBefore || dragBefore(DDeiEnumOperateType.DRAG, sms, null, this.stage?.ddInstance, evt)) {
+            let mouseOpSPI = DDeiUtil.getConfigValue(
+              "EVENT_MOUSE_OPERATING",
+              this.stage.ddInstance
+            );
+            if (mouseOpSPI) {
+              mouseOpSPI(DDeiEnumOperateType.DRAG, null, this.stage.ddInstance, evt);
+            }
             //当前操作状态：控件拖拽中
             this.stageRender.operateState = DDeiEnumOperateState.CONTROL_DRAGING
             //产生影子控件

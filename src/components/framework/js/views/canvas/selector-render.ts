@@ -646,7 +646,13 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
           this.stage.ddInstance
         );
         if (!dragBefore || dragBefore(DDeiEnumOperateType.DRAG, dragObj, this.stage.ddInstance, evt)) {
-
+          let mouseOpSPI = DDeiUtil.getConfigValue(
+            "EVENT_MOUSE_OPERATING",
+            this.stage.ddInstance
+          );
+          if (mouseOpSPI) {
+            mouseOpSPI(DDeiEnumOperateType.LINK, null, this.stage.ddInstance, evt);
+          }
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
           //改变光标
           this.stage?.ddInstance?.bus?.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: "grabbing" }, evt);

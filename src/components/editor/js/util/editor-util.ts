@@ -664,7 +664,6 @@ class DDeiEditorUtil {
    * @param id 弹出框ID
    */
   static hiddenDialog(id: string) {
-
     let backEle = document.getElementById("dialog_background_div");
     if (backEle) {
       backEle.style.display = "none"

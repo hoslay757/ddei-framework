@@ -76,6 +76,7 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
                 })
               }
             }
+            model.render?.enableRefreshShape()
             //更新线段
             DDeiBusCommandChangeStageRatio.calLineCross(layer)
           })
@@ -116,6 +117,13 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
 
         stage.wpv.x = -wpvX - ox
         stage.wpv.y = -wpvY - oy
+        let mouseOpSPI = DDeiUtil.getConfigValue(
+          "EVENT_MOUSE_OPERATING",
+          stage.ddInstance
+        );
+        if (mouseOpSPI) {
+          mouseOpSPI("CHANGE_RATIO", null, bus.ddInstance, evt);
+        }
         //调用SPI
         let changeRatioSPI = DDeiUtil.getConfigValue(
           "EVENT_STAGE_CHANGE_RATIO",

@@ -61,12 +61,12 @@ export default {
         EVENT_GOBACK_FILE_LIST: this.goBackFileList,
         EVENT_PUBLISH_FILE: this.publishFile,
         EVENT_CONTROL_SELECT_AFTER: this.showQuickEditPicker,
-        EVENT_STAGE_CHANGE_WPV: this.changeWPV,
-        EVENT_STAGE_CHANGE_RATIO: this.changeRatio,
-        EVENT_CONTROL_DRAG_BEFORE: this.dragBefore,
-        EVENT_LINE_DRAG_BEFORE: this.dragLineBefore,
-        EVENT_LINE_DRAG_AFTER: this.dragLineAfter,
-        EVENT_CONTROL_CREATE_BEFORE: this.dragBefore,
+        // EVENT_STAGE_CHANGE_WPV: this.changeWPV,
+        // EVENT_STAGE_CHANGE_RATIO: this.changeRatio,
+        // EVENT_CONTROL_DRAG_BEFORE: this.dragBefore,
+        // EVENT_LINE_DRAG_BEFORE: this.dragLineBefore,
+        // EVENT_CONTROL_CREATE_BEFORE: this.dragBefore,
+        EVENT_MOUSE_OPERATING: this.mouseOperating,
         // AC_DESIGN_SELECT: false,
         // AC_DESIGN_DRAG: false,
         // AC_DESIGN_EDIT: false,
@@ -531,6 +531,18 @@ export default {
     },
 
     /**
+     * 正在进行鼠标操作
+     */
+    mouseOperating(operateType, models, ddInstance, evt) {
+      if (ddInstance && ddInstance["AC_DESIGN_EDIT"]) {
+        DDeiEditorUtil.hiddenDialog("canvas_quick_dialog")
+        if (operateType == "CHANGE_RATIO" || operateType == "CHANGE_WPV" || operateType == "CHANGE_BOUNDS" || operateType == "CHANGE_ROTATE") {
+          this.displayQuickDialog();
+        }
+      }
+    },
+
+    /**
      * 拖拽前
      */
     dragBefore(operate, models, propName, ddInstance, evt) {
@@ -556,15 +568,7 @@ export default {
       return false
     },
 
-    /**
-     * 拖拽线节点后
-     */
-    dragLineAfter(operate, dragObj, ddInstance, evt) {
-      if (ddInstance && ddInstance["AC_DESIGN_EDIT"]) {
-        this.displayQuickDialog()
-      }
-      return true
-    },
+
 
     /**
      * 移动滚动条

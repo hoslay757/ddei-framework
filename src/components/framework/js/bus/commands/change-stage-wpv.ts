@@ -64,6 +64,14 @@ class DDeiBusCommandChangeStageWPV extends DDeiBusCommand {
       } else if (stage.wpv.y < -stage.height + vScrollHeight) {
         stage.wpv.y = -stage.height + vScrollHeight
       }
+
+      let mouseOpSPI = DDeiUtil.getConfigValue(
+        "EVENT_MOUSE_OPERATING",
+        stage.ddInstance
+      );
+      if (mouseOpSPI) {
+        mouseOpSPI("CHANGE_WPV", null, bus.ddInstance, evt);
+      }
       //调用SPI
       let changeWPVSPI = DDeiUtil.getConfigValue(
         "EVENT_STAGE_CHANGE_WPV",
