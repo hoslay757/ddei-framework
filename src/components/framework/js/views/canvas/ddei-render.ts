@@ -342,7 +342,7 @@ class DDeiCanvasRender {
     //放大缩小
     let wheelDeltaY = evt.wheelDeltaY
     let wheelDeltaYAbs = Math.abs(wheelDeltaY)
-    if (wheelDeltaYAbs == 240) {
+    if (wheelDeltaYAbs > 0 && wheelDeltaYAbs % 120 == 0) {
       if (DDeiUtil.getConfigValue("GLOBAL_ALLOW_STAGE_RATIO", this.model)) {
         this.mouseScale(evt.wheelDeltaY, evt)
       }
