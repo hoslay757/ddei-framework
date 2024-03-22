@@ -200,6 +200,7 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
           //修改编辑器状态为快捷编辑中
           editor.changeState(DDeiEditorState.QUICK_EDITING);
           delete ddInstance.stage.brushData
+          delete ddInstance.stage.brushDataText
           ddInstance.stage.render.operateState = DDeiEnumOperateState.QUICK_EDITING
           //发出通知，选中的焦点发生变化
           editor.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels);

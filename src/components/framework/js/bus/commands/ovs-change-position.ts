@@ -214,7 +214,7 @@ class DDeiBusCommandOVSChangePosition extends DDeiBusCommand {
 
         //触发重新采样和坐标计算
         model.initPVS()
-
+        model.render?.enableRefreshShape()
 
 
         return true;

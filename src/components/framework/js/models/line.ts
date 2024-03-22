@@ -600,10 +600,13 @@ class DDeiLine extends DDeiAbstractShape {
 
     //构建障碍物
     let ignoreIds = [this.id]
-    this.linkModels.forEach(link => {
-      if (link.dm?.id) {
-        ignoreIds.push(link.dm?.id)
-      }
+    let lines = this.layer.getModelsByBaseType("DDeiLine");
+    lines.forEach(l => {
+      l.linkModels?.forEach(link => {
+        if (link.dm?.id) {
+          ignoreIds.push(link.dm?.id)
+        }
+      })
     })
     let allModels = this.layer.getSubModels(ignoreIds, 10)
     let obis = []
@@ -933,13 +936,15 @@ class DDeiLine extends DDeiAbstractShape {
     })
     super.destroyed();
     //移除自身所有附属控件
-    this.linkModels?.forEach(lm => {
-      if (lm.dm) {
-        lm.dm.pModel.removeModel(lm.dm, true)
-      }
-    })
-    this.linkModels?.clear()
-    this.linkModels = null;
+    if (!this.isShadowControl) {
+      this.linkModels?.forEach(lm => {
+        if (lm.dm) {
+          lm.dm.pModel.removeModel(lm.dm, true)
+        }
+      })
+      this.linkModels?.clear()
+      this.linkModels = null;
+    }
 
     DDeiLine.calLineCrossSync(layer);
   }

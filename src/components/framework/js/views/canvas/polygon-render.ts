@@ -132,6 +132,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       null
     )) {
       if (this.refreshShape || this.isEditoring) {
+
         //创建准备图形
         this.createTempShape();
         //将当前控件以及composes按照zindex顺序排列并输出
