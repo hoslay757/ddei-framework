@@ -124,7 +124,10 @@ class DDeiKeyActionDownMoveModels extends DDeiKeyAction {
         DDeiAbstractShape.moveModels(models, deltaX, deltaY, moveOriginLines);
 
         stage.layers[stage.layerIndex].opPoints = []
-        stage.layers[stage.layerIndex].opLine = null;
+        if (stage.layers[stage.layerIndex].opLine?.render) {
+          stage.layers[stage.layerIndex].opLine.render.enableRefreshShape()
+        }
+        delete stage.layers[stage.layerIndex].opLine;
         stage.render.refreshJumpLine = false
         ddInstance.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
         ddInstance.bus.push(DDeiEnumBusCommandType.NodifyChange);

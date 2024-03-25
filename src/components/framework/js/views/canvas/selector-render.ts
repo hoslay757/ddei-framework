@@ -492,7 +492,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         ctx.save();
         model.render.enableRefreshShape()
         if (model.baseModelType == "DDeiLine") {
-          model.render.drawLine({ color: "red", dash: [] });
+          model.render.drawShape({ color: "red", dash: [] });
         } else {
           //绘制临时Border
           model.render.drawBorderAndComposesBorder({ type: 1, width: 1, color: "red", border: { type: 1, width: 1, color: "red" } });
@@ -712,7 +712,10 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         let layer = Array.from(selectedModels?.values())[0].layer;
         //清除临时操作点
         layer.opPoints = [];
-        layer.opLine = null;
+        if (layer.opLine?.render) {
+          layer.opLine.render.enableRefreshShape()
+        }
+        delete layer.opLine;
         //中心点坐标
         //当前控件的上层控件，可能是一个layer也可能是容器
         let centerPointVector = this.model.cpv;

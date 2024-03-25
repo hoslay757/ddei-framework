@@ -20,7 +20,10 @@ class DDeiKeyActionCancelControlCreate extends DDeiKeyAction {
         layer.removeModels(editor.creatingControls);
         editor.creatingControls = null
         layer.opPoints = [];
-        layer.opLine = null;
+        if (layer.opLine?.render) {
+          layer.opLine.render.enableRefreshShape()
+        }
+        delete layer.opLine;
         //清除临时变量
         editor.bus.push(DDeiEnumBusCommandType.ClearTemplateVars);
         //渲染图形

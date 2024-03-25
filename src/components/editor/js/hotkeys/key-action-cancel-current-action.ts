@@ -19,7 +19,10 @@ class DDeiKeyActionCancelCurrentAction extends DDeiKeyAction {
       let layer = stage.layers[stage?.layerIndex];
       if (layer) {
         layer.opPoints = []
-        layer.opLine = null;
+        if (layer.opLine?.render) {
+          layer.opLine.render.enableRefreshShape()
+        }
+        delete layer.opLine;
         //清空shadows
         layer.shadowControls?.forEach(c => {
           c.destroyed()

@@ -191,7 +191,10 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
           ddInstance.stage.render.editorShadowControl = DDeiUtil.getShadowControl(model);
           //清空当前opPoints
           model.layer.opPoints = [];
-          model.layer.opLine = null;
+          if (model.layer.opLine?.render) {
+            model.layer.opLine.render.enableRefreshShape()
+          }
+          delete model.layer.opLine;
           ddInstance.stage.render.editorShadowControl.render.isEditoring = true
           inputEle.focus()
 

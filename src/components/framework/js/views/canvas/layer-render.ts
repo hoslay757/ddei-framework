@@ -421,6 +421,7 @@ class DDeiLayerCanvasRender {
       let lineRender = this.model.opLine.render
       let color = lineRender.getCachedValue("color");
       let weight = lineRender.getCachedValue("weight");
+      lineRender.enableRefreshShape();
       this.model.opLine.render.drawShape({ color: "red", opacity: 0.5, weight: weight * 1.5 })
 
 
@@ -672,6 +673,7 @@ class DDeiLayerCanvasRender {
             case 1: {
               //当前操作状态：选择器工作中
               this.stageRender.operateState = DDeiEnumOperateState.SELECT_WORKING
+
               //当没有按下ctrl键时，清空除了当前操作控件外所有选中状态控件
               clearSelect = !isCtrl;
               break;
@@ -757,7 +759,11 @@ class DDeiLayerCanvasRender {
       }
       //清除临时操作点
       this.model.opPoints = [];
-      this.model.opLine = null;
+
+      if (this.model.opLine?.render) {
+        this.model.opLine.render.enableRefreshShape()
+      }
+      delete this.model.opLine;
       //清空shadows
       this.clearShadowControls()
     } else {
@@ -1320,7 +1326,10 @@ class DDeiLayerCanvasRender {
         }
         //清除临时操作点
         this.model.opPoints = [];
-        this.model.opLine = null;
+        if (this.model.opLine?.render) {
+          this.model.opLine.render.enableRefreshShape()
+        }
+        delete this.model.opLine;
         //中心点坐标
         let operateControl = this.stageRender.currentOperateShape
         //当前控件的上层控件，可能是一个layer也可能是容器
@@ -1379,6 +1388,13 @@ class DDeiLayerCanvasRender {
       }
       //选择器工作中
       case DDeiEnumOperateState.SELECT_WORKING: {
+        let mouseOpSPI = DDeiUtil.getConfigValue(
+          "EVENT_MOUSE_OPERATING",
+          this.stage.ddInstance
+        );
+        if (mouseOpSPI) {
+          mouseOpSPI("SELECT_WORKING", null, this.stage.ddInstance, evt);
+        }
         //根据事件更新选择器位置
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateSelectorBounds, { operateState: this.stageRender.operateState }, evt);
         //渲染图形
@@ -1506,7 +1522,10 @@ class DDeiLayerCanvasRender {
         }
         //判定是否到达了另一个控件的操作点
         this.model.opPoints = [];
-        this.model.opLine = null;
+        if (this.model.opLine?.render) {
+          this.model.opLine.render.enableRefreshShape()
+        }
+        delete this.model.opLine;
         delete this.stage.tempCursorOPpoint
         //判断当前鼠标坐标是否落在选择器控件的区域内
         // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
@@ -1563,7 +1582,10 @@ class DDeiLayerCanvasRender {
       //表格内部拖拽中
       case DDeiEnumOperateState.TABLE_INNER_DRAG: {
         this.model.opPoints = []
-        this.model.opLine = null;
+        if (this.model.opLine?.render) {
+          this.model.opLine.render.enableRefreshShape()
+        }
+        delete this.model.opLine;
         let table = this.stageRender.currentOperateShape;
         table.render.mouseMove(evt);
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
@@ -1613,7 +1635,10 @@ class DDeiLayerCanvasRender {
 
           let pushData = { x: ex, y: ey, deltaX: movedBounds.x - selector.x * stageRatio, deltaY: movedBounds.y - selector.y * stageRatio, deltaWidth: movedBounds.width - selector.width * stageRatio, deltaHeight: movedBounds.height - selector.height * stageRatio, selector: selector, models: this.model.shadowControls };
           this.model.opPoints = [];
-          this.model.opLine = null;
+          if (this.model.opLine?.render) {
+            this.model.opLine.render.enableRefreshShape()
+          }
+          delete this.model.opLine;
           //更新dragObj临时变量中的数值,确保坐标对应关系一致
           //修改所有选中控件坐标
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeBounds, pushData, evt);
@@ -1648,7 +1673,10 @@ class DDeiLayerCanvasRender {
         if (this.stageRender.editorShadowControl) {
           //清空当前opPoints
           this.model.opPoints = [];
-          this.model.opLine = null;
+          if (this.model.opLine?.render) {
+            this.model.opLine.render.enableRefreshShape()
+          }
+          delete this.model.opLine;
           let shadowControl = this.stageRender.editorShadowControl;
           if (shadowControl?.isInTextArea(ex, ey)) {
 
@@ -1746,7 +1774,10 @@ class DDeiLayerCanvasRender {
       default: {
         //清空当前opPoints
         this.model.opPoints = [];
-        this.model.opLine = null;
+        if (this.model.opLine?.render) {
+          this.model.opLine.render.enableRefreshShape()
+        }
+        delete this.model.opLine;
         //判断当前鼠标坐标是否落在选择器控件的区域内
         let inSelector = false
         if (this.stageRender.selector &&
