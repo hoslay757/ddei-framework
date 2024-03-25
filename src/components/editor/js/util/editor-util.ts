@@ -245,17 +245,18 @@ class DDeiEditorUtil {
         DDeiUtil.setCurrentMenu(menuJSON);
         let menuDialogId = DDeiUtil.getMenuControlId();
         let menuEle = document.getElementById(menuDialogId);
+        let elePos = DDeiUtil.getDomAbsPosition(evt.currentTarget)
         if (menuEle) {
-
-          if (evt.layerX + 200 > document.body.clientWidth) {
+          if (elePos.left + 200 > document.body.clientWidth) {
             menuEle.style.right = "0px";
           } else {
-            menuEle.style.left = evt.layerX + "px";
+            menuEle.style.left = elePos.left + "px";
           }
-          if (evt.layerY + menuJSON.length * 40 > document.body.clientHeight) {
+          
+          if (elePos.top + menuJSON.length * 40 > document.body.clientHeight) {
             menuEle.style.bottom = "0px";
           } else {
-            menuEle.style.top = evt.layerY + "px";
+            menuEle.style.top = elePos.top + "px";
           }
           setTimeout(() => {
             menuEle.style.display = "block";
