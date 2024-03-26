@@ -1,149 +1,55 @@
-<script setup>
-import FrameWorkTest from './components/FrameWorkTest.vue'
-import DDeiConfig from "./components/framework/js/config"
-import DDeiStage from "./components/framework/js/models/stage"
-import DDeiLayer from "./components/framework/js/models/layer"
-import DDeiRectangle from "./components/framework/js/models/rectangle"
-</script>
-
 <template>
-  <div class="main">
-    <div class="top">
-      <button type="button"
-              style="width:120px;height:30px;margin-top:10px">新建</button>
-      <button type="button"
-              style="width:120px;height:30px;margin-top:10px">打开</button>
-      <button type="button"
-              style="width:120px;height:30px;margin-top:10px">保存</button>
-    </div>
-    <div class="left">
-      <button type="button"
-              @click="createRectangle()"
-              style="width:120px;height:30px;margin-top:10px">矩形</button>
-      <button type="button"
-              style="width:120px;height:30px;margin-top:10px">圆型</button>
-      <button type="button"
-              style="width:120px;height:30px;margin-top:10px">菱形</button>
-    </div>
-    <div class="middle">
-      <FrameWorkTest />
-    </div>
-    <div class="right"></div>
-    <div class="bottom">
-
-      <button type="button"
-              style="width:120px;height:30px;margin-top:10px">图层1</button>
-      <button type="button"
-              style="width:120px;height:30px;margin-top:10px">图层2</button>
-      <button type="button"
-              style="width:120px;height:30px;margin-top:10px">图层+</button>
-      <button type="button"
-              style="width:120px;height:30px;margin-top:10px">图层-</button>
-      <button type="button"
-              style="width:120px;height:30px;margin-top:10px">放大</button>
-      <button type="button"
-              style="width:120px;height:30px;margin-top:10px">缩小</button>
-
-    </div>
-  </div>
+  <a-config-provider :locale="locale">
+    <router-view v-slot="{ Component, route }">
+      <component :is="Component" :key="route.path" />
+    </router-view>
+  </a-config-provider>
 </template>
-<script>
+
+<script lang="ts">
+import zhCN from 'ant-design-vue/es/locale/zh_CN';
+
 export default {
-  name: 'APP',
+  name: "APP-DDEI",
   extends: null,
   mixins: [],
   props: {},
-  data () {
+  //注册组件
+  components: {},
+  data() {
     return {
-
-    }
+      locale: zhCN,
+      layers: [],
+    };
   },
-  computed: {
-
+  computed: {},
+  watch: {},
+  created() {
+    document.body.style.overscrollBehaviorX = "none"
   },
-  watch: {
-
-  },
-  created () {
-  },
-  mounted () {
-  },
-  methods: {
-
-    //创建矩形
-    createRectangle () {
-      //TODO 这里是否应该直接封装一个方法维护关系？
-      //获取当前实例
-      let ddInstance = DDei.INSTANCE_POOL["ddei_demo"];
-      //创建一个矩形
-      let rect = DDeiRectangle.initByJSON({
-        id: "rect_" + ddInstance.stage.idIdx,
-        x: 10,
-        y: 10,
-        width: 100,
-        height: 100,
-        text: "示例矩形" + ddInstance.stage.idIdx
-      });
-      rect.stage = ddInstance.stage;
-      //下标自增1
-      ddInstance.stage.idIdx++;
-      //将矩形添加进图层
-      ddInstance.stage.layers[ddInstance.stage.layerIndex].models[rect.id] = rect
-      rect.layer = ddInstance.stage.layers[ddInstance.stage.layerIndex]
-      rect.pModel = rect.layer
-      //绑定并初始化渲染器
-      DDeiConfig.bindRender(rect);
-      rect.render.init();
-      //重新绘制图形,TODO 这里应该调模型的方法，还是调用render的方法？
-      ddInstance.stage.render.drawShape();
-    },
-  }
-}
+  mounted() { },
+  methods: {},
+};
 </script>
-
 <style>
 body {
   display: block;
+  overflow-y: hidden;
 }
+
 #app {
   padding: 0;
   margin: 0;
   display: block;
   max-width: 100%;
+  touch-action: none;
 }
-.main {
-  width: 100%;
-  height: calc(100vh);
-}
-.top {
-  float: left;
-  background: grey;
-  width: 100%;
-  height: 175px;
-}
-.left {
-  text-align: center;
-  float: left;
-  background: green;
-  width: 200px;
-  height: calc(100vh - 235px);
-}
-.middle {
-  float: left;
-  background: green;
-  width: calc(100% - 470px);
-  height: calc(100vh - 235px);
-}
-.right {
-  float: left;
-  background: red;
-  width: 270px;
-  height: calc(100vh - 235px);
-}
-.bottom {
-  float: left;
-  background: blue;
-  width: 100%;
-  height: 60px;
+
+.icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
 }
 </style>

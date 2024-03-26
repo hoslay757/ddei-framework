@@ -1,17 +1,76 @@
 {
-  "name": "ddei-framework",
-  "version": "0.0.1",
-  "private": true,
+  "name": "@ddei/ddei-framework",
+  "version": "1.0.4",
+  "private": false,
+  "author": "hoslay@163.com",
+  "description": "ddei图形基础框架",
+  "keywords": [
+    "@ddei",
+    "@ddei/ddei-framework"
+  ],
+  "homepage": "http://www.ddei.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wei-design/web-vue.git"
+  },
+  "files": [
+    "lib/*",
+    "packages/*",
+    "Readme.md",
+    "package.json"
+  ],
+  "main": "./lib/web-vue.umd.js",
+  "module": "./lib/web-vue.mjs",
+  "exports": {
+    ".": {
+      "import": "./lib/web-vue.mjs",
+      "require": "./lib/web-vue.umd.js"
+    },
+    "./lib/style.css": "./lib/style.css"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host=0.0.0.0",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build-only": "vite build",
+    "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false"
   },
   "dependencies": {
-    "vue": "^3.3.4"
+    "animate.css": "^4.1.1",
+    "ant-design-vue": "4.x",
+    "axios": "^1.6.1",
+    "ddei-autolink": "^1.1.1",
+    "flow": "^0.2.3",
+    "js-cookie": "^3.0.5",
+    "jspdf": "^2.5.1",
+    "jsx": "^0.9.89",
+    "less": "^4.2.0",
+    "lib-flexible": "^0.3.2",
+    "lib-flexible-computer": "^1.0.2",
+    "lodash": "^4.17.21",
+    "postcss-px2rem": "^0.3.0",
+    "postcss-px2rem-exclude": "^0.0.6",
+    "sass": "^1.66.1",
+    "three": "^0.156.1",
+    "vue": "^3.3.4",
+    "vue-router": "^4.2.5",
+    "webworker": "^0.8.4"
   },
   "devDependencies": {
+    "@tsconfig/node18": "^18.2.0",
+    "@types/lodash": "^4.14.197",
+    "@types/node": "^18.17.6",
     "@vitejs/plugin-vue": "^4.2.3",
-    "vite": "^4.4.6"
+    "@vue/tsconfig": "^0.4.0",
+    "npm-run-all": "^4.1.5",
+    "px2rem-loader": "^0.1.9",
+    "typescript": "~5.1.6",
+    "unplugin-vue-components": "^0.26.0",
+    "vite": "^4.4.6",
+    "vite-plugin-compression": "^0.5.1",
+    "vue-tsc": "^1.8.6"
   }
 }
