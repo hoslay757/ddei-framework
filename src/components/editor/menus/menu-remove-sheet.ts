@@ -1,9 +1,9 @@
-import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type";
-import DDeiEditor from "../js/editor";
-import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
-import DDeiEditorState from "../js/enums/editor-state";
-import DDeiUtil from "@/components/framework/js/util";
-import DDeiEditorUtil from "../js/util/editor-util";
+import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
+import DDeiEditor from "@ddei-core/editor/js/editor";
+import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
+import DDeiEditorState from "@ddei-core/editor/js/enums/editor-state";
+import DDeiUtil from "@ddei-core/framework/js/util";
+import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
 
 /**
  * 插入列菜单

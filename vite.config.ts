@@ -27,8 +27,11 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@ddei': fileURLToPath(new URL('./plugins', import.meta.url)),
+      '@ddei-core': fileURLToPath(new URL('./core', import.meta.url))
     }
+
   },
   css: {
     postcss: {

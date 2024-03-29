@@ -1,4 +1,4 @@
-import DDei from '@/components/framework/js/ddei'
+import DDei from '@ddei-core/framework/js/ddei'
 import { createRouter, createWebHistory } from 'vue-router'
 import { routes } from './routes'
 

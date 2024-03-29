@@ -1,4 +1,4 @@
-import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type";
+import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 
 /**
  * 删除行菜单

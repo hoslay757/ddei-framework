@@ -1,6 +1,6 @@
 import ICONS from "./icon"
 import FONTS from "../configs/fonts/font"
-import MENUS from "./menu"
+import MENUS from "../js/menu"
 
 //配置信息
 const CONFIGS = {}

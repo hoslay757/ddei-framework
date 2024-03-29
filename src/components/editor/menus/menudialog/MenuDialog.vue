@@ -19,10 +19,10 @@
 </template>
 
 <script lang="ts">
-import DDeiEditor from "../../js/editor";
+import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEditorConfig from "../../js/resource";
-import DDeiEnumBusCommandType from "../../../framework/js/enums/bus-command-type";
-import DDeiEnumOperateState from "../../../framework/js/enums/operate-state";
+import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
+import DDeiEnumOperateState from "@ddei-core/framework/js/enums/operate-state";
 export default {
   name: "DDei-Editor-Menu-Dialog",
   extends: null,

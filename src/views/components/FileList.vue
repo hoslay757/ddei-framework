@@ -133,7 +133,7 @@
 <script type="ts">
 import Cookies from 'js-cookie'
 import { listfile, createfile, savefilebasic, removefile, copyfile } from "@/lib/api/file"
-import ICONS from '../../components/editor/js/icon'
+import ICONS from '@/components/editor/js/icon'
 import { debounce } from 'lodash'
 import { createVNode } from 'vue'
 import FONTS from "@/components/editor/configs/fonts/font"
@@ -206,7 +206,7 @@ export default {
     deleteFile (file) {
       Modal.confirm({
         title: '是否删除文件',
-        content: createVNode('div', { }, file.name),
+        content: createVNode('div', {}, file.name),
         onOk: async () => {
           let fileData = await removefile({ id: file.id })
           if (fileData.status == 200) {
@@ -401,7 +401,7 @@ export default {
   color: #212121;
   margin-left: 20px;
   margin-top: 20px;
-  float:left;
+  float: left;
 }
 
 .ddei_home_fileview_file_header {
@@ -433,16 +433,22 @@ export default {
   text-align: center;
 
   img {
-    max-width: 100%; /* 设置图片的最大宽度为父元素宽度的100% */
-    max-height: 100%; /* 同上，最大高度也为100% */
+    max-width: 100%;
+    /* 设置图片的最大宽度为父元素宽度的100% */
+    max-height: 100%;
+    /* 同上，最大高度也为100% */
 
-    width: auto; /* 宽度设为auto，使图片按比例缩放 */
+    width: auto;
+    /* 宽度设为auto，使图片按比例缩放 */
 
-    height: auto; /* 高度同上，按比例缩放 */
+    height: auto;
+    /* 高度同上，按比例缩放 */
 
-    min-width: 160px; /* 如果图片小于父元素，最小宽度应设置为100px，以保持等比缩放效果 */
+    min-width: 160px;
+    /* 如果图片小于父元素，最小宽度应设置为100px，以保持等比缩放效果 */
 
-    min-height: 100px; /* 同上，最小高度也应为100px */
+    min-height: 100px;
+    /* 同上，最小高度也应为100px */
   }
 }
 
@@ -483,7 +489,7 @@ export default {
   white-space: nowrap;
   text-overflow: ellipsis;
   margin-right: 8px;
-  font-size:16px;
+  font-size: 16px;
 }
 
 .ddei_home_fileview_file_version {
@@ -563,7 +569,7 @@ export default {
   display: block;
   margin-top: 20px;
   margin-bottom: 20px;
-  margin-right:20px;
+  margin-right: 20px;
   border-bottom: 1px solid #CED4DD;
 }
 

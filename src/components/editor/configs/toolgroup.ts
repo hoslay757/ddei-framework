@@ -1,6 +1,6 @@
-import DDeiEditorArrtibute from '../js/attribute/editor-attribute';
+import DDeiEditorArrtibute from '@ddei-core/editor/js/attribute/editor-attribute';
 import { cloneDeep } from 'lodash'
-import DDeiUtil from '@/components/framework/js/util';
+import DDeiUtil from '@ddei-core/framework/js/util';
 //已读取的配置组原始定义
 const groupOriginDefinies = [];
 
@@ -239,11 +239,11 @@ for (let i in control_ctx) {
   let cls = control_ctx[i];
   loadArray.push(cls);
 }
-const out_control_ctx = import.meta.glob('@/ddei/controls/**', { eager: true });
-for (let i in out_control_ctx) {
-  let cls = out_control_ctx[i];
-  loadArray.push(cls);
-}
+// const out_control_ctx = import.meta.glob('@/ddei/controls/**', { eager: true });
+// for (let i in out_control_ctx) {
+//   let cls = out_control_ctx[i];
+//   loadArray.push(cls);
+// }
 let stage_ctx = import.meta.glob('./stage.ts', { eager: true })
 for (let i in stage_ctx) {
   let cls = stage_ctx[i];

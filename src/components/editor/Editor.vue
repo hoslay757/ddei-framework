@@ -1,58 +1,54 @@
 <template>
-  <div id="ddei_editor" class="ddei_editor" @contextmenu.prevent @mousewheel.prevent  @mouseup="mouseUp"
+  <div id="ddei_editor" class="ddei_editor" @contextmenu.prevent @mousewheel.prevent @mouseup="mouseUp"
     @mousemove="mouseMove" @mousedown="mouseDown">
+
     <div class="top" id="ddei_editor_frame_top">
-      <TopMenu v-if="refreshTopMenuView"></TopMenu>
+      <component :is="editor?.components['TopMenu']" v-if="refreshTopMenuView"></component>
     </div>
     <div class="body">
       <div class="left" v-show="toolboxShow" id="ddei_editor_frame_left">
-        <Toolbox v-if="refreshToolBox" @createControlPrepare="createControlPrepare"></Toolbox>
+        <component :is="editor?.components['ToolBox']" v-if="refreshToolBox"></component>
       </div>
 
       <div class="middle" id="ddei_editor_frame_middle">
-        <OpenFilesView v-if="allowOpenMultFiles && refreshOpenFilesView"></OpenFilesView>
-        <CanvasView id="ddei_editor_canvasview"></CanvasView>
-        <QuickColorView v-if="allowQuickColor"></QuickColorView>
+        <component :is="editor?.components['OpenFilesView']" v-if="allowOpenMultFiles && refreshOpenFilesView">
+        </component>
+        <component :is="editor?.components['CanvasView']"></component>
+        <component :is="editor?.components['QuickColorView']" v-if="allowQuickColor"></component>
       </div>
       <div class="right" v-show="propertyViewShow" id="ddei_editor_frame_right">
-        <PropertyView v-if="refreshPropertyView"></PropertyView>
+        <component :is="editor?.components['PropertyView']" v-if="refreshPropertyView"></component>
       </div>
     </div>
     <div class="bottom" id="ddei_editor_frame_bottom">
-      <BottomMenu v-if="refreshBottomMenu"></BottomMenu>
+      <component :is="editor?.components['BottomMenu']" v-if="refreshBottomMenu"></component>
     </div>
   </div>
   <MenuDialog v-show="!refreshMenu"></MenuDialog>
-  <Dialogs></Dialogs>
   <div id="ddei-cut-img-div" class="ddei-cut-img-div"></div>
 </template>
 
 <script lang="ts">
 
-import Dialogs from "./dialogs/Dialogs.vue";
-import DDeiEditor from "./js/editor";
-import TopMenu from "./topmenu/TopMenu.vue";
-import Toolbox from "./toolbox/Toolbox.vue";
-import BottomMenu from "./bottommenu/BottomMenu.vue";
-import PropertyView from "./propertyview/PropertyView.vue";
-import CanvasView from "./canvasview/CanvasView.vue";
-import OpenFilesView from "./openfilesview/OpenFilesView.vue";
-import QuickColorView from "./quickcolorview/QuickColorView.vue";
-import DDeiEditorState from "./js/enums/editor-state";
-import DDeiAbstractShape from "../framework/js/models/shape";
-import DDeiEnumState from "../framework/js/enums/ddei-state";
-import "./js/util/command";
-import DDeiUtil from "../framework/js/util";
-import DDeiEnumBusCommandType from "../framework/js/enums/bus-command-type";
-import DDeiEditorEnumBusCommandType from "./js/enums/editor-command-type";
-import DDeiFileState from "./js/enums/file-state";
-import DDeiEditorCommandFileDirty from "./js/bus/commands/file-dirty";
-import DDeiEditorCommandAddHistroy from "./js/bus/commands/add-histroy";
+import DDeiEditor from "@ddei-core/editor/js/editor";
+import DDeiEditorState from "@ddei-core/editor/js/enums/editor-state";
+import DDeiAbstractShape from "@ddei-core/framework/js/models/shape";
+import DDeiEnumState from "@ddei-core/framework/js/enums/ddei-state";
+import "@ddei-core/editor/js/util/command";
+import DDeiUtil from "@ddei-core/framework/js/util";
+import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
+import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
+import DDeiFileState from "@ddei-core/editor/js/enums/file-state";
+import DDeiEditorCommandFileDirty from "@ddei-core/editor/js/bus/commands/file-dirty";
+import DDeiEditorCommandAddHistroy from "@ddei-core/editor/js/bus/commands/add-histroy";
 import MenuDialog from "./menus/menudialog/MenuDialog.vue";
 import { throttle } from "lodash";
-import DDeiEnumOperateState from "../framework/js/enums/operate-state";
-import DDeiEditorUtil from "./js/util/editor-util";
-import DDeiFile from "./js/file";
+import DDeiEnumOperateState from "@ddei-core/framework/js/enums/operate-state";
+import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
+
+import ICONS from "./js/icon";
+import { controlOriginDefinies, groupOriginDefinies } from "./configs/toolgroup"
+
 export default {
   name: "DDei-Editor",
   extends: null,
@@ -64,6 +60,11 @@ export default {
       type: Object,
       default: null,
     },
+
+    options: {
+      type: Object,
+      default: null
+    }
   },
   data() {
     return {
@@ -86,15 +87,7 @@ export default {
   },
   //注册组件
   components: {
-    TopMenu,
-    Toolbox,
-    BottomMenu,
-    PropertyView,
-    OpenFilesView,
-    CanvasView,
-    QuickColorView,
     MenuDialog,
-    Dialogs
   },
   computed: {},
   watch: {},
@@ -104,7 +97,7 @@ export default {
     if (DDeiEditor.ACTIVE_INSTANCE) {
       this.editor = DDeiEditor.ACTIVE_INSTANCE;
     } else {
-      this.editor = DDeiEditor.newInstance("ddei_editor_ins", "ddei_editor");
+      this.editor = DDeiEditor.newInstance("ddei_editor_ins", "ddei_editor", true, this.options);
     }
     //载入局部配置
     this.editor.applyConfig(this.config);
@@ -118,6 +111,11 @@ export default {
       this.editor
     );
     window.onbeforeunload = this.beforeUnload;
+
+
+    DDeiEditorUtil.controlOriginDefinies = controlOriginDefinies;
+    DDeiEditorUtil.groupOriginDefinies = groupOriginDefinies;
+    DDeiEditorUtil.ICONS = ICONS;
 
   },
   mounted() {
@@ -175,7 +173,7 @@ export default {
       for (const entry of entries) {
         // 获取宽度和高度
         const { width, height } = entry.contentRect;
-        if(width != 0 && height != 0){
+        if (width != 0 && height != 0) {
           this.editor.ddInstance.render.setSize(
             width,
             height,

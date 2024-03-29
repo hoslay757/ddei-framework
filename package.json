@@ -43,6 +43,7 @@
     "ant-design-vue": "4.x",
     "axios": "^1.6.1",
     "ddei-autolink": "^1.1.1",
+    "ddei-plugins-quick-pop-picker": "^0.0.11",
     "flow": "^0.2.3",
     "js-cookie": "^3.0.5",
     "jspdf": "^2.5.1",

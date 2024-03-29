@@ -1,10 +1,8 @@
-import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type";
-import { cloneDeep, indexOf } from 'lodash'
-import DDeiEditor from "../js/editor";
-import DDeiActiveType from "../js/enums/active-type";
-import DDeiEditorEnumBusCommandType from "../js/enums/editor-command-type";
-import DDeiEditorState from "../js/enums/editor-state";
-import DDeiSheet from "../js/sheet";
+import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
+import DDeiEditor from "@ddei-core/editor/js/editor";
+import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
+import DDeiEditorState from "@ddei-core/editor/js/enums/editor-state";
+import DDeiSheet from "@ddei-core/editor/js/sheet";
 
 /**
  * 复制页签

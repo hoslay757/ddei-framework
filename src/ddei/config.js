@@ -39,6 +39,7 @@ const config = {
   AC_DESIGN_DEL: true,
   AC_DESIGN_SELECT: true,
 
+
   SELECTOR: {
     //选择器边框
     border: {

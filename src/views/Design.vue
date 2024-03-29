@@ -1,5 +1,5 @@
 <template>
-  <DDeiEditor v-if="loadMode == 1 || loadMode == 2" :config="ddeiConfig"></DDeiEditor>
+  <DDeiEditor v-if="loadMode == 1 || loadMode == 2" :config="ddeiConfig" :options="options"></DDeiEditor>
   <div v-if="loadMode == 3" class="ddei_sslink_outtime">
     <div class="content">
       <div class="header">
@@ -38,15 +38,18 @@ import { userinfo } from "@/lib/api/login/index.js";
 import { loadfile, savefile, publishfile } from "@/lib/api/file";
 import { shortlinklogin } from "@/lib/api/shortlink";
 import Cookies from "js-cookie";
-import DDeiEditor from "../components/editor/Editor.vue";
-import DDeiEditorUtil from "@/components/editor/js/util/editor-util";
-import DDeiEditorCls from "@/components/editor/js/editor";
-import DDei from "@/components/framework/js/ddei";
-import DDeiUtil from "@/components/framework/js/util";
+import DDeiEditor from "@/components/editor/Editor.vue";
+import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
+import DDeiEditorCls from "@ddei-core/editor/js/editor";
+import DDei from "@ddei-core/framework/js/ddei";
+import DDeiUtil from "@ddei-core/framework/js/util";
 import { debounce } from "lodash";
+import { markRaw } from "vue";
 
-import DDeiEditorEnumBusCommandType from "@/components/editor/js/enums/editor-command-type";
+import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
 
+//引入插件
+import DDeiCore from "@ddei/core";
 
 export default {
   props: {},
@@ -55,7 +58,7 @@ export default {
       publishPostData: null,
       inputPwdCode: "",
       loadMode: 0,//加载模式0，不加载
-      ddeiConfig: Object.freeze({
+      ddeiConfig: markRaw({
         EVENT_LOAD_FILE: this.openFile,
         EVENT_SAVE_FILE: this.saveFile,
         EVENT_GOBACK_FILE_LIST: this.goBackFileList,
@@ -86,6 +89,12 @@ export default {
         // EVENT_CONTROL_VIEW_AFTER: this.viewAfter,
         // EVENT_CONTROL_VIEW_BEFORE: this.viewBefore,
       }),
+      options: markRaw({
+        //配置扩展插件
+        extensions: [
+          DDeiCore
+        ]
+      }),
     };
   },
   //注册组件
@@ -94,6 +103,7 @@ export default {
   },
   created() {
     this.displayQuickDialog = debounce(this.displayQuickDialog, 200, { trailing: true, leading: false });
+
   },
   beforeMount() {
     let routePath = decodeURIComponent(this.$route.path)

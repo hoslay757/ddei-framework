@@ -1,0 +1,242 @@
+<template>
+  <div class="ddei_editor_eip">
+    <div class="header"></div>
+    <div class="content">
+      <div class="part">
+        <div class="button-v" @click="download">
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan424"></use>
+          </svg>
+          <div class="text">下载</div>
+        </div>
+      </div>
+      <div class="part">
+        <div class="button-v" @click="showExportDialog($event)">
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan501"></use>
+          </svg>
+          <div class="text">打印</div>
+        </div>
+      </div>
+      <div class="part">
+        <div class="button-v" @click="showShareDialog($event)">
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan378"></use>
+          </svg>
+          <div class="text">分享</div>
+        </div>
+      </div>
+
+      <div class="part">
+        <div class="button-v" @click="publish">
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-a-ziyuan425"></use>
+          </svg>
+          <div class="text">发布</div>
+        </div>
+      </div>
+    </div>
+    <div class="tail">发布</div>
+    <div class="ddei_editor_eip_file_dialog">
+
+    </div>
+  </div>
+</template>
+<script lang="ts">
+import DDeiEditor from "@ddei-core/editor/js/editor";
+import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
+import DDeiEditorState from "@ddei-core/editor/js/enums/editor-state";
+import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
+import Cookies from "js-cookie";
+
+export default {
+  name: "DDei-Editor-Quick-EImport",
+  extends: null,
+  mixins: [],
+  props: {},
+  data() {
+    return {
+      editor: null,
+      user: null
+    };
+  },
+  computed: {},
+  watch: {},
+  created() { },
+  mounted() {
+    this.editor = DDeiEditor.ACTIVE_INSTANCE;
+    let userCookie = Cookies.get("user");
+    if (userCookie) {
+      this.user = JSON.parse(userCookie)
+    }
+
+  },
+  methods: {
+
+    showExportDialog(evt: Event) {
+      let srcElement = evt.currentTarget;
+      DDeiEditorUtil.showOrCloseDialog("export_option_dialog", {
+        callback: {
+        },
+        mode: 2,
+        group: "top-dialog",
+        background: "white",
+        opacity: "1%",
+        event: -1
+      }, {}, srcElement)
+
+      if (DDeiEditor.ACTIVE_INSTANCE.tempDialogData && DDeiEditor.ACTIVE_INSTANCE.tempDialogData["export_option_dialog"]) {
+        this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
+      } else {
+        this.editor.changeState(DDeiEditorState.DESIGNING);
+      }
+    },
+
+    showShareDialog(evt: Event) {
+      let srcElement = evt.currentTarget;
+      DDeiEditorUtil.showOrCloseDialog("create_share_dialog", {
+        callback: {
+        },
+        group: "top-dialog",
+        background: "white",
+        opacity: "1%",
+        event: -1
+      }, {}, srcElement)
+
+
+      if (DDeiEditor.ACTIVE_INSTANCE.tempDialogData && DDeiEditor.ACTIVE_INSTANCE.tempDialogData["create_share_dialog"]) {
+        this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
+      } else {
+        this.editor.changeState(DDeiEditorState.DESIGNING);
+      }
+    },
+    /**
+     * 发布
+     * @param evt
+     */
+    publish(evt) {
+      this.editor.changeState(DDeiEditorState.DESIGNING);
+      this.editor.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+      this.editor.bus.push(DDeiEditorEnumBusCommandType.SaveFile, {
+        publish: 1,
+      });
+      this.editor.bus.executeAll();
+    },
+    /**
+     * 下载文件
+     */
+    download(evt) {
+      if (this.editor?.ddInstance?.stage) {
+        //获取json信息
+        let file = this.editor?.files[this.editor?.currentFileIndex];
+        if (file) {
+          let json = file.toJSON();
+          if (json) {
+            // 创建隐藏的可下载链接
+            let eleLink = document.createElement("a");
+            eleLink.download = file.name + ".dei";
+            eleLink.style.display = "none";
+            // 字符内容转变成blob地址
+            let blob = new Blob([JSON.stringify(json)]);
+            eleLink.href = URL.createObjectURL(blob);
+            // 触发点击
+            document.body.appendChild(eleLink);
+            eleLink.click();
+            // 然后移除
+            document.body.removeChild(eleLink);
+            this.editor.changeState(DDeiEditorState.DESIGNING);
+          }
+        }
+      }
+    },
+
+
+  },
+};
+</script>
+
+<style lang="less" scoped>
+.ddei_editor_eip {
+  height: 103px;
+  display: grid;
+  grid-template-rows: 20px 57px 26px;
+  grid-template-columns: 1fr;
+  text-align: center;
+
+  .content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0px 4px;
+
+    .part {
+      flex: 1;
+      padding: 0px 2px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      .button-v {
+        flex: 1;
+        height: 50px;
+        border-radius: 4px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .button-v:hover {
+        cursor: pointer;
+        background-color: #e6e6e6;
+      }
+
+      .button-v-selected {
+        flex: 1;
+        height: 50px;
+        background-color: #e6e6e6;
+        border-radius: 4px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .button-v-disabled {
+        flex: 1;
+        height: 50px;
+        cursor: not-allowed;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        >span {
+          color: #bcbcbc;
+        }
+
+        .text {
+
+          color: #bcbcbc;
+        }
+      }
+
+      .text {
+        flex: 0 0 20px;
+        white-space: nowrap;
+        font-size: 14px;
+        font-family: "Microsoft YaHei";
+        font-weight: 400;
+        color: #000000;
+      }
+    }
+  }
+
+  .tail {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    font-family: "Microsoft YaHei";
+    font-weight: 400;
+    color: #9D9D9D;
+  }
+}
+</style>

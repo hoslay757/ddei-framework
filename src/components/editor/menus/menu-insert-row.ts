@@ -1,5 +1,5 @@
-import DDeiEnumBusCommandType from "@/components/framework/js/enums/bus-command-type";
-import DDeiTable from "@/components/framework/js/models/table";
+import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
+import DDeiTable from "@ddei-core/framework/js/models/table";
 
 /**
  * 插入行菜单
