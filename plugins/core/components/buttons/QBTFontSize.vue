@@ -169,7 +169,7 @@ export default {
     //打开弹出框
     showDialog(evt: Event) {
       let srcElement = evt.currentTarget;
-      DDeiEditorUtil.showOrCloseDialog("selectfontsize_dialog", {
+      DDeiEditorUtil.showOrCloseDialog("ddei-core-dialog-selectfontsize", {
         dataSource: this.dataSource,
         value: this.attrDefine.value,
         group: "property-dialog",

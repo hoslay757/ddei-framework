@@ -86,7 +86,7 @@ export default {
     //打开弹出框
     showDialog(evt) {
       let srcElement = evt.currentTarget;
-      DDeiEditorUtil.showOrCloseDialog("select_border_weight_dialog", {
+      DDeiEditorUtil.showOrCloseDialog("ddei-core-dialog-selectboderweight", {
 
         value: this.attrDefine.value,
         dataSource: [

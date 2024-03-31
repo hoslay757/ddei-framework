@@ -1,5 +1,5 @@
 <template>
-  <div id="rotate_dialog" class="rotate_dialog">
+  <div id="ddei-core-dialog-changerotate" class="ddei-core-dialog-changerotate">
     <div class="content">
       <div class="title">翻转</div>
       <div class="group">
@@ -55,7 +55,7 @@ export default {
   props: {},
   data() {
     return {
-      dialogId: 'rotate_dialog',
+      dialogId: 'ddei-core-dialog-changerotate',
       //当前编辑器
       editor: null,
     };
@@ -135,7 +135,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.rotate_dialog {
+.ddei-core-dialog-changerotate {
 
   border: 1px solid #E6E6E6;
   box-shadow: 0px 2px 24px 0px #DBDBDB;

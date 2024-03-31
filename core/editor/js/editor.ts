@@ -249,6 +249,13 @@ class DDeiEditor {
         this.components[components[i].name] = components[i]
       }
     }
+    if (plugin.addDialogs) {
+      //注册并加载弹出框
+      let dialogs = plugin.addDialogs(this)
+      for (let i in dialogs) {
+        this.dialogs[dialogs[i].name] = dialogs[i]
+      }
+    }
     if (plugin.addPanels) {
       //注册并加载面板
       let panels = plugin.addPanels(this)
@@ -264,7 +271,6 @@ class DDeiEditor {
         this.layouts[layouts[i].name] = layouts[i]
       }
     }
-    debugger
   }
 
   /**
@@ -408,6 +414,8 @@ class DDeiEditor {
   panels: object = markRaw({});
   //当前引入的外部布局
   layouts: object = markRaw({});
+  //当前引入的外部弹出框
+  dialogs: object = markRaw({});
 
   // ============================ 方法 ============================
 

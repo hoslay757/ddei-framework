@@ -1,6 +1,6 @@
 <template>
-  <div id="ddei_editor_toolbox" v-show="editor?.leftWidth > 0" @mousedown="changeEditorFocus"
-    @mouseup="cancelCreateControl($event)" class="ddei_editor_toolbox">
+  <div id="ddei_editor_toolbox" @mousedown="changeEditorFocus" @mouseup="cancelCreateControl($event)"
+    class="ddei_editor_toolbox">
     <div class="header">
       <div class="header-1"></div>
       <svg class="icon icon1" aria-hidden="true">
@@ -186,7 +186,7 @@ export default {
           selectGroups.push(group.id)
         }
       });
-      DDeiEditorUtil.showOrCloseDialog("choose_control_group_dialog", {
+      DDeiEditorUtil.showOrCloseDialog("ddei-core-dialog-choosecontrolgroup", {
         selectGroups: selectGroups,
         callback: {
           select: this.groupBoxChoose

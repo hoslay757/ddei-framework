@@ -64,7 +64,7 @@ export default {
 
     registry() {
       //弹出登录弹出框
-      DDeiEditorUtil.showDialog("user_registry_dialog", {
+      DDeiEditorUtil.showDialog("ddei-core-dialog-userregistry", {
         icon: "#icon-a-ziyuan413",
         msg: "新用户注册",
         callback: {
@@ -78,7 +78,7 @@ export default {
 
     login() {
       //弹出登录弹出框
-      DDeiEditorUtil.showDialog("relogin_dialog", {
+      DDeiEditorUtil.showDialog("ddei-core-dialog-relogin", {
         icon: "#icon-a-ziyuan413",
         msg: '用户登录',
         callback: {

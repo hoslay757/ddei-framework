@@ -15,7 +15,7 @@ import DDeiEnumOperateState from '@ddei-core/framework/js/enums/operate-state';
 import DDeiModelArrtibuteValue from '@ddei-core/framework/js/models/attribute/attribute-value';
 import DDeiEditorUtil from '@ddei-core/editor/js/util/editor-util';
 export default {
-  name: "btn-borderdash",
+  name: "btn-linetype",
   extends: null,
   mixins: [],
   components: {
@@ -75,7 +75,7 @@ export default {
     //打开弹出框
     showDialog(evt) {
       let srcElement = evt.currentTarget;
-      DDeiEditorUtil.showOrCloseDialog("line_type_dialog", {
+      DDeiEditorUtil.showOrCloseDialog("ddei-core-dialog-linetype", {
 
         value: this.attrDefine.value,
         dataSource: this.attrDefine.dataSource,

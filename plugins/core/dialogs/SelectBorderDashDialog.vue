@@ -1,14 +1,14 @@
 <template>
-  <div :id="dialogId" class="select_border_weight_dialog">
+  <div :id="dialogId" class="ddei-core-dialog-selectborderdash">
     <div class="content">
       <div class="group">
-        <div class="title">选择线段粗细</div>
+        <div class="title">选择线段类型</div>
         <div class="group_content">
           <div :class="{ 'item': true, 'item-selected': JSON.stringify(value) == JSON.stringify(data.value) }"
             v-for="data in dataSource" @click="select(data.value)" @dblclick="selectAndConfirm(data.value)">
             <svg class="div_input">
-              <line x1=0 y1="50%" x2="100%" y2="50%" stroke="black" fill="white" :stroke-width="data.value"
-                :stroke-dasharray="dash">
+              <line x1=0 y1=0 x2="100%" y2=0 stroke="black" fill="white" stroke-width="3"
+                :stroke-dasharray="data.value">
               </line>
             </svg>
           </div>
@@ -25,21 +25,21 @@
 <script lang="ts">
 import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
+import DDeiUtil from "../../framework/js/util.ts";
 
 export default {
-  name: "ddei-core-dialog-selectboderweight",
+  name: "ddei-core-dialog-selectborderdash",
   extends: null,
   mixins: [],
   props: {},
   data() {
     return {
-      dialogId: 'select_border_weight_dialog',
+      dialogId: 'ddei-core-dialog-selectborderdash',
       //当前编辑器
       editor: null,
       value: [],
       //最近使用的颜色
-      dataSource: null,
-      dash: []
+      dataSource: null
     }
   },
   computed: {},
@@ -54,9 +54,6 @@ export default {
     }
     if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]?.dataSource) {
       this.dataSource = this.editor?.tempDialogData[this.dialogId].dataSource
-    }
-    if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]?.dash) {
-      this.dash = this.editor?.tempDialogData[this.dialogId].dash
     }
   },
   methods: {
@@ -86,7 +83,7 @@ export default {
 
 <style lang="less" scoped>
 /**以下是选择颜色的弹出框 */
-.select_border_weight_dialog {
+.ddei-core-dialog-selectborderdash {
 
   border: 1px solid #E6E6E6;
   box-shadow: 0px 2px 24px 0px #DBDBDB;
@@ -144,7 +141,7 @@ export default {
 
         .div_input {
           width: calc(100% - 10px);
-          height: 100%;
+          height: 3px;
         }
       }
 

@@ -320,14 +320,14 @@ export default {
         }
         this.editor.currentControlDefine = null;
       }
-      setTimeout(() => {
-        let e1 = document.getElementById("ddei_editor_frame_top")
-        let e2 = document.getElementById("ddei_editor_frame_bottom")
-        let e3 = document.getElementsByClassName("ddei_editor_ofsview")[0]
-        let e4 = document.getElementsByClassName("ddei_editor_pv_subgroup_view_tab_title")[0]
+      // setTimeout(() => {
+      //   let e1 = document.getElementById("ddei_editor_frame_top")
+      //   let e2 = document.getElementById("ddei_editor_frame_bottom")
+      //   let e3 = document.getElementsByClassName("ddei_editor_ofsview")[0]
+      //   let e4 = document.getElementsByClassName("ddei_editor_pv_subgroup_view_tab_title")[0]
 
-        this.panelStyle = "height:calc(100vh - " + (e1.clientHeight + e2.clientHeight + e3.clientHeight + e4.clientHeight + 5) + "px"
-      }, 10);
+      //   this.panelStyle = "height:calc(100vh - " + (e1.clientHeight + e2.clientHeight + e3.clientHeight + e4.clientHeight + 5) + "px"
+      // }, 10);
 
     },
 

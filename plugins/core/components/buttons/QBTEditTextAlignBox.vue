@@ -54,7 +54,7 @@ export default {
 
     showTextAlignDialog(evt: Event) {
       let srcElement = evt.currentTarget;
-      DDeiEditorUtil.showOrCloseDialog("text_align_dialog", {
+      DDeiEditorUtil.showOrCloseDialog("ddei-core-dialog-textalign", {
         group: "top-dialog",
         align: this.attrDefine.value,
         valign: this.valignAttrDefine.value,

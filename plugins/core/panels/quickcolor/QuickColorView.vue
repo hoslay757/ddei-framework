@@ -163,7 +163,7 @@ export default {
         }
       });
       let el = evt.currentTarget;
-      DDeiEditorUtil.showOrCloseDialog("qcview_dialog", {
+      DDeiEditorUtil.showOrCloseDialog("ddei-core-dialog-qcview", {
         dataSource: dataSource,
         callback: {
           ok: this.changeMode,

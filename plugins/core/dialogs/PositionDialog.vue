@@ -1,21 +1,36 @@
 <template>
-  <div id="mergecompose_dialog" class="mergecompose_dialog">
+  <div id="ddei-core-dialog-changeposition" class="ddei-core-dialog-changeposition">
     <div class="content">
-      <div class="title">组合</div>
+      <div class="title">位置</div>
       <div class="group">
         <div class="group_content">
-          <div :class="{ 'item_disabled': !canMerge(), 'item': canMerge() }" @click="canMerge() && doMerge()">
+          <div :class="{ 'item_disabled': !canPush('top'), 'item': canPush('top') }"
+            @click="canPush('top') && doPush('top')">
             <svg class="icon" aria-hidden="true">
-              <use xlink:href="#icon-a-ziyuan406"></use>
+              <use xlink:href="#icon-a-ziyuan435"></use>
             </svg>
-            <div class="text">组合</div>
+            <div class="text">置于顶层</div>
           </div>
-          <div :class="{ 'item_disabled': !canCancelMerge(), 'item': canCancelMerge() }"
-            @click="canCancelMerge() && doCancelMerge()">
+          <div :class="{ 'item_disabled': !canPush('bottom'), 'item': canPush('bottom') }"
+            @click="canPush('top') && doPush('bottom')">
             <svg class="icon" aria-hidden="true">
-              <use xlink:href="#icon-a-ziyuan405"></use>
+              <use xlink:href="#icon-a-ziyuan436"></use>
             </svg>
-            <div class="text">取消组合</div>
+            <div class="text">置于底层</div>
+          </div>
+          <div :class="{ 'item_disabled': !canPush('up'), 'item': canPush('up') }"
+            @click="canPush('up') && doPush('up')">
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-a-ziyuan433"></use>
+            </svg>
+            <div class="text">上移一层</div>
+          </div>
+          <div :class="{ 'item_disabled': !canPush('down'), 'item': canPush('down') }"
+            @click="canPush('down') && doPush('down')">
+            <svg class="icon" aria-hidden="true">
+              <use xlink:href="#icon-a-ziyuan434"></use>
+            </svg>
+            <div class="text">下移一层</div>
           </div>
         </div>
       </div>
@@ -34,7 +49,7 @@ export default {
   props: {},
   data() {
     return {
-      dialogId: 'mergecompose_dialog',
+      dialogId: 'ddei-core-dialog-changeposition',
       //当前编辑器
       editor: null,
     };
@@ -48,61 +63,27 @@ export default {
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
   },
   methods: {
-
-
-    //是否可以取消组合
-    canCancelMerge() {
-      //获取当前选择控件
-      let file = this.editor?.files[this.editor.currentFileIndex];
-      let sheet = file?.sheets[file?.currentSheetIndex];
-      let stage = sheet?.stage;
-
-      if (stage?.selectedModels?.size > 0) {
-        let models = Array.from(stage?.selectedModels.values())
-        if (models[0].baseModelType == 'DDeiContainer' && models[0].layout == "compose") {
-          return true;
-        }
-      }
-      return false;
-    },
-    //是否可以组合
-    canMerge() {
-      //获取当前选择控件
-      let file = this.editor?.files[this.editor.currentFileIndex];
-      let sheet = file?.sheets[file?.currentSheetIndex];
-      let stage = sheet?.stage;
-      if (stage?.selectedModels?.size > 1) {
-        return true;
-      }
-      return false;
+    //是否置于上层
+    canPush(type) {
+      return true;
     },
 
-    /**
-   * 执行组合
-   */
-    doMerge() {
+    //修改图形层次
+    doPush(v) {
       //获取当前选择控件
       let file = this.editor?.files[this.editor.currentFileIndex];
       let sheet = file?.sheets[file?.currentSheetIndex];
       let stage = sheet?.stage;
-      if (stage?.selectedModels?.size > 1) {
-        this.editor.bus.push(DDeiEnumBusCommandType.ModelMerge);
+      let stageRender = stage?.render;
+      let optContainer = stageRender?.currentOperateContainer;
+      if (optContainer) {
+        this.editor.bus.push(DDeiEnumBusCommandType.ModelPush, {
+          container: optContainer,
+          type: v,
+        });
+        //渲染图形
+        this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
         this.editor.bus.executeAll();
-      }
-    },
-
-    /**
-     * 执行取消组合
-     */
-    doCancelMerge() {
-      //获取当前选择控件
-      let file = this.editor?.files[this.editor.currentFileIndex];
-      let sheet = file?.sheets[file?.currentSheetIndex];
-      let stage = sheet?.stage;
-      if (stage?.selectedModels?.size > 0) {
-        this.editor.bus.push(DDeiEnumBusCommandType.ModelCancelMerge);
-        this.editor.bus.executeAll();
-
       }
     },
   }
@@ -110,7 +91,8 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.mergecompose_dialog {
+.ddei-core-dialog-changeposition {
+
   border: 1px solid #E6E6E6;
   box-shadow: 0px 2px 24px 0px #DBDBDB;
   border-radius: 6px;
@@ -119,12 +101,12 @@ export default {
   width: 140px;
   position: absolute;
   background-color: white;
-  height: 110px;
+  height: 180px;
   z-index: 999;
 
   .content {
     width: 100%;
-    max-height: 110px;
+    max-height: 180px;
     overflow-y: auto;
     user-select: none;
 
@@ -155,6 +137,7 @@ export default {
         .item {
           outline: none;
           font-size: 16px;
+          margin: auto;
           background: transparent;
           border-radius: 4px;
           width: 100%;
@@ -164,19 +147,11 @@ export default {
           align-items: center;
           padding: 0px 10px;
           cursor: pointer;
+
+
         }
 
         .item_disabled {
-          outline: none;
-          font-size: 16px;
-          background: transparent;
-          border-radius: 4px;
-          width: 100%;
-          flex: 0 0 36px;
-          display: flex;
-          justify-content: start;
-          align-items: center;
-          padding: 0px 10px;
           color: rgb(210, 210, 210);
           text-decoration: line-through;
         }
@@ -191,8 +166,7 @@ export default {
 
         .text {
           flex: 1;
-          text-align: left;
-          padding-left: 15px;
+          text-align: center;
           white-space: nowrap;
           width: 100%;
         }
@@ -204,6 +178,5 @@ export default {
       }
     }
   }
-
 }
 </style>

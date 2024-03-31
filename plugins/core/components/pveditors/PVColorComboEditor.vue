@@ -65,7 +65,7 @@ export default {
     //打开弹出框
     showDialog(evt) {
       let srcElement = evt.currentTarget;
-      DDeiEditorUtil.showOrCloseDialog("selectcolor_dialog", {
+      DDeiEditorUtil.showOrCloseDialog("ddei-core-dialog-selectcolor", {
         value: this.attrDefine.value,
         callback: {
           ok: this.valueChange

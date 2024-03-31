@@ -663,7 +663,7 @@ export default {
           if (left < 0) {
             left = 0
           }
-          DDeiEditorUtil.showDialog("canvas_quick_dialog", {
+          DDeiEditorUtil.showDialog('ddei-core-dialog-quickpop', {
             group: "canvas-pop"
           }, { type: 99, left: left, top: top, hiddenMask: true }, null, true, true)
         }
@@ -673,14 +673,14 @@ export default {
 
     showChangeRatioDialog(evt: Event) {
       let srcElement = evt.currentTarget;
-      DDeiEditorUtil.showOrCloseDialog("changeratio_dialog", {
+      DDeiEditorUtil.showOrCloseDialog("ddei-core-dialog-changeratio", {
         ratio: this.currentStage?.ratio,
         callback: {
           ok: this.setRatio,
         },
         group: "bottom-dialog"
       }, { type: 2 }, srcElement)
-      if (DDeiEditor.ACTIVE_INSTANCE.tempDialogData && DDeiEditor.ACTIVE_INSTANCE.tempDialogData["changeratio_dialog"]) {
+      if (DDeiEditor.ACTIVE_INSTANCE.tempDialogData && DDeiEditor.ACTIVE_INSTANCE.tempDialogData["ddei-core-dialog-changeratio"]) {
         this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
       } else {
         this.editor.changeState(DDeiEditorState.DESIGNING);
@@ -690,10 +690,10 @@ export default {
 
     showLayersDialog(evt: Event) {
       let srcElement = evt.currentTarget;
-      DDeiEditorUtil.showOrCloseDialog("managelayers_dialog", {
+      DDeiEditorUtil.showOrCloseDialog("ddei-core-dialog-managerlayers", {
         group: "bottom-dialog"
       }, { type: 3 }, srcElement)
-      if (DDeiEditor.ACTIVE_INSTANCE.tempDialogData && DDeiEditor.ACTIVE_INSTANCE.tempDialogData["managelayers_dialog"]) {
+      if (DDeiEditor.ACTIVE_INSTANCE.tempDialogData && DDeiEditor.ACTIVE_INSTANCE.tempDialogData["ddei-core-dialog-managerlayers"]) {
         this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
       } else {
         this.editor.changeState(DDeiEditorState.DESIGNING);

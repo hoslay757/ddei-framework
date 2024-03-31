@@ -1,5 +1,5 @@
 <template>
-  <div id="quick_setstyle_dialog" class="quick_setstyle_dialog">
+  <div id='ddei-core-dialog-setstyle' class='ddei-core-dialog-setstyle'>
     <div class="content">
       <div class="title">快捷设置样式</div>
       <div class="group">
@@ -28,7 +28,7 @@ export default {
   props: {},
   data() {
     return {
-      dialogId: 'quick_setstyle_dialog',
+      dialogId: 'ddei-core-dialog-setstyle',
       //当前编辑器
       editor: null,
       ds: [
@@ -179,7 +179,7 @@ export default {
      */
     ok(data) {
       this.select(data)
-      DDeiEditorUtil.closeDialog("quick_setstyle_dialog")
+      DDeiEditorUtil.closeDialog('ddei-core-dialog-setstyle')
     },
 
   }
@@ -187,7 +187,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.quick_setstyle_dialog {
+.ddei-core-dialog-setstyle {
 
   border: 1px solid #E6E6E6;
   box-shadow: 0px 2px 24px 0px #DBDBDB;

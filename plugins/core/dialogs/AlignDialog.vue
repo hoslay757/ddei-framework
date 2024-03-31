@@ -1,5 +1,5 @@
 <template>
-  <div id="align_dialog" class="align_dialog">
+  <div id='ddei-core-dialog-align' class="ddei-core-dialog-align">
     <div class="content">
       <div class="title">对齐</div>
       <div class="group">
@@ -62,13 +62,13 @@ import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 
 export default {
-  name: "ddei-core-component-dialog-align",
+  name: "ddei-core-dialog-align",
   extends: null,
   mixins: [],
   props: {},
   data() {
     return {
-      dialogId: 'align_dialog',
+      dialogId: 'ddei-core-dialog-align',
       //当前编辑器
       editor: null,
     };
@@ -122,7 +122,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.align_dialog {
+.ddei-core-dialog-align {
 
   border: 1px solid #E6E6E6;
   box-shadow: 0px 2px 24px 0px #DBDBDB;

@@ -102,7 +102,7 @@ export default {
 
     showExportDialog(evt: Event, mode) {
       let srcElement = evt.currentTarget;
-      DDeiEditorUtil.showOrCloseDialog("export_option_dialog", {
+      DDeiEditorUtil.showOrCloseDialog("ddei-core-dialog-exportoption", {
         callback: {
         },
         mode: mode,
@@ -112,7 +112,7 @@ export default {
         event: -1
       }, {}, srcElement)
 
-      if (DDeiEditor.ACTIVE_INSTANCE.tempDialogData && DDeiEditor.ACTIVE_INSTANCE.tempDialogData["export_option_dialog"]) {
+      if (DDeiEditor.ACTIVE_INSTANCE.tempDialogData && DDeiEditor.ACTIVE_INSTANCE.tempDialogData["ddei-core-dialog-exportoption"]) {
         this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
       } else {
         this.editor.changeState(DDeiEditorState.DESIGNING);
@@ -167,7 +167,7 @@ export default {
         //获取json信息
         let file = this.editor?.files[this.editor?.currentFileIndex];
         if (file) {
-          DDeiEditorUtil.showDialog("coll_file_confirm_dialog", {
+          DDeiEditorUtil.showDialog("ddei-core-dialog-collfile", {
             msg: '是否将"' + this.file?.name + '"另存为您的私人文件?',
             callback: {
               cancel: this.cancelCollFile,
@@ -215,7 +215,7 @@ export default {
     },
 
     cancelCollFile() {
-      DDeiEditorUtil.closeDialog("coll_file_confirm_dialog")
+      DDeiEditorUtil.closeDialog("ddei-core-dialog-collfile")
       this.editor.changeState(DDeiEditorState.DESIGNING);
     },
 
@@ -234,7 +234,7 @@ export default {
         return true;
       } catch (e) {
         //弹出登录弹出框
-        DDeiEditorUtil.showDialog("relogin_dialog", {
+        DDeiEditorUtil.showDialog("ddei-core-dialog-relogin", {
           icon: "#icon-a-ziyuan411",
           msg: "当前登录状态已失效，请重新登录.",
           callback: {

@@ -75,7 +75,7 @@ export default {
 
     showExportDialog(evt: Event) {
       let srcElement = evt.currentTarget;
-      DDeiEditorUtil.showOrCloseDialog("export_option_dialog", {
+      DDeiEditorUtil.showOrCloseDialog("ddei-core-dialog-exportoption", {
         callback: {
         },
         mode: 2,
@@ -85,7 +85,7 @@ export default {
         event: -1
       }, {}, srcElement)
 
-      if (DDeiEditor.ACTIVE_INSTANCE.tempDialogData && DDeiEditor.ACTIVE_INSTANCE.tempDialogData["export_option_dialog"]) {
+      if (DDeiEditor.ACTIVE_INSTANCE.tempDialogData && DDeiEditor.ACTIVE_INSTANCE.tempDialogData["ddei-core-dialog-exportoption"]) {
         this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
       } else {
         this.editor.changeState(DDeiEditorState.DESIGNING);
@@ -94,7 +94,7 @@ export default {
 
     showShareDialog(evt: Event) {
       let srcElement = evt.currentTarget;
-      DDeiEditorUtil.showOrCloseDialog("create_share_dialog", {
+      DDeiEditorUtil.showOrCloseDialog("ddei-core-dialog-createshare", {
         callback: {
         },
         group: "top-dialog",
@@ -104,7 +104,7 @@ export default {
       }, {}, srcElement)
 
 
-      if (DDeiEditor.ACTIVE_INSTANCE.tempDialogData && DDeiEditor.ACTIVE_INSTANCE.tempDialogData["create_share_dialog"]) {
+      if (DDeiEditor.ACTIVE_INSTANCE.tempDialogData && DDeiEditor.ACTIVE_INSTANCE.tempDialogData["ddei-core-dialog-createshare"]) {
         this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
       } else {
         this.editor.changeState(DDeiEditorState.DESIGNING);

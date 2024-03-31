@@ -99,11 +99,10 @@ export default {
   },
   //注册组件
   components: {
-    DDeiEditor,
+    DDeiEditor
   },
   created() {
     this.displayQuickDialog = debounce(this.displayQuickDialog, 200, { trailing: true, leading: false });
-
   },
   beforeMount() {
     let routePath = decodeURIComponent(this.$route.path)
@@ -253,7 +252,7 @@ export default {
         let curState = editor.state
 
         //隐藏弹出框
-        DDeiEditorUtil.closeDialog("canvas_quick_dialog")
+        DDeiEditorUtil.closeDialog('ddei-core-dialog-quickpop')
 
         //显示弹出框
         if (models?.length > 0) {
@@ -278,7 +277,7 @@ export default {
           if (left < 0) {
             left = 0
           }
-          DDeiEditorUtil.showDialog("canvas_quick_dialog", {
+          DDeiEditorUtil.showDialog('ddei-core-dialog-quickpop', {
             group: "canvas-pop"
           }, { type: 99, left: left, top: top, hiddenMask: true }, null, true, true)
           editor?.changeState(curState)
@@ -545,7 +544,7 @@ export default {
      */
     mouseOperating(operateType, models, ddInstance, evt) {
       if (ddInstance && ddInstance["AC_DESIGN_EDIT"]) {
-        DDeiEditorUtil.hiddenDialog("canvas_quick_dialog")
+        DDeiEditorUtil.hiddenDialog('ddei-core-dialog-quickpop')
         if (operateType == "CHANGE_RATIO" || operateType == "CHANGE_WPV" || operateType == "CHANGE_BOUNDS" || operateType == "CHANGE_ROTATE") {
           this.displayQuickDialog();
         }
@@ -558,7 +557,7 @@ export default {
     dragBefore(operate, models, propName, ddInstance, evt) {
       if (DDei.beforeOperateValid(operate, models, propName, ddInstance, evt)) {
         if (ddInstance && ddInstance["AC_DESIGN_EDIT"]) {
-          DDeiEditorUtil.hiddenDialog("canvas_quick_dialog")
+          DDeiEditorUtil.hiddenDialog('ddei-core-dialog-quickpop')
         }
         return true
       }
@@ -571,7 +570,7 @@ export default {
     dragLineBefore(operate, dragObj, ddInstance, evt) {
       if (DDei.beforeOperateValid(operate, [dragObj?.model], null, ddInstance, evt)) {
         if (ddInstance && ddInstance["AC_DESIGN_EDIT"]) {
-          DDeiEditorUtil.hiddenDialog("canvas_quick_dialog")
+          DDeiEditorUtil.hiddenDialog('ddei-core-dialog-quickpop')
         }
         return true
       }
@@ -585,7 +584,7 @@ export default {
      */
     changeWPV(oldValue, newValue, ddInstance) {
       if (ddInstance && ddInstance["AC_DESIGN_EDIT"]) {
-        DDeiEditorUtil.hiddenDialog("canvas_quick_dialog")
+        DDeiEditorUtil.hiddenDialog('ddei-core-dialog-quickpop')
         this.displayQuickDialog();
       }
     },
@@ -617,7 +616,7 @@ export default {
           }
 
 
-          DDeiEditorUtil.displayDialog("canvas_quick_dialog", null, { type: 99, left: left, top: top, hiddenMask: true })
+          DDeiEditorUtil.displayDialog('ddei-core-dialog-quickpop', null, { type: 99, left: left, top: top, hiddenMask: true })
         }
       }
     },
@@ -627,7 +626,7 @@ export default {
      */
     changeRatio(oldValue, newValue, ddInstance) {
       if (ddInstance && ddInstance["AC_DESIGN_EDIT"]) {
-        DDeiEditorUtil.hiddenDialog("canvas_quick_dialog")
+        DDeiEditorUtil.hiddenDialog('ddei-core-dialog-quickpop')
         this.displayQuickDialog();
       }
     },
@@ -666,7 +665,7 @@ export default {
      * 弹出发布文件弹出框
      */
     showPublishFileDialog() {
-      DDeiEditorUtil.showDialog("publish_file_confirm_dialog", {
+      DDeiEditorUtil.showDialog("ddei-core-dialog-publishfile", {
         msg: '是否发布"' + this.publishPostData?.name + ' V' + this.publishPostData?.version + '"？',
         callback: {
           cancel: this.cancelPublishFile,
@@ -690,7 +689,7 @@ export default {
       } catch (e) {
         Cookies.remove("token");
         //弹出登录弹出框
-        DDeiEditorUtil.showDialog("relogin_dialog", {
+        DDeiEditorUtil.showDialog("ddei-core-dialog-relogin", {
           icon: "#icon-a-ziyuan411",
           msg: "当前登录状态已失效，请重新登录.",
           callback: {

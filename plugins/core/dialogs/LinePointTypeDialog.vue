@@ -1,5 +1,5 @@
 <template>
-  <div :id="dialogId" class="linepoint_type_dialog">
+  <div :id="dialogId" class="ddei-core-dialog-linepointtype">
     <div class="content">
       <div class="group">
         <div class="title">选择端点类型</div>
@@ -19,13 +19,13 @@ import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
 
 export default {
-  name: "ddei-core-component-dialog-linepointtype",
+  name: "ddei-core-dialog-linepointtype",
   extends: null,
   mixins: [],
   props: {},
   data() {
     return {
-      dialogId: 'linepoint_type_dialog',
+      dialogId: 'ddei-core-dialog-linepointtype',
       //当前编辑器
       editor: null,
       value: [],
@@ -75,7 +75,7 @@ export default {
 
 <style lang="less" scoped>
 /**以下是选择颜色的弹出框 */
-.linepoint_type_dialog {
+.ddei-core-dialog-linepointtype {
 
   border: 1px solid #E6E6E6;
   box-shadow: 0px 2px 24px 0px #DBDBDB;

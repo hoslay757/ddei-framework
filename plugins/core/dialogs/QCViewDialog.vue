@@ -1,5 +1,5 @@
 <template>
-  <div :id="dialogId" class="qcview_dialog">
+  <div :id="dialogId" class="ddei-core-dialog-qcview">
     <div class="items">
       <div class="item" :title="item.text" v-for="item in dataSource" @click="ok(item)">
         <svg class="icon" aria-hidden="true">
@@ -22,7 +22,7 @@ export default {
   props: {},
   data() {
     return {
-      dialogId: 'qcview_dialog',
+      dialogId: 'ddei-core-dialog-qcview',
       //当前编辑器
       editor: null,
       dataSource: null,
@@ -57,7 +57,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.qcview_dialog {
+.ddei-core-dialog-qcview {
   width: 80px;
   position: absolute;
   background-color: white;

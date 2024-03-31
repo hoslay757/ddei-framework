@@ -509,7 +509,7 @@ export default {
         file.state == DDeiFileState.NEW ||
         file.state == DDeiFileState.MODIFY
       ) {
-        DDeiEditorUtil.showDialog("close_file_confirm_dialog", {
+        DDeiEditorUtil.showDialog("ddei-core-dialog-closefile", {
           msg: '是否保存对"' + file.name + '"的更改？',
           callback: {
             abort: this.abortAndCloseFileConfirmDialog,

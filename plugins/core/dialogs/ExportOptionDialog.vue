@@ -1,5 +1,5 @@
 <template>
-  <div :id="dialogId" class="export_option_dialog">
+  <div :id="dialogId" class="ddei-core-dialog-exportoption">
     <div class="content">
       <div class="header">
         <svg v-if="mode == 1" class="icon warn" aria-hidden="true">
@@ -75,13 +75,13 @@ import JsPDF from "jspdf";
 import DDeiModelArrtibuteValue from "@ddei-core/framework/js/models/attribute/attribute-value";
 import DDeiConfig from "@ddei-core/framework/js/config";
 export default {
-  name: "ddei-core-component-dialog-exportoption",
+  name: "ddei-core-dialog-exportoption",
   extends: null,
   mixins: [],
   props: {},
   data() {
     return {
-      dialogId: "export_option_dialog",
+      dialogId: "ddei-core-dialog-exportoption",
       //当前编辑器
       editor: null,
       ds1: [
@@ -169,7 +169,7 @@ export default {
     },
 
     abort() {
-      DDeiEditorUtil.closeDialog("export_option_dialog");
+      DDeiEditorUtil.closeDialog("ddei-core-dialog-exportoption");
     },
 
     /**
@@ -250,7 +250,7 @@ export default {
           }
         }
       }
-      DDeiEditorUtil.closeDialog("export_option_dialog");
+      DDeiEditorUtil.closeDialog("ddei-core-dialog-exportoption");
     },
 
 
@@ -260,7 +260,7 @@ export default {
 
 <style lang="less" scoped>
 /**以下为询问框的样式 */
-.export_option_dialog {
+.ddei-core-dialog-exportoption {
   width: 420px;
   height: 300px;
   color: black;

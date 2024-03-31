@@ -1,5 +1,5 @@
 <template>
-  <div :id="dialogId" class="changeratio_dialog">
+  <div :id="dialogId" class="ddei-core-dialog-changeratio">
     <div class="content">
       <div class="title">缩放</div>
       <div class="group">
@@ -42,13 +42,13 @@
 import DDeiEditor from "@ddei-core/editor/js/editor";
 
 export default {
-  name: "ddei-core-component-dialog-changeratio",
+  name: "dialog-changeratio",
   extends: null,
   mixins: [],
   props: {},
   data() {
     return {
-      dialogId: 'changeratio_dialog',
+      dialogId: 'ddei-core-dialog-changeratio',
       //当前编辑器
       editor: null,
       ratioInputValue: 100,
@@ -92,7 +92,7 @@ export default {
 
 <style lang="less" scoped>
 /**以下是设置缩放比例的弹出框 */
-.changeratio_dialog {
+.ddei-core-dialog-changeratio {
 
   border: 1px solid #E6E6E6;
   box-shadow: 0px 2px 24px 0px #DBDBDB;

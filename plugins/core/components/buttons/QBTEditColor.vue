@@ -84,7 +84,7 @@ export default {
       let colorInput = this.$refs.colorInput
       // colorInput.showPicker()
       let srcElement = evt.currentTarget;
-      DDeiEditorUtil.showOrCloseDialog("selectcolor_dialog", {
+      DDeiEditorUtil.showOrCloseDialog("ddei-core-dialog-selectcolor", {
         value: colorInput.value,
         callback: {
           ok: this.valueChange

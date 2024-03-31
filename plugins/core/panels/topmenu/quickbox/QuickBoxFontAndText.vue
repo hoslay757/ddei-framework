@@ -109,6 +109,7 @@
   </div>
 </template>
 <script lang="ts">
+import DDeiEditor from "@ddei-core/editor/js/editor";
 
 export default {
   name: "DDei-Editor-Quick-FontAndText",
@@ -117,6 +118,7 @@ export default {
   props: {},
   data() {
     return {
+      editor: null,
     };
   },
   computed: {},
@@ -125,6 +127,7 @@ export default {
   watch: {},
   created() { },
   mounted() {
+    this.editor = DDeiEditor.ACTIVE_INSTANCE;
   },
 };
 </script>

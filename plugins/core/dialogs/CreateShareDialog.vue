@@ -1,5 +1,5 @@
 <template>
-  <div :id="dialogId" class="create_share_dialog">
+  <div :id="dialogId" class="ddei-core-dialog-createshare">
     <div class="content">
       <div class="header">
         <svg class="icon warn" aria-hidden="true">
@@ -85,13 +85,13 @@ import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
 import { createshortlink } from "@/lib/api/shortlink"
 import DDeiUtil from "@ddei-core/framework/js/util";
 export default {
-  name: "ddei-core-component-dialog-createshare",
+  name: "dialog-createshare",
   extends: null,
   mixins: [],
   props: {},
   data() {
     return {
-      dialogId: 'create_share_dialog',
+      dialogId: 'ddei-core-dialog-createshare',
       //当前编辑器
       editor: null,
       ds1: [
@@ -208,7 +208,7 @@ export default {
       }
     },
     abort() {
-      DDeiEditorUtil.closeDialog('create_share_dialog');
+      DDeiEditorUtil.closeDialog('ddei-core-dialog-createshare');
     },
   }
 };
@@ -216,7 +216,7 @@ export default {
 
 <style lang="less" scoped>
 /**以下为询问框的样式 */
-.create_share_dialog {
+.ddei-core-dialog-createshare {
   width: 420px;
   height: 260px;
   color: black;

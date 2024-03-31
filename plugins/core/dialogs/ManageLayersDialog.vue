@@ -1,5 +1,5 @@
 <template>
-  <div :id="dialogId" v-if="allowOpenMultLayers" class="managelayers_dialog">
+  <div :id="dialogId" v-if="allowOpenMultLayers" class="ddei-core-dialog-managerlayers">
     <div class="content">
       <div class="title">图层</div>
       <div class="group">
@@ -62,13 +62,13 @@ import DDeiEnumOperateType from "@ddei-core/framework/js/enums/operate-type";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
 import Cookies from "js-cookie";
 export default {
-  name: "ddei-core-component-dialog-managerlayers",
+  name: "ddei-core-dialog-managerlayers",
   extends: null,
   mixins: [],
   props: {},
   data() {
     return {
-      dialogId: 'managelayers_dialog',
+      dialogId: 'ddei-core-dialog-managerlayers',
       //当前编辑器
       editor: null,
       allowAddLayer: true,
@@ -375,7 +375,7 @@ export default {
 
 <style lang="less" scoped>
 /**以下是编辑图层的弹出框 */
-.managelayers_dialog {
+.ddei-core-dialog-managerlayers {
   width: 240px;
   position: absolute;
   background-color: white;

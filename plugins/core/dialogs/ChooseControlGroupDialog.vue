@@ -1,5 +1,5 @@
 <template>
-  <div id="choose_control_group_dialog" class="choose_control_group_dialog">
+  <div id="ddei-core-dialog-choosecontrolgroup" class="ddei-core-dialog-choosecontrolgroup">
     <div class="content">
       <div class="title">选择需要的图形</div>
       <div class="group">
@@ -23,7 +23,7 @@
         </div>
       </div>
     </div>
-    <div class="subcontent" id="choose_control_group_dialog_subcontent">
+    <div class="subcontent" id="ddei-core-dialog-choosecontrolgroup_subcontent">
       <div class="group">
         <div class="item" v-for="group in subGroups" @click="chooseGroup(group.id)">
           <input type="checkbox" v-model="group.selected" style="pointer-events: none;" :name="group.id"
@@ -37,17 +37,16 @@
 
 <script lang="ts">
 import DDeiEditor from "@ddei-core/editor/js/editor";
-import { groupOriginDefinies } from "../configs/toolgroup";
 import DDeiUtil from "@ddei-core/framework/js/util";
-
+import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
 export default {
-  name: "ddei-core-component-dialog-choosecontrolgroup",
+  name: "ddei-core-dialog-choosecontrolgroup",
   extends: null,
   mixins: [],
   props: {},
   data() {
     return {
-      dialogId: 'choose_control_group_dialog',
+      dialogId: 'ddei-core-dialog-choosecontrolgroup',
       //当前编辑器
       editor: null,
       subGroups: null,
@@ -71,7 +70,7 @@ export default {
     expandSubMenu(menuid, evt) {
       if (this.menuId != menuid) {
         let groups = []
-        groupOriginDefinies.forEach(group => {
+        DDeiEditorUtil.groupOriginDefinies.forEach(group => {
           if (group.subject == menuid) {
             let ginfo = { id: group.id, name: group.name }
 
@@ -85,8 +84,8 @@ export default {
         })
         this.subGroups = groups
         this.menuId = menuid
-        let dialogEle = document.getElementById("choose_control_group_dialog");
-        let subContentEle = document.getElementById("choose_control_group_dialog_subcontent");
+        let dialogEle = document.getElementById("ddei-core-dialog-choosecontrolgroup");
+        let subContentEle = document.getElementById("ddei-core-dialog-choosecontrolgroup_subcontent");
         subContentEle.style.display = "block";
         let srcElement = evt.currentTarget;
         let dialogDomPos = DDeiUtil.getDomAbsPosition(dialogEle)
@@ -131,7 +130,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.choose_control_group_dialog {
+.ddei-core-dialog-choosecontrolgroup {
   display: none;
   overflow: hidden;
   width: 420px;

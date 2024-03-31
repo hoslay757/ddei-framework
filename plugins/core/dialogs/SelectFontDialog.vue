@@ -1,13 +1,13 @@
 <template>
-  <div :id="dialogId" class="selectfontsize_dialog">
+  <div :id="dialogId" class="ddei-core-dialog-selectfont">
     <div class="content">
       <div class="group">
         <div class="group_content">
           <div
-            :class="{ 'itembox': true, 'itembox_selected': item.value == value, 'itembox_deleted': item.deleted, 'itembox_disabled': item.disabled, 'itembox_underline': item.underline, 'itembox_bold': item.bold }"
+            :class="{ 'item': true, 'item_selected': item.value == value, 'item_deleted': item.deleted, 'item_disabled': item.disabled, 'item_underline': item.underline, 'item_bold': item.bold }"
             v-for="item in dataSource" @dblclick="!item.disabled && ok(item.value)"
             @click="!item.disabled && select(item.value)" :title="item.desc">
-            <div class="itembox_text" v-if="item.text" :style="{ 'font-family': item.fontFamily }">{{ item.text }}</div>
+            <div class="text" v-if="item.text" :style="{ 'font-family': item.fontFamily }">{{ item.text }}</div>
           </div>
         </div>
       </div>
@@ -20,13 +20,13 @@ import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
 
 export default {
-  name: "ddei-core-dialog-selectfontsize",
+  name: "ddei-core-dialog-selectfont",
   extends: null,
   mixins: [],
   props: {},
   data() {
     return {
-      dialogId: 'selectfontsize_dialog',
+      dialogId: 'ddei-core-dialog-selectfont',
       //当前编辑器
       editor: null,
       dataSource: null,
@@ -54,7 +54,7 @@ export default {
       if (this.editor?.tempDialogData[this.dialogId]?.callback?.ok) {
         this.editor?.tempDialogData[this.dialogId]?.callback?.ok(data);
       }
-      DDeiEditorUtil.closeDialog("selectfontsize_dialog")
+      DDeiEditorUtil.closeDialog("ddei-core-dialog-selectfont")
     },
 
     select(data) {
@@ -69,8 +69,8 @@ export default {
 </script>
 
 <style lang="less" scoped>
-/**以下是选择字号的弹出框 */
-.selectfontsize_dialog {
+/**以下是选择字体的弹出框 */
+.ddei-core-dialog-selectfont {
 
   border: 1px solid #E6E6E6;
   box-shadow: 0px 2px 24px 0px #DBDBDB;
@@ -101,7 +101,7 @@ export default {
         grid-template-rows: 30px 30px 30px 30px 30px;
         display: grid;
 
-        .itembox {
+        .item {
           outline: none;
           font-size: 15px;
           margin: auto;
@@ -114,7 +114,7 @@ export default {
           align-items: center;
           cursor: pointer;
 
-          .itembox_text {
+          .text {
             text-align: center;
             white-space: nowrap;
             display: table-cell;
@@ -140,13 +140,13 @@ export default {
           text-decoration: underline;
         }
 
-        .itembox_selected {
+        .item_selected {
           font-weight: bold;
           background-color: rgb(233, 233, 238);
 
         }
 
-        .itembox:hover {
+        .item:hover {
           background-color: rgb(233, 233, 238);
         }
 

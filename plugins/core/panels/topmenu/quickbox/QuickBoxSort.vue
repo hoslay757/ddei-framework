@@ -4,7 +4,7 @@
     <div class="content">
       <div class="part">
         <div
-          :class="{ 'button-v-disabled': !isButtonEnable(), 'button-v-selected': isButtonEnable() && dialogShow == 'ddei_editor_quick_sort_position_dialog', 'button-v': isButtonEnable() }"
+          :class="{ 'button-v-disabled': !isButtonEnable(), 'button-v-selected': isButtonEnable() && dialogShow == 'ddei_editor_quick_sort_ddei-core-dialog-changeposition', 'button-v': isButtonEnable() }"
           @click="isButtonEnable() && showPositionDialog($event)">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-a-ziyuan429"></use>
@@ -44,7 +44,7 @@
 
       <div class="part">
         <div
-          :class="{ 'button-v-disabled': !isButtonEnable(), 'button-v-selected': isButtonEnable() && dialogShow == 'ddei_editor_quick_sort_rotate_dialog', 'button-v': isButtonEnable() }"
+          :class="{ 'button-v-disabled': !isButtonEnable(), 'button-v-selected': isButtonEnable() && dialogShow == 'ddei_editor_quick_sort_ddei-core-dialog-changerotate', 'button-v': isButtonEnable() }"
           @click="isButtonEnable() && showRotateDialog($event)">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-a-ziyuan426"></use>
@@ -85,26 +85,26 @@ export default {
      */
     showPositionDialog(evt: Event) {
       let srcElement = evt.currentTarget;
-      DDeiEditorUtil.showOrCloseDialog("position_dialog", {
+      DDeiEditorUtil.showOrCloseDialog("ddei-core-dialog-changeposition", {
         group: "top-dialog"
       }, { type: 5 }, srcElement)
 
     },
     showAlignDialog(evt: Event) {
       let srcElement = evt.currentTarget;
-      DDeiEditorUtil.showOrCloseDialog("align_dialog", {
+      DDeiEditorUtil.showOrCloseDialog('ddei-core-dialog-align', {
         group: "top-dialog"
       }, { type: 5 }, srcElement)
     },
     showMergeDialog(evt: Event) {
       let srcElement = evt.currentTarget;
-      DDeiEditorUtil.showOrCloseDialog("mergecompose_dialog", {
+      DDeiEditorUtil.showOrCloseDialog("ddei-core-dialog-changeposition", {
         group: "top-dialog"
       }, { type: 5 }, srcElement)
     },
     showRotateDialog(evt: Event) {
       let srcElement = evt.currentTarget;
-      DDeiEditorUtil.showOrCloseDialog("rotate_dialog", {
+      DDeiEditorUtil.showOrCloseDialog("ddei-core-dialog-changerotate", {
         group: "top-dialog"
       }, { type: 5 }, srcElement)
     },

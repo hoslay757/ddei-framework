@@ -1,31 +1,11 @@
 <template>
   <div id="ddei_editor" class="ddei_editor" @contextmenu.prevent @mousewheel.prevent @mouseup="mouseUp"
     @mousemove="mouseMove" @mousedown="mouseDown">
-
-    <div class="top" id="ddei_editor_frame_top">
-      <component :is="editor?.components['TopMenu']" v-if="refreshTopMenuView"></component>
-    </div>
-    <div class="body">
-      <div class="left" v-show="toolboxShow" id="ddei_editor_frame_left">
-        <component :is="editor?.components['ToolBox']" v-if="refreshToolBox"></component>
-      </div>
-
-      <div class="middle" id="ddei_editor_frame_middle">
-        <component :is="editor?.components['OpenFilesView']" v-if="allowOpenMultFiles && refreshOpenFilesView">
-        </component>
-        <component :is="editor?.components['CanvasView']"></component>
-        <component :is="editor?.components['QuickColorView']" v-if="allowQuickColor"></component>
-      </div>
-      <div class="right" v-show="propertyViewShow" id="ddei_editor_frame_right">
-        <component :is="editor?.components['PropertyView']" v-if="refreshPropertyView"></component>
-      </div>
-    </div>
-    <div class="bottom" id="ddei_editor_frame_bottom">
-      <component :is="editor?.components['BottomMenu']" v-if="refreshBottomMenu"></component>
-    </div>
+    <component :is="editor?.layouts['ddei-core-layout-standard']"></component>
   </div>
+  <div id="dialog_background_div" class="dialog_background_div"></div>
+  <component v-for="(item, index) in editor?.dialogs" :is="item" v-if="refreshDialogs"></component>
   <MenuDialog v-show="!refreshMenu"></MenuDialog>
-  <div id="ddei-cut-img-div" class="ddei-cut-img-div"></div>
 </template>
 
 <script lang="ts">
@@ -82,7 +62,8 @@ export default {
       initLeftWidth: 0,
       initRightWidth: 0,
       toolboxShow: true,
-      propertyViewShow: true
+      propertyViewShow: SVGComponentTransferFunctionElement,
+      refreshDialogs: true,
     };
   },
   //注册组件
@@ -119,10 +100,9 @@ export default {
 
   },
   mounted() {
-
     this.editor.editorViewer = this;
     this.editor.bindEvent();
-
+    return;
     let frameLeftElement = document.getElementById("ddei_editor_frame_left");
     let frameRightElement = document.getElementById("ddei_editor_frame_right");
     let frameTopElement = document.getElementById("ddei_editor_frame_top");
@@ -194,6 +174,13 @@ export default {
   methods: {
 
 
+    //强行刷新dialog
+    forceRefreshDialog() {
+      this.refreshDialogs = false;
+      this.$nextTick(() => {
+        this.refreshDialogs = true;
+      });
+    },
 
     beforeUnload(e) {
       let files = this.editor?.files
@@ -211,40 +198,7 @@ export default {
       }
     },
 
-    forceRefreshBottomMenu() {
-      this.refreshBottomMenu = false;
-      this.$nextTick(() => {
-        this.refreshBottomMenu = true;
-      });
-    },
 
-    forcePropertyView() {
-      this.refreshPropertyView = false;
-      this.$nextTick(() => {
-        this.refreshPropertyView = true;
-      });
-    },
-
-    forceToolBox() {
-      this.refreshToolBox = false;
-      this.$nextTick(() => {
-        this.refreshToolBox = true;
-      });
-    },
-
-    forceRefreshOpenFilesView() {
-      this.refreshOpenFilesView = false;
-      this.$nextTick(() => {
-        this.refreshOpenFilesView = true;
-      });
-    },
-
-    forceRefreshTopMenuView() {
-      this.refreshTopMenuView = false;
-      this.$nextTick(() => {
-        this.refreshTopMenuView = true;
-      });
-    },
     /**
      * 设置当前菜单
      * @returns 控件ID
@@ -346,6 +300,7 @@ export default {
      * 判断是否移动到拖拽区
      */
     mouseMove(e: Event) {
+      return;
       //判断落点是否在某个区域的拖拽区附近
       let frameLeftElement = document.getElementById("ddei_editor_frame_left");
       let frameRightElement = document.getElementById(
@@ -483,6 +438,7 @@ export default {
      * 准备拖拽
      */
     mouseDown(e: Event) {
+      return;
       //判断落点是否在某个区域的拖拽区附近
       let frameLeftElement = document.getElementById("ddei_editor_frame_left");
       let frameRightElement = document.getElementById(
@@ -631,5 +587,16 @@ export default {
   width: 0.1px;
   height: 0.1px;
   display: flex;
+}
+
+.dialog_background_div {
+  width: 100%;
+  height: 100vh;
+  opacity: 50%;
+  z-index: 500;
+  left: 0;
+  top: 0;
+  display: none;
+  position: absolute;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div :id="dialogId" class="selectcolor_dialog">
+  <div :id="dialogId" class="ddei-core-dialog-selectcolor">
     <div class="content">
       <div class="group">
         <div class="title">最近使用的颜色</div>
@@ -52,7 +52,7 @@ export default {
   props: {},
   data() {
     return {
-      dialogId: 'selectcolor_dialog',
+      dialogId: 'ddei-core-dialog-selectcolor',
       //当前编辑器
       editor: null,
       dataSource: null,
@@ -221,7 +221,7 @@ export default {
 
 <style lang="less" scoped>
 /**以下是选择颜色的弹出框 */
-.selectcolor_dialog {
+.ddei-core-dialog-selectcolor {
 
   border: 1px solid #E6E6E6;
   box-shadow: 0px 2px 24px 0px #DBDBDB;

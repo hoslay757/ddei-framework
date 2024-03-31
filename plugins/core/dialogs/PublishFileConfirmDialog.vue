@@ -1,11 +1,11 @@
 <template>
-  <div :id="dialogId" class="coll_file_confirm_dialog">
+  <div :id="dialogId" class="ddei-core-dialog-publishfile">
     <div class="content">
       <div class="header">
         <svg class="icon warn" aria-hidden="true">
-          <use xlink:href="#icon-shoucang"></use>
+          <use xlink:href="#icon-a-ziyuan425"></use>
         </svg>
-        <span>收藏文件</span>
+        <span>发布文件</span>
         <div style="flex:1"></div>
         <svg class="icon close" aria-hidden="true" @click="cancel">
           <use xlink:href="#icon-a-ziyuan422"></use>
@@ -14,7 +14,7 @@
       <div class="msg">
       </div>
       <div class="tail">
-        <div class="button button-main" @click="ok">确定</div>
+        <div class="button button-main" @click="ok">发布</div>
         <div class="button" @click="cancel">取消</div>
       </div>
     </div>
@@ -26,13 +26,13 @@ import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
 
 export default {
-  name: "ddei-core-component-dialog-collfile",
+  name: "ddei-core-dialog-publishfile",
   extends: null,
   mixins: [],
   props: {},
   data() {
     return {
-      dialogId: 'coll_file_confirm_dialog',
+      dialogId: 'ddei-core-dialog-publishfile',
       //当前编辑器
       editor: null,
     };
@@ -50,13 +50,13 @@ export default {
       if (this.editor?.tempDialogData[this.dialogId]?.callback?.ok) {
         this.editor?.tempDialogData[this.dialogId]?.callback?.ok();
       }
-      DDeiEditorUtil.closeDialog('coll_file_confirm_dialog');
+      DDeiEditorUtil.closeDialog('ddei-core-dialog-publishfile');
     },
     cancel() {
       if (this.editor?.tempDialogData[this.dialogId]?.callback?.cancel) {
         this.editor.tempDialogData[this.dialogId].callback.cancel();
       }
-      DDeiEditorUtil.closeDialog('coll_file_confirm_dialog');
+      DDeiEditorUtil.closeDialog('ddei-core-dialog-publishfile');
     },
   }
 };
@@ -64,7 +64,7 @@ export default {
 
 <style lang="less" scoped>
 /**以下为询问框的样式 */
-.coll_file_confirm_dialog {
+.ddei-core-dialog-publishfile {
   width: 420px;
   height: 165px;
   background: #FFFFFF;

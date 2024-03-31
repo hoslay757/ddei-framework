@@ -8,3 +8,4 @@ import './assets/fonts/iconfont/iconfont.js'
 const app = createApp(App)
 app.use(router)
 app.mount('#app')
+window.$app = app

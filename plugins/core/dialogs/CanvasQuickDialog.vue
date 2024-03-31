@@ -1,49 +1,52 @@
 <template>
-  <div v-show="selectedModels?.size > 0" :id="dialogId" @mousedown="closeAllDialog()" class="canvas_quick_dialog">
+  <div v-show="selectedModels?.size > 0" :id="dialogId" @mousedown="closeAllDialog()" class='ddei-core-dialog-quickpop'>
     <div v-if="operateState == 50" class="content">
       <div class="panel12">
         <div class="panel12-content-1">
-          <QBTFontFamily></QBTFontFamily>
+          <component :is="editor?.components['ddei-core-btn-fontfamily']"></component>
         </div>
         <div class="panel12-content-2">
-          <QBTFontSize></QBTFontSize>
+          <component :is="editor?.components['ddei-core-btn-fontsize']"></component>
         </div>
         <div class="panel12-content-5">
-          <QBTEditAddFontSize :addValue="1" attrCode="font.size" img="icon-a-ziyuan456" extcls="magtop-2">
-          </QBTEditAddFontSize>
+          <component :is="editor?.components['ddei-core-btn-addfontsize']" :addValue="1" attrCode="font.size"
+            img="icon-a-ziyuan456" extcls="magtop-2"></component>
         </div>
         <div class="panel12-content-5">
-          <QBTEditAddFontSize :addValue="-1" attrCode="font.size" img="icon-a-ziyuan455" extcls="magtop-1">
-          </QBTEditAddFontSize>
+          <component :is="editor?.components['ddei-core-btn-addfontsize']" :addValue="-1" attrCode="font.size"
+            img="icon-a-ziyuan455" extcls="magtop-1"></component>
         </div>
 
         <div class="panel12-content-3">
-          <QBTEditBox selectedValue="1" attrCode="textStyle.bold" img="icon-a-ziyuan461">
-          </QBTEditBox>
+          <component :is="editor?.components['ddei-core-btn-editbox']" selectedValue="1" attrCode="textStyle.bold"
+            img="icon-a-ziyuan461"></component>
         </div>
         <div class="panel12-content-3">
-          <QBTEditBox selectedValue="1" attrCode="textStyle.italic" img="icon-a-ziyuan459">
-          </QBTEditBox>
+          <component :is="editor?.components['ddei-core-btn-editbox']" selectedValue="1" attrCode="textStyle.italic"
+            img="icon-a-ziyuan459"></component>
         </div>
         <div class="panel12-content-3">
-          <QBTEditBox selectedValue="1" attrCode="textStyle.underline" img="icon-icon-text-underline"
-            extcls="ext-underline">
-          </QBTEditBox>
+          <component :is="editor?.components['ddei-core-btn-editbox']" selectedValue="1" attrCode="textStyle.underline"
+            img="icon-icon-text-underline" extcls="ext-underline"></component>
         </div>
         <div class="panel12-content-3">
-          <QBTEditBox selectedValue="1" attrCode="textStyle.deleteline" img="icon-a-ziyuan457">
-          </QBTEditBox>
+          <component :is="editor?.components['ddei-core-btn-editbox']" electedValue="1" attrCode="textStyle.deleteline"
+            img="icon-a-ziyuan457">
+          </component>
         </div>
         <div class="panel12-content-3">
-          <QBTEditBox selectedValue="1" :onlyQuickEdit="true" attrCode="textStyle.subtype" img="icon-a-ziyuan394"
-            extcls="magtop-1">
-          </QBTEditBox>
+          <component :is="editor?.components['ddei-core-btn-editbox']" selectedValue="1" :onlyQuickEdit="true"
+            attrCode="textStyle.subtype" img="icon-a-ziyuan394" extcls="magtop-1">
+          </component>
         </div>
         <div class="panel12-split-3 panel12-content-4 panel1-split-4">
-          <QBTEditColor attrCode="textStyle.bgcolor" img="icon-a-ziyuan452"></QBTEditColor>
+          <component :is="editor?.components['ddei-core-btn-color']" attrCode="textStyle.bgcolor"
+            img="icon-a-ziyuan452">
+          </component>
         </div>
         <div class="panel12-content-4">
-          <QBTEditColor attrCode="font.color" img="icon-a-ziyuan463"></QBTEditColor>
+          <component :is="editor?.components['ddei-core-btn-color']" attrCode="font.color" img="icon-a-ziyuan463">
+          </component>
         </div>
       </div>
 
@@ -59,7 +62,8 @@
     <div v-if="operateState != 50 && allLine" class="content">
       <div class="panel6">
         <div class="panel6-content1 pointtype">
-          <QBTLinePointType attrCode="sp.type"></QBTLinePointType>
+          <component :is="editor?.components['ddei-core-btn-linepointtype']" attrCode="sp.type">
+          </component>
           <div class="text">起点</div>
         </div>
         <div class="panel6-content1 exchange" @click="exchangeLinePoint">
@@ -68,25 +72,31 @@
           </svg>
         </div>
         <div class="panel6-content1 pointtype">
-          <QBTLinePointType attrCode="ep.type"></QBTLinePointType>
+          <component :is="editor?.components['ddei-core-btn-linepointtype']" attrCode="ep.type">
+          </component>
           <div class="text">终点</div>
         </div>
       </div>
       <div class="panel6" style="border-left:1px solid #E2E2EB;">
         <div class="panel6-content type">
-          <QBTLineType attrCode="type" img="icon-a-ziyuan430"></QBTLineType>
+          <component :is="editor?.components['ddei-core-btn-linetype']" attrCode="type" img="icon-a-ziyuan430">
+          </component>
           <div class="text">类型</div>
         </div>
         <div class="panel6-content color2">
-          <QBTEditColor attrCode="color" img="icon-border-pencil"></QBTEditColor>
+          <component :is="editor?.components['ddei-core-btn-color']" attrCode="color" img="icon-border-pencil">
+          </component>
           <div class="text">颜色</div>
         </div>
         <div class="panel6-content dash">
-          <QBTBorderWeight attrCode="weight" hiddenCombo="1"></QBTBorderWeight>
+          <component :is="editor?.components['ddei-core-btn-borderweight']" attrCode="weight" hiddenCombo="1">
+          </component>
+
           <div class="text">粗细</div>
         </div>
         <div class="panel6-content dash">
-          <QBTBorderDash attrCode="dash" hiddenCombo="1"></QBTBorderDash>
+          <component :is="editor?.components['ddei-core-btn-borderdash']" attrCode="dash" hiddenCombo="1">
+          </component>
           <div class="text">虚线</div>
         </div>
       </div>
@@ -104,29 +114,31 @@
     <div v-if="operateState != 50 && !allLine" class="content">
       <div class="panel1">
         <div class="panel1-content-1">
-          <QBTFontFamily></QBTFontFamily>
+          <component :is="editor?.components['ddei-core-btn-fontfamily']"></component>
         </div>
         <div class="panel1-content-2">
-          <QBTFontSize></QBTFontSize>
+          <component :is="editor?.components['ddei-core-btn-fontsize']"></component>
         </div>
         <div class="panel1-content-3">
-          <QBTEditBox selectedValue="1" attrCode="textStyle.bold" img="icon-a-ziyuan461">
-          </QBTEditBox>
+          <component :is="editor?.components['ddei-core-btn-editbox']" selectedValue="1" attrCode="textStyle.bold"
+            img="icon-a-ziyuan461"></component>
         </div>
         <div class="panel1-content-3">
-          <QBTEditBox selectedValue="1" attrCode="textStyle.italic" img="icon-a-ziyuan459">
-          </QBTEditBox>
+          <component :is="editor?.components['ddei-core-btn-editbox']" selectedValue="1" attrCode="textStyle.italic"
+            img="icon-a-ziyuan459"></component>
         </div>
         <div class="panel1-content-3">
-          <QBTEditTextAlignBox img="icon-a-ziyuan440">
-          </QBTEditTextAlignBox>
+          <component :is="editor?.components['ddei-core-btn-textalign']" img="icon-a-ziyuan440"></component>
 
         </div>
         <div class="panel1-split-3 panel1-content-4 panel1-split-4">
-          <QBTEditColor attrCode="textStyle.bgcolor" img="icon-a-ziyuan452"></QBTEditColor>
+          <component :is="editor?.components['ddei-core-btn-color']" attrCode="textStyle.bgcolor"
+            img="icon-a-ziyuan452">
+          </component>
         </div>
         <div class="panel1-content-4 ">
-          <QBTEditColor attrCode="font.color" img="icon-a-ziyuan463"></QBTEditColor>
+          <component :is="editor?.components['ddei-core-btn-color']" attrCode="font.color" img="icon-a-ziyuan463">
+          </component>
         </div>
       </div>
       <div class="panel2" title="格式刷" @click="execBrushAction($event)">
@@ -145,11 +157,13 @@
           <div class="text">样式</div>
         </div>
         <div class="panel3-content i2">
-          <QBTEditColor attrCode="fill.color" img="icon-a-ziyuan419"></QBTEditColor>
+          <component :is="editor?.components['ddei-core-btn-color']" attrCode="fill.color" img="icon-a-ziyuan419">
+          </component>
           <div class="text">填充</div>
         </div>
         <div class="panel3-content i3">
-          <QBTEditColor attrCode="border.color" img="icon-border-pencil"></QBTEditColor>
+          <component :is="editor?.components['ddei-core-btn-color']" attrCode="border.color" img="icon-border-pencil">
+          </component>
           <div class="text">线条</div>
         </div>
       </div>
@@ -193,17 +207,6 @@
 </template>
 
 <script lang="ts">
-
-import QBTFontFamily from "../topmenu/quickbox/tools/QBTFontFamily.vue";
-import QBTFontSize from "../topmenu/quickbox/tools/QBTFontSize.vue";
-import QBTEditAddFontSize from "../topmenu/quickbox/tools/QBTEditAddFontSize.vue";
-import QBTEditBox from "../topmenu/quickbox/tools/QBTEditBox.vue";
-import QBTEditTextAlignBox from "../topmenu/quickbox/tools/QBTEditTextAlignBox.vue";
-import QBTEditColor from "../topmenu/quickbox/tools/QBTEditColor.vue";
-import QBTBorderDash from "../topmenu/quickbox/tools/QBTBorderDash.vue";
-import QBTBorderWeight from "../topmenu/quickbox/tools/QBTBorderWeight.vue"
-import QBTLineType from "../topmenu/quickbox/tools/QBTLineType.vue";
-import QBTLinePointType from "../topmenu/quickbox/tools/QBTLinePointType.vue"
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type.js";
 import DDeiEnumKeyActionInst from "@ddei-core/editor/js/enums/key-action-inst.js";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util.js";
@@ -211,13 +214,13 @@ import DDeiEditorState from "@ddei-core/editor/js/enums/editor-state.js";
 import DDeiEditor from "@ddei-core/editor/js/editor";
 
 export default {
-  name: "ddei-core-component-dialog-quickpop",
+  name: 'ddei-core-dialog-quickpop',
   extends: null,
   mixins: [],
   props: {},
   data() {
     return {
-      dialogId: 'canvas_quick_dialog',
+      dialogId: 'ddei-core-dialog-quickpop',
       //当前编辑器
       editor: null,
       //当前选中的控件
@@ -271,7 +274,7 @@ export default {
 
     showSetStyleDialog(evt: Event) {
       let srcElement = evt.currentTarget;
-      DDeiEditorUtil.showOrCloseDialog("quick_setstyle_dialog", {
+      DDeiEditorUtil.showOrCloseDialog('ddei-core-dialog-setstyle', {
         group: "top-dialog"
       }, { type: 5 }, srcElement, false, true)
     },
@@ -282,7 +285,7 @@ export default {
 
     showAlignDialog(evt: Event) {
       let srcElement = evt.currentTarget;
-      DDeiEditorUtil.showOrCloseDialog("align_dialog", {
+      DDeiEditorUtil.showOrCloseDialog("ddei-core-align_dialog", {
         group: "top-dialog"
       }, { type: 5 }, srcElement, false, true)
     },
@@ -383,7 +386,7 @@ export default {
 
 <style lang="less" scoped>
 /**以下是快捷样式编辑的弹出框 */
-.canvas_quick_dialog {
+.ddei-core-dialog-quickpop {
 
   border: 1px solid #E6E6E6;
   box-shadow: 0px 2px 24px 0px #DBDBDB;

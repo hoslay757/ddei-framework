@@ -1,15 +1,23 @@
 import DDeiCorePanels from "./panels"
 import DDeiCoreComponents from "./components"
 import DDeiCoreLayouts from "./layouts";
-let DDeiCore = {}
-DDeiCore.addComponents = (editor) => {
-  return DDeiCoreComponents.addComponents(editor);
-}
-DDeiCore.addPanels = (editor) => {
-  return DDeiCorePanels.addPanels(editor);
-}
+import DDeiCoreDialogs from "./dialogs";
 
-DDeiCore.addLayouts = (editor) => {
-  return DDeiCoreLayouts.addLayouts(editor);
+
+
+
+let DDeiCore = {}
+
+DDeiCore.addComponents = (app) => {
+  return DDeiCoreComponents.addComponents(app);
+}
+DDeiCore.addPanels = (app) => {
+  return DDeiCorePanels.addPanels(app);
+}
+DDeiCore.addLayouts = (app) => {
+  return DDeiCoreLayouts.addLayouts(app);
+}
+DDeiCore.addDialogs = (app) => {
+  return DDeiCoreDialogs.addDialogs(app);
 }
 export default DDeiCore
