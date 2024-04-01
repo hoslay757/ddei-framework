@@ -40,7 +40,6 @@ class DDeiPolygon extends DDeiAbstractShape {
 
   // ============================ 静态变量 ============================
   // ============================ 静态方法 ============================
-
   // 通过一个JSON反向序列化成对象，模型数据与JSON完全一样
   static loadFromJSON(json: object, tempData: object = {}, initPVS: boolean = true): DDeiPolygon {
     let model = new DDeiPolygon(json);

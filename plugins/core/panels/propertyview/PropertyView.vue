@@ -15,13 +15,13 @@
       </svg>
     </div>
     <div class="content">
-      <div class="ddei_editor_pv_subgroup_view" v-show="editor?.rightWidth > pvGroupWidth">
+      <div class="ddei_editor_pv_subgroup_view" v-show="true || editor?.rightWidth > pvGroupWidth">
         <div class="ddei_editor_pv_subgroup_view_tab_title">
           <div
             :class="currentTopGroup?.subGroups.length > 1 && subGroup.selected ? 'ddei_editor_pv_subgroup_view_tab_title_item_selected' : 'ddei_editor_pv_subgroup_view_tab_title_item'"
             v-show="!subGroup.empty" v-for="subGroup in currentTopGroup?.subGroups" :title="subGroup.name"
             @mouseup="changeSubGroup(subGroup)">{{
-      subGroup.name }}</div>
+            subGroup.name }}</div>
         </div>
         <div class="ddei_editor_pv_subgroup_view_tab_panel" @mousewheel="mouseWheel($event)" :style="panelStyle">
           <div
@@ -32,8 +32,8 @@
               }}<span v-if="attrDefine.notNull">*</span>：
             </div>
             <div class="editor" v-if="attrDefine.visiable != false">
-              <component v-for="(comp, index) in editor?.components" :is="comp.controlType == attrDefine.controlType"
-                v-if="reFresh && attrDefine?.visiable != false && attrDefine.controlType == 'text'"></component>
+              <component :is="editor?.getPropEditor(attrDefine.controlType)"
+                v-if="reFresh && attrDefine?.visiable != false" :attrDefine="attrDefine"></component>
             </div>
           </div>
         </div>

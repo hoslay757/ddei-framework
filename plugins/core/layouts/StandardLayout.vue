@@ -1,32 +1,33 @@
 <template>
   <div class="layout_standrad">
     <div class="top">
-      <component :is="editor?.panels['ddei-core-panel-topmenu']" v-if="refreshTopMenuView"></component>
+      <component v-for="(item,index) in getPartPanels('top')" :is="item" v-if="refreshTopMenuView"></component>
     </div>
     <div class="body">
       <div class="left" v-show="toolboxShow">
-        <component :is="editor?.panels['ddei-core-panel-toolbox']" v-if="refreshToolBox"></component>
+        <component v-for="(item, index) in getPartPanels('left')" :is="item" v-if="refreshToolBox"></component>
       </div>
-
       <div class="middle">
-        <component :is="editor?.panels['ddei-core-panel-openfilesview']"
+        <component v-for="(item, index) in getPartPanels('middle')" :is="item"></component>
+        <!-- <component :is="editor?.panels['ddei-core-panel-openfilesview']"
           v-if="allowOpenMultFiles && refreshOpenFilesView">
         </component>
         <component :is="editor?.panels['ddei-core-panel-canvasview']"></component>
-        <component :is="editor?.panels['ddei-core-panel-quickcolorview']" v-if="allowQuickColor"></component>
+        <component :is="editor?.panels['ddei-core-panel-quickcolorview']" v-if="allowQuickColor"></component> -->
       </div>
       <div class="right" v-show="propertyViewShow">
-        <component :is="editor?.panels['ddei-core-panel-propertyview']" v-if="refreshPropertyView"></component>
+        <component v-for="(item, index) in getPartPanels('right')" :is="item" v-if="refreshPropertyView"></component>
       </div>
     </div>
     <div class="bottom">
-      <component :is="editor?.panels['ddei-core-panel-bottommenu']" v-if="refreshBottomMenu"></component>
+      <component v-for="(item, index) in getPartPanels('bottom')" :is="item" v-if="refreshBottomMenu"></component>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import DDeiEditor from "@ddei-core/editor/js/editor";
+import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 
 export default {
   name: "layout-standard",
@@ -51,7 +52,14 @@ export default {
       initLeftWidth: 0,
       initRightWidth: 0,
       toolboxShow: true,
-      propertyViewShow: true
+      propertyViewShow: true,
+      defaultLayout:{
+        top: ['ddei-core-panel-topmenu'],
+        left: ['ddei-core-panel-toolbox'],
+        middle: ['ddei-core-panel-canvasview'],
+        right: ['ddei-core-panel-propertyview'],
+        bottom: ['ddei-core-panel-bottommenu']
+      }
     };
   },
   //注册组件
@@ -68,8 +76,57 @@ export default {
   },
   mounted() {
     this.editor.layoutViewer = this;
+
+    // 获取要监听的 div 元素
+    let middleCanvas = document.getElementById("ddei_editor_canvasview");
+    // 创建 ResizeObserver 实例
+    const resizeObserver = new ResizeObserver(entries => {
+      // entries 是一个 ResizeObserverEntry 对象数组，包含目标元素的大小信息
+      for (const entry of entries) {
+        // 获取宽度和高度
+        const { width, height } = entry.contentRect;
+        if (width != 0 && height != 0) {
+          this.editor.ddInstance.render.setSize(
+            width,
+            height,
+            0,
+            0
+          );
+          this.editor.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
+          this.editor.ddInstance.bus.executeAll();
+        }
+
+      }
+    });
+
+    // 开始监听目标元素的大小变化
+    resizeObserver.observe(middleCanvas);
   },
   methods: {
+    /**
+     * 获取options重的各个部分的配置
+     */
+    getPartPanels(part:string){
+      let partOption = null;
+      if (this.editor?.options?.standardLayout && this.editor?.options?.standardLayout[part]){
+        if (this.editor?.options?.standardLayout[part]){
+          partOption = this.editor?.options?.standardLayout[part];
+        }
+      }else{
+        partOption = this.defaultLayout[part];
+      }
+      if (partOption && this.editor?.panels){
+        let returnArray = []
+        partOption.forEach(poption=>{
+          if(this.editor.panels[poption]){
+            returnArray.push(this.editor.panels[poption])
+          }
+        })
+        return returnArray;
+      }
+    },
+
+
     forceRefreshBottomMenu() {
       this.refreshBottomMenu = false;
       this.$nextTick(() => {
@@ -119,18 +176,19 @@ export default {
   min-width: 1700px;
 
   .top {
-    flex: 0 0 103px
+    // flex: 0 0 103px
   }
 
   .bottom {
-    flex: 0 0 50px;
+    // flex: 0 0 50px;
     background: #F2F2F7;
     border: 1px solid #D4D4D4;
   }
 
   .body {
     display: flex;
-    flex: 1;
+    overflow:auto;
+    flex: 1 1 calc(100vh-153px);
 
     .left {
       flex: 0 1 292px;

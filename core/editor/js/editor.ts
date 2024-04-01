@@ -226,7 +226,7 @@ class DDeiEditor {
 
         //装载插件
         if (options) {
-          this.options = options
+          editorInstance.options = options
           options.extensions?.forEach(item => editorInstance.registerExtension(item))
         }
 
@@ -269,6 +269,15 @@ class DDeiEditor {
       let layouts = plugin.addLayouts(this)
       for (let i in layouts) {
         this.layouts[layouts[i].name] = layouts[i]
+      }
+    }
+
+    if (plugin.addPropEditors) {
+      //注册并加载属性编辑器
+      let propEditors = plugin.addPropEditors(this)
+      for (let i in propEditors) {
+     
+        this.propeditors[propEditors[i].name] = propEditors[i]
       }
     }
   }
@@ -410,12 +419,16 @@ class DDeiEditor {
 
   //当前引入的外部组件
   components: object = markRaw({});
+  //当前引入的外部属性编辑器
+  propeditors: object = markRaw({});
   //当前引入的外部面板
   panels: object = markRaw({});
   //当前引入的外部布局
   layouts: object = markRaw({});
   //当前引入的外部弹出框
   dialogs: object = markRaw({});
+  //当前布局的名称，如果为空，则获取最后一个有效的布局
+  currentLayout: string = "ddei-core-layout-standard";
 
   // ============================ 方法 ============================
 
@@ -515,6 +528,23 @@ class DDeiEditor {
     if (this.ddInstance?.render) {
       this.ddInstance.render.inEdge = 0;
     }
+  }
+
+  /**
+   * 获取属性编辑器
+   */
+  getPropEditor(controlType: string): object {
+    if(controlType && this.propeditors && this.propeditors['pv-'+controlType]){
+      
+      return this.propeditors['pv-'+controlType]
+    }
+  }
+
+  /**
+   * 获取属性编辑器
+   */
+  getLayout(): object {
+    return this.layouts[this.currentLayout];
   }
 }
 

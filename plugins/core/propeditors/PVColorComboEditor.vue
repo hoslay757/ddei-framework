@@ -1,13 +1,14 @@
 <template>
-  <div :class="{ 'ddei_pv_editor_fontsize': true, 'ddei_pv_editor_fontsize_disabled': attrDefine.readonly }"
-    :style="{ 'pointer-events': attrDefine.readonly ? 'none' : '' }">
-    <input type="range" :step="attrDefine.step" class="range" :min="attrDefine.min" :max="attrDefine.max"
-      v-model="attrDefine.value" :disabled="attrDefine.readonly" autocomplete="off" />
-    <div class="textinput">
-      <input type="number" :step="attrDefine.step" :min="attrDefine.min" :max="attrDefine.max"
-        v-model="attrDefine.value" :disabled="attrDefine.readonly" :placeholder="attrDefine.defaultValue"
+  <div :id="getEditorId(attrDefine?.code)"
+    :class="{ 'ddei_pv_color_combox': true, 'ddei_pv_color_combox_disabled': !attrDefine || attrDefine.readonly }">
+    <div class="textinput" @click="attrDefine && !attrDefine.readonly && showDialog($event)">
+      <input type="color" :readonly="attrDefine && (attrDefine.readonly)" v-model="attrDefine.value"
         autocomplete="off" />
-      <div style="float:left">px</div>
+      <div style="display:flex;justify-content: center;align-items: center;">
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-a-ziyuan466"></use>
+        </svg>
+      </div>
     </div>
   </div>
 </template>
@@ -15,15 +16,14 @@
 <script lang="ts">
 import DDeiEditorArrtibute from "@ddei-core/editor/js/attribute/editor-attribute";
 import DDeiEditor from "@ddei-core/editor/js/editor";
-import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
-import DDeiAbstractArrtibuteParser from "@ddei-core/framework/js/models/attribute/parser/attribute-parser";
-import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
 import DDeiUtil from "@ddei-core/framework/js/util";
+import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
 import DDeiEnumOperateType from "@ddei-core/framework/js/enums/operate-type";
 import DDeiEnumOperateState from "@ddei-core/framework/js/enums/operate-state";
-
+import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
+import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 export default {
-  name: "pv-fontsize",
+  name: "pv-color-combo",
   extends: null,
   mixins: [],
   props: {
@@ -32,6 +32,7 @@ export default {
       type: DDeiEditorArrtibute,
       default: null,
     },
+
     //当前控件定义
     controlDefine: {
       type: Object,
@@ -42,49 +43,38 @@ export default {
     return {
       //当前编辑器
       editor: null,
+      //值
+      value: null,
     };
   },
   computed: {},
   watch: {},
   created() {
-    // 监听obj对象中prop属性的变化
-    this.$watch("attrDefine.value", function (newVal, oldVal) {
-      this.valueChange();
-    });
   },
+
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
-    //判断当前属性是否可编辑
-    this.editBefore = DDeiUtil.getConfigValue(
-      "EVENT_CONTROL_EDIT_BEFORE",
-      this.editor.ddInstance
-    );
-
-    if (
-      this.editBefore &&
-      this.editor?.ddInstance?.stage?.selectedModels?.size > 0
-    ) {
-      let mds = [];
-      if (this.editor?.ddInstance?.stage?.selectedModels?.size > 0) {
-        mds = Array.from(
-          this.editor?.ddInstance?.stage?.selectedModels?.values()
-        );
-      }
-      if (this.attrDefine?.model && mds.indexOf(this.attrDefine.model) == -1) {
-        mds.push(this.attrDefine.model);
-      }
-      this.attrDefine.readonly = !this.editBefore(
-        DDeiEnumOperateType.EDIT,
-        mds,
-        this.attrDefine?.code,
-        this.editor.ddInstance,
-        null
-      );
-    }
   },
   methods: {
-    valueChange(evt) {
+
+    getEditorId(id) {
+      return "ddei_attr_editor_" + id;
+    },
+
+    //打开弹出框
+    showDialog(evt) {
+      let srcElement = evt.currentTarget;
+      DDeiEditorUtil.showOrCloseDialog("ddei-core-dialog-selectcolor", {
+        value: this.attrDefine.value,
+        callback: {
+          ok: this.valueChange
+        },
+        group: "property-dialog"
+      }, { type: 5 }, srcElement)
+    },
+
+    valueChange(value) {
       if (this.attrDefine?.readonly) {
         return;
       }
@@ -121,9 +111,7 @@ export default {
       //通过解析器获取有效值
       let parser: DDeiAbstractArrtibuteParser = this.attrDefine.getParser();
       //属性值
-      let value = parser.parseValue(this.attrDefine.value);
-      value = isNaN(value) || value <= 0 ? null : value
-      value = value > 300 ? 300 : value
+      this.attrDefine.value = value
       let hasEditSetted = false;
       //文本编辑状态
       if (this.editor.ddInstance.stage.render.operateState == DDeiEnumOperateState.QUICK_EDITING) {
@@ -160,7 +148,7 @@ export default {
               value: value,
               attrDefine: this.attrDefine,
             },
-            evt,
+            null,
             true
           );
         } else {
@@ -174,7 +162,7 @@ export default {
                 value: value,
                 attrDefine: this.attrDefine,
               },
-              evt,
+              null,
               true
             );
           });
@@ -201,77 +189,59 @@ export default {
           null
         );
       }
-    },
+    }
+
   },
 };
 </script>
 
-<style scoped>
-/**以下为range属性编辑器 */
-.ddei_pv_editor_fontsize {
-  border-radius: 4px;
+<style lang="less" scoped>
+.ddei_pv_color_combox {
   height: 28px;
-  margin-right: 10px;
-  display: flex;
+  padding-right: 10px;
 }
 
-.ddei_pv_editor_fontsize .range {
-  height: 7px;
-  width: 60%;
-  border: transparent;
-  outline: none;
-  background: transparent;
-  flex: 1;
-  margin: auto;
+.ddei_pv_color_combox_disabled .textinput {
+  background-color: rgb(210, 210, 210);
+  height: 28px;
+  justify-content: center;
+  align-items: center;
 }
 
-.ddei_pv_editor_fontsize_disabled .range {
-  height: 7px;
-  width: 60%;
-  border: transparent;
-  outline: none;
-  background-color: rgb(210, 210, 210) !important;
-  flex: 1;
-  margin: auto;
-}
-
-.ddei_pv_editor_fontsize .textinput {
-  flex: 0 0 80px;
-  margin-left: 10px;
-  padding-left: 5px;
+.ddei_pv_color_combox .textinput {
+  width: 100%;
   padding-right: 5px;
   border: 0.5px solid rgb(210, 210, 210);
   border-radius: 4px;
   display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: 5px;
+  height: 28px;
 }
 
-.ddei_pv_editor_fontsize .textinput:hover {
+.ddei_pv_color_combox .textinput:hover {
   border: 1px solid #017fff;
   box-sizing: border-box;
 }
 
-.ddei_pv_editor_fontsize_disabled .textinput {
-  flex: 0 0 80px;
-  margin-left: 10px;
-  padding-left: 5px;
-  padding-right: 5px;
-  background-color: rgb(210, 210, 210);
-  border: 0.5px solid rgb(210, 210, 210);
-  border-radius: 4px;
-  display: flex;
-}
-
-.ddei_pv_editor_fontsize_disabled .textinput:hover {
-  border: 1px solid grey !important;
-  box-sizing: border-box;
-}
-
-.ddei_pv_editor_fontsize .textinput input {
-  flex: 1 1 50px;
+.ddei_pv_color_combox .textinput input {
+  flex: 1 1 calc(100% - 10px);
+  width: calc(100% - 10px);
   border: transparent;
   outline: none;
   font-size: 15px;
-  margin: 0px 2%;
   background: transparent;
+  user-select: none;
+  pointer-events: none;
+}
+
+.ddei_pv_color_combox .textinput div {
+  flex: 0 0 20px;
+}
+
+
+.icon {
+  font-size: 16px
 }
 </style>

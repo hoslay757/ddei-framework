@@ -1,12 +1,12 @@
 <template>
-  <div :class="{ 'ddei_pv_editor_radio': true, 'ddei_pv_editor_radio_disabled': attrDefine.readonly }"
-    :style="{ 'pointer-events': attrDefine.readonly ? 'none' : '' }">
-    <div class="itembox" v-for="item in dataSource" @click="checkRadioValue(attrDefine, $event)">
-      <input type="radio" :disabled="attrDefine.readonly" :name="attrDefine.id" :value="item.value"
-        v-model="attrDefine.value" autocomplete="off" />
-
-      <div>{{ item.text }}</div>
+  <div
+    :class="{ 'ddei_pv_editor_switch_excheckbox': true, 'ddei_pv_editor_switch_excheckbox_disabled': attrDefine.readonly }"
+    @click="doCheck(attrDefine, $event)" :style="{ 'pointer-events': attrDefine.readonly ? 'none' : '' }">
+    <div
+      :class="{ 'chk_state': attrDefine.value != 1, 'chk_state_checked': attrDefine.value == 1 || (attrDefine.value == null && attrDefine.defaultValue == 1) }">
+      <span>{{ attrDefine.value == 1 || (attrDefine.value == null && attrDefine.defaultValue == 1) ? '✓' : '' }}</span>
     </div>
+    <div class="title">{{ attrDefine.name }}</div>
   </div>
 </template>
 
@@ -15,14 +15,12 @@ import DDeiEditorArrtibute from "@ddei-core/editor/js/attribute/editor-attribute
 import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 import DDeiAbstractArrtibuteParser from "@ddei-core/framework/js/models/attribute/parser/attribute-parser";
-import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
 import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
 import DDeiUtil from "@ddei-core/framework/js/util";
 import DDeiEnumOperateType from "@ddei-core/framework/js/enums/operate-type";
-import DDeiEnumOperateState from "@ddei-core/framework/js/enums/operate-state";
 
 export default {
-  name: "pv-radio",
+  name: "pv-switch-checkbox",
   extends: null,
   mixins: [],
   props: {
@@ -41,24 +39,14 @@ export default {
     return {
       //当前编辑器
       editor: null,
-      dataSource: null,
-      editBefore: null,
-      editAfter: null,
     };
   },
   computed: {},
   watch: {},
-  created() {
-    // 监听obj对象中prop属性的变化
-    this.$watch("attrDefine.value", function (newVal, oldVal) {
-      this.valueChange();
-    });
-  },
+  created() { },
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
-    this.getDataSource(this.attrDefine);
-
     this.attrDefine.doCascadeDisplayByValue();
     //判断当前属性是否可编辑
     this.editBefore = DDeiUtil.getConfigValue(
@@ -89,47 +77,16 @@ export default {
     }
   },
   methods: {
-    /**
-     * 选中radio
-     */
-    checkRadioValue(attrDefine, evt: Event) {
-      let targetElement = evt.target;
-      if (
-        targetElement.tagName == "DIV" &&
-        targetElement.className == "itembox"
-      ) {
-        targetElement = targetElement.children[0];
-      } else if (targetElement.tagName == "DIV") {
-        targetElement = targetElement.parentElement.children[0];
-      }
-      if (attrDefine.value == targetElement.value) {
-        attrDefine.value = null;
-      } else {
-        attrDefine.value = targetElement.value;
-      }
-    },
-
-    /**
-     * 获取数据源数据
-     */
-    getDataSource(attrDefine) {
-      let dataSources = DDeiEditorUtil.getDataSource(this.attrDefine);
-      this.dataSource = dataSources;
-      return this.dataSource;
-    },
-
-    valueChange(evt) {
-      if (this.attrDefine?.readonly) {
+    doCheck(attrDefine, evt: Event) {
+      if (attrDefine?.readonly) {
         return;
       }
-
       let mds = [];
       if (this.editor?.ddInstance?.stage?.selectedModels?.size > 0) {
         mds = Array.from(
           this.editor?.ddInstance?.stage?.selectedModels?.values()
         );
       }
-
       if (this.attrDefine?.model && mds.indexOf(this.attrDefine.model) == -1) {
         mds.push(this.attrDefine.model);
       }
@@ -153,23 +110,30 @@ export default {
       if (!(paths?.length > 0)) {
         paths = [this.attrDefine.code];
       }
+      if (attrDefine.value == null) {
+        if (attrDefine.defaultValue == 1) {
+          attrDefine.value = 0;
+        } else {
+          attrDefine.value = 1;
+        }
+      } else if (!attrDefine.value) {
+        attrDefine.value = 1;
+      } else {
+        attrDefine.value = 0;
+      }
 
       //通过解析器获取有效值
       let parser: DDeiAbstractArrtibuteParser = this.attrDefine.getParser();
       //属性值
       let value = parser.parseValue(this.attrDefine.value);
-
       DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, value);
       this.attrDefine.doCascadeDisplayByValue();
-      if (
-        this.attrDefine.model.modelType == "DDeiStage" ||
-        this.attrDefine.model.modelType == "DDeiLayer"
-      ) {
+      this.editor.ddInstance.stage.selectedModels?.forEach((element) => {
         //推送信息进入总线
         this.editor.bus.push(
           DDeiEnumBusCommandType.ModelChangeValue,
           {
-            mids: [this.attrDefine.model.modelType],
+            mids: [element.id],
             paths: paths,
             value: value,
             attrDefine: this.attrDefine,
@@ -177,23 +141,7 @@ export default {
           evt,
           true
         );
-      } else {
-        this.editor.ddInstance.stage.selectedModels.forEach((element) => {
-          //推送信息进入总线
-          this.editor.bus.push(
-            DDeiEnumBusCommandType.ModelChangeValue,
-            {
-              mids: [element.id],
-              paths: paths,
-              value: value,
-              attrDefine: this.attrDefine,
-            },
-            evt,
-            true
-          );
-        });
-      }
-
+      });
       this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
         parts: ["topmenu"],
       });
@@ -221,48 +169,47 @@ export default {
 </script>
 
 <style scoped>
-/**以下为radio属性编辑器 */
-.ddei_pv_editor_radio {
+/**以下为checkbox属性编辑器 */
+.ddei_pv_editor_switch_excheckbox {
   border-radius: 4px;
   margin-right: 10px;
 }
 
-.ddei_pv_editor_radio_disabled {
+.ddei_pv_editor_switch_excheckbox_disabled {
   background-color: rgb(210, 210, 210) !important;
 }
 
-.ddei_pv_editor_radio .itembox {
-  display: flex;
-  justify-content: start;
-  align-items: center;
-  height: 24px;
-  outline: none;
-  font-size: 15px;
-  margin: 0;
-  padding-top: 2px;
-  background: transparent;
-}
-
-.ddei_pv_editor_radio .itembox input {
-  width: 16px;
-  height: 16px;
-}
-
-.ddei_pv_editor_radio .itembox div {
-  margin-left: 15px;
-}
-
-.ddei_editor_pv_subgroup_view_tab_panel_editors_row .itembox {
+.ddei_pv_editor_switch_excheckbox .title {
   float: left;
+}
+
+.ddei_pv_editor_switch_excheckbox .chk_state {
+  border: 1px solid grey;
+  width: 15px;
+  height: 15px;
   margin-right: 10px;
-}
-
-.ddei_editor_pv_subgroup_view_tab_panel_editors_column .itembox {
-  margin-top: 10px;
-}
-
-.ddei_editor_pv_subgroup_view_tab_panel_editors_row .itembox div {
+  margin-top: 5px;
   float: left;
-  margin-left: 5px;
+}
+
+.ddei_pv_editor_switch_excheckbox:hover .chk_state {
+  background: #017fff;
+}
+
+.ddei_pv_editor_switch_excheckbox .chk_state_checked {
+  border: 1px solid grey;
+  width: 15px;
+  height: 15px;
+  margin-right: 10px;
+  margin-top: 5px;
+  float: left;
+  background-color: #017fff;
+  color: #fff;
+}
+
+.ddei_pv_editor_switch_excheckbox .chk_state_checked span {
+  margin-top: -4.5px;
+  margin-left: 1px;
+  display: block;
 }
 </style>

@@ -92,8 +92,29 @@ export default {
       options: markRaw({
         //配置扩展插件
         extensions: [
-          DDeiCore
-        ]
+          DDeiCore,
+          // DDeiCore.configuraion({
+          //   //配置布局信息
+          //   standardLayout: {
+          //     layout: {
+                
+          //     }
+          //     'middle': ['ddei-core-panel-openfilesview', 'ddei-core-panel-canvasview', 'ddei-core-panel-quickcolorview']
+          //   },
+          // }),
+          // DDeiPluginsLayoutMini.configuraion({
+          //   layout: {
+
+          //   }
+          // })
+        ],
+        //配置布局信息
+        standardLayout: {
+          'middle': ['ddei-core-panel-openfilesview', 'ddei-core-panel-canvasview', 'ddei-core-panel-quickcolorview']
+        },
+        miniLayout: {
+          'pop': ['ddei-core-panel-openfilesview', 'ddei-core-panel-canvasview', 'ddei-core-panel-quickcolorview']
+        },
       }),
     };
   },

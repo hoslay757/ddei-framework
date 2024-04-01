@@ -1,5 +1,4 @@
 const buttons = import.meta.glob('./buttons/*.vue', { eager: true })
-const pveditors = import.meta.glob('./pveditors/*.vue', { eager: true })
 
 
 const DDeiCoreComponents = {}
@@ -13,14 +12,7 @@ DDeiCoreComponents.addComponents = (editor) => {
       components[name] = button
     }
   }
-  for (let i in pveditors) {
-    if (pveditors[i].default) {
-      let comp = pveditors[i].default;
-      let name = "ddei-core-" + comp.name
-      comp.name = name
-      components[name] = comp
-    }
-  }
+
   return components
 }
 

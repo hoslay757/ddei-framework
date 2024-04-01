@@ -54,7 +54,7 @@ import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-comm
 import DDeiEnumOperateType from "@ddei-core/framework/js/enums/operate-type";
 
 export default {
-  name: "pv-aligntype",
+  name: "pv-align-type",
   extends: null,
   mixins: [],
   props: {

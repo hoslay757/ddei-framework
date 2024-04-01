@@ -1,7 +1,7 @@
 <template>
   <div id="ddei_editor" class="ddei_editor" @contextmenu.prevent @mousewheel.prevent @mouseup="mouseUp"
     @mousemove="mouseMove" @mousedown="mouseDown">
-    <component :is="editor?.layouts['ddei-core-layout-standard']"></component>
+    <component :is="editor?.getLayout()"></component>
   </div>
   <div id="dialog_background_div" class="dialog_background_div"></div>
   <component v-for="(item, index) in editor?.dialogs" :is="item" v-if="refreshDialogs"></component>
@@ -102,6 +102,26 @@ export default {
   mounted() {
     this.editor.editorViewer = this;
     this.editor.bindEvent();
+    //初始化拦截器
+    //以下为拦截器的配置
+    this.editor.bus.interceptor[DDeiEnumBusCommandType.NodifyChange] = {
+      after: [this.changeFileModifyDirty],
+    };
+
+    this.editor.bus.interceptor[DDeiEnumBusCommandType.ModelChangeValue] = {
+      after: [this.changeFileModifyDirty],
+    };
+    if (DDeiEditor.HISTROY_LEVEL == "file") {
+      this.editor.bus.interceptor[DDeiEnumBusCommandType.AddHistroy] = {
+        execute: [this.addFileHistroy],
+      };
+    }
+    this.editor.bus.interceptor[DDeiEnumBusCommandType.TextEditorChangeSelectPos] = {
+      execute: [this.textEditorChangeSelectPos],
+    };
+    if (!DDeiUtil.setCurrentMenu) {
+      DDeiUtil.setCurrentMenu = this.setCurrentMenu;
+    }
     return;
     let frameLeftElement = document.getElementById("ddei_editor_frame_left");
     let frameRightElement = document.getElementById("ddei_editor_frame_right");
@@ -123,53 +143,6 @@ export default {
     this.initRightWidth = frameRightElement.offsetWidth
     this.editor.maxWidth =
       this.editor.leftWidth + this.editor.rightWidth + this.editor.middleWidth;
-
-    //初始化拦截器
-    //以下为拦截器的配置
-    this.editor.bus.interceptor[DDeiEnumBusCommandType.NodifyChange] = {
-      after: [this.changeFileModifyDirty],
-    };
-
-    this.editor.bus.interceptor[DDeiEnumBusCommandType.ModelChangeValue] = {
-      after: [this.changeFileModifyDirty],
-    };
-    if (DDeiEditor.HISTROY_LEVEL == "file") {
-      this.editor.bus.interceptor[DDeiEnumBusCommandType.AddHistroy] = {
-        execute: [this.addFileHistroy],
-      };
-    }
-    this.editor.bus.interceptor[DDeiEnumBusCommandType.TextEditorChangeSelectPos] = {
-      execute: [this.textEditorChangeSelectPos],
-    };
-    if (!DDeiUtil.setCurrentMenu) {
-      DDeiUtil.setCurrentMenu = this.setCurrentMenu;
-    }
-
-    // 获取要监听的 div 元素
-    let middleCanvas = document.getElementById("ddei_editor_canvasview");
-    // 创建 ResizeObserver 实例
-    const resizeObserver = new ResizeObserver(entries => {
-      // entries 是一个 ResizeObserverEntry 对象数组，包含目标元素的大小信息
-      for (const entry of entries) {
-        // 获取宽度和高度
-        const { width, height } = entry.contentRect;
-        if (width != 0 && height != 0) {
-          this.editor.ddInstance.render.setSize(
-            width,
-            height,
-            0,
-            0
-          );
-          this.editor.ddInstance.bus.push(DDeiEditorEnumBusCommandType);
-          this.editor.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
-          this.editor.ddInstance.bus.executeAll();
-        }
-
-      }
-    });
-
-    // 开始监听目标元素的大小变化
-    resizeObserver.observe(middleCanvas);
   },
   methods: {
 
@@ -528,6 +501,7 @@ export default {
 
   width: 100%;
   height: calc(100vh);
+  overflow: auto;
   display: flex;
   flex-direction: column;
   background-color: rgb(240, 240, 240);

@@ -1,33 +1,29 @@
 <template>
-  <div :id="getEditorId(attrDefine?.code)"
-    :class="{ 'ddei_pv_border_dash_combox': true, 'ddei_pv_border_dash_combox_disabled': !attrDefine || attrDefine.readonly }">
-    <div class="textinput" @click="attrDefine && !attrDefine.readonly && showDialog($event)">
-      <svg class="div_input">
-        <line x1=0 y1=0 x2="100%" y2=0 stroke="black" fill="white" stroke-width="3"
-          :stroke-dasharray="attrDefine.value">
-        </line>
-      </svg>
-      <div style="display:flex;justify-content: center;align-items: center;">
-        <svg class="icon" aria-hidden="true">
-          <use xlink:href="#icon-a-ziyuan466"></use>
-        </svg>
-      </div>
+  <div :class="{ 'ddei_pv_editor_fontsize': true, 'ddei_pv_editor_fontsize_disabled': attrDefine.readonly }"
+    :style="{ 'pointer-events': attrDefine.readonly ? 'none' : '' }">
+    <input type="range" :step="attrDefine.step" class="range" :min="attrDefine.min" :max="attrDefine.max"
+      v-model="attrDefine.value" :disabled="attrDefine.readonly" autocomplete="off" />
+    <div class="textinput">
+      <input type="number" :step="attrDefine.step" :min="attrDefine.min" :max="attrDefine.max"
+        v-model="attrDefine.value" :disabled="attrDefine.readonly" :placeholder="attrDefine.defaultValue"
+        autocomplete="off" />
+      <div style="float:left">px</div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { debounce } from "lodash";
 import DDeiEditorArrtibute from "@ddei-core/editor/js/attribute/editor-attribute";
 import DDeiEditor from "@ddei-core/editor/js/editor";
+import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
+import DDeiAbstractArrtibuteParser from "@ddei-core/framework/js/models/attribute/parser/attribute-parser";
+import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
 import DDeiUtil from "@ddei-core/framework/js/util";
-import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
 import DDeiEnumOperateType from "@ddei-core/framework/js/enums/operate-type";
 import DDeiEnumOperateState from "@ddei-core/framework/js/enums/operate-state";
-import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
-import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
+
 export default {
-  name: "pv-borderdashtypecombox",
+  name: "pv-font-size",
   extends: null,
   mixins: [],
   props: {
@@ -36,7 +32,6 @@ export default {
       type: DDeiEditorArrtibute,
       default: null,
     },
-
     //当前控件定义
     controlDefine: {
       type: Object,
@@ -47,40 +42,49 @@ export default {
     return {
       //当前编辑器
       editor: null,
-      //值
-      value: null,
     };
   },
   computed: {},
   watch: {},
   created() {
+    // 监听obj对象中prop属性的变化
+    this.$watch("attrDefine.value", function (newVal, oldVal) {
+      this.valueChange();
+    });
   },
-
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
+    //判断当前属性是否可编辑
+    this.editBefore = DDeiUtil.getConfigValue(
+      "EVENT_CONTROL_EDIT_BEFORE",
+      this.editor.ddInstance
+    );
+
+    if (
+      this.editBefore &&
+      this.editor?.ddInstance?.stage?.selectedModels?.size > 0
+    ) {
+      let mds = [];
+      if (this.editor?.ddInstance?.stage?.selectedModels?.size > 0) {
+        mds = Array.from(
+          this.editor?.ddInstance?.stage?.selectedModels?.values()
+        );
+      }
+      if (this.attrDefine?.model && mds.indexOf(this.attrDefine.model) == -1) {
+        mds.push(this.attrDefine.model);
+      }
+      this.attrDefine.readonly = !this.editBefore(
+        DDeiEnumOperateType.EDIT,
+        mds,
+        this.attrDefine?.code,
+        this.editor.ddInstance,
+        null
+      );
+    }
   },
   methods: {
-
-    getEditorId(id) {
-      return "ddei_attr_editor_" + id;
-    },
-
-    //打开弹出框
-    showDialog(evt) {
-      let srcElement = evt.currentTarget;
-      DDeiEditorUtil.showOrCloseDialog("ddei-core-dialog-selectborderdash", {
-
-        value: this.attrDefine.value,
-        dataSource: this.attrDefine.dataSource,
-        callback: {
-          ok: this.valueChange
-        },
-        group: "property-dialog"
-      }, { type: 5 }, srcElement)
-    },
-
-    valueChange(value) {
+    valueChange(evt) {
       if (this.attrDefine?.readonly) {
         return;
       }
@@ -117,7 +121,9 @@ export default {
       //通过解析器获取有效值
       let parser: DDeiAbstractArrtibuteParser = this.attrDefine.getParser();
       //属性值
-      this.attrDefine.value = value
+      let value = parser.parseValue(this.attrDefine.value);
+      value = isNaN(value) || value <= 0 ? null : value
+      value = value > 300 ? 300 : value
       let hasEditSetted = false;
       //文本编辑状态
       if (this.editor.ddInstance.stage.render.operateState == DDeiEnumOperateState.QUICK_EDITING) {
@@ -154,7 +160,7 @@ export default {
               value: value,
               attrDefine: this.attrDefine,
             },
-            null,
+            evt,
             true
           );
         } else {
@@ -168,7 +174,7 @@ export default {
                 value: value,
                 attrDefine: this.attrDefine,
               },
-              null,
+              evt,
               true
             );
           });
@@ -195,56 +201,77 @@ export default {
           null
         );
       }
-    }
-
+    },
   },
 };
 </script>
 
-<style lang="less" scoped>
-.ddei_pv_border_dash_combox {
+<style scoped>
+/**以下为range属性编辑器 */
+.ddei_pv_editor_fontsize {
+  border-radius: 4px;
   height: 28px;
-  padding-right: 10px;
+  margin-right: 10px;
+  display: flex;
 }
 
-.ddei_pv_border_dash_combox_disabled .textinput {
-  background-color: rgb(210, 210, 210);
-  height: 28px;
-  justify-content: center;
-  align-items: center;
+.ddei_pv_editor_fontsize .range {
+  height: 7px;
+  width: 60%;
+  border: transparent;
+  outline: none;
+  background: transparent;
+  flex: 1;
+  margin: auto;
 }
 
-.ddei_pv_border_dash_combox .textinput {
-  width: 100%;
+.ddei_pv_editor_fontsize_disabled .range {
+  height: 7px;
+  width: 60%;
+  border: transparent;
+  outline: none;
+  background-color: rgb(210, 210, 210) !important;
+  flex: 1;
+  margin: auto;
+}
+
+.ddei_pv_editor_fontsize .textinput {
+  flex: 0 0 80px;
+  margin-left: 10px;
+  padding-left: 5px;
   padding-right: 5px;
   border: 0.5px solid rgb(210, 210, 210);
   border-radius: 4px;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  padding-left: 5px;
-  height: 28px;
 }
 
-.ddei_pv_border_dash_combox .textinput:hover {
+.ddei_pv_editor_fontsize .textinput:hover {
   border: 1px solid #017fff;
   box-sizing: border-box;
 }
 
-.ddei_pv_border_dash_combox .textinput {
-  .div_input {
-    flex: 1 1 calc(100% - 10px);
-    width: calc(100% - 10px);
-    height: 3px;
-  }
+.ddei_pv_editor_fontsize_disabled .textinput {
+  flex: 0 0 80px;
+  margin-left: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: rgb(210, 210, 210);
+  border: 0.5px solid rgb(210, 210, 210);
+  border-radius: 4px;
+  display: flex;
 }
 
-.ddei_pv_border_dash_combox .textinput div {
-  flex: 0 0 20px;
+.ddei_pv_editor_fontsize_disabled .textinput:hover {
+  border: 1px solid grey !important;
+  box-sizing: border-box;
 }
 
-
-.icon {
-  font-size: 16px
+.ddei_pv_editor_fontsize .textinput input {
+  flex: 1 1 50px;
+  border: transparent;
+  outline: none;
+  font-size: 15px;
+  margin: 0px 2%;
+  background: transparent;
 }
 </style>

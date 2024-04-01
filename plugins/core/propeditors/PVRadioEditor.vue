@@ -1,9 +1,10 @@
 <template>
-  <div :class="{ 'ddei_pv_editor_filltype': true, 'ddei_pv_editor_filltype_disabled': attrDefine.readonly }"
+  <div :class="{ 'ddei_pv_editor_radio': true, 'ddei_pv_editor_radio_disabled': attrDefine.readonly }"
     :style="{ 'pointer-events': attrDefine.readonly ? 'none' : '' }">
     <div class="itembox" v-for="item in dataSource" @click="checkRadioValue(attrDefine, $event)">
-      <input type="radio" :disabled="attrDefine.readonly" :name="attrDefine.id" :value="item.value" autocomplete="off"
-        v-model="attrDefine.value" />
+      <input type="radio" :disabled="attrDefine.readonly" :name="attrDefine.id" :value="item.value"
+        v-model="attrDefine.value" autocomplete="off" />
+
       <div>{{ item.text }}</div>
     </div>
   </div>
@@ -15,12 +16,12 @@ import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 import DDeiAbstractArrtibuteParser from "@ddei-core/framework/js/models/attribute/parser/attribute-parser";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
-import DDeiUtil from "@ddei-core/framework/js/util";
 import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
+import DDeiUtil from "@ddei-core/framework/js/util";
 import DDeiEnumOperateType from "@ddei-core/framework/js/enums/operate-type";
 
 export default {
-  name: "pv-filltype",
+  name: "pv-radio",
   extends: null,
   mixins: [],
   props: {
@@ -40,19 +41,24 @@ export default {
       //当前编辑器
       editor: null,
       dataSource: null,
+      editBefore: null,
+      editAfter: null,
     };
   },
   computed: {},
   watch: {},
-  created() { },
+  created() {
+    // 监听obj对象中prop属性的变化
+    this.$watch("attrDefine.value", function (newVal, oldVal) {
+      this.valueChange();
+    });
+  },
   mounted() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     this.getDataSource(this.attrDefine);
-    let type = this.getTypeValue();
-    if (type) {
-      this.attrDefine.value = type.value;
-    }
+
+    this.attrDefine.doCascadeDisplayByValue();
     //判断当前属性是否可编辑
     this.editBefore = DDeiUtil.getConfigValue(
       "EVENT_CONTROL_EDIT_BEFORE",
@@ -83,20 +89,6 @@ export default {
   },
   methods: {
     /**
-     * 根据值获取选项定义
-     * @param value 值
-     */
-    getDataDefine(value) {
-      if (this.dataSource && value) {
-        for (let i = 0; i < this.dataSource.length; i++) {
-          if (this.dataSource[i].value.toString() == value.toString()) {
-            return this.dataSource[i];
-          }
-        }
-      }
-      return { text: "" };
-    },
-    /**
      * 选中radio
      */
     checkRadioValue(attrDefine, evt: Event) {
@@ -114,7 +106,6 @@ export default {
       } else {
         attrDefine.value = targetElement.value;
       }
-      this.valueChange();
     },
 
     /**
@@ -126,39 +117,18 @@ export default {
       return this.dataSource;
     },
 
-    getTypeValue() {
-      //获取属性路径
-      let paths = [];
-      this.attrDefine?.exmapping?.forEach((element) => {
-        paths.push(element);
-      });
-      if (!(paths?.length > 0)) {
-        paths = [this.attrDefine.code];
-      }
-
-      //通过解析器获取有效值
-      let value = DDeiUtil.getDataByPathList(this.attrDefine.model, paths);
-      if (!value) {
-        return { value: "1" };
-      } else if (value == "true" || value == true) {
-        return { value: "0" };
-      }
-      return {
-        isDefault: true,
-        value: this.attrDefine.getParser().getDefaultValue(),
-      };
-    },
-
     valueChange(evt) {
       if (this.attrDefine?.readonly) {
         return;
       }
+
       let mds = [];
       if (this.editor?.ddInstance?.stage?.selectedModels?.size > 0) {
         mds = Array.from(
           this.editor?.ddInstance?.stage?.selectedModels?.values()
         );
       }
+
       if (this.attrDefine?.model && mds.indexOf(this.attrDefine.model) == -1) {
         mds.push(this.attrDefine.model);
       }
@@ -176,7 +146,7 @@ export default {
       }
       //获取属性路径
       let paths = [];
-      this.attrDefine?.exmapping?.forEach((element) => {
+      this.attrDefine?.mapping?.forEach((element) => {
         paths.push(element);
       });
       if (!(paths?.length > 0)) {
@@ -187,71 +157,42 @@ export default {
       let parser: DDeiAbstractArrtibuteParser = this.attrDefine.getParser();
       //属性值
       let value = parser.parseValue(this.attrDefine.value);
-      //显示隐藏其他属性
-      if (value == "0") {
-        DDeiEditorArrtibute.hiddenAttributesByCode(
-          this.controlDefine.styles,
-          "fill.color",
-          "fill.opacity"
+
+      DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, value);
+      this.attrDefine.doCascadeDisplayByValue();
+      if (
+        this.attrDefine.model.modelType == "DDeiStage" ||
+        this.attrDefine.model.modelType == "DDeiLayer"
+      ) {
+        //推送信息进入总线
+        this.editor.bus.push(
+          DDeiEnumBusCommandType.ModelChangeValue,
+          {
+            mids: [this.attrDefine.model.modelType],
+            paths: paths,
+            value: value,
+            attrDefine: this.attrDefine,
+          },
+          evt,
+          true
         );
-        if (this.controlDefine.subStyles) {
-          DDeiEditorArrtibute.hiddenAttributesByCode(
-            this.controlDefine.subStyles,
-            "fill.color",
-            "fill.opacity"
+      } else {
+        this.editor.ddInstance.stage.selectedModels.forEach((element) => {
+          //推送信息进入总线
+          this.editor.bus.push(
+            DDeiEnumBusCommandType.ModelChangeValue,
+            {
+              mids: [element.id],
+              paths: paths,
+              value: value,
+              attrDefine: this.attrDefine,
+            },
+            evt,
+            true
           );
-        }
-      } else if (value == "1") {
-        DDeiEditorArrtibute.showAttributesByCode(
-          this.controlDefine.styles,
-          "fill.color",
-          "fill.opacity"
-        );
-        if (this.controlDefine.subStyles) {
-          DDeiEditorArrtibute.showAttributesByCode(
-            this.controlDefine.subStyles,
-            "fill.color",
-            "fill.opacity"
-          );
-        }
+        });
       }
 
-      //设置当前编辑器控件的临时属性值
-      this.editor.ddInstance.stage.selectedModels.forEach((element) => {
-        if (value == "0") {
-          //推送信息进入总线
-          this.editor.bus.push(
-            DDeiEnumBusCommandType.ModelChangeValue,
-            {
-              mids: [element.id],
-              paths: paths,
-              value: true,
-              attrDefine: this.attrDefine,
-            },
-            evt,
-            true
-          );
-          //根据code以及mapping设置属性值
-          DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, true);
-        }
-        //处理实线
-        else if (value == "1") {
-          //推送信息进入总线
-          this.editor.bus.push(
-            DDeiEnumBusCommandType.ModelChangeValue,
-            {
-              mids: [element.id],
-              paths: paths,
-              value: false,
-              attrDefine: this.attrDefine,
-            },
-            evt,
-            true
-          );
-          //根据code以及mapping设置属性值
-          DDeiUtil.setAttrValueByPath(this.attrDefine.model, paths, false);
-        }
-      });
       this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
         parts: ["topmenu"],
       });
@@ -280,16 +221,16 @@ export default {
 
 <style scoped>
 /**以下为radio属性编辑器 */
-.ddei_pv_editor_filltype {
+.ddei_pv_editor_radio {
   border-radius: 4px;
   margin-right: 10px;
 }
 
-.ddei_pv_editor_filltype_disabled {
+.ddei_pv_editor_radio_disabled {
   background-color: rgb(210, 210, 210) !important;
 }
 
-.ddei_pv_editor_filltype .itembox {
+.ddei_pv_editor_radio .itembox {
   display: flex;
   justify-content: start;
   align-items: center;
@@ -301,12 +242,12 @@ export default {
   background: transparent;
 }
 
-.ddei_pv_editor_filltype .itembox input {
+.ddei_pv_editor_radio .itembox input {
   width: 16px;
   height: 16px;
 }
 
-.ddei_pv_editor_filltype .itembox div {
+.ddei_pv_editor_radio .itembox div {
   margin-left: 15px;
 }
 

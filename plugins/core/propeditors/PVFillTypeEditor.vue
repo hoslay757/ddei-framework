@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'ddei_pv_editor_bordertype': true, 'ddei_pv_editor_bordertype_disabled': attrDefine.readonly }"
+  <div :class="{ 'ddei_pv_editor_filltype': true, 'ddei_pv_editor_filltype_disabled': attrDefine.readonly }"
     :style="{ 'pointer-events': attrDefine.readonly ? 'none' : '' }">
     <div class="itembox" v-for="item in dataSource" @click="checkRadioValue(attrDefine, $event)">
       <input type="radio" :disabled="attrDefine.readonly" :name="attrDefine.id" :value="item.value" autocomplete="off"
@@ -20,7 +20,7 @@ import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-comm
 import DDeiEnumOperateType from "@ddei-core/framework/js/enums/operate-type";
 
 export default {
-  name: "pv-borderdashtype",
+  name: "pv-fill-type",
   extends: null,
   mixins: [],
   props: {
@@ -52,9 +52,7 @@ export default {
     let type = this.getTypeValue();
     if (type) {
       this.attrDefine.value = type.value;
-      this.showOrHiddenOtherAttrs(this.attrDefine.value);
     }
-
     //判断当前属性是否可编辑
     this.editBefore = DDeiUtil.getConfigValue(
       "EVENT_CONTROL_EDIT_BEFORE",
@@ -128,34 +126,6 @@ export default {
       return this.dataSource;
     },
 
-    showOrHiddenOtherAttrs(value) {
-      //显示隐藏其他属性
-      if (value == "0") {
-        this.controlDefine.groups.forEach(group => {
-          DDeiEditorArrtibute.hiddenAttributesByCode(
-            group,
-            "border.color",
-            "borderOpacity",
-            "borderWidth",
-            "borderDash",
-            "borderRound",
-          );
-        });
-
-      } else if (value == "1") {
-        this.controlDefine.groups.forEach(group => {
-          DDeiEditorArrtibute.showAttributesByCode(
-            group,
-            "border.color",
-            "borderOpacity",
-            "borderWidth",
-            "borderDash",
-            "borderRound",
-          );
-        });
-      }
-    },
-
     getTypeValue() {
       //获取属性路径
       let paths = [];
@@ -218,7 +188,34 @@ export default {
       //属性值
       let value = parser.parseValue(this.attrDefine.value);
       //显示隐藏其他属性
-      this.showOrHiddenOtherAttrs(value);
+      if (value == "0") {
+        DDeiEditorArrtibute.hiddenAttributesByCode(
+          this.controlDefine.styles,
+          "fill.color",
+          "fill.opacity"
+        );
+        if (this.controlDefine.subStyles) {
+          DDeiEditorArrtibute.hiddenAttributesByCode(
+            this.controlDefine.subStyles,
+            "fill.color",
+            "fill.opacity"
+          );
+        }
+      } else if (value == "1") {
+        DDeiEditorArrtibute.showAttributesByCode(
+          this.controlDefine.styles,
+          "fill.color",
+          "fill.opacity"
+        );
+        if (this.controlDefine.subStyles) {
+          DDeiEditorArrtibute.showAttributesByCode(
+            this.controlDefine.subStyles,
+            "fill.color",
+            "fill.opacity"
+          );
+        }
+      }
+
       //设置当前编辑器控件的临时属性值
       this.editor.ddInstance.stage.selectedModels.forEach((element) => {
         if (value == "0") {
@@ -283,17 +280,16 @@ export default {
 
 <style scoped>
 /**以下为radio属性编辑器 */
-.ddei_pv_editor_bordertype {
+.ddei_pv_editor_filltype {
   border-radius: 4px;
   margin-right: 10px;
-
 }
 
-.ddei_pv_editor_bordertype_disabled {
+.ddei_pv_editor_filltype_disabled {
   background-color: rgb(210, 210, 210) !important;
 }
 
-.ddei_pv_editor_bordertype .itembox {
+.ddei_pv_editor_filltype .itembox {
   display: flex;
   justify-content: start;
   align-items: center;
@@ -305,12 +301,12 @@ export default {
   background: transparent;
 }
 
-.ddei_pv_editor_bordertype .itembox input {
+.ddei_pv_editor_filltype .itembox input {
   width: 16px;
   height: 16px;
 }
 
-.ddei_pv_editor_bordertype .itembox div {
+.ddei_pv_editor_filltype .itembox div {
   margin-left: 15px;
 }
 

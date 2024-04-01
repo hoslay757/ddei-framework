@@ -1,9 +1,12 @@
 <template>
   <div :id="getEditorId(attrDefine?.code)"
-    :class="{ 'ddei_pv_color_combox': true, 'ddei_pv_color_combox_disabled': !attrDefine || attrDefine.readonly }">
+    :class="{ 'ddei_pv_border_dash_combox': true, 'ddei_pv_border_dash_combox_disabled': !attrDefine || attrDefine.readonly }">
     <div class="textinput" @click="attrDefine && !attrDefine.readonly && showDialog($event)">
-      <input type="color" :readonly="attrDefine && (attrDefine.readonly)" v-model="attrDefine.value"
-        autocomplete="off" />
+      <svg class="div_input">
+        <line x1=0 y1=0 x2="100%" y2=0 stroke="black" fill="white" stroke-width="3"
+          :stroke-dasharray="attrDefine.value">
+        </line>
+      </svg>
       <div style="display:flex;justify-content: center;align-items: center;">
         <svg class="icon" aria-hidden="true">
           <use xlink:href="#icon-a-ziyuan466"></use>
@@ -14,6 +17,7 @@
 </template>
 
 <script lang="ts">
+import { debounce } from "lodash";
 import DDeiEditorArrtibute from "@ddei-core/editor/js/attribute/editor-attribute";
 import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiUtil from "@ddei-core/framework/js/util";
@@ -23,7 +27,7 @@ import DDeiEnumOperateState from "@ddei-core/framework/js/enums/operate-state";
 import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 export default {
-  name: "pv-colorcombox",
+  name: "pv-border-dash",
   extends: null,
   mixins: [],
   props: {
@@ -65,8 +69,10 @@ export default {
     //打开弹出框
     showDialog(evt) {
       let srcElement = evt.currentTarget;
-      DDeiEditorUtil.showOrCloseDialog("ddei-core-dialog-selectcolor", {
+      DDeiEditorUtil.showOrCloseDialog("ddei-core-dialog-selectborderdash", {
+
         value: this.attrDefine.value,
+        dataSource: this.attrDefine.dataSource,
         callback: {
           ok: this.valueChange
         },
@@ -196,19 +202,19 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.ddei_pv_color_combox {
+.ddei_pv_border_dash_combox {
   height: 28px;
   padding-right: 10px;
 }
 
-.ddei_pv_color_combox_disabled .textinput {
+.ddei_pv_border_dash_combox_disabled .textinput {
   background-color: rgb(210, 210, 210);
   height: 28px;
   justify-content: center;
   align-items: center;
 }
 
-.ddei_pv_color_combox .textinput {
+.ddei_pv_border_dash_combox .textinput {
   width: 100%;
   padding-right: 5px;
   border: 0.5px solid rgb(210, 210, 210);
@@ -220,23 +226,20 @@ export default {
   height: 28px;
 }
 
-.ddei_pv_color_combox .textinput:hover {
+.ddei_pv_border_dash_combox .textinput:hover {
   border: 1px solid #017fff;
   box-sizing: border-box;
 }
 
-.ddei_pv_color_combox .textinput input {
-  flex: 1 1 calc(100% - 10px);
-  width: calc(100% - 10px);
-  border: transparent;
-  outline: none;
-  font-size: 15px;
-  background: transparent;
-  user-select: none;
-  pointer-events: none;
+.ddei_pv_border_dash_combox .textinput {
+  .div_input {
+    flex: 1 1 calc(100% - 10px);
+    width: calc(100% - 10px);
+    height: 3px;
+  }
 }
 
-.ddei_pv_color_combox .textinput div {
+.ddei_pv_border_dash_combox .textinput div {
   flex: 0 0 20px;
 }
 
