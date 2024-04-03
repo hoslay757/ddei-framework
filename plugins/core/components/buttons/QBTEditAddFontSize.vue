@@ -17,7 +17,7 @@ import DDeiEditorEnumBusCommandType from '@ddei-core/editor/js/enums/editor-comm
 import DDeiEditorState from '@ddei-core/editor/js/enums/editor-state';
 
 export default {
-  name: "btn-addfontsize",
+  name: "ddei-core-btn-addfontsize",
   extends: null,
   mixins: [],
   components: {

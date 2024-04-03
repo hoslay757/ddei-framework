@@ -15,7 +15,7 @@ import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-comm
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
 
 export default {
-  name: "btn-textalign",
+  name: "ddei-core-btn-textalign",
   extends: null,
   mixins: [],
   components: {},

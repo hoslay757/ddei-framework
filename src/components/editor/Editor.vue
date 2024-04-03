@@ -1,7 +1,8 @@
 <template>
   <div id="ddei_editor" class="ddei_editor" @contextmenu.prevent @mousewheel.prevent @mouseup="mouseUp"
     @mousemove="mouseMove" @mousedown="mouseDown">
-    <component :is="editor?.getLayout()"></component>
+    <component :is="editor?.getLayout()" :options="editor?.getLayoutOptions()">
+    </component>
   </div>
   <div id="dialog_background_div" class="dialog_background_div"></div>
   <component v-for="(item, index) in editor?.dialogs" :is="item" v-if="refreshDialogs"></component>

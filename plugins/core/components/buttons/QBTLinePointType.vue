@@ -20,7 +20,7 @@ import DDeiUtil from '@ddei-core/framework/js/util';
 import DDeiEnumBusCommandType from '@ddei-core/framework/js/enums/bus-command-type';
 import DDeiEditorUtil from '@ddei-core/editor/js/util/editor-util';
 export default {
-  name: "btn-linepointtype",
+  name: "ddei-core-btn-linepointtype",
   extends: null,
   mixins: [],
   components: {

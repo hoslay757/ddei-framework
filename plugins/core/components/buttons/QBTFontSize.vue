@@ -24,7 +24,7 @@ import DDeiEnumOperateState from "@ddei-core/framework/js/enums/operate-state";
 import DDeiModelArrtibuteValue from "@ddei-core/framework/js/models/attribute/attribute-value";
 
 export default {
-  name: "btn-fontsize",
+  name: "ddei-core-btn-fontsize",
   extends: null,
   mixins: [],
   components: {},

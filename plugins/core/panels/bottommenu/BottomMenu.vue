@@ -97,7 +97,7 @@ import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
 import Cookies from "js-cookie";
 
 export default {
-  name: "panel-bottommenu",
+  name: "ddei-core-panel-bottommenu",
   extends: null,
   mixins: [],
   props: {},

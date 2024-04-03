@@ -21,14 +21,14 @@ import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-comm
 import DDeiEnumKeyActionInst from "@ddei-core/editor/js/enums/key-action-inst";
 
 export default {
-  name: "panel-canvasview",
+  name: "ddei-core-panel-canvasview",
   extends: null,
   mixins: [],
   props: {
     id: {
       type: String,
       default: "ddei_editor_canvasview",
-    },
+    }
   },
   data() {
     return {

@@ -68,7 +68,7 @@ import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-comm
 import DDeiEnumOperateType from "@ddei-core/framework/js/enums/operate-type";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 export default {
-  name: "panel-propertyview",
+  name: "ddei-core-panel-propertyview",
   extends: null,
   mixins: [],
   props: {},

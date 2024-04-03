@@ -50,11 +50,15 @@ import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-comm
 
 //引入插件
 import DDeiCore from "@ddei/core";
+import { DDeiCoreTopMenuPanel, DDeiCoreOpenFilesViewPanel, DDeiCoreQuickColorViewPanel } from "@ddei/core";
+import Editor from "@/components/editor/Editor.vue";
 
 export default {
   props: {},
   data() {
+    
     return {
+
       publishPostData: null,
       inputPwdCode: "",
       loadMode: 0,//加载模式0，不加载
@@ -92,29 +96,19 @@ export default {
       options: markRaw({
         //配置扩展插件
         extensions: [
-          DDeiCore,
-          // DDeiCore.configuraion({
-          //   //配置布局信息
-          //   standardLayout: {
-          //     layout: {
-                
-          //     }
-          //     'middle': ['ddei-core-panel-openfilesview', 'ddei-core-panel-canvasview', 'ddei-core-panel-quickcolorview']
-          //   },
+          
+          // DDeiCore,
+          DDeiCore.configuraton({
+            //配置插件
+            "ddei-core-layout-standard": {
+              'top': [DDeiCoreTopMenuPanel.configuraton({test:1})],
+              'middle': [DDeiCoreOpenFilesViewPanel,  'ddei-core-panel-canvasview' , 'ddei-core-panel-quickcolorview'],
+            },
+          }),
+          DDeiCoreQuickColorViewPanel.configuraton({ testcolor: "red" }),
+          // DDeiCoreTopMenuPanel.configuraton({ top: "123" }),
           // }),
-          // DDeiPluginsLayoutMini.configuraion({
-          //   layout: {
-
-          //   }
-          // })
         ],
-        //配置布局信息
-        standardLayout: {
-          'middle': ['ddei-core-panel-openfilesview', 'ddei-core-panel-canvasview', 'ddei-core-panel-quickcolorview']
-        },
-        miniLayout: {
-          'pop': ['ddei-core-panel-openfilesview', 'ddei-core-panel-canvasview', 'ddei-core-panel-quickcolorview']
-        },
       }),
     };
   },
@@ -143,7 +137,7 @@ export default {
     }
   },
   mounted() {
-
+    let a = DDeiCoreTopMenuPanel
   },
   methods: {
     /**

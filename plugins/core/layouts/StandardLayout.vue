@@ -1,14 +1,17 @@
 <template>
   <div class="layout_standrad">
     <div class="top">
-      <component v-for="(item,index) in getPartPanels('top')" :is="item" v-if="refreshTopMenuView"></component>
+      <component v-for="(item,index) in getPartPanels('top')" :is="item.comp"
+        v-bind="item.options" :options="item.options" v-if="refreshTopMenuView"></component>
     </div>
     <div class="body">
       <div class="left" v-show="toolboxShow">
-        <component v-for="(item, index) in getPartPanels('left')" :is="item" v-if="refreshToolBox"></component>
+        <component v-for="(item, index) in getPartPanels('left')" :is="item.comp" :options="item.options"
+          v-bind="item.options" v-if="refreshToolBox"></component>
       </div>
       <div class="middle">
-        <component v-for="(item, index) in getPartPanels('middle')" :is="item"></component>
+        <component v-for="(item, index) in getPartPanels('middle')" :is="item.comp" :options="item.options"
+          v-bind="item.options"></component>
         <!-- <component :is="editor?.panels['ddei-core-panel-openfilesview']"
           v-if="allowOpenMultFiles && refreshOpenFilesView">
         </component>
@@ -16,11 +19,13 @@
         <component :is="editor?.panels['ddei-core-panel-quickcolorview']" v-if="allowQuickColor"></component> -->
       </div>
       <div class="right" v-show="propertyViewShow">
-        <component v-for="(item, index) in getPartPanels('right')" :is="item" v-if="refreshPropertyView"></component>
+        <component v-for="(item, index) in getPartPanels('right')" :is="item.comp" :options="item.options"
+          v-bind="item.options" v-if="refreshPropertyView"></component>
       </div>
     </div>
     <div class="bottom">
-      <component v-for="(item, index) in getPartPanels('bottom')" :is="item" v-if="refreshBottomMenu"></component>
+      <component v-for="(item, index) in getPartPanels('bottom')" :is="item.comp" :options="item.options"
+        v-bind="item.options" v-if="refreshBottomMenu"></component>
     </div>
   </div>
 </template>
@@ -30,11 +35,14 @@ import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 
 export default {
-  name: "layout-standard",
+  name: "ddei-core-layout-standard",
   extends: null,
   mixins: [],
   props: {
-
+    options: {
+      type: Object,
+      default: null
+    }
   },
   data() {
     return {
@@ -53,13 +61,6 @@ export default {
       initRightWidth: 0,
       toolboxShow: true,
       propertyViewShow: true,
-      defaultLayout:{
-        top: ['ddei-core-panel-topmenu'],
-        left: ['ddei-core-panel-toolbox'],
-        middle: ['ddei-core-panel-canvasview'],
-        right: ['ddei-core-panel-propertyview'],
-        bottom: ['ddei-core-panel-bottommenu']
-      }
     };
   },
   //注册组件
@@ -106,20 +107,32 @@ export default {
     /**
      * 获取options重的各个部分的配置
      */
-    getPartPanels(part:string){
+    getPartPanels(part: string) {
       let partOption = null;
-      if (this.editor?.options?.standardLayout && this.editor?.options?.standardLayout[part]){
-        if (this.editor?.options?.standardLayout[part]){
-          partOption = this.editor?.options?.standardLayout[part];
+      if (this.options && this.options[part]) {
+        if (this.options[part]) {
+          partOption = this.options[part];
         }
-      }else{
-        partOption = this.defaultLayout[part];
       }
-      if (partOption && this.editor?.panels){
+      if (partOption && this.editor?.panels) {
         let returnArray = []
-        partOption.forEach(poption=>{
-          if(this.editor.panels[poption]){
-            returnArray.push(this.editor.panels[poption])
+        partOption.forEach(poption => {
+          //根据名称获取配置
+          if (typeof (poption) == 'string') {
+            if (this.editor.panels[poption]) {
+              let comp = this.editor.panels[poption]
+              //解析当前配置
+              let options = this.editor.options[poption] 
+              returnArray.push({ comp: comp, options: options })
+            }
+          } else if (poption.getName) {
+            let name = poption.getName()
+            if (this.editor.panels[name]) {
+              let comp = this.editor.panels[name]
+              //解析当前配置
+              let options = poption.getOptions(); 
+              returnArray.push({ comp: comp, options: options })
+            }
           }
         })
         return returnArray;

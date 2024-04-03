@@ -68,7 +68,7 @@ import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-ty
 import { clone } from 'lodash'
 
 export default {
-  name: "panel-toolbox",
+  name: "ddei-core-panel-toolbox",
   extends: null,
   mixins: [],
   props: {},

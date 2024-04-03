@@ -242,43 +242,53 @@ class DDeiEditor {
    * 注册外部插件
    */
   registerExtension(plugin): void {
-    if (plugin.addComponents) {
+    if (plugin.getComponents) {
       //注册并加载组件
-      let components = plugin.addComponents(this)
-      for (let i in components) {
-        this.components[components[i].name] = components[i]
-      }
+      let components = plugin.getComponents(this)
+      components?.forEach(component => {
+        this.components[component.name] = component
+      }); 
     }
-    if (plugin.addDialogs) {
+    if (plugin.getDialogs) {
       //注册并加载弹出框
-      let dialogs = plugin.addDialogs(this)
-      for (let i in dialogs) {
-        this.dialogs[dialogs[i].name] = dialogs[i]
-      }
+      let dialogs = plugin.getDialogs(this)
+      dialogs?.forEach(dialog => {
+        this.dialogs[dialog.name] = dialog
+      }); 
     }
-    if (plugin.addPanels) {
+    if (plugin.getPanels) {
       //注册并加载面板
-      let panels = plugin.addPanels(this)
-      for (let i in panels) {
-        this.panels[panels[i].name] = panels[i]
-      }
+      let panels = plugin.getPanels(this)
+      panels?.forEach(panel => {
+        this.panels[panel.name] = panel
+      }); 
     }
 
-    if (plugin.addLayouts) {
+    if (plugin.getLayouts) {
       //注册并加载面板
-      let layouts = plugin.addLayouts(this)
-      for (let i in layouts) {
-        this.layouts[layouts[i].name] = layouts[i]
-      }
+      let layouts = plugin.getLayouts(this)
+      layouts?.forEach(layout => {
+        this.layouts[layout.name] = layout
+      }); 
     }
 
-    if (plugin.addPropEditors) {
+    if (plugin.getPropEditors) {
       //注册并加载属性编辑器
-      let propEditors = plugin.addPropEditors(this)
-      for (let i in propEditors) {
-     
-        this.propeditors[propEditors[i].name] = propEditors[i]
+      let propEditors = plugin.getPropEditors(this)
+      propEditors?.forEach(propEditor => {
+        this.propeditors[propEditor.name] = propEditor
+      }); 
+    }
+    let options = plugin.getOptions()
+    let pluginType = plugin.getType();
+ 
+    if (pluginType == 'plugin'){
+      let pluginName = plugin.getName();
+      if (pluginName){
+        this.options[pluginName] = options;
       }
+    } else if (pluginType == 'package') {
+      this.options = Object.assign({}, this.options, options)
     }
   }
 
@@ -545,6 +555,13 @@ class DDeiEditor {
    */
   getLayout(): object {
     return this.layouts[this.currentLayout];
+  }
+
+  /**
+  * 获取属性编辑器
+  */
+  getLayoutOptions(): object {
+    return this.options[this.currentLayout];
   }
 }
 

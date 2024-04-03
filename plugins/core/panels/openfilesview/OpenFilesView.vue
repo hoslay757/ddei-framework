@@ -57,7 +57,7 @@ import DDeiStage from "@ddei-core/framework/js/models/stage";
 import DDeiSheet from "@ddei-core/editor/js/sheet";
 
 export default {
-  name: "panel-openfilesview",
+  name: "ddei-core-panel-openfilesview",
   extends: null,
   mixins: [],
   props: {},

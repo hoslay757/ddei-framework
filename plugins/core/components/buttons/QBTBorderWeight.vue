@@ -24,7 +24,7 @@ import DDeiEnumOperateState from '@ddei-core/framework/js/enums/operate-state';
 import DDeiModelArrtibuteValue from '@ddei-core/framework/js/models/attribute/attribute-value';
 import DDeiEditorUtil from '@ddei-core/editor/js/util/editor-util';
 export default {
-  name: "btn-borderweight",
+  name: "ddei-core-btn-borderweight",
   extends: null,
   mixins: [],
   components: {

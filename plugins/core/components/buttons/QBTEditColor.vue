@@ -17,7 +17,7 @@ import DDeiEnumOperateState from '@ddei-core/framework/js/enums/operate-state';
 import DDeiModelArrtibuteValue from '@ddei-core/framework/js/models/attribute/attribute-value';
 import DDeiEditorUtil from '@ddei-core/editor/js/util/editor-util';
 export default {
-  name: "btn-color",
+  name: "ddei-core-btn-color",
   extends: null,
   mixins: [],
   components: {

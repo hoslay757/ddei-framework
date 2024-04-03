@@ -51,10 +51,12 @@ import DDeiEditorState from "@ddei-core/editor/js/enums/editor-state";
 import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
 
 export default {
-  name: "panel-topmenu",
+  name: "ddei-core-panel-topmenu",
   extends: null,
   mixins: [],
-  props: {},
+  props: {
+   
+  },
   data() {
     return {
       editor: null,

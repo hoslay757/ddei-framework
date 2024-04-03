@@ -18,7 +18,7 @@ import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-comm
 import DDeiEditorState from "@ddei-core/editor/js/enums/editor-state";
 
 export default {
-  name: "btn-editbox",
+  name: "ddei-core-btn-editbox",
   extends: null,
   mixins: [],
   components: {},

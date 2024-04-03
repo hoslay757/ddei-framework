@@ -27,7 +27,7 @@ import DDeiModelArrtibuteValue from "@ddei-core/framework/js/models/attribute/at
 import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
 
 export default {
-  name: "btn-fontfamily",
+  name: "ddei-core-btn-fontfamily",
   extends: null,
   mixins: [],
   components: {},

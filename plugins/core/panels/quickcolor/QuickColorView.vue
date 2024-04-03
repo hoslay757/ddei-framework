@@ -21,10 +21,15 @@ import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-ty
 import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
 export default {
-  name: "panel-quickcolorview",
+  name: "ddei-core-panel-quickcolorview",
   extends: null,
   mixins: [],
-  props: {},
+  props: {
+    options: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
       colors: [],
