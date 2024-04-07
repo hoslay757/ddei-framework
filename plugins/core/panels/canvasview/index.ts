@@ -9,13 +9,6 @@ class DDeiCoreCanvasViewPanel extends DDeiPluginBase{
    */
   static defaultIns: DDeiCoreCanvasViewPanel = new DDeiCoreCanvasViewPanel(null);
 
-  static getPanels(editor){
-    return DDeiCoreCanvasViewPanel.defaultIns.getPanels(editor);
-  }
-
-  static getOptions(): object {
-    return DDeiCoreCanvasViewPanel.defaultIns.getOptions();
-  }
 
   plugins: object[] = [CanvasView]
 
@@ -24,13 +17,6 @@ class DDeiCoreCanvasViewPanel extends DDeiPluginBase{
   }
 
 
-  static getName(): string {
-    return DDeiCoreCanvasViewPanel.defaultIns.getName();
-  }
-
-  static getType(): string {
-    return DDeiCoreCanvasViewPanel.defaultIns.getType();
-  }
   
   static configuraton(options, fullConfig: boolean = false) {
     //解析options，只使用自己相关的

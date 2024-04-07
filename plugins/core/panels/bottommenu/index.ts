@@ -8,13 +8,6 @@ class DDeiCoreBottomMenuPanel extends DDeiPluginBase{
    */
   static defaultIns: DDeiCoreBottomMenuPanel = new DDeiCoreBottomMenuPanel(null);
 
-  static getPanels(editor){
-    return DDeiCoreBottomMenuPanel.defaultIns.getPanels(editor);
-  }
-
-  static getOptions(): object {
-    return DDeiCoreBottomMenuPanel.defaultIns.getOptions();
-  }
 
   plugins: object[] = [BottomMenu]
 
@@ -22,13 +15,6 @@ class DDeiCoreBottomMenuPanel extends DDeiPluginBase{
     return this.plugins;
   }
 
-  static getName(): string {
-    return DDeiCoreBottomMenuPanel.defaultIns.getName();
-  }
-
-  static getType(): string {
-    return DDeiCoreBottomMenuPanel.defaultIns.getType();
-  }
 
   static configuraton(options, fullConfig: boolean = false) {
     //解析options，只使用自己相关的

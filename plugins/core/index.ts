@@ -21,7 +21,7 @@ class DDeiCore extends DDeiPluginBase {
 
   components: object = DDeiCoreComponents;
 
-  // dialogs:object = DDeiCoreDialogs;
+  dialogs: object = DDeiCoreDialogs;
 
   propeditors:object = DDeiCorePropEditors;
 
@@ -39,7 +39,11 @@ class DDeiCore extends DDeiPluginBase {
   }
 
   getComponents(editor) {
-    return this.components.getComponents(editor);
+    if (DDeiPluginBase.isSubclass(this.components, DDeiPluginBase)) {
+      return this.components.defaultIns.getComponents(editor);
+    } else if (this.components instanceof DDeiPluginBase) {
+      return this.components.getComponents(editor);
+    }
   }
 
   getPanels(editor) {
@@ -58,9 +62,13 @@ class DDeiCore extends DDeiPluginBase {
     }
   }
 
-  // getDialogs(editor){
-  //    return DDeiCoreDialogs.getDialogs(app);
-  // }
+  getDialogs(editor){
+    if (DDeiPluginBase.isSubclass(this.dialogs, DDeiPluginBase)) {
+      return this.dialogs.defaultIns.getDialogs(editor);
+    } else if (this.dialogs instanceof DDeiPluginBase) {
+      return this.dialogs.getDialogs(editor);
+    }
+  }
 
   getPropEditors(editor){
     if (DDeiPluginBase.isSubclass(this.propeditors, DDeiPluginBase)){

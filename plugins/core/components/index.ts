@@ -1,61 +1,62 @@
 import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
-
-const buttons = import.meta.glob('./buttons/*.vue', { eager: true })
-
+import DDeiCoreAddFontSizeButton from "./buttons/qbt-addfontsize"
+import DDeiCoreBorderDashButton from "./buttons/qbt-borderdash"
+import DDeiCoreBorderWeightButton from "./buttons/qbt-borderweight"
+import DDeiCoreEditBoxButton from "./buttons/qbt-editbox"
+import DDeiCoreEditColorButton from "./buttons/qbt-editcolor"
+import DDeiCoreEditFontFamilyButton from "./buttons/qbt-fontfamily"
+import DDeiCoreEditFontSizeButton from "./buttons/qbt-fontsize"
+import DDeiCoreEditLinePointTypeButton from "./buttons/qbt-linepointtype"
+import DDeiCoreEditLineTypeButton from "./buttons/qbt-linetype"
+import DDeiCoreEditTextAlignButton from "./buttons/qbt-textalign"
 
 class DDeiCoreComponents extends DDeiPluginBase{
 
   type: string = "package"
 
-  constructor(options: object | null | undefined) {
-    super(options)
-    for (let i in buttons) {
-      if (buttons[i].default) {
-        this.plugins.push(buttons[i].default)
-      }
-    }
-    
-  }
-  
+  plugins: object[] = [DDeiCoreAddFontSizeButton, DDeiCoreBorderDashButton, DDeiCoreBorderWeightButton
+    , DDeiCoreEditBoxButton, DDeiCoreEditColorButton,
+    DDeiCoreEditFontFamilyButton, DDeiCoreEditFontSizeButton, DDeiCoreEditLinePointTypeButton, DDeiCoreEditLineTypeButton, DDeiCoreEditTextAlignButton]
+
   /**
    * 缺省实例
    */
   static defaultIns:DDeiCoreComponents = new DDeiCoreComponents(null);
 
-  static getComponents(editor){
-    return DDeiCoreComponents.defaultIns.getComponents(editor);
-  }
-
-  static getOptions(): object {
-    return DDeiCoreComponents.defaultIns.getOptions();
-  }
-
 
   getComponents(editor){
-    return this.plugins;
+    let components = []
+    this.plugins?.forEach(plugin => {
+      let ls
+      if (DDeiPluginBase.isSubclass(plugin, DDeiPluginBase)) {
+        ls = plugin.defaultIns.getComponents(editor);
+      } else if (plugin instanceof DDeiPluginBase) {
+        ls = plugin.getComponents(editor);
+      }
+      if (ls?.length > 0) {
+        components = components.concat(ls);
+      }
+    })
+    return components
   }
 
-  static getType(): string {
-    return DDeiCoreComponents.defaultIns.getType();
-  }
   
 
   static configuraton(options) {
     //解析options，只使用自己相关的
     if (options) {
-      let newOptions = {}
-      this.plugins?.forEach(plugin => {
-        if (options[plugin.name]) {
-          newOptions[plugin.name] = options[plugin.name]
-        }
-      });
-      if (newOptions && Object.keys(newOptions).length !== 0) {
-        let panels = new DDeiCoreComponents(newOptions);
-        return panels;
+      //解析options，只使用自己相关的
+      let components = new DDeiCoreComponents(options);
+      for (let i = 0; i < components.plugins?.length; i++) {
+        components.plugins[i] = components.plugins[i].configuraton(options, true)
       }
+      return components;
     }
     return DDeiCoreComponents;
   }
 }
 
+export {DDeiCoreComponents,DDeiCoreAddFontSizeButton, DDeiCoreBorderDashButton, DDeiCoreBorderWeightButton
+  , DDeiCoreEditBoxButton, DDeiCoreEditColorButton,
+  DDeiCoreEditFontFamilyButton, DDeiCoreEditFontSizeButton, DDeiCoreEditLinePointTypeButton, DDeiCoreEditLineTypeButton, DDeiCoreEditTextAlignButton}
 export default DDeiCoreComponents

@@ -9,13 +9,6 @@ class DDeiCoreOpenFilesViewPanel extends DDeiPluginBase{
    */
   static defaultIns: DDeiCoreOpenFilesViewPanel = new DDeiCoreOpenFilesViewPanel(null);
 
-  static getPanels(editor){
-    return DDeiCoreOpenFilesViewPanel.defaultIns.getPanels(editor);
-  }
-
-  static getOptions(): object {
-    return DDeiCoreOpenFilesViewPanel.defaultIns.getOptions();
-  }
 
   plugins: object[] = [OpenFilesView]
 
@@ -23,13 +16,6 @@ class DDeiCoreOpenFilesViewPanel extends DDeiPluginBase{
     return this.plugins;
   }
 
-  static getName(): string {
-    return DDeiCoreOpenFilesViewPanel.defaultIns.getName();
-  }
-
-  static getType(): string {
-    return DDeiCoreOpenFilesViewPanel.defaultIns.getType();
-  }
   
   static configuraton(options, fullConfig: boolean = false) {
     //解析options，只使用自己相关的

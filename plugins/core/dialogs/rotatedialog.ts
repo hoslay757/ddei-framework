@@ -1,31 +1,29 @@
 import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
-import Toolbox from './Toolbox.vue';
+import RotateDialog from './RotateDialog.vue';
 
-class DDeiCoreToolboxPanel extends DDeiPluginBase{
-  name: string = Toolbox.name
+class DDeiCoreRotateDialog extends DDeiPluginBase{
+  
   /**
    * 缺省实例
    */
-  static defaultIns: DDeiCoreToolboxPanel = new DDeiCoreToolboxPanel(null);
+  static defaultIns: DDeiCoreRotateDialog = new DDeiCoreRotateDialog(null);
 
 
-  plugins: object[] = [Toolbox]
+  plugins: object[] = [RotateDialog]
 
-  getPanels(editor){
+  getDialogs(editor){
     return this.plugins;
   }
 
-
-  
   static configuraton(options, fullConfig: boolean = false) {
     //解析options，只使用自己相关的
     if (options) {
       let newOptions = {}
       if (fullConfig) {
         if (fullConfig) {
-          if (options[Toolbox.name]) {
-            for (let i in options[Toolbox.name]) {
-              newOptions[i] = options[Toolbox.name][i]
+          if (options[RotateDialog.name]) {
+            for (let i in options[RotateDialog.name]) {
+              newOptions[i] = options[RotateDialog.name][i]
             }
           }
         }
@@ -33,12 +31,12 @@ class DDeiCoreToolboxPanel extends DDeiPluginBase{
         newOptions = options
       }
       if (newOptions && Object.keys(newOptions).length !== 0) {
-        let panels = new DDeiCoreToolboxPanel(newOptions);
+        let panels = new DDeiCoreRotateDialog(newOptions);
         return panels;
       }
     }
-    return DDeiCoreToolboxPanel;
+    return DDeiCoreRotateDialog;
   }
 }
 
-export default DDeiCoreToolboxPanel
+export default DDeiCoreRotateDialog

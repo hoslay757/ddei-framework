@@ -9,13 +9,6 @@ class DDeiCorePropertyViewPanel extends DDeiPluginBase{
    */
   static defaultIns: DDeiCorePropertyViewPanel = new DDeiCorePropertyViewPanel(null);
 
-  static getPanels(editor){
-    return DDeiCorePropertyViewPanel.defaultIns.getPanels(editor);
-  }
-
-  static getOptions(): object {
-    return DDeiCorePropertyViewPanel.defaultIns.getOptions();
-  }
 
   plugins: object[] = [PropertyView]
 
@@ -23,13 +16,6 @@ class DDeiCorePropertyViewPanel extends DDeiPluginBase{
     return this.plugins;
   }
 
-  static getType(): string {
-    return DDeiCorePropertyViewPanel.defaultIns.getType();
-  }
-
-  static getName(): string {
-    return DDeiCorePropertyViewPanel.defaultIns.getName();
-  }
 
   
   static configuraton(options, fullConfig: boolean = false) {

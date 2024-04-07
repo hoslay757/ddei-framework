@@ -8,13 +8,6 @@ class DDeiCoreQuickColorViewPanel extends DDeiPluginBase{
    */
   static defaultIns: DDeiCoreQuickColorViewPanel = new DDeiCoreQuickColorViewPanel(null);
 
-  static getPanels(editor){
-    return DDeiCoreQuickColorViewPanel.defaultIns.getPanels(editor);
-  }
-
-  static getOptions(): object {
-    return DDeiCoreQuickColorViewPanel.defaultIns.getOptions();
-  }
 
   plugins: object[] = [QuickColorView]
 
@@ -22,13 +15,6 @@ class DDeiCoreQuickColorViewPanel extends DDeiPluginBase{
     return this.plugins;
   }
 
-  static getName(): string {
-    return DDeiCoreQuickColorViewPanel.defaultIns.getName();
-  }
-
-  static getType(): string {
-    return DDeiCoreQuickColorViewPanel.defaultIns.getType();
-  }
   
   static configuraton(options, fullConfig: boolean = false) {
     //解析options，只使用自己相关的

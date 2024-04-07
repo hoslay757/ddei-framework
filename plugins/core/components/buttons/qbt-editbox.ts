@@ -1,31 +1,28 @@
 import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
-import Toolbox from './Toolbox.vue';
+import QBTEditBox from './QBTEditBox.vue';
 
-class DDeiCoreToolboxPanel extends DDeiPluginBase{
-  name: string = Toolbox.name
+class DDeiCoreEditBoxButton extends DDeiPluginBase{
+  
   /**
    * 缺省实例
    */
-  static defaultIns: DDeiCoreToolboxPanel = new DDeiCoreToolboxPanel(null);
+  static defaultIns: DDeiCoreEditBoxButton = new DDeiCoreEditBoxButton(null);
 
+  plugins: object[] = [QBTEditBox]
 
-  plugins: object[] = [Toolbox]
-
-  getPanels(editor){
+  getComponents(editor){
     return this.plugins;
   }
 
-
-  
   static configuraton(options, fullConfig: boolean = false) {
     //解析options，只使用自己相关的
     if (options) {
       let newOptions = {}
       if (fullConfig) {
         if (fullConfig) {
-          if (options[Toolbox.name]) {
-            for (let i in options[Toolbox.name]) {
-              newOptions[i] = options[Toolbox.name][i]
+          if (options[QBTEditBox.name]) {
+            for (let i in options[QBTEditBox.name]) {
+              newOptions[i] = options[QBTEditBox.name][i]
             }
           }
         }
@@ -33,12 +30,12 @@ class DDeiCoreToolboxPanel extends DDeiPluginBase{
         newOptions = options
       }
       if (newOptions && Object.keys(newOptions).length !== 0) {
-        let panels = new DDeiCoreToolboxPanel(newOptions);
+        let panels = new DDeiCoreEditBoxButton(newOptions);
         return panels;
       }
     }
-    return DDeiCoreToolboxPanel;
+    return DDeiCoreEditBoxButton;
   }
 }
 
-export default DDeiCoreToolboxPanel
+export default DDeiCoreEditBoxButton

@@ -1,23 +1,19 @@
 import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
-import TopMenu from './TopMenu.vue';
+import ReLoginDialog from './ReLoginDialog.vue';
 
-class DDeiCoreTopMenuPanel extends DDeiPluginBase{
-  
-  name: string = TopMenu.name
-  
+class DDeiCoreReLoginDialog extends DDeiPluginBase{
   
   /**
    * 缺省实例
    */
-  static defaultIns: DDeiCoreTopMenuPanel = new DDeiCoreTopMenuPanel(null);
+  static defaultIns: DDeiCoreReLoginDialog = new DDeiCoreReLoginDialog(null);
 
 
-  plugins: object[] = [TopMenu]
+  plugins: object[] = [ReLoginDialog]
 
-  getPanels(editor){
+  getDialogs(editor){
     return this.plugins;
   }
-
 
   static configuraton(options, fullConfig: boolean = false) {
     //解析options，只使用自己相关的
@@ -25,9 +21,9 @@ class DDeiCoreTopMenuPanel extends DDeiPluginBase{
       let newOptions = {}
       if (fullConfig) {
         if (fullConfig) {
-          if (options[TopMenu.name]) {
-            for (let i in options[TopMenu.name]) {
-              newOptions[i] = options[TopMenu.name][i]
+          if (options[ReLoginDialog.name]) {
+            for (let i in options[ReLoginDialog.name]) {
+              newOptions[i] = options[ReLoginDialog.name][i]
             }
           }
         }
@@ -35,12 +31,12 @@ class DDeiCoreTopMenuPanel extends DDeiPluginBase{
         newOptions = options
       }
       if (newOptions && Object.keys(newOptions).length !== 0) {
-        let panels = new DDeiCoreTopMenuPanel(newOptions);
+        let panels = new DDeiCoreReLoginDialog(newOptions);
         return panels;
       }
     }
-    return DDeiCoreTopMenuPanel;
+    return DDeiCoreReLoginDialog;
   }
 }
 
-export default DDeiCoreTopMenuPanel
+export default DDeiCoreReLoginDialog
