@@ -1,5 +1,5 @@
 <template>
-  <div class="ddei_editor_file_info">
+  <div class="ddei-core-panel-fileinfo">
     <div class="header"></div>
     <div class="content">
       <div class="part">
@@ -63,10 +63,16 @@ import DDeiSheet from "@ddei-core/editor/js/sheet";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util.ts";
 
 export default {
-  name: "DDei-Editor-File-Info",
+  name: "ddei-core-panel-fileinfo",
   extends: null,
   mixins: [],
-  props: {},
+  props: {
+    //外部传入的插件扩展参数
+    options: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
       editor: null,
@@ -301,7 +307,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.ddei_editor_file_info {
+.ddei-core-panel-fileinfo {
   height: 103px;
   display: grid;
   grid-template-rows: 20px 57px 26px;

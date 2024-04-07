@@ -1,10 +1,10 @@
 <template>
-  <div class="ddei_editor_quick_sort">
+  <div class="ddei-core-panel-sort">
     <div class="header"></div>
     <div class="content">
       <div class="part">
         <div
-          :class="{ 'button-v-disabled': !isButtonEnable(), 'button-v-selected': isButtonEnable() && dialogShow == 'ddei_editor_quick_sort_ddei-core-dialog-changeposition', 'button-v': isButtonEnable() }"
+          :class="{ 'button-v-disabled': !isButtonEnable(), 'button-v-selected': isButtonEnable() && dialogShow == 'ddei-core-panel-sort_ddei-core-dialog-changeposition', 'button-v': isButtonEnable() }"
           @click="isButtonEnable() && showPositionDialog($event)">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-a-ziyuan429"></use>
@@ -17,7 +17,7 @@
       </div>
       <div class="part">
         <div
-          :class="{ 'button-v-disabled': !isButtonEnable(2), 'button-v-selected': isButtonEnable(2) && dialogShow == 'ddei_editor_quick_sort_align_dialog', 'button-v': isButtonEnable(2) }"
+          :class="{ 'button-v-disabled': !isButtonEnable(2), 'button-v-selected': isButtonEnable(2) && dialogShow == 'ddei-core-panel-sort_align_dialog', 'button-v': isButtonEnable(2) }"
           @click="isButtonEnable(2) && showAlignDialog($event)">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-a-ziyuan428"></use>
@@ -30,7 +30,7 @@
       </div>
       <div class="part">
         <div
-          :class="{ 'button-v-disabled': !isButtonEnable(), 'button-v-selected': isButtonEnable() && dialogShow == 'ddei_editor_quick_sort_merge_dialog', 'button-v': isButtonEnable() }"
+          :class="{ 'button-v-disabled': !isButtonEnable(), 'button-v-selected': isButtonEnable() && dialogShow == 'ddei-core-panel-sort_merge_dialog', 'button-v': isButtonEnable() }"
           @click="isButtonEnable() && showMergeDialog($event)">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-a-ziyuan427"></use>
@@ -44,7 +44,7 @@
 
       <div class="part">
         <div
-          :class="{ 'button-v-disabled': !isButtonEnable(), 'button-v-selected': isButtonEnable() && dialogShow == 'ddei_editor_quick_sort_ddei-core-dialog-changerotate', 'button-v': isButtonEnable() }"
+          :class="{ 'button-v-disabled': !isButtonEnable(), 'button-v-selected': isButtonEnable() && dialogShow == 'ddei-core-panel-sort_ddei-core-dialog-changerotate', 'button-v': isButtonEnable() }"
           @click="isButtonEnable() && showRotateDialog($event)">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-a-ziyuan426"></use>
@@ -63,10 +63,16 @@
 import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
 export default {
-  name: "DDei-Editor-Quick-Sort",
+  name: "ddei-core-panel-sort",
   extends: null,
   mixins: [],
-  props: {},
+  props: {
+    //外部传入的插件扩展参数
+    options: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
       editor: null,
@@ -127,7 +133,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.ddei_editor_quick_sort {
+.ddei-core-panel-sort {
   height: 103px;
   display: grid;
   grid-template-rows: 20px 57px 26px;

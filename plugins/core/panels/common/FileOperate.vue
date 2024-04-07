@@ -1,30 +1,27 @@
 <template>
-  <div class="ddei_editor_sdp">
-    <div class="ddei_editor_sdp_item" style="grid-row:1/3">
-      <div class="ddei_editor_sdp_item_box" @click="newFile">
+  <div class="ddei-core-panel-fileoperate">
+    <div class="ddei-core-panel-fileoperate-item" style="grid-row:1/3">
+      <div class="ddei-core-panel-fileoperate-item-box" @click="newFile">
         <img width="16px" height="16px" :src="icons['icon-file']" />
         <div>新建</div>
       </div>
-      <div class="ddei_editor_sdp_item_box" @click="save">
+      <div class="ddei-core-panel-fileoperate-item-box" @click="save">
         <img width="16px" height="16px" :src="icons['icon-save']" />
         <div>保存</div>
       </div>
-      <div class="ddei_editor_sdp_item_box" @click="openFile">
+      <div class="ddei-core-panel-fileoperate-item-box" @click="openFile">
         <img width="16px" height="16px" :src="icons['icon-open']" />
         <div>打开</div>
       </div>
-      <div class="ddei_editor_sdp_item_box" @click="download">
+      <div class="ddei-core-panel-fileoperate-item-box" @click="download">
         <img width="16px" height="16px" :src="icons['icon-download']" />
         <div>下载</div>
       </div>
     </div>
-    <div class="ddei_editor_sdp_item">
-      <div class="ddei_editor_sdp_item_text">
+    <div class="ddei-core-panel-fileoperate-item">
+      <div class="ddei-core-panel-fileoperate-item-text">
         保存
       </div>
-    </div>
-    <div class="ddei_editor_sdp_file_dialog">
-
     </div>
   </div>
 </template>
@@ -41,10 +38,16 @@ import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-comm
 import DDeiEditorState from "@ddei-core/editor/js/enums/editor-state";
 
 export default {
-  name: "DDei-Editor-Quick-SDP",
+  name: "ddei-core-panel-fileoperate",
   extends: null,
   mixins: [],
-  props: {},
+  props: {
+    //外部传入的插件扩展参数
+    options: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
       editor: null,
@@ -249,8 +252,8 @@ export default {
 };
 </script>
 
-<style scoped>
-.ddei_editor_sdp {
+<style lang="less" scoped>
+.ddei-core-panel-fileoperate {
   width: 150px;
   height: 90px;
   border-right: 1px solid rgb(224, 224, 224);
@@ -259,47 +262,44 @@ export default {
   display: grid;
   gap: 4px;
   padding-right: 4px;
+
+  &-item{
+    margin: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 4px;
+    &-text {
+      text-align: center;
+      font-family: "Microsoft YaHei";
+      font-size: 12px;
+      grid-column: 1/5;
+      color: rgb(120, 120, 120);
+    }
+
+    &-box {
+      width: 30px;
+      height: 50px;
+      color: black;
+      border-radius: 4px;
+      font-size: 12px;
+      display: grid;
+      grid-template-rows: 25px 25px 10px;
+      grid-template-columns: 1fr;
+      div {
+        margin: auto;
+      }
+      img {
+        filter: brightness(45%) drop-shadow(0.2px 0px 0.2px #000);
+        width: 16px;
+        height: 16px;
+        margin: auto;
+      }
+      &:hover {
+        background-color: rgb(233, 233, 238);
+        border-radius: 4px;
+      }
+    }
+  }
 }
 
-.ddei_editor_sdp_item {
-  margin: auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  gap: 4px;
-}
-
-.ddei_editor_sdp_item_text {
-  text-align: center;
-  font-family: "Microsoft YaHei";
-  font-size: 12px;
-  grid-column: 1/5;
-  color: rgb(120, 120, 120);
-}
-
-.ddei_editor_sdp_item_box {
-  width: 30px;
-  height: 50px;
-  color: black;
-  border-radius: 4px;
-  font-size: 12px;
-  display: grid;
-  grid-template-rows: 25px 25px 10px;
-  grid-template-columns: 1fr;
-}
-
-.ddei_editor_sdp_item_box div {
-  margin: auto;
-}
-
-.ddei_editor_sdp_item_box img {
-  filter: brightness(45%) drop-shadow(0.2px 0px 0.2px #000);
-  width: 16px;
-  height: 16px;
-  margin: auto;
-}
-
-.ddei_editor_sdp_item_box:hover {
-  background-color: rgb(233, 233, 238);
-  border-radius: 4px;
-}
 </style>

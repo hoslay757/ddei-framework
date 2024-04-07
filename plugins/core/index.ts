@@ -83,6 +83,7 @@ class DDeiCore extends DDeiPluginBase {
     core.layouts = core.layouts.configuraton(options,true)
     core.panels = core.panels.configuraton(options,true)
     core.components = core.components.configuraton(options, true)
+    core.dialogs = core.dialogs.configuraton(options, true)
     core.propeditors = core.propeditors.configuraton(options, true)
     return core;
   }

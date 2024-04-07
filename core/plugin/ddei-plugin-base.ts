@@ -1,11 +1,13 @@
+import { cloneDeep } from 'lodash'
+
 class DDeiPluginBase{
 
 
-  constructor(options: object|null|undefined) {
-    if(options){
-      this.options = options;
-    }
+  constructor(options: object | null | undefined) {
+    this.options = options;
   }
+
+  
 
   getOptions(): object {
     let options = {}
@@ -13,21 +15,39 @@ class DDeiPluginBase{
       this.plugins?.forEach(plugin => {
         let pluginOptions
         let pluginName
+        let pluginType
         if (DDeiPluginBase.isSubclass(plugin, DDeiPluginBase)) {
           pluginOptions = plugin.defaultIns.getOptions()
           pluginName = plugin.defaultIns.getName()
+          pluginType = plugin.defaultIns.type
         } else if (plugin instanceof DDeiPluginBase) {
           pluginOptions = plugin.getOptions()
           pluginName  = plugin.getName()
+          pluginType = plugin.type
         }
         if (pluginOptions) {
+          if (pluginType == 'package'){
+            for (let i in pluginOptions){
+              options[i] = pluginOptions[i]
+            }
+            
+          }else{
+            options[pluginName] = pluginOptions
+          }
           
-          options[pluginName] = pluginOptions
         }
       });
     } else if (this.type == 'plugin') {
-      options = this.options;
+        if (this.options){
+          options = this.options;
+        } else if (this.defaultOptions){
+          options = this.defaultOptions;
+        }
+        if (options && options.config instanceof Function) {
+          options = options.config(cloneDeep(this.defaultOptions));
+        }
     }
+    
     return options;
   }
 
@@ -51,7 +71,9 @@ class DDeiPluginBase{
   }
   
 
-  options:object;
+  options: object | null |undefined;
+
+  defaultOptions: object | null | undefined;
 
   plugins:object[] = [];
 

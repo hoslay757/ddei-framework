@@ -7,6 +7,7 @@ import DDeiUtil from "@ddei-core/framework/js/util";
 import DDeiBus from "@ddei-core/framework/js/bus/bus";
 import type DDeiFile from "./file";
 import DDeiConfig from "@ddei-core/framework/js/config";
+import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import { markRaw } from "vue";
 /**
  * DDei图形编辑器类，用于维护编辑器实例、全局状态以及全局属性
@@ -242,6 +243,9 @@ class DDeiEditor {
    * 注册外部插件
    */
   registerExtension(plugin): void {
+    if (DDeiPluginBase.isSubclass(plugin, DDeiPluginBase)) {
+      plugin = plugin.defaultIns
+    } 
     if (plugin.getComponents) {
       //注册并加载组件
       let components = plugin.getComponents(this)
@@ -279,8 +283,12 @@ class DDeiEditor {
         this.propeditors[propEditor.name] = propEditor
       }); 
     }
-    let options = plugin.getOptions()
+    
+    
+    let options = plugin.getOptions() 
+    
     let pluginType = plugin.getType();
+    
  
     if (pluginType == 'plugin'){
       let pluginName = plugin.getName();
@@ -554,6 +562,7 @@ class DDeiEditor {
    * 获取属性编辑器
    */
   getLayout(): object {
+    
     return this.layouts[this.currentLayout];
   }
 
@@ -590,6 +599,50 @@ class DDeiEditor {
     }
    
     return returnArray
+  }
+
+  /**
+   * 获取options中的各个部分的配置
+   */
+  getPartPanels(options:object,part: string) {
+    
+    let partOption = null;
+    if (options && options[part]) {
+      if (options[part]) {
+        partOption = options[part];
+      }
+    }
+    if (partOption && this.panels) {
+      let returnArray = []
+      partOption.forEach(poption => {
+        //根据名称获取配置
+        if (typeof (poption) == 'string') {
+          if (this.panels[poption]) {
+            let comp = this.panels[poption]
+            //解析当前配置
+            let opts = this.options[poption]
+            returnArray.push({ comp: comp, options: opts })
+          }
+        } else if (poption instanceof DDeiPluginBase) {
+          let name = poption.getName()
+          if (this.panels[name]) {
+            let comp = this.panels[name]
+            //解析当前配置
+            let opts = poption.getOptions();
+            returnArray.push({ comp: comp, options: opts })
+          }
+        } else if (DDeiPluginBase.isSubclass(poption, DDeiPluginBase)) {
+          let name = poption.defaultIns.getName()
+          if (this.panels[name]) {
+            let comp = this.panels[name]
+            //解析当前配置
+            let opts = poption.defaultIns.getOptions();
+            returnArray.push({ comp: comp, options: opts })
+          }
+        } 
+      })
+      return returnArray;
+    }
   }
 }
 

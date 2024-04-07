@@ -1,5 +1,5 @@
 <template>
-  <div class="ddei_editor_cut">
+  <div class="ddei-core-panel-operate">
     <div class="header"></div>
     <div class="content">
       <div class="part">
@@ -55,10 +55,16 @@ import DDeiEnumKeyActionInst from "@ddei-core/editor/js/enums/key-action-inst";
 
 
 export default {
-  name: "DDei-Editor-Quick-CUT",
+  name: "ddei-core-panel-operate",
   extends: null,
   mixins: [],
-  props: {},
+  props: {
+    //外部传入的插件扩展参数
+    options: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
       editor: null,
@@ -145,7 +151,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.ddei_editor_cut {
+.ddei-core-panel-operate {
   height: 103px;
   display: grid;
   grid-template-rows: 20px 57px 26px;

@@ -9,13 +9,15 @@ class DDeiCoreStandLayout extends DDeiPluginBase{
   /**
    * 缺省实例
    */
-  static defaultIns: DDeiCoreStandLayout = new DDeiCoreStandLayout({
+  static defaultIns: DDeiCoreStandLayout = new DDeiCoreStandLayout();
+
+  defaultOptions: object = {
     top: ['ddei-core-panel-topmenu'],
     left: ['ddei-core-panel-toolbox'],
     middle: ['ddei-core-panel-canvasview'],
     right: ['ddei-core-panel-propertyview'],
     bottom: ['ddei-core-panel-bottommenu']
-  });
+  }
 
 
   plugins:object[] = [Layout]
@@ -27,7 +29,7 @@ class DDeiCoreStandLayout extends DDeiPluginBase{
   static configuraton(options,fullConfig:boolean = false ) {
     //解析options，只使用自己相关的
     if (options) {
-      let newOptions = Object.assign({}, {}, DDeiCoreStandLayout.defaultIns.options)
+      let newOptions = Object.assign({}, {}, DDeiCoreStandLayout.defaultIns.defaultOptions)
       if (fullConfig) {
         if (fullConfig) {
           if (options[Layout.name]) {

@@ -1,5 +1,5 @@
 <template>
-  <div class="ddei_editor_eip">
+  <div class="ddei-core-panel-eimport">
     <div class="header"></div>
     <div class="content">
       <div class="part">
@@ -37,9 +37,6 @@
       </div>
     </div>
     <div class="tail">发布</div>
-    <div class="ddei_editor_eip_file_dialog">
-
-    </div>
   </div>
 </template>
 <script lang="ts">
@@ -50,10 +47,16 @@ import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
 import Cookies from "js-cookie";
 
 export default {
-  name: "DDei-Editor-Quick-EImport",
+  name: "ddei-core-panel-eimport",
   extends: null,
   mixins: [],
-  props: {},
+  props: {
+    //外部传入的插件扩展参数
+    options: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
       editor: null,
@@ -156,7 +159,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.ddei_editor_eip {
+.ddei-core-panel-eimport {
   height: 103px;
   display: grid;
   grid-template-rows: 20px 57px 26px;

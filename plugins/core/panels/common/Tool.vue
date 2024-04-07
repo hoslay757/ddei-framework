@@ -1,5 +1,5 @@
 <template>
-  <div class="ddei_editor_quick_tool">
+  <div class="ddei-core-panel-tool">
     <div class="header"></div>
     <div class="content">
       <div class="part">
@@ -41,10 +41,16 @@ import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
 import DDeiEditorState from "@ddei-core/editor/js/enums/editor-state";
 export default {
-  name: "DDei-Editor-Quick-Tool",
+  name: "ddei-core-panel-tool",
   extends: null,
   mixins: [],
-  props: {},
+  props: {
+    //外部传入的插件扩展参数
+    options: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
       editor: null,
@@ -72,7 +78,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.ddei_editor_quick_tool {
+.ddei-core-panel-tool {
   height: 103px;
   display: grid;
   grid-template-rows: 20px 57px 26px;

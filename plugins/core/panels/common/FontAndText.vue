@@ -1,5 +1,5 @@
 <template>
-  <div class="ddei_editor_quick_fat">
+  <div class="ddei-core-panel-fontandtext">
     <div class="header"></div>
     <div class="content">
       <div class="buttons">
@@ -112,10 +112,16 @@
 import DDeiEditor from "@ddei-core/editor/js/editor";
 
 export default {
-  name: "DDei-Editor-Quick-FontAndText",
+  name: "ddei-core-panel-fontandtext",
   extends: null,
   mixins: [],
-  props: {},
+  props: {
+    //外部传入的插件扩展参数
+    options: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
       editor: null,
@@ -133,7 +139,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.ddei_editor_quick_fat {
+.ddei-core-panel-fontandtext {
   height: 103px;
   display: grid;
   grid-template-rows: 20px 57px 26px;

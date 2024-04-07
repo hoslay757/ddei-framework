@@ -1,50 +1,40 @@
 <template>
-  <div id="ddei_editor_topmenu" class="ddei_editor_topmenu" @mousedown="changeEditorFocus">
-    <div id="ddei_editor_topmenu_quickbox" class="ddei_editor_topmenu_quickbox">
-      <div class="ddei_editor_topmenu_quickbox_group g1">
+  <div id="ddei-core-panel-topmenu" class="ddei-core-panel-topmenu" @mousedown="changeEditorFocus">
+    <div id="ddei-core-panel-topmenu-quickbox" class="ddei-core-panel-topmenu-quickbox">
+      <component v-for="(item, index) in editor?.getPartPanels(options, 'panels') " :is="item.comp"
+        :options="item.options" v-bind="item.options"></component>
+      <!-- <div class="ddei-core-panel-topmenu-quickbox-group g1">
         <QuickBoxGoBack></QuickBoxGoBack>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group g2" v-show="file?.extData?.owner == 1">
+      <div class="ddei-core-panel-topmenu-quickbox-group g2" v-show="file?.extData?.owner == 1">
         <QuickBoxFileInfo></QuickBoxFileInfo>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group g2_share" v-show="file?.extData?.owner == 0">
+      <div class="ddei-core-panel-topmenu-quickbox-group g2-share" v-show="file?.extData?.owner == 0">
         <QuickBoxShare></QuickBoxShare>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group g3">
+      <div class="ddei-core-panel-topmenu-quickbox-group g3">
         <QuickBoxOperate></QuickBoxOperate>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group g4">
+      <div class="ddei-core-panel-topmenu-quickbox-group g4">
         <QuickBoxFontAndText></QuickBoxFontAndText>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group g5">
+      <div class="ddei-core-panel-topmenu-quickbox-group g5">
         <QuickBoxTool></QuickBoxTool>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group g6">
+      <div class="ddei-core-panel-topmenu-quickbox-group g6">
         <QuickBoxSort></QuickBoxSort>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group g7" v-show="file?.extData?.owner == 1">
+      <div class="ddei-core-panel-topmenu-quickbox-group g7" v-show="file?.extData?.owner == 1">
         <QuickBoxEImport></QuickBoxEImport>
       </div>
-      <div class="ddei_editor_topmenu_quickbox_group" style="flex:1">
+      <div class="ddei-core-panel-topmenu-quickbox-group" style="flex:1">
         <QuickBoxRight></QuickBoxRight>
-      </div>
+      </div> -->
     </div>
 
   </div>
 </template>
 <script lang="ts">
-import QuickBoxOperate from "./quickbox/QuickBoxOperate.vue";
-import QuickBoxFontAndText from "./quickbox/QuickBoxFontAndText.vue";
-import QuickBoxTool from "./quickbox/QuickBoxTool.vue";
-import QuickBoxStyle from "./quickbox/QuickBoxStyle.vue";
-import QuickBoxSort from "./quickbox/QuickBoxSort.vue";
-import QuickBoxChangeShape from "./quickbox/QuickBoxChangeShape.vue";
-import QuickBoxFileInfo from "./quickbox/QuickBoxFileInfo.vue";
-import QuickBoxShare from "./quickbox/QuickBoxShare.vue";
-import QuickBoxGoBack from "./quickbox/QuickBoxGoBack.vue";
-import QuickBoxSDP from "./quickbox/QuickBoxSDP.vue";
-import QuickBoxEImport from "./quickbox/QuickBoxEImport.vue";
-import QuickBoxRight from "./quickbox/QuickBoxRight.vue";
 import Cookies from "js-cookie";
 import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEditorState from "@ddei-core/editor/js/enums/editor-state";
@@ -71,18 +61,7 @@ export default {
   },
   //注册组件
   components: {
-    QuickBoxOperate,
-    QuickBoxFontAndText,
-    QuickBoxTool,
-    QuickBoxStyle,
-    QuickBoxSort,
-    QuickBoxChangeShape,
-    QuickBoxSDP,
-    QuickBoxFileInfo,
-    QuickBoxEImport,
-    QuickBoxGoBack,
-    QuickBoxRight,
-    QuickBoxShare
+   
   },
   computed: {},
   watch: {},
@@ -120,12 +99,11 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.ddei_editor_topmenu {
+.ddei-core-panel-topmenu {
   background: rgb(225, 225, 225);
-
 }
 
-.ddei_editor_topmenu_quickbox {
+.ddei-core-panel-topmenu-quickbox {
   background-color: #F5F5F5;
   width: 100%;
 
@@ -133,7 +111,7 @@ export default {
   display: flex;
 }
 
-.ddei_editor_topmenu_quickbox_group {
+.ddei-core-panel-topmenu-quickbox-group {
   flex: 0;
   margin: auto 0;
 }
@@ -146,7 +124,7 @@ export default {
   flex: 0 1 172px
 }
 
-.g2_share {
+.g2-share {
   flex: 0 1 250px
 }
 
@@ -170,7 +148,7 @@ export default {
   flex: 0 1 260px
 }
 
-.ddei_editor_topmenu_quickbox_group_empty {
+.ddei-core-panel-topmenu-quickbox-group_empty {
   flex: 1;
   margin: auto 0;
   margin-left: 5px;

@@ -50,7 +50,7 @@ import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-comm
 
 //引入插件
 import DDeiCore from "@ddei/core";
-import { DDeiCoreTopMenuPanel, DDeiCoreOpenFilesViewPanel, DDeiCoreQuickColorViewPanel, DDeiCoreAlignDialog } from "@ddei/core";
+import { DDeiCoreTopMenuPanel, DDeiCoreStandLayout, DDeiCoreOpenFilesViewPanel, DDeiCoreQuickColorViewPanel, DDeiCoreAlignDialog } from "@ddei/core";
 import Editor from "@/components/editor/Editor.vue";
 
 export default {
@@ -98,10 +98,22 @@ export default {
         extensions: [
           
           // DDeiCore,
+          // DDeiCoreStandLayout.configuraton({
+          //   //配置插件
+          //   'top': [DDeiCoreTopMenuPanel],
+          //   'middle': [DDeiCoreOpenFilesViewPanel,  'ddei-core-panel-canvasview' , 'ddei-core-panel-quickcolorview'],
+          // }),
           DDeiCore.configuraton({
             //配置插件
             "ddei-core-layout-standard": {
-              'top': [DDeiCoreTopMenuPanel.configuraton({test:1})],
+              'top': [
+                // DDeiCoreTopMenuPanel.configuraton({ panels: ["ddei-core-panel-goback", "ddei-core-panel-fileinfo"] }),
+                DDeiCoreTopMenuPanel,
+                DDeiCoreTopMenuPanel.configuraton({ config: function(options:object){
+                  options.panels.splice(0,3);
+                  return options;
+                } }),
+              ],
               'middle': [DDeiCoreOpenFilesViewPanel,  'ddei-core-panel-canvasview' , 'ddei-core-panel-quickcolorview'],
             },
           }),

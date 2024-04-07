@@ -1,5 +1,5 @@
 <template>
-  <div class="ddei_editor_right">
+  <div class="ddei-core-panel-right">
     <div class="header">
       <div class="h1"></div>
       <div class="h3"></div>
@@ -22,10 +22,16 @@ import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
 import Cookies from 'js-cookie'
 import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
 export default {
-  name: "DDei-Editor-Right",
+  name: "ddei-core-panel-right",
   extends: null,
   mixins: [],
-  props: {},
+  props: {
+    //外部传入的插件扩展参数
+    options: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
       editor: null,
@@ -116,7 +122,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.ddei_editor_right {
+.ddei-core-panel-right {
   height: 103px;
   display: grid;
   grid-template-rows: 50px 23px 23px;

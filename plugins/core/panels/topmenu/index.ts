@@ -1,6 +1,7 @@
 import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import TopMenu from './TopMenu.vue';
 
+
 class DDeiCoreTopMenuPanel extends DDeiPluginBase{
   
   name: string = TopMenu.name
@@ -9,7 +10,13 @@ class DDeiCoreTopMenuPanel extends DDeiPluginBase{
   /**
    * 缺省实例
    */
-  static defaultIns: DDeiCoreTopMenuPanel = new DDeiCoreTopMenuPanel(null);
+  static defaultIns: DDeiCoreTopMenuPanel = new DDeiCoreTopMenuPanel();
+
+  defaultOptions: object = {
+    'panels': ["ddei-core-panel-goback", "ddei-core-panel-fileinfo", "ddei-core-panel-share"
+      , "ddei-core-panel-operate", "ddei-core-panel-fontandtext", "ddei-core-panel-tool"
+      , "ddei-core-panel-sort", "ddei-core-panel-eimport", "ddei-core-panel-right"]
+  }
 
 
   plugins: object[] = [TopMenu]
