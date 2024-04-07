@@ -27,9 +27,11 @@ import MenuDialog from "./menus/menudialog/MenuDialog.vue";
 import { throttle } from "lodash";
 import DDeiEnumOperateState from "@ddei-core/framework/js/enums/operate-state";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
+import DDeiCore from "@ddei/core";
 
 import ICONS from "./js/icon";
 import { controlOriginDefinies, groupOriginDefinies } from "./configs/toolgroup"
+import { markRaw } from "vue";
 
 export default {
   name: "DDei-Editor",
@@ -80,6 +82,16 @@ export default {
     if (DDeiEditor.ACTIVE_INSTANCE) {
       this.editor = DDeiEditor.ACTIVE_INSTANCE;
     } else {
+      //加载默认初始插件DDeiCore
+      if (!this.options){
+        this.options = markRaw({
+          //配置扩展插件
+          extensions: []});
+      }
+      if (!this.options.extensions){
+        this.options.extensions = []
+      }
+      this.options.extensions.splice(0,0,DDeiCore)
       this.editor = DDeiEditor.newInstance("ddei_editor_ins", "ddei_editor", true, this.options);
     }
     //载入局部配置

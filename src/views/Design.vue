@@ -49,7 +49,6 @@ import { markRaw } from "vue";
 import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
 
 //引入插件
-import DDeiCore from "@ddei/core";
 import { DDeiCoreTopMenuPanel, DDeiCoreStandLayout, DDeiCoreOpenFilesViewPanel, DDeiCoreQuickColorViewPanel, DDeiCoreAlignDialog } from "@ddei/core";
 import Editor from "@/components/editor/Editor.vue";
 
@@ -96,27 +95,25 @@ export default {
       options: markRaw({
         //配置扩展插件
         extensions: [
-          
-          // DDeiCore,
-          // DDeiCoreStandLayout.configuraton({
-          //   //配置插件
-          //   'top': [DDeiCoreTopMenuPanel],
-          //   'middle': [DDeiCoreOpenFilesViewPanel,  'ddei-core-panel-canvasview' , 'ddei-core-panel-quickcolorview'],
-          // }),
-          DDeiCore.configuraton({
+          DDeiCoreStandLayout.configuraton({
             //配置插件
-            "ddei-core-layout-standard": {
-              'top': [
-                // DDeiCoreTopMenuPanel.configuraton({ panels: ["ddei-core-panel-goback", "ddei-core-panel-fileinfo"] }),
-                DDeiCoreTopMenuPanel,
-                DDeiCoreTopMenuPanel.configuraton({ config: function(options:object){
-                  options.panels.splice(0,3);
-                  return options;
-                } }),
-              ],
-              'middle': [DDeiCoreOpenFilesViewPanel,  'ddei-core-panel-canvasview' , 'ddei-core-panel-quickcolorview'],
-            },
+            'top': [DDeiCoreTopMenuPanel],
+            'middle': [DDeiCoreOpenFilesViewPanel,  'ddei-core-panel-canvasview' , 'ddei-core-panel-quickcolorview'],
           }),
+          // DDeiCore.configuraton({
+          //   //配置插件
+          //   "ddei-core-layout-standard": {
+          //     'top': [
+          //       // DDeiCoreTopMenuPanel.configuraton({ panels: ["ddei-core-panel-goback", "ddei-core-panel-fileinfo"] }),
+          //       DDeiCoreTopMenuPanel,
+          //       DDeiCoreTopMenuPanel.configuraton({ config: function(options:object){
+          //         options.panels.splice(0,3);
+          //         return options;
+          //       } }),
+          //     ],
+          //     'middle': [DDeiCoreOpenFilesViewPanel,  'ddei-core-panel-canvasview' , 'ddei-core-panel-quickcolorview'],
+          //   },
+          // }),
           DDeiCoreQuickColorViewPanel.configuraton({ testcolor: "red" }),
           DDeiCoreAlignDialog.configuraton({ a: "1",b:2 }),
           // DDeiCoreTopMenuPanel.configuraton({ top: "123" }),
