@@ -3,6 +3,7 @@ import CanvasQuickDialog from './CanvasQuickDialog.vue';
 
 class DDeiCoreCanvasQuickDialog extends DDeiPluginBase{
   
+  name: string = CanvasQuickDialog.name
   /**
    * 缺省实例
    */

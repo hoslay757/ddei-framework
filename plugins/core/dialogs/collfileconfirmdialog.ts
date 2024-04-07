@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import CollFileConfirmDialog from './CollFileConfirmDialog.vue';
 
 class DDeiCoreCollFileConfirmDialog extends DDeiPluginBase{
-  
+  name: string = CollFileConfirmDialog.name
   /**
    * 缺省实例
    */

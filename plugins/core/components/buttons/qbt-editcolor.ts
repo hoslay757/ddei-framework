@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import QBTEditColor from './QBTEditColor.vue';
 
 class DDeiCoreEditColorButton extends DDeiPluginBase{
-  
+  name: string = QBTEditColor.name
   /**
    * 缺省实例
    */

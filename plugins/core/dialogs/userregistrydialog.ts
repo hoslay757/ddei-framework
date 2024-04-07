@@ -2,7 +2,8 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import UserRegistryDialog from './UserRegistryDialog.vue';
 
 class DDeiCoreUserRegistryDialog extends DDeiPluginBase{
-  
+  name: string = UserRegistryDialog.name
+
   /**
    * 缺省实例
    */

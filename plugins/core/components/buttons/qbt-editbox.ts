@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import QBTEditBox from './QBTEditBox.vue';
 
 class DDeiCoreEditBoxButton extends DDeiPluginBase{
-  
+  name: string = QBTEditBox.name
   /**
    * 缺省实例
    */

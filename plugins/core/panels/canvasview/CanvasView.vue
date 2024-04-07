@@ -28,6 +28,11 @@ export default {
     id: {
       type: String,
       default: "ddei_editor_canvasview",
+    },
+     //外部传入的插件扩展参数
+    options: {
+      type: Object,
+      default: null
     }
   },
   data() {

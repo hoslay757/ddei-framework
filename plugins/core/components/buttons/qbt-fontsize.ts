@@ -3,6 +3,7 @@ import QBTFontSize from './QBTFontSize.vue';
 
 class DDeiCoreEditFontSizeButton extends DDeiPluginBase{
   
+  name: string = QBTFontSize.name
   /**
    * 缺省实例
    */

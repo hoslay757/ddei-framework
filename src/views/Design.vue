@@ -50,7 +50,7 @@ import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-comm
 
 //引入插件
 import DDeiCore from "@ddei/core";
-import { DDeiCoreTopMenuPanel, DDeiCoreOpenFilesViewPanel, DDeiCoreQuickColorViewPanel } from "@ddei/core";
+import { DDeiCoreTopMenuPanel, DDeiCoreOpenFilesViewPanel, DDeiCoreQuickColorViewPanel, DDeiCoreAlignDialog } from "@ddei/core";
 import Editor from "@/components/editor/Editor.vue";
 
 export default {
@@ -106,6 +106,7 @@ export default {
             },
           }),
           DDeiCoreQuickColorViewPanel.configuraton({ testcolor: "red" }),
+          DDeiCoreAlignDialog.configuraton({ a: "1",b:2 }),
           // DDeiCoreTopMenuPanel.configuraton({ top: "123" }),
           // }),
         ],

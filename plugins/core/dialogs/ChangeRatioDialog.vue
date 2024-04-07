@@ -45,7 +45,13 @@ export default {
   name: "dialog-changeratio",
   extends: null,
   mixins: [],
-  props: {},
+  props: {
+    //外部传入的插件扩展参数
+    options: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
       dialogId: 'ddei-core-dialog-changeratio',

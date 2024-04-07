@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import QBTBorderWeight from './QBTBorderWeight.vue';
 
 class DDeiCoreBorderWeightButton extends DDeiPluginBase{
-  
+  name: string = QBTBorderWeight.name
   /**
    * 缺省实例
    */

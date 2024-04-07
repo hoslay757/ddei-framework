@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import ChooseControlGroupDialog from './ChooseControlGroupDialog.vue';
 
 class DDeiCoreChooseControlGroupDialog extends DDeiPluginBase{
-  
+  name: string = ChooseControlGroupDialog.name
   /**
    * 缺省实例
    */

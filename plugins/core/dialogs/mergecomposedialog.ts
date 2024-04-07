@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import MergeComposeDialog from './MergeComposeDialog.vue';
 
 class DDeiCoreMergeComposeDialog extends DDeiPluginBase{
-  
+  name: string = MergeComposeDialog.name
   /**
    * 缺省实例
    */

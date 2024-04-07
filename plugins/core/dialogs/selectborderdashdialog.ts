@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import SelectBorderDashDialog from './SelectBorderDashDialog.vue';
 
 class DDeiCoreSelectBorderDashDialog extends DDeiPluginBase{
-  
+  name: string = SelectBorderDashDialog.name
   /**
    * 缺省实例
    */

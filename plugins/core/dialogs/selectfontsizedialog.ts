@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import SelectFontSizeDialog from './SelectFontSizeDialog.vue';
 
 class DDeiCoreSelectFontSizeDialog extends DDeiPluginBase{
-  
+  name: string = SelectFontSizeDialog.name
   /**
    * 缺省实例
    */

@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import LineTypeDialog from './LineTypeDialog.vue';
 
 class DDeiCoreLineTypeDialog extends DDeiPluginBase{
-  
+  name: string = LineTypeDialog.name
   /**
    * 缺省实例
    */

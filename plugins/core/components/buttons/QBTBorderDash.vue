@@ -45,6 +45,11 @@ export default {
       type: String,
       default: null,
     },
+    //外部传入的插件扩展参数
+    options: {
+      type: Object,
+      default: null
+    }
   },
   data() {
     return {

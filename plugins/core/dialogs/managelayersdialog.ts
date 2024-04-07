@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import ManageLayersDialog from './ManageLayersDialog.vue';
 
 class DDeiCoreManageLayersDialog extends DDeiPluginBase{
-  
+  name: string = ManageLayersDialog.name
   /**
    * 缺省实例
    */

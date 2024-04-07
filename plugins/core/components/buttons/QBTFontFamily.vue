@@ -31,7 +31,13 @@ export default {
   extends: null,
   mixins: [],
   components: {},
-  props: {},
+  props: {
+    //外部传入的插件扩展参数
+    options: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
       //当前编辑器

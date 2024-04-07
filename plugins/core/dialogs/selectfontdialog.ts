@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import SelectFontDialog from './SelectFontDialog.vue';
 
 class DDeiCoreSelectFontDialog extends DDeiPluginBase{
-  
+  name: string = SelectFontDialog.name
   /**
    * 缺省实例
    */

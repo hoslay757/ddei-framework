@@ -71,7 +71,13 @@ export default {
   name: "ddei-core-panel-propertyview",
   extends: null,
   mixins: [],
-  props: {},
+  props: {
+    //外部传入的插件扩展参数
+    options: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
       //当前编辑器

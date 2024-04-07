@@ -563,6 +563,34 @@ class DDeiEditor {
   getLayoutOptions(): object {
     return this.options[this.currentLayout];
   }
+
+  /**
+   * 返回所有弹出框以及选项
+   */
+  getDialogs() {
+    let returnArray = []
+    for (let i in this.dialogs){
+      let dialog = this.dialogs[i];
+    
+      //根据名称获取配置
+      if (dialog){
+        let dialogOption = this.options[i];
+        let options = null;
+        if (typeof (dialogOption) == 'string') {
+          //解析当前配置
+          options = this.options[dialogOption]
+        } else if (dialogOption?.getName) {
+          //解析当前配置
+          options = dialogOption.getOptions();
+        }else{
+          options = dialogOption
+        }
+        returnArray.push({ dialog: dialog, options: options })
+      } 
+    }
+   
+    return returnArray
+  }
 }
 
 export default DDeiEditor

@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import RotateDialog from './RotateDialog.vue';
 
 class DDeiCoreRotateDialog extends DDeiPluginBase{
-  
+  name: string = RotateDialog.name
   /**
    * 缺省实例
    */

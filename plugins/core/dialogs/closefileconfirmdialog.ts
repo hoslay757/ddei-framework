@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import CloseFileConfirmDialog from './CloseFileConfirmDialog.vue';
 
 class DDeiCoreCloseFileConfirmDialog extends DDeiPluginBase{
-  
+  name: string = CloseFileConfirmDialog.name
   /**
    * 缺省实例
    */

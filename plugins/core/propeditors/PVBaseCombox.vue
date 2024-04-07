@@ -53,6 +53,10 @@ export default {
       type: Object,
       default: null,
     },
+    options: {
+      type: Object,
+      default: null
+    }
   },
   data() {
     return {

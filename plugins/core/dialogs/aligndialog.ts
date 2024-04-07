@@ -3,6 +3,7 @@ import AlignDialog from './AlignDialog.vue';
 
 class DDeiCoreAlignDialog extends DDeiPluginBase{
   
+  name: string = AlignDialog.name
   /**
    * 缺省实例
    */

@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import PublishFileConfirmDialog from './PublishFileConfirmDialog.vue';
 
 class DDeiCorePublishFileConfirmDialog extends DDeiPluginBase{
-  
+  name: string = PublishFileConfirmDialog.name
   /**
    * 缺省实例
    */

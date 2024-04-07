@@ -5,7 +5,8 @@
     </component>
   </div>
   <div id="dialog_background_div" class="dialog_background_div"></div>
-  <component v-for="(item, index) in editor?.dialogs" :is="item" v-if="refreshDialogs"></component>
+  <component v-for="(item, index) in editor?.getDialogs()" :is="item.dialog" :options="item.options"
+    v-bind="item.options" v-if="refreshDialogs"></component>
   <MenuDialog v-show="!refreshMenu"></MenuDialog>
 </template>
 

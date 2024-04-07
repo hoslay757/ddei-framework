@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import TextAlignDialog from './TextAlignDialog.vue';
 
 class DDeiCoreTextAlignDialog extends DDeiPluginBase{
-  
+  name: string = TextAlignDialog.name
   /**
    * 缺省实例
    */

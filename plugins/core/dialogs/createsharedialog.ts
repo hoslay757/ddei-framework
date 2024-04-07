@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import CreateShareDialog from './CreateShareDialog.vue';
 
 class DDeiCoreCreateShareDialog extends DDeiPluginBase{
-  
+  name: string = CreateShareDialog.name
   /**
    * 缺省实例
    */

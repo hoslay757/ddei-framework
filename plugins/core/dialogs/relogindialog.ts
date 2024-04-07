@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import ReLoginDialog from './ReLoginDialog.vue';
 
 class DDeiCoreReLoginDialog extends DDeiPluginBase{
-  
+  name: string = ReLoginDialog.name
   /**
    * 缺省实例
    */

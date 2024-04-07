@@ -21,13 +21,13 @@ class DDeiCore extends DDeiPluginBase {
 
   components: object = DDeiCoreComponents;
 
-  dialogs: object = DDeiCoreDialogs;
+  dialogs:object = DDeiCoreDialogs;
 
   propeditors:object = DDeiCorePropEditors;
 
   getOptions(): object {
     let options = {}
-    let array = [this.layouts,this.panels,this.propeditors]
+    let array = [this.layouts, this.panels, this.propeditors,  this.dialogs,  this.components]
     array.forEach(plugin => {
       if (DDeiPluginBase.isSubclass(plugin, DDeiPluginBase)) {
         options = Object.assign({}, options, plugin.defaultIns.getOptions())

@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import PositionDialog from './PositionDialog.vue';
 
 class DDeiCorePositionDialog extends DDeiPluginBase{
-  
+  name: string = PositionDialog.name
   /**
    * 缺省实例
    */

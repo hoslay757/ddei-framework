@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import ExportOptionDialog from './ExportOptionDialog.vue';
 
 class DDeiCoreExportOptionDialog extends DDeiPluginBase{
-  
+  name: string = ExportOptionDialog.name
   /**
    * 缺省实例
    */

@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import QCViewDialog from './QCViewDialog.vue';
 
 class DDeiCoreQCViewDialog extends DDeiPluginBase{
-  
+  name: string = QCViewDialog.name
   /**
    * 缺省实例
    */

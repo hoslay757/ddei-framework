@@ -48,7 +48,12 @@ export default {
   name: "ddei-core-dialog-relogin",
   extends: null,
   mixins: [],
-  props: {},
+  props: {
+    options: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
       dialogId: 'ddei-core-dialog-relogin',
@@ -69,7 +74,6 @@ export default {
   watch: {},
   created() { },
   mounted() {
-
 
 
     //获取编辑器

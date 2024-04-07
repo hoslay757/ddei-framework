@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import QBTBorderDash from './QBTBorderDash.vue';
 
 class DDeiCoreBorderDashButton extends DDeiPluginBase{
-  
+  name: string = QBTBorderDash.name
   /**
    * 缺省实例
    */

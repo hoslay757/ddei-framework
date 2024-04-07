@@ -14,10 +14,10 @@ class DDeiPluginBase{
         let pluginOptions
         let pluginName
         if (DDeiPluginBase.isSubclass(plugin, DDeiPluginBase)) {
-          pluginOptions = Object.assign({}, options, plugin.defaultIns.getOptions())
+          pluginOptions = plugin.defaultIns.getOptions()
           pluginName = plugin.defaultIns.getName()
         } else if (plugin instanceof DDeiPluginBase) {
-          pluginOptions = Object.assign({}, options, plugin.getOptions())
+          pluginOptions = plugin.getOptions()
           pluginName  = plugin.getName()
         }
         if (pluginOptions) {

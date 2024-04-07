@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import QBTEditTextAlign from './QBTEditTextAlign.vue';
 
 class DDeiCoreEditTextAlignButton extends DDeiPluginBase{
-  
+  name: string = QBTEditTextAlign.name
   /**
    * 缺省实例
    */

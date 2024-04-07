@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import QuickSetStyleDialog from './QuickSetStyleDialog.vue';
 
 class DDeiCoreQuickSetStyleDialog extends DDeiPluginBase{
-  
+  name: string = QuickSetStyleDialog.name
   /**
    * 缺省实例
    */

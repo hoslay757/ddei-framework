@@ -65,7 +65,12 @@ export default {
   name: "ddei-core-dialog-align",
   extends: null,
   mixins: [],
-  props: {},
+  props: {
+    options: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
       dialogId: 'ddei-core-dialog-align',

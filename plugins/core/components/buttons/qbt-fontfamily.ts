@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import QBTFontFamily from './QBTFontFamily.vue';
 
 class DDeiCoreEditFontFamilyButton extends DDeiPluginBase{
-  
+  name: string = QBTFontFamily.name
   /**
    * 缺省实例
    */

@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import QBTEditAddFontSize from './QBTEditAddFontSize.vue';
 
 class DDeiCoreAddFontSizeButton extends DDeiPluginBase{
-  
+  name: string = QBTEditAddFontSize.name
   /**
    * 缺省实例
    */

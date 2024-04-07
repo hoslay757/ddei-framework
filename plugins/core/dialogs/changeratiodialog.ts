@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import ChangeRatioDialog from './ChangeRatioDialog.vue';
 
 class DDeiCoreChangeRatioDialog extends DDeiPluginBase{
-  
+  name: string = ChangeRatioDialog.name
   /**
    * 缺省实例
    */

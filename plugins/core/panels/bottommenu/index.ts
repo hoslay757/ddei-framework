@@ -3,6 +3,7 @@ import BottomMenu from './BottomMenu.vue';
 
 class DDeiCoreBottomMenuPanel extends DDeiPluginBase{
   
+  name: string = BottomMenu.name
   /**
    * 缺省实例
    */

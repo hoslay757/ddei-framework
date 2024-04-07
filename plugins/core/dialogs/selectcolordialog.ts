@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import SelectColorDialog from './SelectColorDialog.vue';
 
 class DDeiCoreSelectColorDialog extends DDeiPluginBase{
-  
+  name: string = SelectColorDialog.name
   /**
    * 缺省实例
    */

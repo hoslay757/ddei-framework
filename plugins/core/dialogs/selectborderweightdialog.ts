@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import SelectBorderWeightDialog from './SelectBorderWeightDialog.vue';
 
 class DDeiCoreSelectBorderWeightDialog extends DDeiPluginBase{
-  
+  name: string = SelectBorderWeightDialog.name
   /**
    * 缺省实例
    */

@@ -2,7 +2,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import QBTLineType from './QBTLineType.vue';
 
 class DDeiCoreEditLineTypeButton extends DDeiPluginBase{
-  
+  name: string = QBTLineType.name
   /**
    * 缺省实例
    */
