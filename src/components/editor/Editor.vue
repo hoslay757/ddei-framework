@@ -1,9 +1,11 @@
 <template>
+
   <div id="ddei_editor" class="ddei_editor" @contextmenu.prevent @mousewheel.prevent @mouseup="mouseUp"
     @mousemove="mouseMove" @mousedown="mouseDown">
     <component :is="editor?.getLayout()" :options="editor?.getLayoutOptions()">
     </component>
   </div>
+
   <div id="dialog_background_div" class="dialog_background_div"></div>
   <component v-for="(item, index) in editor?.getDialogs()" :is="item.dialog" :options="item.options"
     v-bind="item.options" v-if="refreshDialogs"></component>
@@ -50,6 +52,11 @@ export default {
       default: null
     }
   },
+  provide() {
+    return {
+      editor:this.editor
+    };
+  },
   data() {
     return {
       editor: null,
@@ -79,6 +86,7 @@ export default {
   created() {
     window.onresize = this.resetSize;
     this.mouseMove = throttle(this.mouseMove, 20);
+    
     if (DDeiEditor.ACTIVE_INSTANCE) {
       this.editor = DDeiEditor.ACTIVE_INSTANCE;
     } else {
@@ -114,6 +122,7 @@ export default {
 
   },
   mounted() {
+    
     this.editor.editorViewer = this;
     this.editor.bindEvent();
     //初始化拦截器
@@ -159,7 +168,9 @@ export default {
       this.editor.leftWidth + this.editor.rightWidth + this.editor.middleWidth;
   },
   methods: {
-
+    setCurrentStage(stage){
+      this.currentStage = stage
+    },
 
     //强行刷新dialog
     forceRefreshDialog() {

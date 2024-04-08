@@ -7,8 +7,12 @@ class DDeiCoreBottomMenuPanel extends DDeiPluginBase{
   /**
    * 缺省实例
    */
-  static defaultIns: DDeiCoreBottomMenuPanel = new DDeiCoreBottomMenuPanel(null);
+  static defaultIns: DDeiCoreBottomMenuPanel = new DDeiCoreBottomMenuPanel();
 
+  defaultOptions: object = {
+    'panels': ["ddei-core-panel-bottom-sheets", "ddei-core-panel-bottom-shapecount", "ddei-core-panel-bottom-play",
+      "ddei-core-panel-bottom-managelayers", "ddei-core-panel-bottom-changeratio", "ddei-core-panel-bottom-suitratio"]
+  }
 
   plugins: object[] = [BottomMenu]
 

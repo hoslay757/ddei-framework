@@ -1,35 +1,15 @@
 <template>
   <div :id="dialogId" class="ddei-core-dialog-changeratio">
     <div class="content">
-      <div class="title">缩放</div>
+      <div class="title">{{title}}</div>
       <div class="group">
         <div class="group_content">
-          <div :class="{ 'item': true, 'item_selected': ratioInputValue / 100 == 4 }" @click="ok(4)">
-            400%
+          <div v-for="data in dataSource" v-show="data?.value >=min && data?.value <=max"
+            :class="{ 'item': true, 'item_selected': ratioInputValue / 100 == data.value }" @click="ok(data.value)">
+            {{ data.text}}
           </div>
-          <div :class="{ 'item': true, 'item_selected': ratioInputValue / 100 == 2 }" @click="ok(2)">
-            200%
-          </div>
-          <div :class="{ 'item': true, 'item_selected': ratioInputValue / 100 == 1.5 }" @click="ok(1.5)">
-            150%
-          </div>
-          <div :class="{ 'item': true, 'item_selected': ratioInputValue / 100 == 1.25 }" @click="ok(1.25)">
-            125%
-          </div>
-          <div :class="{ 'item': true, 'item_selected': ratioInputValue / 100 == 1 }" @click="ok(1)">
-            100%
-          </div>
-          <div :class="{ 'item': true, 'item_selected': ratioInputValue / 100 == 0.75 }" @click="ok(0.75)">
-            75%
-          </div>
-          <div :class="{ 'item': true, 'item_selected': ratioInputValue / 100 == 0.5 }" @click="ok(0.5)">
-            50%
-          </div>
-          <div :class="{ 'item': true, 'item_selected': ratioInputValue / 100 == 0.25 }" @click="ok(0.25)">
-            25%
-          </div>
-          <div class="item" style="flex:1;border-top: 1px solid rgb(240, 240, 240);">
-            百分比：<input type="number" min="25" max="1000" v-model="ratioInputValue" @blur="ratioInputChange()"
+          <div v-if="input" class="item" style="flex:1;border-top: 1px solid rgb(240, 240, 240);">
+            百分比：<input type="number" :min="min*100" :max="max*100" v-model="ratioInputValue" @blur="ratioInputChange()"
               autocomplete="off" name="ddei_bottom_input" />%
           </div>
         </div>
@@ -50,6 +30,35 @@ export default {
     options: {
       type: Object,
       default: null
+    },
+    input: {
+      type: Boolean,
+      default: true
+    },
+    min: {
+      type: Number,
+      default: 0.1
+    },
+    max: {
+      type: Number,
+      default: 10
+    },
+    title: {
+      type: String,
+      default: "缩放"
+    },
+    dataSource: {
+      type: Array,
+      default: [
+        { text: "400%", value: 4 },
+        { text: "200%", value: 2 },
+        { text: "150%", value: 1.5 },
+        { text: "125%", value: 1.25 },
+        { text: "100%", value: 1 },
+        { text: "75%", value: 0.75 },
+        { text: "50%", value: 0.5 },
+        { text: "25%", value: 0.25 },
+      ]
     }
   },
   data() {
@@ -84,8 +93,10 @@ export default {
     },
 
     ratioInputChange() {
-      if (this.ratioInputValue >= 1000) {
-        this.ratioInputValue = 1000;
+      if (this.ratioInputValue > this.max * 100) {
+        this.ratioInputValue = this.max * 100;
+      }else if (this.ratioInputValue < this.min * 100) {
+        this.ratioInputValue = this.min * 100;
       }
       if (this.editor?.tempDialogData[this.dialogId]?.callback?.ok) {
         this.editor?.tempDialogData[this.dialogId]?.callback?.ok(this.ratioInputValue / 100);
@@ -108,12 +119,10 @@ export default {
   width: 170px;
   position: absolute;
   background-color: white;
-  height: 310px;
   z-index: 999;
 
   .content {
     width: 170px;
-    height: 310px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -139,7 +148,6 @@ export default {
 
       .group_content {
         width: 100%;
-        height: 280px;
         display: flex;
         flex-direction: column;
 

@@ -14,7 +14,6 @@ import DDeiCoreToolPanel from './tool';
 
 class DDeiCoreCommonPanels extends DDeiPluginBase{
   
-  name:string = "test"
 
   type:string = "package"
   /**

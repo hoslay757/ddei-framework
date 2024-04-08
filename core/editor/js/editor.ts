@@ -605,7 +605,6 @@ class DDeiEditor {
    * 获取options中的各个部分的配置
    */
   getPartPanels(options:object,part: string) {
-    
     let partOption = null;
     if (options && options[part]) {
       if (options[part]) {

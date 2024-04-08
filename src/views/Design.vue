@@ -49,8 +49,7 @@ import { markRaw } from "vue";
 import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
 
 //引入插件
-import { DDeiCoreTopMenuPanel, DDeiCoreStandLayout, DDeiCoreOpenFilesViewPanel, DDeiCoreQuickColorViewPanel, DDeiCoreAlignDialog } from "@ddei/core";
-import Editor from "@/components/editor/Editor.vue";
+import { DDeiCoreTopMenuPanel, DDeiCoreSheetsPanel, DDeiCoreChangeRatioPanel, DDeiCoreChangeRatioDialog,DDeiCoreShapeCountPanel, DDeiCoreBottomMenuPanel,DDeiCoreStandLayout, DDeiCoreOpenFilesViewPanel, DDeiCoreQuickColorViewPanel, DDeiCoreAlignDialog } from "@ddei/core";
 
 export default {
   props: {},
@@ -100,6 +99,34 @@ export default {
             'top': [DDeiCoreTopMenuPanel],
             'middle': [DDeiCoreOpenFilesViewPanel,  'ddei-core-panel-canvasview' , 'ddei-core-panel-quickcolorview'],
           }),
+          // DDeiCoreBottomMenuPanel,
+          DDeiCoreBottomMenuPanel.configuraton({
+            'panels': [DDeiCoreSheetsPanel.configuraton({
+              max:10
+            }),, DDeiCoreShapeCountPanel.configuraton({
+              title:"图形数:"
+            }),
+            "ddei-core-panel-bottom-managelayers", DDeiCoreChangeRatioPanel.configuraton({
+              delta:0.1,min:1,max:4,step:0.2,dialog:false,range:false
+            })]
+          }),
+          DDeiCoreChangeRatioDialog.configuraton({
+            dataSource: [
+              { text: "200%", value: 2 },
+              { text: "150%", value: 1.5 },
+              { text: "125%", value: 1.25 },
+              { text: "100%", value: 1 },
+              { text: "75%", value: 0.75 },
+              { text: "50%", value: 0.5 },
+            ],
+            input:true,
+            min: 1, max: 4,title:"缩放比例"
+          }),
+          // DDeiCoreBottomMenuPanel.configuraton({
+          //   config: function (options: object) {
+          //         options.panels.splice(0,1);
+          //         return options;
+          //       } }),
           // DDeiCore.configuraton({
           //   //配置插件
           //   "ddei-core-layout-standard": {
@@ -114,8 +141,8 @@ export default {
           //     'middle': [DDeiCoreOpenFilesViewPanel,  'ddei-core-panel-canvasview' , 'ddei-core-panel-quickcolorview'],
           //   },
           // }),
-          DDeiCoreQuickColorViewPanel.configuraton({ testcolor: "red" }),
-          DDeiCoreAlignDialog.configuraton({ a: "1",b:2 }),
+          // DDeiCoreQuickColorViewPanel.configuraton({ testcolor: "red" }),
+          // DDeiCoreAlignDialog.configuraton({ a: "1",b:2 }),
           // DDeiCoreTopMenuPanel.configuraton({ top: "123" }),
           // }),
         ],
