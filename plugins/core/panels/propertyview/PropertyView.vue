@@ -1,9 +1,8 @@
 <template>
-  <div id="ddei_editor_propertyview" ref="ddei_editor_propertyview"
-    :class="{ 'ddei_editor_propertyview': true, 'ddei_editor_propertyview_disabled': propertyDisabled }"
+  <div ref="propertyView" :class="{ 'propertyview': true, 'propertyview--disabled': propertyDisabled }"
     @mousedown="changeEditorFocus">
-    <div class="header">
-      <svg aria-hidden="true"
+    <div class="propertyview-header">
+      <svg aria-hidden="true" v-if="expand"
         :class="{ 'icon': true, 'header-7': propertyViewShow, 'header-7-expand': !propertyViewShow }"
         @click="hidOrShowPV">
         <use v-if="propertyViewShow" xlink:href="#icon-a-ziyuan474"></use>
@@ -15,17 +14,17 @@
       </svg>
     </div>
     <div class="content">
-      <div class="ddei_editor_pv_subgroup_view" v-show="true || editor?.rightWidth > pvGroupWidth">
-        <div class="ddei_editor_pv_subgroup_view_tab_title">
+      <div class="propertyview-subgroup" v-show="editor?.rightWidth > pvGroupWidth">
+        <div class="propertyview-subgroup-tabtitle">
           <div
-            :class="currentTopGroup?.subGroups.length > 1 && subGroup.selected ? 'ddei_editor_pv_subgroup_view_tab_title_item_selected' : 'ddei_editor_pv_subgroup_view_tab_title_item'"
+            :class="currentTopGroup?.subGroups.length > 1 && subGroup.selected ? 'propertyview-subgroup-tabtitle-item--selected' : 'propertyview-subgroup-tabtitle-item'"
             v-show="!subGroup.empty" v-for="subGroup in currentTopGroup?.subGroups" :title="subGroup.name"
             @mouseup="changeSubGroup(subGroup)">{{
             subGroup.name }}</div>
         </div>
-        <div class="ddei_editor_pv_subgroup_view_tab_panel" @mousewheel="mouseWheel($event)" :style="panelStyle">
+        <div class="propertyview-subgroup-tabpanel" @mousewheel="mouseWheel($event)" :style="panelStyle">
           <div
-            :class="{ 'ddei_editor_pv_subgroup_view_tab_panel_editors_column': attrDefine.display == 'column', 'ddei_editor_pv_subgroup_view_tab_panel_editors_row': attrDefine.display != 'column', 'empty_value': attrDefine.value ? false : true }"
+            :class="{ 'propertyview-subgroup-tabpanel-editors-column': attrDefine.display == 'column', 'propertyview-subgroup-tabpanel-editors-row': attrDefine.display != 'column', 'empty-value': attrDefine.value ? false : true }"
             v-for="attrDefine in currentSubGroup?.children" :title="attrDefine.desc"
             v-show="attrDefine?.visiable && !attrDefine?.forceHidden">
             <div class="title" v-if="!attrDefine.hiddenTitle && attrDefine?.visiable != false">{{ attrDefine.name
@@ -38,10 +37,10 @@
           </div>
         </div>
       </div>
-      <div class="ddei_editor_pv_group_view" ref="ddei_editor_pv_group_view">
-        <div class="ddei_editor_pv_group_view_items">
+      <div class="propertyview-groupview" ref="propertyviewGroupview">
+        <div class="propertyview-groupview-items">
           <div
-            :class="topGroup.selected ? 'ddei_editor_pv_group_view_items_item_selected' : 'ddei_editor_pv_group_view_items_item'"
+            :class="topGroup.selected ? 'propertyview-groupview-items-item--selected' : 'propertyview-groupview-items-item'"
             v-for="topGroup in topGroups" v-show="!topGroup?.empty" @click="changeTopGroup(topGroup)"
             :title="topGroup.name">
             <svg class="icon img" aria-hidden="true">
@@ -66,7 +65,6 @@ import DDeiEditorArrtibute from "@ddei-core/editor/js/attribute/editor-attribute
 import DDeiEditorState from "@ddei-core/editor//js/enums/editor-state";
 import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
 import DDeiEnumOperateType from "@ddei-core/framework/js/enums/operate-type";
-import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 export default {
   name: "ddei-core-panel-propertyview",
   extends: null,
@@ -76,6 +74,11 @@ export default {
     options: {
       type: Object,
       default: null
+    },
+    //是否允许展开收折
+    expand:{
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -168,13 +171,6 @@ export default {
       );
       //获取第一个组件及其定义
       if (firstControlDefine) {
-
-        // if (!firstControlDefine.attrDefineMapAll) {
-        //   firstControlDefine.attrDefineMapAll = new Map();
-        //   firstControlDefine.attrDefineMap.forEach((d, attrKey) => {
-        //     firstControlDefine.attrDefineMapAll.set(attrKey, d);
-        //   });
-        // }
         //如果同时有多个组件被选中，则以第一个组件为基准，对属性定义进行过滤，属性值相同则采用相同值，属性值不同采用空值
         let removeKeys = [];
         for (let i = 0; i < models.length; i++) {
@@ -326,14 +322,7 @@ export default {
         }
         this.editor.currentControlDefine = null;
       }
-      // setTimeout(() => {
-      //   let e1 = document.getElementById("ddei_editor_frame_top")
-      //   let e2 = document.getElementById("ddei_editor_frame_bottom")
-      //   let e3 = document.getElementsByClassName("ddei_editor_ofsview")[0]
-      //   let e4 = document.getElementsByClassName("ddei_editor_pv_subgroup_view_tab_title")[0]
-
-      //   this.panelStyle = "height:calc(100vh - " + (e1.clientHeight + e2.clientHeight + e3.clientHeight + e4.clientHeight + 5) + "px"
-      // }, 10);
+      
 
     },
 
@@ -527,38 +516,20 @@ export default {
       this.propertyViewShow = !this.propertyViewShow
       let pvFullWidth = document.body.clientWidth * this.rightRate;
       //获取最右边区域的大小
-      let pvGroupViewEle = this.$refs.ddei_editor_pv_group_view
+      let pvGroupViewEle = this.$refs.propertyviewGroupview
       this.pvGroupWidth = pvGroupViewEle.clientWidth
       if (this.editor.rightWidth > this.pvGroupWidth) {
         let deltaX = pvFullWidth - this.pvGroupWidth;
-        let frameRightElement = document.getElementById(
-          "ddei_editor_frame_right"
-        );
         this.editor.rightWidth = this.pvGroupWidth;
-        frameRightElement.style.flexBasis = this.pvGroupWidth + "px";
         //重新设置画布大小
         this.editor.middleWidth += deltaX;
       } else {
         let deltaX = pvFullWidth - this.pvGroupWidth;
-        let frameRightElement = document.getElementById(
-          "ddei_editor_frame_right"
-        );
+       
         this.editor.rightWidth = pvFullWidth;
-        frameRightElement.style.flexBasis = pvFullWidth + "px";
         //重新设置画布大小
         this.editor.middleWidth -= deltaX;
       }
-
-
-      this.editor.ddInstance.render.setSize(
-        this.editor.middleWidth,
-        this.editor.middleHeight,
-        0,
-        0
-      );
-
-      this.editor.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape)
-      this.editor.ddInstance.bus.executeAll()
       this.editor.changeState(DDeiEditorState.DESIGNING);
     },
 
@@ -578,14 +549,14 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.ddei_editor_propertyview {
+.propertyview {
   display: flex;
   flex-direction: column;
   background: rgb(254, 254, 255);
   display: flex;
   user-select: none;
 
-  .header {
+  &-header {
     background: #F5F6F7;
     border-bottom: 1px solid #D5D5DF;
     flex: 0 0 30px;
@@ -619,204 +590,193 @@ export default {
     flex: 1;
     display: flex;
   }
-}
 
-.ddei_editor_propertyview_disabled {
-  pointer-events: none !important;
-  user-select: none !important;
-  filter: opacity(70%);
-}
-
-.ddei_editor_propertyview .empty_value {
-  filter: opacity(50%);
-}
-
-.ddei_editor_pv_group_view {
-  flex: 0 0 28px;
-  display: flex;
-  flex-flow: column;
-  border-left: 1px solid #E0E3E9;
-}
-
-.ddei_editor_pv_group_view_items {
-  flex: 1;
-  display: flex;
-  flex-flow: column;
-
-  .ddei_editor_pv_group_view_items_item {
-    flex: 0 0 16px;
-    margin-top: 8px;
-    margin-bottom: 8px;
+  &-subgroup {
+    flex: 1;
     display: flex;
     flex-flow: column;
-    justify-content: center;
-    align-items: center;
+    &-tabtitle {
+      flex: 0 0 46px;
+      display: flex;
+      border-bottom: 1pt solid rgb(235, 235, 239);
+      color: grey;
+      &-item {
+        flex: 1;
+        text-align: center;
+        font-size: 16px;
+        font-weight: 400;
+        color: #8D8D8D;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        &--selected {
+          flex: 1;
+          text-align: center;
+          font-size: 16px;
+          background-color: #F5F6F7;
+          font-weight: 400;
+          color: #1F72FF;
+          border-bottom: 4px solid #1F72FF;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+      
+        &:hover {
+          color: #1F72FF;
+          cursor: pointer;
+        }
+      }
+    }
+
+    &-tabpanel {
+      text-align: center;
+      background: rgb(254, 254, 255);
+      overflow-y: auto;
+      display: flex;
+      flex-flow: column;
+      flex: 1 1 auto;
+      color: black;
+      font-size: 15px;
+      font-family: "Microsoft YaHei";
+
+      span {
+        color: red;
+      }
+      &-editors-column {
+        display: flex;
+        flex-flow: column;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        .title {
+          background: rgb(254, 254, 255);
+          text-align: left;
+          padding-left: 10px;
+          margin: auto 0;
+          margin-bottom: 5px;
+          font-size: 15px;
+        }
+        .editor {
+          text-align: left;
+          padding-left: 10px;
+        }
+      }
+
+      &-editors-row {
+        display: flex;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        .title {
+          text-align: left;
+          padding-left: 10px;
+          flex: 0 0 100px;
+          white-space: nowrap;
+          /*文字不换行*/
+          overflow: hidden;
+          /*超出部分隐藏*/
+          text-overflow: ellipsis;
+          /*溢出部分用省略号表示*/
+          margin: auto 0;
+          font-size: 15px;
+        }
+      
+        .editor {
+          text-align: center;
+          flex: 1;
+        }
+      }
+
+
+      &::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+
+      /*正常情况下滑块的样式*/
+      &::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.05);
+        border-radius: 6px;
+        -webkit-box-shadow: inset1px1px0rgba(0, 0, 0, 0.1);
+      }
+
+      /*鼠标悬浮在该类指向的控件上时滑块的样式*/
+      &:hover::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.2);
+        border-radius: 6px;
+        -webkit-box-shadow: inset1px1px0rgba(0, 0, 0, 0.1);
+      }
+
+      /*鼠标悬浮在滑块上时滑块的样式*/
+      &::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(0, 0, 0, 0.4);
+        -webkit-box-shadow: inset1px1px0rgba(0, 0, 0, 0.1);
+      }
+
+      /*正常时候的主干部分*/
+      &::-webkit-scrollbar-track {
+        border-radius: 6px;
+        -webkit-box-shadow: inset006pxrgba(0, 0, 0, 0);
+        background-color: white;
+      }
+
+      /*鼠标悬浮在滚动条上的主干部分*/
+      &::-webkit-scrollbar-track:hover {
+        -webkit-box-shadow: inset006pxrgba(0, 0, 0, 0.4);
+        background-color: rgba(0, 0, 0, 0.01);
+      }
+    }
+    
   }
 
-  .ddei_editor_pv_group_view_items_item_selected {
-    flex: 0 0 16px;
-    margin-top: 8px;
-    margin-bottom: 8px;
+  .empty-value {
+    filter: opacity(50%);
+  }
+
+  &-groupview {
+    flex: 0 0 28px;
     display: flex;
     flex-flow: column;
-    justify-content: center;
-    align-items: center;
+    border-left: 1px solid #E0E3E9;
+    &-items {
+      flex: 1;
+      display: flex;
+      flex-flow: column;
+      &-item {
+        flex: 0 0 16px;
+        margin-top: 8px;
+        margin-bottom: 8px;
+        display: flex;
+        flex-flow: column;
+        justify-content: center;
+        align-items: center;
+        &--selected {
+          flex: 0 0 16px;
+          margin-top: 8px;
+          margin-bottom: 8px;
+          display: flex;
+          flex-flow: column;
+          justify-content: center;
+          align-items: center;
+      
+          >svg {
+            color: #1F72FF;
+          }
+        }
+      }
+    }
+  }
 
-    >svg {
-      color: #1F72FF;
+  &--disabled {
+    pointer-events: none !important;
+    user-select: none !important;
+    filter: opacity(70%);
+
+    .propertyview-subgroup-tabpanel {
+      pointer-events: none !important;
+      user-select: none !important;
+      filter: opacity(70%) !important;
     }
   }
 }
 
-
-
-.ddei_editor_pv_subgroup_view {
-  flex: 1;
-  display: flex;
-  flex-flow: column;
-}
-
-.ddei_editor_pv_subgroup_view_tab_title {
-  flex: 0 0 46px;
-  display: flex;
-  border-bottom: 1pt solid rgb(235, 235, 239);
-  color: grey;
-}
-
-.ddei_editor_pv_subgroup_view_tab_title_item {
-  flex: 1;
-  text-align: center;
-  font-size: 16px;
-  font-weight: 400;
-  color: #8D8D8D;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.ddei_editor_pv_subgroup_view_tab_title_item_selected {
-  flex: 1;
-  text-align: center;
-  font-size: 16px;
-  background-color: #F5F6F7;
-  font-weight: 400;
-  color: #1F72FF;
-  border-bottom: 4px solid #1F72FF;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.ddei_editor_pv_subgroup_view_tab_title_item:hover {
-  color: #1F72FF;
-  cursor: pointer;
-}
-
-/**以下为属性编辑器 */
-
-.ddei_editor_pv_subgroup_view_tab_panel {
-  text-align: center;
-  background: rgb(254, 254, 255);
-  overflow-y: auto;
-  display: flex;
-  flex-flow: column;
-  flex: 1 1 auto;
-  color: black;
-  font-size: 15px;
-  font-family: "Microsoft YaHei";
-}
-
-.ddei_editor_propertyview_disabled .ddei_editor_pv_subgroup_view_tab_panel {
-  pointer-events: none !important;
-  user-select: none !important;
-  filter: opacity(70%) !important;
-}
-
-.ddei_editor_pv_subgroup_view_tab_panel::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-/*正常情况下滑块的样式*/
-.ddei_editor_pv_subgroup_view_tab_panel::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.05);
-  border-radius: 6px;
-  -webkit-box-shadow: inset1px1px0rgba(0, 0, 0, 0.1);
-}
-
-/*鼠标悬浮在该类指向的控件上时滑块的样式*/
-.ddei_editor_pv_subgroup_view_tab_panel:hover::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 6px;
-  -webkit-box-shadow: inset1px1px0rgba(0, 0, 0, 0.1);
-}
-
-/*鼠标悬浮在滑块上时滑块的样式*/
-.ddei_editor_pv_subgroup_view_tab_panel::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0, 0, 0, 0.4);
-  -webkit-box-shadow: inset1px1px0rgba(0, 0, 0, 0.1);
-}
-
-/*正常时候的主干部分*/
-.ddei_editor_pv_subgroup_view_tab_panel::-webkit-scrollbar-track {
-  border-radius: 6px;
-  -webkit-box-shadow: inset006pxrgba(0, 0, 0, 0);
-  background-color: white;
-}
-
-/*鼠标悬浮在滚动条上的主干部分*/
-.ddei_editor_pv_subgroup_view_tab_panel::-webkit-scrollbar-track:hover {
-  -webkit-box-shadow: inset006pxrgba(0, 0, 0, 0.4);
-  background-color: rgba(0, 0, 0, 0.01);
-}
-
-.ddei_editor_pv_subgroup_view_tab_panel_editors_column {
-  display: flex;
-  flex-flow: column;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-.ddei_editor_pv_subgroup_view_tab_panel_editors_column .title {
-  background: rgb(254, 254, 255);
-  text-align: left;
-  padding-left: 10px;
-  margin: auto 0;
-  margin-bottom: 5px;
-  font-size: 15px;
-}
-
-.ddei_editor_pv_subgroup_view_tab_panel_editors_column .editor {
-  text-align: left;
-  padding-left: 10px;
-}
-
-.ddei_editor_pv_subgroup_view_tab_panel_editors_row {
-  display: flex;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-.ddei_editor_pv_subgroup_view_tab_panel_editors_row .title {
-  text-align: left;
-  padding-left: 10px;
-  flex: 0 0 100px;
-  white-space: nowrap;
-  /*文字不换行*/
-  overflow: hidden;
-  /*超出部分隐藏*/
-  text-overflow: ellipsis;
-  /*溢出部分用省略号表示*/
-  margin: auto 0;
-  font-size: 15px;
-}
-
-.ddei_editor_pv_subgroup_view_tab_panel_editors_row .editor {
-  text-align: center;
-  flex: 1;
-}
-
-.ddei_editor_pv_subgroup_view_tab_panel span {
-  color: red;
-}
 </style>

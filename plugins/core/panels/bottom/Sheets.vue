@@ -6,15 +6,14 @@
       <use xlink:href="#icon-a-ziyuan376"></use>
     </svg>
   </div>
-  <div class="ddei-core-panel-bottom-pages" ref="bottomSheets">
+  <div class="ddei-core-panel-bottom-pages" ref="bottomSheets" @mouseup="drag && sheetDragDrop($event)">
     <div class="ddei-core-panel-bottom-pages-page" v-if="maxOpenSize == 0">
       <span></span>
     </div>
-    <div draggable="true" v-if="allowOpenMultSheets" @dragstart="sheetDragStart(null, $event)"
-      @click.left="changeSheet(index)"
+    <div v-if="allowOpenMultSheets" @mousedown="drag && sheetDragStart(null, $event)" @click.left="changeSheet(index)"
       @click.right="(file?.extData?.owner == 1 || sslink?.can_edit == 1) && showMenu(sheet, $event)"
-      @dragover="sheetDragOver($event)" @drop="sheetDragDrop($event)" @dragleave="sheetDragCancel($event)"
-      @dblclick="startChangeSheetName(sheet, $event)" v-show="index >= openIndex && index < openIndex + maxOpenSize"
+      @mousemove="drag && sheetDragOver($event)" @dblclick="startChangeSheetName(sheet, $event)"
+      v-show="index >= openIndex && index < openIndex + maxOpenSize"
       :class="{ 'ddei-core-panel-bottom-pages-page': sheet.active == 0, 'ddei-core-panel-bottom-pages-page--selected': sheet.active == 1 }"
       :title="sheet.name" v-for="(sheet, index) in  editor?.files[editor?.currentFileIndex]?.sheets ">
       <span>{{ sheet.name }}</span>
@@ -55,9 +54,13 @@ export default {
       type: Object,
       default: null
     },
-    max:{
-      type:Number,
-      default:0
+    max: {
+      type: Number,
+      default: 0
+    },
+    drag: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -158,48 +161,50 @@ export default {
       * sheet开始拖拽移动
       */
     sheetDragStart(sheetEle, evt) {
-      this.dragSheetEle = evt.target;
+      this.dragSheetEle = evt.currentTarget;
     },
 
     /**
      * 拖拽元素移动
      */
     sheetDragOver(e) {
-      let parentDiv = this.dragSheetEle.parentElement;
-      let sourceIndex = -1;
-      let targetIndex = -1;
-      let children = parentDiv.children;
-      for (let i = 0; i < children.length - 2; i++) {
-        children[i].style.borderLeft = "";
-        children[i].style.borderRight = "";
-        if (children[i] == this.dragSheetEle) {
-          sourceIndex = i;
-        } else if (e.target == children[i]) {
-          targetIndex = i;
+      if (this.dragSheetEle){
+        let parentDiv = this.dragSheetEle.parentElement;
+        let sourceIndex = -1;
+        let targetIndex = -1;
+        let children = parentDiv.children;
+        for (let i = 0; i < children.length - 2; i++) {
+          children[i].style.borderLeft = "";
+          children[i].style.borderRight = "";
+          if (children[i] == this.dragSheetEle) {
+            sourceIndex = i;
+          } else if (e.target == children[i]) {
+            targetIndex = i;
+          }
         }
-      }
-      if (sourceIndex != -1 && targetIndex != -1) {
-        this.sourceSheetIndex = sourceIndex;
-        if (targetIndex == children.length - 3) {
-          let pos = DDeiUtil.getDomAbsPosition(children[targetIndex]);
-          let halfPos = pos.left + children[targetIndex].offsetWidth / 2;
-          if (
-            halfPos <= e.clientX &&
-            e.clientX <= pos.left + children[targetIndex].offsetWidth
-          ) {
-            this.changeSheetIndex = targetIndex;
-            children[targetIndex].style.borderRight = "2px solid #017fff";
+        if (sourceIndex != -1 && targetIndex != -1) {
+          this.sourceSheetIndex = sourceIndex;
+          if (targetIndex == children.length - 3) {
+            let pos = DDeiUtil.getDomAbsPosition(children[targetIndex]);
+            let halfPos = pos.left + children[targetIndex].offsetWidth / 2;
+            if (
+              halfPos <= e.clientX &&
+              e.clientX <= pos.left + children[targetIndex].offsetWidth
+            ) {
+              this.changeSheetIndex = targetIndex;
+              children[targetIndex].style.borderRight = "2px solid #017fff";
+            } else {
+              this.changeSheetIndex = targetIndex - 1;
+              children[targetIndex].style.borderLeft = "2px solid #017fff";
+            }
           } else {
             this.changeSheetIndex = targetIndex - 1;
             children[targetIndex].style.borderLeft = "2px solid #017fff";
           }
-        } else {
-          this.changeSheetIndex = targetIndex - 1;
-          children[targetIndex].style.borderLeft = "2px solid #017fff";
         }
-      }
 
-      e.preventDefault();
+        e.preventDefault();
+      }
     },
 
     /**
@@ -227,9 +232,6 @@ export default {
           }
         }
         //刷新当前画布
-        this.dragSheetEle = null;
-        this.sourceSheetIndex = null;
-        this.changeSheetIndex = null;
 
         this.editor.editorViewer?.changeFileModifyDirty();
         this.editor.bus.push(DDeiEditorEnumBusCommandType.AddFileHistroy);
@@ -239,24 +241,11 @@ export default {
         this.editor.bus.executeAll();
         this.editor.changeState(DDeiEditorState.DESIGNING);
       }
+      this.dragSheetEle = null;
+      this.sourceSheetIndex = null;
+      this.changeSheetIndex = null;
     },
 
-    /**
-     * 拖拽元素离开，清空元素
-     */
-    sheetDragCancel(e) {
-      if (this.dragSheetEle) {
-        //还原样式
-        let children = this.dragSheetEle.parentElement.children;
-        for (let i = 0; i < children.length - 2; i++) {
-          children[i].style.borderLeft = "";
-          children[i].style.borderRight = "";
-        }
-        //刷新当前画布
-        this.sourceSheetIndex = null;
-        this.changeSheetIndex = null;
-      }
-    },
 
 
 

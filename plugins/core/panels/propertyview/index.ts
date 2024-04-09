@@ -7,7 +7,7 @@ class DDeiCorePropertyViewPanel extends DDeiPluginBase{
   /**
    * 缺省实例
    */
-  static defaultIns: DDeiCorePropertyViewPanel = new DDeiCorePropertyViewPanel(null);
+  static defaultIns: DDeiCorePropertyViewPanel = new DDeiCorePropertyViewPanel();
 
 
   plugins: object[] = [PropertyView]

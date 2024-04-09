@@ -1,5 +1,6 @@
 <template>
-  <div @mousedown="changeEditorFocus" @mouseup="cancelCreateControl($event)" class="ddei-core-panel-toolbox">
+  <div @mousedown="changeEditorFocus" @mouseup="cancelCreateControl($event)" ref="toolbox"
+    class="ddei-core-panel-toolbox">
     <div class="ddei-core-panel-toolbox-header">
       <div class="header-1"></div>
       <svg class="icon icon1" v-if="custom" aria-hidden="true">
@@ -14,7 +15,7 @@
         </svg>
       </div>
       <div style="flex:1"></div>
-      <svg class="icon header-7" aria-hidden="true" @click="hiddenToolBox">
+      <svg class="icon header-7" aria-hidden="true" v-if="expand" @click="hiddenToolBox">
         <use xlink:href="#icon-a-ziyuan475"></use>
       </svg>
     </div>
@@ -32,7 +33,7 @@
       :style="{ height: 'calc(100vh - ' + (editor?.topHeight + editor?.bottomHeight + 90) + 'px' }">
       <div v-for="group in groups" v-show="group.display == true" class="ddei-core-panel-toolbox-groups-group">
         <div
-          :class="{ 'ddei-core-panel-toolbox-groups-group-box': true, 'ddei-core-panel-toolbox-groups-group__expanded': group.expand }"
+          :class="{ 'ddei-core-panel-toolbox-groups-group-box': true, 'ddei-core-panel-toolbox-groups-group--expanded': group.expand }"
           @click="groupBoxExpand(group)">
           <span class="title">{{ group.name }}</span>
           <svg v-if="custom && !group.cannotClose" class="icon close" aria-hidden="true" @click="groupBoxClose(group)"
@@ -93,6 +94,11 @@ export default {
     customGroups:{
       type: Array,
       default: null
+    },
+    //是否允许展开收折
+    expand: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -332,21 +338,8 @@ export default {
      * 隐藏工具栏
      */
     hiddenToolBox() {
-      let deltaX = this.editor.leftWidth;
-      let frameLeftElement = document.getElementById("ddei_editor_frame_left");
       window.leftWidth = this.editor.leftWidth
       this.editor.leftWidth = 0;
-      frameLeftElement.style.flexBasis = "0px";
-      //重新设置画布大小
-      this.editor.middleWidth += deltaX;
-      this.editor.ddInstance.render.setSize(
-        this.editor.middleWidth,
-        this.editor.middleHeight,
-        0,
-        0
-      );
-      this.editor.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape)
-      this.editor.ddInstance.bus.executeAll()
       this.editor.changeState(DDeiEditorState.DESIGNING);
 
     },
@@ -933,7 +926,7 @@ export default {
         }
       }
 
-      &__expanded {
+      &--expanded {
         background-color: #F5F6F7;
       }
     }

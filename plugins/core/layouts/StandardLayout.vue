@@ -1,15 +1,15 @@
 <template>
   <div class="layout_standrad">
-    <div class="top">
+    <div class="top" ref="top">
       <component v-for="(item,index) in editor?.getPartPanels(options,'top')" :is="item.comp" v-bind="item.options"
         :options="item.options" v-if="refreshTopMenuView"></component>
     </div>
     <div class="body">
-      <div class="left" v-show="toolboxShow">
+      <div class="left" ref="left" v-show="toolboxShow">
         <component v-for="(item, index) in editor?.getPartPanels(options, 'left')" :is="item.comp"
           :options="item.options" v-bind="item.options" v-if="refreshToolBox"></component>
       </div>
-      <div class="middle">
+      <div class="middle" ref="middle">
         <component v-for="(item, index) in editor?.getPartPanels(options, 'middle')" :is="item.comp"
           :options="item.options" v-bind="item.options"></component>
         <!-- <component :is="editor?.panels['ddei-core-panel-openfilesview']"
@@ -18,12 +18,12 @@
         <component :is="editor?.panels['ddei-core-panel-canvasview']"></component>
         <component :is="editor?.panels['ddei-core-panel-quickcolorview']" v-if="allowQuickColor"></component> -->
       </div>
-      <div class="right" v-show="propertyViewShow">
+      <div class="right" ref="right" v-show="propertyViewShow">
         <component v-for="(item, index) in editor?.getPartPanels(options, 'right')" :is="item.comp"
           :options="item.options" v-bind="item.options" v-if="refreshPropertyView"></component>
       </div>
     </div>
-    <div class="bottom">
+    <div class="bottom" ref="bottom">
       <component v-for="(item, index) in editor?.getPartPanels(options, 'bottom')" :is="item.comp"
         :options="item.options" v-bind="item.options" v-if="refreshBottomMenu"></component>
     </div>
@@ -33,6 +33,7 @@
 <script lang="ts">
 import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
+import DDeiEditorState from "@ddei-core/editor//js/enums/editor-state";
 
 export default {
   name: "ddei-core-layout-standard",
@@ -74,6 +75,33 @@ export default {
     } else {
       this.editor = DDeiEditor.newInstance("ddei_editor_ins", "ddei_editor", true, this.options);
     }
+
+    // 监听obj对象中prop属性的变化
+    this.$watch("editor.leftWidth", function (newVal, oldVal) {
+      this.$refs.left.style.flexBasis = newVal + "px";
+    });
+    this.$watch("editor.middleWidth", function (newVal, oldVal) {
+      
+      //重新设置画布大小
+      this.editor.ddInstance.render.setSize(
+        this.editor.middleWidth,
+        this.editor.middleHeight,
+        0,
+        0
+      );
+      this.editor.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape)
+      this.editor.ddInstance.bus.executeAll()
+      this.editor.changeState(DDeiEditorState.DESIGNING);
+    });
+    this.$watch("editor.rightWidth", function (newVal, oldVal) {
+      this.$refs.right.style.flexBasis = newVal + "px";
+    });
+    this.$watch("editor.topHeight", function (newVal, oldVal) {
+      this.$refs.top.style.flexBasis = newVal + "px";
+    });
+    this.$watch("editor.bottomHeight", function (newVal, oldVal) {
+      this.$refs.bottom.style.flexBasis = newVal + "px";
+    });
   },
   mounted() {
     this.editor.layoutViewer = this;
@@ -102,6 +130,16 @@ export default {
 
     // 开始监听目标元素的大小变化
     resizeObserver.observe(middleCanvas);
+
+    this.editor.leftWidth = this.$refs.left.offsetWidth;
+    this.editor.rightWidth = this.$refs.right.offsetWidth;
+    this.editor.topHeight = this.$refs.top.offsetHeight;
+    this.editor.bottomHeight = this.$refs.bottom.offsetHeight;
+    this.editor.middleWidth = this.$refs.middle.offsetWidth;
+    this.editor.middleHeight = this.$refs.middle.offsetHeight;
+    this.initLeftWidth = this.$refs.left.offsetWidth
+    this.initRightWidth = this.$refs.right.offsetWidth
+    this.editor.maxWidth = this.editor.leftWidth + this.editor.rightWidth + this.editor.middleWidth;
   },
   methods: {
     
@@ -168,11 +206,12 @@ export default {
   .body {
     display: flex;
     overflow:auto;
-    flex: 1 1 calc(100vh-153px);
+    flex: 1 1 calc(100vh - 153px);
 
     .left {
       flex: 0 1 292px;
       border: 1px solid #D5D5DF;
+      overflow: hidden;
     }
 
     .middle {
@@ -184,6 +223,7 @@ export default {
     .right {
       flex: 0 1 292px;
       border: 1px solid #D5D5DF;
+      overflow: hidden;
     }
   }
 }

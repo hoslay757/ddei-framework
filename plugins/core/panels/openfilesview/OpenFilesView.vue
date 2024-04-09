@@ -1,39 +1,42 @@
 <template>
-  <div id="ddei_editor_ofsview" @mousedown="changeEditorFocus()" class="ddei_editor_ofsview">
-    <div v-show="this.editor?.leftWidth == 0" class="ddei_editor_ofsview_expandbox" @click="expandToolBox">
+  <div @mousedown="changeEditorFocus()" @mouseup="drag && fileDragDrop($event)" ref="openFilesView"
+    class="ddei-core-panel-openfilesview">
+    <div v-show="this.editor?.leftWidth == 0 && expand" class="ddei-core-panel-openfilesview-expandbox"
+      @click="expandToolBox">
       <svg class="icon" aria-hidden="true">
         <use xlink:href="#icon-a-ziyuan474"></use>
       </svg>
     </div>
-    <div class="ddei_editor_ofsview_item" v-if="!editor?.files"></div>
+    <div class="ddei-core-panel-openfilesview-item" v-if="!editor?.files"></div>
     <div
-      :class="item.active == 1 ? 'ddei_editor_ofsview_item ddei_editor_ofsview_item_selected' : 'ddei_editor_ofsview_item'"
-      @click="changeFile(item)" draggable="true" @dragstart="fileDragStart(index, $event)"
-      @dragover="fileDragOver($event)" @drop="fileDragDrop($event)" @dragleave="fileDragCancel($event)"
-      v-for="(item, i) in editor?.files"
-      v-show="i >= openIndex && ((i - openIndex + 1) * unitFileWidth + 120) <= editor?.middleWidth" :title="item.name">
+      :class="item.active == 1 ? 'ddei-core-panel-openfilesview-item ddei-core-panel-openfilesview-item--selected' : 'ddei-core-panel-openfilesview-item'"
+      @click="changeFile(item)" @mousedown="drag && fileDragStart(index, $event)"
+      @mousemove="drag && fileDragOver($event)" v-for="(item, i) in editor?.files"
+      v-show="i >= openIndex && ((i - openIndex + 1) * unitFileWidth + 120) <= width" :title="item.name">
       <svg class="icon" aria-hidden="true">
         <use xlink:href="#icon-wenjian01"></use>
       </svg>
 
       <span class="textcontent">
-        <div class="text" @dblclick="startChangeFileName(item, $event)">{{ item.name }}</div>
+        <div class="text" @dblclick="rename && startChangeFileName(item, $event)">{{ item.name }}</div>
         <div class="dirty" v-show="item.state != 0">ꔷ</div>
       </span>
-      <svg @click.prevent.stop="closeFile(item, $event)" class="icon close" aria-hidden="true">
+      <svg @click.prevent.stop="closeFile(item, $event)" v-if="close" class="icon close" aria-hidden="true">
         <use xlink:href="#icon-a-ziyuan422"></use>
       </svg>
     </div>
-    <svg class="icon addfile" v-show="user?.id != '-99'" aria-hidden="true" @click="newFile">
+    <svg class="icon addfile" v-show="user?.id != '-99'" aria-hidden="true" v-if="new" @click="newFile">
       <use xlink:href="#icon-a-ziyuan376"></use>
     </svg>
     <div style="flex:1 1 1px"></div>
-    <div class="ddei_editor_ofsview_movebox" v-show="editor?.files?.length > maxOpenSize" @click="moveItem(-1)">
+    <div class="ddei-core-panel-openfilesview-movebox" v-show="editor?.files?.length > maxOpenSize"
+      @click="moveItem(-1)">
       <svg class="icon" aria-hidden="true">
         <use xlink:href="#icon-a-ziyuan481"></use>
       </svg>
     </div>
-    <div class="ddei_editor_ofsview_movebox" v-show="editor?.files?.length > maxOpenSize" @click="moveItem(1)">
+    <div class="ddei-core-panel-openfilesview-movebox" v-show="editor?.files?.length > maxOpenSize"
+      @click="moveItem(1)">
       <svg class="icon" aria-hidden="true">
         <use xlink:href="#icon-a-ziyuan480"></use>
       </svg>
@@ -65,6 +68,27 @@ export default {
     options: {
       type: Object,
       default: null
+    },
+    //是否允许展开收折
+    expand: {
+      type: Boolean,
+      default: true
+    },
+    new: {
+      type: Boolean,
+      default: true
+    },
+    close: {
+      type: Boolean,
+      default: true
+    },
+    rename: {
+      type: Boolean,
+      default: true
+    },
+    drag: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -83,24 +107,7 @@ export default {
   computed: {},
   watch: {},
   created() {
-    // 监听obj对象中prop属性的变化
-    this.$watch("editor.middleWidth", function (newVal, oldVal) {
-      //获取单个tab大小
-      let fileEles = document.getElementsByClassName("ddei_editor_ofsview_item")
-      let width = 0;
-      if (fileEles.length > 0) {
-        width = fileEles[0].clientWidth
-      }
-      if (!width) {
-        width = 160
-      }
-      this.unitFileWidth = width
-      let size = parseInt((newVal - 120) / width);
-      if (size > this.maxOpenSize && this.openIndex > 0) {
-        this.openIndex--;
-      }
-      this.maxOpenSize = size;
-    });
+    
     // 监听文件列表大小变化
     this.$watch("editor.files.length", function (newVal, oldVal) {
       //打开新文件
@@ -126,6 +133,34 @@ export default {
     });
   },
   mounted() {
+    // 创建 ResizeObserver 实例
+    const resizeObserver = new ResizeObserver(entries => {
+      // entries 是一个 ResizeObserverEntry 对象数组，包含目标元素的大小信息
+      for (const entry of entries) {
+        // 获取宽度和高度
+        const { width, height } = entry.contentRect;
+        if (width != 0 && height != 0) { 
+          //获取单个tab大小
+          let fileEles = document.getElementsByClassName("ddei-core-panel-openfilesview-item")
+          let fileWidth = 0;
+          if (fileEles.length > 0) {
+            fileWidth = fileEles[0].clientWidth
+          }
+          if (!fileWidth) {
+            fileWidth = 160
+          }
+          this.unitFileWidth = fileWidth
+          let size = parseInt((width - 120) / fileWidth);
+          if (size > this.maxOpenSize && this.openIndex > 0) {
+            this.openIndex--;
+          }
+          this.maxOpenSize = size;
+          this.width = width
+        }
+      }
+    });
+    // 开始监听目标元素的大小变化
+    resizeObserver.observe(this.$refs.openFilesView);
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
     this.editor.openFilesViewer = this;
@@ -288,7 +323,7 @@ export default {
      * file开始拖拽移动
      */
     fileDragStart(fileEle, evt) {
-      this.dragFileEle = evt.target;
+      this.dragFileEle = evt.currentTarget;
     },
 
     /**
@@ -296,7 +331,7 @@ export default {
      */
     fileDragOver(e) {
       if (this.dragFileEle) {
-        if (e.target.className == "text") {
+        if (e.currentTarget.className.indexOf("ddei-core-panel-openfilesview-item") != -1) {
           let parentDiv = this.dragFileEle.parentElement;
           let sourceIndex = -1;
           let targetIndex = -1;
@@ -306,7 +341,7 @@ export default {
             children[i].style.borderRight = "";
             if (children[i] == this.dragFileEle) {
               sourceIndex = i;
-            } else if (e.target.parentElement.parentElement == children[i]) {
+            } else if (e.currentTarget == children[i]) {
               targetIndex = i;
             }
           }
@@ -360,34 +395,22 @@ export default {
             this.editor.currentFileIndex = j;
           }
         }
-        //刷新当前画布
-        this.dragFileEle = null;
-        this.sourceFileIndex = null;
-        this.changeFileIndex = null;
-
-        this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
-          parts: ["openfiles"],
-        });
-        this.editor.bus.executeAll();
-      }
-    },
-
-    /**
-     * 拖拽元素离开，清空元素
-     */
-    fileDragCancel(e) {
-      if (this.dragFileEle) {
         let parentDiv = this.dragFileEle.parentElement;
         let children = parentDiv.children;
         for (let i = 1; i < children.length - 4; i++) {
           children[i].style.borderLeft = "";
           children[i].style.borderRight = "";
         }
-        //刷新当前画布
-        this.dragFileEle = null;
-        this.sourceFileIndex = null;
-        this.changeFileIndex = null;
+        //刷新
+        this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts, {
+          parts: ["openfiles"],
+        });
+        this.editor.bus.executeAll();
       }
+    
+      this.dragFileEle = null;
+      this.sourceFileIndex = null;
+      this.changeFileIndex = null;
     },
 
     /**
@@ -572,21 +595,11 @@ export default {
      */
     expandToolBox() {
 
-      let deltaX = window.leftWidth;
-      let frameLeftElement = document.getElementById("ddei_editor_frame_left");
       this.editor.leftWidth = window.leftWidth;
-      frameLeftElement.style.flexBasis = window.leftWidth + "px";
       //重新设置画布大小
-      this.editor.middleWidth -= deltaX;
-      this.editor.ddInstance.render.setSize(
-        this.editor.middleWidth,
-        this.editor.middleHeight,
-        0,
-        0
-      );
+      this.editor.middleWidth -= window.leftWidth;
       delete window.leftWidth
-      this.editor.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape)
-      this.editor.ddInstance.bus.executeAll()
+      this.editor.changeState(DDeiEditorState.DESIGNING);
     },
     /**
      * 焦点进入当前区域
@@ -601,7 +614,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.ddei_editor_ofsview {
+.ddei-core-panel-openfilesview {
   flex: 0 0 30.5px;
   background: #F5F6F7;
   border-top: 1px solid #E0E3E9;
@@ -609,111 +622,104 @@ export default {
   display: flex;
   user-select: none;
   align-items: center;
-}
 
-.ddei_editor_ofsview .addfile {
-  margin: 0px 10px;
-  font-size: 24px;
-}
+  &-expandbox {
+    flex: 0 0 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-.ddei_editor_ofsview_expandbox {
-  flex: 0 0 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+    &:hover {
+      background: rgb(235, 235, 239);
+      cursor: pointer;
+    }
+    img {
+      filter: brightness(60%);
+      margin-top: 3px;
+    }
+  }
+  .addfile {
+      margin: 0px 10px;
+      font-size: 24px;
+  }
 
-.ddei_editor_ofsview_expandbox:hover {
-  background: rgb(235, 235, 239);
-  cursor: pointer;
-}
+  &-movebox {
+    flex: 0 0 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-.ddei_editor_ofsview_expandbox img {
-  filter: brightness(60%);
-  margin-top: 3px;
-}
+    &:hover {
+      background: rgb(235, 235, 239);
+      cursor: pointer;
+    }
 
-.ddei_editor_ofsview_movebox {
-  flex: 0 0 25px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+    img {
+      filter: brightness(60%);
+      margin-top: 4px;
+    }
+  }
 
-.ddei_editor_ofsview_movebox:hover {
-  background: rgb(235, 235, 239);
-  cursor: pointer;
-}
+  &-item {
+    flex: 0 0 195px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-right: 1px solid #B3B4B4;
+  
+    .icon {
+      font-size: 16px;
+      flex: 0 0 42px;
+      text-align: center;
+    }
 
-.ddei_editor_ofsview_movebox img {
-  filter: brightness(60%);
-  margin-top: 4px;
-}
+    .close {
+      font-size: 18px;
+      flex: 0 0 24px;
+      margin-left: -5px;
+    }
 
-.ddei_editor_ofsview_item {
-  flex: 0 0 195px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-right: 1px solid #B3B4B4;
+    .textcontent {
+      font-size: 15px;
+      flex: 0 0 130px;
+      width: 130px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      .text {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        color: black;
+        flex: 1;
+        font-size: 16px;
+        font-weight: 400;
+      }
+    }
 
+    span .dirty {
+      color: red;
+      width: 10px;
+      flex: 0 0 10px;
+      font-size: 18px;
+      text-align: right;
+    }
+    &:hover {
+      background: #E9E7F0;
+    }
 
-}
+    &--selected {
+      background: white;
+      .textcontent .text {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        flex: 1;
+        color: black;
+      }
+    }
 
-
-
-.ddei_editor_ofsview_item .icon {
-  font-size: 16px;
-  flex: 0 0 42px;
-  text-align: center;
-}
-
-.ddei_editor_ofsview_item .close {
-  font-size: 18px;
-  flex: 0 0 24px;
-  margin-left: -5px;
-}
-
-.ddei_editor_ofsview_item .textcontent {
-  font-size: 15px;
-  flex: 0 0 130px;
-  width: 130px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.ddei_editor_ofsview_item .textcontent .text {
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  color: black;
-  flex: 1;
-  font-size: 16px;
-  font-weight: 400;
-}
-
-.ddei_editor_ofsview_item span .dirty {
-  color: red;
-  width: 10px;
-  flex: 0 0 10px;
-  font-size: 18px;
-  text-align: right;
-}
-
-.ddei_editor_ofsview_item:hover {
-  background: #E9E7F0;
-}
-
-.ddei_editor_ofsview_item_selected {
-  background: white;
-}
-
-.ddei_editor_ofsview_item_selected .textcontent .text {
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  flex: 1;
-  color: black;
+ 
+  }
 }
 </style>

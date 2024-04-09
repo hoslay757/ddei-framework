@@ -145,27 +145,6 @@ export default {
     if (!DDeiUtil.setCurrentMenu) {
       DDeiUtil.setCurrentMenu = this.setCurrentMenu;
     }
-    return;
-    let frameLeftElement = document.getElementById("ddei_editor_frame_left");
-    let frameRightElement = document.getElementById("ddei_editor_frame_right");
-    let frameTopElement = document.getElementById("ddei_editor_frame_top");
-    let frameBottomElement = document.getElementById(
-      "ddei_editor_frame_bottom"
-    );
-    let frameMiddleElement = document.getElementById(
-      "ddei_editor_frame_middle"
-    );
-
-    this.editor.leftWidth = frameLeftElement.offsetWidth;
-    this.editor.rightWidth = frameRightElement.offsetWidth;
-    this.editor.topHeight = frameTopElement.offsetHeight;
-    this.editor.bottomHeight = frameBottomElement.offsetHeight;
-    this.editor.middleWidth = frameMiddleElement.offsetWidth;
-    this.editor.middleHeight = frameMiddleElement.offsetHeight;
-    this.initLeftWidth = frameLeftElement.offsetWidth
-    this.initRightWidth = frameRightElement.offsetWidth
-    this.editor.maxWidth =
-      this.editor.leftWidth + this.editor.rightWidth + this.editor.middleWidth;
   },
   methods: {
     setCurrentStage(stage){
