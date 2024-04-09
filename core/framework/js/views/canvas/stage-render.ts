@@ -9,7 +9,7 @@ import DDeiAbstractShape from '../../models/shape.js';
 import DDeiStage from '../../models/stage.js';
 import DDeiUtil from '../../util.js';
 import DDeiCanvasRender from './ddei-render.js';
-import { Vector3 } from 'three';
+import { Vector3,Matrix3 } from 'three';
 
 /**
  * DDeiStage的渲染器类，用于渲染文件
@@ -1089,8 +1089,42 @@ class DDeiStageCanvasRender {
         //计算文本大小
         let textSize = DDeiUtil.measureTextSize(this.model.ddInstance, text, fiFamily, fontSize)
         let weight = Math.max(textSize.width, textSize.height);
-        markCanvas.setAttribute("width", weight);
-        markCanvas.setAttribute("height", weight);
+        //方向
+        let direct = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.direct", true);
+
+        //计算矩形区域大小
+        let ps = [new Vector3(-weight * 0.5, -weight * 0.5, 1),
+          new Vector3(weight * 0.5, -weight * 0.5, 1),
+          new Vector3(weight * 0.5, weight * 0.5, 1),
+          new Vector3(-weight * 0.5, weight * 0.5, 1),]
+
+        if (direct == 1) {
+          let rotateMatrix = new Matrix3(
+            Math.cos(45 * DDeiConfig.ROTATE_UNIT), Math.sin(45 * DDeiConfig.ROTATE_UNIT), 0,
+            -Math.sin(45 * DDeiConfig.ROTATE_UNIT), Math.cos(45 * DDeiConfig.ROTATE_UNIT), 0,
+            0, 0, 1);
+          ps.forEach(p => {
+            p.applyMatrix3(rotateMatrix)
+          })
+          let outRect = DDeiAbstractShape.pvsToOutRect(ps);
+          markCanvas.setAttribute("width", outRect.width);
+          markCanvas.setAttribute("height", outRect.height);
+        } else if (direct == 2) {
+          let rotateMatrix = new Matrix3(
+            Math.cos(-45 * DDeiConfig.ROTATE_UNIT), Math.sin(-45 * DDeiConfig.ROTATE_UNIT), 0,
+            -Math.sin(-45 * DDeiConfig.ROTATE_UNIT), Math.cos(-45 * DDeiConfig.ROTATE_UNIT), 0,
+            0, 0, 1);
+          //计算矩形区域大小
+          ps.forEach(p => {
+            p.applyMatrix3(rotateMatrix)
+          })
+          let outRect = DDeiAbstractShape.pvsToOutRect(ps);
+          markCanvas.setAttribute("width", outRect.width);
+          markCanvas.setAttribute("height", outRect.height);
+        }else{
+          markCanvas.setAttribute("width", weight);
+          markCanvas.setAttribute("height", weight);
+        }
         let markCtx = markCanvas.getContext("2d");
         markCtx.save();
         //设置字体
@@ -1102,16 +1136,20 @@ class DDeiStageCanvasRender {
         if (opac) {
           markCtx.globalAlpha = opac
         }
-        //方向
-        let direct = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.direct", true);
+        
         if (direct == 1) {
+         
           markCtx.translate(markCanvas.width * 0.5, markCanvas.height * 0.5)
           markCtx.rotate(45 * DDeiConfig.ROTATE_UNIT);
           markCtx.translate(-markCanvas.width * 0.5, -markCanvas.height * 0.5)
+
+         
         } else if (direct == 2) {
+          
           markCtx.translate(markCanvas.width * 0.5, markCanvas.height * 0.5)
           markCtx.rotate(-45 * DDeiConfig.ROTATE_UNIT);
           markCtx.translate(-markCanvas.width * 0.5, -markCanvas.height * 0.5)
+         
         }
         markCtx.clearRect(0, 0, markCanvas.width, markCanvas.height)
         markCtx?.fillText(text, 0, (markCanvas.height - textSize.height) / 2)
@@ -1246,21 +1284,10 @@ class DDeiStageCanvasRender {
       ctx.fillRect(cwidth, cheight, scrollWeight, scrollWeight)
       ctx.strokeRect(cwidth, cheight, scrollWeight, scrollWeight)
     }
+  }
 
+  enableRefreshShape() {
 
-
-    //设置所有文本的对齐方式，以便于后续所有的对齐都采用程序计算
-    // ctx.textAlign = "left";
-    // ctx.textBaseline = "top";
-    // //设置字体
-    // ctx.font = "bold 24px 宋体"
-    // //设置字体颜色
-    // ctx.fillStyle = "red"
-    // ctx.fillText(this.model.wpv.x + "," + this.model.wpv.y, 0, 0)
-    // ctx.fillText(this.model.width + "," + this.model.height, 0, 20)
-    // ctx.fillText(this.ddRender.container.clientWidth + "," + this.ddRender.container.clientHeight, 0, 40)
-    // ctx.fillText(this.vScroll?.y + "", 0, 60)
-    // ctx.restore();
   }
 
   /**

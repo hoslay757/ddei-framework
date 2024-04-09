@@ -407,6 +407,10 @@ class DDeiLayerCanvasRender {
     }
   }
 
+  enableRefreshShape() {
+    
+  }
+
   /**
    * 绘制操作线
    */
