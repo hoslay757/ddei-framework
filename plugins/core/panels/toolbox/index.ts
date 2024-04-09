@@ -6,8 +6,7 @@ class DDeiCoreToolboxPanel extends DDeiPluginBase{
   /**
    * 缺省实例
    */
-  static defaultIns: DDeiCoreToolboxPanel = new DDeiCoreToolboxPanel(null);
-
+  static defaultIns: DDeiCoreToolboxPanel = new DDeiCoreToolboxPanel();
 
   plugins: object[] = [Toolbox]
 

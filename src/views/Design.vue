@@ -49,7 +49,7 @@ import { markRaw } from "vue";
 import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
 
 //引入插件
-import { DDeiCoreTopMenuPanel, DDeiCoreSheetsPanel, DDeiCoreChangeRatioPanel, DDeiCoreChangeRatioDialog,DDeiCoreShapeCountPanel, DDeiCoreBottomMenuPanel,DDeiCoreStandLayout, DDeiCoreOpenFilesViewPanel, DDeiCoreQuickColorViewPanel, DDeiCoreAlignDialog } from "@ddei/core";
+import { DDeiCoreTopMenuPanel, DDeiCoreToolboxPanel,DDeiCoreSheetsPanel, DDeiCoreChangeRatioPanel, DDeiCoreChangeRatioDialog,DDeiCoreShapeCountPanel, DDeiCoreBottomMenuPanel,DDeiCoreStandLayout, DDeiCoreOpenFilesViewPanel, DDeiCoreQuickColorViewPanel, DDeiCoreAlignDialog } from "@ddei/core";
 
 export default {
   props: {},
@@ -121,6 +121,11 @@ export default {
             ],
             input:true,
             min: 1, max: 4,title:"缩放比例"
+          }),
+          DDeiCoreToolboxPanel.configuraton({
+            custom:false,
+            search:false,
+            customGroups: [302, 301,102,101]
           }),
           // DDeiCoreBottomMenuPanel.configuraton({
           //   config: function (options: object) {
