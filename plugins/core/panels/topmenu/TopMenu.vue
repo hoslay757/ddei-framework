@@ -3,33 +3,7 @@
     <div id="ddei-core-panel-topmenu-quickbox" class="ddei-core-panel-topmenu-quickbox">
       <component v-for="(item, index) in editor?.getPartPanels(options, 'panels') " :is="item.comp"
         :options="item.options" v-bind="item.options"></component>
-      <!-- <div class="ddei-core-panel-topmenu-quickbox-group g1">
-        <QuickBoxGoBack></QuickBoxGoBack>
-      </div>
-      <div class="ddei-core-panel-topmenu-quickbox-group g2" v-show="file?.extData?.owner == 1">
-        <QuickBoxFileInfo></QuickBoxFileInfo>
-      </div>
-      <div class="ddei-core-panel-topmenu-quickbox-group g2-share" v-show="file?.extData?.owner == 0">
-        <QuickBoxShare></QuickBoxShare>
-      </div>
-      <div class="ddei-core-panel-topmenu-quickbox-group g3">
-        <QuickBoxOperate></QuickBoxOperate>
-      </div>
-      <div class="ddei-core-panel-topmenu-quickbox-group g4">
-        <QuickBoxFontAndText></QuickBoxFontAndText>
-      </div>
-      <div class="ddei-core-panel-topmenu-quickbox-group g5">
-        <QuickBoxTool></QuickBoxTool>
-      </div>
-      <div class="ddei-core-panel-topmenu-quickbox-group g6">
-        <QuickBoxSort></QuickBoxSort>
-      </div>
-      <div class="ddei-core-panel-topmenu-quickbox-group g7" v-show="file?.extData?.owner == 1">
-        <QuickBoxEImport></QuickBoxEImport>
-      </div>
-      <div class="ddei-core-panel-topmenu-quickbox-group" style="flex:1">
-        <QuickBoxRight></QuickBoxRight>
-      </div> -->
+      
     </div>
 
   </div>
@@ -101,56 +75,12 @@ export default {
 <style lang="less" scoped>
 .ddei-core-panel-topmenu {
   background: rgb(225, 225, 225);
-}
+  &-quickbox {
+    background-color: #F5F5F5;
+    width: 100%;
 
-.ddei-core-panel-topmenu-quickbox {
-  background-color: #F5F5F5;
-  width: 100%;
-
-  height: 103px;
-  display: flex;
-}
-
-.ddei-core-panel-topmenu-quickbox-group {
-  flex: 0;
-  margin: auto 0;
-}
-
-.g1 {
-  flex: 0 1 120px
-}
-
-.g2 {
-  flex: 0 1 172px
-}
-
-.g2-share {
-  flex: 0 1 250px
-}
-
-.g3 {
-  flex: 0 1 234px
-}
-
-.g4 {
-  flex: 0 1 418px
-}
-
-.g5 {
-  flex: 0 1 200px
-}
-
-.g6 {
-  flex: 0 1 237px
-}
-
-.g7 {
-  flex: 0 1 260px
-}
-
-.ddei-core-panel-topmenu-quickbox-group_empty {
-  flex: 1;
-  margin: auto 0;
-  margin-left: 5px;
+    height: 103px;
+    display: flex;
+  }
 }
 </style>

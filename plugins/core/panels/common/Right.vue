@@ -124,6 +124,7 @@ export default {
 <style lang="less" scoped>
 .ddei-core-panel-right {
   height: 103px;
+  flex:1;
   display: grid;
   grid-template-rows: 50px 23px 23px;
   grid-template-columns: 1fr;

@@ -1,5 +1,5 @@
 <template>
-  <div class="ddei-core-panel-share">
+  <div class="ddei-core-panel-share" v-if="file?.extData?.owner == 0">
     <div class="header"></div>
     <div class="content">
       <div class="part">
@@ -273,6 +273,8 @@ export default {
 <style lang="less" scoped>
 .ddei-core-panel-share {
   height: 103px;
+  width: 250px;
+  flex:0 1 250px;
   display: grid;
   grid-template-rows: 20px 57px 26px;
   grid-template-columns: 1fr;

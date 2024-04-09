@@ -33,7 +33,6 @@
     <div class="tail">
       工具
     </div>
-
   </div>
 </template>
 <script lang="ts">
@@ -80,6 +79,8 @@ export default {
 <style lang="less" scoped>
 .ddei-core-panel-tool {
   height: 103px;
+  width:200px;
+  flex:0 1 200px;
   display: grid;
   grid-template-rows: 20px 57px 26px;
   grid-template-columns: 1fr;

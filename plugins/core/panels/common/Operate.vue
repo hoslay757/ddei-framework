@@ -153,6 +153,8 @@ export default {
 <style lang="less" scoped>
 .ddei-core-panel-operate {
   height: 103px;
+  width:234px;
+  flex:0 1 234px;
   display: grid;
   grid-template-rows: 20px 57px 26px;
   grid-template-columns: 1fr;

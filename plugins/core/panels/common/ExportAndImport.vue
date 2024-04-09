@@ -1,5 +1,5 @@
 <template>
-  <div class="ddei-core-panel-eimport">
+  <div class="ddei-core-panel-eimport" v-if="file?.extData?.owner == 1">
     <div class="header"></div>
     <div class="content">
       <div class="part">
@@ -60,7 +60,8 @@ export default {
   data() {
     return {
       editor: null,
-      user: null
+      user: null,
+      file:null,
     };
   },
   computed: {},
@@ -72,6 +73,7 @@ export default {
     if (userCookie) {
       this.user = JSON.parse(userCookie)
     }
+    this.file = this.editor?.files[this.editor?.currentFileIndex];
 
   },
   methods: {
@@ -150,6 +152,7 @@ export default {
             this.editor.changeState(DDeiEditorState.DESIGNING);
           }
         }
+        
       }
     },
 
@@ -161,6 +164,8 @@ export default {
 <style lang="less" scoped>
 .ddei-core-panel-eimport {
   height: 103px;
+  width: 260px;
+  flex: 0 1 260px;
   display: grid;
   grid-template-rows: 20px 57px 26px;
   grid-template-columns: 1fr;
