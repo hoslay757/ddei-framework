@@ -1,14 +1,7 @@
-//初始化外部配置
+//缺省配置
 const config = {
 
   HISTROY_LEVEL: "file",
-
-
-  //允许打开多文件
-  GLOBAL_ALLOW_OPEN_MULT_FILES: true,
-
-  //允许多sheet编辑
-  GLOBAL_ALLOW_OPEN_MULT_SHEETS: true,
 
   //允许多图层编辑
   GLOBAL_ALLOW_OPEN_MULT_LAYERS: true,
@@ -16,8 +9,7 @@ const config = {
   //允许全局缩放
   GLOBAL_ALLOW_STAGE_RATIO: true,
 
-  //允许快捷编辑颜色
-  GLOBAL_ALLOW_QUICK_COLOR: true,
+
 
   //模式标识，模式标识对应以ac_开头的访问权限配置
   MODE_NAME: "DESIGN",
@@ -37,23 +29,7 @@ const config = {
   AC_DESIGN_DRAG: true,
   AC_DESIGN_LINK: true,
   AC_DESIGN_DEL: true,
-  AC_DESIGN_SELECT: true,
-
-
-  SELECTOR: {
-    //选择器边框
-    border: {
-      width: 1,
-      color: "red",
-      selected: {
-        width: 1,
-        color: "#017fff",
-      },
-    },
-  },
-
-
-
+  AC_DESIGN_SELECT: true
 };
 
 export default config

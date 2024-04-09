@@ -1,5 +1,5 @@
 <template>
-  <DDeiEditor v-if="loadMode == 1 || loadMode == 2" :config="ddeiConfig" :options="options"></DDeiEditor>
+  <DDeiEditor v-if="loadMode == 1 || loadMode == 2" :options="options"></DDeiEditor>
   <div v-if="loadMode == 3" class="ddei_sslink_outtime">
     <div class="content">
       <div class="header">
@@ -60,45 +60,22 @@ export default {
       publishPostData: null,
       inputPwdCode: "",
       loadMode: 0,//加载模式0，不加载
-      ddeiConfig: markRaw({
-        EVENT_LOAD_FILE: this.openFile,
-        EVENT_SAVE_FILE: this.saveFile,
-        EVENT_GOBACK_FILE_LIST: this.goBackFileList,
-        EVENT_PUBLISH_FILE: this.publishFile,
-        EVENT_CONTROL_SELECT_AFTER: this.showQuickEditPicker,
-        // EVENT_STAGE_CHANGE_WPV: this.changeWPV,
-        // EVENT_STAGE_CHANGE_RATIO: this.changeRatio,
-        // EVENT_CONTROL_DRAG_BEFORE: this.dragBefore,
-        // EVENT_LINE_DRAG_BEFORE: this.dragLineBefore,
-        // EVENT_CONTROL_CREATE_BEFORE: this.dragBefore,
-        EVENT_MOUSE_OPERATING: this.mouseOperating,
-        // AC_DESIGN_SELECT: false,
-        // AC_DESIGN_DRAG: false,
-        // AC_DESIGN_EDIT: false,
-        // AC_DESIGN_CREATE_DDeiRectangle: true,
-        // AC_DESIGN_SELECT_DDeiRectangle: true,
-        // AC_DESIGN_DRAG_DDeiRectangle: false,
-        // AC_DESIGN_DEL_DDeiRectContainer: false,
-        // "AC_DESIGN_VIEW_DDeiRectangle_fill.color": true,
-        // AC_DESIGN_EDIT_DDeiRectangle: true,
-        // AC_DESIGN_EDIT_DDeiRectangle_text: false,
-        // EVENT_CONTROL_SELECT_BEFORE: this.selectBefore,
-        // EVENT_CONTROL_CREATE_BEFORE: this.createBefore,
-        // EVENT_CONTROL_CREATE_AFTER: this.createAfter,
-        // EVENT_CONTROL_DRAG_AFTER: this.dragAfter,
-        // EVENT_CONTROL_DEL_AFTER: this.removeAfter,
-        // EVENT_CONTROL_EDIT_AFTER: this.editAfter,
-        // EVENT_CONTROL_VIEW_AFTER: this.viewAfter,
-        // EVENT_CONTROL_VIEW_BEFORE: this.viewBefore,
-      }),
+     
       options: markRaw({
+        config: {
+          EVENT_LOAD_FILE: this.openFile,
+          EVENT_SAVE_FILE: this.saveFile,
+          EVENT_GOBACK_FILE_LIST: this.goBackFileList,
+          EVENT_PUBLISH_FILE: this.publishFile,
+          EVENT_CONTROL_SELECT_AFTER: this.showQuickEditPicker,
+          EVENT_MOUSE_OPERATING: this.mouseOperating,
+        },
         //配置扩展插件
         extensions: [
           DDeiCoreStandLayout.configuraton({
             //配置插件
             'top': [DDeiCoreTopMenuPanel],
             'middle': [DDeiCoreOpenFilesViewPanel.configuraton({
-       
               drag:true
             }),  'ddei-core-panel-canvasview' , 'ddei-core-panel-quickcolorview'],
           }),
@@ -109,7 +86,8 @@ export default {
             }),, DDeiCoreShapeCountPanel.configuraton({
               title:"图形数:"
             }),
-            "ddei-core-panel-bottom-managelayers", DDeiCoreChangeRatioPanel.configuraton({
+            "ddei-core-panel-bottom-managelayers", 
+            DDeiCoreChangeRatioPanel.configuraton({
               delta:0.1,min:1,max:4,step:0.2,dialog:false,range:false
             })]
           }),

@@ -41,21 +41,10 @@ export default {
   mixins: [],
   props: {
     //外部配置文件的定义，当传入外部配置文件时，用外部配置文件覆盖内部配置
-    //外部配置文件包含对缺省值、快捷键、默认行为、扩展函数的配置
-    config: {
-      type: Object,
-      default: null,
-    },
-
     options: {
       type: Object,
       default: null
     }
-  },
-  provide() {
-    return {
-      editor:this.editor
-    };
   },
   data() {
     return {
@@ -68,12 +57,8 @@ export default {
       refreshToolBox: true,
       refreshMenu: true,
       refreshTopMenuView: true,
-      allowOpenMultFiles: true,
-      allowQuickColor: true,
       initLeftWidth: 0,
       initRightWidth: 0,
-      toolboxShow: true,
-      propertyViewShow: SVGComponentTransferFunctionElement,
       refreshDialogs: true,
     };
   },
@@ -103,16 +88,11 @@ export default {
       this.editor = DDeiEditor.newInstance("ddei_editor_ins", "ddei_editor", true, this.options);
     }
     //载入局部配置
-    this.editor.applyConfig(this.config);
-    this.editor.extConfig = this.config;
-    this.allowOpenMultFiles = DDeiEditorUtil.getConfigValue(
-      "GLOBAL_ALLOW_OPEN_MULT_FILES",
-      this.editor
-    );
-    this.allowQuickColor = DDeiEditorUtil.getConfigValue(
-      "GLOBAL_ALLOW_QUICK_COLOR",
-      this.editor
-    );
+    if (this.options){
+      this.editor.applyConfig(this.options.config);
+      this.editor.extConfig = this.options.config;
+    }
+    
     window.onbeforeunload = this.beforeUnload;
 
 

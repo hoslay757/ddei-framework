@@ -1,7 +1,7 @@
 <template>
   <div class="ddei-core-panel-bottom-addpage" v-show="file?.extData?.owner == 1 || sslink?.can_edit == 1"
     @click="newSheet"
-    v-if="allowOpenMultSheets && (!this.max || (this.editor?.files[this.editor?.currentFileIndex]?.sheets?.length < this.max))">
+    v-if=" (!this.max || (this.editor?.files[this.editor?.currentFileIndex]?.sheets?.length < this.max))">
     <svg class="icon" aria-hidden="true">
       <use xlink:href="#icon-a-ziyuan376"></use>
     </svg>
@@ -10,7 +10,7 @@
     <div class="ddei-core-panel-bottom-pages-page" v-if="maxOpenSize == 0">
       <span></span>
     </div>
-    <div v-if="allowOpenMultSheets" @mousedown="drag && sheetDragStart(null, $event)" @click.left="changeSheet(index)"
+    <div @mousedown="drag && sheetDragStart(null, $event)" @click.left="changeSheet(index)"
       @click.right="(file?.extData?.owner == 1 || sslink?.can_edit == 1) && showMenu(sheet, $event)"
       @mousemove="drag && sheetDragOver($event)" @dblclick="startChangeSheetName(sheet, $event)"
       v-show="index >= openIndex && index < openIndex + maxOpenSize"
@@ -69,7 +69,6 @@ export default {
       file: null,
       maxOpenSize:0,
       openIndex: 0,
-      allowOpenMultSheets: true,
       sslink: null,
       user: null,
     };
@@ -121,10 +120,6 @@ export default {
     let sheet = file?.sheets[file?.currentSheetIndex];
     this.changeCurrentStage = true;
     this.editor.currentStage = sheet?.stage;
-    this.allowOpenMultSheets = DDeiEditorUtil.getConfigValue(
-      "GLOBAL_ALLOW_OPEN_MULT_SHEETS",
-      this.editor
-    );
     let userCookie = Cookies.get("user");
     if (userCookie && file) {
       this.user = JSON.parse(userCookie)

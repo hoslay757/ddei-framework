@@ -9,6 +9,7 @@ import type DDeiFile from "./file";
 import DDeiConfig from "@ddei-core/framework/js/config";
 import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import { markRaw } from "vue";
+import config from "./config"
 /**
  * DDei图形编辑器类，用于维护编辑器实例、全局状态以及全局属性
  */
@@ -43,19 +44,9 @@ class DDeiEditor {
   // 键盘对齐,开启后允许通过上下左右来改变控件位置,每次改变位置的大小为GLOBAL_HELP_LINE_WEIGHT
   static GLOBAL_KEYBOARD_ALIGN_ENABLE: boolean = true;
 
-  //是否允许同时打开多个文件，开启后展示多文件列表，并可以切换
-  static GLOBAL_ALLOW_OPEN_MULT_FILES: boolean = true;
-
-  //是否允许同时打开多个Sheet，开启后展示多Sheet，并可以切换
-  static GLOBAL_ALLOW_OPEN_MULT_SHEETS: boolean = true;
 
   //是否允许同时打开多个图层，开启后展示图层切换按钮
   static GLOBAL_ALLOW_OPEN_MULT_LAYERS: boolean = true;
-
-  //是否允许快捷编辑颜色
-  static GLOBAL_ALLOW_QUICK_COLOR: boolean = true;
-
-
 
 
   // 快捷键-键行为映射配置
@@ -250,7 +241,7 @@ class DDeiEditor {
       //注册并加载组件
       let components = plugin.getComponents(this)
       components?.forEach(component => {
-        this.components[component.name] = component
+        this.panels[component.name] = component
       }); 
     }
     if (plugin.getDialogs) {
@@ -378,17 +369,10 @@ class DDeiEditor {
   }
 
   static {
-    //加载外部配置
-    const global_config_ctx = import.meta.glob('@/ddei/config', { eager: true });
-    for (let i in global_config_ctx) {
-      let configData = global_config_ctx[i].default;
-      //载入外部配置
-      if (configData) {
-        DDeiEditor.applyConfig(configData)
-      }
-      break;
+    //载入缺省配置
+    if (config) {
+      DDeiEditor.applyConfig(config)
     }
-
   }
 
   // ============================ 属性 ============================
