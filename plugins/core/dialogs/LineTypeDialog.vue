@@ -1,5 +1,5 @@
 <template>
-  <div id="ddei-core-dialog-linetype" class="ddei-core-dialog-linetype">
+  <div id="ddei-core-dialog-linetype" class="ddei-core-dialog-linetype" v-if="forceRefresh">
     <div class="content">
       <div class="title">线段类型</div>
       <div class="group">
@@ -23,11 +23,13 @@
 import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
+import DialogBase from "./dialog"
+
 
 export default {
   name: "ddei-core-dialog-linetype",
   extends: null,
-  mixins: [],
+  mixins: [DialogBase],
   props: {
     //外部传入的插件扩展参数
     options: {
@@ -48,8 +50,6 @@ export default {
   watch: {},
   created() { },
   mounted() {
-    //获取编辑器
-    this.editor = DDeiEditor.ACTIVE_INSTANCE;
     let value = 1
     if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]) {
       value = this.editor?.tempDialogData[this.dialogId].value

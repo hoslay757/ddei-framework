@@ -1,5 +1,6 @@
 <template>
-  <div v-show="selectedModels?.size > 0" :id="dialogId" @mousedown="closeAllDialog()" class='ddei-core-dialog-quickpop'>
+  <div v-show="selectedModels?.size > 0" v-if="forceRefresh" :id="dialogId" @mousedown="closeAllDialog()"
+    class='ddei-core-dialog-quickpop'>
     <div v-if="operateState == 50" class="content">
       <div class="panel12">
         <div class="panel12-content-1">
@@ -40,8 +41,7 @@
           </component>
         </div>
         <div class="panel12-split-3 panel12-content-4 panel1-split-4">
-          <component :is="editor?.panels['ddei-core-btn-color']" attrCode="textStyle.bgcolor"
-            img="icon-a-ziyuan452">
+          <component :is="editor?.panels['ddei-core-btn-color']" attrCode="textStyle.bgcolor" img="icon-a-ziyuan452">
           </component>
         </div>
         <div class="panel12-content-4">
@@ -132,8 +132,7 @@
 
         </div>
         <div class="panel1-split-3 panel1-content-4 panel1-split-4">
-          <component :is="editor?.panels['ddei-core-btn-color']" attrCode="textStyle.bgcolor"
-            img="icon-a-ziyuan452">
+          <component :is="editor?.panels['ddei-core-btn-color']" attrCode="textStyle.bgcolor" img="icon-a-ziyuan452">
           </component>
         </div>
         <div class="panel1-content-4 ">
@@ -212,11 +211,12 @@ import DDeiEnumKeyActionInst from "@ddei-core/editor/js/enums/key-action-inst.js
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util.js";
 import DDeiEditorState from "@ddei-core/editor/js/enums/editor-state.js";
 import DDeiEditor from "@ddei-core/editor/js/editor";
+import DialogBase from "./dialog"
 
 export default {
   name: 'ddei-core-dialog-quickpop',
   extends: null,
-  mixins: [],
+  mixins: [DialogBase],
   props: {
     //外部传入的插件扩展参数
     options: {
@@ -227,14 +227,12 @@ export default {
   data() {
     return {
       dialogId: 'ddei-core-dialog-quickpop',
-      //当前编辑器
-      editor: null,
       //当前选中的控件
       selectedModels: null,
       //当前操作
       operateState: null,
       //全部都是线条
-      allLine: false
+      allLine: false,
     };
   },
   computed: {},
@@ -246,8 +244,7 @@ export default {
 
   },
   mounted() {
-    //获取编辑器
-    this.editor = DDeiEditor.ACTIVE_INSTANCE;
+
     let stage = this.editor.ddInstance.stage
     if (stage) {
       this.selectedModels = stage.selectedModels

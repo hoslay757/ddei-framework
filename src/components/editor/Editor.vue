@@ -8,7 +8,7 @@
 
   <div id="dialog_background_div" class="dialog_background_div"></div>
   <component v-for="(item, index) in editor?.getDialogs()" :is="item.dialog" :options="item.options"
-    v-bind="item.options" v-if="refreshDialogs"></component>
+    v-bind="item.options"></component>
   <MenuDialog v-show="!refreshMenu"></MenuDialog>
 </template>
 
@@ -58,8 +58,7 @@ export default {
       refreshMenu: true,
       refreshTopMenuView: true,
       initLeftWidth: 0,
-      initRightWidth: 0,
-      refreshDialogs: true,
+      initRightWidth: 0
     };
   },
   //注册组件
@@ -129,14 +128,6 @@ export default {
   methods: {
     setCurrentStage(stage){
       this.currentStage = stage
-    },
-
-    //强行刷新dialog
-    forceRefreshDialog() {
-      this.refreshDialogs = false;
-      this.$nextTick(() => {
-        this.refreshDialogs = true;
-      });
     },
 
     beforeUnload(e) {

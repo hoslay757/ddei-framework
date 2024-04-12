@@ -1,5 +1,5 @@
 <template>
-  <div id="ddei-core-dialog-choosecontrolgroup" class="ddei-core-dialog-choosecontrolgroup">
+  <div id="ddei-core-dialog-choosecontrolgroup" class="ddei-core-dialog-choosecontrolgroup" v-if="forceRefresh">
     <div class="content">
       <div class="title">选择需要的图形</div>
       <div class="group">
@@ -39,10 +39,12 @@
 import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiUtil from "@ddei-core/framework/js/util";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
+import DialogBase from "./dialog"
+
 export default {
   name: "ddei-core-dialog-choosecontrolgroup",
   extends: null,
-  mixins: [],
+  mixins: [DialogBase],
   props: {
     //外部传入的插件扩展参数
     options: {
@@ -53,8 +55,6 @@ export default {
   data() {
     return {
       dialogId: 'ddei-core-dialog-choosecontrolgroup',
-      //当前编辑器
-      editor: null,
       subGroups: null,
       menuId: null,
       selectGroups: []
@@ -65,8 +65,6 @@ export default {
   watch: {},
   created() { },
   mounted() {
-    //获取编辑器
-    this.editor = DDeiEditor.ACTIVE_INSTANCE;
     this.menuId = null
     if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]?.selectGroups) {
       this.selectGroups = this.editor?.tempDialogData[this.dialogId].selectGroups

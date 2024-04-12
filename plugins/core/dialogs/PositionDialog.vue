@@ -1,5 +1,5 @@
 <template>
-  <div id="ddei-core-dialog-changeposition" class="ddei-core-dialog-changeposition">
+  <div id="ddei-core-dialog-changeposition" class="ddei-core-dialog-changeposition" v-if="forceRefresh">
     <div class="content">
       <div class="title">位置</div>
       <div class="group">
@@ -41,11 +41,12 @@
 <script lang="ts">
 import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
+import DialogBase from "./dialog"
 
 export default {
   name: "ddei-core-dialog-changeposition",
   extends: null,
-  mixins: [],
+  mixins: [DialogBase],
   props: {
     //外部传入的插件扩展参数
     options: {
@@ -56,8 +57,6 @@ export default {
   data() {
     return {
       dialogId: 'ddei-core-dialog-changeposition',
-      //当前编辑器
-      editor: null,
     };
   },
   computed: {},
@@ -65,8 +64,6 @@ export default {
   watch: {},
   created() { },
   mounted() {
-    //获取编辑器
-    this.editor = DDeiEditor.ACTIVE_INSTANCE;
   },
   methods: {
     //是否置于上层

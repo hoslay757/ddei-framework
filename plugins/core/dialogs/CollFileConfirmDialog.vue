@@ -1,5 +1,5 @@
 <template>
-  <div :id="dialogId" class="ddei-core-dialog-collfile">
+  <div :id="dialogId" class="ddei-core-dialog-collfile" v-if="forceRefresh">
     <div class="content">
       <div class="header">
         <svg class="icon warn" aria-hidden="true">
@@ -24,11 +24,12 @@
 <script lang="ts">
 import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
+import DialogBase from "./dialog"
 
 export default {
   name: "ddei-core-dialog-collfile",
   extends: null,
-  mixins: [],
+  mixins: [DialogBase],
   props: {
     //外部传入的插件扩展参数
     options: {
@@ -39,8 +40,6 @@ export default {
   data() {
     return {
       dialogId: 'ddei-core-dialog-collfile',
-      //当前编辑器
-      editor: null,
     };
   },
   computed: {},
@@ -48,8 +47,6 @@ export default {
   watch: {},
   created() { },
   mounted() {
-    //获取编辑器
-    this.editor = DDeiEditor.ACTIVE_INSTANCE;
   },
   methods: {
     ok() {

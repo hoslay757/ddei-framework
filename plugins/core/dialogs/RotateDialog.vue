@@ -1,5 +1,5 @@
 <template>
-  <div id="ddei-core-dialog-changerotate" class="ddei-core-dialog-changerotate">
+  <div id="ddei-core-dialog-changerotate" class="ddei-core-dialog-changerotate" v-if="forceRefresh">
     <div class="content">
       <div class="title">翻转</div>
       <div class="group">
@@ -47,11 +47,12 @@ import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 import DDeiConfig from "@ddei-core/framework/js/config";
 import { Matrix3 } from 'three';
+import DialogBase from "./dialog"
 
 export default {
   name: "ddei-core-dialog-changerotate",
   extends: null,
-  mixins: [],
+  mixins: [DialogBase],
   props: {
     //外部传入的插件扩展参数
     options: {
@@ -62,8 +63,6 @@ export default {
   data() {
     return {
       dialogId: 'ddei-core-dialog-changerotate',
-      //当前编辑器
-      editor: null,
     };
   },
   computed: {},
@@ -71,8 +70,6 @@ export default {
   watch: {},
   created() { },
   mounted() {
-    //获取编辑器
-    this.editor = DDeiEditor.ACTIVE_INSTANCE;
 
   },
   methods: {

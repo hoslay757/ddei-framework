@@ -518,7 +518,7 @@ class DDeiEditorUtil {
     }
 
     //修改编辑器状态为快捷编辑中
-    editor?.editorViewer.forceRefreshDialog();
+    editor?.dialogs[id]?.viewer?.forceRefreshView();
     setTimeout(() => {
       if (!pos?.hiddenMask) {
         let backEle = document.getElementById("dialog_background_div");
@@ -692,7 +692,9 @@ class DDeiEditorUtil {
   static closeDialog(id: string, isPop: boolean = false) {
     let editor = DDeiEditor.ACTIVE_INSTANCE;
     let dialog = document.getElementById(id);
-    dialog.style.display = "none";
+    if (dialog){
+      dialog.style.display = "none";
+    }
     let dialogData
     if (!isPop && editor.tempDialogData) {
       dialogData = editor.tempDialogData[id]

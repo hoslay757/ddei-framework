@@ -1,5 +1,5 @@
 <template>
-  <div :id="dialogId" class="ddei-core-dialog-exportoption">
+  <div :id="dialogId" class="ddei-core-dialog-exportoption" v-if="forceRefresh">
     <div class="content">
       <div class="header">
         <svg v-if="mode == 1" class="icon warn" aria-hidden="true">
@@ -74,10 +74,12 @@ import DDeiUtil from "@ddei-core/framework/js/util";
 import JsPDF from "jspdf";
 import DDeiModelArrtibuteValue from "@ddei-core/framework/js/models/attribute/attribute-value";
 import DDeiConfig from "@ddei-core/framework/js/config";
+import DialogBase from "./dialog"
+
 export default {
   name: "ddei-core-dialog-exportoption",
   extends: null,
-  mixins: [],
+  mixins: [DialogBase],
   props: {
     //外部传入的插件扩展参数
     options: {
@@ -88,8 +90,6 @@ export default {
   data() {
     return {
       dialogId: "ddei-core-dialog-exportoption",
-      //当前编辑器
-      editor: null,
       ds1: [
         { value: 2, text: "普通" },
         { value: 3, text: "高清" },
@@ -125,8 +125,7 @@ export default {
   watch: {},
   created() { },
   mounted() {
-    //获取编辑器
-    this.editor = DDeiEditor.ACTIVE_INSTANCE;
+    
     let file = this.editor?.files[this.editor?.currentFileIndex];
     if (file) {
       let stage = this.editor?.ddInstance.stage;

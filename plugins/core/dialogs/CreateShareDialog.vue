@@ -1,5 +1,5 @@
 <template>
-  <div :id="dialogId" class="ddei-core-dialog-createshare">
+  <div :id="dialogId" class="ddei-core-dialog-createshare" v-if="forceRefresh">
     <div class="content">
       <div class="header">
         <svg class="icon warn" aria-hidden="true">
@@ -52,7 +52,7 @@
           <div class="link-end">
             <span v-if="linkData?.state != 0 && linkData?.endType == 99" style="color:green">永久生效</span>
             <span v-if="linkData?.state != 0 && linkData?.endType != 99 && linkData?.endDate" style="color:green">{{
-    linkData?.endDate }}
+              linkData?.endDate }}
               过期</span>
             <span v-if="linkData?.state == 0" style="color:red">已过期</span>
             <!-- <span v-if="linkData?.endType != 99 && linkData?.endDate" style="color:red">已过期</span> -->
@@ -84,10 +84,12 @@ import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
 import { createshortlink } from "@/lib/api/shortlink"
 import DDeiUtil from "@ddei-core/framework/js/util";
+import DialogBase from "./dialog"
+
 export default {
-  name: "dialog-createshare",
+  name: "ddei-core-dialog-createshare",
   extends: null,
-  mixins: [],
+  mixins: [DialogBase],
   props: {
     //外部传入的插件扩展参数
     options: {
@@ -98,8 +100,6 @@ export default {
   data() {
     return {
       dialogId: 'ddei-core-dialog-createshare',
-      //当前编辑器
-      editor: null,
       ds1: [
         { value: 1, text: '需要' },
         { value: 0, text: '不需要' }
@@ -123,8 +123,6 @@ export default {
   watch: {},
   created() { },
   mounted() {
-    //获取编辑器
-    this.editor = DDeiEditor.ACTIVE_INSTANCE;
   },
   methods: {
 

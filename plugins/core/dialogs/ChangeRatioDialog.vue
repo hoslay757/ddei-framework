@@ -1,5 +1,5 @@
 <template>
-  <div :id="dialogId" class="ddei-core-dialog-changeratio">
+  <div :id="dialogId" class="ddei-core-dialog-changeratio" v-if="forceRefresh">
     <div class="content">
       <div class="title">{{title}}</div>
       <div class="group">
@@ -19,12 +19,13 @@
 </template>
 
 <script lang="ts">
-import DDeiEditor from "@ddei-core/editor/js/editor";
+
+import DialogBase from "./dialog"
 
 export default {
-  name: "dialog-changeratio",
+  name: "ddei-core-dialog-changeratio",
   extends: null,
-  mixins: [],
+  mixins: [DialogBase],
   props: {
     //外部传入的插件扩展参数
     options: {
@@ -64,8 +65,6 @@ export default {
   data() {
     return {
       dialogId: 'ddei-core-dialog-changeratio',
-      //当前编辑器
-      editor: null,
       ratioInputValue: 100,
     };
   },
@@ -74,8 +73,7 @@ export default {
   watch: {},
   created() { },
   mounted() {
-    //获取编辑器
-    this.editor = DDeiEditor.ACTIVE_INSTANCE;
+    
     if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]) {
       this.ratioInputValue = this.editor?.tempDialogData[this.dialogId]?.ratio * 100
     }

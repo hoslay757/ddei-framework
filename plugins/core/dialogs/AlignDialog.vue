@@ -1,5 +1,5 @@
 <template>
-  <div id='ddei-core-dialog-align' class="ddei-core-dialog-align">
+  <div id='ddei-core-dialog-align' class="ddei-core-dialog-align" v-if="forceRefresh">
     <div class="content">
       <div class="title">对齐</div>
       <div class="group">
@@ -60,11 +60,12 @@
 <script lang="ts">
 import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
+import DialogBase from "./dialog"
 
 export default {
   name: "ddei-core-dialog-align",
   extends: null,
-  mixins: [],
+  mixins: [DialogBase],
   props: {
     options: {
       type: Object,
@@ -74,8 +75,6 @@ export default {
   data() {
     return {
       dialogId: 'ddei-core-dialog-align',
-      //当前编辑器
-      editor: null,
     };
   },
   computed: {},
@@ -83,8 +82,6 @@ export default {
   watch: {},
   created() { },
   mounted() {
-    //获取编辑器
-    this.editor = DDeiEditor.ACTIVE_INSTANCE;
 
   },
   methods: {

@@ -1,5 +1,5 @@
 <template>
-  <div :id="dialogId" v-if="allowOpenMultLayers" class="ddei-core-dialog-managerlayers">
+  <div :id="dialogId" v-if="forceRefresh && allowOpenMultLayers" class="ddei-core-dialog-managerlayers">
     <div class="content">
       <div class="title">图层</div>
       <div class="group">
@@ -15,7 +15,7 @@
             v-for="(layer, index) in currentStage?.layers" draggable="true" @dragstart="layerDragStart(index, $event)"
             @dragover="layerDragOver($event)" @drop="layerDragDrop($event)" @dragleave="layerDragCancel($event)">
             <span style="grid-column:1/8;" @dblclick="startChangeLayerName(layer, $event)">{{ layer.name ? layer.name :
-    '图层' }}</span>
+              '图层' }}</span>
             <svg class="icon" aria-hidden="true" v-show="file?.extData?.owner == 1 || sslink?.can_edit == 1"
               @click="removeLayer(index)">
               <use xlink:href="#icon-a-ziyuan401"></use>
@@ -60,11 +60,13 @@ import DDeiUtil from "@ddei-core/framework/js/util";
 import DDeiEditorState from "@ddei-core/editor//js/enums/editor-state";
 import DDeiEnumOperateType from "@ddei-core/framework/js/enums/operate-type";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
+import DialogBase from "./dialog";
 import Cookies from "js-cookie";
+
 export default {
   name: "ddei-core-dialog-managerlayers",
   extends: null,
-  mixins: [],
+  mixins: [DialogBase],
   props: {
     //外部传入的插件扩展参数
     options: {
@@ -75,8 +77,6 @@ export default {
   data() {
     return {
       dialogId: 'ddei-core-dialog-managerlayers',
-      //当前编辑器
-      editor: null,
       allowAddLayer: true,
       allowOpenMultLayers: true,
       currentStage: null,
@@ -90,8 +90,6 @@ export default {
   watch: {},
   created() { },
   mounted() {
-    //获取编辑器
-    this.editor = DDeiEditor.ACTIVE_INSTANCE;
     //获取权限
     this.allowOpenMultLayers = DDeiEditorUtil.getConfigValue(
       "GLOBAL_ALLOW_OPEN_MULT_LAYERS",

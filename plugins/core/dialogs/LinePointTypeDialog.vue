@@ -1,5 +1,5 @@
 <template>
-  <div :id="dialogId" class="ddei-core-dialog-linepointtype">
+  <div :id="dialogId" class="ddei-core-dialog-linepointtype" v-if="forceRefresh">
     <div class="content">
       <div class="group">
         <div class="title">选择端点类型</div>
@@ -17,11 +17,13 @@
 <script lang="ts">
 import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
+import DialogBase from "./dialog"
+
 
 export default {
   name: "ddei-core-dialog-linepointtype",
   extends: null,
-  mixins: [],
+  mixins: [DialogBase],
   props: {
     //外部传入的插件扩展参数
     options: {
@@ -32,8 +34,6 @@ export default {
   data() {
     return {
       dialogId: 'ddei-core-dialog-linepointtype',
-      //当前编辑器
-      editor: null,
       value: [],
       dataSource: null
     }
@@ -43,8 +43,6 @@ export default {
   watch: {},
   created() { },
   mounted() {
-    //获取编辑器
-    this.editor = DDeiEditor.ACTIVE_INSTANCE;
     if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]?.value) {
       this.value = this.editor?.tempDialogData[this.dialogId].value
     }

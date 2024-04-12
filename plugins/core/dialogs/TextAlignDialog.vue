@@ -1,5 +1,5 @@
 <template>
-  <div id="ddei-core-dialog-textalign" class="ddei-core-dialog-textalign">
+  <div id="ddei-core-dialog-textalign" class="ddei-core-dialog-textalign" v-if="forceRefresh">
     <div class="content">
       <div class="title">文本对齐</div>
       <div class="group">
@@ -41,11 +41,12 @@
 import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util.js";
+import DialogBase from "./dialog"
 
 export default {
   name: "ddei-core-dialog-textalign",
   extends: null,
-  mixins: [],
+  mixins: [DialogBase],
   props: {
     //外部传入的插件扩展参数
     options: {
@@ -56,8 +57,6 @@ export default {
   data() {
     return {
       dialogId: 'ddei-core-dialog-textalign',
-      //当前编辑器
-      editor: null,
       value: 5,//当前选中值
     };
   },
@@ -66,8 +65,6 @@ export default {
   watch: {},
   created() { },
   mounted() {
-    //获取编辑器
-    this.editor = DDeiEditor.ACTIVE_INSTANCE;
     let align = 2;
     let valign = 2;
     if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]) {

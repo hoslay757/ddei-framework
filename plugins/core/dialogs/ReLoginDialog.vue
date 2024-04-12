@@ -1,5 +1,5 @@
 <template>
-  <div :id="dialogId" class="ddei-core-dialog-relogin">
+  <div :id="dialogId" class="ddei-core-dialog-relogin" v-if="forceRefresh">
     <div class="content">
       <div class="header">
         <svg class="icon warn" aria-hidden="true">
@@ -44,10 +44,11 @@ import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
 import { login, userinfo } from "@/lib/api/login";
 import Cookies from "js-cookie";
 import DDeiEditorState from "@ddei-core/editor//js/enums/editor-state";
+import DialogBase from "./dialog"
 export default {
   name: "ddei-core-dialog-relogin",
   extends: null,
-  mixins: [],
+  mixins: [DialogBase],
   props: {
     options: {
       type: Object,
@@ -58,8 +59,6 @@ export default {
     return {
       dialogId: 'ddei-core-dialog-relogin',
       icon: null,
-      //当前编辑器
-      editor: null,
       loginMessage: "",
       user: "",
       form: {
@@ -75,9 +74,6 @@ export default {
   created() { },
   mounted() {
 
-
-    //获取编辑器
-    this.editor = DDeiEditor.ACTIVE_INSTANCE;
     if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]?.icon) {
       this.icon = this.editor?.tempDialogData[this.dialogId].icon
     }

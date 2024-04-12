@@ -1,5 +1,5 @@
 <template>
-  <div :id="dialogId" class="ddei-core-dialog-selectborderdash">
+  <div :id="dialogId" class="ddei-core-dialog-selectborderdash" v-if="forceRefresh">
     <div class="content">
       <div class="group">
         <div class="title">选择线段类型</div>
@@ -26,11 +26,12 @@
 import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
 import DDeiUtil from "../../framework/js/util.ts";
+import DialogBase from "./dialog"
 
 export default {
   name: "ddei-core-dialog-selectborderdash",
   extends: null,
-  mixins: [],
+  mixins: [DialogBase],
   props: {
     //外部传入的插件扩展参数
     options: {
@@ -41,8 +42,6 @@ export default {
   data() {
     return {
       dialogId: 'ddei-core-dialog-selectborderdash',
-      //当前编辑器
-      editor: null,
       value: [],
       //最近使用的颜色
       dataSource: null
@@ -53,8 +52,6 @@ export default {
   watch: {},
   created() { },
   mounted() {
-    //获取编辑器
-    this.editor = DDeiEditor.ACTIVE_INSTANCE;
     if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]?.value) {
       this.value = this.editor?.tempDialogData[this.dialogId].value
     }

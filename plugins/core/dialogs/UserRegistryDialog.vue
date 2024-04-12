@@ -1,5 +1,5 @@
 <template>
-  <div :id="dialogId" class="ddei-core-dialog-userregistry">
+  <div :id="dialogId" class="ddei-core-dialog-userregistry" v-if="forceRefresh">
     <form>
       <div class="content">
         <div class="header">
@@ -89,10 +89,12 @@ import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
 import { register, userinfo } from "@/lib/api/login";
 import Cookies from "js-cookie";
+import DialogBase from "./dialog"
+
 export default {
   name: "ddei-core-dialog-userregistry",
   extends: null,
-  mixins: [],
+  mixins: [DialogBase],
   props: {
     //外部传入的插件扩展参数
     options: {
@@ -104,8 +106,6 @@ export default {
     return {
       dialogId: 'ddei-core-dialog-userregistry',
       icon: null,
-      //当前编辑器
-      editor: null,
       loginMessage: "",
       user: "",
       form: {
@@ -123,11 +123,6 @@ export default {
   watch: {},
   created() { },
   mounted() {
-
-
-
-    //获取编辑器
-    this.editor = DDeiEditor.ACTIVE_INSTANCE;
     if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]?.icon) {
       this.icon = this.editor?.tempDialogData[this.dialogId].icon
     }

@@ -123,6 +123,7 @@ export default {
     let file = this.editor?.files[this.editor?.currentFileIndex];
     let sheet = file?.sheets[file?.currentSheetIndex];
     this.editor.currentStage = sheet?.stage;
+
     this.allowStageRatio = DDeiEditorUtil.getConfigValue(
       "GLOBAL_ALLOW_STAGE_RATIO",
       this.editor

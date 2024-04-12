@@ -1,5 +1,5 @@
 <template>
-  <div :id="dialogId" class="ddei-core-dialog-qcview">
+  <div :id="dialogId" class="ddei-core-dialog-qcview" v-if="forceRefresh">
     <div class="items">
       <div class="item" :title="item.text" v-for="item in dataSource" @click="ok(item)">
         <svg class="icon" aria-hidden="true">
@@ -14,11 +14,12 @@
 <script lang="ts">
 import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
+import DialogBase from "./dialog"
 
 export default {
   name: "ddei-core-dialog-qcview",
   extends: null,
-  mixins: [],
+  mixins: [DialogBase],
   props: {
     //外部传入的插件扩展参数
     options: {
@@ -29,9 +30,9 @@ export default {
   data() {
     return {
       dialogId: 'ddei-core-dialog-qcview',
-      //当前编辑器
-      editor: null,
       dataSource: null,
+      //强制刷新控制变量
+      forceRefresh: false,
     };
   },
   computed: {},
@@ -39,8 +40,6 @@ export default {
   watch: {},
   created() { },
   mounted() {
-    //获取编辑器
-    this.editor = DDeiEditor.ACTIVE_INSTANCE;
     if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]?.dataSource) {
       this.dataSource = this.editor?.tempDialogData[this.dialogId]?.dataSource;
     }

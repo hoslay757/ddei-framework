@@ -1,5 +1,5 @@
 <template>
-  <div id='ddei-core-dialog-setstyle' class='ddei-core-dialog-setstyle'>
+  <div id='ddei-core-dialog-setstyle' class='ddei-core-dialog-setstyle' v-if="forceRefresh">
     <div class="content">
       <div class="title">快捷设置样式</div>
       <div class="group">
@@ -20,11 +20,12 @@ import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util.js";
 import DDeiUtil from "@ddei-core/framework/js/util.js";
+import DialogBase from "./dialog"
 
 export default {
   name: "ddei-core-dialog-setstyle",
   extends: null,
-  mixins: [],
+  mixins: [DialogBase],
   props: {
     //外部传入的插件扩展参数
     options: {
@@ -35,8 +36,6 @@ export default {
   data() {
     return {
       dialogId: 'ddei-core-dialog-setstyle',
-      //当前编辑器
-      editor: null,
       ds: [
         { border: DDeiUtil.rgb2hex("rgb(78,215,197)"), fill: DDeiUtil.rgb2hex("rgb(255,255,255)"), round: 4 },
         { border: DDeiUtil.rgb2hex("rgb(70,125,254)"), fill: DDeiUtil.rgb2hex("rgb(255,255,255)"), round: 4 },
@@ -71,8 +70,6 @@ export default {
   watch: {},
   created() { },
   mounted() {
-    //获取编辑器
-    this.editor = DDeiEditor.ACTIVE_INSTANCE;
 
   },
   methods: {
