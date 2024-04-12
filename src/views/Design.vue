@@ -49,8 +49,8 @@ import { markRaw } from "vue";
 import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
 
 //引入插件
-import { DDeiCoreTopMenuPanel, DDeiCoreHotkeys,DDeiKeyActionAllSelect,DDeiCorePropertyViewPanel,DDeiCoreToolboxPanel,DDeiCoreSheetsPanel, DDeiCoreChangeRatioPanel, DDeiCoreChangeRatioDialog,DDeiCoreShapeCountPanel, DDeiCoreBottomMenuPanel,DDeiCoreStandLayout, DDeiCoreOpenFilesViewPanel, DDeiCoreQuickColorViewPanel, DDeiCoreAlignDialog } from "@ddei/core";
-
+import { DDeiCoreTopMenuPanel,DDeiCoreHotkeys,DDeiKeyActionAllSelect,DDeiCorePropertyViewPanel,DDeiCoreToolboxPanel,DDeiCoreSheetsPanel, DDeiCoreChangeRatioPanel, DDeiCoreChangeRatioDialog,DDeiCoreShapeCountPanel, DDeiCoreBottomMenuPanel,DDeiCoreStandLayout, DDeiCoreOpenFilesViewPanel, DDeiCoreQuickColorViewPanel, DDeiCoreAlignDialog } from "@ddei/core";
+import DDeiExtUML from "@ddei/uml"
 export default {
   props: {},
   data() {
@@ -95,13 +95,13 @@ export default {
           //   },
           // }),
           //某个快捷键的配置
-          // DDeiKeyActionAllSelect.configuraton({
-          //   'keys': [
-          //     {
-          //       ctrl: 1, keys: "66"
-          //     }
-          //   ]
-          // }),
+          DDeiKeyActionAllSelect.configuraton({
+            'keys': [
+              {
+                ctrl: 1, keys: "66"
+              }
+            ]
+          }),
           
           // DDeiCoreBottomMenuPanel,
           DDeiCoreBottomMenuPanel.configuraton({
@@ -137,6 +137,8 @@ export default {
             
             expand: false
           }),
+
+          
           // DDeiCoreBottomMenuPanel.configuraton({
           //   config: function (options: object) {
           //         options.panels.splice(0,1);
@@ -160,6 +162,9 @@ export default {
           // DDeiCoreAlignDialog.configuraton({ a: "1",b:2 }),
           // DDeiCoreTopMenuPanel.configuraton({ top: "123" }),
           // }),
+
+          //加载UML插件
+          DDeiExtUML
         ],
       }),
     };

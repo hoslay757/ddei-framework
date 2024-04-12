@@ -10,6 +10,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import { markRaw } from "vue";
 import config from "./config"
 import { cloneDeep } from "lodash";
+
 /**
  * DDei图形编辑器类，用于维护编辑器实例、全局状态以及全局属性
  */
@@ -163,7 +164,6 @@ class DDeiEditor {
             }
           }
           
-          
         }
 
 
@@ -227,6 +227,53 @@ class DDeiEditor {
         
         this.hotkeys[hotkey.name] = hotkey
 
+      });
+    }
+
+    //加载控件相关插件
+    //控件配置
+    if (plugin.getControls) {
+      //注册并加载控件
+      let controls = plugin.getControls(this)
+      controls?.forEach(control => {
+        this.controls.set(control.id,control)
+      });
+    }
+
+    //控件分组
+    if (plugin.getGroups) {
+      //注册并加载分组
+      let groups = plugin.getGroups(this)
+      groups?.forEach(group => {
+        let finded = false;
+        for(let i = 0;i < this.groups.length;i++){
+          if(this.groups[i].id == group.id){
+            this.groups[i] = group
+            finded = true
+            break;
+          }
+        }
+        if (!finded){
+          this.groups.push(group)
+        }
+      });
+    }
+
+    //控件模型定义
+    if (plugin.getModels) {
+      //注册并加载控件
+      let models = plugin.getModels(this)
+      models?.forEach(model => {
+        this.controlModelClasses[model.ClsName] = model
+      });
+    }
+
+    //控件视图定义
+    if (plugin.getViews) {
+      //注册并加载控件
+      let views = plugin.getViews(this)
+      views?.forEach(view => {
+        this.controlViewClasses[view.ClsName] = view
       });
     }
 
@@ -353,6 +400,14 @@ class DDeiEditor {
   hotkeys: object = markRaw({});
   // 快捷键-键行为映射配置
   hotKeyMapping: object[] = markRaw([]);
+  //当前引入的外部控件配置
+  controls: Map<string,object> = markRaw(new Map());
+  //当前引入的外部分组配置
+  groups: object = markRaw([]);
+  //当前引入的外部控件模型定义
+  controlModelClasses: object = markRaw({});
+  //当前引入的外部控件视图定义
+  controlViewClasses: object = markRaw({});
   //当前布局的名称，如果为空，则获取最后一个有效的布局
   currentLayout: string = "ddei-core-layout-standard";
 

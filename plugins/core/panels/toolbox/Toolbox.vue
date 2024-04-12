@@ -143,9 +143,9 @@ export default {
       let groups = []
       hisGroups.forEach(hg => {
         let group = null;
-        for (let i = 0; i < DDeiEditorUtil.groupOriginDefinies.length; i++) {
-          if (DDeiEditorUtil.groupOriginDefinies[i].id == hg.id) {
-            group = DDeiEditorUtil.groupOriginDefinies[i]
+        for (let i = 0; i < this.editor.groups.length; i++) {
+          if (this.editor.groups[i].id == hg.id) {
+            group = this.editor.groups[i]
             break;
           }
         }
@@ -156,7 +156,7 @@ export default {
       })
       this.groups = groups;
     } else {
-      this.groups = clone(DDeiEditorUtil.groupOriginDefinies)
+      this.groups = clone(this.editor.groups)
       DDeiEditorUtil.whiteRecentlyToolGroups(this.groups)
     }
     if (this.customGroups){
@@ -384,9 +384,9 @@ export default {
      */
     groupBoxChoose(groupid: object, choose: boolean) {
       let group = null
-      for (let i = 0; i < DDeiEditorUtil.groupOriginDefinies.length; i++) {
-        if (DDeiEditorUtil.groupOriginDefinies[i].id == groupid) {
-          group = DDeiEditorUtil.groupOriginDefinies[i]
+      for (let i = 0; i < this.editor.groups.length; i++) {
+        if (this.editor.groups[i].id == groupid) {
+          group = this.editor.groups[i]
           break;
         }
       }

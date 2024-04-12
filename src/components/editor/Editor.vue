@@ -32,7 +32,6 @@ import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
 import DDeiCore from "@ddei/core";
 
 import ICONS from "./js/icon";
-import { controlOriginDefinies, groupOriginDefinies } from "./configs/toolgroup"
 import { markRaw } from "vue";
 
 export default {
@@ -93,10 +92,6 @@ export default {
     }
     
     window.onbeforeunload = this.beforeUnload;
-
-
-    DDeiEditorUtil.controlOriginDefinies = controlOriginDefinies;
-    DDeiEditorUtil.groupOriginDefinies = groupOriginDefinies;
     DDeiEditorUtil.ICONS = ICONS;
 
   },

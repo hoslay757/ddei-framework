@@ -137,7 +137,6 @@ import ICONS from '@/components/editor/js/icon'
 import { debounce } from 'lodash'
 import { createVNode } from 'vue'
 import FONTS from "@/components/editor/configs/fonts/font"
-import { groupOriginDefinies, controlOriginDefinies } from "@/components/editor/configs/toolgroup";
 import { message, Modal } from 'ant-design-vue'
 
 export default {

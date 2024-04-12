@@ -7,6 +7,7 @@ import DDeiUtil from "@ddei-core/framework/js/util";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 import DDeiEditorEnumBusCommandType from "../enums/editor-command-type";
 import DDeiEditorState from "../enums/editor-state";
+import { cloneDeep } from "lodash";
 
 class DDeiEditorUtil {
 
@@ -14,11 +15,6 @@ class DDeiEditorUtil {
 
   //最新使用的工具栏
   static recentlyToolGroups = null
-
-  //外部传入的控件定义
-  static controlOriginDefinies = null
-
-  static groupOriginDefinies = null
 
   //外部传入的图标定义
   static ICONS = null
@@ -209,11 +205,14 @@ class DDeiEditorUtil {
   /**
    * 获取子元素定义的json信息
    */
-  static getSubControlJSON(modelCode: string): object {
+  static getSubControlJSON(modelCode: string,editor:DDeiEditor|null|undefined): object {
+    if(!editor){
+      editor = DDeiEditor.ACTIVE_INSTANCE;
+    }
     //如果存在初始化子控件的json，则记录在类变量上
-    let controlDefine = DDeiEditorUtil.controlOriginDefinies?.get(modelCode);
+    let controlDefine = editor.controls?.get(modelCode);
     if (controlDefine.subcontrol) {
-      let subControlDefine = DDeiEditorUtil.controlOriginDefinies?.get(controlDefine.subcontrol);
+      let subControlDefine = editor.controls?.get(controlDefine.subcontrol);
       let configAtrs = DDeiEditorUtil.getAttrValueByConfig(subControlDefine, [
         "layout",
       ]);
@@ -278,7 +277,10 @@ class DDeiEditorUtil {
      * @param paths 属性路径,支持传入多个
      * @return 由构成的属性的实际路径和配置中对应的值组成的Map
      */
-  static getMenuConfig(model: object): object | null {
+  static getMenuConfig(model: object, editor: DDeiEditor | null | undefined): object | null {
+    if (!editor){
+      editor = DDeiEditor.ACTIVE_INSTANCE;
+    }
     switch (model?.modelType) {
       case "DDeiFile": {
 
@@ -300,7 +302,7 @@ class DDeiEditorUtil {
         return menus
       }
       default: {
-        let controlDefine = DDeiEditorUtil.controlOriginDefinies?.get(model.modelCode);
+        let controlDefine = editor.controls?.get(model.modelCode);
         if (controlDefine) {
           return controlDefine.menus;
         }
@@ -316,7 +318,10 @@ class DDeiEditorUtil {
    * @param paths 属性路径,支持传入多个
    * @return 由构成的属性的实际路径和配置中对应的值组成的Map
    */
-  static getAttrValueByConfig(configModel: object, paths: string[] | string): Map<string, object> {
+  static getAttrValueByConfig(configModel: object, paths: string[] | string,editor:DDeiEditor|null|undefined): Map<string, object> {
+    if (!editor){
+      editor = DDeiEditor.ACTIVE_INSTANCE;
+    }
     let returnDatas: Map<string, object> = new Map();
     if (configModel && paths) {
       let searchPaths = null;
@@ -334,7 +339,7 @@ class DDeiEditorUtil {
           id = id.substring(id, id.lastIndexOf("_shadow"))
         }
         //找到控件定义
-        let control = DDeiEditorUtil.controlOriginDefinies?.get(id);
+        let control = editor.controls?.get(id);
         if (control) {
           searchMap = control.attrDefineMap;
         }
@@ -378,10 +383,13 @@ class DDeiEditorUtil {
    * 返回控件原始定义
    * @param modelCode model或id
    */
-  static getControlDefine(configModel: DDeiAbstractShape) {
+  static getControlDefine(configModel: DDeiAbstractShape,editor:DDeiEditor|null|undefined) {
+    if (!editor) {
+      editor = DDeiEditor.ACTIVE_INSTANCE;
+    }
     let id = configModel.modelCode ? configModel.modelCode : configModel.id;
     //找到控件定义
-    return DDeiEditorUtil.controlOriginDefinies?.get(id);
+    return editor.controls?.get(id);
   }
 
   /**
@@ -748,10 +756,6 @@ class DDeiEditorUtil {
       DDeiEditorUtil.showDialog(id, data, pos, el, isPop, keepState)
     }
   }
-
-
-
-
 
 
 

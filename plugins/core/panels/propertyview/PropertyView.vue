@@ -167,7 +167,7 @@ export default {
       }
 
       let firstControlDefine = cloneDeep(
-        DDeiEditorUtil.controlOriginDefinies.get(firstModel?.modelCode)
+        this.editor.controls.get(firstModel?.modelCode)
       );
       //获取第一个组件及其定义
       if (firstControlDefine) {
@@ -175,7 +175,7 @@ export default {
         let removeKeys = [];
         for (let i = 0; i < models.length; i++) {
           let curModel: DDeiAbstractShape = models[i];
-          let curDefine = DDeiEditorUtil.controlOriginDefinies.get(curModel.modelCode);
+          let curDefine = this.editor.controls.get(curModel.modelCode);
 
           firstControlDefine.attrDefineMap.forEach(
             (firstAttrDefine, attrKey) => {
@@ -222,7 +222,7 @@ export default {
         if (firstControlDefine.type == "DDeiStage") {
           //加载layer的配置
           let layerControlDefine = cloneDeep(
-            DDeiEditorUtil.controlOriginDefinies.get("DDeiLayer")
+            this.editor.controls.get("DDeiLayer")
           );
           let layer = firstModel.layers[firstModel.layerIndex];
           layerControlDefine.attrDefineMap.forEach((attrDefine, attrKey) => {
@@ -329,7 +329,7 @@ export default {
     getFirstChildAttrsGroup(control) {
       if (control.models?.size > 0) {
         let firstControl = control.models.get(control.midList[0])
-        let curDefine = DDeiEditorUtil.controlOriginDefinies.get(firstControl.modelCode);
+        let curDefine = this.editor.controls.get(firstControl.modelCode);
         if (curDefine.groups?.length > 0) {
           let returnGroups = curDefine.groups;
           returnGroups.forEach(group => {

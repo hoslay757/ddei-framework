@@ -1,16 +1,12 @@
 import DDeiEditorArrtibute from '@ddei-core/editor/js/attribute/editor-attribute';
 import { cloneDeep } from 'lodash'
 import DDeiUtil from '@ddei-core/framework/js/util';
-//已读取的配置组原始定义
-const groupOriginDefinies = [];
-
-//已读取的控件原始定义
-const controlOriginDefinies = new Map();
 
 const ToDefaultPropertys = ["fill.type", "fill.color", "fill.image", "fill.opacity", "border.type", "border.color", "borderOpacity", "borderWidth", "borderDash", "borderRound",
   "font.family", "font.size", "font.color", "fontAlign", "textStyle.feed"
   , "textStyle.scale", "textStyle.hollow", "textStyle.bold", "textStyle.italic"
   , "textStyle.underline", "textStyle.deleteline", "textStyle.topline", "textStyle.hspace", "textStyle.vspace"]
+
 //将属性转换为更深的groups中
 const parseAttrsToGroup = function (control) {
 
@@ -50,11 +46,11 @@ const parseAttrsToGroup = function (control) {
 
 }
 
-const loadControlByFrom = function (control) {
+const loadControlByFrom = function (controlOriginDefinies: Map<string, object>, control: object) {
   if (control.from && !control.def) {
     let fromControl = controlOriginDefinies.get(control.from)
     if (fromControl.from) {
-      loadControlByFrom(fromControl)
+      loadControlByFrom(controlOriginDefinies, fromControl)
     }
     control.attrs = cloneDeep(fromControl.attrs)
     control.groups = cloneDeep(fromControl.groups)
@@ -164,7 +160,7 @@ const loadControlByFrom = function (control) {
       control.define?.composes.forEach(compose => {
         let composeControlDefine = controlOriginDefinies.get(compose.id)
         if (composeControlDefine.from) {
-          loadControlByFrom(composeControlDefine)
+          loadControlByFrom(controlOriginDefinies, composeControlDefine)
         }
         compose.attrs = cloneDeep(composeControlDefine.attrs)
         let composeDefine = cloneDeep(composeControlDefine.define)
@@ -181,7 +177,7 @@ const loadControlByFrom = function (control) {
     }
 
     //处理others
-    loadControlOthers(control)
+    loadControlOthers(controlOriginDefinies, control)
 
     if (fromMenus) {
       if (!control.menus) {
@@ -205,12 +201,12 @@ const loadControlByFrom = function (control) {
   control.def = true;
 };
 
-const loadControlOthers = function (control) {
+const loadControlOthers = function (controlOriginDefinies, control) {
   if (control.others) {
     control.others.forEach(other => {
       let otherControlDefine = controlOriginDefinies.get(other.id)
       if (otherControlDefine.from) {
-        loadControlByFrom(otherControlDefine)
+        loadControlByFrom(controlOriginDefinies, otherControlDefine)
       }
       other.code = otherControlDefine.code
       let otherDefine = cloneDeep(otherControlDefine.define)
@@ -227,110 +223,56 @@ const loadControlOthers = function (control) {
       }
       other.type = otherControlDefine.type
       other.others = otherControlDefine.others
-      loadControlOthers(other)
+      loadControlOthers(controlOriginDefinies, other)
     });
   }
 }
 
-//加载控件定义
-const control_ctx = import.meta.glob('./controls/**', { eager: true })
-let loadArray = [];
-for (let i in control_ctx) {
-  let cls = control_ctx[i];
-  loadArray.push(cls);
-}
-// const out_control_ctx = import.meta.glob('@/ddei/controls/**', { eager: true });
-// for (let i in out_control_ctx) {
-//   let cls = out_control_ctx[i];
-//   loadArray.push(cls);
-// }
-let stage_ctx = import.meta.glob('./stage.ts', { eager: true })
-for (let i in stage_ctx) {
-  let cls = stage_ctx[i];
-  loadArray.push(cls);
-}
-let layer_ctx = import.meta.glob('./layer.ts', { eager: true })
-for (let i in layer_ctx) {
-  let cls = layer_ctx[i];
-  loadArray.push(cls);
-}
-loadArray.forEach(item => {
-  let controlDefine = item.default;
-  controlOriginDefinies.set(controlDefine.id, controlDefine);
-})
 
-controlOriginDefinies.forEach(control => {
-  loadControlByFrom(control)
-})
-loadArray = [];
-//加载toolbox定义信息
-let ctx = import.meta.glob('./toolgroups/**', { eager: true })
-for (let path in ctx) {
-  loadArray.push(ctx[path]);
-}
 
-let out_ctx = import.meta.glob('@/ddei/groups/**', { eager: true });
-for (let path in out_ctx) {
-  loadArray.push(out_ctx[path]);
-}
-
-controlOriginDefinies.forEach(control => {
-  if (control.define) {
-    delete control.define.font
-    delete control.define.textStyle
-    delete control.define.border
-    delete control.define.fill
-  }
-  delete control.attrs
-})
-
-//组的定义
-loadArray.forEach(item => {
-  let group = item.default;
-  //读取控件的信息,将实际的控件读取进到group中
-  if (group.controls) {
-    let cos = [];
-    group.controls.forEach(control => {
-      let id = control.id;
-      let controlDefine = controlOriginDefinies.get(id);
-      if (controlDefine) {
-        //复制控件定义
-        let c = cloneDeep(controlDefine);
-        //复写group中定义的属性
-        for (let i in control) {
-          if (control[i] != undefined && control[i] != null) {
-            c[i] = control[i];
+const loadAndSortGroup = function (groups, controlOriginDefinies){
+  let groupOriginDefinies = []
+  //组的定义
+  groups.forEach(group => {
+    //读取控件的信息,将实际的控件读取进到group中
+    if (group.controls) {
+      let cos = [];
+      group.controls.forEach(control => {
+        let id = control.id;
+        let controlDefine = controlOriginDefinies.get(id);
+        if (controlDefine) {
+          //复制控件定义
+          let c = cloneDeep(controlDefine);
+          //复写group中定义的属性
+          for (let i in control) {
+            if (control[i] != undefined && control[i] != null) {
+              c[i] = control[i];
+            }
           }
+          //处理属性
+          cos.push(c);
         }
-        //处理属性
-        cos.push(c);
-      }
-    });
-    // 内部控件排序
-    cos.sort((a, b) => {
-      return a.orderNo - b.orderNo
-    })
-    group.controls = cos;
-  }
-  groupOriginDefinies.push(group)
-});
+      });
+      // 内部控件排序
+      cos.sort((a, b) => {
+        return a.orderNo - b.orderNo
+      })
+      group.controls = cos;
+    }
+    group.display = true
+    groupOriginDefinies.push(group)
+  });
+
+  //对分组进行排序
+  groupOriginDefinies.sort((a, b) => {
+    return a.orderNo - b.orderNo
+  })
+
+  return groupOriginDefinies;
+}
 
 
 
-//对分组进行排序
-groupOriginDefinies.sort((a, b) => {
-  return a.orderNo - b.orderNo
-})
 
-groupOriginDefinies.forEach((item, index) => {
-  item.display = true;
-  //缺省第一个展开
-  if (index == 0) {
-    item.expand = true;
-  } else {
-    item.expand = false;
-  }
-});
 
-export default groupOriginDefinies;
-export { groupOriginDefinies, controlOriginDefinies };
+export { loadControlByFrom, loadAndSortGroup };

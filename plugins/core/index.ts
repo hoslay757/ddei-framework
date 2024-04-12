@@ -4,6 +4,7 @@ import DDeiCoreLayouts from "./layouts";
 import DDeiCoreDialogs from "./dialogs";
 import DDeiCorePropEditors from "./propeditors";
 import DDeiCoreHotkeys from "./hotkeys";
+import DDeiCoreControls from "./controls";
 import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 
 class DDeiCore extends DDeiPluginBase {
@@ -28,9 +29,11 @@ class DDeiCore extends DDeiPluginBase {
 
   hotkeys: object = DDeiCoreHotkeys;
 
+  controls: object = DDeiCoreControls;
+
   getOptions(): object {
     let options = {}
-    let array = [this.layouts, this.panels, this.propeditors, this.dialogs, this.components, this.hotkeys]
+    let array = [this.layouts, this.panels, this.propeditors, this.dialogs, this.components, this.hotkeys, this.controls]
     array.forEach(plugin => {
       if (DDeiPluginBase.isSubclass(plugin, DDeiPluginBase)) {
         options = Object.assign({}, options, plugin.defaultIns.getOptions())
@@ -89,6 +92,22 @@ class DDeiCore extends DDeiPluginBase {
     }
   }
 
+  getControls(editor) {
+    if (DDeiPluginBase.isSubclass(this.controls, DDeiPluginBase)) {
+      return this.controls.defaultIns.getControls(editor);
+    } else if (this.controls instanceof DDeiPluginBase) {
+      return this.controls.getControls(editor);
+    }
+  }
+
+  getGroups(editor) {
+    if (DDeiPluginBase.isSubclass(this.controls, DDeiPluginBase)) {
+      return this.controls.defaultIns.getGroups(editor);
+    } else if (this.controls instanceof DDeiPluginBase) {
+      return this.controls.getGroups(editor);
+    }
+  }
+
   static configuraton(options) {
     let core = new DDeiCore(options);
     core.layouts = core.layouts.configuraton(options,true)
@@ -97,6 +116,7 @@ class DDeiCore extends DDeiPluginBase {
     core.dialogs = core.dialogs.configuraton(options, true)
     core.propeditors = core.propeditors.configuraton(options, true)
     core.hotkeys = core.hotkeys.configuraton(options, true)
+    core.controls = core.controls.configuraton(controls, true)
     return core;
   }
 }

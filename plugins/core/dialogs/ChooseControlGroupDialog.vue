@@ -74,7 +74,7 @@ export default {
     expandSubMenu(menuid, evt) {
       if (this.menuId != menuid) {
         let groups = []
-        DDeiEditorUtil.groupOriginDefinies.forEach(group => {
+        this.editor.groups.forEach(group => {
           if (group.subject == menuid) {
             let ginfo = { id: group.id, name: group.name }
 

@@ -1,9 +1,9 @@
-import { ov_link_v_split_point, ov_link_h_split_point } from "@/components/editor/configs/scripts/common/ov-link-split-point";
+import { ov_link_v_split_point } from "@ddei-core/scripts/common/ov-link-split-point";
 export default {
-  'id': '307004',
-  'name': '接口',
-  'code': 'inte',
-  'desc': 'UML的接口节点',
+  'id': '307016',
+  'name': '对象',
+  'code': 'obj',
+  'desc': 'UML的对象节点',
   'from': '100008',
 
   'define': {
@@ -56,8 +56,7 @@ export default {
         height: 30,
         id: '100002',
         cIndex: 1,
-        text: `<<interface>>
-接口名`,
+        text: `对象名`,
         textStyle: {
           bold: 1,
           feed: 1,
@@ -82,9 +81,8 @@ export default {
         height: 70,
         id: '100002',
         cIndex: 1,
-        text: ` + Operation A(int): void
- + Operation B(): void
- - Operation C(int): int`,
+        text: ` attribute A = value A
+ attribute B = value B`,
         textStyle: {
           align: 1,
           feed: 1,
