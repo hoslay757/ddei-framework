@@ -207,10 +207,8 @@
 
 <script lang="ts">
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type.js";
-import DDeiEnumKeyActionInst from "@ddei-core/editor/js/enums/key-action-inst.js";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util.js";
 import DDeiEditorState from "@ddei-core/editor/js/enums/editor-state.js";
-import DDeiEditor from "@ddei-core/editor/js/editor";
 import DialogBase from "./dialog"
 
 export default {
@@ -371,13 +369,13 @@ export default {
     execBrushAction(evt: Event) {
       if (this.editor.state == DDeiEditorState.QUICK_EDITING) {
         if (!this.editor?.ddInstance?.stage?.brushDataText) {
-          DDeiEnumKeyActionInst.BrushData.action(evt, this.editor.ddInstance, this.editor);
+          // DDeiEnumKeyActionInst.BrushData.action(evt, this.editor.ddInstance, this.editor);
         } else {
           delete this.editor.ddInstance.stage.brushDataText
         }
       } else {
         if (!this.editor?.ddInstance?.stage?.brushData) {
-          DDeiEnumKeyActionInst.BrushData.action(evt, this.editor.ddInstance, this.editor);
+          // DDeiEnumKeyActionInst.BrushData.action(evt, this.editor.ddInstance, this.editor);
         } else {
           delete this.editor.ddInstance.stage.brushData
         }

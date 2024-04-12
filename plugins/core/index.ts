@@ -3,6 +3,7 @@ import DDeiCoreComponents from "./components"
 import DDeiCoreLayouts from "./layouts";
 import DDeiCoreDialogs from "./dialogs";
 import DDeiCorePropEditors from "./propeditors";
+import DDeiCoreHotkeys from "./hotkeys";
 import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 
 class DDeiCore extends DDeiPluginBase {
@@ -23,11 +24,13 @@ class DDeiCore extends DDeiPluginBase {
 
   dialogs:object = DDeiCoreDialogs;
 
-  propeditors:object = DDeiCorePropEditors;
+  propeditors: object = DDeiCorePropEditors;
+
+  hotkeys: object = DDeiCoreHotkeys;
 
   getOptions(): object {
     let options = {}
-    let array = [this.layouts, this.panels, this.propeditors,  this.dialogs,  this.components]
+    let array = [this.layouts, this.panels, this.propeditors, this.dialogs, this.components, this.hotkeys]
     array.forEach(plugin => {
       if (DDeiPluginBase.isSubclass(plugin, DDeiPluginBase)) {
         options = Object.assign({}, options, plugin.defaultIns.getOptions())
@@ -70,11 +73,19 @@ class DDeiCore extends DDeiPluginBase {
     }
   }
 
-  getPropEditors(editor){
-    if (DDeiPluginBase.isSubclass(this.propeditors, DDeiPluginBase)){
+  getPropEditors(editor) {
+    if (DDeiPluginBase.isSubclass(this.propeditors, DDeiPluginBase)) {
       return this.propeditors.defaultIns.getPropEditors(editor);
-    } else if (this.propeditors instanceof DDeiPluginBase){
+    } else if (this.propeditors instanceof DDeiPluginBase) {
       return this.propeditors.getPropEditors(editor);
+    }
+  }
+
+  getHotKeys(editor) {
+    if (DDeiPluginBase.isSubclass(this.hotkeys, DDeiPluginBase)) {
+      return this.hotkeys.defaultIns.getHotKeys(editor);
+    } else if (this.hotkeys instanceof DDeiPluginBase) {
+      return this.hotkeys.getHotKeys(editor);
     }
   }
 
@@ -85,6 +96,7 @@ class DDeiCore extends DDeiPluginBase {
     core.components = core.components.configuraton(options, true)
     core.dialogs = core.dialogs.configuraton(options, true)
     core.propeditors = core.propeditors.configuraton(options, true)
+    core.hotkeys = core.hotkeys.configuraton(options, true)
     return core;
   }
 }
@@ -94,5 +106,6 @@ export * from "./components"
 export * from "./layouts";
 export * from "./dialogs";
 export * from "./propeditors";
+export * from "./hotkeys";
 export {DDeiCore}
 export default DDeiCore;

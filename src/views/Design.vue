@@ -49,7 +49,7 @@ import { markRaw } from "vue";
 import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
 
 //引入插件
-import { DDeiCoreTopMenuPanel, DDeiCorePropertyViewPanel,DDeiCoreToolboxPanel,DDeiCoreSheetsPanel, DDeiCoreChangeRatioPanel, DDeiCoreChangeRatioDialog,DDeiCoreShapeCountPanel, DDeiCoreBottomMenuPanel,DDeiCoreStandLayout, DDeiCoreOpenFilesViewPanel, DDeiCoreQuickColorViewPanel, DDeiCoreAlignDialog } from "@ddei/core";
+import { DDeiCoreTopMenuPanel, DDeiCoreHotkeys,DDeiKeyActionAllSelect,DDeiCorePropertyViewPanel,DDeiCoreToolboxPanel,DDeiCoreSheetsPanel, DDeiCoreChangeRatioPanel, DDeiCoreChangeRatioDialog,DDeiCoreShapeCountPanel, DDeiCoreBottomMenuPanel,DDeiCoreStandLayout, DDeiCoreOpenFilesViewPanel, DDeiCoreQuickColorViewPanel, DDeiCoreAlignDialog } from "@ddei/core";
 
 export default {
   props: {},
@@ -72,6 +72,7 @@ export default {
         },
         //配置扩展插件
         extensions: [
+          //布局的配置
           DDeiCoreStandLayout.configuraton({
             //配置插件
             'top': [DDeiCoreTopMenuPanel],
@@ -79,6 +80,29 @@ export default {
               drag:true
             }),  'ddei-core-panel-canvasview' , 'ddei-core-panel-quickcolorview'],
           }),
+          
+          //批量快捷键配置
+          // DDeiCoreHotkeys.configuraton({
+          //   "ddei-core-keyaction-remove-models": {
+          //     'keys': [
+          //       { keys: "67" },
+          //     ]
+          //   },
+          //   "ddei-core-keyaction-all-select": {
+          //     'keys': [
+          //       { keys: "68" },
+          //     ]
+          //   },
+          // }),
+          //某个快捷键的配置
+          // DDeiKeyActionAllSelect.configuraton({
+          //   'keys': [
+          //     {
+          //       ctrl: 1, keys: "66"
+          //     }
+          //   ]
+          // }),
+          
           // DDeiCoreBottomMenuPanel,
           DDeiCoreBottomMenuPanel.configuraton({
             'panels': [DDeiCoreSheetsPanel.configuraton({

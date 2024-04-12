@@ -5,11 +5,11 @@ import DDeiLineLink from "@ddei-core/framework/js/models/linelink";
 import DDeiUtil from "@ddei-core/framework/js/util";
 import { Matrix3, Vector3 } from 'three';
 import layer from "../../configs/layer";
-import DDeiEditor from "../editor";
-import DDeiEditorEnumBusCommandType from "../enums/editor-command-type";
-import DDeiEditorState from "../enums/editor-state";
-import DDeiEditorUtil from "../util/editor-util";
-import DDeiKeyAction from "./key-action";
+import DDeiEditor from "@ddei-core/editor/js/editor";
+import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
+import DDeiEditorState from "@ddei-core/editor/js/enums/editor-state";
+import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
+import DDeiKeyAction from "@ddei-core/hotkeys/key-action";
 import DDeiEnumOperateState from "@ddei-core/framework/js/enums/operate-state";
 import DDeiAbstractShape from "@ddei-core/framework/js/models/shape";
 
@@ -19,6 +19,48 @@ import DDeiAbstractShape from "@ddei-core/framework/js/models/shape";
  */
 class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
 
+  name: string = "ddei-core-keyaction-quickedit-start"
+
+
+  /**
+   * 缺省实例
+   */
+  static defaultIns: DDeiKeyActionStartQuickEdit = new DDeiKeyActionStartQuickEdit();
+
+  defaultOptions: object = {
+    'keys': [
+      //F2快捷编辑
+      { keys: "113", editorState: DDeiEditorState.DESIGNING },
+    ]
+  }
+
+  getHotKeys(editor) {
+    return [this];
+  }
+
+
+  static configuraton(options, fullConfig: boolean = false) {
+    //解析options，只使用自己相关的
+    if (options) {
+      let newOptions = {}
+      if (fullConfig) {
+        if (fullConfig) {
+          if (options[DDeiKeyActionStartQuickEdit.defaultIns.name]) {
+            for (let i in options[DDeiKeyActionStartQuickEdit.defaultIns.name]) {
+              newOptions[i] = options[DDeiKeyActionStartQuickEdit.defaultIns.name][i]
+            }
+          }
+        }
+      } else {
+        newOptions = options
+      }
+      if (newOptions && Object.keys(newOptions).length !== 0) {
+        let panels = new DDeiKeyActionStartQuickEdit(newOptions);
+        return panels;
+      }
+    }
+    return DDeiKeyActionStartQuickEdit;
+  }
   // ============================ 方法 ===============================
   action(evt: Event, ddInstance: DDei): void {
     //获取当前编辑控件

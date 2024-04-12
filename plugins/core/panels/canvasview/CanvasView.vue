@@ -11,14 +11,13 @@ import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEditorState from "@ddei-core/editor//js/enums/editor-state";
 import DDeiEnumControlState from "@ddei-core/framework/js/enums/control-state";
 import DDeiAbstractShape from "@ddei-core/framework/js/models/shape";
-import DDeiKeyAction from "@ddei-core/editor/js/hotkeys/key-action";
+import DDeiKeyAction from "@ddei-core/hotkeys/key-action";
 import DDeiEnumOperateState from "@ddei-core/framework/js/enums/operate-state";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 import DDeiEnumState from "@ddei-core/framework/js/enums/ddei-state";
 import DDeiUtil from "@ddei-core/framework/js/util";
 import { throttle } from "lodash";
 import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
-import DDeiEnumKeyActionInst from "@ddei-core/editor/js/enums/key-action-inst";
 
 export default {
   name: "ddei-core-panel-canvasview",
@@ -83,10 +82,10 @@ export default {
         middleCanvasPos.left + 5 <= evt.clientX &&
         middleCanvasPos.left + middleCanvas.offsetWidth - 5 >= evt.clientX
       ) {
-        DDeiEnumKeyActionInst.StartQuickEdit.action(
-          evt,
-          this.editor.ddInstance
-        );
+        // DDeiEnumKeyActionInst.StartQuickEdit.action(
+        //   evt,
+        //   this.editor.ddInstance
+        // );
       }
     },
     /**

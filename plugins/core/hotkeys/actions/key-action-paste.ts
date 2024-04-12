@@ -1,6 +1,6 @@
 import DDei from "@ddei-core/framework/js/ddei";
 import DDeiEnumControlState from "@ddei-core/framework/js/enums/control-state";
-import DDeiKeyAction from "./key-action";
+import DDeiKeyAction from "@ddei-core/hotkeys/key-action";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 import DDeiUtil from "@ddei-core/framework/js/util";
 import DDeiStage from "@ddei-core/framework/js/models/stage";
@@ -10,16 +10,57 @@ import DDeiAbstractShape from "@ddei-core/framework/js/models/shape";
 import DDeiTable from "@ddei-core/framework/js/models/table";
 import { Matrix3, Vector3 } from 'three';
 import DDeiEnumOperateType from "@ddei-core/framework/js/enums/operate-type";
-import DDeiEditorEnumBusCommandType from "../enums/editor-command-type";
+import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
 import DDeiPolygon from "@ddei-core/framework/js/models/polygon";
 import DDeiLink from "@ddei-core/framework/js/models/link";
 import DDeiLineLink from "@ddei-core/framework/js/models/linelink";
+import DDeiEditorState from "@ddei-core/editor/js/enums/editor-state";
 /**
  * 键行为:粘贴
  * 粘贴剪切板内容
  */
 class DDeiKeyActionPaste extends DDeiKeyAction {
+  name: string = "ddei-core-keyaction-paste"
 
+
+  /**
+   * 缺省实例
+   */
+  static defaultIns: DDeiKeyActionPaste = new DDeiKeyActionPaste();
+
+  defaultOptions: object = {
+    'keys': [
+      { ctrl: 1, keys: "86", editorState: DDeiEditorState.DESIGNING},
+    ]
+  }
+
+  getHotKeys(editor) {
+    return [this];
+  }
+
+
+  static configuraton(options, fullConfig: boolean = false) {
+    //解析options，只使用自己相关的
+    if (options) {
+      let newOptions = {}
+      if (fullConfig) {
+        if (fullConfig) {
+          if (options[DDeiKeyActionPaste.defaultIns.name]) {
+            for (let i in options[DDeiKeyActionPaste.defaultIns.name]) {
+              newOptions[i] = options[DDeiKeyActionPaste.defaultIns.name][i]
+            }
+          }
+        }
+      } else {
+        newOptions = options
+      }
+      if (newOptions && Object.keys(newOptions).length !== 0) {
+        let panels = new DDeiKeyActionPaste(newOptions);
+        return panels;
+      }
+    }
+    return DDeiKeyActionPaste;
+  }
 
 
   // ============================ 方法 ===============================

@@ -1,13 +1,56 @@
 import DDei from "@ddei-core/framework/js/ddei";
 import DDeiEnumControlState from "@ddei-core/framework/js/enums/control-state";
-import DDeiKeyAction from "./key-action";
+import DDeiKeyAction from "@ddei-core/hotkeys/key-action";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
+import DDeiEditorState from "@ddei-core/editor/js/enums/editor-state";
 
 /**
  * 键行为:移动到表格下一行
  */
 class DDeiKeyActionTableNextRow extends DDeiKeyAction {
 
+  name: string = "ddei-core-keyaction-table-next-row"
+
+
+  /**
+   * 缺省实例
+   */
+  static defaultIns: DDeiKeyActionTableNextRow = new DDeiKeyActionTableNextRow();
+
+  defaultOptions: object = {
+    'keys': [
+      //表格内部回车，往下一行
+      { keys: "13", modelType: 'DDeiTable', editorState: DDeiEditorState.DESIGNING },
+    ]
+  }
+
+  getHotKeys(editor) {
+    return [this];
+  }
+
+
+  static configuraton(options, fullConfig: boolean = false) {
+    //解析options，只使用自己相关的
+    if (options) {
+      let newOptions = {}
+      if (fullConfig) {
+        if (fullConfig) {
+          if (options[DDeiKeyActionTableNextRow.defaultIns.name]) {
+            for (let i in options[DDeiKeyActionTableNextRow.defaultIns.name]) {
+              newOptions[i] = options[DDeiKeyActionTableNextRow.defaultIns.name][i]
+            }
+          }
+        }
+      } else {
+        newOptions = options
+      }
+      if (newOptions && Object.keys(newOptions).length !== 0) {
+        let panels = new DDeiKeyActionTableNextRow(newOptions);
+        return panels;
+      }
+    }
+    return DDeiKeyActionTableNextRow;
+  }
   // ============================ 方法 ===============================
   action(evt: Event, ddInstance: DDei): void {
     //修改当前操作控件坐标

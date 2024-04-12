@@ -1,11 +1,9 @@
 import DDei from "@ddei-core/framework/js/ddei";
-import DDeiEnumControlState from "@ddei-core/framework/js/enums/control-state";
-import DDeiKeyAction from "./key-action";
+import DDeiKeyAction from "@ddei-core/hotkeys/key-action";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
-import DDeiEditor from "../editor";
-import DDeiEditorState from "../enums/editor-state";
-import DDeiEnumOperateState from "@ddei-core/framework/js/enums/operate-state";
-import DDeiEditorEnumBusCommandType from "../enums/editor-command-type";
+import DDeiEditor from "@ddei-core/editor/js/editor";
+import DDeiEditorState from "@ddei-core/editor/js/enums/editor-state";
+import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
 import DDeiUtil from "@ddei-core/framework/js/util";
 import { cloneDeep } from 'lodash'
 
@@ -14,6 +12,49 @@ import { cloneDeep } from 'lodash'
  */
 class DDeiKeyActionBrushData extends DDeiKeyAction {
 
+  name: string = "ddei-core-keyaction-brush-data"
+
+
+  /**
+   * 缺省实例
+   */
+  static defaultIns: DDeiKeyActionBrushData = new DDeiKeyActionBrushData();
+
+  defaultOptions: object = {
+    'keys': [
+      {
+        ctrl: 1, shift: 1, keys: "67", editorState: DDeiEditorState.DESIGNING
+      }
+    ]
+  }
+
+  getHotKeys(editor) {
+    return [this];
+  }
+
+
+  static configuraton(options, fullConfig: boolean = false) {
+    //解析options，只使用自己相关的
+    if (options) {
+      let newOptions = {}
+      if (fullConfig) {
+        if (fullConfig) {
+          if (options[DDeiKeyActionBrushData.defaultIns.name]) {
+            for (let i in options[DDeiKeyActionBrushData.defaultIns.name]) {
+              newOptions[i] = options[DDeiKeyActionBrushData.defaultIns.name][i]
+            }
+          }
+        }
+      } else {
+        newOptions = options
+      }
+      if (newOptions && Object.keys(newOptions).length !== 0) {
+        let panels = new DDeiKeyActionBrushData(newOptions);
+        return panels;
+      }
+    }
+    return DDeiKeyActionBrushData;
+  }
   // ============================ 方法 ===============================
   action(evt: Event, ddInstance: DDei): void {
     //记录当前格式信息，修改状态为刷子状态

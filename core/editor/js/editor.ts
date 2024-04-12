@@ -1,5 +1,4 @@
-import DDeiEnumKeyActionInst from "./enums/key-action-inst";
-import DDeiKeyAction from "./hotkeys/key-action"
+import DDeiKeyAction from "../../hotkeys/key-action"
 import DDeiEditorState from "./enums/editor-state";
 import DDei from "@ddei-core/framework/js/ddei";
 import DDeiEditorUtil from "./util/editor-util";
@@ -10,6 +9,7 @@ import DDeiConfig from "@ddei-core/framework/js/config";
 import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import { markRaw } from "vue";
 import config from "./config"
+import { cloneDeep } from "lodash";
 /**
  * DDei图形编辑器类，用于维护编辑器实例、全局状态以及全局属性
  */
@@ -48,76 +48,6 @@ class DDeiEditor {
   //是否允许同时打开多个图层，开启后展示图层切换按钮
   static GLOBAL_ALLOW_OPEN_MULT_LAYERS: boolean = true;
 
-
-  // 快捷键-键行为映射配置
-  static HOT_KEY_MAPPING: object[] = [
-    //全选,ctrl 0/null 不按下，1必须按下，2可选按下
-    { ctrl: 1, keys: "65", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.AllSelect },
-    //取消全选,500毫秒内，连续按两下esc键
-    { keys: "27", times: 2, interval: 500, editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.CancelSelect },
-    //删除
-    { keys: "8", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.RemoveModels },
-    { keys: "46", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.RemoveModels },
-    //F2快捷编辑
-    { keys: "113", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.StartQuickEdit },
-    //ESC取消快捷编辑
-    { keys: "27", editorState: DDeiEditorState.QUICK_EDITING, action: DDeiEnumKeyActionInst.CancelQuickEdit },
-    //ESC关闭弹出框
-    { keys: "27", editorState: DDeiEditorState.PROPERTY_EDITING, action: DDeiEnumKeyActionInst.CloseDialog },
-    //ESC取消控件创建
-    { keys: "27", editorState: DDeiEditorState.CONTROL_CREATING, action: DDeiEnumKeyActionInst.CancelControlCreating },
-    //ESC取消当前的正在进行的动作
-    { keys: "27", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.CancelCurrentAction },
-    //Enter确定快捷编辑
-    { keys: "13", shift: 1, editorState: DDeiEditorState.QUICK_EDITING, action: DDeiEnumKeyActionInst.EnterQuickEdit },
-    //表格内部回车，往下一行
-    { keys: "13", modelType: 'DDeiTable', editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.TableNextRow },
-    //表格内部tab，往下一列
-    { keys: "9", modelType: 'DDeiTable', editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.TableNextCol },
-    //上
-    { shift: 2, keys: "38", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.UpMoveModels },
-    //下
-    { shift: 2, keys: "40", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.DownMoveModels },
-    //左
-    { shift: 2, keys: "37", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.LeftMoveModels },
-    //右
-    { shift: 2, keys: "39", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.RightMoveModels },
-    //组合
-    { keys: "71", ctrl: 1, editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.MakeCompose },
-    //取消组合
-    { keys: "71", ctrl: 1, shift: 1, editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.CancelCompose },
-    //置于上层
-    { ctrl: 1, keys: "38", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.PushUpModels },
-    //置于下层
-    { ctrl: 1, keys: "40", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.PushDownModels },
-    //置于顶层
-    { ctrl: 1, shift: 1, keys: "38", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.PushTopModels },
-    //置于底层
-    { ctrl: 1, shift: 1, keys: "40", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.PushBottomModels },
-    //复制
-    { ctrl: 1, keys: "67", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.Copy },
-    //剪切
-    { ctrl: 1, keys: "88", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.CUT },
-    //复制为图片
-    { ctrl: 1, keys: "73", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.CopyImage },
-    //粘贴
-    { ctrl: 1, keys: "86", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.Paste },
-    //格式刷
-    { ctrl: 1, shift: 1, keys: "67", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.BrushData },
-    //清除格式刷
-    { keys: "27", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.ClearBrushData },
-
-    //撤销
-    { ctrl: 1, keys: "90", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.Revoke },
-
-    //反撤销
-    { ctrl: 1, keys: "89", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.ReRevoke },
-    { ctrl: 1, shift: 1, keys: "90", editorState: DDeiEditorState.DESIGNING, action: DDeiEnumKeyActionInst.ReRevoke },
-
-    //保存
-    { ctrl: 1, keys: "83", action: DDeiEnumKeyActionInst.SaveFile },
-
-  ];
 
   /**
    * 加载文件的函数，加载后的文件会进入文件列表，此方法为外部传入的勾子函数，由外部对文件进行加载
@@ -220,6 +150,20 @@ class DDeiEditor {
         if (options) {
           editorInstance.options = options
           options.extensions?.forEach(item => editorInstance.registerExtension(item))
+          //注册快捷键
+          for (let i in editorInstance.hotkeys){
+            let hotkey = editorInstance.hotkeys[i]
+            let options = hotkey.getOptions()
+            if (options?.keys) {
+              let keys = cloneDeep(options?.keys)
+              keys.forEach(key => {
+                key.action = hotkey
+              });
+              editorInstance.hotKeyMapping = editorInstance.hotKeyMapping.concat(keys)
+            }
+          }
+          
+          
         }
 
 
@@ -272,9 +216,20 @@ class DDeiEditor {
       let propEditors = plugin.getPropEditors(this)
       propEditors?.forEach(propEditor => {
         this.propeditors[propEditor.name] = propEditor
-      }); 
+      });
     }
-    
+
+
+    if (plugin.getHotKeys) {
+      //注册并加载快捷键
+      let hotKeys = plugin.getHotKeys(this)
+      hotKeys?.forEach(hotkey => {
+        
+        this.hotkeys[hotkey.name] = hotkey
+
+      });
+    }
+
     
     let options = plugin.getOptions() 
     
@@ -309,34 +264,8 @@ class DDeiEditor {
       for (let i in config) {
         let outConfigValue = config[i];
         let configValue = DDeiEditor[i];
-        if (i != "HOT_KEY_MAPPING") {
-          //深度遍历属性，然后进行设置
-          DDeiEditor[i] = DDeiUtil.copyJSONValue(outConfigValue, configValue);
-        }
-      }
-      if (config.HOT_KEY_MAPPING) {
-        config.HOT_KEY_MAPPING.forEach(hotkey => {
-          let ctrl = hotkey.ctrl;
-          let shift = hotkey.shift;
-          let keys = hotkey.keys;
-          let times = hotkey.times;
-          let interval = hotkey.interval;
-          let editorState = hotkey.editorState
-          //寻找是否已存在相同的键定义
-          let index = -1;
-          for (let i = 0; i < DDeiEditor.HOT_KEY_MAPPING.length; i++) {
-            let hk1 = DDeiEditor.HOT_KEY_MAPPING[i]
-            if (hk1.ctrl == ctrl && hk1.shift == shift && hk1.keys == keys && hk1.times == times && hk1.interval == interval && hk1.editorState == editorState) {
-              index = i;
-              break;
-            }
-          }
-          if (index != -1) {
-            DDeiEditor.HOT_KEY_MAPPING.splice(index, 1, hotkey);
-          } else {
-            DDeiEditor.HOT_KEY_MAPPING.push(hotkey)
-          }
-        });
+        //深度遍历属性，然后进行设置
+        DDeiEditor[i] = DDeiUtil.copyJSONValue(outConfigValue, configValue);
       }
       //将配置文件传递到DDei框架
       DDeiConfig.applyConfig(config);
@@ -353,17 +282,8 @@ class DDeiEditor {
       for (let i in config) {
         let outConfigValue = config[i];
         let configValue = this[i];
-        if (i != "HOT_KEY_MAPPING") {
-          //深度遍历属性，然后进行设置
-          this[i] = DDeiUtil.copyJSONValue(outConfigValue, configValue);
-        }
-      }
-      if (config.HOT_KEY_MAPPING) {
-        this.HOT_KEY_MAPPING = []
-        config.HOT_KEY_MAPPING.forEach(hotkey => {
-          //寻找是否已存在相同的键定义
-          this.HOT_KEY_MAPPING.push(hotkey)
-        });
+        //深度遍历属性，然后进行设置
+        this[i] = DDeiUtil.copyJSONValue(outConfigValue, configValue);
       }
     }
   }
@@ -429,6 +349,10 @@ class DDeiEditor {
   layouts: object = markRaw({});
   //当前引入的外部弹出框
   dialogs: object = markRaw({});
+  //当前引入的外部快捷键
+  hotkeys: object = markRaw({});
+  // 快捷键-键行为映射配置
+  hotKeyMapping: object[] = markRaw([]);
   //当前布局的名称，如果为空，则获取最后一个有效的布局
   currentLayout: string = "ddei-core-layout-standard";
 

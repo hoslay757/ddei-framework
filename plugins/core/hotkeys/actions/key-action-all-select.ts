@@ -1,15 +1,60 @@
 import DDei from "@ddei-core/framework/js/ddei";
 import DDeiEnumControlState from "@ddei-core/framework/js/enums/control-state";
-import DDeiKeyAction from "./key-action";
+import DDeiKeyAction from "@ddei-core/hotkeys/key-action";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 import DDeiUtil from "@ddei-core/framework/js/util";
 import DDeiEnumOperateType from "@ddei-core/framework/js/enums/operate-type";
+import DDeiEditorState from "@ddei-core/editor/js/enums/editor-state";
 
 /**
  * 键行为:全选
  * 全选所有控件
  */
 class DDeiKeyActionAllSelect extends DDeiKeyAction {
+
+  name: string = "ddei-core-keyaction-all-select"
+
+
+  /**
+   * 缺省实例
+   */
+  static defaultIns: DDeiKeyActionAllSelect = new DDeiKeyActionAllSelect();
+
+  defaultOptions: object = {
+    'keys': [
+      {
+        ctrl: 1, keys: "65", editorState: DDeiEditorState.DESIGNING
+      }
+    ]
+  }
+
+  getHotKeys(editor) {
+    return [this];
+  }
+
+
+  static configuraton(options, fullConfig: boolean = false) {
+    //解析options，只使用自己相关的
+    if (options) {
+      let newOptions = {}
+      if (fullConfig) {
+        if (fullConfig) {
+          if (options[DDeiKeyActionAllSelect.defaultIns.name]) {
+            for (let i in options[DDeiKeyActionAllSelect.defaultIns.name]) {
+              newOptions[i] = options[DDeiKeyActionAllSelect.defaultIns.name][i]
+            }
+          }
+        }
+      } else {
+        newOptions = options
+      }
+      if (newOptions && Object.keys(newOptions).length !== 0) {
+        let panels = new DDeiKeyActionAllSelect(newOptions);
+        return panels;
+      }
+    }
+    return DDeiKeyActionAllSelect;
+  }
 
   // ============================ 方法 ===============================
   action(evt: Event, ddInstance: DDei): void {

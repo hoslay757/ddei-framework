@@ -1,9 +1,9 @@
 import DDei from "@ddei-core/framework/js/ddei";
-import DDeiKeyAction from "./key-action";
+import DDeiKeyAction from "@ddei-core/hotkeys/key-action";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 import DDeiEnumControlState from "@ddei-core/framework/js/enums/control-state";
-import DDeiEditorState from "../enums/editor-state";
-import DDeiEditor from "../editor";
+import DDeiEditorState from "@ddei-core/editor/js/enums/editor-state";
+import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEnumOperateState from "@ddei-core/framework/js/enums/operate-state";
 
 /**
@@ -11,6 +11,49 @@ import DDeiEnumOperateState from "@ddei-core/framework/js/enums/operate-state";
  * 取消当前正在进行的动作
  */
 class DDeiKeyActionCancelCurrentAction extends DDeiKeyAction {
+
+
+  name: string = "ddei-core-keyaction-cancel-current-action"
+
+
+  /**
+   * 缺省实例
+   */
+  static defaultIns: DDeiKeyActionCancelCurrentAction = new DDeiKeyActionCancelCurrentAction();
+
+  defaultOptions: object = {
+    'keys': [
+      { keys: "27", editorState: DDeiEditorState.DESIGNING},
+    ]
+  }
+
+  getHotKeys(editor) {
+    return [this];
+  }
+
+
+  static configuraton(options, fullConfig: boolean = false) {
+    //解析options，只使用自己相关的
+    if (options) {
+      let newOptions = {}
+      if (fullConfig) {
+        if (fullConfig) {
+          if (options[DDeiKeyActionCancelCurrentAction.defaultIns.name]) {
+            for (let i in options[DDeiKeyActionCancelCurrentAction.defaultIns.name]) {
+              newOptions[i] = options[DDeiKeyActionCancelCurrentAction.defaultIns.name][i]
+            }
+          }
+        }
+      } else {
+        newOptions = options
+      }
+      if (newOptions && Object.keys(newOptions).length !== 0) {
+        let panels = new DDeiKeyActionCancelCurrentAction(newOptions);
+        return panels;
+      }
+    }
+    return DDeiKeyActionCancelCurrentAction;
+  }
 
   // ============================ 方法 ===============================
   action(evt: Event, ddInstance: DDei, editor: DDeiEditor): void {

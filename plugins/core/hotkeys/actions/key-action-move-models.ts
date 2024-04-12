@@ -1,20 +1,68 @@
 import DDeiConfig from "@ddei-core/framework/js/config";
 import DDei from "@ddei-core/framework/js/ddei";
-import DDeiKeyAction from "./key-action";
+import DDeiKeyAction from "@ddei-core/hotkeys/key-action";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 import DDeiAbstractShape from "@ddei-core/framework/js/models/shape";
 import DDeiEnumControlState from "@ddei-core/framework/js/enums/control-state";
 import DDeiModelArrtibuteValue from "@ddei-core/framework/js/models/attribute/attribute-value";
 import DDeiUtil from "@ddei-core/framework/js/util";
 import DDeiLine from "@ddei-core/framework/js/models/line";
+import DDeiEditorState from "@ddei-core/editor/js/enums/editor-state";
 
 /**
  * 键行为:移动模型
  * 批量移动模型
  */
-class DDeiKeyActionDownMoveModels extends DDeiKeyAction {
+class DDeiKeyActionMoveModels extends DDeiKeyAction {
+
+  name: string = "ddei-core-keyaction-move-models"
 
 
+  /**
+   * 缺省实例
+   */
+  static defaultIns: DDeiKeyActionMoveModels = new DDeiKeyActionMoveModels();
+
+  defaultOptions: object = {
+    'keys': [
+      //上
+      { shift: 2, keys: "38", editorState: DDeiEditorState.DESIGNING },
+      //下
+      { shift: 2, keys: "40", editorState: DDeiEditorState.DESIGNING},
+      //左
+      { shift: 2, keys: "37", editorState: DDeiEditorState.DESIGNING},
+      //右
+      { shift: 2, keys: "39", editorState: DDeiEditorState.DESIGNING},
+    ]
+  }
+
+  getHotKeys(editor) {
+    return [this];
+  }
+
+
+  static configuraton(options, fullConfig: boolean = false) {
+    //解析options，只使用自己相关的
+    if (options) {
+      let newOptions = {}
+      if (fullConfig) {
+        if (fullConfig) {
+          if (options[DDeiKeyActionMoveModels.defaultIns.name]) {
+            for (let i in options[DDeiKeyActionMoveModels.defaultIns.name]) {
+              newOptions[i] = options[DDeiKeyActionMoveModels.defaultIns.name][i]
+            }
+          }
+        }
+      } else {
+        newOptions = options
+      }
+      if (newOptions && Object.keys(newOptions).length !== 0) {
+        let panels = new DDeiKeyActionMoveModels(newOptions);
+        return panels;
+      }
+    }
+    return DDeiKeyActionMoveModels;
+  }
   // ============================ 方法 ===============================
   action(evt: Event, ddInstance: DDei): void {
     //修改当前操作控件坐标
@@ -149,4 +197,4 @@ class DDeiKeyActionDownMoveModels extends DDeiKeyAction {
 }
 
 
-export default DDeiKeyActionDownMoveModels
+export default DDeiKeyActionMoveModels

@@ -1,8 +1,9 @@
 import DDei from "@ddei-core/framework/js/ddei";
-import DDeiEditor from "../editor";
-import DDeiKeyAction from "./key-action";
+import DDeiEditor from "@ddei-core/editor/js/editor";
+import DDeiKeyAction from "@ddei-core/hotkeys/key-action";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 import DDeiConfig from "@ddei-core/framework/js/config";
+import DDeiEditorState from "@ddei-core/editor/js/enums/editor-state";
 
 /**
  * 键行为:图形移动到上层或下层、顶层或底层
@@ -10,6 +11,54 @@ import DDeiConfig from "@ddei-core/framework/js/config";
  */
 class DDeiKeyActionPushModels extends DDeiKeyAction {
 
+  name: string = "ddei-core-keyaction-push-models"
+
+
+  /**
+   * 缺省实例
+   */
+  static defaultIns: DDeiKeyActionPushModels = new DDeiKeyActionPushModels();
+
+  defaultOptions: object = {
+    'keys': [
+      //置于上层
+      { ctrl: 1, keys: "38", editorState: DDeiEditorState.DESIGNING },
+      //置于下层
+      { ctrl: 1, keys: "40", editorState: DDeiEditorState.DESIGNING },
+      //置于顶层
+      { ctrl: 1, shift: 1, keys: "38", editorState: DDeiEditorState.DESIGNING},
+      //置于底层
+      { ctrl: 1, shift: 1, keys: "40", editorState: DDeiEditorState.DESIGNING},
+    ]
+  }
+
+  getHotKeys(editor) {
+    return [this];
+  }
+
+
+  static configuraton(options, fullConfig: boolean = false) {
+    //解析options，只使用自己相关的
+    if (options) {
+      let newOptions = {}
+      if (fullConfig) {
+        if (fullConfig) {
+          if (options[DDeiKeyActionPushModels.defaultIns.name]) {
+            for (let i in options[DDeiKeyActionPushModels.defaultIns.name]) {
+              newOptions[i] = options[DDeiKeyActionPushModels.defaultIns.name][i]
+            }
+          }
+        }
+      } else {
+        newOptions = options
+      }
+      if (newOptions && Object.keys(newOptions).length !== 0) {
+        let panels = new DDeiKeyActionPushModels(newOptions);
+        return panels;
+      }
+    }
+    return DDeiKeyActionPushModels;
+  }
   // ============================ 方法 ===============================
   action(evt: Event, ddInstance: DDei): void {
     //修改当前操作控件坐标

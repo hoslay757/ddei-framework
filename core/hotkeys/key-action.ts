@@ -1,18 +1,20 @@
-import DDeiConfig from '@ddei-core/framework/js/config';
-import DDei from '@ddei-core/framework/js/ddei';
-import DDeiEditor from '../editor'
+
+import DDeiConfig from '../framework/js/config';
+import DDei from '../framework/js/ddei';
+import DDeiEditor from '../editor/js/editor'
+import DDeiPluginBase from '../plugin/ddei-plugin-base'
 /**
  * 键行为的定义
  * 键行为包含名称、编码和行为
  * 通过配置将一组快捷键与一个行为绑定
- * 在不同的控件上按下快捷键可能会出现不同的行为，TODO 路由判断交由键行为/或路由去决定
+ * 在不同的控件上按下快捷键可能会出现不同的行为
  */
-abstract class DDeiKeyAction {
+class DDeiKeyAction extends DDeiPluginBase {
   // ============================ 构造函数 ============================
-  constructor(props: object) {
-    this.code = props.code
-    this.name = props.name
-    this.desc = props.desc
+  constructor(props: object | null | undefined) {
+    super(props)
+    this.name = props?.name
+    this.desc = props?.desc
   }
 
   // ============================ 静态方法 ============================
@@ -78,8 +80,8 @@ abstract class DDeiKeyAction {
       m1Str += evt.keyCode
     }
     //执行下发逻
-    for (let it = 0; it < DDeiEditor.HOT_KEY_MAPPING.length; it++) {
-      let item = DDeiEditor.HOT_KEY_MAPPING[it];
+    for (let it = 0; it < editor.hotKeyMapping?.length; it++) {
+      let item = editor.hotKeyMapping[it];
       let matchStr = null;
       if (item.editorState) {
         matchStr = item.editorState + "_";
@@ -149,8 +151,6 @@ abstract class DDeiKeyAction {
   }
 
   // ============================ 属性 ===============================
-  //键盘事件的唯一编号
-  code: string;
   //键盘事件的名称
   name: string;
   //键盘事件的描述备注
@@ -161,7 +161,9 @@ abstract class DDeiKeyAction {
    * 键行为
    * @param evt 事件
    */
-  abstract action(evt: Event, ddInstance: DDei): void
+  action(evt: Event, ddInstance: DDei): void{
+
+  }
 
 }
 

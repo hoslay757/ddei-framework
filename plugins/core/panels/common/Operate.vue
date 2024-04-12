@@ -51,7 +51,6 @@
 import DDeiConfig from "@ddei-core/framework/js/config";
 import DDeiUtil from "@ddei-core/framework/js/util";
 import DDeiEditor from "@ddei-core/editor/js/editor";
-import DDeiEnumKeyActionInst from "@ddei-core/editor/js/enums/key-action-inst";
 
 
 export default {
@@ -86,21 +85,21 @@ export default {
      * 执行剪切
      */
     execShearAction(evt: Event) {
-      DDeiEnumKeyActionInst.CUT.action(evt, this.editor.ddInstance, this.editor);
+      // DDeiEnumKeyActionInst.CUT.action(evt, this.editor.ddInstance, this.editor);
     },
 
     /**
      * 执行复制
      */
     execCopyAction(evt: Event) {
-      DDeiEnumKeyActionInst.Copy.action(evt, this.editor.ddInstance, this.editor);
+      // DDeiEnumKeyActionInst.Copy.action(evt, this.editor.ddInstance, this.editor);
     },
 
     /**
      * 执行格式刷
      */
     execBrushAction(evt: Event) {
-      DDeiEnumKeyActionInst.BrushData.action(evt, this.editor.ddInstance, this.editor);
+      // DDeiEnumKeyActionInst.BrushData.action(evt, this.editor.ddInstance, this.editor);
     },
 
     /**

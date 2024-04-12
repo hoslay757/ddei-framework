@@ -67,7 +67,7 @@ class DDeiPluginBase{
   }
 
   static isSubclass<T, U>(a: new (...args: any[]) => T, b: new (...args: any[]) => U): boolean {
-    return a.prototype && Object.getPrototypeOf(a.prototype) === b.prototype;
+    return a.prototype && (Object.getPrototypeOf(a.prototype) === b.prototype || a.prototype instanceof b)
   }
   
 

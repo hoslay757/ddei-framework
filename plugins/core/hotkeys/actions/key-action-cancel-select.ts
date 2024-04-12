@@ -1,14 +1,56 @@
 import DDei from "@ddei-core/framework/js/ddei";
-import DDeiKeyAction from "./key-action";
+import DDeiKeyAction from "@ddei-core/hotkeys/key-action";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 import DDeiEnumControlState from "@ddei-core/framework/js/enums/control-state";
+import DDeiEditorState from "@ddei-core/editor/js/enums/editor-state";
 
 /**
  * 键行为:取消全选
  * 取消选择所有控件
  */
 class DDeiKeyActionCancelSelect extends DDeiKeyAction {
+  name: string = "ddei-core-keyaction-cancel-select"
 
+
+  /**
+   * 缺省实例
+   */
+  static defaultIns: DDeiKeyActionCancelSelect = new DDeiKeyActionCancelSelect();
+
+  defaultOptions: object = {
+    'keys': [
+      //取消全选,500毫秒内，连续按两下esc键
+      { keys: "27", times: 2, interval: 500, editorState: DDeiEditorState.DESIGNING },
+    ]
+  }
+
+  getHotKeys(editor) {
+    return [this];
+  }
+
+
+  static configuraton(options, fullConfig: boolean = false) {
+    //解析options，只使用自己相关的
+    if (options) {
+      let newOptions = {}
+      if (fullConfig) {
+        if (fullConfig) {
+          if (options[DDeiKeyActionCancelSelect.defaultIns.name]) {
+            for (let i in options[DDeiKeyActionCancelSelect.defaultIns.name]) {
+              newOptions[i] = options[DDeiKeyActionCancelSelect.defaultIns.name][i]
+            }
+          }
+        }
+      } else {
+        newOptions = options
+      }
+      if (newOptions && Object.keys(newOptions).length !== 0) {
+        let panels = new DDeiKeyActionCancelSelect(newOptions);
+        return panels;
+      }
+    }
+    return DDeiKeyActionCancelSelect;
+  }
   // ============================ 方法 ===============================
   action(evt: Event, ddInstance: DDei): void {
     //修改当前操作控件坐标

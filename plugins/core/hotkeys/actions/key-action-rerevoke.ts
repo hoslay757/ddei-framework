@@ -1,22 +1,65 @@
 import DDei from "@ddei-core/framework/js/ddei";
 import DDeiEnumControlState from "@ddei-core/framework/js/enums/control-state";
-import DDeiKeyAction from "./key-action";
+import DDeiKeyAction from "@ddei-core/hotkeys/key-action";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 import DDeiLayer from "@ddei-core/framework/js/models/layer";
-import DDeiActiveType from "../enums/active-type";
-import DDeiFile from "../file";
-import DDeiFileState from "../enums/file-state";
-import DDeiEditor from "../editor";
+import DDeiActiveType from "@ddei-core/editor/js/enums/active-type";
+import DDeiFile from "@ddei-core/editor/js/file";
+import DDeiFileState from "@ddei-core/editor/js/enums/file-state";
+import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiUtil from "@ddei-core/framework/js/util";
-import DDeiEditorUtil from "../util/editor-util";
-import DDeiEditorEnumBusCommandType from "../enums/editor-command-type";
+import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
+import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
+import DDeiEditorState from "@ddei-core/editor/js/enums/editor-state";
 
 /**
  * 键行为:反撤销
  * 撤销前一次撤销动作
  */
 class DDeiKeyActionReRevoke extends DDeiKeyAction {
+  name: string = "ddei-core-keyaction-re-revoke"
 
+
+  /**
+   * 缺省实例
+   */
+  static defaultIns: DDeiKeyActionReRevoke = new DDeiKeyActionReRevoke();
+
+  defaultOptions: object = {
+    'keys': [
+      //反撤销
+      { ctrl: 1, keys: "89", editorState: DDeiEditorState.DESIGNING},
+      { ctrl: 1, shift: 1, keys: "90", editorState: DDeiEditorState.DESIGNING },
+    ]
+  }
+
+  getHotKeys(editor) {
+    return [this];
+  }
+
+
+  static configuraton(options, fullConfig: boolean = false) {
+    //解析options，只使用自己相关的
+    if (options) {
+      let newOptions = {}
+      if (fullConfig) {
+        if (fullConfig) {
+          if (options[DDeiKeyActionReRevoke.defaultIns.name]) {
+            for (let i in options[DDeiKeyActionReRevoke.defaultIns.name]) {
+              newOptions[i] = options[DDeiKeyActionReRevoke.defaultIns.name][i]
+            }
+          }
+        }
+      } else {
+        newOptions = options
+      }
+      if (newOptions && Object.keys(newOptions).length !== 0) {
+        let panels = new DDeiKeyActionReRevoke(newOptions);
+        return panels;
+      }
+    }
+    return DDeiKeyActionReRevoke;
+  }
   // ============================ 方法 ===============================
   action(evt: Event, ddInstance: DDei): void {
     let editor = DDeiEditor.ACTIVE_INSTANCE;
