@@ -10,6 +10,7 @@ import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import { markRaw } from "vue";
 import config from "./config"
 import { cloneDeep } from "lodash";
+import FONTS from "../../framework/js/fonts/font"
 
 /**
  * DDei图形编辑器类，用于维护编辑器实例、全局状态以及全局属性
@@ -144,7 +145,6 @@ class DDeiEditor {
           editorInstance.id+"_canvas"
         );
         editorInstance.ddInstance = ddInstance;
-        editorInstance.applyConfig(editorInstance.extConfig);
         //初始化编辑器bus
         ddInstance.bus.invoker = editorInstance;
         editorInstance.bus = ddInstance.bus;
@@ -494,6 +494,8 @@ class DDeiEditor {
   hotKeyMapping: object[] = markRaw([]);
   //当前引入的外部菜单
   menus: object = markRaw({});
+  //当前引入的外部字体
+  fonts: object[] = FONTS;
   //当前引入的外部菜单
   menuMapping: object = markRaw({});
   //当前引入的外部控件配置

@@ -73,17 +73,19 @@ export default {
   watch: {},
   created() { },
   mounted() {
-
-    if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]?.icon) {
-      this.icon = this.editor?.tempDialogData[this.dialogId].icon
-    }
-    setTimeout(() => {
-      this.$refs.usernameinput?.focus()
-    }, 100);
-    this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
-
+    this.refreshData();
   },
   methods: {
+
+    refreshData(){
+      if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]?.icon) {
+        this.icon = this.editor?.tempDialogData[this.dialogId].icon
+      }
+      setTimeout(() => {
+        this.$refs.usernameinput?.focus()
+      }, 100);
+      this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
+    },
 
     registry() {
       let callback = this.editor?.tempDialogData[this.dialogId]?.callback;

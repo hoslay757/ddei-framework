@@ -73,12 +73,16 @@ export default {
   watch: {},
   created() { },
   mounted() {
+    this.refreshData()
     
-    if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]) {
-      this.ratioInputValue = this.editor?.tempDialogData[this.dialogId]?.ratio * 100
-    }
   },
   methods: {
+    refreshData(){
+      if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]) {
+        this.ratioInputValue = this.editor?.tempDialogData[this.dialogId]?.ratio * 100
+      }
+    },
+
     ok(data) {
       if (!data) {
         data = 1

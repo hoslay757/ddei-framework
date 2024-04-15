@@ -92,8 +92,10 @@ export default {
     }
     //载入局部配置
     if (this.options){
+
       this.editor.applyConfig(this.options.config);
       this.editor.extConfig = this.options.config;
+      this.editor.ddInstance.applyConfig(this.editor.extConfig);
     }
     
     window.onbeforeunload = this.beforeUnload;

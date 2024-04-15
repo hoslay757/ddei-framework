@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'ddei_pv_editor_fontsize': true, 'ddei_pv_editor_fontsize_disabled': attrDefine.readonly }"
+  <div :class="{ 'ddei_pv_editor_fontsize': true, 'ddei_pv_editor_fontsize--disabled': attrDefine.readonly }"
     :style="{ 'pointer-events': attrDefine.readonly ? 'none' : '' }">
     <input type="range" :step="attrDefine.step" class="range" :min="attrDefine.min" :max="attrDefine.max"
       v-model="attrDefine.value" :disabled="attrDefine.readonly" autocomplete="off" />
@@ -230,7 +230,7 @@ export default {
   margin: auto;
 }
 
-.ddei_pv_editor_fontsize_disabled .range {
+.ddei_pv_editor_fontsize--disabled .range {
   height: 7px;
   width: 60%;
   border: transparent;
@@ -255,7 +255,7 @@ export default {
   box-sizing: border-box;
 }
 
-.ddei_pv_editor_fontsize_disabled .textinput {
+.ddei_pv_editor_fontsize--disabled .textinput {
   flex: 0 0 80px;
   margin-left: 10px;
   padding-left: 5px;
@@ -266,7 +266,7 @@ export default {
   display: flex;
 }
 
-.ddei_pv_editor_fontsize_disabled .textinput:hover {
+.ddei_pv_editor_fontsize--disabled .textinput:hover {
   border: 1px solid grey !important;
   box-sizing: border-box;
 }

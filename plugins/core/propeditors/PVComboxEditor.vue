@@ -331,6 +331,7 @@ export default {
     getDataSource(attrDefine) {
       if (this.attrDefine) {
         let dataSources = DDeiEditorUtil.getDataSource(
+          this.editor,
           this.attrDefine,
           this.searchText
         );

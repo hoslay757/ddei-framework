@@ -125,32 +125,36 @@ export default {
   watch: {},
   created() { },
   mounted() {
+    this.refreshData();
     
-    let file = this.editor?.files[this.editor?.currentFileIndex];
-    if (file) {
-      let stage = this.editor?.ddInstance.stage;
-      //获取纸张信息
-      let paperType = DDeiModelArrtibuteValue.getAttrValueByState(
-        stage,
-        "paper.type",
-        true
-      );
-      let paperDirect = DDeiModelArrtibuteValue.getAttrValueByState(
-        stage,
-        "paper.direct",
-        true
-      );
-      this.direct = paperDirect ? paperDirect : this.direct;
-
-      this.size = paperType ? paperType.toLowerCase() : this.size;
-
-      this.sheets = file.sheets;
-    }
-    if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]?.mode) {
-      this.mode = this.editor?.tempDialogData[this.dialogId].mode
-    }
   },
   methods: {
+    refreshData(){
+      let file = this.editor?.files[this.editor?.currentFileIndex];
+      if (file) {
+        let stage = this.editor?.ddInstance.stage;
+        //获取纸张信息
+        let paperType = DDeiModelArrtibuteValue.getAttrValueByState(
+          stage,
+          "paper.type",
+          true
+        );
+        let paperDirect = DDeiModelArrtibuteValue.getAttrValueByState(
+          stage,
+          "paper.direct",
+          true
+        );
+        this.direct = paperDirect ? paperDirect : this.direct;
+
+        this.size = paperType ? paperType.toLowerCase() : this.size;
+
+        this.sheets = file.sheets;
+      }
+      if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]?.mode) {
+        this.mode = this.editor?.tempDialogData[this.dialogId].mode
+      }
+    },
+
     checkOrUnCheckBG() {
       this.exportBG = !this.exportBG;
     },

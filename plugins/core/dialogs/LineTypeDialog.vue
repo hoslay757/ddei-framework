@@ -50,13 +50,17 @@ export default {
   watch: {},
   created() { },
   mounted() {
-    let value = 1
-    if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]) {
-      value = this.editor?.tempDialogData[this.dialogId].value
-    }
-    this.value = value;
+    this.refreshData();
   },
   methods: {
+
+    refreshData(){
+      let value = 1
+      if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]) {
+        value = this.editor?.tempDialogData[this.dialogId].value
+      }
+      this.value = value;
+    },
     /**
      * 修改文本对齐方式
      */

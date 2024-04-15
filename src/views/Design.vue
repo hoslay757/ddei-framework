@@ -322,7 +322,6 @@ export default {
       if (ddInstance && ddInstance["AC_DESIGN_EDIT"]) {
         let editor = DDeiEditorCls.ACTIVE_INSTANCE;
         let curState = editor.state
-
         //隐藏弹出框
         DDeiEditorUtil.closeDialog('ddei-core-dialog-quickpop')
 

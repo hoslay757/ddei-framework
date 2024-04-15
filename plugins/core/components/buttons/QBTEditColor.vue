@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'ddei_editor_quick_fat_item_box': true, 'ddei_editor_quick_fat_item_box_disabled': !attrDefine }"
+  <div :class="{ 'ddei-editor-quick-fat-item-box': true, 'ddei-editor-quick-fat-item-box--disabled': !attrDefine }"
     @click="attrDefine && showColor($event)">
     <svg :class="'icon ' + (extcls ? extcls : '')" aria-hidden="true">
       <use :xlink:href="'#' + img"></use>
@@ -203,7 +203,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.ddei_editor_quick_fat_item_box {
+.ddei-editor-quick-fat-item-box {
   width: 15px;
   height: 24px;
   overflow: hidden;
@@ -226,13 +226,12 @@ export default {
     display: block;
     margin-top: 5px
   }
-}
+  .magtop-1 {
+    margin-top: -1px;
+  }
 
-.magtop-1 {
-  margin-top: -1px;
-}
-
-.ddei_editor_quick_fat_item_box:hover {
-  cursor: pointer;
+  &:hover {
+    cursor: pointer;
+  }
 }
 </style>

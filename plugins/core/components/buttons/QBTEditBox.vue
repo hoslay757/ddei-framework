@@ -1,6 +1,6 @@
 <template>
   <div
-    :class="{ 'ddei_editor_quick_fat_item_box': true, 'ddei_editor_quick_fat_item_box_selected': value, 'ddei_editor_quick_fat_item_box_disabled': !attrDefine }"
+    :class="{ 'ddei-editor-quick-fat-item-box': true, 'ddei-editor-quick-fat-item-box--selected': value, 'ddei-editor-quick-fat-item-box--disabled': !attrDefine }"
     @click="attrDefine && valueChange($event)">
     <svg :class="'icon ' + (extcls ? extcls : '')" aria-hidden="true">
       <use :xlink:href="'#' + img"></use>
@@ -242,46 +242,46 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.ddei_editor_quick_fat_item_box {
+.ddei-editor-quick-fat-item-box {
   width: 24px;
   display: flex;
   justify-content: center;
   align-items: center;
-}
 
-.rotate-90 {
-  transform: rotate(90deg);
-}
+  &:hover {
+    cursor: pointer;
+    background-color: #e6e6e6;
+  }
 
-.ext-underline {
-  margin-top: 5.5px;
-  font-size: 16px;
-}
+  &--selected {
+    background-color: #e6e6e6;
+  }
 
-.magtop-1 {
-  margin-top: -1px;
-}
+  &--disabled {
+    pointer-events: none;
+    color: #e6e6e6;
+    cursor: not-allowed;
+  }
 
-.magtop-2 {
-  margin-top: -2px;
-}
+  .rotate-90 {
+    transform: rotate(90deg);
+  }
 
-.magtop-3 {
-  margin-top: -3px;
-}
+  .ext-underline {
+    margin-top: 5.5px;
+    font-size: 16px;
+  }
 
-.ddei_editor_quick_fat_item_box:hover {
-  cursor: pointer;
-  background-color: #e6e6e6;
-}
+  .magtop-1 {
+    margin-top: -1px;
+  }
 
-.ddei_editor_quick_fat_item_box_selected {
-  background-color: #e6e6e6;
-}
+  .magtop-2 {
+    margin-top: -2px;
+  }
 
-.ddei_editor_quick_fat_item_box_disabled {
-  pointer-events: none;
-  color: #e6e6e6;
-  cursor: not-allowed;
+  .magtop-3 {
+    margin-top: -3px;
+  }
 }
 </style>

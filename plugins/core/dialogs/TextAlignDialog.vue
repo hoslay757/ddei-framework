@@ -65,39 +65,43 @@ export default {
   watch: {},
   created() { },
   mounted() {
-    let align = 2;
-    let valign = 2;
-    if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]) {
-      align = this.editor?.tempDialogData[this.dialogId].align
-      valign = this.editor?.tempDialogData[this.dialogId].valign
-    }
-    let value = 5;
-    switch (align) {
-      case 1:
-        switch (valign) {
-          case 1: value = 1; break;
-          case 2: value = 4; break;
-          case 3: value = 7; break;
-        }
-        break;
-      case 2:
-        switch (valign) {
-          case 1: value = 2; break;
-          case 2: value = 5; break;
-          case 3: value = 8; break;
-        }
-        break;
-      case 3:
-        switch (valign) {
-          case 1: value = 3; break;
-          case 2: value = 6; break;
-          case 3: value = 9; break;
-        }
-        break;
-    }
-    this.value = value;
+    this.refreshData();
   },
   methods: {
+
+    refreshData(){
+      let align = 2;
+      let valign = 2;
+      if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]) {
+        align = this.editor?.tempDialogData[this.dialogId].align
+        valign = this.editor?.tempDialogData[this.dialogId].valign
+      }
+      let value = 5;
+      switch (align) {
+        case 1:
+          switch (valign) {
+            case 1: value = 1; break;
+            case 2: value = 4; break;
+            case 3: value = 7; break;
+          }
+          break;
+        case 2:
+          switch (valign) {
+            case 1: value = 2; break;
+            case 2: value = 5; break;
+            case 3: value = 8; break;
+          }
+          break;
+        case 3:
+          switch (valign) {
+            case 1: value = 3; break;
+            case 2: value = 6; break;
+            case 3: value = 9; break;
+          }
+          break;
+      }
+      this.value = value;
+    },
     /**
      * 修改文本对齐方式
      */

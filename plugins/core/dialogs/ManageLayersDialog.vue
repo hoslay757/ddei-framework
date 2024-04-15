@@ -90,36 +90,40 @@ export default {
   watch: {},
   created() { },
   mounted() {
-    //获取权限
-    this.allowOpenMultLayers = DDeiEditorUtil.getConfigValue(
-      "GLOBAL_ALLOW_OPEN_MULT_LAYERS",
-      this.editor
-    );
-    this.allowAddLayer = DDeiUtil.isAccess(
-      DDeiEnumOperateType.CREATE,
-      { modelType: "DDeiLayer" },
-      DDeiUtil.getConfigValue("MODE_NAME", this.editor.ddInstance),
-      this.editor.ddInstance
-    );
-    let file = this.editor?.files[this.editor?.currentFileIndex];
-    let sheet = file?.sheets[file?.currentSheetIndex];
-    this.currentStage = sheet?.stage;
-
-    let userCookie = Cookies.get("user");
-
-    if (userCookie && file) {
-      this.user = JSON.parse(userCookie)
-      for (let i = 0; i < this.user?.sslinks?.length; i++) {
-        if (this.user.sslinks[i].file_id == file.id) {
-          this.sslink = this.user.sslinks[i]
-          break;
-        }
-      }
-
-    }
-    this.file = file
+    this.refreshData()
   },
   methods: {
+
+    refreshData(){
+      //获取权限
+      this.allowOpenMultLayers = DDeiEditorUtil.getConfigValue(
+        "GLOBAL_ALLOW_OPEN_MULT_LAYERS",
+        this.editor
+      );
+      this.allowAddLayer = DDeiUtil.isAccess(
+        DDeiEnumOperateType.CREATE,
+        { modelType: "DDeiLayer" },
+        DDeiUtil.getConfigValue("MODE_NAME", this.editor.ddInstance),
+        this.editor.ddInstance
+      );
+      let file = this.editor?.files[this.editor?.currentFileIndex];
+      let sheet = file?.sheets[file?.currentSheetIndex];
+      this.currentStage = sheet?.stage;
+
+      let userCookie = Cookies.get("user");
+
+      if (userCookie && file) {
+        this.user = JSON.parse(userCookie)
+        for (let i = 0; i < this.user?.sslinks?.length; i++) {
+          if (this.user.sslinks[i].file_id == file.id) {
+            this.sslink = this.user.sslinks[i]
+            break;
+          }
+        }
+
+      }
+      this.file = file
+    },
     /**
      * layer开始拖拽移动
      */

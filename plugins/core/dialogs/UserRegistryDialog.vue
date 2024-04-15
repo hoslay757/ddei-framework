@@ -123,17 +123,20 @@ export default {
   watch: {},
   created() { },
   mounted() {
-    if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]?.icon) {
-      this.icon = this.editor?.tempDialogData[this.dialogId].icon
-    }
-    if (this.$refs.reg_input_id) {
-      setTimeout(() => {
-          this.$refs.reg_input_id.focus()
-      }, 100);
-    }
+    this.refreshData();
 
   },
   methods: {
+    refreshData(){
+      if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]?.icon) {
+        this.icon = this.editor?.tempDialogData[this.dialogId].icon
+      }
+      if (this.$refs.reg_input_id) {
+        setTimeout(() => {
+          this.$refs.reg_input_id.focus()
+        }, 100);
+      }
+    },
 
     ok() {
       this.registry()

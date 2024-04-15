@@ -110,6 +110,7 @@ export default {
     //打开弹出框
     showDialog(evt: Event) {
       let srcElement = evt.currentTarget;
+      
       DDeiEditorUtil.showOrCloseDialog("ddei-core-dialog-selectfont", {
         dataSource: this.dataSource,
         value: this.attrDefine.value,
@@ -194,6 +195,7 @@ export default {
     getDataSource(attrDefine) {
       if (this.attrDefine) {
         let dataSources = DDeiEditorUtil.getDataSource(
+          this.editor,
           this.attrDefine,
           this.searchText
         );

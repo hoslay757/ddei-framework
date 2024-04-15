@@ -1,6 +1,6 @@
 <template>
   <div
-    :class="{ 'ddei_editor_quick_fat_item_box': true, 'ddei_editor_quick_fat_item_box_disabled': !(attrDefine || valignAttrDefine) }"
+    :class="{ 'ddei-editor-quick-fat-item-box': true, 'ddei-editor-quick-fat-item-box--disabled': !(attrDefine || valignAttrDefine) }"
     @click="(attrDefine || valignAttrDefine) && showTextAlignDialog($event)">
     <svg :class="'icon ' + (extcls ? extcls : '')" aria-hidden="true">
       <use :xlink:href="'#' + img"></use>
@@ -169,46 +169,49 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.ddei_editor_quick_fat_item_box {
+.ddei-editor-quick-fat-item-box {
   width: 24px;
   display: flex;
   justify-content: center;
   align-items: center;
+
+  &:hover {
+    cursor: pointer;
+    background-color: #e6e6e6;
+  }
+
+  &--selected {
+    background-color: #e6e6e6;
+  }
+
+  &--disabled {
+    pointer-events: none;
+    color: #e6e6e6;
+    cursor: not-allowed;
+  }
+  
+  .rotate-90 {
+    transform: rotate(90deg);
+  }
+
+  .ext-underline {
+    margin-top: 5.5px;
+    font-size: 16px;
+  }
+
+  .magtop-1 {
+    margin-top: -1px;
+  }
+
+  .magtop-2 {
+    margin-top: -2px;
+  }
+
+  .magtop-3 {
+    margin-top: -3px;
+  }
 }
 
-.rotate-90 {
-  transform: rotate(90deg);
-}
 
-.ext-underline {
-  margin-top: 5.5px;
-  font-size: 16px;
-}
 
-.magtop-1 {
-  margin-top: -1px;
-}
-
-.magtop-2 {
-  margin-top: -2px;
-}
-
-.magtop-3 {
-  margin-top: -3px;
-}
-
-.ddei_editor_quick_fat_item_box:hover {
-  cursor: pointer;
-  background-color: #e6e6e6;
-}
-
-.ddei_editor_quick_fat_item_box_selected {
-  background-color: #e6e6e6;
-}
-
-.ddei_editor_quick_fat_item_box_disabled {
-  pointer-events: none;
-  color: #e6e6e6;
-  cursor: not-allowed;
-}
 </style>

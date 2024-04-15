@@ -1,5 +1,4 @@
 import DDeiEditorArrtibute from "../attribute/editor-attribute";
-import CONFIGS from "../../../../src/components/editor/js/resource"
 import DDeiAbstractShape from "../../../framework/js/models/shape";
 import DDeiEditor from "../editor";
 import DDeiConfig from "../../../framework/js/config";
@@ -377,8 +376,11 @@ class DDeiEditorUtil {
   /**
     * 获取数据源数据
     */
-  static getDataSource(attrDefine: DDeiEditorArrtibute, searchText: string | null = null): object[] | null {
+  static getDataSource(editor:DDeiEditor, attrDefine: DDeiEditorArrtibute, searchText: string | null = null): object[] | null {
     if (attrDefine.dataSource) {
+      if (!editor){
+        editor = DDeiEditor.ACTIVE_INSTANCE;
+      }
       let dsDefine = attrDefine.dataSource;
       let dataSource = null;
       if (Array.isArray(dsDefine)) {
@@ -392,7 +394,7 @@ class DDeiEditorUtil {
         else if (type == 'config') {
           dataSource = [];
           let configData = dsDefine.data;
-          let data = CONFIGS[configData];
+          let data = editor[configData];
           if (!data) {
             data = DDeiConfig[configData]
           }

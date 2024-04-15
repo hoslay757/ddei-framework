@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div id="ddei_editor_quick_fat_item_fontsize"
-      :class="{ 'ddei_editor_quick_fat_item_fontsize': true, 'ddei_editor_quick_fat_item_fontsize_disabled': !attrDefine }">
-      <input class="ddei_editor_quick_fat_item_fontsize_input"
+    <div id="ddei-editor-quick-fat-item-fontsize"
+      :class="{ 'ddei-editor-quick-fat-item-fontsize': true, 'ddei-editor-quick-fat-item-fontsize--disabled': !attrDefine }">
+      <input class="ddei-editor-quick-fat-item-fontsize_input"
         :readonly="!attrDefine || (attrDefine && (attrDefine.readonly))" v-model="text" @input="inputValue()"
         :placeholder="defaultText" autocomplete="off" />
-      <div class="ddei_editor_quick_fat_item_fontsize_combox"
+      <div class="ddei-editor-quick-fat-item-fontsize_combox"
         @click="attrDefine && !attrDefine.readonly && showDialog($event)">
         <svg class="icon iconfont-45" aria-hidden="true">
           <use xlink:href="#icon-a-ziyuan478"></use>
@@ -282,6 +282,7 @@ export default {
           { text: "288", value: 288 },
         ];
         let dataSources = DDeiEditorUtil.getDataSource(
+          this.editor,
           this.attrDefine,
           this.searchText
         );
@@ -296,7 +297,7 @@ export default {
 <style lang="less" scoped>
 /*字体大小设置框 */
 
-.ddei_editor_quick_fat_item_fontsize {
+.ddei-editor-quick-fat-item-fontsize {
   background-color: white;
   height: 24px;
   display: flex;
@@ -305,67 +306,68 @@ export default {
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
   border: 1px solid #D4D4D4;
+
+  &:hover {
+    border: 0.5px solid #017fff;
+    box-sizing: border-box;
+  }
+
+  &--disabled:hover {
+    background-color: transparent !important;
+    cursor: not-allowed !important;
+  }
+
+  &_input {
+    width: calc(100% - 20px);
+    border: transparent;
+    outline: none;
+    font-size: 15px;
+    background: transparent;
+  
+  }
+
+  &_combox {
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  
+    .iconfont-45 {
+      font-size: 13px
+    }
+  }
 }
 
-.ddei_editor_quick_fat_item_fontsize:hover {
-  border: 0.5px solid #017fff;
-  box-sizing: border-box;
-}
+.ddei-editor-quick-fat-item-box {
+  width: 25px;
+  height: 25px;
+  text-align: center;
 
-.ddei_editor_quick_fat_item_fontsize_disabled:hover {
-  background-color: transparent !important;
-  cursor: not-allowed !important;
-}
 
-.ddei_editor_quick_fat_item_fontsize_input {
-  width: calc(100% - 20px);
-  border: transparent;
-  outline: none;
-  font-size: 15px;
-  background: transparent;
+  &--disabled {
+    color: rgb(228, 228, 232);
+    filter: brightness(200%) !important;
+  }
 
-}
+  &--disabled:hover {
+    background-color: transparent !important;
+    cursor: not-allowed;
+  }
 
-.ddei_editor_quick_fat_item_fontsize_combox {
-  height: 24px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  &--selected {
+    width: 25px;
+    height: 25px;
+    text-align: center;
+    background-color: rgb(228, 228, 232);
+    border-radius: 4px;
+  }
 
-  .iconfont-45 {
-    font-size: 13px
+
+  &:hover {
+    background-color: rgb(233, 233, 238);
+    border-radius: 4px;
   }
 }
 
 
-.ddei_editor_quick_fat_item_box {
-  width: 25px;
-  height: 25px;
-  text-align: center;
-}
-
-
-.ddei_editor_quick_fat_item_box_disabled {
-  color: rgb(228, 228, 232);
-  filter: brightness(200%) !important;
-}
-
-.ddei_editor_quick_fat_item_box_disabled:hover {
-  background-color: transparent !important;
-  cursor: not-allowed;
-}
-
-.ddei_editor_quick_fat_item_box_selected {
-  width: 25px;
-  height: 25px;
-  text-align: center;
-  background-color: rgb(228, 228, 232);
-  border-radius: 4px;
-}
-
-
-.ddei_editor_quick_fat_item_box:hover {
-  background-color: rgb(233, 233, 238);
-  border-radius: 4px;
-}
 </style>

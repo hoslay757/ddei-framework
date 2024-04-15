@@ -136,7 +136,7 @@ import { listfile, createfile, savefilebasic, removefile, copyfile } from "@/lib
 import ICONS from '@/components/editor/js/icon'
 import { debounce } from 'lodash'
 import { createVNode } from 'vue'
-import FONTS from "@/components/editor/configs/fonts/font"
+import FONTS from "@ddei-core/framework/js/fonts/font"
 import { message, Modal } from 'ant-design-vue'
 
 export default {

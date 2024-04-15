@@ -128,7 +128,7 @@ export default {
       'dataType': 'string',
       'dataSource': {
         'type': 'config',
-        'data': 'FONTS',
+        'data': 'fonts',
         'text': 'ch',
         'value': 'en',
         'bold': 'isSystemDefault',

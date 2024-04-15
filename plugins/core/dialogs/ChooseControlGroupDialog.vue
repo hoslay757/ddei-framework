@@ -65,12 +65,16 @@ export default {
   watch: {},
   created() { },
   mounted() {
-    this.menuId = null
-    if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]?.selectGroups) {
-      this.selectGroups = this.editor?.tempDialogData[this.dialogId].selectGroups
-    }
+   this.refreshData();
   },
   methods: {
+    refreshData(){
+      this.menuId = null
+      if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]?.selectGroups) {
+        this.selectGroups = this.editor?.tempDialogData[this.dialogId].selectGroups
+      }
+    },
+
     expandSubMenu(menuid, evt) {
       if (this.menuId != menuid) {
         let groups = []

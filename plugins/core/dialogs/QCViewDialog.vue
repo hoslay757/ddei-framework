@@ -40,11 +40,15 @@ export default {
   watch: {},
   created() { },
   mounted() {
-    if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]?.dataSource) {
-      this.dataSource = this.editor?.tempDialogData[this.dialogId]?.dataSource;
-    }
+    this.refreshData()
   },
   methods: {
+    refreshData(){
+      if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]?.dataSource) {
+        this.dataSource = this.editor?.tempDialogData[this.dialogId]?.dataSource;
+      }
+    },
+
     ok(item) {
       if (this.editor?.tempDialogData[this.dialogId]?.callback?.ok) {
         this.editor?.tempDialogData[this.dialogId]?.callback?.ok(item);

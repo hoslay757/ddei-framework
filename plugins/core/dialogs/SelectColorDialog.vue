@@ -174,22 +174,26 @@ export default {
   watch: {},
   created() { },
   mounted() {
-    if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]?.dataSource) {
-      this.dataSource = this.editor?.tempDialogData[this.dialogId].dataSource
-    }
-    if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]?.value) {
-      this.value = this.editor?.tempDialogData[this.dialogId].value
-    }
-    DDeiUtil.readRecentlyChooseColors();
-    for (let i = DDeiUtil.recentlyChooseColors?.length; i >= 0; i--) {
-      this.ds1.splice(0, 0, DDeiUtil.recentlyChooseColors[i])
-      if (this.ds1.length > 10) {
-        this.ds1.splice(10, 1)
-      }
-    }
+    this.refreshData()
 
   },
   methods: {
+    refreshData(){
+      if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]?.dataSource) {
+        this.dataSource = this.editor?.tempDialogData[this.dialogId].dataSource
+      }
+      if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]?.value) {
+        this.value = this.editor?.tempDialogData[this.dialogId].value
+      }
+      DDeiUtil.readRecentlyChooseColors();
+      for (let i = DDeiUtil.recentlyChooseColors?.length; i >= 0; i--) {
+        this.ds1.splice(0, 0, DDeiUtil.recentlyChooseColors[i])
+        if (this.ds1.length > 10) {
+          this.ds1.splice(10, 1)
+        }
+      }
+    },
+
     selectColor(evt) {
       let srcElement = evt.currentTarget;
       this.value = DDeiUtil.rgb2hex(srcElement.style.backgroundColor)

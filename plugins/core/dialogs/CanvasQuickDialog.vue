@@ -242,24 +242,25 @@ export default {
 
   },
   mounted() {
-
-    let stage = this.editor.ddInstance.stage
-    if (stage) {
-      this.selectedModels = stage.selectedModels
-      this.operateState = stage.render.operateState
-      if (this.selectedModels?.size > 0) {
-        let allLine = true
-        this.selectedModels.forEach(model => {
-          if (model.baseModelType != 'DDeiLine') {
-            allLine = false
-          }
-        });
-        this.allLine = allLine
-      }
-    }
+   this.refreshData()
   },
   methods: {
-
+    refreshData(){
+      let stage = this.editor.ddInstance.stage
+      if (stage) {
+        this.selectedModels = stage.selectedModels
+        this.operateState = stage.render.operateState
+        if (this.selectedModels?.size > 0) {
+          let allLine = true
+          this.selectedModels.forEach(model => {
+            if (model.baseModelType != 'DDeiLine') {
+              allLine = false
+            }
+          });
+          this.allLine = allLine
+        }
+      }
+    },
     exchangeLinePoint() {
 
       this.selectedModels?.forEach(model => {
@@ -505,7 +506,7 @@ export default {
       }
 
       .i2 {
-        .ddei_editor_quick_fat_item_box {
+        .ddei-editor-quick-fat-item-box {
           width: 22px;
           height: 26px;
           margin: 0 auto;
@@ -518,7 +519,7 @@ export default {
       }
 
       .i3 {
-        .ddei_editor_quick_fat_item_box {
+        .ddei-editor-quick-fat-item-box {
           width: 22px;
           height: 28px;
           margin: 0 auto;
@@ -701,7 +702,7 @@ export default {
         padding-left: 5px;
         padding-right: 5px;
 
-        .ddei_editor_quick_fat_item_box {
+        .ddei-editor-quick-fat-item-box {
           width: 22px;
           height: 28px;
           margin: 5px auto 3px auto;

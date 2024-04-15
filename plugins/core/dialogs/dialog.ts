@@ -11,6 +11,9 @@ const DialogBase = {
       this.forceRefresh = false
       this.$nextTick(() => {
         this.forceRefresh = true;
+        if (this.refreshData){
+          this.refreshData();
+        }
       });
     }
   },

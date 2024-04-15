@@ -484,16 +484,7 @@ class DDeiConfig {
     "64开": { width: 110, height: 142, paddingLeft: 18, paddingTop: 12, unit: 'mm' }
   }
   static {
-    //加载外部配置
-    const global_config_ctx = import.meta.glob('@/ddei/config', { eager: true });
-    for (let i in global_config_ctx) {
-      let configData = global_config_ctx[i].default;
-      if (configData) {
-        DDeiConfig.applyConfig(configData)
-        break;
-      }
-    }
-
+    
   }
 
   /**
