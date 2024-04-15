@@ -1,4 +1,4 @@
-import { MODEL_CLS, DDeiConfig } from '../config'
+import  DDeiConfig from '../config'
 import DDeiAbstractShape from './shape'
 import { Matrix3, Vector3 } from 'three';
 import DDeiUtil from '../util';
@@ -60,13 +60,14 @@ class DDeiLine extends DDeiAbstractShape {
     if (!model.pModel) {
       model.pModel = model.layer;
     }
+    let ddInstance = model.stage?.ddInstance;
     tempData[model.id] = model;
     //初始化composes
     if (json?.composes?.length > 0) {
       let composes = []
       json?.composes.forEach(composeJSON => {
         let def = DDeiUtil.getControlDefine(composeJSON)
-        let composeModel: DDeiAbstractShape = MODEL_CLS[def.type].loadFromJSON(
+        let composeModel: DDeiAbstractShape = ddInstance.controlModelClasses[def.type].loadFromJSON(
           composeJSON,
           tempData,
           false
@@ -89,12 +90,13 @@ class DDeiLine extends DDeiAbstractShape {
     model.layer = tempData['currentLayer']
     model.stage = tempData['currentStage']
     model.pModel = tempData['currentContainer']
+    let ddInstance = model.stage?.ddInstance;
     //初始化composes
     if (json?.composes?.length > 0) {
       let composes = []
       json?.composes.forEach(composeJSON => {
         let def = DDeiUtil.getControlDefine(composeJSON)
-        let composeModel: DDeiAbstractShape = MODEL_CLS[def.type].initByJSON(
+        let composeModel: DDeiAbstractShape = ddInstance.controlModelClasses[def.type].initByJSON(
           composeJSON,
           tempData,
           false

@@ -1,47 +1,6 @@
 import DDeiAbstractShape from "./models/shape"
 import DDeiUtil from "./util"
 
-/**
- * 组件的定义，用于根据名称找到组件类型
- */
-const MODEL_CLS = {}
-
-/**
- * 组件渲染器的定义，用于根据名称找到渲染器
- */
-const RENDER_CLS = {}
-
-
-
-
-//动态加载控件
-const control_ctx = import.meta.glob('./models/*.ts', { eager: true })
-for (let i in control_ctx) {
-  let cls = control_ctx[i].default;
-  MODEL_CLS[cls.ClsName] = cls;
-}
-
-//动态加载渲染器
-const render_ctx = import.meta.glob('./views/canvas/*.ts', { eager: true });
-for (let i in render_ctx) {
-  let cls = render_ctx[i].default;
-  RENDER_CLS[cls.ClsName] = cls;
-}
-const render_ctx1 = import.meta.glob('./views/svg/*.ts', { eager: true });
-for (let i in render_ctx1) {
-  let cls = render_ctx1[i].default;
-  RENDER_CLS[cls.ClsName] = cls;
-}
-
-const render_ctx2 = import.meta.glob('./views/webgl/*.ts', { eager: true });
-for (let i in render_ctx2) {
-  let cls = render_ctx2[i].default;
-  RENDER_CLS[cls.ClsName] = cls;
-}
-
-
-
-
 
 /**
  * DDei的配置文件
@@ -712,7 +671,11 @@ class DDeiConfig {
   */
   static bindRender(model: DDeiAbstractShape): any {
     let clsName = model.modelType + this.RENDER_TYPE + "Render";
-    model.render = RENDER_CLS[clsName].newInstance({ model: model })
+    if(model.modelType=="DDeiStage"){
+      model.render = model?.ddInstance.controlViewClasses[clsName].newInstance({ model: model })
+    }else{
+      model.render = model.stage?.ddInstance.controlViewClasses[clsName].newInstance({ model: model })
+    }
   }
 
   static {
@@ -735,4 +698,3 @@ class DDeiConfig {
 }
 
 export default DDeiConfig
-export { MODEL_CLS, RENDER_CLS, DDeiConfig }

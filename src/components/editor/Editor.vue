@@ -1,12 +1,11 @@
 <template>
-
-  <div id="ddei_editor" class="ddei_editor" @contextmenu.prevent @mousewheel.prevent @mouseup="mouseUp"
-    @mousemove="mouseMove" @mousedown="mouseDown">
+  <div :id="id" class="ddei-editor" @contextmenu.prevent @mousewheel.prevent @mouseup="mouseUp" @mousemove="mouseMove"
+    @mousedown="mouseDown">
     <component :is="editor?.getLayout()" :options="editor?.getLayoutOptions()">
     </component>
   </div>
 
-  <div id="dialog_background_div" class="dialog_background_div"></div>
+  <div :id="id+'_dialog_background_div'" class="dialog-background-div"></div>
   <component v-for="(item, index) in editor?.getDialogs()" :is="item.dialog" :options="item.options"
     v-bind="item.options"></component>
   <MenuDialog v-show="!refreshMenu"></MenuDialog>
@@ -43,7 +42,12 @@ export default {
     options: {
       type: Object,
       default: null
-    }
+    },
+    id: {
+      type: String,
+      default: "ddei_editor"
+    },
+
   },
   data() {
     return {
@@ -83,7 +87,8 @@ export default {
         this.options.extensions = []
       }
       this.options.extensions.splice(0,0,DDeiCore)
-      this.editor = DDeiEditor.newInstance("ddei_editor_ins", "ddei_editor", true, this.options);
+      this.editor = DDeiEditor.newInstance(this.id, this.id, true, this.options);
+      
     }
     //载入局部配置
     if (this.options){
@@ -96,9 +101,9 @@ export default {
 
   },
   mounted() {
-    
     this.editor.editorViewer = this;
     this.editor.bindEvent();
+    
     //初始化拦截器
     //以下为拦截器的配置
     this.editor.bus.interceptor[DDeiEnumBusCommandType.NodifyChange] = {
@@ -466,8 +471,8 @@ export default {
 };
 </script>
 
-<style scoped>
-.ddei_editor {
+<style lang="less" scoped>
+.ddei-editor {
 
   width: 100%;
   height: calc(100vh);
@@ -477,40 +482,9 @@ export default {
   background-color: rgb(240, 240, 240);
   min-width: 1700px;
 }
-
-.ddei_editor .top {
-  flex: 0 0 103px
-}
-
-.ddei_editor .bottom {
-  flex: 0 0 50px;
-  background: #F2F2F7;
-  border: 1px solid #D4D4D4;
-}
-
-.ddei_editor .body {
-  display: flex;
-  flex: 1;
-}
-
-.ddei_editor .body .left {
-  flex: 0 1 292px;
-  border: 1px solid #D5D5DF;
-}
-
-.ddei_editor .body .middle {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.ddei_editor .body .right {
-  flex: 0 1 292px;
-  border: 1px solid #D5D5DF;
-}
 </style>
 <style>
-.ddei_editor img {
+.ddei-editor img {
   -webkit-user-drag: none;
   user-drag: none;
   -webkit-user-select: none;
@@ -519,7 +493,7 @@ export default {
   user-select: none;
 }
 
-.ddei_editor div {
+.ddei-editor div {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -533,7 +507,7 @@ export default {
   display: flex;
 }
 
-.dialog_background_div {
+.dialog-background-div {
   width: 100%;
   height: 100vh;
   opacity: 50%;

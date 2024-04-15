@@ -5,7 +5,7 @@ import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-ty
 import DDeiUtil from "@ddei-core/framework/js/util";
 import DDeiStage from "@ddei-core/framework/js/models/stage";
 import DDeiRectangle from "@ddei-core/framework/js/models/rectangle";
-import DDeiConfig, { MODEL_CLS } from "@ddei-core/framework/js/config";
+import DDeiConfig from "@ddei-core/framework/js/config";
 import DDeiAbstractShape from "@ddei-core/framework/js/models/shape";
 import DDeiTable from "@ddei-core/framework/js/models/table";
 import { Matrix3, Vector3 } from 'three';
@@ -953,7 +953,7 @@ class DDeiKeyActionPaste extends DDeiKeyAction {
     let models: DDeiAbstractShape[] = []
     jsonArray.forEach(json => {
       if (mode == 'copy') {
-        let copyModel = MODEL_CLS[json.modelType].loadFromJSON(json, { currentDdInstance: stage.ddInstance, currentStage: stage, currentLayer: layer, currentContainer: container });
+        let copyModel = stage.ddInstance.controlModelClasses[json.modelType].loadFromJSON(json, { currentDdInstance: stage.ddInstance, currentStage: stage, currentLayer: layer, currentContainer: container });
 
         models.push(copyModel);
 

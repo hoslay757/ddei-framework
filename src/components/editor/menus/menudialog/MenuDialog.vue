@@ -1,17 +1,17 @@
 <template>
-  <div id="ddei_editor_menu_dialog" class="ddei_editor_menu_dialog">
+  <div :id="editor?.id+'_menu_dialog'" class="ddei-editor-menu-dialog">
     <div v-show="isVisiable(menu)"
-      :class="{ 'ddei_editor_menu_dialog_hr': menu.code == 'split', 'ddei_editor_menu_dialog_item': menu.code != 'split' }"
+      :class="{ 'ddei-editor-menu-dialog-hr': menu.code == 'split', 'ddei-editor-menu-dialog-item': menu.code != 'split' }"
       v-for="menu in editor?.currentMenuData" @click="execMenuAction(menu, $event)">
-      <div v-if="menu.code != 'split'" class="ddei_editor_menu_dialog_item_icon">
+      <div v-if="menu.code != 'split'" class="ddei-editor-menu-dialog-item-icon">
         <svg v-if="menu.icon" class="icon" aria-hidden="true">
           <use :xlink:href="menu.icon"></use>
         </svg>
       </div>
-      <div v-if="menu.code != 'split'" class="ddei_editor_menu_dialog_item_content">
+      <div v-if="menu.code != 'split'" class="ddei-editor-menu-dialog-item-content">
         {{ menu.name }}
       </div>
-      <div v-if="menu.code != 'split'" class="ddei_editor_menu_dialog_item_desc">
+      <div v-if="menu.code != 'split'" class="ddei-editor-menu-dialog-item-desc">
         {{ menu.desc }}
       </div>
     </div>
@@ -37,10 +37,12 @@ export default {
   computed: {},
   components: {},
   watch: {},
-  created() { },
-  mounted() {
+  created() {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
+  },
+  mounted() {
+
   },
   methods: {
     /**
@@ -54,7 +56,7 @@ export default {
         menuAction.action(menuShape, evt);
       }
       //关闭dialog
-      document.getElementById("ddei_editor_menu_dialog").style.display = "none";
+      document.getElementById("ddei-editor-menu-dialog").style.display = "none";
       //刷新
       stage.render.operateState = DDeiEnumOperateState.NONE;
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
@@ -81,9 +83,9 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 /**以下为菜单的样式 */
-.ddei_editor_menu_dialog {
+.ddei-editor-menu-dialog {
   width: 200px;
   background-color: white;
   font-size: 13px;
@@ -95,47 +97,44 @@ export default {
   z-index: 999;
   border-radius: 4px;
   box-shadow: -3px 3px 3px hsl(0deg 0% 0% /0.25);
-}
 
-.ddei_editor_menu_dialog_item {
-  height: 34px;
-  width: 100%;
-  display: flex;
-}
+  &-item {
+    height: 34px;
+    width: 100%;
+    display: flex;
+    &:hover {
+      background-color: rgb(240, 240, 240);
+      cursor: pointer;
+    }
+    &-icon {
+      flex: 0 0 34px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      .icon {
+        width: 22px;
+        height: 22px;
+        margin: 0px 3px 0px 3px;
+        filter: brightness(60%);
+      }
+    }
 
-.ddei_editor_menu_dialog_item:hover {
-  background-color: rgb(240, 240, 240);
-  cursor: pointer;
-}
+    &-content {
+      flex: 1;
+      display: flex;
+      justify-content: start;
+      align-items: center;
+    }
 
-.ddei_editor_menu_dialog_item_icon {
-  flex: 0 0 34px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+    &-desc {
+      flex: 0 0 34px;
+    }
 
-.ddei_editor_menu_dialog_item_icon .icon {
-  width: 22px;
-  height: 22px;
-  margin: 0px 3px 0px 3px;
-  filter: brightness(60%);
-}
-
-.ddei_editor_menu_dialog_item_content {
-  flex: 1;
-  display: flex;
-  justify-content: start;
-  align-items: center;
-}
-
-.ddei_editor_menu_dialog_item_desc {
-  flex: 0 0 34px;
-}
-
-.ddei_editor_menu_dialog_hr {
-  border: 0.5px solid rgb(240, 240, 240);
-  width: 93%;
-  margin: 1px auto;
+    &-hr {
+      border: 0.5px solid rgb(240, 240, 240);
+      width: 93%;
+      margin: 1px auto;
+    }
+  }
 }
 </style>

@@ -138,14 +138,49 @@ class DDeiEditor {
         if (!DDeiUtil.getEditorText) {
           DDeiUtil.getEditorText = DDeiEditorUtil.getEditorText;
         }
+        //初始化ddInstance
+        let ddInstance = DDei.newInstance(
+          editorInstance.id,
+          editorInstance.id+"_canvas"
+        );
+        editorInstance.ddInstance = ddInstance;
+        editorInstance.applyConfig(editorInstance.extConfig);
+        //初始化编辑器bus
+        ddInstance.bus.invoker = editorInstance;
+        editorInstance.bus = ddInstance.bus;
 
-
+        
 
         //将DDeiEditor对象装入全局缓存
         DDeiEditor.INSTANCE_POOL[id] = editorInstance;
         if (active) {
           DDeiEditor.ACTIVE_INSTANCE = editorInstance;
         }
+        
+        //将编辑器的部分关键变量同步
+        ddInstance.controlModelClasses = editorInstance.controlModelClasses
+        ddInstance.controlViewClasses = editorInstance.controlViewClasses
+
+        //加载预置模型定义和渲染定义
+        let control_ctx = import.meta.glob(
+          "../../framework/js/models/*.ts", { eager: true }
+        )
+        for (let path in control_ctx) {
+          let cls = control_ctx[path].default
+          if (cls?.ClsName) {
+            editorInstance.controlModelClasses[cls.ClsName] = cls
+          }
+        }
+        let view_ctx = import.meta.glob(
+          "../../framework/js/views/**", { eager: true }
+        )
+        for (let path in view_ctx) {
+          let cls = view_ctx[path].default
+          if (cls?.ClsName) {
+            editorInstance.controlViewClasses[cls.ClsName] = cls
+          }
+        }
+       
 
         //装载插件
         if (options) {
@@ -163,6 +198,17 @@ class DDeiEditor {
               editorInstance.hotKeyMapping = editorInstance.hotKeyMapping.concat(keys)
             }
           }
+          //移除加载控件的临时变量
+          editorInstance.controls?.forEach(control => {
+            if (control.define) {
+              delete control.define.font
+              delete control.define.textStyle
+              delete control.define.border
+              delete control.define.fill
+            }
+            delete control.attrs
+          })
+          //加载控件的图标
           
         }
 

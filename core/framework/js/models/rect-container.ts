@@ -1,4 +1,4 @@
-import DDeiConfig, { MODEL_CLS } from '../config';
+import DDeiConfig from '../config';
 import DDeiEnumControlState from '../enums/control-state';
 import DDeiRectangle from './rectangle'
 import DDeiAbstractShape from './shape';
@@ -34,12 +34,13 @@ class DDeiRectContainer extends DDeiRectangle {
     if (!container.pModel) {
       container.pModel = container.layer;
     }
+    let ddInstance = container.stage?.ddInstance;
     tempData[container.id] = container;
     let models: Map<String, DDeiAbstractShape> = new Map<String, DDeiAbstractShape>();
     for (let key in json.models) {
       tempData['currentContainer'] = container;
       let item = json.models[key];
-      let model = MODEL_CLS[item.modelType].loadFromJSON(item, tempData);
+      let model = ddInstance.controlModelClasses[item.modelType].loadFromJSON(item, tempData);
       models.set(key, model)
       tempData['currentContainer'] = null;
     }

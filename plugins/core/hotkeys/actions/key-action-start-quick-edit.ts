@@ -1,4 +1,4 @@
-import { MODEL_CLS, DDeiConfig } from "@ddei-core/framework/js/config";
+import DDeiConfig from "@ddei-core/framework/js/config";
 import DDei from "@ddei-core/framework/js/ddei";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 import DDeiLineLink from "@ddei-core/framework/js/models/linelink";
@@ -154,7 +154,7 @@ class DDeiKeyActionStartQuickEdit extends DDeiKeyAction {
             dataJson["width"] = 80
             dataJson["height"] = 25
             dataJson["font"] = { size: 12 }
-            realModel = MODEL_CLS["DDeiPolygon"].initByJSON(
+            realModel = ddInstance.controlModelClasses["DDeiPolygon"].initByJSON(
               dataJson,
               { currentStage: stage, currentDdInstance: ddInstance, currentContainer: model.pModel }
             );

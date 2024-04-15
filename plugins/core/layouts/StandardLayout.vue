@@ -12,11 +12,6 @@
       <div class="middle" ref="middle">
         <component v-for="(item, index) in editor?.getPartPanels(options, 'middle')" :is="item.comp"
           :options="item.options" v-bind="item.options"></component>
-        <!-- <component :is="editor?.panels['ddei-core-panel-openfilesview']"
-          v-if="allowOpenMultFiles && refreshOpenFilesView">
-        </component>
-        <component :is="editor?.panels['ddei-core-panel-canvasview']"></component>
-        <component :is="editor?.panels['ddei-core-panel-quickcolorview']" v-if="allowQuickColor"></component> -->
       </div>
       <div class="right" ref="right" v-show="propertyViewShow">
         <component v-for="(item, index) in editor?.getPartPanels(options, 'right')" :is="item.comp"
@@ -32,8 +27,10 @@
 
 <script lang="ts">
 import DDeiEditor from "@ddei-core/editor/js/editor";
+import DDeiUtil from "@ddei-core/framework/js/util";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 import DDeiEditorState from "@ddei-core/editor//js/enums/editor-state";
+import DDeiEnumOperateType from "@ddei-core/framework/js/enums/operate-type";
 
 export default {
   name: "ddei-core-layout-standard",
@@ -70,11 +67,7 @@ export default {
   computed: {},
   watch: {},
   created() {
-    if (DDeiEditor.ACTIVE_INSTANCE) {
-      this.editor = DDeiEditor.ACTIVE_INSTANCE;
-    } else {
-      this.editor = DDeiEditor.newInstance("ddei_editor_ins", "ddei_editor", true, this.options);
-    }
+    this.editor = DDeiEditor.ACTIVE_INSTANCE;
 
     // 监听obj对象中prop属性的变化
     this.$watch("editor.leftWidth", function (newVal, oldVal) {
@@ -107,7 +100,7 @@ export default {
     this.editor.layoutViewer = this;
 
     // 获取要监听的 div 元素
-    let middleCanvas = document.getElementById("ddei_editor_canvasview");
+    let middleCanvas = document.getElementById(this.editor.id+"_canvas");
     // 创建 ResizeObserver 实例
     const resizeObserver = new ResizeObserver(entries => {
       // entries 是一个 ResizeObserverEntry 对象数组，包含目标元素的大小信息
@@ -140,6 +133,22 @@ export default {
     this.initLeftWidth = this.$refs.left.offsetWidth
     this.initRightWidth = this.$refs.right.offsetWidth
     this.editor.maxWidth = this.editor.leftWidth + this.editor.rightWidth + this.editor.middleWidth;
+
+    let ddInstance = this.editor.ddInstance;
+    if (ddInstance) {
+      let modeName = DDeiUtil.getConfigValue("MODE_NAME", ddInstance);
+      let accessCreate = DDeiUtil.isAccess(
+        DDeiEnumOperateType.CREATE, null, null, modeName,
+        ddInstance
+      );
+      this.toolboxShow = accessCreate
+      let accessEdit = DDeiUtil.isAccess(
+        DDeiEnumOperateType.EDIT, null, null, modeName,
+        ddInstance
+      );
+      this.propertyViewShow = accessEdit
+  
+    }
   },
   methods: {
     

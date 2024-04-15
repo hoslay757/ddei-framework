@@ -1,5 +1,5 @@
 <template>
-  <DDeiEditor v-if="loadMode == 1 || loadMode == 2" :options="options"></DDeiEditor>
+  <DDeiEditor ref="editorViewer" v-if="loadMode == 1 || loadMode == 2" :options="options"></DDeiEditor>
   <div v-if="loadMode == 3" class="ddei_sslink_outtime">
     <div class="content">
       <div class="header">
@@ -130,7 +130,7 @@ export default {
           DDeiCoreToolboxPanel.configuraton({
             custom: false,
             search: false,
-            customGroups: [302, 301, 102, 101],
+            // customGroups: [302, 301, 102, 101],
             expand: false
           }),
           DDeiCorePropertyViewPanel.configuraton({
@@ -363,7 +363,8 @@ export default {
       this.serverFunc = this.openFile
       this.serverFuncParam = 1
       if (isReExec) {
-        let ddInstance = DDei.INSTANCE_POOL['ddei_editor_view'];
+       
+        let ddInstance = this.$refs.editorViewer.editor.ddInstance
         ddInstance.bus.push(DDeiEditorEnumBusCommandType.LoadFile)
         ddInstance.bus.executeAll();
       } else if (await this.getUserInfo(this.ssUrl)) {
@@ -550,7 +551,7 @@ export default {
         delete this.serverFunc
         delete this.serverFuncParam
       } else {
-        let ddInstance = DDei.INSTANCE_POOL['ddei_editor_view'];
+        let ddInstance = this.$refs.editorViewer.editor.ddInstance
         ddInstance.bus.restoreQueue();
         ddInstance.bus.executeAll();
       }

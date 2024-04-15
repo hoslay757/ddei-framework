@@ -17,8 +17,8 @@
         </svg>
       </div>
     </div>
-    <div :id="getShowDialogId(attrDefine?.code)" :class="{ 'ddei_combox_show_dialog': true }">
-      <div class="ddei_combox_show_dialog_content">
+    <div :id="getShowDialogId(attrDefine?.code)" :class="{ 'ddei-combox-show-dialog': true }">
+      <div class="ddei-combox-show-dialog_content">
         <slot></slot>
       </div>
     </div>
@@ -148,7 +148,7 @@ export default {
     destroyDialog() {
       let dialogs = [];
       for (let i = 0; i < document.body.children.length; i++) {
-        if (document.body.children[i].className == "ddei_combox_show_dialog") {
+        if (document.body.children[i].className == "ddei-combox-show-dialog") {
           dialogs.push(document.body.children[i]);
         }
       }
@@ -228,7 +228,7 @@ export default {
   height: 20px;
 }
 
-.ddei_combox_show_dialog {
+.ddei-combox-show-dialog {
   font-size: 13px;
   background: white;
   display: none;
@@ -237,7 +237,7 @@ export default {
   border-radius: 4px;
 }
 
-.ddei_combox_show_dialog_content {
+.ddei-combox-show-dialog_content {
   width: 100%;
   height: 100%;
   background: white;

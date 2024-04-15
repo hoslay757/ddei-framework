@@ -1,5 +1,5 @@
 <template>
-  <div :id="id" class="ddei_editor_canvasview" @mousedown="mouseDown($event)" ondragstart="return false;"
+  <div :id="editor?.id+'_canvas'" ref="middleCanvas" class="ddei-editor-canvasview" @mousedown="mouseDown($event)" ondragstart="return false;"
     @wheel="mouseWheel($event)" @mousemove="createControlOver($event)" @mouseup="createControlDrop"
     @dblclick="canvasDBClick" @contextmenu.prevent>
   </div>
@@ -24,10 +24,6 @@ export default {
   extends: null,
   mixins: [],
   props: {
-    id: {
-      type: String,
-      default: "ddei_editor_canvasview",
-    },
      //外部传入的插件扩展参数
     options: {
       type: Object,
@@ -46,28 +42,31 @@ export default {
     // 监听obj对象中prop属性的变化
     this.$watch("editor.files.length", function (newVal, oldVal) {
       if (newVal == 0) {
-        this.editor.ddInstance.render.hidden();
+        this.editor?.ddInstance?.render?.hidden();
       } else {
-        this.editor.ddInstance.render.show();
+        this.editor?.ddInstance?.render?.show();
       }
     });
     this.mouseWheelThrottle = throttle(this.mouseWheelThrottle, 10);
     this.createControlOver = throttle(this.createControlOver, 20);
+    //获取编辑器
+    this.editor = DDeiEditor.ACTIVE_INSTANCE;
 
   },
   mounted() {
-    //获取编辑器
-    this.editor = DDeiEditor.ACTIVE_INSTANCE;
-    //初始化ddInstance
-    let ddInstance = DDei.newInstance(
-      "ddei_editor_view",
-      "ddei_editor_canvasview"
-    );
-    this.editor.ddInstance = ddInstance;
-    ddInstance.applyConfig(this.editor.extConfig);
-    //初始化编辑器bus
-    ddInstance.bus.invoker = this.editor;
-    this.editor.bus = ddInstance.bus;
+   
+    let ddInstance = this.editor.ddInstance;
+  
+    ddInstance.initRender()
+    //设置视窗位置到中央
+    if (!ddInstance.stage.wpv) {
+      //缺省定位在画布中心点位置
+      ddInstance.stage.wpv = {
+        x: -(ddInstance.stage.width - ddInstance.render.container.clientWidth) / 2, y: -(ddInstance.stage.height - ddInstance.render.container.clientHeight) / 2, z: 0
+      };
+    }
+    //通过当前装载的stage更新图形
+    ddInstance.render.drawShape();
     ddInstance.bus.push(DDeiEditorEnumBusCommandType.LoadFile)
     ddInstance.bus.executeAll();
   },
@@ -76,7 +75,7 @@ export default {
      * 画布双击
      */
     canvasDBClick(evt) {
-      let middleCanvas = document.getElementById(this.id);
+      let middleCanvas = this.$refs.middleCanvas
       let middleCanvasPos = DDeiUtil.getDomAbsPosition(middleCanvas);
       if (
         middleCanvasPos.left + 5 <= evt.clientX &&
@@ -116,7 +115,7 @@ export default {
 
 
     mouseDown(evt) {
-      let middleCanvas = document.getElementById(this.id);
+      let middleCanvas = this.$refs.middleCanvas
       let middleCanvasPos = DDeiUtil.getDomAbsPosition(middleCanvas);
       if (
         middleCanvasPos.left + 5 <= evt.clientX &&
@@ -458,7 +457,7 @@ export default {
 </script>
 
 <style scoped>
-.ddei_editor_canvasview {
+.ddei-editor-canvasview {
   flex: 1;
   overflow: hidden;
 }

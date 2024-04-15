@@ -348,7 +348,7 @@ export default {
 
 .ddei_pv_editor_combox_disabled {}
 
-.ddei_combox_show_dialog_content .itemboxs {
+.ddei-combox-show-dialog_content .itemboxs {
   border-radius: 4px;
   margin-top: 4px;
   display: grid;
@@ -358,7 +358,7 @@ export default {
   font-size: 13px;
 }
 
-.ddei_combox_show_dialog_content .itemboxs .itembox {
+.ddei-combox-show-dialog_content .itemboxs .itembox {
   outline: none;
   font-size: 13px;
   margin: auto;
@@ -367,30 +367,30 @@ export default {
   border-radius: 4px;
 }
 
-.ddei_combox_show_dialog_content .itemboxs .itembox:hover {
+.ddei-combox-show-dialog_content .itemboxs .itembox:hover {
   background-color: rgb(245, 245, 245);
   cursor: pointer;
 }
 
-.ddei_combox_show_dialog_content .itemboxs .itembox .itembox_img {
+.ddei-combox-show-dialog_content .itemboxs .itembox .itembox_img {
   display: table-cell;
   padding-left: 5px;
   vertical-align: middle;
 }
 
-.ddei_combox_show_dialog_content .itemboxs .itembox .itembox_img img {
+.ddei-combox-show-dialog_content .itemboxs .itembox .itembox_img img {
   text-align: center;
   vertical-align: middle;
 }
 
-.ddei_combox_show_dialog_content .itemboxs .itembox .itembox_text {
+.ddei-combox-show-dialog_content .itemboxs .itembox .itembox_text {
   text-align: center;
   display: table-cell;
   flex: 1;
   vertical-align: middle;
 }
 
-.ddei_combox_show_dialog_content .itemboxs .itembox .itembox_desc {
+.ddei-combox-show-dialog_content .itemboxs .itembox .itembox_desc {
   text-align: left;
   display: table-cell;
   font-size: 11px;
@@ -402,28 +402,28 @@ export default {
   vertical-align: middle;
 }
 
-.ddei_combox_show_dialog_content .itembox_selected {
+.ddei-combox-show-dialog_content .itembox_selected {
   background-color: rgb(240, 240, 240) !important;
 }
 
-.ddei_combox_show_dialog_content .itembox_deleted {
+.ddei-combox-show-dialog_content .itembox_deleted {
   text-decoration: line-through;
 }
 
-.ddei_combox_show_dialog_content .itembox_disabled {
+.ddei-combox-show-dialog_content .itembox_disabled {
   color: rgb(210, 210, 210);
   text-decoration: line-through;
 }
 
-.ddei_combox_show_dialog_content .itembox_disabled:hover {
+.ddei-combox-show-dialog_content .itembox_disabled:hover {
   cursor: not-allowed !important;
 }
 
-.ddei_combox_show_dialog_content .itembox_underline {
+.ddei-combox-show-dialog_content .itembox_underline {
   text-decoration: underline;
 }
 
-.ddei_combox_show_dialog_content .itembox_bold .itembox_text {
+.ddei-combox-show-dialog_content .itembox_bold .itembox_text {
   font-weight: bold;
 }
 </style>

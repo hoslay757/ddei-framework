@@ -82,24 +82,10 @@ class DDei {
         DDei.INSTANCE_POOL[id] = ddInstance;
 
         //初始化bus
-        ddInstance.bus = new DDeiBus({ ddInstance: ddInstance });
-        //初始化渲染器
-        ddInstance.initRender();
-        //设置视窗位置到中央
-        if (!ddInstance.stage.wpv) {
-          //缺省定位在画布中心点位置
-          ddInstance.stage.wpv = {
-            x: -(ddInstance.stage.width - ddInstance.render.container.clientWidth) / 2, y: -(ddInstance.stage.height - ddInstance.render.container.clientHeight) / 2, z: 0
-          };
-        }
-        //通过当前装载的stage更新图形
-        ddInstance.render.drawShape();
+        ddInstance.bus = new DDeiBus({ ddInstance: ddInstance }); 
         return ddInstance;
       } else {
         let ddInstance = DDei.INSTANCE_POOL[id];
-        //重新加载render
-        ddInstance.initRender();
-        ddInstance.render.drawShape();
         return ddInstance;
       }
     }
@@ -123,6 +109,11 @@ class DDei {
   stage: DDeiStage | null;
   //当前模型的类型
   modelType: string = "DDei";
+
+  //当前引入的外部控件模型定义
+  controlModelClasses: object;
+  //当前引入的外部控件视图定义
+  controlViewClasses: object;
 
   //当前实例的状态
   state: DDeiEnumState = DDeiEnumState.NONE;

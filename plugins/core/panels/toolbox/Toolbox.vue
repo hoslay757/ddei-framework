@@ -111,31 +111,22 @@ export default {
       searchText: "",
       //当前编辑器
       editor: null,
-      //用于缓存动态引入的控件
-      controlCls: {},
       icons: {}
     };
   },
   computed: {},
   watch: {},
-  created() { },
+  created() {
+    //获取编辑器
+    this.editor = DDeiEditor.ACTIVE_INSTANCE;
+   },
   emits: ["createControlPrepare"],
   mounted() {
     
-    //动态加载控件
-    const control_ctx = import.meta.glob(
-      "@ddei-core/framework/js/models/*.ts"
-    )
-    let loadArray = []
-    for (const path in control_ctx) {
-      loadArray.push(control_ctx[path]().then(value => {
-        let cls = value.default;
-        this.controlCls[cls.ClsName] = cls;
-      }))
-    }
-    //获取编辑器
-    this.editor = DDeiEditor.ACTIVE_INSTANCE;
     this.editor.toolBarViewer = this;
+    if (this.editor.ddInstance && !this.editor.ddInstance.render){
+      this.editor.ddInstance.initRender()
+    }
     //加载工具栏
     DDeiEditorUtil.readRecentlyToolGroups()
     let hisGroups = DDeiEditorUtil.recentlyToolGroups;
@@ -173,19 +164,10 @@ export default {
       this.groups = newGroups
     }
     this.searchOriginGroups = this.groups;
-    Promise.all(loadArray).then(x => {
-      this.generateControlIcons();
+    DDeiEditorUtil.getControlIcons(this.editor).then(icons=>{
+      this.icons = icons;
     })
-    let ddInstance: DDei = this.editor.ddInstance;
-    if (ddInstance) {
-      let modeName = DDeiUtil.getConfigValue("MODE_NAME", ddInstance);
-      let accessCreate = DDeiUtil.isAccess(
-        DDeiEnumOperateType.CREATE, null, null, modeName,
-        ddInstance
-      );
-      this.editor.editorViewer.toolboxShow = accessCreate
-
-    }
+    
   },
   methods: {
 
@@ -239,100 +221,7 @@ export default {
 
     },
 
-    /**
-     * 生成控件的小图标
-     */
-    async generateControlIcons() {
-      if (DDeiUtil.ICONS) {
-        this.icons = DDeiUtil.ICONS
-      } else {
-        if (this.editor.ddInstance) {
-          let promiseArr = []
-          let ddInstance = this.editor.ddInstance
-          DDeiUtil.ICONS = {}
-          this.groups?.forEach((group, key) => {
-            group.controls.forEach(controlDefine => {
-              let cacheData = localStorage.getItem("ICON-CACHE-" + controlDefine.id)
-              if (cacheData) {
-                DDeiUtil.ICONS[controlDefine.id] = cacheData
-                return;
-              } else {
-                promiseArr.push(new Promise((resolve, reject) => {
-                  try {
-                    let canvas = document.createElement('canvas');
-                    //获取缩放比例
-                    let rat1 = ddInstance.render.ratio;
-                    ddInstance.render.tempCanvas = canvas;
-                    //创建图形对象
-                    let models = this.createControl(controlDefine)
-                    let iconPos = controlDefine?.define?.iconPos;
-                    let outRect = DDeiAbstractShape.getOutRectByPV(models);
-                    outRect.width += (iconPos?.dw ? iconPos.dw : 0)
-                    outRect.height += (iconPos?.dh ? iconPos.dh : 0)
-                    //基准大小
-                    let baseWidth = 50
-                    let baseHeight = 50
-
-                    //按高度缩放
-                    if (outRect.width > 0 && outRect.height > 0) {
-                      if (outRect.width > outRect.height) {
-                        baseWidth *= outRect.width / outRect.height
-                      } else {
-                        baseHeight *= outRect.height / outRect.width
-                      }
-
-                      //构建缩放矩阵，缩放到基准大小
-                      let scaleMatrix = new Matrix3(
-                        baseWidth / outRect.width, 0, 0,
-                        0, baseHeight / outRect.height, 0,
-                        0, 0, 1);
-                      models.forEach(model => {
-                        model.transVectors(scaleMatrix)
-                      });
-
-                      outRect = DDeiAbstractShape.getOutRectByPV(models);
-                    }
-                    if (!outRect.height) {
-                      outRect.height = baseHeight
-                    }
-                    if (!outRect.width) {
-                      outRect.width = baseWidth
-                    }
-                    outRect.width += (iconPos?.dw ? iconPos.dw : 0)
-                    outRect.height += (iconPos?.dh ? iconPos.dh : 0)
-                    let width = (outRect.width + 4) * rat1
-                    let height = (outRect.height + 4) * rat1
-
-                    canvas.setAttribute("width", width)
-                    canvas.setAttribute("height", height)
-                    canvas.style.width = width + 'px';
-                    canvas.style.height = height + 'px';
-                    //获得 2d 上下文对象
-
-                    let ctx = canvas.getContext('2d', { willReadFrequently: true });
-
-                    ctx.translate(width / 2 + (iconPos?.dx ? iconPos.dx : 0), height / 2 + (iconPos?.dy ? iconPos.dy : 0))
-                    models.forEach(model => {
-                      model.initRender()
-                      model.render.drawShape({ weight: 3, border: { width: 1.5 } })
-                    })
-                    let dataURL = canvas.toDataURL("image/png");
-                    localStorage.setItem("ICON-CACHE-" + controlDefine.id, dataURL)
-                    DDeiUtil.ICONS[controlDefine.id] = dataURL
-                  } catch (e) { console.error(e) }
-                  resolve()
-                }));
-              }
-            });
-
-          });
-          Promise.all(promiseArr).then(all => {
-            this.icons = DDeiUtil.ICONS
-            ddInstance.render.tempCanvas = null;
-          })
-        }
-      }
-    },
+    
 
     /**
      * 隐藏工具栏
@@ -430,7 +319,7 @@ export default {
       }
 
       //创建并初始化控件以及关系
-      let models = this.createControl(control)
+      let models = DDeiEditorUtil.createControl(control,this.editor)
 
       //加载事件的配置
       let createBefore = DDeiUtil.getConfigValue(
@@ -470,159 +359,6 @@ export default {
         e.preventDefault()
         e.cancelBubble = true
       }
-    },
-
-    /**
-     * 创建控件
-     */
-    createControl(control) {
-      let ddInstance: DDei = this.editor.ddInstance;
-      ddInstance.render.inEdge = 0;
-      let stage = ddInstance.stage;
-      let layer = stage.layers[stage.layerIndex];
-      let models = []
-
-
-      let cc = control
-
-
-      //根据control的定义，初始化临时控件，并推送至上层Editor
-      let searchPaths = [
-        "width",
-        "height",
-        "text",
-        "subcontrol",
-        "layout",
-      ];
-      let configAtrs = DDeiEditorUtil.getAttrValueByConfig(
-        cc,
-        searchPaths
-      );
-
-      stage.idIdx++
-      let dataJson = {
-        id: cc.code + "_" + (stage.idIdx),
-        modelCode: cc.id,
-      };
-
-
-      //设置配置的属性值
-      searchPaths.forEach((key) => {
-        if (configAtrs.get(key)) {
-          dataJson[key] = configAtrs.get(key).data;
-        }
-        if (cc[key] != undefined && cc[key] != null) {
-          dataJson[key] = cc[key];
-        }
-      });
-      if (cc.img) {
-        dataJson.fill = { type: 2, image: cc.img };
-      }
-      for (let i in cc?.define) {
-        dataJson[i] = cc.define[i];
-      }
-      //如果有from则根据from读取属性
-      delete dataJson.ovs
-      let model: DDeiAbstractShape = this.controlCls[cc.type].initByJSON(
-        dataJson,
-        { currentStage: stage, currentLayer: layer }
-      );
-      models.push(model)
-      //处理others
-      control.others?.forEach(oc => {
-        let otherModels = this.createControl(oc)
-        if (otherModels?.length > 0) {
-          models = models.concat(otherModels);
-        }
-      });
-
-
-      //处理merge和create=false
-      if (control?.define?.create == false) {
-        models.splice(0, 1)
-      }
-
-      //添加初始linkModels以及控件关联
-      if (control?.define?.iLinkModels) {
-        for (let ilk in control?.define?.iLinkModels) {
-          let linkData = control?.define?.iLinkModels[ilk]
-          let cIndex = parseInt(ilk)
-          if (cIndex != -1) {
-            cIndex++
-            let linkControl = models[cIndex]
-            let lineLink = new DDeiLineLink({
-              line: cc,
-              type: linkData.type,
-              dm: linkControl,
-              dx: linkData.dx,
-              dy: linkData.dy,
-            })
-            models[0].linkModels.set(linkControl.id, lineLink);
-          }
-        }
-      }
-      //添加初始merge
-      if (control?.define?.initMerges) {
-
-        let mergeControls = [models[0]]
-        for (let m in control?.define?.initMerges) {
-          let mIndex = control?.define?.initMerges[m];
-          if (mIndex != -1) {
-            mIndex++
-            let mControl = models[mIndex]
-            if (mergeControls.indexOf(mControl) == -1) {
-              mergeControls.push(mControl)
-            }
-          }
-        }
-        //执行控件合并
-        if (mergeControls.length > 1) {
-          let ddInstance: DDei = this.editor.ddInstance;
-          let layer = ddInstance.stage.layers[ddInstance.stage.layerIndex];
-          let stageRatio = ddInstance.stage?.getStageRatio()
-          //获取选中图形的外接矩形
-          let outRect = DDeiAbstractShape.getOutRectByPV(mergeControls);
-          //创建一个容器，添加到画布,其坐标等于外接矩形
-          let container: DDeiRectContainer = DDeiRectContainer.initByJSON({
-            id: "comp_" + ddInstance.stage.idIdx,
-            initCPV: {
-              x: outRect.x + outRect.width / 2,
-              y: outRect.y + outRect.height / 2,
-              z: 1
-            },
-            layout: "compose",
-            modelCode: "100202",
-            fill: {
-              type: 0
-            },
-            border: {
-              top: { type: 0 }
-            },
-            width: outRect.width / stageRatio,
-            height: outRect.height / stageRatio
-          },
-            {
-              currentLayer: layer,
-              currentStage: ddInstance.stage,
-              currentContainer: layer
-            });
-
-          mergeControls.forEach(mc => {
-            if (mc) {
-              container.addModel(mc)
-              mc.pModel = container
-            }
-          })
-          //更新新容器大小
-          container?.changeParentsBounds()
-          //下标自增1
-          ddInstance.stage.idIdx++;
-          //返回合并后的控件
-          models.splice(0, mergeControls.length, container);
-        }
-      }
-      return models;
-
     },
 
 

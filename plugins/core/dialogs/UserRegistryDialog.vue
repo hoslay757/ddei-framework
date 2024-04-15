@@ -126,9 +126,11 @@ export default {
     if (this.editor?.tempDialogData && this.editor?.tempDialogData[this.dialogId]?.icon) {
       this.icon = this.editor?.tempDialogData[this.dialogId].icon
     }
-    setTimeout(() => {
-      this.$refs.reg_input_id.focus()
-    }, 100);
+    if (this.$refs.reg_input_id) {
+      setTimeout(() => {
+          this.$refs.reg_input_id.focus()
+      }, 100);
+    }
 
   },
   methods: {

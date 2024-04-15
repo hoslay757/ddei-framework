@@ -1,4 +1,3 @@
-import { MODEL_CLS } from '../config';
 import DDeiAbstractShape from './shape';
 import DDeiRectContainer from './rect-container';
 import DDeiTable from './table';
@@ -80,11 +79,12 @@ class DDeiTableCell extends DDeiRectContainer {
       container.pModel = container.layer;
     }
     tempData[container.id] = container;
+    let ddInstance = container.stage?.ddInstance;
     let models: Map<String, DDeiAbstractShape> = new Map<String, DDeiAbstractShape>();
     for (let key in json.models) {
       tempData['currentContainer'] = container;
       let item = json.models[key];
-      let model = MODEL_CLS[item.modelType].loadFromJSON(item, tempData);
+      let model = ddInstance.controlModelClasses[item.modelType].loadFromJSON(item, tempData);
       models.set(key, model)
       tempData['currentContainer'] = null;
     }

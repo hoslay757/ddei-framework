@@ -36,31 +36,7 @@ class DDeiEditorCommandClearTemplateUI extends DDeiBusCommand {
     {
       let dialogs = [];
       for (let i = 0; i < document.body.children.length; i++) {
-        if (document.body.children[i].className == "ddei_combox_show_dialog") {
-          dialogs.push(document.body.children[i]);
-        }
-      }
-      dialogs.forEach(dialog => {
-        dialog.style.display = "none";
-      })
-    }
-
-    {
-      let dialogs = [];
-      for (let i = 0; i < document.body.children.length; i++) {
-        if (document.body.children[i].className == "ddei_editor_quick_fat_item_fontfamily_combox_dialog") {
-          dialogs.push(document.body.children[i]);
-        }
-      }
-      dialogs.forEach(dialog => {
-        dialog.style.display = "none";
-      })
-    }
-
-    {
-      let dialogs = [];
-      for (let i = 0; i < document.body.children.length; i++) {
-        if (document.body.children[i].className == "ddei_editor_quick_fat_item_fontsize_combox_dialog") {
+        if (document.body.children[i].className == "ddei-combox-show-dialog") {
           dialogs.push(document.body.children[i]);
         }
       }
@@ -77,7 +53,7 @@ class DDeiEditorCommandClearTemplateUI extends DDeiBusCommand {
     //清除右键弹出框
     {
       //关闭菜单
-      let menuDialogId = DDeiUtil.getMenuControlId();
+      let menuDialogId = DDeiUtil.getMenuControlId(bus.invoker);
       let menuEle = document.getElementById(menuDialogId);
       if (menuEle) {
         menuEle.style.display = "none";

@@ -1,7 +1,7 @@
 import DDeiAbstractShape from './shape'
 import DDeiUtil from '../util';
 import { Matrix3, Vector3 } from 'three';
-import DDeiConfig, { MODEL_CLS } from '../config';
+import DDeiConfig from '../config';
 /**
  * polygon由3个以上点构成的图形
  * 主要样式属性：坐标、高宽、边框、字体、填充
@@ -46,6 +46,7 @@ class DDeiPolygon extends DDeiAbstractShape {
     model.layer = tempData['currentLayer']
     model.stage = tempData['currentStage']
     model.pModel = tempData['currentContainer']
+    let ddInstance = model.stage?.ddInstance;
     if (!model.pModel) {
       model.pModel = model.layer;
     }
@@ -56,7 +57,7 @@ class DDeiPolygon extends DDeiAbstractShape {
       let composes = []
       json?.composes.forEach(composeJSON => {
         let def = DDeiUtil.getControlDefine(composeJSON)
-        let composeModel: DDeiAbstractShape = MODEL_CLS[def.type].loadFromJSON(
+        let composeModel: DDeiAbstractShape = ddInstance.controlModelClasses[def.type].loadFromJSON(
           composeJSON,
           tempData,
           false
@@ -80,12 +81,13 @@ class DDeiPolygon extends DDeiAbstractShape {
     model.layer = tempData['currentLayer']
     model.stage = tempData['currentStage']
     model.pModel = tempData['currentContainer']
+    let ddInstance = model.stage?.ddInstance;
     //初始化composes
     if (json?.composes?.length > 0) {
       let composes = []
       json?.composes.forEach(composeJSON => {
         let def = DDeiUtil.getControlDefine(composeJSON)
-        let composeModel: DDeiAbstractShape = MODEL_CLS[def.type].initByJSON(
+        let composeModel: DDeiAbstractShape = ddInstance.controlModelClasses[def.type].initByJSON(
           composeJSON,
           tempData,
           false

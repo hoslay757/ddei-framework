@@ -13,26 +13,32 @@ class DDeiExtUMLControls extends DDeiPluginBase{
 
   getControls(editor) {
     //加载控件定义
+    let controls:Map<string,object> = new Map();
+    let controls1 = new Map(editor.controls);
     for (let i in control_ctx) {
       let control = control_ctx[i].default;
       if (control){
-        this.controls.set(control.id, control);
+        controls.set(control.id, control);
+        controls1.set(control.id,control);
       }
     }
+
+    
     //初始化控件定义
-    this.controls.forEach(control => {
-      loadControlByFrom(this.controls, control)
+    controls.forEach(control => {
+      loadControlByFrom(controls1, control)
     });
-    this.controls.forEach(control => {
-      if (control.define) {
-        delete control.define.font
-        delete control.define.textStyle
-        delete control.define.border
-        delete control.define.fill
-      }
-      delete control.attrs
-    })
-    return this.controls
+    // controls.forEach(control => {
+    //   if (control.define) {
+    //     delete control.define.font
+    //     delete control.define.textStyle
+    //     delete control.define.border
+    //     delete control.define.fill
+    //   }
+    //   delete control.attrs
+    // })
+    this.controls = controls;
+    return controls
   }
 
   getGroups(editor) {

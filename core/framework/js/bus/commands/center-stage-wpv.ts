@@ -1,4 +1,3 @@
-import { MODEL_CLS } from '../../config';
 import DDeiEnumBusCommandType from '../../enums/bus-command-type';
 import DDeiEnumOperateState from '../../enums/operate-state';
 import DDeiBus from '../bus';

@@ -1,5 +1,5 @@
 
-import DDeiConfig, { MODEL_CLS } from '../config'
+import DDeiConfig from '../config'
 import DDeiEnumBusCommandType from '../enums/bus-command-type';
 import DDeiEnumControlState from '../enums/control-state';
 import DDeiUtil from '../util';
@@ -38,11 +38,12 @@ class DDeiLayer {
     let layer = new DDeiLayer(json);
     layer.stage = tempData['currentStage']
     tempData['currentLayer'] = layer;
+    let ddInstance = layer.stage?.ddInstance;
     tempData[layer.id] = layer;
     let models: Map<String, DDeiAbstractShape> = new Map<String, DDeiAbstractShape>();
     for (let key in json.models) {
       let item = json.models[key];
-      let model = MODEL_CLS[item.modelType].loadFromJSON(item, tempData);
+      let model = ddInstance.controlModelClasses[item.modelType].loadFromJSON(item, tempData);
       models.set(key, model)
     }
     tempData['currentLayer'] = null;
