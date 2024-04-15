@@ -1,5 +1,5 @@
 <template>
-  <div :id="editor?.id+'_menu_dialog'" class="ddei-editor-menu-dialog">
+  <div :id="editor?.id+'_menu_dialog'" ref="menuDialog" class="ddei-editor-menu-dialog">
     <div v-show="isVisiable(menu)"
       :class="{ 'ddei-editor-menu-dialog-hr': menu.code == 'split', 'ddei-editor-menu-dialog-item': menu.code != 'split' }"
       v-for="menu in editor?.currentMenuData" @click="execMenuAction(menu, $event)">
@@ -9,7 +9,7 @@
         </svg>
       </div>
       <div v-if="menu.code != 'split'" class="ddei-editor-menu-dialog-item-content">
-        {{ menu.name }}
+        {{ menu.label }}
       </div>
       <div v-if="menu.code != 'split'" class="ddei-editor-menu-dialog-item-desc">
         {{ menu.desc }}
@@ -20,7 +20,6 @@
 
 <script lang="ts">
 import DDeiEditor from "@ddei-core/editor/js/editor";
-import DDeiEditorConfig from "../../js/resource";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 import DDeiEnumOperateState from "@ddei-core/framework/js/enums/operate-state";
 export default {
@@ -50,13 +49,13 @@ export default {
      */
     execMenuAction(menu, evt: Event) {
       let stage = this.editor?.ddInstance?.stage;
-      let menuAction = DDeiEditorConfig.MENUS[menu.code];
+      let menuAction = this.editor.menus[menu.name];
       if (menuAction && stage) {
         let menuShape = stage.render?.currentMenuShape;
         menuAction.action(menuShape, evt);
       }
       //关闭dialog
-      document.getElementById("ddei-editor-menu-dialog").style.display = "none";
+      this.$refs.menuDialog.style.display = "none";
       //刷新
       stage.render.operateState = DDeiEnumOperateState.NONE;
       this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
@@ -69,7 +68,7 @@ export default {
     isVisiable(menu) {
       try {
         let stage = this.editor?.ddInstance?.stage;
-        let menuAction = DDeiEditorConfig.MENUS[menu.code];
+        let menuAction = this.editor.menus[menu.name];
         if (menuAction && stage) {
           let menuShape = stage.render?.currentMenuShape;
           return menuAction.isVisiable(menuShape);

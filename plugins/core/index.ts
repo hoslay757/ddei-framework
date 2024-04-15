@@ -5,6 +5,7 @@ import DDeiCoreDialogs from "./dialogs";
 import DDeiCorePropEditors from "./propeditors";
 import DDeiCoreHotkeys from "./hotkeys";
 import DDeiCoreControls from "./controls";
+import DDeiCoreMenus from "./menus";
 import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 
 class DDeiCore extends DDeiPluginBase {
@@ -31,9 +32,11 @@ class DDeiCore extends DDeiPluginBase {
 
   controls: object = DDeiCoreControls;
 
+  menus: object = DDeiCoreMenus;
+
   getOptions(): object {
     let options = {}
-    let array = [this.layouts, this.panels, this.propeditors, this.dialogs, this.components, this.hotkeys, this.controls]
+    let array = [this.layouts, this.panels, this.propeditors, this.dialogs, this.components, this.hotkeys, this.controls, this.menus]
     array.forEach(plugin => {
       if (DDeiPluginBase.isSubclass(plugin, DDeiPluginBase)) {
         options = Object.assign({}, options, plugin.defaultIns.getOptions())
@@ -108,6 +111,14 @@ class DDeiCore extends DDeiPluginBase {
     }
   }
 
+  getMenus(editor) {
+    if (DDeiPluginBase.isSubclass(this.menus, DDeiPluginBase)) {
+      return this.menus.defaultIns.getMenus(editor);
+    } else if (this.menus instanceof DDeiPluginBase) {
+      return this.menus.getMenus(editor);
+    }
+  }
+
   static configuraton(options) {
     let core = new DDeiCore(options);
     core.layouts = core.layouts.configuraton(options,true)
@@ -116,7 +127,8 @@ class DDeiCore extends DDeiPluginBase {
     core.dialogs = core.dialogs.configuraton(options, true)
     core.propeditors = core.propeditors.configuraton(options, true)
     core.hotkeys = core.hotkeys.configuraton(options, true)
-    core.controls = core.controls.configuraton(controls, true)
+    core.controls = core.controls.configuraton(options, true)
+    core.menus = core.menus.configuraton(options, true)
     return core;
   }
 }
@@ -127,5 +139,6 @@ export * from "./layouts";
 export * from "./dialogs";
 export * from "./propeditors";
 export * from "./hotkeys";
+export * from "./menus"
 export {DDeiCore}
 export default DDeiCore;

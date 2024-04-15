@@ -198,8 +198,22 @@ class DDeiEditor {
               editorInstance.hotKeyMapping = editorInstance.hotKeyMapping.concat(keys)
             }
           }
-          //移除加载控件的临时变量
+          
           editorInstance.controls?.forEach(control => {
+            if(control.menus){
+              if (!editorInstance.menuMapping[control.id]) {
+                editorInstance.menuMapping[control.id] = control.menus
+              }
+              let menus = editorInstance.menuMapping[control.id];
+              for (let i = 0; i < menus.length;i++){
+                for (let j in editorInstance.menus){
+                  if (editorInstance.menus[j].name == menus[i].name){
+                    menus[i] = editorInstance.menus[j];
+                    break;
+                  }
+                }
+              }
+            }
             if (control.define) {
               delete control.define.font
               delete control.define.textStyle
@@ -208,8 +222,31 @@ class DDeiEditor {
             }
             delete control.attrs
           })
-          //加载控件的图标
-          
+          //加载控件的右键菜单,移除加载控件的临时变量
+          for (let i in editorInstance.menus){
+            let menu = editorInstance.menus[i]
+            let options = menu.getOptions();
+            menu.label = options.label ? options.label : ''
+            menu.icon = options.icon ? options.icon : ''
+            menu.disabled = options.disabled ? options.disabled : false;
+            options?.models?.forEach(model => {
+              if (!editorInstance.menuMapping[model]){
+                editorInstance.menuMapping[model] = []
+              }
+              let menus = editorInstance.menuMapping[model]
+              let finded = false
+              for (let j = 0; j < menus.length; j++) {
+                if (menu.name == menus[j].name) {
+                  finded = true
+                  break;
+                }
+              }
+              if (!finded){
+                menus.push(menu)
+              }
+              
+            });
+          };
         }
 
 
@@ -273,6 +310,15 @@ class DDeiEditor {
         
         this.hotkeys[hotkey.name] = hotkey
 
+      });
+    }
+
+    //加载菜单相关插件
+    if (plugin.getMenus) {
+      //注册并加载菜单
+      let menus = plugin.getMenus(this)
+      menus?.forEach(menu => {
+        this.menus[menu.name] = menu;
       });
     }
 
@@ -446,6 +492,10 @@ class DDeiEditor {
   hotkeys: object = markRaw({});
   // 快捷键-键行为映射配置
   hotKeyMapping: object[] = markRaw([]);
+  //当前引入的外部菜单
+  menus: object = markRaw({});
+  //当前引入的外部菜单
+  menuMapping: object = markRaw({});
   //当前引入的外部控件配置
   controls: Map<string,object> = markRaw(new Map());
   //当前引入的外部分组配置

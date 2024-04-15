@@ -286,35 +286,12 @@ class DDeiEditorUtil {
     if (!editor){
       editor = DDeiEditor.ACTIVE_INSTANCE;
     }
-    switch (model?.modelType) {
-      case "DDeiFile": {
-
-        break
-      }
-      case "DDeiSheet": {
-        let menus = [
-          {
-            'code': 'copy-sheet',
-            'name': '复制',
-            'icon': '#icon-a-ziyuan488',
-          },
-          {
-            'code': 'remove-sheet',
-            'name': '删除',
-            'icon': '#icon-a-ziyuan401',
-          }
-        ]
-        return menus
-      }
-      default: {
-        let controlDefine = editor.controls?.get(model.modelCode);
-        if (controlDefine) {
-          return controlDefine.menus;
-        }
-        return null;
+    if (editor?.menuMapping){
+      let menus = editor?.menuMapping[model?.modelType]
+      if (menus?.length > 0){
+        return menus;
       }
     }
-
   }
 
   /**

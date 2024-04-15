@@ -1,13 +1,57 @@
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
+import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 
 /**
  * 插入列菜单
  */
-class MenuInsertCol {
+class MenuInsertCol extends DDeiPluginBase {
+
+
+  name: string = "ddei-core-menu-insert-col"
+
+
+  /**
+   * 缺省实例
+   */
+  static defaultIns: MenuInsertCol = new MenuInsertCol();
+
+  defaultOptions: object = {
+    'label': '合并单元格',
+    'icon': 'icon-merge-cells',
+    'disabled': false
+  }
+
+  getMenus(editor) {
+    return [this];
+  }
+
+
+  static configuraton(options, fullConfig: boolean = false) {
+    //解析options，只使用自己相关的
+    if (options) {
+      let newOptions = {}
+      if (fullConfig) {
+        if (fullConfig) {
+          if (options[MenuInsertCol.defaultIns.name]) {
+            for (let i in options[MenuInsertCol.defaultIns.name]) {
+              newOptions[i] = options[MenuInsertCol.defaultIns.name][i]
+            }
+          }
+        }
+      } else {
+        newOptions = options
+      }
+      if (newOptions && Object.keys(newOptions).length !== 0) {
+        let panels = new MenuInsertCol(newOptions);
+        return panels;
+      }
+    }
+    return MenuInsertCol;
+  }
   /**
    * 执行的方法
    */
-  static action(model: object, evt: Event): void {
+  action(model: object, evt: Event): void {
     //当前控件为表格控件，TODO 或者布局方式为表格的容器控件
     if (model?.baseModelType == 'DDeiTable') {
       let table: DDeiTable = model;
@@ -33,9 +77,9 @@ class MenuInsertCol {
   /**
    * 判定是否显示的方法
    */
-  static isVisiable(model: object): boolean {
+  isVisiable(model: object): boolean {
     //当前控件为表格控件，TODO 或者布局方式为表格的容器控件
-    if (model?.baseModelType == 'DDeiTable') {
+    if (!this.disabled && model?.baseModelType == 'DDeiTable') {
       return true
     }
     return false;

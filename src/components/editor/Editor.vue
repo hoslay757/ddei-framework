@@ -24,7 +24,7 @@ import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-comm
 import DDeiFileState from "@ddei-core/editor/js/enums/file-state";
 import DDeiEditorCommandFileDirty from "@ddei-core/editor/js/bus/commands/file-dirty";
 import DDeiEditorCommandAddHistroy from "@ddei-core/editor/js/bus/commands/add-histroy";
-import MenuDialog from "./menus/menudialog/MenuDialog.vue";
+import MenuDialog from "./MenuDialog.vue";
 import { throttle } from "lodash";
 import DDeiEnumOperateState from "@ddei-core/framework/js/enums/operate-state";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";

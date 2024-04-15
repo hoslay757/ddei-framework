@@ -4,14 +4,59 @@ import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-comm
 import DDeiEditorState from "@ddei-core/editor/js/enums/editor-state";
 import DDeiUtil from "@ddei-core/framework/js/util";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
+import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 
 /**
  * 插入列菜单
  */
-class MenuRemoveSheet {
+class MenuRemoveSheet extends DDeiPluginBase {
 
 
-  static action(model: object, evt: Event): void {
+  name: string = "ddei-core-menu-remove-sheet"
+
+
+  /**
+   * 缺省实例
+   */
+  static defaultIns: MenuRemoveSheet = new MenuRemoveSheet();
+
+  defaultOptions: object = {
+    'label': '删除',
+    'icon': '#icon-a-ziyuan401',
+    'models':["DDeiSheet"],
+    'disabled': false
+  }
+
+  getMenus(editor) {
+    return [this];
+  }
+
+
+  static configuraton(options, fullConfig: boolean = false) {
+    //解析options，只使用自己相关的
+    if (options) {
+      let newOptions = {}
+      if (fullConfig) {
+        if (fullConfig) {
+          if (options[MenuRemoveSheet.defaultIns.name]) {
+            for (let i in options[MenuRemoveSheet.defaultIns.name]) {
+              newOptions[i] = options[MenuRemoveSheet.defaultIns.name][i]
+            }
+          }
+        }
+      } else {
+        newOptions = options
+      }
+      if (newOptions && Object.keys(newOptions).length !== 0) {
+        let panels = new MenuRemoveSheet(newOptions);
+        return panels;
+      }
+    }
+    return MenuRemoveSheet;
+  }
+
+
+  action(model: object, evt: Event): void {
     if (model.modelType == 'DDeiSheet') {
       //将sheet插入文件
       let editor = DDeiEditor.ACTIVE_INSTANCE
@@ -87,8 +132,8 @@ class MenuRemoveSheet {
   /**
    * 判定是否显示的方法
    */
-  static isVisiable(model: object): boolean {
-    if (model?.modelType == 'DDeiSheet') {
+  isVisiable(model: object): boolean {
+    if (!this.disabled && model?.modelType == 'DDeiSheet') {
       //将sheet插入文件
       let editor = DDeiEditor.ACTIVE_INSTANCE
       let file = editor?.files[editor.currentFileIndex];

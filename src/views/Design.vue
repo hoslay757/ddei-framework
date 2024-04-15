@@ -1,6 +1,6 @@
 <template>
-  <DDeiEditor ref="editorViewer" v-if="loadMode == 1 || loadMode == 2" :options="options"></DDeiEditor>
-  <div v-if="loadMode == 3" class="ddei_sslink_outtime">
+  <DDeiEditor ref="editorViewer" v-if="loadMode == 1 || loadMode == 2" :options="options" id="editor_1"></DDeiEditor>
+   <div v-if="loadMode == 3" class="ddei_sslink_outtime">
     <div class="content">
       <div class="header">
         <svg class="icon" aria-hidden="true">

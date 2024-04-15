@@ -20,7 +20,7 @@ declare module 'vue' {
     ATree: typeof import('ant-design-vue/es')['Tree']
     ATreeSelect: typeof import('ant-design-vue/es')['TreeSelect']
     Editor: typeof import('./src/components/editor/Editor.vue')['default']
-    MenuDialog: typeof import('./src/components/editor/menus/menudialog/MenuDialog.vue')['default']
+    MenuDialog: typeof import('./src/components/editor/MenuDialog.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }

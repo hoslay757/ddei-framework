@@ -1,6 +1,6 @@
 <template>
-  <div id="ddei_editor_qcview" class="ddei_editor_qcview" v-show="show">
-    <div class="ddei_editor_qcview_type" v-for="item in dataSource" v-show="item.value == mode"
+  <div class="ddei-editor-qcview" v-show="show">
+    <div class="ddei-editor-qcview-type" v-for="item in dataSource" v-show="item.value == mode"
       @click="showDialog($event)" :title="item.text">
       <svg class="icon" aria-hidden="true">
         <use :xlink:href="item.img"></use>
@@ -9,7 +9,7 @@
         <use xlink:href="#icon-a-ziyuan466"></use>
       </svg>
     </div>
-    <div :class="{ 'ddei_editor_qcview_color': true }" v-for="color in  colors "
+    <div :class="{ 'ddei-editor-qcview-color': true }" v-for="color in  colors "
       :style="{ 'background-color': '' + color }"
       @click="editor?.ddInstance?.stage?.selectedModels?.size > 0 && changeModelColor(color, $event)">
     </div>
@@ -244,47 +244,45 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.ddei_editor_qcview {
+.ddei-editor-qcview {
   height: 16px;
   background: rgb(245, 245, 245);
   border: 0.5pt solid rgb(235, 235, 239);
   display: flex;
   position: relative;
-}
 
-.ddei_editor_qcview_type {
-  flex: 0 0 30px;
-  height: 14px;
-  width: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+  &-type {
+    flex: 0 0 30px;
+    height: 14px;
+    width: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &:hover {
+      background: rgb(235, 235, 239);
+      cursor: pointer;
+    }
+    img {
+      display: block;
+      float: left;
+    }
+  }
 
-.ddei_editor_qcview_type:hover {
-  background: rgb(235, 235, 239);
-  cursor: pointer;
-}
+  &-color {
+    flex: 1 1 15px;
+    height: 13px;
+    margin-left: 2px;
+    margin-top: 1px;
 
-.ddei_editor_qcview_type img {
-  display: block;
-  float: left;
-}
+    &:hover {
+      outline: 0.5px solid #017fff;
+      box-sizing: border-box;
+      outline-offset: 0.5px;
+    }
 
-.ddei_editor_qcview_color {
-  flex: 1 1 15px;
-  height: 13px;
-  margin-left: 2px;
-  margin-top: 1px;
-}
-
-.ddei_editor_qcview_color_disabled {
-  background-color: grey !important;
-}
-
-.ddei_editor_qcview_color:hover {
-  outline: 0.5px solid #017fff;
-  box-sizing: border-box;
-  outline-offset: 0.5px;
+    &--disabled {
+      background-color: grey !important;
+    }
+  }
 }
 </style>

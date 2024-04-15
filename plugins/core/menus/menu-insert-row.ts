@@ -1,16 +1,60 @@
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 import DDeiTable from "@ddei-core/framework/js/models/table";
+import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 
 /**
  * 插入行菜单
  */
-class MenuInsertRow {
+class MenuInsertRow extends DDeiPluginBase {
+
+
+  name: string = "ddei-core-menu-insert-row"
+
+
+  /**
+   * 缺省实例
+   */
+  static defaultIns: MenuInsertRow = new MenuInsertRow();
+
+  defaultOptions: object = {
+    'label': '插入行',
+    'icon': 'icon-insert-row',
+    'disabled': false
+  }
+
+  getMenus(editor) {
+    return [this];
+  }
+
+
+  static configuraton(options, fullConfig: boolean = false) {
+    //解析options，只使用自己相关的
+    if (options) {
+      let newOptions = {}
+      if (fullConfig) {
+        if (fullConfig) {
+          if (options[MenuInsertRow.defaultIns.name]) {
+            for (let i in options[MenuInsertRow.defaultIns.name]) {
+              newOptions[i] = options[MenuInsertRow.defaultIns.name][i]
+            }
+          }
+        }
+      } else {
+        newOptions = options
+      }
+      if (newOptions && Object.keys(newOptions).length !== 0) {
+        let panels = new MenuInsertRow(newOptions);
+        return panels;
+      }
+    }
+    return MenuInsertRow;
+  }
 
 
   /**
    * 执行的方法
    */
-  static action(model: object, evt: Event): void {
+  action(model: object, evt: Event): void {
     //当前控件为表格控件，TODO 或者布局方式为表格的容器控件
     if (model?.baseModelType == 'DDeiTable') {
       let table: DDeiTable = model;
@@ -40,9 +84,9 @@ class MenuInsertRow {
   /**
    * 判定是否显示的方法
    */
-  static isVisiable(model: object): boolean {
+  isVisiable(model: object): boolean {
     //当前控件为表格控件，TODO 或者布局方式为表格的容器控件
-    if (model?.baseModelType == 'DDeiTable') {
+    if (!this.disabled && model?.baseModelType == 'DDeiTable') {
       return true
     }
     return false;

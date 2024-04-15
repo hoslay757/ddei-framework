@@ -28,15 +28,6 @@ class DDeiCoreControls extends DDeiPluginBase{
     controls.forEach(control => {
       loadControlByFrom(controls1, control)
     });
-    // controls.forEach(control => {
-    //   if (control.define) {
-    //     delete control.define.font
-    //     delete control.define.textStyle
-    //     delete control.define.border
-    //     delete control.define.fill
-    //   }
-    //   delete control.attrs
-    // })
     this.controls = controls;
     return controls
   }

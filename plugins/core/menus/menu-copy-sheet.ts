@@ -3,15 +3,61 @@ import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
 import DDeiEditorState from "@ddei-core/editor/js/enums/editor-state";
 import DDeiSheet from "@ddei-core/editor/js/sheet";
+import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 
 /**
  * 复制页签
  */
-class MenuCopySheet {
+class MenuCopySheet extends DDeiPluginBase {
+
+
+  name: string = "ddei-core-menu-copy-sheet"
+
+ 
+
+  /**
+   * 缺省实例
+   */
+  static defaultIns: MenuCopySheet = new MenuCopySheet();
+  
+  defaultOptions: object = {
+    'label': '复制',
+    'icon': '#icon-a-ziyuan488',
+    'models': ["DDeiSheet"],
+    'disabled': false
+  }
+
+  getMenus(editor) {
+    return [this];
+  }
+
+
+  static configuraton(options, fullConfig: boolean = false) {
+    //解析options，只使用自己相关的
+    if (options) {
+      let newOptions = {}
+      if (fullConfig) {
+        if (fullConfig) {
+          if (options[MenuCopySheet.defaultIns.name]) {
+            for (let i in options[MenuCopySheet.defaultIns.name]) {
+              newOptions[i] = options[MenuCopySheet.defaultIns.name][i]
+            }
+          }
+        }
+      } else {
+        newOptions = options
+      }
+      if (newOptions && Object.keys(newOptions).length !== 0) {
+        let panels = new MenuCopySheet(newOptions);
+        return panels;
+      }
+    }
+    return MenuCopySheet;
+  }
   /**
    * 执行的方法
    */
-  static action(model: object, evt: Event): void {
+  action(model: object, evt: Event): void {
     if (model.modelType == 'DDeiSheet') {
       //将sheet插入文件
       let editor = DDeiEditor.ACTIVE_INSTANCE
@@ -42,8 +88,8 @@ class MenuCopySheet {
   /**
    * 判定是否显示的方法
    */
-  static isVisiable(model: object): boolean {
-    return true;
+  isVisiable(model: object): boolean {
+    return !this.disabled;
   }
 
 }
