@@ -69,6 +69,7 @@ import DDeiRectContainer from "@ddei-core/framework/js/models/rect-container";
 import DDeiLineLink from "@ddei-core/framework/js/models/linelink";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 import { clone } from 'lodash'
+import DDeiEnumOperateState from "@ddei-core/framework/js/enums/operate-state";
 
 export default {
   name: "ddei-core-panel-toolbox",
@@ -120,7 +121,6 @@ export default {
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
    },
-  emits: ["createControlPrepare"],
   mounted() {
     
     this.editor.toolBarViewer = this;
@@ -355,7 +355,21 @@ export default {
           model.setState(DDeiEnumControlState.CREATING);
         })
 
-        this.$emit("createControlPrepare", models);
+
+        if (models?.length > 0) {
+
+          let ddInstance = this.editor.ddInstance;
+          let stage = ddInstance.stage;
+          if (stage?.render?.operateState == DDeiEnumOperateState.QUICK_EDITING && stage?.render?.editorShadowControl) {
+            DDeiUtil.getEditorText()?.enterValue()
+          }
+          //修改编辑器状态为控件创建中
+          this.editor.changeState(DDeiEditorState.CONTROL_CREATING);
+          //设置正在需要创建的控件
+          this.editor.creatingControls = models;
+          this.editor.bus?.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+          this.editor.bus?.executeAll();
+        }
         e.preventDefault()
         e.cancelBubble = true
       }

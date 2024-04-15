@@ -1,6 +1,5 @@
 <template>
-  <div :id="id" class="ddei-editor" @contextmenu.prevent @mousewheel.prevent @mouseup="mouseUp" @mousemove="mouseMove"
-    @mousedown="mouseDown">
+  <div :id="id" class="ddei-editor" @contextmenu.prevent @mousewheel.prevent>
     <component :is="editor?.getLayout()" :options="editor?.getLayoutOptions()">
     </component>
   </div>
@@ -14,19 +13,13 @@
 <script lang="ts">
 
 import DDeiEditor from "@ddei-core/editor/js/editor";
-import DDeiEditorState from "@ddei-core/editor/js/enums/editor-state";
-import DDeiAbstractShape from "@ddei-core/framework/js/models/shape";
-import DDeiEnumState from "@ddei-core/framework/js/enums/ddei-state";
 import "@ddei-core/editor/js/util/command";
 import DDeiUtil from "@ddei-core/framework/js/util";
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
-import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
 import DDeiFileState from "@ddei-core/editor/js/enums/file-state";
 import DDeiEditorCommandFileDirty from "@ddei-core/editor/js/bus/commands/file-dirty";
 import DDeiEditorCommandAddHistroy from "@ddei-core/editor/js/bus/commands/add-histroy";
 import MenuDialog from "./MenuDialog.vue";
-import { throttle } from "lodash";
-import DDeiEnumOperateState from "@ddei-core/framework/js/enums/operate-state";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
 import DDeiCore from "@ddei/core";
 
@@ -72,7 +65,6 @@ export default {
   watch: {},
   created() {
     window.onresize = this.resetSize;
-    this.mouseMove = throttle(this.mouseMove, 20);
     
     if (DDeiEditor.ACTIVE_INSTANCE) {
       this.editor = DDeiEditor.ACTIVE_INSTANCE;
@@ -128,9 +120,7 @@ export default {
     }
   },
   methods: {
-    setCurrentStage(stage){
-      this.currentStage = stage
-    },
+    
 
     beforeUnload(e) {
       let files = this.editor?.files
@@ -149,18 +139,7 @@ export default {
     },
 
 
-    /**
-     * 设置当前菜单
-     * @returns 控件ID
-     */
-    setCurrentMenu(menus: object): void {
-      this.editor.currentMenuData = menus;
-      this.refreshMenu = false;
-      this.$nextTick(() => {
-        this.refreshMenu = true;
-      });
-    },
-
+   
     changeFileModifyDirty() {
       let action: DDeiEditorCommandFileDirty =
         DDeiEditorCommandFileDirty.newInstance();
@@ -223,250 +202,6 @@ export default {
         );
         this.editor.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
         this.editor.ddInstance.bus.executeAll();
-      }
-    },
-    /**
-     * 停止改变大小
-     * @param e
-     */
-    mouseUp(e: Event) {
-      if (this.editor.state == DDeiEditorState.FRAME_CHANGING) {
-        this.dragObj = null;
-        this.changeIndex = -1;
-        this.editor.state = DDeiEditorState.DESIGNING;
-        this.editor.ddInstance.state = DDeiEnumState.NONE;
-        e.stopImmediatePropagation();
-        e.stopPropagation();
-        e.cancelBubble = true;
-        e.preventDefault();
-        return false;
-      } else if (this.editor.state == DDeiEditorState.DESIGNING || this.editor.state == DDeiEditorState.QUICK_EDITING) {
-        //事件下发到绘图区
-        this.editor.ddInstance.render.mouseUp(e);
-      }
-    },
-
-    /**
-     * 判断是否移动到拖拽区
-     */
-    mouseMove(e: Event) {
-      return;
-      //判断落点是否在某个区域的拖拽区附近
-      let frameLeftElement = document.getElementById("ddei_editor_frame_left");
-      let frameRightElement = document.getElementById(
-        "ddei_editor_frame_right"
-      );
-      let frameTopElement = document.getElementById("ddei_editor_frame_top");
-      let frameMiddleElement = document.getElementById(
-        "ddei_editor_frame_middle"
-      );
-      let frameBottomElement = document.getElementById(
-        "ddei_editor_frame_bottom"
-      );
-      let filesElement = document.getElementById("ddei_editor_ofsview");
-      let quickColorElement = document.getElementById("ddei_editor_qcview");
-      let middleCanvas = document.getElementById("ddei_editor_canvasview");
-      let middleCanvasPos = DDeiUtil.getDomAbsPosition(middleCanvas);
-      this.editor.middleWidth = frameMiddleElement.offsetWidth;
-      this.editor.middleHeight =
-        frameMiddleElement.offsetHeight -
-        filesElement?.offsetHeight -
-        quickColorElement?.offsetHeight;
-      //拖拽中，根据拖拽的类型，改变大小
-      if (this.editor.state == DDeiEditorState.FRAME_CHANGING) {
-        if (e.buttons !== 1) {
-          this.mouseUp(e);
-          e.preventDefault();
-          return;
-        }
-        let deltaY = e.clientY - this.dragObj.y;
-        let deltaX = e.clientX - this.dragObj.x;
-        switch (this.changeIndex) {
-          case 1:
-            break;
-          case 2:
-            if (deltaX != 0) {
-              if (frameRightElement.offsetWidth - deltaX < this.initRightWidth) {
-                deltaX = -this.initRightWidth + frameRightElement.offsetWidth
-              }
-              if (this.editor.middleWidth + deltaX >= 300 && deltaX != 0) {
-                frameRightElement.style.flexBasis =
-                  frameRightElement.offsetWidth - deltaX + "px";
-                frameRightElement.style.flexShrink = "0";
-                frameRightElement.style.flexGrow = "0";
-                this.editor.middleWidth += deltaX;
-                this.dragObj.x = e.clientX;
-                this.dragObj.y = e.clientY;
-                this.editor.ddInstance.render.setSize(
-                  this.editor.middleWidth,
-                  this.editor.middleHeight,
-                  0,
-                  0
-                );
-                this.editor.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape)
-                this.editor.ddInstance.bus.executeAll()
-              }
-            }
-            break;
-          case 4:
-            if (deltaX != 0) {
-              if (frameLeftElement.offsetWidth + deltaX < this.initLeftWidth / 1.5) {
-                deltaX = parseInt(this.initLeftWidth / 1.5) - frameLeftElement.offsetWidth
-              }
-              if (this.editor.middleWidth - deltaX >= 300 && deltaX != 0) {
-                frameLeftElement.style.flexBasis =
-                  frameLeftElement.offsetWidth + deltaX + "px";
-                frameLeftElement.style.flexShrink = "0";
-                frameLeftElement.style.flexGrow = "0";
-                //重新设置画布大小
-                this.editor.middleWidth -= deltaX;
-                this.dragObj.x = e.clientX;
-                this.dragObj.y = e.clientY;
-                this.editor.ddInstance.render.setSize(
-                  this.editor.middleWidth,
-                  this.editor.middleHeight,
-                  0,
-                  0
-                );
-                this.editor.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape)
-                this.editor.ddInstance.bus.executeAll()
-              }
-            }
-            break;
-          default:
-            break;
-        }
-
-        //同步记录大小
-        this.editor.leftWidth = frameLeftElement.offsetWidth;
-        this.editor.rightWidth = frameRightElement.offsetWidth;
-        this.editor.topHeight = frameTopElement.offsetHeight;
-        this.editor.bottomHeight = frameBottomElement.offsetHeight;
-      } else {
-        //如果正在拖拽内部画布的滚动条
-        if (
-          this.editor.ddInstance.stage.render.operateState ==
-          DDeiEnumOperateState.STAGE_SCROLL_WORKING
-        ) {
-          this.editor.ddInstance.render.mouseMove(e);
-        }
-        //判断鼠标落点是否在框架上
-        else if (
-          frameLeftElement.offsetTop <= e.clientY &&
-          frameLeftElement.offsetTop + frameLeftElement.offsetHeight >=
-          e.clientY &&
-          Math.abs(
-            e.clientX -
-            (frameLeftElement.offsetLeft + frameLeftElement.offsetWidth)
-          ) <= 5
-        ) {
-          document.body.style.cursor = "col-resize";
-        } else if (
-          frameRightElement.offsetTop <= e.clientY &&
-          frameRightElement.offsetTop + frameRightElement.offsetHeight >=
-          e.clientY &&
-          e.clientX - frameRightElement.offsetLeft >= -5 &&
-          e.clientX - frameRightElement.offsetLeft <= -1
-        ) {
-          if (frameRightElement.offsetWidth > 38) {
-            document.body.style.cursor = "col-resize";
-          }
-        } else if (
-          middleCanvasPos.top <= e.clientY &&
-          middleCanvasPos.left <= e.clientX &&
-          middleCanvasPos.top + middleCanvas.offsetHeight >= e.clientY &&
-          middleCanvasPos.left + middleCanvas.offsetWidth >= e.clientX
-        ) {
-          //事件下发到绘图区
-          this.editor.ddInstance.render.mouseMove(e);
-        } else {
-          document.body.style.cursor = "default";
-        }
-      }
-    },
-    /**
-     * 准备拖拽
-     */
-    mouseDown(e: Event) {
-      return;
-      //判断落点是否在某个区域的拖拽区附近
-      let frameLeftElement = document.getElementById("ddei_editor_frame_left");
-      let frameRightElement = document.getElementById(
-        "ddei_editor_frame_right"
-      );
-      let frameTopElement = document.getElementById("ddei_editor_frame_top");
-      let ex = e.clientX
-      let ey = e.clientY
-      //判断鼠标落点是否在框架上
-      if (
-        frameLeftElement.offsetTop <= ey &&
-        frameLeftElement.offsetTop + frameLeftElement.offsetHeight >=
-        ey &&
-        Math.abs(
-          ex -
-          (frameLeftElement.offsetLeft + frameLeftElement.offsetWidth)
-        ) <= 5
-      ) {
-        this.changeIndex = 4;
-        this.dragObj = {
-          x: ex,
-          y: ey,
-          originX: e.offsetX,
-          originY: e.offsetY,
-        };
-        this.editor.state = DDeiEditorState.FRAME_CHANGING;
-        this.editor.ddInstance.state = DDeiEnumState.IN_ACTIVITY;
-      } else if (
-        frameRightElement.offsetTop <= ey &&
-        frameRightElement.offsetTop + frameRightElement.offsetHeight >=
-        ey &&
-        ex - frameRightElement.offsetLeft >= -5 &&
-        ex - frameRightElement.offsetLeft <= -1
-      ) {
-        this.changeIndex = 2;
-        this.dragObj = {
-          x: ex,
-          y: ey,
-          originX: e.offsetX,
-          originY: e.offsetY,
-        };
-        this.editor.state = DDeiEditorState.FRAME_CHANGING;
-        this.editor.ddInstance.state = DDeiEnumState.IN_ACTIVITY;
-      } else if (
-        Math.abs(
-          ey - (frameTopElement.offsetTop + frameTopElement.offsetHeight)
-        ) <= 5
-      ) {
-        this.changeIndex = 1;
-        this.dragObj = {
-          x: ex,
-          y: ey,
-          originX: e.offsetX,
-          originY: e.offsetY,
-        };
-        this.editor.state = DDeiEditorState.FRAME_CHANGING;
-        this.editor.ddInstance.state = DDeiEnumState.IN_ACTIVITY;
-      }
-    },
-
-    /**
-     * 准备创建控件
-     * @param control 要创建的控件定义
-     */
-    createControlPrepare(models: DDeiAbstractShape[]): void {
-      if (models?.length > 0) {
-
-        let ddInstance = this.editor.ddInstance;
-        let stage = ddInstance.stage;
-        if (stage?.render?.operateState == DDeiEnumOperateState.QUICK_EDITING && stage?.render?.editorShadowControl) {
-          DDeiUtil.getEditorText()?.enterValue()
-        }
-        //修改编辑器状态为控件创建中
-        this.editor.changeState(DDeiEditorState.CONTROL_CREATING);
-        //设置正在需要创建的控件
-        this.editor.creatingControls = models;
-        this.editor.bus?.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
-        this.editor.bus?.executeAll();
       }
     },
   },

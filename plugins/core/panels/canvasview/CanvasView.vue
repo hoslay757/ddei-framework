@@ -1,6 +1,6 @@
 <template>
   <div :id="editor?.id+'_canvas'" ref="middleCanvas" class="ddei-editor-canvasview" @mousedown="mouseDown($event)" ondragstart="return false;"
-    @wheel="mouseWheel($event)" @mousemove="createControlOver($event)" @mouseup="createControlDrop"
+    @wheel="mouseWheel($event)" @mousemove="mouseMove($event)" @mouseup="mouseUp($event)"
     @dblclick="canvasDBClick" @contextmenu.prevent>
   </div>
 </template>
@@ -48,7 +48,7 @@ export default {
       }
     });
     this.mouseWheelThrottle = throttle(this.mouseWheelThrottle, 10);
-    this.createControlOver = throttle(this.createControlOver, 20);
+    this.mouseMove = throttle(this.mouseMove, 20);
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
 
@@ -227,7 +227,7 @@ export default {
     /**
      * 拖拽元素移动
      */
-    createControlOver(e) {
+    mouseMove(e) {
       if (this.editor.state == DDeiEditorState.CONTROL_CREATING) {
         DDeiKeyAction.updateKeyState(e);
 
@@ -377,12 +377,23 @@ export default {
           }
         }
       }
+      //如果正在拖拽内部画布的滚动条
+      else if (
+        this.editor.ddInstance.stage.render.operateState ==
+        DDeiEnumOperateState.STAGE_SCROLL_WORKING
+      ) {
+        this.editor.ddInstance.render.mouseMove(e);
+      }
+      else{
+        //事件下发到绘图区
+        this.editor.ddInstance.render.mouseMove(e);
+      }
     },
 
     /**
      * 拖拽元素放开
      */
-    createControlDrop(e) {
+    mouseUp(e) {
       if (this.editor.state == DDeiEditorState.CONTROL_CREATING) {
         let ddInstance = this.editor.ddInstance;
         let stage = ddInstance.stage;
@@ -448,6 +459,9 @@ export default {
           this.editor.bus.executeAll();
         }
         e.preventDefault()
+      } else if (this.editor.state == DDeiEditorState.DESIGNING || this.editor.state == DDeiEditorState.QUICK_EDITING) {
+        //事件下发到绘图区
+        this.editor.ddInstance.render.mouseUp(e);
       }
     },
 
