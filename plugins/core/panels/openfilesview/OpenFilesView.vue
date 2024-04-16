@@ -634,7 +634,7 @@ export default {
 <style lang="less" scoped>
 .ddei-core-panel-openfilesview {
   flex: 0 0 30.5px;
-  background: #F5F6F7;
+  background: @background;
   border-top: 1px solid #E0E3E9;
   border-bottom: 1px solid #E0E3E9;
   display: flex;
@@ -708,7 +708,7 @@ export default {
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
-        color: black;
+        color: @titleColor;
         flex: 1;
         font-size: 16px;
         font-weight: 400;

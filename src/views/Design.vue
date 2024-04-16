@@ -93,7 +93,7 @@ export default {
           }),
           DDeiExtFontTest,
           DDeiExtThemeTest.configuraton({
-            background:'yellow'
+            backgroundColor:'yellow'
           }),
           //批量快捷键配置
           // DDeiCoreHotkeys.configuraton({

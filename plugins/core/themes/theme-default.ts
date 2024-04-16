@@ -9,9 +9,9 @@ class DDeiCoreThemeDefault extends DDeiThemeBase {
 
   label:string = "默认"
 
-  background: string = "#F5F6F7"
+  backgroundColor: string = "#F5F6F7"
 
- 
+  fontTitleColor: string = "black"
 
   /**
    * 缺省实例

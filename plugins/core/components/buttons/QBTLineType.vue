@@ -204,11 +204,11 @@ export default {
 
 .ddei_pv_line_type_combox:hover {
   cursor: pointer;
-  background-color: #e6e6e6;
+  background-color: @background;
 }
 
 .ddei_pv_line_type_combox_selected {
-  background-color: #e6e6e6;
+  background-color: @background;
 }
 
 .ddei_pv_line_type_combox_disabled {

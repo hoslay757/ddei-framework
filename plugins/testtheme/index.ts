@@ -6,7 +6,9 @@ class DDeiExtThemeTest extends DDeiThemeBase {
 
   label: string = "测试"
 
-  background: string = "red"
+  backgroundColor: string = "red"
+
+  fontTitleColor: string = "green"
 
   /**
    * 缺省实例

@@ -334,7 +334,7 @@ export default {
 
       .button-v:hover {
         cursor: pointer;
-        background-color: #e6e6e6;
+        background-color: @background;
       }
 
     }

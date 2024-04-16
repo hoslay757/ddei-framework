@@ -94,7 +94,7 @@ export default {
 .ddei-core-panel-topmenu {
   background: rgb(225, 225, 225);
   &-quickbox {
-    background-color: #F5F5F5;
+    background-color: @background;
     width: 100%;
 
     height: 103px;

@@ -567,7 +567,7 @@ export default {
   user-select: none;
 
   &-header {
-    background: #F5F6F7;
+    background: @background;
     border-bottom: 1px solid #D5D5DF;
     flex: 0 0 30px;
     display: flex;
@@ -623,7 +623,7 @@ export default {
           flex: 1;
           text-align: center;
           font-size: 16px;
-          background-color: #F5F6F7;
+          background-color: @background;
           font-weight: 400;
           color: #1F72FF;
           border-bottom: 4px solid #1F72FF;

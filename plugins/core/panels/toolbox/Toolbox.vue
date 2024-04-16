@@ -469,7 +469,7 @@ export default {
     }
 
     .morecontrol:hover {
-      background-color: #e6e6e6;
+      background-color: @background;
       cursor: pointer;
     }
 
@@ -637,7 +637,7 @@ export default {
         }
         .title {
           flex: 1;
-          color: black;
+          color: @titleColor;
           text-align: left;
           margin-left: 25px;
           font-size: 16px;
@@ -705,6 +705,5 @@ export default {
     margin: auto 4px 5px 7px;
   }
 }
-
 
 </style>

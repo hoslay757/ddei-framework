@@ -451,7 +451,7 @@ export default {
       }
 
       .panel1-content-4:hover {
-        background-color: #e6e6e6;
+        background-color: @background;
         cursor: pointer
       }
     }
@@ -472,7 +472,7 @@ export default {
       }
 
       .panel2-content:hover {
-        background-color: #e6e6e6;
+        background-color: @background;
         cursor: pointer
       }
     }
@@ -493,7 +493,7 @@ export default {
       }
 
       .panel3-content:hover {
-        background-color: #e6e6e6;
+        background-color: @background;
         cursor: pointer
       }
 
@@ -555,7 +555,7 @@ export default {
 
 
       .panel4-content:hover {
-        background-color: #e6e6e6;
+        background-color: @background;
         cursor: pointer
       }
 
@@ -590,7 +590,7 @@ export default {
 
 
       .panel5-content:hover {
-        background-color: #e6e6e6;
+        background-color: @background;
         cursor: pointer
       }
 
@@ -644,7 +644,7 @@ export default {
       }
 
       .panel12-content-4:hover {
-        background-color: #e6e6e6;
+        background-color: @background;
         cursor: pointer
       }
     }
@@ -742,12 +742,12 @@ export default {
 
 
       &-content:hover {
-        background-color: #e6e6e6;
+        background-color: @background;
         cursor: pointer
       }
 
       &-content1:hover {
-        background-color: #e6e6e6;
+        background-color: @background;
         cursor: pointer
       }
 
@@ -756,7 +756,7 @@ export default {
   }
 
   .brush-selected {
-    background-color: #e6e6e6;
+    background-color: @background;
   }
 
 

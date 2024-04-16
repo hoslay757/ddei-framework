@@ -9,7 +9,9 @@ class DDeiCoreThemeBlack extends DDeiThemeBase {
 
   label: string = "黑色"
 
-  background: string = "black"
+  backgroundColor: string = "black"
+
+  fontTitleColor: string = "white"
 
   /**
    * 缺省实例

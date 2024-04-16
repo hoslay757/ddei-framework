@@ -514,7 +514,7 @@ export default {
       &:hover {
         color: #1F72FF;
         cursor: pointer;
-        background: #EBEBF5;
+        background: @background;
       }
     }
 
@@ -527,7 +527,7 @@ export default {
 
       span {     height: 27px;
         width: 80px;
-        background: #EBEBF5;
+        background: @background;
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;

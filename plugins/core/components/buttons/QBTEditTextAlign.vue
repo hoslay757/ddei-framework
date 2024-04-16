@@ -177,11 +177,11 @@ export default {
 
   &:hover {
     cursor: pointer;
-    background-color: #e6e6e6;
+    background-color: @background;
   }
 
   &--selected {
-    background-color: #e6e6e6;
+    background-color: @background;
   }
 
   &--disabled {

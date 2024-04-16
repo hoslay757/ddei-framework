@@ -184,7 +184,7 @@ export default {
 
       .button-v:hover {
         cursor: pointer;
-        background-color: #e6e6e6;
+        background-color: @background;
       }
 
       .button-v-selected {
@@ -192,7 +192,7 @@ export default {
         height: 50px;
         display: flex;
         flex-direction: column;
-        background-color: #e6e6e6;
+        background-color: @background;
         border-radius: 4px;
       }
 
