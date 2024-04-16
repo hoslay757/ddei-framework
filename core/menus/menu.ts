@@ -5,14 +5,7 @@ import DDeiEditor from '../editor/js/editor'
 import DDeiPluginBase from '../plugin/ddei-plugin-base'
 
 abstract class DDeiMenuBase extends DDeiPluginBase {
-  // ============================ 构造函数 ============================
-  constructor(props: object | null | undefined) {
-    super(props)
-    this.name = props?.name
-    this.label = props?.label
-    this.icon = props?.icon
-    this.disabled = props?.disabled
-  }
+  
   // ============================ 属性 ===============================
   //文本
   label: string;
@@ -34,6 +27,14 @@ abstract class DDeiMenuBase extends DDeiPluginBase {
   abstract isVisiable(model: object): boolean;
 
   getMenus(editor) {
+    let option = this.getOptions()
+    if (option) {
+      for (let i in option) {
+        if (i != 'name') {
+          this[i] = option[i];
+        }
+      }
+    }
     return [this];
   }
 

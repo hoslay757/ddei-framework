@@ -5,7 +5,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'node:path'
 import px2rem from "postcss-px2rem"
-
+import path from 'path'
 import Components from 'unplugin-vue-components/vite';
 import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers';
 
@@ -40,8 +40,20 @@ export default defineConfig({
           remUnit: 192,
         })
       ]
+    },
+    /* CSS 预处理器 */
+    preprocessorOptions: {
+      less: {
+        modifyVars: {
+          'primary-color': '#2186FB',
+          // 配置我们定义的less样式变量
+          hack: `true; @import (reference) "${path.resolve('./src/styles/variable.less')}";`
+        },
+        javascriptEnabled: true
+      }
     }
   }
+  
 
 
 

@@ -6,6 +6,7 @@ import DDeiCorePropEditors from "./propeditors";
 import DDeiCoreHotkeys from "./hotkeys";
 import DDeiCoreControls from "./controls";
 import DDeiCoreMenus from "./menus";
+import DDeiCoreThemes from "./themes"
 import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 
 class DDeiCore extends DDeiPluginBase {
@@ -34,9 +35,11 @@ class DDeiCore extends DDeiPluginBase {
 
   menus: object = DDeiCoreMenus;
 
+  themes: object = DDeiCoreThemes;
+
   getOptions(): object {
     let options = {}
-    let array = [this.layouts, this.panels, this.propeditors, this.dialogs, this.components, this.hotkeys, this.controls, this.menus]
+    let array = [this.layouts, this.panels, this.propeditors, this.dialogs, this.components, this.hotkeys, this.controls, this.menus, this.themes]
     array.forEach(plugin => {
       if (DDeiPluginBase.isSubclass(plugin, DDeiPluginBase)) {
         options = Object.assign({}, options, plugin.defaultIns.getOptions())
@@ -119,6 +122,14 @@ class DDeiCore extends DDeiPluginBase {
     }
   }
 
+  getThemes(editor) {
+    if (DDeiPluginBase.isSubclass(this.themes, DDeiPluginBase)) {
+      return this.themes.defaultIns.getThemes(editor);
+    } else if (this.themes instanceof DDeiPluginBase) {
+      return this.themes.getThemes(editor);
+    }
+  }
+
   static configuraton(options) {
     let core = new DDeiCore(options);
     core.layouts = core.layouts.configuraton(options,true)
@@ -129,6 +140,7 @@ class DDeiCore extends DDeiPluginBase {
     core.hotkeys = core.hotkeys.configuraton(options, true)
     core.controls = core.controls.configuraton(options, true)
     core.menus = core.menus.configuraton(options, true)
+    core.themes = core.themes.configuraton(options, true)
     return core;
   }
 }
@@ -141,5 +153,6 @@ export * from "./propeditors";
 export * from "./hotkeys";
 export * from "./menus"
 export * from "./controls"
+export * from "./themes"
 export {DDeiCore}
 export default DDeiCore;

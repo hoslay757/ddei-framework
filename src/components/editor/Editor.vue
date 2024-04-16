@@ -227,7 +227,6 @@ export default {
   overflow: auto;
   display: flex;
   flex-direction: column;
-  background-color: rgb(240, 240, 240);
   min-width: 1700px;
 }
 </style>

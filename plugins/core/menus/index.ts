@@ -46,7 +46,7 @@ class DDeiCoreMenus extends DDeiPluginBase{
   static configuraton(options) {
     let menus = new DDeiCoreMenus(options);
     for (let i = 0; i < menus.plugins?.length;i++){
-      menus.plugins[i] = hotkeys.plugins[i].configuraton(options,true)
+      menus.plugins[i] = menus.plugins[i].configuraton(options,true)
     }
     return menus;
   }

@@ -433,14 +433,14 @@ export default {
 .ddei-core-panel-toolbox {
   user-select: none;
   text-align: center;
-  background: rgb(254, 254, 255);
+  // background: rgb(254, 254, 255);
   display: flex;
   flex-flow: column;
   height: 100%;
 
   /**以下为收折框 */
   &-header {
-    background: #F5F6F7;
+    background: @background;
     border-bottom: 1px solid #D5D5DF;
     flex: 0 0 30px;
     display: flex;
@@ -623,17 +623,17 @@ export default {
       &-box {
         display: flex;
         height: 35px;
-        background: #F5F6F7;
+        background: @background;
         user-select: none;
         justify-content: center;
         align-items: center;
 
         &:hover {
-          background-color: #F5F6F7;
+          background-color: @background;
         }
 
         &:active {
-          background-color: #F5F6F7;
+          background-color: @background;
         }
         .title {
           flex: 1;
@@ -693,7 +693,7 @@ export default {
       }
 
       &--expanded {
-        background-color: #F5F6F7;
+        background-color: @background;
       }
     }
   }

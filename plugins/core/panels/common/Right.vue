@@ -2,7 +2,7 @@
   <div class="ddei-core-panel-right">
     <div class="header">
       <div class="h1"></div>
-      <div class="h3"></div>
+      <div class="h3" @click="changeTheme">切换</div>
       <div class="userinfo" v-show="user?.id != '-99'">{{ userNameFirst }}</div>
       <div class="h4"></div>
       <div class="loginout" v-show="user && user.id != '-99'" @click="loginout">注销</div>
@@ -21,6 +21,7 @@ import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
 import Cookies from 'js-cookie'
 import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
+import { setTheme } from '@ddei-core/themes/theme'
 export default {
   name: "ddei-core-panel-right",
   extends: null,
@@ -62,6 +63,17 @@ export default {
     } catch (e) { }
   },
   methods: {
+
+    changeTheme(){
+      if(this.themeIndex == this.editor.themes.length-1){
+        this.themeIndex =0
+      } else if (!this.themeIndex && this.themeIndex != 0){
+        this.themeIndex = 0
+      }else{
+        this.themeIndex++
+      }
+      this.editor.changeTheme(this.editor.themes[this.themeIndex].name)
+    },
 
     refreshEditor() {
       this.editor.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts);
@@ -145,7 +157,8 @@ export default {
     }
 
     .h3 {
-      flex: 0 1 33px
+      flex: 0 1 33px;
+      color:black;
     }
 
     .h4 {

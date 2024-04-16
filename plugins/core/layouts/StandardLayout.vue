@@ -1,5 +1,5 @@
 <template>
-  <div class="layout_standrad">
+  <div class="ddei-editor-layout-standrad">
     <div class="top" ref="top">
       <component ref="topComponents" v-for="(item,index) in editor?.getPartPanels(options,'top')" :is="item.comp"
         v-bind="item.options" :options="item.options"></component>
@@ -169,13 +169,12 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.layout_standrad {
-
+.ddei-editor-layout-standrad {
   width: 100%;
   height: calc(100vh);
   display: flex;
   flex-direction: column;
-  background-color: rgb(240, 240, 240);
+  // background-color: rgb(240, 240, 240);
   min-width: 1700px;
 
   .top {
@@ -214,7 +213,7 @@ export default {
 }
 </style>
 <style lang="less">
-.layout_standrad {
+.ddei-editor-layout-standrad {
   >img {
     -webkit-user-drag: none;
     user-drag: none;

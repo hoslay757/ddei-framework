@@ -11,6 +11,7 @@ import { markRaw } from "vue";
 import config from "./config"
 import { cloneDeep } from "lodash";
 import FONTS from "../../framework/js/fonts/font"
+import {changeStyle} from "../../themes/theme"
 
 /**
  * DDei图形编辑器类，用于维护编辑器实例、全局状态以及全局属性
@@ -319,12 +320,22 @@ class DDeiEditor {
       let fonts = plugin.getFonts(this)
       fonts?.forEach(font => {
         this.fonts.push(font)
-        let fontObj = new FontFace(font.ch, 'url(' + font.font+')')
+        let fontObj = new FontFace(font.ch, 'url(' + font.font + ')')
         fontObj.load().then(f => {
           document.fonts.add(f)
         })
       });
-      
+
+    }
+
+    //加载主题样式
+    if (plugin.getThemes) {
+      //注册并加载菜单
+      let themes = plugin.getThemes(this)
+      themes?.forEach(theme => {
+        this.themes.push(theme)
+      });
+
     }
 
     //加载菜单相关插件
@@ -520,6 +531,10 @@ class DDeiEditor {
   controlModelClasses: object = markRaw({});
   //当前引入的外部控件视图定义
   controlViewClasses: object = markRaw({});
+  //当前引入的外部主题样式
+  themes:object[] = markRaw([])
+  //当前缺省主题
+  currentTheme: string = 'ddei-core-theme-default'
   //当前布局的名称，如果为空，则获取最后一个有效的布局
   currentLayout: string = "ddei-core-layout-standard";
 
@@ -716,6 +731,32 @@ class DDeiEditor {
         } 
       })
       return returnArray;
+    }
+  }
+
+  /**
+   * 设置当前主题
+   * @param themeName 主题名称
+   */
+  changeTheme(themeName: string){
+    let finded = false;
+    let defaultJSON = null;
+    for (let i = 0; i < this.themes?.length;i++){
+      if (this.themes[i].name == 'default'){
+        defaultJSON = this.themes[i]
+      }
+      if (this.themes[i].name == themeName){
+        finded = true
+        this.currentTheme = themeName
+        let themeConfig = this.themes[i];
+        changeStyle(themeConfig);
+        break;
+      }
+    }
+    if (!finded){
+      this.currentTheme = 'default'
+      let themeConfig = defaultJSON
+      changeStyle(themeConfig);
     }
   }
 }
