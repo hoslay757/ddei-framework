@@ -12,6 +12,8 @@ class DDeiCoreControls extends DDeiPluginBase{
   controls:Map<string,object>  = new Map()
 
   getControls(editor) {
+    //获取扩展options
+    let extOptions = this.getOptions();
     //加载控件定义
     let controls: Map<string, object> = new Map();
     let controls1 = new Map(editor.controls);
@@ -20,9 +22,14 @@ class DDeiCoreControls extends DDeiPluginBase{
       if (control) {
         controls.set(control.id, control);
         controls1.set(control.id, control);
+        
+        if (extOptions && extOptions[control.id]){
+          for (let x in extOptions[control.id]){
+            control.define[x] = extOptions[control.id][x]
+          }
+        }
       }
     }
-
 
     //初始化控件定义
     controls.forEach(control => {
@@ -55,5 +62,5 @@ class DDeiCoreControls extends DDeiPluginBase{
   }
 }
 
-
+export {DDeiCoreControls}
 export default DDeiCoreControls

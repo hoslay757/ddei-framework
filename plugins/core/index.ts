@@ -140,5 +140,6 @@ export * from "./dialogs";
 export * from "./propeditors";
 export * from "./hotkeys";
 export * from "./menus"
+export * from "./controls"
 export {DDeiCore}
 export default DDeiCore;

@@ -49,7 +49,7 @@ import { markRaw } from "vue";
 import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
 
 //引入插件
-import { DDeiCoreTopMenuPanel,DDeiCoreHotkeys,DDeiKeyActionAllSelect,DDeiCorePropertyViewPanel,DDeiCoreToolboxPanel,DDeiCoreSheetsPanel, DDeiCoreChangeRatioPanel, DDeiCoreChangeRatioDialog,DDeiCoreShapeCountPanel, DDeiCoreBottomMenuPanel,DDeiCoreStandLayout, DDeiCoreOpenFilesViewPanel, DDeiCoreQuickColorViewPanel, DDeiCoreAlignDialog } from "@ddei/core";
+import { DDeiCoreTopMenuPanel, DDeiCoreControls,DDeiCoreHotkeys,DDeiKeyActionAllSelect,DDeiCorePropertyViewPanel,DDeiCoreToolboxPanel,DDeiCoreSheetsPanel, DDeiCoreChangeRatioPanel, DDeiCoreChangeRatioDialog,DDeiCoreShapeCountPanel, DDeiCoreBottomMenuPanel,DDeiCoreStandLayout, DDeiCoreOpenFilesViewPanel, DDeiCoreQuickColorViewPanel, DDeiCoreAlignDialog } from "@ddei/core";
 import DDeiExtUML from "@ddei/uml"
 export default {
   props: {},
@@ -79,6 +79,15 @@ export default {
             'middle': [DDeiCoreOpenFilesViewPanel.configuraton({
               drag:true
             }),  'ddei-core-panel-canvasview' , 'ddei-core-panel-quickcolorview'],
+          }),
+          //特殊控件的配置
+          DDeiCoreControls.configuraton({
+            '100002': {
+              border: { color: 'red', width: 3 }
+            },
+            '100001': {
+              border: { color: 'yellow' }
+            }
           }),
           
           //批量快捷键配置
