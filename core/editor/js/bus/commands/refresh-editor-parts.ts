@@ -33,29 +33,9 @@ class DDeiEditorCommandRefreshEditorParts extends DDeiBusCommand {
 
     let editor = bus.invoker;
     if (data?.parts?.length > 0) {
-      if (data.parts?.indexOf("bottommenu") != -1) {
-        editor.layoutViewer?.forceRefreshBottomMenu();
-      }
-      if (data.parts?.indexOf("openfiles") != -1) {
-        editor.layoutViewer?.forceRefreshOpenFilesView();
-      }
-      if (data.parts?.indexOf("topmenu") != -1) {
-        editor.layoutViewer?.forceRefreshTopMenuView();
-      }
-      if (data.parts?.indexOf("property") != -1) {
-        editor.layoutViewer?.forcePropertyView();
-      }
-      if (data.parts?.indexOf("toolbox") != -1) {
-        editor.layoutViewer?.forceToolBox();
-      }
-
+      editor.layoutViewer?.forceRefreshParts(data?.parts)
     } else {
-      editor.layoutViewer?.forceRefreshBottomMenu();
-      editor.layoutViewer?.forceRefreshOpenFilesView();
-      editor.layoutViewer?.forceRefreshTopMenuView();
-      editor.layoutViewer?.forcePropertyView();
-      editor.layoutViewer?.forceToolBox();
-
+      editor.layoutViewer?.forceRefreshParts()
     }
     return true;
 

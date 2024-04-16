@@ -1,5 +1,5 @@
 <template>
-  <div @mousedown="changeEditorFocus()" @mouseup="drag && fileDragDrop($event)" ref="openFilesView"
+  <div @mousedown="changeEditorFocus()" v-if="forceRefresh" @mouseup="drag && fileDragDrop($event)" ref="openFilesView"
     class="ddei-core-panel-openfilesview">
     <div v-show="this.editor?.leftWidth == 0 && expand" class="ddei-core-panel-openfilesview-expandbox"
       @click="expandToolBox">
@@ -101,7 +101,8 @@ export default {
       maxOpenSize: 1,
       tempFile: null,
       unitFileWidth: 160,
-      user: null
+      user: null,
+      forceRefresh:true
     };
   },
   computed: {},
@@ -161,15 +162,32 @@ export default {
     });
     // 开始监听目标元素的大小变化
     resizeObserver.observe(this.$refs.openFilesView);
-    //获取编辑器
-    this.editor = DDeiEditor.ACTIVE_INSTANCE;
-    this.editor.openFilesViewer = this;
-    let userCookie = Cookies.get("user");
-    if (userCookie) {
-      this.user = JSON.parse(userCookie)
-    }
+    this.refreshData();
   },
   methods: {
+
+    //强制刷新当前以及下层组件
+    forceRefreshParts(parts) {
+      if (!parts || parts == 'openfiles' || parts.indexOf('openfiles') != -1) {
+        this.forceRefresh = false
+        this.$nextTick(() => {
+          this.forceRefresh = true;
+          if (this.refreshData) {
+            this.refreshData();
+          }
+        });
+      }
+    },
+
+    refreshData() {
+      //获取编辑器
+      this.editor = DDeiEditor.ACTIVE_INSTANCE;
+      this.editor.openFilesViewer = this;
+      let userCookie = Cookies.get("user");
+      if (userCookie) {
+        this.user = JSON.parse(userCookie)
+      }
+    },
 
     /**
      * 新建文件

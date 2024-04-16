@@ -113,6 +113,9 @@ class DDeiEditorCommandSaveFile extends DDeiBusCommand {
                       });
                       //将当前的设置
                       file.histroy[file.histroyIdx].isNew = true;
+
+                      bus?.insert(DDeiEditorEnumBusCommandType.RefreshEditorParts, { parts: ['openfiles'] }, evt);
+                      bus.executeAll();
                     } else if (data.result != 4) {
                       file.state = oldState
                     }

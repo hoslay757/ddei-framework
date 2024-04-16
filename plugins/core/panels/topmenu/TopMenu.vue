@@ -1,9 +1,9 @@
 <template>
-  <div id="ddei-core-panel-topmenu" class="ddei-core-panel-topmenu" @mousedown="changeEditorFocus">
+  <div id="ddei-core-panel-topmenu" v-if="forceRefresh" class="ddei-core-panel-topmenu" @mousedown="changeEditorFocus">
     <div id="ddei-core-panel-topmenu-quickbox" class="ddei-core-panel-topmenu-quickbox">
       <component v-for="(item, index) in editor?.getPartPanels(options, 'panels') " :is="item.comp"
         :options="item.options" v-bind="item.options"></component>
-      
+
     </div>
 
   </div>
@@ -31,6 +31,7 @@ export default {
       file: null,
       sslink: null,
       user: null,
+      forceRefresh:true,
     };
   },
   //注册组件
@@ -41,23 +42,40 @@ export default {
   watch: {},
   created() { },
   mounted() {
-    this.editor = DDeiEditor.ACTIVE_INSTANCE;
-    this.editor.topMenuViewer = this;
-    let userCookie = Cookies.get("user");
-    let file = this.editor?.files[this.editor?.currentFileIndex];
-    if (userCookie && file) {
-      this.user = JSON.parse(userCookie)
-      for (let i = 0; i < this.user?.sslinks?.length; i++) {
-        if (this.user.sslinks[i].file_id == file.id) {
-          this.sslink = this.user.sslinks[i]
-          break;
-        }
-      }
-
-    }
-    this.file = file
+    this.refreshData()
   },
   methods: {
+
+    //强制刷新当前以及下层组件
+    forceRefreshParts(parts) {
+      if (!parts || parts == 'topmenu' || parts.indexOf('topmenu') != -1) {
+        this.forceRefresh = false
+        this.$nextTick(() => {
+          this.forceRefresh = true;
+          if (this.refreshData) {
+            this.refreshData();
+          }
+        });
+      }
+    },
+
+    refreshData() {
+      this.editor = DDeiEditor.ACTIVE_INSTANCE;
+      this.editor.topMenuViewer = this;
+      let userCookie = Cookies.get("user");
+      let file = this.editor?.files[this.editor?.currentFileIndex];
+      if (userCookie && file) {
+        this.user = JSON.parse(userCookie)
+        for (let i = 0; i < this.user?.sslinks?.length; i++) {
+          if (this.user.sslinks[i].file_id == file.id) {
+            this.sslink = this.user.sslinks[i]
+            break;
+          }
+        }
+
+      }
+      this.file = file
+    },
     /**
      * 焦点进入当前区域
      */

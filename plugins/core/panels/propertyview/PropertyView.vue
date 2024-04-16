@@ -1,6 +1,6 @@
 <template>
-  <div ref="propertyView" :class="{ 'propertyview': true, 'propertyview--disabled': propertyDisabled }"
-    @mousedown="changeEditorFocus">
+  <div v-if="forceRefresh" ref="propertyView"
+    :class="{ 'propertyview': true, 'propertyview--disabled': propertyDisabled }" @mousedown="changeEditorFocus">
     <div class="propertyview-header">
       <svg aria-hidden="true" v-if="expand"
         :class="{ 'icon': true, 'header-7': propertyViewShow, 'header-7-expand': !propertyViewShow }"
@@ -99,12 +99,13 @@ export default {
       pvGroupWidth: 0,
       panelStyle: "height:calc(100vh - 202px)",
       rightRate: 0,//右边部分所占的比例
+      forceRefresh:true,
     };
   },
   computed: {},
   watch: {
     currentSubGroup() {
-      this.forceRefresh();
+      this.forceRefreshSub();
     },
   },
   components: {
@@ -121,19 +122,37 @@ export default {
     });
   },
   mounted() {
-    //获取编辑器
-    this.editor = DDeiEditor.ACTIVE_INSTANCE;
-    this.editor.properyViewer = this;
-    this.refreshAttrs();
+    
   },
   methods: {
+
+    //强制刷新当前以及下层组件
+    forceRefreshParts(parts) {
+      if (!parts || parts == 'property' || parts.indexOf('property') != -1) {
+        this.forceRefresh = false
+        this.$nextTick(() => {
+          this.forceRefresh = true;
+          if (this.refreshData) {
+            this.refreshData();
+          }
+        });
+      }
+    },
+
+    refreshData() {
+      //获取编辑器
+      this.editor = DDeiEditor.ACTIVE_INSTANCE;
+      this.editor.properyViewer = this;
+      this.refreshAttrs();
+    },
+
     mouseWheel(evt) {
       if (evt.currentTarget.clientHeight < evt.currentTarget.scrollHeight) {
         evt.cancelBubble = true;
         return false;
       }
     },
-    forceRefresh() {
+    forceRefreshSub() {
       this.reFresh = false;
       this.propertyDisabled = false
       this.$nextTick(() => {

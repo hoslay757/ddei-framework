@@ -1,26 +1,26 @@
 <template>
   <div class="layout_standrad">
     <div class="top" ref="top">
-      <component v-for="(item,index) in editor?.getPartPanels(options,'top')" :is="item.comp" v-bind="item.options"
-        :options="item.options" v-if="refreshTopMenuView"></component>
+      <component ref="topComponents" v-for="(item,index) in editor?.getPartPanels(options,'top')" :is="item.comp"
+        v-bind="item.options" :options="item.options"></component>
     </div>
     <div class="body">
       <div class="left" ref="left" v-show="toolboxShow">
-        <component v-for="(item, index) in editor?.getPartPanels(options, 'left')" :is="item.comp"
-          :options="item.options" v-bind="item.options" v-if="refreshToolBox"></component>
-      </div>
-      <div class="middle" ref="middle">
-        <component v-for="(item, index) in editor?.getPartPanels(options, 'middle')" :is="item.comp"
+        <component ref="leftComponents" v-for="(item, index) in editor?.getPartPanels(options, 'left')" :is="item.comp"
           :options="item.options" v-bind="item.options"></component>
       </div>
+      <div class="middle" ref="middle">
+        <component ref="middleComponents" v-for="(item, index) in editor?.getPartPanels(options, 'middle')"
+          :is="item.comp" :options="item.options" v-bind="item.options"></component>
+      </div>
       <div class="right" ref="right" v-show="propertyViewShow">
-        <component v-for="(item, index) in editor?.getPartPanels(options, 'right')" :is="item.comp"
-          :options="item.options" v-bind="item.options" v-if="refreshPropertyView"></component>
+        <component ref="rightComponents" v-for="(item, index) in editor?.getPartPanels(options, 'right')"
+          :is="item.comp" :options="item.options" v-bind="item.options"></component>
       </div>
     </div>
     <div class="bottom" ref="bottom">
-      <component v-for="(item, index) in editor?.getPartPanels(options, 'bottom')" :is="item.comp"
-        :options="item.options" v-bind="item.options" v-if="refreshBottomMenu"></component>
+      <component ref="bottomComponents" v-for="(item, index) in editor?.getPartPanels(options, 'bottom')"
+        :is="item.comp" :options="item.options" v-bind="item.options"></component>
     </div>
   </div>
 </template>
@@ -47,12 +47,6 @@ export default {
       editor: null,
       dragObj: null,
       changeIndex: -1,
-      refreshBottomMenu: true,
-      refreshOpenFilesView: true,
-      refreshPropertyView: true,
-      refreshToolBox: true,
-      refreshMenu: true,
-      refreshTopMenuView: true,
       allowOpenMultFiles: true,
       allowQuickColor: true,
       initLeftWidth: 0,
@@ -153,40 +147,22 @@ export default {
   methods: {
     
 
-
-    forceRefreshBottomMenu() {
-      this.refreshBottomMenu = false;
-      this.$nextTick(() => {
-        this.refreshBottomMenu = true;
-      });
-    },
-
-    forcePropertyView() {
-      this.refreshPropertyView = false;
-      this.$nextTick(() => {
-        this.refreshPropertyView = true;
-      });
-    },
-
-    forceToolBox() {
-      this.refreshToolBox = false;
-      this.$nextTick(() => {
-        this.refreshToolBox = true;
-      });
-    },
-
-    forceRefreshOpenFilesView() {
-      this.refreshOpenFilesView = false;
-      this.$nextTick(() => {
-        this.refreshOpenFilesView = true;
-      });
-    },
-
-    forceRefreshTopMenuView() {
-      this.refreshTopMenuView = false;
-      this.$nextTick(() => {
-        this.refreshTopMenuView = true;
-      });
+    //强制刷新下层组件
+    forceRefreshParts(parts){
+      let arr = [this.$refs.topComponents, this.$refs.leftComponents, this.$refs.middleComponents, this.$refs.rightComponents, this.$refs.bottomComponents]
+      arr.forEach(comps=>{
+        if (comps){
+          if(Array.isArray(comps)){
+            comps.forEach(comp=>{
+              if (comp && comp.forceRefreshParts){
+                comp.forceRefreshParts(parts);
+              }
+            })
+          } else if (comps.forceRefreshParts) {
+            comps.forceRefreshParts(parts);
+          }
+        }
+      })
     },
   }
 };

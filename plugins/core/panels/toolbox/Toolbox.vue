@@ -1,5 +1,5 @@
 <template>
-  <div @mousedown="changeEditorFocus" @mouseup="cancelCreateControl($event)" ref="toolbox"
+  <div @mousedown="changeEditorFocus" v-if="forceRefresh" @mouseup="cancelCreateControl($event)" ref="toolbox"
     class="ddei-core-panel-toolbox">
     <div class="ddei-core-panel-toolbox-header">
       <div class="header-1"></div>
@@ -112,7 +112,8 @@ export default {
       searchText: "",
       //当前编辑器
       editor: null,
-      icons: {}
+      icons: {},
+      forceRefresh:true,
     };
   },
   computed: {},
@@ -122,54 +123,69 @@ export default {
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
    },
   mounted() {
-    
-    this.editor.toolBarViewer = this;
-    if (this.editor.ddInstance && !this.editor.ddInstance.render){
-      this.editor.ddInstance.initRender()
-    }
-    //加载工具栏
-    DDeiEditorUtil.readRecentlyToolGroups()
-    let hisGroups = DDeiEditorUtil.recentlyToolGroups;
-    if (hisGroups?.length > 0) {
-      let groups = []
-      hisGroups.forEach(hg => {
-        let group = null;
-        for (let i = 0; i < this.editor.groups.length; i++) {
-          if (this.editor.groups[i].id == hg.id) {
-            group = this.editor.groups[i]
-            break;
-          }
-        }
-        if (group) {
-          group.expand = hg.expand
-          groups.push(group)
-        }
-      })
-      this.groups = groups;
-    } else {
-      this.groups = clone(this.editor.groups)
-      DDeiEditorUtil.whiteRecentlyToolGroups(this.groups)
-    }
-    if (this.customGroups){
-      let newGroups = []
-      this.customGroups?.forEach(cg => {
-        for (let i = 0; i < this.groups.length;i++){
-          if(this.groups[i].id == cg){
-            newGroups.push(this.groups[i])
-            break;
-          }
-        }
-        
-      });
-      this.groups = newGroups
-    }
-    this.searchOriginGroups = this.groups;
-    DDeiEditorUtil.getControlIcons(this.editor).then(icons=>{
-      this.icons = icons;
-    })
-    
+    this.refreshData();
   },
   methods: {
+
+    //强制刷新当前以及下层组件
+    forceRefreshParts(parts) {
+      if (!parts || parts == 'toolbox' || parts.indexOf('toolbox') != -1){
+        this.forceRefresh = false
+        this.$nextTick(() => {
+          this.forceRefresh = true;
+          if (this.refreshData) {
+            this.refreshData();
+          }
+        });
+      }
+    },
+
+    refreshData(){
+      this.editor.toolBarViewer = this;
+      if (this.editor.ddInstance && !this.editor.ddInstance.render) {
+        this.editor.ddInstance.initRender()
+      }
+      //加载工具栏
+      DDeiEditorUtil.readRecentlyToolGroups()
+      let hisGroups = DDeiEditorUtil.recentlyToolGroups;
+      if (hisGroups?.length > 0) {
+        let groups = []
+        hisGroups.forEach(hg => {
+          let group = null;
+          for (let i = 0; i < this.editor.groups.length; i++) {
+            if (this.editor.groups[i].id == hg.id) {
+              group = this.editor.groups[i]
+              break;
+            }
+          }
+          if (group) {
+            group.expand = hg.expand
+            groups.push(group)
+          }
+        })
+        this.groups = groups;
+      } else {
+        this.groups = clone(this.editor.groups)
+        DDeiEditorUtil.whiteRecentlyToolGroups(this.groups)
+      }
+      if (this.customGroups) {
+        let newGroups = []
+        this.customGroups?.forEach(cg => {
+          for (let i = 0; i < this.groups.length; i++) {
+            if (this.groups[i].id == cg) {
+              newGroups.push(this.groups[i])
+              break;
+            }
+          }
+
+        });
+        this.groups = newGroups
+      }
+      this.searchOriginGroups = this.groups;
+      DDeiEditorUtil.getControlIcons(this.editor).then(icons => {
+        this.icons = icons;
+      })
+    },
 
     mouseWheel(evt) {
       if (evt.currentTarget.clientHeight < evt.currentTarget.scrollHeight) {

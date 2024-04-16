@@ -10,7 +10,6 @@ import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-comm
 /**
  * 键行为:保存文件
  * 保存当前文件
- * TODO做成配置和扩展点，让保存操作走向后端
  */
 class DDeiKeyActionSaveFile extends DDeiKeyAction {
 

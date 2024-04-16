@@ -370,13 +370,13 @@ export default {
     execBrushAction(evt: Event) {
       if (this.editor.state == DDeiEditorState.QUICK_EDITING) {
         if (!this.editor?.ddInstance?.stage?.brushDataText) {
-          // DDeiEnumKeyActionInst.BrushData.action(evt, this.editor.ddInstance, this.editor);
+          this.editor?.hotkeys['ddei-core-keyaction-brush-data']?.action(evt, this.editor.ddInstance,this.editor);
         } else {
           delete this.editor.ddInstance.stage.brushDataText
         }
       } else {
         if (!this.editor?.ddInstance?.stage?.brushData) {
-          // DDeiEnumKeyActionInst.BrushData.action(evt, this.editor.ddInstance, this.editor);
+          this.editor?.hotkeys['ddei-core-keyaction-brush-data']?.action(evt, this.editor.ddInstance, this.editor);
         } else {
           delete this.editor.ddInstance.stage.brushData
         }

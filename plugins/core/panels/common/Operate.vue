@@ -85,21 +85,21 @@ export default {
      * 执行剪切
      */
     execShearAction(evt: Event) {
-      // DDeiEnumKeyActionInst.CUT.action(evt, this.editor.ddInstance, this.editor);
+      this.editor?.hotkeys['ddei-core-keyaction-cut']?.action(evt, this.editor.ddInstance, this.editor);
     },
 
     /**
      * 执行复制
      */
     execCopyAction(evt: Event) {
-      // DDeiEnumKeyActionInst.Copy.action(evt, this.editor.ddInstance, this.editor);
+      this.editor?.hotkeys['ddei-core-keyaction-copy']?.action(evt, this.editor.ddInstance, this.editor);
     },
 
     /**
      * 执行格式刷
      */
     execBrushAction(evt: Event) {
-      // DDeiEnumKeyActionInst.BrushData.action(evt, this.editor.ddInstance, this.editor);
+      this.editor?.hotkeys['ddei-core-keyaction-brush-data']?.action(evt, this.editor.ddInstance, this.editor);
     },
 
     /**

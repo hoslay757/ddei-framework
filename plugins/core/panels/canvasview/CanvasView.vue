@@ -81,10 +81,7 @@ export default {
         middleCanvasPos.left + 5 <= evt.clientX &&
         middleCanvasPos.left + middleCanvas.offsetWidth - 5 >= evt.clientX
       ) {
-        // DDeiEnumKeyActionInst.StartQuickEdit.action(
-        //   evt,
-        //   this.editor.ddInstance
-        // );
+        this.editor?.hotkeys['ddei-core-keyaction-quickedit-start']?.action(evt,this.editor.ddInstance);
       }
     },
     /**
