@@ -120,7 +120,18 @@ export default {
     }
   },
   methods: {
-    
+    /**
+    * 设置当前菜单
+    * @returns 控件ID
+    */
+    setCurrentMenu(menus: object): void {
+      this.editor.currentMenuData = menus;
+      this.refreshMenu = false;
+      this.$nextTick(() => {
+        this.refreshMenu = true;
+      });
+    },
+
 
     beforeUnload(e) {
       let files = this.editor?.files

@@ -3,12 +3,11 @@ import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
 import DDeiEditorState from "@ddei-core/editor/js/enums/editor-state";
 import DDeiSheet from "@ddei-core/editor/js/sheet";
-import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
-
+import DDeiMenuBase from "@ddei-core/menus/menu";
 /**
  * 复制页签
  */
-class MenuCopySheet extends DDeiPluginBase {
+class MenuCopySheet extends DDeiMenuBase {
 
 
   name: string = "ddei-core-menu-copy-sheet"
@@ -25,10 +24,6 @@ class MenuCopySheet extends DDeiPluginBase {
     'icon': '#icon-a-ziyuan488',
     'models': ["DDeiSheet"],
     'disabled': false
-  }
-
-  getMenus(editor) {
-    return [this];
   }
 
 

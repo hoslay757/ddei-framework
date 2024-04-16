@@ -1,10 +1,9 @@
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
-import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
-
+import DDeiMenuBase from "@ddei-core/menus/menu";
 /**
  * 合并单元格菜单
  */
-class MenuMergeCell extends DDeiPluginBase {
+class MenuMergeCell extends DDeiMenuBase {
 
 
   name: string = "ddei-core-menu-merge-cell"
@@ -19,10 +18,6 @@ class MenuMergeCell extends DDeiPluginBase {
     'label': '插入列',
     'icon': 'icon-insert-col',
     'disabled': false
-  }
-
-  getMenus(editor) {
-    return [this];
   }
 
 

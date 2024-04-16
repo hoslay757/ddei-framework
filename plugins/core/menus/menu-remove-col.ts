@@ -1,10 +1,9 @@
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
-import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
-
+import DDeiMenuBase from "@ddei-core/menus/menu";
 /**
  * 删除列菜单
  */
-class MenuRemoveCol extends DDeiPluginBase {
+class MenuRemoveCol extends DDeiMenuBase {
 
 
   name: string = "ddei-core-menu-remove-col"
@@ -19,10 +18,6 @@ class MenuRemoveCol extends DDeiPluginBase {
     'label': '删除列',
     'icon': 'icon-delete-column',
     'disabled': false
-  }
-
-  getMenus(editor) {
-    return [this];
   }
 
 

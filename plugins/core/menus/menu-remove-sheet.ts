@@ -4,12 +4,12 @@ import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-comm
 import DDeiEditorState from "@ddei-core/editor/js/enums/editor-state";
 import DDeiUtil from "@ddei-core/framework/js/util";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
-import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
+import DDeiMenuBase from "@ddei-core/menus/menu";
 
 /**
  * 插入列菜单
  */
-class MenuRemoveSheet extends DDeiPluginBase {
+class MenuRemoveSheet extends DDeiMenuBase {
 
 
   name: string = "ddei-core-menu-remove-sheet"
@@ -25,10 +25,6 @@ class MenuRemoveSheet extends DDeiPluginBase {
     'icon': '#icon-a-ziyuan401',
     'models':["DDeiSheet"],
     'disabled': false
-  }
-
-  getMenus(editor) {
-    return [this];
   }
 
 

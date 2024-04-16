@@ -51,6 +51,7 @@ import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-comm
 //引入插件
 import { DDeiCoreTopMenuPanel, DDeiCoreControls,DDeiCoreHotkeys,DDeiKeyActionAllSelect,DDeiCorePropertyViewPanel,DDeiCoreToolboxPanel,DDeiCoreSheetsPanel, DDeiCoreChangeRatioPanel, DDeiCoreChangeRatioDialog,DDeiCoreShapeCountPanel, DDeiCoreBottomMenuPanel,DDeiCoreStandLayout, DDeiCoreOpenFilesViewPanel, DDeiCoreQuickColorViewPanel, DDeiCoreAlignDialog } from "@ddei/core";
 import DDeiExtUML from "@ddei/uml"
+import DDeiExtFontTest from "@ddei/testfont"
 export default {
   props: {},
   data() {
@@ -89,6 +90,7 @@ export default {
               border: { color: 'yellow' }
             }
           }),
+          DDeiExtFontTest,
           
           //批量快捷键配置
           // DDeiCoreHotkeys.configuraton({

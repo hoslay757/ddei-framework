@@ -1,10 +1,10 @@
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
-import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
+import DDeiMenuBase from "@ddei-core/menus/menu";
 
 /**
  * 删除行菜单
  */
-class MenuRemoveRow extends DDeiPluginBase {
+class MenuRemoveRow extends DDeiMenuBase {
 
 
   name: string = "ddei-core-menu-remove-row"
@@ -19,10 +19,6 @@ class MenuRemoveRow extends DDeiPluginBase {
     'label': '删除行',
     'icon': 'icon-delete-row',
     'disabled': false
-  }
-
-  getMenus(editor) {
-    return [this];
   }
 
 

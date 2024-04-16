@@ -1,10 +1,10 @@
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
-import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
+import DDeiMenuBase from "@ddei-core/menus/menu";
 
 /**
  * 取消合并单元格菜单
  */
-class MenuCancelMergeCell extends DDeiPluginBase{
+class MenuCancelMergeCell extends DDeiMenuBase {
 
 
   name: string = "ddei-core-menu-cancel-merge-cell"
@@ -19,10 +19,6 @@ class MenuCancelMergeCell extends DDeiPluginBase{
     'label': '取消合并单元格',
     'icon': 'icon-merge-cells',
     'disabled':false
-  }
-
-  getMenus(editor) {
-    return [this];
   }
 
 

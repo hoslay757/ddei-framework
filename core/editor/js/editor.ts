@@ -313,6 +313,20 @@ class DDeiEditor {
       });
     }
 
+    //加载字体插件
+    if (plugin.getFonts) {
+      //注册并加载菜单
+      let fonts = plugin.getFonts(this)
+      fonts?.forEach(font => {
+        this.fonts.push(font)
+        let fontObj = new FontFace(font.ch, 'url(' + font.font+')')
+        fontObj.load().then(f => {
+          document.fonts.add(f)
+        })
+      });
+      
+    }
+
     //加载菜单相关插件
     if (plugin.getMenus) {
       //注册并加载菜单

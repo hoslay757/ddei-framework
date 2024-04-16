@@ -1,11 +1,11 @@
 import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 import DDeiTable from "@ddei-core/framework/js/models/table";
-import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
+import DDeiMenuBase from "@ddei-core/menus/menu";
 
 /**
  * 插入行菜单
  */
-class MenuInsertRow extends DDeiPluginBase {
+class MenuInsertRow extends DDeiMenuBase {
 
 
   name: string = "ddei-core-menu-insert-row"
@@ -22,9 +22,6 @@ class MenuInsertRow extends DDeiPluginBase {
     'disabled': false
   }
 
-  getMenus(editor) {
-    return [this];
-  }
 
 
   static configuraton(options, fullConfig: boolean = false) {
