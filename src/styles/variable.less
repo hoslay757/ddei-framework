@@ -1,25 +1,121 @@
+
 //背景色
-@background: var(--background, #F5F6F7);
-//背景色：hover
-@backgroundHover: var(--backgroundHover, #F5F6F7);
-//背景色：选中
-@backgroundSelected: var(--backgroundSelected, #F5F6F7);
+@background: var(--background,white);
+//主题色
+@theme: var(--theme, #F5F5F5);
+//文本色
+@text: var(--text, black);
+//点缀色
+@dot: var(--dot, #176eff);
+//交互色
+@active: var(--active, #edefff);
 //图标色
-@iconColor: var(--iconColor, black);
-//标题色
-@titleColor: var(--titleColor, black);
-//标题色：选中
-@titleHoverColor: var(--titleHoverColor, black);
-//标题色：选中
-@titleSelectedColor: var(--titleSelectedColor, black);
+@icon:var(--icon, #424242);
+
+
+
+
+
+//工具栏-背景色
+@toolbox-background: @background;
+//工具栏-头部颜色
+@toolbox-header: @theme;
+@toolbox-header-expanded: @theme;
+//工具栏-文本
+@toolbox-title: @text;
+//工具栏-文本hover
+@toolbox-title-hover: @text;//darken(@toolbox-title, 20%);
+//工具栏-文本提示文本
+@toolbox-placeholder: @text;//fade(@toolbox-title, 30%);
+//工具栏-hover
+@toolbox-hover: @theme;//darken(@toolbox-header, 5%);
+//工具栏-控件
+@toolbox-control-background: @background;
+//工具栏-控件标题
+@toolbox-control-title: @text;
+//工具栏-控件hover
+@toolbox-control-hover:@dot;//fade(@dot, 10%);
+@toolbox-control-hover-outline: 2px solid @dot;//fade(@dot, 20%);//#BED0EF;
+
+
+//顶部菜单-背景色
+@topmenu-background: @background;
+//顶部菜单-头部颜色
+@topmenu-header: @theme;
+@topmenu-header-expanded: @theme;
+//顶部菜单-文本
+@topmenu-title: @text;
+//顶部菜单-文本hover
+@topmenu-title-hover: @text;//darken(@topmenu-title, 20%);
+//顶部菜单-文本提示文本
+@topmenu-placeholder: @text;//fade(@topmenu-title, 30%);
+//顶部菜单-hover
+@topmenu-hover: @theme;//darken(@topmenu-header, 5%);
+
+
+
+//panel-背景色
+@panel-background: @background;
+//panel-头部颜色
+@panel-header: @theme;
+@panel-header-expanded: @theme;
+//panel-文本
+@panel-title: @text;
+//panel-文本hover
+@panel-title-hover: @text;//darken(@panel-title, 20%);
+//panel-文本-disabled
+@panel-title-disabled: @text;//fade(@panel-title, 30%);
+//panel-文本-selected
+@panel-title-selected: @text;//darken(@panel-title, 20%);
+//panel-文本提示文本
+@panel-placeholder: @text;//fade(@panel-title, 30%);
+//panel-hover
+@panel-hover: @theme;//@panel-header;//darken(@panel-header, 5%);
+//panel-selected
+@panel-selected: @theme;//@panel-header;//darken(@panel-header, 5%);
+//panel-disabled
+@panel-disabled: @panel-header;
+
 // 导出变量
 :export {
   name: "less";
   background: @background;
-  backgroundHover: @backgroundHover;
-  backgroundSelected: @backgroundSelected;
-  titleColor: @titleColor;
-  titleHoverColor:@titleHoverColor;
-  titleSelectedColor:@titleSelectedColor;
-  iconColor:@iconColor;
+  theme: @theme;
+  text: @text;
+  icon:@icon;
+  dot:@dot;
+
+  toolbox-background: @toolbox-background;
+  toolbox-header: @toolbox-header;
+  toolbox-header-expanded:@toolbox-header-expanded;
+  toolbox-title: @toolbox-title;
+  toolbox-placeholder:@toolbox-placeholder;
+  toolbox-control-background:@toolbox-control-background;
+  toolbox-control-hover: @toolbox-control-hover;
+  toolbox-control-hover-outline: @toolbox-control-hover-outline;
+  toolbox-control-title: @toolbox-control-title;
+  toolbox-hover:@toolbox-hover;
+  toolbox-title-hover:@toolbox-title-hover;
+
+
+  topmenu-background: @topmenu-background;
+  topmenu-header: @topmenu-background;
+  topmenu-header-expanded: @topmenu-background;
+  topmenu-title: @topmenu-background;
+  topmenu-title-hover: @topmenu-title-hover;
+  topmenu-placeholder: @topmenu-placeholder;
+  topmenu-hover: @topmenu-hover;
+
+
+  panel-background: @panel-background;
+  panel-header: @panel-header;
+  panel-header-expanded: @panel-header-expanded;
+  panel-title: @panel-title;
+  panel-title-hover: @panel-title-hover;
+  panel-title-selected: @panel-title-selected;
+  panel-placeholder: @panel-placeholder;
+  panel-hover: @panel-hover;
+  panel-selected: @panel-selected;
+  panel-title-disabled:@panel-title-disabled;
+  panel-disabled:@panel-disabled;
 }

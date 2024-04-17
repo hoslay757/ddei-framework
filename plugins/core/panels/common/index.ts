@@ -1,5 +1,4 @@
 import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
-import DDeiCoreChangeShapePanel from './changeshape';
 import DDeiCoreExportAndImportPanel from './exportandimport';
 import DDeiCoreFileInfoPanel from './fileinfo';
 import DDeiCoreFileOperatePanel from './fileoperate';
@@ -21,7 +20,7 @@ class DDeiCoreCommonPanels extends DDeiPluginBase{
    */
   static defaultIns:DDeiCoreCommonPanels = new DDeiCoreCommonPanels(null);
 
-  plugins: object[] = [DDeiCoreChangeShapePanel, DDeiCoreExportAndImportPanel, DDeiCoreFileInfoPanel,
+  plugins: object[] = [DDeiCoreExportAndImportPanel, DDeiCoreFileInfoPanel,
      DDeiCoreFileOperatePanel, DDeiCoreFontAndTextPanel, DDeiCoreGoBackPanel, DDeiCoreOperatePanel,
      DDeiCoreOperatePanel, DDeiCoreRightPanel, DDeiCoreSharePanel, DDeiCoreSortPanel, DDeiCoreStylePanel,
      DDeiCoreToolPanel]
@@ -58,7 +57,7 @@ class DDeiCoreCommonPanels extends DDeiPluginBase{
 }
 
 
-export {DDeiCoreCommonPanels,DDeiCoreChangeShapePanel, DDeiCoreExportAndImportPanel, DDeiCoreFileInfoPanel,
+export {DDeiCoreCommonPanels, DDeiCoreExportAndImportPanel, DDeiCoreFileInfoPanel,
   DDeiCoreFileOperatePanel, DDeiCoreFontAndTextPanel, DDeiCoreGoBackPanel, DDeiCoreOperatePanel,
   DDeiCoreRightPanel, DDeiCoreSharePanel, DDeiCoreSortPanel, DDeiCoreStylePanel,
   DDeiCoreToolPanel}

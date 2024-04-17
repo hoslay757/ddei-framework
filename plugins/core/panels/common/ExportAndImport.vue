@@ -191,21 +191,25 @@ export default {
         display: flex;
         flex-direction: column;
         align-items: center;
+        &:hover {
+          cursor: pointer;
+          background-color: @panel-hover;
+        }
       }
 
-      .button-v:hover {
-        cursor: pointer;
-        background-color: @background;
-      }
+      
 
       .button-v-selected {
         flex: 1;
         height: 50px;
-        background-color: @background;
+        background-color: @panel-selected;
         border-radius: 4px;
         display: flex;
         flex-direction: column;
         align-items: center;
+        .text {
+          color: @panel-title-selected;
+        }
       }
 
       .button-v-disabled {
@@ -215,14 +219,14 @@ export default {
         display: flex;
         flex-direction: column;
         align-items: center;
+        background-color: @panel-disabled;
 
         >span {
-          color: #bcbcbc;
+          color: @panel-title-disabled;
         }
 
         .text {
-
-          color: #bcbcbc;
+          color: @panel-title-disabled;
         }
       }
 
@@ -230,9 +234,8 @@ export default {
         flex: 0 0 20px;
         white-space: nowrap;
         font-size: 14px;
-        font-family: "Microsoft YaHei";
         font-weight: 400;
-        color: #000000;
+        color: @panel-title;
       }
     }
   }
@@ -242,9 +245,9 @@ export default {
     justify-content: center;
     align-items: center;
     font-size: 14px;
-    font-family: "Microsoft YaHei";
     font-weight: 400;
-    color: #9D9D9D;
+    color: @panel-title; // fade(@panel-title, 40%);
+    
   }
 }
 </style>

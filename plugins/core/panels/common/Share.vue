@@ -284,7 +284,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-right: 1px solid #E2E2EB;
+    border-right: 1px solid @panel-header;//darken(@panel-header, 13%);
     padding: 0px 4px;
 
     .part {
@@ -305,9 +305,13 @@ export default {
           white-space: nowrap;
           flex: 0 0 13px;
           font-size: 14px;
-          font-family: "Microsoft YaHei";
           font-weight: 400;
-          color: #000000;
+          color: @panel-title;
+        }
+
+        &:hover {
+          cursor: pointer;
+          background-color: @panel-hover;
         }
       }
 
@@ -318,6 +322,7 @@ export default {
         flex-direction: column;
         cursor: not-allowed;
         align-items: center;
+        background-color: @panel-disabled;
 
         .icon {
           filter: grayscale(1);
@@ -325,16 +330,10 @@ export default {
         }
 
         .text {
-          color: #bcbcbc;
+          color: @panel-title-disabled;
         }
 
 
-      }
-
-
-      .button-v:hover {
-        cursor: pointer;
-        background-color: @background;
       }
 
     }
@@ -345,10 +344,9 @@ export default {
     justify-content: center;
     align-items: center;
     font-size: 14px;
-    font-family: "Microsoft YaHei";
     font-weight: 400;
-    color: #9D9D9D;
-    border-right: 1px solid #E2E2EB;
+    color:@panel-title; // @panel-title; // fade(@panel-title, 40%);
+    border-right: 1px solid @panel-header;//darken(@panel-header, 13%);
   }
 }
 </style>

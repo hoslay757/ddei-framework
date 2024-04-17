@@ -90,7 +90,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-right: 1px solid #E2E2EB;
+    border-right: 1px solid @panel-header;//darken(@panel-header, 13%);
     padding: 0px 4px;
 
     .part {
@@ -111,7 +111,7 @@ export default {
 
       .button-v:hover {
         cursor: pointer;
-        background-color: @background;
+        background-color: @panel-hover;
       }
 
       .button-v-selected {
@@ -119,9 +119,12 @@ export default {
         display: flex;
         flex-direction: column;
         height: 50px;
-        background-color: @background;
+        background-color: @panel-selected;
         border-radius: 4px;
         align-items: center;
+        .text {
+          color: @panel-title-selected;
+        }
       }
 
       .button-v-disabled {
@@ -132,13 +135,14 @@ export default {
         height: 50px;
         cursor: not-allowed;
         align-items: center;
+        background-color: @panel-disabled;
 
         >span {
-          color: #bcbcbc;
+          color: @panel-title-disabled;
         }
 
         .text {
-          color: #bcbcbc;
+          color: @panel-title-disabled;
         }
       }
 
@@ -146,9 +150,8 @@ export default {
         flex: 0 0 13px;
         font-size: 14px;
         white-space: nowrap;
-        font-family: "Microsoft YaHei";
         font-weight: 400;
-        color: #000000;
+        color: @panel-title;
       }
     }
   }
@@ -158,10 +161,9 @@ export default {
     justify-content: center;
     align-items: center;
     font-size: 14px;
-    font-family: "Microsoft YaHei";
     font-weight: 400;
-    color: #9D9D9D;
-    border-right: 1px solid #E2E2EB;
+    color:@panel-title; // @panel-title; // fade(@panel-title, 40%);
+    border-right: 1px solid @panel-header;//darken(@panel-header, 13%);
   }
 }
 </style>

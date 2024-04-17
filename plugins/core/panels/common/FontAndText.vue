@@ -152,7 +152,7 @@ export default {
     display: flex;
     flex-direction: column;
     padding-left: 16px;
-    border-right: 1px solid #E2E2EB;
+    border-right: 1px solid @panel-header;//darken(@panel-header, 13%);
 
     .buttons {
       flex: 1;
@@ -212,10 +212,9 @@ export default {
     justify-content: center;
     align-items: center;
     font-size: 14px;
-    font-family: "Microsoft YaHei";
     font-weight: 400;
-    color: #9D9D9D;
-    border-right: 1px solid #E2E2EB;
+    color: @panel-title; // fade(@panel-title, 40%);
+    border-right: 1px solid @panel-header;//darken(@panel-header, 13%);
   }
 }
 </style>

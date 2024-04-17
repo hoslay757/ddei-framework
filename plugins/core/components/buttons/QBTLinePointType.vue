@@ -162,7 +162,7 @@ export default {
 }
 
 .ddei_pv_line_point_combox_disabled .textinput {
-  background-color: rgb(210, 210, 210);
+  background-color: @panel-background;
   height: 28px;
   justify-content: center;
   align-items: center;
@@ -171,7 +171,7 @@ export default {
 .ddei_pv_line_point_combox .textinput {
   width: 100%;
   padding-right: 5px;
-  border: 0.5px solid rgb(210, 210, 210);
+  border: 0.5px solid @panel-header;//darken(@panel-header, 13%);
   border-radius: 4px;
   display: flex;
   justify-content: center;
@@ -181,7 +181,7 @@ export default {
 }
 
 .ddei_pv_line_point_combox .textinput:hover {
-  border: 1px solid #017fff;
+  border: 1px solid @dot;
   box-sizing: border-box;
 }
 

@@ -208,7 +208,7 @@ export default {
 .ddei-pv-border-dash-combox {
   height: 28px;
   &--disabled .textinput {
-    background-color: rgb(210, 210, 210);
+    background-color: @panel-background;
     height: 28px;
     justify-content: center;
     align-items: center;
@@ -216,7 +216,7 @@ export default {
   .textinput {
     width: 100%;
     padding-right: 5px;
-    border: 0.5px solid rgb(210, 210, 210);
+    border: 0.5px solid @panel-header;//@panel-header;//darken(@panel-header, 13%);
     border-radius: 4px;
     display: flex;
     justify-content: center;
@@ -225,7 +225,7 @@ export default {
     height: 28px;
     
     &:hover {
-      border: 1px solid #017fff;
+      border: 1px solid @dot;
       box-sizing: border-box;
     }
 

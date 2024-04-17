@@ -430,18 +430,20 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.icon{
+  color:@icon;
+}
 .ddei-core-panel-toolbox {
   user-select: none;
   text-align: center;
-  // background: rgb(254, 254, 255);
   display: flex;
   flex-flow: column;
   height: 100%;
 
   /**以下为收折框 */
   &-header {
-    background: @background;
-    border-bottom: 1px solid #D5D5DF;
+    background: @toolbox-header;
+    border-bottom: 1px solid @toolbox-header;//darken(@toolbox-header, 13%);
     flex: 0 0 30px;
     display: flex;
     justify-content: center;
@@ -462,15 +464,14 @@ export default {
         font-size: 16px;
         flex: 0 1 70px;
         font-weight: bold;
-        color: #000000;
+        color: @toolbox-title;
       }
 
+      &:hover {
+        background-color: @toolbox-hover;//darken(@toolbox-hover, 5%);
+        cursor: pointer;
+      }
 
-    }
-
-    .morecontrol:hover {
-      background-color: @background;
-      cursor: pointer;
     }
 
 
@@ -486,6 +487,10 @@ export default {
 
     .header-7 {
       font-size: 18px;
+      &:hover{
+        background-color:@toolbox-hover;
+        cursor:pointer;
+      }
     }
 
     .icon1 {
@@ -502,13 +507,14 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    background:@toolbox-background;
 
     &-group {
       flex: 1;
       margin: 0 25px;
       height: 32px;
-      background: #F4F5F6;
-      border: 1px solid #D4D4D4;
+      background: @toolbox-header;
+      border: 1px solid @toolbox-header;//darken(@toolbox-header,13%);
       border-radius: 4px;
       display: flex;
       justify-content: center;
@@ -528,51 +534,37 @@ export default {
         background: transparent;
         font-size: 16px;
         font-weight: 400;
-        color: black;
+        color: @toolbox-title;
 
         &::placeholder {
           /* Chrome, Firefox, Opera, Safari 10.1+ */
-          color: #B8B8B8;
+          color: @toolbox-placeholder;
         }
 
         &::-webkit-input-placeholder {
           /* WebKit browsers，webkit内核浏览器 */
-          color: #B8B8B8
+          color: @toolbox-placeholder;
         }
 
         &:-moz-placeholder {
           /* Mozilla Firefox 4 to 18 */
-          color: #B8B8B8
+          color: @toolbox-placeholder;
         }
 
         &::-moz-placeholder {
           /* Mozilla Firefox 19+ */
-          color: #B8B8B8
+          color: @toolbox-placeholder;
         }
 
         &:-ms-input-placeholder {
           /* Internet Explorer 10-11 */
-          color: #B8B8B8
+          color: @toolbox-placeholder;
         }
 
         &::-ms-input-placeholder {
           /* Microsoft Edge */
-          color: #B8B8B8
+          color: @toolbox-placeholder;
         }
-      }
-
-      .button {
-        flex: 0 0 42px;
-        height: 23px;
-        background-color: #017fff;
-        font-size: 16px;
-        color: white;
-        margin: auto 7px auto 5px;
-        border-radius: 4px;
-      }
-
-      .button:hover {
-        background-color: #0177f0;
       }
     }
   }
@@ -589,31 +581,31 @@ export default {
       height: 6px;
     }
     &::-webkit-scrollbar-thumb {
-      background-color: rgba(0, 0, 0, 0.05);
+      background-color: @toolbox-header;//darken(@toolbox-header,5%);
       border-radius: 6px;
       -webkit-box-shadow: inset1px1px0rgba(0, 0, 0, 0.1);
     }
 
     &:hover::-webkit-scrollbar-thumb {
-      background-color: rgba(0, 0, 0, 0.2);
+      background-color: @toolbox-header; //darken(@toolbox-header, 10%);
       border-radius: 6px;
       -webkit-box-shadow: inset1px1px0rgba(0, 0, 0, 0.1);
     }
 
     &::-webkit-scrollbar-thumb:hover {
-      background-color: rgba(0, 0, 0, 0.4);
+      background-color: @toolbox-header; //darken(@toolbox-header, 20%);
       -webkit-box-shadow: inset1px1px0rgba(0, 0, 0, 0.1);
     }
 
     &::-webkit-scrollbar-track {
       border-radius: 6px;
       -webkit-box-shadow: inset006pxrgba(0, 0, 0, 0);
-      background-color: white;
+      background-color: @toolbox-header; //darken(@toolbox-header, 0%);
     }
 
     &::-webkit-scrollbar-track:hover {
       -webkit-box-shadow: inset006pxrgba(0, 0, 0, 0.4);
-      background-color: rgba(0, 0, 0, 0.01);
+      background-color: @toolbox-header; //darken(@toolbox-header, 1%);
     }
 
     &-group {
@@ -623,21 +615,21 @@ export default {
       &-box {
         display: flex;
         height: 35px;
-        background: @background;
+        background: @toolbox-header;
         user-select: none;
         justify-content: center;
         align-items: center;
 
         &:hover {
-          background-color: @background;
+          background-color: @toolbox-header;
         }
 
         &:active {
-          background-color: @background;
+          background-color: @toolbox-header;
         }
         .title {
           flex: 1;
-          color: @titleColor;
+          color: @toolbox-title;
           text-align: left;
           margin-left: 25px;
           font-size: 16px;
@@ -649,7 +641,7 @@ export default {
           font-size: 18px;
 
           &:hover {
-            color: rgb(200, 200, 200);
+            color: @toolbox-title-hover;
             cursor: pointer;
           }
         }
@@ -658,7 +650,7 @@ export default {
       &-itempanel {
         display: flex;
         flex-flow: row wrap;
-        background: white;
+        background: @toolbox-background;
         padding: 15px 15px 15px 15px;
 
         &-item {
@@ -670,10 +662,9 @@ export default {
           justify-content: center;
           align-items: center;
           flex-flow: column;
-
           &:hover {
-            background: #EDEFFF;
-            outline: 2px solid #BED0EF;
+            background: @toolbox-control-hover;
+            outline: @toolbox-control-hover-outline;
             cursor: all-scroll;
           }
 
@@ -682,7 +673,7 @@ export default {
             text-align: center;
             font-size: 13px;
             font-weight: 400;
-            color: #000000;
+            color: @toolbox-control-title;
           }
           .icon {
             width: 90%;
@@ -693,17 +684,10 @@ export default {
       }
 
       &--expanded {
-        background-color: @background;
+        background-color: @toolbox-header-expanded;
       }
     }
   }
 
-  /**以下为分割线 */
-  hr {
-    border: 0.5px solid rgb(240, 240, 240);
-    width: 93%;
-    margin: auto 4px 5px 7px;
-  }
 }
-
 </style>

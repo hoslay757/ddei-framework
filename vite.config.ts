@@ -45,7 +45,6 @@ export default defineConfig({
     preprocessorOptions: {
       less: {
         modifyVars: {
-          'primary-color': '#2186FB',
           // 配置我们定义的less样式变量
           hack: `true; @import (reference) "${path.resolve('./src/styles/variable.less')}";`
         },

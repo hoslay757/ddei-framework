@@ -73,7 +73,7 @@ export default {
 .ddei-core-panel-bottommenu {
   height: 50px;
   display: flex;
-  color: @titleColor;
+  color: @text;
   background: @background;
   justify-content: center;
   align-items: center;

@@ -9,9 +9,18 @@ class DDeiCoreThemeDefault extends DDeiThemeBase {
 
   label:string = "默认"
 
-  backgroundColor: string = "#F5F6F7"
-
-  fontTitleColor: string = "black"
+  //背景色
+  background:string =  'white';
+  //主题色
+  theme:string = '#F5F5F5';
+  //文本色
+  text:string = 'black';
+  //点缀色
+  dot: string = '#176eff';
+  //交互色
+  active:string = '#edefff';
+  //图标色
+  icon:string = '#424242';
 
   /**
    * 缺省实例

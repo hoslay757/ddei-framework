@@ -270,16 +270,15 @@ export default {
     gap: 4px;
     &-text {
       text-align: center;
-      font-family: "Microsoft YaHei";
       font-size: 12px;
       grid-column: 1/5;
-      color: rgb(120, 120, 120);
+      color: @panel-title;
     }
 
     &-box {
       width: 30px;
       height: 50px;
-      color: black;
+      color: @panel-title;
       border-radius: 4px;
       font-size: 12px;
       display: grid;
@@ -289,13 +288,13 @@ export default {
         margin: auto;
       }
       img {
-        filter: brightness(45%) drop-shadow(0.2px 0px 0.2px #000);
+        filter: brightness(45%) drop-shadow(0.2px 0px 0.2px @panel-title);
         width: 16px;
         height: 16px;
         margin: auto;
       }
       &:hover {
-        background-color: rgb(233, 233, 238);
+        background-color: @panel-hover;
         border-radius: 4px;
       }
     }

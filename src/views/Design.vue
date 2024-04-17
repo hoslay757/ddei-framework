@@ -141,12 +141,12 @@ export default {
             input:true,
             min: 1, max: 4,title:"缩放比例"
           }),
-          DDeiCoreToolboxPanel.configuraton({
-            custom: false,
-            search: false,
-            // customGroups: [302, 301, 102, 101],
-            expand: false
-          }),
+          // DDeiCoreToolboxPanel.configuraton({
+          //   custom: false,
+          //   search: false,
+          //   // customGroups: [302, 301, 102, 101],
+          //   expand: false
+          // }),
           DDeiCorePropertyViewPanel.configuraton({
             
             expand: false
@@ -208,7 +208,6 @@ export default {
     }
   },
   mounted() {
-    let a = DDeiCoreTopMenuPanel
   },
   methods: {
     /**

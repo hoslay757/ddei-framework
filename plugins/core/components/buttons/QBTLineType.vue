@@ -1,6 +1,6 @@
 <template>
   <div @click="attrDefine && showDialog($event)"
-    :class="{ 'ddei_pv_line_type_combox': true, 'ddei_pv_line_type_combox_disabled': !attrDefine || attrDefine.readonly }">
+    :class="{ 'ddei-pv-line-type-combox': true, 'ddei-pv-line-type-combox--disabled': !attrDefine || attrDefine.readonly }">
     <svg :class="'icon ' + (extcls ? extcls : '')" aria-hidden="true">
       <use :xlink:href="'#' + img"></use>
     </svg>
@@ -194,26 +194,22 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.ddei_pv_line_type_combox {
+.ddei-pv-line-type-combox {
   width: 24px;
   display: flex;
   justify-content: center;
   align-items: center;
-}
 
+  &:hover {
+    cursor: pointer;
+    background-color: @panel-hover;
+  }
 
-.ddei_pv_line_type_combox:hover {
-  cursor: pointer;
-  background-color: @background;
-}
-
-.ddei_pv_line_type_combox_selected {
-  background-color: @background;
-}
-
-.ddei_pv_line_type_combox_disabled {
-  pointer-events: none;
-  color: #e6e6e6;
-  cursor: not-allowed;
+  &--disabled {
+    pointer-events: none;
+    background-color: @panel-disabled;
+    color: @panel-title-disabled;
+    cursor: not-allowed;
+  }
 }
 </style>

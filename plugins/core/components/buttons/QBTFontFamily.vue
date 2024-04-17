@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div id="ddei_editor_quick_fat_item_fontfamily"
-      :class="{ 'ddei_editor_quick_fat_item_fontfamily': true, 'ddei_editor_quick_fat_item_fontfamily_disabled': !attrDefine }">
-      <input class="ddei_editor_quick_fat_item_fontfamily_input"
+    <div id="ddei-editor-quick-fat-item-fontfamily"
+      :class="{ 'ddei-editor-quick-fat-item-fontfamily': true, 'ddei-editor-quick-fat-item-fontfamily--disabled': !attrDefine }">
+      <input class="ddei-editor-quick-fat-item-fontfamily_input"
         :readonly="!attrDefine || (attrDefine && (attrDefine.readonly || !canSearch))" v-model="text"
         :placeholder="defaultText" @click="attrDefine && !attrDefine.readonly && !canSearch && showDialog($event)"
         @keydown="search($event)" autocomplete="off" />
-      <div class="ddei_editor_quick_fat_item_fontfamily_combox"
+      <div class="ddei-editor-quick-fat-item-fontfamily_combox"
         @click="attrDefine && !attrDefine.readonly && showDialog($event)">
         <svg class="icon iconfont-45" aria-hidden="true">
           <use xlink:href="#icon-a-ziyuan478"></use>
@@ -270,44 +270,46 @@ export default {
 <style lang="less" scoped>
 /*字体选择框*/
 
-.ddei_editor_quick_fat_item_fontfamily {
-  background-color: white;
+.ddei-editor-quick-fat-item-fontfamily {
+  background-color: @panel-background;
   height: 24px;
   display: flex;
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
   justify-content: center;
   align-items: center;
-  border: 1px solid #D4D4D4;
+  border: 1px solid @panel-header;//darken(@panel-header, 13%);
   border-right: none;
-}
 
-.ddei_editor_quick_fat_item_fontfamily:hover {
-  border: 0.5px solid #017fff;
-  box-sizing: border-box;
-}
+  &:hover {
+    border: 0.5px solid @dot;
+    box-sizing: border-box;
+  }
 
-.ddei_editor_quick_fat_item_fontfamily_disabled:hover {
-  background-color: transparent !important;
-  cursor: not-allowed !important;
-}
+  &--disabled{
+    &:hover {
+      background-color: @panel-disabled;
+      cursor: not-allowed !important;
+    }
+  }
 
-.ddei_editor_quick_fat_item_fontfamily_input {
-  width: calc(100% - 20px);
-  border: transparent;
-  outline: none;
-  font-size: 15px;
-  background: transparent;
-}
+  &_input {
+    width: calc(100% - 20px);
+    border: transparent;
+    outline: none;
+    font-size: 15px;
+    background: transparent;
+  }
 
-.ddei_editor_quick_fat_item_fontfamily_combox {
-  height: 24px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  .iconfont-45 {
-    font-size: 13px
+  &_combox {
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  
+    .iconfont-45 {
+      font-size: 13px
+    }
   }
 }
 </style>

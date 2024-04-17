@@ -320,7 +320,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-right: 1px solid #E2E2EB;
+    border-right: 1px solid @panel-header;//darken(@panel-header, 13%);
     padding: 0px 4px;
 
     .part {
@@ -341,15 +341,14 @@ export default {
           white-space: nowrap;
           flex: 0 0 13px;
           font-size: 14px;
-          font-family: "Microsoft YaHei";
           font-weight: 400;
-          color: #000000;
+          color: @panel-title;
         }
       }
 
       .button-v:hover {
         cursor: pointer;
-        background-color: @background;
+        background-color: @panel-hover;
       }
 
       .button-h {
@@ -365,8 +364,6 @@ export default {
           justify-content: center;
           align-items: center;
           border-radius: 4px;
-
-
           .icon {
             font-size: 28px;
             flex: 1;
@@ -376,16 +373,15 @@ export default {
             white-space: nowrap;
             flex: 0 0 25px;
             font-size: 14px;
-            font-family: "Microsoft YaHei";
             font-weight: 400;
-            color: #000000;
+            color: @panel-title;
           }
         }
 
         .button:hover {
 
           cursor: pointer;
-          background-color: @background;
+          background-color: @panel-hover;
         }
 
       }
@@ -397,10 +393,9 @@ export default {
     justify-content: center;
     align-items: center;
     font-size: 14px;
-    font-family: "Microsoft YaHei";
     font-weight: 400;
-    color: #9D9D9D;
-    border-right: 1px solid #E2E2EB;
+    color: @panel-title; // fade(@panel-title, 40%);
+    border-right: 1px solid @panel-header;//darken(@panel-header, 13%);
   }
 }
 </style>

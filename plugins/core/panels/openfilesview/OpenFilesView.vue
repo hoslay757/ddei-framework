@@ -708,7 +708,7 @@ export default {
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
-        color: @titleColor;
+        color: @text;
         flex: 1;
         font-size: 16px;
         font-weight: 400;

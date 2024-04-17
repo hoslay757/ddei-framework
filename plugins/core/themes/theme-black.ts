@@ -9,9 +9,18 @@ class DDeiCoreThemeBlack extends DDeiThemeBase {
 
   label: string = "黑色"
 
-  backgroundColor: string = "black"
-
-  fontTitleColor: string = "white"
+  //背景色
+  background: string = 'black';
+  //主题色
+  theme: string = 'grey';
+  //文本色
+  text: string = 'white';
+  //点缀色
+  dot: string = 'red';
+  //交互色
+  active: string = '#1f1f1f';
+  //图标色
+  icon: string = 'white';
 
   /**
    * 缺省实例
