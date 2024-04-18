@@ -1,8 +1,8 @@
 <template>
-  <div :class="{ 'ddei_pv_editor_image': true, 'ddei_pv_editor_image_disabled': attrDefine.readonly }">
+  <div :class="{ 'ddei-pv-editor-image': true, 'ddei-pv-editor-image--disabled': attrDefine.readonly }">
     <div class="textinput">
       <input type="text" v-model="attrDefine.value" :disabled="attrDefine.readonly"
-        :placeholder="attrDefine.defaultValue" :name="'ddei_pv_editor_image_' + attrDefine.code" autocomplete="off" />
+        :placeholder="attrDefine.defaultValue" :name="'ddei-pv-editor-image-' + attrDefine.code" autocomplete="off" />
 
       <svg @click="attrDefine && !attrDefine.readonly && chooseFile()" class="icon" aria-hidden="true">
         <use xlink:href="#icon-a-ziyuan389"></use>
@@ -214,66 +214,67 @@ export default {
 
 <style scoped>
 /**以下为range属性编辑器 */
-.ddei_pv_editor_image {
+.ddei-pv-editor-image {
   border-radius: 4px;
   height: 28px;
   margin-right: 10px;
 }
 
 
-.ddei_pv_editor_image .textinput {
+.ddei-pv-editor-image .textinput {
   width: 100%;
   height: 28px;
   padding-left: 5px;
   padding-right: 5px;
-  border: 0.5px solid rgb(210, 210, 210);
+  border: 0.5px solid var(--panel-title);
   border-radius: 4px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.ddei_pv_editor_image .textinput:hover {
-  border: 1px solid #017fff;
+.ddei-pv-editor-image .textinput:hover {
+  border: 1px solid var(--dot);
   box-sizing: border-box;
 }
 
-.ddei_pv_editor_image_disabled .textinput {
+.ddei-pv-editor-image--disabled .textinput {
   width: 100%;
   height: 28px;
   padding-left: 5px;
   padding-right: 5px;
-  border: 0.5px solid rgb(210, 210, 210);
+  border: 0.5px solid var(--panel-disabled);
   border-radius: 4px;
   display: flex;
-  background-color: rgb(210, 210, 210);
+  background-color: var(--panel-disabled);
   justify-content: center;
   align-items: center;
 }
 
-.ddei_pv_editor_image_disabled .textinput:hover {
-  border: 1px solid grey !important;
+.ddei-pv-editor-image--disabled .textinput:hover {
+  border: 1px solid var(--panel-disabled) !important;
   box-sizing: border-box;
 }
 
-.ddei_pv_editor_image .textinput input {
+.ddei-pv-editor-image .textinput input {
   flex: 1 1 calc(100% - 20px);
   width: calc(100% - 20px);
   border: transparent;
   outline: none;
+  color:var(--panel-title);
   font-size: 16px;
   margin: 0px 2%;
   background: transparent;
 }
 
-.ddei_pv_editor_image .textinput .icon {
+.ddei-pv-editor-image .textinput .icon {
   flex: 0 0 20px;
   font-size: 16px
 }
 
-.ddei_pv_editor_image .textinput .icon:hover {
+.ddei-pv-editor-image .textinput .icon:hover {
   cursor: pointer;
-  background: rgb(240, 240, 240);
+  background: var(--panel-hover);
 }
 
 

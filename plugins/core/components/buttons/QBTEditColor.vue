@@ -232,7 +232,7 @@ export default {
 
   &:hover {
     cursor: pointer;
-    background-color: @panel-hover;
+    background-color: var(--panel-hover);
   }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'ddei_pv_editor_text': true, 'ddei_pv_editor_text_disabled': attrDefine.readonly }">
+  <div :class="{ 'ddei-pv-editor-text': true, 'ddei-pv-editor-text--disabled': attrDefine.readonly }">
     <input :type="attrDefine?.itemStyle?.type ? attrDefine?.itemStyle?.type : 'input'" v-model="attrDefine.value"
       :disabled="attrDefine.readonly" :placeholder="attrDefine.defaultValue" autocomplete="off" />
   </div>
@@ -180,32 +180,33 @@ export default {
 
 <style scoped>
 /**以下为text属性编辑器 */
-.ddei_pv_editor_text {
+.ddei-pv-editor-text {
   border-radius: 4px;
-  border: 0.5px solid rgb(210, 210, 210);
+  border: 0.5px solid var(--panel-title);
   height: 28px;
   margin-right: 10px;
   padding: 0 5px;
 }
 
-.ddei_pv_editor_text_disabled {
-  background-color: rgb(210, 210, 210) !important;
+.ddei-pv-editor-text--disabled {
+  background-color: var(--panel-disabled) !important;
 }
 
-.ddei_pv_editor_text_disabled:hover {
-  border: 1px solid grey !important;
+.ddei-pv-editor-text--disabled:hover {
+  border: 1px solid var(--panel-disabled) !important;
 }
 
-.ddei_pv_editor_text:hover {
-  border: 1px solid #017fff;
+.ddei-pv-editor-text:hover {
+  border: 1px solid var(--dot);
   box-sizing: border-box;
 }
 
-.ddei_pv_editor_text input {
+.ddei-pv-editor-text input {
   height: 24px;
   width: 100%;
   border: transparent;
   outline: none;
+  color:var(--panel-title);
   font-size: 15px;
   background: transparent;
 }

@@ -202,13 +202,13 @@ export default {
 
   &:hover {
     cursor: pointer;
-    background-color: @panel-hover;
+    background-color: var(--panel-hover);
   }
 
   &--disabled {
     pointer-events: none;
-    background-color: @panel-disabled;
-    color: @panel-title-disabled;
+    background-color: var(--panel-disabled);
+    color: var(--panel-title-disabled);
     cursor: not-allowed;
   }
 }

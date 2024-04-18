@@ -1,40 +1,40 @@
 <template>
-  <div class="ddei_pv_editor_aligntype">
+  <div class="ddei-pv-editor-aligntype">
     <PVBaseCombox :attrDefine="attrDefine" ref="combox" :canSearch="false">
-      <div class="ddei_pv_editor_aligntype_items">
-        <div :class="{ 'ddei_pv_editor_aligntype_item': true, 'ddei_pv_editor_aligntype_item_selected': value == 1 }"
+      <div class="ddei-pv-editor-aligntype-items">
+        <div :class="{ 'ddei-pv-editor-aligntype-item': true, 'ddei-pv-editor-aligntype-item--selected': value == 1 }"
           style="text-align:left" @click="valueChange(1, $event)">
           <div style="vertical-align: top;">左上</div>
         </div>
-        <div :class="{ 'ddei_pv_editor_aligntype_item': true, 'ddei_pv_editor_aligntype_item_selected': value == 2 }"
+        <div :class="{ 'ddei-pv-editor-aligntype-item': true, 'ddei-pv-editor-aligntype-item--selected': value == 2 }"
           style="text-align:center" @click="valueChange(2, $event)">
           <div style="vertical-align: top;">中上</div>
         </div>
-        <div :class="{ 'ddei_pv_editor_aligntype_item': true, 'ddei_pv_editor_aligntype_item_selected': value == 3 }"
+        <div :class="{ 'ddei-pv-editor-aligntype-item': true, 'ddei-pv-editor-aligntype-item--selected': value == 3 }"
           style="text-align:right" @click="valueChange(3, $event)">
           <div style="vertical-align: top;">右上</div>
         </div>
-        <div :class="{ 'ddei_pv_editor_aligntype_item': true, 'ddei_pv_editor_aligntype_item_selected': value == 4 }"
+        <div :class="{ 'ddei-pv-editor-aligntype-item': true, 'ddei-pv-editor-aligntype-item--selected': value == 4 }"
           style="text-align:left" @click="valueChange(4, $event)">
           <div style="vertical-align: middle;">左中</div>
         </div>
-        <div :class="{ 'ddei_pv_editor_aligntype_item': true, 'ddei_pv_editor_aligntype_item_selected': value == 5 }"
+        <div :class="{ 'ddei-pv-editor-aligntype-item': true, 'ddei-pv-editor-aligntype-item--selected': value == 5 }"
           style="text-align:center" @click="valueChange(5, $event)">
           <div style="vertical-align: middle;">正中</div>
         </div>
-        <div :class="{ 'ddei_pv_editor_aligntype_item': true, 'ddei_pv_editor_aligntype_item_selected': value == 6 }"
+        <div :class="{ 'ddei-pv-editor-aligntype-item': true, 'ddei-pv-editor-aligntype-item--selected': value == 6 }"
           style="text-align:right" @click="valueChange(6, $event)">
           <div style="vertical-align: middle;">右中</div>
         </div>
-        <div :class="{ 'ddei_pv_editor_aligntype_item': true, 'ddei_pv_editor_aligntype_item_selected': value == 7 }"
+        <div :class="{ 'ddei-pv-editor-aligntype-item': true, 'ddei-pv-editor-aligntype-item--selected': value == 7 }"
           style="text-align:left" @click="valueChange(7, $event)">
           <div style="vertical-align: bottom;">左下</div>
         </div>
-        <div :class="{ 'ddei_pv_editor_aligntype_item': true, 'ddei_pv_editor_aligntype_item_selected': value == 8 }"
+        <div :class="{ 'ddei-pv-editor-aligntype-item': true, 'ddei-pv-editor-aligntype-item--selected': value == 8 }"
           style="text-align:center" @click="valueChange(8, $event)">
           <div style="vertical-align: bottom;">中下</div>
         </div>
-        <div :class="{ 'ddei_pv_editor_aligntype_item': true, 'ddei_pv_editor_aligntype_item_selected': value == 9 }"
+        <div :class="{ 'ddei-pv-editor-aligntype-item': true, 'ddei-pv-editor-aligntype-item--selected': value == 9 }"
           style="text-align:right" @click="valueChange(9, $event)">
           <div style="vertical-align: bottom;">右下</div>
         </div>
@@ -346,41 +346,43 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 /**以下为aligntype属性编辑器 */
-.ddei_pv_editor_aligntype {}
+.ddei-pv-editor-aligntype {
+  &-items {
+    width: 200px;
+    height: 150px;
+    display: grid;
+    padding: 2%;
+    grid-template-rows: 30% 30% 30%;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 4px;
 
-.ddei_pv_editor_aligntype_items {
-  width: 200px;
-  height: 150px;
-  display: grid;
-  padding: 2%;
-  grid-template-rows: 30% 30% 30%;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 4px;
+  }
+
+  &-item {
+    text-align: center;
+    font-size: 16px;
+    display: table;
+    color: var(--panel-title);
+    border: 0.5px solid var(--panel-title);
+    background-color: var(--panel-background);
+    padding: 5px;
+
+    div {
+      display: table-cell;
+    }
+
+    &:hover {
+      border: 1px solid var(-dot);
+      cursor: pointer;
+    }
+
+    &--selected {
+      border: 1px solid var(-dot);
+    }
+  }
+
 }
 
-.ddei_pv_editor_aligntype_item {
-  text-align: center;
-  font-size: 16px;
-  display: table;
-  color: black;
-  border: 0.5px solid grey;
-  padding: 5px;
-}
-
-.ddei_pv_editor_aligntype_item div {
-  display: table-cell;
-}
-
-
-
-.ddei_pv_editor_aligntype_item:hover {
-  border: 1px solid #017fff;
-  cursor: pointer;
-}
-
-.ddei_pv_editor_aligntype_item_selected {
-  border: 1px solid #017fff;
-}
 </style>

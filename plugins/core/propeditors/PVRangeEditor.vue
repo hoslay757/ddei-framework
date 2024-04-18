@@ -1,11 +1,11 @@
 <template>
-  <div :class="{ 'ddei_pv_editor_range': true, 'ddei_pv_editor_range_disabled': attrDefine.readonly }">
+  <div :class="{ 'ddei-pv-editor-range': true, 'ddei-pv-editor-range--disabled': attrDefine.readonly }">
     <input type="range" :step="attrDefine.step" class="range" :min="attrDefine.min" :max="attrDefine.max"
       v-model="attrDefine.value" :disabled="attrDefine.readonly" />
     <div class="textinput">
       <input type="number" :step="attrDefine.step" :min="attrDefine.min" :max="attrDefine.max"
         v-model="attrDefine.value" :disabled="attrDefine.readonly" :placeholder="attrDefine.defaultValue"
-        :name="'ddei_pv_editor_range_' + attrDefine.code" autocomplete="off" />
+        :name="'ddei-pv-editor-range-' + attrDefine.code" autocomplete="off" />
     </div>
   </div>
 </template>
@@ -185,70 +185,82 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 /**以下为range属性编辑器 */
-.ddei_pv_editor_range {
+.ddei-pv-editor-range {
   border-radius: 4px;
   height: 28px;
   margin-right: 10px;
   display: flex;
-}
 
-.ddei_pv_editor_range .range {
-  height: 7px;
-  width: 60%;
-  border: transparent;
-  outline: none;
-  background: transparent;
-  flex: 1;
-  margin: auto;
-}
+  .range {
+    height: 7px;
+    width: 60%;
+    border: transparent;
+    outline: none;
+    background: transparent;
+    flex: 1;
+    margin: auto;
+  }
 
-.ddei_pv_editor_range_disabled .range {
-  height: 7px;
-  width: 60%;
-  border: transparent;
-  outline: none;
-  background-color: rgb(210, 210, 210) !important;
-  flex: 1;
-  margin: auto;
-}
+  .textinput {
+    flex: 0 0 80px;
+    margin-left: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+    border: 0.5px solid var(--panel-title);
+    border-radius: 4px;
 
-.ddei_pv_editor_range .textinput {
-  flex: 0 0 80px;
-  margin-left: 10px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border: 0.5px solid rgb(210, 210, 210);
-  border-radius: 4px;
-}
+    input {
+      width: 100%;
+      border: transparent;
+      outline: none;
+      font-size: 15px;
+      margin: 0px 2%;
+      color:var(--panel-title);
+      background: transparent;
+    }
+    &:hover {
+      border: 1px solid var(--dot);
+      box-sizing: border-box;
+    }
+  }
 
-.ddei_pv_editor_range .textinput:hover {
-  border: 1px solid #017fff;
-  box-sizing: border-box;
-}
+  &--disabled{
+    .range {
+      height: 7px;
+      width: 60%;
+      border: transparent;
+      outline: none;
+      background-color: var(--panel-disabled) !important;
+      flex: 1;
+      margin: auto;
+    }
 
-.ddei_pv_editor_range_disabled .textinput {
-  flex: 0 0 80px;
-  margin-left: 10px;
-  padding-left: 5px;
-  padding-right: 5px;
-  background-color: rgb(210, 210, 210);
-  border: 0.5px solid rgb(210, 210, 210);
-  border-radius: 4px;
-}
+    .textinput {
+      flex: 0 0 80px;
+      margin-left: 10px;
+      padding-left: 5px;
+      padding-right: 5px;
+      background-color: var(--panel-disabled);
+      border: 0.5px solid var(--panel-disabled);
+      border-radius: 4px;
 
-.ddei_pv_editor_range_disabled .textinput:hover {
-  border: 1px solid grey !important;
-  box-sizing: border-box;
-}
+      &:hover {
+        border: 1px solid var(--panel-disabled) !important;
+        box-sizing: border-box;
+      }
 
-.ddei_pv_editor_range .textinput input {
-  width: 100%;
-  border: transparent;
-  outline: none;
-  font-size: 15px;
-  margin: 0px 2%;
-  background: transparent;
+      input {
+        width: 100%;
+        border: transparent;
+        outline: none;
+        font-size: 15px;
+        margin: 0px 2%;
+        color: var(--panel-title);
+        background: transparent;
+      }
+    }
+  }
 }
 </style>

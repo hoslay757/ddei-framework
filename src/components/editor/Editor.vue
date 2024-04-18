@@ -2,12 +2,11 @@
   <div :id="id" class="ddei-editor" @contextmenu.prevent @mousewheel.prevent>
     <component :is="editor?.getLayout()" :options="editor?.getLayoutOptions()">
     </component>
+    <component v-for="(item, index) in editor?.getDialogs()" :is="item.dialog" :options="item.options"
+      v-bind="item.options"></component>
+    <MenuDialog v-show="!refreshMenu"></MenuDialog>
   </div>
-
   <div :id="id+'_dialog_background_div'" class="dialog-background-div"></div>
-  <component v-for="(item, index) in editor?.getDialogs()" :is="item.dialog" :options="item.options"
-    v-bind="item.options"></component>
-  <MenuDialog v-show="!refreshMenu"></MenuDialog>
 </template>
 
 <script lang="ts">
@@ -96,7 +95,10 @@ export default {
   },
   mounted() {
     this.editor.editorViewer = this;
+    //设置默认风格
     this.editor.bindEvent();
+    this.editor.changeTheme('');
+
     
     //初始化拦截器
     //以下为拦截器的配置
@@ -228,9 +230,13 @@ export default {
   display: flex;
   flex-direction: column;
   min-width: 1700px;
+  background-color: var(--background);
 }
 </style>
 <style>
+.icon {
+  color: var(--icon);
+}
 .ddei-editor img {
   -webkit-user-drag: none;
   user-drag: none;

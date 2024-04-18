@@ -632,11 +632,15 @@ export default {
 </script>
 
 <style lang="less" scoped>
+
+.icon{
+  color:var(--icon);
+}
 .ddei-core-panel-openfilesview {
   flex: 0 0 30.5px;
-  background: @background;
-  border-top: 1px solid #E0E3E9;
-  border-bottom: 1px solid #E0E3E9;
+  background: var(--background);
+  border-top: 1px solid var(--panel-header);
+  border-bottom: 1px solid var(--panel-header);
   display: flex;
   user-select: none;
   align-items: center;
@@ -648,7 +652,7 @@ export default {
     align-items: center;
 
     &:hover {
-      background: rgb(235, 235, 239);
+      background: var(--panel-hover);
       cursor: pointer;
     }
     img {
@@ -668,7 +672,7 @@ export default {
     align-items: center;
 
     &:hover {
-      background: rgb(235, 235, 239);
+      background: var(--panel-hover);
       cursor: pointer;
     }
 
@@ -683,7 +687,8 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-right: 1px solid #B3B4B4;
+    background-color:  var(--panel-background);
+    border-right: 1px solid var(--panel-hover);//#B3B4B4;
   
     .icon {
       font-size: 16px;
@@ -708,7 +713,7 @@ export default {
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
-        color: @text;
+        color: var(--panel-title);
         flex: 1;
         font-size: 16px;
         font-weight: 400;
@@ -723,17 +728,17 @@ export default {
       text-align: right;
     }
     &:hover {
-      background: #E9E7F0;
+      background: var(--panel-hover);
     }
 
     &--selected {
-      background: white;
+      background: var(--panel-selected);
       .textcontent .text {
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
         flex: 1;
-        color: black;
+        color: var(--panel-title);
       }
     }
 

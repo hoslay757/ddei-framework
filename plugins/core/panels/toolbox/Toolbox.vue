@@ -431,7 +431,7 @@ export default {
 
 <style lang="less" scoped>
 .icon{
-  color:@icon;
+  color:var(--icon);
 }
 .ddei-core-panel-toolbox {
   user-select: none;
@@ -442,8 +442,8 @@ export default {
 
   /**以下为收折框 */
   &-header {
-    background: @toolbox-header;
-    border-bottom: 1px solid @toolbox-header;//darken(@toolbox-header, 13%);
+    background:var(--toolbox-header);
+    border-bottom: 1px solid var(--toolbox-header);//darken(@toolbox-header, 13%);
     flex: 0 0 30px;
     display: flex;
     justify-content: center;
@@ -464,11 +464,11 @@ export default {
         font-size: 16px;
         flex: 0 1 70px;
         font-weight: bold;
-        color: @toolbox-title;
+        color:var(--toolbox-title);
       }
 
       &:hover {
-        background-color: @toolbox-hover;//darken(@toolbox-hover, 5%);
+        background-color:var(--toolbox-hover);//darken(var(--toolbox-hover), 5%);
         cursor: pointer;
       }
 
@@ -488,7 +488,7 @@ export default {
     .header-7 {
       font-size: 18px;
       &:hover{
-        background-color:@toolbox-hover;
+        background-color:var(--toolbox-hover);
         cursor:pointer;
       }
     }
@@ -507,14 +507,14 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    background:@toolbox-background;
+    background:var(--toolbox-background);
 
     &-group {
       flex: 1;
       margin: 0 25px;
       height: 32px;
-      background: @toolbox-header;
-      border: 1px solid @toolbox-header;//darken(@toolbox-header,13%);
+      background:var(--toolbox-header);
+      border: 1px solid var(--toolbox-header);//darken(@toolbox-header,13%);
       border-radius: 4px;
       display: flex;
       justify-content: center;
@@ -534,36 +534,36 @@ export default {
         background: transparent;
         font-size: 16px;
         font-weight: 400;
-        color: @toolbox-title;
+        color:var(--toolbox-title);
 
         &::placeholder {
           /* Chrome, Firefox, Opera, Safari 10.1+ */
-          color: @toolbox-placeholder;
+          color:var(--toolbox-placeholder);
         }
 
         &::-webkit-input-placeholder {
           /* WebKit browsers，webkit内核浏览器 */
-          color: @toolbox-placeholder;
+          color:var(--toolbox-placeholder);
         }
 
         &:-moz-placeholder {
           /* Mozilla Firefox 4 to 18 */
-          color: @toolbox-placeholder;
+          color:var(--toolbox-placeholder);
         }
 
         &::-moz-placeholder {
           /* Mozilla Firefox 19+ */
-          color: @toolbox-placeholder;
+          color:var(--toolbox-placeholder);
         }
 
         &:-ms-input-placeholder {
           /* Internet Explorer 10-11 */
-          color: @toolbox-placeholder;
+          color:var(--toolbox-placeholder);
         }
 
         &::-ms-input-placeholder {
           /* Microsoft Edge */
-          color: @toolbox-placeholder;
+          color:var(--toolbox-placeholder);
         }
       }
     }
@@ -581,31 +581,31 @@ export default {
       height: 6px;
     }
     &::-webkit-scrollbar-thumb {
-      background-color: @toolbox-header;//darken(@toolbox-header,5%);
+      background-color:var(--toolbox-header);//darken(@toolbox-header,5%);
       border-radius: 6px;
       -webkit-box-shadow: inset1px1px0rgba(0, 0, 0, 0.1);
     }
 
     &:hover::-webkit-scrollbar-thumb {
-      background-color: @toolbox-header; //darken(@toolbox-header, 10%);
+      background-color:var(--toolbox-header); //darken(@toolbox-header, 10%);
       border-radius: 6px;
       -webkit-box-shadow: inset1px1px0rgba(0, 0, 0, 0.1);
     }
 
     &::-webkit-scrollbar-thumb:hover {
-      background-color: @toolbox-header; //darken(@toolbox-header, 20%);
+      background-color:var(--toolbox-header); //darken(@toolbox-header, 20%);
       -webkit-box-shadow: inset1px1px0rgba(0, 0, 0, 0.1);
     }
 
     &::-webkit-scrollbar-track {
       border-radius: 6px;
       -webkit-box-shadow: inset006pxrgba(0, 0, 0, 0);
-      background-color: @toolbox-header; //darken(@toolbox-header, 0%);
+      background-color:var(--toolbox-header); //darken(@toolbox-header, 0%);
     }
 
     &::-webkit-scrollbar-track:hover {
       -webkit-box-shadow: inset006pxrgba(0, 0, 0, 0.4);
-      background-color: @toolbox-header; //darken(@toolbox-header, 1%);
+      background-color:var(--toolbox-header); //darken(@toolbox-header, 1%);
     }
 
     &-group {
@@ -615,21 +615,21 @@ export default {
       &-box {
         display: flex;
         height: 35px;
-        background: @toolbox-header;
+        background:var(--toolbox-header);
         user-select: none;
         justify-content: center;
         align-items: center;
 
         &:hover {
-          background-color: @toolbox-header;
+          background-color:var(--toolbox-header);
         }
 
         &:active {
-          background-color: @toolbox-header;
+          background-color:var(--toolbox-header);
         }
         .title {
           flex: 1;
-          color: @toolbox-title;
+          color:var(--toolbox-title);
           text-align: left;
           margin-left: 25px;
           font-size: 16px;
@@ -641,7 +641,7 @@ export default {
           font-size: 18px;
 
           &:hover {
-            color: @toolbox-title-hover;
+            color:var(--toolbox-title)-hover;
             cursor: pointer;
           }
         }
@@ -650,7 +650,7 @@ export default {
       &-itempanel {
         display: flex;
         flex-flow: row wrap;
-        background: @toolbox-background;
+        background:var(--toolbox-background);
         padding: 15px 15px 15px 15px;
 
         &-item {
@@ -663,8 +663,8 @@ export default {
           align-items: center;
           flex-flow: column;
           &:hover {
-            background: @toolbox-control-hover;
-            outline: @toolbox-control-hover-outline;
+            background:var(--toolbox-control-hover);
+            outline:var(--toolbox-control-hover-outline);
             cursor: all-scroll;
           }
 
@@ -673,7 +673,7 @@ export default {
             text-align: center;
             font-size: 13px;
             font-weight: 400;
-            color: @toolbox-control-title;
+            color:var(--toolbox-control-title);
           }
           .icon {
             width: 90%;
@@ -684,7 +684,7 @@ export default {
       }
 
       &--expanded {
-        background-color: @toolbox-header-expanded;
+        background-color:var(--toolbox-header);
       }
     }
   }

@@ -298,22 +298,22 @@ export default {
 /*字体大小设置框 */
 
 .ddei-editor-quick-fat-item-fontsize {
-  background-color: @panel-background;
+  background-color: var(--panel-background);
   height: 24px;
   display: flex;
   justify-content: center;
   align-items: center;
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
-  border: 1px solid @panel-header;//darken(@panel-header, 13%);
+  border: 1px solid var(--panel-header);//darken(var(--panel-header), 13%);
 
   &:hover {
-    border: 0.5px solid @dot;
+    border: 0.5px solid var(--dot);
     box-sizing: border-box;
   }
 
   &--disabled:hover {
-    background-color: @panel-disabled;
+    background-color: var(--panel-disabled);
     cursor: not-allowed !important;
   }
 
@@ -345,17 +345,17 @@ export default {
 
 
   &--disabled {
-    color: @panel-title-disabled;
+    color: var(--panel-title-disabled);
     filter: brightness(200%) !important;
   }
 
   &--disabled:hover {
-    background-color: @panel-disabled;
+    background-color: var(--panel-disabled);
     cursor: not-allowed;
   }
 
   &:hover {
-    background-color: @panel-hover;
+    background-color: var(--panel-hover);
     border-radius: 4px;
   }
 }

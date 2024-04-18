@@ -1,6 +1,6 @@
 <template>
   <div
-    :class="{ 'ddei_pv_editor_switch_excheckbox': true, 'ddei_pv_editor_switch_excheckbox_disabled': attrDefine.readonly }"
+    :class="{ 'ddei-pv-editor-switch-excheckbox': true, 'ddei-pv-editor-switch-excheckbox--disabled': attrDefine.readonly }"
     @click="doCheck(attrDefine, $event)" :style="{ 'pointer-events': attrDefine.readonly ? 'none' : '' }">
     <div
       :class="{ 'chk_state': attrDefine.value != 1, 'chk_state_checked': attrDefine.value == 1 || (attrDefine.value == null && attrDefine.defaultValue == 1) }">
@@ -175,21 +175,22 @@ export default {
 
 <style scoped>
 /**以下为checkbox属性编辑器 */
-.ddei_pv_editor_switch_excheckbox {
+.ddei-pv-editor-switch-excheckbox {
   border-radius: 4px;
   margin-right: 10px;
 }
 
-.ddei_pv_editor_switch_excheckbox_disabled {
-  background-color: rgb(210, 210, 210) !important;
+.ddei-pv-editor-switch-excheckbox--disabled {
+  background-color: var(--panel-disabled) !important;
 }
 
-.ddei_pv_editor_switch_excheckbox .title {
+.ddei-pv-editor-switch-excheckbox .title {
   float: left;
+  color:var(--panel-title);
 }
 
-.ddei_pv_editor_switch_excheckbox .chk_state {
-  border: 1px solid grey;
+.ddei-pv-editor-switch-excheckbox .chk_state {
+  border: 1px solid var(--panel-title);
   width: 15px;
   height: 15px;
   margin-right: 10px;
@@ -197,22 +198,22 @@ export default {
   float: left;
 }
 
-.ddei_pv_editor_switch_excheckbox:hover .chk_state {
-  background: #017fff;
+.ddei-pv-editor-switch-excheckbox:hover .chk_state {
+  background: var(--dot);
 }
 
-.ddei_pv_editor_switch_excheckbox .chk_state_checked {
-  border: 1px solid grey;
+.ddei-pv-editor-switch-excheckbox .chk_state_checked {
+  border: 1px solid var(--panel-title);
   width: 15px;
   height: 15px;
   margin-right: 10px;
   margin-top: 5px;
   float: left;
-  background-color: #017fff;
+  background-color: var(--dot);
   color: #fff;
 }
 
-.ddei_pv_editor_switch_excheckbox .chk_state_checked span {
+.ddei-pv-editor-switch-excheckbox .chk_state_checked span {
   margin-top: -4.5px;
   margin-left: 1px;
   display: block;

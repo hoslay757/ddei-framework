@@ -1,6 +1,6 @@
 <template>
   <div :id="getEditorId(attrDefine?.code)"
-    :class="{ 'ddei_pv_base_combox': true, 'ddei_pv_base_combox_disabled': !attrDefine || attrDefine.readonly }">
+    :class="{ 'ddei-pv-base-combox': true, 'ddei-pv-base-combox--disabled': !attrDefine || attrDefine.readonly }">
     <div
       :class="{ 'textinput': true, 'textinput_expanded': expanded, 'display_img': img && attrDefine?.itemStyle?.display == 'img', 'display_img_text': img && attrDefine?.itemStyle?.display == 'img-text' }">
       <span :class="img"
@@ -18,7 +18,7 @@
       </div>
     </div>
     <div :id="getShowDialogId(attrDefine?.code)" :class="{ 'ddei-combox-show-dialog': true }">
-      <div class="ddei-combox-show-dialog_content">
+      <div class="ddei-combox-show-dialog-content">
         <slot></slot>
       </div>
     </div>
@@ -102,6 +102,9 @@ export default {
 
     //打开弹出框
     showDialog(show: boolean = false, evt: Event) {
+      if (!this.editor?.containerid) {
+        return;
+      }
       let dialogId = this.getShowDialogId(this.attrDefine.code)
       let dialog = document.getElementById(dialogId);
       let haveElement = false;
@@ -112,7 +115,8 @@ export default {
       }
       if (!haveElement) {
         //dialog.remove();
-        document.body.appendChild(dialog);
+        let ele = document.getElementById(this.editor.containerid)
+        ele.appendChild(dialog);
       }
       if (!this.expanded || haveElement) {
         dialog.style.display = "block";
@@ -146,15 +150,18 @@ export default {
 
     //移除弹出框
     destroyDialog() {
-      let dialogs = [];
-      for (let i = 0; i < document.body.children.length; i++) {
-        if (document.body.children[i].className == "ddei-combox-show-dialog") {
-          dialogs.push(document.body.children[i]);
+      if(this.editor?.containerid){
+        let dialogs = [];
+        let ele = document.getElementById(this.editor.containerid)
+        for (let i = 0; i < ele.children.length; i++) {
+          if (ele.children[i].className == "ddei-combox-show-dialog") {
+            dialogs.push(ele.children[i]);
+          }
         }
+        dialogs.forEach((dialog) => {
+          dialog.remove();
+        });
       }
-      dialogs.forEach((dialog) => {
-        dialog.remove();
-      });
     },
 
     closeDialog(evt) {
@@ -170,59 +177,60 @@ export default {
 
 <style scoped>
 /**以下为range属性编辑器 */
-.ddei_pv_base_combox {
+.ddei-pv-base-combox {
   height: 28px;
   padding-right: 10px;
 }
 
-.ddei_pv_base_combox_disabled .textinput {
-  background-color: rgb(210, 210, 210);
+.ddei-pv-base-combox--disabled .textinput {
+  background-color: var(--panel-disabled);
   height: 28px;
 }
 
-.ddei_pv_base_combox .textinput {
+.ddei-pv-base-combox .textinput {
   width: 100%;
   padding-right: 5px;
-  border: 0.5px solid rgb(210, 210, 210);
+  border: 0.5px solid var(--panel-title);
   border-radius: 4px;
   display: flex;
   padding-left: 5px;
   height: 28px;
 }
 
-.ddei_pv_base_combox .textinput:hover {
-  border: 1px solid #017fff;
+.ddei-pv-base-combox .textinput:hover {
+  border: 1px solid var(--dot);
   box-sizing: border-box;
 }
 
-.ddei_pv_base_combox .textinput input {
+.ddei-pv-base-combox .textinput input {
   flex: 1 1 calc(100% - 10px);
   width: calc(100% - 10px);
   border: transparent;
   outline: none;
   font-size: 15px;
   background: transparent;
+  color:var(--panel-title);
   margin-top: 1px;
 }
 
-.ddei_pv_base_combox .textinput div {
+.ddei-pv-base-combox .textinput div {
   flex: 0 0 20px;
 }
 
-.ddei_pv_base_combox .display_img input {
+.ddei-pv-base-combox .display_img input {
   display: none;
 }
 
-.ddei_pv_base_combox .display_img img {
+.ddei-pv-base-combox .display_img img {
   width: 20px;
   height: 20px;
 }
 
-.ddei_pv_base_combox .display_img_text input {
+.ddei-pv-base-combox .display_img_text input {
   width: calc(100% - 30px);
 }
 
-.ddei_pv_base_combox .display_img_text img {
+.ddei-pv-base-combox .display_img_text img {
   float: left;
   width: 20px;
   height: 20px;
@@ -230,17 +238,17 @@ export default {
 
 .ddei-combox-show-dialog {
   font-size: 13px;
-  background: white;
+  background: var(--panel-background);
   display: none;
   position: absolute;
   z-index: 999;
   border-radius: 4px;
 }
 
-.ddei-combox-show-dialog_content {
+.ddei-combox-show-dialog-content {
   width: 100%;
   height: 100%;
-  background: white;
+  background: var(--panel-background);
   padding: 10px;
   box-shadow: 4px 4px 4px hsl(0deg 0% 0% /0.25);
 }

@@ -1,9 +1,9 @@
 <template>
   <div :id="getEditorId(attrDefine?.code)"
-    :class="{ 'ddei_pv_border_dash_combox': true, 'ddei_pv_border_dash_combox_disabled': !attrDefine || attrDefine.readonly }">
+    :class="{ 'ddei-pv-border-dash-combox': true, 'ddei-pv-border-dash-combox--disabled': !attrDefine || attrDefine.readonly }">
     <div class="textinput" @click="attrDefine && !attrDefine.readonly && showDialog($event)">
       <svg class="div_input">
-        <line x1=0 y1=0 x2="100%" y2=0 stroke="black" fill="white" stroke-width="3"
+        <line x1=0 y1=0 x2="100%" y2=0  stroke-width="3"
           :stroke-dasharray="attrDefine.value">
         </line>
       </svg>
@@ -206,47 +206,50 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.ddei_pv_border_dash_combox {
+.ddei-pv-border-dash-combox {
   height: 28px;
   padding-right: 10px;
-}
 
-.ddei_pv_border_dash_combox_disabled .textinput {
-  background-color: rgb(210, 210, 210);
-  height: 28px;
-  justify-content: center;
-  align-items: center;
-}
+  .textinput {
+    width: 100%;
+    padding-right: 5px;
+    border: 0.5px solid var(--panel-title);
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-left: 5px;
+    height: 28px;
 
-.ddei_pv_border_dash_combox .textinput {
-  width: 100%;
-  padding-right: 5px;
-  border: 0.5px solid rgb(210, 210, 210);
-  border-radius: 4px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding-left: 5px;
-  height: 28px;
-}
+    &:hover {
+      border: 1px solid var(--dot);
+      box-sizing: border-box;
+    }
 
-.ddei_pv_border_dash_combox .textinput:hover {
-  border: 1px solid #017fff;
-  box-sizing: border-box;
-}
+    .div_input {
+      flex: 1 1 calc(100% - 10px);
+      width: calc(100% - 10px);
+      height: 3px;
 
-.ddei_pv_border_dash_combox .textinput {
-  .div_input {
-    flex: 1 1 calc(100% - 10px);
-    width: calc(100% - 10px);
-    height: 3px;
+      div {
+        flex: 0 0 20px;
+      }
+
+      >*{
+        stroke:var(--panel-title);
+        fill:var(--panel-background);
+      }
+    }
+  }
+  &--disabled {
+    .textinput {
+      background-color: var(--panel-disabled);
+      height: 28px;
+      justify-content: center;
+      align-items: center;
+    }
   }
 }
-
-.ddei_pv_border_dash_combox .textinput div {
-  flex: 0 0 20px;
-}
-
 
 .icon {
   font-size: 16px

@@ -390,17 +390,17 @@ export default {
 /**以下是快捷样式编辑的弹出框 */
 .ddei-core-dialog-quickpop {
 
-  border: 1px solid @panel-header;//darken(@panel-header, 13%);
-  box-shadow: 0px 2px 24px 0px @panel-header;//darken(@panel-header, 10%);
+  border: 1px solid var(--panel-header);//darken(var(--panel-header), 13%);
+  box-shadow: 0px 2px 24px 0px var(--panel-header);//darken(var(--panel-header), 10%);
   border-radius: 6px;
   display: none;
   overflow: hidden;
   position: absolute;
-  background-color: @panel-background;
+  background-color: var(--panel-background);
   height: 80px;
   z-index: 990;
   user-select: none;
-  color: @panel-title;
+  color: var(--panel-title);
 
   .content {
     width: 100%;
@@ -415,7 +415,7 @@ export default {
       margin-top: 20px;
       width: 170px;
       height: 70px;
-      border-right: 1px solid @panel-header;//darken(@panel-header, 13%);
+      border-right: 1px solid var(--panel-header);//darken(var(--panel-header), 13%);
 
       .panel1-content-1 {
         width: 100px;
@@ -451,7 +451,7 @@ export default {
       }
 
       .panel1-content-4:hover {
-        background-color: @panel-hover;
+        background-color: var(--panel-hover);
         cursor: pointer
       }
     }
@@ -464,7 +464,7 @@ export default {
       justify-content: center;
       align-items: center;
       text-align: center;
-      border-right: 1px solid @panel-header;//darken(@panel-header, 13%);
+      border-right: 1px solid var(--panel-header);//darken(var(--panel-header), 13%);
 
       .panel2-content {
         flex: 1;
@@ -472,7 +472,7 @@ export default {
       }
 
       .panel2-content:hover {
-        background-color: @panel-hover;
+        background-color: var(--panel-hover);
         cursor: pointer
       }
     }
@@ -485,7 +485,7 @@ export default {
       justify-content: center;
       align-items: center;
       text-align: center;
-      border-right: 1px solid @panel-header;//darken(@panel-header, 13%);
+      border-right: 1px solid var(--panel-header);//darken(var(--panel-header), 13%);
 
       .panel3-content {
         flex: 1;
@@ -493,7 +493,7 @@ export default {
       }
 
       .panel3-content:hover {
-        background-color: @panel-hover;
+        background-color: var(--panel-hover);
         cursor: pointer
       }
 
@@ -555,7 +555,7 @@ export default {
 
 
       .panel4-content:hover {
-        background-color: @panel-hover;
+        background-color: var(--panel-hover);
         cursor: pointer
       }
 
@@ -570,7 +570,7 @@ export default {
       align-items: center;
       text-align: center;
 
-      border-left: 1px solid @panel-header;//darken(@panel-header, 13%);
+      border-left: 1px solid var(--panel-header);//darken(var(--panel-header), 13%);
 
       .panel5-content {
         margin-right: 10px;
@@ -590,7 +590,7 @@ export default {
 
 
       .panel5-content:hover {
-        background-color: @panel-hover;
+        background-color: var(--panel-hover);
         cursor: pointer
       }
 
@@ -600,7 +600,7 @@ export default {
       margin-top: 20px;
       width: 225px;
       height: 70px;
-      border-right: 1px solid @panel-header;//darken(@panel-header, 13%);
+      border-right: 1px solid var(--panel-header);//darken(var(--panel-header), 13%);
 
       .panel12-content-1 {
         width: 100px;
@@ -644,7 +644,7 @@ export default {
       }
 
       .panel12-content-4:hover {
-        background-color: @panel-hover;
+        background-color: var(--panel-hover);
         cursor: pointer
       }
     }
@@ -742,12 +742,12 @@ export default {
 
 
       &-content:hover {
-        background-color: @panel-background;
+        background-color: var(--panel-background);
         cursor: pointer
       }
 
       &-content1:hover {
-        background-color: @panel-background;
+        background-color: var(--panel-background);
         cursor: pointer
       }
 
@@ -756,7 +756,7 @@ export default {
   }
 
   .brush-selected {
-    background-color: @panel-selected;
+    background-color: var(--panel-selected);
   }
 
 

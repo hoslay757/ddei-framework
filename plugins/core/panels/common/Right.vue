@@ -158,7 +158,7 @@ export default {
 
     .h3 {
       flex: 0 1 33px;
-      color:@panel-title;
+      color:var(--panel-title);
     }
 
     .h4 {
@@ -175,7 +175,7 @@ export default {
       align-items: center;
       width: 28px;
       height: 28px;
-      background: @dot;
+      background: var(--dot);
       border-radius: 50%;
       text-align: center;
       flex: 0 0 28px;
@@ -194,7 +194,7 @@ export default {
       height: 14px;
       font-size: 16px;
       font-weight: 400;
-      color: @panel-title;
+      color: var(--panel-title);
       cursor: pointer;
     }
 
@@ -212,7 +212,7 @@ export default {
       height: 14px;
       font-size: 16px;
       font-weight: 400;
-      color: @panel-title;
+      color: var(--panel-title);
       cursor: pointer;
       margin-right: 10px;
     }
@@ -231,7 +231,7 @@ export default {
       height: 14px;
       font-size: 16px;
       font-weight: 400;
-      color: @panel-title;
+      color: var(--panel-title);
       cursor: pointer;
     }
 

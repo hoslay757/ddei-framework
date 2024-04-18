@@ -7,7 +7,7 @@
           <div :class="{ 'item': true, 'item-selected': JSON.stringify(value) == JSON.stringify(data.value) }"
             v-for="data in dataSource" @click="select(data.value)" @dblclick="selectAndConfirm(data.value)">
             <svg class="div_input">
-              <line x1=0 y1=0 x2="100%" y2=0 stroke="black" fill="white" stroke-width="3"
+              <line x1=0 y1=0 x2="100%" y2=0 stroke-width="3"
                 :stroke-dasharray="data.value">
               </line>
             </svg>
@@ -92,14 +92,14 @@ export default {
 /**以下是选择颜色的弹出框 */
 .ddei-core-dialog-selectborderdash {
 
-  border: 1px solid #E6E6E6;
-  box-shadow: 0px 2px 24px 0px #DBDBDB;
+  border: 1px solid var(--panel-header);
+  box-shadow: 0px 2px 24px 0px var(--panel-header);
   border-radius: 6px;
   display: none;
   overflow: hidden;
   width: 290px;
   position: absolute;
-  background-color: white;
+  background-color: var(--panel-background);
   height: 250px;
   z-index: 999;
   user-select: none;
@@ -110,11 +110,11 @@ export default {
     overflow-y: auto;
 
     .group {
-      color: black;
+      color: var(--panel-title);
       width: 100%;
 
       .title {
-        color: black;
+        color: var(--panel-title);
         flex: 0 0 30px;
         width: 100%;
         display: flex;
@@ -144,20 +144,25 @@ export default {
         justify-content: center;
         align-items: center;
         cursor: pointer;
-        border: 0.5px solid #DBDBDB;
+        border: 0.5px solid var(--panel-title);
 
         .div_input {
           width: calc(100% - 10px);
           height: 3px;
+
+          >*{
+            stroke: var(--panel-title);
+            fill: var(--panel-background);
+          }
         }
       }
 
       .item:hover {
-        outline: 1px solid #1F72FF;
+        outline: 1px solid var(--dot);
       }
 
       .item-selected {
-        outline: 1px solid #1F72FF;
+        outline: 1px solid var(--dot);
       }
     }
   }
@@ -172,33 +177,33 @@ export default {
     justify-content: end;
   }
 
-  .button {
-    flex: 0 0 70px;
-    height: 32px;
-    background: #FFFFFF;
-    border: 1px solid #E6E6E6;
-    border-radius: 6px;
-    font-size: 16px;
-    font-family: "Microsoft YaHei";
-    font-weight: 400;
-    color: #040404;
-    margin-left: 13px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-  }
-
-  .button:hover {
-    color: white;
-    background: #176EFF;
-    cursor: pointer;
-  }
-
-  .button-main {
-    color: white;
-    background: #176EFF;
-
-  }
+    .button {
+      flex: 0 0 70px;
+      height: 32px;
+      background: var(--panel-background);
+      border: 1px solid var(--panel-title);
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--panel-title);
+      margin-left: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  
+    }
+  
+    .button:hover {
+      color: white;
+      background: var(--dot);
+      cursor: pointer;
+    }
+  
+    .button-main {
+      color: white;
+      border: 1px solid var(--panel-background);
+      background: var(--dot);
+  
+    }
 }
 </style>

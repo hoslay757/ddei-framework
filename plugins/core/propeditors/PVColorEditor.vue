@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'ddei_pv_editor_color': true, 'ddei_pv_editor_color_disabled': attrDefine.readonly }">
+  <div :class="{ 'ddei-pv-editor-color': true, 'ddei-pv-editor-color--disabled': attrDefine.readonly }">
     <input type="color" :step="attrDefine.step" class="color" v-model="attrDefine.value" autocomplete="off"
       :disabled="attrDefine.readonly" />
     <div class="textinput">
@@ -207,72 +207,69 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 /**以下为color属性编辑器 */
-.ddei_pv_editor_color {
+.ddei-pv-editor-color {
   border-radius: 4px;
   height: 28px;
   margin-right: 10px;
   display: flex;
-}
+  .color {
+    height: 36px;
+    width: 60%;
+    border: transparent;
+    outline: none;
+    background: transparent;
+    flex: 1;
+    margin: -4px -4px 0px -4px;
+  }
+  &--disabled{
+    .textinput {
+      flex: 0 0 80px;
+      margin-left: 10px;
+      padding-left: 5px;
+      padding-right: 5px;
+      background-color: var(--panel-disabled);
+      border: 0.5px solid var(--panel-disabled);
+      border-radius: 4px;
 
-.ddei_pv_editor_color .color {
-  height: 36px;
+      &:hover {
+        border: 1px solid var(--panel-disabled) !important;
+        box-sizing: border-box;
+      }
+    }
+    .color {
+      height: 32px;
 
-  width: 60%;
-  border: transparent;
-  outline: none;
-  background: transparent;
-  flex: 1;
-  margin: -4px -4px 0px -4px;
-}
+      width: 60%;
+      border: transparent;
+      outline: none;
+      background-color: var(--panel-title) !important;
+      flex: 1;
+      margin: -4px -4px 0px -4px;
+    }
+  } 
+  .textinput {
+    flex: 0 0 80px;
+    margin-left: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+    border: 0.5px solid var(--panel-title);
+    border-radius: 4px;
 
-.ddei_pv_editor_color_disabled .color {
-  height: 32px;
+    &:hover {
+      border: 1px solid var(--dot);
+      box-sizing: border-box;
+    }
 
-  width: 60%;
-  border: transparent;
-  outline: none;
-  background-color: rgb(210, 210, 210) !important;
-  flex: 1;
-  margin: -4px -4px 0px -4px;
-}
-
-.ddei_pv_editor_color .textinput {
-  flex: 0 0 80px;
-  margin-left: 10px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border: 0.5px solid rgb(210, 210, 210);
-  border-radius: 4px;
-}
-
-.ddei_pv_editor_color .textinput:hover {
-  border: 1px solid #017fff;
-  box-sizing: border-box;
-}
-
-.ddei_pv_editor_color_disabled .textinput {
-  flex: 0 0 80px;
-  margin-left: 10px;
-  padding-left: 5px;
-  padding-right: 5px;
-  background-color: rgb(210, 210, 210);
-  border: 0.5px solid rgb(210, 210, 210);
-  border-radius: 4px;
-}
-
-.ddei_pv_editor_color_disabled .textinput:hover {
-  border: 1px solid grey !important;
-  box-sizing: border-box;
-}
-
-.ddei_pv_editor_color .textinput input {
-  width: 100%;
-  border: transparent;
-  outline: none;
-  font-size: 15px;
-  margin: 0px 2%;
-  background: transparent;
+    input {
+      width: 100%;
+      border: transparent;
+      outline: none;
+      font-size: 15px;
+      margin: 0px 2%;
+      background: transparent;
+    }
+  }
 }
 </style>

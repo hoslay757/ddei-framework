@@ -1,0 +1,26 @@
+.ddei-editor[theme='ddei-core-theme-black'] {
+  --background: black;
+  --theme: black;
+  --text: white;
+  --dot: #176eff;
+  --active: #edefff;
+  --icon: white;
+
+  --panel-header: var(--theme);
+  --panel-background: var(--background);
+  --panel-title: var(--text);
+  --panel-hover: var(--theme);
+  --panel-disabled: var(--theme);
+  --panel-selected: var(--theme);
+  --panel-title-disabled:var(--text);
+
+
+  --toolbox-header: var(--theme);
+  --toolbox-background: var(--background);
+  --toolbox-title: var(--text);
+  --toolbox-hover: var(--theme);
+  --toolbox-placeholder: var(--text);
+  --toolbox-control-hover: var(--dot);
+  --toolbox-control-title: var(--text);
+
+}

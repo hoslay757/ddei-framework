@@ -250,17 +250,17 @@ export default {
 
   &:hover {
     cursor: pointer;
-    background-color: @panel-hover;
+    background-color: var(--panel-hover);
   }
 
   &--selected {
-    background-color: @panel-selected;
+    background-color: var(--panel-selected);
   }
 
   &--disabled {
-    background-color: @panel-disabled;
+    background-color: var(--panel-disabled);
     pointer-events: none;
-    color: @panel-title-disabled;
+    color: var(--panel-title-disabled);
     cursor: not-allowed;
   }
 

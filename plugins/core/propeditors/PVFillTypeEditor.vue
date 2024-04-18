@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'ddei_pv_editor_filltype': true, 'ddei_pv_editor_filltype_disabled': attrDefine.readonly }"
+  <div :class="{ 'ddei-pv-editor-filltype': true, 'ddei-pv-editor-filltype--disabled': attrDefine.readonly }"
     :style="{ 'pointer-events': attrDefine.readonly ? 'none' : '' }">
     <div class="itembox" v-for="item in dataSource" @click="checkRadioValue(attrDefine, $event)">
       <input type="radio" :disabled="attrDefine.readonly" :name="attrDefine.id" :value="item.value" autocomplete="off"
@@ -285,16 +285,16 @@ export default {
 
 <style scoped>
 /**以下为radio属性编辑器 */
-.ddei_pv_editor_filltype {
+.ddei-pv-editor-filltype {
   border-radius: 4px;
   margin-right: 10px;
 }
 
-.ddei_pv_editor_filltype_disabled {
-  background-color: rgb(210, 210, 210) !important;
+.ddei-pv-editor-filltype--disabled {
+  background-color: var(--panel-disabled) !important;
 }
 
-.ddei_pv_editor_filltype .itembox {
+.ddei-pv-editor-filltype .itembox {
   display: flex;
   justify-content: start;
   align-items: center;
@@ -306,25 +306,25 @@ export default {
   background: transparent;
 }
 
-.ddei_pv_editor_filltype .itembox input {
+.ddei-pv-editor-filltype .itembox input {
   width: 16px;
   height: 16px;
 }
 
-.ddei_pv_editor_filltype .itembox div {
+.ddei-pv-editor-filltype .itembox div {
   margin-left: 15px;
 }
 
-.ddei_editor_pv_subgroup_view_tab_panel_editors_row .itembox {
+.ddei-editor-pv-subgroup-view-tab-panel-editors-row .itembox {
   float: left;
   margin-right: 10px;
 }
 
-.ddei_editor_pv_subgroup_view_tab_panel_editors_column .itembox {
+.ddei-editor-pv-subgroup-view-tab-panel-editors-column .itembox {
   margin-top: 10px;
 }
 
-.ddei_editor_pv_subgroup_view_tab_panel_editors_row .itembox div {
+.ddei-editor-pv-subgroup-view-tab-panel-editors-row .itembox div {
   float: left;
   margin-left: 5px;
 }

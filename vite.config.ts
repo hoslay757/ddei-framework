@@ -41,16 +41,6 @@ export default defineConfig({
         })
       ]
     },
-    /* CSS 预处理器 */
-    preprocessorOptions: {
-      less: {
-        modifyVars: {
-          // 配置我们定义的less样式变量
-          hack: `true; @import (reference) "${path.resolve('./src/styles/variable.less')}";`
-        },
-        javascriptEnabled: true
-      }
-    }
   }
   
 

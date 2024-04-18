@@ -318,16 +318,16 @@ export default {
   margin-left: 15px;
 }
 
-.ddei_editor_pv_subgroup_view_tab_panel_editors_row .itembox {
+.ddei-editor-pv-subgroup-view-tab-panel-editors-row .itembox {
   float: left;
   margin-right: 10px;
 }
 
-.ddei_editor_pv_subgroup_view_tab_panel_editors_column .itembox {
+.ddei-editor-pv-subgroup-view-tab-panel-editors-column .itembox {
   margin-top: 10px;
 }
 
-.ddei_editor_pv_subgroup_view_tab_panel_editors_row .itembox div {
+.ddei-editor-pv-subgroup-view-tab-panel-editors-row .itembox div {
   float: left;
   margin-left: 5px;
 }

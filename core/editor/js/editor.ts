@@ -11,7 +11,6 @@ import { markRaw } from "vue";
 import config from "./config"
 import { cloneDeep } from "lodash";
 import FONTS from "../../framework/js/fonts/font"
-import {changeStyle} from "../../themes/theme"
 
 /**
  * DDei图形编辑器类，用于维护编辑器实例、全局状态以及全局属性
@@ -248,6 +247,7 @@ class DDeiEditor {
               
             });
           };
+          
         }
 
 
@@ -333,7 +333,17 @@ class DDeiEditor {
       //注册并加载菜单
       let themes = plugin.getThemes(this)
       themes?.forEach(theme => {
-        this.themes.push(theme)
+        let finded = false;
+        for (let i = 0; i < this.themes?.length; i++) {
+          if (this.themes[i].name == theme.name) {
+            finded = true
+            this.themes[i] = theme;
+            break;
+          }
+        }
+        if (!finded){
+          this.themes.push(theme)
+        }
       });
 
     }
@@ -534,7 +544,7 @@ class DDeiEditor {
   //当前引入的外部主题样式
   themes:object[] = markRaw([])
   //当前缺省主题
-  currentTheme: string = 'ddei-core-theme-default'
+  currentTheme: string = ''
   //当前布局的名称，如果为空，则获取最后一个有效的布局
   currentLayout: string = "ddei-core-layout-standard";
 
@@ -742,23 +752,31 @@ class DDeiEditor {
     let finded = false;
     let defaultJSON = null;
     for (let i = 0; i < this.themes?.length;i++){
-      if (this.themes[i].name == 'default'){
+      if (this.themes[i].default == true){
         defaultJSON = this.themes[i]
       }
       if (this.themes[i].name == themeName){
         finded = true
         this.currentTheme = themeName
         let themeConfig = this.themes[i];
-        changeStyle(themeConfig);
+        this.changeStyle(this.currentTheme,themeConfig);
         break;
       }
     }
     if (!finded){
-      this.currentTheme = 'default'
+      this.currentTheme = defaultJSON.name;
       let themeConfig = defaultJSON
-      changeStyle(themeConfig);
+      this.changeStyle(this.currentTheme,themeConfig);
     }
   }
+
+  changeStyle(name:string,obj: object){
+    let container = document.getElementById(this.containerid);
+    container?.setAttribute("theme",name);
+    for (let key in obj) {
+      container.style.setProperty(`--${key}`, obj[key]);
+    }
+  };
 }
 
 export default DDeiEditor

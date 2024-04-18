@@ -271,24 +271,24 @@ export default {
 /*字体选择框*/
 
 .ddei-editor-quick-fat-item-fontfamily {
-  background-color: @panel-background;
+  background-color: var(--panel-background);
   height: 24px;
   display: flex;
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
   justify-content: center;
   align-items: center;
-  border: 1px solid @panel-header;//darken(@panel-header, 13%);
+  border: 1px solid var(--panel-header);//darken(var(--panel-header), 13%);
   border-right: none;
 
   &:hover {
-    border: 0.5px solid @dot;
+    border: 0.5px solid var(--dot);
     box-sizing: border-box;
   }
 
   &--disabled{
     &:hover {
-      background-color: @panel-disabled;
+      background-color: var(--panel-disabled);
       cursor: not-allowed !important;
     }
   }

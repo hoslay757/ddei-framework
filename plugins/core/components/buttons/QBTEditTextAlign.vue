@@ -177,18 +177,18 @@ export default {
 
   &:hover {
     cursor: pointer;
-    background-color: @panel-hover;
+    background-color: var(--panel-hover);
   }
 
   &--selected {
-    background-color: @panel-selected;
+    background-color: var(--panel-selected);
   }
 
   &--disabled {
     pointer-events: none;
-    color: @panel-title-selected;
+    color: var(--panel-title)-selected;
     cursor: not-allowed;
-    background-color: @panel-selected;
+    background-color: var(--panel-selected);
   }
   
   .rotate-90 {

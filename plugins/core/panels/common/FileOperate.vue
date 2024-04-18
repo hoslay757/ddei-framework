@@ -272,13 +272,13 @@ export default {
       text-align: center;
       font-size: 12px;
       grid-column: 1/5;
-      color: @panel-title;
+      color: var(--panel-title);
     }
 
     &-box {
       width: 30px;
       height: 50px;
-      color: @panel-title;
+      color: var(--panel-title);
       border-radius: 4px;
       font-size: 12px;
       display: grid;
@@ -288,13 +288,13 @@ export default {
         margin: auto;
       }
       img {
-        filter: brightness(45%) drop-shadow(0.2px 0px 0.2px @panel-title);
+        filter: brightness(45%) drop-shadow(0.2px 0px 0.2px var(--panel-title));
         width: 16px;
         height: 16px;
         margin: auto;
       }
       &:hover {
-        background-color: @panel-hover;
+        background-color: var(--panel-hover);
         border-radius: 4px;
       }
     }

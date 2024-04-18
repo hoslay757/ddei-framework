@@ -49,10 +49,9 @@ import { markRaw } from "vue";
 import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
 
 //引入插件
-import { DDeiCoreTopMenuPanel, DDeiCoreControls,DDeiCoreHotkeys,DDeiKeyActionAllSelect,DDeiCorePropertyViewPanel,DDeiCoreToolboxPanel,DDeiCoreSheetsPanel, DDeiCoreChangeRatioPanel, DDeiCoreChangeRatioDialog,DDeiCoreShapeCountPanel, DDeiCoreBottomMenuPanel,DDeiCoreStandLayout, DDeiCoreOpenFilesViewPanel, DDeiCoreQuickColorViewPanel, DDeiCoreAlignDialog } from "@ddei/core";
+import { DDeiCoreTopMenuPanel,DDeiCoreThemeBlack, DDeiCoreControls,DDeiCoreHotkeys,DDeiKeyActionAllSelect,DDeiCorePropertyViewPanel,DDeiCoreToolboxPanel,DDeiCoreSheetsPanel, DDeiCoreChangeRatioPanel, DDeiCoreChangeRatioDialog,DDeiCoreShapeCountPanel, DDeiCoreBottomMenuPanel,DDeiCoreStandLayout, DDeiCoreOpenFilesViewPanel, DDeiCoreQuickColorViewPanel, DDeiCoreAlignDialog } from "@ddei/core";
 import DDeiExtUML from "@ddei/uml"
 import DDeiExtFontTest from "@ddei/testfont"
-import DDeiExtThemeTest from "@ddei/testtheme"
 export default {
   props: {},
   data() {
@@ -92,8 +91,8 @@ export default {
             }
           }),
           DDeiExtFontTest,
-          DDeiExtThemeTest.configuraton({
-            backgroundColor:'yellow'
+          DDeiCoreThemeBlack.configuraton({
+            default:true
           }),
           //批量快捷键配置
           // DDeiCoreHotkeys.configuraton({

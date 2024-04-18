@@ -44,7 +44,5 @@ class DDeiCoreThemes extends DDeiPluginBase{
     return themes;
   }
 }
-export {
-  DDeiCoreThemes, DDeiCoreThemeDefault, DDeiCoreThemeBlack
-}
+export { DDeiCoreThemeBlack, DDeiCoreThemeDefault ,DDeiCoreThemes}
 export default DDeiCoreThemes

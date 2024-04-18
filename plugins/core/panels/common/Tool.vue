@@ -90,7 +90,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-right: 1px solid @panel-header;//darken(@panel-header, 13%);
+    border-right: 1px solid var(--panel-header);//darken(var(--panel-header), 13%);
     padding: 0px 4px;
 
     .part {
@@ -111,7 +111,7 @@ export default {
 
       .button-v:hover {
         cursor: pointer;
-        background-color: @panel-hover;
+        background-color: var(--panel-hover);
       }
 
       .button-v-selected {
@@ -119,11 +119,11 @@ export default {
         display: flex;
         flex-direction: column;
         height: 50px;
-        background-color: @panel-selected;
+        background-color: var(--panel-selected);
         border-radius: 4px;
         align-items: center;
         .text {
-          color: @panel-title-selected;
+          color: var(--panel-title)-selected;
         }
       }
 
@@ -135,14 +135,14 @@ export default {
         height: 50px;
         cursor: not-allowed;
         align-items: center;
-        background-color: @panel-disabled;
+        background-color: var(--panel-disabled);
 
         >span {
-          color: @panel-title-disabled;
+          color: var(--panel-title-disabled);
         }
 
         .text {
-          color: @panel-title-disabled;
+          color: var(--panel-title-disabled);
         }
       }
 
@@ -151,7 +151,7 @@ export default {
         font-size: 14px;
         white-space: nowrap;
         font-weight: 400;
-        color: @panel-title;
+        color: var(--panel-title);
       }
     }
   }
@@ -162,8 +162,8 @@ export default {
     align-items: center;
     font-size: 14px;
     font-weight: 400;
-    color:@panel-title; // @panel-title; // fade(@panel-title, 40%);
-    border-right: 1px solid @panel-header;//darken(@panel-header, 13%);
+    color:var(--panel-title); // var(--panel-title); // fade(var(--panel-title), 40%);
+    border-right: 1px solid var(--panel-header);//darken(var(--panel-header), 13%);
   }
 }
 </style>

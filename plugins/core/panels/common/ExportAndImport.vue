@@ -193,7 +193,7 @@ export default {
         align-items: center;
         &:hover {
           cursor: pointer;
-          background-color: @panel-hover;
+          background-color: var(--panel-hover);
         }
       }
 
@@ -202,13 +202,13 @@ export default {
       .button-v-selected {
         flex: 1;
         height: 50px;
-        background-color: @panel-selected;
+        background-color: var(--panel-selected);
         border-radius: 4px;
         display: flex;
         flex-direction: column;
         align-items: center;
         .text {
-          color: @panel-title-selected;
+          color: var(--panel-title)-selected;
         }
       }
 
@@ -219,14 +219,14 @@ export default {
         display: flex;
         flex-direction: column;
         align-items: center;
-        background-color: @panel-disabled;
+        background-color: var(--panel-disabled);
 
         >span {
-          color: @panel-title-disabled;
+          color: var(--panel-title-disabled);
         }
 
         .text {
-          color: @panel-title-disabled;
+          color: var(--panel-title-disabled);
         }
       }
 
@@ -235,7 +235,7 @@ export default {
         white-space: nowrap;
         font-size: 14px;
         font-weight: 400;
-        color: @panel-title;
+        color: var(--panel-title);
       }
     }
   }
@@ -246,7 +246,7 @@ export default {
     align-items: center;
     font-size: 14px;
     font-weight: 400;
-    color: @panel-title; // fade(@panel-title, 40%);
+    color: var(--panel-title); // fade(var(--panel-title), 40%);
     
   }
 }

@@ -72,13 +72,13 @@ export default {
   display: grid;
   grid-template-rows: 20px 57px 26px;
   grid-template-columns: 1fr;
-  background:@panel-header;
+  background:var(--panel-header);
 
   .content {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-right: 1px solid @panel-header;//darken(@panel-header, 13%);
+    border-right: 1px solid var(--panel-header);//darken(var(--panel-header), 13%);
 
     .goback {
       flex: 0 1 36px;
@@ -89,14 +89,14 @@ export default {
       .out {
         flex: 0 0 25px;
         height: 36px;
-        background: @panel-header;//darken(@panel-header, 5%);
+        background: var(--panel-header);//darken(var(--panel-header), 5%);
         border-radius: 2px;
         display: flex;
         justify-content: center;
         align-items: center;
 
         >svg:hover {
-          color:@panel-title-hover;
+          color:var(--panel-title)-hover;
           cursor: pointer;
         }
       }
@@ -118,7 +118,7 @@ export default {
   }
 
   .tail {
-    border-right: 1px solid @panel-header;//darken(@panel-header, 13%);
+    border-right: 1px solid var(--panel-header);//darken(var(--panel-header), 13%);
   }
 }
 </style>

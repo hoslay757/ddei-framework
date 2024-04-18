@@ -284,7 +284,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-right: 1px solid @panel-header;//darken(@panel-header, 13%);
+    border-right: 1px solid var(--panel-header);//darken(var(--panel-header), 13%);
     padding: 0px 4px;
 
     .part {
@@ -306,12 +306,12 @@ export default {
           flex: 0 0 13px;
           font-size: 14px;
           font-weight: 400;
-          color: @panel-title;
+          color: var(--panel-title);
         }
 
         &:hover {
           cursor: pointer;
-          background-color: @panel-hover;
+          background-color: var(--panel-hover);
         }
       }
 
@@ -322,7 +322,7 @@ export default {
         flex-direction: column;
         cursor: not-allowed;
         align-items: center;
-        background-color: @panel-disabled;
+        background-color: var(--panel-disabled);
 
         .icon {
           filter: grayscale(1);
@@ -330,7 +330,7 @@ export default {
         }
 
         .text {
-          color: @panel-title-disabled;
+          color: var(--panel-title-disabled);
         }
 
 
@@ -345,8 +345,8 @@ export default {
     align-items: center;
     font-size: 14px;
     font-weight: 400;
-    color:@panel-title; // @panel-title; // fade(@panel-title, 40%);
-    border-right: 1px solid @panel-header;//darken(@panel-header, 13%);
+    color:var(--panel-title); // var(--panel-title); // fade(var(--panel-title), 40%);
+    border-right: 1px solid var(--panel-header);//darken(var(--panel-header), 13%);
   }
 }
 </style>

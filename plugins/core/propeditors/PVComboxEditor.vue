@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'ddei_pv_editor_combox': true, 'ddei_pv_editor_combox_disabled': !attrDefine || attrDefine.readonly }"
+  <div :class="{ 'ddei-pv-editor-combox': true, 'ddei-pv-editor-combox--disabled': !attrDefine || attrDefine.readonly }"
     :style="{ 'pointer-events': attrDefine.readonly ? 'none' : '' }">
     <PVBaseCombox :attrDefine="attrDefine" :searchMethod="doSearch" ref="combox" :canSearch="attrDefine?.canSearch">
       <div class="itemboxs"
@@ -345,53 +345,51 @@ export default {
 
 <style scoped>
 /**以下为combox属性编辑器 */
-.ddei_pv_editor_combox {}
 
-.ddei_pv_editor_combox_disabled {}
-
-.ddei-combox-show-dialog_content .itemboxs {
+.ddei-combox-show-dialog-content .itemboxs {
   border-radius: 4px;
   margin-top: 4px;
   display: grid;
   gap: 4px;
   overflow: auto;
-  color: black;
+  color: var(--panel-title);
   font-size: 13px;
 }
 
-.ddei-combox-show-dialog_content .itemboxs .itembox {
+.ddei-combox-show-dialog-content .itemboxs .itembox {
   outline: none;
   font-size: 13px;
   margin: auto;
   background: transparent;
+  border:1px solid var(--panel-title);
   display: flex;
   border-radius: 4px;
 }
 
-.ddei-combox-show-dialog_content .itemboxs .itembox:hover {
-  background-color: rgb(245, 245, 245);
+.ddei-combox-show-dialog-content .itemboxs .itembox:hover {
+  background-color: var(--panel-hover);
   cursor: pointer;
 }
 
-.ddei-combox-show-dialog_content .itemboxs .itembox .itembox_img {
+.ddei-combox-show-dialog-content .itemboxs .itembox .itembox_img {
   display: table-cell;
   padding-left: 5px;
   vertical-align: middle;
 }
 
-.ddei-combox-show-dialog_content .itemboxs .itembox .itembox_img img {
+.ddei-combox-show-dialog-content .itemboxs .itembox .itembox_img img {
   text-align: center;
   vertical-align: middle;
 }
 
-.ddei-combox-show-dialog_content .itemboxs .itembox .itembox_text {
+.ddei-combox-show-dialog-content .itemboxs .itembox .itembox_text {
   text-align: center;
   display: table-cell;
   flex: 1;
   vertical-align: middle;
 }
 
-.ddei-combox-show-dialog_content .itemboxs .itembox .itembox_desc {
+.ddei-combox-show-dialog-content .itemboxs .itembox .itembox_desc {
   text-align: left;
   display: table-cell;
   font-size: 11px;
@@ -403,28 +401,28 @@ export default {
   vertical-align: middle;
 }
 
-.ddei-combox-show-dialog_content .itembox_selected {
-  background-color: rgb(240, 240, 240) !important;
+.ddei-combox-show-dialog-content .itembox_selected {
+  background-color: var(panel-title) !important;
 }
 
-.ddei-combox-show-dialog_content .itembox_deleted {
+.ddei-combox-show-dialog-content .itembox_deleted {
   text-decoration: line-through;
 }
 
-.ddei-combox-show-dialog_content .itembox_disabled {
+.ddei-combox-show-dialog-content .itembox_disabled {
   color: rgb(210, 210, 210);
   text-decoration: line-through;
 }
 
-.ddei-combox-show-dialog_content .itembox_disabled:hover {
+.ddei-combox-show-dialog-content .itembox_disabled:hover {
   cursor: not-allowed !important;
 }
 
-.ddei-combox-show-dialog_content .itembox_underline {
+.ddei-combox-show-dialog-content .itembox_underline {
   text-decoration: underline;
 }
 
-.ddei-combox-show-dialog_content .itembox_bold .itembox_text {
+.ddei-combox-show-dialog-content .itembox_bold .itembox_text {
   font-weight: bold;
 }
 </style>

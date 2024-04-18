@@ -205,14 +205,14 @@ export default {
 
   &--disabled {
     pointer-events: none;
-    color: @panel-title-disabled;
-    background:@panel-disabled;
+    color: var(--panel-title-disabled);
+    background:var(--panel-disabled);
     cursor: not-allowed;
   }
 
   &:hover {
     cursor: pointer;
-    background-color: @panel-hover;
+    background-color: var(--panel-hover);
   }
 
   .magtop-1 {

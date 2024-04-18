@@ -498,7 +498,7 @@ export default {
   &-page {
     float: left;
     height: 27px;
-    border-right: 1px solid #CACAD5;
+    border-right: 1px solid var(--panel-header);
     padding: 0 10px;
     text-align: center;
 
@@ -510,28 +510,29 @@ export default {
       overflow: hidden;
       display: inline-flex;
       align-items: center;
-
+      background: var(--panel-background);
       &:hover {
-        color: #1F72FF;
+        color: var(--dot);
         cursor: pointer;
-        background: @background;
+        background: var(--background);
       }
     }
 
     &--selected {
       float: left;
       height: 27px;
-      border-right: 1px solid #CACAD5;
+      border-right: 1px solid var(--panel-header);
       padding: 0 10px;
       text-align: center;
 
-      span {     height: 27px;
+      span {    
+        height: 27px;
         width: 80px;
-        background: @background;
+        background: var(--panel-hover);
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
-        color: #1F72FF;
+        color: var(--dot);
         font-weight: bold;
         display: inline-flex;
         align-items: center;

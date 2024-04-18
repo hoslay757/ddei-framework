@@ -91,13 +91,11 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.icon {
-  color: @icon;
-}
+
 .ddei-core-panel-topmenu {
-  background: @topmenu-background;
+  background: var(--topmenu-background);
   &-quickbox {
-    background-color: @topmenu-header;
+    background-color: var(--topmenu-header);
     width: 100%;
     height: 103px;
     display: flex;

@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'ddei_pv_editor_radio': true, 'ddei_pv_editor_radio_disabled': attrDefine.readonly }"
+  <div :class="{ 'ddei-pv-editor-radio': true, 'ddei-pv-editor-radio--disabled': attrDefine.readonly }"
     :style="{ 'pointer-events': attrDefine.readonly ? 'none' : '' }">
     <div class="itembox" v-for="item in dataSource" @click="checkRadioValue(attrDefine, $event)">
       <input type="radio" :disabled="attrDefine.readonly" :name="attrDefine.id" :value="item.value"
@@ -224,49 +224,45 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 /**以下为radio属性编辑器 */
-.ddei_pv_editor_radio {
+.ddei-pv-editor-radio {
   border-radius: 4px;
   margin-right: 10px;
+
+  &--disabled {
+    background-color: rgb(210, 210, 210) !important;
+  }
+  .itembox {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    height: 24px;
+    outline: none;
+    font-size: 15px;
+    margin: 0;
+    padding-top: 2px;
+    background: transparent;
+    input {
+      width: 16px;
+      height: 16px;
+    }
+    div {
+      margin-left: 15px;
+    }
+  }
 }
 
-.ddei_pv_editor_radio_disabled {
-  background-color: rgb(210, 210, 210) !important;
-}
-
-.ddei_pv_editor_radio .itembox {
-  display: flex;
-  justify-content: start;
-  align-items: center;
-  height: 24px;
-  outline: none;
-  font-size: 15px;
-  margin: 0;
-  padding-top: 2px;
-  background: transparent;
-}
-
-.ddei_pv_editor_radio .itembox input {
-  width: 16px;
-  height: 16px;
-}
-
-.ddei_pv_editor_radio .itembox div {
-  margin-left: 15px;
-}
-
-.ddei_editor_pv_subgroup_view_tab_panel_editors_row .itembox {
+.ddei-editor-pv-subgroup-view-tab-panel-editors-row .itembox {
   float: left;
   margin-right: 10px;
+  div {
+    float: left;
+    margin-left: 5px;
+  }
 }
 
-.ddei_editor_pv_subgroup_view_tab_panel_editors_column .itembox {
+.ddei-editor-pv-subgroup-view-tab-panel-editors-column .itembox {
   margin-top: 10px;
-}
-
-.ddei_editor_pv_subgroup_view_tab_panel_editors_row .itembox div {
-  float: left;
-  margin-left: 5px;
 }
 </style>

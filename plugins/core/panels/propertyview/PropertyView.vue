@@ -562,12 +562,12 @@ export default {
 .propertyview {
   display: flex;
   flex-direction: column;
-  background: rgb(254, 254, 255);
+  background: var(--panel-background);
   display: flex;
   user-select: none;
 
   &-header {
-    background: @background;
+    background: var(--panel-header);
     border-bottom: 1px solid #D5D5DF;
     flex: 0 0 30px;
     display: flex;
@@ -615,7 +615,7 @@ export default {
         text-align: center;
         font-size: 16px;
         font-weight: 400;
-        color: #8D8D8D;
+        color: var(--panel-title);
         display: flex;
         justify-content: center;
         align-items: center;
@@ -623,17 +623,17 @@ export default {
           flex: 1;
           text-align: center;
           font-size: 16px;
-          background-color: @background;
+          background-color: var(--background);
           font-weight: 400;
-          color: #1F72FF;
-          border-bottom: 4px solid #1F72FF;
+          color: var(--dot);
+          border-bottom: 4px solid var(--dot);
           display: flex;
           justify-content: center;
           align-items: center;
         }
       
         &:hover {
-          color: #1F72FF;
+          color: var(--dot);
           cursor: pointer;
         }
       }
@@ -641,14 +641,13 @@ export default {
 
     &-tabpanel {
       text-align: center;
-      background: rgb(254, 254, 255);
+      background: var(--panel-background);
       overflow-y: auto;
       display: flex;
       flex-flow: column;
       flex: 1 1 auto;
-      color: black;
+      color: var(--panel-title);
       font-size: 15px;
-      font-family: "Microsoft YaHei";
 
       span {
         color: red;
@@ -659,7 +658,8 @@ export default {
         margin-top: 10px;
         margin-bottom: 10px;
         .title {
-          background: rgb(254, 254, 255);
+          background: var(--panel-background);
+          color: var(--panel-title);
           text-align: left;
           padding-left: 10px;
           margin: auto 0;
@@ -704,21 +704,21 @@ export default {
 
       /*正常情况下滑块的样式*/
       &::-webkit-scrollbar-thumb {
-        background-color: rgba(0, 0, 0, 0.05);
+        background-color: var(--panel-header);
         border-radius: 6px;
         -webkit-box-shadow: inset1px1px0rgba(0, 0, 0, 0.1);
       }
 
       /*鼠标悬浮在该类指向的控件上时滑块的样式*/
       &:hover::-webkit-scrollbar-thumb {
-        background-color: rgba(0, 0, 0, 0.2);
+        background-color: var(--panel-header);
         border-radius: 6px;
         -webkit-box-shadow: inset1px1px0rgba(0, 0, 0, 0.1);
       }
 
       /*鼠标悬浮在滑块上时滑块的样式*/
       &::-webkit-scrollbar-thumb:hover {
-        background-color: rgba(0, 0, 0, 0.4);
+        background-color: var(--panel-header);
         -webkit-box-shadow: inset1px1px0rgba(0, 0, 0, 0.1);
       }
 
@@ -726,13 +726,13 @@ export default {
       &::-webkit-scrollbar-track {
         border-radius: 6px;
         -webkit-box-shadow: inset006pxrgba(0, 0, 0, 0);
-        background-color: white;
+        background-color: var(--panel-header);
       }
 
       /*鼠标悬浮在滚动条上的主干部分*/
       &::-webkit-scrollbar-track:hover {
         -webkit-box-shadow: inset006pxrgba(0, 0, 0, 0.4);
-        background-color: rgba(0, 0, 0, 0.01);
+        background-color: var(--panel-header);
       }
     }
     

@@ -204,7 +204,7 @@ export default {
       }
 
       .item:hover {
-        background-color: @background;
+        background-color: var(--background);
       }
     }
   }
@@ -268,7 +268,7 @@ export default {
       }
 
       .item:hover {
-        background-color: @background;
+        background-color: var(--background);
       }
     }
   }

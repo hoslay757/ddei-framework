@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'ddei_pv_editor_fontsize': true, 'ddei_pv_editor_fontsize--disabled': attrDefine.readonly }"
+  <div :class="{ 'ddei-pv-editor-fontsize': true, 'ddei-pv-editor-fontsize--disabled': attrDefine.readonly }"
     :style="{ 'pointer-events': attrDefine.readonly ? 'none' : '' }">
     <input type="range" :step="attrDefine.step" class="range" :min="attrDefine.min" :max="attrDefine.max"
       v-model="attrDefine.value" :disabled="attrDefine.readonly" autocomplete="off" />
@@ -213,14 +213,14 @@ export default {
 
 <style scoped>
 /**以下为range属性编辑器 */
-.ddei_pv_editor_fontsize {
+.ddei-pv-editor-fontsize {
   border-radius: 4px;
   height: 28px;
   margin-right: 10px;
   display: flex;
 }
 
-.ddei_pv_editor_fontsize .range {
+.ddei-pv-editor-fontsize .range {
   height: 7px;
   width: 60%;
   border: transparent;
@@ -230,52 +230,54 @@ export default {
   margin: auto;
 }
 
-.ddei_pv_editor_fontsize--disabled .range {
+.ddei-pv-editor-fontsize--disabled .range {
   height: 7px;
   width: 60%;
   border: transparent;
   outline: none;
-  background-color: rgb(210, 210, 210) !important;
+  background-color: var(--panel-disabled) !important;
   flex: 1;
   margin: auto;
 }
 
-.ddei_pv_editor_fontsize .textinput {
+.ddei-pv-editor-fontsize .textinput {
   flex: 0 0 80px;
   margin-left: 10px;
   padding-left: 5px;
   padding-right: 5px;
-  border: 0.5px solid rgb(210, 210, 210);
+  color:var(--panel-title);
+  border: 0.5px solid var(--panel-title);
   border-radius: 4px;
   display: flex;
 }
 
-.ddei_pv_editor_fontsize .textinput:hover {
-  border: 1px solid #017fff;
+.ddei-pv-editor-fontsize .textinput:hover {
+  border: 1px solid var(--dot);
   box-sizing: border-box;
 }
 
-.ddei_pv_editor_fontsize--disabled .textinput {
+.ddei-pv-editor-fontsize--disabled .textinput {
   flex: 0 0 80px;
   margin-left: 10px;
   padding-left: 5px;
   padding-right: 5px;
-  background-color: rgb(210, 210, 210);
-  border: 0.5px solid rgb(210, 210, 210);
+  background-color: var(--panel-disabled);
+  border: 0.5px solid var(--panel-disabled);
   border-radius: 4px;
   display: flex;
 }
 
-.ddei_pv_editor_fontsize--disabled .textinput:hover {
-  border: 1px solid grey !important;
+.ddei-pv-editor-fontsize--disabled .textinput:hover {
+  border: 1px solid var(--panel-disabled) !important;
   box-sizing: border-box;
 }
 
-.ddei_pv_editor_fontsize .textinput input {
+.ddei-pv-editor-fontsize .textinput input {
   flex: 1 1 50px;
   border: transparent;
   outline: none;
   font-size: 15px;
+  color:var(--panel-title);
   margin: 0px 2%;
   background: transparent;
 }

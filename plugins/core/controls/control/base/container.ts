@@ -478,7 +478,7 @@ export default {
       'name': '日期类型',
       'desc': '日期和时间的格式化类型',
       'controlType': 'radio',
-      'dataSource': [{ 'text': '日期（2023-01-01）', 'value': 1 }, { 'text': '时间（23:59:59）', 'value': 2 }, { 'text': '日期时间（2023-01-01 23:59:59）', 'value': 3 }, { 'text': '自定义', 'value': 99 }],
+      'dataSource': [{ 'text': '2023-01-01', 'value': 1 }, { 'text': '23:59:59', 'value': 2 }, { 'text': '2023-01-01 23:59:59', 'value': 3 }, { 'text': '自定义', 'value': 99 }],
       'dataType': 'integer',
       'defaultValue': 1,
       'hiddenTitle': true,

@@ -22,16 +22,9 @@ abstract class DDeiThemeBase extends DDeiPluginBase {
   label: string;
   //图标
   icon: string;
+  //样式文件路径
+  css:string;
 
 }
-
-// 修改页面中的样式变量值
-const changeStyle = (obj: any) => {
-  for (let key in obj) {
-    document
-      .getElementsByTagName('body')[0]
-      .style.setProperty(`--${key}`, obj[key]);
-  }
-};
-export { DDeiThemeBase, changeStyle }
+export { DDeiThemeBase }
 export default DDeiThemeBase;

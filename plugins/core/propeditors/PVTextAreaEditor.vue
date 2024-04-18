@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'ddei_pv_editor_textarea': true, 'ddei_pv_editor_textarea_disabled': attrDefine.readonly }">
+  <div :class="{ 'ddei-pv-editor-textarea': true, 'ddei-pv-editor-textarea--disabled': attrDefine.readonly }">
     <textarea ref="pvTextArea" v-model="attrDefine.value" :disabled="attrDefine.readonly"
       :placeholder="attrDefine.defaultValue" />
   </div>
@@ -183,34 +183,35 @@ export default {
 
 <style scoped>
 /**以下为text属性编辑器 */
-.ddei_pv_editor_textarea {
+.ddei-pv-editor-textarea {
   border-radius: 4px;
-  border: 0.5px solid rgb(210, 210, 210);
+  border: 0.5px solid var(--panel-title);
   height: 80px;
   margin-right: 10px;
   padding: 0 5px;
   display: flex;
 }
 
-.ddei_pv_editor_textarea_disabled {
-  background-color: rgb(210, 210, 210) !important;
+.ddei-pv-editor-textarea--disabled {
+  background-color: var(--panel-disabled) !important;
 }
 
-.ddei_pv_editor_textarea_disabled:hover {
-  border: 1px solid grey !important;
+.ddei-pv-editor-textarea--disabled:hover {
+  border: 1px solid var(--panel-disabled) !important;
 }
 
-.ddei_pv_editor_textarea:hover {
-  border: 1px solid #017fff;
+.ddei-pv-editor-textarea:hover {
+  border: 1px solid var(--dot);
   box-sizing: border-box;
 }
 
-.ddei_pv_editor_textarea textarea {
+.ddei-pv-editor-textarea textarea {
   flex: 1;
   border: transparent;
   outline: none;
   font-size: 15px;
   margin: 1px 0;
+  color:var(--panel-title);
   width: 100%;
   background: transparent;
 }
