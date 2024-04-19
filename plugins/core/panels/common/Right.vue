@@ -2,7 +2,7 @@
   <div class="ddei-core-panel-right">
     <div class="header">
       <div class="h1"></div>
-      <div class="h3" @click="changeTheme">切换</div>
+      <div class="h3" @click="changeTheme">换肤</div>
       <div class="userinfo" v-show="user?.id != '-99'">{{ userNameFirst }}</div>
       <div class="h4"></div>
       <div class="loginout" v-show="user && user.id != '-99'" @click="loginout">注销</div>
@@ -157,7 +157,9 @@ export default {
     }
 
     .h3 {
-      flex: 0 1 33px;
+      flex: 0 1 50px;
+      cursor: pointer;
+      
       color:var(--panel-title);
     }
 

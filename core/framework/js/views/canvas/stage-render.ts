@@ -333,7 +333,7 @@ class DDeiStageCanvasRender {
         //线段、虚线样式
         ctx.setLineDash([0, 1 * ratio, 1 * ratio]);
         //颜色
-        ctx.strokeStyle = DDeiUtil.getColor(DDeiConfig.GLOBAL_HELP_LINE_ALIGN_COLOR);
+        ctx.strokeStyle = DDeiUtil.getStyleValue("dot", this.ddRender.model);
 
         if (hpoint) {
           for (let y in hpoint) {

@@ -35,9 +35,6 @@ class DDeiConfig {
   // 是否打开辅助对齐线
   static GLOBAL_HELP_LINE_ENABLE: boolean = true;
 
-  // 缺省辅助对齐线颜色
-  static GLOBAL_HELP_LINE_ALIGN_COLOR = 'red';
-
   // 缺省吸附效果宽度，小于0时没有吸附效果
   static GLOBAL_ADV_WEIGHT: number = 5;
 
