@@ -55,7 +55,7 @@ export default {
       'controlType': 'color-combo',
 
       'dataType': 'string',
-      'defaultValue': 'black',
+      'defaultValue': '',
     },
     {
       'code': 'borderOpacity',
@@ -138,7 +138,7 @@ export default {
       'desc': '图形的填充颜色',
       'controlType': 'color-combo',
       'dataType': 'string',
-      'defaultValue': 'white',
+      'defaultValue': '',
     },
     {
       'code': 'fill.image',
@@ -198,7 +198,7 @@ export default {
       'desc': '文本的颜色',
       'controlType': 'color-combo',
       'dataType': 'string',
-      'defaultValue': "#252525",
+      'defaultValue': "",
     },
     {
       'code': 'fontAlign',

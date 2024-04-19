@@ -114,6 +114,34 @@ class DDeiAbstractShapeRender {
     }
   }
 
+  clearCachedValue():void{
+    this.renderCacheData.clear();
+    this.refreshShape = true;
+    this.clearComposesCacheValue();
+  }
+
+  clearComposesCacheValue() {
+    //通知composes的值改变
+    let define = DDeiUtil.getControlDefine(this.model)?.define;
+    if (define?.composes?.length > 0) {
+      for (let i = 0; i < define.composes.length; i++) {
+        let comDef = define.composes[i]
+        let comModel = this.model.composes[i]
+        if (comDef.attrLinks?.length > 0) {
+          comDef.attrLinks.forEach(attrLink => {
+            attrLink.mapping.forEach(mp => {
+              if (mp == "*") {
+                comModel.render?.clearCachedValue()
+              } else {
+                comModel.render?.clearCachedValue()
+              }
+            });
+          });
+        }
+      }
+    }
+  }
+
   changeComposesCacheValue(attrPath, value) {
     //通知composes的值改变
     let define = DDeiUtil.getControlDefine(this.model)?.define;

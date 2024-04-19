@@ -26,4 +26,12 @@
 
   --topmenu-background: var(--background);
   --topmenu-header: var(--theme);
+
+
+
+  --canvas-rule-background: var(--background);
+  --canvas-rule-border: #E0E3E9;
+  --canvas-control-border: black;
+  --canvas-control-background: white;
+  --canvas-control-title: #252525;
 }

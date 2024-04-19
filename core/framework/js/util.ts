@@ -41,6 +41,8 @@ class DDeiUtil {
   static getBusiData: Function;
   //钩子函数，获取快捷编辑文本框
   static getEditorText: Function;
+  //钩子函数，获取样式属性变量值
+  static getStyleValue:Function;
 
 
   static offsetX: number;

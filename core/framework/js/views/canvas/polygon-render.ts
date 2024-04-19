@@ -442,6 +442,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     //如果被选中，使用选中的边框，否则使用缺省边框
     let type = tempShape?.border?.type || tempShape?.border?.type == 0 ? tempShape?.border?.type : this.getCachedValue("border.type")
     let color = tempShape?.border?.color ? tempShape?.border?.color : this.getCachedValue("border.color")
+    if (!color){
+      color = DDeiUtil.getStyleValue("canvas-control-border", this.ddRender.model);
+    }
     let opacity = tempShape?.border?.opacity ? tempShape?.border?.opacity : this.getCachedValue("border.opacity");
     let width = tempShape?.border?.width ? tempShape?.border?.width : this.getCachedValue("border.width");
     let dash = tempShape?.border?.dash ? tempShape?.border?.dash : this.getCachedValue("border.dash");
@@ -722,6 +725,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let ctx = canvas.getContext('2d');
     //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
     let fillColor = tempShape?.fill?.color ? tempShape.fill.color : this.getCachedValue("fill.color");
+    if (!fillColor) {
+      fillColor = DDeiUtil.getStyleValue("canvas-control-background", this.ddRender.model);
+    }
     let fillOpacity = tempShape?.fill?.opacity ? tempShape.fill.opacity : this.getCachedValue("fill.opacity");
 
     let fillType = tempShape?.fill?.type ? tempShape.fill.type : this.getCachedValue("fill.type");
@@ -808,6 +814,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let fiFamily = this.getCachedValue("font.family");
     let fiSize = this.getCachedValue("font.size");
     let fiColor = this.getCachedValue("font.color");
+    if (!fiColor) {
+      fiColor = DDeiUtil.getStyleValue("canvas-control-title", this.ddRender.model);
+    }
     //镂空
     let hollow = this.getCachedValue("textStyle.hollow");
     //粗体

@@ -91,8 +91,6 @@ class DDeiConfig {
         family: "Microsoft YaHei", color: "grey", size: "16"
       }
     }
-    //全局背景色
-    , NONE_BG_COLOR: "rgb(240,240,240)"
   }
 
   // 选择器的相关缺省样式属性

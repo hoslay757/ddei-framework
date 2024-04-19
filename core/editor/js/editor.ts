@@ -139,6 +139,9 @@ class DDeiEditor {
         if (!DDeiUtil.getEditorText) {
           DDeiUtil.getEditorText = DDeiEditorUtil.getEditorText;
         }
+        if (!DDeiUtil.getStyleValue){
+          DDeiUtil.getStyleValue = DDeiEditorUtil.getStyleValue;
+        }
         //初始化ddInstance
         let ddInstance = DDei.newInstance(
           editorInstance.id,
@@ -775,6 +778,11 @@ class DDeiEditor {
     container?.setAttribute("theme",name);
     for (let key in obj) {
       container.style.setProperty(`--${key}`, obj[key]);
+    }
+    //刷新清空画布缓存颜色，刷新画布
+    if(this.ddInstance?.stage?.render){
+      this.ddInstance?.stage?.render?.clearCachedValue();
+      this.ddInstance.stage.render.refresh = true
     }
   };
 }

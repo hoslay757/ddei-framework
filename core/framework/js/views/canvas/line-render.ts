@@ -226,6 +226,9 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
 
     //获取绘图属性
     let color = tempLine?.color ? tempLine.color : this.getCachedValue("color");
+    if(!color){
+      color = DDeiUtil.getStyleValue("canvas-control-border", this.ddRender.model);
+    }
     let weight = tempLine?.weight ? tempLine.weight : this.getCachedValue("weight");
     let fillColor = tempLine?.fill?.color ? tempLine?.fill?.color : this.getCachedValue("fill.color");
     let fillWeight = tempLine?.fill?.weight ? tempLine?.fill?.weight : this.getCachedValue("fill.weight");

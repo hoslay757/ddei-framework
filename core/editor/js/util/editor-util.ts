@@ -9,6 +9,7 @@ import DDeiEditorState from "../enums/editor-state";
 import DDeiLineLink from "../../../framework/js/models/linelink";
 import { Matrix3 } from "three";
 import DDeiRectContainer from "../../../framework/js/models/rect-container";
+import DDei from "../../../framework/js/ddei";
 
 class DDeiEditorUtil {
 
@@ -131,6 +132,32 @@ class DDeiEditorUtil {
       return editor.quickEditorInput;
     }
 
+  }
+
+  /**
+   * 获取样式属性值
+   * @param name 属性名称
+   * @param ddInstance ddei实例
+   */
+  static getStyleValue(name:string,ddInstance:DDei){
+    let editor = DDeiEditorUtil.getEditorInsByDDei(ddInstance);
+    let element = document.getElementById(editor.containerid); // 替换为你想要获取变量的元素id
+    let styles = getComputedStyle(element);
+    let cssVariable = styles.getPropertyValue('--' + name); // 替换为你想获取的CSS变量名
+    return cssVariable;
+  }
+
+  static getEditorInsByDDei(ddInstance:DDei){
+    let editor;
+    DDeiEditor.INSTANCE_POOL.forEach(editorIns => {
+      if (editorIns.ddInstance == ddInstance) {
+        editor = editorIns;
+      }
+    })
+    if (!editor) {
+      editor = DDeiEditor.ACTIVE_INSTANCE;
+    }
+    return editor;
   }
 
   /**

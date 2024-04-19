@@ -47,7 +47,7 @@ export default {
       'desc': '线段的边框显示颜色',
       'controlType': 'color-combo',
       'dataType': 'string',
-      'defaultValue': 'black',
+      'defaultValue': '',
     },
     {
       'code': 'fill.weight',

@@ -1,6 +1,6 @@
 .ddei-editor[theme='ddei-core-theme-black'] {
-  --background: black;
-  --theme: black;
+  --background: #212121;
+  --theme: #2c2c2c;
   --text: white;
   --dot: #176eff;
   --active: #edefff;
@@ -22,5 +22,12 @@
   --toolbox-placeholder: var(--text);
   --toolbox-control-hover: var(--dot);
   --toolbox-control-title: var(--text);
+
+
+  --canvas-rule-background: var(--theme);
+  --canvas-rule-border: white;
+  --canvas-control-border: white;
+  --canvas-control-background: var(--theme);
+  --canvas-control-title: white;
 
 }

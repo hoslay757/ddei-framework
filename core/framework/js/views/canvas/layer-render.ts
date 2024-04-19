@@ -160,7 +160,11 @@ class DDeiLayerCanvasRender {
 
       // 绘制纯色背景
       if (bgInfoType == 1) {
+        
         let bgInfoColor = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.color", true);
+        if (!bgInfoColor){
+          bgInfoColor = DDeiUtil.getStyleValue("panel-background", this.ddRender.model);
+        }
         let bgInfoOpacity = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.opacity", true);
         //填充色
         ctx.fillStyle = DDeiUtil.getColor(bgInfoColor)
@@ -517,6 +521,13 @@ class DDeiLayerCanvasRender {
         this.renderCacheData.set(attrPath, value);
       }
     }
+  }
+
+  clearCachedValue(): void {
+    this.renderCacheData.clear();
+    this.model.models.forEach(item=>{
+      item?.render?.clearCachedValue()
+    });
   }
 
   /**

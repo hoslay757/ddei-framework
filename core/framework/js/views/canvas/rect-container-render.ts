@@ -16,6 +16,7 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
   static newInstance(props: object): DDeiRectContainerCanvasRender {
     return new DDeiRectContainerCanvasRender(props)
   }
+  
 
   // ============================== 属性 ===============================
 
@@ -28,6 +29,13 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
       model.render?.enableRefreshShape()
     })
   }
+
+  clearCachedValue(): void {
+    this.model.models.forEach(item => {
+      item?.render?.clearCachedValue()
+    });
+  }
+
   /**
      * 创建图形
      */

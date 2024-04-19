@@ -37,7 +37,7 @@ export default {
       'desc': '背景的颜色',
       'controlType': 'color-combo',
       'dataType': 'string',
-      'defaultValue': 'white',
+      'defaultValue': '',
       'type': 1
     },
     {

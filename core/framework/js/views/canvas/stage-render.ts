@@ -389,7 +389,7 @@ class DDeiStageCanvasRender {
     let ctx = canvas.getContext('2d');
     ctx.save();
     //清空画布
-    ctx.fillStyle = DDeiUtil.getColor(DDeiConfig.STAGE.NONE_BG_COLOR)
+    ctx.fillStyle = DDeiUtil.getStyleValue("panel-header", this.ddRender.model);
     ctx.fillRect(0, 0, canvas.width, canvas.height)
     ctx.restore();
   }
@@ -656,8 +656,8 @@ class DDeiStageCanvasRender {
       fontSize *= rat1
       ctx.font = fontSize + "px Microsoft YaHei"
       ctx.lineWidth = 1
-      ctx.strokeStyle = "#E0E3E9"
-      ctx.fillStyle = "white"
+      ctx.strokeStyle = DDeiUtil.getStyleValue("canvas-rule-border", this.ddRender.model);
+      ctx.fillStyle = DDeiUtil.getStyleValue("canvas-rule-background", this.ddRender.model);
       let cwidth = canvas.width;
       let cheight = canvas.height;
 
@@ -711,9 +711,9 @@ class DDeiStageCanvasRender {
             ctx.moveTo(curX, 15);
           }
           if (nMod != 0) {
-            ctx.strokeStyle = "rgb(230,230,230)"
+            ctx.strokeStyle = DDeiUtil.getStyleValue("canvas-rule-border", this.ddRender.model); //"rgb(230,230,230)"
           } else {
-            ctx.strokeStyle = "rgb(220,220,220)"
+            ctx.strokeStyle = DDeiUtil.getStyleValue("canvas-rule-border", this.ddRender.model); //"rgb(220,220,220)"
           }
           ctx.lineTo(curX, weight);
           ctx.stroke()
@@ -732,9 +732,9 @@ class DDeiStageCanvasRender {
             ctx.moveTo(curX, 15);
           }
           if (nMod != 0) {
-            ctx.strokeStyle = "rgb(230,230,230)"
+            ctx.strokeStyle = DDeiUtil.getStyleValue("canvas-rule-border", this.ddRender.model); //"rgb(230,230,230)"
           } else {
-            ctx.strokeStyle = "rgb(220,220,220)"
+            ctx.strokeStyle = DDeiUtil.getStyleValue("canvas-rule-border", this.ddRender.model); //"rgb(220,220,220)"
           }
           ctx.lineTo(curX, weight);
           ctx.stroke()
@@ -758,9 +758,9 @@ class DDeiStageCanvasRender {
 
 
           if (nMod != 0) {
-            ctx.strokeStyle = "rgb(230,230,230)"
+            ctx.strokeStyle = DDeiUtil.getStyleValue("canvas-rule-border", this.ddRender.model); //"rgb(230,230,230)"
           } else {
-            ctx.strokeStyle = "rgb(220,220,220)"
+            ctx.strokeStyle = DDeiUtil.getStyleValue("canvas-rule-border", this.ddRender.model); //"rgb(220,220,220)"
           }
           ctx.lineTo(lineToNumber, curY);
           ctx.stroke();
@@ -873,7 +873,7 @@ class DDeiStageCanvasRender {
 
 
       //左上角空白
-      ctx.fillStyle = 'white'
+      ctx.fillStyle = DDeiUtil.getStyleValue("canvas-rule-background", this.ddRender.model);
       ctx.fillRect(0, 0, weight, weight)
       ctx.moveTo(0, weight)
       ctx.lineTo(weight, weight)
@@ -1255,8 +1255,9 @@ class DDeiStageCanvasRender {
     let cheight = canvas.height - scrollWeight;
     //绘制画布滚动条
     if (this.hScroll) {
-      ctx.fillStyle = "white"
-      ctx.strokeStyle = "rgb(220,220,220)"
+      
+      ctx.fillStyle = DDeiUtil.getStyleValue("panel-header", this.ddRender.model);
+      ctx.strokeStyle = DDeiUtil.getStyleValue("panel-title", this.ddRender.model);
       ctx.fillRect(0, cheight, this.hScroll.width * rat1, scrollWeight)
       ctx.strokeRect(0, cheight, this.hScroll.width * rat1, scrollWeight)
       //绘制当前位置区域
@@ -1267,8 +1268,8 @@ class DDeiStageCanvasRender {
       ctx.fillRect(this.hScroll.x * rat1, cheight, this.hScroll.contentWidth * rat1, scrollWeight)
     }
     if (this.vScroll) {
-      ctx.fillStyle = "white"
-      ctx.strokeStyle = "rgb(220,220,220)"
+      ctx.fillStyle = DDeiUtil.getStyleValue("panel-header", this.ddRender.model);
+      ctx.strokeStyle = DDeiUtil.getStyleValue("panel-title", this.ddRender.model);
       ctx.fillRect(cwidth, 0, scrollWeight, this.vScroll.height * rat1)
       ctx.strokeRect(cwidth, 0, scrollWeight, this.vScroll.height * rat1)
       ctx.fillStyle = "rgb(210,210,210)"
@@ -1279,8 +1280,8 @@ class DDeiStageCanvasRender {
       //绘制当前位置区域
     }
     if (this.vScroll || this.hScroll) {
-      ctx.strokeStyle = "rgb(220,220,220)"
-      ctx.fillStyle = "white"
+      ctx.strokeStyle = DDeiUtil.getStyleValue("panel-title", this.ddRender.model);
+      ctx.fillStyle = DDeiUtil.getStyleValue("panel-header", this.ddRender.model);
       ctx.fillRect(cwidth, cheight, scrollWeight, scrollWeight)
       ctx.strokeRect(cwidth, cheight, scrollWeight, scrollWeight)
     }
@@ -1355,6 +1356,13 @@ class DDeiStageCanvasRender {
         this.renderCacheData.set(attrPath, value);
       }
     }
+  }
+
+  clearCachedValue(): void {
+    this.renderCacheData.clear();
+    this.model.layers.forEach(layer => {
+      layer?.render?.clearCachedValue()
+    });
   }
 
   /**
