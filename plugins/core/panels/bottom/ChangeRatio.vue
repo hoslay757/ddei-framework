@@ -241,7 +241,7 @@ export default {
     
           &__dialog {
             &:hover {
-              background-color: rgb(235, 235, 235);
+              background-color: var(--panel-hover);
               cursor: pointer;
             }
           }

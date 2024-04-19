@@ -28,6 +28,7 @@
   --toolbox-title: var(--text);
   --toolbox-hover: var(--hover);
   --toolbox-control-hover: var(--dot);
+  --toolbox-control-hover-outline: 2px solid #BED0EF;
   --toolbox-control-title: var(--text);
 
 

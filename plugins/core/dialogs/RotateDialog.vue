@@ -128,6 +128,7 @@ export default {
           }
           model.render?.enableRefreshShape();
         });
+        this.editor.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
         this.editor.bus.push(DDeiEnumBusCommandType.NodifyChange);
         this.editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
         this.editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
