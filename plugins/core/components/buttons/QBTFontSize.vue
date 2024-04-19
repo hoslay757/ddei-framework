@@ -305,7 +305,7 @@ export default {
   align-items: center;
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
-  border: 1px solid var(--panel-header);//darken(var(--panel-header), 13%);
+  border: 1px solid var(--panel-border);//darken(var(--panel-header), 13%);
 
   &:hover {
     border: 0.5px solid var(--dot);
@@ -321,6 +321,7 @@ export default {
     width: calc(100% - 20px);
     border: transparent;
     outline: none;
+    color:var(--panel-title);
     font-size: 15px;
     background: transparent;
   

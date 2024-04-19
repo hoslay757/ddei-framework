@@ -148,9 +148,9 @@ export default {
 
   .content {
     width: 210px;
-    border: 1px solid #E6E6E6;
-    background-color: white;
-    box-shadow: 0px 2px 24px 0px #DBDBDB;
+    border: 1px solid var(--panel-border);
+    background-color: var(--panel-background);
+    box-shadow: 0px 2px 24px 0px hsl(0deg 0% 0% /0.25);
     border-radius: 6px;
     height: 400px;
     overflow-y: auto;
@@ -158,7 +158,7 @@ export default {
     user-select: none;
 
     .title {
-      color: black;
+      color: var(--panel-title);
       height: 36px;
       width: 100%;
       display: flex;
@@ -166,11 +166,11 @@ export default {
       align-items: center;
       font-size: 16px;
       padding-left: 10px;
-      border-bottom: 1px solid #DBDBDB;
+      border-bottom: 1px solid var(--panel-border);
     }
 
     .group {
-      color: black;
+      color: var(--panel-title);
       flex: 1;
       width: 100%;
       display: flex;
@@ -204,7 +204,7 @@ export default {
       }
 
       .item:hover {
-        background-color: var(--background);
+        background-color: var(--panel-hover);
       }
     }
   }
@@ -213,9 +213,9 @@ export default {
     display: none;
     position: absolute;
     width: 160px;
-    border: 1px solid #E6E6E6;
-    background-color: white;
-    box-shadow: 0px 2px 24px 0px #DBDBDB;
+    border: 1px solid var(--panel-border);
+    background-color: var(--panel-background);
+    box-shadow: 0px 2px 24px 0px hsl(0deg 0% 0% /0.25);
     border-radius: 6px;
     max-height: 400px;
     overflow-y: auto;
@@ -223,7 +223,7 @@ export default {
     user-select: none;
 
     .title {
-      color: black;
+      color: var(--panel-title);
       height: 36px;
       width: 100%;
       display: flex;
@@ -234,7 +234,7 @@ export default {
     }
 
     .group {
-      color: black;
+      color: var(--panel-title);
       flex: 1;
       width: 100%;
       display: flex;
@@ -268,7 +268,7 @@ export default {
       }
 
       .item:hover {
-        background-color: var(--background);
+        background-color: var(--panel-hover);
       }
     }
   }

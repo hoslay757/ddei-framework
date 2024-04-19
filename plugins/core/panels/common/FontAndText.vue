@@ -152,7 +152,7 @@ export default {
     display: flex;
     flex-direction: column;
     padding-left: 16px;
-    border-right: 1px solid var(--panel-header);//darken(var(--panel-header), 13%);
+    border-right: 1px solid var(--panel-border);//darken(var(--panel-header), 13%);
 
     .buttons {
       flex: 1;
@@ -214,7 +214,7 @@ export default {
     font-size: 14px;
     font-weight: 400;
     color: var(--panel-title); // fade(var(--panel-title), 40%);
-    border-right: 1px solid var(--panel-header);//darken(var(--panel-header), 13%);
+    border-right: 1px solid var(--panel-border);//darken(var(--panel-header), 13%);
   }
 }
 </style>

@@ -13,18 +13,18 @@
         </svg>
       </div>
       <form>
-        <div class="content_right_login_form">
+        <div class="content-right-login-form">
           <div class="content_right_form_msg">
             {{ form.validMsg.username }}
           </div>
-          <div class="content_right_login_form_title">用户名：</div>
-          <input v-model="form.username" ref="usernameinput" class="content_right_login_form_input"
+          <div class="content-right-login-form-title">用户名：</div>
+          <input v-model="form.username" ref="usernameinput" class="content-right-login-form_input"
             placeholder="手机号/邮箱/账号" autofocus />
           <div class="content_right_form_msg">
             {{ form.validMsg.password }}
           </div>
-          <div class="content_right_login_form_title">密码：</div>
-          <input v-model="form.password" class="content_right_login_form_input" placeholder="请输入密码" type="password"
+          <div class="content-right-login-form-title">密码：</div>
+          <input v-model="form.password" class="content-right-login-form_input" placeholder="请输入密码" type="password"
             @keydown.enter="login" autocomplete="on" />
 
         </div>
@@ -214,9 +214,9 @@ export default {
 .ddei-core-dialog-relogin {
   width: 420px;
   height: 210px;
-  background: #FFFFFF;
-  border: 1px solid #E6E6E6;
-  box-shadow: 0px 2px 24px 0px #DBDBDB;
+  background: var(--panel-background);
+  border: 1px solid var(--panel-border);
+   box-shadow: 0px 2px 24px 0px hsl(0deg 0% 0% /0.25);
   border-radius: 12px;
   display: none;
   position: absolute;
@@ -239,10 +239,9 @@ export default {
       align-items: center;
       justify-content: center;
       font-size: 18px;
-      font-family: "Microsoft YaHei";
       font-weight: 400;
       margin-top: 10px;
-      color: #000000;
+      color: var(--panel-title);
 
       >span {
         margin: 0 2px;
@@ -259,27 +258,29 @@ export default {
     }
 
 
-    .content_right_login_form {
+    .content-right-login-form {
       width: 90%;
       height: 120px;
-      background: #fff;
+      background: var(--panel-background);
       border-radius: 10px;
       text-align: center;
     }
 
-    .content_right_login_form_title {
+    .content-right-login-form-title {
       width: 100px;
       height: 30px;
       font-size: 18px;
       float: left;
       text-align: right;
-      color: black;
+      color: var(--panel-title);
     }
 
-    .content_right_login_form_input {
+    .content-right-login-form_input {
       width: 70%;
       height: 30px;
       font-size: 18px;
+      background-color: var(--panel-background);
+      color: var(--panel-title);
       float: left;
     }
 
@@ -293,11 +294,11 @@ export default {
       float: left;
     }
 
-    .content_right_login_form_login {
+    .content-right-login-form_login {
       width: 45%;
       height: 50px;
-      background-color: #3662ec;
-      border-color: #3662ec;
+      background-color: var(--dot);
+      border-color: var(--dot);;
       cursor: pointer;
       border-radius: 2px;
       text-align: center;
@@ -305,11 +306,11 @@ export default {
       padding-top: 15px;
     }
 
-    .content_right_login_form_register {
+    .content-right-login-form_register {
       width: 45%;
       height: 50px;
-      background-color: rgb(210, 210, 210);
-      border-color: rgb(210, 210, 210);
+      background-color: var(--panel-background);
+      border-color: var(--panel-border);
       cursor: pointer;
       border-radius: 2px;
       text-align: center;
@@ -317,16 +318,16 @@ export default {
       padding-top: 15px;
     }
 
-    .content_right_login_form_register span {
+    .content-right-login-form_register span {
       font-size: 19px;
-      color: black;
+      color: var(--panel-title);
       text-align: center;
       pointer-events: none;
     }
 
-    .content_right_login_form_login span {
+    .content-right-login-form_login span {
       font-size: 19px;
-      color: white;
+      color: var(--panel-title);
       text-align: center;
       pointer-events: none;
     }
@@ -343,13 +344,12 @@ export default {
     .button {
       flex: 0 0 80px;
       height: 36px;
-      background: #FFFFFF;
-      border: 1px solid #E6E6E6;
+      background: var(--panel-header);
+      border: 1px solid var(--panel-border);
       border-radius: 6px;
       font-size: 17px;
-      font-family: "Microsoft YaHei";
       font-weight: 400;
-      color: #040404;
+      color: var(--panel-title);
       margin-left: 13px;
       display: flex;
       align-items: center;
@@ -359,13 +359,13 @@ export default {
 
     .button:hover {
       color: white;
-      background: #176EFF;
+      background: var(--dot);
       cursor: pointer;
     }
 
     .button-main {
       color: white;
-      background: #176EFF;
+      background: var(--dot);
 
     }
   }

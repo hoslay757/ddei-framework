@@ -776,6 +776,18 @@ class DDeiEditor {
   changeStyle(name:string,obj: object){
     let container = document.getElementById(this.containerid);
     container?.setAttribute("theme",name);
+    //清空已有属性
+    let removeProperties = []
+    for(let i = 0;i < container.style.length;i++){
+      if (container.style[i] && container.style[i].startsWith("--")){
+        removeProperties.push(container.style[i])
+        
+      }
+    }
+    removeProperties.forEach(prop=>{
+      container.style.removeProperty(prop);
+    });
+   
     for (let key in obj) {
       container.style.setProperty(`--${key}`, obj[key]);
     }
@@ -784,6 +796,9 @@ class DDeiEditor {
       this.ddInstance?.stage?.render?.clearCachedValue();
       this.ddInstance.stage.render.refresh = true
     }
+    //更新图标
+    DDeiEditorUtil.clearControlIcons(this);
+    DDeiEditorUtil.getControlIcons(this);
   };
 }
 

@@ -80,14 +80,14 @@ export default {
 /**以下是选择字体的弹出框 */
 .ddei-core-dialog-selectfont {
 
-  border: 1px solid #E6E6E6;
-  box-shadow: 0px 2px 24px 0px #DBDBDB;
+  border: 1px solid var(--panel-border);
+   box-shadow: 0px 2px 24px 0px hsl(0deg 0% 0% /0.25);
   border-radius: 6px;
   display: none;
   overflow: hidden;
   width: 170px;
   position: absolute;
-  background-color: white;
+  background-color: var(--panel-background);
   height: 310px;
   z-index: 999;
   user-select: none;
@@ -98,7 +98,7 @@ export default {
     overflow-y: auto;
 
     .group {
-      color: black;
+      color: var(--panel-title);
       flex: 1 1 40px;
       width: 100%;
 
@@ -136,7 +136,7 @@ export default {
         }
 
         .itembox_disabled {
-          color: rgb(210, 210, 210);
+          color: var(--panel-title-disabled);
           text-decoration: line-through;
         }
 
@@ -150,12 +150,12 @@ export default {
 
         .item_selected {
           font-weight: bold;
-          background-color: rgb(233, 233, 238);
+          background-color: var(--panel-selected);
 
         }
 
         .item:hover {
-          background-color: rgb(233, 233, 238);
+          background-color: var(--panel-hover);
         }
 
 

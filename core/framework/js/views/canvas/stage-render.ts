@@ -795,7 +795,7 @@ class DDeiStageCanvasRender {
       }
 
 
-      ctx.fillStyle = "grey"
+      ctx.fillStyle = DDeiUtil.getStyleValue("canvas-control-title", this.ddRender.model); 
       //绘制文本与左上角空白
       curX = startBaseX - wpvX
       x = 0;
@@ -981,7 +981,7 @@ class DDeiStageCanvasRender {
         let ey = paperOutRect.y + paperOutRect.h
         if (gridDisplay == 2 || gridDisplay == '2') {
           //纸张开始的位置
-          ctx.strokeStyle = "rgb(121,121,121)"
+          ctx.strokeStyle = DDeiUtil.getColorObj(DDeiUtil.getStyleValue("canvas-grid-dot", this.ddRender.model));
           ctx.lineWidth = 2 * stageRatio
           ctx.setLineDash([2 * stageRatio, splitedWeight - stageRatio])
           for (let sx = this.paperStartX; sx <= ex; sx = sx + splitedWeight) {
@@ -997,12 +997,15 @@ class DDeiStageCanvasRender {
             ctx.stroke();
           }
         } else if (gridDisplay == 1 || gridDisplay == '1') {
+          let strokeColor = DDeiUtil.getColorObj(DDeiUtil.getStyleValue("canvas-grid-line", this.ddRender.model));
+          let strokeLighten = strokeColor?.lighten(0.05);
+          
           for (let sx = this.paperStartX, n = 0; sx <= ex; sx = sx + splitedWeight, n++) {
             let nMod = n % splitNumber
             if (nMod != 0) {
-              ctx.strokeStyle = "rgb(230,230,230)"
+              ctx.strokeStyle = strokeLighten?.toColor();
             } else {
-              ctx.strokeStyle = "rgb(220,220,220)"
+              ctx.strokeStyle = strokeColor?.toColor();
             }
             ctx.beginPath()
             ctx.moveTo(sx, paperOutRect.y);
@@ -1012,9 +1015,9 @@ class DDeiStageCanvasRender {
           for (let sx = this.paperStartX, n = 0; sx >= paperOutRect.x; sx = sx - splitedWeight, n++) {
             let nMod = n % splitNumber
             if (nMod != 0) {
-              ctx.strokeStyle = "rgb(230,230,230)"
+              ctx.strokeStyle = strokeLighten?.toColor();
             } else {
-              ctx.strokeStyle = "rgb(220,220,220)"
+              ctx.strokeStyle = strokeColor?.toColor();
             }
             ctx.beginPath()
             ctx.moveTo(sx, paperOutRect.y);
@@ -1024,9 +1027,9 @@ class DDeiStageCanvasRender {
           for (let sy = this.paperStartY, n = 0; sy <= ey; sy = sy + splitedWeight, n++) {
             let nMod = n % splitNumber
             if (nMod != 0) {
-              ctx.strokeStyle = "rgb(230,230,230)"
+              ctx.strokeStyle = strokeLighten?.toColor();
             } else {
-              ctx.strokeStyle = "rgb(220,220,220)"
+              ctx.strokeStyle = strokeColor?.toColor();
             }
             ctx.beginPath()
             ctx.moveTo(paperOutRect.x, sy);
@@ -1037,9 +1040,9 @@ class DDeiStageCanvasRender {
           for (let sy = this.paperStartY, n = 0; sy >= paperOutRect.y; sy = sy - splitedWeight, n++) {
             let nMod = n % splitNumber
             if (nMod != 0) {
-              ctx.strokeStyle = "rgb(230,230,230)"
+              ctx.strokeStyle = strokeLighten?.toColor();
             } else {
-              ctx.strokeStyle = "rgb(220,220,220)"
+              ctx.strokeStyle = strokeColor?.toColor();
             }
             ctx.beginPath()
             ctx.moveTo(paperOutRect.x, sy);
@@ -1048,8 +1051,6 @@ class DDeiStageCanvasRender {
 
           }
         }
-
-
         ctx.restore();
       }
     }
@@ -1256,8 +1257,8 @@ class DDeiStageCanvasRender {
     //绘制画布滚动条
     if (this.hScroll) {
       
-      ctx.fillStyle = DDeiUtil.getStyleValue("panel-header", this.ddRender.model);
-      ctx.strokeStyle = DDeiUtil.getStyleValue("panel-title", this.ddRender.model);
+      ctx.fillStyle = DDeiUtil.getStyleValue("canvas-scroll-background", this.ddRender.model);
+      ctx.strokeStyle = DDeiUtil.getStyleValue("canvas-scroll-border", this.ddRender.model);
       ctx.fillRect(0, cheight, this.hScroll.width * rat1, scrollWeight)
       ctx.strokeRect(0, cheight, this.hScroll.width * rat1, scrollWeight)
       //绘制当前位置区域
@@ -1268,8 +1269,8 @@ class DDeiStageCanvasRender {
       ctx.fillRect(this.hScroll.x * rat1, cheight, this.hScroll.contentWidth * rat1, scrollWeight)
     }
     if (this.vScroll) {
-      ctx.fillStyle = DDeiUtil.getStyleValue("panel-header", this.ddRender.model);
-      ctx.strokeStyle = DDeiUtil.getStyleValue("panel-title", this.ddRender.model);
+      ctx.fillStyle = DDeiUtil.getStyleValue("canvas-scroll-background", this.ddRender.model);
+      ctx.strokeStyle = DDeiUtil.getStyleValue("canvas-scroll-border", this.ddRender.model);
       ctx.fillRect(cwidth, 0, scrollWeight, this.vScroll.height * rat1)
       ctx.strokeRect(cwidth, 0, scrollWeight, this.vScroll.height * rat1)
       ctx.fillStyle = "rgb(210,210,210)"
@@ -1280,8 +1281,8 @@ class DDeiStageCanvasRender {
       //绘制当前位置区域
     }
     if (this.vScroll || this.hScroll) {
-      ctx.strokeStyle = DDeiUtil.getStyleValue("panel-title", this.ddRender.model);
-      ctx.fillStyle = DDeiUtil.getStyleValue("panel-header", this.ddRender.model);
+      ctx.strokeStyle = DDeiUtil.getStyleValue("canvas-scroll-border", this.ddRender.model);
+      ctx.fillStyle = DDeiUtil.getStyleValue("canvas-scroll-background", this.ddRender.model);
       ctx.fillRect(cwidth, cheight, scrollWeight, scrollWeight)
       ctx.strokeRect(cwidth, cheight, scrollWeight, scrollWeight)
     }

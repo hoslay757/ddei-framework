@@ -125,7 +125,7 @@ export default {
             }),
             "ddei-core-panel-bottom-managelayers", 
             DDeiCoreChangeRatioPanel.configuraton({
-              delta:0.1,min:1,max:4,step:0.2,dialog:false,range:false
+              delta:0.1,min:1,max:4,step:0.2,dialog:true,range:false
             })]
           }),
           DDeiCoreChangeRatioDialog.configuraton({
@@ -1007,7 +1007,7 @@ export default {
       width: 200px;
       height: 40px;
       background: #FFFFFF;
-      border: 1px solid #E6E6E6;
+      border: 1px solid var(--panel-border);
       border-radius: 6px;
       font-size: 20px;
       font-family: "Microsoft YaHei";

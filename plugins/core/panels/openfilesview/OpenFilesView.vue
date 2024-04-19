@@ -638,9 +638,9 @@ export default {
 }
 .ddei-core-panel-openfilesview {
   flex: 0 0 30.5px;
-  background: var(--background);
-  border-top: 1px solid var(--panel-header);
-  border-bottom: 1px solid var(--panel-header);
+  background: var(--panel-background);
+  border-top: 1px solid var(--panel-border);
+  border-bottom: 1px solid var(--panel-border);
   display: flex;
   user-select: none;
   align-items: center;
@@ -683,6 +683,7 @@ export default {
   }
 
   &-item {
+    height: 100%;
     flex: 0 0 195px;
     display: flex;
     justify-content: center;

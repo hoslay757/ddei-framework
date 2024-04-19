@@ -498,7 +498,7 @@ export default {
   &-page {
     float: left;
     height: 27px;
-    border-right: 1px solid var(--panel-header);
+    border-right: 1px solid var(--panel-border);
     padding: 0 10px;
     text-align: center;
 
@@ -521,14 +521,14 @@ export default {
     &--selected {
       float: left;
       height: 27px;
-      border-right: 1px solid var(--panel-header);
+      border-right: 1px solid var(--panel-border);
       padding: 0 10px;
       text-align: center;
 
       span {    
         height: 27px;
         width: 80px;
-        background: var(--panel-hover);
+        background: var(--panel-selected);
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;

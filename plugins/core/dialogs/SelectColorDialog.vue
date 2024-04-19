@@ -230,8 +230,8 @@ export default {
 /**以下是选择颜色的弹出框 */
 .ddei-core-dialog-selectcolor {
 
-  border: 1px solid var(--panel-header);
-  box-shadow: 0px 2px 24px 0px var(--panel-header);
+  border: 1px solid var(--panel-border);
+  box-shadow: 0px 2px 24px 0px hsl(0deg 0% 0% /0.25);
   border-radius: 6px;
   display: none;
   overflow: hidden;

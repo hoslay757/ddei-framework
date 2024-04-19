@@ -186,7 +186,7 @@ export default {
 
   &--disabled {
     pointer-events: none;
-    color: var(--panel-title)-selected;
+    color: var(--panel-title-selected);
     cursor: not-allowed;
     background-color: var(--panel-selected);
   }

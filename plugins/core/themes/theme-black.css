@@ -3,31 +3,43 @@
   --theme: #2c2c2c;
   --text: white;
   --dot: #176eff;
-  --active: #edefff;
+  --hover: rgb(60,60,60);
   --icon: white;
+  --border: #DFDFDF;
+  --placeholder: #A1A1A1;
+  --scroll-background: var(--theme);
+  --scroll-hover: var(--hover);
+  --scroll-border: white;
 
   --panel-header: var(--theme);
   --panel-background: var(--background);
   --panel-title: var(--text);
-  --panel-hover: var(--theme);
+  --panel-border: var(--border);
+  --panel-hover: var(--hover);
   --panel-disabled: var(--theme);
-  --panel-selected: var(--theme);
-  --panel-title-disabled:var(--text);
+  --panel-selected: var(--hover);
+  --panel-title-disabled: #A1A1A1;
+  --panel-title-selected: var(--text);
+
 
 
   --toolbox-header: var(--theme);
   --toolbox-background: var(--background);
   --toolbox-title: var(--text);
-  --toolbox-hover: var(--theme);
-  --toolbox-placeholder: var(--text);
+  --toolbox-hover: var(--hover);
   --toolbox-control-hover: var(--dot);
   --toolbox-control-title: var(--text);
 
 
   --canvas-rule-background: var(--theme);
   --canvas-rule-border: white;
+  --canvas-scroll-background: var(--theme);
+  --canvas-scroll-border: white;
+  --canvas-grid-line: rgb(121, 121, 121);
+  --canvas-grid-dot: rgb(121, 121, 121);
   --canvas-control-border: white;
   --canvas-control-background: var(--theme);
   --canvas-control-title: white;
 
+  
 }

@@ -5,6 +5,7 @@ import DDei from './ddei.js';
 import { Matrix3, Vector3 } from 'three';
 import DDeiModelArrtibuteValue from './models/attribute/attribute-value';
 import DDeiStage from './models/stage';
+import DDeiColor from './color.js';
 
 const expressBindValueReg = /#\{[^\{\}]*\}/;
 const contentSplitReg = /\+|\-|\*|\//;
@@ -1279,6 +1280,15 @@ class DDeiUtil {
     return `rgb(${r},${g},${b})`;
   }
 
+  static hex2ddeicolor(hex: string): DDeiColor {
+    let hexNum = hex.substring(1);
+    hexNum = '0x' + (hexNum.length < 6 ? repeatLetter(hexNum, 2) : hexNum);
+    let r = hexNum >> 16;
+    let g = hexNum >> 8 & '0xff';
+    let b = hexNum & '0xff';
+    return new DDeiColor(r,g,b,1);
+  }
+
   static repeatWord(word: string, num: number): string {
     let result = '';
     for (let i = 0; i < num; i++) {
@@ -1327,11 +1337,26 @@ class DDeiUtil {
       return null;
     }
     if (color.startsWith("#")) {
-      return this.hex2rgb(color);
+      return DDeiUtil.hex2rgb(color);
     }
     //其余情况原样返回
     else {
       return color;
+    }
+  }
+
+  // 将颜色转换为可用颜色(rgb),其他情况原样返回
+  static getColorObj(color: string): DDeiColor|null {
+    if (!color) {
+      return null;
+    }
+    if (color.startsWith("#")) {
+      return DDeiUtil.hex2ddeicolor(color);
+    }
+    //其余情况原样返回
+    else {
+      let hexColor = DDeiUtil.rgb2hex(color);
+      return DDeiUtil.hex2ddeicolor(hexColor);
     }
   }
 

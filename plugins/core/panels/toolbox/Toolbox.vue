@@ -44,7 +44,7 @@
         <div class="ddei-core-panel-toolbox-groups-group-itempanel" v-if="group.expand == true">
           <div class="ddei-core-panel-toolbox-groups-group-itempanel-item" :title="control.desc"
             @mousedown="createControlPrepare(control, $event)" v-for="control in group.controls">
-            <img class="icon" :src="icons[control.id]" />
+            <img class="icon" :src="editor?.icons[control.id]" />
             <div class="text">{{ control.name }}</div>
           </div>
         </div>
@@ -112,7 +112,6 @@ export default {
       searchText: "",
       //当前编辑器
       editor: null,
-      icons: {},
       forceRefresh:true,
     };
   },
@@ -182,9 +181,6 @@ export default {
         this.groups = newGroups
       }
       this.searchOriginGroups = this.groups;
-      DDeiEditorUtil.getControlIcons(this.editor).then(icons => {
-        this.icons = icons;
-      })
     },
 
     mouseWheel(evt) {
@@ -538,32 +534,32 @@ export default {
 
         &::placeholder {
           /* Chrome, Firefox, Opera, Safari 10.1+ */
-          color:var(--toolbox-placeholder);
+          color:var(--placeholder);
         }
 
         &::-webkit-input-placeholder {
           /* WebKit browsers，webkit内核浏览器 */
-          color:var(--toolbox-placeholder);
+          color:var(--placeholder);
         }
 
         &:-moz-placeholder {
           /* Mozilla Firefox 4 to 18 */
-          color:var(--toolbox-placeholder);
+          color:var(--placeholder);
         }
 
         &::-moz-placeholder {
           /* Mozilla Firefox 19+ */
-          color:var(--toolbox-placeholder);
+          color:var(--placeholder);
         }
 
         &:-ms-input-placeholder {
           /* Internet Explorer 10-11 */
-          color:var(--toolbox-placeholder);
+          color:var(--placeholder);
         }
 
         &::-ms-input-placeholder {
           /* Microsoft Edge */
-          color:var(--toolbox-placeholder);
+          color:var(--placeholder);
         }
       }
     }
@@ -571,7 +567,7 @@ export default {
 
   &-groups {
     text-align: center;
-    background: rgb(254, 254, 255);
+    background: var(--toolbox-background,--panel-background);
     overflow-y: auto;
     display: flex;
     flex-flow: column;
@@ -581,31 +577,28 @@ export default {
       height: 6px;
     }
     &::-webkit-scrollbar-thumb {
-      background-color:var(--toolbox-header);//darken(@toolbox-header,5%);
-      border-radius: 6px;
+      background-color:var(--scroll-hover);//darken(@toolbox-header,5%);
       -webkit-box-shadow: inset1px1px0rgba(0, 0, 0, 0.1);
     }
 
     &:hover::-webkit-scrollbar-thumb {
-      background-color:var(--toolbox-header); //darken(@toolbox-header, 10%);
-      border-radius: 6px;
+      background-color:var(--scroll-hover); //darken(@toolbox-header, 10%);
       -webkit-box-shadow: inset1px1px0rgba(0, 0, 0, 0.1);
     }
 
     &::-webkit-scrollbar-thumb:hover {
-      background-color:var(--toolbox-header); //darken(@toolbox-header, 20%);
+      background-color:var(--scroll-hover); //darken(@toolbox-header, 20%);
       -webkit-box-shadow: inset1px1px0rgba(0, 0, 0, 0.1);
     }
 
     &::-webkit-scrollbar-track {
-      border-radius: 6px;
       -webkit-box-shadow: inset006pxrgba(0, 0, 0, 0);
-      background-color:var(--toolbox-header); //darken(@toolbox-header, 0%);
+      background-color:var(--scroll-background); //darken(@toolbox-header, 0%);
     }
 
     &::-webkit-scrollbar-track:hover {
       -webkit-box-shadow: inset006pxrgba(0, 0, 0, 0.4);
-      background-color:var(--toolbox-header); //darken(@toolbox-header, 1%);
+      background-color:var(--scroll-background); //darken(@toolbox-header, 1%);
     }
 
     &-group {

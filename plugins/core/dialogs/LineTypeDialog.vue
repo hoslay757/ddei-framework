@@ -20,8 +20,6 @@
 </template>
 
 <script lang="ts">
-import DDeiEditor from "@ddei-core/editor/js/editor";
-import DDeiEnumBusCommandType from "@ddei-core/framework/js/enums/bus-command-type";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
 import DialogBase from "./dialog"
 
@@ -86,14 +84,14 @@ export default {
 <style lang="less" scoped>
 .ddei-core-dialog-linetype {
 
-  border: 1px solid #E6E6E6;
-  box-shadow: 0px 2px 24px 0px #DBDBDB;
+  border: 1px solid var(--panel-border);
+  box-shadow: 0px 2px 24px 0px hsl(0deg 0% 0% /0.25);
   border-radius: 6px;
   display: none;
   overflow: hidden;
   width: 240px;
   position: absolute;
-  background-color: white;
+  background-color: var(--panel-background);
   height: 90px;
   z-index: 999;
 
@@ -104,7 +102,7 @@ export default {
     user-select: none;
 
     .title {
-      color: black;
+      color: var(--panel-title);
       font-weight: bold;
       flex: 0 0 30px;
       width: 100%;
@@ -115,11 +113,11 @@ export default {
     }
 
     .group {
-      color: black;
+      color: var(--panel-title);
       flex: 1 1 40px;
       width: 100%;
       padding: 10px;
-      border-top: 1px solid rgb(240, 240, 240);
+      border-top: 1px solid var(--panel-border);
 
       .group_content {
         width: 96%;
@@ -139,17 +137,17 @@ export default {
           justify-content: center;
           align-items: center;
           cursor: pointer;
-          border: 1px solid grey;
+          border: 1px solid var(--panel-border);
         }
 
         .selected {
-          background-color: rgb(233, 233, 238);
+          background-color: var(--panel-selected);
         }
 
 
 
         .item:hover {
-          background-color: rgb(233, 233, 238);
+          background-color: var(--panel-hover);
         }
 
 

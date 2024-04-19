@@ -85,14 +85,14 @@ export default {
 /**以下是选择颜色的弹出框 */
 .ddei-core-dialog-linepointtype {
 
-  border: 1px solid #E6E6E6;
-  box-shadow: 0px 2px 24px 0px #DBDBDB;
+  border: 1px solid var(--panel-border);
+  box-shadow: 0px 2px 24px 0px hsl(0deg 0% 0% /0.25);
   border-radius: 6px;
   display: none;
   overflow: hidden;
   width: 240px;
   position: absolute;
-  background-color: white;
+  background-color: var(--panel-background);
   height: 250px;
   z-index: 999;
   user-select: none;
@@ -103,11 +103,11 @@ export default {
     overflow-y: auto;
 
     .group {
-      color: black;
+      color: var(--panel-title);
       width: 100%;
 
       .title {
-        color: black;
+        color: var(--panel-title);
         flex: 0 0 30px;
         width: 100%;
         display: flex;
@@ -136,7 +136,7 @@ export default {
         justify-content: center;
         align-items: center;
         cursor: pointer;
-        border: 0.5px solid #DBDBDB;
+        border: 0.5px solid var(--panel-border);
 
         .div_input {
           width: calc(100% - 10px);
@@ -145,11 +145,11 @@ export default {
       }
 
       .item:hover {
-        outline: 1px solid #1F72FF;
+        outline: 1px solid var(--dot);
       }
 
       .item-selected {
-        outline: 1px solid #1F72FF;
+        outline: 1px solid var(--dot);
       }
     }
   }
@@ -167,13 +167,12 @@ export default {
   .button {
     flex: 0 0 70px;
     height: 32px;
-    background: #FFFFFF;
-    border: 1px solid #E6E6E6;
+    background: var(--panel-header);
+    border: 1px solid var(--panel-border);
     border-radius: 6px;
     font-size: 16px;
-    font-family: "Microsoft YaHei";
     font-weight: 400;
-    color: #040404;
+    color: var(--panel-title);
     margin-left: 13px;
     display: flex;
     align-items: center;
@@ -183,13 +182,13 @@ export default {
 
   .button:hover {
     color: white;
-    background: #176EFF;
+    background: var(--dot);
     cursor: pointer;
   }
 
   .button-main {
     color: white;
-    background: #176EFF;
+    background: var(--dot);
 
   }
 }

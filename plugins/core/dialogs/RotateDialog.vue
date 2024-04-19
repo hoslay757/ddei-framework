@@ -126,6 +126,7 @@ export default {
             m1.premultiply(move2Matrix)
             model.transVectors(m1)
           }
+          model.render?.enableRefreshShape();
         });
         this.editor.bus.push(DDeiEnumBusCommandType.NodifyChange);
         this.editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
@@ -140,14 +141,14 @@ export default {
 <style lang="less" scoped>
 .ddei-core-dialog-changerotate {
 
-  border: 1px solid #E6E6E6;
-  box-shadow: 0px 2px 24px 0px #DBDBDB;
+  border: 1px solid var(--panel-border);
+   box-shadow: 0px 2px 24px 0px hsl(0deg 0% 0% /0.25);
   border-radius: 6px;
   display: none;
   overflow: hidden;
   width: 180px;
   position: absolute;
-  background-color: white;
+  background-color: var(--panel-background);
   height: 150px;
   z-index: 999;
 
@@ -158,7 +159,7 @@ export default {
     user-select: none;
 
     .title {
-      color: black;
+      color: var(--panel-title);
       font-weight: bold;
       flex: 0 0 30px;
       width: 100%;
@@ -170,13 +171,13 @@ export default {
     }
 
     .group {
-      color: black;
+      color: var(--panel-title);
       flex: 1 1 40px;
       width: 100%;
-      border-top: 1px solid rgb(240, 240, 240);
+      border-top: 1px solid var(--panel-border);
 
       .title {
-        color: black;
+        color: var(--panel-title);
         flex: 0 0 30px;
         width: 100%;
         display: flex;
@@ -210,7 +211,7 @@ export default {
         }
 
         .item_disabled {
-          color: rgb(210, 210, 210);
+          color: var(--panel-title-disabled);
           outline: none;
           width: 30px;
           height: 25px;
@@ -224,7 +225,7 @@ export default {
           text-decoration: line-through;
 
           .icon {
-            color: none;
+            color: var(--panel-title-disabled);
           }
         }
 
@@ -233,7 +234,7 @@ export default {
         }
 
         .item:hover {
-          background-color: rgb(233, 233, 238);
+          background-color: var(--panel-hover);
         }
 
         .text {

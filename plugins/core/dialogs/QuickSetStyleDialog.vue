@@ -5,7 +5,7 @@
       <div class="group">
         <div class="group_content">
           <div class="item"
-            :style="{ 'border-radius': data.round ? data.round + 'px' : '', 'border-color': data.border ? data.border : 'transparent', 'background-color': data.fill ? data.fill : 'transparent' }"
+            :style="{ 'color':data.text?data.text:'black','border-radius': data.round ? data.round + 'px' : '', 'border-color': data.border ? data.border : 'transparent', 'background-color': data.fill ? data.fill : 'transparent' }"
             v-for="data in ds" @click="select(data)" @dblclick="ok(data)">
             文本
           </div>
@@ -164,6 +164,20 @@ export default {
               );
             }
 
+            let fontColor = "black";
+            if (data.color) {
+              fontColor = data.color;
+            }
+            let fontColorDefine = controlDefine.attrDefineMap.get("font.color");
+            fontColorDefine.value = fontColor
+            let paths = ["font.color"]
+            this.editor.bus.push(
+              DDeiEnumBusCommandType.ModelChangeValue,
+              { mids: [model.id], paths: paths, value: data.round },
+              null,
+              true
+            );
+            
 
 
 
@@ -192,14 +206,14 @@ export default {
 <style lang="less" scoped>
 .ddei-core-dialog-setstyle {
 
-  border: 1px solid #E6E6E6;
-  box-shadow: 0px 2px 24px 0px #DBDBDB;
+  border: 1px solid var(--panel-border);
+  box-shadow: 0px 2px 24px 0px hsl(0deg 0% 0% /0.25);
   border-radius: 6px;
   display: none;
   overflow: hidden;
   width: 440px;
   position: absolute;
-  background-color: white;
+  background-color: var(--panel-background);
   height: 230px;
   z-index: 999;
 
@@ -210,7 +224,7 @@ export default {
     user-select: none;
 
     .title {
-      color: black;
+      color: var(--panel-title);
       font-weight: bold;
       flex: 0 0 30px;
       width: 100%;
@@ -221,11 +235,11 @@ export default {
     }
 
     .group {
-      color: black;
+      color: var(--panel-title);
       flex: 1 1 40px;
       width: 100%;
       padding: 10px;
-      border-top: 1px solid rgb(240, 240, 240);
+      border-top: 1px solid var(--panel-border);
 
       .group_content {
         width: 95%;
@@ -244,7 +258,7 @@ export default {
           justify-content: center;
           align-items: center;
           cursor: pointer;
-          border: 1px solid black;
+          border: 1px solid var(--panel-border);
         }
 
 

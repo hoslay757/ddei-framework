@@ -278,7 +278,7 @@ export default {
   border-bottom-left-radius: 4px;
   justify-content: center;
   align-items: center;
-  border: 1px solid var(--panel-header);//darken(var(--panel-header), 13%);
+  border: 1px solid var(--panel-border);//darken(var(--panel-header), 13%);
   border-right: none;
 
   &:hover {
@@ -298,6 +298,7 @@ export default {
     border: transparent;
     outline: none;
     font-size: 15px;
+    color:var(--panel-title);
     background: transparent;
   }
 

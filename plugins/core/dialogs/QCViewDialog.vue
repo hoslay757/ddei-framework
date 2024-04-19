@@ -69,7 +69,7 @@ export default {
 .ddei-core-dialog-qcview {
   width: 80px;
   position: absolute;
-  background-color: white;
+  background-color: var(--panel-background);
   left: 0px;
   display: none;
   bottom: 16px;
@@ -89,14 +89,14 @@ export default {
       align-items: center;
 
       >div {
-        color: black;
+        color: var(--panel-title);
         font-size: 13px;
         flex: 1
       }
     }
 
     .item:hover {
-      background: rgb(235, 235, 239);
+      background: var(--panel-hover);
       cursor: pointer;
     }
   }

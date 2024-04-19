@@ -46,12 +46,7 @@ export default {
       editor: null,
       dragObj: null,
       changeIndex: -1,
-      refreshBottomMenu: true,
-      refreshOpenFilesView: true,
-      refreshPropertyView: true,
-      refreshToolBox: true,
-      refreshMenu: true,
-      refreshTopMenuView: true,
+      refreshMenu:false,
       initLeftWidth: 0,
       initRightWidth: 0
     };
@@ -98,6 +93,7 @@ export default {
     //设置默认风格
     this.editor.bindEvent();
     this.editor.changeTheme('');
+    DDeiEditorUtil.getControlIcons(this.editor);
 
     
     //初始化拦截器

@@ -72,13 +72,12 @@ export default {
   display: grid;
   grid-template-rows: 20px 57px 26px;
   grid-template-columns: 1fr;
-  background:var(--panel-header);
 
   .content {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-right: 1px solid var(--panel-header);//darken(var(--panel-header), 13%);
+    border-right: 1px solid var(--panel-border);//darken(var(--panel-header), 13%);
 
     .goback {
       flex: 0 1 36px;
@@ -118,7 +117,7 @@ export default {
   }
 
   .tail {
-    border-right: 1px solid var(--panel-header);//darken(var(--panel-header), 13%);
+    border-right: 1px solid var(--panel-border);//darken(var(--panel-header), 13%);
   }
 }
 </style>

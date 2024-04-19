@@ -14,63 +14,63 @@
           </svg>
         </div>
 
-        <div class="content_right_login_form">
-          <div class="content_right_form_msg">
+        <div class="content-right-login-form">
+          <div class="content-right-form-msg">
             {{ form.validMsg.mobile }}
           </div>
-          <div class="content_right_login_form_input">
+          <div class="content-right-reg-form-input">
             <svg class="icon" aria-hidden="true">
               <use xlink:href="#icon-a-ziyuan412"></use>
             </svg>
 
-            <input v-model="form.mobile" ref="reg_input_id" type="mobile" class="content_right_reg_form_input"
+            <input v-model="form.mobile" ref="reg_input_id" type="mobile" class="content-right-reg-form-input"
               placeholder="手机号" />
-            <span class="content_right_reg_form_input_required">*</span>
+            <span class="content-right-reg-form-input-required">*</span>
           </div>
-          <div class="content_right_form_msg">
+          <div class="content-right-form-msg">
             {{ form.validMsg.username }}
           </div>
-          <div class="content_right_login_form_input">
+          <div class="content-right-reg-form-input">
             <svg class="icon" aria-hidden="true">
               <use xlink:href="#icon-a-ziyuan413"></use>
             </svg>
 
-            <input v-model="form.username" class="content_right_reg_form_input" placeholder="用户名,4-20位中文、英文、数字、下划线" />
-            <span class="content_right_reg_form_input_required">*</span>
+            <input v-model="form.username" class="content-right-reg-form-input" placeholder="用户名,4-20位中文、英文、数字、下划线" />
+            <span class="content-right-reg-form-input-required">*</span>
           </div>
-          <div class="content_right_form_msg">
+          <div class="content-right-form-msg">
             {{ form.validMsg.email }}
           </div>
-          <div class="content_right_login_form_input">
+          <div class="content-right-reg-form-input">
             <svg class="icon" aria-hidden="true">
               <use xlink:href="#icon-youjian-01-01"></use>
             </svg>
 
-            <input v-model="form.email" class="content_right_reg_form_input" placeholder="邮箱地址" type="email" />
+            <input v-model="form.email" class="content-right-reg-form-input" placeholder="邮箱地址" type="email" />
           </div>
-          <div class="content_right_form_msg">
+          <div class="content-right-form-msg">
             {{ form.validMsg.password }}
           </div>
-          <div class="content_right_login_form_input">
+          <div class="content-right-reg-form-input">
             <svg class="icon" aria-hidden="true">
               <use xlink:href="#icon-a-ziyuan415"></use>
             </svg>
 
-            <input v-model="form.password" type="password" autocomplete="on" class="content_right_reg_form_input"
+            <input v-model="form.password" type="password" autocomplete="on" class="content-right-reg-form-input"
               placeholder="密码" />
-            <span class="content_right_reg_form_input_required">*</span>
+            <span class="content-right-reg-form-input-required">*</span>
           </div>
-          <div class="content_right_form_msg">
+          <div class="content-right-form-msg">
             {{ form.validMsg.password1 }}
           </div>
-          <div class="content_right_login_form_input">
+          <div class="content-right-reg-form-input">
             <svg class="icon" aria-hidden="true">
               <use xlink:href="#icon-a-ziyuan414"></use>
             </svg>
 
-            <input v-model="form.password1" type="password" autocomplete="on" class="content_right_reg_form_input"
+            <input v-model="form.password1" type="password" autocomplete="on" class="content-right-reg-form-input"
               placeholder="确认密码" />
-            <span class="content_right_reg_form_input_required">*</span>
+            <span class="content-right-reg-form-input-required">*</span>
           </div>
 
         </div>
@@ -266,9 +266,9 @@ export default {
 .ddei-core-dialog-userregistry {
   width: 320px;
   height: 380px;
-  background: #FFFFFF;
-  border: 1px solid #E6E6E6;
-  box-shadow: 0px 2px 24px 0px #DBDBDB;
+  background: var(--panel-background);
+  border: 1px solid var(--panel-border);
+   box-shadow: 0px 2px 24px 0px hsl(0deg 0% 0% /0.25);
   border-radius: 12px;
   display: none;
   position: absolute;
@@ -291,10 +291,9 @@ export default {
       align-items: center;
       justify-content: center;
       font-size: 18px;
-      font-family: "Microsoft YaHei";
       font-weight: 400;
       margin-top: 10px;
-      color: #000000;
+      color: var(--panel-title);
 
       >span {
         margin: 0 2px;
@@ -311,14 +310,14 @@ export default {
     }
 
 
-    .content_right_login_form {
+    .content-right-login-form {
       height: 300px;
-      background: #fff;
+      background: var(--panel-background);
       border-radius: 10px;
       text-align: center;
     }
 
-    .content_right_login_form_input {
+    .content-right-reg-form-input {
 
       height: 30px;
       font-size: 18px;
@@ -326,13 +325,16 @@ export default {
       display: flex;
       justify-content: start;
       align-items: center;
-
+      background: var(--panel-background);
       .icon {
         flex: 0 0 30px;
       }
 
       >input {
         flex: 0 0 220px;
+        background: transparent;
+        border:0.5px solid var(--panel-border);
+        color:var(--panel-title);
       }
 
       >span {
@@ -342,7 +344,7 @@ export default {
 
     }
 
-    .content_right_form_msg {
+    .content-right-form-msg {
       width: 90%;
       height: 24px;
       font-size: 16px;
@@ -353,11 +355,11 @@ export default {
       padding-right: 30px;
     }
 
-    .content_right_login_form_login {
+    .content-right-login-form-login {
       width: 45%;
       height: 50px;
-      background-color: #3662ec;
-      border-color: #3662ec;
+      background-color: var(--dot);
+      border-color: var(--dot);
       cursor: pointer;
       border-radius: 2px;
       text-align: center;
@@ -365,11 +367,11 @@ export default {
       padding-top: 15px;
     }
 
-    .content_right_login_form_register {
+    .content-right-login-form-register {
       width: 45%;
       height: 50px;
-      background-color: rgb(210, 210, 210);
-      border-color: rgb(210, 210, 210);
+      background-color: var(--panel-background);
+      border-color: var(--panel-border);
       cursor: pointer;
       border-radius: 2px;
       text-align: center;
@@ -377,16 +379,16 @@ export default {
       padding-top: 15px;
     }
 
-    .content_right_login_form_register span {
+    .content-right-login-form-register span {
       font-size: 19px;
-      color: black;
+      color: var(--panel-title);
       text-align: center;
       pointer-events: none;
     }
 
-    .content_right_login_form_login span {
+    .content-right-login-form-login span {
       font-size: 19px;
-      color: white;
+      color: var(--panel-title);
       text-align: center;
       pointer-events: none;
     }
@@ -403,13 +405,12 @@ export default {
     .button {
       flex: 0 0 80px;
       height: 36px;
-      background: #FFFFFF;
-      border: 1px solid #E6E6E6;
+      background: var(--panel-header);
+      border: 1px solid var(--panel-border);
       border-radius: 6px;
       font-size: 17px;
-      font-family: "Microsoft YaHei";
       font-weight: 400;
-      color: #040404;
+      color: var(--panel-title);
       margin-left: 13px;
       display: flex;
       align-items: center;
@@ -419,13 +420,13 @@ export default {
 
     .button:hover {
       color: white;
-      background: #176EFF;
+      background: var(--dot);
       cursor: pointer;
     }
 
     .button-main {
       color: white;
-      background: #176EFF;
+      background: var(--dot);
 
     }
   }

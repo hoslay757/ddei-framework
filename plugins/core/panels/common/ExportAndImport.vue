@@ -208,7 +208,7 @@ export default {
         flex-direction: column;
         align-items: center;
         .text {
-          color: var(--panel-title)-selected;
+          color: var(--panel-title-selected);
         }
       }
 

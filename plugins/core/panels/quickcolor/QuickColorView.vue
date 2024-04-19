@@ -246,8 +246,8 @@ export default {
 <style lang="less" scoped>
 .ddei-editor-qcview {
   height: 16px;
-  background: rgb(245, 245, 245);
-  border: 0.5pt solid rgb(235, 235, 239);
+  background: var(--panel-header);
+  border: 0.5pt solid var(--panel-border);
   display: flex;
   position: relative;
 
@@ -259,7 +259,7 @@ export default {
     justify-content: center;
     align-items: center;
     &:hover {
-      background: rgb(235, 235, 239);
+      background: var(--panel-hover);
       cursor: pointer;
     }
     img {
@@ -275,13 +275,13 @@ export default {
     margin-top: 1px;
 
     &:hover {
-      outline: 0.5px solid #017fff;
+      outline: 0.5px solid var(--dot);
       box-sizing: border-box;
       outline-offset: 0.5px;
     }
 
     &--disabled {
-      background-color: grey !important;
+      background-color: var(--panel-disabled) !important;
     }
   }
 }

@@ -216,7 +216,7 @@ export default {
   .textinput {
     width: 100%;
     padding-right: 5px;
-    border: 0.5px solid var(--panel-header);//var(--panel-header);//darken(var(--panel-header), 13%);
+    border: 0.5px solid var(--panel-border);//var(--panel-header);//darken(var(--panel-header), 13%);
     border-radius: 4px;
     display: flex;
     justify-content: center;

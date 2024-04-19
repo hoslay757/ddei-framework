@@ -70,9 +70,9 @@ export default {
 .ddei-core-dialog-publishfile {
   width: 420px;
   height: 165px;
-  background: #FFFFFF;
-  border: 1px solid #E6E6E6;
-  box-shadow: 0px 2px 24px 0px #DBDBDB;
+  background: var(--panel-background);
+  border: 1px solid var(--panel-border);
+   box-shadow: 0px 2px 24px 0px hsl(0deg 0% 0% /0.25);
   border-radius: 12px;
   display: none;
   position: absolute;
@@ -94,9 +94,8 @@ export default {
       display: flex;
       align-items: center;
       font-size: 18px;
-      font-family: "Microsoft YaHei";
       font-weight: 400;
-      color: #000000;
+      color: var(--panel-title);
 
       >span {
         margin: 0 2px;
@@ -118,9 +117,8 @@ export default {
       justify-content: center;
       align-items: center;
       font-size: 16px;
-      font-family: "Microsoft YaHei";
       font-weight: 400;
-      color: #000000;
+      color: var(--panel-title);
     }
 
     .tail {
@@ -134,13 +132,12 @@ export default {
     .button {
       flex: 0 0 70px;
       height: 32px;
-      background: #FFFFFF;
-      border: 1px solid #E6E6E6;
+      background: var(--panel-header);
+      border: 1px solid var(--panel-border);
       border-radius: 6px;
       font-size: 16px;
-      font-family: "Microsoft YaHei";
       font-weight: 400;
-      color: #040404;
+      color: var(--panel-title);
       margin-left: 13px;
       display: flex;
       align-items: center;
@@ -150,13 +147,13 @@ export default {
 
     .button:hover {
       color: white;
-      background: #176EFF;
+      background: var(--dot);
       cursor: pointer;
     }
 
     .button-main {
       color: white;
-      background: #176EFF;
+      background: var(--dot);
 
     }
   }

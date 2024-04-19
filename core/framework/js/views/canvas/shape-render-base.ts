@@ -116,7 +116,7 @@ class DDeiAbstractShapeRender {
 
   clearCachedValue():void{
     this.renderCacheData.clear();
-    this.refreshShape = true;
+    this.enableRefreshShape();
     this.clearComposesCacheValue();
   }
 

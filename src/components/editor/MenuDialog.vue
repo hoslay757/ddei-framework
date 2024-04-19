@@ -86,10 +86,10 @@ export default {
 /**以下为菜单的样式 */
 .ddei-editor-menu-dialog {
   width: 200px;
-  background-color: white;
+  background-color: var(--panel-background);
   font-size: 13px;
-  color: black;
-  border: 0.3px solid rgb(240, 240, 240);
+  color: var(--panel-title);
+  border: 0.3px solid var(--panel-border);
   display: none;
   position: absolute;
   font-weight: bolder;
@@ -102,7 +102,7 @@ export default {
     width: 100%;
     display: flex;
     &:hover {
-      background-color: rgb(240, 240, 240);
+      background-color: var(--panel-hover);
       cursor: pointer;
     }
     &-icon {
@@ -114,7 +114,6 @@ export default {
         width: 22px;
         height: 22px;
         margin: 0px 3px 0px 3px;
-        filter: brightness(60%);
       }
     }
 
@@ -130,7 +129,7 @@ export default {
     }
 
     &-hr {
-      border: 0.5px solid rgb(240, 240, 240);
+      border: 0.5px solid var(--panel-border);
       width: 93%;
       margin: 1px auto;
     }

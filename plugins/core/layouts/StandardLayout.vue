@@ -174,7 +174,6 @@ export default {
   height: calc(100vh);
   display: flex;
   flex-direction: column;
-  // background-color: rgb(240, 240, 240);
   min-width: 1700px;
 
   .top {
@@ -183,7 +182,7 @@ export default {
 
   .bottom {
     // flex: 0 0 50px;
-    border: 1px solid #D4D4D4;
+    border: 1px solid var(--border);
   }
 
   .body {
@@ -193,7 +192,7 @@ export default {
 
     .left {
       flex: 0 1 292px;
-      border: 1px solid #D5D5DF;
+      border: 1px solid var(--border);
       overflow: hidden;
     }
 
@@ -205,7 +204,7 @@ export default {
 
     .right {
       flex: 0 1 292px;
-      border: 1px solid #D5D5DF;
+      border: 1px solid var(--border);
       overflow: hidden;
     }
   }

@@ -774,21 +774,21 @@ class DDeiEditorUtil {
 
 
   /**
-     * 获取控件的小图标
-     */
+   * 获取控件的小图标
+   */
   static getControlIcons(editor: DDeiEditor): Promise{
     return new Promise((resolve, reject) => {
-      if (DDeiUtil.ICONS) {
-        resolve(DDeiUtil.ICONS);
+      if (editor.icons && JSON.stringify(editor.icons) != "{}") {
+        resolve(editor.icons);
       } else {
         if (editor.ddInstance) {
           let promiseArr = []
           let ddInstance = editor.ddInstance
-          DDeiUtil.ICONS = {}
+          editor.icons = {}
           editor?.controls.forEach(controlDefine => {
             let cacheData = localStorage.getItem("ICON-CACHE-" + controlDefine.id)
             if (cacheData) {
-              DDeiUtil.ICONS[controlDefine.id] = cacheData
+              editor.icons[controlDefine.id] = cacheData
               return;
             } else {
               promiseArr.push(new Promise((resolve, reject) => {
@@ -852,7 +852,7 @@ class DDeiEditorUtil {
                   })
                   let dataURL = canvas.toDataURL("image/png");
                   localStorage.setItem("ICON-CACHE-" + controlDefine.id, dataURL)
-                  DDeiUtil.ICONS[controlDefine.id] = dataURL
+                  editor.icons[controlDefine.id] = dataURL
                 } catch (e) { console.error(e) }
                 resolve()
               }));
@@ -860,11 +860,21 @@ class DDeiEditorUtil {
           });
           Promise.all(promiseArr).then(all => {
             ddInstance.render.tempCanvas = null;
-            resolve(DDeiUtil.ICONS)
+            resolve(editor.icons)
           })
         }
       }
     });
+  }
+
+  /**
+   * 清空控件小图标
+   */
+  static clearControlIcons(editor: DDeiEditor):void{
+    editor.icons = {}
+    editor?.controls.forEach(controlDefine => {
+      localStorage.removeItem("ICON-CACHE-" + controlDefine.id)
+    })
   }
 
 

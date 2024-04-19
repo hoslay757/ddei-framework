@@ -272,10 +272,10 @@ export default {
 .ddei-core-dialog-exportoption {
   width: 420px;
   height: 300px;
-  color: black;
-  background: #ffffff;
-  border: 1px solid #e6e6e6;
-  box-shadow: 0px 2px 24px 0px #dbdbdb;
+  color: var(--panel-title);
+  background: var(--panel-background);
+  border: 1px solid var(--panel-border);
+   box-shadow: 0px 2px 24px 0px hsl(0deg 0% 0% /0.25);
   border-radius: 12px;
   display: none;
   position: absolute;
@@ -298,10 +298,9 @@ export default {
       align-items: center;
       justify-content: center;
       font-size: 19px;
-      font-family: "Microsoft YaHei";
       font-weight: 400;
       margin-top: 10px;
-      color: #000000;
+      color: var(--panel-title);
 
       >span {
         margin: 0 2px;
@@ -320,7 +319,6 @@ export default {
       flex: 1;
       display: flex;
       flex-direction: column;
-      background: #fff;
       border-radius: 10px;
       text-align: center;
 
@@ -376,68 +374,6 @@ export default {
         flex: 0 0 70px;
         padding-right: 0px;
       }
-
-      .link-input {
-        flex: 1 1 100%;
-        border: 1px solid #dedede;
-        border-radius: 4px;
-        height: 50px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding-left: 10px;
-
-        >input {
-          flex: 1 1 100%;
-          outline: none;
-          background: none;
-          border: none;
-          font-size: 20px;
-        }
-
-        .icon {
-          flex: 0 0 40px;
-          cursor: pointer;
-        }
-      }
-
-      .link-code-title {
-        flex: 0 0 100px;
-        height: 30px;
-        padding-left: 10px;
-        text-align: left;
-      }
-
-      .link-end {
-        flex: 0 0 150px;
-        padding-left: 10px;
-        text-align: left;
-        font-size: 16px;
-      }
-
-      .link-code {
-        flex: 0 0 120px;
-        border: 1px solid #dedede;
-        border-radius: 4px;
-        height: 50px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        >input {
-          flex: 0 0 80px;
-          outline: none;
-          background: none;
-          border: none;
-          width: 80px;
-          font-size: 20px;
-        }
-
-        .icon {
-          flex: 0 0 40px;
-          cursor: pointer;
-        }
-      }
     }
 
     .fields-large {
@@ -455,13 +391,12 @@ export default {
     .button {
       flex: 0 0 80px;
       height: 36px;
-      background: #ffffff;
-      border: 1px solid #e6e6e6;
+      background: var(--panel-header);
+      border: 1px solid var(--panel-border);
       border-radius: 6px;
       font-size: 17px;
-      font-family: "Microsoft YaHei";
       font-weight: 400;
-      color: #040404;
+      color: var(--panel-title);
       margin-left: 13px;
       display: flex;
       align-items: center;
@@ -470,13 +405,13 @@ export default {
 
     .button:hover {
       color: white;
-      background: #176eff;
+      background: var(--dot);
       cursor: pointer;
     }
 
     .button-main {
       color: white;
-      background: #176eff;
+      background: var(--dot);
     }
   }
 }

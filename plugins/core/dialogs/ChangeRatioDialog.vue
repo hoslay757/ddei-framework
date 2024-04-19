@@ -8,7 +8,7 @@
             :class="{ 'item': true, 'item_selected': ratioInputValue / 100 == data.value }" @click="ok(data.value)">
             {{ data.text}}
           </div>
-          <div v-if="input" class="item" style="flex:1;border-top: 1px solid rgb(240, 240, 240);">
+          <div v-if="input" class="item" style="flex:1;border-top: 1px solid var(--panel-border)">
             百分比：<input type="number" :min="min*100" :max="max*100" v-model="ratioInputValue" @blur="ratioInputChange()"
               autocomplete="off" name="ddei_bottom_input" />%
           </div>
@@ -113,14 +113,14 @@ export default {
 /**以下是设置缩放比例的弹出框 */
 .ddei-core-dialog-changeratio {
 
-  border: 1px solid #E6E6E6;
-  box-shadow: 0px 2px 24px 0px #DBDBDB;
+  border: 1px solid var(--panel-border);
+  box-shadow: 0px 2px 24px 0px hsl(0deg 0% 0% /0.25);
   border-radius: 6px;
   display: none;
   overflow: hidden;
   width: 170px;
   position: absolute;
-  background-color: white;
+  background-color: var(--panel-background);
   z-index: 999;
 
   .content {
@@ -131,7 +131,7 @@ export default {
     align-items: center;
 
     .title {
-      color: black;
+      color: var(--panel-title);
       font-weight: bold;
       flex: 0 0 30px;
       width: 100%;
@@ -139,12 +139,12 @@ export default {
       justify-content: center;
       align-items: center;
       font-size: 16px;
-      border-bottom: 1px solid rgb(240, 240, 240);
+      border-bottom: 1px solid var(--panel-border);
     }
 
 
     .group {
-      color: black;
+      color: var(--panel-title);
       flex: 1 1 40px;
       width: 100%;
 
@@ -172,7 +172,7 @@ export default {
         }
 
         .item:hover {
-          background-color: rgb(233, 233, 238);
+          background-color: var(--panel-hover);
         }
       }
     }

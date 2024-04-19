@@ -223,10 +223,10 @@ export default {
 .ddei-core-dialog-createshare {
   width: 420px;
   height: 260px;
-  color: black;
-  background: #FFFFFF;
-  border: 1px solid #E6E6E6;
-  box-shadow: 0px 2px 24px 0px #DBDBDB;
+  color: var(--panel-title);
+  background: var(--panel-background);
+  border: 1px solid var(--panel-border);
+  box-shadow: 0px 2px 24px 0px hsl(0deg 0% 0% /0.25);
   border-radius: 12px;
   display: none;
   position: absolute;
@@ -249,10 +249,9 @@ export default {
       align-items: center;
       justify-content: center;
       font-size: 19px;
-      font-family: "Microsoft YaHei";
       font-weight: 400;
       margin-top: 10px;
-      color: #000000;
+      color: var(--panel-title);
 
       >span {
         margin: 0 2px;
@@ -274,7 +273,6 @@ export default {
       flex: 1;
       display: flex;
       flex-direction: column;
-      background: #fff;
       border-radius: 10px;
       text-align: center;
 
@@ -327,13 +325,14 @@ export default {
 
       .link-input {
         flex: 1 1 100%;
-        border: 1px solid #dedede;
+        border: 1px solid var(--panel-border);
         border-radius: 4px;
         height: 50px;
         display: flex;
         justify-content: center;
         align-items: center;
         padding-left: 10px;
+        
 
         >input {
           flex: 1 1 100%;
@@ -341,6 +340,7 @@ export default {
           background: none;
           border: none;
           font-size: 20px;
+          color: var(--panel-title);
         }
 
         .icon {
@@ -365,7 +365,7 @@ export default {
 
       .link-code {
         flex: 0 0 120px;
-        border: 1px solid #dedede;
+        border: 1px solid var(--panel-border);
         border-radius: 4px;
         height: 50px;
         display: flex;
@@ -378,6 +378,7 @@ export default {
           background: none;
           border: none;
           width: 80px;
+          color: var(--panel-title);
           font-size: 20px;
         }
 
@@ -404,13 +405,12 @@ export default {
     .button {
       flex: 0 0 80px;
       height: 36px;
-      background: #FFFFFF;
-      border: 1px solid #E6E6E6;
+      background: var(--panel-header);
+      border: 1px solid var(--panel-border);
       border-radius: 6px;
       font-size: 17px;
-      font-family: "Microsoft YaHei";
       font-weight: 400;
-      color: #040404;
+      color: var(--panel-title);
       margin-left: 13px;
       display: flex;
       align-items: center;
@@ -420,13 +420,13 @@ export default {
 
     .button:hover {
       color: white;
-      background: #176EFF;
+      background: var(--dot);
       cursor: pointer;
     }
 
     .button-main {
       color: white;
-      background: #176EFF;
+      background: var(--dot);
 
     }
   }
