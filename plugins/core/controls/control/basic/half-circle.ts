@@ -52,14 +52,21 @@ export default {
             pvs.push({x:x2,y:y2,r:sample.r,rad:rad1,stroke:1,type:2,direct:1});
             pvs.push({x:x2,y:y2});
             pvs.push({end:1,x:0,y:0});
-            pvs.push({x:x1,y:y1,type:0,oppoint:1,select:1});
-            pvs.push({x:x2,y:y2,type:0,oppoint:1,select:1});
+            pvs.push({x:x1,y:y1,type:0,oppoint:1});
+            pvs.push({x:x2,y:y2,type:0,oppoint:1});
 
             pvs.push({x:x0,y:0,type:0,oppoint:1});
             pvs.push({x:x2,y:0,type:0,oppoint:1});
-            pvs.push({x:x0,y:y2,type:0,select:1});
-            pvs.push({x:x0,y:y1,type:0,select:1});
+            pvs.push({x:x0,y:y2,type:0});
+            pvs.push({x:x0,y:y1,type:0});
           }
+        }`,
+        //选中区域
+        `(i, sample, pvs, model, ovs){
+            let er  = sample.r / Math.cos(45 * DDeiConfig.ROTATE_UNIT)
+            let x = er * sample.cos
+            let y = er * sample.sin
+            pvs.push({x:x,y:y,r:er,select:1});
         }`,
       ],
 

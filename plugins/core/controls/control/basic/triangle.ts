@@ -27,7 +27,7 @@ export default {
               if(i == 8){
                 op2close = 1
               }
-              pvs.push({begin:i == 0,end:i == 8,x:sample.x,y:sample.y,select:1,clip:1,oppoint:2,op2close:op2close,stroke:1,fill:1});
+              pvs.push({begin:i == 0,end:i == 8,x:sample.x,y:sample.y,clip:1,oppoint:2,op2close:op2close,stroke:1,fill:1});
             }
         }`,
 
@@ -37,6 +37,43 @@ export default {
               let x = er * Math.cos((sample.sita+45) * DDeiConfig.ROTATE_UNIT)
               let y = er * Math.sin((sample.sita+45) * DDeiConfig.ROTATE_UNIT)
               pvs.push({begin:i == 0,end:i == 9,x:x,y:y,text:1});
+            }
+        }`,
+        //选中区域
+        `(i, sample, pvs, model, ovs){
+            if(i  == 0){
+              let sita = 45;
+              let rad = sita * DDeiConfig.ROTATE_UNIT
+              let cos = parseFloat(Math.cos(rad).toFixed(4))
+              let sin = parseFloat(Math.sin(rad).toFixed(4))
+              let er  = sample.r / Math.cos(45 * DDeiConfig.ROTATE_UNIT)
+              let x = er * cos
+              let y = er * sin
+              pvs.push({x:x,y:y,r:er,select:1});
+              sita = 135;
+              rad = sita * DDeiConfig.ROTATE_UNIT
+              cos = parseFloat(Math.cos(rad).toFixed(4))
+              sin = parseFloat(Math.sin(rad).toFixed(4))
+              er  = sample.r / Math.cos(45 * DDeiConfig.ROTATE_UNIT)
+              x = er * cos
+              y = er * sin
+              pvs.push({x:x,y:y,r:er,select:1});
+              sita = 225;
+              rad = sita * DDeiConfig.ROTATE_UNIT
+              cos = parseFloat(Math.cos(rad).toFixed(4))
+              sin = parseFloat(Math.sin(rad).toFixed(4))
+              er  = sample.r / Math.cos(45 * DDeiConfig.ROTATE_UNIT)
+              x = er * cos
+              y = er * sin
+              pvs.push({x:x,y:y,r:er,select:1});
+              sita = 315;
+              rad = sita * DDeiConfig.ROTATE_UNIT
+              cos = parseFloat(Math.cos(rad).toFixed(4))
+              sin = parseFloat(Math.sin(rad).toFixed(4))
+              er  = sample.r / Math.cos(45 * DDeiConfig.ROTATE_UNIT)
+              x = er * cos
+              y = er * sin
+              pvs.push({x:x,y:y,r:er,select:1});
             }
         }`,
       ],

@@ -29,22 +29,12 @@ export default {
         `(i, sample, pvs, model, ovs){
           let sita = Math.round(ovs[1].sita)
           let hdelta = (ovs[2].x-ovs[2].ovi.x)
-          if(sita<0 && sita >= -90){
-            pvs.push({begin:1,x:hdelta,y:1,select:1,clip:1});
-            pvs.push({x:-1,y:1,select:1,clip:1});
-            pvs.push({x:-1,y:-hdelta,select:1,clip:1});
-            pvs.push({x:hdelta,y:-hdelta,select:1,clip:1});
-          }else if(sita<-90 && sita >= -180){
-            pvs.push({begin:1,x:hdelta,y:1,select:1,clip:1});
-            pvs.push({x:-hdelta,y:1,select:1,clip:1});
-            pvs.push({x:-hdelta,y:-hdelta,select:1,clip:1});
-            pvs.push({x:hdelta,y:-hdelta,select:1,clip:1});
-          }else{
+          
             pvs.push({begin:1,x:hdelta,y:hdelta,select:1,clip:1});
             pvs.push({x:-hdelta,y:hdelta,select:1,clip:1});
             pvs.push({x:-hdelta,y:-hdelta,select:1,clip:1});
             pvs.push({x:hdelta,y:-hdelta,select:1,clip:1});
-          }
+          
         }`,
         //下方直线
         `(i, sample, pvs, model, ovs){

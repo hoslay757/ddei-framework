@@ -27,14 +27,14 @@ export default {
             let y = sample.y
             switch(i){
               case 1:
-                y = y-20
+                y = y-8
                 pvs[0].y=y
               break;
               case 2:
                 pvs[1].x=x
               break;
               case 3:
-                y = y-12
+                y = y-8
                 pvs[2].y=y
                x = pvs[0].x
               break;

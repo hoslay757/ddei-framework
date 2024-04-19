@@ -24,10 +24,10 @@ export default {
         //选中区域
         `(i, sample, pvs, model, ovs){
             let dr  = -50/ Math.cos(45 * DDeiConfig.ROTATE_UNIT)
-            pvs.push({begin:1,x:50,y:50,select:1})
+            pvs.push({begin:1,x:-dr,y:50,select:1})
             pvs.push({x:dr,y:50,select:1})
             pvs.push({x:dr,y:-50,select:1})
-            pvs.push({end:1,x:50,y:-50,select:1})
+            pvs.push({end:1,x:-dr,y:-50,select:1})
         }`,
         //操作点
         `(i, sample, pvs, model, ovs){

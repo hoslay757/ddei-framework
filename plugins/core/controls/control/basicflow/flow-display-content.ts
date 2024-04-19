@@ -25,10 +25,10 @@ export default {
         //选中区域
         `(i, sample, pvs, model, ovs){
           if(i == 0){
-            pvs.push({begin:1,x:65,y:50,select:1,clip:1})
+            pvs.push({begin:1,x:135,y:50,select:1,clip:1})
             pvs.push({x:-135,y:50,select:1,clip:1})
             pvs.push({x:-135,y:-50,select:1,clip:1})
-            pvs.push({end:1,x:65,y:-50,select:1,clip:1})
+            pvs.push({end:1,x:135,y:-50,select:1,clip:1})
           }
         }`,
         //操作点
