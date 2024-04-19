@@ -90,7 +90,7 @@ export default {
         event: -1
       }, {}, srcElement)
 
-      if (DDeiEditor.ACTIVE_INSTANCE.tempDialogData && DDeiEditor.ACTIVE_INSTANCE.tempDialogData["ddei-core-dialog-exportoption"]) {
+      if (this.editor.tempDialogData && this.editor.tempDialogData["ddei-core-dialog-exportoption"]) {
         this.editor.changeState(DDeiEditorState.PROPERTY_EDITING);
       } else {
         this.editor.changeState(DDeiEditorState.DESIGNING);

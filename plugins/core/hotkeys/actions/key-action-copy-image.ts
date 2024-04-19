@@ -97,7 +97,8 @@ class DDeiKeyActionCopyImage extends DDeiKeyAction {
           addWidth = lineOffset * 2
         }
       }
-      let containerDiv = document.getElementById("ddei-cut-img-div")
+      let editorId = DDeiUtil.getEditorId(ddInstance);
+      let containerDiv = document.getElementById(editorId+"_ddei_cut_img_div")
 
       canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat2) + ");display:block;zoom:" + (1 / rat2));
       let cW = outRect.width * oldRat1 + addWidth

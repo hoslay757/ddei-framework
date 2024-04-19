@@ -139,12 +139,18 @@ class DDeiEditorUtil {
    * @param name 属性名称
    * @param ddInstance ddei实例
    */
-  static getStyleValue(name:string,ddInstance:DDei){
+  static getStyleValue(name: string, ddInstance: DDei) {
     let editor = DDeiEditorUtil.getEditorInsByDDei(ddInstance);
     let element = document.getElementById(editor.containerid); // 替换为你想要获取变量的元素id
     let styles = getComputedStyle(element);
     let cssVariable = styles.getPropertyValue('--' + name); // 替换为你想获取的CSS变量名
     return cssVariable;
+  }
+
+  static getEditorId(ddInstance: DDei) {
+    let editor = DDeiEditorUtil.getEditorInsByDDei(ddInstance);
+    
+    return editor.id;
   }
 
   static getEditorInsByDDei(ddInstance:DDei){

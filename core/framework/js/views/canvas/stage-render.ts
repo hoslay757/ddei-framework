@@ -1085,6 +1085,9 @@ class DDeiStageCanvasRender {
         let fiFamily = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.font.family", true);
         let fiSize = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.font.size", true);
         let fiColor = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.font.color", true);
+        if (!fiColor){
+          fiColor = DDeiUtil.getStyleValue("canvas-mark-title", this.ddRender.model);
+        }
         //字体缩放后的大小，用于计算
         let fontSize = fiSize * ratio;
         //计算文本大小

@@ -155,7 +155,7 @@ export default {
       'desc': '文本的颜色',
       'controlType': 'color-combo',
       'dataType': 'string',
-      'defaultValue': "#252525",
+      'defaultValue': "",
     },
     {
       'code': 'ruler.display',

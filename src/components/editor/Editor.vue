@@ -6,7 +6,8 @@
       v-bind="item.options"></component>
     <MenuDialog v-show="!refreshMenu"></MenuDialog>
   </div>
-  <div :id="id+'_dialog_background_div'" class="dialog-background-div"></div>
+  <div :id="id + '_dialog_background_div'" class="dialog-background-div"></div>
+  <div :id="id + '_ddei_cut_img_div'" class="ddei-cut-img-div"></div>
 </template>
 
 <script lang="ts">

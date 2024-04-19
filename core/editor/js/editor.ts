@@ -139,8 +139,11 @@ class DDeiEditor {
         if (!DDeiUtil.getEditorText) {
           DDeiUtil.getEditorText = DDeiEditorUtil.getEditorText;
         }
-        if (!DDeiUtil.getStyleValue){
+        if (!DDeiUtil.getStyleValue) {
           DDeiUtil.getStyleValue = DDeiEditorUtil.getStyleValue;
+        }
+        if (!DDeiUtil.getEditorId) {
+          DDeiUtil.getEditorId = DDeiEditorUtil.getEditorId;
         }
         //初始化ddInstance
         let ddInstance = DDei.newInstance(

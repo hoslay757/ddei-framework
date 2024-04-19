@@ -43,7 +43,9 @@ class DDeiUtil {
   //钩子函数，获取快捷编辑文本框
   static getEditorText: Function;
   //钩子函数，获取样式属性变量值
-  static getStyleValue:Function;
+  static getStyleValue: Function;
+  //钩子函数，获取ID
+  static getEditorId: Function;
 
 
   static offsetX: number;
@@ -2780,8 +2782,8 @@ class DDeiUtil {
         ddInstance.render.ratio = rat1
         //所选择区域的最大范围
 
-
-        let containerDiv = document.getElementById("ddei-cut-img-div")
+        let editorId = DDeiUtil.getEditorId(ddInstance);
+        let containerDiv = document.getElementById(editorId+"_ddei_cut_img_div")
         canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
         canvas.setAttribute("width", width * rat1)
         canvas.setAttribute("height", height * rat1)
