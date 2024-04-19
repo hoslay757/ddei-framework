@@ -46,5 +46,7 @@
   --canvas-control-background: white;
   --canvas-control-title: #252525;
 
-  --canvas-mark-title:#252525;
+  --canvas-mark-title: #252525;
+  --canvas-text-selection: #97bdf2;
+  --canvas-text-cursor: black;
 }

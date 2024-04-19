@@ -1281,7 +1281,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         //绘制光标和选中效果
         if (tempIdx >= curSIdx && tempIdx < curEIdx) {
           ctx.save();
-          ctx.fillStyle = "#97bdf2";
+          ctx.fillStyle = DDeiUtil.getStyleValue("canvas-text-selection", this.ddRender.model);
           ctx.globalAlpha = 1
           ctx.fillRect(usedX - 0.5, y1 + ofY, width + 1, height)
           ctx.restore();
@@ -1386,7 +1386,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     //绘制光标
     if (this.isEditoring && Date.now() % 1000 >= 500) {
       if (cursorX != -Infinity && cursorY != -Infinity && curSIdx == curEIdx) {
-        ctx.strokeStyle = "black";
+        ctx.strokeStyle = DDeiUtil.getStyleValue("canvas-text-cursor", this.ddRender.model);
         ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.moveTo(cursorX, cursorY - 2);
@@ -1415,7 +1415,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
 
         y = y + ratPos.y
 
-        ctx.strokeStyle = "black";
+        ctx.strokeStyle = DDeiUtil.getStyleValue("canvas-text-cursor", this.ddRender.model);
         ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.moveTo(x, y - 2);
@@ -1444,7 +1444,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           }
           x = x + ratPos.x
         }
-        ctx.strokeStyle = "black";
+        ctx.strokeStyle = DDeiUtil.getStyleValue("canvas-text-cursor", this.ddRender.model);
         ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.moveTo(x, lastUsedY - 2);
