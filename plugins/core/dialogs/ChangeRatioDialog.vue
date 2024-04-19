@@ -164,6 +164,8 @@ export default {
           >input {
             border: none;
             outline: none;
+            background: var(--panel-background);
+            color: var(--panel-title);
           }
         }
 

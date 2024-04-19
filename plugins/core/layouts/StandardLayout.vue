@@ -187,7 +187,7 @@ export default {
 
   .body {
     display: flex;
-    overflow:auto;
+    overflow:hidden;
     flex: 1 1 calc(100vh - 153px);
 
     .left {

@@ -81,9 +81,9 @@ export default {
   },
 
   mounted() {
-    this.destroyDialog();
     //获取编辑器
     this.editor = DDeiEditor.ACTIVE_INSTANCE;
+    this.destroyDialog();
   },
   methods: {
     getShowDialogId(id) {

@@ -695,42 +695,6 @@ export default {
           flex: 1;
         }
       }
-
-
-      &::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
-      }
-
-      /*正常情况下滑块的样式*/
-      &::-webkit-scrollbar-thumb {
-        background-color:var(--scroll-hover);
-        -webkit-box-shadow: inset1px1px0rgba(0, 0, 0, 0.1);
-      }
-
-      /*鼠标悬浮在该类指向的控件上时滑块的样式*/
-      &:hover::-webkit-scrollbar-thumb {
-        background-color: var(--scroll-hover);
-        -webkit-box-shadow: inset1px1px0rgba(0, 0, 0, 0.1);
-      }
-
-      /*鼠标悬浮在滑块上时滑块的样式*/
-      &::-webkit-scrollbar-thumb:hover {
-        background-color: var(--scroll-hover);
-        -webkit-box-shadow: inset1px1px0rgba(0, 0, 0, 0.1);
-      }
-
-      /*正常时候的主干部分*/
-      &::-webkit-scrollbar-track {
-        -webkit-box-shadow: inset006pxrgba(0, 0, 0, 0);
-        background-color: var(--scroll-background);
-      }
-
-      /*鼠标悬浮在滚动条上的主干部分*/
-      &::-webkit-scrollbar-track:hover {
-        -webkit-box-shadow: inset006pxrgba(0, 0, 0, 0.4);
-        background-color: var(--scroll-background);
-      }
     }
     
   }

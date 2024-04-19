@@ -345,6 +345,8 @@ export default {
           justify-content: center;
           align-items: center;
           user-select: none;
+          background: var(--panel-background);
+          color: var(--panel-title);
 
           >input[type="checkbox"] {
             width: 18px;

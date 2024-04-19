@@ -572,34 +572,7 @@ export default {
     display: flex;
     flex-flow: column;
     flex: 1 1 auto;
-    &::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    &::-webkit-scrollbar-thumb {
-      background-color:var(--scroll-hover);//darken(@toolbox-header,5%);
-      -webkit-box-shadow: inset1px1px0rgba(0, 0, 0, 0.1);
-    }
-
-    &:hover::-webkit-scrollbar-thumb {
-      background-color:var(--scroll-hover); //darken(@toolbox-header, 10%);
-      -webkit-box-shadow: inset1px1px0rgba(0, 0, 0, 0.1);
-    }
-
-    &::-webkit-scrollbar-thumb:hover {
-      background-color:var(--scroll-hover); //darken(@toolbox-header, 20%);
-      -webkit-box-shadow: inset1px1px0rgba(0, 0, 0, 0.1);
-    }
-
-    &::-webkit-scrollbar-track {
-      -webkit-box-shadow: inset006pxrgba(0, 0, 0, 0);
-      background-color:var(--scroll-background); //darken(@toolbox-header, 0%);
-    }
-
-    &::-webkit-scrollbar-track:hover {
-      -webkit-box-shadow: inset006pxrgba(0, 0, 0, 0.4);
-      background-color:var(--scroll-background); //darken(@toolbox-header, 1%);
-    }
+    
 
     &-group {
       text-align: center;
