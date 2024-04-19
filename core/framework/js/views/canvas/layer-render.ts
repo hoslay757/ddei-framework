@@ -412,7 +412,9 @@ class DDeiLayerCanvasRender {
   }
 
   enableRefreshShape() {
-    
+    this.model.models.forEach(shape=>{
+      shape?.render?.enableRefreshShape();
+    })
   }
 
   /**

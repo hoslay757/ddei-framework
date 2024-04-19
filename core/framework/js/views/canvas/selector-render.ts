@@ -46,6 +46,9 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       models = Array.from(this.stage.selectedModels.values())
     }
     if (this.stageRender.operateState == DDeiEnumOperateState.SELECT_WORKING) {
+      
+      this.stage?.layers[this.stage.layerIndex]?.render?.enableRefreshShape();
+ 
       //绘制边框
       this.drawBorder();
 
