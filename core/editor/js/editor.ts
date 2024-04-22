@@ -755,6 +755,9 @@ class DDeiEditor {
    * @param themeName 主题名称
    */
   changeTheme(themeName: string){
+    if(!themeName){
+      themeName = localStorage.getItem("ddei-theme-" + this.id);
+    }
     let finded = false;
     let defaultJSON = null;
     for (let i = 0; i < this.themes?.length;i++){
@@ -800,8 +803,12 @@ class DDeiEditor {
       this.ddInstance.stage.render.refresh = true
     }
     //更新图标
-    DDeiEditorUtil.clearControlIcons(this);
-    DDeiEditorUtil.getControlIcons(this);
+    let curInsTheme = localStorage.getItem("ddei-theme-"+this.id);
+    if (!curInsTheme || curInsTheme != name){
+      localStorage.setItem("ddei-theme-" + this.id,name);
+      DDeiEditorUtil.clearControlIcons(this);
+      DDeiEditorUtil.getControlIcons(this);
+    }
   };
 }
 

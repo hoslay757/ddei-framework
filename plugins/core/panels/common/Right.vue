@@ -21,7 +21,7 @@ import DDeiEditor from "@ddei-core/editor/js/editor";
 import DDeiEditorUtil from "@ddei-core/editor/js/util/editor-util";
 import Cookies from 'js-cookie'
 import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-command-type";
-import { setTheme } from '@ddei-core/themes/theme'
+import DDeiEditorState from '@ddei-core/editor/js/enums/editor-state';
 export default {
   name: "ddei-core-panel-right",
   extends: null,
@@ -65,14 +65,29 @@ export default {
   methods: {
 
     changeTheme(){
-      if(this.themeIndex == this.editor.themes.length-1){
+      if(this.themeIndex >= this.editor.themes.length-1){
         this.themeIndex =0
       } else if (!this.themeIndex && this.themeIndex != 0){
-        this.themeIndex = 0
+        let themeName = localStorage.getItem("ddei-theme-" + this.editor.id);
+        if (themeName){
+          for(let i = 0;i < this.editor.themes.length;i++){
+            
+            if (this.editor.themes[i].name == themeName){
+              this.themeIndex = i;
+              this.themeIndex++;
+              break;
+            }
+          }
+        }
+        if (!this.themeIndex || this.themeIndex >= this.editor.themes.length){
+          this.themeIndex = 0
+        }
+
       }else{
         this.themeIndex++
       }
       this.editor.changeTheme(this.editor.themes[this.themeIndex].name)
+      this.editor.changeState(DDeiEditorState.DESIGNING);
     },
 
     refreshEditor() {
