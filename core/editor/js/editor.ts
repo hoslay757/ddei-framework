@@ -410,6 +410,16 @@ class DDeiEditor {
       });
     }
 
+
+    //加载转换器
+    if (plugin.getConverters) {
+      let converters = plugin.getConverters(this)
+      converters?.forEach(converter => {
+        this.converters[converter.name] = converter
+      });
+    }
+    
+
     
     let options = plugin.getOptions() 
     
@@ -553,6 +563,8 @@ class DDeiEditor {
   currentTheme: string = ''
   //当前布局的名称，如果为空，则获取最后一个有效的布局
   currentLayout: string = "ddei-core-layout-standard";
+  //转换器，用于对输入和输出的数据进行转换或适配
+  converters: object = markRaw({});
 
   // ============================ 方法 ============================
 
@@ -748,6 +760,47 @@ class DDeiEditor {
       })
       return returnArray;
     }
+  }
+
+  /**
+   * 获取开启的转换器
+   * fileData 文件内容
+   */
+  getEnabledConverters(fileData:object,sort:number = 1) {
+    let returnArray = []
+    for(let i in this.converters){
+      let converter = this.converters[i];
+      if (converter.isEnable(fileData)){
+        returnArray.push(converter);
+      }
+    }
+    if (sort == 1){
+      returnArray.sort((c1, c2) => {
+        if(c1.sort && c2.sort){
+          return c1?.sort - c2?.sort
+        } else if (c1.sort && !c2.sort) {
+          return 1
+        } else if (!c1.sort && c2.sort) {
+          return -1;
+        } else{
+          return 0;
+        }
+      })
+    }else{
+      returnArray.sort((c1, c2) => {
+        if (c1.sort && c2.sort) {
+          return c2?.sort - c1?.sort
+        } else if (c1.sort && !c2.sort) {
+          return -1
+        }else if (!c1.sort && c2.sort) {
+          return 1;
+        } else {
+          return 0;
+        }
+      })
+    }
+    debugger
+    return returnArray;
   }
 
   /**

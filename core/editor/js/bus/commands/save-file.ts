@@ -47,6 +47,12 @@ class DDeiEditorCommandSaveFile extends DDeiBusCommand {
           file.lastUpdateTime = new Date().getTime()
           let json = file.toJSON();
           if (json) {
+            //调用转换器，将输入内容转换为设计器能够识别的格式
+            let converters = editor.getEnabledConverters(json,2);
+            //依次调用converters
+            converters?.forEach(converter => {
+              json = converter.output(json)
+            });
             json.state = DDeiFileState.NONE;
             let storeIns = new DDeiStoreLocal();
             //本地保存一份

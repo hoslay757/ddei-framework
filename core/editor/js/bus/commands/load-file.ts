@@ -48,6 +48,12 @@ class DDeiEditorCommandLoadFile extends DDeiBusCommand {
     );
     if (loadFile) {
       loadFile().then((fileData) => {
+        //调用转换器，将输入内容转换为设计器能够识别的格式
+        let converters = editor.getEnabledConverters(fileData,1);
+        //依次调用converters
+        converters?.forEach(converter => {
+          fileData = converter.input(fileData)
+        });
         if (fileData) {
           //当前已打开的文件
           let file = null;

@@ -50,6 +50,7 @@ import DDeiEditorEnumBusCommandType from "@ddei-core/editor/js/enums/editor-comm
 
 //引入插件
 import { DDeiCoreTopMenuPanel,DDeiCoreThemeBlack, DDeiCoreControls,DDeiCoreHotkeys,DDeiKeyActionAllSelect,DDeiCorePropertyViewPanel,DDeiCoreToolboxPanel,DDeiCoreSheetsPanel, DDeiCoreChangeRatioPanel, DDeiCoreChangeRatioDialog,DDeiCoreShapeCountPanel, DDeiCoreBottomMenuPanel,DDeiCoreStandLayout, DDeiCoreOpenFilesViewPanel, DDeiCoreQuickColorViewPanel, DDeiCoreAlignDialog } from "@ddei/core";
+import { DDeiExtTestConverters, DDeiExtTestStep1Converter, DDeiExtTestStep2Converter } from "@ddei/testconverter";
 import DDeiExtUML from "@ddei/uml"
 import DDeiExtFontTest from "@ddei/testfont"
 export default {
@@ -150,6 +151,13 @@ export default {
             
             expand: false
           }),
+          //引入扩展转换器插件
+          DDeiExtTestConverters,
+          DDeiExtTestStep2Converter.configuraton(
+            {
+              config: 21
+            }
+          ),
 
           
           // DDeiCoreBottomMenuPanel.configuraton({
