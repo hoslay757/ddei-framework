@@ -421,18 +421,20 @@ class DDeiEditor {
     
 
     
-    let options = plugin.getOptions() 
-    
-    let pluginType = plugin.getType();
-    
- 
-    if (pluginType == 'plugin'){
-      let pluginName = plugin.getName();
-      if (pluginName){
-        this.options[pluginName] = options;
+    let options = null;
+    if (plugin.getOptions){
+      options = plugin.getOptions() 
+    }
+    if (options){
+      let pluginType = plugin.getType();
+      if (pluginType == 'plugin'){
+        let pluginName = plugin.getName();
+        if (pluginName){
+          this.options[pluginName] = options;
+        }
+      } else if (pluginType == 'package') {
+        this.options = Object.assign({}, this.options, options)
       }
-    } else if (pluginType == 'package') {
-      this.options = Object.assign({}, this.options, options)
     }
   }
 

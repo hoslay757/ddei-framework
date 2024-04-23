@@ -1,6 +1,6 @@
 {
   "name": "ddei-framework",
-  "version": "1.2.6",
+  "version": "1.2.11",
   "private": false,
   "type": "module",
   "author": "hoslay <3697355039@qq.com>",
@@ -29,8 +29,8 @@
     "url": "https://gitee.com/hoslay/ddei-framework",
     "email": "3697355039@qq.com"
   },
-  "main": "./dist/ddei-framework.umd.cjs",
-  "module": "./dist/ddei-framework.js",
+  "main": "./dist/ddei-framework.js",
+  "module": "./dist/ddei-framework.umd.cjs",
   "exports": {
     ".": {
       "import": "./dist/ddei-framework.js",
