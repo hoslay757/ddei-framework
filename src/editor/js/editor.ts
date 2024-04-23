@@ -847,7 +847,9 @@ class DDeiEditor {
     });
    
     for (let key in obj) {
-      container.style.setProperty(`--${key}`, obj[key]);
+      if (obj[key]){
+        container.style.setProperty(`--${key}`, obj[key]);
+      }
     }
     //刷新清空画布缓存颜色，刷新画布
     if(this.ddInstance?.stage?.render){
