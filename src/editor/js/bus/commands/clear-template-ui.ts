@@ -3,7 +3,7 @@ import type DDeiBus from '@ddei-core/framework/js/bus/bus';
 import DDeiEditorEnumBusCommandType from '../../enums/editor-command-type';
 import DDeiBusCommand from '@ddei-core/framework/js/bus/bus-command';
 import DDeiUtil from '@ddei-core/framework/js/util';
-import DDeiEditorUtil from '../../util/editor-util';
+import DDeiEditorUtil from '../../editor-util';
 /**
  * 清理临时UI总线Command
  */

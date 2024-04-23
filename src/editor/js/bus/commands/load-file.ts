@@ -3,7 +3,7 @@ import type DDeiBus from '@ddei-core/framework/js/bus/bus';
 import DDeiEditorEnumBusCommandType from '../../enums/editor-command-type';
 import DDeiBusCommand from '@ddei-core/framework/js/bus/bus-command';
 import DDeiUtil from '@ddei-core/framework/js/util';
-import DDeiEditorUtil from '../../util/editor-util';
+import DDeiEditorUtil from '../../editor-util';
 import DDeiActiveType from '../../enums/active-type';
 import DDeiFile from '../../file';
 import DDeiSheet from '../../sheet';

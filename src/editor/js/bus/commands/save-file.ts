@@ -8,7 +8,7 @@ import DDeiFileState from '../../enums/file-state';
 import DDeiEditor from '../../editor';
 import DDeiFile from '../../file';
 import DDeiConfig from '@ddei-core/framework/js/config';
-import DDeiEditorUtil from '../../util/editor-util';
+import DDeiEditorUtil from '../../editor-util';
 import DDeiUtil from '@ddei-core/framework/js/util';
 /**
  * 保存文件的总线Command

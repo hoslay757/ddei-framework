@@ -1,15 +1,15 @@
-import DDeiEditorArrtibute from "../attribute/editor-attribute";
-import DDeiAbstractShape from "../../../framework/js/models/shape";
-import DDeiEditor from "../editor";
-import DDeiConfig from "../../../framework/js/config";
-import DDeiUtil from "../../../framework/js/util";
-import DDeiEnumBusCommandType from "../../../framework/js/enums/bus-command-type";
-import DDeiEditorEnumBusCommandType from "../enums/editor-command-type";
-import DDeiEditorState from "../enums/editor-state";
-import DDeiLineLink from "../../../framework/js/models/linelink";
+import DDeiEditorArrtibute from "./attribute/editor-attribute";
+import DDeiAbstractShape from "../../framework/js/models/shape";
+import DDeiEditor from "./editor";
+import DDeiConfig from "../../framework/js/config";
+import DDeiUtil from "../../framework/js/util";
+import DDeiEnumBusCommandType from "../../framework/js/enums/bus-command-type";
+import DDeiEditorEnumBusCommandType from "./enums/editor-command-type";
+import DDeiEditorState from "./enums/editor-state";
+import DDeiLineLink from "../../framework/js/models/linelink";
 import { Matrix3 } from "three";
-import DDeiRectContainer from "../../../framework/js/models/rect-container";
-import DDei from "../../../framework/js/ddei";
+import DDeiRectContainer from "../../framework/js/models/rect-container";
+import DDei from "../../framework/js/ddei";
 
 class DDeiEditorUtil {
 

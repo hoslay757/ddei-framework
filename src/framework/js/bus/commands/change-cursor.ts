@@ -1,4 +1,4 @@
-import DDeiEditorUtil from '../../../../editor/js/util/editor-util';
+import DDeiEditorUtil from '../../../../editor/js/editor-util';
 import DDeiEnumBusCommandType from '../../enums/bus-command-type';
 import DDeiEnumState from '../../enums/ddei-state';
 import DDeiBus from '../bus';

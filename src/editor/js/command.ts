@@ -8,7 +8,7 @@ import { addCommand } from "@ddei-core/framework/js/command";
 //加载控件定义
 
 const autoLoadCommand = function(){
-  const control_ctx = import.meta.glob('../bus/commands/*.ts', { eager: true })
+  const control_ctx = import.meta.glob('./bus/commands/*.ts', { eager: true })
   let loadArray = [];
   for (const path in control_ctx) {
     loadArray.push(control_ctx[path]);

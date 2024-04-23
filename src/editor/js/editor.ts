@@ -1,7 +1,7 @@
 import DDeiKeyAction from "../../hotkeys/key-action"
 import DDeiEditorState from "./enums/editor-state";
 import DDei from "@ddei-core/framework/js/ddei";
-import DDeiEditorUtil from "./util/editor-util";
+import DDeiEditorUtil from "./editor-util";
 import DDeiUtil from "@ddei-core/framework/js/util";
 import DDeiBus from "@ddei-core/framework/js/bus/bus";
 import type DDeiFile from "./file";
@@ -799,7 +799,6 @@ class DDeiEditor {
         }
       })
     }
-    debugger
     return returnArray;
   }
 
