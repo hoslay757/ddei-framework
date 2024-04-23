@@ -1,5 +1,5 @@
 {
-  "name": "ddei-framework1",
+  "name": "ddei-framework",
   "version": "1.2.6",
   "private": false,
   "type": "module",
@@ -29,12 +29,12 @@
     "url": "https://gitee.com/hoslay/ddei-framework",
     "email": "3697355039@qq.com"
   },
-  "main": "./dist/ddei-framework1.umd.cjs",
-  "module": "./dist/ddei-framework1.js",
+  "main": "./dist/ddei-framework.umd.cjs",
+  "module": "./dist/ddei-framework.js",
   "exports": {
     ".": {
-      "import": "./dist/ddei-framework1.js",
-      "require": "./dist/ddei-framework1.umd.cjs"
+      "import": "./dist/ddei-framework.js",
+      "require": "./dist/ddei-framework.umd.cjs"
     }
   },
   "engines": {
