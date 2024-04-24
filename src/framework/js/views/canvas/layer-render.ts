@@ -771,7 +771,7 @@ class DDeiLayerCanvasRender {
       //显示当前控件的
       if (operateControls != null && operateControls.length > 0) {
         //全局变量：当前操作控件=当前控件
-        DDeiUtil.showContextMenu(operateControls[0], evt)
+        DDeiUtil.showContextMenu(operateControls[0],this.ddRender?.model, evt)
       }
       //清除临时操作点
       this.model.opPoints = [];

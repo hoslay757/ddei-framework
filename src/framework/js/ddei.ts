@@ -68,7 +68,7 @@ class DDei {
   */
   static newInstance(id: string, containerid: string, stagejson: string): DDei {
     if (id && containerid) {
-      if (!DDei.INSTANCE_POOL[id]) {
+      if (!DDei.INSTANCE_POOL.get(id)) {
         //初始化DDei对象
         let ddInstance = new DDei({ id: id, containerid: containerid });
         //初始化DDeiStage对象，如果存在stagejson则加载，不存在则初始化
@@ -79,13 +79,13 @@ class DDei {
         }
         ddInstance.stage.ddInstance = ddInstance;
         //将DDei对象装入全局缓存
-        DDei.INSTANCE_POOL[id] = ddInstance;
+        DDei.INSTANCE_POOL.set(id,ddInstance);
 
         //初始化bus
         ddInstance.bus = new DDeiBus({ ddInstance: ddInstance }); 
         return ddInstance;
       } else {
-        let ddInstance = DDei.INSTANCE_POOL[id];
+        let ddInstance = DDei.INSTANCE_POOL.get(id);
         return ddInstance;
       }
     }

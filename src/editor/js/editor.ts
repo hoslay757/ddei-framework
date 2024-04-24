@@ -107,7 +107,7 @@ class DDeiEditor {
   */
   static newInstance(id: string, containerid: string, active: boolean = true, options: object = {}): DDeiEditor {
     if (id && containerid) {
-      if (!DDeiEditor.INSTANCE_POOL[id]) {
+      if (!DDeiEditor.INSTANCE_POOL.get(id)) {
         //初始化DDeiEditor对象
         let editorInstance = new DDeiEditor({ id: id, containerid: containerid });
         if (!DDeiUtil.getAttrValueByConfig) {
@@ -158,7 +158,7 @@ class DDeiEditor {
         
 
         //将DDeiEditor对象装入全局缓存
-        DDeiEditor.INSTANCE_POOL[id] = editorInstance;
+        DDeiEditor.INSTANCE_POOL.set(id,editorInstance);
         if (active) {
           DDeiEditor.ACTIVE_INSTANCE = editorInstance;
         }
@@ -282,7 +282,7 @@ class DDeiEditor {
       //注册并加载弹出框
       let dialogs = plugin.getDialogs(this)
       dialogs?.forEach(dialog => {
-        this.dialogs[dialog.name] = dialog
+        this.dialogs[dialog.name] = cloneDeep(dialog)
       }); 
     }
     if (plugin.getPanels) {

@@ -75,7 +75,7 @@ class DDeiTable extends DDeiAbstractShape {
           if (i == 0) {
             this.cols[j] = [];
           }
-          let initJSON = DDeiUtil.getSubControlJSON(this.modelCode);
+          let initJSON = DDeiUtil.getSubControlJSON(this.modelCode,this.stage?.ddInstance);
           initJSON.id = this.id + "_c_" + i + "_" + j
           let x = (j + 0.5) * initWidth
           let y = (i + 0.5) * initHeight
@@ -243,7 +243,7 @@ class DDeiTable extends DDeiAbstractShape {
         newWidth = oldCell.width;
         newHeight = oldCell.height;
       }
-      let initJSON = DDeiUtil.getSubControlJSON(this.modelCode);
+      let initJSON = DDeiUtil.getSubControlJSON(this.modelCode, this.stage?.ddInstance);
       initJSON.width = newWidth
       initJSON.height = newHeight
       initJSON.table = this
@@ -483,7 +483,7 @@ class DDeiTable extends DDeiAbstractShape {
         newHeight = oldCell.height;
       }
 
-      let initJSON = DDeiUtil.getSubControlJSON(this.modelCode);
+      let initJSON = DDeiUtil.getSubControlJSON(this.modelCode, this.stage?.ddInstance);
       initJSON.width = newWidth
       initJSON.height = newHeight
       initJSON.table = this

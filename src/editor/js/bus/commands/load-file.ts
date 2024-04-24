@@ -148,6 +148,68 @@ class DDeiEditorCommandLoadFile extends DDeiBusCommand {
           }
         }
       });
+    }else{
+       let file = DDeiFile.loadFromJSON(
+          {
+            name: "新建文件_NEW",
+            path: "/新建文件_NEW",
+            sheets: [
+              new DDeiSheet({
+                name: "页面-1",
+                desc: "页面-1",
+                stage: DDeiStage.initByJSON({ id: "stage_1" }),
+                active: DDeiActiveType.ACTIVE,
+              }),
+            ],
+            currentSheetIndex: 0,
+            state: DDeiFileState.NEW,
+            active: DDeiActiveType.ACTIVE,
+          },
+          { currentDdInstance: ddInstance }
+        );
+      //添加文件
+      if (editor.currentFileIndex != -1) {
+        editor.files[editor.currentFileIndex].active =
+          DDeiActiveType.NONE;
+      }
+      editor.addFile(file);
+      editor.currentFileIndex = editor.files.indexOf(file);
+      file.active = DDeiActiveType.ACTIVE;
+      let sheets = file?.sheets;
+      if (file && sheets && ddInstance) {
+        file.changeSheet(file.currentSheetIndex);
+
+        let stage = sheets[file.currentSheetIndex].stage;
+        stage.ddInstance = ddInstance;
+        //记录文件初始日志
+        file.initHistroy();
+        //刷新页面
+        ddInstance.stage = stage;
+        //加载场景渲染器
+        stage.initRender();
+        //设置视窗位置到中央
+        if (!stage.wpv) {
+          //缺省定位在画布中心点位置
+          stage.wpv = {
+            x:
+              -(
+                stage.width -
+                ddInstance.render.canvas.width / ddInstance.render.ratio
+              ) / 2,
+            y:
+              -(
+                stage.height -
+                ddInstance.render.canvas.height / ddInstance.render.ratio
+              ) / 2,
+            z: 0,
+          };
+        }
+        editor.changeState(DDeiEditorState.DESIGNING);
+        ddInstance.bus.insert(DDeiEditorEnumBusCommandType.ClearTemplateUI, 0);
+        ddInstance.bus.insert(DDeiEnumBusCommandType.RefreshShape, 1);
+        ddInstance.bus.insert(DDeiEditorEnumBusCommandType.RefreshEditorParts, 2);
+        ddInstance.bus.executeAll();
+      }
     }
     return true;
 

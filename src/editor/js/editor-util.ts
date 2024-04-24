@@ -61,7 +61,7 @@ class DDeiEditorUtil {
   * 获取业务数据
   */
   static getBusiData(): object {
-    let editor = DDeiEditor.ACTIVE_INSTANCE;
+    let CTIVE_INSTANCE;
     if (editor) {
       let file = editor.files[editor.currentFileIndex]
       return file?.busiData
@@ -156,7 +156,7 @@ class DDeiEditorUtil {
   static getEditorInsByDDei(ddInstance:DDei){
     let editor;
     DDeiEditor.INSTANCE_POOL.forEach(editorIns => {
-      if (editorIns.ddInstance == ddInstance) {
+      if (editorIns.ddInstance == ddInstance || editorIns.ddInstance?.id == ddInstance?.id) {
         editor = editorIns;
       }
     })
@@ -239,11 +239,9 @@ class DDeiEditorUtil {
   /**
    * 获取子元素定义的json信息
    */
-  static getSubControlJSON(modelCode: string,editor:DDeiEditor|null|undefined): object {
-    if(!editor){
-      editor = DDeiEditor.ACTIVE_INSTANCE;
-    }
+  static getSubControlJSON(modelCode: string,ddInstance:DDei): object {
     //如果存在初始化子控件的json，则记录在类变量上
+    let editor = DDeiEditorUtil.getEditorInsByDDei(ddInstance);
     let controlDefine = editor.controls?.get(modelCode);
     if (controlDefine.subcontrol) {
       let subControlDefine = editor.controls?.get(controlDefine.subcontrol);
@@ -266,25 +264,24 @@ class DDeiEditorUtil {
    * @returns 控件ID
    */
   static getMenuControlId(editor:DDeiEditor|undefined|null): string {
-    if (!editor) {
-      editor = DDeiEditor.ACTIVE_INSTANCE;
-    }
     return editor.id+"_menu_dialog"
   }
 
   /**
    * 显示菜单
    */
-  static showContextMenu(control: any, evt: Event): void {
-    let menuJSON = DDeiUtil.getMenuConfig(control);
+  static showContextMenu(control: any,ddInstance:DDei, evt: Event): void {
+    let editor = DDeiEditorUtil.getEditorInsByDDei(ddInstance)
+    let menuJSON = DDeiUtil.getMenuConfig(control, editor);
+
     if (menuJSON?.length > 0) {
       //记录当前控件
-      let stage = DDeiEditor.ACTIVE_INSTANCE?.ddInstance?.stage;
+      let stage = ddInstance.stage;
       if (stage) {
         stage.render.currentMenuShape = control;
         //显示菜单
         DDeiUtil.setCurrentMenu(menuJSON);
-        let menuDialogId = DDeiUtil.getMenuControlId(DDeiEditor.ACTIVE_INSTANCE);
+        let menuDialogId = DDeiUtil.getMenuControlId(editor);
         let menuEle = document.getElementById(menuDialogId);
         let elePos = DDeiUtil.getDomAbsPosition(evt.currentTarget)
         if (menuEle) {
@@ -315,9 +312,6 @@ class DDeiEditorUtil {
      * @return 由构成的属性的实际路径和配置中对应的值组成的Map
      */
   static getMenuConfig(model: object, editor: DDeiEditor | null | undefined): object | null {
-    if (!editor){
-      editor = DDeiEditor.ACTIVE_INSTANCE;
-    }
     if (editor?.menuMapping){
       let menus = editor?.menuMapping[model?.modelType]
       if (menus?.length > 0){
@@ -334,7 +328,7 @@ class DDeiEditorUtil {
    */
   static getAttrValueByConfig(configModel: object, paths: string[] | string,editor:DDeiEditor|null|undefined): Map<string, object> {
     if (!editor){
-      editor = DDeiEditor.ACTIVE_INSTANCE;
+      editor = DDeiEditorUtil.getEditorInsByDDei(configModel.stage?.ddInstance)
     }
     let returnDatas: Map<string, object> = new Map();
     if (configModel && paths) {
@@ -397,10 +391,8 @@ class DDeiEditorUtil {
    * 返回控件原始定义
    * @param modelCode model或id
    */
-  static getControlDefine(configModel: DDeiAbstractShape,editor:DDeiEditor|null|undefined) {
-    if (!editor) {
-      editor = DDeiEditor.ACTIVE_INSTANCE;
-    }
+  static getControlDefine(configModel: DDeiAbstractShape) {
+    let editor = DDeiEditorUtil.getEditorInsByDDei(configModel.stage?.ddInstance)
     let id = configModel.modelCode ? configModel.modelCode : configModel.id;
     //找到控件定义
     return editor.controls?.get(id);
@@ -411,9 +403,6 @@ class DDeiEditorUtil {
     */
   static getDataSource(editor:DDeiEditor, attrDefine: DDeiEditorArrtibute, searchText: string | null = null): object[] | null {
     if (attrDefine.dataSource) {
-      if (!editor){
-        editor = DDeiEditor.ACTIVE_INSTANCE;
-      }
       let dsDefine = attrDefine.dataSource;
       let dataSource = null;
       if (Array.isArray(dsDefine)) {
@@ -504,8 +493,7 @@ class DDeiEditorUtil {
    * @param pos 位置信息
    * @param el 事件的元素
    */
-  static showDialog(id: string, data: object, pos: object, el: object, isPop: boolean = false, keepState: boolean = false) {
-    let editor = DDeiEditor.ACTIVE_INSTANCE;
+  static showDialog(editor:DDeiEditor, id: string, data: object, pos: object, el: object, isPop: boolean = false, keepState: boolean = false) {
     if (!isPop && !editor.tempDialogData) {
       editor.tempDialogData = {}
     } else if (isPop && !editor.tempPopData) {
@@ -523,7 +511,7 @@ class DDeiEditorUtil {
         if (oid != id) {
           let otherDialogData = loopData[oid]
           if (otherDialogData && otherDialogData.group == data.group) {
-            DDeiEditorUtil.closeDialog(oid)
+            DDeiEditorUtil.closeDialog(editor,oid)
           }
         }
       }
@@ -546,7 +534,7 @@ class DDeiEditorUtil {
     editor?.dialogs[id]?.viewer?.forceRefreshView();
     setTimeout(() => {
       if (!pos?.hiddenMask) {
-        let editor = DDeiEditor.ACTIVE_INSTANCE;
+        // let editor = DDeiEditor.ACTIVE_INSTANCE;
         let backEle = document.getElementById(editor.id+"_dialog_background_div");
         if (data.background) {
           backEle.style.background = data.background;
@@ -562,7 +550,7 @@ class DDeiEditorUtil {
         }
       }
 
-      let dialog = document.getElementById(id);
+      let dialog = document.getElementById(editor.id+"_"+id);
       dialog.style.display = "block";
       let msgEle = dialog?.getElementsByClassName("msg")[0];
       if (msgEle) {
@@ -626,9 +614,8 @@ class DDeiEditorUtil {
    * @param pos 位置信息
    * @param el 事件的元素
    */
-  static displayDialog(id: string, data: object, pos: object, el: object) {
+  static displayDialog(editor: DDeiEditor, id: string, data: object, pos: object, el: object) {
     if (!pos?.hiddenMask) {
-      let editor = DDeiEditor.ACTIVE_INSTANCE;
       let backEle = document.getElementById(editor.id + "_dialog_background_div");
       if (data.background) {
         backEle.style.background = data.background;
@@ -644,7 +631,7 @@ class DDeiEditorUtil {
       }
     }
 
-    let dialog = document.getElementById(id);
+    let dialog = document.getElementById(editor.id+"_"+id);
 
     dialog.style.display = "block";
 
@@ -700,13 +687,12 @@ class DDeiEditorUtil {
    * 隐藏弹出框
    * @param id 弹出框ID
    */
-  static hiddenDialog(id: string) {
-    let editor = DDeiEditor.ACTIVE_INSTANCE;
+  static hiddenDialog(editor: DDeiEditor, id: string) {
     let backEle = document.getElementById(editor.id + "_dialog_background_div");
     if (backEle) {
       backEle.style.display = "none"
     }
-    let dialogEle = document.getElementById(id);
+    let dialogEle = document.getElementById(editor.id+"_"+id);
     if (dialogEle) {
       dialogEle.style.display = "none"
     }
@@ -717,9 +703,8 @@ class DDeiEditorUtil {
    * 关闭弹出框
    * @param id 
    */
-  static closeDialog(id: string, isPop: boolean = false) {
-    let editor = DDeiEditor.ACTIVE_INSTANCE;
-    let dialog = document.getElementById(id);
+  static closeDialog(editor: DDeiEditor, id: string, isPop: boolean = false) {
+    let dialog = document.getElementById(editor.id+"_"+id);
     if (dialog){
       dialog.style.display = "none";
     }
@@ -740,21 +725,20 @@ class DDeiEditorUtil {
     }
   }
 
-  static closeDialogs(groups: string[], isPop: boolean = false) {
-    let editor = DDeiEditor.ACTIVE_INSTANCE;
+  static closeDialogs(editor: DDeiEditor, groups: string[], isPop: boolean = false) {
     if (isPop) {
 
       for (let oid in editor.tempPopData) {
         let otherDialogData = editor.tempPopData[oid]
         if (otherDialogData && (groups && groups.indexOf(otherDialogData.group) != -1 || !groups || groups.length == 0)) {
-          DDeiEditorUtil.closeDialog(oid, isPop)
+          DDeiEditorUtil.closeDialog(editor,oid, isPop)
         }
       }
     } else {
       for (let oid in editor.tempDialogData) {
         let otherDialogData = editor.tempDialogData[oid]
         if (otherDialogData && (groups && groups.indexOf(otherDialogData.group) != -1 || !groups || groups.length == 0)) {
-          DDeiEditorUtil.closeDialog(oid, isPop)
+          DDeiEditorUtil.closeDialog(editor,oid, isPop)
         }
       }
     }
@@ -767,14 +751,13 @@ class DDeiEditorUtil {
    * @param pos 
    * @param el 
    */
-  static showOrCloseDialog(id: string, data: object, pos: object, el: object, isPop: boolean = false, keepState: boolean = false) {
-    let editor = DDeiEditor.ACTIVE_INSTANCE;
+  static showOrCloseDialog(editor: DDeiEditor, id: string, data: object, pos: object, el: object, isPop: boolean = false, keepState: boolean = false) {
     if (!isPop && editor.tempDialogData && editor.tempDialogData[id]) {
-      DDeiEditorUtil.closeDialog(id, isPop)
+      DDeiEditorUtil.closeDialog(editor,id, isPop)
     } else if (isPop && editor.tempPopData && editor.tempPopData[id]) {
-      DDeiEditorUtil.closeDialog(id, isPop)
+      DDeiEditorUtil.closeDialog(editor,id, isPop)
     } else {
-      DDeiEditorUtil.showDialog(id, data, pos, el, isPop, keepState)
+      DDeiEditorUtil.showDialog(editor,id, data, pos, el, isPop, keepState)
     }
   }
 
@@ -887,7 +870,7 @@ class DDeiEditorUtil {
   /**
     * 创建控件
     */
-  static createControl(control, editor):[] {
+  static createControl(control, editor:DDeiEditor):[] {
     let ddInstance: DDei = editor.ddInstance;
     ddInstance.render.inEdge = 0;
     let stage = ddInstance.stage;
