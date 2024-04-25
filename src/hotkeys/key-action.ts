@@ -67,6 +67,10 @@ class DDeiKeyAction extends DDeiPluginBase {
       onlySelectModel = Array.from(selectedModels.values())[0]
     }
     let m1Str = editor.state + "_";
+
+    m1Str += editor.ddInstance?.stage?.render?.operateState + "_";
+
+
     if (ctrl == true) {
       m1Str += "ctrl_"
     }
@@ -90,9 +94,9 @@ class DDeiKeyAction extends DDeiPluginBase {
       }
 
       if (item.operateState) {
-        matchStr = item.operateState + "_";
+        matchStr += item.operateState + "_";
       } else {
-        matchStr = editor?.ddInstance?.stage?.render?.operateState + "_";
+        matchStr += editor.ddInstance?.stage?.render?.operateState + "_";
       }
 
 
@@ -167,11 +171,11 @@ class DDeiKeyAction extends DDeiPluginBase {
    * 键行为
    * @param evt 事件
    */
-  action(evt: Event, ddInstance: DDei): void{
+  action(evt: Event, ddInstance: DDei): void {
 
   }
 
 }
 
-export {DDeiKeyAction}
+export { DDeiKeyAction }
 export default DDeiKeyAction

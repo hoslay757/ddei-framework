@@ -1,11 +1,10 @@
 {
   "name": "ddei-framework",
-  "version": "1.2.32",
+  "version": "1.2.33",
   "private": false,
   "type": "module",
   "author": "hoslay <3697355039@qq.com>",
   "license": "Apache License 2.0",
-  
   "description": "ddei设计器-基础框架，底层运行支持和插件开发",
   "keywords": [
     "ddei",
