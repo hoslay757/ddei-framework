@@ -38,13 +38,10 @@ class DDeiBusCommandModelEdgePosition extends DDeiBusCommand {
     if (data?.models?.length > 0) {
       let dx = data.dx ? data.dx : 0;
       let dy = data.dy ? data.dy : 0;
-      let dragObj = data.dragObj;
       let models = data.models;
       let stage = bus.ddInstance.stage;
       //获取鼠标在屏幕上的位置
-      let ddRender = stage?.ddInstance.render
-      let canvas = ddRender.canvas;
-      let rat1 = ddRender?.ratio;
+      let ddInstance =  stage?.ddInstance
 
       let fModel = null
       if (models[0].id.lastIndexOf("_shadow") != -1) {
@@ -75,13 +72,13 @@ class DDeiBusCommandModelEdgePosition extends DDeiBusCommand {
         let hScrollWidth = stage.render.hScroll?.width ? stage.render.hScroll?.width : 0
         let vScrollHeight = stage.render.vScroll?.height ? stage.render.vScroll?.height : 0
         if (stage.wpv.x > 0) {
-          if (DDeiConfig.EXT_STAGE_WIDTH) {
+          if (ddInstance.EXT_STAGE_WIDTH) {
             extW = stage.wpv.x
             moveW = extW
           }
           stage.wpv.x = 0
         } else if (stage.wpv.x < -stage.width + hScrollWidth) {
-          if (DDeiConfig.EXT_STAGE_WIDTH) {
+          if (ddInstance.EXT_STAGE_WIDTH) {
             extW = -stage.width + hScrollWidth - stage.wpv.x
           } else {
             stage.wpv.x = -stage.width + hScrollWidth
@@ -90,13 +87,13 @@ class DDeiBusCommandModelEdgePosition extends DDeiBusCommand {
         let extH = 0;
         let moveH = 0;
         if (stage.wpv.y > 0) {
-          if (DDeiConfig.EXT_STAGE_HEIGHT) {
+          if (ddInstance.EXT_STAGE_HEIGHT) {
             extH = stage.wpv.y
             moveH = extH
           }
           stage.wpv.y = 0
         } else if (stage.wpv.y < -stage.height + vScrollHeight) {
-          if (DDeiConfig.EXT_STAGE_HEIGHT) {
+          if (ddInstance.EXT_STAGE_HEIGHT) {
             extH = -stage.height + vScrollHeight - stage.wpv.y
           } else {
             stage.wpv.y = -stage.height + vScrollHeight

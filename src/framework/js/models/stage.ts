@@ -24,9 +24,9 @@ class DDeiStage {
     this.unicode = props.unicode ? props.unicode : DDeiUtil.getUniqueCode()
     this.histroy = props.histroy ? props.histroy : [];
     this.histroyIdx = props.histroyIdx || props.histroyIdx == 0 ? props.histroyIdx : -1;
-    this.ratio = props.ratio ? props.ratio : DDeiConfig.STAGE_RATIO;
-    this.width = props.width ? props.width : DDeiConfig.STAGE_WIDTH;
-    this.height = props.height ? props.height : DDeiConfig.STAGE_HEIGHT;
+    this.ratio = props.ratio;
+    this.width = props.width;
+    this.height = props.height;
     this.wpv = props.wpv;
     this.mark = props.mark;
     this.paper = props.paper;
@@ -54,6 +54,15 @@ class DDeiStage {
   static loadFromJSON(json: object, tempData: object = {}): any {
     let stage = new DDeiStage(json);
     stage.ddInstance = tempData["currentDdInstance"]
+    if (!stage.ratio) {
+      stage.ratio = stage.ddInstance?.STAGE_RATIO;
+    }
+    if (!stage.width) {
+      stage.width = stage.ddInstance?.STAGE_WIDTH ? stage.ddInstance?.STAGE_WIDTH : stage.ddInstance?.render?.container?.offsetWidth;
+    }
+    if (!stage.height) {
+      stage.height = stage.ddInstance?.STAGE_HEIGHT ? stage.ddInstance?.STAGE_HEIGHT : stage.ddInstance?.render?.container?.offsetHeight;
+    }
     tempData['currentStage'] = stage
     tempData[stage.id] = stage
     let layers = [];
@@ -108,6 +117,15 @@ class DDeiStage {
   static initByJSON(json: object, tempData: object = {}): DDeiStage {
     let stage = new DDeiStage(json);
     stage.ddInstance = tempData["currentDdInstance"]
+    if (!stage.ratio) {
+      stage.ratio = stage.ddInstance?.STAGE_RATIO;
+    }
+    if (!stage.width) {
+      stage.width = stage.ddInstance?.STAGE_WIDTH ? stage.ddInstance?.STAGE_WIDTH : stage.ddInstance?.render?.container?.offsetWidth;
+    }
+    if (!stage.height) {
+      stage.height = stage.ddInstance?.STAGE_HEIGHT ? stage.ddInstance?.STAGE_HEIGHT : stage.ddInstance?.render?.container?.offsetHeight;
+    }
     //初始化三个Layer
     let dDeiLayer1 = DDeiLayer.initByJSON({ id: "layer_default", name: "图层" });
     dDeiLayer1.index = 0;
@@ -425,7 +443,7 @@ class DDeiStage {
   getStageRatio(): number {
     let stageRatio = parseFloat(this.ratio) ? parseFloat(this.ratio) : 1.0
     if (!stageRatio || isNaN(stageRatio)) {
-      stageRatio = DDeiConfig.STAGE_RATIO
+      stageRatio = this.ddInstance.STAGE_RATIO
     }
     return stageRatio
   }

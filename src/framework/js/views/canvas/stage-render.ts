@@ -325,7 +325,7 @@ class DDeiStageCanvasRender {
         ctx.restore()
       }
       // 计算对齐辅助线
-      if (DDeiConfig.GLOBAL_HELP_LINE_ENABLE) {
+      if (this.ddRender.model.GLOBAL_HELP_LINE_ENABLE) {
 
         //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
         let lineOffset = 0//1 * ratio / 2;
@@ -1482,8 +1482,8 @@ class DDeiStageCanvasRender {
     if (!this.model.ddInstance.eventCancel) {
       if (this.operateState == DDeiEnumOperateState.STAGE_SCROLL_WORKING) {
         let canvasPos = DDeiUtil.getDomAbsPosition(this.ddRender?.canvas?.parentElement)
-        let ex = evt.clientX - canvasPos.left;
-        let ey = evt.clientY - canvasPos.top;
+        let ex = evt.pageX - canvasPos.left;
+        let ey = evt.pageY - canvasPos.top;
 
         if (this.dragObj?.scroll == 1) {
           let width = this.hScroll.width;

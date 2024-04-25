@@ -19,6 +19,12 @@ class DDei {
     this.id = props.id
     this.containerid = props.containerid
     this.stage = null
+    this.EVENT_CONTROL_SELECT_BEFORE = DDei.beforeOperateValid
+    this.EVENT_CONTROL_CREATE_BEFORE = DDei.beforeOperateValid
+    this.EVENT_CONTROL_DRAG_BEFORE = DDei.beforeOperateValid
+    this.EVENT_CONTROL_DEL_BEFORE = DDei.beforeOperateValid
+    this.EVENT_CONTROL_EDIT_BEFORE = DDei.beforeOperateValid
+    this.EVENT_CONTROL_VIEW_BEFORE = DDei.beforeOperateValid
   }
   // ============================ 静态变量 ============================
   /**
@@ -90,17 +96,6 @@ class DDei {
       }
     }
   }
-
-  static {
-    DDeiConfig.EVENT_CONTROL_SELECT_BEFORE = DDei.beforeOperateValid
-    DDeiConfig.EVENT_CONTROL_CREATE_BEFORE = DDei.beforeOperateValid
-    DDeiConfig.EVENT_CONTROL_DRAG_BEFORE = DDei.beforeOperateValid
-    DDeiConfig.EVENT_CONTROL_DEL_BEFORE = DDei.beforeOperateValid
-    DDeiConfig.EVENT_CONTROL_EDIT_BEFORE = DDei.beforeOperateValid
-    DDeiConfig.EVENT_CONTROL_VIEW_BEFORE = DDei.beforeOperateValid
-
-  }
-
   // ============================ 属性 ============================
   id: string;
   // 承载的容器id
@@ -123,6 +118,132 @@ class DDei {
 
   //当前编辑模式，1：指针，2：手，3:文本创建，4:线段创建
   editMode: number = 1;
+
+
+
+  //缺省画布大小
+  STAGE_WIDTH: number = 0;
+  STAGE_HEIGHT: number = 0;
+  //自动扩展画布大小
+  EXT_STAGE_WIDTH: boolean = true;
+  EXT_STAGE_HEIGHT: boolean = true;
+
+  //是否开启全局缩放
+  GLOBAL_ALLOW_STAGE_RATIO = true;
+  //缺省缩放比例
+  STAGE_RATIO: number = 1.0;
+
+  // 是否打开辅助对齐线
+  GLOBAL_HELP_LINE_ENABLE: boolean = true;
+
+
+  /**
+   * 加载文件的函数，加载后的文件会进入文件列表，此方法为外部传入的勾子函数，由外部对文件进行加载
+   * 必须为一个async函数
+   */
+  EVENT_LOAD_FILE: Function|null = null;
+
+  /**
+   * 保存文件的函数，保存后文件会从dirty状态变为普通状态，此方法为外部传入的勾子函数，由外部对文件进行保存和存储
+   * 必须为一个async函数
+   */
+  EVENT_SAVE_FILE: Function | null = null;
+
+  /**
+ * 发布文件的函数，发布后文件从业务上转变为正式文件，此方法为外部传入的勾子函数，由外部对文件状态进行控制
+ * 必须为一个async函数
+ */
+  EVENT_PUBLISH_FILE: Function | null = null;
+
+  /**
+   * 返回文件列表，此方法为外部传入的勾子函数
+   */
+  EVENT_GOBACK_FILE_LIST: Function | null = null;
+
+  /**
+   * 控件选择前，此方法为外部传入的勾子函数
+   */
+  EVENT_CONTROL_SELECT_BEFORE: Function | null = null;
+
+  /**
+   * 控件选择后，此方法为外部传入的勾子函数
+   */
+  EVENT_CONTROL_SELECT_AFTER: Function | null = null;
+
+  /**
+   * 控件创建前，此方法为外部传入的勾子函数
+   */
+  EVENT_CONTROL_CREATE_BEFORE: Function | null = null;
+
+  /**
+   * 当前正在执行鼠标相关的动作，此方法为外部传入的钩子函数
+   */
+  EVENT_MOUSE_OPERATING: Function | null = null;
+
+  /**
+   * 控件创建后，此方法为外部传入的勾子函数
+   */
+  EVENT_CONTROL_CREATE_AFTER: Function | null = null;
+
+  /**
+   * 控件拖拽前，此方法为外部传入的勾子函数
+   */
+  EVENT_CONTROL_DRAG_BEFORE: Function | null = null;
+
+  /**
+   * 控件拖拽后，此方法为外部传入的勾子函数
+   */
+  EVENT_CONTROL_DRAG_AFTER: Function | null = null;
+
+  /**
+   * 线段拖拽前，此方法为外部传入的勾子函数
+   */
+  EVENT_LINE_DRAG_BEFORE: Function | null = null;
+
+  /**
+   * 线段拖拽后，此方法为外部传入的勾子函数
+   */
+  EVENT_LINE_DRAG_AFTER: Function | null = null;
+
+  /**
+   * 控件删除前，此方法为外部传入的勾子函数
+   */
+  EVENT_CONTROL_DEL_BEFORE: Function | null = null;
+
+  /**
+   * 控件删除后，此方法为外部传入的勾子函数
+   */
+  EVENT_CONTROL_DEL_AFTER: Function | null = null;
+
+  /**
+   * 控件属性编辑前，此方法为外部传入的勾子函数
+   */
+  EVENT_CONTROL_EDIT_BEFORE: Function | null = null;
+
+  /**
+   * 控件属性编辑后，此方法为外部传入的勾子函数
+   */
+  EVENT_CONTROL_EDIT_AFTER: Function | null = null;
+  /**
+   * 控件查看前，此方法为外部传入的勾子函数
+   */
+  EVENT_CONTROL_VIEW_BEFORE: Function | null = null;
+
+  /**
+   * 控件查看后，此方法为外部传入的勾子函数
+   */
+  EVENT_CONTROL_VIEW_AFTER: Function | null = null;
+
+  /**
+   * 移动视窗，此方法为外部传入的勾子函数
+   */
+  EVENT_STAGE_CHANGE_WPV: Function | null = null;
+
+  /**
+   * 全剧缩放，此方法为外部传入的勾子函数
+   */
+  EVENT_STAGE_CHANGE_RATIO: Function | null = null;
+  
 
   // ============================ 方法 ============================
   /**

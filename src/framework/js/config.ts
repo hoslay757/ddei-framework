@@ -19,22 +19,6 @@ class DDeiConfig {
   //当前采用的渲染器类型，暂时只支持canvas
   static RENDER_TYPE: string = "Canvas";
 
-
-  //缺省画布大小
-  static STAGE_WIDTH: number = 3000;
-  static STAGE_HEIGHT: number = 3000;
-  //自动扩展画布大小
-  static EXT_STAGE_WIDTH: boolean = true;
-  static EXT_STAGE_HEIGHT: boolean = true;
-
-  //是否开启全局缩放
-  static GLOBAL_ALLOW_STAGE_RATIO = true;
-  //缺省缩放比例
-  static STAGE_RATIO: number = 1.0;
-
-  // 是否打开辅助对齐线
-  static GLOBAL_HELP_LINE_ENABLE: boolean = true;
-
   // 缺省吸附效果宽度，小于0时没有吸附效果
   static GLOBAL_ADV_WEIGHT: number = 5;
 
@@ -478,9 +462,6 @@ class DDeiConfig {
     "32开": { width: 142, height: 210, paddingLeft: 12, paddingTop: 25, unit: 'mm' },
     "64开": { width: 110, height: 142, paddingLeft: 18, paddingTop: 12, unit: 'mm' }
   }
-  static {
-    
-  }
 
   /**
    * 应用外部配置文件，覆写配置文件内容
@@ -539,114 +520,6 @@ class DDeiConfig {
     }
   }
 
-  /**
-   * 加载文件的函数，加载后的文件会进入文件列表，此方法为外部传入的勾子函数，由外部对文件进行加载
-   * 必须为一个async函数
-   */
-  static EVENT_LOAD_FILE: Function;
-
-  /**
-   * 保存文件的函数，保存后文件会从dirty状态变为普通状态，此方法为外部传入的勾子函数，由外部对文件进行保存和存储
-   * 必须为一个async函数
-   */
-  static EVENT_SAVE_FILE: Function;
-
-  /**
- * 发布文件的函数，发布后文件从业务上转变为正式文件，此方法为外部传入的勾子函数，由外部对文件状态进行控制
- * 必须为一个async函数
- */
-  static EVENT_PUBLISH_FILE: Function;
-
-  /**
-   * 返回文件列表，此方法为外部传入的勾子函数
-   */
-  static EVENT_GOBACK_FILE_LIST: Function;
-
-  /**
-   * 控件选择前，此方法为外部传入的勾子函数
-   */
-  static EVENT_CONTROL_SELECT_BEFORE: Function;
-
-  /**
-   * 控件选择后，此方法为外部传入的勾子函数
-   */
-  static EVENT_CONTROL_SELECT_AFTER: Function;
-
-  /**
-   * 控件创建前，此方法为外部传入的勾子函数
-   */
-  static EVENT_CONTROL_CREATE_BEFORE: Function;
-
-  /**
-   * 当前正在执行鼠标相关的动作，此方法为外部传入的钩子函数
-   */
-  static EVENT_MOUSE_OPERATING: Function;
-
-  /**
-   * 控件创建后，此方法为外部传入的勾子函数
-   */
-  static EVENT_CONTROL_CREATE_AFTER: Function;
-
-  /**
-   * 控件拖拽前，此方法为外部传入的勾子函数
-   */
-  static EVENT_CONTROL_DRAG_BEFORE: Function;
-
-  /**
-   * 控件拖拽后，此方法为外部传入的勾子函数
-   */
-  static EVENT_CONTROL_DRAG_AFTER: Function;
-
-  /**
-   * 线段拖拽前，此方法为外部传入的勾子函数
-   */
-  static EVENT_LINE_DRAG_BEFORE: Function;
-
-  /**
-   * 线段拖拽后，此方法为外部传入的勾子函数
-   */
-  static EVENT_LINE_DRAG_AFTER: Function;
-
-  /**
-   * 控件删除前，此方法为外部传入的勾子函数
-   */
-  static EVENT_CONTROL_DEL_BEFORE: Function;
-
-  /**
-   * 控件删除后，此方法为外部传入的勾子函数
-   */
-  static EVENT_CONTROL_DEL_AFTER: Function;
-
-  /**
-   * 控件属性编辑前，此方法为外部传入的勾子函数
-   */
-  static EVENT_CONTROL_EDIT_BEFORE: Function;
-
-  /**
-   * 控件属性编辑后，此方法为外部传入的勾子函数
-   */
-  static EVENT_CONTROL_EDIT_AFTER: Function;
-
-
-  /**
-   * 控件查看前，此方法为外部传入的勾子函数
-   */
-  static EVENT_CONTROL_VIEW_BEFORE: Function;
-
-  /**
-   * 控件查看后，此方法为外部传入的勾子函数
-   */
-  static EVENT_CONTROL_VIEW_AFTER: Function;
-
-  /**
-   * 移动视窗，此方法为外部传入的勾子函数
-   */
-  static EVENT_STAGE_CHANGE_WPV: Function;
-
-  /**
-   * 全剧缩放，此方法为外部传入的勾子函数
-   */
-  static EVENT_STAGE_CHANGE_RATIO: Function;
 
 
 

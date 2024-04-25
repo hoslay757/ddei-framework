@@ -55,46 +55,46 @@ class DDeiEditor {
    * 加载文件的函数，加载后的文件会进入文件列表，此方法为外部传入的勾子函数，由外部对文件进行加载
    * 必须为一个async函数
    */
-  static EVENT_LOAD_FILE: Function;
+  EVENT_LOAD_FILE: Function|null = null;
 
   /**
    * 保存文件的函数，保存后文件会从dirty状态变为普通状态，此方法为外部传入的勾子函数，由外部对文件进行保存和存储
    * 必须为一个async函数
    */
-  static EVENT_SAVE_FILE: Function;
+  EVENT_SAVE_FILE: Function|null = null;
 
   /**
  * 发布文件的函数，发布后文件从业务上转变为正式文件，此方法为外部传入的勾子函数，由外部对文件状态进行控制
  * 必须为一个async函数
  */
-  static EVENT_PUBLISH_FILE: Function;
+  EVENT_PUBLISH_FILE: Function | null = null;
 
 
 
   /**
    * 返回文件列表，此方法为外部传入的勾子函数
    */
-  static EVENT_GOBACK_FILE_LIST: Function;
+  EVENT_GOBACK_FILE_LIST: Function | null = null;
 
   /**
    * 控件选择前，此方法为外部传入的勾子函数
    */
-  static EVENT_CONTROL_SELECT_BEFORE: Function;
+  EVENT_CONTROL_SELECT_BEFORE: Function | null = null;
 
   /**
    * 控件选择后，此方法为外部传入的勾子函数
    */
-  static EVENT_CONTROL_SELECT_AFTER: Function;
+  EVENT_CONTROL_SELECT_AFTER: Function | null = null;
 
   /**
  * 移动视窗，此方法为外部传入的勾子函数
  */
-  static EVENT_STAGE_CHANGE_WPV: Function;
+  EVENT_STAGE_CHANGE_WPV: Function | null = null;
 
   /**
    * 全剧缩放，此方法为外部传入的勾子函数
    */
-  static EVENT_STAGE_CHANGE_RATIO: Function;
+  EVENT_STAGE_CHANGE_RATIO: Function | null = null;
 
 
   // ============================ 静态方法 ============================

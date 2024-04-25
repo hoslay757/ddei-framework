@@ -133,7 +133,7 @@ class DDeiSelector extends DDeiRectangle {
   * 获取画布缩放比率
   */
   getStageRatio(): number {
-    return DDeiConfig.STAGE_RATIO
+    return this.stage?.ddInstance.STAGE_RATIO;
   }
 
 

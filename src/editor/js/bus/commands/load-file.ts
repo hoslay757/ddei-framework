@@ -157,7 +157,7 @@ class DDeiEditorCommandLoadFile extends DDeiBusCommand {
               new DDeiSheet({
                 name: "页面-1",
                 desc: "页面-1",
-                stage: DDeiStage.initByJSON({ id: "stage_1" }),
+                stage: DDeiStage.initByJSON({ id: "stage_1" }, { currentDdInstance: ddInstance }),
                 active: DDeiActiveType.ACTIVE,
               }),
             ],

@@ -89,6 +89,12 @@ class DDeiKeyAction extends DDeiPluginBase {
         matchStr = editor.state + "_";
       }
 
+      if (item.operateState) {
+        matchStr = item.operateState + "_";
+      } else {
+        matchStr = editor?.ddInstance?.stage?.render?.operateState + "_";
+      }
+
 
       if (item.ctrl == 1) {
         matchStr += "ctrl_"
