@@ -30,8 +30,6 @@ class DDeiUtil {
 
   //钩子函数，获取菜单的控件ID，用于显示菜单，控制样式等
   static getMenuControlId: Function;
-  //钩子函数，设置当前右键菜单
-  static setCurrentMenu: Function;
   //钩子函数，显示右键菜单
   static showContextMenu: Function;
   //钩子函数，返回控件的子控件定义，用于创建控件时自动创建子控件

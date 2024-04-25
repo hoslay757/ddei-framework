@@ -47,7 +47,7 @@ class DDeiEditorCommandClearTemplateUI extends DDeiBusCommand {
 
     //清除弹框
     {
-      DDeiEditorUtil.closeDialogs(["bottom-dialog", "property-dialog", "top-dialog", "toolbox-dialog"])
+      DDeiEditorUtil.closeDialogs(bus.invoker,["bottom-dialog", "property-dialog", "top-dialog", "toolbox-dialog"])
     }
 
     //清除右键弹出框

@@ -274,25 +274,25 @@ class DDeiEditorUtil {
     let editor = DDeiEditorUtil.getEditorInsByDDei(ddInstance)
     let menuJSON = DDeiUtil.getMenuConfig(control, editor);
 
-    if (menuJSON?.length > 0) {
+    if (menuJSON?.length > 0 && editor?.setCurrentMenu) {
       //记录当前控件
       let stage = ddInstance.stage;
       if (stage) {
         stage.render.currentMenuShape = control;
         //显示菜单
-        DDeiUtil.setCurrentMenu(menuJSON);
+        editor.setCurrentMenu(menuJSON);
         let menuDialogId = DDeiUtil.getMenuControlId(editor);
         let menuEle = document.getElementById(menuDialogId);
         let elePos = DDeiUtil.getDomAbsPosition(evt.currentTarget)
         if (menuEle) {
           if (elePos.left + 200 > document.body.clientWidth) {
-            menuEle.style.right = "0px";
+            menuEle.style.left = (document.body.clientWidth-200) + "px";
           } else {
             menuEle.style.left = elePos.left + "px";
           }
 
           if (elePos.top + menuJSON.length * 40 > document.body.clientHeight) {
-            menuEle.style.bottom = "0px";
+            menuEle.style.top = (document.body.clientHeight - menuJSON.length * 40) + "px";
           } else {
             menuEle.style.top = elePos.top + "px";
           }

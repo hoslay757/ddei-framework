@@ -500,6 +500,7 @@ class DDeiEditor {
 
   // 当前实例的状态
   state: DDeiEditorState | null;
+  
   //当前模型的类型
   modelType: string = "DDeiEditor";
   //当前的实例
@@ -527,6 +528,9 @@ class DDeiEditor {
   properyViewer: object | null = null;
   //文件浏览器对象
   openFilesViewer: object | null = null;
+
+  //钩子函数，设置当前右键菜单
+  setCurrentMenu: Function | null = null;
 
   //当前编辑模式，1：指针，2：手，3:文本创建，4:线段创建
   editMode: number = 1;
