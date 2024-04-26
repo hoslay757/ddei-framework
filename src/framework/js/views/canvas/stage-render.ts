@@ -220,7 +220,20 @@ class DDeiStageCanvasRender {
         let font = "bold " + (fontSize * rat1) + "px Microsoft YaHei"
         //设置字体
         ctx.font = font
-        let ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
+        let ruleDisplay
+        let ruleInit
+        if (this.model.ruler?.display) {
+          ruleDisplay = this.model.ruler.display;
+        } else if (this.model.ddInstance.ruler != null && this.model.ddInstance.ruler != undefined) {
+          if (typeof (this.model.ddInstance.ruler) == 'boolean') {
+            ruleDisplay = this.model.ddInstance.ruler ? 1 : 0;
+          } else {
+            ruleInit = this.model.ddInstance.ruler
+            ruleDisplay = ruleInit.display;
+          }
+        } else {
+          ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
+        }
         let xText = 0;
         let yText = 0;
         if (this.operateState == DDeiEnumOperateState.CONTROL_DRAGING || this.operateState == DDeiEnumOperateState.CONTROL_CREATING) {
@@ -239,7 +252,7 @@ class DDeiStageCanvasRender {
           let stageRatio = this.model.getStageRatio()
           let xDPI = this.ddRender.dpi.x;
           //标尺单位
-          let unit = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.unit", true);
+          let unit = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.unit", true, ruleInit);
           let rulerConfig = DDeiConfig.RULER[unit]
           //尺子间隔单位
           let unitWeight = DDeiUtil.unitToPix(rulerConfig.size, unit, xDPI) * rat1;
@@ -398,7 +411,19 @@ class DDeiStageCanvasRender {
    * 绘制纸张
    */
   drawPaper() {
-    let paperType = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.type", true);
+    let paperType
+    if (this.model.paper?.type) {
+      paperType = this.model.paper.type;
+    } else if (this.ddRender?.model.paper) {
+      if (typeof (this.ddRender?.model.paper) == 'string'){
+        paperType = this.ddRender?.model.paper;
+      }else{
+        paperType = this.ddRender?.model.paper.type;
+      }
+    } else {
+      paperType = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.type", true);
+    }
+    
     //获取纸张大小的定义
     let paperConfig = DDeiConfig.PAPER[paperType];
     if (paperConfig) {
@@ -416,7 +441,7 @@ class DDeiStageCanvasRender {
       let offsetWidth = 1 * ratio / 2;
 
       //纸张的像素大小
-      let paperSize = DDeiUtil.getPaperSize(this.model)
+      let paperSize = DDeiUtil.getPaperSize(this.model,paperType)
 
       let paperWidth = paperSize.width;
       let paperHeight = paperSize.height;
@@ -600,8 +625,20 @@ class DDeiStageCanvasRender {
    * 标尺
    */
   drawRuler() {
-    let ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
-
+    let ruleDisplay
+    let ruleInit
+    if (this.model.ruler?.display) {
+      ruleDisplay = this.model.ruler.display;
+    } else if (this.model.ddInstance.ruler != null && this.model.ddInstance.ruler != undefined) {
+      if (typeof (this.model.ddInstance.ruler) == 'boolean') {
+        ruleDisplay = this.model.ddInstance.ruler ? 1 : 0;
+      } else {
+        ruleInit = this.model.ddInstance.ruler
+        ruleDisplay = ruleInit.display;
+      }
+    } else {
+      ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
+    }
     if (ruleDisplay == 1 || ruleDisplay == "1") {
       //绘制横向点
       //获得 2d 上下文对象
@@ -611,7 +648,7 @@ class DDeiStageCanvasRender {
       let stageRatio = this.model.getStageRatio()
       let xDPI = this.ddRender.dpi.x;
       //标尺单位
-      let unit = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.unit", true);
+      let unit = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.unit", true, ruleInit);
       let rulerConfig = DDeiConfig.RULER[unit]
       //尺子间隔单位
       let unitWeight = DDeiUtil.unitToPix(rulerConfig.size, unit, xDPI) * rat1;
@@ -915,11 +952,31 @@ class DDeiStageCanvasRender {
   * 绘制网格
   */
   drawGrid() {
-    let paperType = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.type", true);
+    let paperType
+    if (this.model.paper?.type) {
+      paperType = this.model.paper.type;
+    } else if (this.ddRender?.model.paper) {
+      if (typeof (this.ddRender?.model.paper) == 'string') {
+        paperType = this.ddRender?.model.paper;
+      } else {
+        paperType = this.ddRender?.model.paper.type;
+      }
+    } else {
+      paperType = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.type", true);
+    }
     //获取纸张大小的定义
     let paperConfig = DDeiConfig.PAPER[paperType];
     if (paperConfig) {
-      let gridDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "grid.display", true);
+      
+      let gridDisplay;
+      if (this.model.grid?.display || this.model.grid?.display == 0) {
+        gridDisplay = this.model.grid?.display;
+      } else if (this.ddRender?.model.grid) {
+        gridDisplay = this.ddRender?.model.grid;
+      } else{
+        gridDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "grid.display", true);
+      }
+      
       if (gridDisplay == 1 || gridDisplay == '1' || gridDisplay == 2 || gridDisplay == '2') {
         //绘制横向点
         //获得 2d 上下文对象
@@ -929,7 +986,13 @@ class DDeiStageCanvasRender {
         let stageRatio = this.model.getStageRatio()
         let xDPI = this.ddRender.dpi.x;
         //标尺单位
-        let unit = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.unit", true);
+        let ruleInit
+        if (this.model.ddInstance.ruler) {
+          if (typeof (this.model.ddInstance.ruler) == 'object') {
+            ruleInit = this.model.ddInstance.ruler;
+          }
+        } 
+        let unit = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.unit", true, ruleInit);
         let rulerConfig = DDeiConfig.RULER[unit]
         //尺子间隔单位
         let unitWeight = DDeiUtil.unitToPix(rulerConfig.size, unit, xDPI) * rat1;
@@ -1061,12 +1124,23 @@ class DDeiStageCanvasRender {
    * 绘制水印
    */
   drawMark() {
+    let ddInstance = this.ddRender?.model;
+    let markInit
+    if (ddInstance.mark) {
+      if (typeof (ddInstance.mark) == 'object') {
+        markInit = ddInstance.mark
+      }else{
+        markInit = {data:ddInstance?.mark,type:1}
+      }
+    } 
     //水印的参考位置为0,0原点，按照配置进行输出
-    let markType = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.type", true);
+    let markType = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.type", true, markInit);
+    
     //文本水印
     if (markType == 1 || markType == '1') {
       //内容
-      let text = DDeiUtil.getReplacibleValue(this.model, "mark.data");
+      let text = DDeiUtil.getReplacibleValue(this.model, "mark.data",false,false,markInit);
+      
       if (text) {
         if (!this.markCanvas) {
           this.markCanvas = document.createElement("canvas");
@@ -1082,9 +1156,9 @@ class DDeiStageCanvasRender {
         ctx.save();
         //获取并应用设置信息
         //获取字体信息
-        let fiFamily = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.font.family", true);
-        let fiSize = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.font.size", true);
-        let fiColor = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.font.color", true);
+        let fiFamily = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.font.family", true, markInit);
+        let fiSize = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.font.size", true, markInit);
+        let fiColor = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.font.color", true, markInit);
         if (!fiColor){
           fiColor = DDeiUtil.getStyleValue("canvas-mark-title", this.ddRender.model);
         }
@@ -1094,7 +1168,7 @@ class DDeiStageCanvasRender {
         let textSize = DDeiUtil.measureTextSize(this.model.ddInstance, text, fiFamily, fontSize)
         let weight = Math.max(textSize.width, textSize.height);
         //方向
-        let direct = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.direct", true);
+        let direct = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.direct", true, markInit);
 
         //计算矩形区域大小
         let ps = [new Vector3(-weight * 0.5, -weight * 0.5, 1),
@@ -1136,7 +1210,7 @@ class DDeiStageCanvasRender {
         //设置字体颜色
         markCtx.fillStyle = fiColor
         //透明度
-        let opac = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.opacity", true);
+        let opac = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.opacity", true, markInit);
         if (opac) {
           markCtx.globalAlpha = opac
         }
@@ -1199,12 +1273,12 @@ class DDeiStageCanvasRender {
         let markCtx = markCanvas.getContext("2d");
         markCtx.save();
         //透明度
-        let opac = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.opacity", true);
+        let opac = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.opacity", true, markInit);
         if (opac) {
           markCtx.globalAlpha = opac
         }
         //方向
-        let direct = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.direct", true);
+        let direct = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "mark.direct", true, markInit);
         if (direct == 1) {
           markCtx.translate(markCanvas.width * 0.5, markCanvas.height * 0.5)
           markCtx.rotate(45 * DDeiConfig.ROTATE_UNIT);

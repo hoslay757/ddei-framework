@@ -241,8 +241,15 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     //条线
     let jumpLine = DDeiModelArrtibuteValue.getAttrValueByState(this, "jumpline", true);
     //采用全局跳线
+    //采用全局跳线
     if (jumpLine == 0 || !jumpLine) {
-      jumpLine = DDeiModelArrtibuteValue.getAttrValueByState(this.stage, "global.jumpline", true);
+      if (this.stage.global?.jumpline) {
+        jumpLine = this.stage.global.jumpline;
+      } else if (this.stage.ddInstance.jumpline) {
+        jumpLine = this.stage.ddInstance.jumpline;
+      } else {
+        jumpLine = DDeiModelArrtibuteValue.getAttrValueByState(this.stage, "global.jumpline", true);
+      }
     }
     weight = weight + fillWeight
 

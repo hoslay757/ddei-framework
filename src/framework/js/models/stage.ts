@@ -55,13 +55,13 @@ class DDeiStage {
     let stage = new DDeiStage(json);
     stage.ddInstance = tempData["currentDdInstance"]
     if (!stage.ratio) {
-      stage.ratio = stage.ddInstance?.STAGE_RATIO;
+      stage.ratio = stage.ddInstance?.ratio;
     }
     if (!stage.width) {
-      stage.width = stage.ddInstance?.STAGE_WIDTH ? stage.ddInstance?.STAGE_WIDTH : stage.ddInstance?.render?.container?.offsetWidth;
+      stage.width = stage.ddInstance?.width ? stage.ddInstance?.width : stage.ddInstance?.render?.container?.offsetWidth;
     }
     if (!stage.height) {
-      stage.height = stage.ddInstance?.STAGE_HEIGHT ? stage.ddInstance?.STAGE_HEIGHT : stage.ddInstance?.render?.container?.offsetHeight;
+      stage.height = stage.ddInstance?.height ? stage.ddInstance?.height : stage.ddInstance?.render?.container?.offsetHeight;
     }
     tempData['currentStage'] = stage
     tempData[stage.id] = stage
@@ -118,13 +118,13 @@ class DDeiStage {
     let stage = new DDeiStage(json);
     stage.ddInstance = tempData["currentDdInstance"]
     if (!stage.ratio) {
-      stage.ratio = stage.ddInstance?.STAGE_RATIO;
+      stage.ratio = stage.ddInstance?.ratio;
     }
     if (!stage.width) {
-      stage.width = stage.ddInstance?.STAGE_WIDTH ? stage.ddInstance?.STAGE_WIDTH : stage.ddInstance?.render?.container?.offsetWidth;
+      stage.width = stage.ddInstance?.width ? stage.ddInstance?.width : stage.ddInstance?.render?.container?.offsetWidth;
     }
     if (!stage.height) {
-      stage.height = stage.ddInstance?.STAGE_HEIGHT ? stage.ddInstance?.STAGE_HEIGHT : stage.ddInstance?.render?.container?.offsetHeight;
+      stage.height = stage.ddInstance?.height ? stage.ddInstance?.height : stage.ddInstance?.render?.container?.offsetHeight;
     }
     //初始化三个Layer
     let dDeiLayer1 = DDeiLayer.initByJSON({ id: "layer_default", name: "图层" });
@@ -443,7 +443,7 @@ class DDeiStage {
   getStageRatio(): number {
     let stageRatio = parseFloat(this.ratio) ? parseFloat(this.ratio) : 1.0
     if (!stageRatio || isNaN(stageRatio)) {
-      stageRatio = this.ddInstance.STAGE_RATIO
+      stageRatio = this.ddInstance.ratio
     }
     return stageRatio
   }

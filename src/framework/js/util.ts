@@ -1559,7 +1559,10 @@ class DDeiUtil {
    * @param dist 目标
    */
   static copyJSONValue(source, dist): object {
-    let distType = typeof dist;
+    let distType;
+    if (dist){
+      distType = typeof dist
+    }
     let sourceType = typeof source;
     let type = distType && distType != 'undefined' ? distType : sourceType;
     if (type != undefined && type != undefined) {
@@ -1710,12 +1713,24 @@ class DDeiUtil {
      * @param format 是否需要格式化
      * @param replaceSPT 是否替换特殊样式
      */
-  static getReplacibleValue(model: object, keypath: string, format: boolean = false, replaceSPT: boolean = false): any {
+  static getReplacibleValue(model: object, keypath: string, format: boolean = false, replaceSPT: boolean = false, initData:object| null = null): any {
     //获取原始值
     if (model) {
       let hasTempSpt = false;
       let replaceDetail = null;
       let originValue = model?.render?.getCachedValue(keypath);
+      if (!originValue && initData){
+        //切分想要获取的属性层级
+        let rp1 = keypath.split('.');
+        if (rp1.length > 1){
+          //属性详情路径code
+          let detailCode = rp1.slice(1);
+          let rd = DDeiUtil.getDataByPath(initData, detailCode);
+          if(rd){
+            originValue = rd.data
+          }
+        }
+      }
       let returnValue = originValue;
       //执行值绑定替换
       if (originValue && originValue.indexOf("#") != -1) {
@@ -2881,30 +2896,43 @@ class DDeiUtil {
     let paperWidth = 0;
     let paperHeight = 0;
     //获取纸张大小的定义
+    let paperInit
     if (!paperType) {
-      paperType = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.type", true);
+      if (stage.paper?.type) {
+        paperType = stage.paper.type;
+      } else if (stage.ddInstance.paper) {
+        if (typeof (stage.ddInstance.paper) == 'string') {
+          paperType = stage.ddInstance.paper;
+        } else {
+          paperType = stage.ddInstance.paper.type;
+          paperInit = stage.ddInstance.paper;
+        }
+      } else {
+        paperType = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.type", true);
+      }
     }
+    
     let paperConfig = DDeiConfig.PAPER[paperType];
     if (paperConfig) {
       let rat1 = stage.render.ddRender.ratio;
       let stageRatio = stage.getStageRatio()
       let ratio = rat1 * stageRatio;
       let xDPI = stage.render.ddRender.dpi.x;
-      let paperDirect = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.direct", true);
+      let paperDirect = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.direct", true, paperInit);
       let w = paperConfig.width;
       let h = paperConfig.height;
       let unit = paperConfig.unit;
       if (paperType == '自定义') {
         //获取自定义属性以及单位
-        let custWidth = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.width", true);
+        let custWidth = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.width", true, paperInit);
         if (custWidth || custWidth == 0) {
           w = custWidth;
         }
-        let custHeight = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.height", true);
+        let custHeight = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.height", true, paperInit);
         if (custHeight || custHeight == 0) {
           h = custHeight;
         }
-        let custUnit = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.unit", true);
+        let custUnit = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.unit", true, paperInit);
         if (custUnit) {
           unit = custUnit;
         }

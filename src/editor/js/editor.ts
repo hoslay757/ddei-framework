@@ -43,13 +43,27 @@ class DDeiEditor {
    */
   static ACTIVE_INSTANCE: DDeiEditor | null = null;
 
-  // 键盘对齐,开启后允许通过上下左右来改变控件位置,每次改变位置的大小为GLOBAL_HELP_LINE_WEIGHT
-  static GLOBAL_KEYBOARD_ALIGN_ENABLE: boolean = true;
+  //以下字段为初始化时传入初始化字段，在运行时会用作缺省值
+  //主题风格
+  theme: string|null = null;
+
+  //初始化控件，只会使用一次
+  controls:object[]|null = null;
+  //以上字段为初始化时传入初始化字段，在运行时会用作缺省值
+
+
+
+  //以下字段为初始化时传入的全局控制变量或钩子函数，在运行时不会改变
+
+  //是否开启风格本地缓存
+  GLOBAL_LOCAL_CACHE_THEME: boolean = false;
+
+  // 键盘对齐,开启后允许通过上下左右来改变控件位置
+  GLOBAL_KEYBOARD_ALIGN_ENABLE: boolean = true;
 
 
   //是否允许同时打开多个图层，开启后展示图层切换按钮
-  static GLOBAL_ALLOW_OPEN_MULT_LAYERS: boolean = true;
-
+  GLOBAL_ALLOW_OPEN_MULT_LAYERS: boolean = true;
 
   /**
    * 加载文件的函数，加载后的文件会进入文件列表，此方法为外部传入的勾子函数，由外部对文件进行加载
@@ -95,7 +109,7 @@ class DDeiEditor {
    * 全剧缩放，此方法为外部传入的勾子函数
    */
   EVENT_STAGE_CHANGE_RATIO: Function | null = null;
-
+  //以上字段为初始化时传入的全局控制变量或钩子函数，在运行时不会改变
 
   // ============================ 静态方法 ============================
   /**
@@ -814,12 +828,16 @@ class DDeiEditor {
    */
   changeTheme(themeName: string){
     if(!themeName){
-      themeName = localStorage.getItem("ddei-theme-" + this.id);
+      if (this.GLOBAL_LOCAL_CACHE_THEME){
+        themeName = localStorage.getItem("ddei-theme-" + this.id);
+      }
     }
     let finded = false;
     let defaultJSON = null;
     for (let i = 0; i < this.themes?.length;i++){
-      if (this.themes[i].default == true){
+      if (this.theme && this.themes[i].name == this.theme) {
+        defaultJSON = this.themes[i]
+      }else if (this.themes[i].default == true){
         defaultJSON = this.themes[i]
       }
       if (this.themes[i].name == themeName){
@@ -863,12 +881,18 @@ class DDeiEditor {
       this.ddInstance.stage.render.refresh = true
     }
     //更新图标
-    let curInsTheme = localStorage.getItem("ddei-theme-"+this.id);
-    if (!curInsTheme || curInsTheme != name){
-      localStorage.setItem("ddei-theme-" + this.id,name);
+    if (this.GLOBAL_LOCAL_CACHE_THEME){
+      let curInsTheme = localStorage.getItem("ddei-theme-" + this.id);
+      if (!curInsTheme || curInsTheme != name) {
+        localStorage.setItem("ddei-theme-" + this.id, name);
+        DDeiEditorUtil.clearControlIcons(this);
+        DDeiEditorUtil.getControlIcons(this);
+      }
+    }else{
       DDeiEditorUtil.clearControlIcons(this);
       DDeiEditorUtil.getControlIcons(this);
     }
+    
   };
 }
 export { DDeiEditor }

@@ -119,24 +119,32 @@ class DDei {
   //当前编辑模式，1：指针，2：手，3:文本创建，4:线段创建
   editMode: number = 1;
 
-
-
+  //以下字段为初始化时传入初始化字段，在运行时会改变或用作缺省值
   //缺省画布大小
-  STAGE_WIDTH: number = 0;
-  STAGE_HEIGHT: number = 0;
+  width: number = 0;
+  height: number = 0;
+  //缩放比例
+  ratio: number = 1.0;
+  //水印
+  mark:string|object|null = null;
+  //标尺
+  ruler:boolean|object|null = null;
+  //网格0无、1网格、2点阵
+  grid:number|null = null;
+  //纸张
+  paper:string|object|null = null;
+  //背景
+  background:string|object|null =  null;
+  //以上字段为初始化时传入初始化字段，在运行时会改变或用作缺省值
+
+  //以下字段为初始化时传入的全局控制变量或钩子函数，在运行时不会改变
   //自动扩展画布大小
   EXT_STAGE_WIDTH: boolean = true;
   EXT_STAGE_HEIGHT: boolean = true;
-
   //是否开启全局缩放
   GLOBAL_ALLOW_STAGE_RATIO = true;
-  //缺省缩放比例
-  STAGE_RATIO: number = 1.0;
-
   // 是否打开辅助对齐线
   GLOBAL_HELP_LINE_ENABLE: boolean = true;
-
-
   /**
    * 加载文件的函数，加载后的文件会进入文件列表，此方法为外部传入的勾子函数，由外部对文件进行加载
    * 必须为一个async函数
@@ -243,7 +251,7 @@ class DDei {
    * 全剧缩放，此方法为外部传入的勾子函数
    */
   EVENT_STAGE_CHANGE_RATIO: Function | null = null;
-  
+  //以上字段为初始化时传入的全局控制变量或钩子函数，在运行时不会改变
 
   // ============================ 方法 ============================
   /**
@@ -283,6 +291,7 @@ class DDei {
         }
       }
     }
+    
   }
 
   /**

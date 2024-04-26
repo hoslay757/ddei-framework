@@ -37,7 +37,18 @@ class DDeiBusCommandUpdatePaperArea extends DDeiBusCommand {
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
     let stage = bus.ddInstance.stage;
-    let paperType = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.type", true);
+    let paperType
+    if (stage.paper?.type) {
+      paperType = stage.paper.type;
+    } else if (stage.ddInstance.paper) {
+      if (typeof (stage.ddInstance.paper) == 'string') {
+        paperType = stage.ddInstance.paper;
+      } else {
+        paperType = stage.ddInstance.paper.type;
+      }
+    } else {
+      paperType = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.type", true);
+    }
     //获取纸张大小的定义
     let paperConfig = DDeiConfig.PAPER[paperType];
     if (paperConfig) {
@@ -46,7 +57,7 @@ class DDeiBusCommandUpdatePaperArea extends DDeiBusCommand {
       let wpv = stage.wpv
 
       //纸张的像素大小
-      let paperSize = DDeiUtil.getPaperSize(stage)
+      let paperSize = DDeiUtil.getPaperSize(stage,paperType)
 
       let paperWidth = paperSize.width / rat1;
       let paperHeight = paperSize.height / rat1;

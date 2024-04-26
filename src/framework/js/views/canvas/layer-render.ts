@@ -155,16 +155,33 @@ class DDeiLayerCanvasRender {
 
       //根据背景的设置绘制图层
       //获取属性配置
-      let bgInfoType = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.type", true);
-
+      let bgInit
+      if (this.ddRender?.model.background && typeof (this.ddRender?.model.background) == 'object') {
+        bgInit = this.ddRender?.model.background;
+      }
+      let bgInfoType = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.type", true, bgInit);
+      let bgInfoColor
+      if (this.model.bg?.color) {
+        bgInfoColor = this.model.bg.color
+      } else if (this.ddRender?.model.background) {
+        if (typeof (this.ddRender?.model.background) == 'string') {
+          bgInfoColor = this.ddRender?.model.background;
+          if (!bgInfoType){
+            bgInfoType = 1;
+          }
+        } else {
+          bgInfoColor = this.ddRender?.model.background.color
+        }
+      } else {
+        bgInfoColor = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.color", true);
+      }
+      if (!bgInfoColor) {
+        bgInfoColor = DDeiUtil.getStyleValue("panel-background", this.ddRender.model);
+      }
       // 绘制纯色背景
       if (bgInfoType == 1) {
         
-        let bgInfoColor = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.color", true);
-        if (!bgInfoColor){
-          bgInfoColor = DDeiUtil.getStyleValue("panel-background", this.ddRender.model);
-        }
-        let bgInfoOpacity = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.opacity", true);
+        let bgInfoOpacity = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.opacity", true, bgInit);
         //填充色
         ctx.fillStyle = DDeiUtil.getColor(bgInfoColor)
         //透明度
@@ -175,13 +192,13 @@ class DDeiLayerCanvasRender {
       }
       //绘制图片背景类型
       else if (bgInfoType == 2) {
-        let bgImage = DDeiUtil.getReplacibleValue(this.model, "bg.image");
+        let bgImage = DDeiUtil.getReplacibleValue(this.model, "bg.image", bgInit);
         //没有图片，加载图片，有图片绘制图片
         if (!this.bgImgObj || bgImage != this.upBgImage) {
           this.initBgImage();
         } else {
-          let bgImgMode = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.imageMode", true);
-          let bgInfoOpacity = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.opacity", true);
+          let bgImgMode = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.imageMode", true, bgInit);
+          let bgInfoOpacity = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.opacity", true, bgInit);
           //透明度
           if (bgInfoOpacity || bgInfoOpacity == 0) {
             ctx.globalAlpha = bgInfoOpacity
@@ -192,7 +209,18 @@ class DDeiLayerCanvasRender {
           let h = this.bgImgObj.height;
           let cwidth = pw
           let cheight = ph
-          let ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
+          let ruleDisplay
+          if (this.stage.ruler?.display) {
+            ruleDisplay = this.stage.ruler.display;
+          } else if (this.stage.ddInstance.ruler != null && this.stage.ddInstance.ruler != undefined) {
+            if (typeof (this.model.ddInstance.ruler) == 'boolean') {
+              ruleDisplay = this.stage.ddInstance.ruler ? 1 : 0;
+            } else {
+              ruleDisplay = this.stage.ddInstance.ruler.display;
+            }
+          } else {
+            ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.stage, "ruler.display", true);
+          }
           if (ruleDisplay == 1) {
             cwidth -= 16 * rat1;
             cheight -= 16 * rat1;
@@ -213,13 +241,13 @@ class DDeiLayerCanvasRender {
           }
           //缩放
           else if (bgImgMode == 1) {
-            let bgImageScale = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.imageScale", true);
+            let bgImageScale = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.imageScale", true, bgInit);
             w = w * bgImageScale;
             h = h * bgImageScale;
           }
           //对齐
           if (bgImgMode != 2) {
-            let bgImageAlign = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.imageAlign", true);
+            let bgImageAlign = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.imageAlign", true,bgInit);
             let align = 2;
             let valign = 2;
             switch (bgImageAlign) {

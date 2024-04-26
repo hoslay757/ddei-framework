@@ -19,9 +19,10 @@ class DDeiModelArrtibuteValue {
    * @param model 模型
    * @param attrPath 属性路径，第一级为属性名称，略过中间的状态层级，如，定义：border.selected.width,写作：border.width
    * @param useDefault  是否采用缺省值，默认false不采用
+   * @param initValue 初始化值
    * @returns 模型的值对象
    */
-  static getAttrValueByState(model: DDeiAbstractShape, attrPath: string, useDefault: boolean = false): object | null {
+  static getAttrValueByState(model: DDeiAbstractShape, attrPath: string, useDefault: boolean = false,initValue:object|null = null): object | null {
     let returnValue: object | null = null;
     if (model && attrPath) {
       //切分想要获取的属性层级
@@ -70,6 +71,24 @@ class DDeiModelArrtibuteValue {
               // console.warn("获取属性值【" + model.id + "(" + model.state + "):" + attrPath + "】失败,PATH:" + attrPath, e);
             }
           }
+        }
+      }
+
+      //初始化值获取
+      if (!overwrite && (returnValue == null || returnValue == undefined) && initValue && typeof(initValue) == 'object') {
+        //基于模型的modelCode，反向寻找所指向的定义中的属性
+        try {
+          //如果有状态，则增加状态层级
+          let path = detailCode;
+          if (stateCode) {
+            path = [stateCode].concat(detailCode);
+          }
+          let returnJSON = DDeiUtil.getDataByPath(initValue, path);
+          if (returnJSON.overwrite && returnJSON.overwrite == true) {
+            overwrite = true;
+          }
+          returnValue = returnJSON.data;
+        } catch (e) {
         }
       }
 

@@ -41,7 +41,18 @@ class DDeiBusCommandCenterStageWPV extends DDeiBusCommand {
       //获取canvas窗体大小
       let canvas = bus.ddInstance.render.canvas;
       let rat1 = bus.ddInstance.render.ratio;
-      let ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(stage, "ruler.display", true);
+      let ruleDisplay
+      if (stage.ruler?.display) {
+        ruleDisplay = stage.ruler.display;
+      } else if (stage.ddInstance.ruler != null && stage.ddInstance.ruler != undefined) {
+        if (typeof (stage.ddInstance.ruler) == 'boolean') {
+          ruleDisplay = stage.ddInstance.ruler ? 1 : 0;
+        } else {
+          ruleDisplay = stage.ddInstance.ruler.display;
+        }
+      } else {
+        ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(stage, "ruler.display", true);
+      }
       let ruleWeight = 0;
       if (ruleDisplay == 1 || ruleDisplay == "1") {
         ruleWeight = 16;

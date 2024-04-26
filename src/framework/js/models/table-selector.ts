@@ -71,7 +71,7 @@ class DDeiTableSelector extends DDeiSelector {
     if (this.stage) {
       let stageRatio = parseFloat(this.stage.ratio) ? this.stage.ratio : 1.0
       if (!stageRatio || isNaN(stageRatio)) {
-        stageRatio = this.stage.ddInstance.STAGE_RATIO
+        stageRatio = this.stage.ddInstance.ratio
       }
       return stageRatio
     } else {

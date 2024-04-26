@@ -156,7 +156,13 @@ class DDeiLine extends DDeiAbstractShape {
       let jumpLine = DDeiModelArrtibuteValue.getAttrValueByState(l1, "jumpline", true);
       //采用全局跳线
       if (jumpLine == 0 || !jumpLine) {
-        jumpLine = DDeiModelArrtibuteValue.getAttrValueByState(layer.stage, "global.jumpline", true);
+        if (layer.stage.global?.jumpline) {
+          jumpLine = layer.stage.global.jumpline;
+        } else if (layer.stage.ddInstance.jumpline) {
+          jumpLine = layer.stage.ddInstance.jumpline;
+        } else {
+          jumpLine = DDeiModelArrtibuteValue.getAttrValueByState(layer.stage, "global.jumpline", true);
+        }
       }
       if (jumpLine == 1) {
         if (!rectMap.has(l1.id)) {
