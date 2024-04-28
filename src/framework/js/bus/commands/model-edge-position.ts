@@ -50,19 +50,7 @@ class DDeiBusCommandModelEdgePosition extends DDeiBusCommand {
         fModel = models[0];
       }
 
-      //移动窗口的大小
-      let ignoreModelIds = [];
-
-      //移动控件以及窗口
-      models.forEach(model => {
-        ignoreModelIds.push(model.id)
-        let moveMatrix = new Matrix3(
-          1, 0, dx,
-          0, 1, dy,
-          0, 0, 1,
-        );
-        model.transVectors(moveMatrix);
-      });
+      
       //自动移动视窗以及扩展画布大小
       if (dx || dy) {
         stage.wpv.x -= dx
@@ -75,14 +63,19 @@ class DDeiBusCommandModelEdgePosition extends DDeiBusCommand {
           if (ddInstance.EXT_STAGE_WIDTH) {
             extW = stage.wpv.x
             moveW = extW
+          }else{
+            dx = 0
           }
           stage.wpv.x = 0
         } else if (stage.wpv.x < -stage.width + hScrollWidth) {
           if (ddInstance.EXT_STAGE_WIDTH) {
             extW = -stage.width + hScrollWidth - stage.wpv.x
           } else {
+            dx = 0
             stage.wpv.x = -stage.width + hScrollWidth
           }
+        } else if (!ddInstance.EXT_STAGE_WIDTH){
+            dx = 0
         }
         let extH = 0;
         let moveH = 0;
@@ -90,15 +83,36 @@ class DDeiBusCommandModelEdgePosition extends DDeiBusCommand {
           if (ddInstance.EXT_STAGE_HEIGHT) {
             extH = stage.wpv.y
             moveH = extH
+          }else{
+            dy = 0
           }
           stage.wpv.y = 0
         } else if (stage.wpv.y < -stage.height + vScrollHeight) {
           if (ddInstance.EXT_STAGE_HEIGHT) {
             extH = -stage.height + vScrollHeight - stage.wpv.y
           } else {
+            dy = 0
             stage.wpv.y = -stage.height + vScrollHeight
           }
+        } else if (!ddInstance.EXT_STAGE_HEIGHT) {
+          dy = 0
         }
+        //移动窗口的大小
+        let ignoreModelIds = [];
+
+        //移动控件以及窗口
+        if(dx || dy){
+          models.forEach(model => {
+            ignoreModelIds.push(model.id)
+            let moveMatrix = new Matrix3(
+              1, 0, dx,
+              0, 1, dy,
+              0, 0, 1,
+            );
+            model.transVectors(moveMatrix);
+          });
+        }
+
         if (extW || extH) {
           stage.width += extW
           stage.height += extH
