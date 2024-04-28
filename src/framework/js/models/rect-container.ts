@@ -594,6 +594,20 @@ class DDeiRectContainer extends DDeiRectangle {
       return super.getProjPoint(point, distance, direct)
     }
   }
+
+  removeModelById(ids: string[]): void {
+    ids?.forEach(id => {
+      let model = this.getModelById(id)
+      if (model) {
+        this.removeModel(model);
+      }
+    });
+    this.models.forEach(model => {
+      if (model.baseModelType == 'DDeiContainer') {
+        model.removeModelById(ids);
+      }
+    })
+  }
 }
 
 export {DDeiRectContainer}

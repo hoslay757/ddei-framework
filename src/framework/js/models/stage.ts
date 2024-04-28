@@ -554,6 +554,15 @@ class DDeiStage {
   }
 
   /**
+   * 根据ID删除元素
+   */
+  removeModelById(ids: string[]): void {
+    this.layers.forEach(layer=>{
+      layer.removeModelById(ids);
+    })
+  }
+
+  /**
    * 全部取消所有已选控件
    */
   cancelSelectModels(models: DDeiAbstractShape[] | undefined, ignoreModels: DDeiAbstractShape[] | undefined): void {

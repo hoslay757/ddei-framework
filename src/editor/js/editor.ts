@@ -11,6 +11,9 @@ import { markRaw } from "vue";
 import config from "./config"
 import { cloneDeep } from "lodash";
 import FONTS from "../../framework/js/fonts/font"
+import {Matrix3,Vector3} from 'three'
+import { DDeiModelArrtibuteValue } from "../../framework/js/models/attribute/attribute-value";
+import type { DDeiAbstractShape } from "@/index";
 
 /**
  * DDei图形编辑器类，用于维护编辑器实例、全局状态以及全局属性
@@ -46,9 +49,6 @@ class DDeiEditor {
   //以下字段为初始化时传入初始化字段，在运行时会用作缺省值
   //主题风格
   theme: string|null = null;
-
-  //初始化控件，只会使用一次
-  controls:object[]|null = null;
   //以上字段为初始化时传入初始化字段，在运行时会用作缺省值
 
 
@@ -894,6 +894,112 @@ class DDeiEditor {
     }
     
   };
+
+
+  /**
+   * 向当前画布添加控件,缺省坐标为当前画布的中心
+   */
+  addControls(controls:object[]):DDeiAbstractShape[]{
+    //添加控件到图层
+    let stage = this.ddInstance.stage
+    let layer = stage?.layers[stage?.layerIndex];
+    let shapes: DDeiAbstractShape[] = []
+    if (layer) {
+      //纸张的像素大小
+      let paperType
+      if (stage.paper?.type) {
+        paperType = stage.paper.type;
+      } else if (stage.ddInstance.paper) {
+        if (typeof (stage.ddInstance.paper) == 'string') {
+          paperType = stage.ddInstance.paper;
+        } else {
+          paperType = stage.ddInstance.paper.type;
+        }
+      } else {
+        paperType = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.type", true);
+      }
+      let paperSize = DDeiUtil.getPaperSize(stage, paperType)
+      let rat1 = stage.ddInstance.render.ratio;
+      let paperWidth = paperSize.width / rat1;
+      let paperHeight = paperSize.height / rat1;
+
+      //第一张纸开始位置
+      if (!stage.spv) {
+
+        let sx = stage.width / 2 - paperWidth / 2
+        let sy = stage.height / 2 - paperHeight / 2
+        stage.spv = new Vector3(sx, sy, 1)
+      }
+      controls.forEach(control => {
+        //读取配置
+        let controlDefine = this.controls.get(control.model);
+        if (controlDefine) {
+          //根据配置创建控件
+          let controlModel = DDeiEditorUtil.createControl(controlDefine, this)
+          if (controlModel?.length > 0) {
+            let cc = controlModel[0]
+            //设置控件值
+            for (let i in control){
+              if (i != 'x' && i != 'y' && i!='width' && i != 'height' && (control[i] || control[i] == 0 || control[i] == false)){
+                cc[i] = control[i];
+              }
+            }
+            
+            //设置大小以及坐标
+            let stageRatio = stage.getStageRatio();
+            let m1 = new Matrix3()
+            //缩放至目标大小
+            if (control.width || control.height) {
+              let width = (control.width ? control.width : 0) * stageRatio
+              let height = (control.height ? control.height : 0) * stageRatio
+              let scaleMatrix = new Matrix3(
+                width / cc.essBounds.width, 0, 0,
+                0, height / cc.essBounds.height, 0,
+                0, 0, 1);
+              m1.premultiply(scaleMatrix)
+            }
+
+            //位移至画布中心
+            let moveMatrix = new Matrix3(
+              1, 0, stage.spv.x + paperWidth / 2,
+              0, 1, stage.spv.y + paperHeight / 2,
+              0, 0, 1);
+            m1.premultiply(moveMatrix)
+            //位移至画布中心的相对位置
+            if (control.x || control.y) {
+              let move1Matrix = new Matrix3(
+                1, 0, control.x ? control.x : 0,
+                0, 1, control.y ? -control.y : 0,
+                0, 0, 1);
+              m1.premultiply(move1Matrix)
+            }
+            cc.transVectors(m1)
+            cc.updateLinkModels()
+
+            layer.addModel(cc)
+            //绑定并初始化渲染器
+            cc.initRender();
+            shapes.push(cc);
+          }
+        }
+      });
+    }
+    return shapes;
+  }
+
+  /**
+   * 移除当前画布控件
+   */
+  removeControls(ids: string[]): void {
+    this.ddInstance.stage?.removeControls(ids)
+  }
+
+  /**
+   * 移除当前画布控件
+   */
+  getControlById(id: string): DDeiAbstractShape {
+    return this.ddInstance.stage?.getModelById(id,true);
+  }
 }
 export { DDeiEditor }
 export default DDeiEditor

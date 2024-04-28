@@ -262,6 +262,23 @@ class DDeiLayer {
   }
 
   /**
+   * 根据ID删除元素
+   */
+  removeModelById(ids : string[]):void{
+    ids?.forEach(id => {
+      let model = this.getModelById(id)
+      if(model){
+        this.removeModel(model);
+      }
+    });
+    this.models.forEach(model=>{
+      if(model.baseModelType == 'DDeiContainer'){
+        model.removeModelById(ids);
+      }
+    })
+  }
+
+  /**
    * 根据基础模型获取控件
    * @param bmt 基础模型类别
    */

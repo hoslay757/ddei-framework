@@ -971,7 +971,7 @@ class DDeiStageCanvasRender {
       let gridDisplay;
       if (this.model.grid?.display || this.model.grid?.display == 0) {
         gridDisplay = this.model.grid?.display;
-      } else if (this.ddRender?.model.grid) {
+      } else if (this.ddRender?.model.grid || this.ddRender?.model.grid == 0) {
         gridDisplay = this.ddRender?.model.grid;
       } else{
         gridDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "grid.display", true);
