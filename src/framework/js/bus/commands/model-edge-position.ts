@@ -74,7 +74,7 @@ class DDeiBusCommandModelEdgePosition extends DDeiBusCommand {
             dx = 0
             stage.wpv.x = -stage.width + hScrollWidth
           }
-        } else if (!ddInstance.EXT_STAGE_WIDTH){
+        } else if (!ddInstance.EXT_STAGE_WIDTH && hScrollWidth == 0){
             dx = 0
         }
         let extH = 0;
@@ -94,12 +94,11 @@ class DDeiBusCommandModelEdgePosition extends DDeiBusCommand {
             dy = 0
             stage.wpv.y = -stage.height + vScrollHeight
           }
-        } else if (!ddInstance.EXT_STAGE_HEIGHT) {
+        } else if (!ddInstance.EXT_STAGE_HEIGHT && vScrollHeight == 0) {
           dy = 0
         }
         //移动窗口的大小
         let ignoreModelIds = [];
-
         //移动控件以及窗口
         if(dx || dy){
           models.forEach(model => {
