@@ -460,44 +460,35 @@ class DDeiEditor {
 
 
   /**
-   * 应用外部配置文件，覆写配置文件内容
-   * @param config 
-   */
-  static applyConfig(config: Object): void {
-
-    if (config) {
-      //普通值、JSON、数组、MAP
-      for (let i in config) {
-        let outConfigValue = config[i];
-        let configValue = DDeiEditor[i];
-        //深度遍历属性，然后进行设置
-        DDeiEditor[i] = DDeiUtil.copyJSONValue(outConfigValue, configValue);
-      }
-      //将配置文件传递到DDei框架
-      DDeiConfig.applyConfig(config);
-    }
-  }
-
-  /**
    * 应用外部配置文件
-   * @param config 
+   * @param custConfig 
    */
-  applyConfig(config: Object): void {
-    if (config) {
+  applyConfig(custConfig: Object): void {
+
+    if(config){
       //普通值、JSON、数组、MAP
       for (let i in config) {
         let outConfigValue = config[i];
         let configValue = this[i];
         //深度遍历属性，然后进行设置
         this[i] = DDeiUtil.copyJSONValue(outConfigValue, configValue);
+        
+      }
+      if (this.ddInstance) {
+        this.ddInstance.applyConfig(config)
       }
     }
-  }
-
-  static {
-    //载入缺省配置
-    if (config) {
-      DDeiEditor.applyConfig(config)
+    if (custConfig) {
+      //普通值、JSON、数组、MAP
+      for (let i in custConfig) {
+        let outConfigValue = custConfig[i];
+        let configValue = this[i];
+        //深度遍历属性，然后进行设置
+        this[i] = DDeiUtil.copyJSONValue(outConfigValue, configValue);
+      }
+      if (this.ddInstance) {
+        this.ddInstance.applyConfig(custConfig)
+      }
     }
   }
 
@@ -999,6 +990,39 @@ class DDeiEditor {
    */
   getControlById(id: string): DDeiAbstractShape {
     return this.ddInstance.stage?.getModelById(id,true);
+  }
+
+
+  /**
+   * 设置是否可以编辑
+   */
+  setEditable(editable: boolean): void {
+    if (!editable) {
+      this.ddInstance["AC_DESIGN_CREATE"] = false
+      this.ddInstance["AC_DESIGN_EDIT"] = false
+      this.ddInstance["AC_DESIGN_DRAG"] = false
+      this.ddInstance["AC_DESIGN_SELECT"] = false
+      this.ddInstance["AC_DESIGN_LINK"] = false
+      this.ddInstance["AC_DESIGN_DEL"] = false
+
+    } else {
+      this.ddInstance["AC_DESIGN_CREATE"] = true
+      this.ddInstance["AC_DESIGN_EDIT"] = true
+      this.ddInstance["AC_DESIGN_DRAG"] = true
+      this.ddInstance["AC_DESIGN_SELECT"] = true
+      this.ddInstance["AC_DESIGN_LINK"] = true
+      this.ddInstance["AC_DESIGN_DEL"] = true
+    }
+  }
+
+  setAccessInfo(config:object): void {
+    if (config) {
+      for (let i in config){
+        if (config[i] == true || config[i] == false ){
+          this.ddInstance["AC_" + this.MODE_NAME + "_" + i] = config[i]
+        }
+      }
+    }
   }
 }
 export { DDeiEditor }
