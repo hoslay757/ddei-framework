@@ -11,8 +11,7 @@ import { markRaw } from "vue";
 import config from "./config"
 import { cloneDeep } from "lodash";
 import FONTS from "../../framework/js/fonts/font"
-import {Matrix3,Vector3} from 'three'
-import { DDeiModelArrtibuteValue } from "../../framework/js/models/attribute/attribute-value";
+import {Matrix3} from 'three'
 import type { DDeiAbstractShape } from "@/index";
 
 /**
@@ -896,31 +895,6 @@ class DDeiEditor {
     let layer = stage?.layers[stage?.layerIndex];
     let shapes: DDeiAbstractShape[] = []
     if (layer) {
-      //纸张的像素大小
-      let paperType
-      if (stage.paper?.type) {
-        paperType = stage.paper.type;
-      } else if (stage.ddInstance.paper) {
-        if (typeof (stage.ddInstance.paper) == 'string') {
-          paperType = stage.ddInstance.paper;
-        } else {
-          paperType = stage.ddInstance.paper.type;
-        }
-      } else {
-        paperType = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.type", true);
-      }
-      let paperSize = DDeiUtil.getPaperSize(stage, paperType)
-      let rat1 = stage.ddInstance.render.ratio;
-      let paperWidth = paperSize.width / rat1;
-      let paperHeight = paperSize.height / rat1;
-
-      //第一张纸开始位置
-      if (!stage.spv) {
-
-        let sx = stage.width / 2 - paperWidth / 2
-        let sy = stage.height / 2 - paperHeight / 2
-        stage.spv = new Vector3(sx, sy, 1)
-      }
       controls.forEach(control => {
         //读取配置
         let controlDefine = this.controls.get(control.model);
@@ -931,7 +905,7 @@ class DDeiEditor {
             let cc = controlModel[0]
             //设置控件值
             for (let i in control){
-              if (i != 'x' && i != 'y' && i!='width' && i != 'height' && (control[i] || control[i] == 0 || control[i] == false)){
+              if (i != 'spv' && i != 'hpv' && i != 'cpv' && i != 'x' && i != 'y' && i!='width' && i != 'height' && (control[i] || control[i] == 0 || control[i] == false)){
                 cc[i] = control[i];
               }
             }
@@ -950,11 +924,12 @@ class DDeiEditor {
               m1.premultiply(scaleMatrix)
             }
 
-            //位移至画布中心
+            //位移至当前位置中心
             let moveMatrix = new Matrix3(
-              1, 0, stage.spv.x + paperWidth / 2,
-              0, 1, stage.spv.y + paperHeight / 2,
+              1, 0, stage.wpv.x + this.ddInstance.render.container.offsetWidth/2,
+              0, 1, stage.wpv.y + this.ddInstance.render.container.offsetHeight / 2,
               0, 0, 1);
+            
             m1.premultiply(moveMatrix)
             //位移至画布中心的相对位置
             if (control.x || control.y) {
