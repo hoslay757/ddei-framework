@@ -1614,32 +1614,29 @@ class DDeiLayerCanvasRender {
             }else{
               if (!this.ddRender?.model.EXT_STAGE_WIDTH || !this.ddRender?.model.EXT_STAGE_HEIGHT){
                 let dragObj = pushData.dragObj;
-                for (let ni = 0; ni < this.model.shadowControls.length;ni++){
-                  let nmodel = this.model.shadowControls[ni];
-                  let dx = 0
-                  let dy = 0
-                  if (dragObj && dragObj[nmodel.id]) {
-                    dx = dragObj[nmodel.id]?.dx ? dragObj[nmodel.id]?.dx : 0;
-                    dy = dragObj[nmodel.id]?.dy ? dragObj[nmodel.id]?.dy : 0
+                let outRect = DDeiAbstractShape.getOutRectByPV(this.model.shadowControls)
+                let nmodel = this.stageRender.currentOperateShape;
+                let dx = 0
+                let dy = 0
+                if (dragObj && dragObj[nmodel.id]) {
+                  dx = dragObj[nmodel.id]?.dx ? dragObj[nmodel.id]?.dx : 0;
+                  dy = dragObj[nmodel.id]?.dy ? dragObj[nmodel.id]?.dy : 0
+                }
+                if (!this.ddRender?.model.EXT_STAGE_WIDTH){
+                  let xm = ex - nmodel.cpv.x + dx;
+                  if(outRect.x + xm < 0){
+                    pushData.x -= (outRect.x + xm)
+                  }else if(outRect.x1 +xm > this.stage.width){
+                    pushData.x -= (outRect.x1 + xm - this.stage.width)
                   }
-                  let outRect = DDeiAbstractShape.getOutRectByPV([nmodel])
-                  if (!this.ddRender?.model.EXT_STAGE_WIDTH){
-                    let xm = ex - nmodel.cpv.x + dx;
-                    if(outRect.x + xm < 0){
-                      pushData.x -= (outRect.x + xm)
-                    }else if(outRect.x1 +xm > this.stage.width){
-                      pushData.x -= (outRect.x1 + xm - this.stage.width)
-                    }
+                }
+                if (!this.ddRender?.model.EXT_STAGE_HEIGHT){
+                  let ym = ey - nmodel.cpv.y + dy;
+                  if (outRect.y + ym < 0) {
+                    pushData.y -= (outRect.y + ym)
+                  } else if (outRect.y1 + ym > this.stage.height) {
+                    pushData.y -= (outRect.y1 + ym - this.stage.height)
                   }
-                  if (!this.ddRender?.model.EXT_STAGE_HEIGHT){
-                    let ym = ey - nmodel.cpv.y + dy;
-                    if (outRect.y + ym < 0) {
-                      pushData.y -= (outRect.y + ym)
-                    } else if (outRect.y1 + ym > this.stage.height) {
-                      pushData.y -= (outRect.y1 + ym - this.stage.height)
-                    }
-                  }
-                  
                 }
               }
             }
