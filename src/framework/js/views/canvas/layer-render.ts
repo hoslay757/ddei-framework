@@ -91,8 +91,7 @@ class DDeiLayerCanvasRender {
   drawShape(inRect: boolean = true): void {
     //只有当显示时才绘制图层
     if (this.model.display || this.model.tempDisplay) {
-      let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", DDeiEnumOperateType.SELECT, { models: [this.model] }, this.stage?.ddInstance, null)
-
+      let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.stage?.ddInstance, null)
       if (rsState == 0 || rsState == 1) {
         //绘制子元素
         this.drawChildrenShapes(inRect);
@@ -110,7 +109,7 @@ class DDeiLayerCanvasRender {
 
 
         this.modelChanged = false;
-        DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_AFTER", DDeiEnumOperateType.SELECT, { models: [this.model] }, this.stage?.ddInstance, null)
+        DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_AFTER", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.stage?.ddInstance, null)
       }
     }
   }

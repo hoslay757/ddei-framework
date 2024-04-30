@@ -5,6 +5,7 @@ import DDeiEnumOperateType from './enums/operate-type'
 import DDeiAbstractShape from './models/shape'
 import DDeiStage from './models/stage'
 import DDeiUtil from './util'
+import DDeiFuncCallResult from "../../lifecycle/callresult";
 
 /**
  * DDei图形框架的基础类，通过此类对图形框架进行初始化
@@ -46,10 +47,14 @@ class DDei {
   /**
    * 选中前，一般用于校验，默认根据权限配置参数进行校验
    */
-  static beforeOperateValid(operate: DDeiEnumOperateType, models: DDeiAbstractShape[], propName: string, ddInstance: DDei, evt: Event): boolean {
+  static beforeOperateValid(operate: DDeiEnumOperateType, data:object|null, ddInstance: DDei, evt: Event): DDeiFuncCallResult {
     //获取权限
     let modeName = DDeiUtil.getConfigValue("MODE_NAME", ddInstance);
-    for (let i = 0; i < models.length; i++) {
+    let rs = new DDeiFuncCallResult();
+    rs.state = 1;
+    let models: DDeiAbstractShape[] = data?.models
+    let propName: string = data?.propName;
+    for (let i = 0; i < models?.length; i++) {
       let access = DDeiUtil.isAccess(
         operate,
         models[i],
@@ -58,10 +63,11 @@ class DDei {
         ddInstance
       );
       if (!access) {
-        return false
+        rs.state = -2
+        return rs
       }
     }
-    return true;
+    return rs;
   }
 
 
