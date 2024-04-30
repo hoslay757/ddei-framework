@@ -44,6 +44,8 @@ class DDeiUtil {
   static getStyleValue: Function;
   //钩子函数，获取ID
   static getEditorId: Function;
+  //钩子函数，调用回调函数
+  static invokeCallbackFunc: Function;
 
 
   static offsetX: number;

@@ -158,17 +158,6 @@ class DDei {
   EVENT_SAVE_FILE: Function | null = null;
 
   /**
- * 发布文件的函数，发布后文件从业务上转变为正式文件，此方法为外部传入的勾子函数，由外部对文件状态进行控制
- * 必须为一个async函数
- */
-  EVENT_PUBLISH_FILE: Function | null = null;
-
-  /**
-   * 返回文件列表，此方法为外部传入的勾子函数
-   */
-  EVENT_GOBACK_FILE_LIST: Function | null = null;
-
-  /**
    * 控件选择前，此方法为外部传入的勾子函数
    */
   EVENT_CONTROL_SELECT_BEFORE: Function | null = null;

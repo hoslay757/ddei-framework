@@ -4,7 +4,7 @@ import DDeiEnumOperateState from '../../enums/operate-state';
 import DDeiUtil from '../../util';
 import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
-import { Matrix3, Vector3 } from 'three';
+import DDeiEditorUtil from '@ddei-core/editor/js/editor-util';
 /**
  * 修改画布的窗口坐标总线Command
  */
@@ -64,21 +64,9 @@ class DDeiBusCommandChangeStageWPV extends DDeiBusCommand {
         stage.wpv.y = -stage.height + vScrollHeight
       }
 
-      let mouseOpSPI = DDeiUtil.getConfigValue(
-        "EVENT_MOUSE_OPERATING",
-        stage.ddInstance
-      );
-      if (mouseOpSPI) {
-        mouseOpSPI("CHANGE_WPV", null, bus.ddInstance, evt);
-      }
-      //调用SPI
-      let changeWPVSPI = DDeiUtil.getConfigValue(
-        "EVENT_STAGE_CHANGE_WPV",
-        stage.ddInstance
-      );
-      if (changeWPVSPI) {
-        changeWPVSPI(oldWPV, stage.wpv, bus.ddInstance);
-      }
+
+      DDeiEditorUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", "CHANGE_WPV", null, stage.ddInstance, evt)
+      DDeiEditorUtil.invokeCallbackFunc("EVENT_STAGE_CHANGE_WPV", "CHANGE_WPV", { oldWPV:oldWPV, wpv:stage.wpv }, stage.ddInstance, evt)
       return true;
     } else {
       return false;

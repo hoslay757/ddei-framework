@@ -124,5 +124,8 @@ export * from "./editor/js/bus/commands/load-file"
 export * from "./editor/js/bus/commands/load-file"
 export * from "./editor/js/bus/commands/refresh-editor-parts"
 export * from "./editor/js/bus/commands/save-file"
+export * from "./lifecycle/lifecycle"
+export * from "./lifecycle/funcdata"
+export * from "./lifecycle/callresult"
 
 

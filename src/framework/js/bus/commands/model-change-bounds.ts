@@ -3,10 +3,7 @@ import DDeiEnumBusCommandType from '../../enums/bus-command-type';
 import DDeiAbstractShape from '../../models/shape';
 import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
-import { Matrix3, Vector3 } from 'three';
-import { cloneDeep, clone } from 'lodash'
-import DDeiUtil from '../../util';
-import DDeiEnumOperateType from '../../enums/operate-type';
+import DDeiEditorUtil from '@ddei-core/editor/js/editor-util';
 /**
  * 改变模型坐标以及大小的总线Command
  */
@@ -38,13 +35,7 @@ class DDeiBusCommandModelChangeBounds extends DDeiBusCommand {
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
     if (data?.models?.length > 0) {
-      let mouseOpSPI = DDeiUtil.getConfigValue(
-        "EVENT_MOUSE_OPERATING",
-        bus.ddInstance
-      );
-      if (mouseOpSPI) {
-        mouseOpSPI("CHANGE_BOUNDS", data.models, bus.ddInstance, evt);
-      }
+      DDeiEditorUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", "CHANGE_BOUNDS", data, bus.ddInstance, evt)
       DDeiAbstractShape.changeModelBoundByRect(data.models, data.selector, data)
       return true;
     }

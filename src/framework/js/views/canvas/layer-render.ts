@@ -70,16 +70,6 @@ class DDeiLayerCanvasRender {
     this.ddRender = this.model.stage.ddInstance.render
     this.stage = this.model.stage
     this.stageRender = this.model.stage.render
-    //展示前逻辑
-    this.viewBefore = DDeiUtil.getConfigValue(
-      "EVENT_CONTROL_VIEW_BEFORE",
-      this.ddRender.model
-    );
-    //展示后逻辑
-    this.viewAfter = DDeiUtil.getConfigValue(
-      "EVENT_CONTROL_VIEW_AFTER",
-      this.ddRender.model
-    );
   }
 
   /**
@@ -101,13 +91,9 @@ class DDeiLayerCanvasRender {
   drawShape(inRect: boolean = true): void {
     //只有当显示时才绘制图层
     if (this.model.display || this.model.tempDisplay) {
-      if (!this.viewBefore || this.viewBefore(
-        DDeiEnumOperateType.VIEW,
-        [this.model],
-        null,
-        this.ddRender.model,
-        null
-      )) {
+      let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", DDeiEnumOperateType.SELECT, { models: [this.model] }, this.stage?.ddInstance, null)
+
+      if (rsState == 0 || rsState == 1) {
         //绘制子元素
         this.drawChildrenShapes(inRect);
         //绘制操作点
@@ -124,15 +110,7 @@ class DDeiLayerCanvasRender {
 
 
         this.modelChanged = false;
-        if (this.viewAfter) {
-          this.viewAfter(
-            DDeiEnumOperateType.VIEW,
-            [this.model],
-            null,
-            this.ddRender.model,
-            null
-          )
-        }
+        DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_AFTER", DDeiEnumOperateType.SELECT, { models: [this.model] }, this.stage?.ddInstance, null)
       }
     }
   }
@@ -845,12 +823,9 @@ class DDeiLayerCanvasRender {
           let includedModels: Map<string, DDeiAbstractShape> = this.stageRender.selector.getIncludedModels();
 
           //加载事件的配置
-          let selectBefore = DDeiUtil.getConfigValue(
-            "EVENT_CONTROL_SELECT_BEFORE",
-            this.stage?.ddInstance
-          );
+          let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_SELECT_BEFORE", DDeiEnumOperateType.SELECT, { models: Array.from(includedModels.values()) }, this.stage?.ddInstance, evt)
 
-          if (!selectBefore || selectBefore(DDeiEnumOperateType.SELECT, Array.from(includedModels.values()), null, this.stage?.ddInstance, evt)) {
+          if (rsState == 0 || rsState == 1) {
             this.stageRender.currentOperateContainer = this.model;
             includedModels.forEach((model, key) => {
               pushDatas.push({ id: model.id, value: DDeiEnumControlState.SELECTED });
@@ -882,12 +857,10 @@ class DDeiLayerCanvasRender {
               let model = this.stage?.getModelById(id)
               let isStop = false;
               //加载事件的配置
-              let dragAfter = DDeiUtil.getConfigValue(
-                "EVENT_LINE_DRAG_AFTER",
-                this.stage.ddInstance
-              );
+              let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_DRAG_AFTER", DDeiEnumOperateType.DRAG, this.stageRender.dragObj, this.stage?.ddInstance, null)
 
-              if (!dragAfter || dragAfter(DDeiEnumOperateType.DRAG, this.stageRender.dragObj, this.stage.ddInstance, evt)) {
+
+              if (rsState == 0 || rsState == 1) {
 
                 if (model) {
                   model.syncVectors(item)
@@ -1053,15 +1026,8 @@ class DDeiLayerCanvasRender {
                 } else {
                   selMods.push({ id: lastOnContainer?.id, value: DDeiEnumControlState.SELECTED })
                 }
+                DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_DRAG_AFTER", DDeiEnumOperateType.DRAG, { models: operateModels }, this.stage?.ddInstance, null)
 
-                //加载事件的配置
-                let dragAfter = DDeiUtil.getConfigValue(
-                  "EVENT_CONTROL_DRAG_AFTER",
-                  this.stage?.ddInstance
-                );
-                if (dragAfter) {
-                  dragAfter(DDeiEnumOperateType.DRAG, operateModels, null, this.stage?.ddInstance, evt)
-                }
                 //构造移动容器action数据
                 this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeContainer, { oldContainer: pContainerModel, newContainer: lastOnContainer, models: operateModels }, evt);
                 this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, selMods, evt);
@@ -1209,13 +1175,8 @@ class DDeiLayerCanvasRender {
                 item.render?.controlDragEnd(evt)
               })
               //加载事件的配置
-              let dragAfter = DDeiUtil.getConfigValue(
-                "EVENT_CONTROL_DRAG_AFTER",
-                this.stage?.ddInstance
-              );
-              if (dragAfter) {
-                dragAfter(DDeiEnumOperateType.DRAG, operateModels, null, this.stage?.ddInstance, evt)
-              }
+              DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_DRAG_AFTER", DDeiEnumOperateType.DRAG, { models: operateModels }, this.stage?.ddInstance, null)
+
             }
           }
           if (hasChange) {
@@ -1396,24 +1357,17 @@ class DDeiLayerCanvasRender {
         } else {
 
           //加载事件的配置
-          let dragBefore = DDeiUtil.getConfigValue(
-            "EVENT_CONTROL_DRAG_BEFORE",
-            this.stage?.ddInstance
-          );
-
+          
+          
           let selectedModels = pContainerModel.getSelectedModels();
           let sms = Array.from(selectedModels.values())
           if (sms.indexOf(this.stageRender.currentOperateShape) == -1) {
             sms.push(this.stageRender.currentOperateShape)
           }
-          if (!dragBefore || dragBefore(DDeiEnumOperateType.DRAG, sms, null, this.stage?.ddInstance, evt)) {
-            let mouseOpSPI = DDeiUtil.getConfigValue(
-              "EVENT_MOUSE_OPERATING",
-              this.stage.ddInstance
-            );
-            if (mouseOpSPI) {
-              mouseOpSPI(DDeiEnumOperateType.DRAG, null, this.stage.ddInstance, evt);
-            }
+          let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_DRAG_BEFORE", DDeiEnumOperateType.DRAG, { models: sms }, this.ddRender.model, null)
+
+          if (rsState == 0 || rsState == 1) {
+            DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", DDeiEnumOperateType.DRAG, null, this.stage?.ddInstance, evt)
             //当前操作状态：控件拖拽中
             this.stageRender.operateState = DDeiEnumOperateState.CONTROL_DRAGING
             //产生影子控件
@@ -1432,13 +1386,7 @@ class DDeiLayerCanvasRender {
       }
       //选择器工作中
       case DDeiEnumOperateState.SELECT_WORKING: {
-        let mouseOpSPI = DDeiUtil.getConfigValue(
-          "EVENT_MOUSE_OPERATING",
-          this.stage.ddInstance
-        );
-        if (mouseOpSPI) {
-          mouseOpSPI("SELECT_WORKING", null, this.stage.ddInstance, evt);
-        }
+        DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", "SELECT_WORKING", null, this.stage?.ddInstance, evt)
         //根据事件更新选择器位置
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateSelectorBounds, { operateState: this.stageRender.operateState }, evt);
         //渲染图形

@@ -1,6 +1,6 @@
 import DDeiConfig from '../../config';
 import DDeiEnumBusCommandType from '../../enums/bus-command-type';
-import DDeiEnumOperateState from '../../enums/operate-state';
+import DDeiEditorUtil from '@ddei-core/editor/js/editor-util';
 import DDeiAbstractShape from '../../models/shape';
 import DDeiUtil from '../../util';
 import DDeiBus from '../bus';
@@ -67,13 +67,7 @@ class DDeiBusCommandModelChangeRotate extends DDeiBusCommand {
       let ratio = stage?.getStageRatio()
       let models: DDeiAbstractShape[] = Array.from(selectedModels.values());
 
-      let mouseOpSPI = DDeiUtil.getConfigValue(
-        "EVENT_MOUSE_OPERATING",
-        bus.ddInstance
-      );
-      if (mouseOpSPI) {
-        mouseOpSPI("CHANGE_ROTATE", models, bus.ddInstance, evt);
-      }
+      DDeiEditorUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", "CHANGE_ROTATE", {models:models}, bus.ddInstance, evt)
       //基于中心构建旋转矩阵，旋转所有向量点
       //计算selector的中心坐标与鼠标当前坐标的角度关系
       let scx = selector.x * ratio + selector.width / 2 * ratio

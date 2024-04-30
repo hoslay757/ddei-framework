@@ -57,16 +57,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
       this.layer = this.model.layer
       this.layerRender = this.model.layer.render
     }
-    //展示前逻辑
-    this.viewBefore = DDeiUtil.getConfigValue(
-      "EVENT_CONTROL_VIEW_BEFORE",
-      this.ddRender.model
-    );
-    //展示后逻辑
-    this.viewAfter = DDeiUtil.getConfigValue(
-      "EVENT_CONTROL_VIEW_AFTER",
-      this.ddRender.model
-    );
+    
   }
 
 
@@ -90,13 +81,8 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
    * 创建图形
    */
   drawShape(tempShape): void {
-    if (!this.viewBefore || this.viewBefore(
-      DDeiEnumOperateType.VIEW,
-      [this.model],
-      null,
-      this.ddRender.model,
-      null
-    )) {
+    let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
+    if (rsState == 0 || rsState == 1) {
       //获得 2d 上下文对象
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
@@ -115,15 +101,8 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
 
       ctx.restore();
 
-      if (this.viewAfter) {
-        this.viewAfter(
-          DDeiEnumOperateType.VIEW,
-          [this.model],
-          null,
-          this.ddRender.model,
-          null
-        )
-      }
+      DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_AFTER", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
+      
     }
   }
 

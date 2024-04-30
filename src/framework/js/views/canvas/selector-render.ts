@@ -640,18 +640,10 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
           opvs: this.model.opvs
         }
         //加载事件的配置
-        let dragBefore = DDeiUtil.getConfigValue(
-          "EVENT_LINE_DRAG_BEFORE",
-          this.stage.ddInstance
-        );
-        if (!dragBefore || dragBefore(DDeiEnumOperateType.DRAG, dragObj, this.stage.ddInstance, evt)) {
-          let mouseOpSPI = DDeiUtil.getConfigValue(
-            "EVENT_MOUSE_OPERATING",
-            this.stage.ddInstance
-          );
-          if (mouseOpSPI) {
-            mouseOpSPI(DDeiEnumOperateType.LINK, null, this.stage.ddInstance, evt);
-          }
+        
+        let rsState = DDeiUtil.invokeCallbackFunc("EVENT_LINE_DRAG_BEFORE", DDeiEnumOperateType.DRAG, dragObj, this.stage?.ddInstance, evt)
+        if (rsState == 0 || rsState == 1) {
+          DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", DDeiEnumOperateType.LINK, null, this.stage?.ddInstance, evt)
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
           //改变光标
           this.stage?.ddInstance?.bus?.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: "grabbing" }, evt);

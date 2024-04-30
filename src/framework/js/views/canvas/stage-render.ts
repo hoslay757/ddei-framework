@@ -84,31 +84,14 @@ class DDeiStageCanvasRender {
   init(): void {
     this.ddRender = this.model.ddInstance.render
     this.initSelector();
-    //展示前逻辑
-    this.viewBefore = DDeiUtil.getConfigValue(
-      "EVENT_CONTROL_VIEW_BEFORE",
-      this.ddRender.model
-    );
-    //展示后逻辑
-    this.viewAfter = DDeiUtil.getConfigValue(
-      "EVENT_CONTROL_VIEW_AFTER",
-      this.ddRender.model
-    );
   }
 
   /**
    * 创建图形
    */
   drawShape(): void {
-    if (!this.viewBefore || this.viewBefore(
-      DDeiEnumOperateType.VIEW,
-      [this.model],
-      null,
-      this.ddRender.model,
-      null
-    )) {
-
-
+    let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
+    if (rsState == 0 || rsState == 1) {
       //清空画布，绘制场景大背景
       this.clearStage();
       //绘制纸张，以及图层背景
@@ -176,16 +159,7 @@ class DDeiStageCanvasRender {
 
       DDeiLine.calLineCrossSync(this.model.layers[this.model.layerIndex])
 
-
-      if (this.viewAfter) {
-        this.viewAfter(
-          DDeiEnumOperateType.VIEW,
-          [this.model],
-          null,
-          this.ddRender.model,
-          null
-        )
-      }
+      DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_AFTER", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
     }
   }
 

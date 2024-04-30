@@ -2,8 +2,7 @@ import DDeiEnumBusCommandType from '../../enums/bus-command-type';
 import { debounce } from 'lodash';
 import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
-import DDeiStage from '../../models/stage';
-import DDeiUtil from '../../util';
+import DDeiEditorUtil from '@ddei-core/editor/js/editor-util';
 import DDeiEnumOperateType from '../../enums/operate-type';
 /**
  * 通知控件被创建的总线Command
@@ -36,15 +35,7 @@ class DDeiBusCommandNodifyControlCreated extends DDeiBusCommand {
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
     if (data?.models) {
-      //加载事件的配置
-      let createAfter = DDeiUtil.getConfigValue(
-        "EVENT_CONTROL_CREATE_AFTER",
-        bus.ddInstance
-      );
-      //选中前
-      if (createAfter) {
-        createAfter(DDeiEnumOperateType.CREATE, data?.models, null, bus.ddInstance)
-      }
+      DDeiEditorUtil.invokeCallbackFunc("EVENT_CONTROL_CREATE_AFTER", DDeiEnumOperateType.CREATE, data, bus.ddInstance, evt)
     }
     return true
   }

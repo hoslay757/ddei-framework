@@ -12,7 +12,10 @@ import config from "./config"
 import { cloneDeep } from "lodash";
 import FONTS from "../../framework/js/fonts/font"
 import {Matrix3} from 'three'
-import type { DDeiAbstractShape } from "@/index";
+import DDeiAbstractShape from "@ddei-core/themes/theme";
+import DDeiThemeBase from "@ddei-core/framework/js/models/shape";
+import  DDeiLifeCycle  from "@ddei-core/lifecycle/lifecycle";
+import  DDeiFuncData  from "@ddei-core/lifecycle/funcdata";
 
 /**
  * DDei图形编辑器类，用于维护编辑器实例、全局状态以及全局属性
@@ -158,6 +161,9 @@ class DDeiEditor {
         if (!DDeiUtil.getEditorId) {
           DDeiUtil.getEditorId = DDeiEditorUtil.getEditorId;
         }
+        if (!DDeiUtil.invokeCallbackFunc) {
+          DDeiUtil.invokeCallbackFunc = DDeiEditorUtil.invokeCallbackFunc;
+        }
         //初始化ddInstance
         let ddInstance = DDei.newInstance(
           editorInstance.id,
@@ -266,7 +272,32 @@ class DDeiEditor {
               
             });
           };
-          
+
+          //将生命周期插件中的回调函数进行升序排序,建立调用索引
+          editorInstance.lifecyclies.forEach(lifeCycle=>{
+            for (let i in lifeCycle){
+              if (lifeCycle[i] && lifeCycle[i] instanceof DDeiFuncData){
+                if (!editorInstance.funcIndex.has(i)){
+                  editorInstance.funcIndex.set(i,[]);
+                }
+                let funcArray = editorInstance.funcIndex.get(i);
+                funcArray?.push(lifeCycle[i])
+              }
+            }
+          })
+          editorInstance.funcIndex.forEach(funcArr=>{
+            funcArr.sort((a: DDeiFuncData, b: DDeiFuncData)=>{
+              if(a.sort && b.sort){
+                return a.sort - b.sort
+              } else if (a.sort && !b.sort) {
+                return 1
+              } else if (!a.sort && b.sort) {
+                return -1
+              } else if (!a.sort && !b.sort) {
+                return 0
+              }
+            })
+          })
         }
 
 
@@ -431,6 +462,14 @@ class DDeiEditor {
         this.converters[converter.name] = converter
       });
     }
+
+    //加载生命周期插件
+    if (plugin.getLifeCyclies){
+      let lifeCyclies = plugin.getLifeCyclies(this)
+      lifeCyclies?.forEach(lifeCycle => {
+        this.lifecyclies.push(lifeCycle)
+      });
+    }
     
 
     
@@ -449,12 +488,6 @@ class DDeiEditor {
         this.options = Object.assign({}, this.options, options)
       }
     }
-  }
-
-  /**
-   * 注销外部插件
-   */
-  static ungisterExtension(plugin): void {
   }
 
 
@@ -568,13 +601,19 @@ class DDeiEditor {
   //当前引入的外部控件视图定义
   controlViewClasses: object = markRaw({});
   //当前引入的外部主题样式
-  themes:object[] = markRaw([])
+  themes: DDeiThemeBase[] = markRaw([])
   //当前缺省主题
   currentTheme: string = ''
   //当前布局的名称，如果为空，则获取最后一个有效的布局
   currentLayout: string = "ddei-core-layout-standard";
   //转换器，用于对输入和输出的数据进行转换或适配
   converters: object = markRaw({});
+
+  //生命周期插件
+  lifecyclies: DDeiLifeCycle[] = markRaw([]);
+
+  //排序后的回调函数索引
+  funcIndex: Map<string,DDeiFuncData[]> = new Map();
 
   // ============================ 方法 ============================
 

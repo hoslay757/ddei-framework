@@ -47,16 +47,6 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       this.layer = this.model.layer
       this.layerRender = this.model.layer.render
     }
-    //展示前逻辑
-    this.viewBefore = DDeiUtil.getConfigValue(
-      "EVENT_CONTROL_VIEW_BEFORE",
-      this.ddRender.model
-    );
-    //展示后逻辑
-    this.viewAfter = DDeiUtil.getConfigValue(
-      "EVENT_CONTROL_VIEW_AFTER",
-      this.ddRender.model
-    );
   }
 
 
@@ -124,13 +114,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
    * 绘制图形
    */
   drawShape(tempShape, composeRender: number = 0): void {
-    if (composeRender || !this.viewBefore || this.viewBefore(
-      DDeiEnumOperateType.VIEW,
-      [this.model],
-      null,
-      this.ddRender.model,
-      null
-    )) {
+    let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
+    if (composeRender || rsState == 0 || rsState == 1) {
       if (this.refreshShape || this.isEditoring) {
 
         //创建准备图形
@@ -215,14 +200,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       this.drawSelfToCanvas(composeRender)
 
 
-      if (!composeRender && this.viewAfter) {
-        this.viewAfter(
-          DDeiEnumOperateType.VIEW,
-          [this.model],
-          null,
-          this.ddRender.model,
-          null
-        )
+      if (!composeRender) {
+        DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_AFTER", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
       }
 
     }

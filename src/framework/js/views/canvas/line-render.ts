@@ -55,16 +55,6 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       this.layer = this.model.layer
       this.layerRender = this.model.layer.render
     }
-    //展示前逻辑
-    this.viewBefore = DDeiUtil.getConfigValue(
-      "EVENT_CONTROL_VIEW_BEFORE",
-      this.ddRender.model
-    );
-    //展示后逻辑
-    this.viewAfter = DDeiUtil.getConfigValue(
-      "EVENT_CONTROL_VIEW_AFTER",
-      this.ddRender.model
-    );
   }
 
   enableRefreshShape() {
@@ -111,13 +101,8 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
    * 创建图形
    */
   drawShape(tempShape, composeRender: boolean = false): void {
-    if (!this.viewBefore || this.viewBefore(
-      DDeiEnumOperateType.VIEW,
-      [this.model],
-      null,
-      this.ddRender.model,
-      null
-    )) {
+    let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
+    if (rsState == 0 || rsState == 1) {
 
       if (this.refreshShape) {
         //创建准备图形
@@ -181,15 +166,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         let outRect = this.tempCanvas.outRect
         ctx.drawImage(this.tempCanvas, 0, 0, outRect.width * rat1, outRect.height * rat1, outRect.x * rat1, outRect.y * rat1, outRect.width * rat1, outRect.height * rat1)
       }
-      if (this.viewAfter) {
-        this.viewAfter(
-          DDeiEnumOperateType.VIEW,
-          [this.model],
-          null,
-          this.ddRender.model,
-          null
-        )
-      }
+      DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_AFTER", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
     }
   }
 

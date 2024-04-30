@@ -187,17 +187,6 @@ class DDeiAbstractShapeRender {
    */
   mouseUp(evt: Event): void {
     this.controlSelect()
-    // //加载事件的配置
-    // let selectBefore = DDeiUtil.getConfigValue("EVENT_CONTROL_SELECT_BEFORE", this.stage.ddInstance);
-    // //选中前
-    // if (!selectBefore || selectBefore(DDeiEnumOperateType.SELECT, [this.model], null, this.stage.ddInstance, evt)) {
-    //   if (this.controlSelect()) {
-    //     let selectAfter = DDeiUtil.getConfigValue("EVENT_CONTROL_SELECT_AFTER", this.stage.ddInstance);
-    //     if (selectAfter) {
-    //       selectAfter(DDeiEnumOperateType.SELECT, [this.model], null, this.stage.ddInstance, evt);
-    //     }
-    //   }
-    // }
   }
 
 

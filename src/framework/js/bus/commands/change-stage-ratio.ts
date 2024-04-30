@@ -6,6 +6,7 @@ import { Matrix3, Vector3 } from 'three';
 import DDeiUtil from '../../util';
 import DDeiLine from '../../models/line';
 import { debounce } from 'lodash';
+import DDeiEditorUtil from '@ddei-core/editor/js/editor-util';
 /**
  * 缩放画布总线Command
  * 图形类Command一般在普通Command之后执行
@@ -116,22 +117,8 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
 
         stage.wpv.x = -wpvX - ox
         stage.wpv.y = -wpvY - oy
-        let mouseOpSPI = DDeiUtil.getConfigValue(
-          "EVENT_MOUSE_OPERATING",
-          stage.ddInstance
-        );
-        if (mouseOpSPI) {
-          mouseOpSPI("CHANGE_RATIO", null, bus.ddInstance, evt);
-        }
-        //调用SPI
-        let changeRatioSPI = DDeiUtil.getConfigValue(
-          "EVENT_STAGE_CHANGE_RATIO",
-          stage.ddInstance
-        );
-        if (changeRatioSPI) {
-          changeRatioSPI(data.oldValue, data.newValue, bus.ddInstance);
-        }
-
+        DDeiEditorUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", "CHANGE_RATIO",null , stage.ddInstance, evt)
+        DDeiEditorUtil.invokeCallbackFunc("EVENT_STAGE_CHANGE_RATIO", "CHANGE_RATIO", data, stage.ddInstance, evt)
         return true;
       }
     }

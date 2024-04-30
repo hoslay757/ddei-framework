@@ -10,6 +10,7 @@ import DDeiLineLink from "../../framework/js/models/linelink";
 import { Matrix3 } from "three";
 import DDeiRectContainer from "../../framework/js/models/rect-container";
 import DDei from "../../framework/js/ddei";
+import DDeiFuncCallResult from "@ddei-core/lifecycle/callresult";
 
 class DDeiEditorUtil {
 
@@ -1018,6 +1019,51 @@ class DDeiEditorUtil {
 
   }
 
+
+  /**
+   * 执行调用回调函数
+   * @param ddInstance ddeis实例
+   * @param editor 设计器对象实例
+   */
+  static invokeCallbackFunc(name: string, operate:any, data:any,ddInstance:DDei,evt:Event):number{
+    let result = 0;
+    let editor = DDeiEditorUtil.getEditorInsByDDei(ddInstance)
+    let selectAfter = DDeiUtil.getConfigValue(name, ddInstance);
+    let funcArr = editor.funcIndex.get(name)
+    let callResult = new DDeiFuncCallResult();
+    if (selectAfter) {
+      
+      let cr = selectAfter(operate, data, ddInstance, evt);
+      callResult = cr ? cr : callResult
+    }
+    if (callResult?.state > 0) {
+      result = 1;
+    } else if (callResult?.state < 0) {
+      result = -1;
+    }
+    if (callResult.state == 0 || callResult.state == 1 || callResult.state == -1){
+      if (funcArr?.length > 0) {
+        for (let fa = 0; fa < funcArr.length; fa++) {
+          let func = funcArr[fa]["func"]
+          if (func) {
+            callResult = func(operate, data, ddInstance, evt);
+            if (callResult){
+              if (callResult.state > 0){
+                result = 1;
+              } else if (callResult.state < 0) {
+                result = -1;
+              }
+              if (!(callResult.state == 0 || callResult.state == 1 || callResult.state == -1)) {
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return result;
+  }
 
 
 
