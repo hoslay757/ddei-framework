@@ -55,6 +55,12 @@ class DDeiCanvasRender {
       if (this.container.children.length > 0) {
         this.container.innerHTML = "";
       }
+      if (this.model.width){
+        this.container.style.width = this.model.width+"px"
+      }
+      if (this.model.height) {
+        this.container.style.height = this.model.height + "px"
+      }
       //创建容器
       this.realCanvas = document.createElement("canvas");
       this.realCanvas.setAttribute("id", this.model.id + "_canvas");
@@ -69,14 +75,16 @@ class DDeiCanvasRender {
           this.isSupportOffScreen = false;
         }
       } catch (e) { }
+      let w = this.model.width ? this.model.width: this.container.clientWidth
+      let h = this.model.height ? this.model.height: this.container.clientHeight
       if (this.isSupportOffScreen) {
-        this.canvas = new OffscreenCanvas(this.container.clientWidth * ratio, this.container.clientHeight * ratio);
+        this.canvas = new OffscreenCanvas(w * ratio, h * ratio);
       } else {
         this.canvas = this.realCanvas
       }
       this.realCanvas.setAttribute("style", "position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / ratio) + ");display:block;zoom:" + (1 / ratio));
-      this.realCanvas.setAttribute("width", this.container.clientWidth * ratio);
-      this.realCanvas.setAttribute("height", this.container.clientHeight * ratio);
+      this.realCanvas.setAttribute("width", w * ratio);
+      this.realCanvas.setAttribute("height", h * ratio);
 
       this.ratio = ratio * window.remRatio;
 

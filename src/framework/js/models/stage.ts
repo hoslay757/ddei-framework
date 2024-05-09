@@ -702,7 +702,7 @@ class DDeiStage {
               hpoint[pvy].ex = Math.max(hpoint[pvy].sx, pvx, mpvx)
             }
           }
-          if (hAds == Infinity && Math.abs(pvy - mpvy) <= DDeiConfig.GLOBAL_ADV_WEIGHT) {
+          if (hAds == Infinity && Math.abs(pvy - mpvy) <= this.ddInstance.GLOBAL_ADV_WEIGHT) {
             hAds = pvy - mpvy;
           }
           //纵向相等
@@ -716,7 +716,7 @@ class DDeiStage {
             }
           }
 
-          if (vAds == Infinity && Math.abs(pvx - mpvx) <= DDeiConfig.GLOBAL_ADV_WEIGHT) {
+          if (vAds == Infinity && Math.abs(pvx - mpvx) <= this.ddInstance.GLOBAL_ADV_WEIGHT) {
             vAds = pvx - mpvx;
           }
         });

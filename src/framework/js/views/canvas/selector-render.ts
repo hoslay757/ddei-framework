@@ -782,7 +782,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     let vAdsValue = Infinity;
     if (hAds != Infinity) {
       //退出吸附状态
-      if (stage.render.isHAds && Math.abs(stage.render.hAdsY - y) > DDeiConfig.GLOBAL_ADV_WEIGHT) {
+      if (stage.render.isHAds && Math.abs(stage.render.hAdsY - y) > stage.ddInstance.GLOBAL_ADV_WEIGHT) {
         stage.render.isHAds = false
         stage.render.hAdsY = Infinity
       }
@@ -800,7 +800,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     if (vAds != Infinity) {
 
       //退出吸附状态
-      if (stage.render.isVAds && Math.abs(stage.render.vAdsX - x) > DDeiConfig.GLOBAL_ADV_WEIGHT) {
+      if (stage.render.isVAds && Math.abs(stage.render.vAdsX - x) > stage.ddInstance.GLOBAL_ADV_WEIGHT) {
         stage.render.isVAds = false
         stage.render.vAdsX = Infinity
       }

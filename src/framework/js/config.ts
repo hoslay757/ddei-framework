@@ -19,9 +19,6 @@ class DDeiConfig {
   //当前采用的渲染器类型，暂时只支持canvas
   static RENDER_TYPE: string = "Canvas";
 
-  // 缺省吸附效果宽度，小于0时没有吸附效果
-  static GLOBAL_ADV_WEIGHT: number = 5;
-
   //是否允许访问外部剪切板
   static ALLOW_CLIPBOARD: boolean | undefined = undefined;
 

@@ -149,6 +149,8 @@ class DDei {
   EXT_STAGE_HEIGHT: boolean = true;
   //是否开启全局缩放
   GLOBAL_ALLOW_STAGE_RATIO = true;
+  // 吸附宽度，单位像素，大于0时拖拽时会有吸附效果，小于0时没有效果
+  GLOBAL_ADV_WEIGHT: number = 5;
   // 是否打开辅助对齐线
   GLOBAL_HELP_LINE_ENABLE: boolean = true;
   /**

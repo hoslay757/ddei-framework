@@ -1492,16 +1492,16 @@ class DDeiLayerCanvasRender {
 
           if (passIndex == 1 && opvsIndex == 0) {
             let endPoint = lineModel.endPoint;
-            if (Math.abs(endPoint.x - ex) <= DDeiConfig.GLOBAL_ADV_WEIGHT) {
+            if (Math.abs(endPoint.x - ex) <= this.stage?.ddInstance.GLOBAL_ADV_WEIGHT) {
               ex = endPoint.x
-            } else if (Math.abs(endPoint.y - ey) <= DDeiConfig.GLOBAL_ADV_WEIGHT) {
+            } else if (Math.abs(endPoint.y - ey) <= this.stage?.ddInstance.GLOBAL_ADV_WEIGHT) {
               ey = endPoint.y
             }
           } else if (passIndex == 1 && opvsIndex == opvs.length - 1) {
             let startPoint = lineModel.startPoint;
-            if (Math.abs(startPoint.x - ex) <= DDeiConfig.GLOBAL_ADV_WEIGHT) {
+            if (Math.abs(startPoint.x - ex) <= this.stage?.ddInstance.GLOBAL_ADV_WEIGHT) {
               ex = startPoint.x
-            } else if (Math.abs(startPoint.y - ey) <= DDeiConfig.GLOBAL_ADV_WEIGHT) {
+            } else if (Math.abs(startPoint.y - ey) <= this.stage?.ddInstance.GLOBAL_ADV_WEIGHT) {
               ey = startPoint.y
             }
           }
