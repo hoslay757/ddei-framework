@@ -78,7 +78,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       //转换为图片
       if (!this.tempCanvas) {
         this.tempCanvas = document.createElement('canvas');
-        this.tempCanvas.setAttribute("style", "position:fixed;display:none;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
+        this.tempCanvas.setAttribute("style", "left:-99999px;position:fixed;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
         document.body.appendChild(this.tempCanvas)
       }
       let tempCanvas = this.tempCanvas

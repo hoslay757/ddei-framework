@@ -303,9 +303,10 @@ class DDeiEditor {
 
         return editorInstance;
       } else {
-        throw new Error('实例池中已存在ID相同的实例，初始化失败')
+        return DDeiEditor.INSTANCE_POOL.get(id)
       }
     }
+    return null;
   }
 
   /**
