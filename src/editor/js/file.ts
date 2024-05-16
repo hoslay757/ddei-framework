@@ -27,8 +27,8 @@ class DDeiFile {
   }
   // ============================ 静态变量 ============================
 
-  static loadFromJSON(json, tempData: object = {}): any {
-    let model = new DDeiFile(json);
+  static loadFromJSON(json, tempData: object = {}): DDeiFile {
+    let model: DDeiFile = new DDeiFile(json);
     let sheets = []
     for (let i = 0; i < model.sheets.length; i++) {
       sheets[i] = DDeiSheet.loadFromJSON(model.sheets[i], tempData);

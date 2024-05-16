@@ -571,25 +571,25 @@ class DDeiEditorUtil {
           } break;
           //基于触发元素的底部
           case 2: {
-            let absPos = DDeiUtil.getDomAbsPosition(el)
+            let absPos = DDeiUtil.getDomAbsPosition(el, editor)
             left = absPos.left + (pos.dx ? pos.dx : 0)
             top = (absPos.top - dialog?.clientHeight + (pos.dy ? pos.dy : 0))
           } break;
           //基于触发元素的底部居中
           case 3: {
-            let absPos = DDeiUtil.getDomAbsPosition(el)
+            let absPos = DDeiUtil.getDomAbsPosition(el, editor)
             left = absPos.left - (dialog.clientWidth / 2 - el.clientWidth / 2) + (pos.dx ? pos.dx : 0)
             top = (absPos.top - dialog?.clientHeight + (pos.dy ? pos.dy : 0))
           } break;
           //基于触发元素的顶部
           case 4: {
-            let absPos = DDeiUtil.getDomAbsPosition(el)
+            let absPos = DDeiUtil.getDomAbsPosition(el, editor)
             left = absPos.left + (pos.dx ? pos.dx : 0)
             top = (absPos.top + el.clientHeight + (pos.dy ? pos.dy : 0))
           } break;
           //基于触发元素的顶部居中
           case 5: {
-            let absPos = DDeiUtil.getDomAbsPosition(el)
+            let absPos = DDeiUtil.getDomAbsPosition(el, editor)
             left = absPos.left - (dialog.clientWidth / 2 - el.clientWidth / 2) + (pos.dx ? pos.dx : 0)
             top = (absPos.top + el.clientHeight + (pos.dy ? pos.dy : 0))
           } break;

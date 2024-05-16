@@ -164,6 +164,7 @@ class DDeiEditor {
         if (!DDeiUtil.invokeCallbackFunc) {
           DDeiUtil.invokeCallbackFunc = DDeiEditorUtil.invokeCallbackFunc;
         }
+        
         //初始化ddInstance
         let ddInstance = DDei.newInstance(
           editorInstance.id,
@@ -555,17 +556,17 @@ class DDeiEditor {
   bus: DDeiBus | null = null;
 
   //编辑器UI对象
-  viewEditor: object | null = null;
-  //底部菜单UI对象
-  bottomMenuViewer: object | null = null;
-  //顶部菜单UI对象
-  topMenuViewer: object | null = null;
-  //toolbarUI对象
-  toolBarViewer: object | null = null;
-  //属性栏UI对象
-  properyViewer: object | null = null;
-  //文件浏览器对象
-  openFilesViewer: object | null = null;
+  // viewEditor: object | null = null;
+  // //底部菜单UI对象
+  // bottomMenuViewer: object | null = null;
+  // //顶部菜单UI对象
+  // topMenuViewer: object | null = null;
+  // //toolbarUI对象
+  // toolBarViewer: object | null = null;
+  // //属性栏UI对象
+  // properyViewer: object | null = null;
+  // //文件浏览器对象
+  // openFilesViewer: object | null = null;
 
   //钩子函数，设置当前右键菜单
   setCurrentMenu: Function | null = null;
@@ -622,7 +623,7 @@ class DDeiEditor {
    * 修改当前编辑模式
    * @param mode 编辑模式
    */
-  changeEditMode(mode): void {
+  changeEditMode(mode:number): void {
     if (this.editMode != mode) {
       this.editMode = mode
     }
@@ -727,7 +728,7 @@ class DDeiEditor {
   }
 
   /**
-   * 获取属性编辑器
+   * 获取布局
    */
   getLayout(): object {
     
@@ -735,7 +736,7 @@ class DDeiEditor {
   }
 
   /**
-  * 获取属性编辑器
+  * 获取布局选项
   */
   getLayoutOptions(): object {
     return this.options[this.currentLayout];
@@ -997,11 +998,11 @@ class DDeiEditor {
    * 移除当前画布控件
    */
   removeControls(ids: string[]): void {
-    this.ddInstance.stage?.removeControls(ids)
+    this.ddInstance.stage?.removeModelById(ids)
   }
 
   /**
-   * 移除当前画布控件
+   * 根据ID获取控件
    */
   getControlById(id: string): DDeiAbstractShape {
     return this.ddInstance.stage?.getModelById(id,true);

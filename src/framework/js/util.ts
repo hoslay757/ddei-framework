@@ -6,6 +6,7 @@ import { Matrix3, Vector3 } from 'three';
 import DDeiModelArrtibuteValue from './models/attribute/attribute-value';
 import DDeiStage from './models/stage';
 import DDeiColor from './color.js';
+import type { DDeiEditor } from '@/index.js';
 
 const expressBindValueReg = /#\{[^\{\}]*\}/;
 const contentSplitReg = /\+|\-|\*|\//;
@@ -46,6 +47,8 @@ class DDeiUtil {
   static getEditorId: Function;
   //钩子函数，调用回调函数
   static invokeCallbackFunc: Function;
+
+  
 
 
   static offsetX: number;
@@ -347,20 +350,21 @@ class DDeiUtil {
    * 返回dom绝对坐标
    * @param element 
    */
-  static getDomAbsPosition(element): object {
+  static getDomAbsPosition(element, editor:DDeiEditor): object {
     //计算x坐标
-    var actualLeft = element.offsetLeft;
-    var current = element.offsetParent;
+    let actualLeft = element.offsetLeft;
+    let actualTop = element.offsetTop;
+    let current = element.offsetParent;
     while (current !== null) {
       actualLeft += current.offsetLeft;
-      current = current.offsetParent;
-    }
-    //计算y坐标
-    var actualTop = element.offsetTop;
-    var current = element.offsetParent;
-    while (current !== null) {
       actualTop += (current.offsetTop + current.clientTop);
       current = current.offsetParent;
+    }
+    if (editor){
+      let editorElement = document.getElementById(editor.id);
+      let editorPos = DDeiUtil.getDomAbsPosition(editorElement)
+      actualLeft -= editorPos.left
+      actualTop -= editorPos.top
     }
     //返回结果
     return { left: actualLeft, top: actualTop }

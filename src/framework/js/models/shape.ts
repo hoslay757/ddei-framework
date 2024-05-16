@@ -101,7 +101,7 @@ abstract class DDeiAbstractShape {
   //宽度与高度，会换算为点向量，参与运算
   width: number;
   height: number;
-  // 本模型的编码,用来却分modelType相同，但业务含义不同的模型
+  // 本模型的编码,用来区分modelType相同，但业务含义不同的模型
   modelCode: string;
   // 本模型的唯一名称
   modelType: string = 'AbstractShape';

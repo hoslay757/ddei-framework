@@ -4,7 +4,7 @@ import DDei from '../ddei';
 import DDeiAbstractShape from './shape';
 import DDeiUtil from '../util';
 import DDeiLink from './link';
-import { Vector3 } from 'three';
+import { Vector3, Matrix3 } from 'three';
 import DDeiLine from './line';
 
 
@@ -432,7 +432,7 @@ class DDeiStage {
    * 修改当前图层
    * @param layerIndex 图层下标
    */
-  changeLayer(layerIndex: number) {
+  changeLayer(layerIndex: number):void {
     this.layerIndex = layerIndex;
   }
 
@@ -465,7 +465,7 @@ class DDeiStage {
    * 隐藏图层
    * @param layerIndex 图层下标，不传则为当前图层
    */
-  hiddenLayer(layerIndex: number) {
+  hiddenLayer(layerIndex: number):void {
     if (!layerIndex) {
       layerIndex = this.layerIndex;
     }
@@ -477,7 +477,7 @@ class DDeiStage {
   * @param layerIndex 图层下标，不传则为当前图层
   * @param temp 是否临时显示
   */
-  displayLayer(layerIndex: number, temp: boolean = false) {
+  displayLayer(layerIndex: number, temp: boolean = false):void {
     if (!layerIndex || layerIndex < 0 || layerIndex > this.layers[layerIndex].length - 1) {
       layerIndex = this.layerIndex;
     }
