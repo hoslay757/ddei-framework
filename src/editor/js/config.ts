@@ -25,6 +25,9 @@ const config = {
    */
   AC_DESIGN_CREATE: true,
   AC_DESIGN_EDIT: true,
+  AC_DESIGN_ROTATE: true,
+  AC_DESIGN_SCALE: true,
+  AC_DESIGN_COMPOSE: true,
   AC_DESIGN_VIEW: true,
   AC_DESIGN_DRAG: true,
   AC_DESIGN_LINK: true,

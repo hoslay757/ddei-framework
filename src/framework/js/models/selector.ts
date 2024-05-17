@@ -8,6 +8,7 @@ import { clone, cloneDeep } from 'lodash'
 import { Matrix3, Vector3 } from 'three';
 import DDeiModelArrtibuteValue from './attribute/attribute-value';
 import DDeiEnumOperateState from '../enums/operate-state';
+import DDeiEnumOperateType from '../enums/operate-type';
 
 /**
  * selector选择器，用来选择界面上的控件，选择器不是一个实体控件,不会被序列化
@@ -356,6 +357,7 @@ class DDeiSelector extends DDeiRectangle {
     if (this.stage?.selectedModels?.size > 0) {
       models = Array.from(this.stage.selectedModels.values())
     }
+    
     if (models?.length == 1 && models[0]?.baseModelType == "DDeiLine") {
       //计算线的操作点
       let lineModel = models[0];
@@ -430,6 +432,9 @@ class DDeiSelector extends DDeiRectangle {
       this.opvs = opvs;
       this.opvsType = opvsType;
     } else {
+      let canRotate = DDei.beforeOperateValid(DDeiEnumOperateType.ROTATE, { models: models }, this.stage?.ddInstance, null);
+      let canScale = DDei.beforeOperateValid(DDeiEnumOperateType.SCALE, { models: models }, this.stage?.ddInstance, null);
+      
       //计算矩形的操作点
       let pvs = this.pvs;
       let opvs = [];
@@ -444,23 +449,27 @@ class DDeiSelector extends DDeiRectangle {
       }
 
       if (pvs?.length > 0) {
-        if (scale == 3) {
-          if (lockWidth == 1) {
+        //可以拉伸
+        if (canScale == 0 || canScale == 1) {
+          if (scale == 3) {
+            if (lockWidth == 1) {
+              opvs[3] = { x: (pvs[1].x + pvs[2].x) / 2, y: (pvs[1].y + pvs[2].y) / 2 };
+              opvs[7] = { x: (pvs[0].x + pvs[3].x) / 2, y: (pvs[0].y + pvs[3].y) / 2 };
+            }
+          } else {
+            opvs[1] = { x: (pvs[0].x + pvs[1].x) / 2, y: (pvs[0].y + pvs[1].y) / 2 };
             opvs[3] = { x: (pvs[1].x + pvs[2].x) / 2, y: (pvs[1].y + pvs[2].y) / 2 };
+            opvs[5] = { x: (pvs[2].x + pvs[3].x) / 2, y: (pvs[2].y + pvs[3].y) / 2 };
             opvs[7] = { x: (pvs[0].x + pvs[3].x) / 2, y: (pvs[0].y + pvs[3].y) / 2 };
-          }
-        } else {
-          opvs[1] = { x: (pvs[0].x + pvs[1].x) / 2, y: (pvs[0].y + pvs[1].y) / 2 };
-          opvs[3] = { x: (pvs[1].x + pvs[2].x) / 2, y: (pvs[1].y + pvs[2].y) / 2 };
-          opvs[5] = { x: (pvs[2].x + pvs[3].x) / 2, y: (pvs[2].y + pvs[3].y) / 2 };
-          opvs[7] = { x: (pvs[0].x + pvs[3].x) / 2, y: (pvs[0].y + pvs[3].y) / 2 };
-          if (!this.eqrat) {
-            opvs[2] = { x: pvs[1].x, y: pvs[1].y };
-            opvs[4] = { x: pvs[2].x, y: pvs[2].y };
-            opvs[6] = { x: pvs[3].x, y: pvs[3].y };
-            opvs[8] = { x: pvs[0].x, y: pvs[0].y };
+            if (!this.eqrat) {
+              opvs[2] = { x: pvs[1].x, y: pvs[1].y };
+              opvs[4] = { x: pvs[2].x, y: pvs[2].y };
+              opvs[6] = { x: pvs[3].x, y: pvs[3].y };
+              opvs[8] = { x: pvs[0].x, y: pvs[0].y };
+            }
           }
         }
+        
         let v1 = new Vector3(pvs[1].x, pvs[1].y, 1);
         let moveMatrix = new Matrix3(
           1, 0, -(pvs[0].x + pvs[1].x) / 2,
@@ -483,24 +492,27 @@ class DDeiSelector extends DDeiRectangle {
         } else if (v1.x >= 0 && v1.y <= 0) {
           angle = ((- angle1) * DDeiConfig.ROTATE_UNIT).toFixed(4);
         }
-        let angleR1 = (90 * DDeiConfig.ROTATE_UNIT).toFixed(4) - angle
-        v1 = new Vector3(20, 0, 1)
+        if (canRotate == 0 || canRotate == 1) {
+          let angleR1 = (90 * DDeiConfig.ROTATE_UNIT).toFixed(4) - angle
+          v1 = new Vector3(20, 0, 1)
 
-        let rotateMatrix = new Matrix3(
-          Math.cos(angleR1), Math.sin(angleR1), 0,
-          -Math.sin(angleR1), Math.cos(angleR1), 0,
-          0, 0, 1);
-        v1.applyMatrix3(rotateMatrix);
-
-
-        let removeMatrix = new Matrix3(
-          1, 0, (pvs[0].x + pvs[1].x) / 2,
-          0, 1, (pvs[0].y + pvs[1].y) / 2,
-          0, 0, 1);
+          let rotateMatrix = new Matrix3(
+            Math.cos(angleR1), Math.sin(angleR1), 0,
+            -Math.sin(angleR1), Math.cos(angleR1), 0,
+            0, 0, 1);
+          v1.applyMatrix3(rotateMatrix);
 
 
-        v1.applyMatrix3(removeMatrix);
-        opvs[9] = v1;
+          let removeMatrix = new Matrix3(
+            1, 0, (pvs[0].x + pvs[1].x) / 2,
+            0, 1, (pvs[0].y + pvs[1].y) / 2,
+            0, 0, 1);
+
+
+          v1.applyMatrix3(removeMatrix);
+          opvs[9] = v1;
+        }
+
 
         let v2 = new Vector3(25, 0, 1)
         let angleR2 = (135 * DDeiConfig.ROTATE_UNIT).toFixed(4) - angle

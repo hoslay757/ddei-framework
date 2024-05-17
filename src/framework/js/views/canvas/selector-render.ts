@@ -398,14 +398,16 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
                 ctx.stroke();
               }
             } else if (i == 9) {
-              if (this.model.passIndex == i) {
-                //填充一个圆形
-                ctx.ellipse(opvs[9].x * ratio + lineOffset, opvs[9].y * ratio + lineOffset, halfWidth, halfWidth, 0, 0, Math.PI * 2)
-                ctx.fill();
-              } else {
-                //绘制旋转按钮
-                ctx.arc(opvs[9].x * ratio + lineOffset, opvs[9].y * ratio + lineOffset, halfWidth, 50, Math.PI * 1.6)
-                ctx.stroke()
+              if (opvs[9]){
+                if (this.model.passIndex == i) {
+                  //填充一个圆形
+                  ctx.ellipse(opvs[9].x * ratio + lineOffset, opvs[9].y * ratio + lineOffset, halfWidth, halfWidth, 0, 0, Math.PI * 2)
+                  ctx.fill();
+                } else {
+                  //绘制旋转按钮
+                  ctx.arc(opvs[9].x * ratio + lineOffset, opvs[9].y * ratio + lineOffset, halfWidth, 50, Math.PI * 1.6)
+                  ctx.stroke()
+                }
               }
             } else if (i == 10 && selectedModels.size == 1 && firstModel.baseModelType == 'DDeiTable') {
 

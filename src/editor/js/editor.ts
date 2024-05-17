@@ -1027,7 +1027,9 @@ class DDeiEditor {
       this.ddInstance["AC_DESIGN_SELECT"] = false
       this.ddInstance["AC_DESIGN_LINK"] = false
       this.ddInstance["AC_DESIGN_DEL"] = false
-
+      this.ddInstance["AC_DESIGN_ROTATE"] = false
+      this.ddInstance["AC_DESIGN_SCALE"] = false
+      this.ddInstance["AC_DESIGN_COMPOSE"] = false
     } else {
       this.ddInstance["AC_DESIGN_CREATE"] = true
       this.ddInstance["AC_DESIGN_EDIT"] = true
@@ -1035,6 +1037,9 @@ class DDeiEditor {
       this.ddInstance["AC_DESIGN_SELECT"] = true
       this.ddInstance["AC_DESIGN_LINK"] = true
       this.ddInstance["AC_DESIGN_DEL"] = true
+      this.ddInstance["AC_DESIGN_ROTATE"] = true
+      this.ddInstance["AC_DESIGN_SCALE"] = true
+      this.ddInstance["AC_DESIGN_COMPOSE"] = true
     }
   }
 

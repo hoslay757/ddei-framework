@@ -11,6 +11,9 @@ enum DDeiEnumOperateType {
   LINK = "LINK",
   DEL = "DEL",
   SELECT = "SELECT",
+  ROTATE = "ROTATE",
+  SCALE = "SCALE",
+  COMPOSE = "COMPOSE",
 }
 
 export { DDeiEnumOperateType }

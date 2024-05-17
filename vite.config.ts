@@ -19,7 +19,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@ddei-core': fileURLToPath(new URL('./src', import.meta.url))
+      '@ddei-core': fileURLToPath(new URL('./src', import.meta.url)),
+
     }
   }
 })
