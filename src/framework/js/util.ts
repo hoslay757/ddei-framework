@@ -2903,19 +2903,11 @@ class DDeiUtil {
     let paperHeight = 0;
     //获取纸张大小的定义
     let paperInit
+    if (stage.ddInstance.paper && typeof (stage.ddInstance.paper) == 'object') {
+      paperInit = stage.ddInstance.paper;
+    }
     if (!paperType) {
-      if (stage.paper?.type) {
-        paperType = stage.paper.type;
-      } else if (stage.ddInstance.paper) {
-        if (typeof (stage.ddInstance.paper) == 'string') {
-          paperType = stage.ddInstance.paper;
-        } else {
-          paperType = stage.ddInstance.paper.type;
-          paperInit = stage.ddInstance.paper;
-        }
-      } else {
-        paperType = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.type", true);
-      }
+      paperType = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.type", true, paperInit);
     }
     
     let paperConfig = DDeiConfig.PAPER[paperType];

@@ -405,9 +405,18 @@ class DDeiCanvasRender {
       }
       if (newValue != ratio) {
         stage.setStageRatio(newValue);
+        if (!this.model.ratioWatch){
+          this.model.bus.push(
+            DDeiEnumBusCommandType.ChangeStageRatio,
+            {
+              oldValue: ratio,
+              newValue: newValue,
+            },
+            null
+          );
+          this.model.bus.executeAll();
+        }
       }
-
-
     }
   }
 

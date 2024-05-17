@@ -58,7 +58,7 @@ class DDeiEditor {
   //以下字段为初始化时传入的全局控制变量或钩子函数，在运行时不会改变
 
   //是否开启风格本地缓存
-  GLOBAL_LOCAL_CACHE_THEME: boolean = false;
+  GLOBAL_LOCAL_CACHE_THEME: boolean = true;
 
   // 键盘对齐,开启后允许通过上下左右来改变控件位置
   GLOBAL_KEYBOARD_ALIGN_ENABLE: boolean = true;
@@ -224,6 +224,18 @@ class DDeiEditor {
               editorInstance.hotKeyMapping = editorInstance.hotKeyMapping.concat(keys)
             }
           }
+          editorInstance.hotKeyMapping.sort((a: object, b: object) => {
+            if (a.times && b.times) {
+              return 0
+            } else if (a.times && !b.times) {
+              return -1
+            } else if (!a.times && b.times) {
+              return 1
+            } else if (!a.times && !b.times) {
+              return 0
+            }
+          })
+        
           
           editorInstance.controls?.forEach(control => {
             if(control.menus){
@@ -916,12 +928,7 @@ class DDeiEditor {
       let curInsTheme = localStorage.getItem("ddei-theme-" + this.id);
       if (!curInsTheme || curInsTheme != name) {
         localStorage.setItem("ddei-theme-" + this.id, name);
-        DDeiEditorUtil.clearControlIcons(this);
-        DDeiEditorUtil.getControlIcons(this);
       }
-    }else{
-      DDeiEditorUtil.clearControlIcons(this);
-      DDeiEditorUtil.getControlIcons(this);
     }
     
   };

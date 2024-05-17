@@ -169,7 +169,10 @@ class DDeiLayerCanvasRender {
       }
       //绘制图片背景类型
       else if (bgInfoType == 2) {
-        let bgImage = DDeiUtil.getReplacibleValue(this.model, "bg.image", bgInit);
+        let bgImage = DDeiUtil.getReplacibleValue(this.model, "bg.image");
+        if (!bgImage) {
+          bgImage = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.image", true, bgInit);
+        }
         //没有图片，加载图片，有图片绘制图片
         if (!this.bgImgObj || bgImage != this.upBgImage) {
           this.initBgImage();
@@ -267,6 +270,13 @@ class DDeiLayerCanvasRender {
     //加载图片
     let that = this;
     let bgImage = DDeiUtil.getReplacibleValue(this.model, "bg.image");
+    if (!bgImage) {
+      let bgInit
+      if (this.ddRender?.model.background && typeof (this.ddRender?.model.background) == 'object') {
+        bgInit = this.ddRender?.model.background;
+      }
+      bgImage = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.image", true, bgInit);
+    }
     //加载base64图片
     if ((this.model.bgImageBase64 || bgImage)) {
       let img = new Image();   // 创建一个<img>元素

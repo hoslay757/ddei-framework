@@ -376,8 +376,9 @@ class DDeiStageCanvasRender {
     let ctx = canvas.getContext('2d');
     ctx.save();
     //清空画布
-    ctx.fillStyle = DDeiUtil.getStyleValue("panel-header", this.ddRender.model);
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    // ctx.fillStyle = DDeiUtil.getStyleValue("panel-header", this.ddRender.model);
+    // ctx.fillRect(0, 0, canvas.width, canvas.height)
+    ctx.clearRect(0,0,canvas.width,canvas.height)
     ctx.restore();
   }
 

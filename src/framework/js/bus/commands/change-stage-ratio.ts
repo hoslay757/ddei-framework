@@ -133,8 +133,8 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
    * @param evt 事件对象引用
    */
   after(data: object, bus: DDeiBus, evt: Event): boolean {
-    bus.insert(DDeiEnumBusCommandType.UpdateSelectorBounds, null, evt)
-    bus.push(DDeiEnumBusCommandType.RefreshShape);
+    bus.insert(DDeiEnumBusCommandType.UpdateSelectorBounds, null, evt,0)
+    bus.insert(DDeiEnumBusCommandType.RefreshShape,null,evt,1);
     return true;
   }
 
