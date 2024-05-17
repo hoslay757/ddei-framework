@@ -1236,9 +1236,9 @@ class DDeiStageCanvasRender {
       }
     }
     //图片水印
-    else if (this.model.mark?.type == 2) {
+    else if (markType == 2 || markType == '2') {
       //没有图片，加载图片，有图片绘制图片
-      let imgData = DDeiUtil.getReplacibleValue(this.model, "mark.data");
+      let imgData = DDeiUtil.getReplacibleValue(this.model, "mark.data",false,false,markInit);
       if (!this.mark?.imgObj || this.mark.upMarkImg != imgData) {
         this.initMarkImage();
       } else {
@@ -1456,20 +1456,28 @@ class DDeiStageCanvasRender {
     //加载图片
     let that = this;
     //加载base64图片
-    let imgData = DDeiUtil.getReplacibleValue(this.model, "mark.data");
+    let markInit
+    if (this.model.ddInstance.mark) {
+      if (typeof (this.model.ddInstance.mark) == 'object') {
+        markInit = this.model.ddInstance.mark
+      } else {
+        markInit = { data: this.model.ddInstance.mark, type: 1 }
+      }
+    } 
+    let imgData = DDeiUtil.getReplacibleValue(this.model, "mark.data", false, false, markInit);
     if ((this.model.mark?.imgBase64 || imgData)) {
       let img = new Image();   // 创建一个<img>元素
       img.onload = function () {
         if (!that.mark) {
           that.mark = {}
         }
-        let imgData = DDeiUtil.getReplacibleValue(that.model, "mark.data");
-        that.mark.upMarkImg = that.model.mark.imgBase64 ? that.model.mark?.imgBase64 : imgData;
+        let imgData = DDeiUtil.getReplacibleValue(that.model, "mark.data", false, false, markInit);
+        that.mark.upMarkImg = that.model.mark?.imgBase64 ? that.model.mark.imgBase64 : imgData;
         that.mark.imgObj = img;
         that.model.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, null);
         that.model.ddInstance.bus.executeAll()
       }
-      img.src = this.model.mark.imgBase64 ? this.model.mark?.imgBase64 : imgData;
+      img.src = this.model.mark?.imgBase64 ? this.model.mark.imgBase64 : imgData;
     }
 
   }
