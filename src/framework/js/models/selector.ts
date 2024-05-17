@@ -450,7 +450,7 @@ class DDeiSelector extends DDeiRectangle {
 
       if (pvs?.length > 0) {
         //可以拉伸
-        if (canScale == 0 || canScale == 1) {
+        if (canScale.state == 0 || canScale.state == 1) {
           if (scale == 3) {
             if (lockWidth == 1) {
               opvs[3] = { x: (pvs[1].x + pvs[2].x) / 2, y: (pvs[1].y + pvs[2].y) / 2 };
@@ -492,7 +492,7 @@ class DDeiSelector extends DDeiRectangle {
         } else if (v1.x >= 0 && v1.y <= 0) {
           angle = ((- angle1) * DDeiConfig.ROTATE_UNIT).toFixed(4);
         }
-        if (canRotate == 0 || canRotate == 1) {
+        if (canRotate.state == 0 || canRotate.state == 1) {
           let angleR1 = (90 * DDeiConfig.ROTATE_UNIT).toFixed(4) - angle
           v1 = new Vector3(20, 0, 1)
 
