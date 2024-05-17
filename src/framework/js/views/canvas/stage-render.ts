@@ -376,9 +376,8 @@ class DDeiStageCanvasRender {
     let ctx = canvas.getContext('2d');
     ctx.save();
     //清空画布
-    // ctx.fillStyle = DDeiUtil.getStyleValue("panel-header", this.ddRender.model);
-    // ctx.fillRect(0, 0, canvas.width, canvas.height)
-    ctx.clearRect(0,0,canvas.width,canvas.height)
+    ctx.fillStyle = DDeiUtil.getStyleValue("panel-header", this.ddRender.model);
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
     ctx.restore();
   }
 
@@ -520,6 +519,19 @@ class DDeiStageCanvasRender {
 
       ctx.restore();
 
+    }else{
+      let canvas = this.ddRender.getCanvas();
+      let topDisplayIndex = -1;
+      for (let l = this.model.layers.length - 1; l >= 0; l--) {
+        if (this.model.layers[l].tempDisplay) {
+          topDisplayIndex = l;
+        } else if (this.model.layers[l].display == 1) {
+          this.model.layers[l].render.drawBackground(0, 0, canvas.width, canvas.height);
+        }
+      }
+      if (topDisplayIndex != -1) {
+        this.model.layers[topDisplayIndex].render.drawBackground(0, 0, canvas.width, canvas.height);
+      }
     }
 
   }

@@ -776,7 +776,7 @@ class DDeiEditorUtil {
           let ddInstance = editor.ddInstance
           editor.icons = {}
           editor?.controls.forEach(controlDefine => {
-            let cacheData = localStorage.getItem("ICON-CACHE-" + controlDefine.id)
+            let cacheData = localStorage.getItem("ICON-CACHE-" + editor.id+"-" + controlDefine.id)
             if (cacheData) {
               editor.icons[controlDefine.id] = cacheData
               return;
@@ -841,7 +841,7 @@ class DDeiEditorUtil {
                     model.render.drawShape({ weight: 3, border: { width: 1.5 } })
                   })
                   let dataURL = canvas.toDataURL("image/png");
-                  localStorage.setItem("ICON-CACHE-" + controlDefine.id, dataURL)
+                  localStorage.setItem("ICON-CACHE-" + editor.id + "-" + controlDefine.id, dataURL)
                   editor.icons[controlDefine.id] = dataURL
                 } catch (e) { console.error(e) }
                 resolve()
@@ -863,7 +863,7 @@ class DDeiEditorUtil {
   static clearControlIcons(editor: DDeiEditor):void{
     editor.icons = {}
     editor?.controls.forEach(controlDefine => {
-      localStorage.removeItem("ICON-CACHE-" + controlDefine.id)
+      localStorage.removeItem("ICON-CACHE-" +editor.id+"-"+ controlDefine.id)
     })
   }
 
