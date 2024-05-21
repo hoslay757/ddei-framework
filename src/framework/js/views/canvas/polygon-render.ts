@@ -666,7 +666,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       this.initImage();
     } else {
       //获得 2d 上下文对象
-      let canvas = this.ddRender.getCanvas();
+      let canvas = this.getCanvas();
       let ctx = canvas.getContext('2d');
       //获取全局缩放比例
       let rat1 = this.ddRender.oldRatio ? this.ddRender.oldRatio : this.ddRender.ratio;
@@ -686,7 +686,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       ctx.rotate(this.model.rotate * DDeiConfig.ROTATE_UNIT);
       ctx.translate(-this.model.cpv.x * rat1, -this.model.cpv.y * rat1)
       //绘制图片
-
+      
       ctx.imageSmoothingQuality = "high"
       ctx.drawImage(this.imgObj, 0, 0, this.imgObj.width, this.imgObj.height, (this.model.cpv.x - fillRect.width / 2) * rat1 + lineOffset, (this.model.cpv.y - fillRect.height / 2) * rat1 + lineOffset, fillRect.width * rat1, fillRect.height * rat1);
 
