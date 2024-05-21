@@ -60,6 +60,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       img.onload = function () {
         that.imgObj = img;
         that.upFillImage = bgImage
+        that.clearCachedValue();
         that.ddRender.model.bus.push(DDeiEnumBusCommandType.RefreshShape, null, null);
         that.ddRender.model.bus.executeAll()
       }
@@ -692,6 +693,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
 
       //恢复状态
       ctx.restore();
+ 
     }
   }
 
