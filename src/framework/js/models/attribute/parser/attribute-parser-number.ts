@@ -17,6 +17,11 @@ class DDeiArrtibuteParserNumber extends DDeiAbstractArrtibuteParser {
     if (value != null && value != undefined) {
       if (this.define.isArray) {
         if (Array.isArray(value)) {
+          for (let i = 0; i < value.length;i++){
+            try{
+              value[i] = parseFloat(value[i]);
+            }catch(e){}
+          }
           return value;
         }
       } else {
@@ -40,6 +45,11 @@ class DDeiArrtibuteParserNumber extends DDeiAbstractArrtibuteParser {
     if (value) {
       if (this.define.isArray) {
         if (Array.isArray(value)) {
+          for (let i = 0; i < value.length; i++) {
+            try {
+              value[i] = parseFloat(value[i]);
+            } catch (e) { }
+          }
           return value;
         }
       } else {

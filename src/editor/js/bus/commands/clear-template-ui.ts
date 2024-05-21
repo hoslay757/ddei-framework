@@ -34,10 +34,11 @@ class DDeiEditorCommandClearTemplateUI extends DDeiBusCommand {
   action(data: object, bus: DDeiBus, evt: Event): boolean {
     //清除最外层的combox:dialog
     {
+      let ele = document.getElementById(bus.invoker.containerid)
       let dialogs = [];
-      for (let i = 0; i < document.body.children.length; i++) {
-        if (document.body.children[i].className == "ddei-combox-show-dialog") {
-          dialogs.push(document.body.children[i]);
+      for (let i = 0; i < ele.children.length; i++) {
+        if (ele.children[i].className == "ddei-combox-show-dialog") {
+          dialogs.push(ele.children[i]);
         }
       }
       dialogs.forEach(dialog => {
