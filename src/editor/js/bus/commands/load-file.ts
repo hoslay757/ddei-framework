@@ -124,7 +124,9 @@ class DDeiEditorCommandLoadFile extends DDeiBusCommand {
             //加载场景渲染器
             stage.initRender();
             //设置视窗位置到中央
+            
             if (!stage.wpv) {
+             
               //缺省定位在画布中心点位置
               stage.wpv = {
                 x:
@@ -188,6 +190,7 @@ class DDeiEditorCommandLoadFile extends DDeiBusCommand {
         //加载场景渲染器
         stage.initRender();
         //设置视窗位置到中央
+        
         if (!stage.wpv) {
           //缺省定位在画布中心点位置
           stage.wpv = {

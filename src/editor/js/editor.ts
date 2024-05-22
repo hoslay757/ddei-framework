@@ -5,7 +5,6 @@ import DDeiEditorUtil from "./editor-util";
 import DDeiUtil from "@ddei-core/framework/js/util";
 import DDeiBus from "@ddei-core/framework/js/bus/bus";
 import type DDeiFile from "./file";
-import DDeiConfig from "@ddei-core/framework/js/config";
 import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import { markRaw } from "vue";
 import config from "./config"
@@ -16,6 +15,7 @@ import DDeiAbstractShape from "@ddei-core/themes/theme";
 import DDeiThemeBase from "@ddei-core/framework/js/models/shape";
 import  DDeiLifeCycle  from "@ddei-core/lifecycle/lifecycle";
 import  DDeiFuncData  from "@ddei-core/lifecycle/funcdata";
+import { DDeiModelArrtibuteValue } from "@ddei-core/framework/js/models/attribute/attribute-value";
 
 /**
  * DDei图形编辑器类，用于维护编辑器实例、全局状态以及全局属性
@@ -165,23 +165,25 @@ class DDeiEditor {
           DDeiUtil.invokeCallbackFunc = DDeiEditorUtil.invokeCallbackFunc;
         }
         
+        //将DDeiEditor对象装入全局缓存
+        DDeiEditor.INSTANCE_POOL.set(id, editorInstance);
+        if (active) {
+          DDeiEditor.ACTIVE_INSTANCE = editorInstance;
+        }
         //初始化ddInstance
         let ddInstance = DDei.newInstance(
           editorInstance.id,
-          editorInstance.id+"_canvas"
+          editorInstance.id+"_canvas",null,
+          editorInstance
         );
-        editorInstance.ddInstance = ddInstance;
+        
         //初始化编辑器bus
         ddInstance.bus.invoker = editorInstance;
         editorInstance.bus = ddInstance.bus;
 
         
 
-        //将DDeiEditor对象装入全局缓存
-        DDeiEditor.INSTANCE_POOL.set(id,editorInstance);
-        if (active) {
-          DDeiEditor.ACTIVE_INSTANCE = editorInstance;
-        }
+        
         
         //将编辑器的部分关键变量同步
         ddInstance.controlModelClasses = editorInstance.controlModelClasses
@@ -938,6 +940,7 @@ class DDeiEditor {
    * 向当前画布添加控件,缺省坐标为当前画布的中心
    */
   addControls(controls:object[]):DDeiAbstractShape[]{
+    
     //添加控件到图层
     let stage = this.ddInstance.stage
     let layer = stage?.layers[stage?.layerIndex];
@@ -972,10 +975,31 @@ class DDeiEditor {
               m1.premultiply(scaleMatrix)
             }
 
+
+            //取得缺省纸张大小
+            let paperType
+            if (stage.paper?.type) {
+              paperType = stage.paper.type;
+            } else if (stage.ddInstance.paper) {
+              if (typeof (stage.ddInstance.paper) == 'string') {
+                paperType = stage.ddInstance.paper;
+              } else {
+                paperType = stage.ddInstance.paper.type;
+              }
+            } else {
+              paperType = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.type", true);
+            }
+            let paperSize = DDeiUtil.getPaperSize(stage, paperType, false);
+            
+            // (-stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2) - (stage.spv.x + paperSize.width / 2)= 0
             //位移至当前位置中心
+            // let moveMatrix = new Matrix3(
+            //   1, 0, stage.spv.x + paperSize.width / 2, //+ this.ddInstance.render.container.offsetWidth/2,
+            //   0, 1, stage.spv.y + paperSize.height / 2,// + this.ddInstance.render.container.offsetHeight / 2,
+            //   0, 0, 1);
             let moveMatrix = new Matrix3(
-              1, 0, stage.wpv.x + this.ddInstance.render.container.offsetWidth/2,
-              0, 1, stage.wpv.y + this.ddInstance.render.container.offsetHeight / 2,
+              1, 0, -stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2, //+ this.ddInstance.render.container.offsetWidth/2,
+              0, 1, -stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2,// + this.ddInstance.render.container.offsetHeight / 2,
               0, 0, 1);
             
             m1.premultiply(moveMatrix)

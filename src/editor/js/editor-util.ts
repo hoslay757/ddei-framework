@@ -329,7 +329,12 @@ class DDeiEditorUtil {
    */
   static getAttrValueByConfig(configModel: object, paths: string[] | string,editor:DDeiEditor|null|undefined): Map<string, object> {
     if (!editor){
-      editor = DDeiEditorUtil.getEditorInsByDDei(configModel.stage?.ddInstance)
+      if (configModel.modelType == 'DDeiStage'){
+        editor = DDeiEditorUtil.getEditorInsByDDei(configModel.ddInstance)
+      }else{
+        editor = DDeiEditorUtil.getEditorInsByDDei(configModel.stage?.ddInstance)
+      }
+      
     }
     let returnDatas: Map<string, object> = new Map();
     if (configModel && paths) {
@@ -920,7 +925,7 @@ class DDeiEditorUtil {
     delete dataJson.ovs
     let model: DDeiAbstractShape = editor.controlModelClasses[cc.type].initByJSON(
       dataJson,
-      { currentStage: stage, currentLayer: layer }
+      { currentStage: stage, currentLayer: layer,currentDdInstance:ddInstance }
     );
     models.push(model)
     //处理others

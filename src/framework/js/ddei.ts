@@ -78,11 +78,14 @@ class DDei {
    * @param {containerid} containerid 容器id
    * @param {stagejson} stagejson 内容JSON,如果没有则会创建一个
   */
-  static newInstance(id: string, containerid: string, stagejson: string): DDei {
+  static newInstance(id: string, containerid: string, stagejson: string,editor:object): DDei {
     if (id && containerid) {
       if (!DDei.INSTANCE_POOL.get(id)) {
         //初始化DDei对象
         let ddInstance = new DDei({ id: id, containerid: containerid });
+        if (editor){
+          editor.ddInstance = ddInstance;
+        }
         //初始化DDeiStage对象，如果存在stagejson则加载，不存在则初始化
         if (stagejson) {
           ddInstance.stage = DDeiStage.loadFromJSON(stagejson, { currentDdInstance: ddInstance });
@@ -95,6 +98,9 @@ class DDei {
 
         //初始化bus
         ddInstance.bus = new DDeiBus({ ddInstance: ddInstance }); 
+        //获取dpi
+        ddInstance.dpi = DDeiUtil.getDPI();
+
         return ddInstance;
       } else {
         let ddInstance = DDei.INSTANCE_POOL.get(id);
@@ -248,6 +254,10 @@ class DDei {
    * 全剧缩放，此方法为外部传入的勾子函数
    */
   EVENT_STAGE_CHANGE_RATIO: Function | null = null;
+
+  //屏幕DPI
+  dpi: object | null = null;
+
   //以上字段为初始化时传入的全局控制变量或钩子函数，在运行时不会改变
 
   // ============================ 方法 ============================

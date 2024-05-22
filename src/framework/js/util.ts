@@ -2897,7 +2897,7 @@ class DDeiUtil {
   /**
    * 根据属性获取纸张大小
    */
-  static getPaperSize(stage: DDeiStage, paperType: string): object {
+  static getPaperSize(stage: DDeiStage, paperType: string,useRat:boolean = true): object {
     //纸张的像素大小
     let paperWidth = 0;
     let paperHeight = 0;
@@ -2912,10 +2912,15 @@ class DDeiUtil {
     
     let paperConfig = DDeiConfig.PAPER[paperType];
     if (paperConfig) {
-      let rat1 = stage.render.ddRender.ratio;
       let stageRatio = stage.getStageRatio()
-      let ratio = rat1 * stageRatio;
-      let xDPI = stage.render.ddRender.dpi.x;
+      let ratio
+      if (useRat){
+        let rat1 = stage.render.ddRender.ratio;
+        ratio = rat1 * stageRatio;
+      }else{
+        ratio = stageRatio;
+      }
+      let xDPI = stage.ddInstance.dpi.x;
       let paperDirect = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.direct", true, paperInit);
       let w = paperConfig.width;
       let h = paperConfig.height;

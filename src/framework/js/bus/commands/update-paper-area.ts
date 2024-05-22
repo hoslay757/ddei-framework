@@ -155,7 +155,6 @@ class DDeiBusCommandUpdatePaperArea extends DDeiBusCommand {
       if (!bus.ddInstance.EXT_STAGE_HEIGHT) {
         extH = 0;
       }
-
       if (extW || extH) {
         stage.width += extW
         stage.height += extH

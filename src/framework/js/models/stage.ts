@@ -6,6 +6,7 @@ import DDeiUtil from '../util';
 import DDeiLink from './link';
 import { Vector3, Matrix3 } from 'three';
 import DDeiLine from './line';
+import DDeiModelArrtibuteValue from './attribute/attribute-value';
 
 
 /**
@@ -57,11 +58,27 @@ class DDeiStage {
     if (!stage.ratio) {
       stage.ratio = stage.ddInstance?.ratio;
     }
-    if (!stage.width) {
-      stage.width = stage.ddInstance?.width ? stage.ddInstance?.width : stage.ddInstance?.render?.container?.offsetWidth;
-    }
-    if (!stage.height) {
-      stage.height = stage.ddInstance?.height ? stage.ddInstance?.height : stage.ddInstance?.render?.container?.offsetHeight;
+    if (!stage.width || !stage.height) {
+      //取得缺省纸张大小
+      let paperType
+      if (stage.paper?.type) {
+        paperType = stage.paper.type;
+      } else if (stage.ddInstance.paper) {
+        if (typeof (stage.ddInstance.paper) == 'string') {
+          paperType = stage.ddInstance.paper;
+        } else {
+          paperType = stage.ddInstance.paper.type;
+        }
+      } else {
+        paperType = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.type", true);
+      }
+      let paperSize = DDeiUtil.getPaperSize(stage, paperType, false);
+      if (!stage.width) {
+        stage.width = stage.ddInstance?.width ? stage.ddInstance?.width : paperSize?.width ? 2*paperSize.width : stage.ddInstance?.render?.container?.offsetWidth;
+      }
+      if (!stage.height) {
+        stage.height = stage.ddInstance?.height ? stage.ddInstance?.height : paperSize?.height ? 2*paperSize.height : stage.ddInstance?.render?.container?.offsetHeight;
+      }
     }
     tempData['currentStage'] = stage
     tempData[stage.id] = stage
@@ -120,11 +137,33 @@ class DDeiStage {
     if (!stage.ratio) {
       stage.ratio = stage.ddInstance?.ratio;
     }
-    if (!stage.width) {
-      stage.width = stage.ddInstance?.width ? stage.ddInstance?.width : stage.ddInstance?.render?.container?.offsetWidth;
-    }
-    if (!stage.height) {
-      stage.height = stage.ddInstance?.height ? stage.ddInstance?.height : stage.ddInstance?.render?.container?.offsetHeight;
+    //取得缺省纸张大小
+    if (!stage.width || !stage.height) {
+      let paperType
+      if (stage.paper?.type) {
+        paperType = stage.paper.type;
+      } else if (stage.ddInstance.paper) {
+        if (typeof (stage.ddInstance.paper) == 'string') {
+          paperType = stage.ddInstance.paper;
+        } else {
+          paperType = stage.ddInstance.paper.type;
+        }
+      } else {
+        paperType = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.type", true);
+      }
+      let paperSize = DDeiUtil.getPaperSize(stage, paperType, false);
+      if (!stage.width) {
+        stage.width = stage.ddInstance?.width ? stage.ddInstance?.width : paperSize?.width ? 2*paperSize.width : stage.ddInstance?.render?.container?.offsetWidth;
+      }
+      if (!stage.height) {
+        stage.height = stage.ddInstance?.height ? stage.ddInstance?.height : paperSize?.height ? 2*paperSize.height : stage.ddInstance?.render?.container?.offsetHeight;
+      }
+      //第一张纸开始位置
+      if (!stage.spv) {
+        let sx = stage.width / 2 - paperSize.width / 2 
+        let sy = stage.height / 2 - paperSize.height / 2 
+        stage.spv = new Vector3(sx, sy, 1)
+      }
     }
     //初始化三个Layer
     let dDeiLayer1 = DDeiLayer.initByJSON({ id: "layer_default", name: "图层" });
@@ -285,15 +324,14 @@ class DDeiStage {
   }
 
   getPaperArea(paperType: string) {
-    let rat1 = this.ddInstance.render.ratio;
     let stageRatio = this.getStageRatio()
     let offsetWidth = 1 * stageRatio / 2;
 
     //纸张的像素大小
-    let paperSize = DDeiUtil.getPaperSize(this, paperType)
+    let paperSize = DDeiUtil.getPaperSize(this, paperType,false)
 
-    let paperWidth = paperSize.width / rat1;
-    let paperHeight = paperSize.height / rat1;
+    let paperWidth = paperSize.width;
+    let paperHeight = paperSize.height;
 
     //第一张纸开始位置
     if (!this.spv) {

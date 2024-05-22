@@ -94,6 +94,9 @@ class DDeiStageCanvasRender {
     if (rsState == 0 || rsState == 1) {
       //清空画布，绘制场景大背景
       this.clearStage();
+      if (!this.model.width || !this.model.height){
+        return;
+      }
       //绘制纸张，以及图层背景
       this.drawPaper();
 
@@ -139,15 +142,15 @@ class DDeiStageCanvasRender {
       ctx.restore();
 
 
-
+      //绘制水印
+      this.drawMark();
       //绘制标尺
       this.drawRuler()
       //绘制辅助线
       this.drawHelpLines()
 
 
-      //绘制水印
-      this.drawMark();
+      
 
 
       //绘制滚动条
@@ -224,7 +227,7 @@ class DDeiStageCanvasRender {
           let startBaseY = this.model.spv.y * rat1 + 1
           //生成文本并计算文本大小
           let stageRatio = this.model.getStageRatio()
-          let xDPI = this.ddRender.dpi.x;
+          let xDPI = this.ddRender.model.dpi.x;
           //标尺单位
           let unit = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.unit", true, ruleInit);
           let rulerConfig = DDeiConfig.RULER[unit]
@@ -420,12 +423,7 @@ class DDeiStageCanvasRender {
       let paperWidth = paperSize.width;
       let paperHeight = paperSize.height;
 
-      //第一张纸开始位置
-      if (!this.model.spv) {
-        let sx = this.model.width / 2 - paperWidth / 2 / rat1
-        let sy = this.model.height / 2 - paperHeight / 2 / rat1
-        this.model.spv = new Vector3(sx, sy, 1)
-      }
+      
       let startPaperX = this.model.spv.x * rat1 + 1
       let startPaperY = this.model.spv.y * rat1 + 1
 
@@ -633,7 +631,7 @@ class DDeiStageCanvasRender {
       let ctx = canvas.getContext('2d');
       let rat1 = this.ddRender.ratio;
       let stageRatio = this.model.getStageRatio()
-      let xDPI = this.ddRender.dpi.x;
+      let xDPI = this.ddRender.model.dpi.x;
       //标尺单位
       let unit = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.unit", true, ruleInit);
       let rulerConfig = DDeiConfig.RULER[unit]
@@ -971,7 +969,7 @@ class DDeiStageCanvasRender {
         let ctx = canvas.getContext('2d');
         let rat1 = this.ddRender.ratio;
         let stageRatio = this.model.getStageRatio()
-        let xDPI = this.ddRender.dpi.x;
+        let xDPI = this.ddRender.model.x;
         //标尺单位
         let ruleInit
         if (this.model.ddInstance.ruler) {
@@ -1190,6 +1188,8 @@ class DDeiStageCanvasRender {
           markCanvas.setAttribute("width", weight);
           markCanvas.setAttribute("height", weight);
         }
+        
+        
         let markCtx = markCanvas.getContext("2d");
         markCtx.save();
         //设置字体
@@ -1220,17 +1220,30 @@ class DDeiStageCanvasRender {
         markCtx?.fillText(text, 0, (markCanvas.height - textSize.height) / 2)
         let marginWidth = textSize.width + 50 * ratio
         let marginHeight = textSize.height + 100 * ratio
-        let cwidth = canvas.width + marginWidth;
-        let cheight = canvas.height + marginHeight;
-        let x = -marginWidth
-        let xdr = this.model.wpv.x * rat1 % marginWidth
-        let ydr = this.model.wpv.y * rat1 % marginHeight
-        for (; x <= cwidth; x += marginWidth) {
-          let y = -marginHeight
-          for (; y <= cheight; y += marginHeight) {
-            ctx.drawImage(markCanvas, x + xdr, y + ydr)
+        let paperOutRect = this.paperOutRect
+        let cwidth = this.model.width * rat1
+        let cheight = this.model.height * rat1
+        let startBaseX = this.model.spv.x * rat1
+        let wpvX = -this.model.wpv.x * rat1
+        let startBaseY = this.model.spv.y * rat1
+        let wpvY = -this.model.wpv.y * rat1
+        for (let x = startBaseX - wpvX; x <= cwidth; x += marginWidth) {
+          for (let y = startBaseY - wpvY; y <= cheight; y += marginHeight) {
+            ctx.drawImage(markCanvas, x, y)
+          }
+          for (let y = startBaseY - wpvY - marginHeight; y >= 0; y -= marginHeight) {
+            ctx.drawImage(markCanvas, x, y)
           }
         }
+        for (let x = startBaseX - wpvX - marginWidth; x >= 0; x -= marginWidth) {
+          for (let y = startBaseY - wpvY; y <= cheight; y += marginHeight) {
+            ctx.drawImage(markCanvas, x, y)
+          }
+          for (let y = startBaseY - wpvY - marginHeight; y >= 0; y -= marginHeight) {
+            ctx.drawImage(markCanvas, x, y)
+          }
+        }
+
         ctx.restore();
         markCtx.restore();
       }
