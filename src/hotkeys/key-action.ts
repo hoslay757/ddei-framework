@@ -23,6 +23,13 @@ class DDeiKeyAction extends DDeiPluginBase {
    * 更新按键状态
    */
   static updateKeyState(evt: Event): void {
+    let editor = DDeiEditor.ACTIVE_INSTANCE
+    //获取实例
+    let ddInstance: DDei = editor?.ddInstance;
+    if (ddInstance?.disabled) {
+      DDei.KEY_DOWN_STATE.clear()
+      return;
+    }
     //获取是否按下ctrl、command、alt、shift等键
     let ctrl = evt.ctrlKey || evt.metaKey;
     let shift = evt.shiftKey;
@@ -54,7 +61,10 @@ class DDeiKeyAction extends DDeiPluginBase {
   static route(evt: Event): boolean {
     let editor = DDeiEditor.ACTIVE_INSTANCE
     //获取实例
-    let ddInstance: DDei = editor.ddInstance;
+    let ddInstance: DDei = editor?.ddInstance;
+    if (ddInstance?.disabled) {
+      return false;
+    }
     //获取是否按下ctrl、command、alt、shift等键
     let ctrl = evt.ctrlKey || evt.metaKey;
     let shift = evt.shiftKey;

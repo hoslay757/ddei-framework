@@ -94,7 +94,7 @@ class DDeiStageCanvasRender {
     if (rsState == 0 || rsState == 1) {
       //清空画布，绘制场景大背景
       this.clearStage();
-      if (!this.model.width || !this.model.height){
+      if (this.model.disabled || !this.model.width || !this.model.height){
         return;
       }
       //绘制纸张，以及图层背景
@@ -1511,6 +1511,9 @@ class DDeiStageCanvasRender {
    * 鼠标按下事件
    */
   mouseDown(evt: Event): void {
+    if (this.model.disabled) {
+      return;
+    }
     //分发到当前图层的mouseDown
     if (!this.model.ddInstance.eventCancel) {
       let canvas = this.ddRender.getCanvas();
@@ -1546,6 +1549,9 @@ class DDeiStageCanvasRender {
 
 
   mouseUp(evt: Event): void {
+    if (this.model.ddInstance.disabled) {
+      return;
+    }
     //分发到当前图层的mouseUp
     if (!this.model.ddInstance.eventCancel) {
       if (this.operateState == DDeiEnumOperateState.STAGE_SCROLL_WORKING) {
@@ -1561,6 +1567,9 @@ class DDeiStageCanvasRender {
    * 鼠标移动
    */
   mouseMove(evt: Event): void {
+    if (this.model.ddInstance.disabled){
+      return;
+    }
     //分发到当前图层的mouseUp
     if (!this.model.ddInstance.eventCancel) {
       if (this.operateState == DDeiEnumOperateState.STAGE_SCROLL_WORKING) {

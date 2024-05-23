@@ -116,6 +116,8 @@ class DDei {
   stage: DDeiStage | null;
   //当前模型的类型
   modelType: string = "DDei";
+  //不执行任何操作
+  disabled:boolean = false;
 
   //当前引入的外部控件模型定义
   controlModelClasses: object;

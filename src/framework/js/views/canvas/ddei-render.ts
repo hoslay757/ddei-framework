@@ -271,10 +271,12 @@ class DDeiCanvasRender {
    */
   bindEvent(): void {
     this.interval = setInterval(() => {
-      //边缘扫描
-      this.mouseInEdge();
-      this.model.stage.drawing = true;
-      this.drawShape();
+      if(!this.model.disabled){
+        //边缘扫描
+        this.mouseInEdge();
+        this.model.stage.drawing = true;
+        this.drawShape();
+      }
     }, 20)
   }
 

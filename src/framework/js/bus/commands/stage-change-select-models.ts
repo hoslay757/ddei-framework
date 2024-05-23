@@ -25,6 +25,9 @@ class DDeiBusCommandStageChangeSelectModels extends DDeiBusCommand {
    * @param evt 事件对象引用
    */
   before(data: object, bus: DDeiBus, evt: Event): boolean {
+    if (bus.ddInstance.disabled) {
+      return false;
+    }
     return true;
   }
 
@@ -35,6 +38,7 @@ class DDeiBusCommandStageChangeSelectModels extends DDeiBusCommand {
    * @param evt 事件对象引用
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
+    
     let stage = bus.ddInstance.stage;
     let editor = bus.invoker
     if (stage) {

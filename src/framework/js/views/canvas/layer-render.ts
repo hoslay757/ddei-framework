@@ -577,6 +577,9 @@ class DDeiLayerCanvasRender {
    * 鼠标按下事件
    */
   mouseDown(evt: Event): void {
+    if (this.stage.ddInstance.disabled) {
+      return;
+    }
     if (this.stage.ddInstance.state == DDeiEnumState.IN_ACTIVITY) {
       return;
     }
@@ -759,6 +762,9 @@ class DDeiLayerCanvasRender {
    * 绘制图形
    */
   mouseUp(evt: Event): void {
+    if (this.stage.ddInstance.disabled) {
+      return;
+    }
     if (this.stage.ddInstance.state == DDeiEnumState.IN_ACTIVITY) {
       return;
     }
@@ -1293,6 +1299,9 @@ class DDeiLayerCanvasRender {
    * 鼠标移动
    */
   mouseMove(evt: Event): void {
+    if (this.stage.ddInstance.disabled) {
+      return;
+    }
     if (this.stage.ddInstance.state == DDeiEnumState.IN_ACTIVITY) {
       return;
     }
