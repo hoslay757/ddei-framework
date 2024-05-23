@@ -1314,27 +1314,28 @@ class DDeiUtil {
 
   // rgb转16进制
   static rgb2hex(color: string): string {
-    if (color.toLowerCase().startsWith("rgb")) {
-      let rgb = color.split(',');
-      let r = parseInt(rgb[0].split('(')[1]);
-      let g = parseInt(rgb[1]);
-      let b = parseInt(rgb[2].split(')')[0]);
-      let hex = "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
-      return hex;
-    } else if (color.startsWith("#")) {
-      return color
-    }
-    switch (color) {
-      case "black": return "#000000";
-      case "white": return "#FFFFFF";
-      case "red": return "#FF0000";
-      case "green": return "#00FF00";
-      case "blue": return "#0000FF";
-      case "grey": return "#808080";
-      case "yellow": return "#FFFF00";
+    if (color){
+      if (color.toLowerCase().startsWith("rgb")) {
+        let rgb = color.split(',');
+        let r = parseInt(rgb[0].split('(')[1]);
+        let g = parseInt(rgb[1]);
+        let b = parseInt(rgb[2].split(')')[0]);
+        let hex = "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+        return hex;
+      } else if (color.startsWith("#")) {
+        return color
+      }
+      switch (color) {
+        case "black": return "#000000";
+        case "white": return "#FFFFFF";
+        case "red": return "#FF0000";
+        case "green": return "#00FF00";
+        case "blue": return "#0000FF";
+        case "grey": return "#808080";
+        case "yellow": return "#FFFF00";
+      }
     }
     return "";
-
   }
 
   // 将颜色转换为可用颜色(rgb),其他情况原样返回
@@ -1342,7 +1343,7 @@ class DDeiUtil {
     if (!color) {
       return null;
     }
-    if (color.startsWith("#")) {
+    if (typeof(color) == 'string' && color.startsWith("#")) {
       return DDeiUtil.hex2rgb(color);
     }
     //其余情况原样返回
@@ -1356,7 +1357,7 @@ class DDeiUtil {
     if (!color) {
       return null;
     }
-    if (color.startsWith("#")) {
+    if (typeof (color) == 'string' && color.startsWith("#")) {
       return DDeiUtil.hex2ddeicolor(color);
     }
     //其余情况原样返回
