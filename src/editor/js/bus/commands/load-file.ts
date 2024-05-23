@@ -125,23 +125,33 @@ class DDeiEditorCommandLoadFile extends DDeiBusCommand {
             stage.initRender();
             //设置视窗位置到中央
             
-            if (!stage.wpv) {
-             
-              //缺省定位在画布中心点位置
-              stage.wpv = {
-                x:
-                  -(
-                    stage.width -
-                    ddInstance.render.canvas.width / ddInstance.render.ratio
-                  ) / 2,
-                y:
-                  -(
-                    stage.height -
-                    ddInstance.render.canvas.height / ddInstance.render.ratio
-                  ) / 2,
-                z: 0,
-              };
-            }
+            // if (!stage.wpv) {
+            //   //缺省定位在画布中心点位置
+            //   debugger
+            //   let w = ddInstance.render.canvas.width / ddInstance.render.ratio
+            //   let h = ddInstance.render.canvas.height / ddInstance.render.ratio
+            //   stage.wpv = {
+            //     x:
+            //       stage.width > w ? -(stage.width - w) / 2 : 0,
+            //     y:
+            //       stage.height > h ? -(stage.height - h) / 2 : 0,
+            //     z: 0,
+            //   };
+
+            //   // stage.wpv = {
+            //   //   x:
+            //   //     -(
+            //   //       stage.width -
+            //   //       ddInstance.render.canvas.width / ddInstance.render.ratio
+            //   //     ) / 2,
+            //   //   y:
+            //   //     -(
+            //   //       stage.height -
+            //   //       ddInstance.render.canvas.height / ddInstance.render.ratio
+            //   //     ) / 2,
+            //   //   z: 0,
+            //   // };
+            // }
             editor.changeState(DDeiEditorState.DESIGNING);
             ddInstance.bus.insert(DDeiEditorEnumBusCommandType.ClearTemplateUI, 0);
             ddInstance.bus.insert(DDeiEnumBusCommandType.RefreshShape, 1);
@@ -191,22 +201,32 @@ class DDeiEditorCommandLoadFile extends DDeiBusCommand {
         stage.initRender();
         //设置视窗位置到中央
         
-        if (!stage.wpv) {
-          //缺省定位在画布中心点位置
-          stage.wpv = {
-            x:
-              -(
-                stage.width -
-                ddInstance.render.canvas.width / ddInstance.render.ratio
-              ) / 2,
-            y:
-              -(
-                stage.height -
-                ddInstance.render.canvas.height / ddInstance.render.ratio
-              ) / 2,
-            z: 0,
-          };
-        }
+        // if (!stage.wpv) {
+        //   //缺省定位在画布中心点位置
+        //   debugger
+        //   let w = ddInstance.render.canvas.width / ddInstance.render.ratio
+        //   let h = ddInstance.render.canvas.height / ddInstance.render.ratio
+        //   stage.wpv = {
+        //     x:
+        //       stage.width > w ? -(stage.width - w) / 2 : 0,
+        //     y:
+        //       stage.height > h ? -(stage.height - h) / 2 : 0,
+        //     z: 0,
+        //   };
+        //   // stage.wpv = {
+        //   //   x:
+        //   //     -(
+        //   //       stage.width -
+        //   //       ddInstance.render.canvas.width / ddInstance.render.ratio
+        //   //     ) / 2,
+        //   //   y:
+        //   //     -(
+        //   //       stage.height -
+        //   //       ddInstance.render.canvas.height / ddInstance.render.ratio
+        //   //     ) / 2,
+        //   //   z: 0,
+        //   // };
+        // }
         editor.changeState(DDeiEditorState.DESIGNING);
         ddInstance.bus.insert(DDeiEditorEnumBusCommandType.ClearTemplateUI, 0);
         ddInstance.bus.insert(DDeiEnumBusCommandType.RefreshShape, 1);

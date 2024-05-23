@@ -412,21 +412,20 @@ class DDeiStageCanvasRender {
       let ratio = rat1 * stageRatio;
 
       //当前的窗口位置（乘以了窗口缩放比例）
+      
       let wpv = this.model.wpv
       let wpvX = -wpv.x * rat1
       let wpvY = -wpv.y * rat1
       let offsetWidth = 1 * ratio / 2;
-
+      
       //纸张的像素大小
       let paperSize = DDeiUtil.getPaperSize(this.model,paperType)
 
       let paperWidth = paperSize.width;
       let paperHeight = paperSize.height;
-
-      
       let startPaperX = this.model.spv.x * rat1 + 1
       let startPaperY = this.model.spv.y * rat1 + 1
-
+      
       let posX = startPaperX - wpvX + offsetWidth;
       let posY = startPaperY - wpvY + offsetWidth;
       this.paperStartX = posX
@@ -438,7 +437,7 @@ class DDeiStageCanvasRender {
       maxOutRect.x1 = maxOutRect.x1 * rat1;
       maxOutRect.y = maxOutRect.y * rat1;
       maxOutRect.y1 = maxOutRect.y1 * rat1;
-
+      
       //计算各个方向扩展的数量
       let leftExtNum = 0, rightExtNum = 0, topExtNum = 0, bottomExtNum = 0
       if (maxOutRect.width > 0 && maxOutRect.height > 0) {
@@ -475,6 +474,8 @@ class DDeiStageCanvasRender {
         x: posX + (-leftExtNum * paperWidth), y: posY + (-topExtNum * paperHeight), w: (rightExtNum + leftExtNum + 1) * paperWidth, h: (bottomExtNum + topExtNum + 1) * paperHeight
       }
       this.paperOutRect = paperOutRect;
+      
+
       //绘制矩形纸张
       ctx.save();
       ctx.lineWidth = 1

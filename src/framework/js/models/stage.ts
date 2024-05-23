@@ -58,28 +58,7 @@ class DDeiStage {
     if (!stage.ratio) {
       stage.ratio = stage.ddInstance?.ratio;
     }
-    if (!stage.width || !stage.height) {
-      //取得缺省纸张大小
-      let paperType
-      if (stage.paper?.type) {
-        paperType = stage.paper.type;
-      } else if (stage.ddInstance.paper) {
-        if (typeof (stage.ddInstance.paper) == 'string') {
-          paperType = stage.ddInstance.paper;
-        } else {
-          paperType = stage.ddInstance.paper.type;
-        }
-      } else {
-        paperType = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.type", true);
-      }
-      let paperSize = DDeiUtil.getPaperSize(stage, paperType, false);
-      if (!stage.width) {
-        stage.width = stage.ddInstance?.width ? stage.ddInstance?.width : paperSize?.width ? 2*paperSize.width : stage.ddInstance?.render?.container?.offsetWidth;
-      }
-      if (!stage.height) {
-        stage.height = stage.ddInstance?.height ? stage.ddInstance?.height : paperSize?.height ? 2*paperSize.height : stage.ddInstance?.render?.container?.offsetHeight;
-      }
-    }
+    
     tempData['currentStage'] = stage
     tempData[stage.id] = stage
     let layers = [];
@@ -137,34 +116,7 @@ class DDeiStage {
     if (!stage.ratio) {
       stage.ratio = stage.ddInstance?.ratio;
     }
-    //取得缺省纸张大小
-    if (!stage.width || !stage.height) {
-      let paperType
-      if (stage.paper?.type) {
-        paperType = stage.paper.type;
-      } else if (stage.ddInstance.paper) {
-        if (typeof (stage.ddInstance.paper) == 'string') {
-          paperType = stage.ddInstance.paper;
-        } else {
-          paperType = stage.ddInstance.paper.type;
-        }
-      } else {
-        paperType = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.type", true);
-      }
-      let paperSize = DDeiUtil.getPaperSize(stage, paperType, false);
-      if (!stage.width) {
-        stage.width = stage.ddInstance?.width ? stage.ddInstance?.width : paperSize?.width ? 2*paperSize.width : stage.ddInstance?.render?.container?.offsetWidth;
-      }
-      if (!stage.height) {
-        stage.height = stage.ddInstance?.height ? stage.ddInstance?.height : paperSize?.height ? 2*paperSize.height : stage.ddInstance?.render?.container?.offsetHeight;
-      }
-      //第一张纸开始位置
-      if (!stage.spv) {
-        let sx = stage.width / 2 - paperSize.width / 2 
-        let sy = stage.height / 2 - paperSize.height / 2 
-        stage.spv = new Vector3(sx, sy, 1)
-      }
-    }
+   
     //初始化三个Layer
     let dDeiLayer1 = DDeiLayer.initByJSON({ id: "layer_default", name: "图层" });
     dDeiLayer1.index = 0;
@@ -433,6 +385,55 @@ class DDeiStage {
     }
     //计算线的交叉
     DDeiLine.calLineCrossSync(this.layers[this.layerIndex]);
+    this.initStageSize();
+  }
+
+  initStageSize():void{
+
+    let stage = this;
+    //取得缺省纸张大小
+    if (!stage.width || !stage.height || !stage.spv) {
+      let paperType
+      if (stage.paper?.type) {
+        paperType = stage.paper.type;
+      } else if (stage.ddInstance.paper) {
+        if (typeof (stage.ddInstance.paper) == 'string') {
+          paperType = stage.ddInstance.paper;
+        } else {
+          paperType = stage.ddInstance.paper.type;
+        }
+      } else {
+        paperType = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.type", true);
+      }
+      let paperSize = DDeiUtil.getPaperSize(stage, paperType, false);
+      let w = stage.ddInstance.render.canvas.width / stage.ddInstance.render.ratio
+      let h = stage.ddInstance.render.canvas.height / stage.ddInstance.render.ratio
+      if (!stage.width) {
+        stage.width = stage.ddInstance?.width ? stage.ddInstance?.width : paperSize?.width ? (w > 2 * paperSize.width ? w : 2 * paperSize.width) : w;
+      }
+      if (!stage.height) {
+        stage.height = stage.ddInstance?.height ? stage.ddInstance?.height : paperSize?.height ? (h > 2 * paperSize.height ? h : 2 * paperSize.height) : h;
+      }
+      //第一张纸开始位置
+      if (!stage.spv) {
+        let sx = stage.width / 2 - paperSize.width / 2
+        let sy = stage.height / 2 - paperSize.height / 2
+        stage.spv = new Vector3(sx, sy, 1)
+      }
+
+      //缺省定位在画布中心点位置
+      if(!stage.wpv){
+        stage.wpv = {
+          x:
+            stage.width > w ? -(stage.width - w) / 2 : 0,
+          y:
+            stage.height > h ? -(stage.height - h) / 2 : 0,
+          z: 0,
+        };
+      }
+      
+    }
+ 
   }
 
   /**

@@ -114,9 +114,19 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
           oy = dh * ey / oldHeight
         }
 
-
-        stage.wpv.x = -wpvX - ox
-        stage.wpv.y = -wpvY - oy
+        
+        let w = stage.ddInstance.render.canvas.width / stage.ddInstance.render.ratio
+        let h = stage.ddInstance.render.canvas.height / stage.ddInstance.render.ratio
+        if (w < stage.width){
+          stage.wpv.x = -wpvX - ox
+        }else{
+          stage.wpv.x = 0
+        }
+        if (h < stage.height) {
+          stage.wpv.y = -wpvY - oy
+        }else{
+          stage.wpv.y = 0
+        }
         DDeiEditorUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", "CHANGE_RATIO",null , stage.ddInstance, evt)
         DDeiEditorUtil.invokeCallbackFunc("EVENT_STAGE_CHANGE_RATIO", "CHANGE_RATIO", data, stage.ddInstance, evt)
         return true;
