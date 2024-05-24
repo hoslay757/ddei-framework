@@ -941,6 +941,7 @@ class DDeiEditor {
   };
 
 
+
   /**
    * 向当前画布添加控件,缺省坐标为当前画布的中心
    */
@@ -1088,6 +1089,17 @@ class DDeiEditor {
         }
       }
     }
+  }
+
+  /**
+     * 将模型转换为JSON
+     */
+  toJSON():Array<Object> {
+    let jsonArray = new Array()
+    this.files.forEach(file=>{
+      jsonArray.push(file.toJSON())
+    })
+    return jsonArray;
   }
 }
 export { DDeiEditor }
