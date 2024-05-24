@@ -156,15 +156,22 @@ class DDeiEditorUtil {
 
   static getEditorInsByDDei(ddInstance:DDei){
     let editor;
-    DDeiEditor.INSTANCE_POOL.forEach(editorIns => {
-      if (editorIns.ddInstance == ddInstance || editorIns.ddInstance?.id == ddInstance?.id) {
-        editor = editorIns;
-      }
-    })
+    if (ddInstance){
+      DDeiEditor.INSTANCE_POOL.forEach(editorIns => {
+        if (editorIns.ddInstance == ddInstance || editorIns.ddInstance?.id == ddInstance?.id) {
+          editor = editorIns;
+        }
+      })
+    }
     if (!editor) {
       editor = DDeiEditor.ACTIVE_INSTANCE;
     }
     return editor;
+  }
+
+  static notifyChange(ddInstance:DDei) {
+    let editor = DDeiEditorUtil.getEditorInsByDDei(ddInstance);
+    editor?.notifyChange();
   }
 
   /**

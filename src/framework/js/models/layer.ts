@@ -171,6 +171,9 @@ class DDeiLayer {
     }
   }
 
+  notifyChange() {
+    this.stage?.notifyChange();
+  }
 
   /**
    * 获取子模型
@@ -217,6 +220,7 @@ class DDeiLayer {
       model.layer = this;
       model.pModel = this;
       this.resortModelByZIndex();
+      this.notifyChange()
     }
   }
 
@@ -229,7 +233,6 @@ class DDeiLayer {
     models?.forEach(model => {
       this.removeModel(model, destroy)
     })
-
   }
 
   cascadeRemoveSelf(): void {
@@ -259,6 +262,7 @@ class DDeiLayer {
     if (this.stage?.render) {
       this.stage.render.refreshJumpLine = false
     }
+    this.notifyChange()
   }
 
   /**
@@ -276,6 +280,7 @@ class DDeiLayer {
         model.removeModelById(ids);
       }
     })
+    this.notifyChange()
   }
 
   /**
@@ -317,6 +322,7 @@ class DDeiLayer {
       }
     })
     this.resortModelByZIndex()
+    this.notifyChange()
   }
 
   /**
@@ -332,6 +338,7 @@ class DDeiLayer {
       }
     })
     this.resortModelByZIndex()
+    this.notifyChange()
   }
 
   /**
@@ -346,6 +353,7 @@ class DDeiLayer {
       }
     })
     this.resortModelByZIndex()
+    this.notifyChange()
   }
 
   /**
@@ -366,6 +374,7 @@ class DDeiLayer {
       }
     })
     this.resortModelByZIndex()
+    this.notifyChange()
   }
 
   /**

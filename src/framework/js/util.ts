@@ -47,7 +47,8 @@ class DDeiUtil {
   static getEditorId: Function;
   //钩子函数，调用回调函数
   static invokeCallbackFunc: Function;
-
+  //钩子函数，通知改变
+  static notifyChange: Function;
   
 
 

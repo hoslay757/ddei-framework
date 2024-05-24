@@ -482,7 +482,7 @@ class DDeiStageCanvasRender {
       ctx.fillStyle = "white"
       ctx.strokeStyle = "grey"
       ctx.setLineDash([5, 5]);
-      ctx.fillRect(paperOutRect.x, paperOutRect.y, paperOutRect.w, paperOutRect.h)
+      // ctx.fillRect(paperOutRect.x, paperOutRect.y, paperOutRect.w, paperOutRect.h)
       //绘制当前纸张的每个图层背景
       let topDisplayIndex = -1;
       for (let l = this.model.layers.length - 1; l >= 0; l--) {
@@ -950,6 +950,7 @@ class DDeiStageCanvasRender {
     } else {
       paperType = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.type", true);
     }
+    
     //获取纸张大小的定义
     let paperConfig = DDeiConfig.PAPER[paperType];
     if (paperConfig) {
@@ -970,7 +971,7 @@ class DDeiStageCanvasRender {
         let ctx = canvas.getContext('2d');
         let rat1 = this.ddRender.ratio;
         let stageRatio = this.model.getStageRatio()
-        let xDPI = this.ddRender.model.x;
+        let xDPI = this.ddRender.model.dpi.x;
         //标尺单位
         let ruleInit
         if (this.model.ddInstance.ruler) {

@@ -864,6 +864,33 @@ abstract class DDeiAbstractShape {
   }
 
   /**
+   * 基于当前大小缩放
+   */
+  scale(scaleX: number = 1, scaleY: number = 1): void{
+    if (scaleX != 1 || scaleY != 1){
+      let m1 = new Matrix3()
+      let move1Matrix = new Matrix3(
+        1, 0, -this.cpv.x,
+        0, 1, -this.cpv.y,
+        0, 0, 1);
+      m1.premultiply(move1Matrix)
+      
+      let scaleMatrix = new Matrix3(
+        scaleX, 0, 0,
+        0, scaleY, 0,
+        0, 0, 1);
+      m1.premultiply(scaleMatrix)
+      let move2Matrix = new Matrix3(
+        1, 0, this.cpv.x,
+        0, 1, this.cpv.y,
+        0, 0, 1);
+      m1.premultiply(move2Matrix)
+      this.transVectors(m1)
+    }
+    
+  }
+
+  /**
    * 计算旋转角度，基于隐藏点与坐标系的夹角
    */
   calRotate(): void {
@@ -897,6 +924,11 @@ abstract class DDeiAbstractShape {
       this.render.initImage();
     }
 
+  }
+
+  notifyChange(){
+    this.render?.clearCachedValue()
+    DDeiUtil.notifyChange(this.stage?.ddInstance);
   }
 
   /**

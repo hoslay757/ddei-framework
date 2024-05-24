@@ -436,6 +436,10 @@ class DDeiStage {
  
   }
 
+  notifyChange() {
+    DDeiUtil.notifyChange(this.ddInstance);
+  }
+
   /**
    * 添加图层到某一层，如果不指定则添加到最外层
    * @param layer 被添加的图层
@@ -464,6 +468,7 @@ class DDeiStage {
     }
     //设置当前图层为新建图层
     this.layerIndex = layerIndex;
+    this.notifyChange()
     return layer;
   }
 
@@ -566,7 +571,7 @@ class DDeiStage {
     }
     //设置当前图层为新建图层
     this.layerIndex = layerIndex;
-
+    this.notifyChange()
     return layer;
   }
 

@@ -16,7 +16,8 @@ import DDeiThemeBase from "@ddei-core/framework/js/models/shape";
 import  DDeiLifeCycle  from "@ddei-core/lifecycle/lifecycle";
 import  DDeiFuncData  from "@ddei-core/lifecycle/funcdata";
 import { DDeiModelArrtibuteValue } from "@ddei-core/framework/js/models/attribute/attribute-value";
-
+import DDeiEnumBusCommandType from "../../framework/js/enums/bus-command-type";
+import DDeiEditorEnumBusCommandType from "./enums/editor-command-type";
 /**
  * DDei图形编辑器类，用于维护编辑器实例、全局状态以及全局属性
  */
@@ -164,6 +165,10 @@ class DDeiEditor {
         if (!DDeiUtil.invokeCallbackFunc) {
           DDeiUtil.invokeCallbackFunc = DDeiEditorUtil.invokeCallbackFunc;
         }
+        if (!DDeiUtil.notifyChange) {
+          DDeiUtil.notifyChange = DDeiEditorUtil.notifyChange;
+        }
+        
         
         //将DDeiEditor对象装入全局缓存
         DDeiEditor.INSTANCE_POOL.set(id, editorInstance);
@@ -989,14 +994,7 @@ class DDeiEditor {
             } else {
               paperType = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.type", true);
             }
-            let paperSize = DDeiUtil.getPaperSize(stage, paperType, false);
             
-            // (-stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2) - (stage.spv.x + paperSize.width / 2)= 0
-            //位移至当前位置中心
-            // let moveMatrix = new Matrix3(
-            //   1, 0, stage.spv.x + paperSize.width / 2, //+ this.ddInstance.render.container.offsetWidth/2,
-            //   0, 1, stage.spv.y + paperSize.height / 2,// + this.ddInstance.render.container.offsetHeight / 2,
-            //   0, 0, 1);
             let moveMatrix = new Matrix3(
               1, 0, -stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2, //+ this.ddInstance.render.container.offsetWidth/2,
               0, 1, -stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2,// + this.ddInstance.render.container.offsetHeight / 2,
@@ -1004,10 +1002,10 @@ class DDeiEditor {
             
             m1.premultiply(moveMatrix)
             //位移至画布中心的相对位置
-            if (control.x || control.y) {
+            if (control.offsetX || control.offsetY) {
               let move1Matrix = new Matrix3(
-                1, 0, control.x ? control.x : 0,
-                0, 1, control.y ? -control.y : 0,
+                1, 0, control.offsetX ? control.offsetX : 0,
+                0, 1, control.offsetY ? control.offsetY : 0,
                 0, 0, 1);
               m1.premultiply(move1Matrix)
             }
@@ -1021,8 +1019,22 @@ class DDeiEditor {
           }
         }
       });
+      this.notifyChange();
     }
     return shapes;
+  }
+
+  notifyChange(){
+    this.bus.push(DDeiEnumBusCommandType.NodifyChange);
+    this.bus.push(DDeiEnumBusCommandType.RefreshShape);
+    this.bus.push(DDeiEnumBusCommandType.AddHistroy);
+    this.changeState(DDeiEditorState.DESIGNING);
+    this.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+    this.bus.push(DDeiEnumBusCommandType.ClearTemplateVars);
+    this.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts);
+    this.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels);
+    this.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
+    this.bus.executeAll()
   }
 
   /**
@@ -1030,6 +1042,7 @@ class DDeiEditor {
    */
   removeControls(ids: string[]): void {
     this.ddInstance.stage?.removeModelById(ids)
+    this.notifyChange();
   }
 
   /**

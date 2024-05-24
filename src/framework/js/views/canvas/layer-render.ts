@@ -141,10 +141,14 @@ class DDeiLayerCanvasRender {
       if (this.model.bg?.color) {
         bgInfoColor = this.model.bg.color
       } else if (this.ddRender?.model.background) {
-        if (typeof (this.ddRender?.model.background) == 'string') {
-          bgInfoColor = this.ddRender?.model.background;
-          if (!bgInfoType){
-            bgInfoType = 1;
+        if (typeof (this.ddRender?.model.background) == 'string' || typeof (this.ddRender?.model.background) == 'number') {
+          if (this.ddRender?.model.background == "-1" || this.ddRender?.model.background == -1){
+            bgInfoType = -1;
+          }else{
+            bgInfoColor = this.ddRender?.model.background;
+            if (!bgInfoType){
+              bgInfoType = 1;
+            }
           }
         } else {
           bgInfoColor = this.ddRender?.model.background.color
