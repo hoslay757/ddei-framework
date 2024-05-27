@@ -1030,7 +1030,7 @@ class DDeiEditor {
     this.bus.push(DDeiEnumBusCommandType.RefreshShape);
     this.bus.push(DDeiEnumBusCommandType.AddHistroy);
     this.changeState(DDeiEditorState.DESIGNING);
-    this.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
+    // this.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
     this.bus.push(DDeiEnumBusCommandType.ClearTemplateVars);
     this.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts);
     this.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels);

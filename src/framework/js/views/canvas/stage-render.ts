@@ -199,7 +199,7 @@ class DDeiStageCanvasRender {
         ctx.font = font
         let ruleDisplay
         let ruleInit
-        if (this.model.ruler?.display) {
+        if (this.model.ruler?.display || this.model.ruler?.display == 0 || this.model.ruler?.display == false) {
           ruleDisplay = this.model.ruler.display;
         } else if (this.model.ddInstance.ruler != null && this.model.ddInstance.ruler != undefined) {
           if (typeof (this.model.ddInstance.ruler) == 'boolean') {
@@ -613,7 +613,7 @@ class DDeiStageCanvasRender {
   drawRuler() {
     let ruleDisplay
     let ruleInit
-    if (this.model.ruler?.display) {
+    if (this.model.ruler?.display || this.model.ruler?.display == 0 || this.model.ruler?.display == false) {
       ruleDisplay = this.model.ruler.display;
     } else if (this.model.ddInstance.ruler != null && this.model.ddInstance.ruler != undefined) {
       if (typeof (this.model.ddInstance.ruler) == 'boolean') {

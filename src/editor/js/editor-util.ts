@@ -291,7 +291,7 @@ class DDeiEditorUtil {
         editor.setCurrentMenu(menuJSON);
         let menuDialogId = DDeiUtil.getMenuControlId(editor);
         let menuEle = document.getElementById(menuDialogId);
-        let elePos = DDeiUtil.getDomAbsPosition(evt.currentTarget)
+        let elePos = DDeiUtil.getDomAbsPosition(evt.currentTarget,editor)
         if (menuEle) {
           if (elePos.left + 200 > document.body.clientWidth) {
             menuEle.style.left = (document.body.clientWidth-200) + "px";
