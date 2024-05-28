@@ -1,4 +1,22 @@
 {
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "strict": true,
+    "jsx": "preserve",
+    "importHelpers": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "declaration": true, // 启用类型声明文件的输出
+    "outDir": "dist", // 指定输出目录
+    "rootDir": "src", // 指定源代码目录
+    "removeComments": true,
+    "noEmitOnError": true
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["node_modules"],
   "files": [],
   "references": [
     {
