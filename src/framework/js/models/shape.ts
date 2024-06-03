@@ -5,6 +5,7 @@ import DDeiEnumControlState from '../enums/control-state'
 import DDeiUtil from '../util'
 import { Matrix3, Vector3 } from 'three';
 import { cloneDeep, clone, isNumber } from 'lodash'
+import DDeiModelArrtibuteValue from './attribute/attribute-value'
 /**
  * 抽象的图形类，定义了大多数图形都有的属性和方法
  */
@@ -1640,9 +1641,60 @@ abstract class DDeiAbstractShape {
 
   /**
    * 获取控件坐标
+   * @param coord 坐标系：1标尺坐标/2页面坐标
+   * @param unit 标尺单位
+   * @param type 坐标类型:1左上角/2中心点
    */
-  getPosition() {
+  getPosition(coord: number = 2, unit: string = '', type: number = 2) {
+    switch (coord) {
+      case 1: {
+        if (type == 1) {
+          return DDeiUtil.toRulerCoord({ x: this.x, y: this.y }, this.stage, unit)
+        } else if (type == 2) {
+          return DDeiUtil.toRulerCoord({ x: this.cpv.x, y: this.cpv.y }, this.stage, unit)
+        }
+      } break;
+      case 2: {
+        if (type == 1) {
+          return { x: this.x, y: this.y }
+        } else if (type == 2) {
+          return { x: this.cpv.x, y: this.cpv.y }
+        }
+      } break;
+    }
     return { x: this.x, y: this.y }
+  }
+
+
+  /**
+   * 设置控件坐标
+   * @param point 坐标点
+   * @param coord 坐标系：1标尺坐标/2页面坐标
+   * @param unit 标尺单位
+   * @param type 坐标类型:1左上角/2中心点
+   */
+  setPosition(point: {x:number, y:number}, coord: number = 2, unit: string = '', type: number = 2) {
+    let moveX = 0,moveY = 0;
+    switch (coord) {
+      case 1: {
+        if (type == 1) {
+          
+        } else if (type == 2) {
+          
+        }
+      } break;
+      case 2: {
+        if (type == 1) {
+          moveX = point.x - this.x
+          moveY = point.y - this.y
+        } else if (type == 2) {
+          moveX = point.x - this.cpv.x
+          moveY = point.y - this.cpv.y
+        }
+      } break;
+    }
+    //移动模型
+    DDeiAbstractShape.moveModels(this,moveX,moveY)
   }
 
   /**
@@ -1711,6 +1763,7 @@ abstract class DDeiAbstractShape {
     if (!(toJSONFields?.length > 0)) {
       toJSONFields = DDeiConfig.SERI_FIELDS["AbstractShape"]?.TOJSON;
     }
+    
     for (let i in this) {
       if ((!skipFields || skipFields?.indexOf(i) == -1)) {
         if (toJSONFields && toJSONFields.indexOf(i) != -1 && this[i]) {
@@ -1814,6 +1867,51 @@ abstract class DDeiAbstractShape {
       }
     }
 
+    //标尺单位
+    let ruleDisplay
+    let ruleInit
+    if (this.stage.ruler?.display || this.stage.ruler?.display == 0 || this.stage.ruler?.display == false) {
+      ruleDisplay = this.stage.ruler.display;
+    } else if (this.stage.ddInstance.ruler != null && this.stage.ddInstance.ruler != undefined) {
+      if (typeof (this.stage.ddInstance.ruler) == 'boolean') {
+        ruleDisplay = this.stage.ddInstance.ruler ? 1 : 0;
+      } else {
+        ruleInit = this.stage.ddInstance.ruler
+        ruleDisplay = ruleInit.display;
+      }
+    } else {
+      ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.stage, "ruler.display", true);
+    }
+    let unit = DDeiModelArrtibuteValue.getAttrValueByState(this.stage, "ruler.unit", true, ruleInit);
+   
+    //处理点坐标变换
+    if (ruleDisplay){
+      if (this.cpv) {
+        let cpv = DDeiUtil.toRulerCoord({ x: this.cpv.x, y: this.cpv.y }, this.stage, unit)
+        json.cpv.x = cpv.x
+        json.cpv.y = cpv.y
+      }
+      if (this.hpv) {
+        for(let i = 0;i < this.hpv.length;i++){
+          let hpv = DDeiUtil.toRulerCoord({ x: this.hpv[i].x, y: this.hpv[i].y }, this.stage, unit)
+          json.hpv[i].x = hpv.x
+          json.hpv[i].y = hpv.y
+        }
+      }
+      if (this.bpv) {
+        let bpv = DDeiUtil.toRulerCoord({ x: this.bpv.x, y: this.bpv.y }, this.stage, unit)
+        json.bpv.x = bpv.x
+        json.bpv.y = bpv.y
+      }
+      if (this.exPvs) {
+        for (let i in this.exPvs) {
+          let pv = DDeiUtil.toRulerCoord({ x: this.exPvs[i].x, y: this.exPvs[i].y }, this.stage, unit)
+          json.exPvs[i].x = pv.x
+          json.exPvs[i].y = pv.y
+        }
+      }
+    }
+    //输出结果
     return json;
   }
 

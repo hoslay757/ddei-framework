@@ -126,7 +126,7 @@ class DDeiRectContainer extends DDeiRectangle {
    * 添加模型，并维护关系
    * @param model 被添加的模型
    */
-  addModel(model: DDeiAbstractShape): void {
+  addModel(model: DDeiAbstractShape,notify: boolean = true): void {
     if (this.midList.indexOf(model.id) == -1) {
       model.stage = this.stage;
 
@@ -136,6 +136,9 @@ class DDeiRectContainer extends DDeiRectangle {
       model.pModel = this;
       model.layer = this.layer;
       this.resortModelByZIndex();
+      if (notify) {
+        this.notifyChange()
+      }
     }
   }
 
@@ -144,10 +147,13 @@ class DDeiRectContainer extends DDeiRectangle {
    * @param model 被移除的模型
    * @param destroy 销毁，缺省false
    */
-  removeModels(models: DDeiAbstractShape[], destroy: boolean = false): void {
+  removeModels(models: DDeiAbstractShape[], destroy: boolean = false, notify: boolean = true): void {
     models?.forEach(model => {
       this.removeModel(model, destroy)
     })
+    if (notify) {
+      this.notifyChange()
+    }
   }
 
   /**
@@ -155,7 +161,7 @@ class DDeiRectContainer extends DDeiRectangle {
    * @param model 被移除的模型
    * @param destroy 销毁，缺省false
    */
-  removeModel(model: DDeiAbstractShape, destroy: boolean = false): void {
+  removeModel(model: DDeiAbstractShape, destroy: boolean = false,notify:boolean = true): void {
     this.models.delete(model.id);
     let idx = this.midList.indexOf(model.id);
     if (idx != -1) {
@@ -173,6 +179,9 @@ class DDeiRectContainer extends DDeiRectangle {
     //重新计算错线
     if (this.stage?.render) {
       this.stage.render.refreshJumpLine = false
+    }
+    if (notify) {
+      this.notifyChange()
     }
   }
 

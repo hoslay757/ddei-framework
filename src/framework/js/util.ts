@@ -1,12 +1,11 @@
 import DDeiConfig from './config.js'
 import DDeiAbstractShape from './models/shape.js';
-import { clone, cloneDeep, isDate, isNumber, isString, kebabCase } from 'lodash'
+import { clone, cloneDeep, isDate, isNumber, isString } from 'lodash'
 import DDei from './ddei.js';
 import { Matrix3, Vector3 } from 'three';
 import DDeiModelArrtibuteValue from './models/attribute/attribute-value';
 import DDeiStage from './models/stage';
 import DDeiColor from './color.js';
-import type { DDeiEditor } from '@/index.js';
 
 const expressBindValueReg = /#\{[^\{\}]*\}/;
 const contentSplitReg = /\+|\-|\*|\//;
@@ -351,7 +350,7 @@ class DDeiUtil {
    * 返回dom绝对坐标
    * @param element 
    */
-  static getDomAbsPosition(element, editor:DDeiEditor): object {
+  static getDomAbsPosition(element, editor): object {
     //计算x坐标
     let actualLeft = element.offsetLeft;
     let actualTop = element.offsetTop;
@@ -2963,6 +2962,55 @@ class DDeiUtil {
     }
     return new Blob([u8arr], { type: mime });
   }
+
+  /**
+   * 将页面坐标（像素）转换为标尺坐标
+   * @param point 转换的点
+   * @param stage 舞台
+   * @param unit 单位
+   */
+  static toRulerCoord(point: { x: number, y: number},stage: DDeiStage, unit:string): object{
+    //生成文本并计算文本大小
+    let stageRatio = stage.getStageRatio()
+    let xDPI = stage.ddInstance.dpi.x;
+    //标尺单位
+    let rulerConfig = DDeiConfig.RULER[unit]
+    //尺子间隔单位
+    let unitWeight = DDeiUtil.unitToPix(rulerConfig.size, unit, xDPI);
+    //基准每个部分的大小
+    let marginWeight = unitWeight * stageRatio
+
+    return { 
+      x: (point.x - stage.spv.x) / marginWeight * rulerConfig.size, 
+      y: (point.y - stage.spv.y) / marginWeight * rulerConfig.size,
+      unit:unit
+    };
+  }
+
+
+  /**
+   * 将标尺坐标转换为页面坐标(像素)
+   * @param point 转换的点
+   * @param stage 舞台
+   * @param unit 单位
+   */
+  static toPageCoord(point: { x: number, y: number }, stage: DDeiStage|object, unit: string): object {
+    //生成文本并计算文本大小
+    let stageRatio = stage?.ratio ? stage.ratio : stage.getStageRatio()
+    let xDPI = stage.dpi ? stage.dpi : stage.ddInstance.dpi.x;
+    //标尺单位
+    let rulerConfig = DDeiConfig.RULER[unit]
+    //尺子间隔单位
+    let unitWeight = DDeiUtil.unitToPix(rulerConfig.size, unit, xDPI);
+    //基准每个部分的大小
+    let marginWeight = unitWeight * stageRatio
+    return {
+      x: point.x * marginWeight * rulerConfig.size + (stage.spv ? stage.spv.x : 0),
+      y: point.y * marginWeight * rulerConfig.size + (stage.spv ? stage.spv.y : 0)
+    };
+  }
+
+ 
 
 }
 
