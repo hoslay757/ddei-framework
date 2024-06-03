@@ -26,7 +26,7 @@ class DDeiLayoutManagerCompose extends DDeiLayoutManager {
         //将元素从旧容器移出
         oldContainer.removeModel(item);
       }
-      newContainer.addModel(item);
+      newContainer.addModel(item,false);
       //绑定并初始化渲染器
       item.initRender();
     })

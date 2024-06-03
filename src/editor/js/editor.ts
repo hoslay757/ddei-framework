@@ -86,13 +86,6 @@ class DDeiEditor {
  */
   EVENT_PUBLISH_FILE: Function | null = null;
 
-
-
-  /**
-   * 返回文件列表，此方法为外部传入的勾子函数
-   */
-  EVENT_GOBACK_FILE_LIST: Function | null = null;
-
   /**
    * 控件选择前，此方法为外部传入的勾子函数
    */
