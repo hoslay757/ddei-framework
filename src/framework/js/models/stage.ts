@@ -833,6 +833,30 @@ class DDeiStage {
         }
       }
     }
+
+    //标尺单位
+    let ruleDisplay
+    let ruleInit
+    if (this.ruler?.display || this.ruler?.display == 0 || this.ruler?.display == false) {
+      ruleDisplay = this.ruler.display;
+    } else if (this.ddInstance.ruler != null && this.ddInstance.ruler != undefined) {
+      if (typeof (this.ddInstance.ruler) == 'boolean') {
+        ruleDisplay = this.ddInstance.ruler ? 1 : 0;
+      } else {
+        ruleInit = this.ddInstance.ruler
+        ruleDisplay = ruleInit.display;
+      }
+    } else {
+      ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this, "ruler.display", true);
+    }
+    
+
+    //处理点坐标变换
+    if (ruleDisplay) {
+      //写入unit用于单位换算还原
+      // json.dpi = this.ddInstance?.dpi?.x;
+      json.unit = DDeiModelArrtibuteValue.getAttrValueByState(this, "ruler.unit", true, ruleInit);
+    }
     return json;
   }
 

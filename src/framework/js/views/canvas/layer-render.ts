@@ -895,7 +895,7 @@ class DDeiLayerCanvasRender {
                   if ((opPoint?.model && (Math.abs(opPoint.x - item.startPoint.x) >= 1 || Math.abs(opPoint.y - item.startPoint.y) >= 1)) || maxLength >= 15) {
                     //影子控件转变为真实控件并创建
                     item.id = id
-                    this.model.addModel(item)
+                    this.model.addModel(item,false)
                     item.initRender();
                     model = item;
                     delete model.isShadowControl

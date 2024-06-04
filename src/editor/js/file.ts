@@ -1,5 +1,6 @@
 
-import DDeiUtil from "@ddei-core/framework/js/util";
+import DDeiUtil from "../../framework/js/util";
+import DDei from "../../framework/js/ddei";
 import DDeiActiveType from "./enums/active-type";
 import DDeiFileState from "./enums/file-state";
 import DDeiSheet from "./sheet";
@@ -30,12 +31,77 @@ class DDeiFile {
   static loadFromJSON(json, tempData: object = {}): DDeiFile {
     let model: DDeiFile = new DDeiFile(json);
     let sheets = []
+    //获取当前dpi缩放，不同终端编辑可能造成dpi不一致，因此需要对比还原
+    let dpi;
+    if(DDei.INSTANCE_POOL.size > 0){
+      dpi = Array.from(DDei.INSTANCE_POOL.values())[0].dpi?.x
+    }
+    if (!dpi){
+      dpi = DDeiUtil.getDPI().x;
+    }
     for (let i = 0; i < model.sheets.length; i++) {
+      //执行转换，将存储的标尺坐标转换为网页坐标
+      // let dpi = model.sheets[i].stage.dpi;
+      let unit = model.sheets[i].stage.unit;
+      //只有保存了dpi和unit才需要转换,并且unit为像素也不需要转换
+      if(dpi && unit && unit != 'px'){
+        model.sheets[i]?.stage?.layers?.forEach(layer => {
+          DDeiFile.convertChildrenJsonUnit(layer, model.sheets[i]?.stage,unit);
+        });
+      }
       sheets[i] = DDeiSheet.loadFromJSON(model.sheets[i], tempData);
     }
     model.sheets = sheets;
     model.calModelNumber()
     return model;
+  }
+
+  static convertChildrenJsonUnit(container:object,stage:object,unit:string):void{
+    if (container.midList){
+      for (let i = 0; i < container.midList.length;i++){
+        if (container.models[container.midList[i]]){
+          let model = container.models[container.midList[i]];
+          if (model.cpv) {
+            let cpv = DDeiUtil.toPageCoord({ x: model.cpv.x, y: model.cpv.y }, stage, unit)
+            model.cpv.x = cpv.x
+            model.cpv.y = cpv.y
+          }
+
+          if (model.bpv) {
+            let bpv = DDeiUtil.toPageCoord({ x: model.bpv.x, y: model.bpv.y }, stage, unit)
+            model.bpv.x = bpv.x
+            model.bpv.y = bpv.y
+          }
+          if (model.hpv) {
+            for (let k = 0; k < model.hpv.length; k++) {
+              let hpv = DDeiUtil.toPageCoord({ x: model.hpv[k].x, y: model.hpv[k].y }, stage, unit)
+              model.hpv[k].x = hpv.x
+              model.hpv[k].y = hpv.y
+            }
+          }
+          if (model.exPvs) {
+            for (let k in model.exPvs) {
+              let pv = DDeiUtil.toPageCoord({ x: model.exPvs[k].x, y: model.exPvs[k].y }, stage, unit)
+              model.exPvs[k].x = pv.x
+              model.exPvs[k].y = pv.y
+            }
+          }
+          if (model.pvs) {
+            for (let k = 0; k < model.pvs.length; k++) {
+              let pv = DDeiUtil.toPageCoord({ x: model.pvs[k].x, y: model.pvs[k].y }, stage, unit)
+              model.pvs[k].x = pv.x
+              model.pvs[k].y = pv.y
+            }
+          }
+          
+          
+          
+          //如果是容器则递归处理其子控件
+          DDeiFile.convertChildrenJsonUnit(model, stage, unit);
+        }
+      }
+    }
+    
   }
   // ============================ 属性 ============================
   //文件ID
@@ -241,6 +307,8 @@ class DDeiFile {
         }
       }
     }
+    //写入版本号
+    json.ddeiVersion = 1237
     return json;
   }
 }

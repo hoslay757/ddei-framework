@@ -223,8 +223,7 @@ class DDeiStageCanvasRender {
           xText = rect.rotate.toFixed(0);
         }
         if ((ruleDisplay == 1 || ruleDisplay == "1") && this.operateState != DDeiEnumOperateState.CONTROL_ROTATE) {
-          let startBaseX = this.model.spv.x * rat1 + 1
-          let startBaseY = this.model.spv.y * rat1 + 1
+          
           //生成文本并计算文本大小
           let stageRatio = this.model.getStageRatio()
           let xDPI = this.ddRender.model.dpi.x;
@@ -238,6 +237,8 @@ class DDeiStageCanvasRender {
           let marginWeight = unitWeight * stageRatio
 
           if (this.operateState == DDeiEnumOperateState.CONTROL_DRAGING || this.operateState == DDeiEnumOperateState.CONTROL_CREATING) {
+            let startBaseX = this.model.spv.x * rat1
+            let startBaseY = this.model.spv.y * rat1
             xText = (rect.x * rat1 - startBaseX) / marginWeight * rulerConfig.size
             yText = (rect.y * rat1 - startBaseY) / marginWeight * rulerConfig.size
           } else if (this.operateState == DDeiEnumOperateState.CONTROL_CHANGING_BOUND) {
@@ -697,8 +698,8 @@ class DDeiStageCanvasRender {
         let sy = this.model.height / 2 - paperHeight / 2 / rat1
         this.model.spv = new Vector3(sx, sy, 1)
       }
-      let startBaseX = this.model.spv.x * rat1 + 1
-      let startBaseY = this.model.spv.y * rat1 + 1
+      let startBaseX = this.model.spv.x * rat1
+      let startBaseY = this.model.spv.y * rat1
       if (ruleDisplay == 1 || ruleDisplay == "1") {
         ctx.beginPath()
         //横向尺子背景
