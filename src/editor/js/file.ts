@@ -46,7 +46,7 @@ class DDeiFile {
       //只有保存了dpi和unit才需要转换,并且unit为像素也不需要转换
       if(dpi && unit && unit != 'px'){
         model.sheets[i]?.stage?.layers?.forEach(layer => {
-          DDeiFile.convertChildrenJsonUnit(layer, model.sheets[i]?.stage,unit);
+          DDeiUtil.convertChildrenJsonUnit(layer, model.sheets[i]?.stage,unit);
         });
       }
       sheets[i] = DDeiSheet.loadFromJSON(model.sheets[i], tempData);
@@ -56,53 +56,7 @@ class DDeiFile {
     return model;
   }
 
-  static convertChildrenJsonUnit(container:object,stage:object,unit:string):void{
-    if (container.midList){
-      for (let i = 0; i < container.midList.length;i++){
-        if (container.models[container.midList[i]]){
-          let model = container.models[container.midList[i]];
-          if (model.cpv) {
-            let cpv = DDeiUtil.toPageCoord({ x: model.cpv.x, y: model.cpv.y }, stage, unit)
-            model.cpv.x = cpv.x
-            model.cpv.y = cpv.y
-          }
-
-          if (model.bpv) {
-            let bpv = DDeiUtil.toPageCoord({ x: model.bpv.x, y: model.bpv.y }, stage, unit)
-            model.bpv.x = bpv.x
-            model.bpv.y = bpv.y
-          }
-          if (model.hpv) {
-            for (let k = 0; k < model.hpv.length; k++) {
-              let hpv = DDeiUtil.toPageCoord({ x: model.hpv[k].x, y: model.hpv[k].y }, stage, unit)
-              model.hpv[k].x = hpv.x
-              model.hpv[k].y = hpv.y
-            }
-          }
-          if (model.exPvs) {
-            for (let k in model.exPvs) {
-              let pv = DDeiUtil.toPageCoord({ x: model.exPvs[k].x, y: model.exPvs[k].y }, stage, unit)
-              model.exPvs[k].x = pv.x
-              model.exPvs[k].y = pv.y
-            }
-          }
-          if (model.pvs) {
-            for (let k = 0; k < model.pvs.length; k++) {
-              let pv = DDeiUtil.toPageCoord({ x: model.pvs[k].x, y: model.pvs[k].y }, stage, unit)
-              model.pvs[k].x = pv.x
-              model.pvs[k].y = pv.y
-            }
-          }
-          
-          
-          
-          //如果是容器则递归处理其子控件
-          DDeiFile.convertChildrenJsonUnit(model, stage, unit);
-        }
-      }
-    }
-    
-  }
+  
   // ============================ 属性 ============================
   //文件ID
   id: number;
