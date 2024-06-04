@@ -2998,15 +2998,11 @@ class DDeiUtil {
     //生成文本并计算文本大小
     let stageRatio = stage?.ratio ? stage.ratio : stage.getStageRatio()
     let xDPI = stage.dpi ? stage.dpi : stage.ddInstance.dpi.x;
-    //标尺单位
-    let rulerConfig = DDeiConfig.RULER[unit]
     //尺子间隔单位
-    let unitWeight = DDeiUtil.unitToPix(rulerConfig.size, unit, xDPI);
-    //基准每个部分的大小
-    let marginWeight = unitWeight * stageRatio
+    let unitWeight = DDeiUtil.unitToPix(1, unit, xDPI) * stageRatio;
     return {
-      x: point.x * marginWeight * rulerConfig.size + (stage.spv ? stage.spv.x : 0),
-      y: point.y * marginWeight * rulerConfig.size + (stage.spv ? stage.spv.y : 0)
+      x: point.x * unitWeight  + (stage.spv ? stage.spv.x : 0),
+      y: point.y * unitWeight  + (stage.spv ? stage.spv.y : 0)
     };
   }
 

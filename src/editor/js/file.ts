@@ -1,5 +1,6 @@
 
 import DDeiUtil from "../../framework/js/util";
+import DDei from "../../framework/js/ddei";
 import DDeiActiveType from "./enums/active-type";
 import DDeiFileState from "./enums/file-state";
 import DDeiSheet from "./sheet";
@@ -30,17 +31,23 @@ class DDeiFile {
   static loadFromJSON(json, tempData: object = {}): DDeiFile {
     let model: DDeiFile = new DDeiFile(json);
     let sheets = []
+    //获取当前dpi缩放，不同终端编辑可能造成dpi不一致，因此需要对比还原
+    let dpi;
+    if(DDei.INSTANCE_POOL.size > 0){
+      dpi = Array.from(DDei.INSTANCE_POOL.values())[0].dpi?.x
+    }
+    if (!dpi){
+      dpi = DDeiUtil.getDPI().x;
+    }
     for (let i = 0; i < model.sheets.length; i++) {
-      //执行转换，将存储的标尺坐标转换为网页坐标，打开小于1237版本不用转换
-      if (json.ddeiVersion && json.ddeiVersion >= 1237) {
-        let dpi = model.sheets[i].stage.dpi;
-        let unit = model.sheets[i].stage.unit;
-        //只有保存了dpi和unit才需要转换,并且unit为像素也不需要转换
-        if(dpi && unit && unit != 'px'){
-          model.sheets[i]?.stage?.layers?.forEach(layer => {
-            DDeiFile.convertChildrenJsonUnit(layer, model.sheets[i]?.stage,unit);
-          });
-        }
+      //执行转换，将存储的标尺坐标转换为网页坐标
+      // let dpi = model.sheets[i].stage.dpi;
+      let unit = model.sheets[i].stage.unit;
+      //只有保存了dpi和unit才需要转换,并且unit为像素也不需要转换
+      if(dpi && unit && unit != 'px'){
+        model.sheets[i]?.stage?.layers?.forEach(layer => {
+          DDeiFile.convertChildrenJsonUnit(layer, model.sheets[i]?.stage,unit);
+        });
       }
       sheets[i] = DDeiSheet.loadFromJSON(model.sheets[i], tempData);
     }
@@ -51,7 +58,7 @@ class DDeiFile {
 
   static convertChildrenJsonUnit(container:object,stage:object,unit:string):void{
     if (container.midList){
-      for (let i = 0; i < container.midList;i++){
+      for (let i = 0; i < container.midList.length;i++){
         if (container.models[container.midList[i]]){
           let model = container.models[container.midList[i]];
           if (model.cpv) {
@@ -59,25 +66,36 @@ class DDeiFile {
             model.cpv.x = cpv.x
             model.cpv.y = cpv.y
           }
-          if (model.hpv) {
-            for (let i = 0; i < model.hpv.length; i++) {
-              let hpv = DDeiUtil.toPageCoord({ x: model.hpv[i].x, y: model.hpv[i].y }, stage, unit)
-              model.hpv[i].x = hpv.x
-              model.hpv[i].y = hpv.y
-            }
-          }
+
           if (model.bpv) {
             let bpv = DDeiUtil.toPageCoord({ x: model.bpv.x, y: model.bpv.y }, stage, unit)
             model.bpv.x = bpv.x
             model.bpv.y = bpv.y
           }
-          if (model.exPvs) {
-            for (let i in model.exPvs) {
-              let pv = DDeiUtil.toPageCoord({ x: model.exPvs[i].x, y: model.exPvs[i].y }, stage, unit)
-              model.exPvs[i].x = pv.x
-              model.exPvs[i].y = pv.y
+          if (model.hpv) {
+            for (let k = 0; k < model.hpv.length; k++) {
+              let hpv = DDeiUtil.toPageCoord({ x: model.hpv[k].x, y: model.hpv[k].y }, stage, unit)
+              model.hpv[k].x = hpv.x
+              model.hpv[k].y = hpv.y
             }
           }
+          if (model.exPvs) {
+            for (let k in model.exPvs) {
+              let pv = DDeiUtil.toPageCoord({ x: model.exPvs[k].x, y: model.exPvs[k].y }, stage, unit)
+              model.exPvs[k].x = pv.x
+              model.exPvs[k].y = pv.y
+            }
+          }
+          if (model.pvs) {
+            for (let k = 0; k < model.pvs.length; k++) {
+              let pv = DDeiUtil.toPageCoord({ x: model.pvs[k].x, y: model.pvs[k].y }, stage, unit)
+              model.pvs[k].x = pv.x
+              model.pvs[k].y = pv.y
+            }
+          }
+          
+          
+          
           //如果是容器则递归处理其子控件
           DDeiFile.convertChildrenJsonUnit(model, stage, unit);
         }

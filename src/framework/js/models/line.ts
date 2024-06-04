@@ -1035,7 +1035,7 @@ class DDeiLine extends DDeiAbstractShape {
         }
       }
       if (this.pvs) {
-        this.pvs = cloneDeep(this.pvs);
+        json.pvs = cloneDeep(this.pvs);
         for (let i = 0; i < this.pvs.length; i++) {
           let pv = DDeiUtil.toRulerCoord({ x: this.pvs[i].x, y: this.pvs[i].y }, this.stage, unit)
           json.pvs[i].x = pv.x

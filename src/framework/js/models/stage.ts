@@ -853,8 +853,8 @@ class DDeiStage {
 
     //处理点坐标变换
     if (ruleDisplay) {
-      //写入dpi和unit用于单位换算还原
-      json.dpi = this.ddInstance?.dpi?.x;
+      //写入unit用于单位换算还原
+      // json.dpi = this.ddInstance?.dpi?.x;
       json.unit = DDeiModelArrtibuteValue.getAttrValueByState(this, "ruler.unit", true, ruleInit);
     }
     return json;
