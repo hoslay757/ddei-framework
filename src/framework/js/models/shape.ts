@@ -1678,9 +1678,15 @@ abstract class DDeiAbstractShape {
     switch (coord) {
       case 1: {
         if (type == 1) {
-          
+          //目标点转换为像素
+          let pv1 = DDeiUtil.toPageCoord(point, this.stage, unit)
+          moveX = pv1.x - this.x
+          moveY = pv1.y - this.y
         } else if (type == 2) {
-          
+          //目标点转换为像素
+          let pv1 = DDeiUtil.toPageCoord(point, this.stage, unit)
+          moveX = pv1.x - this.cpv.x
+          moveY = pv1.y - this.cpv.y
         }
       } break;
       case 2: {
@@ -1694,7 +1700,7 @@ abstract class DDeiAbstractShape {
       } break;
     }
     //移动模型
-    DDeiAbstractShape.moveModels(this,moveX,moveY)
+    DDeiAbstractShape.moveModels([this],moveX,moveY)
   }
 
   /**
