@@ -1063,7 +1063,18 @@ class DDeiLayerCanvasRender {
               let moveOriginModels = []
               let moveOriginModelIds = []
               let moveOriginLines = []
+              // if (this.model.shadowControls[0].baseModelType == 'DDeiContainer') {
+              //   this.clearShadowControls()
+              //   //清空临时变量
+              //   this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
+              //   //渲染图形
+              //   this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+              //   //排序并执行所有action
+              //   this.stage?.ddInstance?.bus?.executeAll();
+              //   return;
+              // }
               this.model.shadowControls.forEach(item => {
+                
                 let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
                 let momodel = this.stage?.getModelById(id)
                 if (momodel?.baseModelType == 'DDeiLine') {

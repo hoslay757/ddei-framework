@@ -41,7 +41,7 @@ class DDeiLayoutManagerFree extends DDeiLayoutManager {
         let newContainer = this.container;
         if (oldContainer) {
           //将元素从旧容器移出
-          oldContainer.removeModel(item);
+          oldContainer.removeModel(item,false,false);
         }
         newContainer.addModel(item,false);
         //绑定并初始化渲染器

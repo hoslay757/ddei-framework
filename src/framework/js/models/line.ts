@@ -935,14 +935,16 @@ class DDeiLine extends DDeiAbstractShape {
    */
   destroyed() {
     let layer = this.layer;
-    let distLinks = this.stage?.getDistModelLinks(this.id);
-    distLinks?.forEach(dl => {
-      //删除源点
-      if (dl?.sm && dl?.smpath) {
-        eval("delete dl.sm." + dl.smpath)
-      }
-      this.stage?.removeLink(dl);
-    })
+    if (!this.isShadowControl) {
+      let distLinks = this.stage?.getDistModelLinks(this.id);
+      distLinks?.forEach(dl => {
+        //删除源点
+        if (dl?.sm && dl?.smpath) {
+          eval("delete dl.sm." + dl.smpath)
+        }
+        this.stage?.removeLink(dl);
+      })
+    }
     super.destroyed();
     //移除自身所有附属控件
     if (!this.isShadowControl) {

@@ -39,9 +39,12 @@ class DDeiFile {
     if (!dpi){
       dpi = DDeiUtil.getDPI().x;
     }
+    
     for (let i = 0; i < model.sheets.length; i++) {
       //执行转换，将存储的标尺坐标转换为网页坐标
-      // let dpi = model.sheets[i].stage.dpi;
+      if (!model.sheets[i].stage.ddInstance && !model.sheets[i].stage.dpi) {
+        model.sheets[i].stage.dpi = dpi;
+      }
       let unit = model.sheets[i].stage.unit;
       //只有保存了dpi和unit才需要转换,并且unit为像素也不需要转换
       if(dpi && unit && unit != 'px'){

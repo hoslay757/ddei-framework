@@ -270,14 +270,17 @@ class DDeiUtil {
       md.id = md.id + "_shadow"
       if (md?.baseModelType == "DDeiContainer") {
         let newModels = new Map();
+        // let newMidList = new Array();
         md.models.forEach(smi => {
           let sm = DDeiUtil.getShadowControl(smi)
           sm.id = sm.id.substring(0, sm.id.lastIndexOf("_shadow"))
           sm.pModel = md;
           newModels.set(sm.id, sm)
+          // newMidList.push(sm.id);
           sm.initRender();
         });
         md.models = newModels;
+        // md.midList = newMidList;
       }
 
     }
