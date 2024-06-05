@@ -278,7 +278,7 @@ class DDeiPolygon extends DDeiAbstractShape {
         }
       }
     }
-
+    
     return json;
   }
 
