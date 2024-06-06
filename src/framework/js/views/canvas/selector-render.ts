@@ -496,7 +496,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
           model.render.drawShape({ color: "red", dash: [] });
         } else {
           //绘制临时Border
-          model.render.drawBorderAndComposesBorder({ type: 1, width: 1, color: "red", border: { type: 1, width: 1, color: "red" } });
+          model.render.drawBorderAndComposesBorder({ type: 1, width: 1, color: "red", border: { type: 1, width: 1, color: "red" } },false);
 
         }
         ctx.restore()

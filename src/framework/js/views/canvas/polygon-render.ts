@@ -155,7 +155,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
                 }
               }
             } else if (!tempShape && this.stage?.selectedModels?.size == 1 && Array.from(this.stage?.selectedModels.values())[0].id == this.model.id) {
-              tempShape = { border: { type: 1, width: 1, color: "#017fff", dash: [10, 5] } }
+              tempShape = { border: { type: 1, width: 1, color: "#017fff", dash: [10, 5] }, drawCompose:false}
             }
             let oldRat1 = this.ddRender.ratio
             this.ddRender.oldRatio = oldRat1
@@ -188,7 +188,11 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
 
           } else {
             //绘制组合控件的内容
-            c.render.drawShape(tempShape, composeRender + 1)
+            if (tempShape && tempShape?.drawCompose == false){
+              c.render.drawShape(null, composeRender + 1)
+            }else{
+              c.render.drawShape(tempShape, composeRender + 1)
+            }
           }
         })
 
@@ -608,7 +612,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   * 绘制边框以及Compose的边框
   * @param tempShape 临时图形，优先级最高
   */
-  drawBorderAndComposesBorder(tempShape: object | null): void {
+  drawBorderAndComposesBorder(tempShape: object | null,drawCompose:boolean = true): void {
     //将当前控件以及composes按照zindex顺序排列并输出
     let rendList = [];
     if (this.model.composes?.length > 0) {
@@ -641,7 +645,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       if (c == this.model) {
         //根据pvss绘制边框
         this.drawBorder(tempShape);
-      } else {
+      } else if (drawCompose){
         //绘制组合控件的内容
         c.render.drawBorder(tempShape, true)
         c.render.drawSelfToCanvas(1);
