@@ -148,7 +148,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
 
             if (!tempShape && this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING || this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING_TEXT_SELECTING) {
               if (this.isEditoring) {
-                tempShape = { border: { type: 1, dash: [10, 10], width: 1.25, color: "#017fff" } }
+                // tempShape = { border: { type: 1, dash: [10, 10], width: 1.25, color: "#017fff" } }
               } else if (this.stage.render?.editorShadowControl) {
                 if (this.model.id + "_shadow" == this.stage.render.editorShadowControl.id) {
                   return;
