@@ -731,8 +731,10 @@ class DDeiEditorUtil {
     }
     
     let backEle = document.getElementById(editor.id + "_dialog_background_div");
-    backEle.style.background = "none"
-    backEle.style.display = "none";
+    if (backEle){
+      backEle.style.background = "none"
+      backEle.style.display = "none";
+    }
     if (!dialogData || !dialogData.keepState) {
       editor.changeState(DDeiEditorState.DESIGNING);
     }
