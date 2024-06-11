@@ -1094,6 +1094,41 @@ class DDeiEditor {
     })
     return jsonArray;
   }
+
+  /**
+   * 根据属性搜索控件
+   * @param keywords 关键字/正则表达式
+   * @param attr 搜索的属性
+   * @param isReg 是否正则表达式
+   * @param area 搜索范围，1本页/2本文档/3所有打开文件
+   * @param matchCase 区分大小写
+   * @param matchAll 全字匹配
+   */
+  searchModels(keywords:string,attr:string,isReg:boolean = false,area:number = 1,matchCase:boolean = false,matchAll:boolean = false):Array{
+    let resultArray = new Array()
+    if (keywords && attr){
+      switch(area){
+        //当前页
+        case 1: {
+          return this.ddInstance.stage.searchModels(keywords, attr,isReg,matchCase,matchAll);
+        }
+        //当前文档
+        case 2: {
+          return this.files[this.currentFileIndex].searchModels(keywords, attr, isReg, matchCase, matchAll);
+        }
+        //所有打开文件
+        case 3: {
+          for(let i = 0;i < this.files.length;i++){
+            let rs = this.files[i].searchModels(keywords, attr, isReg, matchCase, matchAll)
+            if (rs?.length > 0){
+              resultArray.push(...rs);
+            }
+          }
+        } break;
+      }
+    }
+    return resultArray;
+  }
 }
 export { DDeiEditor }
 export default DDeiEditor

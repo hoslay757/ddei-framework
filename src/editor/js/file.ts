@@ -268,6 +268,27 @@ class DDeiFile {
     json.ddeiVersion = 1237
     return json;
   }
+
+  /**
+   * 根据属性搜索控件
+   * @param keywords 关键字/正则表达式
+   * @param attr 搜索的属性
+   * @param isReg 是否正则表达式
+   * @param matchCase 区分大小写
+   * @param matchAll 全字匹配
+   */
+  searchModels(keywords: string, attr:string, isReg: boolean = false, matchCase: boolean = false, matchAll: boolean = false): Array {
+    let resultArray = new Array()
+    if (keywords && attr) {
+      for (let i = 0; i < this.sheets.length; i++) {
+        let rs = this.sheets[i].stage.searchModels(keywords, attr, isReg, matchCase, matchAll)
+        if (rs?.length > 0) {
+          resultArray.push(...rs);
+        }
+      }
+    }
+    return resultArray;
+  }
 }
 export {DDeiFile}
 export default DDeiFile

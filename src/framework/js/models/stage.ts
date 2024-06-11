@@ -300,7 +300,7 @@ class DDeiStage {
     this.paperStartY = posY
 
     //获取最大的有效范围，自动扩展纸张
-    let maxOutRect = DDeiAbstractShape.getOutRectByPV(this.getLayerModels())
+    let maxOutRect = DDeiAbstractShape.getOutRectByPV(this.getLayerModels([],100))
 
     //计算各个方向扩展的数量
     let leftExtNum = 0, rightExtNum = 0, topExtNum = 0, bottomExtNum = 0
@@ -913,6 +913,42 @@ class DDeiStage {
       this.histroyIdx++;
       return this.histroy[this.histroyIdx];
     }
+  }
+
+  /**
+   * 根据属性搜索控件
+   * @param keywords 关键字/正则表达式
+   * @param attr 搜索的属性
+   * @param isReg 是否正则表达式
+   * @param matchCase 区分大小写
+   * @param matchAll 全字匹配
+   */
+  searchModels(keywords: string, attr :string, isReg: boolean = false, matchCase: boolean = false, matchAll: boolean = false): Array {
+    let resultArray = new Array()
+    if (keywords && attr) {
+      let models = this.getLayerModels([], 100);
+      if(isReg){
+        // TODO let reg = new RegExp(keywords)
+      }else{
+        for (let i = 0; i < models.length;i++){
+          let model = models[i];
+          let data = model[attr]
+          if (data && typeof (data) == 'string'){
+            let searchIndex = 0;
+            while(true){
+              let ix = data.indexOf(keywords, searchIndex);
+              if (ix != -1){
+                resultArray.push({stage:this.unicode,model:model,attr:attr,index:ix,len:keywords.length})
+                searchIndex = ix+1;
+              }else{
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+    return resultArray;
   }
 
 }
