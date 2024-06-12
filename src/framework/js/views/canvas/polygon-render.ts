@@ -890,7 +890,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       cText = this.getCachedValue("text")
     } else {
       cText = DDeiUtil.getReplacibleValue(this.model, "text", true, true);
-      sptStyle = this.tempSptStyle ? this.tempSptStyle : this.model.sptStyle;
+      sptStyle = this.tempSptStyle ? this.tempSptStyle : tempShape?.sptStyle ? tempShape.sptStyle : this.model.sptStyle;
     }
     if (!cText) {
       cText = ""

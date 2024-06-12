@@ -93,6 +93,7 @@ class DDeiKeyAction extends DDeiPluginBase {
     if (evt.keyCode != 93 && evt.keyCode != 18 && evt.keyCode != 16 && evt.keyCode != 17) {
       m1Str += evt.keyCode
     }
+    let matched = false
     //执行下发逻
     for (let it = 0; it < editor.hotKeyMapping?.length; it++) {
       let item = editor.hotKeyMapping[it];
@@ -128,7 +129,6 @@ class DDeiKeyAction extends DDeiPluginBase {
       if (item.keys) {
         matchStr += item.keys
       }
-
       //如果匹配则下发
       if (m1Str == matchStr) {
         //处理计数器,如果设置了计数器，则必须满足计数器触发条件
@@ -162,12 +162,16 @@ class DDeiKeyAction extends DDeiPluginBase {
             }
           } else {
             item.action.action(evt, ddInstance, editor);
-            return true;
+            matched = true;
+            if (item.break == true || item.break == 1) {
+              break;
+            }
+            
           }
         }
       }
     }
-    return false
+    return matched
   }
 
   // ============================ 属性 ===============================

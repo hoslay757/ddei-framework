@@ -282,9 +282,11 @@ class DDeiFile {
     if (keywords && attr) {
       for (let i = 0; i < this.sheets.length; i++) {
         let rs = this.sheets[i].stage.searchModels(keywords, attr, isReg, matchCase, matchAll)
-        if (rs?.length > 0) {
-          resultArray.push(...rs);
-        }
+        rs?.forEach(r => {
+          r.sheetIndex = i;
+          resultArray.push(r);
+        });
+        
       }
     }
     return resultArray;

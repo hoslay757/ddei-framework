@@ -11,13 +11,15 @@ import config from "./config"
 import { cloneDeep } from "lodash";
 import FONTS from "../../framework/js/fonts/font"
 import {Matrix3} from 'three'
-import DDeiAbstractShape from "@ddei-core/themes/theme";
-import DDeiThemeBase from "@ddei-core/framework/js/models/shape";
+import DDeiThemeBase from "@ddei-core/themes/theme";
+import DDeiAbstractShape from "@ddei-core/framework/js/models/shape";
 import  DDeiLifeCycle  from "@ddei-core/lifecycle/lifecycle";
 import  DDeiFuncData  from "@ddei-core/lifecycle/funcdata";
 import { DDeiModelArrtibuteValue } from "@ddei-core/framework/js/models/attribute/attribute-value";
 import DDeiEnumBusCommandType from "../../framework/js/enums/bus-command-type";
 import DDeiEditorEnumBusCommandType from "./enums/editor-command-type";
+import { DDeiActiveType } from "./enums/active-type";
+import type DDeiStage from "../../framework/js/models/stage";
 /**
  * DDei图形编辑器类，用于维护编辑器实例、全局状态以及全局属性
  */
@@ -667,7 +669,7 @@ class DDeiEditor {
   /**
    * 交换文件的位置
    */
-  changeFile(indexA: number, indexB: number): void {
+  exchangeFile(indexA: number, indexB: number): void {
     let fileA = this.files[indexA];
     let fileB = this.files[indexB];
     this.files[indexA] = fileB
@@ -1104,30 +1106,105 @@ class DDeiEditor {
    * @param matchCase 区分大小写
    * @param matchAll 全字匹配
    */
-  searchModels(keywords:string,attr:string,isReg:boolean = false,area:number = 1,matchCase:boolean = false,matchAll:boolean = false):Array{
+  searchModels(keywords:string,attr:string,isReg:boolean = false,area:number = 1,matchCase:boolean = false,matchAll:boolean = false):Array<object>{
     let resultArray = new Array()
     if (keywords && attr){
       switch(area){
         //当前页
         case 1: {
-          return this.ddInstance.stage.searchModels(keywords, attr,isReg,matchCase,matchAll);
+          for(let i = 0;i < this.files.length;i++){
+            for (let j = 0; j < this.files[i].sheets.length; j++) {
+              if (this.files[i].sheets[j].stage == this.ddInstance.stage){
+                let rs =  this.ddInstance.stage.searchModels(keywords, attr, isReg, matchCase, matchAll);
+                rs?.forEach(r => {
+                  r.fileIndex = i
+                  r.sheetIndex = j
+                  resultArray.push(r);
+                });
+                return resultArray
+              }
+            }
+          }
+          
         }
         //当前文档
         case 2: {
-          return this.files[this.currentFileIndex].searchModels(keywords, attr, isReg, matchCase, matchAll);
+          let rs = this.files[this.currentFileIndex].searchModels(keywords, attr, isReg, matchCase, matchAll);
+          rs?.forEach(r => {
+            r.fileIndex = this.currentFileIndex;
+            resultArray.push(r);
+          });
         }
         //所有打开文件
         case 3: {
           for(let i = 0;i < this.files.length;i++){
             let rs = this.files[i].searchModels(keywords, attr, isReg, matchCase, matchAll)
-            if (rs?.length > 0){
-              resultArray.push(...rs);
-            }
+            rs?.forEach(r => {
+              r.fileIndex = i;
+              resultArray.push(r);
+            });
           }
         } break;
       }
     }
     return resultArray;
+  }
+
+  /**
+   * 将控件置于中心
+   * @param modelIds 
+   */
+  centerModels(stage:DDeiStage ,...modelIds:string[]):void{
+    if (stage && modelIds?.length > 0){
+      let models = new Array();
+      for (let i = 0; i < modelIds.length;i++){
+        if(modelIds[i]){
+          let model = stage.getModelById(modelIds[i],true);
+          if (model){
+            models.push(model)
+          }
+        }
+      }
+      if (models.length > 0){
+        let outRect = DDeiAbstractShape.getOutRectByPV(models);
+        stage.wpv.x = -(outRect.x+outRect.width/2) + (stage.ddInstance.render.canvas.width / stage.ddInstance.render.ratio) / 2
+        stage.wpv.y = -(outRect.y + outRect.height / 2) + (stage.ddInstance.render.canvas.height / stage.ddInstance.render.ratio) / 2
+      }
+    }
+  }
+
+  /**
+   * 切换文件
+   * @param file 
+   */
+  changeFile(fileIndex:number,sheetIndex:number = -1):void{
+    let ddInstance = this?.ddInstance;
+    let file:DDeiFile|null = null;
+    if (fileIndex || fileIndex ==0){
+      file = this.files[fileIndex];
+    }
+    if (file) {
+      this.files.forEach((item) => {
+        item.active = DDeiActiveType.NONE;
+      });
+      file.active = DDeiActiveType.ACTIVE;
+      //刷新画布
+      this.currentFileIndex = fileIndex;
+      let sheets = file?.sheets;
+
+      if (file && sheets && ddInstance) {
+        if (sheetIndex >=0){
+          file.changeSheet(sheetIndex)
+        }
+        let stage = sheets[file.currentSheetIndex].stage;
+        stage.ddInstance = ddInstance;
+        //刷新页面
+        ddInstance.stage = stage;
+        //加载场景渲染器
+        stage.initRender();
+      }
+    }
+
   }
 }
 export { DDeiEditor }

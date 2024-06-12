@@ -934,14 +934,24 @@ class DDeiStage {
           let model = models[i];
           let data = model[attr]
           if (data && typeof (data) == 'string'){
-            let searchIndex = 0;
-            while(true){
-              let ix = data.indexOf(keywords, searchIndex);
-              if (ix != -1){
-                resultArray.push({stage:this.unicode,model:model,attr:attr,index:ix,len:keywords.length})
-                searchIndex = ix+1;
-              }else{
-                break;
+            if (!matchCase){
+              data = data.toLowerCase();
+              keywords = keywords.toLowerCase();
+            }
+            if (!matchAll){
+              let searchIndex = 0;
+              while(true){
+                let ix = data.indexOf(keywords, searchIndex);
+                if (ix != -1){
+                  resultArray.push({model:model,attr:attr,index:ix,len:keywords.length})
+                  searchIndex = ix+1;
+                }else{
+                  break;
+                }
+              }
+            }else{
+              if (data == keywords){
+                resultArray.push({ model: model, attr: attr, index: 0, len: keywords.length })
               }
             }
           }
