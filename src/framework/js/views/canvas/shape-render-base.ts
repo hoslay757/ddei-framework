@@ -205,7 +205,7 @@ class DDeiAbstractShapeRender {
     let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
     if (isCtrl) {
       //判断当前操作控件是否选中
-      if (this.stageRender.currentOperateShape.state == DDeiEnumControlState.SELECTED) {
+      if (this.stageRender.currentOperateShape?.state == DDeiEnumControlState.SELECTED) {
         pushMulits.push({ actionType: DDeiEnumBusCommandType.ModelChangeSelect, data: [{ id: this.model.id, value: DDeiEnumControlState.DEFAULT }] });
       } else {
         //选中当前操作控件
