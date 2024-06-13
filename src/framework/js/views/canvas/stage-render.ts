@@ -1604,6 +1604,8 @@ class DDeiStageCanvasRender {
             this.model.wpv.y = -this.model.height + vScrollHeight
           }
         }
+        
+        DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", "SCROLL_WORKING", null, this.model.ddInstance, evt)
         this.model.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
         this.model.ddInstance?.bus?.executeAll()
       } else {

@@ -564,56 +564,58 @@ class DDeiEditorUtil {
       }
 
       let dialog = document.getElementById(editor.id+"_"+id);
-      dialog.style.display = "block";
-      let msgEle = dialog?.getElementsByClassName("msg")[0];
-      if (msgEle) {
-        msgEle.innerHTML = "";
-        if (data.msg) {
-          msgEle.innerHTML = data.msg;
+      if (dialog){
+        dialog.style.display = "block";
+        let msgEle = dialog.getElementsByClassName("msg")[0];
+        if (msgEle) {
+          msgEle.innerHTML = "";
+          if (data.msg) {
+            msgEle.innerHTML = data.msg;
+          }
         }
-      }
-      //设置位置信息
-      if (pos?.type) {
-        let left, top
-        switch (pos.type) {
-          //自由设置位置
-          case 99: {
-            left = pos.left
-            top = pos.top
-          } break;
-          //基于触发元素的底部
-          case 2: {
-            let absPos = DDeiUtil.getDomAbsPosition(el, editor)
-            left = absPos.left + (pos.dx ? pos.dx : 0)
-            top = (absPos.top - dialog?.clientHeight + (pos.dy ? pos.dy : 0))
-          } break;
-          //基于触发元素的底部居中
-          case 3: {
-            let absPos = DDeiUtil.getDomAbsPosition(el, editor)
-            left = absPos.left - (dialog.clientWidth / 2 - el.clientWidth / 2) + (pos.dx ? pos.dx : 0)
-            top = (absPos.top - dialog?.clientHeight + (pos.dy ? pos.dy : 0))
-          } break;
-          //基于触发元素的顶部
-          case 4: {
-            let absPos = DDeiUtil.getDomAbsPosition(el, editor)
-            left = absPos.left + (pos.dx ? pos.dx : 0)
-            top = (absPos.top + el.clientHeight + (pos.dy ? pos.dy : 0))
-          } break;
-          //基于触发元素的顶部居中
-          case 5: {
-            let absPos = DDeiUtil.getDomAbsPosition(el, editor)
-            left = absPos.left - (dialog.clientWidth / 2 - el.clientWidth / 2) + (pos.dx ? pos.dx : 0)
-            top = (absPos.top + el.clientHeight + (pos.dy ? pos.dy : 0))
-          } break;
+        //设置位置信息
+        if (pos?.type) {
+          let left, top
+          switch (pos.type) {
+            //自由设置位置
+            case 99: {
+              left = pos.left
+              top = pos.top
+            } break;
+            //基于触发元素的底部
+            case 2: {
+              let absPos = DDeiUtil.getDomAbsPosition(el, editor)
+              left = absPos.left + (pos.dx ? pos.dx : 0)
+              top = (absPos.top - dialog?.clientHeight + (pos.dy ? pos.dy : 0))
+            } break;
+            //基于触发元素的底部居中
+            case 3: {
+              let absPos = DDeiUtil.getDomAbsPosition(el, editor)
+              left = absPos.left - (dialog.clientWidth / 2 - el.clientWidth / 2) + (pos.dx ? pos.dx : 0)
+              top = (absPos.top - dialog?.clientHeight + (pos.dy ? pos.dy : 0))
+            } break;
+            //基于触发元素的顶部
+            case 4: {
+              let absPos = DDeiUtil.getDomAbsPosition(el, editor)
+              left = absPos.left + (pos.dx ? pos.dx : 0)
+              top = (absPos.top + el.clientHeight + (pos.dy ? pos.dy : 0))
+            } break;
+            //基于触发元素的顶部居中
+            case 5: {
+              let absPos = DDeiUtil.getDomAbsPosition(el, editor)
+              left = absPos.left - (dialog.clientWidth / 2 - el.clientWidth / 2) + (pos.dx ? pos.dx : 0)
+              top = (absPos.top + el.clientHeight + (pos.dy ? pos.dy : 0))
+            } break;
+          }
+          if (left + dialog?.clientWidth > document.body.scrollWidth) {
+            left = document.body.scrollWidth - dialog?.clientWidth - 10
+          }
+          if (top + dialog?.clientHeight > document.body.scrollHeight) {
+            top = document.body.scrollHeight - dialog?.clientHeight - 10
+          }
+          dialog.style.left = left + "px"
+          dialog.style.top = top + "px"
         }
-        if (left + dialog?.clientWidth > document.body.scrollWidth) {
-          left = document.body.scrollWidth - dialog?.clientWidth - 10
-        }
-        if (top + dialog?.clientHeight > document.body.scrollHeight) {
-          top = document.body.scrollHeight - dialog?.clientHeight - 10
-        }
-        dialog.style.left = left + "px"
-        dialog.style.top = top + "px"
       }
     }, 50);
 
@@ -645,51 +647,52 @@ class DDeiEditorUtil {
     }
 
     let dialog = document.getElementById(editor.id+"_"+id);
+    if(dialog){
+      dialog.style.display = "block";
 
-    dialog.style.display = "block";
-
-    //设置位置信息
-    if (pos?.type) {
-      let left, top
-      switch (pos.type) {
-        //自由设置位置
-        case 99: {
-          left = pos.left
-          top = pos.top
-        } break;
-        //基于触发元素的底部
-        case 2: {
-          let absPos = DDeiUtil.getDomAbsPosition(el)
-          left = absPos.left + (pos.dx ? pos.dx : 0)
-          top = (absPos.top - dialog?.clientHeight + (pos.dy ? pos.dy : 0))
-        } break;
-        //基于触发元素的底部居中
-        case 3: {
-          let absPos = DDeiUtil.getDomAbsPosition(el)
-          left = absPos.left - (dialog.clientWidth / 2 - el.clientWidth / 2) + (pos.dx ? pos.dx : 0)
-          top = (absPos.top - dialog?.clientHeight + (pos.dy ? pos.dy : 0))
-        } break;
-        //基于触发元素的顶部
-        case 4: {
-          let absPos = DDeiUtil.getDomAbsPosition(el)
-          left = absPos.left + (pos.dx ? pos.dx : 0)
-          top = (absPos.top + el.clientHeight + (pos.dy ? pos.dy : 0))
-        } break;
-        //基于触发元素的顶部居中
-        case 5: {
-          let absPos = DDeiUtil.getDomAbsPosition(el)
-          left = absPos.left - (dialog.clientWidth / 2 - el.clientWidth / 2) + (pos.dx ? pos.dx : 0)
-          top = (absPos.top + el.clientHeight + (pos.dy ? pos.dy : 0))
-        } break;
+      //设置位置信息
+      if (pos?.type) {
+        let left, top
+        switch (pos.type) {
+          //自由设置位置
+          case 99: {
+            left = pos.left
+            top = pos.top
+          } break;
+          //基于触发元素的底部
+          case 2: {
+            let absPos = DDeiUtil.getDomAbsPosition(el)
+            left = absPos.left + (pos.dx ? pos.dx : 0)
+            top = (absPos.top - dialog?.clientHeight + (pos.dy ? pos.dy : 0))
+          } break;
+          //基于触发元素的底部居中
+          case 3: {
+            let absPos = DDeiUtil.getDomAbsPosition(el)
+            left = absPos.left - (dialog.clientWidth / 2 - el.clientWidth / 2) + (pos.dx ? pos.dx : 0)
+            top = (absPos.top - dialog?.clientHeight + (pos.dy ? pos.dy : 0))
+          } break;
+          //基于触发元素的顶部
+          case 4: {
+            let absPos = DDeiUtil.getDomAbsPosition(el)
+            left = absPos.left + (pos.dx ? pos.dx : 0)
+            top = (absPos.top + el.clientHeight + (pos.dy ? pos.dy : 0))
+          } break;
+          //基于触发元素的顶部居中
+          case 5: {
+            let absPos = DDeiUtil.getDomAbsPosition(el)
+            left = absPos.left - (dialog.clientWidth / 2 - el.clientWidth / 2) + (pos.dx ? pos.dx : 0)
+            top = (absPos.top + el.clientHeight + (pos.dy ? pos.dy : 0))
+          } break;
+        }
+        if (left + dialog?.clientWidth > document.body.scrollWidth) {
+          left = document.body.scrollWidth - dialog?.clientWidth - 10
+        }
+        if (top + dialog?.clientHeight > document.body.scrollHeight) {
+          top = document.body.scrollHeight - dialog?.clientHeight - 10
+        }
+        dialog.style.left = left + "px"
+        dialog.style.top = top + "px"
       }
-      if (left + dialog?.clientWidth > document.body.scrollWidth) {
-        left = document.body.scrollWidth - dialog?.clientWidth - 10
-      }
-      if (top + dialog?.clientHeight > document.body.scrollHeight) {
-        top = document.body.scrollHeight - dialog?.clientHeight - 10
-      }
-      dialog.style.left = left + "px"
-      dialog.style.top = top + "px"
     }
 
 
