@@ -1206,6 +1206,28 @@ class DDeiEditor {
     }
 
   }
+
+  /**
+   * 替换模型数据
+   * @param models 被替换的模型
+   * @param attr 属性
+   * @param sIdx 开始下标
+   * @param eIdx 结束下标
+   * @param data 数据
+   */
+  replaceModelsData(models:Array<DDeiAbstractShape>, attr: string,sIdx:number = -1,eIdx:number = -1, data:string = ''): void{
+    if (models?.length > 0 && attr && sIdx != -1 && eIdx != -1 && eIdx >=sIdx) {
+      models.forEach(model=>{
+        let oldValue = model[attr];
+        if (oldValue && typeof(oldValue) == 'string'){
+          let sStr = oldValue.substring(0,sIdx)
+          let eStr = oldValue.substring(eIdx, oldValue.length)
+          let newValue = sStr+data+eStr;
+          model[attr] = newValue
+        }
+      })
+    }
+  }
 }
 export { DDeiEditor }
 export default DDeiEditor
