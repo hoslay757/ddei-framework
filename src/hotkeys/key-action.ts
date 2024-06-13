@@ -147,7 +147,7 @@ class DDeiKeyAction extends DDeiPluginBase {
               let times = DDeiConfig.KEY_DOWN_TIMES.get(m1Str);
               //如果在时间差内达到了次数，则触发，否则丢弃，并重新计算
               if (nowTime - startTime <= item.interval && times + 1 >= item.times) {
-                item.action.action(evt, ddInstance, editor);
+                item.action.action(evt, ddInstance, editor,item);
                 //清空记录
                 DDeiConfig.KEY_DOWN_TIMES.delete(m1Str)
                 //记录开始时间
@@ -161,7 +161,7 @@ class DDeiKeyAction extends DDeiPluginBase {
               }
             }
           } else {
-            item.action.action(evt, ddInstance, editor);
+            item.action.action(evt, ddInstance, editor,item);
             matched = true;
             if (item.break == true || item.break == 1) {
               break;
