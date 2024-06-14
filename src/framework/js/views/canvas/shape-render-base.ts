@@ -230,28 +230,35 @@ class DDeiAbstractShapeRender {
    * 鼠标移动
    */
   mouseMove(evt: Event): void {
+    
     //获取操作点，如果有则添加到其Layer
     if (this.layer) {
-
-      let modeName = DDeiUtil.getConfigValue("MODE_NAME", this.ddRender?.model);
-      let accessLink = DDeiUtil.isAccess(
-        DDeiEnumOperateType.LINK, [this.model], null, modeName,
-        this.ddRender?.model
-      );
-      if (accessLink) {
-        let ex = evt.offsetX;
-        let ey = evt.offsetY;
-        ex /= window.remRatio
-        ey /= window.remRatio
-        ex -= this.stage.wpv.x;
-        ey -= this.stage.wpv.y
-        this.changeOpPoints(ex, ey);
+      
+      //执行回调函数
+      let rsState = DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_MOVE_IN_CONTROL", "MOVE_IN_CONTROL", { model: this.model }, this.ddRender.model, evt)
+      
+      if (rsState == 0 || rsState == 1) {
+        let modeName = DDeiUtil.getConfigValue("MODE_NAME", this.ddRender?.model);
+        let accessLink = DDeiUtil.isAccess(
+          DDeiEnumOperateType.LINK, [this.model], null, modeName,
+          this.ddRender?.model
+        );
+        if (accessLink) {
+          let ex = evt.offsetX;
+          let ey = evt.offsetY;
+          ex /= window.remRatio
+          ey /= window.remRatio
+          ex -= this.stage.wpv.x;
+          ey -= this.stage.wpv.y
+          this.changeOpPoints(ex, ey);
+        }
       }
     }
 
   }
 
   changeOpPoints(ex: number, ey: number, pointMode: number | null = null) {
+    
     //获取直线连接操作点
     let appendPoints = []
     let hasPoint = false;

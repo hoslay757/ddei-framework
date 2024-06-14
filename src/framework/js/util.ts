@@ -358,7 +358,7 @@ class DDeiUtil {
     let actualLeft = element.offsetLeft;
     let actualTop = element.offsetTop;
     let current = element.offsetParent;
-    while (current !== null) {
+    while (current) {
       actualLeft += current.offsetLeft;
       actualTop += (current.offsetTop + current.clientTop);
       current = current.offsetParent;
@@ -374,7 +374,7 @@ class DDeiUtil {
   }
 
   /**
-   * 返回空间模型在dom下的绝对坐标
+   * 返回控件模型在dom下的绝对坐标
    * @param element 
    */
   static getModelsDomAbsPosition(models: DDeiAbstractShape[]): object {
