@@ -1844,9 +1844,12 @@ class DDeiLayerCanvasRender {
         //光标所属位置是否有控件
         //有控件：分发事件到当前控件
         if (operateControls != null && operateControls.length > 0) {
+          //执行回调函数
+          DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_MOVE_IN_CONTROL", "MOVE_IN_CONTROL", { models: operateControls }, this.ddRender.model, evt)
           operateControls.forEach(control => {
             control.render.mouseMove(evt)
           })
+          
           // operateControls[0].render.mouseMove(evt);
           this.stage.ddInstance.bus.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'all-scroll' }, evt);
         } else if (!inSelector || this.stageRender.selector.passIndex == -1) {
@@ -1855,7 +1858,7 @@ class DDeiLayerCanvasRender {
           } else if (this.stage.ddInstance?.editMode == 2) {
             this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'grab' }, evt);
           }
-          DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_MOVE_IN_LAYER", "MOVE_IN_LAYER", { model: this.model,ex:ex,ey:ey }, this.ddRender.model, evt)
+          DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_MOVE_IN_LAYER", "MOVE_IN_LAYER", { layer: this.model,ex:ex,ey:ey }, this.ddRender.model, evt)
         }
         if (this.stage?.brushData) {
           this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { image: 'cursor-brush' }, evt);
