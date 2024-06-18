@@ -7,6 +7,7 @@ import DDeiLink from './link';
 import { Vector3, Matrix3 } from 'three';
 import DDeiLine from './line';
 import DDeiModelArrtibuteValue from './attribute/attribute-value';
+import DDeiEnumControlState from '../enums/control-state';
 
 
 /**
@@ -604,6 +605,21 @@ class DDeiStage {
     this.layers.forEach(layer=>{
       layer.removeModelById(ids);
     })
+  }
+
+  /**
+  * 选择控件
+  */
+  makeSelectModels(models: DDeiAbstractShape[] | undefined, cancelSelectOther:boolean = true): void {
+    if (cancelSelectOther){
+      for (let i = 0; i < this.layers.length; i++) {
+        this.layers[i].cancelAllLevelSelectModels();
+      }
+    }
+    models?.forEach(model=>{
+      model.state = DDeiEnumControlState.SELECTED
+    })
+    
   }
 
   /**

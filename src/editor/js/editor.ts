@@ -10,7 +10,7 @@ import { markRaw } from "vue";
 import config from "./config"
 import { cloneDeep } from "lodash";
 import FONTS from "../../framework/js/fonts/font"
-import {Matrix3} from 'three'
+import { Matrix3, Vector3 } from 'three'
 import DDeiThemeBase from "@ddei-core/themes/theme";
 import DDeiAbstractShape from "@ddei-core/framework/js/models/shape";
 import  DDeiLifeCycle  from "@ddei-core/lifecycle/lifecycle";
@@ -19,7 +19,9 @@ import { DDeiModelArrtibuteValue } from "@ddei-core/framework/js/models/attribut
 import DDeiEnumBusCommandType from "../../framework/js/enums/bus-command-type";
 import DDeiEditorEnumBusCommandType from "./enums/editor-command-type";
 import { DDeiActiveType } from "./enums/active-type";
+import { DDeiLink } from "@ddei-core/framework/js/models/link"
 import type DDeiStage from "../../framework/js/models/stage";
+import DDeiLine from "../../framework/js/models/line"
 /**
  * DDei图形编辑器类，用于维护编辑器实例、全局状态以及全局属性
  */
@@ -1004,6 +1006,12 @@ class DDeiEditor {
                 0, 1, control.offsetY ? control.offsetY : 0,
                 0, 0, 1);
               m1.premultiply(move1Matrix)
+            } else if ((control.x || control.x == 0) && (control.y || control.y == 0)){
+              let move1Matrix = new Matrix3(
+                1, 0, -(-stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2) + control.x,
+                0, 1, -(-stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2) + control.y,
+                0, 0, 1);
+              m1.premultiply(move1Matrix)
             }
             cc.transVectors(m1)
             cc.updateLinkModels()
@@ -1013,6 +1021,96 @@ class DDeiEditor {
             cc.initRender();
             shapes.push(cc);
           }
+        }
+      });
+      this.notifyChange();
+    }
+    return shapes;
+  }
+
+  /**
+   * 向当前画布添加连线
+   */
+  addLines(controls: object[]): DDeiAbstractShape[] {
+    //添加控件到图层
+    let stage = this.ddInstance.stage
+    let layer = stage?.layers[stage?.layerIndex];
+    let shapes: DDeiAbstractShape[] = []
+    if (layer) {
+      controls.forEach(control => {
+        if (control.startPoint && control.endPoint) {
+          //读取配置
+          let lineJson = DDeiUtil.getLineInitJSON();
+          lineJson.id = "line_" + (++stage.idIdx)
+          //线段类型
+          lineJson.type = 2
+          
+          //根据线的类型生成不同的初始化点
+          lineJson.type = 2
+          //直线两个点
+          lineJson.pvs = [new Vector3(control.startPoint.x, control.startPoint.y, 1), new Vector3(control.endPoint.x, control.endPoint.y, 1)]
+          lineJson.cpv = lineJson.pvs[0]
+          //初始化开始点和结束点
+
+          let cc = DDeiLine.initByJSON(lineJson, { currentStage: stage, currentLayer: layer, currentContainer: layer });
+          
+          //设置控件值
+          for (let i in control) {
+            if (i != 'startPoint' && i != 'endPoint' && i != 'pvs' && i != 'spv' && i != 'hpv' && i != 'cpv' && i != 'x' && i != 'y' && i != 'width' && i != 'height' && (control[i] || control[i] == 0 || control[i] == false)) {
+              cc[i] = control[i];
+            }
+          }
+          //构造线段关键属性
+          // cc.startPoint = 
+          // cc.endPoint = new Vector3(control.endPoint.x, control.endPoint.y, 1)
+          // cc.pvs = [cc.startPoint, cc.endPoint]
+          // cc.cpv = cc.pvs[0]
+          let smodel,emodel
+          if (control.smodel) {
+            smodel = this.getControlById(control.smodel.id)
+            //创建连接点
+            let id = "_" + DDeiUtil.getUniqueCode()
+            smodel.exPvs[id] = new Vector3(control.smodel.x, control.smodel.y, 1)
+            smodel.exPvs[id].rate = control.smodel.rate
+            smodel.exPvs[id].sita = control.smodel.sita
+            smodel.exPvs[id].index = control.smodel.index
+            smodel.exPvs[id].id = id
+            let link = new DDeiLink({
+              sm: smodel,
+              dm: cc,
+              smpath: "exPvs." + id,
+              dmpath: "startPoint",
+              stage: stage
+            });
+            stage.addLink(link)
+            
+          }
+          if (control.emodel) {
+            emodel = this.getControlById(control.emodel.id)
+            //创建连接点
+            let id = "_" + DDeiUtil.getUniqueCode()
+            emodel.exPvs[id] = new Vector3(control.emodel.x, control.emodel.y, 1)
+            emodel.exPvs[id].rate = control.emodel.rate
+            emodel.exPvs[id].sita = control.emodel.sita
+            emodel.exPvs[id].index = control.emodel.index
+            emodel.exPvs[id].id = id
+            let link = new DDeiLink({
+              sm: emodel,
+              dm: cc,
+              smpath: "exPvs." + id,
+              dmpath: "endPoint",
+              stage: stage
+            });
+            stage.addLink(link)
+          }
+          
+          //绑定并初始化渲染器
+          cc.initRender();
+          layer.addModel(cc,false)
+          smodel?.updateLinkModels();
+          emodel?.updateLinkModels();
+          shapes.push(cc);
+          
         }
       });
       this.notifyChange();

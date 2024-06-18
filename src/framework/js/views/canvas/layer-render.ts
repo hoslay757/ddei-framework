@@ -354,6 +354,7 @@ class DDeiLayerCanvasRender {
    */
   drawOpPoints(): void {
     if (this.model?.opPoints?.length > 0) {
+      
       //获得 2d 上下文对象
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
@@ -367,6 +368,7 @@ class DDeiLayerCanvasRender {
           firstOp2Point = null
 
         } else if (point.mode == 3) {
+  
           if (point.oppoint == 2 || point.oppoint == 4) {
             if (!beforeOp2Point) {
               beforeOp2Point = point
@@ -400,7 +402,6 @@ class DDeiLayerCanvasRender {
             ctx.closePath();
           }
         } else {
-
           let weight = 4;
           if (point.isMiddle) {
             weight = 5;
@@ -1442,7 +1443,7 @@ class DDeiLayerCanvasRender {
           dx = this.stageRender.dragObj.dx
           dy = this.stageRender.dragObj.dy
         }
-
+        DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", "CHANGE_WPV", null, this.stage?.ddInstance, evt)
         if (Math.abs(ex - dx) >= 10 || Math.abs(ey - dy) >= 10) {
           this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING
         }
@@ -1545,8 +1546,10 @@ class DDeiLayerCanvasRender {
           //渲染图形
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
         }
+       
         //判定是否到达了另一个控件的操作点
         this.model.opPoints = [];
+        DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", "CHANGE_WPV", null, this.stage?.ddInstance, evt)
         if (this.model.opLine?.render) {
           this.model.opLine.render.enableRefreshShape()
         }
