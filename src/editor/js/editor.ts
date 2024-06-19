@@ -942,7 +942,7 @@ class DDeiEditor {
   /**
    * 向当前画布添加控件,缺省坐标为当前画布的中心
    */
-  addControls(controls:object[]):DDeiAbstractShape[]{
+  addControls(controls: object[], notify: boolean = true):DDeiAbstractShape[]{
     
     //添加控件到图层
     let stage = this.ddInstance.stage
@@ -1023,7 +1023,9 @@ class DDeiEditor {
           }
         }
       });
-      this.notifyChange();
+      if (notify) {
+        this.notifyChange();
+      }
     }
     return shapes;
   }
@@ -1031,7 +1033,7 @@ class DDeiEditor {
   /**
    * 向当前画布添加连线
    */
-  addLines(controls: object[]): DDeiAbstractShape[] {
+  addLines(controls: object[],notify:boolean = true): DDeiAbstractShape[] {
     //添加控件到图层
     let stage = this.ddInstance.stage
     let layer = stage?.layers[stage?.layerIndex];
@@ -1061,10 +1063,6 @@ class DDeiEditor {
             }
           }
           //构造线段关键属性
-          // cc.startPoint = 
-          // cc.endPoint = new Vector3(control.endPoint.x, control.endPoint.y, 1)
-          // cc.pvs = [cc.startPoint, cc.endPoint]
-          // cc.cpv = cc.pvs[0]
           let smodel,emodel
           if (control.smodel) {
             smodel = this.getControlById(control.smodel.id)
@@ -1103,17 +1101,22 @@ class DDeiEditor {
             });
             stage.addLink(link)
           }
-          
-          //绑定并初始化渲染器
-          cc.initRender();
-          layer.addModel(cc,false)
+          if (!control.isShadowControl) {
+            layer.addModel(cc, false)
+            cc.initRender()
+          }else{
+            layer.shadowControls.push(cc);
+            cc.initRender()
+          }
           smodel?.updateLinkModels();
           emodel?.updateLinkModels();
           shapes.push(cc);
           
         }
       });
-      this.notifyChange();
+      if (notify){
+        this.notifyChange();
+      }
     }
     return shapes;
   }

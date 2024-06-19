@@ -343,6 +343,7 @@ class DDeiLayerCanvasRender {
         let item = this.model.models.get(key);
         //判定控件是否在绘制区间，如果在则绘制
         if (!inRect || item?.isInRect(x, y, x1, y1)) {
+         
           item.render?.drawShape();
         }
       });
@@ -1078,11 +1079,13 @@ class DDeiLayerCanvasRender {
                 
                 let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
                 let momodel = this.stage?.getModelById(id)
-                if (momodel?.baseModelType == 'DDeiLine') {
-                  moveOriginLines.push(momodel.id)
+                if (momodel){
+                  if (momodel?.baseModelType == 'DDeiLine') {
+                    moveOriginLines.push(momodel.id)
+                  }
+                  moveOriginModels.push(momodel)
+                  moveOriginModelIds.push(momodel.id)
                 }
-                moveOriginModels.push(momodel)
-                moveOriginModelIds.push(momodel.id)
               });
               //同步影子元素的坐标大小等状态到当前模
               for (let i = 0; i < this.model.shadowControls.length; i++) {

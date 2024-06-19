@@ -688,10 +688,10 @@ class DDeiStage {
   /**
    * 获取所有图层的模型
    */
-  getLayerModels(ignoreModelIds: string[], level: number = 1): DDeiAbstractShape[] {
+  getLayerModels(ignoreModelIds: string[], level: number = 1, rect: object): DDeiAbstractShape[] {
     let models: DDeiAbstractShape[] = [];
     for (let i = 0; i < this.layers.length; i++) {
-      let subModels = this.layers[i].getSubModels(ignoreModelIds, level)
+      let subModels = this.layers[i].getSubModels(ignoreModelIds, level, rect)
       models = models.concat(subModels);
     }
     return models;
