@@ -108,20 +108,6 @@ class DDeiUtil {
 
 
   /**
-   * 记录鼠标位置
-   * @param offsetX 
-   * @param offsetY 
-   * @param screenX 
-   * @param screenY 
-   */
-  static setMousePosition(offsetX: number, offsetY: number, screenX: number, screenY: number): void {
-    DDeiUtil.offsetX = offsetX
-    DDeiUtil.offsetY = offsetY
-    DDeiUtil.screenX = screenX
-    DDeiUtil.screenY = screenY
-  }
-
-  /**
    * 计算文字的高度和宽度
    */
   static measureTextSize(ddInstance, text, fontFamily, fontSize): object {

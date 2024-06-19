@@ -1355,6 +1355,9 @@ class DDeiLayerCanvasRender {
     } else {
       this.ddRender.inEdge = 0;
     }
+    //记录ex和ey
+    this.ddRender.inAreaX = ex;
+    this.ddRender.inAreaY = ey;
     ex -= this.stage.wpv.x;
     ey -= this.stage.wpv.y;
 
@@ -1847,6 +1850,7 @@ class DDeiLayerCanvasRender {
         }
         // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
         let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, ex, ey, true);
+        this.ddRender.inAreaControls = operateControls;
         //光标所属位置是否有控件
         //有控件：分发事件到当前控件
         if (operateControls != null && operateControls.length > 0) {

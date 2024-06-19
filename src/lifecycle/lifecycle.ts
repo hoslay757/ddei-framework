@@ -100,6 +100,13 @@ class DDeiLifeCycle extends DDeiPluginBase {
    */
   EVENT_MOUSE_MOVE_IN_LAYER: DDeiFuncData | null = null;
 
+  /**
+   * 鼠标在某个区域
+   */
+  EVENT_MOUSE_IN_AREA: DDeiFuncData | null = null;
+
+
+  
   
   
   // ============================ 方法 ===============================
