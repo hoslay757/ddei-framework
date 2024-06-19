@@ -267,6 +267,9 @@ class DDei {
    * 初始化渲染器
    */
   initRender(): void {
+    if(this.render){
+      this.render.destroyed();
+    }
     //绑定并初始化渲染器
     DDeiConfig.bindRender(this);
     this.render.init();
