@@ -302,7 +302,7 @@ class DDeiCanvasRender {
       this.inEdgeTime += 20;
       this.model.stage?.render?.mouseInEdge(this.inEdge, this.inEdgeTime)
     }
-    DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_IN_AREA", "MOUSE_IN_AREA", { x: this.inAreaX, y: this.inAreaY, models: this.inAreaControls }, this.model.ddInstance, null)
+    DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_IN_AREA", "MOUSE_IN_AREA", { x: this.inAreaX, y: this.inAreaY, models: this.inAreaControls }, this.model, null)
   }
 
   /**

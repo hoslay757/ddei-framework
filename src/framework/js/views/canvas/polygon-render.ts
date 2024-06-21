@@ -226,7 +226,19 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       if (composeRender > 0) {
         oldRat1 = rat1
       }
+      ctx.save();
+      if (this.model.mirrorX || this.model.mirrorY){
+        ctx.translate(this.model.cpv.x * oldRat1, this.model.cpv.y * oldRat1)
+        if(this.model.mirrorX){
+          ctx.scale(-1, 1)
+        } 
+        if (this.model.mirrorY){
+          ctx.scale(1, -1)
+        }
+        ctx.translate(-this.model.cpv.x * oldRat1, -this.model.cpv.y * oldRat1)
+      }
       ctx.drawImage(this.tempCanvas, 0, 0, outRect.width * rat1, outRect.height * rat1, (this.model.cpv.x - outRect.width / 2) * oldRat1, (this.model.cpv.y - outRect.height / 2) * oldRat1, outRect.width * oldRat1, outRect.height * oldRat1)
+      ctx.restore()
     }
 
   }
