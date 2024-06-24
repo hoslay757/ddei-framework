@@ -207,7 +207,7 @@ class DDeiLayer {
    * 添加模型，并维护关系
    * @param model 被添加的模型
    */
-  addModel(model: DDeiAbstractShape): void {
+  addModel(model: DDeiAbstractShape,notify:boolean = true): void {
     if (this.midList.indexOf(model.id) == -1) {
       model.stage = this.stage;
       //将模型添加进图层
@@ -220,7 +220,9 @@ class DDeiLayer {
       model.layer = this;
       model.pModel = this;
       this.resortModelByZIndex();
-      this.notifyChange()
+      if (notify){
+        this.notifyChange()
+      }
     }
   }
 
@@ -229,10 +231,13 @@ class DDeiLayer {
   * @param model 被移除的模型
   * @param destroy 销毁，缺省false
   */
-  removeModels(models: DDeiAbstractShape[], destroy: boolean = false): void {
+  removeModels(models: DDeiAbstractShape[], destroy: boolean = false,notify:boolean = true): void {
     models?.forEach(model => {
       this.removeModel(model, destroy)
     })
+    if (notify) {
+      this.notifyChange()
+    }
   }
 
   cascadeRemoveSelf(): void {
@@ -242,7 +247,7 @@ class DDeiLayer {
    * @param model 被移除的模型
    * @param destroy 销毁，缺省false
    */
-  removeModel(model: DDeiAbstractShape, destroy: boolean = false): void {
+  removeModel(model: DDeiAbstractShape, destroy: boolean = false,notify:boolean = true): void {
     this.models.delete(model.id);
 
     let idx = this.midList.indexOf(model.id);
@@ -262,13 +267,15 @@ class DDeiLayer {
     if (this.stage?.render) {
       this.stage.render.refreshJumpLine = false
     }
-    this.notifyChange()
+    if (notify) {
+      this.notifyChange()
+    }
   }
 
   /**
    * 根据ID删除元素
    */
-  removeModelById(ids : string[]):void{
+  removeModelById(ids : string[],notify:boolean = true):void{
     ids?.forEach(id => {
       let model = this.getModelById(id)
       if(model){
@@ -280,7 +287,9 @@ class DDeiLayer {
         model.removeModelById(ids);
       }
     })
-    this.notifyChange()
+    if (notify) {
+      this.notifyChange()
+    }
   }
 
   /**
@@ -313,7 +322,7 @@ class DDeiLayer {
   /**
   * 将控件设置到顶层
   */
-  pushTop(models: DDeiAbstractShape[]): void {
+  pushTop(models: DDeiAbstractShape[],notify:boolean = true): void {
     models.forEach(item => {
       let lastItem = this.models.get(this.midList[this.midList.length - 1]);
       if (lastItem.id != item.id) {
@@ -322,13 +331,15 @@ class DDeiLayer {
       }
     })
     this.resortModelByZIndex()
-    this.notifyChange()
+    if (notify) {
+      this.notifyChange()
+    }
   }
 
   /**
    * 将控件设置到底层
    */
-  pushBottom(models: DDeiAbstractShape[]): void {
+  pushBottom(models: DDeiAbstractShape[], notify: boolean = true): void {
     models.forEach(item => {
       item.zIndex = null
       let oldIdIndex = this.midList.indexOf(item.id);
@@ -338,13 +349,15 @@ class DDeiLayer {
       }
     })
     this.resortModelByZIndex()
-    this.notifyChange()
+    if (notify) {
+      this.notifyChange()
+    }
   }
 
   /**
   * 将控件设置到上一层
   */
-  pushUp(models: DDeiAbstractShape[]): void {
+  pushUp(models: DDeiAbstractShape[], notify: boolean = true): void {
     models.forEach(item => {
       if (!item.zIndex) {
         item.zIndex = 1
@@ -353,13 +366,15 @@ class DDeiLayer {
       }
     })
     this.resortModelByZIndex()
-    this.notifyChange()
+    if (notify) {
+      this.notifyChange()
+    }
   }
 
   /**
    * 将控件设置到下一层
    */
-  pushDown(models: DDeiAbstractShape[]): void {
+  pushDown(models: DDeiAbstractShape[], notify: boolean = true): void {
     models.forEach(item => {
       if (!item.zIndex || item.zIndex <= 1) {
         item.zIndex = null
@@ -374,7 +389,9 @@ class DDeiLayer {
       }
     })
     this.resortModelByZIndex()
-    this.notifyChange()
+    if (notify) {
+      this.notifyChange()
+    }
   }
 
   /**

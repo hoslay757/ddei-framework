@@ -7,6 +7,7 @@ import DDeiBusCommand from '../bus-command';
 import { Matrix3, Vector3 } from 'three';
 import DDeiLayoutManagerFactory from '../../layout/layout-manager-factory';
 import { has } from 'lodash';
+import DDeiUtil from '../../util';
 /**
  * 改变模型坐标的总线Command
  */
@@ -162,6 +163,7 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
           bus?.insert(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: stage.render.selector.passIndex }, evt);
         }
       }
+      DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", "DRAG", null, stage.ddInstance, evt)
       return true;
     }
     return false;

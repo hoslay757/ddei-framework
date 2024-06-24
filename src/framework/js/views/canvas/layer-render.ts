@@ -343,6 +343,7 @@ class DDeiLayerCanvasRender {
         let item = this.model.models.get(key);
         //判定控件是否在绘制区间，如果在则绘制
         if (!inRect || item?.isInRect(x, y, x1, y1)) {
+         
           item.render?.drawShape();
         }
       });
@@ -354,6 +355,7 @@ class DDeiLayerCanvasRender {
    */
   drawOpPoints(): void {
     if (this.model?.opPoints?.length > 0) {
+      
       //获得 2d 上下文对象
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
@@ -367,6 +369,7 @@ class DDeiLayerCanvasRender {
           firstOp2Point = null
 
         } else if (point.mode == 3) {
+  
           if (point.oppoint == 2 || point.oppoint == 4) {
             if (!beforeOp2Point) {
               beforeOp2Point = point
@@ -400,7 +403,6 @@ class DDeiLayerCanvasRender {
             ctx.closePath();
           }
         } else {
-
           let weight = 4;
           if (point.isMiddle) {
             weight = 5;
@@ -895,7 +897,7 @@ class DDeiLayerCanvasRender {
                   if ((opPoint?.model && (Math.abs(opPoint.x - item.startPoint.x) >= 1 || Math.abs(opPoint.y - item.startPoint.y) >= 1)) || maxLength >= 15) {
                     //影子控件转变为真实控件并创建
                     item.id = id
-                    this.model.addModel(item)
+                    this.model.addModel(item,false)
                     item.initRender();
                     model = item;
                     delete model.isShadowControl
@@ -1063,14 +1065,27 @@ class DDeiLayerCanvasRender {
               let moveOriginModels = []
               let moveOriginModelIds = []
               let moveOriginLines = []
+              // if (this.model.shadowControls[0].baseModelType == 'DDeiContainer') {
+              //   this.clearShadowControls()
+              //   //清空临时变量
+              //   this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars, null, evt);
+              //   //渲染图形
+              //   this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
+              //   //排序并执行所有action
+              //   this.stage?.ddInstance?.bus?.executeAll();
+              //   return;
+              // }
               this.model.shadowControls.forEach(item => {
+                
                 let id = item.id.substring(item.id, item.id.lastIndexOf("_shadow"))
                 let momodel = this.stage?.getModelById(id)
-                if (momodel?.baseModelType == 'DDeiLine') {
-                  moveOriginLines.push(momodel.id)
+                if (momodel){
+                  if (momodel?.baseModelType == 'DDeiLine') {
+                    moveOriginLines.push(momodel.id)
+                  }
+                  moveOriginModels.push(momodel)
+                  moveOriginModelIds.push(momodel.id)
                 }
-                moveOriginModels.push(momodel)
-                moveOriginModelIds.push(momodel.id)
               });
               //同步影子元素的坐标大小等状态到当前模
               for (let i = 0; i < this.model.shadowControls.length; i++) {
@@ -1340,6 +1355,9 @@ class DDeiLayerCanvasRender {
     } else {
       this.ddRender.inEdge = 0;
     }
+    //记录ex和ey
+    this.ddRender.inAreaX = ex;
+    this.ddRender.inAreaY = ey;
     ex -= this.stage.wpv.x;
     ey -= this.stage.wpv.y;
 
@@ -1431,7 +1449,7 @@ class DDeiLayerCanvasRender {
           dx = this.stageRender.dragObj.dx
           dy = this.stageRender.dragObj.dy
         }
-
+        DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", "CHANGE_WPV", null, this.stage?.ddInstance, evt)
         if (Math.abs(ex - dx) >= 10 || Math.abs(ey - dy) >= 10) {
           this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING
         }
@@ -1534,8 +1552,10 @@ class DDeiLayerCanvasRender {
           //渲染图形
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
         }
+       
         //判定是否到达了另一个控件的操作点
         this.model.opPoints = [];
+        DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", "CHANGE_WPV", null, this.stage?.ddInstance, evt)
         if (this.model.opLine?.render) {
           this.model.opLine.render.enableRefreshShape()
         }
@@ -1830,20 +1850,25 @@ class DDeiLayerCanvasRender {
         }
         // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
         let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, ex, ey, true);
+        this.ddRender.inAreaControls = operateControls;
         //光标所属位置是否有控件
         //有控件：分发事件到当前控件
         if (operateControls != null && operateControls.length > 0) {
+          //执行回调函数
+          DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_MOVE_IN_CONTROL", "MOVE_IN_CONTROL", { models: operateControls }, this.ddRender.model, evt)
           operateControls.forEach(control => {
             control.render.mouseMove(evt)
           })
+          
           // operateControls[0].render.mouseMove(evt);
           this.stage.ddInstance.bus.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'all-scroll' }, evt);
         } else if (!inSelector || this.stageRender.selector.passIndex == -1) {
-          if (this.stage.ddInstance?.editMode == 1) {
+         if (this.stage.ddInstance?.editMode == 1) {
             this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
           } else if (this.stage.ddInstance?.editMode == 2) {
             this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'grab' }, evt);
           }
+          DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_MOVE_IN_LAYER", "MOVE_IN_LAYER", { layer: this.model,ex:ex,ey:ey }, this.ddRender.model, evt)
         }
         if (this.stage?.brushData) {
           this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { image: 'cursor-brush' }, evt);

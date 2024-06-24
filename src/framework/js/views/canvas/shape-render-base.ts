@@ -205,7 +205,7 @@ class DDeiAbstractShapeRender {
     let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
     if (isCtrl) {
       //判断当前操作控件是否选中
-      if (this.stageRender.currentOperateShape.state == DDeiEnumControlState.SELECTED) {
+      if (this.stageRender.currentOperateShape?.state == DDeiEnumControlState.SELECTED) {
         pushMulits.push({ actionType: DDeiEnumBusCommandType.ModelChangeSelect, data: [{ id: this.model.id, value: DDeiEnumControlState.DEFAULT }] });
       } else {
         //选中当前操作控件
@@ -230,9 +230,11 @@ class DDeiAbstractShapeRender {
    * 鼠标移动
    */
   mouseMove(evt: Event): void {
+    
     //获取操作点，如果有则添加到其Layer
     if (this.layer) {
-
+      
+      
       let modeName = DDeiUtil.getConfigValue("MODE_NAME", this.ddRender?.model);
       let accessLink = DDeiUtil.isAccess(
         DDeiEnumOperateType.LINK, [this.model], null, modeName,
@@ -247,11 +249,13 @@ class DDeiAbstractShapeRender {
         ey -= this.stage.wpv.y
         this.changeOpPoints(ex, ey);
       }
+      
     }
 
   }
 
   changeOpPoints(ex: number, ey: number, pointMode: number | null = null) {
+    
     //获取直线连接操作点
     let appendPoints = []
     let hasPoint = false;

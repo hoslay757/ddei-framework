@@ -2,6 +2,8 @@ import DDeiAbstractShape from './shape'
 import DDeiUtil from '../util';
 import { Matrix3, Vector3 } from 'three';
 import DDeiConfig from '../config';
+import DDeiModelArrtibuteValue from './attribute/attribute-value'
+import { cloneDeep } from 'lodash';
 /**
  * polygon由3个以上点构成的图形
  * 主要样式属性：坐标、高宽、边框、字体、填充
@@ -223,6 +225,61 @@ class DDeiPolygon extends DDeiAbstractShape {
       //左
       return 180
     }
+  }
+
+
+  toJSON(): Object {
+    let json = super.toJSON()
+    //标尺单位
+    let ruleDisplay
+    let ruleInit
+    if (this.stage.ruler?.display || this.stage.ruler?.display == 0 || this.stage.ruler?.display == false) {
+      ruleDisplay = this.stage.ruler.display;
+    } else if (this.stage.ddInstance.ruler != null && this.stage.ddInstance.ruler != undefined) {
+      if (typeof (this.stage.ddInstance.ruler) == 'boolean') {
+        ruleDisplay = this.stage.ddInstance.ruler ? 1 : 0;
+      } else {
+        ruleInit = this.stage.ddInstance.ruler
+        ruleDisplay = ruleInit.display;
+      }
+    } else {
+      ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.stage, "ruler.display", true);
+    }
+    let unit = DDeiModelArrtibuteValue.getAttrValueByState(this.stage, "ruler.unit", true, ruleInit);
+
+    //处理点坐标变换
+    if (ruleDisplay) {
+      if (this.cpv) {
+        json.cpv = cloneDeep(this.cpv);
+        let cpv = DDeiUtil.toRulerCoord({ x: this.cpv.x, y: this.cpv.y }, this.stage, unit)
+        json.cpv.x = cpv.x
+        json.cpv.y = cpv.y
+      }
+      if (this.hpv) {
+        json.hpv = cloneDeep(this.hpv);
+        for (let i = 0; i < this.hpv.length; i++) {
+          let hpv = DDeiUtil.toRulerCoord({ x: this.hpv[i].x, y: this.hpv[i].y }, this.stage, unit)
+          json.hpv[i].x = hpv.x
+          json.hpv[i].y = hpv.y
+        }
+      }
+      if (this.bpv) {
+        json.bpv = cloneDeep(this.bpv);
+        let bpv = DDeiUtil.toRulerCoord({ x: this.bpv.x, y: this.bpv.y }, this.stage, unit)
+        json.bpv.x = bpv.x
+        json.bpv.y = bpv.y
+      }
+      if (this.exPvs) {
+        json.exPvs = cloneDeep(this.exPvs);
+        for (let i in this.exPvs) {
+          let pv = DDeiUtil.toRulerCoord({ x: this.exPvs[i].x, y: this.exPvs[i].y }, this.stage, unit)
+          json.exPvs[i].x = pv.x
+          json.exPvs[i].y = pv.y
+        }
+      }
+    }
+    
+    return json;
   }
 
 

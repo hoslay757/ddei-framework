@@ -86,9 +86,29 @@ class DDeiLifeCycle extends DDeiPluginBase {
   EVENT_STAGE_CHANGE_WPV: DDeiFuncData | null = null;
 
   /**
-   * 全剧缩放，此方法为外部传入的勾子函数
+   * 全局缩放，此方法为外部传入的勾子函数
    */
   EVENT_STAGE_CHANGE_RATIO: DDeiFuncData | null = null;
+
+  /**
+   * 鼠标进入某控件
+   */
+  EVENT_MOUSE_MOVE_IN_CONTROL: DDeiFuncData | null = null;
+
+  /**
+   * 鼠标进入画布
+   */
+  EVENT_MOUSE_MOVE_IN_LAYER: DDeiFuncData | null = null;
+
+  /**
+   * 鼠标在某个区域
+   */
+  EVENT_MOUSE_IN_AREA: DDeiFuncData | null = null;
+
+
+  
+  
+  
   // ============================ 方法 ===============================
 
   getLifeCyclies(editor) {

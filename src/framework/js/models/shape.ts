@@ -5,6 +5,7 @@ import DDeiEnumControlState from '../enums/control-state'
 import DDeiUtil from '../util'
 import { Matrix3, Vector3 } from 'three';
 import { cloneDeep, clone, isNumber } from 'lodash'
+import DDeiModelArrtibuteValue from './attribute/attribute-value'
 /**
  * 抽象的图形类，定义了大多数图形都有的属性和方法
  */
@@ -26,6 +27,12 @@ abstract class DDeiAbstractShape {
     this.cIndex = props.cIndex ? props.cIndex : null
     this.ruleEvals = []
     this.initCPV = props.initCPV ? props.initCPV : null
+    if (props.mirrorX) {
+      this.mirrorX = props.mirrorX
+    }
+    if (props.mirrorY) {
+      this.mirrorY = props.mirrorY
+    }
     if (props.cpv) {
       this.cpv = new Vector3(props.cpv.x, props.cpv.y, props.cpv.z || props.cpv.z == 0 ? props.cpv.z : 1);
     }
@@ -146,6 +153,12 @@ abstract class DDeiAbstractShape {
 
   //坐标描述方式，null/1为直角坐标，2为极坐标，默认直角坐标
   poly: number | null;
+
+
+  //镜像
+  mirrorX: boolean = false;
+
+  mirrorY: boolean = false;
 
   /**
    * 极坐标下的采样策略，采样策略返回的点上会附带绘图的控制属性
@@ -454,7 +467,7 @@ abstract class DDeiAbstractShape {
         pv.applyMatrix3(m1)
       });
       this.pvs = pvs
-
+      
       this.operatePVS = operatePVS;
 
       this.textArea = textArea
@@ -1640,9 +1653,66 @@ abstract class DDeiAbstractShape {
 
   /**
    * 获取控件坐标
+   * @param coord 坐标系：1标尺坐标/2页面坐标
+   * @param unit 标尺单位
+   * @param type 坐标类型:1左上角/2中心点
    */
-  getPosition() {
+  getPosition(coord: number = 2, unit: string = '', type: number = 2) {
+    switch (coord) {
+      case 1: {
+        if (type == 1) {
+          return DDeiUtil.toRulerCoord({ x: this.x, y: this.y }, this.stage, unit)
+        } else if (type == 2) {
+          return DDeiUtil.toRulerCoord({ x: this.cpv.x, y: this.cpv.y }, this.stage, unit)
+        }
+      } break;
+      case 2: {
+        if (type == 1) {
+          return { x: this.x, y: this.y }
+        } else if (type == 2) {
+          return { x: this.cpv.x, y: this.cpv.y }
+        }
+      } break;
+    }
     return { x: this.x, y: this.y }
+  }
+
+
+  /**
+   * 设置控件坐标
+   * @param point 坐标点
+   * @param coord 坐标系：1标尺坐标/2页面坐标
+   * @param unit 标尺单位
+   * @param type 坐标类型:1左上角/2中心点
+   */
+  setPosition(point: {x:number, y:number}, coord: number = 2, unit: string = '', type: number = 2) {
+    let moveX = 0,moveY = 0;
+    switch (coord) {
+      case 1: {
+        if (type == 1) {
+          //目标点转换为像素
+          let pv1 = DDeiUtil.toPageCoord(point, this.stage, unit)
+          moveX = pv1.x - this.x
+          moveY = pv1.y - this.y
+        } else if (type == 2) {
+          //目标点转换为像素
+          let pv1 = DDeiUtil.toPageCoord(point, this.stage, unit)
+          moveX = pv1.x - this.cpv.x
+          moveY = pv1.y - this.cpv.y
+        }
+      } break;
+      case 2: {
+        if (type == 1) {
+          moveX = point.x - this.x
+          moveY = point.y - this.y
+        } else if (type == 2) {
+          moveX = point.x - this.cpv.x
+          moveY = point.y - this.cpv.y
+        }
+      } break;
+    }
+    //移动模型
+    DDeiAbstractShape.moveModels([this],moveX,moveY)
   }
 
   /**
@@ -1662,24 +1732,26 @@ abstract class DDeiAbstractShape {
    * 移除自身的方法
    */
   destroyed() {
-    //找到以自己为source的链接
-    let sourceLinks = this.stage?.getSourceModelLinks(this.id);
-    //删除链接
-    sourceLinks?.forEach(link => {
-      if (link.dm) {
-        link.dm.pModel.removeModel(link.dm, true)
-      }
-      this.stage?.removeLink(link);
-    })
-
-    let lines = this.stage?.getModelsByBaseType("DDeiLine");
-    //删除线链接
-    lines?.forEach(line => {
-      if (line.linkModels?.has(this.id)) {
-        line.linkModels.delete(this.id)
-      }
-    })
-
+    if(!this.isShadowControl){
+      //找到以自己为source的链接
+      let sourceLinks = this.stage?.getSourceModelLinks(this.id);
+      //删除链接
+      sourceLinks?.forEach(link => {
+        if (link.dm) {
+          link.dm.pModel.removeModel(link.dm, true)
+        }
+        this.stage?.removeLink(link);
+      })
+      
+      let lines = this.stage?.getModelsByBaseType("DDeiLine");
+      //删除线链接
+      lines?.forEach(line => {
+        if (line.linkModels?.has(this.id)) {
+          
+          line.linkModels.delete(this.id)
+        }
+      })
+    }
     if (this.render?.tempCanvas) {
       this.render.tempCanvas.remove()
       delete this.render.tempCanvas
@@ -1711,6 +1783,7 @@ abstract class DDeiAbstractShape {
     if (!(toJSONFields?.length > 0)) {
       toJSONFields = DDeiConfig.SERI_FIELDS["AbstractShape"]?.TOJSON;
     }
+    
     for (let i in this) {
       if ((!skipFields || skipFields?.indexOf(i) == -1)) {
         if (toJSONFields && toJSONFields.indexOf(i) != -1 && this[i]) {
@@ -1813,7 +1886,7 @@ abstract class DDeiAbstractShape {
         }
       }
     }
-
+    //输出结果
     return json;
   }
 

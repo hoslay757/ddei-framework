@@ -13,6 +13,7 @@ enum DDeiEnumOperateType {
   SELECT = "SELECT",
   ROTATE = "ROTATE",
   SCALE = "SCALE",
+  MIRROR = "MIRROR",
   COMPOSE = "COMPOSE",
 }
 
