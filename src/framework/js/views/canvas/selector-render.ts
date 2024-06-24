@@ -56,18 +56,32 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         this.drawLine();
         //绘制操作图形
         this.drawOperatorShapeLine();
-      } else if (this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING || this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING_TEXT_SELECTING) {
+      } else {
+        if (models?.length == 1 && (models[0].mirrorX || models[0].mirrorY)){
+          let model = models[0]
+          let oldRat1 = this.ddRender.ratio;
+          ctx.translate(model.cpv.x * oldRat1, model.cpv.y * oldRat1)
+          if (model.mirrorX) {
+            ctx.scale(-1, 1)
+          }
+          if (model.mirrorY) {
+            ctx.scale(1, -1)
+          }
+          ctx.translate(-model.cpv.x * oldRat1, -model.cpv.y * oldRat1)
+        }
+        if (this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING || this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING_TEXT_SELECTING) {
         //绘制编辑边框
         // this.drawEditBorder()
-      } else {
-        //绘制边框
-        if (this.stage?.selectedModels?.size > 1) {
-          this.drawBorder();
+        } else {
+          //绘制边框
+          if (this.stage?.selectedModels?.size > 1) {
+            this.drawBorder();
+          }
+
+          //绘制边框上的操作图形
+          this.drawOperatorShape();
+
         }
-
-        //绘制边框上的操作图形
-        this.drawOperatorShape();
-
       }
 
 

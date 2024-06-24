@@ -27,6 +27,12 @@ abstract class DDeiAbstractShape {
     this.cIndex = props.cIndex ? props.cIndex : null
     this.ruleEvals = []
     this.initCPV = props.initCPV ? props.initCPV : null
+    if (props.mirrorX) {
+      this.mirrorX = props.mirrorX
+    }
+    if (props.mirrorY) {
+      this.mirrorY = props.mirrorY
+    }
     if (props.cpv) {
       this.cpv = new Vector3(props.cpv.x, props.cpv.y, props.cpv.z || props.cpv.z == 0 ? props.cpv.z : 1);
     }
@@ -147,6 +153,12 @@ abstract class DDeiAbstractShape {
 
   //坐标描述方式，null/1为直角坐标，2为极坐标，默认直角坐标
   poly: number | null;
+
+
+  //镜像
+  mirrorX: boolean = false;
+
+  mirrorY: boolean = false;
 
   /**
    * 极坐标下的采样策略，采样策略返回的点上会附带绘图的控制属性
@@ -455,7 +467,7 @@ abstract class DDeiAbstractShape {
         pv.applyMatrix3(m1)
       });
       this.pvs = pvs
-
+      
       this.operatePVS = operatePVS;
 
       this.textArea = textArea
