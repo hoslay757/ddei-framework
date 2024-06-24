@@ -1,12 +1,11 @@
 import DDeiConfig from './config.js'
 import DDeiAbstractShape from './models/shape.js';
-import { clone, cloneDeep, isDate, isNumber, isString, kebabCase } from 'lodash'
+import { clone, cloneDeep, isDate, isNumber, isString } from 'lodash'
 import DDei from './ddei.js';
 import { Matrix3, Vector3 } from 'three';
 import DDeiModelArrtibuteValue from './models/attribute/attribute-value';
 import DDeiStage from './models/stage';
 import DDeiColor from './color.js';
-import type { DDeiEditor } from '@/index.js';
 
 const expressBindValueReg = /#\{[^\{\}]*\}/;
 const contentSplitReg = /\+|\-|\*|\//;
@@ -107,20 +106,6 @@ class DDeiUtil {
     }
   }
 
-
-  /**
-   * 记录鼠标位置
-   * @param offsetX 
-   * @param offsetY 
-   * @param screenX 
-   * @param screenY 
-   */
-  static setMousePosition(offsetX: number, offsetY: number, screenX: number, screenY: number): void {
-    DDeiUtil.offsetX = offsetX
-    DDeiUtil.offsetY = offsetY
-    DDeiUtil.screenX = screenX
-    DDeiUtil.screenY = screenY
-  }
 
   /**
    * 计算文字的高度和宽度
@@ -271,14 +256,17 @@ class DDeiUtil {
       md.id = md.id + "_shadow"
       if (md?.baseModelType == "DDeiContainer") {
         let newModels = new Map();
+        // let newMidList = new Array();
         md.models.forEach(smi => {
           let sm = DDeiUtil.getShadowControl(smi)
           sm.id = sm.id.substring(0, sm.id.lastIndexOf("_shadow"))
           sm.pModel = md;
           newModels.set(sm.id, sm)
+          // newMidList.push(sm.id);
           sm.initRender();
         });
         md.models = newModels;
+        // md.midList = newMidList;
       }
 
     }
@@ -351,12 +339,12 @@ class DDeiUtil {
    * 返回dom绝对坐标
    * @param element 
    */
-  static getDomAbsPosition(element, editor:DDeiEditor): object {
+  static getDomAbsPosition(element, editor): object {
     //计算x坐标
     let actualLeft = element.offsetLeft;
     let actualTop = element.offsetTop;
     let current = element.offsetParent;
-    while (current !== null) {
+    while (current) {
       actualLeft += current.offsetLeft;
       actualTop += (current.offsetTop + current.clientTop);
       current = current.offsetParent;
@@ -372,7 +360,7 @@ class DDeiUtil {
   }
 
   /**
-   * 返回空间模型在dom下的绝对坐标
+   * 返回控件模型在dom下的绝对坐标
    * @param element 
    */
   static getModelsDomAbsPosition(models: DDeiAbstractShape[]): object {
@@ -2963,6 +2951,108 @@ class DDeiUtil {
     }
     return new Blob([u8arr], { type: mime });
   }
+
+  /**
+   * 将页面坐标（像素）转换为标尺坐标
+   * @param point 转换的点
+   * @param stage 舞台
+   * @param unit 单位
+   */
+  static toRulerCoord(point: { x: number, y: number},stage: DDeiStage, unit:string): object{
+    //生成文本并计算文本大小
+    let stageRatio = stage.getStageRatio()
+    let xDPI = stage.ddInstance.dpi.x;
+    //标尺单位
+    let rulerConfig = DDeiConfig.RULER[unit]
+    //尺子间隔单位
+    let unitWeight = DDeiUtil.unitToPix(rulerConfig.size, unit, xDPI);
+    //基准每个部分的大小
+    let marginWeight = unitWeight * stageRatio
+
+    return { 
+      x: (point.x - stage.spv.x) / marginWeight * rulerConfig.size, 
+      y: (point.y - stage.spv.y) / marginWeight * rulerConfig.size,
+      unit:unit
+    };
+  }
+
+
+  /**
+   * 将标尺坐标转换为页面坐标(像素)
+   * @param point 转换的点
+   * @param stage 舞台
+   * @param unit 单位
+   */
+  static toPageCoord(point: { x: number, y: number }, stage: DDeiStage|object, unit: string): object {
+    //生成文本并计算文本大小
+    let stageRatio = stage?.ratio ? stage.ratio : stage.getStageRatio()
+    let xDPI = stage.dpi ? stage.dpi : stage.ddInstance.dpi.x;
+    //尺子间隔单位
+    let unitWeight = DDeiUtil.unitToPix(1, unit, xDPI) * stageRatio;
+    return {
+      x: point.x * unitWeight  + (stage.spv ? stage.spv.x : 0),
+      y: point.y * unitWeight  + (stage.spv ? stage.spv.y : 0)
+    };
+  }
+
+  /**
+   * 转换子元素的坐标
+   * @param container 容器
+   * @param stage  画布
+   * @param unit  单位
+   */
+  static convertChildrenJsonUnit(model: object, stage: object, unit: string): void {
+    if (model.cpv) {
+      let cpv = DDeiUtil.toPageCoord({ x: model.cpv.x, y: model.cpv.y }, stage, unit)
+      model.cpv.x = cpv.x
+      model.cpv.y = cpv.y
+    }
+
+    if (model.bpv) {
+      let bpv = DDeiUtil.toPageCoord({ x: model.bpv.x, y: model.bpv.y }, stage, unit)
+      model.bpv.x = bpv.x
+      model.bpv.y = bpv.y
+    }
+    if (model.hpv) {
+      for (let k = 0; k < model.hpv.length; k++) {
+        let hpv = DDeiUtil.toPageCoord({ x: model.hpv[k].x, y: model.hpv[k].y }, stage, unit)
+        model.hpv[k].x = hpv.x
+        model.hpv[k].y = hpv.y
+      }
+    }
+    if (model.exPvs) {
+      for (let k in model.exPvs) {
+        let pv = DDeiUtil.toPageCoord({ x: model.exPvs[k].x, y: model.exPvs[k].y }, stage, unit)
+        model.exPvs[k].x = pv.x
+        model.exPvs[k].y = pv.y
+      }
+    }
+    if (model.pvs) {
+      for (let k = 0; k < model.pvs.length; k++) {
+        let pv = DDeiUtil.toPageCoord({ x: model.pvs[k].x, y: model.pvs[k].y }, stage, unit)
+        model.pvs[k].x = pv.x
+        model.pvs[k].y = pv.y
+      }
+    }
+    if (model.composes?.length > 0) {
+      for (let k = 0; k < model.composes.length; k++) {
+        DDeiUtil.convertChildrenJsonUnit(model.composes[k], stage, unit);
+      }
+    }
+
+    if (model.midList) {
+      for (let i = 0; i < model.midList.length; i++) {
+        if (model.models[model.midList[i]]) {
+          let subModel = model.models[model.midList[i]];
+          //如果是容器则递归处理其子控件
+          DDeiUtil.convertChildrenJsonUnit(subModel, stage, unit);
+        }
+      }
+    }
+
+  }
+
+ 
 
 }
 

@@ -10,14 +10,18 @@ import { markRaw } from "vue";
 import config from "./config"
 import { cloneDeep } from "lodash";
 import FONTS from "../../framework/js/fonts/font"
-import {Matrix3} from 'three'
-import DDeiAbstractShape from "@ddei-core/themes/theme";
-import DDeiThemeBase from "@ddei-core/framework/js/models/shape";
+import { Matrix3, Vector3 } from 'three'
+import DDeiThemeBase from "@ddei-core/themes/theme";
+import DDeiAbstractShape from "@ddei-core/framework/js/models/shape";
 import  DDeiLifeCycle  from "@ddei-core/lifecycle/lifecycle";
 import  DDeiFuncData  from "@ddei-core/lifecycle/funcdata";
 import { DDeiModelArrtibuteValue } from "@ddei-core/framework/js/models/attribute/attribute-value";
 import DDeiEnumBusCommandType from "../../framework/js/enums/bus-command-type";
 import DDeiEditorEnumBusCommandType from "./enums/editor-command-type";
+import { DDeiActiveType } from "./enums/active-type";
+import { DDeiLink } from "@ddei-core/framework/js/models/link"
+import type DDeiStage from "../../framework/js/models/stage";
+import DDeiLine from "../../framework/js/models/line"
 /**
  * DDei图形编辑器类，用于维护编辑器实例、全局状态以及全局属性
  */
@@ -85,13 +89,6 @@ class DDeiEditor {
  * 必须为一个async函数
  */
   EVENT_PUBLISH_FILE: Function | null = null;
-
-
-
-  /**
-   * 返回文件列表，此方法为外部传入的勾子函数
-   */
-  EVENT_GOBACK_FILE_LIST: Function | null = null;
 
   /**
    * 控件选择前，此方法为外部传入的勾子函数
@@ -674,7 +671,7 @@ class DDeiEditor {
   /**
    * 交换文件的位置
    */
-  changeFile(indexA: number, indexB: number): void {
+  exchangeFile(indexA: number, indexB: number): void {
     let fileA = this.files[indexA];
     let fileB = this.files[indexB];
     this.files[indexA] = fileB
@@ -945,7 +942,7 @@ class DDeiEditor {
   /**
    * 向当前画布添加控件,缺省坐标为当前画布的中心
    */
-  addControls(controls:object[]):DDeiAbstractShape[]{
+  addControls(controls: object[], notify: boolean = true):DDeiAbstractShape[]{
     
     //添加控件到图层
     let stage = this.ddInstance.stage
@@ -1009,6 +1006,12 @@ class DDeiEditor {
                 0, 1, control.offsetY ? control.offsetY : 0,
                 0, 0, 1);
               m1.premultiply(move1Matrix)
+            } else if ((control.x || control.x == 0) && (control.y || control.y == 0)){
+              let move1Matrix = new Matrix3(
+                1, 0, -(-stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2) + control.x,
+                0, 1, -(-stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2) + control.y,
+                0, 0, 1);
+              m1.premultiply(move1Matrix)
             }
             cc.transVectors(m1)
             cc.updateLinkModels()
@@ -1020,7 +1023,100 @@ class DDeiEditor {
           }
         }
       });
-      this.notifyChange();
+      if (notify) {
+        this.notifyChange();
+      }
+    }
+    return shapes;
+  }
+
+  /**
+   * 向当前画布添加连线
+   */
+  addLines(controls: object[],notify:boolean = true): DDeiAbstractShape[] {
+    //添加控件到图层
+    let stage = this.ddInstance.stage
+    let layer = stage?.layers[stage?.layerIndex];
+    let shapes: DDeiAbstractShape[] = []
+    if (layer) {
+      controls.forEach(control => {
+        if (control.startPoint && control.endPoint) {
+          //读取配置
+          let lineJson = DDeiUtil.getLineInitJSON();
+          lineJson.id = "line_" + (++stage.idIdx)
+          //线段类型
+          lineJson.type = 2
+          
+          //根据线的类型生成不同的初始化点
+          lineJson.type = 2
+          //直线两个点
+          lineJson.pvs = [new Vector3(control.startPoint.x, control.startPoint.y, 1), new Vector3(control.endPoint.x, control.endPoint.y, 1)]
+          lineJson.cpv = lineJson.pvs[0]
+          //初始化开始点和结束点
+
+          let cc = DDeiLine.initByJSON(lineJson, { currentStage: stage, currentLayer: layer, currentContainer: layer });
+          
+          //设置控件值
+          for (let i in control) {
+            if (i != 'startPoint' && i != 'endPoint' && i != 'pvs' && i != 'spv' && i != 'hpv' && i != 'cpv' && i != 'x' && i != 'y' && i != 'width' && i != 'height' && (control[i] || control[i] == 0 || control[i] == false)) {
+              cc[i] = control[i];
+            }
+          }
+          //构造线段关键属性
+          let smodel,emodel
+          if (control.smodel) {
+            smodel = this.getControlById(control.smodel.id)
+            //创建连接点
+            let id = "_" + DDeiUtil.getUniqueCode()
+            smodel.exPvs[id] = new Vector3(control.smodel.x, control.smodel.y, 1)
+            smodel.exPvs[id].rate = control.smodel.rate
+            smodel.exPvs[id].sita = control.smodel.sita
+            smodel.exPvs[id].index = control.smodel.index
+            smodel.exPvs[id].id = id
+            let link = new DDeiLink({
+              sm: smodel,
+              dm: cc,
+              smpath: "exPvs." + id,
+              dmpath: "startPoint",
+              stage: stage
+            });
+            stage.addLink(link)
+            
+          }
+          if (control.emodel) {
+            emodel = this.getControlById(control.emodel.id)
+            //创建连接点
+            let id = "_" + DDeiUtil.getUniqueCode()
+            emodel.exPvs[id] = new Vector3(control.emodel.x, control.emodel.y, 1)
+            emodel.exPvs[id].rate = control.emodel.rate
+            emodel.exPvs[id].sita = control.emodel.sita
+            emodel.exPvs[id].index = control.emodel.index
+            emodel.exPvs[id].id = id
+            let link = new DDeiLink({
+              sm: emodel,
+              dm: cc,
+              smpath: "exPvs." + id,
+              dmpath: "endPoint",
+              stage: stage
+            });
+            stage.addLink(link)
+          }
+          if (!control.isShadowControl) {
+            layer.addModel(cc, false)
+            cc.initRender()
+          }else{
+            layer.shadowControls.push(cc);
+            cc.initRender()
+          }
+          smodel?.updateLinkModels();
+          emodel?.updateLinkModels();
+          shapes.push(cc);
+          
+        }
+      });
+      if (notify){
+        this.notifyChange();
+      }
     }
     return shapes;
   }
@@ -1100,6 +1196,138 @@ class DDeiEditor {
       jsonArray.push(file.toJSON())
     })
     return jsonArray;
+  }
+
+  /**
+   * 根据属性搜索控件
+   * @param keywords 关键字/正则表达式
+   * @param attr 搜索的属性
+   * @param isReg 是否正则表达式
+   * @param area 搜索范围，1本页/2本文档/3所有打开文件
+   * @param matchCase 区分大小写
+   * @param matchAll 全字匹配
+   */
+  searchModels(keywords:string,attr:string,isReg:boolean = false,area:number = 1,matchCase:boolean = false,matchAll:boolean = false):Array<object>{
+    let resultArray = new Array()
+    if (keywords && attr){
+      switch(area){
+        //当前页
+        case 1: {
+          for(let i = 0;i < this.files.length;i++){
+            for (let j = 0; j < this.files[i].sheets.length; j++) {
+              if (this.files[i].sheets[j].stage == this.ddInstance.stage){
+                let rs =  this.ddInstance.stage.searchModels(keywords, attr, isReg, matchCase, matchAll);
+                rs?.forEach(r => {
+                  r.fileIndex = i
+                  r.sheetIndex = j
+                  resultArray.push(r);
+                });
+                return resultArray
+              }
+            }
+          }
+          
+        }
+        //当前文档
+        case 2: {
+          let rs = this.files[this.currentFileIndex].searchModels(keywords, attr, isReg, matchCase, matchAll);
+          rs?.forEach(r => {
+            r.fileIndex = this.currentFileIndex;
+            resultArray.push(r);
+          });
+        }
+        //所有打开文件
+        case 3: {
+          for(let i = 0;i < this.files.length;i++){
+            let rs = this.files[i].searchModels(keywords, attr, isReg, matchCase, matchAll)
+            rs?.forEach(r => {
+              r.fileIndex = i;
+              resultArray.push(r);
+            });
+          }
+        } break;
+      }
+    }
+    return resultArray;
+  }
+
+  /**
+   * 将控件置于中心
+   * @param modelIds 
+   */
+  centerModels(stage:DDeiStage ,...modelIds:string[]):void{
+    if (stage && modelIds?.length > 0){
+      let models = new Array();
+      for (let i = 0; i < modelIds.length;i++){
+        if(modelIds[i]){
+          let model = stage.getModelById(modelIds[i],true);
+          if (model){
+            models.push(model)
+          }
+        }
+      }
+      if (models.length > 0){
+        let outRect = DDeiAbstractShape.getOutRectByPV(models);
+        stage.wpv.x = -(outRect.x+outRect.width/2) + (stage.ddInstance.render.canvas.width / stage.ddInstance.render.ratio) / 2
+        stage.wpv.y = -(outRect.y + outRect.height / 2) + (stage.ddInstance.render.canvas.height / stage.ddInstance.render.ratio) / 2
+      }
+    }
+  }
+
+  /**
+   * 切换文件
+   * @param file 
+   */
+  changeFile(fileIndex:number,sheetIndex:number = -1):void{
+    let ddInstance = this?.ddInstance;
+    let file:DDeiFile|null = null;
+    if (fileIndex || fileIndex ==0){
+      file = this.files[fileIndex];
+    }
+    if (file) {
+      this.files.forEach((item) => {
+        item.active = DDeiActiveType.NONE;
+      });
+      file.active = DDeiActiveType.ACTIVE;
+      //刷新画布
+      this.currentFileIndex = fileIndex;
+      let sheets = file?.sheets;
+
+      if (file && sheets && ddInstance) {
+        if (sheetIndex >=0){
+          file.changeSheet(sheetIndex)
+        }
+        let stage = sheets[file.currentSheetIndex].stage;
+        stage.ddInstance = ddInstance;
+        //刷新页面
+        ddInstance.stage = stage;
+        //加载场景渲染器
+        stage.initRender();
+      }
+    }
+
+  }
+
+  /**
+   * 替换模型数据
+   * @param models 被替换的模型
+   * @param attr 属性
+   * @param sIdx 开始下标
+   * @param eIdx 结束下标
+   * @param data 数据
+   */
+  replaceModelsData(models:Array<DDeiAbstractShape>, attr: string,sIdx:number = -1,eIdx:number = -1, data:string = ''): void{
+    if (models?.length > 0 && attr && sIdx != -1 && eIdx != -1 && eIdx >=sIdx) {
+      models.forEach(model=>{
+        let oldValue = model[attr];
+        if (oldValue && typeof(oldValue) == 'string'){
+          let sStr = oldValue.substring(0,sIdx)
+          let eStr = oldValue.substring(eIdx, oldValue.length)
+          let newValue = sStr+data+eStr;
+          model[attr] = newValue
+        }
+      })
+    }
   }
 }
 export { DDeiEditor }

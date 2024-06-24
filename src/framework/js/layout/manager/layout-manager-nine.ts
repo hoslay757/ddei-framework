@@ -185,9 +185,9 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
       let oldContainer = item.pModel;
       //将元素从就容器移出
       if (oldContainer) {
-        oldContainer.removeModel(item);
+        oldContainer.removeModel(item,false);
       }
-      newContainer.addModel(item);
+      newContainer.addModel(item,false);
       //绑定并初始化渲染器
       item.initRender();
       //如果操作的只有一个元素，就在空位插入元素，
@@ -195,7 +195,7 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
         layoutData[item.id] = { row: layoutIndex.row, col: layoutIndex.col }
         //如果已存在元素，则交换
         if (indexModel) {
-          newContainer.removeModel(indexModel);
+          newContainer.removeModel(indexModel,false);
           //坐标为移入控件的坐标
           if (item.dragOriginX || item.dragOriginX == 0) {
             indexModel.setBounds(item.dragOriginX, item.dragOriginY, item.dragOriginWidth, item.dragOriginHeight);
@@ -214,7 +214,7 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
             }
           }
           //交换
-          oldContainer.addModel(indexModel);
+          oldContainer.addModel(indexModel,false);
           //绑定并初始化渲染器
           indexModel.initRender();
           oldContainer.layoutManager?.updateLayout(oldAbsPos.x, oldAbsPos.y, [indexModel]);

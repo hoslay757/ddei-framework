@@ -7,6 +7,7 @@ import DDeiLink from './link';
 import { Vector3, Matrix3 } from 'three';
 import DDeiLine from './line';
 import DDeiModelArrtibuteValue from './attribute/attribute-value';
+import DDeiEnumControlState from '../enums/control-state';
 
 
 /**
@@ -300,7 +301,7 @@ class DDeiStage {
     this.paperStartY = posY
 
     //获取最大的有效范围，自动扩展纸张
-    let maxOutRect = DDeiAbstractShape.getOutRectByPV(this.getLayerModels())
+    let maxOutRect = DDeiAbstractShape.getOutRectByPV(this.getLayerModels([],100))
 
     //计算各个方向扩展的数量
     let leftExtNum = 0, rightExtNum = 0, topExtNum = 0, bottomExtNum = 0
@@ -607,6 +608,21 @@ class DDeiStage {
   }
 
   /**
+  * 选择控件
+  */
+  makeSelectModels(models: DDeiAbstractShape[] | undefined, cancelSelectOther:boolean = true): void {
+    if (cancelSelectOther){
+      for (let i = 0; i < this.layers.length; i++) {
+        this.layers[i].cancelAllLevelSelectModels();
+      }
+    }
+    models?.forEach(model=>{
+      model.state = DDeiEnumControlState.SELECTED
+    })
+    
+  }
+
+  /**
    * 全部取消所有已选控件
    */
   cancelSelectModels(models: DDeiAbstractShape[] | undefined, ignoreModels: DDeiAbstractShape[] | undefined): void {
@@ -672,10 +688,10 @@ class DDeiStage {
   /**
    * 获取所有图层的模型
    */
-  getLayerModels(ignoreModelIds: string[], level: number = 1): DDeiAbstractShape[] {
+  getLayerModels(ignoreModelIds: string[], level: number = 1, rect: object): DDeiAbstractShape[] {
     let models: DDeiAbstractShape[] = [];
     for (let i = 0; i < this.layers.length; i++) {
-      let subModels = this.layers[i].getSubModels(ignoreModelIds, level)
+      let subModels = this.layers[i].getSubModels(ignoreModelIds, level, rect)
       models = models.concat(subModels);
     }
     return models;
@@ -833,6 +849,30 @@ class DDeiStage {
         }
       }
     }
+
+    //标尺单位
+    let ruleDisplay
+    let ruleInit
+    if (this.ruler?.display || this.ruler?.display == 0 || this.ruler?.display == false) {
+      ruleDisplay = this.ruler.display;
+    } else if (this.ddInstance.ruler != null && this.ddInstance.ruler != undefined) {
+      if (typeof (this.ddInstance.ruler) == 'boolean') {
+        ruleDisplay = this.ddInstance.ruler ? 1 : 0;
+      } else {
+        ruleInit = this.ddInstance.ruler
+        ruleDisplay = ruleInit.display;
+      }
+    } else {
+      ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this, "ruler.display", true);
+    }
+    
+
+    //处理点坐标变换
+    if (ruleDisplay) {
+      //写入unit用于单位换算还原
+      // json.dpi = this.ddInstance?.dpi?.x;
+      json.unit = DDeiModelArrtibuteValue.getAttrValueByState(this, "ruler.unit", true, ruleInit);
+    }
     return json;
   }
 
@@ -889,6 +929,52 @@ class DDeiStage {
       this.histroyIdx++;
       return this.histroy[this.histroyIdx];
     }
+  }
+
+  /**
+   * 根据属性搜索控件
+   * @param keywords 关键字/正则表达式
+   * @param attr 搜索的属性
+   * @param isReg 是否正则表达式
+   * @param matchCase 区分大小写
+   * @param matchAll 全字匹配
+   */
+  searchModels(keywords: string, attr :string, isReg: boolean = false, matchCase: boolean = false, matchAll: boolean = false): Array {
+    let resultArray = new Array()
+    if (keywords && attr) {
+      let models = this.getLayerModels([], 100);
+      if(isReg){
+        // TODO let reg = new RegExp(keywords)
+      }else{
+        for (let i = 0; i < models.length;i++){
+          let model = models[i];
+          let data = model[attr]
+          if (data && typeof (data) == 'string'){
+            if (!matchCase){
+              data = data.toLowerCase();
+              keywords = keywords.toLowerCase();
+            }
+            if (!matchAll){
+              let searchIndex = 0;
+              while(true){
+                let ix = data.indexOf(keywords, searchIndex);
+                if (ix != -1){
+                  resultArray.push({model:model,attr:attr,index:ix,len:keywords.length})
+                  searchIndex = ix+1;
+                }else{
+                  break;
+                }
+              }
+            }else{
+              if (data == keywords){
+                resultArray.push({ model: model, attr: attr, index: 0, len: keywords.length })
+              }
+            }
+          }
+        }
+      }
+    }
+    return resultArray;
   }
 
 }

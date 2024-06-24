@@ -108,16 +108,16 @@ class DDeiLayoutManagerFull extends DDeiLayoutManager {
     let oldContainer = item.pModel;
     let newContainer = this.container;
     //将元素从就容器移出
-    oldContainer.removeModel(item);
-    newContainer.addModel(item);
+    oldContainer.removeModel(item,false);
+    newContainer.addModel(item,false);
     //绑定并初始化渲染器
     item.initRender();
     //如果已有控件，则交换两个控件的位置
     if (oldModel) {
-      newContainer.removeModel(oldModel);
+      newContainer.removeModel(oldModel,false);
 
       //交换
-      oldContainer.addModel(oldModel);
+      oldContainer.addModel(oldModel,false);
       //坐标为移入控件的坐标
       if (item.originCPV && item.originPVS) {
         oldModel.cpv = item.originCPV

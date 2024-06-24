@@ -103,8 +103,9 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
   drawShape(tempShape, composeRender: boolean = false): void {
     let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
     if (rsState == 0 || rsState == 1) {
-
+      
       if (this.refreshShape) {
+        
         //创建准备图形
         this.createTempShape();
         //将当前控件以及composes按照zindex顺序排列并输出

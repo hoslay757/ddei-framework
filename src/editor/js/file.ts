@@ -1,5 +1,6 @@
 
-import DDeiUtil from "@ddei-core/framework/js/util";
+import DDeiUtil from "../../framework/js/util";
+import DDei from "../../framework/js/ddei";
 import DDeiActiveType from "./enums/active-type";
 import DDeiFileState from "./enums/file-state";
 import DDeiSheet from "./sheet";
@@ -30,13 +31,35 @@ class DDeiFile {
   static loadFromJSON(json, tempData: object = {}): DDeiFile {
     let model: DDeiFile = new DDeiFile(json);
     let sheets = []
+    //获取当前dpi缩放，不同终端编辑可能造成dpi不一致，因此需要对比还原
+    let dpi;
+    if(DDei.INSTANCE_POOL.size > 0){
+      dpi = Array.from(DDei.INSTANCE_POOL.values())[0].dpi?.x
+    }
+    if (!dpi){
+      dpi = DDeiUtil.getDPI().x;
+    }
+    
     for (let i = 0; i < model.sheets.length; i++) {
+      //执行转换，将存储的标尺坐标转换为网页坐标
+      if (!model.sheets[i].stage.ddInstance && !model.sheets[i].stage.dpi) {
+        model.sheets[i].stage.dpi = dpi;
+      }
+      let unit = model.sheets[i].stage.unit;
+      //只有保存了dpi和unit才需要转换,并且unit为像素也不需要转换
+      if(dpi && unit && unit != 'px'){
+        model.sheets[i]?.stage?.layers?.forEach(layer => {
+          DDeiUtil.convertChildrenJsonUnit(layer, model.sheets[i]?.stage,unit);
+        });
+      }
       sheets[i] = DDeiSheet.loadFromJSON(model.sheets[i], tempData);
     }
     model.sheets = sheets;
     model.calModelNumber()
     return model;
   }
+
+  
   // ============================ 属性 ============================
   //文件ID
   id: number;
@@ -241,7 +264,32 @@ class DDeiFile {
         }
       }
     }
+    //写入版本号
+    json.ddeiVersion = 1237
     return json;
+  }
+
+  /**
+   * 根据属性搜索控件
+   * @param keywords 关键字/正则表达式
+   * @param attr 搜索的属性
+   * @param isReg 是否正则表达式
+   * @param matchCase 区分大小写
+   * @param matchAll 全字匹配
+   */
+  searchModels(keywords: string, attr:string, isReg: boolean = false, matchCase: boolean = false, matchAll: boolean = false): Array {
+    let resultArray = new Array()
+    if (keywords && attr) {
+      for (let i = 0; i < this.sheets.length; i++) {
+        let rs = this.sheets[i].stage.searchModels(keywords, attr, isReg, matchCase, matchAll)
+        rs?.forEach(r => {
+          r.sheetIndex = i;
+          resultArray.push(r);
+        });
+        
+      }
+    }
+    return resultArray;
   }
 }
 export {DDeiFile}

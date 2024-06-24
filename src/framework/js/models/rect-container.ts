@@ -5,8 +5,9 @@ import DDeiAbstractShape from './shape';
 import { Matrix3, Vector3 } from 'three';
 import DDeiLayoutManager from '../layout/layout-manager';
 import DDeiLayoutManagerFactory from '../layout/layout-manager-factory';
-import DDei from '../ddei';
+import DDeiModelArrtibuteValue from './attribute/attribute-value'
 import DDeiUtil from '../util';
+import { cloneDeep } from 'lodash';
 
 /**
  * 普通容器是一个矩形，能包含其他容器
@@ -126,7 +127,7 @@ class DDeiRectContainer extends DDeiRectangle {
    * 添加模型，并维护关系
    * @param model 被添加的模型
    */
-  addModel(model: DDeiAbstractShape): void {
+  addModel(model: DDeiAbstractShape,notify: boolean = true): void {
     if (this.midList.indexOf(model.id) == -1) {
       model.stage = this.stage;
 
@@ -136,6 +137,9 @@ class DDeiRectContainer extends DDeiRectangle {
       model.pModel = this;
       model.layer = this.layer;
       this.resortModelByZIndex();
+      if (notify) {
+        this.notifyChange()
+      }
     }
   }
 
@@ -144,10 +148,13 @@ class DDeiRectContainer extends DDeiRectangle {
    * @param model 被移除的模型
    * @param destroy 销毁，缺省false
    */
-  removeModels(models: DDeiAbstractShape[], destroy: boolean = false): void {
+  removeModels(models: DDeiAbstractShape[], destroy: boolean = false, notify: boolean = true): void {
     models?.forEach(model => {
       this.removeModel(model, destroy)
     })
+    if (notify) {
+      this.notifyChange()
+    }
   }
 
   /**
@@ -155,7 +162,7 @@ class DDeiRectContainer extends DDeiRectangle {
    * @param model 被移除的模型
    * @param destroy 销毁，缺省false
    */
-  removeModel(model: DDeiAbstractShape, destroy: boolean = false): void {
+  removeModel(model: DDeiAbstractShape, destroy: boolean = false,notify:boolean = true): void {
     this.models.delete(model.id);
     let idx = this.midList.indexOf(model.id);
     if (idx != -1) {
@@ -173,6 +180,9 @@ class DDeiRectContainer extends DDeiRectangle {
     //重新计算错线
     if (this.stage?.render) {
       this.stage.render.refreshJumpLine = false
+    }
+    if (notify) {
+      this.notifyChange()
     }
   }
 
@@ -607,6 +617,53 @@ class DDeiRectContainer extends DDeiRectangle {
         model.removeModelById(ids);
       }
     })
+  }
+
+  toJSON(): Object {
+    let json = super.toJSON()
+    //标尺单位
+    let ruleDisplay
+    let ruleInit
+    if (this.stage.ruler?.display || this.stage.ruler?.display == 0 || this.stage.ruler?.display == false) {
+      ruleDisplay = this.stage.ruler.display;
+    } else if (this.stage.ddInstance.ruler != null && this.stage.ddInstance.ruler != undefined) {
+      if (typeof (this.stage.ddInstance.ruler) == 'boolean') {
+        ruleDisplay = this.stage.ddInstance.ruler ? 1 : 0;
+      } else {
+        ruleInit = this.stage.ddInstance.ruler
+        ruleDisplay = ruleInit.display;
+      }
+    } else {
+      ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.stage, "ruler.display", true);
+    }
+    let unit = DDeiModelArrtibuteValue.getAttrValueByState(this.stage, "ruler.unit", true, ruleInit);
+
+    //处理点坐标变换
+    if (ruleDisplay) {
+      if (this.cpv) {
+        json.cpv = cloneDeep(this.cpv);
+        let cpv = DDeiUtil.toRulerCoord({ x: this.cpv.x, y: this.cpv.y }, this.stage, unit)
+        json.cpv.x = cpv.x
+        json.cpv.y = cpv.y
+      }
+      if (this.pvs) {
+        json.pvs = cloneDeep(this.pvs);
+        for (let i = 0; i < this.pvs.length; i++) {
+          let pv = DDeiUtil.toRulerCoord({ x: this.pvs[i].x, y: this.pvs[i].y }, this.stage, unit)
+          json.pvs[i].x = pv.x
+          json.pvs[i].y = pv.y
+        }
+      }
+      if (this.exPvs) {
+        json.exPvs = cloneDeep(this.exPvs);
+        for (let i in this.exPvs) {
+          let pv = DDeiUtil.toRulerCoord({ x: this.exPvs[i].x, y: this.exPvs[i].y }, this.stage, unit)
+          json.exPvs[i].x = pv.x
+          json.exPvs[i].y = pv.y
+        }
+      }
+    }
+    return json;
   }
 }
 
