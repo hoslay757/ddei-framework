@@ -977,22 +977,7 @@ class DDeiEditor {
                 0, 0, 1);
               m1.premultiply(scaleMatrix)
             }
-
-
-            //取得缺省纸张大小
-            let paperType
-            if (stage.paper?.type) {
-              paperType = stage.paper.type;
-            } else if (stage.ddInstance.paper) {
-              if (typeof (stage.ddInstance.paper) == 'string') {
-                paperType = stage.ddInstance.paper;
-              } else {
-                paperType = stage.ddInstance.paper.type;
-              }
-            } else {
-              paperType = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.type", true);
-            }
-            
+                      
             let moveMatrix = new Matrix3(
               1, 0, -stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2, //+ this.ddInstance.render.container.offsetWidth/2,
               0, 1, -stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2,// + this.ddInstance.render.container.offsetHeight / 2,
