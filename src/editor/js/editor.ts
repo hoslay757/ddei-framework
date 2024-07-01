@@ -111,6 +111,9 @@ class DDeiEditor {
   EVENT_STAGE_CHANGE_RATIO: Function | null = null;
   //以上字段为初始化时传入的全局控制变量或钩子函数，在运行时不会改变
 
+  //是否允许后台激活，允许后台激活的实例，在当前实例为非ACTIVE_INSTANCE时，依然能够执行部分后台操作
+  GLOBAL_ALLOW_BACK_ACTIVE:boolean = false;
+
   // ============================ 静态方法 ============================
   /**
    * 给予container构建一个DDei实例
@@ -165,6 +168,10 @@ class DDeiEditor {
         if (!DDeiUtil.notifyChange) {
           DDeiUtil.notifyChange = DDeiEditorUtil.notifyChange;
         }
+        if (!DDeiUtil.isBackActive) {
+          DDeiUtil.isBackActive = DDeiEditorUtil.isBackActive;
+        }
+        
         
         
         //将DDeiEditor对象装入全局缓存

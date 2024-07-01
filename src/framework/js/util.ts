@@ -48,7 +48,10 @@ class DDeiUtil {
   static invokeCallbackFunc: Function;
   //钩子函数，通知改变
   static notifyChange: Function;
-  
+
+  //钩子函数,判断当前实例是否可以在后台激活，允许后台激活的实例，在当前实例为非ACTIVE_INSTANCE时，依然能够执行部分后台操作
+  static isBackActive: Function;
+
 
 
   static offsetX: number;

@@ -169,9 +169,23 @@ class DDeiEditorUtil {
     return editor;
   }
 
-  static notifyChange(ddInstance:DDei) {
+  static notifyChange(ddInstance: DDei):void {
     let editor = DDeiEditorUtil.getEditorInsByDDei(ddInstance);
     editor?.notifyChange();
+  }
+
+  //钩子函数,判断当前实例是否可以在后台激活，允许后台激活的实例，在当前实例为非ACTIVE_INSTANCE时，依然能够执行部分后台操作
+  static isBackActive(ddInstance:DDei):boolean{
+    if (!ddInstance){
+      return false
+    }else{
+      let editor = DDeiEditorUtil.getEditorInsByDDei(ddInstance);
+      if (!editor){
+        return false
+      }else{
+        return (DDeiEditor.ACTIVE_INSTANCE && editor.id == DDeiEditor.ACTIVE_INSTANCE.id) || editor.GLOBAL_ALLOW_BACK_ACTIVE
+      }
+    }
   }
 
   /**

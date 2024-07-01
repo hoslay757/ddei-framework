@@ -274,12 +274,14 @@ class DDeiCanvasRender {
       if(this.model.render != this){
         this.destroyed();
       }else if(!this.model.disabled){
+        let allowBackActive = DDeiUtil.isBackActive(this.model)
+        if (allowBackActive){
           //边缘扫描
           this.mouseInEdge();
-          this.model.stage.drawing = true;
-          this.drawShape();
         }
-      
+        this.model.stage.drawing = true;
+        this.drawShape();
+      }
     }, 20)
   }
 
