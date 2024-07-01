@@ -941,8 +941,11 @@ class DDeiEditor {
 
   /**
    * 向当前画布添加控件,缺省坐标为当前画布的中心
+   * @param controls 要添加的控件
+   * @param applyRatio 应用缩放
+   * @param notify 通知刷新
    */
-  addControls(controls: object[], notify: boolean = true):DDeiAbstractShape[]{
+  addControls(controls: object[],applyRatio: boolean = true, notify: boolean = true):DDeiAbstractShape[]{
     
     //添加控件到图层
     let stage = this.ddInstance.stage
@@ -965,7 +968,7 @@ class DDeiEditor {
             }
             
             //设置大小以及坐标
-            let stageRatio = stage.getStageRatio();
+            let stageRatio = applyRatio?stage.getStageRatio():1
             let m1 = new Matrix3()
             //缩放至目标大小
             if (control.width || control.height) {
@@ -987,14 +990,14 @@ class DDeiEditor {
             //位移至画布中心的相对位置
             if (control.offsetX || control.offsetY) {
               let move1Matrix = new Matrix3(
-                1, 0, control.offsetX ? control.offsetX : 0,
-                0, 1, control.offsetY ? control.offsetY : 0,
+                1, 0, control.offsetX ? control.offsetX * stageRatio : 0,
+                0, 1, control.offsetY ? control.offsetY * stageRatio : 0,
                 0, 0, 1);
               m1.premultiply(move1Matrix)
             } else if ((control.x || control.x == 0) && (control.y || control.y == 0)){
               let move1Matrix = new Matrix3(
-                1, 0, -(-stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2) + control.x,
-                0, 1, -(-stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2) + control.y,
+                1, 0, -(-stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2) + control.x * stageRatio,
+                0, 1, -(-stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2) + control.y * stageRatio,
                 0, 0, 1);
               m1.premultiply(move1Matrix)
             }
@@ -1017,8 +1020,12 @@ class DDeiEditor {
 
   /**
    * 向特定画布添加控件,缺省坐标为当前画布的中心
+   * @param controls 要添加的控件
+   * @param layerIndex 图层下标
+   * @param applyRatio 应用缩放
+   * @param notify 通知刷新
    */
-  addControlsToLayer(controls: object[],layerIndex:number = -1, notify: boolean = true): DDeiAbstractShape[]|null {
+  addControlsToLayer(controls: object[], layerIndex: number = -1, applyRatio: boolean = true, notify: boolean = true): DDeiAbstractShape[]|null {
     //添加控件到图层
     let stage = this.ddInstance.stage
     if (layerIndex > -1 && layerIndex < stage?.layers?.length){
@@ -1042,7 +1049,7 @@ class DDeiEditor {
               }
 
               //设置大小以及坐标
-              let stageRatio = stage.getStageRatio();
+              let stageRatio = applyRatio ? stage.getStageRatio() : 1;
               let m1 = new Matrix3()
               //缩放至目标大小
               if (control.width || control.height) {
@@ -1064,14 +1071,14 @@ class DDeiEditor {
               //位移至画布中心的相对位置
               if (control.offsetX || control.offsetY) {
                 let move1Matrix = new Matrix3(
-                  1, 0, control.offsetX ? control.offsetX : 0,
-                  0, 1, control.offsetY ? control.offsetY : 0,
+                  1, 0, control.offsetX ? control.offsetX * stageRatio : 0,
+                  0, 1, control.offsetY ? control.offsetY * stageRatio : 0,
                   0, 0, 1);
                 m1.premultiply(move1Matrix)
               } else if ((control.x || control.x == 0) && (control.y || control.y == 0)) {
                 let move1Matrix = new Matrix3(
-                  1, 0, -(-stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2) + control.x,
-                  0, 1, -(-stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2) + control.y,
+                  1, 0, -(-stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2) + control.x * stageRatio,
+                  0, 1, -(-stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2) + control.y * stageRatio,
                   0, 0, 1);
                 m1.premultiply(move1Matrix)
               }
@@ -1097,13 +1104,18 @@ class DDeiEditor {
 
   /**
    * 向当前画布添加连线
+   * @param controls 要添加的控件
+   * @param applyRatio 应用缩放
+   * @param notify 通知刷新
    */
-  addLines(controls: object[],notify:boolean = true): DDeiAbstractShape[] {
+  addLines(controls: object[],applyRatio: boolean = true,notify:boolean = true): DDeiAbstractShape[] {
     //添加控件到图层
     let stage = this.ddInstance.stage
     let layer = stage?.layers[stage?.layerIndex];
     let shapes: DDeiAbstractShape[] = []
     if (layer) {
+      let stageRatio = applyRatio ? stage.getStageRatio() : 1
+
       let moveX = -stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2
       let moveY = -stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2
       
@@ -1120,24 +1132,24 @@ class DDeiEditor {
           //直线两个点
           let sx,sy,ex,ey
           if (control.startPoint.offsetX) {
-            sx = moveX + control.startPoint.offsetX
+            sx = moveX + control.startPoint.offsetX * stageRatio
           } else if (control.startPoint.x) {
-            sx = control.startPoint.x
+            sx = control.startPoint.x * stageRatio
           }
           if (control.startPoint.offsetY) {
-            sy = moveY + control.startPoint.offsetY
+            sy = moveY + control.startPoint.offsetY * stageRatio
           } else if (control.startPoint.y) {
-            sy = control.startPoint.y
+            sy = control.startPoint.y * stageRatio
           }
           if (control.endPoint.offsetX) {
-            ex = moveX + control.endPoint.offsetX
+            ex = moveX + control.endPoint.offsetX * stageRatio
           } else if (control.endPoint.x) {
-            ex = control.endPoint.x
+            ex = control.endPoint.x * stageRatio
           }
           if (control.endPoint.offsetY) {
-            ey = moveY + control.endPoint.offsetY
+            ey = moveY + control.endPoint.offsetY * stageRatio
           } else if (control.endPoint.y) {
-            ey = control.endPoint.y
+            ey = control.endPoint.y * stageRatio
           }
           lineJson.pvs = [new Vector3(sx, sy, 1), new Vector3(ex, ey, 1)]
           lineJson.cpv = lineJson.pvs[0]
