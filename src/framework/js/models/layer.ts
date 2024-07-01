@@ -240,6 +240,15 @@ class DDeiLayer {
     }
   }
 
+  /**
+   * 移除所有元素
+   */
+  clearModels(destroy:boolean = false): void {
+    this.models.forEach(model => {
+      this.removeModel(model, destroy);
+    })
+  }
+
   cascadeRemoveSelf(): void {
   }
   /**
