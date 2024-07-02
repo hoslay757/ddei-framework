@@ -496,6 +496,9 @@ class DDeiEditor {
       });
     }
     
+    if (plugin.installed){
+      plugin.installed(this)
+    }
 
     
     let options = null;
@@ -615,6 +618,9 @@ class DDeiEditor {
   menus: object = markRaw({});
   //当前引入的外部字体
   fonts: object[] = FONTS;
+  //当前引入的外部renderViewers以及创建后的实例
+  renderViewers: object[] = markRaw([]);
+  renderViewerIns: object = markRaw({});
   //当前引入的外部菜单
   menuMapping: object = markRaw({});
   //当前引入的外部控件配置

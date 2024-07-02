@@ -368,7 +368,23 @@ class DDeiUtil {
    */
   static getModelsDomAbsPosition(models: DDeiAbstractShape[]): object {
     if (models?.length > 0) {
-      let outRect = DDeiAbstractShape.getOutRectByPV(models);
+      //如果只有1个元素，则获取其旋转前的位置以及旋转量
+      let outRect
+      if(models.length == 1){
+        let model = models[0]
+        if (model.rotate){
+          let pvs = model.operatePVS ? model.operatePVS : model.pvs;
+          let zeroPvs = DDeiUtil.pointsToZero(pvs, model.cpv, model.rotate)
+          outRect = DDeiAbstractShape.pvsToOutRect(zeroPvs);
+          outRect.rotate = model.rotate
+        }else{
+          outRect = DDeiAbstractShape.getOutRectByPV(models);
+          outRect.rotate = 0
+        }
+      }else{
+        outRect = DDeiAbstractShape.getOutRectByPV(models);
+        outRect.rotate = 0
+      }
       let wpv = models[0].stage.wpv
       let domEle = models[0].stage.ddInstance.render.realCanvas.parentElement
       let canvasPos = DDeiUtil.getDomAbsPosition(domEle)
