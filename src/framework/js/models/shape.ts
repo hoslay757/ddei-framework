@@ -1538,10 +1538,12 @@ abstract class DDeiAbstractShape {
     let len = pvs.length;
     let pn = 0
     let modelLines = []
+    
+
 
     for (let i = 0; i < len; i++) {
       let ps = pvs[i]
-      if (ps.x >= x && ps.y >= y && ps.x <= x1 && ps.y <= y1) {
+      if ((ps.x >= x && ps.y >= y && ps.x <= x1 && ps.y <= y1)) {
         pn++
       }
       if (pn >= pointNumber) {
@@ -1553,6 +1555,8 @@ abstract class DDeiAbstractShape {
         modelLines.push({ x1: pvs[i].x, y1: pvs[i].y, x2: pvs[i + 1].x, y2: pvs[i + 1].y })
       }
     }
+    
+
     //执行执行线段相交判断
     let rectLines = [
       { x1: x, y1: y, x2: x1, y2: y },
@@ -1571,6 +1575,13 @@ abstract class DDeiAbstractShape {
         }
       }
     }
+
+    //判断特殊情况，不相交，但视窗是否在外接矩形中
+    let outRect = DDeiAbstractShape.pvsToOutRect(pvs);
+    if (x >= outRect.x && x <= outRect.x1 && y >= outRect.y && y <= outRect.y1){
+      return true
+    }
+    
     return false;
   }
 
