@@ -154,15 +154,20 @@ class DDeiLine extends DDeiAbstractShape {
       if (l1.type == 3) {
         continue;
       }
-      let jumpLine = DDeiModelArrtibuteValue.getAttrValueByState(l1, "jumpline", true);
-      //采用全局跳线
-      if (jumpLine == 0 || !jumpLine) {
-        if (layer.stage.global?.jumpline) {
-          jumpLine = layer.stage.global.jumpline;
-        } else if (layer.stage.ddInstance.jumpline) {
-          jumpLine = layer.stage.ddInstance.jumpline;
-        } else {
-          jumpLine = DDeiModelArrtibuteValue.getAttrValueByState(layer.stage, "global.jumpline", true);
+      let jumpLine
+      if (layer.stage.ddInstance.jumpline == 0 || layer.stage.ddInstance.jumpline) {
+        jumpLine = layer.stage.ddInstance.jumpline
+      }else{
+        jumpLine = DDeiModelArrtibuteValue.getAttrValueByState(l1, "jumpline", true);
+        //采用全局跳线
+        if (jumpLine == 0 || !jumpLine) {
+          if (layer.stage.global?.jumpline) {
+            jumpLine = layer.stage.global.jumpline;
+          } else if (layer.stage.ddInstance.jumpline) {
+            jumpLine = layer.stage.ddInstance.jumpline;
+          } else {
+            jumpLine = DDeiModelArrtibuteValue.getAttrValueByState(layer.stage, "global.jumpline", true);
+          }
         }
       }
       if (jumpLine == 1) {

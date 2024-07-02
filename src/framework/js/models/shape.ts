@@ -557,7 +557,6 @@ abstract class DDeiAbstractShape {
    * 变换向量
    */
   transVectors(matrix: Matrix3, params: { skipSample: boolean, ignoreBPV: boolean, ignoreOVS: boolean, ignoreHPV: boolean, ignoreComposes: boolean }): void {
-
     this.cpv.applyMatrix3(matrix);
     if (this.poly == 2) {
       //重新计算
