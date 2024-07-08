@@ -105,7 +105,45 @@ class DDeiLifeCycle extends DDeiPluginBase {
    */
   EVENT_MOUSE_IN_AREA: DDeiFuncData | null = null;
 
+  /**
+   * 关闭文件
+   */
+  EVENT_AFTER_CLOSE_FILE: DDeiFuncData | null = null;
 
+  /**
+   * 切换文件
+   */
+  EVENT_AFTER_CHANGE_FILE: DDeiFuncData | null = null;
+
+  /**
+   * 切换页签
+   */
+  EVENT_AFTER_CHANGE_SHEET: DDeiFuncData | null = null;
+
+  /**
+   * 关闭页签
+   */
+  EVENT_AFTER_CLOSE_SHEET: DDeiFuncData | null = null;
+
+  /**
+   * 关闭文件
+   */
+  EVENT_BEFORE_CLOSE_FILE: DDeiFuncData | null = null;
+
+  /**
+   * 切换文件
+   */
+  EVENT_BEFORE_CHANGE_FILE: DDeiFuncData | null = null;
+
+  /**
+   * 切换页签
+   */
+  EVENT_BEFORE_CHANGE_SHEET: DDeiFuncData | null = null;
+
+  /**
+   * 关闭页签
+   */
+  EVENT_BEFORE_CLOSE_SHEET: DDeiFuncData | null = null;
   
   
   
