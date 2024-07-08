@@ -163,6 +163,31 @@ class DDeiStageCanvasRender {
       DDeiLine.calLineCrossSync(this.model.layers[this.model.layerIndex])
 
       DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_AFTER", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
+    
+      //设置htmlrender的容器大小以及位置
+      let renderViewerEle = canvas.parentElement?.getElementsByClassName("ddei-editor-canvasview-renderviewers")[0];
+      if (renderViewerEle){
+        
+        
+        let ruleWeight = 0
+        if (this.tempRuleDisplay == 1 || this.tempRuleDisplay == "1") {
+          ruleWeight = 16
+        }
+        let hScrollWeight = 0, vScrollWeight = 0;
+        if (this.vScroll) {
+          vScrollWeight = 15
+        }
+        if (this.hScroll) {
+          hScrollWeight = 15
+        }
+        
+        
+        renderViewerEle.style.marginLeft = ruleWeight + "px"
+        renderViewerEle.style.marginTop = ruleWeight + "px"
+        renderViewerEle.style.width = (canvas.offsetWidth/rat1 - ruleWeight - vScrollWeight) + "px"
+        renderViewerEle.style.height = (canvas.offsetHeight/rat1 - ruleWeight - hScrollWeight) + "px"
+        delete this.tempRuleDisplay
+      }
     }
   }
 
@@ -626,6 +651,7 @@ class DDeiStageCanvasRender {
     } else {
       ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
     }
+    this.tempRuleDisplay = ruleDisplay
     if (ruleDisplay == 1 || ruleDisplay == "1") {
       //绘制横向点
       //获得 2d 上下文对象

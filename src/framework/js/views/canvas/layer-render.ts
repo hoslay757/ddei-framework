@@ -343,8 +343,9 @@ class DDeiLayerCanvasRender {
         let item = this.model.models.get(key);
         //判定控件是否在绘制区间，如果在则绘制
         if (!inRect || item?.isInRect(x, y, x1, y1)) {
-         
           item.render?.drawShape();
+        }else{
+          DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", "VIEW-HIDDEN", { models: [item] }, this.ddRender.model, null)
         }
       });
     }
