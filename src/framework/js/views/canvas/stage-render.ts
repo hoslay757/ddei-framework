@@ -97,6 +97,21 @@ class DDeiStageCanvasRender {
       if (this.model.disabled || !this.model.width || !this.model.height){
         return;
       }
+      let ruleDisplay
+      let ruleInit
+      if (this.model.ruler?.display || this.model.ruler?.display == 0 || this.model.ruler?.display == false) {
+        ruleDisplay = this.model.ruler.display;
+      } else if (this.model.ddInstance.ruler != null && this.model.ddInstance.ruler != undefined) {
+        if (typeof (this.model.ddInstance.ruler) == 'boolean') {
+          ruleDisplay = this.model.ddInstance.ruler ? 1 : 0;
+        } else {
+          ruleInit = this.model.ddInstance.ruler
+          ruleDisplay = ruleInit.display;
+        }
+      } else {
+        ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
+      }
+      this.tempRuleDisplay = ruleDisplay
       //绘制纸张，以及图层背景
       this.drawPaper();
 
@@ -197,6 +212,15 @@ class DDeiStageCanvasRender {
   drawHelpLines(): void {
     // 未开启主线提示，则不再计算辅助线提示定位
     if (this.helpLines) {
+      let ruleInit
+      if (this.model.ruler?.display || this.model.ruler?.display == 0 || this.model.ruler?.display == false) {
+      } else if (this.model.ddInstance.ruler != null && this.model.ddInstance.ruler != undefined) {
+        if (typeof (this.model.ddInstance.ruler) == 'boolean') {
+        } else {
+          ruleInit = this.model.ddInstance.ruler
+        }
+      } else {
+      }
       let hpoint = this.helpLines.hpoint;
       let vpoint = this.helpLines.vpoint;
       let rect = this.helpLines.rect;
@@ -222,20 +246,7 @@ class DDeiStageCanvasRender {
         let font = "bold " + (fontSize * rat1) + "px Microsoft YaHei"
         //设置字体
         ctx.font = font
-        let ruleDisplay
-        let ruleInit
-        if (this.model.ruler?.display || this.model.ruler?.display == 0 || this.model.ruler?.display == false) {
-          ruleDisplay = this.model.ruler.display;
-        } else if (this.model.ddInstance.ruler != null && this.model.ddInstance.ruler != undefined) {
-          if (typeof (this.model.ddInstance.ruler) == 'boolean') {
-            ruleDisplay = this.model.ddInstance.ruler ? 1 : 0;
-          } else {
-            ruleInit = this.model.ddInstance.ruler
-            ruleDisplay = ruleInit.display;
-          }
-        } else {
-          ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
-        }
+        
         let xText = 0;
         let yText = 0;
         if (this.operateState == DDeiEnumOperateState.CONTROL_DRAGING || this.operateState == DDeiEnumOperateState.CONTROL_CREATING) {
@@ -247,7 +258,7 @@ class DDeiStageCanvasRender {
         } else if (this.operateState == DDeiEnumOperateState.CONTROL_ROTATE) {
           xText = rect.rotate.toFixed(0);
         }
-        if ((ruleDisplay == 1 || ruleDisplay == "1") && this.operateState != DDeiEnumOperateState.CONTROL_ROTATE) {
+        if ((this.tempRuleDisplay == 1 || this.tempRuleDisplay == "1") && this.operateState != DDeiEnumOperateState.CONTROL_ROTATE) {
           
           //生成文本并计算文本大小
           let stageRatio = this.model.getStageRatio()
@@ -316,7 +327,7 @@ class DDeiStageCanvasRender {
         ctx.fillText(text, x + (width - textRect.width) / 2, y + (height - fontSize * rat1) / 2);
 
         //如果正在移动，则在标尺上绘制标注区域
-        if (ruleDisplay == 1 || ruleDisplay == "1") {
+        if (this.tempRuleDisplay == 1 || this.tempRuleDisplay == "1") {
           //横向
           ctx.strokeStyle = "red";
           let weight = 16 * rat1;
@@ -637,22 +648,16 @@ class DDeiStageCanvasRender {
    * 标尺
    */
   drawRuler() {
-    let ruleDisplay
     let ruleInit
     if (this.model.ruler?.display || this.model.ruler?.display == 0 || this.model.ruler?.display == false) {
-      ruleDisplay = this.model.ruler.display;
     } else if (this.model.ddInstance.ruler != null && this.model.ddInstance.ruler != undefined) {
       if (typeof (this.model.ddInstance.ruler) == 'boolean') {
-        ruleDisplay = this.model.ddInstance.ruler ? 1 : 0;
       } else {
         ruleInit = this.model.ddInstance.ruler
-        ruleDisplay = ruleInit.display;
       }
     } else {
-      ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
     }
-    this.tempRuleDisplay = ruleDisplay
-    if (ruleDisplay == 1 || ruleDisplay == "1") {
+    if (this.tempRuleDisplay == 1 || this.tempRuleDisplay == "1") {
       //绘制横向点
       //获得 2d 上下文对象
       let canvas = this.ddRender.getCanvas();
@@ -726,7 +731,7 @@ class DDeiStageCanvasRender {
       }
       let startBaseX = this.model.spv.x * rat1
       let startBaseY = this.model.spv.y * rat1
-      if (ruleDisplay == 1 || ruleDisplay == "1") {
+      if (this.tempRuleDisplay == 1 || this.tempRuleDisplay == "1") {
         ctx.beginPath()
         //横向尺子背景
         ctx.fillRect(0, 0, cwidth, weight)
