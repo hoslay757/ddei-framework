@@ -121,9 +121,9 @@ class DDeiLifeCycle extends DDeiPluginBase {
   EVENT_AFTER_CHANGE_SHEET: DDeiFuncData | null = null;
 
   /**
-   * 关闭页签
+   * 删除页签
    */
-  EVENT_AFTER_CLOSE_SHEET: DDeiFuncData | null = null;
+  EVENT_AFTER_DEL_SHEET: DDeiFuncData | null = null;
 
   /**
    * 关闭文件
@@ -141,9 +141,31 @@ class DDeiLifeCycle extends DDeiPluginBase {
   EVENT_BEFORE_CHANGE_SHEET: DDeiFuncData | null = null;
 
   /**
-   * 关闭页签
+   * 删除页签
    */
-  EVENT_BEFORE_CLOSE_SHEET: DDeiFuncData | null = null;
+  EVENT_BEFORE_DEL_SHEET: DDeiFuncData | null = null;
+
+  /**
+   * 新建文件
+   */
+  EVENT_AFTER_ADD_FILE: DDeiFuncData | null = null;
+
+  /**
+   * 新建页签
+   */
+  EVENT_AFTER_ADD_SHEET: DDeiFuncData | null = null;
+
+
+  /**
+   * 新建文件
+   */
+  EVENT_BEFORE_ADD_FILE: DDeiFuncData | null = null;
+
+  /**
+   * 新建页签
+   */
+  EVENT_BEFORE_ADD_SHEET: DDeiFuncData | null = null;
+
   
   
   
