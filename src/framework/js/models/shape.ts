@@ -12,6 +12,10 @@ import DDeiModelArrtibuteValue from './attribute/attribute-value'
 abstract class DDeiAbstractShape {
   // ============================ 构造函数 ============================
   constructor(props: object) {
+    for (let i in props) {
+      this[i] = props[i]
+    }
+
     this.id = props.id
     //宽度与高度，会换算为点向量，参与运算
     this.width = props.width ? props.width : 0

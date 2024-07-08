@@ -41,13 +41,16 @@ class DDeiLayer {
     let ddInstance = layer.stage?.ddInstance;
     tempData[layer.id] = layer;
     let models: Map<String, DDeiAbstractShape> = new Map<String, DDeiAbstractShape>();
+    let midList = new Array();
     for (let key in json.models) {
       let item = json.models[key];
       let model = ddInstance.controlModelClasses[item.modelType].loadFromJSON(item, tempData);
       models.set(key, model)
+      midList.push(model.id)
     }
     tempData['currentLayer'] = null;
     layer.models = models;
+    layer.midList = midList;
     layer.initRender();
     layer.calModelNumber()
     return layer;
