@@ -959,7 +959,7 @@ class DDeiEditor {
    * @param notify 通知刷新
    */
   addControls(controls: object[],applyRatio: boolean = true, notify: boolean = true):DDeiAbstractShape[]{
-    
+    if (controls?.length > 0){
     //添加控件到图层
     let stage = this.ddInstance.stage
     let layer = stage?.layers[stage?.layerIndex];
@@ -1029,6 +1029,7 @@ class DDeiEditor {
       }
     }
     return shapes;
+    }
   }
 
   /**
