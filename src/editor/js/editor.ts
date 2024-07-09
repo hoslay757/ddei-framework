@@ -1033,7 +1033,7 @@ class DDeiEditor {
   }
 
   /**
-   * 向特定画布添加控件,缺省坐标为当前画布的中心
+   * 向特定图层添加控件,缺省坐标为当前画布的中心
    * @param controls 要添加的控件
    * @param layerIndex 图层下标
    * @param applyRatio 应用缩放
@@ -1379,7 +1379,7 @@ class DDeiEditor {
   }
 
   /**
-   * 将控件置于中心
+   * 将舞台可视区域的中心点移动到控件的外接矩形中心
    * @param modelIds 
    */
   centerModels(stage:DDeiStage ,...modelIds:string[]):void{
