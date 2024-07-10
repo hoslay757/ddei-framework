@@ -1165,6 +1165,10 @@ class DDeiEditor {
           } else if (control.endPoint.y) {
             ey = control.endPoint.y * stageRatio
           }
+          control.spvs?.forEach(spv => {
+            spv.x = spv.x * stageRatio
+            spv.y = spv.y * stageRatio
+          });
           lineJson.pvs = [new Vector3(sx, sy, 1), new Vector3(ex, ey, 1)]
           lineJson.cpv = lineJson.pvs[0]
           //初始化开始点和结束点
