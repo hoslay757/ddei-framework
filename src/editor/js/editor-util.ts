@@ -329,9 +329,6 @@ class DDeiEditorUtil {
 
   /**
      * 获取菜单配置
-     * @param configModel 配置模型，如果包含了attrDefineMap等数据，则直接获取数据,如果只包含id则通过id取原始数据
-     * @param paths 属性路径,支持传入多个
-     * @return 由构成的属性的实际路径和配置中对应的值组成的Map
      */
   static getMenuConfig(model: object, editor: DDeiEditor | null | undefined): object | null {
     if (editor?.menuMapping){

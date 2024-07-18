@@ -1145,24 +1145,24 @@ class DDeiEditor {
           lineJson.type = 2
           //直线两个点
           let sx,sy,ex,ey
-          if (control.startPoint.offsetX) {
+          if (control.startPoint.offsetX || control.startPoint.offsetX == 0) {
             sx = moveX + control.startPoint.offsetX * stageRatio
-          } else if (control.startPoint.x) {
+          } else if (control.startPoint.x || control.startPoint.x == 0) {
             sx = control.startPoint.x * stageRatio
           }
-          if (control.startPoint.offsetY) {
+          if (control.startPoint.offsetY || control.startPoint.offsetY == 0) {
             sy = moveY + control.startPoint.offsetY * stageRatio
-          } else if (control.startPoint.y) {
+          } else if (control.startPoint.y || ontrol.startPoint.y == 0) {
             sy = control.startPoint.y * stageRatio
           }
-          if (control.endPoint.offsetX) {
+          if (control.endPoint.offsetX || control.endPoint.offsetX == 0) {
             ex = moveX + control.endPoint.offsetX * stageRatio
-          } else if (control.endPoint.x) {
+          } else if (control.endPoint.x || control.endPoint.x == 0) {
             ex = control.endPoint.x * stageRatio
           }
-          if (control.endPoint.offsetY) {
+          if (control.endPoint.offsetY || control.endPoint.offsetY == 0) {
             ey = moveY + control.endPoint.offsetY * stageRatio
-          } else if (control.endPoint.y) {
+          } else if (control.endPoint.y || control.endPoint.y == 0) {
             ey = control.endPoint.y * stageRatio
           }
           control.spvs?.forEach(spv => {
