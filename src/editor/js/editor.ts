@@ -1152,7 +1152,7 @@ class DDeiEditor {
           }
           if (control.startPoint.offsetY || control.startPoint.offsetY == 0) {
             sy = moveY + control.startPoint.offsetY * stageRatio
-          } else if (control.startPoint.y || ontrol.startPoint.y == 0) {
+          } else if (control.startPoint.y || control.startPoint.y == 0) {
             sy = control.startPoint.y * stageRatio
           }
           if (control.endPoint.offsetX || control.endPoint.offsetX == 0) {
