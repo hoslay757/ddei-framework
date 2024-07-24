@@ -1206,7 +1206,7 @@ class DDeiEditor {
    * @param applyRatio 应用缩放
    * @param notify 通知刷新
    */
-  addLines(controls: object[],applyRatio: boolean = true,notify:boolean = true): DDeiAbstractShape[] {
+  addLines(controls: object[],calPoints:boolean = true,applyRatio: boolean = true,notify:boolean = true): DDeiAbstractShape[] {
     //添加控件到图层
     let stage = this.ddInstance.stage
     let layer = stage?.layers[stage?.layerIndex];
@@ -1253,7 +1253,27 @@ class DDeiEditor {
             spv.x = spv.x * stageRatio
             spv.y = spv.y * stageRatio
           });
-          lineJson.pvs = [new Vector3(sx, sy, 1), new Vector3(ex, ey, 1)]
+          
+          //跳过计算点
+          if (!calPoints && control.pvs?.length >= 2) {
+            lineJson.pvs = []
+            control.pvs.forEach(pv => {
+              let pvx,pvy
+              if (pv.offsetX || pv.offsetX == 0) {
+                pvx = moveX + pv.offsetX * stageRatio
+              } else if (pv.x || pv.x == 0) {
+                pvx = pv.x * stageRatio
+              }
+              if (pv.offsetY || pv.offsetY == 0) {
+                pvy = moveY + pv.offsetY * stageRatio
+              } else if (pv.y || pv.y == 0) {
+                pvy = pv.y * stageRatio
+              }
+              lineJson.pvs.push(new Vector3(pvx, pvy, 1))
+            });
+          }else{
+            lineJson.pvs = [new Vector3(sx, sy, 1), new Vector3(ex, ey, 1)]
+          }
           lineJson.cpv = lineJson.pvs[0]
           //初始化开始点和结束点
 
@@ -1265,6 +1285,7 @@ class DDeiEditor {
               cc[i] = control[i];
             }
           }
+         
           //构造线段关键属性
           let smodel,emodel
           if (control.smodel) {
@@ -1311,8 +1332,10 @@ class DDeiEditor {
             layer.shadowControls.push(cc);
             cc.initRender()
           }
-          smodel?.updateLinkModels();
-          emodel?.updateLinkModels();
+          if (calPoints){
+            smodel?.updateLinkModels();
+            emodel?.updateLinkModels();
+          }
           shapes.push(cc);
           
         }
