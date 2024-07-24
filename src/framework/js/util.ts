@@ -347,7 +347,7 @@ class DDeiUtil {
       actualTop += (current.offsetTop + current.clientTop);
       current = current.offsetParent;
     }
-    if (editor){
+    if (editor) {
       let editorElement = document.getElementById(editor.id);
       let editorPos = DDeiUtil.getDomAbsPosition(editorElement)
       actualLeft -= editorPos.left
@@ -356,6 +356,8 @@ class DDeiUtil {
     //返回结果
     return { left: actualLeft, top: actualTop }
   }
+
+  
 
   /**
    * 返回控件在dom下的绝对坐标

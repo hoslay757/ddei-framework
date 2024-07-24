@@ -4,7 +4,7 @@ import DDei from "@ddei-core/framework/js/ddei";
 import DDeiEditorUtil from "./editor-util";
 import DDeiUtil from "@ddei-core/framework/js/util";
 import DDeiBus from "@ddei-core/framework/js/bus/bus";
-import type DDeiFile from "./file";
+import DDeiFile from "./file";
 import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import { markRaw } from "vue";
 import config from "./config"
@@ -22,6 +22,7 @@ import { DDeiActiveType } from "./enums/active-type";
 import { DDeiLink } from "@ddei-core/framework/js/models/link"
 import type DDeiStage from "../../framework/js/models/stage";
 import DDeiLine from "../../framework/js/models/line"
+import DDeiFileState from "./enums/file-state";
 /**
  * DDei图形编辑器类，用于维护编辑器实例、全局状态以及全局属性
  */
@@ -657,10 +658,77 @@ class DDeiEditor {
       this.editMode = mode
     }
   }
+
+
+  /**
+   * 加载文件到设计器中
+   * @param fileJson 文件json
+   * @param append 是否添加
+   */
+  loadData(fileJson:string|object,append:boolean = false):void{
+    if (fileJson){
+      
+      if (typeof (fileJson) == 'string'){
+        fileJson = JSON.parse(fileJson)
+      }
+      let json = fileJson
+      //json中有一级content
+      //追加文件
+      let file 
+      if (json?.content) {
+        file = DDeiFile.loadFromJSON(json.content, {
+          currentDdInstance: this.ddInstance,
+        });
+        file.id = json.id;
+        file.publish = json.publish;
+        file.name = json.name;
+        file.path = json.path;
+        file.desc = json.desc;
+        file.version = json.version;
+        file.extData = json.extData;
+        file.busiData = json.busiData;
+      }else{
+        file = DDeiFile.loadFromJSON(json, {
+          currentDdInstance: this.ddInstance,
+        });
+      }
+      
+      file.state = DDeiFileState.NONE;
+      //追加文件
+      if (append){
+        this.addFile(file)
+        this.files.forEach(f=>{
+          f.active = DDeiActiveType.NONE;
+        })
+        this.currentFileIndex = this.files.indexOf(file)
+      }
+      //覆盖文件
+      else{
+        this.files[this.currentFileIndex] = file
+      }
+
+      //显示当前文件内容
+      if (file && file.sheets?.length > 0) {
+        file.active = DDeiActiveType.ACTIVE;
+        let sheets = file?.sheets;
+        file.changeSheet(file.currentSheetIndex);
+        let stage = sheets[file.currentSheetIndex].stage;
+        stage.ddInstance = this.ddInstance;
+        //记录文件初始日志
+        file.initHistroy();
+        //刷新页面
+        this.ddInstance.stage = stage;
+        //加载场景渲染器
+        stage.initRender();
+      }
+      this.notifyChange()
+    }
+  }
+
   /**
    * 添加文件到列表中,默认添加到最后面
    */
-  addFile(file: DDeiFile, index: number): void {
+  addFile(file: DDeiFile, index: number|null = null): void {
     if (index || index == 0) {
       this.files.splice(index, 0, file);
     } else {
@@ -722,7 +790,14 @@ class DDeiEditor {
    * 键盘按下
    */
   keyDown(evt: Event): void {
-    if (DDeiKeyAction.route(evt)) {
+    let isActive = false;
+    if(document.activeElement?.tagName == 'BODY'){
+      isActive = true
+    }else{
+      //控件必须是当前editor的子控件
+      isActive = DDeiEditorUtil.isEditorSubElement(document.activeElement,this)
+    }
+    if (isActive && DDeiKeyAction.route(evt)) {
       evt.preventDefault()
     }
 
@@ -732,7 +807,16 @@ class DDeiEditor {
    * 键盘弹起
    */
   keyUp(evt: Event): void {
-    DDeiKeyAction.updateKeyState(evt);
+    let isActive = false;
+    if (document.activeElement?.tagName == 'BODY') {
+      isActive = true
+    } else {
+      //控件必须是当前editor的子控件
+      isActive = DDeiEditorUtil.isEditorSubElement(document.activeElement, this)
+    }
+    if (isActive){
+      DDeiKeyAction.updateKeyState(evt);
+    }
   }
 
 

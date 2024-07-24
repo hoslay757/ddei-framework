@@ -12,6 +12,7 @@ import DDeiRectContainer from "../../framework/js/models/rect-container";
 import DDei from "../../framework/js/ddei";
 import DDeiFuncCallResult from "@ddei-core/lifecycle/callresult";
 
+
 class DDeiEditorUtil {
 
   // ============================ 静态方法 ============================
@@ -172,6 +173,25 @@ class DDeiEditorUtil {
   static notifyChange(ddInstance: DDei):void {
     let editor = DDeiEditorUtil.getEditorInsByDDei(ddInstance);
     editor?.notifyChange();
+  }
+
+  /**
+   * 判断element是否为editor的子控件
+   * @param element dom元素
+   * @param editor 编辑器
+   */
+  static isEditorSubElement(element: object, editor: DDeiEditor): boolean {
+    if (!editor || !element) {
+      return false
+    }
+    if (element.tagName == 'BODY' || element.tagName == 'HEAD' || element.tagName == 'HTML') {
+      return false
+    }
+    if (element == editor.viewEditor) {
+      return true;
+    } else {
+      return DDeiEditorUtil.isEditorSubElement(element.parentElement, editor)
+    }
   }
 
   //钩子函数,判断当前实例是否可以在后台激活，允许后台激活的实例，在当前实例为非ACTIVE_INSTANCE时，依然能够执行部分后台操作
