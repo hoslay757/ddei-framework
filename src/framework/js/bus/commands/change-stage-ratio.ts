@@ -45,12 +45,12 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
 
       if (stage && data.oldValue && data.newValue && data.oldValue != data.newValue) {
         let scaleSize = data.newValue / data.oldValue
-        //缩放矩阵
-        let scaleMatrix = new Matrix3(
-          scaleSize, 0, 0,
-          0, scaleSize, 0,
-          0, 0, 1);
-        stage?.spv.applyMatrix3(scaleMatrix)
+        // //缩放矩阵
+        // let scaleMatrix = new Matrix3(
+        //   scaleSize, 0, 0,
+        //   0, scaleSize, 0,
+        //   0, 0, 1);
+        // stage?.spv.applyMatrix3(scaleMatrix)
         stage.layers.forEach(layer => {
           layer.opPoints = []
           delete layer.opLine
@@ -60,25 +60,25 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
           layer.shadowControls = []
           layer.midList.forEach(mid => {
             let model = layer.models.get(mid);
-            model.transVectors(scaleMatrix)
-            if (model.baseModelType == 'DDeiLine') {
-              model.linkModels?.forEach(lm => {
-                lm.dx = lm.dx * scaleSize
-                lm.dy = lm.dy * scaleSize
-              })
-              //折线，同步特殊点位
-              if (model.type == 2) {
-                model.spvs?.forEach(spv => {
-                  if (spv) {
-                    spv.x *= scaleSize
-                    spv.y *= scaleSize
-                  }
-                })
-              }
-            }
+            // model.transVectors(scaleMatrix)
+            // if (model.baseModelType == 'DDeiLine') {
+            //   model.linkModels?.forEach(lm => {
+            //     lm.dx = lm.dx * scaleSize
+            //     lm.dy = lm.dy * scaleSize
+            //   })
+            //   //折线，同步特殊点位
+            //   if (model.type == 2) {
+            //     model.spvs?.forEach(spv => {
+            //       if (spv) {
+            //         spv.x *= scaleSize
+            //         spv.y *= scaleSize
+            //       }
+            //     })
+            //   }
+            // }
             model.render?.enableRefreshShape()
             //更新线段
-            DDeiBusCommandChangeStageRatio.calLineCross(layer)
+            // DDeiBusCommandChangeStageRatio.calLineCross(layer)
           })
         });
 

@@ -1535,6 +1535,7 @@ abstract class DDeiAbstractShape {
    * @returns 是否在区域内
    */
   isInRect(x: number, y: number, x1: number, y1: number, pointNumber: number = 1): boolean {
+    
     if (x === undefined || y === undefined || x1 === undefined || y1 === undefined) {
       return false
     }
@@ -2086,7 +2087,7 @@ abstract class DDeiAbstractShape {
   /**
    * 返回点集合的外接矩形
    */
-  static pvsToOutRect(points: object[]): object {
+  static pvsToOutRect(points: object[],ratio:number = 1): object {
     let x: number = Infinity, y: number = Infinity, x1: number = -Infinity, y1: number = -Infinity;
     //找到最大、最小的x和y
     points.forEach(p => {
@@ -2096,7 +2097,7 @@ abstract class DDeiAbstractShape {
       y1 = Math.max(p.y, y1)
     })
     return {
-      x: x, y: y, width: x1 - x, height: y1 - y, x1: x1, y1: y1
+      x: x * ratio, y: y * ratio, width: (x1 - x) * ratio, height: (y1 - y) * ratio, x1: x1 * ratio, y1: y1 * ratio
     }
   }
 

@@ -334,10 +334,11 @@ class DDeiLayerCanvasRender {
       let canvas = this.ddRender.getCanvas();
       //获取全局缩放比例
       let rat1 = this.ddRender.ratio
-      let x = -this.stage.wpv.x;
-      let y = -this.stage.wpv.y;
-      let x1 = x + canvas.width / rat1;
-      let y1 = y + canvas.height / rat1;
+      let stageRatio = this.model.getStageRatio()
+      let x = -this.stage.wpv.x / stageRatio;
+      let y = -this.stage.wpv.y / stageRatio;
+      let x1 = x + canvas.width / rat1 / stageRatio;
+      let y1 = y + canvas.height / rat1 / stageRatio;
       //遍历子元素，绘制子元素
       this.model.midList.forEach(key => {
         let item = this.model.models.get(key);
