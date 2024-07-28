@@ -605,6 +605,7 @@ class DDeiLayerCanvasRender {
     //ctrl键的按下状态
     let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
     //判断当前鼠标坐标是否落在选择器控件的区域内
+    let stageRatio = this.model.getStageRatio()
     let ex = evt.offsetX;
     let ey = evt.offsetY;
     ex /= window.remRatio
