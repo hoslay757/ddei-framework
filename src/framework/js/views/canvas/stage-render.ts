@@ -460,8 +460,8 @@ class DDeiStageCanvasRender {
 
       let paperWidth = paperSize.width;
       let paperHeight = paperSize.height;
-      let startPaperX = this.model.spv.x * rat1 + 1
-      let startPaperY = this.model.spv.y * rat1 + 1
+      let startPaperX = this.model.spv.x * ratio + 1
+      let startPaperY = this.model.spv.y * ratio + 1
       
       let posX = startPaperX - wpvX + offsetWidth;
       let posY = startPaperY - wpvY + offsetWidth;
@@ -470,10 +470,10 @@ class DDeiStageCanvasRender {
 
       //获取最大的有效范围，自动扩展纸张
       let maxOutRect = DDeiAbstractShape.getOutRectByPV(this.model.getLayerModels())
-      maxOutRect.x = maxOutRect.x * rat1;
-      maxOutRect.x1 = maxOutRect.x1 * rat1;
-      maxOutRect.y = maxOutRect.y * rat1;
-      maxOutRect.y1 = maxOutRect.y1 * rat1;
+      maxOutRect.x = maxOutRect.x * ratio;
+      maxOutRect.x1 = maxOutRect.x1 * ratio;
+      maxOutRect.y = maxOutRect.y * ratio;
+      maxOutRect.y1 = maxOutRect.y1 * ratio;
       
       //计算各个方向扩展的数量
       let leftExtNum = 0, rightExtNum = 0, topExtNum = 0, bottomExtNum = 0
@@ -729,8 +729,8 @@ class DDeiStageCanvasRender {
         let sy = this.model.height / 2 - paperHeight / 2 / rat1
         this.model.spv = new Vector3(sx, sy, 1)
       }
-      let startBaseX = this.model.spv.x * rat1
-      let startBaseY = this.model.spv.y * rat1
+      let startBaseX = this.model.spv.x * rat1 * stageRatio
+      let startBaseY = this.model.spv.y * rat1 * stageRatio
       if (this.tempRuleDisplay == 1 || this.tempRuleDisplay == "1") {
         ctx.beginPath()
         //横向尺子背景

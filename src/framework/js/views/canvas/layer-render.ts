@@ -330,6 +330,7 @@ class DDeiLayerCanvasRender {
    * 绘制子元素
    */
   drawChildrenShapes(inRect: boolean = true): void {
+    
     if (this.model.models) {
       let canvas = this.ddRender.getCanvas();
       //获取全局缩放比例
@@ -340,6 +341,7 @@ class DDeiLayerCanvasRender {
       let x1 = x + canvas.width / rat1 / stageRatio;
       let y1 = y + canvas.height / rat1 / stageRatio;
       //遍历子元素，绘制子元素
+      let time1 = new Date().getTime()
       this.model.midList.forEach(key => {
         let item = this.model.models.get(key);
         //判定控件是否在绘制区间，如果在则绘制
@@ -348,6 +350,8 @@ class DDeiLayerCanvasRender {
         }else{
           DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", "VIEW-HIDDEN", { models: [item] }, this.ddRender.model, null)
         }
+        let time2 = new Date().getTime()
+        console.log("渲染："+(time2-time1))
       });
     }
   }

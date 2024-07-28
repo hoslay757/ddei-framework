@@ -45,12 +45,13 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
 
       if (stage && data.oldValue && data.newValue && data.oldValue != data.newValue) {
         let scaleSize = data.newValue / data.oldValue
-        // //缩放矩阵
+        // // //缩放矩阵
         // let scaleMatrix = new Matrix3(
         //   scaleSize, 0, 0,
         //   0, scaleSize, 0,
         //   0, 0, 1);
         // stage?.spv.applyMatrix3(scaleMatrix)
+        let time1 = new Date().getTime()
         stage.layers.forEach(layer => {
           layer.opPoints = []
           delete layer.opLine
@@ -80,6 +81,8 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
             //更新线段
             // DDeiBusCommandChangeStageRatio.calLineCross(layer)
           })
+          let time2 = new Date().getTime()
+          console.log("缩放计算："+(time2-time1))
         });
 
 
