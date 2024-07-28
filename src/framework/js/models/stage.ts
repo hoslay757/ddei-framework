@@ -767,7 +767,8 @@ class DDeiStage {
     let y = -this.wpv.y;
     let x1 = x + canvas.width / rat1;
     let y1 = y + canvas.height / rat1;
-    let curLevelModels = fModel.pModel.getSubModels(sourceModelKeys, 1, { x: x, y: y, x1: x1, y1: y1 });
+    let stageRatio = this.getStageRatio()
+    let curLevelModels = fModel.pModel.getSubModels(sourceModelKeys, 1, { x: x/stageRatio, y: y/stageRatio, x1: x1/stageRatio, y1: y1/stageRatio });
     curLevelModels.forEach(model => {
       //判定每一个点以及中心点,如果旋转角度不同，则只判断中心点
 

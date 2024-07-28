@@ -1741,7 +1741,7 @@ class DDeiLayerCanvasRender {
         }
 
         //更新旋转
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeRotate, { ex: ex, ey: ey, container: pContainerModel }, evt);
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeRotate, { ex: ex2, ey: ey2, container: pContainerModel }, evt);
         // //更新dragObj临时变量中的数值,确保坐标对应关系一致
         // this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { deltaX: movedPos.x, deltaY: 0 }, evt);
         //渲染图形

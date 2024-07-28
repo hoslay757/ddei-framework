@@ -311,14 +311,14 @@ class DDeiStageCanvasRender {
         let height = fontSize + 4
         let x, y
         if (this.operateState == DDeiEnumOperateState.CONTROL_DRAGING || this.operateState == DDeiEnumOperateState.CONTROL_CREATING) {
-          x = (rect.x - width / 2) * rat1
-          y = (rect.y - height - 5) * rat1
+          x = (rect.x * stageRatio - width / 2) * rat1
+          y = (rect.y * stageRatio  - height - 5) * rat1
         } else if (this.operateState == DDeiEnumOperateState.CONTROL_CHANGING_BOUND) {
-          x = (rect.x + (rect.width - width) / 2) * rat1
-          y = (rect.y + rect.height + height / 2) * rat1
+          x = (rect.x * stageRatio + (rect.width - width) / 2) * rat1
+          y = (rect.y * stageRatio + rect.height + height / 2) * rat1
         } else if (this.operateState == DDeiEnumOperateState.CONTROL_ROTATE) {
-          x = (rect.x) * rat1
-          y = (rect.y) * rat1
+          x = (rect.x) * ratio
+          y = (rect.y) * ratio
         }
         width *= rat1
         height *= rat1
@@ -367,8 +367,8 @@ class DDeiStageCanvasRender {
 
             //画横线
             ctx.beginPath();
-            ctx.moveTo(hpoint[y].sx * rat1 - 100, y * rat1 + lineOffset);
-            ctx.lineTo(hpoint[y].ex * rat1 + 100, y * rat1 + lineOffset);
+            ctx.moveTo(hpoint[y].sx * ratio - 100, y * ratio + lineOffset);
+            ctx.lineTo(hpoint[y].ex * ratio + 100, y * ratio + lineOffset);
             ctx.stroke();
           };
         }
@@ -376,8 +376,8 @@ class DDeiStageCanvasRender {
           for (let x in vpoint) {
             //画竖线
             ctx.beginPath();
-            ctx.moveTo(x * rat1 + lineOffset, vpoint[x].sy * rat1 - 100);
-            ctx.lineTo(x * rat1 + lineOffset, vpoint[x].ey * rat1 + 100);
+            ctx.moveTo(x * ratio + lineOffset, vpoint[x].sy * ratio - 100);
+            ctx.lineTo(x * ratio + lineOffset, vpoint[x].ey * ratio + 100);
             ctx.stroke();
           };
         }
