@@ -351,7 +351,7 @@ class DDeiLayerCanvasRender {
           DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", "VIEW-HIDDEN", { models: [item] }, this.ddRender.model, null)
         }
         let time2 = new Date().getTime()
-        console.log("渲染："+(time2-time1))
+        // console.log("渲染："+(time2-time1))
       });
     }
   }
@@ -365,7 +365,8 @@ class DDeiLayerCanvasRender {
       //获得 2d 上下文对象
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
-      let ratio = this.ddRender?.ratio;
+      let stageRatio = this.stage?.getStageRatio()
+      let ratio = this.ddRender?.ratio * stageRatio;
       //保存状态
       ctx.save();
       let firstOp2Point, beforeOp2Point
@@ -612,6 +613,9 @@ class DDeiLayerCanvasRender {
     ey /= window.remRatio
     ex -= this.stage.wpv.x;
     ey -= this.stage.wpv.y;
+    let ex2 = ex / stageRatio
+    let ey2 = ey / stageRatio
+    
 
     if (this.stageRender?.operateState == DDeiEnumOperateState.QUICK_EDITING) {
       //如果在画布范围内，但不在编辑的控件上，则确认解除快捷编辑状态
@@ -640,24 +644,23 @@ class DDeiLayerCanvasRender {
     if (isOvPoint) {
     }
     //判定是否在操作点上，如果在则快捷创建线段
-    else if (this.stageRender.selector && this.stageRender.selector.isInAreaLoose(ex, ey, true) &&
+    else if (this.stageRender.selector && this.stageRender.selector.isInAreaLoose(ex2, ey2, true) &&
       ((this.stageRender.selector.passIndex >= 1 && this.stageRender.selector.passIndex <= 9) || this.stageRender.selector.passIndex == 13)) {
       //派发给selector的mousedown事件，在事件中对具体坐标进行判断
       this.stageRender.selector.render.mouseDown(evt);
     }
     else {
-      let opPoint = this.model.getOpPointByPos(ex, ey);
+      let opPoint = this.model.getOpPointByPos(ex2, ey2);
       let isStop = false;
       if (opPoint) {
         //只有在控件内部才触发
         let projPoint = null
-
         let innerSize = 0
         let outRect = DDeiAbstractShape.getOutRectByPV([opPoint.model])
         if (outRect.height > 20 && outRect.width > 20) {
           innerSize = -5;
         }
-        if (opPoint.oppoint == 3 || (projPoint = opPoint.model.getProjPoint({ x: ex, y: ey }, { in: innerSize, out: 15 }, 1, 2))) {
+        if (opPoint.oppoint == 3 || (projPoint = opPoint.model.getProjPoint({ x: ex2, y: ey2 }, { in: innerSize, out: 15 }, 1, 2))) {
           let modeName = DDeiUtil.getConfigValue("MODE_NAME", this.stage.ddInstance);
           let accessLink = DDeiUtil.isAccess(
             DDeiEnumOperateType.LINK, null, null, modeName,
@@ -676,7 +679,7 @@ class DDeiLayerCanvasRender {
 
       if (!isStop) {
         // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
-        let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, ex, ey, true);
+        let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, ex2, ey2, true);
         //光标所属位置是否有控件
         //有控件：分发事件到当前控件
         if (operateControls != null && operateControls.length > 0) {
@@ -685,8 +688,8 @@ class DDeiLayerCanvasRender {
           let operateControl = operateControls[0];
 
           this.stageRender.currentOperateShape = operateControl;
-          this.stageRender.tempSX = ex
-          this.stageRender.tempSY = ey
+          this.stageRender.tempSX = ex2
+          this.stageRender.tempSY = ey2
           //当前操作状态:控件状态确认中
           this.stageRender.operateState = DDeiEnumOperateState.CONTROL_CONFIRMING
           //分发事件到当前控件
@@ -797,11 +800,14 @@ class DDeiLayerCanvasRender {
     let stageRatio = this.stage.getStageRatio()
     ex -= this.stage.wpv.x;
     ey -= this.stage.wpv.y
+
+    let ex2 = ex / stageRatio
+    let ey2 = ey / stageRatio
     //鼠标右键，显示菜单
     if (evt.button == 2) {
       //在鼠标位置显示菜单
       // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
-      let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, ex, ey);
+      let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, ex2, ey2);
       //显示当前控件的
       if (operateControls != null && operateControls.length > 0) {
         //全局变量：当前操作控件=当前控件
@@ -822,7 +828,7 @@ class DDeiLayerCanvasRender {
         //控件状态确认中
         case DDeiEnumOperateState.LINE_POINT_CHANGING_CONFIRM: {
           // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
-          let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, ex, ey, true);
+          let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, ex2, ey2, true);
           //光标所属位置是否有控件
           //有控件：分发事件到当前控件
           if (operateControls != null && operateControls.length > 0) {
@@ -887,13 +893,13 @@ class DDeiLayerCanvasRender {
               //加载事件的配置
               let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_DRAG_AFTER", DDeiEnumOperateType.DRAG, this.stageRender.dragObj, this.stage?.ddInstance, null)
 
-
+              
               if (rsState == 0 || rsState == 1) {
 
                 if (model) {
                   model.syncVectors(item)
                 } else {
-                  let opPoint = this.model.getOpPointByPos(ex, ey);
+                  let opPoint = this.model.getOpPointByPos(ex2, ey2);
                   //如果长度小于15，终止创建
                   let maxLength = 0
                   if (!opPoint?.model) {
@@ -951,7 +957,7 @@ class DDeiLayerCanvasRender {
                         }
                       })
 
-                      let opPoint = this.model.getOpPointByPos(ex, ey);
+                      let opPoint = this.model.getOpPointByPos(ex2, ey2);
                       if (opPoint) {
 
                         //建立关联
@@ -1368,12 +1374,16 @@ class DDeiLayerCanvasRender {
     ex -= this.stage.wpv.x;
     ey -= this.stage.wpv.y;
 
+    let stageRatio = this.model.getStageRatio()
+    let ex2 = ex / stageRatio
+    let ey2 = ey / stageRatio
+
     //判断当前操作状态
     switch (this.stageRender.operateState) {
       //控件状态确认中
       case DDeiEnumOperateState.CONTROL_CONFIRMING: {
         //如果移动的距离比较小，则忽略
-        if (Math.abs(ex - this.stageRender.tempSX) <= 2 && Math.abs(ey - this.stageRender.tempSY) <= 2) {
+        if (Math.abs(ex2 - this.stageRender.tempSX) <= 2 && Math.abs(ey2 - this.stageRender.tempSY) <= 2) {
           return;
         }
         //清除临时操作点
@@ -1420,7 +1430,7 @@ class DDeiLayerCanvasRender {
             //产生影子控件
             sms.forEach(m => {
               let md = DDeiUtil.getShadowControl(m);
-              dragObj[md.id] = { dx: md.cpv.x - ex, dy: md.cpv.y - ey }
+              dragObj[md.id] = { dx: md.cpv.x - ex2, dy: md.cpv.y - ey2 }
               this.model.shadowControls.push(md);
             });
             //将当前被拖动的控件转变为影子控件
@@ -1457,6 +1467,7 @@ class DDeiLayerCanvasRender {
           dy = this.stageRender.dragObj.dy
         }
         DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", "CHANGE_WPV", null, this.stage?.ddInstance, evt)
+        
         if (Math.abs(ex - dx) >= 10 || Math.abs(ey - dy) >= 10) {
           this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING
         }
@@ -1470,6 +1481,7 @@ class DDeiLayerCanvasRender {
           let lineJson = DDeiUtil.getLineInitJSON();
           lineJson.id = "line_" + (++this.stage.idIdx)
           let dx, dy, opPoint
+          
           if (this.stageRender.dragObj.opPoint) {
             opPoint = this.stageRender.dragObj.opPoint
             dx = opPoint.x
@@ -1484,10 +1496,11 @@ class DDeiLayerCanvasRender {
           lineJson.type = 2
           //直线两个点
           if (lineJson.type == 1) {
-            lineJson.pvs = [lineJson.cpv, new Vector3(ex, ey, 1)]
+            lineJson.pvs = [lineJson.cpv, new Vector3(ex2, ey2, 1)]
           } else {
-            lineJson.pvs = [lineJson.cpv, new Vector3((lineJson.cpv.x + ex) / 2, lineJson.cpv.y, 1), new Vector3((lineJson.cpv.x + ex) / 2, ey, 1), new Vector3(ex, ey, 1)]
+            lineJson.pvs = [lineJson.cpv, new Vector3((lineJson.cpv.x + ex2) / 2, lineJson.cpv.y, 1), new Vector3((lineJson.cpv.x + ex2) / 2, ey2, 1), new Vector3(ex2, ey2, 1)]
           }
+          
           //初始化开始点和结束点
 
           let ddeiLine = DDeiLine.initByJSON(lineJson, { currentStage: this.stage, currentLayer: this.model, currentContainer: this.model });
@@ -1518,8 +1531,8 @@ class DDeiLayerCanvasRender {
           }
           //默认拖动结束线
           let dragObj = {
-            x: ex,
-            y: ey,
+            x: ex2,
+            y: ey2,
             dragPoint: lineShadow.pvs[lineShadow.pvs.length - 1],
             model: lineShadow,
             passIndex: 1,
@@ -1537,25 +1550,25 @@ class DDeiLayerCanvasRender {
           let passIndex = this.stageRender.dragObj.passIndex
           let opvsIndex = this.stageRender.dragObj.opvsIndex
           let opvs = this.stageRender.dragObj.opvs
-
+          
           if (passIndex == 1 && opvsIndex == 0) {
             let endPoint = lineModel.endPoint;
-            if (Math.abs(endPoint.x - ex) <= this.stage?.ddInstance.GLOBAL_ADV_WEIGHT) {
-              ex = endPoint.x
-            } else if (Math.abs(endPoint.y - ey) <= this.stage?.ddInstance.GLOBAL_ADV_WEIGHT) {
-              ey = endPoint.y
+            if (Math.abs(endPoint.x - ex2) <= this.stage?.ddInstance.GLOBAL_ADV_WEIGHT) {
+              ex2 = endPoint.x
+            } else if (Math.abs(endPoint.y - ey2) <= this.stage?.ddInstance.GLOBAL_ADV_WEIGHT) {
+              ey2 = endPoint.y
             }
           } else if (passIndex == 1 && opvsIndex == opvs.length - 1) {
             let startPoint = lineModel.startPoint;
-            if (Math.abs(startPoint.x - ex) <= this.stage?.ddInstance.GLOBAL_ADV_WEIGHT) {
-              ex = startPoint.x
-            } else if (Math.abs(startPoint.y - ey) <= this.stage?.ddInstance.GLOBAL_ADV_WEIGHT) {
-              ey = startPoint.y
+            if (Math.abs(startPoint.x - ex2) <= this.stage?.ddInstance.GLOBAL_ADV_WEIGHT) {
+              ex2 = startPoint.x
+            } else if (Math.abs(startPoint.y - ey2) <= this.stage?.ddInstance.GLOBAL_ADV_WEIGHT) {
+              ey2 = startPoint.y
             }
           }
+          
 
-
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeLinePoint, { ex: ex, ey: ey });
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeLinePoint, { ex: ex2, ey: ey2 });
           //渲染图形
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
         }
@@ -1570,10 +1583,10 @@ class DDeiLayerCanvasRender {
         delete this.stage.tempCursorOPpoint
         //判断当前鼠标坐标是否落在选择器控件的区域内
         // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
-        let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, ex, ey, true, true);
+        let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, ex2, ey2, true, true);
         if (operateControls != null && operateControls.length > 0) {
 
-          operateControls[0].render.changeOpPoints(ex, ey, 1);
+          operateControls[0].render.changeOpPoints(ex2, ey2, 1);
 
         }
         break;
@@ -1691,7 +1704,7 @@ class DDeiLayerCanvasRender {
             points.push({ x: this.stageRender.selector.x, y: this.stageRender.selector.y })
           } break;
         }
-        let stageRatio = this.model.getStageRatio()
+       
         points.forEach(point => {
           point.x = point.x * stageRatio
           point.y = point.y * stageRatio
@@ -1834,7 +1847,7 @@ class DDeiLayerCanvasRender {
       }
       case DDeiEnumOperateState.OV_POINT_CHANGING: {
         //修改所有选中控件坐标
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.OVSChangePosition, { x: ex, y: ey }, evt);
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.OVSChangePosition, { x: ex2, y: ey2 }, evt);
         //渲染图形
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);
         break;
@@ -1850,13 +1863,13 @@ class DDeiLayerCanvasRender {
         //判断当前鼠标坐标是否落在选择器控件的区域内
         let inSelector = false
         if (this.stageRender.selector &&
-          this.stageRender.selector.isInAreaLoose(ex, ey, true)) {
+          this.stageRender.selector.isInAreaLoose(ex2, ey2, true)) {
           //派发给selector的mousemove事件，在事件中对具体坐标进行判断
           this.stageRender.selector.render.mouseMove(evt);
           inSelector = true;
         }
         // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
-        let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, ex, ey, true);
+        let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, ex2, ey2, true);
         this.ddRender.inAreaControls = operateControls;
         //光标所属位置是否有控件
         //有控件：分发事件到当前控件

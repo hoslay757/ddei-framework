@@ -840,11 +840,13 @@ class DDeiLine extends DDeiAbstractShape {
       if (!this.looseCanvas) {
         this.looseCanvas = document.createElement('canvas');
         this.looseCanvas.setAttribute("style", "-moz-transform-origin:left top;");
+        document.body.appendChild(this.looseCanvas)
       }
       let canvas = this.looseCanvas
+      let stageRatio = this.stage?.getStageRatio()
 
       let pvs = this.pvs;
-      let outRect = DDeiAbstractShape.pvsToOutRect(pvs);
+      let outRect = DDeiAbstractShape.pvsToOutRect(pvs, stageRatio);
       let weight = 10
       if (this.weight) {
         weight = this.weight + 5
@@ -855,12 +857,13 @@ class DDeiLine extends DDeiAbstractShape {
       outRect.y1 += weight
       outRect.width += 2 * weight
       outRect.height += 2 * weight
-      this.loosePVS = Object.freeze([
-        new Vector3(outRect.x, outRect.y, 1),
-        new Vector3(outRect.x1, outRect.y, 1),
-        new Vector3(outRect.x1, outRect.y1, 1),
-        new Vector3(outRect.x, outRect.y1, 1)
-      ])
+      // this.loosePVS = Object.freeze([
+      //   new Vector3(outRect.x, outRect.y, 1),
+      //   new Vector3(outRect.x1, outRect.y, 1),
+      //   new Vector3(outRect.x1, outRect.y1, 1),
+      //   new Vector3(outRect.x, outRect.y1, 1)
+      // ])
+      this.loosePVS = this.pvs
       canvas.setAttribute("width", outRect.width)
       canvas.setAttribute("height", outRect.height)
       //获得 2d 上下文对象
@@ -915,8 +918,10 @@ class DDeiLine extends DDeiAbstractShape {
    */
   isInAreaLoose(x: number | undefined = undefined, y: number | undefined = undefined, loose: boolean = false): boolean {
     if (super.isInAreaLoose(x, y, loose) && this.looseCanvas) {
+      
       let ctx = this.looseCanvas.getContext("2d");
-      let outRect = DDeiAbstractShape.pvsToOutRect(this.pvs);
+      let stageRatio = this.stage?.getStageRatio()
+      let outRect = DDeiAbstractShape.pvsToOutRect(this.pvs, stageRatio);
       let weight = 10
       if (this.weight) {
         weight = this.weight + 5
@@ -924,13 +929,14 @@ class DDeiLine extends DDeiAbstractShape {
 
       outRect.x -= weight
       outRect.y -= weight
-      let cx = x - outRect.x
-      let cy = y - outRect.y
+      let cx = x * stageRatio - outRect.x
+      let cy = y * stageRatio - outRect.y
 
       let cdata = ctx.getImageData(cx, cy, 1, 1).data;
       if (cdata && cdata[0] == 255 && cdata[1] != 255 && cdata[2] != 255) {
         return true;
       }
+      
     }
     return false;
   }

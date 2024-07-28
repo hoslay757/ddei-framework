@@ -61,28 +61,15 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
           layer.shadowControls = []
           layer.midList.forEach(mid => {
             let model = layer.models.get(mid);
-            // model.transVectors(scaleMatrix)
-            // if (model.baseModelType == 'DDeiLine') {
-            //   model.linkModels?.forEach(lm => {
-            //     lm.dx = lm.dx * scaleSize
-            //     lm.dy = lm.dy * scaleSize
-            //   })
-            //   //折线，同步特殊点位
-            //   if (model.type == 2) {
-            //     model.spvs?.forEach(spv => {
-            //       if (spv) {
-            //         spv.x *= scaleSize
-            //         spv.y *= scaleSize
-            //       }
-            //     })
-            //   }
-            // }
+            if (model.baseModelType == 'DDeiLine') {
+              model.updateLooseCanvas()
+            }
             model.render?.enableRefreshShape()
             //更新线段
             // DDeiBusCommandChangeStageRatio.calLineCross(layer)
           })
           let time2 = new Date().getTime()
-          console.log("缩放计算："+(time2-time1))
+          // console.log("缩放计算："+(time2-time1))
         });
 
 

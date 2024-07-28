@@ -72,12 +72,18 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     //转换为图片
     if (!this.tempCanvas) {
       this.tempCanvas = document.createElement('canvas');
-      this.tempCanvas.setAttribute("style", "left:-99999px;position:fixed;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
-      document.body.appendChild(this.tempCanvas)
+      // this.tempCanvas.setAttribute("style", "left:-99999px;position:fixed;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
+      this.tempCanvas.setAttribute("style", "left:0px;position:fixed;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
+
+      let editorId = DDeiUtil.getEditorId(this.ddRender?.model);
+      let editorEle = document.getElementById(editorId);
+      editorEle.appendChild(this.tempCanvas)
     }
+    let stageRatio = this.stage?.getStageRatio()
     let tempCanvas = this.tempCanvas
     let pvs = this.model.getOperatePVS(true);
-    let outRect = DDeiAbstractShape.pvsToOutRect(pvs)
+    
+    let outRect = DDeiAbstractShape.pvsToOutRect(pvs, stageRatio)
     let weight = 5
     outRect.x -= weight
     outRect.x1 += weight
@@ -87,6 +93,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     outRect.height += 2 * weight
     tempCanvas.setAttribute("width", outRect.width * rat1)
     tempCanvas.setAttribute("height", outRect.height * rat1)
+    
     //获得 2d 上下文对象
     let tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
     tempCanvas.tx = -outRect.x * rat1
@@ -164,6 +171,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         let canvas = this.getRenderCanvas(composeRender)
         let ctx = canvas.getContext('2d');
         let rat1 = this.ddRender.ratio;
+        let stageRatio = this.stage?.getStageRatio()
         let outRect = this.tempCanvas.outRect
         ctx.drawImage(this.tempCanvas, 0, 0, outRect.width * rat1, outRect.height * rat1, outRect.x * rat1, outRect.y * rat1, outRect.width * rat1, outRect.height * rat1)
       }
@@ -201,7 +209,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     let stageRatio = this.model.getStageRatio()
     let rat1 = tempLine?.rat1 ? tempLine.rat1 : this.ddRender.ratio;
     let ratio = rat1 * stageRatio;
-
+    rat1 = ratio
     //获取绘图属性
     let color = tempLine?.color ? tempLine.color : this.getCachedValue("color");
     if(!color){
@@ -496,6 +504,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     let stageRatio = this.model.getStageRatio()
     let rat1 = tempLine?.rat1 ? tempLine.rat1 : this.ddRender.ratio;
     let ratio = rat1 * stageRatio;
+    rat1 = ratio
     //获取绘图属性
     let color = tempLine?.color ? tempLine.color : this.getCachedValue("color");
     let opacity = tempLine?.opacity ? tempLine.opacity : this.getCachedValue("opacity");
