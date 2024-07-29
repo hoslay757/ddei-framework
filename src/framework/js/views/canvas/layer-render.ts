@@ -1711,7 +1711,7 @@ class DDeiLayerCanvasRender {
         })
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.SetHelpLine, { models: this.model.shadowControls, points: points }, evt);
         this.stage?.ddInstance?.bus?.executeAll()
-        let movedBounds = this.stageRender.selector.render.getMovedBounds(ex, ey, isCtrl || this.stageRender.selector.eqrat);
+        let movedBounds = this.stageRender.selector.render.getMovedBounds(ex2, ey2, isCtrl || this.stageRender.selector.eqrat);
         if (movedBounds) {
           let selector = this.stageRender.selector;
 
@@ -1723,6 +1723,8 @@ class DDeiLayerCanvasRender {
           delete this.model.opLine;
           //更新dragObj临时变量中的数值,确保坐标对应关系一致
           //修改所有选中控件坐标
+          let tempMd = Array.from(this.stage.selectedModels.values())[0]
+          
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeBounds, pushData, evt);
           //渲染图形
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape);

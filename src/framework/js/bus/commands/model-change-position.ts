@@ -72,7 +72,6 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
       let vAds = fModel.stage.render.helpLines?.vAds || fModel.stage.render.helpLines?.vAds == 0 ? fModel.stage.render.helpLines?.vAds : Infinity
       let hAdsValue = Infinity;
       let vAdsValue = Infinity;
-      console.log(hAds)
       if (hAds != Infinity) {
         //退出吸附状态
         if (stage.render.isHAds && Math.abs(stage.render.hAdsY - y) > bus.ddInstance.GLOBAL_ADV_WEIGHT) {
