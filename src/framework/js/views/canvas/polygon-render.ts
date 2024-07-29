@@ -1474,7 +1474,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   calScaleType3Size(): boolean {
     //文本的超出范围后的策略
     let scale = this.getCachedValue("textStyle.scale");
-    let fillRect = DDeiAbstractShape.pvsToOutRect(DDeiUtil.pointsToZero(this.model.textArea, this.model.cpv, this.model.rotate))
+    let textArea = DDeiUtil.pointsToZero(this.model.textArea, this.model.cpv, this.model.rotate)
+    let fillRect = DDeiAbstractShape.pvsToOutRect(textArea)
     if (scale == 3) {
       let lockExtWidth = this.getCachedValue("textStyle.lockWidth");
       //获得 2d 上下文对象
@@ -1643,10 +1644,10 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       }
 
       //比较大小，如果超出文本区域则按照超出区域的实际大小进行扩展
-      let textArea = DDeiUtil.pointsToZero(this.model.textArea, this.model.cpv, this.model.rotate)
-      let textAreaOutRect = DDeiAbstractShape.pvsToOutRect(textArea)
-      let nowOutRect = { width: textAreaWidth / rat1, height: textAreaHeight / rat1 }
-      if (nowOutRect.width > 40 * stageRatio && nowOutRect.height > fontSize) {
+      
+      let textAreaOutRect = fillRect
+      let nowOutRect = { width: textAreaWidth / ratio, height: textAreaHeight / ratio }
+      if (nowOutRect.width > 40 && nowOutRect.height > fontSize) {
         let scaleX = nowOutRect.width / textAreaOutRect.width
         let scaleY = nowOutRect.height / textAreaOutRect.height
         if (lockExtWidth == 1 || lockExtWidth == '1') {
