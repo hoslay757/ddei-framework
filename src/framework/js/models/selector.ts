@@ -134,7 +134,7 @@ class DDeiSelector extends DDeiRectangle {
   * 获取画布缩放比率
   */
   getStageRatio(): number {
-    return this.stage?.ddInstance.ratio;
+    return this.stage?.getStageRatio();
   }
 
 
@@ -212,15 +212,16 @@ class DDeiSelector extends DDeiRectangle {
 
         let outRectBounds = DDeiAbstractShape.getOutRectByPV(models);
         pvs = DDeiAbstractShape.getOutPV(models);
-        let stageRatio = this.stage.getStageRatio()
-        pvs[0].x -= paddingWeight * stageRatio
-        pvs[0].y -= paddingWeight * stageRatio
-        pvs[1].x += paddingWeight * stageRatio
-        pvs[1].y -= paddingWeight * stageRatio
-        pvs[2].x += paddingWeight * stageRatio
-        pvs[2].y += paddingWeight * stageRatio
-        pvs[3].x -= paddingWeight * stageRatio
-        pvs[3].y += paddingWeight * stageRatio
+
+
+        pvs[0].x -= paddingWeight
+        pvs[0].y -= paddingWeight
+        pvs[1].x += paddingWeight
+        pvs[1].y -= paddingWeight
+        pvs[2].x += paddingWeight
+        pvs[2].y += paddingWeight
+        pvs[3].x -= paddingWeight
+        pvs[3].y += paddingWeight
         this.cpv = new Vector3(outRectBounds.x + outRectBounds.width / 2, outRectBounds.y + outRectBounds.height / 2, 1);
       }
       this.pvs = pvs;

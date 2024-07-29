@@ -717,7 +717,7 @@ class DDeiLayerCanvasRender {
             this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
           }
           //重置选择器位置
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ResetSelectorState, { x: ex, y: ey }, evt);
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ResetSelectorState, { x: ex2, y: ey2 }, evt);
           let clearSelect = false;
           switch (this.stage.ddInstance?.editMode) {
             case 1: {

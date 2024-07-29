@@ -48,6 +48,11 @@ class DDeiBusCommandUpdateSelectorBounds extends DDeiBusCommand {
             ey /= window.remRatio
             ex -= stage.wpv.x;
             ey -= stage.wpv.y;
+
+            let stageRatio = stage.getStageRatio()
+            ex = ex / stageRatio
+            ey = ey / stageRatio
+
             let x = selector.startX;
             let y = selector.startY;
             let width, height

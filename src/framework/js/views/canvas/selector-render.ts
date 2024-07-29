@@ -44,12 +44,11 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     if (this.stageRender.operateState == DDeiEnumOperateState.SELECT_WORKING) {
       
       this.stage?.layers[this.stage.layerIndex]?.render?.enableRefreshShape();
- 
       //绘制边框
       this.drawBorder();
 
       //绘制边框上的操作图形
-      this.drawOperatorShape();
+      // this.drawOperatorShape();
     } else if (this.stageRender.operateState != DDeiEnumOperateState.LINE_POINT_CHANGING) {
       if (models?.length == 1 && models[0]?.baseModelType == "DDeiLine") {
         //绘制线的选中效果
@@ -75,6 +74,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         } else {
           //绘制边框
           if (this.stage?.selectedModels?.size > 1) {
+            
             this.drawBorder();
           }
 
