@@ -1777,9 +1777,9 @@ class DDeiLayerCanvasRender {
       case DDeiEnumOperateState.QUICK_EDITING_TEXT_SELECTING: {
 
         let shadowControl = this.stageRender.editorShadowControl;
-        if (shadowControl?.isInTextArea(ex, ey)) {
-          let cx = (ex - shadowControl.cpv.x) * rat1;
-          let cy = (ey - shadowControl.cpv.y) * rat1;
+        if (shadowControl?.isInTextArea(ex2, ey2)) {
+          let cx = (ex2 - shadowControl.cpv.x) * rat1 * stageRatio;
+          let cy = (ey2 - shadowControl.cpv.y) * rat1 * stageRatio;
           //先判断行，再判断具体位置
           //textUsedArea记录的是基于中心点的偏移量
           let startIndex = 0;
