@@ -382,6 +382,14 @@ class DDeiUtil {
         outRect = DDeiAbstractShape.getOutRectByPV(models);
         outRect.rotate = 0
       }
+      let stageRatio = models[0].stage?.getStageRatio();
+      outRect.x *= stageRatio
+      outRect.x1 *= stageRatio
+      outRect.y *= stageRatio
+      outRect.y1 *= stageRatio
+      outRect.width *= stageRatio
+      outRect.height *= stageRatio
+
       let wpv = models[0].stage.wpv
       let domEle = models[0].stage.ddInstance.render.realCanvas.parentElement
       let canvasPos = DDeiUtil.getDomAbsPosition(domEle)

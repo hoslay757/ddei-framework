@@ -1368,15 +1368,17 @@ class DDeiLayerCanvasRender {
     } else {
       this.ddRender.inEdge = 0;
     }
-    //记录ex和ey
-    this.ddRender.inAreaX = ex;
-    this.ddRender.inAreaY = ey;
+ 
     ex -= this.stage.wpv.x;
     ey -= this.stage.wpv.y;
 
     let stageRatio = this.model.getStageRatio()
     let ex2 = ex / stageRatio
     let ey2 = ey / stageRatio
+
+       //记录ex和ey
+    this.ddRender.inAreaX = ex2;
+    this.ddRender.inAreaY = ey2;
 
     //判断当前操作状态
     switch (this.stageRender.operateState) {
