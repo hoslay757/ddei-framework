@@ -41,6 +41,7 @@ class DDeiBusCommandCenterStageWPV extends DDeiBusCommand {
       //获取canvas窗体大小
       let canvas = bus.ddInstance.render.canvas;
       let rat1 = bus.ddInstance.render.ratio;
+      let stageRatio = stage.getStageRatio()
       let ruleDisplay
       if (stage.ruler?.display) {
         ruleDisplay = stage.ruler.display;
@@ -57,8 +58,8 @@ class DDeiBusCommandCenterStageWPV extends DDeiBusCommand {
       if (ruleDisplay == 1 || ruleDisplay == "1") {
         ruleWeight = 16;
       }
-      let centerX = stage.width / 2 - (maxOutRect.x + maxOutRect.width / 2)
-      let centerY = stage.height / 2 - (maxOutRect.y + maxOutRect.height / 2)
+      let centerX = stage.width / 2 - (maxOutRect.x + maxOutRect.width / 2) * stageRatio
+      let centerY = stage.height / 2 - (maxOutRect.y + maxOutRect.height / 2) * stageRatio
       stage.wpv.x =
         -stage.width / 2 +
         canvas.width / rat1 / 2 +
