@@ -1065,7 +1065,7 @@ class DDeiEditor {
             }
             
             //设置大小以及坐标
-            let stageRatio = applyRatio?stage.getStageRatio():1
+            let stageRatio = !applyRatio?1/stage.getStageRatio():1
             let m1 = new Matrix3()
             //缩放至目标大小
             if (control.width || control.height) {
@@ -1147,7 +1147,7 @@ class DDeiEditor {
               }
 
               //设置大小以及坐标
-              let stageRatio = applyRatio ? stage.getStageRatio() : 1;
+              let stageRatio = !applyRatio ? 1/stage.getStageRatio() : 1;
               let m1 = new Matrix3()
               //缩放至目标大小
               if (control.width || control.height) {
@@ -1212,7 +1212,7 @@ class DDeiEditor {
     let layer = stage?.layers[stage?.layerIndex];
     let shapes: DDeiAbstractShape[] = []
     if (layer) {
-      let stageRatio = applyRatio ? stage.getStageRatio() : 1
+      let stageRatio = !applyRatio ? 1/stage.getStageRatio() : 1
 
       let moveX = -stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2
       let moveY = -stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2

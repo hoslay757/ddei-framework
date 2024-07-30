@@ -99,13 +99,14 @@ class DDeiBusCommandModelEdgePosition extends DDeiBusCommand {
         }
         //移动窗口的大小
         let ignoreModelIds = [];
+        let stageRatio = stage?.getStageRatio()
         //移动控件以及窗口
         if(dx || dy){
           models.forEach(model => {
             ignoreModelIds.push(model.id)
             let moveMatrix = new Matrix3(
-              1, 0, dx,
-              0, 1, dy,
+              1, 0, dx / stageRatio,
+              0, 1, dy / stageRatio,
               0, 0, 1,
             );
             model.transVectors(moveMatrix);
@@ -117,11 +118,12 @@ class DDeiBusCommandModelEdgePosition extends DDeiBusCommand {
           stage.height += extH
           if (moveW || moveH) {
             let moveMatrix = new Matrix3(
-              1, 0, extW,
-              0, 1, extH,
+              1, 0, extW / stageRatio,
+              0, 1, extH / stageRatio,
               0, 0, 1,
             );
             stage?.spv.applyMatrix3(moveMatrix)
+            
             let mds = stage.getLayerModels(ignoreModelIds);
             mds.forEach(item => {
               item.transVectors(moveMatrix)

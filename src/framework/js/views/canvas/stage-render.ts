@@ -333,8 +333,8 @@ class DDeiStageCanvasRender {
           let weight = 16 * rat1;
           ctx.lineWidth = 1.5 * rat1
           ctx.globalAlpha = 0.5
-          let x1 = (rect.x + this.model.wpv.x) * rat1
-          let y1 = (rect.y + this.model.wpv.y) * rat1
+          let x1 = (rect.x * stageRatio + this.model.wpv.x) * rat1
+          let y1 = (rect.y * stageRatio + this.model.wpv.y) * rat1
           ctx.translate(-(this.model.wpv.x) * rat1, -(this.model.wpv.y) * rat1)
           ctx.beginPath()
           ctx.moveTo(x1, 0)
@@ -725,8 +725,8 @@ class DDeiStageCanvasRender {
 
 
       if (!this.model.spv) {
-        let sx = this.model.width / 2 - paperWidth / 2 / rat1
-        let sy = this.model.height / 2 - paperHeight / 2 / rat1
+        let sx = this.model.width / 2 - paperWidth / 2 / rat1/stageRatio
+        let sy = this.model.height / 2 - paperHeight / 2 / rat1/stageRatio
         this.model.spv = new Vector3(sx, sy, 1)
       }
       let startBaseX = this.model.spv.x * rat1 * stageRatio
@@ -942,13 +942,14 @@ class DDeiStageCanvasRender {
       let selectedModels = this.model.selectedModels;
       if (selectedModels?.size > 0) {
         let rect = DDeiAbstractShape.getOutRectByPV(Array.from(selectedModels?.values()));
+        
         //横向
         ctx.strokeStyle = "#1F72FF";
         let weight = 16 * rat1;
         ctx.lineWidth = 1.5 * rat1
         ctx.globalAlpha = 0.7
-        let x1 = (rect.x + this.model.wpv.x) * rat1
-        let y1 = (rect.y + this.model.wpv.y) * rat1
+        let x1 = (rect.x * stageRatio + this.model.wpv.x) * rat1
+        let y1 = (rect.y * stageRatio + this.model.wpv.y) * rat1
         ctx.beginPath()
         ctx.moveTo(x1, 0)
         ctx.lineTo(x1, weight);

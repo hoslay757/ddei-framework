@@ -57,6 +57,7 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
       let rat1 = this.ddRender.ratio;
       let stageRatio = this.model.getStageRatio()
       let ratio = rat1 * stageRatio;
+      rat1 = ratio
       //计算填充的原始区域
       let fillPVS = this.getFillAreaPVS();
       //剪切当前区域
@@ -100,7 +101,9 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
       //获取全局缩放比例
-      let ratio = this.ddRender.ratio;
+      let stageRatio = this.stage.getStageRatio()
+      let ratio = this.ddRender.ratio * stageRatio;
+
       let lineOffset = 0//1 * ratio / 2;
       let areaPVS = this.model.layoutManager.getAreasPVS();
       let usedMidIds = [];
@@ -179,6 +182,8 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
         let stageRatio = this.stage.getStageRatio()
         ex -= this.stage.wpv.x;
         ey -= this.stage.wpv.y
+        ex /= stageRatio
+        ey /= stageRatio
         //遍历子元素，绘制子元素
         this.model.midList.forEach(key => {
           let model = this.model.models.get(key);

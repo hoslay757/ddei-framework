@@ -740,7 +740,7 @@ class DDeiLayerCanvasRender {
             case 3: {
               //当前操作状态：文本创建中
               //记录当前的拖拽的x,y,写入dragObj作为临时变量
-              this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { dx: ex, dy: ey } }, evt);
+              this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { dx: ex2, dy: ey2 } }, evt);
               this.stageRender.operateState = DDeiEnumOperateState.TEXT_CREATING
               clearSelect = true;
             }
@@ -753,7 +753,7 @@ class DDeiLayerCanvasRender {
               if (accessLink) {
                 //当前操作状态：线改变点中
                 //记录当前的拖拽的x,y,写入dragObj作为临时变量
-                this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { dx: ex, dy: ey } }, evt);
+                this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { dx: ex2, dy: ey2 } }, evt);
                 this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING
 
                 clearSelect = true
@@ -1020,7 +1020,7 @@ class DDeiLayerCanvasRender {
           //如果按下了ctrl键，则需要修改容器的关系并更新样式
           if (isAlt) {
             //寻找鼠标落点当前所在的容器
-            let mouseOnContainers: DDeiAbstractShape[] = DDeiAbstractShape.findBottomContainersByArea(this.model, ex, ey);
+            let mouseOnContainers: DDeiAbstractShape[] = DDeiAbstractShape.findBottomContainersByArea(this.model, ex2, ey2);
             let lastOnContainer = this.model;
             let pContainerModel = this.stageRender.currentOperateShape.pModel;
             if (mouseOnContainers && mouseOnContainers.length > 0) {
@@ -1035,7 +1035,7 @@ class DDeiLayerCanvasRender {
 
             //如果最小层容器不是当前容器，执行的移动容器操作
             if (lastOnContainer.id != pContainerModel.id || lastOnContainer.unicode != pContainerModel.unicode) {
-              if (!lastOnContainer.layoutManager || lastOnContainer.layoutManager.canAppend(ex, ey, this.model.shadowControls)) {
+              if (!lastOnContainer.layoutManager || lastOnContainer.layoutManager.canAppend(ex2, ey2, this.model.shadowControls)) {
                 let operateModels = []
                 let selMods = []
                 //同步影子元素的坐标大小等状态到当前模型
@@ -1072,7 +1072,7 @@ class DDeiLayerCanvasRender {
           }
           if (!isStop) {
             let pContainerModel = this.stageRender.currentOperateShape.pModel;
-            if (!pContainerModel.layoutManager || pContainerModel.layoutManager.canChangePosition(ex, ey, this.model.shadowControls)) {
+            if (!pContainerModel.layoutManager || pContainerModel.layoutManager.canChangePosition(ex2, ey2, this.model.shadowControls)) {
               let operateModels = []
               let lines = this.stage?.getModelsByBaseType("DDeiLine");
               let moveOriginModels = []
@@ -1217,7 +1217,7 @@ class DDeiLayerCanvasRender {
               this.stageRender.refreshJumpLine = false
               //更新新容器大小
               pContainerModel?.changeParentsBounds()
-              pContainerModel?.layoutManager?.updateLayout(ex, ey, operateModels);
+              pContainerModel?.layoutManager?.updateLayout(ex2, ey2, operateModels);
               operateModels?.forEach(item => {
                 item.render?.controlDragEnd(evt)
               })

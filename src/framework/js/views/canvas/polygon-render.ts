@@ -80,12 +80,12 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       //转换为图片
       if (!this.tempCanvas) {
         this.tempCanvas = document.createElement('canvas');
-        // this.tempCanvas.setAttribute("style", "left:-99999px;position:fixed;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
-        this.tempCanvas.setAttribute("style", "left:0px;top:0px;position:fixed;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
+        this.tempCanvas.setAttribute("style", "left:-99999px;position:fixed;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
+        // this.tempCanvas.setAttribute("style", "left:0px;top:0px;position:fixed;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
 
-        let editorId = DDeiUtil.getEditorId(this.ddRender?.model);
-        let editorEle = document.getElementById(editorId);
-        editorEle.appendChild(this.tempCanvas)
+        // let editorId = DDeiUtil.getEditorId(this.ddRender?.model);
+        // let editorEle = document.getElementById(editorId);
+        // editorEle.appendChild(this.tempCanvas)
       }
       let tempCanvas = this.tempCanvas
       let pvs = this.model.operatePVS ? this.model.operatePVS : this.model.pvs
@@ -236,14 +236,16 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       }
       ctx.save();
       if (this.model.mirrorX || this.model.mirrorY){
-        ctx.translate(this.model.cpv.x * oldRat1, this.model.cpv.y * oldRat1)
+        let ratx = this.model.cpv.x * oldRat1 * stageRatio
+        let raty = this.model.cpv.y * oldRat1 * stageRatio
+        ctx.translate(ratx, raty)
         if(this.model.mirrorX){
           ctx.scale(-1, 1)
         } 
         if (this.model.mirrorY){
           ctx.scale(1, -1)
         }
-        ctx.translate(-this.model.cpv.x * oldRat1, -this.model.cpv.y * oldRat1)
+        ctx.translate(-ratx, -raty)
       }
       ctx.drawImage(this.tempCanvas, 0, 0, outRect.width * rat1, outRect.height * rat1, (this.model.cpv.x * stageRatio - outRect.width / 2) * oldRat1, (this.model.cpv.y * stageRatio - outRect.height / 2) * oldRat1, outRect.width * oldRat1, outRect.height * oldRat1)
       ctx.restore()
