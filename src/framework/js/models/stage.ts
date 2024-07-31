@@ -385,7 +385,7 @@ class DDeiStage {
       this.layers[i].initRender();
     }
     //计算线的交叉
-    DDeiLine.calLineCrossSync(this.layers[this.layerIndex]);
+    DDeiLine.calLineCross(this.layers[this.layerIndex]);
     this.initStageSize();
   }
 

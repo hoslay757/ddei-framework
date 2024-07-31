@@ -175,7 +175,7 @@ class DDeiStageCanvasRender {
       this.helpLines = null;
 
 
-      DDeiLine.calLineCrossSync(this.model.layers[this.model.layerIndex])
+      // DDeiLine.calLineCrossSync(this.model.layers[this.model.layerIndex])
 
       DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_AFTER", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
     
