@@ -839,10 +839,10 @@ class DDeiLine extends DDeiAbstractShape {
       //转换为图片
       if (!this.looseCanvas) {
         this.looseCanvas = document.createElement('canvas');
-        this.looseCanvas.setAttribute("style", "-moz-transform-origin:left top;");
-        // let editorId = DDeiUtil.getEditorId(this.stage?.ddInstance);
-        // let editorEle = document.getElementById(editorId);
-        // editorEle.appendChild(this.looseCanvas)
+        this.looseCanvas.setAttribute("style", "-moz-transform-origin:left top;position:absolute;left:0px;top:0px;");
+        let editorId = DDeiUtil.getEditorId(this.stage?.ddInstance);
+        let editorEle = document.getElementById(editorId);
+        editorEle.appendChild(this.looseCanvas)
       }
       let canvas = this.looseCanvas
       let stageRatio = this.stage?.getStageRatio()
@@ -919,26 +919,39 @@ class DDeiLine extends DDeiAbstractShape {
    * @returns 是否在区域内
    */
   isInAreaLoose(x: number | undefined = undefined, y: number | undefined = undefined, loose: boolean = false): boolean {
-    if (super.isInAreaLoose(x, y, loose) && this.looseCanvas) {
-      
-      let ctx = this.looseCanvas.getContext("2d");
-      let stageRatio = this.stage?.getStageRatio()
-      let outRect = DDeiAbstractShape.pvsToOutRect(this.pvs, stageRatio);
-      let weight = 10
-      if (this.weight) {
-        weight = this.weight + 5
+    if (this.looseCanvas){
+      let isArea = false
+      //直线判断
+      if(this.type == 1){
+        let projPoint = this.getProjPoint({ x: x, y: y }
+          , { in: -10, out: 10 }, 1, 2)
+        if (projPoint){
+          isArea = true
+        }
+        
+      }else{
+        isArea = super.isInAreaLoose(x, y, loose)
       }
+      if (isArea) {
+        let ctx = this.looseCanvas.getContext("2d");
+        let stageRatio = this.stage?.getStageRatio()
+        let outRect = DDeiAbstractShape.pvsToOutRect(this.pvs, stageRatio);
+        let weight = 10
+        if (this.weight) {
+          weight = this.weight + 5
+        }
 
-      outRect.x -= weight
-      outRect.y -= weight
-      let cx = x * stageRatio - outRect.x
-      let cy = y * stageRatio - outRect.y
+        outRect.x -= weight
+        outRect.y -= weight
+        let cx = x * stageRatio - outRect.x
+        let cy = y * stageRatio - outRect.y
 
-      let cdata = ctx.getImageData(cx, cy, 1, 1).data;
-      if (cdata && cdata[0] == 255 && cdata[1] != 255 && cdata[2] != 255) {
-        return true;
+        let cdata = ctx.getImageData(cx, cy, 1, 1).data;
+        if (cdata && cdata[0] == 255 && cdata[1] != 255 && cdata[2] != 255) {
+          return true;
+        }
+        
       }
-      
     }
     return false;
   }
