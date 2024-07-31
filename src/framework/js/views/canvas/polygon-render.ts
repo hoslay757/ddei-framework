@@ -715,7 +715,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       //绘制图片
       
       ctx.imageSmoothingQuality = "high"
-      ctx.drawImage(this.imgObj, 0, 0, this.imgObj.width, this.imgObj.height, (this.model.cpv.x - fillRect.width / 2) * rat1 + lineOffset, (this.model.cpv.y - fillRect.height / 2) * rat1 + lineOffset, fillRect.width * rat1, fillRect.height * rat1);
+      let ratio = rat1 * this.stage?.getStageRatio()
+      ctx.drawImage(this.imgObj, 0, 0, this.imgObj.width, this.imgObj.height, (this.model.cpv.x - fillRect.width / 2) * ratio + lineOffset, (this.model.cpv.y - fillRect.height / 2) * ratio + lineOffset, fillRect.width * ratio, fillRect.height * ratio);
 
       //恢复状态
       ctx.restore();
