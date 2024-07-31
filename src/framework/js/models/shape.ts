@@ -2035,7 +2035,7 @@ abstract class DDeiAbstractShape {
   * 基于向量点获取一组图形模型的宽高
   * @param models
   */
-  static getOutRectByPV(models: Array<DDeiAbstractShape>): object {
+  static getOutRectByPV(models: Array<DDeiAbstractShape>,ratio:number = 1): object {
     models = models.filter(item => !!item)
     if (!models.length) {
       return { x: 0, y: 0, width: 0, height: 0 }
@@ -2049,7 +2049,7 @@ abstract class DDeiAbstractShape {
       points = points.concat(pvs)
     })
 
-    return DDeiAbstractShape.pvsToOutRect(points);
+    return DDeiAbstractShape.pvsToOutRect(points, ratio);
   }
 
 

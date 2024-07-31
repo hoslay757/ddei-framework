@@ -795,7 +795,7 @@ class DDeiEditor {
       isActive = true
     }else{
       //控件必须是当前editor的子控件
-      isActive = DDeiEditorUtil.isEditorSubElement(document.activeElement,this)
+      isActive = DDeiEditorUtil.isEditorSubElement(document.activeElement, DDeiEditor.ACTIVE_INSTANCE)
     }
     if (isActive && DDeiKeyAction.route(evt)) {
       evt.preventDefault()
@@ -1508,7 +1508,8 @@ class DDeiEditor {
         }
       }
       if (models.length > 0){
-        let outRect = DDeiAbstractShape.getOutRectByPV(models);
+        let stageRatio = stage.getStageRatio()
+        let outRect = DDeiAbstractShape.getOutRectByPV(models, stageRatio);
         stage.wpv.x = -(outRect.x+outRect.width/2) + (stage.ddInstance.render.canvas.width / stage.ddInstance.render.ratio) / 2
         stage.wpv.y = -(outRect.y + outRect.height / 2) + (stage.ddInstance.render.canvas.height / stage.ddInstance.render.ratio) / 2
       }
@@ -1557,7 +1558,7 @@ class DDeiEditor {
    * @param eIdx 结束下标
    * @param data 数据
    */
-  replaceModelsData(models:Array<DDeiAbstractShape>, attr: string,sIdx:number = -1,eIdx:number = -1, data:string = ''): void{
+  replaceModelsData(models:Array<DDeiAbstractShape>, attr: string,sIdx:number = -1,eIdx:number = -1, data:string = '',notify:boolean = true): void{
     if (models?.length > 0 && attr && sIdx != -1 && eIdx != -1 && eIdx >=sIdx) {
       models.forEach(model=>{
         let oldValue = model[attr];
@@ -1568,6 +1569,9 @@ class DDeiEditor {
           model[attr] = newValue
         }
       })
+    }
+    if(notify){
+      this.notifyChange()
     }
   }
 
