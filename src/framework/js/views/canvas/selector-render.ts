@@ -107,7 +107,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         //获得 2d 上下文对象
         let canvas = this.ddRender.getCanvas();
         let ctx = canvas.getContext('2d');
-        let ratio = this.ddRender.ratio;
+        let ratio = this.ddRender.ratio * this.stage.getStageRatio();
         let weight = 4
         ctx.save();
         ctx.fillStyle = "yellow"

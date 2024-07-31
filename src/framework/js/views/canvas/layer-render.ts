@@ -630,14 +630,14 @@ class DDeiLayerCanvasRender {
     let isOvPoint = false;
     if (this.stage?.selectedModels?.size == 1) {
       let model = Array.from(this.stage?.selectedModels.values())[0]
-      let ovPoint = model.getOvPointByPos(ex, ey)
+      let ovPoint = model.getOvPointByPos(ex2, ey2)
       if (ovPoint) {
         let ovsDefine = DDeiUtil.getControlDefine(model)?.define?.ovs;
         let ovd = ovsDefine[model.ovs.indexOf(ovPoint)];
         if (ovd?.constraint?.type) {
           isOvPoint = true;
           this.stageRender.operateState = DDeiEnumOperateState.OV_POINT_CHANGING
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { x: ex, y: ey, opPoint: ovPoint, model: model } }, evt);
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { x: ex2, y: ey2, opPoint: ovPoint, model: model } }, evt);
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: "pointer" }, evt);
         }
       }

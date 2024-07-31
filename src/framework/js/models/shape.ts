@@ -215,7 +215,7 @@ abstract class DDeiAbstractShape {
       let defineOvs = DDeiUtil.getControlDefine(this)?.define?.ovs;
       if (defineOvs?.length > 0) {
         //全局缩放因子
-        let stageRatio = this.getStageRatio();
+        let stageRatio = 1;//this.getStageRatio();
         let ovs = []
         defineOvs.forEach(ovd => {
           //如果类型为3，则根据初始的角度、r计算初始位置
@@ -298,7 +298,7 @@ abstract class DDeiAbstractShape {
   executeSample() {
     //通过采样计算pvs,可能存在多组pvs
     let defineSample = DDeiUtil.getControlDefine(this)?.define?.sample;
-    let stageRatio = this.getStageRatio()
+    let stageRatio = 1;//this.getStageRatio()
     if (defineSample?.rules?.length > 0) {
       ///计算ovs未旋转量，传入采样函数进行计算
       let originOVS = []
