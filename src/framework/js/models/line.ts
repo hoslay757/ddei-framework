@@ -840,9 +840,9 @@ class DDeiLine extends DDeiAbstractShape {
       if (!this.looseCanvas) {
         this.looseCanvas = document.createElement('canvas');
         this.looseCanvas.setAttribute("style", "-moz-transform-origin:left top;position:absolute;left:0px;top:0px;");
-        let editorId = DDeiUtil.getEditorId(this.stage?.ddInstance);
-        let editorEle = document.getElementById(editorId);
-        editorEle.appendChild(this.looseCanvas)
+        // let editorId = DDeiUtil.getEditorId(this.stage?.ddInstance);
+        // let editorEle = document.getElementById(editorId);
+        // editorEle.appendChild(this.looseCanvas)
       }
       let canvas = this.looseCanvas
       let stageRatio = this.stage?.getStageRatio()

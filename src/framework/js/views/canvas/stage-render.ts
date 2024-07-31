@@ -1258,9 +1258,9 @@ class DDeiStageCanvasRender {
         let paperOutRect = this.paperOutRect
         let cwidth = this.model.width * rat1
         let cheight = this.model.height * rat1
-        let startBaseX = this.model.spv.x * rat1
+        let startBaseX = this.model.spv.x * ratio
         let wpvX = -this.model.wpv.x * rat1
-        let startBaseY = this.model.spv.y * rat1
+        let startBaseY = this.model.spv.y * ratio
         let wpvY = -this.model.wpv.y * rat1
         for (let x = startBaseX - wpvX; x <= cwidth; x += marginWidth) {
           for (let y = startBaseY - wpvY; y <= cheight; y += marginHeight) {
