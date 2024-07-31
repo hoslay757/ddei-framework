@@ -184,7 +184,7 @@ class DDeiBusCommandUpdatePaperArea extends DDeiBusCommand {
         stage.spv.x += (mx/stageRatio)
         stage.spv.y += (my/stageRatio)
         if (!mds){
-          mds = stage.getLayerModels(null,100);
+          mds = stage.getLayerModels();
         }
         mds.forEach(item => {
           item.transVectors(moveMatrix)

@@ -476,7 +476,8 @@ class DDeiLayerCanvasRender {
       //获得 2d 上下文对象
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
-      let ratio = this.ddRender.ratio;
+      let stageRatio = this.stage?.getStageRatio()
+      let ratio = this.ddRender.ratio * stageRatio;
       //保存状态
       ctx.save();
       ctx.lineWidth = 2.5 * ratio;
