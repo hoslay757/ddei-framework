@@ -1034,12 +1034,17 @@ class DDeiStage {
       }
       //所选择区域的最大范围
       let outRect = DDeiAbstractShape.getOutRectByPV(models);
+      let stageRatio = this.getStageRatio()
+      outRect.x *= stageRatio
+      outRect.y *= stageRatio
+      outRect.width *= stageRatio
+      outRect.height *= stageRatio
       let lineOffset = models[0].render.getCachedValue("border.width");
       let addWidth = 0;
       if (lineOffset) {
-        addWidth = lineOffset * rat1
+        addWidth = lineOffset * rat1 * stageRatio
         if (models.length > 1) {
-          addWidth = lineOffset * 2
+          addWidth = lineOffset * 2 * stageRatio
         }
       }
       let editorId = DDeiUtil.getEditorId(ddInstance);
@@ -1051,7 +1056,7 @@ class DDeiStage {
       canvas.setAttribute("width", cW)
       canvas.setAttribute("height", cH)
       ctx.scale(1 / scaleSize, 1 / scaleSize)
-      ctx.translate(-outRect.x * rat1 + addWidth / 2, -outRect.y * rat1 + addWidth / 2)
+      ctx.translate(-outRect.x * rat1, -outRect.y * rat1)
 
       containerDiv.appendChild(canvas)
 
