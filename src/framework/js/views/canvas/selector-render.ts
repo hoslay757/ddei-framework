@@ -44,12 +44,11 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     if (this.stageRender.operateState == DDeiEnumOperateState.SELECT_WORKING) {
       
       this.stage?.layers[this.stage.layerIndex]?.render?.enableRefreshShape();
- 
       //绘制边框
       this.drawBorder();
 
       //绘制边框上的操作图形
-      this.drawOperatorShape();
+      // this.drawOperatorShape();
     } else if (this.stageRender.operateState != DDeiEnumOperateState.LINE_POINT_CHANGING) {
       if (models?.length == 1 && models[0]?.baseModelType == "DDeiLine") {
         //绘制线的选中效果
@@ -59,7 +58,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       } else {
         if (models?.length == 1 && (models[0].mirrorX || models[0].mirrorY)){
           let model = models[0]
-          let oldRat1 = this.ddRender.ratio;
+          let oldRat1 = this.ddRender.ratio * this/this.stage?.getStageRatio();
           ctx.translate(model.cpv.x * oldRat1, model.cpv.y * oldRat1)
           if (model.mirrorX) {
             ctx.scale(-1, 1)
@@ -75,6 +74,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         } else {
           //绘制边框
           if (this.stage?.selectedModels?.size > 1) {
+            
             this.drawBorder();
           }
 
@@ -107,7 +107,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         //获得 2d 上下文对象
         let canvas = this.ddRender.getCanvas();
         let ctx = canvas.getContext('2d');
-        let ratio = this.ddRender.ratio;
+        let ratio = this.ddRender.ratio * this.stage.getStageRatio();
         let weight = 4
         ctx.save();
         ctx.fillStyle = "yellow"
@@ -208,6 +208,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         let stageRatio = this.stage.getStageRatio()
         let rat1 = this.ddRender.ratio;
         let ratio = rat1 * stageRatio;
+        rat1 = ratio
         let pvs = lineModel.pvs
         let type = DDeiModelArrtibuteValue.getAttrValueByState(lineModel, "type", true);
         let weight = DDeiModelArrtibuteValue.getAttrValueByState(lineModel, "weight", true);
@@ -337,11 +338,8 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     let canvas = this.ddRender.getCanvas();
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
-    let stageRatio = parseFloat(this.stage.ratio) ? this.stage.ratio : 1.0
-    if (!stageRatio || isNaN(stageRatio)) {
-      stageRatio = 1.0
-    }
-    let ratio = this.ddRender.ratio;
+    let stageRatio = this.stage?.getStageRatio()
+    let ratio = this.ddRender.ratio * stageRatio;
     //保存状态
     ctx.save();
     //设置旋转
@@ -529,6 +527,9 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     ey /= window.remRatio
     ex -= this.stage.wpv.x;
     ey -= this.stage.wpv.y
+    let stageRatio = this.stage?.getStageRatio();
+    ex = ex / stageRatio
+    ey = ey / stageRatio
     //判断当前坐标是否位于操作按钮上
     let models = null;
     if (this.stage?.selectedModels?.size > 0) {
@@ -634,6 +635,9 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     ey /= window.remRatio
     ex -= this.stage.wpv.x;
     ey -= this.stage.wpv.y
+    let stageRatio = this.stage?.getStageRatio();
+    ex = ex / stageRatio
+    ey = ey / stageRatio
     //当前操作对象为线
     if (this.model.passType == 'line') {
       let lineModel = null;

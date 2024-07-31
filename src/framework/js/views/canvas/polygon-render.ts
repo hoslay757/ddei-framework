@@ -72,6 +72,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     if (DDeiUtil.DRAW_TEMP_CANVAS) {
       //如果高清屏，rat一般大于2印此系数为1保持不变，如果非高清则扩大为2倍保持清晰
       //获取缩放比例
+      let stageRatio = this.model.getStageRatio()
       let oldRat1 = this.ddRender.ratio
       let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
       let rat1 = oldRat1 * scaleSize
@@ -80,12 +81,17 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       if (!this.tempCanvas) {
         this.tempCanvas = document.createElement('canvas');
         this.tempCanvas.setAttribute("style", "left:-99999px;position:fixed;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
-        document.body.appendChild(this.tempCanvas)
+        // this.tempCanvas.setAttribute("style", "left:0px;top:0px;position:fixed;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
+
+        // let editorId = DDeiUtil.getEditorId(this.ddRender?.model);
+        // let editorEle = document.getElementById(editorId);
+        // editorEle.appendChild(this.tempCanvas)
       }
       let tempCanvas = this.tempCanvas
       let pvs = this.model.operatePVS ? this.model.operatePVS : this.model.pvs
 
-      let outRect = DDeiAbstractShape.pvsToOutRect(pvs)
+      let outRect = DDeiAbstractShape.pvsToOutRect(pvs,stageRatio)
+
       let weight = 5
       outRect.x -= weight
       outRect.x1 += weight
@@ -93,6 +99,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       outRect.y1 += weight
       outRect.width += 2 * weight
       outRect.height += 2 * weight
+
       tempCanvas.style.width = outRect.width
       tempCanvas.style.height = outRect.height
       tempCanvas.setAttribute("width", outRect.width * rat1)
@@ -219,6 +226,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
       let canvas = this.getRenderCanvas(composeRender)
       let ctx = canvas.getContext('2d');
+      let stageRatio = this.model.getStageRatio()
       let oldRat1 = this.ddRender.ratio;
       let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
       let rat1 = oldRat1 * scaleSize
@@ -228,16 +236,18 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       }
       ctx.save();
       if (this.model.mirrorX || this.model.mirrorY){
-        ctx.translate(this.model.cpv.x * oldRat1, this.model.cpv.y * oldRat1)
+        let ratx = this.model.cpv.x * oldRat1 * stageRatio
+        let raty = this.model.cpv.y * oldRat1 * stageRatio
+        ctx.translate(ratx, raty)
         if(this.model.mirrorX){
           ctx.scale(-1, 1)
         } 
         if (this.model.mirrorY){
           ctx.scale(1, -1)
         }
-        ctx.translate(-this.model.cpv.x * oldRat1, -this.model.cpv.y * oldRat1)
+        ctx.translate(-ratx, -raty)
       }
-      ctx.drawImage(this.tempCanvas, 0, 0, outRect.width * rat1, outRect.height * rat1, (this.model.cpv.x - outRect.width / 2) * oldRat1, (this.model.cpv.y - outRect.height / 2) * oldRat1, outRect.width * oldRat1, outRect.height * oldRat1)
+      ctx.drawImage(this.tempCanvas, 0, 0, outRect.width * rat1, outRect.height * rat1, (this.model.cpv.x * stageRatio - outRect.width / 2) * oldRat1, (this.model.cpv.y * stageRatio - outRect.height / 2) * oldRat1, outRect.width * oldRat1, outRect.height * oldRat1)
       ctx.restore()
     }
 
@@ -313,7 +323,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
    */
   getBorderPVS(pvs, tempShape) {
     let stageRatio = this.model.getStageRatio()
-    let rat1 = this.ddRender.ratio;
+    let rat1 = this.ddRender.ratio * stageRatio;
     let round = tempShape?.border?.round ? tempShape?.border?.round : this.getCachedValue("border.round");
     let type = tempShape?.border?.type || tempShape?.border?.type == 0 ? tempShape?.border?.type : this.getCachedValue("border.type");
     let width = tempShape?.border?.width ? tempShape?.border?.width : this.getCachedValue("border.width");
@@ -435,6 +445,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let stageRatio = this.model.getStageRatio()
     let rat1 = this.ddRender.ratio;
     let ratio = rat1 * stageRatio;
+    rat1 = ratio
     //如果被选中，使用选中的边框，否则使用缺省边框
     let type = tempShape?.border?.type || tempShape?.border?.type == 0 ? tempShape?.border?.type : this.getCachedValue("border.type")
     let color = tempShape?.border?.color ? tempShape?.border?.color : this.getCachedValue("border.color")
@@ -479,7 +490,6 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     }
 
     if (pvs?.length > 2) {
-
       let len = pvs.length;
       if (pvs[0].begin) {
         ctx.beginPath();
@@ -705,7 +715,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       //绘制图片
       
       ctx.imageSmoothingQuality = "high"
-      ctx.drawImage(this.imgObj, 0, 0, this.imgObj.width, this.imgObj.height, (this.model.cpv.x - fillRect.width / 2) * rat1 + lineOffset, (this.model.cpv.y - fillRect.height / 2) * rat1 + lineOffset, fillRect.width * rat1, fillRect.height * rat1);
+      let ratio = rat1 * this.stage?.getStageRatio()
+      ctx.drawImage(this.imgObj, 0, 0, this.imgObj.width, this.imgObj.height, (this.model.cpv.x - fillRect.width / 2) * ratio + lineOffset, (this.model.cpv.y - fillRect.height / 2) * ratio + lineOffset, fillRect.width * ratio, fillRect.height * ratio);
 
       //恢复状态
       ctx.restore();
@@ -845,6 +856,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let stageRatio = this.model.getStageRatio()
     let rat1 = this.ddRender.ratio;
     let ratio = rat1 * stageRatio;
+    rat1 = ratio
     let ratPos = DDeiUtil.getRatioPosition(fillRect, rat1)
 
     //设置所有文本的对齐方式，以便于后续所有的对齐都采用程序计算
@@ -1465,7 +1477,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   calScaleType3Size(): boolean {
     //文本的超出范围后的策略
     let scale = this.getCachedValue("textStyle.scale");
-    let fillRect = DDeiAbstractShape.pvsToOutRect(DDeiUtil.pointsToZero(this.model.textArea, this.model.cpv, this.model.rotate))
+    let textArea = DDeiUtil.pointsToZero(this.model.textArea, this.model.cpv, this.model.rotate)
+    let fillRect = DDeiAbstractShape.pvsToOutRect(textArea)
     if (scale == 3) {
       let lockExtWidth = this.getCachedValue("textStyle.lockWidth");
       //获得 2d 上下文对象
@@ -1634,10 +1647,10 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       }
 
       //比较大小，如果超出文本区域则按照超出区域的实际大小进行扩展
-      let textArea = DDeiUtil.pointsToZero(this.model.textArea, this.model.cpv, this.model.rotate)
-      let textAreaOutRect = DDeiAbstractShape.pvsToOutRect(textArea)
-      let nowOutRect = { width: textAreaWidth / rat1, height: textAreaHeight / rat1 }
-      if (nowOutRect.width > 40 * stageRatio && nowOutRect.height > fontSize) {
+      
+      let textAreaOutRect = fillRect
+      let nowOutRect = { width: textAreaWidth / ratio, height: textAreaHeight / ratio }
+      if (nowOutRect.width > 40 && nowOutRect.height > fontSize) {
         let scaleX = nowOutRect.width / textAreaOutRect.width
         let scaleY = nowOutRect.height / textAreaOutRect.height
         if (lockExtWidth == 1 || lockExtWidth == '1') {

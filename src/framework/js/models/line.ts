@@ -139,78 +139,80 @@ class DDeiLine extends DDeiAbstractShape {
     if (!layer) {
       return;
     }
-    let lines = layer.getModelsByBaseType("DDeiLine");
-    //遍历，生成线的交错点
-    lines.forEach(line => {
-      line.clps = {}
-    })
+    if (!layer.stage.render.refreshJumpLine) {
+      let lines = layer.getModelsByBaseType("DDeiLine");
+      //遍历，生成线的交错点
+      lines.forEach(line => {
+        line.clps = {}
+      })
 
-    let wl = 12 * layer.stage?.getStageRatio();
-    let len = lines.length
-    let rectMap = new Map();
-    let corssLinePoints = []
-    for (let i = 0; i < len - 1; i++) {
-      let l1 = lines[i];
-      if (l1.type == 3) {
-        continue;
-      }
-      let jumpLine
-      if (layer.stage.ddInstance.jumpline == 0 || layer.stage.ddInstance.jumpline) {
-        jumpLine = layer.stage.ddInstance.jumpline
-      }else{
-        jumpLine = DDeiModelArrtibuteValue.getAttrValueByState(l1, "jumpline", true);
-        //采用全局跳线
-        if (jumpLine == 0 || !jumpLine) {
-          if (layer.stage.global?.jumpline) {
-            jumpLine = layer.stage.global.jumpline;
-          } else if (layer.stage.ddInstance.jumpline) {
-            jumpLine = layer.stage.ddInstance.jumpline;
-          } else {
-            jumpLine = DDeiModelArrtibuteValue.getAttrValueByState(layer.stage, "global.jumpline", true);
-          }
+      let wl = 12 * layer.stage?.getStageRatio();
+      let len = lines.length
+      let rectMap = new Map();
+      let corssLinePoints = []
+      for (let i = 0; i < len - 1; i++) {
+        let l1 = lines[i];
+        if (l1.type == 3) {
+          continue;
         }
-      }
-      if (jumpLine == 1) {
-        if (!rectMap.has(l1.id)) {
-          rectMap.set(l1.id, DDeiAbstractShape.getOutRectByPV([l1]))
-        }
-        let l1Rect = rectMap.get(l1.id);
-        for (let j = i + 1; j < len; j++) {
-          let l2 = lines[j];
-          if (l2.type == 3) {
-            continue;
-          }
-
-          if (l1 != l2) {
-            if (!rectMap.has(l2.id)) {
-              rectMap.set(l2.id, DDeiAbstractShape.getOutRectByPV([l2]))
+        let jumpLine
+        if (layer.stage.ddInstance.jumpline == 0 || layer.stage.ddInstance.jumpline) {
+          jumpLine = layer.stage.ddInstance.jumpline
+        }else{
+          jumpLine = DDeiModelArrtibuteValue.getAttrValueByState(l1, "jumpline", true);
+          //采用全局跳线
+          if (jumpLine == 0 || !jumpLine) {
+            if (layer.stage.global?.jumpline) {
+              jumpLine = layer.stage.global.jumpline;
+            } else if (layer.stage.ddInstance.jumpline) {
+              jumpLine = layer.stage.ddInstance.jumpline;
+            } else {
+              jumpLine = DDeiModelArrtibuteValue.getAttrValueByState(layer.stage, "global.jumpline", true);
             }
-            let l2Rect = rectMap.get(l2.id);
-            if (DDeiUtil.isRectCorss(l1Rect, l2Rect)) {
-              for (let pi = 0; pi < l1.pvs.length - 1; pi++) {
-                let p1 = l1.pvs[pi];
-                let p2 = l1.pvs[pi + 1];
-                for (let pj = 0; pj < l2.pvs.length - 1; pj++) {
-                  let p3 = l2.pvs[pj];
-                  let p4 = l2.pvs[pj + 1];
-                  //判定线穿越
-                  let crossPoint = DDeiUtil.getLineCorssPoint(p1, p2, p3, p4);
-                  if (crossPoint != null) {
-                    //计算单位移动量
-                    let pRotate = DDeiUtil.getLineAngle(p1.x, p1.y, p2.x, p2.y)
-                    let pAngle = (pRotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
-                    let pVectorUnit = new Vector3(1, 0, 1)
-                    let pRotateMatrix = new Matrix3(
-                      Math.cos(pAngle), Math.sin(pAngle), 0,
-                      -Math.sin(pAngle), Math.cos(pAngle), 0,
-                      0, 0, 1);
-                    pVectorUnit.applyMatrix3(pRotateMatrix)
-                    let sdist = DDeiUtil.getPointDistance(p1.x, p1.y, crossPoint.x, crossPoint.y)
-                    let edist = DDeiUtil.getPointDistance(p2.x, p2.y, crossPoint.x, crossPoint.y)
-                    let s1dist = DDeiUtil.getPointDistance(p3.x, p3.y, crossPoint.x, crossPoint.y)
-                    let e1dist = DDeiUtil.getPointDistance(p4.x, p4.y, crossPoint.x, crossPoint.y)
-                    if (sdist > wl && edist > wl && s1dist > wl && e1dist > wl) {
-                      corssLinePoints.push({ line: l1, index: pi, cp: crossPoint, unit: pVectorUnit, r: pRotate, dist: sdist })
+          }
+        }
+        if (jumpLine == 1) {
+          if (!rectMap.has(l1.id)) {
+            rectMap.set(l1.id, DDeiAbstractShape.getOutRectByPV([l1]))
+          }
+          let l1Rect = rectMap.get(l1.id);
+          for (let j = i + 1; j < len; j++) {
+            let l2 = lines[j];
+            if (l2.type == 3) {
+              continue;
+            }
+
+            if (l1 != l2) {
+              if (!rectMap.has(l2.id)) {
+                rectMap.set(l2.id, DDeiAbstractShape.getOutRectByPV([l2]))
+              }
+              let l2Rect = rectMap.get(l2.id);
+              if (DDeiUtil.isRectCorss(l1Rect, l2Rect)) {
+                for (let pi = 0; pi < l1.pvs.length - 1; pi++) {
+                  let p1 = l1.pvs[pi];
+                  let p2 = l1.pvs[pi + 1];
+                  for (let pj = 0; pj < l2.pvs.length - 1; pj++) {
+                    let p3 = l2.pvs[pj];
+                    let p4 = l2.pvs[pj + 1];
+                    //判定线穿越
+                    let crossPoint = DDeiUtil.getLineCorssPoint(p1, p2, p3, p4);
+                    if (crossPoint != null) {
+                      //计算单位移动量
+                      let pRotate = DDeiUtil.getLineAngle(p1.x, p1.y, p2.x, p2.y)
+                      let pAngle = (pRotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+                      let pVectorUnit = new Vector3(1, 0, 1)
+                      let pRotateMatrix = new Matrix3(
+                        Math.cos(pAngle), Math.sin(pAngle), 0,
+                        -Math.sin(pAngle), Math.cos(pAngle), 0,
+                        0, 0, 1);
+                      pVectorUnit.applyMatrix3(pRotateMatrix)
+                      let sdist = DDeiUtil.getPointDistance(p1.x, p1.y, crossPoint.x, crossPoint.y)
+                      let edist = DDeiUtil.getPointDistance(p2.x, p2.y, crossPoint.x, crossPoint.y)
+                      let s1dist = DDeiUtil.getPointDistance(p3.x, p3.y, crossPoint.x, crossPoint.y)
+                      let e1dist = DDeiUtil.getPointDistance(p4.x, p4.y, crossPoint.x, crossPoint.y)
+                      if (sdist > wl && edist > wl && s1dist > wl && e1dist > wl) {
+                        corssLinePoints.push({ line: l1, index: pi, cp: crossPoint, unit: pVectorUnit, r: pRotate, dist: sdist })
+                      }
                     }
                   }
                 }
@@ -218,35 +220,50 @@ class DDeiLine extends DDeiAbstractShape {
             }
           }
         }
-      }
 
 
-      corssLinePoints.forEach(clp => {
-        if (!clp.line.clps[clp.index]) {
-          clp.line.clps[clp.index] = []
-        }
-        //排序并插入，按从小到达顺序排列
-        let dist = clp.dist;
-        let has = false
-        for (let di = 0; di < clp.line.clps[clp.index].length; di++) {
-          if (dist <= clp.line.clps[clp.index][di]?.dist) {
-            clp.line.clps[clp.index].splice(di, 0, clp)
-            has = true;
-            break;
+        corssLinePoints.forEach(clp => {
+          if (!clp.line.clps[clp.index]) {
+            clp.line.clps[clp.index] = []
           }
-        }
-        if (!has) {
-          clp.line.clps[clp.index].push(clp)
-        }
-      })
-      layer.stage?.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
-      layer.stage?.ddInstance.bus.executeAll()
+          
+          //排序并插入，按从小到大顺序排列
+          let dist = clp.dist;
+          let has = false
+          let lineClps = clp.line.clps[clp.index]
+          let len = lineClps.length
+          for (let di = 0; di < len; di++) {
+            if (lineClps[di].cp.x == clp.cp.x && lineClps[di].cp.y == clp.cp.y){
+              has = true;
+              break
+            }
+            if (dist <= lineClps[di]?.dist) {
+              lineClps.splice(di, 0, clp)
+              has = true;
+              break;
+            }
+          }
+          if (!has) {
+            clp.line.clps[clp.index].push(clp)
+          }
+        })
+        lines.forEach(line => {
+          line.updateLooseCanvas();
+          line.render?.enableRefreshShape()
+        })
+        
+        layer.stage?.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape);
+        layer.stage?.ddInstance.bus.executeAll()
+
+        
+        layer.stage.render.refreshJumpLine = true
+      }
     }
 
   }
 
   static {
-    DDeiLine.calLineCrossSync = debounce(DDeiLine.calLineCrossSync, 50)
+    DDeiLine.calLineCross = debounce(DDeiLine.calLineCross, 50)
   }
 
 
@@ -531,7 +548,7 @@ class DDeiLine extends DDeiAbstractShape {
     }
     this.render?.enableRefreshShape()
 
-    DDeiLine.calLineCrossSync(this.layer);
+    DDeiLine.calLineCross(this.layer);
   }
 
 
@@ -839,12 +856,16 @@ class DDeiLine extends DDeiAbstractShape {
       //转换为图片
       if (!this.looseCanvas) {
         this.looseCanvas = document.createElement('canvas');
-        this.looseCanvas.setAttribute("style", "-moz-transform-origin:left top;");
+        this.looseCanvas.setAttribute("style", "-moz-transform-origin:left top;position:absolute;left:0px;top:0px;");
+        // let editorId = DDeiUtil.getEditorId(this.stage?.ddInstance);
+        // let editorEle = document.getElementById(editorId);
+        // editorEle.appendChild(this.looseCanvas)
       }
       let canvas = this.looseCanvas
+      let stageRatio = this.stage?.getStageRatio()
 
       let pvs = this.pvs;
-      let outRect = DDeiAbstractShape.pvsToOutRect(pvs);
+      let outRect = DDeiAbstractShape.pvsToOutRect(pvs, stageRatio);
       let weight = 10
       if (this.weight) {
         weight = this.weight + 5
@@ -855,12 +876,13 @@ class DDeiLine extends DDeiAbstractShape {
       outRect.y1 += weight
       outRect.width += 2 * weight
       outRect.height += 2 * weight
-      this.loosePVS = Object.freeze([
-        new Vector3(outRect.x, outRect.y, 1),
-        new Vector3(outRect.x1, outRect.y, 1),
-        new Vector3(outRect.x1, outRect.y1, 1),
-        new Vector3(outRect.x, outRect.y1, 1)
-      ])
+      // this.loosePVS = Object.freeze([
+      //   new Vector3(outRect.x, outRect.y, 1),
+      //   new Vector3(outRect.x1, outRect.y, 1),
+      //   new Vector3(outRect.x1, outRect.y1, 1),
+      //   new Vector3(outRect.x, outRect.y1, 1)
+      // ])
+      this.loosePVS = this.pvs
       canvas.setAttribute("width", outRect.width)
       canvas.setAttribute("height", outRect.height)
       //获得 2d 上下文对象
@@ -914,22 +936,38 @@ class DDeiLine extends DDeiAbstractShape {
    * @returns 是否在区域内
    */
   isInAreaLoose(x: number | undefined = undefined, y: number | undefined = undefined, loose: boolean = false): boolean {
-    if (super.isInAreaLoose(x, y, loose) && this.looseCanvas) {
-      let ctx = this.looseCanvas.getContext("2d");
-      let outRect = DDeiAbstractShape.pvsToOutRect(this.pvs);
-      let weight = 10
-      if (this.weight) {
-        weight = this.weight + 5
+    if (this.looseCanvas){
+      let isArea = false
+      //直线判断
+      if(this.type == 1){
+        let projPoint = this.getProjPoint({ x: x, y: y }
+          , { in: -10, out: 10 }, 1, 2)
+        if (projPoint){
+          isArea = true
+        }
+        
+      }else{
+        isArea = super.isInAreaLoose(x, y, loose)
       }
+      if (isArea) {
+        let ctx = this.looseCanvas.getContext("2d");
+        let stageRatio = this.stage?.getStageRatio()
+        let outRect = DDeiAbstractShape.pvsToOutRect(this.pvs, stageRatio);
+        let weight = 10
+        if (this.weight) {
+          weight = this.weight + 5
+        }
 
-      outRect.x -= weight
-      outRect.y -= weight
-      let cx = x - outRect.x
-      let cy = y - outRect.y
+        outRect.x -= weight
+        outRect.y -= weight
+        let cx = x * stageRatio - outRect.x
+        let cy = y * stageRatio - outRect.y
 
-      let cdata = ctx.getImageData(cx, cy, 1, 1).data;
-      if (cdata && cdata[0] == 255 && cdata[1] != 255 && cdata[2] != 255) {
-        return true;
+        let cdata = ctx.getImageData(cx, cy, 1, 1).data;
+        if (cdata && cdata[0] == 255 && cdata[1] != 255 && cdata[2] != 255) {
+          return true;
+        }
+        
       }
     }
     return false;
@@ -962,7 +1000,7 @@ class DDeiLine extends DDeiAbstractShape {
       this.linkModels = null;
     }
 
-    DDeiLine.calLineCrossSync(layer);
+    DDeiLine.calLineCross(layer);
   }
 
   syncVectors(source: DDeiAbstractShape, clonePV: boolean = false): void {

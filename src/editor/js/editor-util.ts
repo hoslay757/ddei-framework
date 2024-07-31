@@ -187,7 +187,7 @@ class DDeiEditorUtil {
     if (element.tagName == 'BODY' || element.tagName == 'HEAD' || element.tagName == 'HTML') {
       return false
     }
-    if (element == editor.viewEditor) {
+    if (element == editor.htmlElement) {
       return true;
     } else {
       return DDeiEditorUtil.isEditorSubElement(element.parentElement, editor)

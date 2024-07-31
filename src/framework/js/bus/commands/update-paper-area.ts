@@ -51,35 +51,40 @@ class DDeiBusCommandUpdatePaperArea extends DDeiBusCommand {
     }
     //获取纸张大小的定义
     let paperConfig = DDeiConfig.PAPER[paperType];
-    let rat1 = bus.ddInstance.render.ratio
+    let stageRatio = stage?.getStageRatio()
     let paperWidth, paperHeight
     let mds
     if (paperConfig) {
       //纸张的像素大小
-      let paperSize = DDeiUtil.getPaperSize(stage,paperType)
-      paperWidth = paperSize.width / rat1;
-      paperHeight = paperSize.height / rat1;
+      let paperSize = DDeiUtil.getPaperSize(stage,paperType,false)
+      paperWidth = paperSize.width;
+      paperHeight = paperSize.height;
     }else{
       mds = stage?.getLayerModels(null,100)
       let outRect = DDeiAbstractShape.getOutRectByPV(mds)
-      paperWidth = outRect.width/4;
-      paperHeight = outRect.height/4;
+      paperWidth = outRect.width * stageRatio
+      paperHeight = outRect.height * stageRatio
     }
     //当前的窗口位置（乘以了窗口缩放比例）
     let wpv = stage.wpv
     //第一张纸开始位置
     if (!stage.spv) {
-      let sx = stage.width / 2 - paperWidth / 2
-      let sy = stage.height / 2 - paperHeight / 2
+      let sx = stage.width / 2 - paperWidth/stageRatio / 2
+      let sy = stage.height / 2 - paperHeight/stageRatio / 2
       stage.spv = new Vector3(sx, sy, 1)
     }
-    let startPaperX = stage.spv.x
-    let startPaperY = stage.spv.y
+    let startPaperX = stage.spv.x * stageRatio
+    let startPaperY = stage.spv.y * stageRatio
 
 
     //获取最大的有效范围，自动扩展纸张
     let maxOutRect = DDeiAbstractShape.getOutRectByPV(stage.getLayerModels())
-
+    maxOutRect.x = maxOutRect.x * stageRatio;
+    maxOutRect.x1 = maxOutRect.x1 * stageRatio;
+    maxOutRect.y = maxOutRect.y * stageRatio;
+    maxOutRect.y1 = maxOutRect.y1 * stageRatio;
+    maxOutRect.width = maxOutRect.width * stageRatio;
+    maxOutRect.height = maxOutRect.height * stageRatio;
     //计算各个方向扩展的数量j
     let leftExtNum = 0, rightExtNum = 0, topExtNum = 0, bottomExtNum = 0
     if (maxOutRect.width > 0 && maxOutRect.height > 0) {
@@ -115,13 +120,13 @@ class DDeiBusCommandUpdatePaperArea extends DDeiBusCommand {
     //从spv.x 开始，左边和右边的宽度
     let leftPaperWidth = (leftExtNum + 0.5) * paperWidth
     let rightPaperWidth = (rightExtNum + 1.5) * paperWidth
-    let leftSpace = stage.spv.x
-    let rightSpace = stage.width - stage.spv.x
+    let leftSpace = stage.spv.x * stageRatio
+    let rightSpace = stage.width - stage.spv.x * stageRatio
 
     let topPaperWidth = (topExtNum + 0.5) * paperHeight
     let bottomPaperWidth = (bottomExtNum + 1.5) * paperHeight
-    let topSpace = stage.spv.y
-    let bottomSpace = stage.height - stage.spv.y
+    let topSpace = stage.spv.y * stageRatio
+    let bottomSpace = stage.height - stage.spv.y * stageRatio
     let extW = 0, extH = 0
     let needMoveX = false, needMoveY = false
     if (rightPaperWidth > rightSpace) {
@@ -172,13 +177,14 @@ class DDeiBusCommandUpdatePaperArea extends DDeiBusCommand {
       }
       if (mx || my) {
         let moveMatrix = new Matrix3(
-          1, 0, mx,
-          0, 1, my,
+          1, 0, mx/stageRatio,
+          0, 1, my/stageRatio,
           0, 0, 1,
         );
-        stage?.spv.applyMatrix3(moveMatrix)
+        stage.spv.x += (mx/stageRatio)
+        stage.spv.y += (my/stageRatio)
         if (!mds){
-          mds = stage.getLayerModels(null,100);
+          mds = stage.getLayerModels();
         }
         mds.forEach(item => {
           item.transVectors(moveMatrix)
@@ -186,8 +192,8 @@ class DDeiBusCommandUpdatePaperArea extends DDeiBusCommand {
 
         stage.render.selector?.transVectors(moveMatrix)
 
-        wpv.x -= mx
-        wpv.y -= my
+        wpv.x -= mx 
+        wpv.y -= my 
       }
 
     }

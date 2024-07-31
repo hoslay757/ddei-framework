@@ -51,6 +51,7 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
     if (data?.models?.length > 0) {
       let x = data.x ? data.x : 0;
       let y = data.y ? data.y : 0;
+      
       let dragObj = data.dragObj;
       let changeContainer = data.changeContainer ? data.changeContainer : false;
       let newContainer = data.newContainer;
@@ -58,6 +59,7 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
       let sample = data.sample
       let models = data.models;
       let stage = bus.ddInstance.stage;
+      let stageRatio  = stage?.getStageRatio()
       let fModel = null
       if (models[0].id.lastIndexOf("_shadow") != -1) {
         fModel = stage?.getModelById(models[0].id.substring(models[0].id, models[0].id.lastIndexOf("_shadow")))
@@ -114,8 +116,8 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
           dx = dragObj[model.id]?.dx ? dragObj[model.id]?.dx : 0;
           dy = dragObj[model.id]?.dy ? dragObj[model.id]?.dy : 0
         }
-        let xm = x - model.cpv.x + dx;
-        let ym = y - model.cpv.y + dy;
+        let xm = x / stageRatio - model.cpv.x + dx;
+        let ym = y /stageRatio - model.cpv.y + dy;
         if (hAdsValue != Infinity) {
           ym = hAdsValue
         }
