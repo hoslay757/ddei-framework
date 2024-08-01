@@ -249,29 +249,7 @@ class DDeiEditor {
           })
         
           
-          editorInstance.controls?.forEach(control => {
-            if(control.menus){
-              if (!editorInstance.menuMapping[control.id]) {
-                editorInstance.menuMapping[control.id] = control.menus
-              }
-              let menus = editorInstance.menuMapping[control.id];
-              for (let i = 0; i < menus.length;i++){
-                for (let j in editorInstance.menus){
-                  if (editorInstance.menus[j].name == menus[i].name){
-                    menus[i] = editorInstance.menus[j];
-                    break;
-                  }
-                }
-              }
-            }
-            if (control.define) {
-              delete control.define.font
-              delete control.define.textStyle
-              delete control.define.border
-              delete control.define.fill
-            }
-            delete control.attrs
-          })
+          
           //加载控件的右键菜单,移除加载控件的临时变量
           for (let i in editorInstance.menus){
             let menu = editorInstance.menus[i]

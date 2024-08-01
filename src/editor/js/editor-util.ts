@@ -62,8 +62,8 @@ class DDeiEditorUtil {
   /**
   * 获取业务数据
   */
-  static getBusiData(): object {
-    let CTIVE_INSTANCE;
+  static getBusiData(ddInstance:DDei): object {
+    let editor = DDeiEditorUtil.getEditorInsByDDei(ddInstance)
     if (editor) {
       let file = editor.files[editor.currentFileIndex]
       return file?.busiData

@@ -1721,7 +1721,7 @@ class DDeiUtil {
       //执行值绑定替换
       if (originValue && originValue.indexOf("#") != -1) {
         //获取外部业务传入值
-        let busiData = DDeiUtil.getBusiData();
+        let busiData = DDeiUtil.getBusiData(model.stage.ddInstance);
         if (busiData) {
           let replaceResult = DDeiUtil.expressBindValue(originValue, busiData);
           if (replaceResult?.data) {
