@@ -6,6 +6,7 @@ import DDeiUtil from '../util'
 import { Matrix3, Vector3 } from 'three';
 import { cloneDeep, clone, isNumber } from 'lodash'
 import DDeiModelArrtibuteValue from './attribute/attribute-value'
+import DDeiEnumOperateType from '../enums/operate-type'
 /**
  * 抽象的图形类，定义了大多数图形都有的属性和方法
  */
@@ -1764,8 +1765,9 @@ abstract class DDeiAbstractShape {
       this.render.tempCanvas.remove()
       delete this.render.tempCanvas
     }
-
+    
     this.render = null
+    DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_DEL_AFTER", DDeiEnumOperateType.DESTROYED, { models: [this] }, this.stage?.ddInstance, null)
   }
   /**
      * 将模型转换为JSON
