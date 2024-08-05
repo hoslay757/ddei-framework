@@ -1563,6 +1563,7 @@ class DDeiUtil {
             dist = {}
           }
           for (let i in source) {
+            console.log(i)
             dist[i] = DDeiUtil.copyJSONValue(source[i], dist[i])
           }
           return dist;

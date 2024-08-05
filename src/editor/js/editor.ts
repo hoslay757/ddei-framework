@@ -507,10 +507,10 @@ class DDeiEditor {
     if(config){
       //普通值、JSON、数组、MAP
       for (let i in config) {
-        let outConfigValue = config[i];
-        let configValue = this[i];
+        // let outConfigValue = config[i];
+        // let configValue = this[i];
         //深度遍历属性，然后进行设置
-        this[i] = DDeiUtil.copyJSONValue(outConfigValue, configValue);
+        this[i] = config[i]
         
       }
       if (this.ddInstance) {
@@ -520,10 +520,10 @@ class DDeiEditor {
     if (custConfig) {
       //普通值、JSON、数组、MAP
       for (let i in custConfig) {
-        let outConfigValue = custConfig[i];
-        let configValue = this[i];
+        // let outConfigValue = custConfig[i];
+        // let configValue = this[i];
         //深度遍历属性，然后进行设置
-        this[i] = DDeiUtil.copyJSONValue(outConfigValue, configValue);
+        this[i] = custConfig[i]
       }
       if (this.ddInstance) {
         this.ddInstance.applyConfig(custConfig)
