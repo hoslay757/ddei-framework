@@ -10,6 +10,7 @@ enum DDeiEnumOperateType {
   DRAG = "DRAG",
   LINK = "LINK",
   DEL = "DEL",
+  DESTROYED = "DESTROYED",
   SELECT = "SELECT",
   ROTATE = "ROTATE",
   SCALE = "SCALE",

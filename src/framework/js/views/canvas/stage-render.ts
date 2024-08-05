@@ -97,6 +97,21 @@ class DDeiStageCanvasRender {
       if (this.model.disabled || !this.model.width || !this.model.height){
         return;
       }
+      let ruleDisplay
+      let ruleInit
+      if (this.model.ruler?.display || this.model.ruler?.display == 0 || this.model.ruler?.display == false) {
+        ruleDisplay = this.model.ruler.display;
+      } else if (this.model.ddInstance.ruler != null && this.model.ddInstance.ruler != undefined) {
+        if (typeof (this.model.ddInstance.ruler) == 'boolean') {
+          ruleDisplay = this.model.ddInstance.ruler ? 1 : 0;
+        } else {
+          ruleInit = this.model.ddInstance.ruler
+          ruleDisplay = ruleInit.display;
+        }
+      } else {
+        ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
+      }
+      this.tempRuleDisplay = ruleDisplay
       //绘制纸张，以及图层背景
       this.drawPaper();
 
@@ -160,9 +175,34 @@ class DDeiStageCanvasRender {
       this.helpLines = null;
 
 
-      DDeiLine.calLineCrossSync(this.model.layers[this.model.layerIndex])
+      // DDeiLine.calLineCrossSync(this.model.layers[this.model.layerIndex])
 
       DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_AFTER", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
+    
+      //设置htmlrender的容器大小以及位置
+      let renderViewerEle = canvas.parentElement?.getElementsByClassName("ddei-editor-canvasview-renderviewers")[0];
+      if (renderViewerEle){
+        
+        
+        let ruleWeight = 0
+        if (this.tempRuleDisplay == 1 || this.tempRuleDisplay == "1") {
+          ruleWeight = 16
+        }
+        let hScrollWeight = 0, vScrollWeight = 0;
+        if (this.vScroll) {
+          vScrollWeight = 15
+        }
+        if (this.hScroll) {
+          hScrollWeight = 15
+        }
+        
+        
+        renderViewerEle.style.marginLeft = ruleWeight + "px"
+        renderViewerEle.style.marginTop = ruleWeight + "px"
+        renderViewerEle.style.width = (canvas.offsetWidth/rat1 - ruleWeight - vScrollWeight) + "px"
+        renderViewerEle.style.height = (canvas.offsetHeight/rat1 - ruleWeight - hScrollWeight) + "px"
+        delete this.tempRuleDisplay
+      }
     }
   }
 
@@ -172,6 +212,15 @@ class DDeiStageCanvasRender {
   drawHelpLines(): void {
     // 未开启主线提示，则不再计算辅助线提示定位
     if (this.helpLines) {
+      let ruleInit
+      if (this.model.ruler?.display || this.model.ruler?.display == 0 || this.model.ruler?.display == false) {
+      } else if (this.model.ddInstance.ruler != null && this.model.ddInstance.ruler != undefined) {
+        if (typeof (this.model.ddInstance.ruler) == 'boolean') {
+        } else {
+          ruleInit = this.model.ddInstance.ruler
+        }
+      } else {
+      }
       let hpoint = this.helpLines.hpoint;
       let vpoint = this.helpLines.vpoint;
       let rect = this.helpLines.rect;
@@ -197,20 +246,7 @@ class DDeiStageCanvasRender {
         let font = "bold " + (fontSize * rat1) + "px Microsoft YaHei"
         //设置字体
         ctx.font = font
-        let ruleDisplay
-        let ruleInit
-        if (this.model.ruler?.display || this.model.ruler?.display == 0 || this.model.ruler?.display == false) {
-          ruleDisplay = this.model.ruler.display;
-        } else if (this.model.ddInstance.ruler != null && this.model.ddInstance.ruler != undefined) {
-          if (typeof (this.model.ddInstance.ruler) == 'boolean') {
-            ruleDisplay = this.model.ddInstance.ruler ? 1 : 0;
-          } else {
-            ruleInit = this.model.ddInstance.ruler
-            ruleDisplay = ruleInit.display;
-          }
-        } else {
-          ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
-        }
+        
         let xText = 0;
         let yText = 0;
         if (this.operateState == DDeiEnumOperateState.CONTROL_DRAGING || this.operateState == DDeiEnumOperateState.CONTROL_CREATING) {
@@ -222,7 +258,7 @@ class DDeiStageCanvasRender {
         } else if (this.operateState == DDeiEnumOperateState.CONTROL_ROTATE) {
           xText = rect.rotate.toFixed(0);
         }
-        if ((ruleDisplay == 1 || ruleDisplay == "1") && this.operateState != DDeiEnumOperateState.CONTROL_ROTATE) {
+        if ((this.tempRuleDisplay == 1 || this.tempRuleDisplay == "1") && this.operateState != DDeiEnumOperateState.CONTROL_ROTATE) {
           
           //生成文本并计算文本大小
           let stageRatio = this.model.getStageRatio()
@@ -275,14 +311,14 @@ class DDeiStageCanvasRender {
         let height = fontSize + 4
         let x, y
         if (this.operateState == DDeiEnumOperateState.CONTROL_DRAGING || this.operateState == DDeiEnumOperateState.CONTROL_CREATING) {
-          x = (rect.x - width / 2) * rat1
-          y = (rect.y - height - 5) * rat1
+          x = (rect.x * stageRatio - width / 2) * rat1
+          y = (rect.y * stageRatio  - height - 5) * rat1
         } else if (this.operateState == DDeiEnumOperateState.CONTROL_CHANGING_BOUND) {
-          x = (rect.x + (rect.width - width) / 2) * rat1
-          y = (rect.y + rect.height + height / 2) * rat1
+          x = (rect.x * stageRatio + (rect.width - width) / 2) * rat1
+          y = (rect.y * stageRatio + rect.height + height / 2) * rat1
         } else if (this.operateState == DDeiEnumOperateState.CONTROL_ROTATE) {
-          x = (rect.x) * rat1
-          y = (rect.y) * rat1
+          x = (rect.x) * ratio
+          y = (rect.y) * ratio
         }
         width *= rat1
         height *= rat1
@@ -291,14 +327,14 @@ class DDeiStageCanvasRender {
         ctx.fillText(text, x + (width - textRect.width) / 2, y + (height - fontSize * rat1) / 2);
 
         //如果正在移动，则在标尺上绘制标注区域
-        if (ruleDisplay == 1 || ruleDisplay == "1") {
+        if (this.tempRuleDisplay == 1 || this.tempRuleDisplay == "1") {
           //横向
           ctx.strokeStyle = "red";
           let weight = 16 * rat1;
           ctx.lineWidth = 1.5 * rat1
           ctx.globalAlpha = 0.5
-          let x1 = (rect.x + this.model.wpv.x) * rat1
-          let y1 = (rect.y + this.model.wpv.y) * rat1
+          let x1 = (rect.x * stageRatio + this.model.wpv.x) * rat1
+          let y1 = (rect.y * stageRatio + this.model.wpv.y) * rat1
           ctx.translate(-(this.model.wpv.x) * rat1, -(this.model.wpv.y) * rat1)
           ctx.beginPath()
           ctx.moveTo(x1, 0)
@@ -331,8 +367,8 @@ class DDeiStageCanvasRender {
 
             //画横线
             ctx.beginPath();
-            ctx.moveTo(hpoint[y].sx * rat1 - 100, y * rat1 + lineOffset);
-            ctx.lineTo(hpoint[y].ex * rat1 + 100, y * rat1 + lineOffset);
+            ctx.moveTo(hpoint[y].sx * ratio - 100, y * ratio + lineOffset);
+            ctx.lineTo(hpoint[y].ex * ratio + 100, y * ratio + lineOffset);
             ctx.stroke();
           };
         }
@@ -340,8 +376,8 @@ class DDeiStageCanvasRender {
           for (let x in vpoint) {
             //画竖线
             ctx.beginPath();
-            ctx.moveTo(x * rat1 + lineOffset, vpoint[x].sy * rat1 - 100);
-            ctx.lineTo(x * rat1 + lineOffset, vpoint[x].ey * rat1 + 100);
+            ctx.moveTo(x * ratio + lineOffset, vpoint[x].sy * ratio - 100);
+            ctx.lineTo(x * ratio + lineOffset, vpoint[x].ey * ratio + 100);
             ctx.stroke();
           };
         }
@@ -424,8 +460,8 @@ class DDeiStageCanvasRender {
 
       let paperWidth = paperSize.width;
       let paperHeight = paperSize.height;
-      let startPaperX = this.model.spv.x * rat1 + 1
-      let startPaperY = this.model.spv.y * rat1 + 1
+      let startPaperX = this.model.spv.x * ratio + 1
+      let startPaperY = this.model.spv.y * ratio + 1
       
       let posX = startPaperX - wpvX + offsetWidth;
       let posY = startPaperY - wpvY + offsetWidth;
@@ -434,10 +470,10 @@ class DDeiStageCanvasRender {
 
       //获取最大的有效范围，自动扩展纸张
       let maxOutRect = DDeiAbstractShape.getOutRectByPV(this.model.getLayerModels())
-      maxOutRect.x = maxOutRect.x * rat1;
-      maxOutRect.x1 = maxOutRect.x1 * rat1;
-      maxOutRect.y = maxOutRect.y * rat1;
-      maxOutRect.y1 = maxOutRect.y1 * rat1;
+      maxOutRect.x = maxOutRect.x * ratio;
+      maxOutRect.x1 = maxOutRect.x1 * ratio;
+      maxOutRect.y = maxOutRect.y * ratio;
+      maxOutRect.y1 = maxOutRect.y1 * ratio;
       
       //计算各个方向扩展的数量
       let leftExtNum = 0, rightExtNum = 0, topExtNum = 0, bottomExtNum = 0
@@ -612,21 +648,16 @@ class DDeiStageCanvasRender {
    * 标尺
    */
   drawRuler() {
-    let ruleDisplay
     let ruleInit
     if (this.model.ruler?.display || this.model.ruler?.display == 0 || this.model.ruler?.display == false) {
-      ruleDisplay = this.model.ruler.display;
     } else if (this.model.ddInstance.ruler != null && this.model.ddInstance.ruler != undefined) {
       if (typeof (this.model.ddInstance.ruler) == 'boolean') {
-        ruleDisplay = this.model.ddInstance.ruler ? 1 : 0;
       } else {
         ruleInit = this.model.ddInstance.ruler
-        ruleDisplay = ruleInit.display;
       }
     } else {
-      ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
     }
-    if (ruleDisplay == 1 || ruleDisplay == "1") {
+    if (this.tempRuleDisplay == 1 || this.tempRuleDisplay == "1") {
       //绘制横向点
       //获得 2d 上下文对象
       let canvas = this.ddRender.getCanvas();
@@ -694,13 +725,13 @@ class DDeiStageCanvasRender {
 
 
       if (!this.model.spv) {
-        let sx = this.model.width / 2 - paperWidth / 2 / rat1
-        let sy = this.model.height / 2 - paperHeight / 2 / rat1
+        let sx = this.model.width / 2 - paperWidth / 2 / rat1/stageRatio
+        let sy = this.model.height / 2 - paperHeight / 2 / rat1/stageRatio
         this.model.spv = new Vector3(sx, sy, 1)
       }
-      let startBaseX = this.model.spv.x * rat1
-      let startBaseY = this.model.spv.y * rat1
-      if (ruleDisplay == 1 || ruleDisplay == "1") {
+      let startBaseX = this.model.spv.x * rat1 * stageRatio
+      let startBaseY = this.model.spv.y * rat1 * stageRatio
+      if (this.tempRuleDisplay == 1 || this.tempRuleDisplay == "1") {
         ctx.beginPath()
         //横向尺子背景
         ctx.fillRect(0, 0, cwidth, weight)
@@ -911,13 +942,14 @@ class DDeiStageCanvasRender {
       let selectedModels = this.model.selectedModels;
       if (selectedModels?.size > 0) {
         let rect = DDeiAbstractShape.getOutRectByPV(Array.from(selectedModels?.values()));
+        
         //横向
         ctx.strokeStyle = "#1F72FF";
         let weight = 16 * rat1;
         ctx.lineWidth = 1.5 * rat1
         ctx.globalAlpha = 0.7
-        let x1 = (rect.x + this.model.wpv.x) * rat1
-        let y1 = (rect.y + this.model.wpv.y) * rat1
+        let x1 = (rect.x * stageRatio + this.model.wpv.x) * rat1
+        let y1 = (rect.y * stageRatio + this.model.wpv.y) * rat1
         ctx.beginPath()
         ctx.moveTo(x1, 0)
         ctx.lineTo(x1, weight);
@@ -1226,9 +1258,9 @@ class DDeiStageCanvasRender {
         let paperOutRect = this.paperOutRect
         let cwidth = this.model.width * rat1
         let cheight = this.model.height * rat1
-        let startBaseX = this.model.spv.x * rat1
+        let startBaseX = this.model.spv.x * ratio
         let wpvX = -this.model.wpv.x * rat1
-        let startBaseY = this.model.spv.y * rat1
+        let startBaseY = this.model.spv.y * ratio
         let wpvY = -this.model.wpv.y * rat1
         for (let x = startBaseX - wpvX; x <= cwidth; x += marginWidth) {
           for (let y = startBaseY - wpvY; y <= cheight; y += marginHeight) {

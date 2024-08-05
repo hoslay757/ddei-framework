@@ -45,6 +45,7 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
       let opvs = stageRender.dragObj.opvs;
       let pvs = lineModel.pvs;
       let create = stageRender.dragObj.create
+      
       //取得线段定义中的约束
       switch (lineModel.type) {
         case 1: {

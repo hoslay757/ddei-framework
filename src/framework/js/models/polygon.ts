@@ -13,6 +13,7 @@ class DDeiPolygon extends DDeiAbstractShape {
   // ============================ 构造函数 ============================
   constructor(props: object) {
     super(props);
+    
     //边框，包含了选中/未选中，4个边框的大小，颜色，样式等配置
     this.border = props.border ? props.border : null;
     //填充，包含了选中/未选中，填充的颜色等配置

@@ -50,7 +50,13 @@ class DDeiCanvasRender {
     this.container = document.getElementById(this.model.containerid);
     if (this.container) {
       if (this.container.children.length > 0) {
-        this.container.innerHTML = "";
+        let cvs = this.container.getElementsByTagName("canvas")
+        
+        if (cvs?.length > 0){
+          for(let n = 0;n<cvs.length;n++){
+            this.container.removeChild(cvs[n])
+          };
+        }
       }
       if (this.model.width){
         this.container.style.width = this.model.width+"px"
@@ -274,12 +280,14 @@ class DDeiCanvasRender {
       if(this.model.render != this){
         this.destroyed();
       }else if(!this.model.disabled){
+        let allowBackActive = DDeiUtil.isBackActive(this.model)
+        if (allowBackActive){
           //边缘扫描
           this.mouseInEdge();
-          this.model.stage.drawing = true;
-          this.drawShape();
         }
-      
+        this.model.stage.drawing = true;
+        this.drawShape();
+      }
     }, 20)
   }
 

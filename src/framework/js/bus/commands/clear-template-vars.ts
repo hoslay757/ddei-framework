@@ -56,6 +56,8 @@ class DDeiBusCommandClearTemplateVars extends DDeiBusCommand {
       delete stage.tempStartOPpoint
       delete stage.tempCursorOPpoint
       delete stage.render.linePathData
+
+      delete stage.ddInstance.render.inAreaControls
     }
     return true;
 

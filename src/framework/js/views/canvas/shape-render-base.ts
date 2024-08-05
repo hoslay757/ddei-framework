@@ -241,12 +241,15 @@ class DDeiAbstractShapeRender {
         this.ddRender?.model
       );
       if (accessLink) {
+        let stageRatio = this.stage?.getStageRatio()
         let ex = evt.offsetX;
         let ey = evt.offsetY;
         ex /= window.remRatio
         ey /= window.remRatio
         ex -= this.stage.wpv.x;
         ey -= this.stage.wpv.y
+        ex /= stageRatio
+        ey /= stageRatio
         this.changeOpPoints(ex, ey);
       }
       

@@ -231,6 +231,7 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
     let stageRatio = this.model.getStageRatio()
     let rat1 = this.ddRender.ratio;
     let ratio = rat1 * stageRatio;
+    rat1 = ratio
     //1,2,3,4 上，右，下，左
     //如果被选中，使用选中的边框，否则使用缺省边框
     let type = this.getBorderInfo(tempBorder, 1, "type");
