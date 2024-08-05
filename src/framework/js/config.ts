@@ -468,11 +468,11 @@ class DDeiConfig {
     if (config) {
       //普通值、JSON、数组、MAP
       for (let i in config) {
-        let outConfigValue = config[i];
-        let configValue = DDeiConfig[i];
+        // let outConfigValue = config[i];
+        // let configValue = DDeiConfig[i];
         if (i != "SERI_FIELDS") {
           //深度遍历属性，然后进行设置
-          DDeiConfig[i] = DDeiUtil.copyJSONValue(outConfigValue, configValue);
+          DDeiConfig[i] = config[i];
         }
       }
       if (config.SERI_FIELDS != undefined && config.SERI_FIELDS != null) {

@@ -12,6 +12,7 @@ import DDeiRectContainer from "../../framework/js/models/rect-container";
 import DDei from "../../framework/js/ddei";
 import DDeiFuncCallResult from "@ddei-core/lifecycle/callresult";
 
+
 class DDeiEditorUtil {
 
   // ============================ 静态方法 ============================
@@ -61,8 +62,8 @@ class DDeiEditorUtil {
   /**
   * 获取业务数据
   */
-  static getBusiData(): object {
-    let CTIVE_INSTANCE;
+  static getBusiData(ddInstance:DDei): object {
+    let editor = DDeiEditorUtil.getEditorInsByDDei(ddInstance)
     if (editor) {
       let file = editor.files[editor.currentFileIndex]
       return file?.busiData
@@ -169,9 +170,42 @@ class DDeiEditorUtil {
     return editor;
   }
 
-  static notifyChange(ddInstance:DDei) {
+  static notifyChange(ddInstance: DDei):void {
     let editor = DDeiEditorUtil.getEditorInsByDDei(ddInstance);
     editor?.notifyChange();
+  }
+
+  /**
+   * 判断element是否为editor的子控件
+   * @param element dom元素
+   * @param editor 编辑器
+   */
+  static isEditorSubElement(element: object, editor: DDeiEditor): boolean {
+    if (!editor || !element) {
+      return false
+    }
+    if (element.tagName == 'BODY' || element.tagName == 'HEAD' || element.tagName == 'HTML') {
+      return false
+    }
+    if (element == editor.htmlElement) {
+      return true;
+    } else {
+      return DDeiEditorUtil.isEditorSubElement(element.parentElement, editor)
+    }
+  }
+
+  //钩子函数,判断当前实例是否可以在后台激活，允许后台激活的实例，在当前实例为非ACTIVE_INSTANCE时，依然能够执行部分后台操作
+  static isBackActive(ddInstance:DDei):boolean{
+    if (!ddInstance){
+      return false
+    }else{
+      let editor = DDeiEditorUtil.getEditorInsByDDei(ddInstance);
+      if (!editor){
+        return false
+      }else{
+        return (DDeiEditor.ACTIVE_INSTANCE && editor.id == DDeiEditor.ACTIVE_INSTANCE.id) || editor.GLOBAL_ALLOW_BACK_ACTIVE
+      }
+    }
   }
 
   /**
@@ -315,9 +349,6 @@ class DDeiEditorUtil {
 
   /**
      * 获取菜单配置
-     * @param configModel 配置模型，如果包含了attrDefineMap等数据，则直接获取数据,如果只包含id则通过id取原始数据
-     * @param paths 属性路径,支持传入多个
-     * @return 由构成的属性的实际路径和配置中对应的值组成的Map
      */
   static getMenuConfig(model: object, editor: DDeiEditor | null | undefined): object | null {
     if (editor?.menuMapping){

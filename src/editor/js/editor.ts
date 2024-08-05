@@ -4,7 +4,7 @@ import DDei from "@ddei-core/framework/js/ddei";
 import DDeiEditorUtil from "./editor-util";
 import DDeiUtil from "@ddei-core/framework/js/util";
 import DDeiBus from "@ddei-core/framework/js/bus/bus";
-import type DDeiFile from "./file";
+import DDeiFile from "./file";
 import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import { markRaw } from "vue";
 import config from "./config"
@@ -22,6 +22,7 @@ import { DDeiActiveType } from "./enums/active-type";
 import { DDeiLink } from "@ddei-core/framework/js/models/link"
 import type DDeiStage from "../../framework/js/models/stage";
 import DDeiLine from "../../framework/js/models/line"
+import DDeiFileState from "./enums/file-state";
 /**
  * DDei图形编辑器类，用于维护编辑器实例、全局状态以及全局属性
  */
@@ -111,6 +112,9 @@ class DDeiEditor {
   EVENT_STAGE_CHANGE_RATIO: Function | null = null;
   //以上字段为初始化时传入的全局控制变量或钩子函数，在运行时不会改变
 
+  //是否允许后台激活，允许后台激活的实例，在当前实例为非ACTIVE_INSTANCE时，依然能够执行部分后台操作
+  GLOBAL_ALLOW_BACK_ACTIVE:boolean = false;
+
   // ============================ 静态方法 ============================
   /**
    * 给予container构建一个DDei实例
@@ -165,6 +169,10 @@ class DDeiEditor {
         if (!DDeiUtil.notifyChange) {
           DDeiUtil.notifyChange = DDeiEditorUtil.notifyChange;
         }
+        if (!DDeiUtil.isBackActive) {
+          DDeiUtil.isBackActive = DDeiEditorUtil.isBackActive;
+        }
+        
         
         
         //将DDeiEditor对象装入全局缓存
@@ -241,29 +249,7 @@ class DDeiEditor {
           })
         
           
-          editorInstance.controls?.forEach(control => {
-            if(control.menus){
-              if (!editorInstance.menuMapping[control.id]) {
-                editorInstance.menuMapping[control.id] = control.menus
-              }
-              let menus = editorInstance.menuMapping[control.id];
-              for (let i = 0; i < menus.length;i++){
-                for (let j in editorInstance.menus){
-                  if (editorInstance.menus[j].name == menus[i].name){
-                    menus[i] = editorInstance.menus[j];
-                    break;
-                  }
-                }
-              }
-            }
-            if (control.define) {
-              delete control.define.font
-              delete control.define.textStyle
-              delete control.define.border
-              delete control.define.fill
-            }
-            delete control.attrs
-          })
+          
           //加载控件的右键菜单,移除加载控件的临时变量
           for (let i in editorInstance.menus){
             let menu = editorInstance.menus[i]
@@ -489,6 +475,9 @@ class DDeiEditor {
       });
     }
     
+    if (plugin.installed){
+      plugin.installed(this)
+    }
 
     
     let options = null;
@@ -518,10 +507,10 @@ class DDeiEditor {
     if(config){
       //普通值、JSON、数组、MAP
       for (let i in config) {
-        let outConfigValue = config[i];
-        let configValue = this[i];
+        // let outConfigValue = config[i];
+        // let configValue = this[i];
         //深度遍历属性，然后进行设置
-        this[i] = DDeiUtil.copyJSONValue(outConfigValue, configValue);
+        this[i] = config[i]
         
       }
       if (this.ddInstance) {
@@ -531,10 +520,10 @@ class DDeiEditor {
     if (custConfig) {
       //普通值、JSON、数组、MAP
       for (let i in custConfig) {
-        let outConfigValue = custConfig[i];
-        let configValue = this[i];
+        // let outConfigValue = custConfig[i];
+        // let configValue = this[i];
         //深度遍历属性，然后进行设置
-        this[i] = DDeiUtil.copyJSONValue(outConfigValue, configValue);
+        this[i] = custConfig[i]
       }
       if (this.ddInstance) {
         this.ddInstance.applyConfig(custConfig)
@@ -608,6 +597,9 @@ class DDeiEditor {
   menus: object = markRaw({});
   //当前引入的外部字体
   fonts: object[] = FONTS;
+  //当前引入的外部renderViewers以及创建后的实例
+  renderViewers: object[] = markRaw([]);
+  renderViewerIns: object = markRaw({});
   //当前引入的外部菜单
   menuMapping: object = markRaw({});
   //当前引入的外部控件配置
@@ -644,10 +636,77 @@ class DDeiEditor {
       this.editMode = mode
     }
   }
+
+
+  /**
+   * 加载文件到设计器中
+   * @param fileJson 文件json
+   * @param append 是否添加
+   */
+  loadData(fileJson:string|object,append:boolean = false):void{
+    if (fileJson){
+      
+      if (typeof (fileJson) == 'string'){
+        fileJson = JSON.parse(fileJson)
+      }
+      let json = fileJson
+      //json中有一级content
+      //追加文件
+      let file 
+      if (json?.content) {
+        file = DDeiFile.loadFromJSON(json.content, {
+          currentDdInstance: this.ddInstance,
+        });
+        file.id = json.id;
+        file.publish = json.publish;
+        file.name = json.name;
+        file.path = json.path;
+        file.desc = json.desc;
+        file.version = json.version;
+        file.extData = json.extData;
+        file.busiData = json.busiData;
+      }else{
+        file = DDeiFile.loadFromJSON(json, {
+          currentDdInstance: this.ddInstance,
+        });
+      }
+      
+      file.state = DDeiFileState.NONE;
+      //追加文件
+      if (append){
+        this.addFile(file)
+        this.files.forEach(f=>{
+          f.active = DDeiActiveType.NONE;
+        })
+        this.currentFileIndex = this.files.indexOf(file)
+      }
+      //覆盖文件
+      else{
+        this.files[this.currentFileIndex] = file
+      }
+
+      //显示当前文件内容
+      if (file && file.sheets?.length > 0) {
+        file.active = DDeiActiveType.ACTIVE;
+        let sheets = file?.sheets;
+        file.changeSheet(file.currentSheetIndex);
+        let stage = sheets[file.currentSheetIndex].stage;
+        stage.ddInstance = this.ddInstance;
+        //记录文件初始日志
+        file.initHistroy();
+        //刷新页面
+        this.ddInstance.stage = stage;
+        //加载场景渲染器
+        stage.initRender();
+      }
+      this.notifyChange()
+    }
+  }
+
   /**
    * 添加文件到列表中,默认添加到最后面
    */
-  addFile(file: DDeiFile, index: number): void {
+  addFile(file: DDeiFile, index: number|null = null): void {
     if (index || index == 0) {
       this.files.splice(index, 0, file);
     } else {
@@ -709,7 +768,14 @@ class DDeiEditor {
    * 键盘按下
    */
   keyDown(evt: Event): void {
-    if (DDeiKeyAction.route(evt)) {
+    let isActive = false;
+    if(document.activeElement?.tagName == 'BODY'){
+      isActive = true
+    }else{
+      //控件必须是当前editor的子控件
+      isActive = DDeiEditorUtil.isEditorSubElement(document.activeElement, DDeiEditor.ACTIVE_INSTANCE)
+    }
+    if (isActive && DDeiKeyAction.route(evt)) {
       evt.preventDefault()
     }
 
@@ -719,7 +785,16 @@ class DDeiEditor {
    * 键盘弹起
    */
   keyUp(evt: Event): void {
-    DDeiKeyAction.updateKeyState(evt);
+    let isActive = false;
+    if (document.activeElement?.tagName == 'BODY') {
+      isActive = true
+    } else {
+      //控件必须是当前editor的子控件
+      isActive = DDeiEditorUtil.isEditorSubElement(document.activeElement, this)
+    }
+    if (isActive){
+      DDeiKeyAction.updateKeyState(evt);
+    }
   }
 
 
@@ -941,9 +1016,12 @@ class DDeiEditor {
 
   /**
    * 向当前画布添加控件,缺省坐标为当前画布的中心
+   * @param controls 要添加的控件
+   * @param applyRatio 应用缩放
+   * @param notify 通知刷新
    */
-  addControls(controls: object[], notify: boolean = true):DDeiAbstractShape[]{
-    
+  addControls(controls: object[],applyRatio: boolean = true, notify: boolean = true):DDeiAbstractShape[]{
+    if (controls?.length > 0){
     //添加控件到图层
     let stage = this.ddInstance.stage
     let layer = stage?.layers[stage?.layerIndex];
@@ -965,7 +1043,7 @@ class DDeiEditor {
             }
             
             //设置大小以及坐标
-            let stageRatio = stage.getStageRatio();
+            let stageRatio = !applyRatio?1/stage.getStageRatio():1
             let m1 = new Matrix3()
             //缩放至目标大小
             if (control.width || control.height) {
@@ -977,22 +1055,7 @@ class DDeiEditor {
                 0, 0, 1);
               m1.premultiply(scaleMatrix)
             }
-
-
-            //取得缺省纸张大小
-            let paperType
-            if (stage.paper?.type) {
-              paperType = stage.paper.type;
-            } else if (stage.ddInstance.paper) {
-              if (typeof (stage.ddInstance.paper) == 'string') {
-                paperType = stage.ddInstance.paper;
-              } else {
-                paperType = stage.ddInstance.paper.type;
-              }
-            } else {
-              paperType = DDeiModelArrtibuteValue.getAttrValueByState(stage, "paper.type", true);
-            }
-            
+                      
             let moveMatrix = new Matrix3(
               1, 0, -stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2, //+ this.ddInstance.render.container.offsetWidth/2,
               0, 1, -stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2,// + this.ddInstance.render.container.offsetHeight / 2,
@@ -1002,21 +1065,21 @@ class DDeiEditor {
             //位移至画布中心的相对位置
             if (control.offsetX || control.offsetY) {
               let move1Matrix = new Matrix3(
-                1, 0, control.offsetX ? control.offsetX : 0,
-                0, 1, control.offsetY ? control.offsetY : 0,
+                1, 0, control.offsetX ? control.offsetX * stageRatio : 0,
+                0, 1, control.offsetY ? control.offsetY * stageRatio : 0,
                 0, 0, 1);
               m1.premultiply(move1Matrix)
             } else if ((control.x || control.x == 0) && (control.y || control.y == 0)){
               let move1Matrix = new Matrix3(
-                1, 0, -(-stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2) + control.x,
-                0, 1, -(-stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2) + control.y,
+                1, 0, -(-stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2) + control.x * stageRatio,
+                0, 1, -(-stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2) + control.y * stageRatio,
                 0, 0, 1);
               m1.premultiply(move1Matrix)
             }
             cc.transVectors(m1)
             cc.updateLinkModels()
 
-            layer.addModel(cc)
+            layer.addModel(cc, false)
             //绑定并初始化渲染器
             cc.initRender();
             shapes.push(cc);
@@ -1028,17 +1091,110 @@ class DDeiEditor {
       }
     }
     return shapes;
+    }
+  }
+
+  /**
+   * 向特定图层添加控件,缺省坐标为当前画布的中心
+   * @param controls 要添加的控件
+   * @param layerIndex 图层下标
+   * @param applyRatio 应用缩放
+   * @param notify 通知刷新
+   */
+  addControlsToLayer(controls: object[], layerIndex: number = -1, applyRatio: boolean = true, notify: boolean = true): DDeiAbstractShape[]|null {
+    //添加控件到图层
+    let stage = this.ddInstance.stage
+    if (layerIndex > -1 && layerIndex < stage?.layers?.length){
+      
+      let layer = stage?.layers[layerIndex];
+      let shapes: DDeiAbstractShape[] = []
+      if (layer) {
+        controls.forEach(control => {
+          //读取配置
+          let controlDefine = this.controls.get(control.model);
+          if (controlDefine) {
+            //根据配置创建控件
+            let controlModel = DDeiEditorUtil.createControl(controlDefine, this)
+            if (controlModel?.length > 0) {
+              let cc = controlModel[0]
+              //设置控件值
+              for (let i in control) {
+                if (i != 'spv' && i != 'hpv' && i != 'cpv' && i != 'x' && i != 'y' && i != 'width' && i != 'height' && (control[i] || control[i] == 0 || control[i] == false)) {
+                  cc[i] = control[i];
+                }
+              }
+
+              //设置大小以及坐标
+              let stageRatio = !applyRatio ? 1/stage.getStageRatio() : 1;
+              let m1 = new Matrix3()
+              //缩放至目标大小
+              if (control.width || control.height) {
+                let width = (control.width ? control.width : 0) * stageRatio
+                let height = (control.height ? control.height : 0) * stageRatio
+                let scaleMatrix = new Matrix3(
+                  width / cc.essBounds.width, 0, 0,
+                  0, height / cc.essBounds.height, 0,
+                  0, 0, 1);
+                m1.premultiply(scaleMatrix)
+              }
+
+              let moveMatrix = new Matrix3(
+                1, 0, -stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2, //+ this.ddInstance.render.container.offsetWidth/2,
+                0, 1, -stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2,// + this.ddInstance.render.container.offsetHeight / 2,
+                0, 0, 1);
+
+              m1.premultiply(moveMatrix)
+              //位移至画布中心的相对位置
+              if (control.offsetX || control.offsetY) {
+                let move1Matrix = new Matrix3(
+                  1, 0, control.offsetX ? control.offsetX * stageRatio : 0,
+                  0, 1, control.offsetY ? control.offsetY * stageRatio : 0,
+                  0, 0, 1);
+                m1.premultiply(move1Matrix)
+              } else if ((control.x || control.x == 0) && (control.y || control.y == 0)) {
+                let move1Matrix = new Matrix3(
+                  1, 0, -(-stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2) + control.x * stageRatio,
+                  0, 1, -(-stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2) + control.y * stageRatio,
+                  0, 0, 1);
+                m1.premultiply(move1Matrix)
+              }
+              cc.transVectors(m1)
+              cc.updateLinkModels()
+
+              layer.addModel(cc, false)
+              //绑定并初始化渲染器
+              cc.initRender();
+              shapes.push(cc);
+            }
+          }
+        });
+        if (notify) {
+          this.notifyChange();
+        }
+      }
+      
+      return shapes;
+    }
+    return null
   }
 
   /**
    * 向当前画布添加连线
+   * @param controls 要添加的控件
+   * @param applyRatio 应用缩放
+   * @param notify 通知刷新
    */
-  addLines(controls: object[],notify:boolean = true): DDeiAbstractShape[] {
+  addLines(controls: object[],calPoints:boolean = true,applyRatio: boolean = true,notify:boolean = true): DDeiAbstractShape[] {
     //添加控件到图层
     let stage = this.ddInstance.stage
     let layer = stage?.layers[stage?.layerIndex];
     let shapes: DDeiAbstractShape[] = []
     if (layer) {
+      let stageRatio = !applyRatio ? 1/stage.getStageRatio() : 1
+
+      let moveX = -stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2
+      let moveY = -stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2
+      
       controls.forEach(control => {
         if (control.startPoint && control.endPoint) {
           //读取配置
@@ -1050,7 +1206,52 @@ class DDeiEditor {
           //根据线的类型生成不同的初始化点
           lineJson.type = 2
           //直线两个点
-          lineJson.pvs = [new Vector3(control.startPoint.x, control.startPoint.y, 1), new Vector3(control.endPoint.x, control.endPoint.y, 1)]
+          let sx,sy,ex,ey
+          if (control.startPoint.offsetX || control.startPoint.offsetX == 0) {
+            sx = moveX + control.startPoint.offsetX * stageRatio
+          } else if (control.startPoint.x || control.startPoint.x == 0) {
+            sx = control.startPoint.x * stageRatio
+          }
+          if (control.startPoint.offsetY || control.startPoint.offsetY == 0) {
+            sy = moveY + control.startPoint.offsetY * stageRatio
+          } else if (control.startPoint.y || control.startPoint.y == 0) {
+            sy = control.startPoint.y * stageRatio
+          }
+          if (control.endPoint.offsetX || control.endPoint.offsetX == 0) {
+            ex = moveX + control.endPoint.offsetX * stageRatio
+          } else if (control.endPoint.x || control.endPoint.x == 0) {
+            ex = control.endPoint.x * stageRatio
+          }
+          if (control.endPoint.offsetY || control.endPoint.offsetY == 0) {
+            ey = moveY + control.endPoint.offsetY * stageRatio
+          } else if (control.endPoint.y || control.endPoint.y == 0) {
+            ey = control.endPoint.y * stageRatio
+          }
+          control.spvs?.forEach(spv => {
+            spv.x = spv.x * stageRatio
+            spv.y = spv.y * stageRatio
+          });
+          
+          //跳过计算点
+          if (!calPoints && control.pvs?.length >= 2) {
+            lineJson.pvs = []
+            control.pvs.forEach(pv => {
+              let pvx,pvy
+              if (pv.offsetX || pv.offsetX == 0) {
+                pvx = moveX + pv.offsetX * stageRatio
+              } else if (pv.x || pv.x == 0) {
+                pvx = pv.x * stageRatio
+              }
+              if (pv.offsetY || pv.offsetY == 0) {
+                pvy = moveY + pv.offsetY * stageRatio
+              } else if (pv.y || pv.y == 0) {
+                pvy = pv.y * stageRatio
+              }
+              lineJson.pvs.push(new Vector3(pvx, pvy, 1))
+            });
+          }else{
+            lineJson.pvs = [new Vector3(sx, sy, 1), new Vector3(ex, ey, 1)]
+          }
           lineJson.cpv = lineJson.pvs[0]
           //初始化开始点和结束点
 
@@ -1062,13 +1263,14 @@ class DDeiEditor {
               cc[i] = control[i];
             }
           }
+         
           //构造线段关键属性
           let smodel,emodel
           if (control.smodel) {
             smodel = this.getControlById(control.smodel.id)
             //创建连接点
             let id = "_" + DDeiUtil.getUniqueCode()
-            smodel.exPvs[id] = new Vector3(control.smodel.x, control.smodel.y, 1)
+            smodel.exPvs[id] = new Vector3(sx, sy, 1)
             smodel.exPvs[id].rate = control.smodel.rate
             smodel.exPvs[id].sita = control.smodel.sita
             smodel.exPvs[id].index = control.smodel.index
@@ -1087,7 +1289,7 @@ class DDeiEditor {
             emodel = this.getControlById(control.emodel.id)
             //创建连接点
             let id = "_" + DDeiUtil.getUniqueCode()
-            emodel.exPvs[id] = new Vector3(control.emodel.x, control.emodel.y, 1)
+            emodel.exPvs[id] = new Vector3(ex, ey, 1)
             emodel.exPvs[id].rate = control.emodel.rate
             emodel.exPvs[id].sita = control.emodel.sita
             emodel.exPvs[id].index = control.emodel.index
@@ -1108,8 +1310,10 @@ class DDeiEditor {
             layer.shadowControls.push(cc);
             cc.initRender()
           }
-          smodel?.updateLinkModels();
-          emodel?.updateLinkModels();
+          if (calPoints){
+            smodel?.updateLinkModels();
+            emodel?.updateLinkModels();
+          }
           shapes.push(cc);
           
         }
@@ -1122,6 +1326,7 @@ class DDeiEditor {
   }
 
   notifyChange(){
+    this.bus.push(DDeiEnumBusCommandType.UpdatePaperArea);
     this.bus.push(DDeiEnumBusCommandType.NodifyChange);
     this.bus.push(DDeiEnumBusCommandType.RefreshShape);
     this.bus.push(DDeiEnumBusCommandType.AddHistroy);
@@ -1137,9 +1342,21 @@ class DDeiEditor {
   /**
    * 移除当前画布控件
    */
-  removeControls(ids: string[]): void {
+  removeControls(ids: string[], notify: boolean = true): void {
     this.ddInstance.stage?.removeModelById(ids)
-    this.notifyChange();
+    if (notify){
+      this.notifyChange();
+    }
+  }
+
+  /**
+   * 清除当前画布所有控件
+   */
+  clearModels(destroy: boolean = false,notify:boolean = true): void {
+    this.ddInstance.stage?.clearModels(destroy)
+    if (notify) {
+      this.notifyChange();
+    }
   }
 
   /**
@@ -1158,7 +1375,6 @@ class DDeiEditor {
       this.ddInstance["AC_DESIGN_CREATE"] = false
       this.ddInstance["AC_DESIGN_EDIT"] = false
       this.ddInstance["AC_DESIGN_DRAG"] = false
-      this.ddInstance["AC_DESIGN_SELECT"] = false
       this.ddInstance["AC_DESIGN_LINK"] = false
       this.ddInstance["AC_DESIGN_DEL"] = false
       this.ddInstance["AC_DESIGN_ROTATE"] = false
@@ -1252,11 +1468,14 @@ class DDeiEditor {
   }
 
   /**
-   * 将控件置于中心
+   * 将舞台可视区域的中心点移动到控件的外接矩形中心
    * @param modelIds 
    */
   centerModels(stage:DDeiStage ,...modelIds:string[]):void{
-    if (stage && modelIds?.length > 0){
+    if(!stage){
+      stage = this.ddInstance.stage
+    }
+    if (modelIds?.length > 0){
       let models = new Array();
       for (let i = 0; i < modelIds.length;i++){
         if(modelIds[i]){
@@ -1267,7 +1486,8 @@ class DDeiEditor {
         }
       }
       if (models.length > 0){
-        let outRect = DDeiAbstractShape.getOutRectByPV(models);
+        let stageRatio = stage.getStageRatio()
+        let outRect = DDeiAbstractShape.getOutRectByPV(models, stageRatio);
         stage.wpv.x = -(outRect.x+outRect.width/2) + (stage.ddInstance.render.canvas.width / stage.ddInstance.render.ratio) / 2
         stage.wpv.y = -(outRect.y + outRect.height / 2) + (stage.ddInstance.render.canvas.height / stage.ddInstance.render.ratio) / 2
       }
@@ -1316,7 +1536,7 @@ class DDeiEditor {
    * @param eIdx 结束下标
    * @param data 数据
    */
-  replaceModelsData(models:Array<DDeiAbstractShape>, attr: string,sIdx:number = -1,eIdx:number = -1, data:string = ''): void{
+  replaceModelsData(models:Array<DDeiAbstractShape>, attr: string,sIdx:number = -1,eIdx:number = -1, data:string = '',notify:boolean = true): void{
     if (models?.length > 0 && attr && sIdx != -1 && eIdx != -1 && eIdx >=sIdx) {
       models.forEach(model=>{
         let oldValue = model[attr];
@@ -1328,6 +1548,17 @@ class DDeiEditor {
         }
       })
     }
+    if(notify){
+      this.notifyChange()
+    }
+  }
+
+  /**
+   * 返回画布图片
+   * @models 选中控件模型，如果不传入则返回整个画布
+   */
+  toImageDataUrl(models: DDeiAbstractShape[] | null = null): string | null {
+    return this.ddInstance.stage.toImageDataUrl(models);
   }
 }
 export { DDeiEditor }

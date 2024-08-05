@@ -48,7 +48,10 @@ class DDeiUtil {
   static invokeCallbackFunc: Function;
   //钩子函数，通知改变
   static notifyChange: Function;
-  
+
+  //钩子函数,判断当前实例是否可以在后台激活，允许后台激活的实例，在当前实例为非ACTIVE_INSTANCE时，依然能够执行部分后台操作
+  static isBackActive: Function;
+
 
 
   static offsetX: number;
@@ -86,11 +89,6 @@ class DDeiUtil {
 
   //向临时canvas输出
   static DRAW_TEMP_CANVAS = true;
-
-  /**
-   * 图标
-   */
-  static ICONS = null
 
   /**
    * 当前用户的操作系统
@@ -349,7 +347,7 @@ class DDeiUtil {
       actualTop += (current.offsetTop + current.clientTop);
       current = current.offsetParent;
     }
-    if (editor){
+    if (editor) {
       let editorElement = document.getElementById(editor.id);
       let editorPos = DDeiUtil.getDomAbsPosition(editorElement)
       actualLeft -= editorPos.left
@@ -359,13 +357,39 @@ class DDeiUtil {
     return { left: actualLeft, top: actualTop }
   }
 
+  
+
   /**
-   * 返回控件模型在dom下的绝对坐标
+   * 返回控件在dom下的绝对坐标
    * @param element 
    */
   static getModelsDomAbsPosition(models: DDeiAbstractShape[]): object {
     if (models?.length > 0) {
-      let outRect = DDeiAbstractShape.getOutRectByPV(models);
+      //如果只有1个元素，则获取其旋转前的位置以及旋转量
+      let outRect
+      if(models.length == 1){
+        let model = models[0]
+        if (model.rotate){
+          let pvs = model.operatePVS ? model.operatePVS : model.pvs;
+          let zeroPvs = DDeiUtil.pointsToZero(pvs, model.cpv, model.rotate)
+          outRect = DDeiAbstractShape.pvsToOutRect(zeroPvs);
+          outRect.rotate = model.rotate
+        }else{
+          outRect = DDeiAbstractShape.getOutRectByPV(models);
+          outRect.rotate = 0
+        }
+      }else{
+        outRect = DDeiAbstractShape.getOutRectByPV(models);
+        outRect.rotate = 0
+      }
+      let stageRatio = models[0].stage?.getStageRatio();
+      outRect.x *= stageRatio
+      outRect.x1 *= stageRatio
+      outRect.y *= stageRatio
+      outRect.y1 *= stageRatio
+      outRect.width *= stageRatio
+      outRect.height *= stageRatio
+
       let wpv = models[0].stage.wpv
       let domEle = models[0].stage.ddInstance.render.realCanvas.parentElement
       let canvasPos = DDeiUtil.getDomAbsPosition(domEle)
@@ -1493,40 +1517,6 @@ class DDeiUtil {
   }
 
   /**
-   * 获取不同字体大小的空格所占空间
-   */
-  static getSpaceWidth(fontFamily: string, fontSize: number, fontStyle: string): number {
-    let key = fontFamily + "_" + fontSize + "_" + fontStyle;
-    if (!DDeiConfig.SPACE_WIDTH_MAP[key]) {
-      if ("Arial Unicode" == fontFamily) {
-        let spaceWidth = fontSize * 0.21 / 0.75;
-        DDeiConfig.SPACE_WIDTH_MAP[key] = spaceWidth;
-      } else if ("STSong-Light" == fontFamily) {
-        let spaceWidth = fontSize * 0.21;
-        DDeiConfig.SPACE_WIDTH_MAP[key] = spaceWidth;
-      }
-    }
-    return DDeiConfig.SPACE_WIDTH_MAP[key]
-  }
-
-  /**
-    * 通过当前P点和旋转角度计算旋转之前的点
-    */
-  static computePosition(occ: { x: number, y: number }, rcc: { x: number, y: number }, angle: number): { x: number, y: number } {
-    // 圆心
-    let a: number = occ.x;
-    let b: number = occ.y;
-    // 计算
-    let c: number = (Math.PI / 180 * angle).toFixed(4);
-    let rx: number = ((rcc.x - a) * Math.cos(c) - (rcc.y - b) * Math.sin(c) + a).toFixed(4);
-    let ry: number = ((rcc.y - b) * Math.cos(c) + (rcc.x - a) * Math.sin(c) + b).toFixed(4);
-    // 取整
-    // rx = Math.round(rx);
-    // ry = Math.round(ry);
-    return { x: rx, y: ry };
-  }
-
-  /**
    * 时间格式化
    * @param date 
    * @param fmt 
@@ -1573,6 +1563,7 @@ class DDeiUtil {
             dist = {}
           }
           for (let i in source) {
+            console.log(i)
             dist[i] = DDeiUtil.copyJSONValue(source[i], dist[i])
           }
           return dist;
@@ -1731,7 +1722,7 @@ class DDeiUtil {
       //执行值绑定替换
       if (originValue && originValue.indexOf("#") != -1) {
         //获取外部业务传入值
-        let busiData = DDeiUtil.getBusiData();
+        let busiData = DDeiUtil.getBusiData(model.stage.ddInstance);
         if (busiData) {
           let replaceResult = DDeiUtil.expressBindValue(originValue, busiData);
           if (replaceResult?.data) {
@@ -2356,7 +2347,7 @@ class DDeiUtil {
             }
           }
           //循环处理数据行与非数据行
-          for (var ri = 0; ri < table.rows.length; ri++) {
+          for (let ri = 0; ri < table.rows.length; ri++) {
             //如果是定义了数据的行,则进行表格样式（合并单元格）与绑定关系的复制，并替换值，随后跳过数据行区域，输出普通数据行区域
             if (ri >= dataRowStart && ri <= dataRowEnd) {
               let sourceRowNum = dataRowEnd - dataRowStart + 1;
@@ -2364,8 +2355,8 @@ class DDeiUtil {
               let mergeCells = [];
               //循环数据，执行数据复制
 
-              for (var c = 1; c < iDataList.length; c++) {
-                for (var ci = dataRowEnd + (c - 1) * sourceRowNum + 1; ci < dataRowEnd + c * sourceRowNum + 1; ci++) {
+              for (let c = 1; c < iDataList.length; c++) {
+                for (let ci = dataRowEnd + (c - 1) * sourceRowNum + 1; ci < dataRowEnd + c * sourceRowNum + 1; ci++) {
                   let offsetI = null;
                   if (sourceRowNum == 1) {
                     offsetI = dataRowStart
@@ -2434,8 +2425,8 @@ class DDeiUtil {
             }
             if (ri < table.rows.length) {
               //处理普通单元格
-              for (var rj = 0; rj < table.rows[ri].length; rj++) {
-                var curCell = table.rows[ri][rj];
+              for (let rj = 0; rj < table.rows[ri].length; rj++) {
+                let curCell = table.rows[ri][rj];
                 let replaceData = this.processTextOrBindFieldExpress(curCell, idata, ri);
                 curCell.text = replaceData;
                 curCell.attrs['text'] = replaceData;
@@ -2713,9 +2704,9 @@ class DDeiUtil {
 
   /**
    * 将当前实例的stage转换为image
-   * @param editor 
    * @param ddInstance 
-   * @param models 
+   * @param width 
+   * @param height 
    */
   static stageScreenToImage(ddInstance, width, height) {
     return new Promise((resolve, rejected) => {

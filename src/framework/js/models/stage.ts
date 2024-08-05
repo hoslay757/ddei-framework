@@ -385,7 +385,7 @@ class DDeiStage {
       this.layers[i].initRender();
     }
     //计算线的交叉
-    DDeiLine.calLineCrossSync(this.layers[this.layerIndex]);
+    DDeiLine.calLineCross(this.layers[this.layerIndex]);
     this.initStageSize();
   }
 
@@ -446,13 +446,27 @@ class DDeiStage {
    * @param layer 被添加的图层
    * @param layerIndex 图层Index
    */
-  addLayer(layer: DDeiLayer | undefined, layerIndex: number | undefined): DDeiLayer {
+  addLayer(layer: DDeiLayer| Record<string,object> | undefined, layerIndex: number | undefined,notify:boolean = true): DDeiLayer {
     //如果layer不存在，创建一个空图层，添加进去
     if (!layer) {
       let curIdx = this.idIdx++;
-      layer = DDeiLayer.initByJSON({ id: "layer_" + curIdx, name: "图层-" + curIdx });
-      layer.stage = this;
+      layer = DDeiLayer.initByJSON({ id: "layer_" + curIdx, name: "图层-" + curIdx }); 
+    } 
+    //传入的是一个DDeiLayer的实例
+    else if (layer.constructor?.ClsName == 'DDeiLayer' ){
+
+    }else{
+      let json = layer
+      if (!json?.id) {
+        let curIdx = this.idIdx++;
+        json.id = "layer_" + curIdx
+      }
+      if (!json?.name) {
+        json.name = "图层-" + this.idIdx
+      }
+      layer = DDeiLayer.initByJSON(json); 
     }
+    layer.stage = this;
     //如果layerIndex不存在，则添加到最外层
     if (!layerIndex || layerIndex < 0) {
       layerIndex = 0;
@@ -469,7 +483,9 @@ class DDeiStage {
     }
     //设置当前图层为新建图层
     this.layerIndex = layerIndex;
-    this.notifyChange()
+    if (notify){
+      this.notifyChange()
+    }
     return layer;
   }
 
@@ -540,7 +556,7 @@ class DDeiStage {
    * 移除图层,如果不指定则移除当前图层
    * @param layerIndex 移除图层的index
    */
-  removeLayer(layerIndex: number | undefined): DDeiLayer {
+  removeLayer(layerIndex: number | undefined,notify: boolean = true): DDeiLayer {
     //如果layers只剩下background图层，则不允许移除
     if (this.layers.length <= 1) {
       return null;
@@ -572,9 +588,12 @@ class DDeiStage {
     }
     //设置当前图层为新建图层
     this.layerIndex = layerIndex;
-    this.notifyChange()
+    if (notify){
+      this.notifyChange()
+    }
     return layer;
   }
+  
 
   /**
    * 添加模型到当前图层
@@ -586,6 +605,7 @@ class DDeiStage {
       }
     }
   }
+  
 
   /**
    * 移除当前图层模型
@@ -596,6 +616,15 @@ class DDeiStage {
         this.layers[this.layerIndex].removeModel(model, destroy);
       }
     }
+  }
+
+  /**
+   * 清除当前画布所有控件
+   */
+  clearModels(destroy: boolean = false): void {
+    this.layers.forEach(layer => {
+      layer.clearModels(destroy);
+    })
   }
 
   /**
@@ -738,7 +767,8 @@ class DDeiStage {
     let y = -this.wpv.y;
     let x1 = x + canvas.width / rat1;
     let y1 = y + canvas.height / rat1;
-    let curLevelModels = fModel.pModel.getSubModels(sourceModelKeys, 1, { x: x, y: y, x1: x1, y1: y1 });
+    let stageRatio = this.getStageRatio()
+    let curLevelModels = fModel.pModel.getSubModels(sourceModelKeys, 1, { x: x/stageRatio, y: y/stageRatio, x1: x1/stageRatio, y1: y1/stageRatio });
     curLevelModels.forEach(model => {
       //判定每一个点以及中心点,如果旋转角度不同，则只判断中心点
 
@@ -975,6 +1005,93 @@ class DDeiStage {
       }
     }
     return resultArray;
+  }
+
+  /**
+   * 返回画布图片
+   * @models 选中控件模型，如果不传入则返回整个画布
+   */
+  toImageDataUrl(models:DDeiAbstractShape[]|null = null):string|null{
+    let ddInstance = this.ddInstance
+    if (ddInstance?.render){
+      //转换为图片
+      let canvas = document.createElement('canvas');
+      //获得 2d 上下文对象
+      let ctx = canvas.getContext('2d');
+      //获取缩放比例
+      let oldRat1 = ddInstance.render.ratio
+
+      //如果高清屏，rat一般大于2印此系数为1保持不变，如果非高清则扩大为2倍保持清晰
+      let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
+      let rat1 = oldRat1 * scaleSize
+      let rat2 = oldRat1 / window.remRatio
+      ddInstance.render.ratio = rat1
+      ddInstance.render.tempCanvas = canvas;
+      let allLayers = false
+      if (!models || models.length < 0){
+        models = this.getLayerModels(null,100);
+        allLayers = true
+      }
+      //所选择区域的最大范围
+      let outRect = DDeiAbstractShape.getOutRectByPV(models);
+      let stageRatio = this.getStageRatio()
+      outRect.x *= stageRatio
+      outRect.y *= stageRatio
+      outRect.width *= stageRatio
+      outRect.height *= stageRatio
+      let lineOffset = models[0].render.getCachedValue("border.width");
+      let addWidth = 0;
+      if (lineOffset) {
+        addWidth = lineOffset * rat1 * stageRatio
+        if (models.length > 1) {
+          addWidth = lineOffset * 2 * stageRatio
+        }
+      }
+      let editorId = DDeiUtil.getEditorId(ddInstance);
+      let containerDiv = document.getElementById(editorId + "_ddei_cut_img_div")
+
+      canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat2) + ");display:block;zoom:" + (1 / rat2));
+      let cW = outRect.width * oldRat1 + addWidth
+      let cH = outRect.height * oldRat1 + addWidth
+      canvas.setAttribute("width", cW)
+      canvas.setAttribute("height", cH)
+      ctx.scale(1 / scaleSize, 1 / scaleSize)
+      ctx.translate(-outRect.x * rat1, -outRect.y * rat1)
+
+      containerDiv.appendChild(canvas)
+
+      if (allLayers) {
+        let layers = this.layers;
+        layers.forEach(ly => {
+          ly.midList.forEach(mid => {
+            let model = ly.models.get(mid)
+            model?.render?.clearCachedValue()
+            model?.render?.drawShape({});
+          })
+        });
+      } else {
+        models[0].pModel.midList.forEach(mid => {
+          models.forEach(item => {
+            if (item.id == mid) {
+              item.render.clearCachedValue()
+              item.render.drawShape({});
+            }
+          })
+        })
+      }
+
+
+      ddInstance.render.ratio = oldRat1
+      let dataURL = canvas.toDataURL()
+      
+
+      containerDiv.removeChild(canvas)
+      //清空临时canvas
+      ddInstance.render.tempCanvas = null;
+
+      return dataURL;
+    }
+    return null;
   }
 
 }

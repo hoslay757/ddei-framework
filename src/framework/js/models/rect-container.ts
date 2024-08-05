@@ -38,15 +38,18 @@ class DDeiRectContainer extends DDeiRectangle {
     let ddInstance = container.stage?.ddInstance;
     tempData[container.id] = container;
     let models: Map<String, DDeiAbstractShape> = new Map<String, DDeiAbstractShape>();
+    let midList = new Array()
     for (let key in json.models) {
       tempData['currentContainer'] = container;
       let item = json.models[key];
       let model = ddInstance.controlModelClasses[item.modelType].loadFromJSON(item, tempData);
       models.set(key, model)
       tempData['currentContainer'] = null;
+      midList.push(model.id)
     }
 
     container.models = models;
+    container.midList = midList;
     container.initPVS();
     container.initRender();
     return container;

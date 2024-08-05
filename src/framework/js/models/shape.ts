@@ -6,12 +6,17 @@ import DDeiUtil from '../util'
 import { Matrix3, Vector3 } from 'three';
 import { cloneDeep, clone, isNumber } from 'lodash'
 import DDeiModelArrtibuteValue from './attribute/attribute-value'
+import DDeiEnumOperateType from '../enums/operate-type'
 /**
  * 抽象的图形类，定义了大多数图形都有的属性和方法
  */
 abstract class DDeiAbstractShape {
   // ============================ 构造函数 ============================
   constructor(props: object) {
+    for (let i in props) {
+      this[i] = props[i]
+    }
+
     this.id = props.id
     //宽度与高度，会换算为点向量，参与运算
     this.width = props.width ? props.width : 0
@@ -197,9 +202,7 @@ abstract class DDeiAbstractShape {
   initPVS() {
     if (!this.cpv) {
       if (this.initCPV) {
-        //全局缩放因子
-        let stageRatio = this.getStageRatio();
-        this.cpv = new Vector3(this.initCPV.x * stageRatio, this.initCPV.y * stageRatio, 1)
+        this.cpv = new Vector3(this.initCPV.x, this.initCPV.y, 1)
         delete this.initCPV
       } else {
         this.cpv = new Vector3(0, 0, 1)
@@ -213,7 +216,7 @@ abstract class DDeiAbstractShape {
       let defineOvs = DDeiUtil.getControlDefine(this)?.define?.ovs;
       if (defineOvs?.length > 0) {
         //全局缩放因子
-        let stageRatio = this.getStageRatio();
+        let stageRatio = 1;//this.getStageRatio();
         let ovs = []
         defineOvs.forEach(ovd => {
           //如果类型为3，则根据初始的角度、r计算初始位置
@@ -245,21 +248,17 @@ abstract class DDeiAbstractShape {
       }
       //用于计算缩放大小比率的点PV，以100为参考
       if (!this.bpv) {
-        //全局缩放因子
-        let stageRatio = this.getStageRatio();
-        this.bpv = new Vector3(this.cpv.x + this.width * stageRatio, this.cpv.y + this.height * stageRatio, 1)
+        this.bpv = new Vector3(this.cpv.x + this.width, this.cpv.y + this.height, 1)
       }
 
       this.executeSample();
     } else {
       if (!this.pvs || this.pvs.length == 0) {
-        //全局缩放因子
-        let stageRatio = this.getStageRatio();
         this.pvs = [];
-        this.pvs[0] = new Vector3(-this.width * stageRatio / 2, -this.height * stageRatio / 2, 1)
-        this.pvs[1] = new Vector3(this.width * stageRatio / 2, -this.height * stageRatio / 2, 1)
-        this.pvs[2] = new Vector3(this.width * stageRatio / 2, this.height * stageRatio / 2, 1)
-        this.pvs[3] = new Vector3(-this.width * stageRatio / 2, this.height * stageRatio / 2, 1)
+        this.pvs[0] = new Vector3(-this.width / 2, -this.height / 2, 1)
+        this.pvs[1] = new Vector3(this.width / 2, -this.height / 2, 1)
+        this.pvs[2] = new Vector3(this.width / 2, this.height / 2, 1)
+        this.pvs[3] = new Vector3(-this.width / 2, this.height / 2, 1)
       }
       this.initHPV();
     }
@@ -300,7 +299,7 @@ abstract class DDeiAbstractShape {
   executeSample() {
     //通过采样计算pvs,可能存在多组pvs
     let defineSample = DDeiUtil.getControlDefine(this)?.define?.sample;
-    let stageRatio = this.getStageRatio()
+    let stageRatio = 1;//this.getStageRatio()
     if (defineSample?.rules?.length > 0) {
       ///计算ovs未旋转量，传入采样函数进行计算
       let originOVS = []
@@ -356,7 +355,7 @@ abstract class DDeiAbstractShape {
       let scaleX = Math.abs(bpv.x / 100)
       let scaleY = Math.abs(bpv.y / 100)
       //添加scale变量以便在内部使用
-      this.scale = { x: scaleX, y: scaleY, stageRatio: stageRatio }
+      this.scale = { x: scaleX, y: scaleY, stageRatio: 1 }
 
       //采样结果
       let sampliesResult = []
@@ -557,7 +556,6 @@ abstract class DDeiAbstractShape {
    * 变换向量
    */
   transVectors(matrix: Matrix3, params: { skipSample: boolean, ignoreBPV: boolean, ignoreOVS: boolean, ignoreHPV: boolean, ignoreComposes: boolean }): void {
-
     this.cpv.applyMatrix3(matrix);
     if (this.poly == 2) {
       //重新计算
@@ -745,7 +743,6 @@ abstract class DDeiAbstractShape {
    * 基于当前向量计算宽松判定向量
    */
   calLoosePVS(): void {
-    let stageRatio = this.stage?.getStageRatio();
     //复制当前向量
     this.loosePVS = this.operatePVS?.length > 2 ? cloneDeep(this.operatePVS) : cloneDeep(this.pvs)
 
@@ -772,10 +769,10 @@ abstract class DDeiAbstractShape {
       this.loosePVS = DDeiAbstractShape.outRectToPV(outRect)
     }
     //计算宽、高信息，该值为不考虑缩放的大小
-    this.x = outRect.x / stageRatio
-    this.y = outRect.y / stageRatio
-    this.width = outRect.width / stageRatio
-    this.height = outRect.height / stageRatio
+    this.x = outRect.x
+    this.y = outRect.y
+    this.width = outRect.width
+    this.height = outRect.height
     //记录缩放后的大小以及坐标
     this.essBounds = outRect;
 
@@ -783,15 +780,15 @@ abstract class DDeiAbstractShape {
     //通过缩放矩阵，进行缩放
     let scX = 1, scY = 1
 
-    if (this.width * stageRatio <= 30) {
-      scX = 1 + (10 / this.width * stageRatio)
+    if (this.width <= 30) {
+      scX = 1 + (10 / this.width)
     } else {
-      scX = 1 + Math.min(0.1 / stageRatio, 20 / this.width)
+      scX = 1 + Math.min(0.1, 20 / this.width)
     }
-    if (this.height * stageRatio <= 30) {
-      scY = 1 + (10 / this.height * stageRatio)
+    if (this.height <= 30) {
+      scY = 1 + (10 / this.height)
     } else {
-      scY = 1 + Math.min(0.1 / stageRatio, 20 / this.height)
+      scY = 1 + Math.min(0.1, 20 / this.height)
     }
     let scaleMatrix = new Matrix3(
       scX, 0, 0,
@@ -815,8 +812,8 @@ abstract class DDeiAbstractShape {
     this.loosePVS.forEach(fpv => {
       fpv.applyMatrix3(m1)
     });
-    this.x += this.cpv.x / stageRatio
-    this.y += this.cpv.y / stageRatio
+    this.x += this.cpv.x
+    this.y += this.cpv.y
     // 记录缩放后的大小以及坐标
     this.essBounds.x += this.cpv.x
     this.essBounds.y += this.cpv.y
@@ -1532,6 +1529,7 @@ abstract class DDeiAbstractShape {
    * @returns 是否在区域内
    */
   isInRect(x: number, y: number, x1: number, y1: number, pointNumber: number = 1): boolean {
+    
     if (x === undefined || y === undefined || x1 === undefined || y1 === undefined) {
       return false
     }
@@ -1539,10 +1537,12 @@ abstract class DDeiAbstractShape {
     let len = pvs.length;
     let pn = 0
     let modelLines = []
+    
+
 
     for (let i = 0; i < len; i++) {
       let ps = pvs[i]
-      if (ps.x >= x && ps.y >= y && ps.x <= x1 && ps.y <= y1) {
+      if ((ps.x >= x && ps.y >= y && ps.x <= x1 && ps.y <= y1)) {
         pn++
       }
       if (pn >= pointNumber) {
@@ -1554,6 +1554,8 @@ abstract class DDeiAbstractShape {
         modelLines.push({ x1: pvs[i].x, y1: pvs[i].y, x2: pvs[i + 1].x, y2: pvs[i + 1].y })
       }
     }
+    
+
     //执行执行线段相交判断
     let rectLines = [
       { x1: x, y1: y, x2: x1, y2: y },
@@ -1572,6 +1574,13 @@ abstract class DDeiAbstractShape {
         }
       }
     }
+
+    //判断特殊情况，不相交，但视窗是否在外接矩形中
+    let outRect = DDeiAbstractShape.pvsToOutRect(pvs);
+    if (x >= outRect.x && x <= outRect.x1 && y >= outRect.y && y <= outRect.y1){
+      return true
+    }
+    
     return false;
   }
 
@@ -1756,8 +1765,9 @@ abstract class DDeiAbstractShape {
       this.render.tempCanvas.remove()
       delete this.render.tempCanvas
     }
-
+    
     this.render = null
+    DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_DEL_AFTER", DDeiEnumOperateType.DESTROYED, { models: [this] }, this.stage?.ddInstance, null)
   }
   /**
      * 将模型转换为JSON
@@ -2027,7 +2037,7 @@ abstract class DDeiAbstractShape {
   * 基于向量点获取一组图形模型的宽高
   * @param models
   */
-  static getOutRectByPV(models: Array<DDeiAbstractShape>): object {
+  static getOutRectByPV(models: Array<DDeiAbstractShape>,ratio:number = 1): object {
     models = models.filter(item => !!item)
     if (!models.length) {
       return { x: 0, y: 0, width: 0, height: 0 }
@@ -2041,7 +2051,7 @@ abstract class DDeiAbstractShape {
       points = points.concat(pvs)
     })
 
-    return DDeiAbstractShape.pvsToOutRect(points);
+    return DDeiAbstractShape.pvsToOutRect(points, ratio);
   }
 
 
@@ -2072,7 +2082,7 @@ abstract class DDeiAbstractShape {
   /**
    * 返回点集合的外接矩形
    */
-  static pvsToOutRect(points: object[]): object {
+  static pvsToOutRect(points: object[],ratio:number = 1): object {
     let x: number = Infinity, y: number = Infinity, x1: number = -Infinity, y1: number = -Infinity;
     //找到最大、最小的x和y
     points.forEach(p => {
@@ -2082,7 +2092,7 @@ abstract class DDeiAbstractShape {
       y1 = Math.max(p.y, y1)
     })
     return {
-      x: x, y: y, width: x1 - x, height: y1 - y, x1: x1, y1: y1
+      x: x * ratio, y: y * ratio, width: (x1 - x) * ratio, height: (y1 - y) * ratio, x1: x1 * ratio, y1: y1 * ratio
     }
   }
 

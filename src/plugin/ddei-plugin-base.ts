@@ -1,4 +1,5 @@
 import { cloneDeep } from 'lodash'
+import type { DDeiEditor } from '..';
 
 class DDeiPluginBase{
 
@@ -7,7 +8,9 @@ class DDeiPluginBase{
     this.options = options;
   }
 
-  
+  installed(editor:DDeiEditor):void{
+    
+  }
 
   getOptions(): object {
     let options = {}
