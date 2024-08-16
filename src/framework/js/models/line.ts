@@ -187,7 +187,7 @@ class DDeiLine extends DDeiAbstractShape {
                 rectMap.set(l2.id, DDeiAbstractShape.getOutRectByPV([l2]))
               }
               let l2Rect = rectMap.get(l2.id);
-              if (DDeiUtil.isRectCorss(l1Rect, l2Rect)) {
+              if (DDeiUtil.isRectCross(l1Rect, l2Rect)) {
                 for (let pi = 0; pi < l1.pvs.length - 1; pi++) {
                   let p1 = l1.pvs[pi];
                   let p2 = l1.pvs[pi + 1];

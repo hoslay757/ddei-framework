@@ -372,6 +372,7 @@ class DDeiUtil {
         if (model.rotate){
           let pvs = model.operatePVS ? model.operatePVS : model.pvs;
           let zeroPvs = DDeiUtil.pointsToZero(pvs, model.cpv, model.rotate)
+          zeroPvs = DDeiUtil.zeroToPoints(zeroPvs, model.cpv, 0, 1, 1)
           outRect = DDeiAbstractShape.pvsToOutRect(zeroPvs);
           outRect.rotate = model.rotate
         }else{
@@ -1133,7 +1134,7 @@ class DDeiUtil {
    * @param rect2 
    * @returns 
    */
-  static isRectCorss(rect1, rect2): boolean {
+  static isRectCross(rect1, rect2): boolean {
     let maxX, maxY, minX, minY
     maxX = rect1.x + rect1.width >= rect2.x + rect2.width ? rect1.x + rect1.width : rect2.x + rect2.width
     maxY = rect1.y + rect1.height >= rect2.y + rect2.height ? rect1.y + rect1.height : rect2.y + rect2.height

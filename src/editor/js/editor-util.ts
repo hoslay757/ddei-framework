@@ -83,7 +83,8 @@ class DDeiEditorUtil {
           inputEle = document.createElement("textarea")
           inputEle.setAttribute("id", inputId)
           inputEle.setAttribute("style", "width:100px;filter: opacity(0);user-select: none;pointer-events: none;border:none;resize:none;padding:0;z-index:9999;position:fixed;left:0;top:0;display:none;outline:none;");
-          document.body.appendChild(inputEle);
+          let editorEle = document.getElementById(editor.id);
+          editorEle.appendChild(inputEle);
           editor.quickEditorInput = inputEle;
           inputEle.enterValue = function () {
             //设置属性值
@@ -92,6 +93,9 @@ class DDeiEditorUtil {
             delete ddInstance.stage.brushDataText
             if (editor.quickEditorModel) {
               editor.quickEditorModel.sptStyle = ddInstance.stage.render.editorShadowControl.sptStyle
+              if (ddInstance.stage.render.editorShadowControl?.isShadowControl) {
+                ddInstance.stage.render.editorShadowControl.destroyed()
+              }
               ddInstance.stage.render.editorShadowControl = null;
               editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { models: [editor.quickEditorModel], paths: ["text"], value: inputEle.value }, null, true);
               editor.bus.push(DDeiEnumBusCommandType.NodifyChange);

@@ -129,6 +129,7 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
           }
           ctx.closePath();
           // ctx.clip();
+          item.render.tempZIndex = this.tempZIndex + (m + 1)
           item.render.drawShape(tempShape);
           //恢复
           ctx.restore();

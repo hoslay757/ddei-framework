@@ -92,91 +92,101 @@ class DDeiStageCanvasRender {
   drawShape(): void {
     let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
     if (rsState == 0 || rsState == 1) {
-      //清空画布，绘制场景大背景
-      this.clearStage();
-      if (this.model.disabled || !this.model.width || !this.model.height){
-        return;
-      }
-      let ruleDisplay
-      let ruleInit
-      if (this.model.ruler?.display || this.model.ruler?.display == 0 || this.model.ruler?.display == false) {
-        ruleDisplay = this.model.ruler.display;
-      } else if (this.model.ddInstance.ruler != null && this.model.ddInstance.ruler != undefined) {
-        if (typeof (this.model.ddInstance.ruler) == 'boolean') {
-          ruleDisplay = this.model.ddInstance.ruler ? 1 : 0;
-        } else {
-          ruleInit = this.model.ddInstance.ruler
-          ruleDisplay = ruleInit.display;
-        }
-      } else {
-        ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
-      }
-      this.tempRuleDisplay = ruleDisplay
-      //绘制纸张，以及图层背景
-      this.drawPaper();
-
-      //计算滚动条
-      this.calScroll();
-
-      //绘制网格
-      this.drawGrid()
+      let rsState1 = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
       //获得 2d 上下文对象
       let canvas = this.ddRender.getCanvas();
-      let ctx = canvas.getContext('2d');
       let rat1 = this.ddRender.ratio;
-
-      //绘制图形
-      ctx.save();
-
-      ctx.translate((this.model.wpv.x) * rat1, (this.model.wpv.y) * rat1)
-
-      // this.drawTest();
-
-      let topDisplayIndex = -1;
-      for (let i = this.model.layers.length - 1; i >= 0; i--) {
-        if (this.model.layers[i].tempDisplay) {
-          topDisplayIndex = i
+      if (rsState1 == 0 || rsState1 == 1) {
+        //清空画布，绘制场景大背景
+        this.clearStage();
+        if (this.model.disabled || !this.model.width || !this.model.height){
+          return;
         }
-        else if (this.model.layers[i].display == 1) {
-          this.model.layers[i].render.drawShape();
+        let ruleDisplay
+        let ruleInit
+        if (this.model.ruler?.display || this.model.ruler?.display == 0 || this.model.ruler?.display == false) {
+          ruleDisplay = this.model.ruler.display;
+        } else if (this.model.ddInstance.ruler != null && this.model.ddInstance.ruler != undefined) {
+          if (typeof (this.model.ddInstance.ruler) == 'boolean') {
+            ruleDisplay = this.model.ddInstance.ruler ? 1 : 0;
+          } else {
+            ruleInit = this.model.ddInstance.ruler
+            ruleDisplay = ruleInit.display;
+          }
+        } else {
+          ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
         }
+        this.tempRuleDisplay = ruleDisplay
+        //绘制纸张，以及图层背景
+        this.drawPaper();
+
+        //计算滚动条
+        this.calScroll();
+
+        //绘制网格
+        this.drawGrid()
+        
+        let ctx = canvas.getContext('2d');
+        
+
+        //绘制图形
+        ctx.save();
+
+        ctx.translate((this.model.wpv.x) * rat1, (this.model.wpv.y) * rat1)
+
+        // this.drawTest();
+
+        let topDisplayIndex = -1;
+        let initI = this.model.layers.length - 1
+        for (let i = initI; i >= 0; i--) {
+          if (this.model.layers[i].tempDisplay) {
+            topDisplayIndex = i
+          }
+          else if (this.model.layers[i].display == 1) {
+
+            this.model.layers[i].render.tempZIndex = (initI - i) * 1000
+            this.model.layers[i].render.drawShape();
+          } else if (this.model.layers[i].display == 0) {
+            this.model.layers[i].render.drawShape();
+          }
+        }
+
+        if (topDisplayIndex != -1) {
+          this.model.layers[topDisplayIndex].render.tempZIndex = initI * 1000
+          this.model.layers[topDisplayIndex].render.drawShape();
+        }
+
+        //绘制编辑时的影子控件
+        this.drawEditorShadowControl();
+        if (this.selector) {
+          this.selector.render.drawShape();
+        }
+
+
+
+        ctx.restore();
+
+
+        //绘制水印
+        this.drawMark();
+        //绘制标尺
+        this.drawRuler()
+        //绘制辅助线
+        this.drawHelpLines()
+
+
+        
+
+
+        //绘制滚动条
+        this.drawScroll();
+
+
+        this.helpLines = null;
+
+
+        // DDeiLine.calLineCrossSync(this.model.layers[this.model.layerIndex])
       }
-
-      if (topDisplayIndex != -1) {
-        this.model.layers[topDisplayIndex].render.drawShape();
-      }
-
-      //绘制编辑时的影子控件
-      this.drawEditorShadowControl();
-      if (this.selector) {
-        this.selector.render.drawShape();
-      }
-
-
-
-      ctx.restore();
-
-
-      //绘制水印
-      this.drawMark();
-      //绘制标尺
-      this.drawRuler()
-      //绘制辅助线
-      this.drawHelpLines()
-
-
-      
-
-
-      //绘制滚动条
-      this.drawScroll();
-
-
-      this.helpLines = null;
-
-
-      // DDeiLine.calLineCrossSync(this.model.layers[this.model.layerIndex])
-
       DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_AFTER", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
     
       //设置htmlrender的容器大小以及位置

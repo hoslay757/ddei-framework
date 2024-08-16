@@ -73,13 +73,6 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     if (!this.tempCanvas) {
       this.tempCanvas = document.createElement('canvas');
       this.tempCanvas.setAttribute("style", "left:-99999px;position:fixed;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
-      if(this.model.id == 'line_10'){
-        this.tempCanvas.setAttribute("style", "left:0px;position:fixed;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
-
-        let editorId = DDeiUtil.getEditorId(this.ddRender?.model);
-        let editorEle = document.getElementById(editorId);
-        editorEle.appendChild(this.tempCanvas)
-      }
     }
     let stageRatio = this.stage?.getStageRatio()
     let tempCanvas = this.tempCanvas
@@ -112,70 +105,71 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
   drawShape(tempShape, composeRender: boolean = false): void {
     let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
     if (rsState == 0 || rsState == 1) {
-      
-      if (this.refreshShape) {
-        
-        //创建准备图形
-        this.createTempShape();
-        //将当前控件以及composes按照zindex顺序排列并输出
-        let rendList = [];
-        if (this.model.composes?.length > 0) {
-          rendList = rendList.concat(this.model.composes);
-        }
-        rendList.push(this.model)
-        rendList.sort((a, b) => {
-
-          if ((a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
-            return a.cIndex - b.cIndex
-          } else if ((a.cIndex || a.cIndex == 0) && !(b.cIndex || b.cIndex == 0)) {
-            return 1
-          } else if (!(a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
-            return -1
-          } else {
-            return 0
+      let rsState1 = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", DDeiEnumOperateType.VIEW, { models: [this.model], tempShape: tempShape, composeRender: composeRender }, this.ddRender.model, null)
+      if (rsState1 == 0 || rsState1 == 1) {
+        if (this.refreshShape) {
+          
+          //创建准备图形
+          this.createTempShape();
+          //将当前控件以及composes按照zindex顺序排列并输出
+          let rendList = [];
+          if (this.model.composes?.length > 0) {
+            rendList = rendList.concat(this.model.composes);
           }
-        })
-        rendList.forEach(c => {
-          if (c == this.model) {
-            //获得 2d 上下文对象
-            let canvas = this.getCanvas();
-            let ctx = canvas.getContext('2d');
-            ctx.save();
-            //如果线段类型发生了改变，则重新绘制线段，计算中间点坐标
-            if (this.inited && this.model.id.indexOf("_shadow") == -1 && (!this.upLineType || this.upLineType != this.model.type)) {
-              this.upLineType = this.model.type
-              this.model.freeze = 0
-              this.model.spvs = []
+          rendList.push(this.model)
+          rendList.sort((a, b) => {
 
-              this.model.refreshLinePoints()
-              this.model.updateOVS()
-              this.stageRender?.selector.updatePVSByModels();
-            } else if (!this.inited) {
-              this.inited = true;
-              this.upLineType = this.model.type
+            if ((a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+              return a.cIndex - b.cIndex
+            } else if ((a.cIndex || a.cIndex == 0) && !(b.cIndex || b.cIndex == 0)) {
+              return 1
+            } else if (!(a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+              return -1
+            } else {
+              return 0
             }
+          })
+          rendList.forEach(c => {
+            if (c == this.model) {
+              //获得 2d 上下文对象
+              let canvas = this.getCanvas();
+              let ctx = canvas.getContext('2d');
+              ctx.save();
+              //如果线段类型发生了改变，则重新绘制线段，计算中间点坐标
+              if (this.inited && this.model.id.indexOf("_shadow") == -1 && (!this.upLineType || this.upLineType != this.model.type)) {
+                this.upLineType = this.model.type
+                this.model.freeze = 0
+                this.model.spvs = []
 
-            //绘制线段
-            this.drawLine(tempShape);
+                this.model.refreshLinePoints()
+                this.model.updateOVS()
+                this.stageRender?.selector.updatePVSByModels();
+              } else if (!this.inited) {
+                this.inited = true;
+                this.upLineType = this.model.type
+              }
+
+              //绘制线段
+              this.drawLine(tempShape);
 
 
-            ctx.restore();
-          } else {
-            //绘制组合控件的内容
-            c.render.drawShape(tempShape, true)
-          }
-        })
-        this.refreshShape = false
-      }
+              ctx.restore();
+            } else {
+              //绘制组合控件的内容
+              c.render.drawShape(tempShape, true)
+            }
+          })
+          this.refreshShape = false
+        }
 
-      //外部canvas
-      if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
-        let canvas = this.getRenderCanvas(composeRender)
-        let ctx = canvas.getContext('2d');
-        let rat1 = this.ddRender.ratio;
-        let stageRatio = this.stage?.getStageRatio()
-        let outRect = this.tempCanvas.outRect
-        ctx.drawImage(this.tempCanvas, 0, 0, outRect.width * rat1, outRect.height * rat1, outRect.x * rat1, outRect.y * rat1, outRect.width * rat1, outRect.height * rat1)
+        //外部canvas
+        if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
+          let canvas = this.getRenderCanvas(composeRender)
+          let ctx = canvas.getContext('2d');
+          let rat1 = this.ddRender.ratio;
+          let outRect = this.tempCanvas.outRect
+          ctx.drawImage(this.tempCanvas, 0, 0, outRect.width * rat1, outRect.height * rat1, outRect.x * rat1, outRect.y * rat1, outRect.width * rat1, outRect.height * rat1)
+        }
       }
       DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_AFTER", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
     }

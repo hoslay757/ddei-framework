@@ -600,6 +600,7 @@ class DDeiEditor {
   //当前引入的外部renderViewers以及创建后的实例
   renderViewers: object[] = markRaw([]);
   renderViewerIns: object = markRaw({});
+  renderViewerElements: object = markRaw({});
   //当前引入的外部菜单
   menuMapping: object = markRaw({});
   //当前引入的外部控件配置

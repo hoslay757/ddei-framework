@@ -93,24 +93,28 @@ class DDeiLayerCanvasRender {
     if (this.model.display || this.model.tempDisplay) {
       let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.stage?.ddInstance, null)
       if (rsState == 0 || rsState == 1) {
-        //绘制子元素
-        this.drawChildrenShapes(inRect);
-        //绘制操作点
-        this.drawOpPoints();
-        //绘制操作线
-        this.drawOpLine();
+        let rsState1 = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.stage?.ddInstance, null)
+        if (rsState1 == 0 || rsState1 == 1) {
+          //绘制子元素
+          this.drawChildrenShapes(inRect);
+          //绘制操作点
+          this.drawOpPoints();
+          //绘制操作线
+          this.drawOpLine();
 
-        //绘制移入移出效果图形
-        this.drawDragInOutPoints();
+          //绘制移入移出效果图形
+          this.drawDragInOutPoints();
 
-        //绘制拖拽影子控件
-        this.drawShadowControls();
+          //绘制拖拽影子控件
+          this.drawShadowControls();
 
-
-
-        this.modelChanged = false;
+          this.modelChanged = false;
+        }
         DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_AFTER", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.stage?.ddInstance, null)
       }
+    }else{
+      //绘制子元素
+      this.drawChildrenShapes(inRect,true);
     }
   }
 
@@ -329,7 +333,7 @@ class DDeiLayerCanvasRender {
   /**
    * 绘制子元素
    */
-  drawChildrenShapes(inRect: boolean = true): void {
+  drawChildrenShapes(inRect: boolean = true,hidden:boolean = false): void {
     
     if (this.model.models) {
       let canvas = this.ddRender.getCanvas();
@@ -341,18 +345,18 @@ class DDeiLayerCanvasRender {
       let x1 = x + canvas.width / rat1 / stageRatio;
       let y1 = y + canvas.height / rat1 / stageRatio;
       //遍历子元素，绘制子元素
-      let time1 = new Date().getTime()
-      this.model.midList.forEach(key => {
+      // let time1 = new Date().getTime()
+      for (let li = 0; li < this.model.midList.length;li++){
+        let key = this.model.midList[li]
         let item = this.model.models.get(key);
-        //判定控件是否在绘制区间，如果在则绘制
-        if (!inRect || item?.isInRect(x, y, x1, y1)) {
-          item.render?.drawShape();
-        }else{
-          DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", "VIEW-HIDDEN", { models: [item] }, this.ddRender.model, null)
+        if (!hidden && item?.render && (!inRect || item?.isInRect(x, y, x1, y1))) {
+          item.render.tempZIndex = this.tempZIndex+(li+1)
+          item.render.drawShape();
+        } else {
+          DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", "VIEW-HIDDEN", { models: [item] }, this.ddRender.model, null)
         }
-        let time2 = new Date().getTime()
-        // console.log("渲染："+(time2-time1))
-      });
+      }
+      
     }
   }
 
