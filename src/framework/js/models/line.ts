@@ -939,7 +939,7 @@ class DDeiLine extends DDeiAbstractShape {
     if (this.looseCanvas){
       let isArea = false
       //直线判断
-      if(this.type == 1){
+      if(this.type == 1 || (Math.abs(this.startPoint.x - this.endPoint.x) <=2 || Math.abs(this.startPoint.y - this.endPoint.y) <= 2)){
         let projPoint = this.getProjPoint({ x: x, y: y }
           , { in: -10, out: 10 }, 1, 2)
         if (projPoint){
