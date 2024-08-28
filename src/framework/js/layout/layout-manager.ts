@@ -19,6 +19,9 @@ abstract class DDeiLayoutManager {
    * 修改模型的位置和大小
    */
   abstract changeSubModelBounds(): void
+
+
+  abstract transVectors(matrix):void
   
   /**
    *  根据子模型大小，修改自身大小

@@ -15,6 +15,10 @@ class DDeiLayoutManagerCompose extends DDeiLayoutManager {
   changeSubModelBounds(): void {
   }
 
+  transVectors(matrix):void{
+    this.container.transVectors(matrix)
+  }
+
   /**
    * 根据子模型大小，修改自身大小
    */

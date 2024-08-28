@@ -2017,8 +2017,12 @@ abstract class DDeiAbstractShape {
 
       m2.premultiply(itemMove1Matrix)
 
-
-      item.transVectors(m2)
+      if(item.baseModelType == 'DDeiContainer'){
+        item.layoutManager?.transVectors(m2);
+      }else{
+        item.transVectors(m2)
+      }
+      
 
 
 

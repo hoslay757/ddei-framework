@@ -14,6 +14,10 @@ class DDeiLayoutManagerFree extends DDeiLayoutManager {
 
   }
 
+  transVectors(matrix): void {
+    this.container.transSelfVectors(matrix)
+  }
+
   /**
    * 根据子模型大小，修改自身大小
    */
