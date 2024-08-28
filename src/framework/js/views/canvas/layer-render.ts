@@ -844,7 +844,7 @@ class DDeiLayerCanvasRender {
         }
         case DDeiEnumOperateState.CONTROL_CONFIRMING: {
 
-
+          
           this.stageRender.currentOperateShape.render.mouseUp(evt);
           //如果有格式刷
           if (this.stage?.brushData) {
@@ -863,7 +863,10 @@ class DDeiLayerCanvasRender {
 
           //加载事件的配置
           let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_SELECT_BEFORE", DDeiEnumOperateType.SELECT, { models: Array.from(includedModels.values()) }, this.stage?.ddInstance, evt)
-
+          let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
+          if (!isCtrl) {
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
+          }
           if (rsState == 0 || rsState == 1) {
             this.stageRender.currentOperateContainer = this.model;
             includedModels.forEach((model, key) => {
@@ -1428,10 +1431,10 @@ class DDeiLayerCanvasRender {
           if (sms.indexOf(this.stageRender.currentOperateShape) == -1) {
             sms.push(this.stageRender.currentOperateShape)
           }
-          let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_DRAG_BEFORE", DDeiEnumOperateType.DRAG, { models: sms }, this.ddRender.model, null)
+          let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_DRAG_BEFORE", DDeiEnumOperateType.DRAG, { models: sms }, this.ddRender.model, evt)
 
           if (rsState == 0 || rsState == 1) {
-            DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", DDeiEnumOperateType.DRAG, null, this.stage?.ddInstance, evt)
+            DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", DDeiEnumOperateType.DRAG, { models: sms }, this.ddRender.model, evt)
             //当前操作状态：控件拖拽中
             this.stageRender.operateState = DDeiEnumOperateState.CONTROL_DRAGING
             //产生影子控件
@@ -1913,6 +1916,7 @@ class DDeiLayerCanvasRender {
       }
     }
     this.stage?.ddInstance?.bus?.executeAll();
+
   }
 
 

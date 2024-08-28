@@ -133,6 +133,13 @@ class DDeiLayoutManagerNine extends DDeiLayoutManager {
     }
   }
 
+  /**
+   * 根据子模型大小，修改自身大小
+   */
+  changeParentsBounds(): void {
+
+  }
+
 
   canAppend(x: number, y: number, models: DDeiAbstractShape[]): boolean {
     if (models?.length == 1 || models?.length <= 9 - this.container.models.size) {

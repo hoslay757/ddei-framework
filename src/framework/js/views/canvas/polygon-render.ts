@@ -258,7 +258,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   getRenderCanvas(composeRender) {
     if (composeRender) {
       return this.model.pModel.render.getCanvas()
-    } else {
+    } else if(this.model.pModel.baseModelType == 'DDeiContainer'){
+      return this.model.pModel.render.getCanvas()
+    }else {
       return this.ddRender?.getCanvas();
     }
   }

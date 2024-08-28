@@ -42,7 +42,7 @@ class DDeiConfig {
   //序列化配置
   static SERI_FIELDS: object = {
     "DDei": { "TOJSON": ["stage"], "SKIP": ["bus", "render", "unicode", "editMode"] },
-    "DDeiStage": { "TOJSON": ["layers", "links"], "SKIP": ["ddInstance", "selectedModels", "render", "unicode", "histroy", 'histroyIdx', "sourceLinkCache", "distLinkCache"] },
+    "DDeiStage": { "TOJSON": ["layers", "links"], "SKIP": ["ddInstance", "selectedModels", "render", "unicode", "histroy", 'histroyIdx', "sourceLinkCache", "distLinkCache", "tempCursorOPpoint","tempStartOPpoint",""] },
     "DDeiLayer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "render", "unicode", "opPoints", "opLine", "dragInPoints", "dragOutPoints", "shadowControls", "layoutManager", "tempDisplay"] },
     "DDeiContainer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "hpv", "loosePVS", "x", "y", "width", "height", "layoutManager", "isShadowControl"] },
     "AbstractShape": {

@@ -96,6 +96,7 @@ class DDeiBusCommandModelChangeRotate extends DDeiBusCommand {
         let item = models[i]
         item.transVectors(m1)
         item.updateLinkModels();
+        item.getTopContainer()?.render?.enableRefreshShape()
         item.render?.enableRefreshShape()
       }
       selector.transVectors(m1)

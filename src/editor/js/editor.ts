@@ -1333,7 +1333,7 @@ class DDeiEditor {
     this.bus.push(DDeiEnumBusCommandType.AddHistroy);
     this.changeState(DDeiEditorState.DESIGNING);
     // this.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
-    this.bus.push(DDeiEnumBusCommandType.ClearTemplateVars);
+
     this.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts);
     this.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels);
     this.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
@@ -1349,6 +1349,8 @@ class DDeiEditor {
       this.notifyChange();
     }
   }
+
+  
 
   /**
    * 清除当前画布所有控件

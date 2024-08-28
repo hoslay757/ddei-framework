@@ -43,6 +43,8 @@ class DDeiBusCommandModelChangeSelect extends DDeiBusCommand {
           if (model) {
             if (model.state != newValue) {
               model.state = newValue;
+              model.getTopContainer()?.render?.enableRefreshShape()
+              model.render?.enableRefreshShape()
             }
           }
         }
@@ -55,6 +57,7 @@ class DDeiBusCommandModelChangeSelect extends DDeiBusCommand {
       if (models) {
         models.forEach(item => {
           item.state = state;
+          item.getTopContainer()?.render?.enableRefreshShape()
           item.render?.enableRefreshShape()
         });
       }

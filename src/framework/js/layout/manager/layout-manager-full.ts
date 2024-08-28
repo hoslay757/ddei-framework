@@ -60,6 +60,13 @@ class DDeiLayoutManagerFull extends DDeiLayoutManager {
     }
   }
 
+  /**
+   * 根据子模型大小，修改自身大小
+   */
+  changeParentsBounds(): void {
+
+  }
+
   canConvertLayout(oldLayout: string): boolean {
     //填充布局，只允许一个元素
     if (this.container.models.size <= 1) {

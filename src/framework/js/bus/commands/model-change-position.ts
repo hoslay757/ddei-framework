@@ -8,6 +8,7 @@ import { Matrix3, Vector3 } from 'three';
 import DDeiLayoutManagerFactory from '../../layout/layout-manager-factory';
 import { has } from 'lodash';
 import DDeiUtil from '../../util';
+import DDeiEnumOperateType from '../../enums/operate-type';
 /**
  * 改变模型坐标的总线Command
  */
@@ -66,7 +67,7 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
       } else {
         fModel = models[0];
       }
-
+      
       //横纵吸附
       let hAds = fModel.stage.render.helpLines?.hAds || fModel.stage.render.helpLines?.hAds == 0 ? fModel.stage.render.helpLines?.hAds : Infinity
       let vAds = fModel.stage.render.helpLines?.vAds || fModel.stage.render.helpLines?.vAds == 0 ? fModel.stage.render.helpLines?.vAds : Infinity
@@ -106,6 +107,7 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
           stage.render.vAdsX = x
         }
       }
+      
       //移动窗口的大小
       let ignoreModelIds = [];
       models.forEach(model => {
@@ -131,41 +133,47 @@ class DDeiBusCommandModelChangePosition extends DDeiBusCommand {
           0, 0, 1,
         );
         model.transVectors(moveMatrix, { skipSample: sample == 1 ? false : true });
+        model.pModel?.render?.enableRefreshShape()
       });
-
-      models[0].layer.dragInPoints = []
-      models[0].layer.dragOutPoints = []
-      //设置移入移出效果的向量
-      if (oldContainer && newContainer && oldContainer != newContainer) {
-        oldContainer?.layoutManager?.calDragOutPVS(data.x, data.y, models);
-        newContainer?.layoutManager?.calDragInPVS(data.x, data.y, models);
-      } else if (oldContainer) {
-        oldContainer?.layoutManager?.calDragOutPVS(data.x, data.y, models);
-        oldContainer?.layoutManager?.calDragInPVS(data.x, data.y, models);
-      }
-      //如果移动过程中需要改变容器，一般用于拖拽时的逻辑
-      if (stage.render.selector.passIndex == 10 || stage.render.selector.passIndex == 13 || stage.render.selector.passIndex == 11) {
-        if (changeContainer) {
-          if (newContainer.baseModelType == "DDeiLayer" && !newContainer.layoutManager) {
-            let freeLayoutManager = DDeiLayoutManagerFactory.getLayoutInstance("free");
-            freeLayoutManager.container = newContainer;
-            newContainer.layoutManager = freeLayoutManager;
-          }
-          //如果最小层容器不是当前容器，则修改鼠标样式，代表可能要移入
-          if (newContainer.id != oldContainer.id) {
-            if (newContainer?.layoutManager?.canAppend(data.x, data.y, models)) {
-              bus?.insert(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 11 }, evt);
+      let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_DRAGING", DDeiEnumOperateType.DRAG, { models: models }, stage.ddInstance, evt)
+      if (rsState == 0 || rsState == 1) {
+        DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", "DRAG", { models: models }, stage.ddInstance, evt)
+        models[0].layer.dragInPoints = []
+        models[0].layer.dragOutPoints = []
+        //设置移入移出效果的向量
+        if (oldContainer && newContainer && oldContainer != newContainer) {
+          oldContainer?.layoutManager?.calDragOutPVS(data.x, data.y, models);
+          newContainer?.layoutManager?.calDragInPVS(data.x, data.y, models);
+        } else if (oldContainer) {
+          oldContainer?.layoutManager?.calDragOutPVS(data.x, data.y, models);
+          oldContainer?.layoutManager?.calDragInPVS(data.x, data.y, models);
+        }
+        
+      
+        //如果移动过程中需要改变容器，一般用于拖拽时的逻辑
+        if (stage.render.selector.passIndex == 10 || stage.render.selector.passIndex == 13 || stage.render.selector.passIndex == 11) {
+          if (changeContainer) {
+            if (newContainer.baseModelType == "DDeiLayer" && !newContainer.layoutManager) {
+              let freeLayoutManager = DDeiLayoutManagerFactory.getLayoutInstance("free");
+              freeLayoutManager.container = newContainer;
+              newContainer.layoutManager = freeLayoutManager;
+            }
+            //如果最小层容器不是当前容器，则修改鼠标样式，代表可能要移入
+            if (newContainer.id != oldContainer.id) {
+              if (newContainer?.layoutManager?.canAppend(data.x, data.y, models)) {
+                bus?.insert(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 11 }, evt);
+              } else {
+                bus?.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'not-allowed' }, evt);
+              }
             } else {
-              bus?.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'not-allowed' }, evt);
+              bus?.insert(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 10 }, evt);
             }
           } else {
-            bus?.insert(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 10 }, evt);
+            bus?.insert(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: stage.render.selector.passIndex }, evt);
           }
-        } else {
-          bus?.insert(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: stage.render.selector.passIndex }, evt);
         }
       }
-      DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", "DRAG", null, stage.ddInstance, evt)
+      
       return true;
     }
     return false;

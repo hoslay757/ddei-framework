@@ -8,11 +8,12 @@ import DDeiLayoutManagerFactory from '../layout/layout-manager-factory';
 import DDeiModelArrtibuteValue from './attribute/attribute-value'
 import DDeiUtil from '../util';
 import { cloneDeep } from 'lodash';
+import DDeiPolygon from './polygon';
 
 /**
  * 普通容器是一个矩形，能包含其他容器
  */
-class DDeiRectContainer extends DDeiRectangle {
+class DDeiPolygonContainer extends DDeiPolygon {
 
   constructor(props: object) {
     super(props);
@@ -27,7 +28,8 @@ class DDeiRectContainer extends DDeiRectangle {
 
   // 通过一个JSON反向序列化成对象，模型数据与JSON完全一样
   static loadFromJSON(json, tempData: object = {}): any {
-    let container = new DDeiRectContainer(json);
+    let container = new DDeiPolygonContainer(json);
+
     container.layer = tempData['currentLayer']
     container.stage = tempData['currentStage']
     container.pModel = tempData['currentContainer']
@@ -55,8 +57,8 @@ class DDeiRectContainer extends DDeiRectangle {
   }
 
   // 通过JSON初始化对象，数据未传入时将初始化数据
-  static initByJSON(json, tempData: object = {}): DDeiRectContainer {
-    let model = new DDeiRectContainer(json);
+  static initByJSON(json, tempData: object = {}): DDeiPolygonContainer {
+    let model = new DDeiPolygonContainer(json);
     model.layer = tempData['currentLayer']
     model.stage = tempData['currentStage']
     model.pModel = tempData['currentContainer']
@@ -66,11 +68,11 @@ class DDeiRectContainer extends DDeiRectangle {
   }
 
   //类名，用于反射和动态加载
-  static ClsName: string = "DDeiRectContainer";
+  static ClsName: string = "DDeiPolygonContainer";
 
   // ============================ 属性 ===============================
   // 本模型的唯一名称
-  modelType: string = 'DDeiRectContainer';
+  modelType: string = 'DDeiPolygonContainer';
   // 本模型的基础图形
   baseModelType: string = 'DDeiContainer';
   /**
@@ -408,43 +410,7 @@ class DDeiRectContainer extends DDeiRectangle {
   }
 
 
-  /**
-   * 通过下层模型更新本层模型的信息
-   */
-  updateBoundsByModels(): void {
-    let subModels = Array.from(this.models.values());
-    let outRect = DDeiAbstractShape.getOutRectByPV(subModels);
-    this.setSelfBounds(outRect.x, outRect.y, outRect.width, outRect.height);
-    this.setModelChanged()
-  }
-
-  //仅设置自身的大小以及宽高
-  setSelfBounds(x, y, width, height) {
-    //归于0，设置大小，然后旋转，再恢复到新坐标
-    this.cpv.x = 0
-    this.cpv.y = 0
-    this.pvs[0].x = -width / 2
-    this.pvs[0].y = -height / 2
-    this.pvs[1].x = width / 2
-    this.pvs[1].y = -height / 2
-    this.pvs[2].x = width / 2
-    this.pvs[2].y = height / 2
-    this.pvs[3].x = -width / 2
-    this.pvs[3].y = height / 2
-
-    let m1 = new Matrix3()
-    let angle = -DDeiUtil.preciseTimes(this.rotate, DDeiConfig.ROTATE_UNIT)
-    let rotateMatrix = new Matrix3(
-      Math.cos(angle), Math.sin(angle), 0,
-      -Math.sin(angle), Math.cos(angle), 0,
-      0, 0, 1);
-    let move2Matrix = new Matrix3(
-      1, 0, x + width / 2,
-      0, 1, y + height / 2,
-      0, 0, 1);
-    m1.premultiply(rotateMatrix).premultiply(move2Matrix)
-    this.transSelfVectors(m1)
-  }
+  
 
 
 
@@ -549,35 +515,7 @@ class DDeiRectContainer extends DDeiRectangle {
     })
   }
 
-  /**
-   * 获取中心点操作点
-   */
-  getCenterOpPoints(): [] {
 
-    if (this.layout == 'compose') {
-      return []
-    } else {
-      return super.getCenterOpPoints()
-    }
-
-  }
-
-  /**
-   * 得到点在图形某条线上的投射点
-   * @param point 测试点
-   * @param distance 内外部判定区间的距离
-   * @param direct 方向，1外部，2内部 默认1
-   * @param index 线开始点向量的下标
-   * @returns 投影点的坐标
-   */
-  getProjPointOnLine(point: { x: number, y: number }
-    , distance: { in: number, out: number } = { in: 0, out: 15 }, direct: number = 1, index: number): { x: number, y: number } | null {
-    if (this.layout == 'compose') {
-      return null
-    } else {
-      return super.getProjPointOnLine(point, distance, direct)
-    }
-  }
 
   getAPVS() {
     let arr = [this.cpv]
@@ -590,21 +528,6 @@ class DDeiRectContainer extends DDeiRectangle {
   }
 
 
-  /**
-   * 得到点在图形连接线上的投射点
-   * @param point 测试点
-   * @param distance 内外部判定区间的距离
-   * @param direct 方向，1外部，2内部 默认1
-   * @returns 投影点的坐标
-   */
-  getProjPoint(point: { x: number, y: number }
-    , distance: { in: number, out: number } = { in: 0, out: 15 }, direct: number = 1): { x: number, y: number } | null {
-    if (this.layout == 'compose') {
-      return null
-    } else {
-      return super.getProjPoint(point, distance, direct)
-    }
-  }
 
   removeModelById(ids: string[]): void {
     ids?.forEach(id => {
@@ -668,5 +591,5 @@ class DDeiRectContainer extends DDeiRectangle {
   }
 }
 
-export {DDeiRectContainer}
-export default DDeiRectContainer
+export { DDeiPolygonContainer }
+export default DDeiPolygonContainer

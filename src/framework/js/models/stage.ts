@@ -706,9 +706,11 @@ class DDeiStage {
   changeSelecetdModels(selectedModels: Map<string, DDeiAbstractShape> | null) {
     if (this.selectedModels != selectedModels) {
       this.selectedModels?.forEach(item => {
+        item.getTopContainer()?.render?.enableRefreshShape()
         item.render?.enableRefreshShape()
       })
       selectedModels?.forEach(item => {
+        item.getTopContainer()?.render?.enableRefreshShape()
         item.render?.enableRefreshShape()
       })
       this.selectedModels = selectedModels;

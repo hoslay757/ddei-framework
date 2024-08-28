@@ -659,6 +659,52 @@ class DDeiEditorUtil {
   }
 
   /**
+   * 初始化弹出框，但不显示
+   * @param id 弹出框ID
+   * @param data 数据以及回调函数等选项
+   * @param el 事件的元素
+   */
+  static initDialog(editor: DDeiEditor, id: string, data: object, isPop: boolean = false, keepState: boolean = false) {
+    if (!isPop && !editor.tempDialogData) {
+      editor.tempDialogData = {}
+    } else if (isPop && !editor.tempPopData) {
+      editor.tempPopData = {}
+    }
+    //查看是否有同一group的弹出框，如果有则关闭同一group的其它弹出框
+    if (data.group) {
+      let loopData
+      if (isPop) {
+        loopData = editor.tempPopData
+      } else {
+        loopData = editor.tempDialogData
+      }
+      for (let oid in loopData) {
+        if (oid != id) {
+          let otherDialogData = loopData[oid]
+          if (otherDialogData && otherDialogData.group == data.group) {
+            DDeiEditorUtil.closeDialog(editor, oid)
+          }
+        }
+      }
+
+    }
+    //记录临时变量
+    if (data) {
+      data.keepState = keepState
+    }
+    if (isPop) {
+      editor.tempPopData[id] = data
+    } else {
+      editor.tempDialogData[id] = data
+      if (!keepState) {
+        editor.changeState(DDeiEditorState.PROPERTY_EDITING);
+      }
+    }
+    //修改编辑器状态为快捷编辑中
+    editor?.dialogs[id]?.viewer?.forceRefreshView();
+  }
+
+  /**
    * 显示弹出框
    * @param id 弹出框ID
    * @param pos 位置信息
@@ -931,7 +977,7 @@ class DDeiEditorUtil {
     let models = [];
 
     let cc = control
-
+  
 
     //根据control的定义，初始化临时控件，并推送至上层Editor
     let searchPaths = [
@@ -952,7 +998,7 @@ class DDeiEditorUtil {
       modelCode: cc.id,
     };
 
-
+    
     //设置配置的属性值
     searchPaths.forEach((key) => {
       if (configAtrs.get(key)) {

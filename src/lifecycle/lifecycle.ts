@@ -37,6 +37,11 @@ class DDeiLifeCycle extends DDeiPluginBase {
   EVENT_CONTROL_DRAG_BEFORE: DDeiFuncData | null = null;
 
   /**
+ * 控件拖拽中，此方法为外部传入的勾子函数
+ */
+  EVENT_CONTROL_DRAGING: DDeiFuncData | null = null;
+
+  /**
    * 控件拖拽后，此方法为外部传入的勾子函数
    */
   EVENT_CONTROL_DRAG_AFTER: DDeiFuncData | null = null;

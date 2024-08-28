@@ -64,6 +64,8 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
             if (model.baseModelType == 'DDeiLine') {
               model.updateLooseCanvas()
             }
+            
+            model.getTopContainer()?.render?.enableRefreshShape()
             model.render?.enableRefreshShape()
             //更新线段
             // DDeiBusCommandChangeStageRatio.calLineCross(layer)

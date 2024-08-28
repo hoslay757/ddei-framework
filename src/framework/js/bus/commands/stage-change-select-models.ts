@@ -38,7 +38,6 @@ class DDeiBusCommandStageChangeSelectModels extends DDeiBusCommand {
    * @param evt 事件对象引用
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
-    
     let stage = bus.ddInstance.stage;
     let editor = bus.invoker
     if (stage) {
@@ -132,7 +131,7 @@ class DDeiBusCommandStageChangeSelectModels extends DDeiBusCommand {
         editor.currentControlDefine = null;
       }
       
-
+      
       DDeiEditorUtil.invokeCallbackFunc("EVENT_CONTROL_SELECT_AFTER", DDeiEnumOperateType.SELECT, { models: Array.from(selectedModels.values()) },bus.ddInstance,evt)
       // }
       return true;

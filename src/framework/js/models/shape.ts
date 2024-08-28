@@ -477,6 +477,7 @@ abstract class DDeiAbstractShape {
     }
   }
 
+
   getOperatePVS(compose: boolean = false) {
     let pvs = this.operatePVS ? this.operatePVS : this.pvs
     let returnPVS = []
@@ -549,6 +550,7 @@ abstract class DDeiAbstractShape {
       let tcop = this.composes[i]
       tcop.syncVectors(scop, clonePV)
     }
+    this.getTopContainer()?.render?.enableRefreshShape()
     this.render?.enableRefreshShape()
   }
 
@@ -1211,6 +1213,22 @@ abstract class DDeiAbstractShape {
    */
   getAccuContainer(): DDeiAbstractShape {
     return null;
+  }
+
+  /**
+   * 获取顶级容器（Layer之下）
+   * @return 获取layer之下的顶级容器
+   */
+  getTopContainer(): DDeiAbstractShape {
+    let model = this;
+    while (model.pModel && model.pModel.baseModelType != "DDeiLayer"){
+      model = model.pModel;
+    }
+    if(model == this){
+      return null
+    }else{
+      return model
+    }
   }
 
   /**
@@ -2006,7 +2024,8 @@ abstract class DDeiAbstractShape {
 
       item.initPVS()
 
-      item.render?.enableRefreshShape()
+      item.getTopContainer()?.render?.enableRefreshShape()
+      this.render?.enableRefreshShape()
 
     })
   }

@@ -19,6 +19,11 @@ abstract class DDeiLayoutManager {
    * 修改模型的位置和大小
    */
   abstract changeSubModelBounds(): void
+  
+  /**
+   *  根据子模型大小，修改自身大小
+   */
+  abstract changeParentsBounds(): void
 
   /**
    * 验证是否可以从其他布局转换为本布局

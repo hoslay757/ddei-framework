@@ -216,8 +216,8 @@ class DDeiAbstractShapeRender {
     else {
       pushMulits.push({ actionType: DDeiEnumBusCommandType.CancelCurLevelSelectedModels, data: { ignoreModels: [this.model] } });
       pushMulits.push({ actionType: DDeiEnumBusCommandType.ModelChangeSelect, data: [{ id: this.model.id, value: DDeiEnumControlState.SELECTED }] });
-
     }
+    this.model.layer.render.enableRefreshShape();
     pushMulits.push({ actionType: DDeiEnumBusCommandType.StageChangeSelectModels });
     this.stage?.ddInstance?.bus?.pushMulit(pushMulits, evt);
     this.stage?.ddInstance?.bus?.executeAll()
@@ -258,7 +258,6 @@ class DDeiAbstractShapeRender {
   }
 
   changeOpPoints(ex: number, ey: number, pointMode: number | null = null) {
-    
     //获取直线连接操作点
     let appendPoints = []
     let hasPoint = false;
