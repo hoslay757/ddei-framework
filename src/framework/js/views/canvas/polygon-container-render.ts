@@ -158,12 +158,12 @@ class DDeiPolygonContainerCanvasRender extends DDeiPolygonCanvasRender {
       //转换为图片
       if (!this.tempCanvas) {
         this.tempCanvas = document.createElement('canvas');
-        // this.tempCanvas.setAttribute("style", "left:-99999px;position:fixed;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
-        this.tempCanvas.setAttribute("style", "left:0px;top:0px;position:fixed;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
+        this.tempCanvas.setAttribute("style", "left:-99999px;position:fixed;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
+        // this.tempCanvas.setAttribute("style", "left:0px;top:0px;position:fixed;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
 
-        let editorId = DDeiUtil.getEditorId(this.ddRender?.model);
-        let editorEle = document.getElementById(editorId);
-        editorEle.appendChild(this.tempCanvas)
+        // let editorId = DDeiUtil.getEditorId(this.ddRender?.model);
+        // let editorEle = document.getElementById(editorId);
+        // editorEle.appendChild(this.tempCanvas)
       }
       let tempCanvas = this.tempCanvas
       let pvs = this.model.operatePVS ? this.model.operatePVS : this.model.pvs

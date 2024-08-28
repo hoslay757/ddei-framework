@@ -688,7 +688,6 @@ class DDeiLayerCanvasRender {
         //光标所属位置是否有控件
         //有控件：分发事件到当前控件
         if (operateControls != null && operateControls.length > 0) {
-
           //全局变量：当前操作控件=当前控件
           let operateControl = operateControls[0];
 
@@ -1431,6 +1430,7 @@ class DDeiLayerCanvasRender {
           if (sms.indexOf(this.stageRender.currentOperateShape) == -1) {
             sms.push(this.stageRender.currentOperateShape)
           }
+          
           let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_DRAG_BEFORE", DDeiEnumOperateType.DRAG, { models: sms }, this.ddRender.model, evt)
 
           if (rsState == 0 || rsState == 1) {
