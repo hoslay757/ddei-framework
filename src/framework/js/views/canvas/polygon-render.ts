@@ -80,7 +80,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       //转换为图片
       if (!this.tempCanvas) {
         this.tempCanvas = document.createElement('canvas');
-        this.tempCanvas.setAttribute("style", "left:-99999px;position:fixed;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
+        this.tempCanvas.setAttribute("style", "pointer-events:none;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;scale:" + (1 / rat1));
+        // this.tempCanvas.setAttribute("style", "pointer-events:none;left:-99999px;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 ) + ");display:block;zoom:" + (1));
         // this.tempCanvas.setAttribute("style", "left:0px;top:0px;position:fixed;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
 
         // let editorId = DDeiUtil.getEditorId(this.ddRender?.model);
@@ -121,103 +122,115 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   /**
    * 绘制图形
    */
-  drawShape(tempShape, composeRender: number = 0): void {
-    let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
-    if (composeRender || rsState == 0 || rsState == 1) {
-      let rsState1 = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", DDeiEnumOperateType.VIEW, { models: [this.model], tempShape: tempShape, composeRender: composeRender }, this.ddRender.model, null)
-      if (rsState1 == 0 || rsState1 == 1) {
-        if (!this.model.hidden && (this.refreshShape || this.isEditoring)) {
+  drawShape(tempShape, composeRender: number = 0,inRect:object|null = null,zIndex:number = 0): void {
 
-          //创建准备图形
-          this.createTempShape();
-          //将当前控件以及composes按照zindex顺序排列并输出
-          let rendList = [];
-          if (this.model.composes?.length > 0) {
-            rendList = rendList.concat(this.model.composes);
-          }
-          rendList.push(this.model)
-          rendList.sort((a, b) => {
+    if (!inRect || this.model.isInRect(inRect.x, inRect.y, inRect.x1, inRect.y1)) {
+      this.tempZIndex = zIndex
+      let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
+      if (composeRender || rsState == 0 || rsState == 1) {
+        let rsState1 = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", DDeiEnumOperateType.VIEW, { models: [this.model], tempShape: tempShape, composeRender: composeRender }, this.ddRender.model, null)
+        if (rsState1 == 0 || rsState1 == 1) {
+          if (!this.model.hidden && (this.refreshShape || this.isEditoring)) {
 
-            if ((a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
-              return a.cIndex - b.cIndex
-            } else if ((a.cIndex || a.cIndex == 0) && !(b.cIndex || b.cIndex == 0)) {
-              return 1
-            } else if (!(a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
-              return -1
-            } else {
-              return 0
+            //创建准备图形
+            this.createTempShape();
+            //将当前控件以及composes按照zindex顺序排列并输出
+            let rendList = [];
+            if (this.model.composes?.length > 0) {
+              rendList = rendList.concat(this.model.composes);
             }
-          })
-          rendList.forEach(c => {
-            if (c == this.model) {
-              //获得 2d 上下文对象
-              let canvas = this.getCanvas();
-              let ctx = canvas.getContext('2d');
+            rendList.push(this.model)
+            rendList.sort((a, b) => {
+
+              if ((a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+                return a.cIndex - b.cIndex
+              } else if ((a.cIndex || a.cIndex == 0) && !(b.cIndex || b.cIndex == 0)) {
+                return 1
+              } else if (!(a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+                return -1
+              } else {
+                return 0
+              }
+            })
+            rendList.forEach(c => {
+              if (c == this.model) {
+                //获得 2d 上下文对象
+                let canvas = this.getCanvas();
+                let ctx = canvas.getContext('2d');
 
 
-              if (!tempShape && this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING || this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING_TEXT_SELECTING) {
-                if (this.isEditoring) {
-                  // tempShape = { border: { type: 1, dash: [10, 10], width: 1.25, color: "#017fff" } }
-                } else if (this.stage.render?.editorShadowControl) {
-                  if (this.model.id + "_shadow" == this.stage.render.editorShadowControl.id) {
-                    return;
+                if (!tempShape && this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING || this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING_TEXT_SELECTING) {
+                  if (this.isEditoring) {
+                    // tempShape = { border: { type: 1, dash: [10, 10], width: 1.25, color: "#017fff" } }
+                  } else if (this.stage.render?.editorShadowControl) {
+                    if (this.model.id + "_shadow" == this.stage.render.editorShadowControl.id) {
+                      return;
+                    }
                   }
+                } else if (!tempShape && this.stage?.selectedModels?.size == 1 && Array.from(this.stage?.selectedModels.values())[0].id == this.model.id) {
+                  tempShape = { border: { type: 1, width: 1, color: "#017fff", dash: [10, 5] }, drawCompose:false}
                 }
-              } else if (!tempShape && this.stage?.selectedModels?.size == 1 && Array.from(this.stage?.selectedModels.values())[0].id == this.model.id) {
-                tempShape = { border: { type: 1, width: 1, color: "#017fff", dash: [10, 5] }, drawCompose:false}
-              }
-              let oldRat1 = this.ddRender.ratio
-              this.ddRender.oldRatio = oldRat1
-              //获取缩放比例
-              if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
+                let oldRat1 = this.ddRender.ratio
+                this.ddRender.oldRatio = oldRat1
+                //获取缩放比例
+                if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
 
-                let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
-                let rat1 = oldRat1 * scaleSize
-                //去掉当前被编辑控件的边框显示
-                this.ddRender.ratio = rat1
-              }
-              this.calScaleType3Size(tempShape);
-              ctx.save();
-              //拆分并计算pvss
-              this.calPVSS(tempShape)
-              //创建剪切区
-              this.createClip(tempShape);
+                  let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
+                  let rat1 = oldRat1 * scaleSize
+                  //去掉当前被编辑控件的边框显示
+                  this.ddRender.ratio = rat1
+                }
+                this.calScaleType3Size(tempShape);
+                ctx.save();
+                //拆分并计算pvss
+                this.calPVSS(tempShape)
+                //创建剪切区
+                this.createClip(tempShape);
 
-              //绘制填充
-              this.drawFill(tempShape);
-              //绘制文本
-              this.drawText(tempShape);
-              //根据pvss绘制边框
-              this.drawBorder(tempShape);
-              ctx.restore();
-              if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
-                this.ddRender.ratio = oldRat1
-                delete this.ddRender.oldRatio
-              }
+                //绘制填充
+                this.drawFill(tempShape);
+                //绘制文本
+                this.drawText(tempShape);
+                //根据pvss绘制边框
+                this.drawBorder(tempShape);
+                ctx.restore();
+                if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
+                  this.ddRender.ratio = oldRat1
+                  delete this.ddRender.oldRatio
+                }
 
-            } else {
-              //绘制组合控件的内容
-              if (tempShape && tempShape?.drawCompose == false){
-                c.render.drawShape(null, composeRender + 1)
-              }else{
-                c.render.drawShape(tempShape, composeRender + 1)
+              } else {
+                //绘制组合控件的内容
+                if (tempShape && tempShape?.drawCompose == false){
+                  c.render.drawShape(null, composeRender + 1)
+                }else{
+                  c.render.drawShape(tempShape, composeRender + 1)
+                }
               }
+            })
+
+            if (!this.isEditoring) {
+              this.refreshShape = false
             }
-          })
-
-          if (!this.isEditoring) {
-            this.refreshShape = false
           }
+
+          //外部canvas
+          this.drawSelfToCanvas(composeRender)
+
+        }
+        if (!composeRender) {
+          DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_AFTER", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
         }
 
-        //外部canvas
-        this.drawSelfToCanvas(composeRender)
-
       }
-      if (!composeRender) {
-        DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_AFTER", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
+    } else {
+     
+      let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", "VIEW-HIDDEN", { models: [this.model] }, this.ddRender.model, null)
+      if (rsState == 0 || rsState == 1) {
+        //将canvas移动至画布位置
+        this.tempCanvas?.remove()
       }
-
+      
     }
   }
 
@@ -226,32 +239,60 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
    */
   drawSelfToCanvas(composeRender) {
     if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
-      let canvas = this.getRenderCanvas(composeRender)
-      let ctx = canvas.getContext('2d');
+      let model = this.model
+      let stage = model.stage
+      let ruleWeight = 0
+      if (stage.render.tempRuleDisplay == 1 || stage.render.tempRuleDisplay == '1') {
+        ruleWeight = 15
+      }
+      
+      // let canvas = this.getRenderCanvas(composeRender)
+    //   let ctx = canvas.getContext('2d');
       let stageRatio = this.model.getStageRatio()
-      let oldRat1 = this.ddRender.ratio;
-      let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
-      let rat1 = oldRat1 * scaleSize
-      let outRect = this.tempCanvas.outRect
-      if (composeRender > 0) {
-        oldRat1 = rat1
+    //   let oldRat1 = this.ddRender.ratio;
+    //   let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
+    //   let rat1 = oldRat1 * scaleSize
+    //   let outRect = this.tempCanvas.outRect
+    //   if (composeRender > 0) {
+    //     oldRat1 = rat1
+    //   }
+    //   ctx.save();
+    //   if (this.model.mirrorX || this.model.mirrorY){
+    //     let ratx = this.model.cpv.x * oldRat1 * stageRatio
+    //     let raty = this.model.cpv.y * oldRat1 * stageRatio
+    //     ctx.translate(ratx, raty)
+    //     if(this.model.mirrorX){
+    //       ctx.scale(-1, 1)
+    //     }
+    //     if (this.model.mirrorY){
+    //       ctx.scale(1, -1)
+    //     }
+    //     ctx.translate(-ratx, -raty)
+    //   }
+    //   ctx.drawImage(this.tempCanvas, 0, 0, outRect.width * rat1, outRect.height * rat1, (this.model.cpv.x * stageRatio - outRect.width / 2) * oldRat1, (this.model.cpv.y * stageRatio - outRect.height / 2) * oldRat1, outRect.width * oldRat1, outRect.height * oldRat1)
+    //   ctx.restore()
+
+      //获取model的绝对位置
+      if (!this.tempCanvas.parentElement){
+        
+        //将canvas移动至画布位置
+        let editorId = DDeiUtil.getEditorId(this.ddRender?.model);
+        let canvasDivEle = document.getElementById(editorId +"_canvas");
+        let viewerEle = canvasDivEle.getElementsByClassName("ddei-editor-canvasview-viewers")[0]
+        viewerEle.appendChild(this.tempCanvas)
       }
-      ctx.save();
-      if (this.model.mirrorX || this.model.mirrorY){
-        let ratx = this.model.cpv.x * oldRat1 * stageRatio
-        let raty = this.model.cpv.y * oldRat1 * stageRatio
-        ctx.translate(ratx, raty)
-        if(this.model.mirrorX){
-          ctx.scale(-1, 1)
-        } 
-        if (this.model.mirrorY){
-          ctx.scale(1, -1)
-        }
-        ctx.translate(-ratx, -raty)
-      }
-      ctx.drawImage(this.tempCanvas, 0, 0, outRect.width * rat1, outRect.height * rat1, (this.model.cpv.x * stageRatio - outRect.width / 2) * oldRat1, (this.model.cpv.y * stageRatio - outRect.height / 2) * oldRat1, outRect.width * oldRat1, outRect.height * oldRat1)
-      ctx.restore()
+
+      this.tempCanvas.style.zIndex = this.tempZIndex
+      this.tempCanvas.style.left = (this.model.cpv.x * stageRatio + this.model.stage.wpv.x) - this.tempCanvas.offsetWidth / 2  - ruleWeight + "px"
+      
+      this.tempCanvas.style.top = (this.model.cpv.y * stageRatio + this.model.stage.wpv.y) - this.tempCanvas.offsetHeight / 2  - ruleWeight + "px"
+
+
+
     }
+
+    
+    
 
   }
 

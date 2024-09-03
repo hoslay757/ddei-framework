@@ -95,6 +95,7 @@ class DDeiStageCanvasRender {
       let rsState1 = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
       //获得 2d 上下文对象
       let canvas = this.ddRender.getCanvas();
+      let operateCanvas = this.ddRender.operateCanvas
       let rat1 = this.ddRender.ratio;
       if (rsState1 == 0 || rsState1 == 1) {
         //清空画布，绘制场景大背景
@@ -127,12 +128,16 @@ class DDeiStageCanvasRender {
         this.drawGrid()
         
         let ctx = canvas.getContext('2d');
+        let operateCtx = operateCanvas.getContext('2d');
         
 
         //绘制图形
         ctx.save();
+        operateCtx.save();
 
         ctx.translate((this.model.wpv.x) * rat1, (this.model.wpv.y) * rat1)
+        operateCtx.translate((this.model.wpv.x) * rat1, (this.model.wpv.y) * rat1)
+        
 
         // this.drawTest();
 
@@ -165,7 +170,7 @@ class DDeiStageCanvasRender {
 
 
         ctx.restore();
-
+        operateCtx.restore()
 
         //绘制水印
         this.drawMark();
@@ -191,7 +196,8 @@ class DDeiStageCanvasRender {
     
       //设置htmlrender的容器大小以及位置
       let renderViewerEle = canvas.parentElement?.getElementsByClassName("ddei-editor-canvasview-renderviewers")[0];
-      if (renderViewerEle){
+      let viewerEle = canvas.parentElement?.getElementsByClassName("ddei-editor-canvasview-viewers")[0];
+      if (renderViewerEle && viewerEle){
         
         
         let ruleWeight = 0
@@ -211,6 +217,11 @@ class DDeiStageCanvasRender {
         renderViewerEle.style.marginTop = ruleWeight + "px"
         renderViewerEle.style.width = (canvas.offsetWidth/rat1 - ruleWeight - vScrollWeight) + "px"
         renderViewerEle.style.height = (canvas.offsetHeight/rat1 - ruleWeight - hScrollWeight) + "px"
+
+        viewerEle.style.marginLeft = ruleWeight + "px"
+        viewerEle.style.marginTop = ruleWeight + "px"
+        viewerEle.style.width = (canvas.offsetWidth / rat1 - ruleWeight - vScrollWeight) + "px"
+        viewerEle.style.height = (canvas.offsetHeight / rat1 - ruleWeight - hScrollWeight) + "px"
         delete this.tempRuleDisplay
       }
     }
@@ -236,7 +247,7 @@ class DDeiStageCanvasRender {
       let rect = this.helpLines.rect;
 
       //获得 2d 上下文对象
-      let canvas = this.ddRender.getCanvas();
+      let canvas = this.ddRender.operateCanvas
       let ctx = canvas.getContext('2d');
       //获取全局缩放比例
       let rat1 = this.ddRender.ratio
@@ -408,8 +419,6 @@ class DDeiStageCanvasRender {
       //获得 2d 上下文对象
       let canvas = this.ddRender.getCanvas();
       let ctx = canvas.getContext('2d');
-      //获取全局缩放比例
-      let ratio = this.ddRender.ratio;
       //保存状态
       ctx.save();
       let item = this.editorShadowControl;
@@ -423,9 +432,15 @@ class DDeiStageCanvasRender {
   clearStage(): void {
     //获得 2d 上下文对象
     let canvas = this.ddRender.getCanvas();
+    
+    let operateCanvas = this.ddRender.operateCanvas
+    operateCanvas.width = operateCanvas.width;
     let ctx = canvas.getContext('2d');
+    
     ctx.save();
+   
     //清空画布
+    
     ctx.fillStyle = DDeiUtil.getStyleValue("panel-header", this.ddRender.model);
     ctx.fillRect(0, 0, canvas.width, canvas.height)
     ctx.restore();

@@ -33,7 +33,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
    */
   drawShape(): void {
     //获得 2d 上下文对象
-    let canvas = this.ddRender.getCanvas();
+    let canvas = this.ddRender.operateCanvas
     let ctx = canvas.getContext('2d');
     //保存状态
     ctx.save();
@@ -105,7 +105,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       let ovs = model.ovs;
       if (ovs?.length > 0) {
         //获得 2d 上下文对象
-        let canvas = this.ddRender.getCanvas();
+        let canvas = this.ddRender.operateCanvas
         let ctx = canvas.getContext('2d');
         let ratio = this.ddRender.ratio * this.stage.getStageRatio();
         let weight = 4
@@ -146,7 +146,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
   drawEditBorder(): void {
     if (this.stageRender.editorShadowControl?.textArea?.length > 3) {
       //获得 2d 上下文对象
-      let canvas = this.ddRender.getCanvas();
+      let canvas = this.ddRender.operateCanvas
       let ctx = canvas.getContext('2d');
       ctx.save()
       //获取全局缩放比例
@@ -202,7 +202,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       let lineModel = Array.from(this.stage?.selectedModels?.values())[0];
       if (lineModel.baseModelType == 'DDeiLine') {
         //获得 2d 上下文对象
-        let canvas = this.ddRender.getCanvas();
+        let canvas = this.ddRender.operateCanvas
         let ctx = canvas.getContext('2d');
         //获取全局缩放比例
         let stageRatio = this.stage.getStageRatio()
@@ -335,7 +335,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       return;
     }
     //获得 2d 上下文对象
-    let canvas = this.ddRender.getCanvas();
+    let canvas = this.ddRender.operateCanvas
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
     let stageRatio = this.stage?.getStageRatio()
@@ -381,7 +381,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         if (!(type == 0 || type == '0') && color && (!opacity || opacity > 0) && bWidth > 0) {
 
           //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
-          let lineOffset = 0//bWidth * ratio / 2;
+          let lineOffset = ratio//bWidth * ratio / 2;
           ctx.lineWidth = bWidth * ratio;
           ctx.beginPath();
 
@@ -499,16 +499,16 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     if (includedModels && includedModels.size > selectNumber) {
       includedModels.forEach((model, key) => {
         //获得 2d 上下文对象
-        let canvas = this.ddRender.getCanvas();
+        let canvas = this.ddRender.operateCanvas
         let ctx = canvas.getContext('2d');
         //保存状态
         ctx.save();
         model.render.enableRefreshShape()
         if (model.baseModelType == "DDeiLine") {
-          model.render.drawShape({ color: "red", dash: [] });
+          model.render.drawShape({ color: "red", dash: [] },0,null,99999);
         } else {
           //绘制临时Border
-          model.render.drawBorderAndComposesBorder({ type: 1, width: 1, color: "red", border: { type: 1, width: 1, color: "red" } },false);
+          model.render.drawShape({ type: 1, width: 1, color: "red", border: { type: 1,dash:[], width: 1, color: "red" } },0,null,99999);
 
         }
         ctx.restore()

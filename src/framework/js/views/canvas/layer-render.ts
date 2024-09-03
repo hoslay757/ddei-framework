@@ -306,20 +306,17 @@ class DDeiLayerCanvasRender {
   drawShadowControls(): void {
     if (this.model.shadowControls?.length > 0) {
       //获得 2d 上下文对象
-      let canvas = this.ddRender.getCanvas();
-      let ctx = canvas.getContext('2d');
+      let canvas = this.ddRender.operateCanvas
+      
       this.model.shadowControls.forEach(item => {
         //保存状态
-        ctx.save();
-        item.render.drawShape();
+        // item.render.drawShape();
         item.render.enableRefreshShape()
         if (item.modelType == 'DDeiLine') {
-          item.render.drawShape({ color: "#017fff", dash: [], opacity: 0.7, fill: { color: '#017fff', opacity: 0.7 } });
+          item.render.drawShape({ color: "#017fff", dash: [], opacity: 0.7, fill: { color: '#017fff', opacity: 0.7 } }, 0, null, 99999);
         } else {
-          item.render.drawShape({ fill: { color: '#017fff', opacity: 0.7 } });
+          item.render.drawShape({ fill: { color: '#017fff', opacity: 0.7 } }, 0, null, 99999);
         }
-
-        ctx.restore();
       });
 
     }
@@ -346,16 +343,17 @@ class DDeiLayerCanvasRender {
       let y1 = y + canvas.height / rat1 / stageRatio;
       //遍历子元素，绘制子元素
       // let time1 = new Date().getTime()
-      for (let li = 0; li < this.model.midList.length;li++){
-        let key = this.model.midList[li]
-        let item = this.model.models.get(key);
-        if (!hidden && item?.render && (!inRect || item?.isInRect(x, y, x1, y1))) {
-          item.render.tempZIndex = this.tempZIndex+(li+1)
-          item.render.drawShape();
-        } else {
-          DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", "VIEW-HIDDEN", { models: [item] }, this.ddRender.model, null)
+      if(!hidden){
+        let rect = inRect ? { x: x, y: y, x1: x1, y1: y1 } : null
+        for (let li = 0; li < this.model.midList.length; li++) {
+          let key = this.model.midList[li]
+          let item = this.model.models.get(key);
+          item?.render?.drawShape(null, 0, rect, this.tempZIndex + (li + 1));
         }
+      }else{
+        DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", "VIEW-HIDDEN", { models: Array.from(this.model.models.values()) }, this.ddRender.model, null)
       }
+      
       
     }
   }
@@ -367,7 +365,7 @@ class DDeiLayerCanvasRender {
     if (this.model?.opPoints?.length > 0) {
       
       //获得 2d 上下文对象
-      let canvas = this.ddRender.getCanvas();
+      let canvas = this.ddRender.operateCanvas
       let ctx = canvas.getContext('2d');
       let stageRatio = this.stage?.getStageRatio()
       let ratio = this.ddRender?.ratio * stageRatio;
@@ -454,7 +452,7 @@ class DDeiLayerCanvasRender {
   drawOpLine(): void {
     if (this.model.opLine) {
       //获得 2d 上下文对象
-      let canvas = this.ddRender.getCanvas();
+      let canvas = this.ddRender.operateCanvas
       let ctx = canvas.getContext('2d');
       let ratio = this.ddRender?.ratio;
       //保存状态
@@ -478,7 +476,7 @@ class DDeiLayerCanvasRender {
 
     if (this.model?.dragInPoints?.length > 0 || this.model?.dragOutPoints?.length > 0) {
       //获得 2d 上下文对象
-      let canvas = this.ddRender.getCanvas();
+      let canvas = this.ddRender.operateCanvas
       let ctx = canvas.getContext('2d');
       let stageRatio = this.stage?.getStageRatio()
       let ratio = this.ddRender.ratio * stageRatio;
@@ -902,7 +900,6 @@ class DDeiLayerCanvasRender {
 
               
               if (rsState == 0 || rsState == 1) {
-
                 if (model) {
                   model.syncVectors(item)
                 } else {
@@ -917,6 +914,7 @@ class DDeiLayerCanvasRender {
                   if ((opPoint?.model && (Math.abs(opPoint.x - item.startPoint.x) >= 1 || Math.abs(opPoint.y - item.startPoint.y) >= 1)) || maxLength >= 15) {
                     //影子控件转变为真实控件并创建
                     item.id = id
+                    item.destroyed()
                     this.model.addModel(item,false)
                     item.initRender();
                     model = item;
