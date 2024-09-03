@@ -36,6 +36,11 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
     });
   }
 
+  getCanvas() {
+    return this.ddRender.getCanvas();
+
+  }
+
   /**
      * 创建图形
      */
@@ -47,46 +52,48 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
       this.ddRender.model,
       null
     )) {
-      let canvas = this.ddRender.getCanvas();
-      let ctx = canvas.getContext('2d');
+      if (!this.model.hidden) {
+        let canvas = this.ddRender.getCanvas();
+        let ctx = canvas.getContext('2d');
 
-      super.drawShape(tempShape);
-      //保存状态
-      ctx.save();
-      //获取全局缩放比例
-      let rat1 = this.ddRender.ratio;
-      let stageRatio = this.model.getStageRatio()
-      let ratio = rat1 * stageRatio;
-      rat1 = ratio
-      //计算填充的原始区域
-      let fillPVS = this.getFillAreaPVS();
-      //剪切当前区域
-      ctx.beginPath();
-      let lineOffset = 0//1 * ratio / 2;
-      for (let i = 0; i < fillPVS.length; i++) {
-        if (i == fillPVS.length - 1) {
-          ctx.lineTo(fillPVS[i].x * rat1 + lineOffset, fillPVS[i].y * rat1 + lineOffset);
-          ctx.lineTo(fillPVS[0].x * rat1 + lineOffset, fillPVS[0].y * rat1 + lineOffset);
-        } else if (i == 0) {
-          ctx.moveTo(fillPVS[i].x * rat1 + lineOffset, fillPVS[i].y * rat1 + lineOffset);
-        } else {
-          ctx.lineTo(fillPVS[i].x * rat1 + lineOffset, fillPVS[i].y * rat1 + lineOffset);
+        super.drawShape(tempShape);
+        //保存状态
+        ctx.save();
+        //获取全局缩放比例
+        let rat1 = this.ddRender.ratio;
+        let stageRatio = this.model.getStageRatio()
+        let ratio = rat1 * stageRatio;
+        rat1 = ratio
+        //计算填充的原始区域
+        let fillPVS = this.getFillAreaPVS();
+        //剪切当前区域
+        ctx.beginPath();
+        let lineOffset = 0//1 * ratio / 2;
+        for (let i = 0; i < fillPVS.length; i++) {
+          if (i == fillPVS.length - 1) {
+            ctx.lineTo(fillPVS[i].x * rat1 + lineOffset, fillPVS[i].y * rat1 + lineOffset);
+            ctx.lineTo(fillPVS[0].x * rat1 + lineOffset, fillPVS[0].y * rat1 + lineOffset);
+          } else if (i == 0) {
+            ctx.moveTo(fillPVS[i].x * rat1 + lineOffset, fillPVS[i].y * rat1 + lineOffset);
+          } else {
+            ctx.lineTo(fillPVS[i].x * rat1 + lineOffset, fillPVS[i].y * rat1 + lineOffset);
+          }
         }
-      }
-      ctx.closePath();
-      //填充矩形
-      // ctx.clip();
-      this.drawChildrenShapes(tempShape);
-      ctx.restore();
+        ctx.closePath();
+        //填充矩形
+        // ctx.clip();
+        this.drawChildrenShapes(tempShape);
+        ctx.restore();
 
-      if (this.viewAfter) {
-        this.viewAfter(
-          DDeiEnumOperateType.VIEW,
-          [this.model],
-          null,
-          this.ddRender.model,
-          null
-        )
+        if (this.viewAfter) {
+          this.viewAfter(
+            DDeiEnumOperateType.VIEW,
+            [this.model],
+            null,
+            this.ddRender.model,
+            null
+          )
+        }
       }
     }
 

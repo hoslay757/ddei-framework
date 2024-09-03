@@ -133,6 +133,9 @@ abstract class DDeiAbstractShape {
   cIndex: number | null;
   // 旋转,0/null 不旋转，默认0
   rotate: number | null;
+  
+  // 是否隐藏
+  hidden:boolean | null = null;
 
   //中心点向量
   cpv: object;
