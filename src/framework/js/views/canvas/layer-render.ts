@@ -62,6 +62,11 @@ class DDeiLayerCanvasRender {
    */
   renderCacheData: Map<string, object> = new Map();
 
+  /**
+   * 用于显示自身的容器
+   */
+  containerViewer:HTMLElement|null = null;
+
   // ============================ 方法 ===============================
   /**
    * 初始化
@@ -89,6 +94,20 @@ class DDeiLayerCanvasRender {
    * 绘制图形
    */
   drawShape(inRect: boolean = true): void {
+    if (!this.containerViewer){
+      this.containerViewer = document.getElementById("ddei_editor_layer_" + this.model.id)
+      if (!this.containerViewer){
+        //在容器上创建画布，画布用来渲染图形
+        let canvasViewerElement = this.ddRender.operateCanvas.parentElement
+        if (canvasViewerElement) {
+          let containerElement = document.createElement("div")
+          containerElement.setAttribute("class", "ddei-editor-canvasview-contentlayer")
+          containerElement.setAttribute("id", "ddei_editor_layer_"+this.model.id)
+          canvasViewerElement.insertBefore(containerElement, this.ddRender.operateCanvas)
+          this.containerViewer = containerElement
+        }
+      }
+    }
     //只有当显示时才绘制图层
     if (this.model.display || this.model.tempDisplay) {
       let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.stage?.ddInstance, null)
@@ -113,7 +132,7 @@ class DDeiLayerCanvasRender {
         DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_AFTER", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.stage?.ddInstance, null)
       }
     }else{
-      //绘制子元素
+      //隐藏子元素
       this.drawChildrenShapes(inRect,true);
     }
   }

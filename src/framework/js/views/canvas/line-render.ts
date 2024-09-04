@@ -180,9 +180,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
             }
             if (!this.tempCanvas.parentElement) {
               //将canvas移动至画布位置
-              let editorId = DDeiUtil.getEditorId(this.ddRender?.model);
-              let canvasDivEle = document.getElementById(editorId + "_canvas");
-              let viewerEle = canvasDivEle.getElementsByClassName("ddei-editor-canvasview-viewers")[0]
+              let viewerEle = this.model.layer.render.containerViewer
               viewerEle.appendChild(this.tempCanvas)
             }
             this.tempCanvas.style.zIndex = this.tempZIndex

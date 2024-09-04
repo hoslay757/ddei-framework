@@ -196,8 +196,8 @@ class DDeiStageCanvasRender {
     
       //设置htmlrender的容器大小以及位置
       let renderViewerEle = canvas.parentElement?.getElementsByClassName("ddei-editor-canvasview-renderviewers")[0];
-      let viewerEle = canvas.parentElement?.getElementsByClassName("ddei-editor-canvasview-viewers")[0];
-      if (renderViewerEle && viewerEle){
+      let viewerEles = canvas.parentElement?.getElementsByClassName("ddei-editor-canvasview-contentlayer");
+      if (renderViewerEle && viewerEles){
         
         
         let ruleWeight = 0
@@ -218,10 +218,13 @@ class DDeiStageCanvasRender {
         renderViewerEle.style.width = (canvas.offsetWidth/rat1 - ruleWeight - vScrollWeight) + "px"
         renderViewerEle.style.height = (canvas.offsetHeight/rat1 - ruleWeight - hScrollWeight) + "px"
 
-        viewerEle.style.marginLeft = ruleWeight + "px"
-        viewerEle.style.marginTop = ruleWeight + "px"
-        viewerEle.style.width = (canvas.offsetWidth / rat1 - ruleWeight - vScrollWeight) + "px"
-        viewerEle.style.height = (canvas.offsetHeight / rat1 - ruleWeight - hScrollWeight) + "px"
+        for (let ei = 0; ei < viewerEles.length;ei++){
+          let viewerEle = viewerEles[ei];
+          viewerEle.style.marginLeft = ruleWeight + "px"
+          viewerEle.style.marginTop = ruleWeight + "px"
+          viewerEle.style.width = (canvas.offsetWidth / rat1 - ruleWeight - vScrollWeight) + "px"
+          viewerEle.style.height = (canvas.offsetHeight / rat1 - ruleWeight - hScrollWeight) + "px"
+        }
         delete this.tempRuleDisplay
       }
     }
