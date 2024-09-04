@@ -306,7 +306,7 @@ class DDeiLayerCanvasRender {
   drawShadowControls(): void {
     if (this.model.shadowControls?.length > 0) {
       //获得 2d 上下文对象
-      let canvas = this.ddRender.operateCanvas
+      // let canvas = this.ddRender.operateCanvas
       
       this.model.shadowControls.forEach(item => {
         //保存状态
@@ -368,9 +368,11 @@ class DDeiLayerCanvasRender {
       let canvas = this.ddRender.operateCanvas
       let ctx = canvas.getContext('2d');
       let stageRatio = this.stage?.getStageRatio()
-      let ratio = this.ddRender?.ratio * stageRatio;
+      let rat1 = this.ddRender.ratio;
+      let ratio = rat1 * stageRatio;
       //保存状态
       ctx.save();
+      ctx.translate(rat1,rat1)
       let firstOp2Point, beforeOp2Point
       this.model?.opPoints.forEach(point => {
         if (!point || point.isSplit) {
@@ -441,9 +443,9 @@ class DDeiLayerCanvasRender {
   }
 
   enableRefreshShape() {
-    this.model.models.forEach(shape=>{
-      shape?.render?.enableRefreshShape();
-    })
+    // this.model.models.forEach(shape=>{
+    //   shape?.render?.enableRefreshShape();
+    // })
   }
 
   /**
@@ -452,11 +454,11 @@ class DDeiLayerCanvasRender {
   drawOpLine(): void {
     if (this.model.opLine) {
       //获得 2d 上下文对象
-      let canvas = this.ddRender.operateCanvas
-      let ctx = canvas.getContext('2d');
-      let ratio = this.ddRender?.ratio;
-      //保存状态
-      ctx.save();
+      // let canvas = this.ddRender.operateCanvas
+      // let ctx = canvas.getContext('2d');
+      // let ratio = this.ddRender?.ratio;
+      // //保存状态
+      // ctx.save();
       let lineRender = this.model.opLine.render
       let color = lineRender.getCachedValue("color");
       let weight = lineRender.getCachedValue("weight");
@@ -464,8 +466,8 @@ class DDeiLayerCanvasRender {
       this.model.opLine.render.drawShape({ color: "red", opacity: 0.5, weight: weight * 1.5 })
 
 
-      //恢复状态
-      ctx.restore();
+      // //恢复状态
+      // ctx.restore();
     }
   }
 
@@ -622,7 +624,7 @@ class DDeiLayerCanvasRender {
 
     if (this.stageRender?.operateState == DDeiEnumOperateState.QUICK_EDITING) {
       //如果在画布范围内，但不在编辑的控件上，则确认解除快捷编辑状态
-      if (evt.target == this.ddRender.canvas && (!this.stageRender.editorShadowControl || !this.stageRender.editorShadowControl?.isInAreaLoose(ex, ey))) {
+      if (evt.target == this.ddRender.operateCanvas && (!this.stageRender.editorShadowControl || !this.stageRender.editorShadowControl?.isInAreaLoose(ex, ey))) {
         DDeiUtil.getEditorText()?.enterValue()
       }
     }

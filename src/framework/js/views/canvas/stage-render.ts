@@ -256,7 +256,7 @@ class DDeiStageCanvasRender {
       //保存状态
       ctx.save();
 
-      ctx.translate((this.model.wpv.x) * rat1, (this.model.wpv.y) * rat1)
+      ctx.translate((this.model.wpv.x+1) * rat1, (this.model.wpv.y+1) * rat1)
       //绘制提示文本
       if (rect) {
         ctx.save()

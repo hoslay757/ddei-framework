@@ -224,6 +224,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         let w30 = 2 * w15
         //保存状态
         ctx.save();
+        ctx.translate(rat1,rat1)
         switch (type) {
           case 1: {
             this.drawSEPoint(pvs, w10, w20, ctx, rat1, ratio)

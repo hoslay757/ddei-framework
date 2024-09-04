@@ -94,7 +94,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     tempCanvas.tx = -outRect.x * rat1
     tempCanvas.ty = -outRect.y * rat1
     tempCanvas.outRect = outRect
-    tempCtx.translate(tempCanvas.tx-rat1, tempCanvas.ty-rat1)
+    tempCtx.translate(tempCanvas.tx, tempCanvas.ty)
 
   }
 

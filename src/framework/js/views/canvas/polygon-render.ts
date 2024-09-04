@@ -131,7 +131,6 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         let rsState1 = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", DDeiEnumOperateType.VIEW, { models: [this.model], tempShape: tempShape, composeRender: composeRender }, this.ddRender.model, null)
         if (rsState1 == 0 || rsState1 == 1) {
           if (!this.model.hidden && (this.refreshShape || this.isEditoring)) {
-
             //创建准备图形
             this.createTempShape();
             //将当前控件以及composes按照zindex顺序排列并输出
@@ -152,7 +151,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
                 return 0
               }
             })
-            rendList.forEach(c => {
+            for(let ri = 0;ri < rendList.length;ri++){
+              let c = rendList[ri]
               if (c == this.model) {
                 //获得 2d 上下文对象
                 let canvas = this.getCanvas();
@@ -202,12 +202,13 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
               } else {
                 //绘制组合控件的内容
                 if (tempShape && tempShape?.drawCompose == false){
-                  c.render.drawShape(null, composeRender + 1)
+                  c.render.drawShape(null, composeRender + 1, null, zIndex+ri)
                 }else{
-                  c.render.drawShape(tempShape, composeRender + 1)
+                  c.render.drawShape(tempShape, composeRender + 1, null, zIndex+ri)
                 }
               }
-            })
+              
+            }
 
             if (!this.isEditoring) {
               this.refreshShape = false
@@ -287,7 +288,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       
       this.tempCanvas.style.top = (this.model.cpv.y * stageRatio + this.model.stage.wpv.y) - this.tempCanvas.offsetHeight / 2  - ruleWeight + "px"
 
-
+      
 
     }
 
