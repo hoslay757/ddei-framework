@@ -33,7 +33,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
    */
   drawShape(): void {
     //获得 2d 上下文对象
-    let canvas = this.ddRender.operateCanvas
+    let canvas = this.ddRender.getCanvas()
     let ctx = canvas.getContext('2d');
     //保存状态
     ctx.save();
@@ -105,7 +105,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       let ovs = model.ovs;
       if (ovs?.length > 0) {
         //获得 2d 上下文对象
-        let canvas = this.ddRender.operateCanvas
+        let canvas = this.ddRender.getCanvas()
         let ctx = canvas.getContext('2d');
         let ratio = this.ddRender.ratio * this.stage.getStageRatio();
         let weight = 4
@@ -146,7 +146,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
   drawEditBorder(): void {
     if (this.stageRender.editorShadowControl?.textArea?.length > 3) {
       //获得 2d 上下文对象
-      let canvas = this.ddRender.operateCanvas
+      let canvas = this.ddRender.getCanvas()
       let ctx = canvas.getContext('2d');
       ctx.save()
       //获取全局缩放比例
@@ -202,7 +202,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       let lineModel = Array.from(this.stage?.selectedModels?.values())[0];
       if (lineModel.baseModelType == 'DDeiLine') {
         //获得 2d 上下文对象
-        let canvas = this.ddRender.operateCanvas
+        let canvas = this.ddRender.getCanvas()
         let ctx = canvas.getContext('2d');
         //获取全局缩放比例
         let stageRatio = this.stage.getStageRatio()
@@ -336,7 +336,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       return;
     }
     //获得 2d 上下文对象
-    let canvas = this.ddRender.operateCanvas
+    let canvas = this.ddRender.getCanvas()
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
     let stageRatio = this.stage?.getStageRatio()
@@ -500,7 +500,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     if (includedModels && includedModels.size > selectNumber) {
       includedModels.forEach((model, key) => {
         //获得 2d 上下文对象
-        let canvas = this.ddRender.operateCanvas
+        let canvas = this.ddRender.getCanvas()
         let ctx = canvas.getContext('2d');
         //保存状态
         ctx.save();

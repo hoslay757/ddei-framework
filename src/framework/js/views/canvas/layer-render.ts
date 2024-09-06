@@ -99,13 +99,13 @@ class DDeiLayerCanvasRender {
       this.containerViewer = document.getElementById(editorId+"_layer_" + this.model.id)
       if (!this.containerViewer){
         //在容器上创建画布，画布用来渲染图形
-        let canvasViewerElement = this.ddRender.operateCanvas.parentElement
+        let canvasViewerElement = this.ddRender.getCanvas().parentElement
         if (canvasViewerElement) {
           let containerElement = document.createElement("div")
           
           containerElement.setAttribute("class", "ddei-editor-canvasview-contentlayer")
           containerElement.setAttribute("id", editorId + "_layer_" + this.model.id)
-          canvasViewerElement.insertBefore(containerElement, this.ddRender.operateCanvas)
+          canvasViewerElement.insertBefore(containerElement, this.ddRender.realCanvas)
           this.containerViewer = containerElement
 
           
@@ -411,7 +411,7 @@ class DDeiLayerCanvasRender {
     if (this.model?.opPoints?.length > 0) {
       
       //获得 2d 上下文对象
-      let canvas = this.ddRender.operateCanvas
+      let canvas = this.ddRender.getCanvas()
       let ctx = canvas.getContext('2d');
       let stageRatio = this.stage?.getStageRatio()
       let rat1 = this.ddRender.ratio;
@@ -524,7 +524,7 @@ class DDeiLayerCanvasRender {
 
     if (this.model?.dragInPoints?.length > 0 || this.model?.dragOutPoints?.length > 0) {
       //获得 2d 上下文对象
-      let canvas = this.ddRender.operateCanvas
+      let canvas = this.ddRender.getCanvas()
       let ctx = canvas.getContext('2d');
       let stageRatio = this.stage?.getStageRatio()
       let ratio = this.ddRender.ratio * stageRatio;
@@ -670,7 +670,7 @@ class DDeiLayerCanvasRender {
 
     if (this.stageRender?.operateState == DDeiEnumOperateState.QUICK_EDITING) {
       //如果在画布范围内，但不在编辑的控件上，则确认解除快捷编辑状态
-      if (evt.target == this.ddRender.operateCanvas && (!this.stageRender.editorShadowControl || !this.stageRender.editorShadowControl?.isInAreaLoose(ex, ey))) {
+      if (evt.target == this.ddRender.getCanvas() && (!this.stageRender.editorShadowControl || !this.stageRender.editorShadowControl?.isInAreaLoose(ex, ey))) {
         DDeiUtil.getEditorText()?.enterValue()
       }
     }
