@@ -124,8 +124,6 @@ class DDeiStageCanvasRender {
         //计算滚动条
         this.calScroll();
 
-        //绘制网格
-        this.drawGrid()
         
         let ctx = canvas.getContext('2d');
         let operateCtx = operateCanvas.getContext('2d');
@@ -143,13 +141,14 @@ class DDeiStageCanvasRender {
 
         let topDisplayIndex = -1;
         let initI = this.model.layers.length - 1
+        
         for (let i = initI; i >= 0; i--) {
           if (this.model.layers[i].tempDisplay) {
             topDisplayIndex = i
           }
           else if (this.model.layers[i].display == 1) {
 
-            this.model.layers[i].render.tempZIndex = (initI - i) * 1000
+            this.model.layers[i].render.tempZIndex = (initI - i)+1
             this.model.layers[i].render.drawShape();
           } else if (this.model.layers[i].display == 0) {
             this.model.layers[i].render.drawShape();
@@ -157,9 +156,12 @@ class DDeiStageCanvasRender {
         }
 
         if (topDisplayIndex != -1) {
-          this.model.layers[topDisplayIndex].render.tempZIndex = initI * 1000
+          this.model.layers[topDisplayIndex].render.tempZIndex = initI+2
           this.model.layers[topDisplayIndex].render.drawShape();
         }
+
+        //在最顶层layer绘制网格
+        this.drawGrid(topDisplayIndex == -1 ? 0 : topDisplayIndex)
 
         //绘制编辑时的影子控件
         this.drawEditorShadowControl();
@@ -202,7 +204,7 @@ class DDeiStageCanvasRender {
         
         let ruleWeight = 0
         if (this.tempRuleDisplay == 1 || this.tempRuleDisplay == "1") {
-          ruleWeight = 16
+          ruleWeight = 15
         }
         let hScrollWeight = 0, vScrollWeight = 0;
         if (this.vScroll) {
@@ -419,14 +421,14 @@ class DDeiStageCanvasRender {
    */
   drawEditorShadowControl(): void {
     if (this.editorShadowControl) {
-      //获得 2d 上下文对象
-      let canvas = this.ddRender.getCanvas();
-      let ctx = canvas.getContext('2d');
-      //保存状态
-      ctx.save();
+      // //获得 2d 上下文对象
+      // let canvas = this.ddRender.getCanvas();
+      // let ctx = canvas.getContext('2d');
+      // //保存状态
+      // ctx.save();
       let item = this.editorShadowControl;
       item.render.drawShape();
-      ctx.restore();
+      // ctx.restore();
     }
   }
   /**
@@ -435,18 +437,18 @@ class DDeiStageCanvasRender {
   clearStage(): void {
     //获得 2d 上下文对象
     let canvas = this.ddRender.getCanvas();
-    
+    canvas.width = canvas.width
     let operateCanvas = this.ddRender.operateCanvas
     operateCanvas.width = operateCanvas.width;
-    let ctx = canvas.getContext('2d');
+    // let ctx = canvas.getContext('2d');
     
-    ctx.save();
+    // ctx.save();
    
     //清空画布
     
-    ctx.fillStyle = DDeiUtil.getStyleValue("panel-header", this.ddRender.model);
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
-    ctx.restore();
+    // ctx.fillStyle = DDeiUtil.getStyleValue("panel-header", this.ddRender.model);
+    // ctx.fillRect(0, 0, canvas.width, canvas.height)
+    // ctx.restore();
   }
 
   /**
@@ -469,9 +471,7 @@ class DDeiStageCanvasRender {
     //获取纸张大小的定义
     let paperConfig = DDeiConfig.PAPER[paperType];
     if (paperConfig) {
-      //纸张从原点开始，根据配置输出和自动扩展
-      let canvas = this.ddRender.getCanvas();
-      let ctx = canvas.getContext('2d');
+      
       let rat1 = this.ddRender.ratio;
       let stageRatio = this.model.getStageRatio()
       let ratio = rat1 * stageRatio;
@@ -541,48 +541,60 @@ class DDeiStageCanvasRender {
       this.paperOutRect = paperOutRect;
       
 
-      //绘制矩形纸张
-      ctx.save();
-      ctx.lineWidth = 1
-      ctx.fillStyle = "white"
-      ctx.strokeStyle = "grey"
-      ctx.setLineDash([5, 5]);
-      // ctx.fillRect(paperOutRect.x, paperOutRect.y, paperOutRect.w, paperOutRect.h)
+      
       //绘制当前纸张的每个图层背景
       let topDisplayIndex = -1;
+      let isBottom = true
       for (let l = this.model.layers.length - 1; l >= 0; l--) {
         if (this.model.layers[l].tempDisplay) {
           topDisplayIndex = l;
         } else if (this.model.layers[l].display == 1) {
-          this.model.layers[l].render.drawBackground(paperOutRect.x, paperOutRect.y, paperOutRect.w, paperOutRect.h);
+          this.model.layers[l].render.drawBackground(paperOutRect.x, paperOutRect.y, paperOutRect.w, paperOutRect.h, isBottom);
+          isBottom = false
         }
       }
       if (topDisplayIndex != -1) {
-        this.model.layers[topDisplayIndex].render.drawBackground(paperOutRect.x, paperOutRect.y, paperOutRect.w, paperOutRect.h);
+        this.model.layers[topDisplayIndex].render.drawBackground(paperOutRect.x, paperOutRect.y, paperOutRect.w, paperOutRect.h, isBottom);
+        isBottom = false
       }
-      //绘制分割虚线
+      //纸张从原点开始，根据配置输出和自动扩展
+      let canvas = this.model.layers[topDisplayIndex == -1 ? 0 : topDisplayIndex].render?.bgCanvas
+      if (canvas){
+        let ctx = canvas.getContext('2d');
+        //绘制分割虚线
+        ctx.save();
+        let ruleWeight = 0
+        if (this.tempRuleDisplay == 1 || this.tempRuleDisplay == '1') {
+          ruleWeight = 15
+        }
+        ctx.translate(-ruleWeight * rat1, -ruleWeight * rat1)
+        ctx.lineWidth = 1
+        ctx.fillStyle = "white"
+        ctx.strokeStyle = "grey"
+        // 外围矩形
+        // ctx.fillRect(paperOutRect.x, paperOutRect.y, paperOutRect.w, paperOutRect.h)
+        ctx.setLineDash([5, 5]);
+        for (let i = -leftExtNum + 1; i <= rightExtNum; i++) {
+          ctx.beginPath()
+          ctx.moveTo(posX + (i * paperWidth), paperOutRect.y)
+          ctx.lineTo(posX + (i * paperWidth), paperOutRect.y + paperOutRect.h)
+          ctx.stroke()
+        }
+        for (let i = -topExtNum + 1; i <= bottomExtNum; i++) {
+          ctx.beginPath()
+          ctx.moveTo(paperOutRect.x, posY + (i * paperHeight))
+          ctx.lineTo(paperOutRect.x + paperOutRect.w, posY + (i * paperHeight))
+          ctx.stroke()
+        }
 
-      for (let i = -leftExtNum + 1; i <= rightExtNum; i++) {
-        ctx.beginPath()
-        ctx.moveTo(posX + (i * paperWidth), paperOutRect.y)
-        ctx.lineTo(posX + (i * paperWidth), paperOutRect.y + paperOutRect.h)
-        ctx.stroke()
+        ctx.setLineDash([]);
+        let lineWidth = 1;
+        ctx.lineWidth = lineWidth
+        ctx.strokeStyle = "black"
+        ctx.strokeRect(posX + (-leftExtNum * paperWidth) - lineWidth, posY + (-topExtNum * paperHeight) - lineWidth, (rightExtNum + leftExtNum + 1) * paperWidth + 2 * lineWidth, (bottomExtNum + topExtNum + 1) * paperHeight + 2 * lineWidth)
+
+        ctx.restore();
       }
-      for (let i = -topExtNum + 1; i <= bottomExtNum; i++) {
-        ctx.beginPath()
-        ctx.moveTo(paperOutRect.x, posY + (i * paperHeight))
-        ctx.lineTo(paperOutRect.x + paperOutRect.w, posY + (i * paperHeight))
-        ctx.stroke()
-      }
-
-      ctx.setLineDash([]);
-      let lineWidth = 1;
-      ctx.lineWidth = lineWidth
-      ctx.strokeStyle = "black"
-      ctx.strokeRect(posX + (-leftExtNum * paperWidth) - lineWidth, posY + (-topExtNum * paperHeight) - lineWidth, (rightExtNum + leftExtNum + 1) * paperWidth + 2 * lineWidth, (bottomExtNum + topExtNum + 1) * paperHeight + 2 * lineWidth)
-
-      ctx.restore();
-
     }else{
       let canvas = this.ddRender.getCanvas();
       let topDisplayIndex = -1;
@@ -688,7 +700,7 @@ class DDeiStageCanvasRender {
     if (this.tempRuleDisplay == 1 || this.tempRuleDisplay == "1") {
       //绘制横向点
       //获得 2d 上下文对象
-      let canvas = this.ddRender.getCanvas();
+      let canvas = this.ddRender.operateCanvas
       let ctx = canvas.getContext('2d');
       let rat1 = this.ddRender.ratio;
       let stageRatio = this.model.getStageRatio()
@@ -998,7 +1010,10 @@ class DDeiStageCanvasRender {
   /**
   * 绘制网格
   */
-  drawGrid() {
+  drawGrid(layerIndex:number) {
+    if (layerIndex == -1 || !this.model.layers[layerIndex].render.bgCanvas){
+      return;
+    }
     let paperType
     if (this.model.paper?.type) {
       paperType = this.model.paper.type;
@@ -1028,8 +1043,9 @@ class DDeiStageCanvasRender {
       if (gridDisplay == 1 || gridDisplay == '1' || gridDisplay == 2 || gridDisplay == '2') {
         //绘制横向点
         //获得 2d 上下文对象
-        let canvas = this.ddRender.getCanvas();
+        let canvas = this.model.layers[layerIndex].render.bgCanvas
         let ctx = canvas.getContext('2d');
+        
         let rat1 = this.ddRender.ratio;
         let stageRatio = this.model.getStageRatio()
         let xDPI = this.ddRender.model.dpi.x;
@@ -1073,15 +1089,23 @@ class DDeiStageCanvasRender {
         let splitedWeight = marginWeight / splitNumber;
         //标尺的固定显示大小
         ctx.save();
-        //创建剪切区，只有在纸张范围内才显示网格线
-        ctx.beginPath();
-        ctx.moveTo(paperOutRect.x, paperOutRect.y);
-        ctx.lineTo(paperOutRect.x + paperOutRect.w, paperOutRect.y);
-        ctx.lineTo(paperOutRect.x + paperOutRect.w, paperOutRect.y + paperOutRect.h);
-        ctx.lineTo(paperOutRect.x, paperOutRect.y + paperOutRect.h);
-        ctx.stroke()
+        let ruleWeight = 0
+        if (this.tempRuleDisplay == 1 || this.tempRuleDisplay == '1') {
+          ruleWeight = 15
+        }
+        ctx.translate(-ruleWeight * rat1, -ruleWeight * rat1)
+        // 创建剪切区，只有在纸张范围内才显示网格线
+        // ctx.beginPath();
+        // ctx.moveTo(paperOutRect.x, paperOutRect.y);
+        // ctx.lineTo(paperOutRect.x + paperOutRect.w, paperOutRect.y);
+        // ctx.lineTo(paperOutRect.x + paperOutRect.w, paperOutRect.y + paperOutRect.h);
+        // ctx.lineTo(paperOutRect.x, paperOutRect.y + paperOutRect.h);
+        // ctx.stroke()
 
-        ctx.clip()
+        // ctx.clip()
+
+        
+
         let fontSize = 11 * rat1
         ctx.font = fontSize + "px Microsoft YaHei"
         ctx.lineWidth = 1
@@ -1196,7 +1220,7 @@ class DDeiStageCanvasRender {
         let markCanvas = this.markCanvas;
 
         //获得 2d 上下文对象
-        let canvas = this.ddRender.getCanvas();
+        let canvas = this.ddRender.operateCanvas
         let ctx = canvas.getContext('2d');
         let rat1 = this.ddRender.ratio;
         let stageRatio = this.model.getStageRatio()

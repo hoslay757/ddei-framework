@@ -95,16 +95,20 @@ class DDeiLayerCanvasRender {
    */
   drawShape(inRect: boolean = true): void {
     if (!this.containerViewer){
-      this.containerViewer = document.getElementById("ddei_editor_layer_" + this.model.id)
+      let editorId = DDeiUtil.getEditorId(this.ddRender?.model);
+      this.containerViewer = document.getElementById(editorId+"_layer_" + this.model.id)
       if (!this.containerViewer){
         //在容器上创建画布，画布用来渲染图形
         let canvasViewerElement = this.ddRender.operateCanvas.parentElement
         if (canvasViewerElement) {
           let containerElement = document.createElement("div")
+          
           containerElement.setAttribute("class", "ddei-editor-canvasview-contentlayer")
-          containerElement.setAttribute("id", "ddei_editor_layer_"+this.model.id)
+          containerElement.setAttribute("id", editorId + "_layer_" + this.model.id)
           canvasViewerElement.insertBefore(containerElement, this.ddRender.operateCanvas)
           this.containerViewer = containerElement
+
+          
         }
       }
     }
@@ -114,6 +118,8 @@ class DDeiLayerCanvasRender {
       if (rsState == 0 || rsState == 1) {
         let rsState1 = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.stage?.ddInstance, null)
         if (rsState1 == 0 || rsState1 == 1) {
+          this.containerViewer.style.display = "block"
+          this.containerViewer.style.zIndex = this.tempZIndex
           //绘制子元素
           this.drawChildrenShapes(inRect);
           //绘制操作点
@@ -132,6 +138,7 @@ class DDeiLayerCanvasRender {
         DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_AFTER", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.stage?.ddInstance, null)
       }
     }else{
+      this.containerViewer.style.display = "none"
       //隐藏子元素
       this.drawChildrenShapes(inRect,true);
     }
@@ -142,15 +149,34 @@ class DDeiLayerCanvasRender {
   /**
    * 绘制背景
    */
-  drawBackground(px, py, pw, ph): void {
-    if (this.model.display || this.model.tempDisplay) {
+  drawBackground(px, py, pw, ph,isBottom): void {
+    if (this.containerViewer && (this.model.display || this.model.tempDisplay)) {
+      let ratio = this.ddRender.ratio
+      if(!this.bgCanvas){
+        let bgCanvas = document.createElement("canvas")
+        
+        bgCanvas.setAttribute("style", "z-index:0;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / ratio) + ");display:block;zoom:" + (1 / ratio));
+        
+        this.containerViewer.appendChild(bgCanvas)
+        this.bgCanvas = bgCanvas
+      }
+      this.bgCanvas.setAttribute("width", this.containerViewer.clientWidth * ratio);
+      this.bgCanvas.setAttribute("height", this.containerViewer.clientHeight * ratio);
       //获得 2d 上下文对象
-      let canvas = this.ddRender.getCanvas();
+      // let canvas = this.ddRender.getCanvas();
+      let canvas = this.bgCanvas;
       let ctx = canvas.getContext('2d');
       //获取全局缩放比例
       let rat1 = this.ddRender.ratio
       //保存状态
       ctx.save();
+
+      let ruleWeight = 0
+      if (this.stageRender.tempRuleDisplay == 1 || this.stageRender.tempRuleDisplay == '1') {
+        ruleWeight = 15
+      }
+      ctx.translate(-ruleWeight*rat1,-ruleWeight*rat1)
+
 
 
       //根据背景的设置绘制图层
@@ -179,20 +205,21 @@ class DDeiLayerCanvasRender {
       } else {
         bgInfoColor = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.color", true);
       }
-      if (!bgInfoColor) {
+      if (!bgInfoColor && isBottom) {
         bgInfoColor = DDeiUtil.getStyleValue("panel-background", this.ddRender.model);
       }
       // 绘制纯色背景
       if (bgInfoType == 1) {
-        
-        let bgInfoOpacity = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.opacity", true, bgInit);
-        //填充色
-        ctx.fillStyle = DDeiUtil.getColor(bgInfoColor)
-        //透明度
-        if (bgInfoOpacity || bgInfoOpacity == 0) {
-          ctx.globalAlpha = bgInfoOpacity
+        if (bgInfoColor){
+          let bgInfoOpacity = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.opacity", true, bgInit);
+          //填充色
+          ctx.fillStyle = DDeiUtil.getColor(bgInfoColor)
+          //透明度
+          if (bgInfoOpacity || bgInfoOpacity == 0) {
+            ctx.globalAlpha = bgInfoOpacity
+          }
+          ctx.fillRect(px, py, pw, ph)
         }
-        ctx.fillRect(px, py, pw, ph)
       }
       //绘制图片背景类型
       else if (bgInfoType == 2) {

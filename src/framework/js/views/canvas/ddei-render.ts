@@ -73,14 +73,14 @@ class DDeiCanvasRender {
       let w = this.model.width ? this.model.width: this.container.clientWidth
       let h = this.model.height ? this.model.height: this.container.clientHeight
       this.canvas = this.realCanvas
-      this.realCanvas.setAttribute("style", "z-index:0;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / ratio) + ");display:block;zoom:" + (1 / ratio));
+      this.realCanvas.setAttribute("style", "z-index:100;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / ratio) + ");display:block;zoom:" + (1 / ratio));
       this.realCanvas.setAttribute("width", w * ratio);
       this.realCanvas.setAttribute("height", h * ratio);
 
       //创建操作点、操作线的图层
       this.operateCanvas = document.createElement("canvas");
       this.operateCanvas.setAttribute("id", this.model.id + "_operate_canvas");
-      this.operateCanvas.setAttribute("style", "z-index:100;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / ratio) + ");display:block;zoom:" + (1 / ratio));
+      this.operateCanvas.setAttribute("style", "z-index:101;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / ratio) + ");display:block;zoom:" + (1 / ratio));
       this.operateCanvas.setAttribute("width", w * ratio);
       this.operateCanvas.setAttribute("height", h * ratio);
       this.container.appendChild(this.operateCanvas);
@@ -213,6 +213,7 @@ class DDeiCanvasRender {
     if (this.tempCanvas) {
       return this.tempCanvas;
     }
+    debugger
     return this.canvas;
   }
   /**
