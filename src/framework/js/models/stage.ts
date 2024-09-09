@@ -606,6 +606,11 @@ class DDeiStage {
     }
   }
   
+  destroyed() {
+    this.layers.forEach(layer => {
+      layer.destroyed();
+    })
+  }
 
   /**
    * 移除当前图层模型

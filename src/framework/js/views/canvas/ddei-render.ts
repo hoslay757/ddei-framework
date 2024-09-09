@@ -213,7 +213,6 @@ class DDeiCanvasRender {
     if (this.tempCanvas) {
       return this.tempCanvas;
     }
-    debugger
     return this.canvas;
   }
   /**

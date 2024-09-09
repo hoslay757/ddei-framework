@@ -255,6 +255,23 @@ class DDeiLayer {
 
   cascadeRemoveSelf(): void {
   }
+
+  /**
+   * 移除自身的方法
+   */
+  destroyed() {
+    if (this.render?.containerViewer) {
+
+      this.render.containerViewer.remove()
+      delete this.render.containerViewer
+    }
+    this.render = null
+
+    this.models?.forEach((item,key)=>{
+      item?.destroyed()
+    })
+  }
+
   /**
    * 移除模型，并维护关系
    * @param model 被移除的模型

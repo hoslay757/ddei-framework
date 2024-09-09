@@ -90,28 +90,32 @@ class DDeiLayerCanvasRender {
     this.model.shadowControls = [];
   }
 
-  /**
-   * 绘制图形
-   */
-  drawShape(inRect: boolean = true): void {
-    if (!this.containerViewer){
+  initContainerViewer(){
+    if (!this.containerViewer) {
       let editorId = DDeiUtil.getEditorId(this.ddRender?.model);
-      this.containerViewer = document.getElementById(editorId+"_layer_" + this.model.id)
-      if (!this.containerViewer){
+      this.containerViewer = document.getElementById(editorId + "_layer_" + this.model.id)
+      if (!this.containerViewer) {
         //在容器上创建画布，画布用来渲染图形
         let canvasViewerElement = this.ddRender.getCanvas().parentElement
         if (canvasViewerElement) {
           let containerElement = document.createElement("div")
-          
+
           containerElement.setAttribute("class", "ddei-editor-canvasview-contentlayer")
           containerElement.setAttribute("id", editorId + "_layer_" + this.model.id)
           canvasViewerElement.insertBefore(containerElement, this.ddRender.realCanvas)
           this.containerViewer = containerElement
 
-          
+
         }
       }
     }
+  }
+
+  /**
+   * 绘制图形
+   */
+  drawShape(inRect: boolean = true): void {
+    this.initContainerViewer();
     //只有当显示时才绘制图层
     if (this.model.display || this.model.tempDisplay) {
       let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.stage?.ddInstance, null)
@@ -150,6 +154,7 @@ class DDeiLayerCanvasRender {
    * 绘制背景
    */
   drawBackground(px, py, pw, ph,isBottom): void {
+    this.initContainerViewer()
     if (this.containerViewer && (this.model.display || this.model.tempDisplay)) {
       let ratio = this.ddRender.ratio
       if(!this.bgCanvas){

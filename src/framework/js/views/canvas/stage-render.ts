@@ -119,6 +119,7 @@ class DDeiStageCanvasRender {
         }
         this.tempRuleDisplay = ruleDisplay
         //绘制纸张，以及图层背景
+        
         this.drawPaper();
 
         //计算滚动条

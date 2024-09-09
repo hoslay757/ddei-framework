@@ -1520,7 +1520,9 @@ class DDeiEditor {
         if (sheetIndex >=0){
           file.changeSheet(sheetIndex)
         }
+        ddInstance.stage.destroyed()
         let stage = sheets[file.currentSheetIndex].stage;
+        
         stage.ddInstance = ddInstance;
         //刷新页面
         ddInstance.stage = stage;
