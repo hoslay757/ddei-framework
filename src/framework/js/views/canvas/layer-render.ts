@@ -1296,6 +1296,7 @@ class DDeiLayerCanvasRender {
           }
           //清空shadows
           this.clearShadowControls()
+          
           break;
         //表格内部拖拽中
         case DDeiEnumOperateState.TABLE_INNER_DRAG:
@@ -1490,6 +1491,7 @@ class DDeiLayerCanvasRender {
           if (rsState == 0 || rsState == 1) {
             DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", DDeiEnumOperateType.DRAG, { models: sms }, this.ddRender.model, evt)
             //当前操作状态：控件拖拽中
+            
             this.stageRender.operateState = DDeiEnumOperateState.CONTROL_DRAGING
             //产生影子控件
             sms.forEach(m => {
@@ -1497,6 +1499,7 @@ class DDeiLayerCanvasRender {
               dragObj[md.id] = { dx: md.cpv.x - ex2, dy: md.cpv.y - ey2 }
               this.model.shadowControls.push(md);
             });
+            
             //将当前被拖动的控件转变为影子控件
             this.stageRender.currentOperateShape = this.model.shadowControls[this.model.shadowControls.length - 1]
           } else {

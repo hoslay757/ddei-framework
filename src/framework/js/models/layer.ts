@@ -237,7 +237,7 @@ class DDeiLayer {
   */
   removeModels(models: DDeiAbstractShape[], destroy: boolean = false,notify:boolean = true): void {
     models?.forEach(model => {
-      this.removeModel(model, destroy)
+      this.removeModel(model, destroy,false)
     })
     if (notify) {
       this.notifyChange()

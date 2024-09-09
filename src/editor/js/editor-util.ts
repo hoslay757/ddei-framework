@@ -1147,7 +1147,7 @@ class DDeiEditorUtil {
 
         mergeControls.forEach(mc => {
           if (mc) {
-            container.addModel(mc)
+            container.addModel(mc,false)
             mc.pModel = container
           }
         })

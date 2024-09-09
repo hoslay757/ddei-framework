@@ -248,8 +248,9 @@ class DDeiUtil {
       md.cols = cols;
       md.initRender();
     } else {
+      
       md = DDeiUtil.cloneModel(model, true);
-      md.initRender();
+      
       //将当前操作控件加入临时选择控件
       md.id = md.id + "_shadow"
       if (md?.baseModelType == "DDeiContainer") {
@@ -266,6 +267,7 @@ class DDeiUtil {
         md.models = newModels;
         // md.midList = newMidList;
       }
+      md.initRender();
 
     }
     return md;

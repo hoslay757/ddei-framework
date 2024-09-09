@@ -130,7 +130,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       if (composeRender || rsState == 0 || rsState == 1) {
         let rsState1 = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", DDeiEnumOperateType.VIEW, { models: [this.model], tempShape: tempShape, composeRender: composeRender }, this.ddRender.model, null)
         if (rsState1 == 0 || rsState1 == 1) {
+          let print = false
           if (!this.model.hidden && (this.refreshShape || this.isEditoring)) {
+            print = true
             //创建准备图形
             this.createTempShape();
             //将当前控件以及composes按照zindex顺序排列并输出
@@ -216,7 +218,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           }
 
           //外部canvas
-          this.drawSelfToCanvas(composeRender)
+          this.drawSelfToCanvas(composeRender, print)
 
         }
         if (!composeRender) {
@@ -238,7 +240,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   /**
    * 绘制自身到最外层canvas
    */
-  drawSelfToCanvas(composeRender) {
+  drawSelfToCanvas(composeRender, print) {
     if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
       let model = this.model
       let stage = model.stage
@@ -283,7 +285,11 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       this.tempCanvas.style.left = (this.model.cpv.x * stageRatio + this.model.stage.wpv.x) - this.tempCanvas.offsetWidth / 2  - ruleWeight + "px"
       
       this.tempCanvas.style.top = (this.model.cpv.y * stageRatio + this.model.stage.wpv.y) - this.tempCanvas.offsetHeight / 2  - ruleWeight + "px"
-
+      if (!print){
+        this.model.composes?.forEach(comp=>{
+          comp.render.drawSelfToCanvas(composeRender+1)
+        })
+      }
       
 
     }

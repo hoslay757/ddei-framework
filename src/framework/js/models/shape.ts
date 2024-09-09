@@ -1789,6 +1789,11 @@ abstract class DDeiAbstractShape {
       delete this.render.tempCanvas
     }
     
+    this.composes?.forEach(comp => {
+      
+      comp.destroyed()
+    });
+    
     this.render = null
     DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_DEL_AFTER", DDeiEnumOperateType.DESTROYED, { models: [this] }, this.stage?.ddInstance, null)
   }
