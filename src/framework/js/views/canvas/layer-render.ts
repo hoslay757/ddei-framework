@@ -161,12 +161,16 @@ class DDeiLayerCanvasRender {
     if (this.containerViewer && (this.model.display || this.model.tempDisplay)) {
       let ratio = this.ddRender.ratio
       if(!this.bgCanvas){
-        let bgCanvas = document.createElement("canvas")
-        
-        bgCanvas.setAttribute("style", "z-index:0;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / ratio) + ");display:block;zoom:" + (1 / ratio));
-        
-        this.containerViewer.appendChild(bgCanvas)
-        this.bgCanvas = bgCanvas
+        let editorId = DDeiUtil.getEditorId(this.ddRender?.model);
+        this.bgCanvas = document.getElementById(editorId + "_layerbg_" + this.model.id)
+        if (!this.bgCanvas){
+          let bgCanvas = document.createElement("canvas")
+          
+          bgCanvas.setAttribute("style", "z-index:0;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / ratio) + ");display:block;zoom:" + (1 / ratio));
+          bgCanvas.setAttribute("id",editorId + "_layerbg_" + this.model.id)
+          this.containerViewer.appendChild(bgCanvas)
+          this.bgCanvas = bgCanvas
+        }
       }
       this.bgCanvas.setAttribute("width", this.containerViewer.clientWidth * ratio);
       this.bgCanvas.setAttribute("height", this.containerViewer.clientHeight * ratio);
