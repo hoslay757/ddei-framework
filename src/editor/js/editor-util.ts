@@ -928,6 +928,8 @@ class DDeiEditorUtil {
                     model.render.drawShape({ weight: 3, border: { width: 1.5 } })
                   })
                   let canvas = document.createElement('canvas');
+                  
+                 
                   DDeiEditorUtil.drawModelsToCanvas(models, outRect,canvas)
                   let dataURL = canvas.toDataURL("image/png");
                   localStorage.setItem("ICON-CACHE-" + editor.id + "-" + controlDefine.id, dataURL)
@@ -949,15 +951,18 @@ class DDeiEditorUtil {
   /**
    * 将多个元素绘制到canvas上
    */
-  static drawModelsToCanvas(models:DDeiAbstractShape[],outRect,canvas):void{
+  static drawModelsToCanvas(models:DDeiAbstractShape[],outRect,canvas,level:number = 0):void{
     let rat1 = models[0].stage?.ddInstance?.render.ratio;
     let ctx = canvas.getContext('2d', { willReadFrequently: true });
+ 
     let width = (outRect.width+4) * rat1
     let height = (outRect.height+4) * rat1
-    canvas.setAttribute("width", width)
-    canvas.setAttribute("height", height)
-    canvas.style.width = width + 'px';
-    canvas.style.height = height + 'px';
+    if (level == 0){
+      canvas.setAttribute("width", width)
+      canvas.setAttribute("height", height)
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+    }
     models.forEach(model=>{
       let rendList = [];
       if (model.composes?.length > 0) {
@@ -976,22 +981,17 @@ class DDeiEditorUtil {
           return 0
         }
       })
+      
       rendList?.forEach(mc => {
         if(mc == model){
           if(mc.render.tempCanvas){
-            ctx.drawImage(mc.render.tempCanvas, -2 * rat1 + ((mc.essBounds ? mc.essBounds.x : mc.cpv.x) - outRect.x) * rat1, -2 * rat1 + ((mc.essBounds ? mc.essBounds.y : mc.cpv.y) - outRect.y) * rat1)
+            ctx.drawImage(mc.render.tempCanvas, ((mc.essBounds ? mc.essBounds.x : mc.cpv.x) - outRect.x-2) * rat1, ((mc.essBounds ? mc.essBounds.y : mc.cpv.y) - outRect.y-2) * rat1)
           }
           if (model.baseModelType == "DDeiContainer") {
-            model.models.forEach((sm, key) => {
-              if (sm.render.tempCanvas){
-                ctx.drawImage(sm.render.tempCanvas, -2 * rat1 + ((sm.essBounds ? sm.essBounds.x : sm.cpv.x) - outRect.x) * rat1, -2 * rat1 + ((sm.essBounds ? sm.essBounds.y : sm.cpv.y) - outRect.y) * rat1)
-              }
-            });
+            DDeiEditorUtil.drawModelsToCanvas(Array.from(model.models.values()), outRect, canvas, level + 1)
           }
         }else{
-          if (mc.render.tempCanvas){
-            ctx.drawImage(mc.render.tempCanvas, -2 * rat1 + ((mc.essBounds ? mc.essBounds.x : mc.cpv.x) - outRect.x) * rat1, -2 * rat1 + ((mc.essBounds ? mc.essBounds.y : mc.cpv.y) - outRect.y) * rat1)
-          }
+          DDeiEditorUtil.drawModelsToCanvas([mc], outRect, canvas, level + 1)
         }
         
       })
