@@ -881,12 +881,11 @@ class DDeiEditorUtil {
             } else {
               promiseArr.push(new Promise((resolve, reject) => {
                 try {
-                  let canvas = document.createElement('canvas');
-                  //获取缩放比例
-                  let rat1 = ddInstance.render.ratio;
-                  ddInstance.render.tempCanvas = canvas;
+                  
                   //创建图形对象
                   let models = DDeiEditorUtil.createControl(controlDefine,editor)
+
+                  
                   let iconPos = controlDefine?.define?.iconPos;
                   let outRect = DDeiAbstractShape.getOutRectByPV(models);
                   outRect.width += (iconPos?.dw ? iconPos.dw : 0)
@@ -922,22 +921,14 @@ class DDeiEditorUtil {
                   }
                   outRect.width += (iconPos?.dw ? iconPos.dw : 0)
                   outRect.height += (iconPos?.dh ? iconPos.dh : 0)
-                  let width = (outRect.width + 4) * rat1
-                  let height = (outRect.height + 4) * rat1
-
-                  canvas.setAttribute("width", width)
-                  canvas.setAttribute("height", height)
-                  canvas.style.width = width + 'px';
-                  canvas.style.height = height + 'px';
-                  //获得 2d 上下文对象
-
-                  let ctx = canvas.getContext('2d', { willReadFrequently: true });
-
-                  ctx.translate(width / 2 + (iconPos?.dx ? iconPos.dx : 0), height / 2 + (iconPos?.dy ? iconPos.dy : 0))
+                  
+                  
                   models.forEach(model => {
                     model.initRender()
                     model.render.drawShape({ weight: 3, border: { width: 1.5 } })
                   })
+                  let canvas = document.createElement('canvas');
+                  DDeiEditorUtil.drawModelsToCanvas(models, outRect,canvas)
                   let dataURL = canvas.toDataURL("image/png");
                   localStorage.setItem("ICON-CACHE-" + editor.id + "-" + controlDefine.id, dataURL)
                   editor.icons[controlDefine.id] = dataURL
@@ -953,6 +944,61 @@ class DDeiEditorUtil {
         }
       }
     });
+  }
+
+  /**
+   * 将多个元素绘制到canvas上
+   */
+  static drawModelsToCanvas(models:DDeiAbstractShape[],outRect,canvas):void{
+    let rat1 = models[0].stage?.ddInstance?.render.ratio;
+    let ctx = canvas.getContext('2d', { willReadFrequently: true });
+    let width = (outRect.width+4) * rat1
+    let height = (outRect.height+4) * rat1
+    canvas.setAttribute("width", width)
+    canvas.setAttribute("height", height)
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+    models.forEach(model=>{
+      let rendList = [];
+      if (model.composes?.length > 0) {
+        rendList = rendList.concat(model.composes);
+      }
+      rendList.push(model)
+      rendList.sort((a, b) => {
+
+        if ((a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+          return a.cIndex - b.cIndex
+        } else if ((a.cIndex || a.cIndex == 0) && !(b.cIndex || b.cIndex == 0)) {
+          return 1
+        } else if (!(a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+          return -1
+        } else {
+          return 0
+        }
+      })
+      rendList?.forEach(mc => {
+        if(mc == model){
+          if(mc.render.tempCanvas){
+            ctx.drawImage(mc.render.tempCanvas, -2 * rat1 + ((mc.essBounds ? mc.essBounds.x : mc.cpv.x) - outRect.x) * rat1, -2 * rat1 + ((mc.essBounds ? mc.essBounds.y : mc.cpv.y) - outRect.y) * rat1)
+          }
+          if (model.baseModelType == "DDeiContainer") {
+            model.models.forEach((sm, key) => {
+              if (sm.render.tempCanvas){
+                ctx.drawImage(sm.render.tempCanvas, -2 * rat1 + ((sm.essBounds ? sm.essBounds.x : sm.cpv.x) - outRect.x) * rat1, -2 * rat1 + ((sm.essBounds ? sm.essBounds.y : sm.cpv.y) - outRect.y) * rat1)
+              }
+            });
+          }
+        }else{
+          if (mc.render.tempCanvas){
+            ctx.drawImage(mc.render.tempCanvas, -2 * rat1 + ((mc.essBounds ? mc.essBounds.x : mc.cpv.x) - outRect.x) * rat1, -2 * rat1 + ((mc.essBounds ? mc.essBounds.y : mc.cpv.y) - outRect.y) * rat1)
+          }
+        }
+        
+      })
+      
+    })
+    
+    
   }
 
   /**

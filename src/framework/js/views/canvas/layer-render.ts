@@ -75,22 +75,10 @@ class DDeiLayerCanvasRender {
     this.ddRender = this.model.stage.ddInstance.render
     this.stage = this.model.stage
     this.stageRender = this.model.stage.render
+    this.initContainerViewer();
   }
 
-  /**
-   * 清空shadowControl
-   */
-  clearShadowControls(): void {
-    //清空shadows
-    this.model.shadowControls?.forEach(c => {
-      if (c.isShadowControl) {
-        c.destroyed()
-      }
-    })
-    this.model.shadowControls = [];
-  }
-
-  initContainerViewer(){
+  initContainerViewer() {
     if (!this.containerViewer) {
       let editorId = DDeiUtil.getEditorId(this.ddRender?.model);
       this.containerViewer = document.getElementById(editorId + "_layer_" + this.model.id)
@@ -110,6 +98,21 @@ class DDeiLayerCanvasRender {
       }
     }
   }
+
+  /**
+   * 清空shadowControl
+   */
+  clearShadowControls(): void {
+    //清空shadows
+    this.model.shadowControls?.forEach(c => {
+      if (c.isShadowControl) {
+        c.destroyed()
+      }
+    })
+    this.model.shadowControls = [];
+  }
+
+  
 
   /**
    * 绘制图形
@@ -423,7 +426,7 @@ class DDeiLayerCanvasRender {
       let ratio = rat1 * stageRatio;
       //保存状态
       ctx.save();
-      ctx.translate(rat1,rat1)
+      // ctx.translate(rat1,rat1)
       let firstOp2Point, beforeOp2Point
       this.model?.opPoints.forEach(point => {
         if (!point || point.isSplit) {

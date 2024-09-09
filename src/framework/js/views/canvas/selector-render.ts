@@ -224,7 +224,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         let w30 = 2 * w15
         //保存状态
         ctx.save();
-        ctx.translate(rat1,rat1)
+        // ctx.translate(rat1,rat1)
         switch (type) {
           case 1: {
             this.drawSEPoint(pvs, w10, w20, ctx, rat1, ratio)
@@ -382,7 +382,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         if (!(type == 0 || type == '0') && color && (!opacity || opacity > 0) && bWidth > 0) {
 
           //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
-          let lineOffset = ratio//bWidth * ratio / 2;
+          let lineOffset = 0//bWidth * ratio / 2;
           ctx.lineWidth = bWidth * ratio;
           ctx.beginPath();
 

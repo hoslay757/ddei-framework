@@ -271,6 +271,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       //获取图标图形
       let { startDX, startDY, endDX, endDY } = this.getPointShapeSize();
       ctx.save()
+      
       let lineWidth = weight * ratio;
       let fillLineWidth = fillWeight * ratio;
       ctx.lineWidth = lineWidth;

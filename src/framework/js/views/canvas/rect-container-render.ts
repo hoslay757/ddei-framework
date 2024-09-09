@@ -41,6 +41,9 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
 
   }
 
+  
+
+  
   /**
      * 创建图形
      */
@@ -53,6 +56,8 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
       null
     )) {
       if (!this.model.hidden) {
+        //创建准备图形
+
         let canvas = this.ddRender.getCanvas();
         let ctx = canvas.getContext('2d');
 
@@ -98,6 +103,8 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
     }
 
   }
+
+
   /**
    * 绘制子元素
    */
