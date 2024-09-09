@@ -428,7 +428,7 @@ class DDeiStageCanvasRender {
       // //保存状态
       // ctx.save();
       let item = this.editorShadowControl;
-      item.render.drawShape();
+      item.render.drawShape(null,0,null,99999);
       // ctx.restore();
     }
   }
