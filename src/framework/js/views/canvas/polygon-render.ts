@@ -69,51 +69,50 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   }
 
   createTempShape() {
-    if (DDeiUtil.DRAW_TEMP_CANVAS) {
-      //如果高清屏，rat一般大于2印此系数为1保持不变，如果非高清则扩大为2倍保持清晰
-      //获取缩放比例
-      let stageRatio = this.model.getStageRatio()
-      let oldRat1 = this.ddRender.ratio
-      let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
-      let rat1 = oldRat1 * scaleSize
-      //测试剪切图形
-      //转换为图片
-      if (!this.tempCanvas) {
-        this.tempCanvas = document.createElement('canvas');
-        this.tempCanvas.setAttribute("style", "pointer-events:none;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;scale:" + (1 / rat1));
-        // this.tempCanvas.setAttribute("style", "pointer-events:none;left:-99999px;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 ) + ");display:block;zoom:" + (1));
-        // this.tempCanvas.setAttribute("style", "left:0px;top:0px;position:fixed;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
+    //如果高清屏，rat一般大于2印此系数为1保持不变，如果非高清则扩大为2倍保持清晰
+    //获取缩放比例
+    let stageRatio = this.model.getStageRatio()
+    let oldRat1 = this.ddRender.ratio
+    let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
+    let rat1 = oldRat1 * scaleSize
+    //测试剪切图形
+    //转换为图片
+    if (!this.tempCanvas) {
+      this.tempCanvas = document.createElement('canvas');
+      this.tempCanvas.setAttribute("style", "pointer-events:none;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;scale:" + (1 / rat1));
+      // this.tempCanvas.setAttribute("style", "pointer-events:none;left:-99999px;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 ) + ");display:block;zoom:" + (1));
+      // this.tempCanvas.setAttribute("style", "left:0px;top:0px;position:fixed;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
 
-        // let editorId = DDeiUtil.getEditorId(this.ddRender?.model);
-        // let editorEle = document.getElementById(editorId);
-        // editorEle.appendChild(this.tempCanvas)
-      }
-      let tempCanvas = this.tempCanvas
-      let pvs = this.model.operatePVS ? this.model.operatePVS : this.model.pvs
-
-      let outRect = DDeiAbstractShape.pvsToOutRect(pvs,stageRatio)
-
-      let weight = 5
-      outRect.x -= weight
-      outRect.x1 += weight
-      outRect.y -= weight
-      outRect.y1 += weight
-      outRect.width += 2 * weight
-      outRect.height += 2 * weight
-
-      tempCanvas.style.width = outRect.width
-      tempCanvas.style.height = outRect.height
-      tempCanvas.setAttribute("width", outRect.width * rat1)
-      tempCanvas.setAttribute("height", outRect.height * rat1)
-
-      //获得 2d 上下文对象
-      let tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
-      tempCanvas.tx = -outRect.x * rat1
-      tempCanvas.ty = -outRect.y * rat1
-      tempCanvas.outRect = outRect
-
-      tempCtx.translate(tempCanvas.tx, tempCanvas.ty)
+      // let editorId = DDeiUtil.getEditorId(this.ddRender?.model);
+      // let editorEle = document.getElementById(editorId);
+      // editorEle.appendChild(this.tempCanvas)
     }
+    let tempCanvas = this.tempCanvas
+    let pvs = this.model.operatePVS ? this.model.operatePVS : this.model.pvs
+
+    let outRect = DDeiAbstractShape.pvsToOutRect(pvs,stageRatio)
+
+    let weight = 5
+    outRect.x -= weight
+    outRect.x1 += weight
+    outRect.y -= weight
+    outRect.y1 += weight
+    outRect.width += 2 * weight
+    outRect.height += 2 * weight
+
+    tempCanvas.style.width = outRect.width
+    tempCanvas.style.height = outRect.height
+    tempCanvas.setAttribute("width", outRect.width * rat1)
+    tempCanvas.setAttribute("height", outRect.height * rat1)
+
+    //获得 2d 上下文对象
+    let tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
+    tempCanvas.tx = -outRect.x * rat1
+    tempCanvas.ty = -outRect.y * rat1
+    tempCanvas.outRect = outRect
+
+    tempCtx.translate(tempCanvas.tx, tempCanvas.ty)
+    
   }
 
 
@@ -175,7 +174,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
                 let oldRat1 = this.ddRender.ratio
                 this.ddRender.oldRatio = oldRat1
                 //获取缩放比例
-                if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
+                if (this.tempCanvas) {
 
                   let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
                   let rat1 = oldRat1 * scaleSize
@@ -196,7 +195,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
                 //根据pvss绘制边框
                 this.drawBorder(tempShape);
                 ctx.restore();
-                if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
+                if (this.tempCanvas) {
                   this.ddRender.ratio = oldRat1
                   delete this.ddRender.oldRatio
                 }
@@ -241,61 +240,123 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
    * 绘制自身到最外层canvas
    */
   drawSelfToCanvas(composeRender, print) {
-    if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
+    if (this.tempCanvas) {
       let model = this.model
       let stage = model.stage
       let ruleWeight = 0
       if (stage.render.tempRuleDisplay == 1 || stage.render.tempRuleDisplay == '1') {
         ruleWeight = 15
       }
-      
+
       // let canvas = this.getRenderCanvas(composeRender)
-    //   let ctx = canvas.getContext('2d');
+      //   let ctx = canvas.getContext('2d');
       let stageRatio = this.model.getStageRatio()
-    //   let oldRat1 = this.ddRender.ratio;
-    //   let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
-    //   let rat1 = oldRat1 * scaleSize
-    //   let outRect = this.tempCanvas.outRect
-    //   if (composeRender > 0) {
-    //     oldRat1 = rat1
-    //   }
-    //   ctx.save();
-    //   if (this.model.mirrorX || this.model.mirrorY){
-    //     let ratx = this.model.cpv.x * oldRat1 * stageRatio
-    //     let raty = this.model.cpv.y * oldRat1 * stageRatio
-    //     ctx.translate(ratx, raty)
-    //     if(this.model.mirrorX){
-    //       ctx.scale(-1, 1)
-    //     }
-    //     if (this.model.mirrorY){
-    //       ctx.scale(1, -1)
-    //     }
-    //     ctx.translate(-ratx, -raty)
-    //   }
-    //   ctx.drawImage(this.tempCanvas, 0, 0, outRect.width * rat1, outRect.height * rat1, (this.model.cpv.x * stageRatio - outRect.width / 2) * oldRat1, (this.model.cpv.y * stageRatio - outRect.height / 2) * oldRat1, outRect.width * oldRat1, outRect.height * oldRat1)
-    //   ctx.restore()
+      //   let oldRat1 = this.ddRender.ratio;
+      //   let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
+      //   let rat1 = oldRat1 * scaleSize
+      //   let outRect = this.tempCanvas.outRect
+      //   if (composeRender > 0) {
+      //     oldRat1 = rat1
+      //   }
+      //   ctx.save();
+      //   if (this.model.mirrorX || this.model.mirrorY){
+      //     let ratx = this.model.cpv.x * oldRat1 * stageRatio
+      //     let raty = this.model.cpv.y * oldRat1 * stageRatio
+      //     ctx.translate(ratx, raty)
+      //     if(this.model.mirrorX){
+      //       ctx.scale(-1, 1)
+      //     }
+      //     if (this.model.mirrorY){
+      //       ctx.scale(1, -1)
+      //     }
+      //     ctx.translate(-ratx, -raty)
+      //   }
+      //   ctx.drawImage(this.tempCanvas, 0, 0, outRect.width * rat1, outRect.height * rat1, (this.model.cpv.x * stageRatio - outRect.width / 2) * oldRat1, (this.model.cpv.y * stageRatio - outRect.height / 2) * oldRat1, outRect.width * oldRat1, outRect.height * oldRat1)
+      //   ctx.restore()
 
       //获取model的绝对位置
-      if (!this.tempCanvas.parentElement){
+      if (!this.tempCanvas.parentElement) {
         let viewerEle = this.model.layer.render.containerViewer
         viewerEle.appendChild(this.tempCanvas)
       }
 
       this.tempCanvas.style.zIndex = this.tempZIndex
-      this.tempCanvas.style.left = (this.model.cpv.x * stageRatio + this.model.stage.wpv.x) - this.tempCanvas.offsetWidth / 2  - ruleWeight + "px"
-      
-      this.tempCanvas.style.top = (this.model.cpv.y * stageRatio + this.model.stage.wpv.y) - this.tempCanvas.offsetHeight / 2  - ruleWeight + "px"
-      if (!print){
-        this.model.composes?.forEach(comp=>{
-          comp.render.drawSelfToCanvas(composeRender+1)
+      this.tempCanvas.style.left = (this.model.cpv.x * stageRatio + this.model.stage.wpv.x) - this.tempCanvas.offsetWidth / 2 - ruleWeight + "px"
+
+      this.tempCanvas.style.top = (this.model.cpv.y * stageRatio + this.model.stage.wpv.y) - this.tempCanvas.offsetHeight / 2 - ruleWeight + "px"
+      if (!print) {
+        this.model.composes?.forEach(comp => {
+          comp.render.drawSelfToCanvas(composeRender + 1)
         })
       }
-      
+
 
     }
 
-    
-    
+
+
+
+  }
+
+  /**
+   * 绘制自身到最外层canvas
+   */
+  drawSelfOutLineToCanvas(composeRender, print) {
+    if (this.tempCanvas) {
+      let model = this.model
+      let stage = model.stage
+      let ruleWeight = 0
+      if (stage.render.tempRuleDisplay == 1 || stage.render.tempRuleDisplay == '1') {
+        ruleWeight = 15
+      }
+
+      // let canvas = this.getRenderCanvas(composeRender)
+      //   let ctx = canvas.getContext('2d');
+      let stageRatio = this.model.getStageRatio()
+      //   let oldRat1 = this.ddRender.ratio;
+      //   let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
+      //   let rat1 = oldRat1 * scaleSize
+      //   let outRect = this.tempCanvas.outRect
+      //   if (composeRender > 0) {
+      //     oldRat1 = rat1
+      //   }
+      //   ctx.save();
+      //   if (this.model.mirrorX || this.model.mirrorY){
+      //     let ratx = this.model.cpv.x * oldRat1 * stageRatio
+      //     let raty = this.model.cpv.y * oldRat1 * stageRatio
+      //     ctx.translate(ratx, raty)
+      //     if(this.model.mirrorX){
+      //       ctx.scale(-1, 1)
+      //     }
+      //     if (this.model.mirrorY){
+      //       ctx.scale(1, -1)
+      //     }
+      //     ctx.translate(-ratx, -raty)
+      //   }
+      //   ctx.drawImage(this.tempCanvas, 0, 0, outRect.width * rat1, outRect.height * rat1, (this.model.cpv.x * stageRatio - outRect.width / 2) * oldRat1, (this.model.cpv.y * stageRatio - outRect.height / 2) * oldRat1, outRect.width * oldRat1, outRect.height * oldRat1)
+      //   ctx.restore()
+
+      //获取model的绝对位置
+      if (!this.tempCanvas.parentElement) {
+        let viewerEle = this.model.layer.render.containerViewer
+        viewerEle.appendChild(this.tempCanvas)
+      }
+
+      this.tempCanvas.style.zIndex = this.tempZIndex
+      this.tempCanvas.style.left = (this.model.cpv.x * stageRatio + this.model.stage.wpv.x) - this.tempCanvas.offsetWidth / 2 - ruleWeight + "px"
+
+      this.tempCanvas.style.top = (this.model.cpv.y * stageRatio + this.model.stage.wpv.y) - this.tempCanvas.offsetHeight / 2 - ruleWeight + "px"
+      if (!print) {
+        this.model.composes?.forEach(comp => {
+          comp.render.drawSelfToCanvas(composeRender + 1)
+        })
+      }
+
+
+    }
+
+
+
 
   }
 
@@ -310,7 +371,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   }
 
   getCanvas() {
-    if (DDeiUtil.DRAW_TEMP_CANVAS) {
+    if (this.tempCanvas) {
       return this.tempCanvas;
     } else {
       return this.getRenderCanvas()
@@ -706,7 +767,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       this.createTempShape()
       let oldRat1 = this.ddRender.ratio
       //获取缩放比例
-      if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
+      if (this.tempCanvas) {
 
         let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
         let rat1 = oldRat1 * scaleSize
@@ -723,7 +784,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           c.render.drawSelfToCanvas(1);
         }
       })
-      if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
+      if (this.tempCanvas) {
         this.ddRender.ratio = oldRat1
         delete this.ddRender.oldRatio
       }

@@ -91,7 +91,7 @@ class DDeiPolygonContainerCanvasRender extends DDeiPolygonCanvasRender {
                 let oldRat1 = this.ddRender.ratio
                 this.ddRender.oldRatio = oldRat1
                 //获取缩放比例
-                if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
+                if (this.tempCanvas) {
 
                   let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
                   let rat1 = oldRat1 * scaleSize
@@ -114,7 +114,7 @@ class DDeiPolygonContainerCanvasRender extends DDeiPolygonCanvasRender {
 
                 this.drawChildrenShapes(tempShape);
                 ctx.restore();
-                if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
+                if (this.tempCanvas) {
                   this.ddRender.ratio = oldRat1
                   delete this.ddRender.oldRatio
                 }
@@ -156,7 +156,7 @@ class DDeiPolygonContainerCanvasRender extends DDeiPolygonCanvasRender {
    * 绘制自身到最外层canvas
    */
   drawSelfToCanvas(composeRender) {
-    if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
+    if (this.tempCanvas) {
       let model = this.model
       let stage = model.stage
       let ruleWeight = 0

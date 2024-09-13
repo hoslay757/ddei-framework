@@ -1857,7 +1857,7 @@ class DDeiLayerCanvasRender {
           let sx = 0;
           let i = 0;
           //由于绘制缓存中的文本位置乘以了调整系数，因此这里判断时，需要利用这个系数反向判断
-          let scaleSize = DDeiUtil.DRAW_TEMP_CANVAS && rat1 < 2 ? 2 / rat1 : 1
+          let scaleSize = rat1 < 2 ? 2 / rat1 : 1
           for (; i < shadowControl.render.textUsedArea.length; i++) {
             let rowData = shadowControl.render.textUsedArea[i];
             let ry = rowData.y / scaleSize

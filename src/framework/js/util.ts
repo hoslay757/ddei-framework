@@ -86,10 +86,6 @@ class DDeiUtil {
   //最新选择的颜色
   static recentlyChooseColors = null
 
-
-  //向临时canvas输出
-  static DRAW_TEMP_CANVAS = true;
-
   /**
    * 当前用户的操作系统
    */

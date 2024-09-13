@@ -165,7 +165,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
           }
 
           //外部canvas
-          if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
+          if (this.tempCanvas) {
             // let canvas = this.getRenderCanvas(composeRender)
             // let ctx = canvas.getContext('2d');
             // let rat1 = this.ddRender.ratio;
