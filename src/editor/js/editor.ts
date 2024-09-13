@@ -597,6 +597,8 @@ class DDeiEditor {
   menus: object = markRaw({});
   //当前引入的外部字体
   fonts: object[] = FONTS;
+
+  viewerMap: Map<string, object> = markRaw(new Map());
   //当前引入的外部renderViewers以及创建后的实例
   renderViewers: object[] = markRaw([]);
   renderViewerIns: object = markRaw({});

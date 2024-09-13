@@ -1782,7 +1782,7 @@ abstract class DDeiAbstractShape {
         }
       })
     }
-    
+ 
     if (this.render?.tempCanvas) {
       
       this.render.tempCanvas.remove()

@@ -875,16 +875,17 @@ class DDeiEditorUtil {
           editor.icons = {}
           editor?.controls.forEach(controlDefine => {
             let cacheData = localStorage.getItem("ICON-CACHE-" + editor.id+"-" + controlDefine.id)
+            
             if (cacheData) {
               editor.icons[controlDefine.id] = cacheData
               return;
             } else {
               promiseArr.push(new Promise((resolve, reject) => {
+                let models = null
                 try {
                   
                   //创建图形对象
-                  let models = DDeiEditorUtil.createControl(controlDefine,editor)
-
+                  models = DDeiEditorUtil.createControl(controlDefine,editor)
                   
                   let iconPos = controlDefine?.define?.iconPos;
                   let outRect = DDeiAbstractShape.getOutRectByPV(models);
@@ -934,7 +935,12 @@ class DDeiEditorUtil {
                   let dataURL = canvas.toDataURL("image/png");
                   localStorage.setItem("ICON-CACHE-" + editor.id + "-" + controlDefine.id, dataURL)
                   editor.icons[controlDefine.id] = dataURL
-                } catch (e) { console.error(e) }
+                } catch (e) { 
+                  console.error(e)
+                 }
+                models?.forEach(md => {
+                  md?.destroyed()
+                })
                 resolve()
               }));
             }
