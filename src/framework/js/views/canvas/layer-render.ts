@@ -1952,9 +1952,14 @@ class DDeiLayerCanvasRender {
           if (allowBackActive) {
             DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_MOVE_IN_CONTROL", "MOVE_IN_CONTROL", { models: operateControls }, this.ddRender.model, evt)
           }
-          operateControls.forEach(control => {
+          for (let li = 0; li < operateControls.length;li++){
+            let control = operateControls[li]
             control.render.mouseMove(evt)
-          })
+            if (control.baseModelType != 'DDeiContainer') {
+              break;
+            }
+          }
+       
           
           // operateControls[0].render.mouseMove(evt);
           this.stage.ddInstance.bus.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'all-scroll' }, evt);

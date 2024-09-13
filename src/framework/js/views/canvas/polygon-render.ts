@@ -298,67 +298,6 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
 
   }
 
-  /**
-   * 绘制自身到最外层canvas
-   */
-  drawSelfOutLineToCanvas(composeRender, print) {
-    if (this.tempCanvas) {
-      let model = this.model
-      let stage = model.stage
-      let ruleWeight = 0
-      if (stage.render.tempRuleDisplay == 1 || stage.render.tempRuleDisplay == '1') {
-        ruleWeight = 15
-      }
-
-      // let canvas = this.getRenderCanvas(composeRender)
-      //   let ctx = canvas.getContext('2d');
-      let stageRatio = this.model.getStageRatio()
-      //   let oldRat1 = this.ddRender.ratio;
-      //   let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
-      //   let rat1 = oldRat1 * scaleSize
-      //   let outRect = this.tempCanvas.outRect
-      //   if (composeRender > 0) {
-      //     oldRat1 = rat1
-      //   }
-      //   ctx.save();
-      //   if (this.model.mirrorX || this.model.mirrorY){
-      //     let ratx = this.model.cpv.x * oldRat1 * stageRatio
-      //     let raty = this.model.cpv.y * oldRat1 * stageRatio
-      //     ctx.translate(ratx, raty)
-      //     if(this.model.mirrorX){
-      //       ctx.scale(-1, 1)
-      //     }
-      //     if (this.model.mirrorY){
-      //       ctx.scale(1, -1)
-      //     }
-      //     ctx.translate(-ratx, -raty)
-      //   }
-      //   ctx.drawImage(this.tempCanvas, 0, 0, outRect.width * rat1, outRect.height * rat1, (this.model.cpv.x * stageRatio - outRect.width / 2) * oldRat1, (this.model.cpv.y * stageRatio - outRect.height / 2) * oldRat1, outRect.width * oldRat1, outRect.height * oldRat1)
-      //   ctx.restore()
-
-      //获取model的绝对位置
-      if (!this.tempCanvas.parentElement) {
-        let viewerEle = this.model.layer.render.containerViewer
-        viewerEle.appendChild(this.tempCanvas)
-      }
-
-      this.tempCanvas.style.zIndex = this.tempZIndex
-      this.tempCanvas.style.left = (this.model.cpv.x * stageRatio + this.model.stage.wpv.x) - this.tempCanvas.offsetWidth / 2 - ruleWeight + "px"
-
-      this.tempCanvas.style.top = (this.model.cpv.y * stageRatio + this.model.stage.wpv.y) - this.tempCanvas.offsetHeight / 2 - ruleWeight + "px"
-      if (!print) {
-        this.model.composes?.forEach(comp => {
-          comp.render.drawSelfToCanvas(composeRender + 1)
-        })
-      }
-
-
-    }
-
-
-
-
-  }
 
   getRenderCanvas(composeRender) {
     if (composeRender) {

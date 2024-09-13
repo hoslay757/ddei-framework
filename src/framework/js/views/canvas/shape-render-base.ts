@@ -272,7 +272,6 @@ class DDeiAbstractShapeRender {
       }
       projPoint = this.model.getProjPoint({ x: ex, y: ey }, { in: inWeight, out: 15 });
     }
-
     let pots = []
     if (projPoint) {
       projPoint.model = this.model
