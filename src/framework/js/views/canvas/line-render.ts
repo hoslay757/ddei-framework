@@ -109,87 +109,94 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       if (rsState == 0 || rsState == 1) {
         let rsState1 = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", DDeiEnumOperateType.VIEW, { models: [this.model], tempShape: tempShape, composeRender: composeRender }, this.ddRender.model, null)
         if (rsState1 == 0 || rsState1 == 1) {
-          if (this.refreshShape) {
+          if (!this.viewer) {
+            if (!this.model.hidden && this.refreshShape) {
             
-            //创建准备图形
-            this.createTempShape();
-            //将当前控件以及composes按照zindex顺序排列并输出
-            let rendList = [];
-            if (this.model.composes?.length > 0) {
-              rendList = rendList.concat(this.model.composes);
-            }
-            rendList.push(this.model)
-            rendList.sort((a, b) => {
-
-              if ((a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
-                return a.cIndex - b.cIndex
-              } else if ((a.cIndex || a.cIndex == 0) && !(b.cIndex || b.cIndex == 0)) {
-                return 1
-              } else if (!(a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
-                return -1
-              } else {
-                return 0
+              //创建准备图形
+              this.createTempShape();
+              //将当前控件以及composes按照zindex顺序排列并输出
+              let rendList = [];
+              if (this.model.composes?.length > 0) {
+                rendList = rendList.concat(this.model.composes);
               }
-            })
-            rendList.forEach(c => {
-              if (c == this.model) {
-                //获得 2d 上下文对象
-                let canvas = this.getCanvas();
-                let ctx = canvas.getContext('2d');
-                ctx.save();
-                //如果线段类型发生了改变，则重新绘制线段，计算中间点坐标
-                if (this.inited && this.model.id.indexOf("_shadow") == -1 && (!this.upLineType || this.upLineType != this.model.type)) {
-                  this.upLineType = this.model.type
-                  this.model.freeze = 0
-                  this.model.spvs = []
+              rendList.push(this.model)
+              rendList.sort((a, b) => {
 
-                  this.model.refreshLinePoints()
-                  this.model.updateOVS()
-                  this.stageRender?.selector.updatePVSByModels();
-                } else if (!this.inited) {
-                  this.inited = true;
-                  this.upLineType = this.model.type
+                if ((a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+                  return a.cIndex - b.cIndex
+                } else if ((a.cIndex || a.cIndex == 0) && !(b.cIndex || b.cIndex == 0)) {
+                  return 1
+                } else if (!(a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+                  return -1
+                } else {
+                  return 0
                 }
+              })
+              rendList.forEach(c => {
+                if (c == this.model) {
+                  //获得 2d 上下文对象
+                  let canvas = this.getCanvas();
+                  let ctx = canvas.getContext('2d');
+                  ctx.save();
+                  //如果线段类型发生了改变，则重新绘制线段，计算中间点坐标
+                  if (this.inited && this.model.id.indexOf("_shadow") == -1 && (!this.upLineType || this.upLineType != this.model.type)) {
+                    this.upLineType = this.model.type
+                    this.model.freeze = 0
+                    this.model.spvs = []
 
-                //绘制线段
-                this.drawLine(tempShape);
+                    this.model.refreshLinePoints()
+                    this.model.updateOVS()
+                    this.stageRender?.selector.updatePVSByModels();
+                  } else if (!this.inited) {
+                    this.inited = true;
+                    this.upLineType = this.model.type
+                  }
+
+                  //绘制线段
+                  this.drawLine(tempShape);
 
 
-                ctx.restore();
-              } else {
-                //绘制组合控件的内容
-                c.render.drawShape(tempShape, true)
+                  ctx.restore();
+                } else {
+                  //绘制组合控件的内容
+                  c.render.drawShape(tempShape, true)
+                }
+              })
+              this.refreshShape = false
+            }
+
+            //外部canvas
+            if (this.tempCanvas) {
+              if (!this.model.hidden) {
+                let outRect = this.tempCanvas.outRect
+                //获取model的绝对位置
+                let model = this.model
+                let stage = model.stage
+                let ruleWeight = 0
+                if (stage.render.tempRuleDisplay == 1 || stage.render.tempRuleDisplay == '1') {
+                  ruleWeight = 15
+                }
+                if (!this.tempCanvas.parentElement) {
+                  //将canvas移动至画布位置
+                  let viewerEle = this.model.layer.render.containerViewer
+                  viewerEle.appendChild(this.tempCanvas)
+                }
+                this.tempCanvas.style.zIndex = this.tempZIndex
+                
+                this.tempCanvas.style.left = (outRect.x + outRect.x1) / 2 + this.model.stage.wpv.x - this.tempCanvas.offsetWidth / 2 - ruleWeight + "px"
+
+                this.tempCanvas.style.top = (outRect.y + outRect.y1) / 2 + this.model.stage.wpv.y - this.tempCanvas.offsetHeight / 2 - ruleWeight + "px"
+
+              }else{
+                this.tempCanvas.remove()
               }
-            })
-            this.refreshShape = false
-          }
-
-          //外部canvas
-          if (this.tempCanvas) {
-            // let canvas = this.getRenderCanvas(composeRender)
-            // let ctx = canvas.getContext('2d');
-            // let rat1 = this.ddRender.ratio;
-            let outRect = this.tempCanvas.outRect
-            // ctx.drawImage(this.tempCanvas, 0, 0, outRect.width * rat1, outRect.height * rat1, outRect.x * rat1, outRect.y * rat1, outRect.width * rat1, outRect.height * rat1)
-            //获取model的绝对位置
-            let model = this.model
-            let stage = model.stage
-            let ruleWeight = 0
-            if (stage.render.tempRuleDisplay == 1 || stage.render.tempRuleDisplay == '1') {
-              ruleWeight = 15
             }
-            if (!this.tempCanvas.parentElement) {
-              //将canvas移动至画布位置
-              let viewerEle = this.model.layer.render.containerViewer
-              viewerEle.appendChild(this.tempCanvas)
+          } else {
+            if (!this.model.hidden && this.refreshShape) {
+              DDeiUtil.createRenderViewer(this.model, "VIEW", tempShape, composeRender)
+            } else {
+              DDeiUtil.createRenderViewer(this.model, "VIEW-HIDDEN")
             }
-            this.tempCanvas.style.zIndex = this.tempZIndex
-            
-            this.tempCanvas.style.left = (outRect.x + outRect.x1) / 2 + this.model.stage.wpv.x - this.tempCanvas.offsetWidth / 2 - ruleWeight + "px"
-
-            this.tempCanvas.style.top = (outRect.y + outRect.y1) / 2 + this.model.stage.wpv.y - this.tempCanvas.offsetHeight / 2 - ruleWeight + "px"
-
-
           }
         }
         DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_AFTER", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
@@ -198,8 +205,11 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
 
       let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", "VIEW-HIDDEN", { models: [this.model] }, this.ddRender.model, null)
       if (rsState == 0 || rsState == 1) {
-        //将canvas移动至画布位置
-        this.tempCanvas.remove()
+        if (!this.viewer) {
+          this.tempCanvas?.remove()
+        } else {
+          DDeiUtil.createRenderViewer(this.model, "VIEW-HIDDEN")
+        }
       }
 
     }

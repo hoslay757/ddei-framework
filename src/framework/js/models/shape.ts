@@ -137,6 +137,8 @@ abstract class DDeiAbstractShape {
   // 是否隐藏
   hidden:boolean | null = null;
 
+  __destroyed:boolean|null = null;
+
   //中心点向量
   cpv: object;
 
@@ -1762,43 +1764,48 @@ abstract class DDeiAbstractShape {
    * 移除自身的方法
    */
   destroyed() {
-    if(!this.isShadowControl){
-      //找到以自己为source的链接
-      let sourceLinks = this.stage?.getSourceModelLinks(this.id);
-      //删除链接
-      sourceLinks?.forEach(link => {
-        if (link.dm) {
-          link.dm.pModel.removeModel(link.dm, true)
-        }
-        this.stage?.removeLink(link);
-      })
+    if (!this.__destroyed){
+      if(!this.isShadowControl){
+        //找到以自己为source的链接
+        let sourceLinks = this.stage?.getSourceModelLinks(this.id);
+        //删除链接
+        sourceLinks?.forEach(link => {
+          if (link.dm) {
+            link.dm.pModel.removeModel(link.dm, true)
+          }
+          this.stage?.removeLink(link);
+        })
+        
+        let lines = this.stage?.getModelsByBaseType("DDeiLine");
+        //删除线链接
+        lines?.forEach(line => {
+          if (line.linkModels?.has(this.id)) {
+            
+            line.linkModels.delete(this.id)
+          }
+        })
+      }
+  
+      if (this.render?.tempCanvas) {
+        
+        this.render.tempCanvas.remove()
+        delete this.render.tempCanvas
+      }
+      if(this.render?.viewer){
+        DDeiUtil.removeRenderViewer(this)
+      }
       
-      let lines = this.stage?.getModelsByBaseType("DDeiLine");
-      //删除线链接
-      lines?.forEach(line => {
-        if (line.linkModels?.has(this.id)) {
-          
-          line.linkModels.delete(this.id)
-        }
-      })
-    }
- 
-    if (this.render?.tempCanvas) {
+      this.composes?.forEach(comp => {
+        
+        comp.destroyed()
+      });
       
-      this.render.tempCanvas.remove()
-      delete this.render.tempCanvas
-    }
-    if(this.render?.viewer){
-      DDeiUtil.removeRenderViewer(this)
+      
+      this.render = null
+      this.__destroyed = true
+      DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_DEL_AFTER", DDeiEnumOperateType.DESTROYED, { models: [this] }, this.stage?.ddInstance, null)
     }
     
-    this.composes?.forEach(comp => {
-      
-      comp.destroyed()
-    });
-    
-    this.render = null
-    DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_DEL_AFTER", DDeiEnumOperateType.DESTROYED, { models: [this] }, this.stage?.ddInstance, null)
   }
   /**
      * 将模型转换为JSON

@@ -201,7 +201,6 @@ class DDeiStageCanvasRender {
       let viewerEles = canvas.parentElement?.getElementsByClassName("ddei-editor-canvasview-contentlayer");
       if (viewerEles){
         
-        
         let ruleWeight = 0
         if (this.tempRuleDisplay == 1 || this.tempRuleDisplay == "1") {
           ruleWeight = 15

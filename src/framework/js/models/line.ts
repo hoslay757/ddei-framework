@@ -630,16 +630,7 @@ class DDeiLine extends DDeiAbstractShape {
     let recommendPaths = getRecommendPath(sAngle, eAngle, startPoint, endPoint, startRect, endRect, outRect)
 
     //构建障碍物
-    let ignoreIds = [this.id]
-    let lines = this.layer.getModelsByBaseType("DDeiLine");
-    lines.forEach(l => {
-      l.linkModels?.forEach(link => {
-        if (link.dm?.id) {
-          ignoreIds.push(link.dm?.id)
-        }
-      })
-    })
-    let allModels = this.layer.getSubModels(ignoreIds, 10)
+    let allModels = this.layer.getSubModelsByFilter("LINE_OBI_FILTER",null, 10,{line:this})
     let obis = []
     allModels.forEach(model => {
       if (model.baseModelType != "DDeiLine" && model.operatePVS?.length > 0) {

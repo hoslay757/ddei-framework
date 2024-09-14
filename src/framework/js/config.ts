@@ -44,13 +44,13 @@ class DDeiConfig {
     "DDei": { "TOJSON": ["stage"], "SKIP": ["bus", "render", "unicode", "editMode"] },
     "DDeiStage": { "TOJSON": ["layers", "links"], "SKIP": ["ddInstance", "selectedModels", "render", "unicode", "histroy", 'histroyIdx', "sourceLinkCache", "distLinkCache", "tempCursorOPpoint","tempStartOPpoint",""] },
     "DDeiLayer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "render", "unicode", "opPoints", "opLine", "dragInPoints", "dragOutPoints", "shadowControls", "layoutManager", "tempDisplay"] },
-    "DDeiContainer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "hpv", "loosePVS", "x", "y", "width", "height", "layoutManager", "isShadowControl"] },
+    "DDeiContainer": { "TOJSON": ["models"], "SKIP": ["ddInstance", "__destroyed", "stage", "layer", "pModel", "render", "unicode", "hpv", "loosePVS", "x", "y", "width", "height", "layoutManager", "isShadowControl"] },
     "AbstractShape": {
       "TOJSON": ["composes"],
-      "SKIP": ["ddInstance", "stage", "layer", "pModel", "state", "render", "unicode", "loosePVS", "x", "y", "width", "height", "ruleEvals", "sample", "operatePVS", "isShadowControl"],
+      "SKIP": ["ddInstance","__destroyed", "stage", "layer", "pModel", "state", "render", "unicode", "loosePVS", "x", "y", "width", "height", "ruleEvals", "sample", "operatePVS", "isShadowControl"],
       "SKIP2": ["ddInstance", "stage", "layer", "pModel", "state", "render", "unicode", "loosePVS", "x", "y", "width", "height", "ruleEvals", "sample", "operatePVS", "isShadowControl", "pvs", "opps", "apvs", "textArea", "essBounds", "baseModelType"]
     },
-    "DDeiLine": { "TOJSON": ["linkModels"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "state", "render", "unicode", "looseCanvas", "loosePVS", "x", "y", "width", "height", "startPoint", "endPoint", "cpv", "clps", "isShadowControl", "updateLooseCanvasSync", "baseModelType"] },
+    "DDeiLine": { "TOJSON": ["linkModels"], "SKIP": ["ddInstance",  "__destroyed" ,"stage", "layer", "pModel", "state", "render", "unicode", "looseCanvas", "loosePVS", "x", "y", "width", "height", "startPoint", "endPoint", "cpv", "clps", "isShadowControl", "updateLooseCanvasSync", "baseModelType"] },
     "DDeiTable": { "TOJSON": ["rows"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "hpv", "loosePVS", "x", "y", "width", "height", "cols", "selector", "initColNum", "initRowNum", "tempDragCell", "tempDragType", "curCol", "curRow", "specilDrag", "tempUpCel", "dragChanging", "dragType", "dragCell", "isShadowControl"] },
     "DDeiTableCell": { "TOJSON": ["models"], "SKIP": ["ddInstance", "stage", "layer", "pModel", "render", "unicode", "hpv", "loosePVS", "x", "y", "width", "height", "layoutManager", "id", "table", "mergedCell", "isShadowControl"] },
   }
