@@ -1788,6 +1788,9 @@ abstract class DDeiAbstractShape {
       this.render.tempCanvas.remove()
       delete this.render.tempCanvas
     }
+    if(this.render?.viewer){
+      DDeiUtil.removeRenderViewer(this)
+    }
     
     this.composes?.forEach(comp => {
       

@@ -598,11 +598,8 @@ class DDeiEditor {
   //当前引入的外部字体
   fonts: object[] = FONTS;
 
+  //自定义viewer的映射，key为model.id, value为渲染元素
   viewerMap: Map<string, object> = markRaw(new Map());
-  //当前引入的外部renderViewers以及创建后的实例
-  renderViewers: object[] = markRaw([]);
-  renderViewerIns: object = markRaw({});
-  renderViewerElements: object = markRaw({});
   //当前引入的外部菜单
   menuMapping: object = markRaw({});
   //当前引入的外部控件配置

@@ -532,6 +532,11 @@ class DDeiConfig {
     }else{
       model.render = model.stage?.ddInstance.controlViewClasses[clsName].newInstance({ model: model })
     }
+    //读取viewer
+    let modelDefine = DDeiUtil.getControlDefine(model);
+    if (modelDefine?.viewer){
+      model.render.viewer = modelDefine.viewer
+    }
   }
 
   static {

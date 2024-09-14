@@ -53,6 +53,13 @@ class DDeiUtil {
   static isBackActive: Function;
 
 
+  //钩子函数,创建renderviewer元素，由editor在创建时传入
+  static createRenderViewer: Function;
+
+  //钩子函数,移除renderviewer元素，由editor在创建时传入
+  static removeRenderViewer: Function;
+
+
 
   static offsetX: number;
   static offsetY: number;
@@ -3040,8 +3047,6 @@ class DDeiUtil {
     }
 
   }
-
- 
 
 }
 

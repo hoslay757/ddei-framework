@@ -198,9 +198,8 @@ class DDeiStageCanvasRender {
       DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_AFTER", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
     
       //设置htmlrender的容器大小以及位置
-      let renderViewerEle = canvas.parentElement?.getElementsByClassName("ddei-editor-canvasview-renderviewers")[0];
       let viewerEles = canvas.parentElement?.getElementsByClassName("ddei-editor-canvasview-contentlayer");
-      if (renderViewerEle && viewerEles){
+      if (viewerEles){
         
         
         let ruleWeight = 0
@@ -214,12 +213,6 @@ class DDeiStageCanvasRender {
         if (this.hScroll) {
           hScrollWeight = 15
         }
-        
-        
-        renderViewerEle.style.marginLeft = ruleWeight + "px"
-        renderViewerEle.style.marginTop = ruleWeight + "px"
-        renderViewerEle.style.width = (canvas.offsetWidth/rat1 - ruleWeight - vScrollWeight) + "px"
-        renderViewerEle.style.height = (canvas.offsetHeight/rat1 - ruleWeight - hScrollWeight) + "px"
 
         for (let ei = 0; ei < viewerEles.length;ei++){
           let viewerEle = viewerEles[ei];
