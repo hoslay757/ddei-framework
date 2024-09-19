@@ -47,7 +47,7 @@ class DDeiPolygonContainerCanvasRender extends DDeiPolygonCanvasRender {
       if (composeRender || rsState == 0 || rsState == 1) {
         let rsState1 = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", DDeiEnumOperateType.VIEW, { models: [this.model], tempShape: tempShape, composeRender: composeRender }, this.ddRender.model, null)
         if (rsState1 == 0 || rsState1 == 1) {
-          if (!this.model.hidden && (this.refreshShape || this.isEditoring)) {
+          if (!DDeiUtil.isModelHidden(this.model) && (this.refreshShape || this.isEditoring)) {
 
             //创建准备图形
             this.createTempShape();

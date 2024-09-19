@@ -130,7 +130,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         if (rsState1 == 0 || rsState1 == 1) {
           if(!this.viewer){
             let print = false
-            if (!this.model.hidden && (this.refreshShape || this.isEditoring)) {
+            if (!DDeiUtil.isModelHidden(this.model) && (this.refreshShape || this.isEditoring)) {
               print = true
               //创建准备图形
               this.createTempShape();
@@ -219,7 +219,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
             //外部canvas
             this.drawSelfToCanvas(composeRender, print)
           }else{
-            if (!this.model.hidden && (this.refreshShape || this.isEditoring)) {
+            if (!DDeiUtil.isModelHidden(this.model) && (this.refreshShape || this.isEditoring)) {
               DDeiUtil.createRenderViewer(this.model, "VIEW", tempShape, composeRender)
             }else{
               DDeiUtil.createRenderViewer(this.model,"VIEW-HIDDEN")
@@ -254,7 +254,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   drawSelfToCanvas(composeRender, print) {
     if (this.tempCanvas) {
       let model = this.model
-      if (!model.hidden) {
+      if (!DDeiUtil.isModelHidden(this.model)) {
         let stage = model.stage
         let ruleWeight = 0
         if (stage.render.tempRuleDisplay == 1 || stage.render.tempRuleDisplay == '1') {

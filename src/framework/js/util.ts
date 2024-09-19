@@ -59,6 +59,22 @@ class DDeiUtil {
   //钩子函数,移除renderviewer元素，由editor在创建时传入
   static removeRenderViewer: Function;
 
+  //钩子函数,判定控件否为hidden的函数，可以由外部来覆写，从而增加前置或者后置判断逻辑
+  static isModelHidden: Function = function(model:DDeiAbstractShape):boolean{
+    if (model.hidden){
+      return true;
+    }else{
+      let pModel = model.pModel;
+      while(pModel && pModel.baseModelType != 'DDeiLayer'){
+        if (pModel.hidden){
+          return true
+        }
+        pModel = pModel.pModel
+      }
+    }
+    return false
+  };
+
 
 
   static offsetX: number;

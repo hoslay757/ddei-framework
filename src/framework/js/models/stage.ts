@@ -86,14 +86,10 @@ class DDeiStage {
         } else if (lk.dmid) {
           dm = stage.getModelById(lk.dmid)
         }
-        let link = new DDeiLink({
-          group: lk.group,
-          smpath: lk.smpath,
-          dmpath: lk.dmpath,
-          stage: stage,
-          sm: sm,
-          dm: dm
-        });
+        lk.stage = stage
+        lk.sm = sm
+        lk.dm = dm
+        let link = new DDeiLink(lk);
         links.push(link);
       })
       stage.links = links;

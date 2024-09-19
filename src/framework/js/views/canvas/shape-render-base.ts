@@ -380,7 +380,7 @@ class DDeiAbstractShapeRender {
     let modelPos = DDeiUtil.getModelsDomAbsPosition([model])
 
     let rat1 = window.remRatio
-    if (model.hidden) {
+    if (DDeiUtil.isModelHidden(model)) {
       shapeElement.style.display = "none"
     } else {
       //大小

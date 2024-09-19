@@ -110,7 +110,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         let rsState1 = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", DDeiEnumOperateType.VIEW, { models: [this.model], tempShape: tempShape, composeRender: composeRender }, this.ddRender.model, null)
         if (rsState1 == 0 || rsState1 == 1) {
           if (!this.viewer) {
-            if (!this.model.hidden && this.refreshShape) {
+            if (!DDeiUtil.isModelHidden(this.model) && this.refreshShape) {
             
               //创建准备图形
               this.createTempShape();
@@ -167,7 +167,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
 
             //外部canvas
             if (this.tempCanvas) {
-              if (!this.model.hidden) {
+              if (!DDeiUtil.isModelHidden(this.model)) {
                 let outRect = this.tempCanvas.outRect
                 //获取model的绝对位置
                 let model = this.model
@@ -192,7 +192,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
               }
             }
           } else {
-            if (!this.model.hidden && this.refreshShape) {
+            if (!DDeiUtil.isModelHidden(this.model) && this.refreshShape) {
               DDeiUtil.createRenderViewer(this.model, "VIEW", tempShape, composeRender)
             } else {
               DDeiUtil.createRenderViewer(this.model, "VIEW-HIDDEN")

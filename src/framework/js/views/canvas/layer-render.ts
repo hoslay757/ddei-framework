@@ -521,7 +521,7 @@ class DDeiLayerCanvasRender {
       let color = lineRender.getCachedValue("color");
       let weight = lineRender.getCachedValue("weight");
       lineRender.enableRefreshShape();
-      this.model.opLine.render.drawShape({ color: "red", opacity: 0.5, weight: weight * 1.5 })
+      this.model.opLine.render.drawShape({ color: "red", opacity: 0.5, weight: weight * 1.5 }, false, null, this.model.opLine.render.tempZIndex)
 
 
       // //恢复状态
@@ -1177,7 +1177,7 @@ class DDeiLayerCanvasRender {
                   //如果原有的关联存在，取消原有的关联
                   let distLinks = this.stage?.getDistModelLinks(model.id);
                   distLinks?.forEach(dl => {
-                    if (!dl.sm || moveOriginModels.indexOf(dl.sm) == -1) {
+                    if (!dl.disabled && (!dl.sm || moveOriginModels.indexOf(dl.sm) == -1)) {
                       this.stage?.removeLink(dl);
                       //删除源点
                       if (dl?.sm && dl?.smpath) {

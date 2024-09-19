@@ -56,7 +56,7 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
       this.ddRender.model,
       null
     )) {
-      if (!this.model.hidden) {
+      if (!DDeiUtil.isModelHidden(this.model)) {
         //创建准备图形
 
         let canvas = this.ddRender.getCanvas();

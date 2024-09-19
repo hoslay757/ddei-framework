@@ -957,7 +957,7 @@ abstract class DDeiAbstractShape {
     //同步调整链接控件的数据
     let removeLinks = []
     links?.forEach(link => {
-      if (!ignoreModelIds || ignoreModelIds?.indexOf(link.dm?.id) == -1) {
+      if (!link.disabled && (!ignoreModelIds || ignoreModelIds?.indexOf(link.dm?.id) == -1)) {
         let dpv = link.getDistPV();
         if (dpv) {
           let spv = link.getSourcePV();
@@ -2311,7 +2311,7 @@ abstract class DDeiAbstractShape {
         let item = container.models.get(container.midList[mg]);
 
         //如果射线相交，则视为选中
-        if (item.isInAreaLoose(x, y, loose)) {
+        if (!DDeiUtil.isModelHidden(item) && item.isInAreaLoose(x, y, loose)) {
           //如果当前控件状态为选中，且是容器，则往下寻找控件，否则返回当前控件
           if ((item.state == DDeiEnumControlState.SELECTED || deep) && item.baseModelType == "DDeiContainer") {
             let subControls = DDeiAbstractShape.findBottomModelsByArea(item, x, y, loose, deep);
@@ -2397,7 +2397,7 @@ abstract class DDeiAbstractShape {
       for (let mg = container.midList.length - 1; mg >= 0; mg--) {
         let item = container.models.get(container.midList[mg]);
         //如果射线相交，则视为选中
-        if (DDeiAbstractShape.isInsidePolygon(item.pvs, { x: x, y: y })) {
+        if (!DDeiUtil.isModelHidden(item) && DDeiAbstractShape.isInsidePolygon(item.pvs, { x: x, y: y })) {
           //获取真实的容器控件
           let accuContainer = item.getAccuContainerByPos(x, y);
           if (accuContainer) {
