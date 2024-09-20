@@ -24,27 +24,8 @@ class DDeiBusCommandModelChangeRotate extends DDeiBusCommand {
    * @param evt 事件对象引用
    */
   before(data: object, bus: DDeiBus, evt: Event): boolean {
-    if ((data.ex || data.ey) && data?.container) {
-      //更改已选择控件的旋转
-      //更改已选择控件的旋转
-      let selector = bus.ddInstance.stage.render.selector;
-      let pContainerModel = data.container;
-      let selectedModels = pContainerModel.getSelectedModels();
-      if (!selectedModels || selector.passIndex == -1) {
-        return false;
-      }
-      if (selectedModels.set) {
-        selectedModels = Array.from(selectedModels.values());
-      }
-      for (let i = 0; i < selectedModels.length; i++) {
-        let parentContainer = selectedModels[i].pModel;
-        if (parentContainer?.layoutManager) {
-          if (!parentContainer.layoutManager.canChangeRotate()) {
-            return false;
-          }
-        }
-      }
-      return true
+    if ((data.ex || data.ey) && data.models?.length > 0) {
+      return true;
     }
     return false;
   }
@@ -56,59 +37,55 @@ class DDeiBusCommandModelChangeRotate extends DDeiBusCommand {
    * @param evt 事件对象引用
    */
   action(data: object, bus: DDeiBus, evt: Event): boolean {
-    if ((data.ex || data.ey) && data?.container) {
-      let stage = bus.ddInstance.stage
-      //更改已选择控件的旋转
-      let selector = stage.render.selector;
-      //鼠标的当前位置
-      let x = data.ex ? data.ex : 0, y = data.ey ? data.ey : 0
-      let pContainerModel = data.container;
-      let selectedModels = pContainerModel.getSelectedModels();
-      let ratio = stage?.getStageRatio()
-      let models: DDeiAbstractShape[] = Array.from(selectedModels.values());
+    let stage = bus.ddInstance.stage
+    //更改已选择控件的旋转
+    let selector = stage.render.selector;
+    //鼠标的当前位置
+    let x = data.ex ? data.ex : 0, y = data.ey ? data.ey : 0
+    let pContainerModel = data.container;
+    let ratio = stage?.getStageRatio()
+    let models: DDeiAbstractShape[] = data.models
 
-      DDeiEditorUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", "CHANGE_ROTATE", {models:models}, bus.ddInstance, evt)
-      //基于中心构建旋转矩阵，旋转所有向量点
-      //计算selector的中心坐标与鼠标当前坐标的角度关系
-      let scx = selector.x * ratio + selector.width / 2 * ratio
-      let scy = selector.y * ratio + selector.height / 2 * ratio
-      let selectorAngle = Math.round(DDeiUtil.getLineAngle(scx, scy, x, y))
+    DDeiEditorUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", "CHANGE_ROTATE", {models:models}, bus.ddInstance, evt)
+    //基于中心构建旋转矩阵，旋转所有向量点
+    //计算selector的中心坐标与鼠标当前坐标的角度关系
+    let scx = selector.x * ratio + selector.width / 2 * ratio
+    let scy = selector.y * ratio + selector.height / 2 * ratio
+    let selectorAngle = Math.round(DDeiUtil.getLineAngle(scx, scy, x, y))
 
-      let rotate = selectorAngle + 90
-      let selectorRotate = selector.rotate
-      let angle = -DDeiUtil.preciseTimes(rotate - selectorRotate, DDeiConfig.ROTATE_UNIT)
-      let move1Matrix = new Matrix3(
-        1, 0, -scx,
-        0, 1, -scy,
-        0, 0, 1);
-      let rotateMatrix = new Matrix3(
-        Math.cos(angle), Math.sin(angle), 0,
-        -Math.sin(angle), Math.cos(angle), 0,
-        0, 0, 1);
-      let move2Matrix = new Matrix3(
-        1, 0, scx,
-        0, 1, scy,
-        0, 0, 1);
+    let rotate = selectorAngle + 90
+    let selectorRotate = selector.rotate
+    let angle = -DDeiUtil.preciseTimes(rotate - selectorRotate, DDeiConfig.ROTATE_UNIT)
+    let move1Matrix = new Matrix3(
+      1, 0, -scx,
+      0, 1, -scy,
+      0, 0, 1);
+    let rotateMatrix = new Matrix3(
+      Math.cos(angle), Math.sin(angle), 0,
+      -Math.sin(angle), Math.cos(angle), 0,
+      0, 0, 1);
+    let move2Matrix = new Matrix3(
+      1, 0, scx,
+      0, 1, scy,
+      0, 0, 1);
 
-      let m1 = new Matrix3().premultiply(move1Matrix).premultiply(rotateMatrix).premultiply(move2Matrix);
-      //对所有选中图形进行位移并旋转
-      for (let i = 0; i < models.length; i++) {
-        let item = models[i]
-        item.transVectors(m1)
-        item.updateLinkModels();
-        item.getTopContainer()?.render?.enableRefreshShape()
-        item.render?.enableRefreshShape()
-      }
-      selector.transVectors(m1)
-
-
-
-      //同步更新上层容器其大小和坐标
-      pContainerModel.changeParentsBounds()
-      stage.render.helpLines = { rect: { x: scx, y: scy, rotate: rotate < 0 ? 360 + rotate : rotate } }
-      return true
+    let m1 = new Matrix3().premultiply(move1Matrix).premultiply(rotateMatrix).premultiply(move2Matrix);
+    //对所有选中图形进行位移并旋转
+    for (let i = 0; i < models.length; i++) {
+      let item = models[i]
+      item.transVectors(m1)
+      item.updateLinkModels();
+      item.getTopContainer()?.render?.enableRefreshShape()
+      item.render?.enableRefreshShape()
     }
-    return false;
+    selector.transVectors(m1)
+
+
+
+    //同步更新上层容器其大小和坐标
+    pContainerModel.changeParentsBounds()
+    stage.render.helpLines = { rect: { x: scx, y: scy, rotate: rotate < 0 ? 360 + rotate : rotate } }
+    return true
   }
 
   /**

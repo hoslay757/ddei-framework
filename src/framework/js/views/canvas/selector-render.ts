@@ -704,16 +704,45 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       }
       //旋转
       else if (this.model.passIndex == 9) {
-        //获取当前元素的中心位置
-        let dragObj = {
-          x: ex,
-          y: ey,
-          cx: this.model.cpv.x,
-          cy: this.model.cpv.y
+        
+        let pContainerModel = this.stageRender.currentOperateContainer;
+        if (!pContainerModel) {
+          pContainerModel = this.layer;
         }
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
-        //当前操作状态：改变控件大小中
-        this.stageRender.operateState = DDeiEnumOperateState.CONTROL_ROTATE
+
+        let selectedModels = pContainerModel.getSelectedModels();
+        if (selectedModels) {
+          if (selectedModels.set) {
+            selectedModels = Array.from(selectedModels.values());
+          }
+          let stop = false;
+          for (let i = 0; i < selectedModels.length; i++) {
+            let parentContainer = selectedModels[i].pModel;
+            if (parentContainer?.layoutManager) {
+              if (!parentContainer.layoutManager.canChangeRotate()) {
+                stop = true;
+                break;
+              }
+            }
+          }
+          if (!stop){
+            //获取当前元素的中心位置
+            let dragObj = {
+              x: ex,
+              y: ey,
+              cx: this.model.cpv.x,
+              cy: this.model.cpv.y,
+              models:selectedModels,
+              container: pContainerModel
+            }
+            let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_ROTATE_BEFORE", DDeiEnumOperateType.ROTATE, { models: dragObj.models }, this.stage.ddInstance, evt)
+            if (rsState == 0 || rsState == 1) {
+              this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
+              //当前操作状态：改变控件大小中
+              this.stageRender.operateState = DDeiEnumOperateState.CONTROL_ROTATE
+            }
+          }
+        }
       }
       //拖拽移动
       else if (this.model.passIndex == 13) {

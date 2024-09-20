@@ -176,7 +176,15 @@ class DDeiLifeCycle extends DDeiPluginBase {
    */
   EVENT_ADD_SHEET_BEFORE: DDeiFuncData | null = null;
 
-  
+  /**
+   * 控件旋转前，此方法为外部传入的勾子函数
+   */
+  EVENT_CONTROL_ROTATE_BEFORE: DDeiFuncData | null = null;
+
+  /**
+   * 控件旋转后，此方法为外部传入的勾子函数
+   */
+  EVENT_CONTROL_ROTATE_AFTER: DDeiFuncData | null = null;
 
   
   

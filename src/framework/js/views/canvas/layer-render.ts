@@ -1309,6 +1309,7 @@ class DDeiLayerCanvasRender {
           this.stage?.ddInstance?.bus.push(DDeiEnumBusCommandType.CopyStyle, { models: [table], brushData: this.stage.brushData });
           break;
         case DDeiEnumOperateState.CONTROL_ROTATE:
+          DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_ROTATE_AFTER", DDeiEnumOperateType.ROTATE, { models: this.stageRender.dragObj.models }, this.stage?.ddInstance, evt)
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars);
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.NodifyChange);
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy);
@@ -1804,23 +1805,11 @@ class DDeiLayerCanvasRender {
       }
       //控件旋转
       case DDeiEnumOperateState.CONTROL_ROTATE: {
-        //获取当前移动的坐标量
-        // let movedPos = this.getMovedPositionDelta(evt);
-        // if (movedPos.x != 0) {
-        //计算上级控件的大小
-        let pContainerModel = this.stageRender?.currentOperateContainer;
-        if (!pContainerModel) {
-          pContainerModel = this.model;
-        }
-
+        let dragObj = this.stageRender.dragObj
         //更新旋转
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeRotate, { ex: ex2, ey: ey2, container: pContainerModel }, evt);
-        // //更新dragObj临时变量中的数值,确保坐标对应关系一致
-        // this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { deltaX: movedPos.x, deltaY: 0 }, evt);
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeRotate, { ex: ex2, ey: ey2, container: dragObj.container, models: dragObj.models }, evt);
         //渲染图形
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
-
-        // }
         break;
       }
       //快捷编辑中
