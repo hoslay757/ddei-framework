@@ -785,8 +785,24 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let haveFilled = false;
     for (let i = 0; i < this.borderPVSS.length; i++) {
       if (this.borderPVSS[i][0].fill == 1) {
+        let hasOpacity = false
         haveFilled = true;
         let pvs = this.borderPVSS[i];
+        if(pvs[0].fillColor){
+          if (pvs[0].fillColor == "none") {
+            ctx.save();
+            hasOpacity = true
+            ctx.globalCompositeOperation = "destination-out"
+            fillColor = DDeiUtil.getColor("black");
+          }else if (pvs[0].fillColor == "border") {
+            fillColor = tempShape?.border?.color ? tempShape?.border?.color : this.getCachedValue("border.color")
+            if (!fillColor) {
+              fillColor = DDeiUtil.getStyleValue("canvas-control-border", this.ddRender.model);
+            }
+          }else{
+            fillColor = DDeiUtil.getColor(pvs[0].fillColor);
+          }
+        }
         //创建path
         this.createPath(pvs, tempShape)
         //纯色填充
@@ -816,6 +832,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         //图片填充
         else if (fillType == 2) {
           this.drawImage()
+        }
+        if(hasOpacity){
+          ctx.restore()
         }
       }
     }
