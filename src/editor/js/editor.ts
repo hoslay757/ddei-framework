@@ -8,7 +8,7 @@ import DDeiFile from "./file";
 import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import { markRaw } from "vue";
 import config from "./config"
-import { cloneDeep } from "lodash";
+import { clone, cloneDeep } from "lodash";
 import FONTS from "../../framework/js/fonts/font"
 import { Matrix3, Vector3 } from 'three'
 import DDeiThemeBase from "@ddei-core/themes/theme";
@@ -34,6 +34,9 @@ class DDeiEditor {
     this.files = props.files ? props.files : []
     this.currentFileIndex = props.currentFileIndex ? props.currentFileIndex : -1;
     this.state = DDeiEditorState.DESIGNING;
+    if (props.currentLayout){
+      this.currentLayout = props.currentLayout
+    }
   }
   // ============================ 静态变量 ============================
 
@@ -127,7 +130,10 @@ class DDeiEditor {
     if (id && containerid) {
       if (!DDeiEditor.INSTANCE_POOL.get(id)) {
         //初始化DDeiEditor对象
-        let editorInstance = new DDeiEditor({ id: id, containerid: containerid });
+        let editorInitOptions = clone(options)
+        editorInitOptions.id = id
+        editorInitOptions.containerid = containerid
+        let editorInstance = new DDeiEditor(editorInitOptions);
         if (!DDeiUtil.getAttrValueByConfig) {
           DDeiUtil.getAttrValueByConfig = DDeiEditorUtil.getAttrValueByConfig;
         }
@@ -1043,7 +1049,9 @@ class DDeiEditor {
             }
             
             //设置大小以及坐标
-            let stageRatio = !applyRatio?1/stage.getStageRatio():1
+            let stageRatio1 = stage.getStageRatio();
+            let stageRatio = !applyRatio ? 1 / stageRatio1 :1
+            
             let m1 = new Matrix3()
             //缩放至目标大小
             if (control.width || control.height) {
@@ -1056,10 +1064,13 @@ class DDeiEditor {
               m1.premultiply(scaleMatrix)
             }
                       
+            
+            
             let moveMatrix = new Matrix3(
-              1, 0, -stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2, //+ this.ddInstance.render.container.offsetWidth/2,
-              0, 1, -stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2,// + this.ddInstance.render.container.offsetHeight / 2,
+              1, 0, -stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2,
+              0, 1, -stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2 ,
               0, 0, 1);
+
             
             m1.premultiply(moveMatrix)
             //位移至画布中心的相对位置

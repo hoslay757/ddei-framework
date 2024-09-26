@@ -1953,10 +1953,13 @@ class DDeiLayerCanvasRender {
           // operateControls[0].render.mouseMove(evt);
           this.stage.ddInstance.bus.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'all-scroll' }, evt);
         } else if (!inSelector || this.stageRender.selector.passIndex == -1) {
-         if (this.stage.ddInstance?.editMode == 1) {
-            this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
+          if (this.stage.ddInstance?.editMode == 1) {
+              this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
           } else if (this.stage.ddInstance?.editMode == 2) {
             this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'grab' }, evt);
+          }
+          else if (this.stage.ddInstance?.editMode == 4) {
+            this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'crosshair' }, evt);
           }
           let allowBackActive = DDeiUtil.isBackActive(this.stage?.ddInstance)
           if (allowBackActive) {

@@ -52,11 +52,12 @@ class DDeiEditorUtil {
   * 获取线的初始化JSON定义
   */
   static getLineInitJSON(): object {
-    let dataJson = {
-      modelCode: "100401",
-    };
-
-    return dataJson
+    if(!DDeiEditorUtil.lineInitJSON){
+      DDeiEditorUtil.lineInitJSON = {
+        modelCode: "100401",
+      };
+    }
+    return DDeiEditorUtil.lineInitJSON;
   }
 
   /**
@@ -641,6 +642,31 @@ class DDeiEditorUtil {
               left = absPos.left - (dialog.clientWidth / 2 - el.clientWidth / 2) + (pos.dx ? pos.dx : 0)
               top = (absPos.top + el.clientHeight + (pos.dy ? pos.dy : 0))
             } break;
+            //基于触发元素的左边
+            case 6: {
+              let absPos = DDeiUtil.getDomAbsPosition(el, editor)
+              left = absPos.left + (pos.dx ? pos.dx : 0) - dialog.clientWidth
+              top = (absPos.top + (pos.dy ? pos.dy : 0))
+            } break;
+            //基于触发元素的左边居中
+            case 7: {
+              let absPos = DDeiUtil.getDomAbsPosition(el, editor)
+              left = absPos.left + (pos.dx ? pos.dx : 0) - dialog.clientWidth
+              top = (absPos.top - (dialog.clientHeight - el.clientHeight) / 2 + (pos.dy ? pos.dy : 0))
+            } break;
+            //基于触发元素的右边
+            case 8: {
+              let absPos = DDeiUtil.getDomAbsPosition(el, editor)
+              left = absPos.left + (pos.dx ? pos.dx : 0)+el.clientWidth
+              top = (absPos.top + (pos.dy ? pos.dy : 0))
+            } break;
+            //基于触发元素的右边居中
+            case 9: {
+              let absPos = DDeiUtil.getDomAbsPosition(el, editor)
+              left = absPos.left + (pos.dx ? pos.dx : 0) + el.clientWidth
+              top = (absPos.top - (dialog.clientHeight - el.clientHeight) / 2 + (pos.dy ? pos.dy : 0))
+            } break;
+            
           }
           if (left + dialog?.clientWidth > document.body.scrollWidth) {
             left = document.body.scrollWidth - dialog?.clientWidth - 10
