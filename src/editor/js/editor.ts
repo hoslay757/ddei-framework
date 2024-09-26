@@ -133,6 +133,20 @@ class DDeiEditor {
         let editorInitOptions = clone(options)
         editorInitOptions.id = id
         editorInitOptions.containerid = containerid
+        //对配置文件进行排序
+        editorInitOptions.extensions?.sort((a, b) => {
+          return a.order - b.order
+        })
+        for (let i = 0; i < editorInitOptions.extensions?.length; i++) {
+          if (editorInitOptions.extensions[i].getInitConfig) {
+            let initConfigData = editorInitOptions.extensions[i].getInitConfig()
+            //对配置进行复写、替换、或追加
+            if (initConfigData) {
+              DDeiEditor.changeInitConfigData(editorInitOptions, initConfigData);
+            }
+          }
+        }
+
         let editorInstance = new DDeiEditor(editorInitOptions);
         if (!DDeiUtil.getAttrValueByConfig) {
           DDeiUtil.getAttrValueByConfig = DDeiEditorUtil.getAttrValueByConfig;
@@ -228,7 +242,10 @@ class DDeiEditor {
 
         //装载插件
         if (options) {
-          editorInstance.options = options
+          
+          editorInstance.options = editorInitOptions
+          
+          
           options.extensions?.forEach(item => editorInstance.registerExtension(item))
           //注册快捷键
           for (let i in editorInstance.hotkeys){
@@ -316,6 +333,44 @@ class DDeiEditor {
       }
     }
     return null;
+  }
+
+  /**
+   * 修改初始化数据，有append，rewrite，remove三种
+   * @param editor 
+   * @param config 
+   * @param initConfigData 
+   */
+  static changeInitConfigData(config:object,initConfigData:object){
+    if (initConfigData.remove) {
+      initConfigData.remove.extensions?.forEach(ext => {
+        if (config.extensions.indexOf(ext) != -1){
+          config.extensions.splice(config.extensions.indexOf(ext),1)
+        }
+      });
+    }
+
+    if (initConfigData.append) {
+      initConfigData.append.extensions?.forEach(ext => {
+        if (config.extensions.indexOf(ext) == -1) {
+          config.extensions.push(ext)
+        }
+      });
+    }
+
+    if (initConfigData.rewrite) {
+      for (let k in initConfigData.rewrite){
+        if(k != config){
+          config[k] = initConfigData.rewrite[k]
+        }
+        
+      }
+      if(initConfigData.rewrite.config){
+        for (let k in initConfigData.rewrite.config) {
+            config.config[k] = initConfigData.rewrite.config[k]
+        }
+      }
+    }
   }
 
   /**
