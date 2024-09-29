@@ -189,8 +189,16 @@ class DDeiEditor {
         if (!DDeiUtil.notifyChange) {
           DDeiUtil.notifyChange = DDeiEditorUtil.notifyChange;
         }
+
         if (!DDeiUtil.isBackActive) {
           DDeiUtil.isBackActive = DDeiEditorUtil.isBackActive;
+        }
+        if (!DDeiUtil.getEditorInsByDDei) {
+          DDeiUtil.getEditorInsByDDei = DDeiEditorUtil.getEditorInsByDDei;
+        }
+
+        if (!DDeiUtil.createControl) {
+          DDeiUtil.createControl = DDeiEditorUtil.createControl;
         }
         
         
@@ -360,14 +368,17 @@ class DDeiEditor {
 
     if (initConfigData.rewrite) {
       for (let k in initConfigData.rewrite){
-        if(k != config){
+        if(k != "config"){
           config[k] = initConfigData.rewrite[k]
         }
         
       }
       if(initConfigData.rewrite.config){
         for (let k in initConfigData.rewrite.config) {
-            config.config[k] = initConfigData.rewrite.config[k]
+          if (!config.config){
+            config.config = {}
+          }
+          config.config[k] = initConfigData.rewrite.config[k]
         }
       }
     }
@@ -1265,12 +1276,36 @@ class DDeiEditor {
         if (control.startPoint && control.endPoint) {
           //读取配置
           let lineJson = DDeiUtil.getLineInitJSON();
-          lineJson.id = "line_" + (++stage.idIdx)
+          let lineDefine = this.controls?.get(lineJson.modelCode ? lineJson.modelCode : lineJson.model ? lineJson.model : lineJson.id ? lineJson.id : lineJson.code);
+          let initJSON = clone(lineDefine)
+          initJSON.modelCode = initJSON.id
+          initJSON.id = "line_" + (++stage.idIdx)
+
           //线段类型
-          lineJson.type = 2
-          
-          //根据线的类型生成不同的初始化点
-          lineJson.type = 2
+          if (!lineJson.type) {
+            initJSON.type = 2
+          } else {
+            initJSON.type = lineJson.type
+          }
+          if (initJSON.img) {
+            initJSON.fill = { type: 2, image: initJSON.img };
+            delete initJSON.img
+          }
+          if (initJSON.define) {
+            for (let i in initJSON?.define) {
+              initJSON[i] = initJSON.define[i];
+            }
+            delete initJSON.define
+          }
+
+          delete initJSON.attrDefineMap
+          delete initJSON.filters
+          delete initJSON.icon
+          delete initJSON.groups
+          delete initJSON.name
+          delete initJSON.def
+          delete initJSON.code
+          delete initJSON.desc
           //直线两个点
           let sx,sy,ex,ey
           if (control.startPoint.offsetX || control.startPoint.offsetX == 0) {
@@ -1300,7 +1335,7 @@ class DDeiEditor {
           
           //跳过计算点
           if (!calPoints && control.pvs?.length >= 2) {
-            lineJson.pvs = []
+            initJSON.pvs = []
             control.pvs.forEach(pv => {
               let pvx,pvy
               if (pv.offsetX || pv.offsetX == 0) {
@@ -1313,15 +1348,15 @@ class DDeiEditor {
               } else if (pv.y || pv.y == 0) {
                 pvy = pv.y * stageRatio
               }
-              lineJson.pvs.push(new Vector3(pvx, pvy, 1))
+              initJSON.pvs.push(new Vector3(pvx, pvy, 1))
             });
           }else{
-            lineJson.pvs = [new Vector3(sx, sy, 1), new Vector3(ex, ey, 1)]
+            initJSON.pvs = [new Vector3(sx, sy, 1), new Vector3(ex, ey, 1)]
           }
-          lineJson.cpv = lineJson.pvs[0]
+          initJSON.cpv = initJSON.pvs[0]
           //初始化开始点和结束点
 
-          let cc = DDeiLine.initByJSON(lineJson, { currentStage: stage, currentLayer: layer, currentContainer: layer });
+          let cc = DDeiLine.initByJSON(initJSON, { currentStage: stage, currentLayer: layer, currentContainer: layer });
           
           //设置控件值
           for (let i in control) {
@@ -1585,7 +1620,7 @@ class DDeiEditor {
         if (sheetIndex >=0){
           file.changeSheet(sheetIndex)
         }
-        ddInstance.stage.destroyed()
+        ddInstance.stage.destroyRender()
         let stage = sheets[file.currentSheetIndex].stage;
         
         stage.ddInstance = ddInstance;

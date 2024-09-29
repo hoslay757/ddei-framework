@@ -143,6 +143,8 @@ class DDeiPolygon extends DDeiAbstractShape {
     this.composes?.forEach(compose => {
       compose.initRender()
     });
+
+    delete this.__destroyed
   }
 
   //覆写hpv

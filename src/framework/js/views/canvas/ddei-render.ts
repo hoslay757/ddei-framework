@@ -269,7 +269,7 @@ class DDeiCanvasRender {
   bindEvent(): void {
     this.interval = setInterval(() => {
       if(this.model.render != this){
-        this.destroyed();
+        this.destroyRender();
       }else if(!this.model.disabled){
         let allowBackActive = DDeiUtil.isBackActive(this.model)
         if (allowBackActive){

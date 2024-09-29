@@ -520,6 +520,17 @@ class DDeiAbstractShapeRender {
       }
     }
   }
+
+  removeViewerCanvas(){
+    if (!this.viewer) {
+      this.tempCanvas?.remove()
+      this.model.composes?.forEach(comp => {
+        comp.render.removeViewerCanvas()
+      })
+    } else {
+      DDeiUtil.createRenderViewer(this.model, "VIEW-HIDDEN")
+    }
+  }
 }
 export { DDeiAbstractShapeRender}
 export default DDeiAbstractShapeRender

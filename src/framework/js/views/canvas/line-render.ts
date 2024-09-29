@@ -110,8 +110,9 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         let rsState1 = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", DDeiEnumOperateType.VIEW, { models: [this.model], tempShape: tempShape, composeRender: composeRender }, this.ddRender.model, null)
         if (rsState1 == 0 || rsState1 == 1) {
           if (!this.viewer) {
+            let print = false
             if (!DDeiUtil.isModelHidden(this.model) && this.refreshShape) {
-            
+              print = true
               //创建准备图形
               this.createTempShape();
               //将当前控件以及composes按照zindex顺序排列并输出
@@ -132,8 +133,10 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
                   return 0
                 }
               })
-              rendList.forEach(c => {
+              for(let ri = 0;ri < rendList.length;ri++){
+                let c = rendList[ri];
                 if (c == this.model) {
+                  this.tempZIndex = this.tempZIndex+ri
                   //获得 2d 上下文对象
                   let canvas = this.getCanvas();
                   let ctx = canvas.getContext('2d');
@@ -159,38 +162,14 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
                   ctx.restore();
                 } else {
                   //绘制组合控件的内容
-                  c.render.drawShape(tempShape, true)
+                  c.render.drawShape(tempShape, 1,null,this.tempZIndex+ri)
                 }
-              })
+              }
               this.refreshShape = false
             }
 
             //外部canvas
-            if (this.tempCanvas) {
-              if (!DDeiUtil.isModelHidden(this.model)) {
-                let outRect = this.tempCanvas.outRect
-                //获取model的绝对位置
-                let model = this.model
-                let stage = model.stage
-                let ruleWeight = 0
-                if (stage.render.tempRuleDisplay == 1 || stage.render.tempRuleDisplay == '1') {
-                  ruleWeight = 15
-                }
-                if (!this.tempCanvas.parentElement) {
-                  //将canvas移动至画布位置
-                  let viewerEle = this.model.layer.render.containerViewer
-                  viewerEle.appendChild(this.tempCanvas)
-                }
-                this.tempCanvas.style.zIndex = this.tempZIndex
-                
-                this.tempCanvas.style.left = (outRect.x + outRect.x1) / 2 + this.model.stage.wpv.x - this.tempCanvas.offsetWidth / 2 - ruleWeight + "px"
-
-                this.tempCanvas.style.top = (outRect.y + outRect.y1) / 2 + this.model.stage.wpv.y - this.tempCanvas.offsetHeight / 2 - ruleWeight + "px"
-
-              }else{
-                this.tempCanvas.remove()
-              }
-            }
+            this.drawSelfToCanvas(composeRender, print)
           } else {
             if (!DDeiUtil.isModelHidden(this.model) && this.refreshShape) {
               DDeiUtil.createRenderViewer(this.model, "VIEW", tempShape, composeRender)
@@ -206,12 +185,45 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", "VIEW-HIDDEN", { models: [this.model] }, this.ddRender.model, null)
       if (rsState == 0 || rsState == 1) {
         if (!this.viewer) {
-          this.tempCanvas?.remove()
+          this.removeViewerCanvas()
         } else {
           DDeiUtil.createRenderViewer(this.model, "VIEW-HIDDEN")
         }
       }
 
+    }
+  }
+
+  drawSelfToCanvas(composeRender, print) {
+    //外部canvas
+    if (this.tempCanvas) {
+      if (!DDeiUtil.isModelHidden(this.model)) {
+        let outRect = this.tempCanvas.outRect
+        //获取model的绝对位置
+        let model = this.model
+        let stage = model.stage
+        let ruleWeight = 0
+        if (stage.render.tempRuleDisplay == 1 || stage.render.tempRuleDisplay == '1') {
+          ruleWeight = 15
+        }
+        if (!this.tempCanvas.parentElement) {
+          //将canvas移动至画布位置
+          let viewerEle = this.model.layer.render.containerViewer
+          viewerEle.appendChild(this.tempCanvas)
+        }
+        this.tempCanvas.style.zIndex = this.tempZIndex
+
+        this.tempCanvas.style.left = (outRect.x + outRect.x1) / 2 + this.model.stage.wpv.x - this.tempCanvas.offsetWidth / 2 - ruleWeight + "px"
+
+        this.tempCanvas.style.top = (outRect.y + outRect.y1) / 2 + this.model.stage.wpv.y - this.tempCanvas.offsetHeight / 2 - ruleWeight + "px"
+        if (!print) {
+          this.model.composes?.forEach(comp => {
+            comp.render.drawSelfToCanvas(composeRender + 1)
+          })
+        }
+      } else {
+        this.removeViewerCanvas()
+      }
     }
   }
 

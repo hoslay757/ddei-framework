@@ -147,7 +147,7 @@ class DDeiPolygonContainerCanvasRender extends DDeiPolygonCanvasRender {
       let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", "VIEW-HIDDEN", { models: [this.model] }, this.ddRender.model, null)
       if (rsState == 0 || rsState == 1) {
         //将canvas移动至画布位置
-        this.tempCanvas?.remove()
+        this.removeViewerCanvas()
       }
     }
   }

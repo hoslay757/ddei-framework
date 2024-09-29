@@ -126,6 +126,8 @@ class DDeiPolygonContainer extends DDeiPolygon {
     this.models.forEach((item, key) => {
       item.initRender()
     });
+
+    delete this.__destroyed
   }
   /**
    * 添加模型，并维护关系
@@ -199,6 +201,17 @@ class DDeiPolygonContainer extends DDeiPolygon {
       item.destroyed();
     });
     super.destroyed();
+  }
+
+  /**
+   * 移除渲染器
+   */
+  destroyRender() {    
+    super.destroyRender();
+    this.midList.forEach(key => {
+      let item = this.models.get(key);
+      item?.destroyRender();
+    });
   }
 
   /**

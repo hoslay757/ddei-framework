@@ -609,6 +609,16 @@ class DDeiStage {
   }
 
   /**
+   * 移除渲染器
+   */
+  destroyRender() {
+    this.layers.forEach(layer => {
+      layer.destroyRender();
+    })
+    this.render = null
+  }
+
+  /**
    * 移除当前图层模型
    */
   removeModel(model: DDeiAbstractShape, destroy: boolean = false): void {

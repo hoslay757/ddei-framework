@@ -15,7 +15,7 @@ import DDeiCanvasRender from './ddei-render.js';
 import DDeiStageCanvasRender from './stage-render.js';
 import { Vector3, Matrix3 } from 'three';
 import DDeiLink from '../../models/link.js';
-import { cloneDeep } from 'lodash'
+import { cloneDeep,clone } from 'lodash'
 /**
  * DDeiLayer的渲染器类，用于渲染文件
  * 渲染器必须要有模型才可以初始化
@@ -696,7 +696,7 @@ class DDeiLayerCanvasRender {
       if (ovPoint) {
         let ovsDefine = DDeiUtil.getControlDefine(model)?.define?.ovs;
         let ovd = ovsDefine[model.ovs.indexOf(ovPoint)];
-        if (ovd?.constraint?.type) {
+        if (ovd?.constraint?.type && ovd.constraint.type != 5) {
           isOvPoint = true;
           this.stageRender.operateState = DDeiEnumOperateState.OV_POINT_CHANGING
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { x: ex2, y: ey2, opPoint: ovPoint, model: model } }, evt);
@@ -974,7 +974,7 @@ class DDeiLayerCanvasRender {
                   if ((opPoint?.model && (Math.abs(opPoint.x - item.startPoint.x) >= 1 || Math.abs(opPoint.y - item.startPoint.y) >= 1)) || maxLength >= 15) {
                     //影子控件转变为真实控件并创建
                     item.id = id
-                    item.destroyed()
+                    item.destroyRender()
                     this.model.addModel(item,false)
                     item.initRender();
                     model = item;
@@ -1551,7 +1551,39 @@ class DDeiLayerCanvasRender {
         //如果当前操作控件不存在，创建线段,生成影子控件，并把影子线段作为当前操作控件
         if (!this.stageRender.currentOperateShape) {
           let lineJson = DDeiUtil.getLineInitJSON();
-          lineJson.id = "line_" + (++this.stage.idIdx)
+          let editor = DDeiUtil.getEditorInsByDDei(this.stage.ddInstance)
+          
+          let lineDefine = editor.controls?.get(lineJson.modelCode ? lineJson.modelCode : lineJson.model ? lineJson.model : lineJson.id?lineJson.id : lineJson.code);
+          let initJSON = clone(lineDefine)
+          initJSON.modelCode = initJSON.id
+          initJSON.id = "line_" + (++this.stage.idIdx)
+          if (!lineJson.type) {
+            initJSON.type = 2
+          }else{
+            initJSON.type = lineJson.type
+          }
+          
+          if (initJSON.img) {
+            initJSON.fill = { type: 2, image: initJSON.img };
+            delete initJSON.img
+          }
+          if (initJSON.define) {
+            for (let i in initJSON?.define) {
+              initJSON[i] = initJSON.define[i];
+            }
+            delete initJSON.define
+          }
+          delete initJSON.ovs
+
+          delete initJSON.attrDefineMap
+          delete initJSON.filters
+          delete initJSON.icon
+          delete initJSON.groups
+          delete initJSON.name
+          delete initJSON.def
+          delete initJSON.code
+          delete initJSON.desc
+          
           let dx, dy, opPoint
           
           if (this.stageRender.dragObj.opPoint) {
@@ -1562,21 +1594,28 @@ class DDeiLayerCanvasRender {
             dx = this.stageRender.dragObj.dx
             dy = this.stageRender.dragObj.dy
           }
-          lineJson.cpv = new Vector3(dx, dy, 1);
+          //初始化位置矩阵
+          let moveMatrix = new Matrix3(
+            1, 0, dx,
+            0, 1, dy,
+            0, 0, 1);
 
-          //根据线的类型生成不同的初始化点
-          lineJson.type = 2
+          initJSON.cpv = new Vector3(0, 0, 1);
           //直线两个点
-          if (lineJson.type == 1) {
-            lineJson.pvs = [lineJson.cpv, new Vector3(ex2, ey2, 1)]
+          if (initJSON.type == 1) {
+            initJSON.pvs = [initJSON.cpv, new Vector3(ex2-dx, ey2-dy, 1)]
           } else {
-            lineJson.pvs = [lineJson.cpv, new Vector3((lineJson.cpv.x + ex2) / 2, lineJson.cpv.y, 1), new Vector3((lineJson.cpv.x + ex2) / 2, ey2, 1), new Vector3(ex2, ey2, 1)]
+            initJSON.pvs = [initJSON.cpv, new Vector3((ex2-dx) / 2, initJSON.cpv.y, 1), new Vector3((ex2-dx) / 2, ey2-dy, 1), new Vector3(ex2-dx, ey2-dy, 1)]
           }
           
+          
+           
+          let ddeiLine = DDeiLine.initByJSON(initJSON, { currentStage: this.stage, currentLayer: this.model, currentContainer: this.model });
+          ddeiLine.transVectors(moveMatrix)
+
           //初始化开始点和结束点
 
-          let ddeiLine = DDeiLine.initByJSON(lineJson, { currentStage: this.stage, currentLayer: this.model, currentContainer: this.model });
-          let lineShadow = DDeiUtil.getShadowControl(ddeiLine);
+           let lineShadow = DDeiUtil.getShadowControl(ddeiLine);
           this.model.shadowControls.push(lineShadow);
           //将当前被拖动的控件转变为影子控件
           this.stageRender.currentOperateShape = lineShadow
@@ -1608,8 +1647,8 @@ class DDeiLayerCanvasRender {
             dragPoint: lineShadow.pvs[lineShadow.pvs.length - 1],
             model: lineShadow,
             passIndex: 1,
-            opvsIndex: lineJson.pvs.length - 1,
-            opvs: lineJson.pvs,
+            opvsIndex: ddeiLine.pvs.length - 1,
+            opvs: ddeiLine.pvs,
             create: true
           }
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);

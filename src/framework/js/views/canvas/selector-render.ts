@@ -116,7 +116,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         for (let i = 0; i < ovs.length; i++) {
           let point = ovs[i]
           let pointDefine = ovsDefine[i]
-          if (pointDefine?.constraint?.type) {
+          if (pointDefine?.constraint?.type && pointDefine.constraint.type != 5) {
             ctx.beginPath();
             ctx.moveTo((point.x + weight) * ratio, point.y * ratio)
             ctx.lineTo(point.x * ratio, (point.y + weight) * ratio)
@@ -543,7 +543,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       if (ovPoint) {
         let ovsDefine = DDeiUtil.getControlDefine(models[0])?.define?.ovs;
         let ovd = ovsDefine[models[0].ovs.indexOf(ovPoint)];
-        if (ovd?.constraint?.type) {
+        if (ovd?.constraint?.type && ovd.constraint.type != 5) {
           isOvPoint = true;
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: "pointer" }, evt);
         }

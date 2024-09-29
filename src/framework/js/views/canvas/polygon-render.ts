@@ -155,6 +155,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
               for(let ri = 0;ri < rendList.length;ri++){
                 let c = rendList[ri]
                 if (c == this.model) {
+                  this.tempZIndex = this.tempZIndex + ri
                   //获得 2d 上下文对象
                   let canvas = this.getCanvas();
                   let ctx = canvas.getContext('2d');
@@ -236,8 +237,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", "VIEW-HIDDEN", { models: [this.model] }, this.ddRender.model, null)
       if (rsState == 0 || rsState == 1) {
         if (!this.viewer) {
-          //将canvas移动至画布位置
-          this.tempCanvas?.remove()
+          this.removeViewerCanvas()
         }else{
           DDeiUtil.createRenderViewer(this.model, "VIEW-HIDDEN")
         }
@@ -277,7 +277,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           })
         }
       }else{
-        this.tempCanvas.remove()
+        this.removeViewerCanvas()
       }
     }
     

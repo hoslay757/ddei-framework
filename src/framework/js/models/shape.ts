@@ -61,7 +61,9 @@ abstract class DDeiAbstractShape {
 
     //控制点
     this.ovs = []
+    
     if (props.ovs) {
+      
       props.ovs.forEach(pvd => {
         let pv = new Vector3(pvd.x, pvd.y, pvd.z || pvd.z == 0 ? pvd.z : 1)
         let ovi = new Vector3(pvd.ovi.x, pvd.ovi.y, pvd.ovi.z || pvd.ovi.z == 0 ? pvd.ovi.z : 1)
@@ -227,6 +229,7 @@ abstract class DDeiAbstractShape {
           //如果类型为3，则根据初始的角度、r计算初始位置
           let scaleX = this.width / 100
           let scaleY = this.height / 100
+          //圆形范围
           if (ovd.constraint.type == 3) {
             let rad = -ovd.isita * DDeiConfig.ROTATE_UNIT
             let x = ovd.constraint.r * Math.cos(rad)
@@ -1048,7 +1051,9 @@ abstract class DDeiAbstractShape {
         let ov = this.ovs[i]
         let ovd = defineOvs[i]
         //依附于Path，则根据比例和index更新位置
+        
         switch (ovd.constraint.type) {
+          //不允许移动
           case 0:
             {
               let dx = ov.x - ov.ovi.x
@@ -1065,6 +1070,7 @@ abstract class DDeiAbstractShape {
               this.updateOVSLink(ov, ovd, m1)
               break;
             };
+          //跟随路径
           case 1: {
             //构建验证路径
             let pathPvs = []
@@ -1158,6 +1164,45 @@ abstract class DDeiAbstractShape {
             }
             break;
           }
+          //不允许移动，固定路径位置，沿路径方向，固定在等比例或者等长度位置（长度不足则按照0.5比例位置）
+          case 5: {
+            //构建验证路径
+            let pathPvs = []
+            let pvsStr = ovd.constraint.pvs;
+            if (pvsStr?.length > 0) {
+              pvsStr.forEach(pvsS => {
+                //联动的点
+                let pvsData = DDeiUtil.getDataByPathList(this, pvsS)
+                if (Array.isArray(pvsData)) {
+                  pvsData.forEach(pvsD => {
+                    pathPvs.push(pvsD)
+                  })
+                } else {
+                  pathPvs.push(pvsData)
+                }
+
+              })
+            }
+            if (pathPvs.length == 2) {
+              let mode = 1;
+              let value
+              if (ovd.constraint.rate || ovd.constraint.rate == 0) {
+                mode = 2;
+                value = ovd.constraint.rate
+              }else{
+                value = ovd.constraint.len ? ovd.constraint.len : 0
+              }
+              
+              let point = DDeiUtil.getPathPoint(pathPvs[0].x, pathPvs[0].y, pathPvs[1].x, pathPvs[1].y, mode, value,0.5)
+              ov.x = point.x
+              ov.y = point.y
+              ov.sita = point.sita
+              ov.rate = point.rate
+              ov.len = point.len
+              this.updateOVSLink(ov, ovd)
+            }
+            break;
+          }
         }
       }
     }
@@ -1188,6 +1233,48 @@ abstract class DDeiAbstractShape {
                       pvsData.applyMatrix3(matrix)
                     }
                   }
+                }
+              });
+
+            }
+            break;
+          }
+          //类型2 同步中心点
+          case 2: {
+            let pvsStr = link.pvs;
+            if (pvsStr?.length > 0) {
+              pvsStr.forEach(pvsS => {
+                //联动的点
+                let pvsData = DDeiUtil.getDataByPathList(this, pvsS)
+                if (pvsData) {
+                  let m1 = new Matrix3()
+                  let moveMatrix = new Matrix3(
+                    1, 0, -pvsData.cpv.x,
+                    0, 1, -pvsData.cpv.y,
+                    0, 0, 1);
+                  m1.premultiply(moveMatrix)
+                  if (pvsData.rotate != 0 && pvsData.rotate != 360) {
+                    let angle = (pvsData.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+                    let rotateMatrix = new Matrix3(
+                      Math.cos(angle), Math.sin(angle), 0,
+                      -Math.sin(angle), Math.cos(angle), 0,
+                      0, 0, 1);
+                    m1.premultiply(rotateMatrix)
+                  }
+                  if (point.sita != 0 && point.sita != 360) {
+                    let angle = (-point.sita * DDeiConfig.ROTATE_UNIT).toFixed(4);
+                    let rotateMatrix = new Matrix3(
+                      Math.cos(angle), Math.sin(angle), 0,
+                      -Math.sin(angle), Math.cos(angle), 0,
+                      0, 0, 1);
+                    m1.premultiply(rotateMatrix)
+                  }
+                  let moveMatrix1 = new Matrix3(
+                    1, 0, point.x,
+                    0, 1, point.y,
+                    0, 0, 1);
+                  m1.premultiply(moveMatrix1)
+                  pvsData.transVectors(m1)
                 }
               });
 
@@ -1807,6 +1894,29 @@ abstract class DDeiAbstractShape {
     }
     
   }
+
+  /**
+   * 移除渲染器
+   */
+  destroyRender() {
+
+    if (this.render?.tempCanvas) {
+      this.render.tempCanvas.remove()
+      delete this.render.tempCanvas
+    }
+    if (this.render?.viewer) {
+      DDeiUtil.removeRenderViewer(this)
+    }
+
+    this.composes?.forEach(comp => {
+
+      comp.destroyRender()
+    });
+
+
+    this.render = null
+  }
+
   /**
      * 将模型转换为JSON
      */

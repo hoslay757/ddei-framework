@@ -48,6 +48,11 @@ class DDeiUtil {
   static invokeCallbackFunc: Function;
   //钩子函数，通知改变
   static notifyChange: Function;
+  //钩子函数，获取编辑器实例
+  static getEditorInsByDDei: Function;
+
+  //钩子函数，获取创建控件
+  static createControl: Function;
 
   //钩子函数,判断当前实例是否可以在后台激活，允许后台激活的实例，在当前实例为非ACTIVE_INSTANCE时，依然能够执行部分后台操作
   static isBackActive: Function;
@@ -536,7 +541,7 @@ class DDeiUtil {
   }
 
   /**
-   * 声称唯一编码
+   * 生成唯一编码
    * @returns 
    */
   static getUniqueCode() {
@@ -558,6 +563,64 @@ class DDeiUtil {
    */
   static getPointDistance(x0: number, y0: number, x1: number, y1: number): number {
     return Math.sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2)
+  }
+
+  /**
+   * 已知两点求其中间以及延长线上的第三点，有len和rate两种计算策略,如果超出按out值，返回实际长度（0），或者按照out设置的值作为长度比例
+   * @param x0 点1x
+   * @param y0 点1y
+   * @param x1 点2x
+   * @param y1 点2y
+   * @param mode 模式，1长度，2比例
+   * @param value 值
+   * @param out 超出策略，-1原样，其他，比例
+   */
+  static getPathPoint(x0: number, y0: number, x1: number, y1: number,mode:number = 1,value:number = 0,out:number = -1):object{
+    //线段长度
+    let pointDistance = DDeiUtil.getPointDistance(x0, y0, x1, y1)
+    let targetLen
+    let rate;
+    if (mode == 1) {
+      targetLen = value
+      if (out != -1 && targetLen > pointDistance){
+        targetLen = pointDistance * out;
+      }
+      rate = targetLen/pointDistance
+    }else{
+      targetLen = pointDistance * value
+      if (out != -1 && targetLen > pointDistance) {
+        targetLen = pointDistance * out;
+      }
+      rate = targetLen / pointDistance
+    }
+    //线段角度
+    let sita = parseFloat(DDeiUtil.getLineAngle(x0, y0, x1, y1).toFixed(4))
+    //构建向量,基于0坐标，长度为targetLen
+    let point = new Vector3(targetLen,0,1)
+    //构建矩阵
+    let m1 = new Matrix3()
+    if (sita != 0 && sita != 360){
+      let angle = (-sita * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      let rotateMatrix = new Matrix3(
+        Math.cos(angle), Math.sin(angle), 0,
+        -Math.sin(angle), Math.cos(angle), 0,
+        0, 0, 1);
+      m1.premultiply(rotateMatrix)
+    }
+    let moveMatrix = new Matrix3(
+      1, 0, x0,
+      0, 1, y0,
+      0, 0, 1);
+
+
+    m1.premultiply(moveMatrix)
+
+    point.applyMatrix3(m1)
+    point.sita = sita;
+    point.rate = rate;
+    point.len = targetLen
+
+    return point;
   }
 
   /**

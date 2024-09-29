@@ -124,6 +124,8 @@ class DDeiRectContainer extends DDeiRectangle {
     this.models.forEach((item, key) => {
       item.initRender()
     });
+
+    delete this.__destroyed
   }
   /**
    * 添加模型，并维护关系

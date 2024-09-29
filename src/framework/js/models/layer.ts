@@ -311,6 +311,21 @@ class DDeiLayer {
   }
 
   /**
+   * 移除渲染器
+   */
+  destroyRender() {
+    if (this.render?.containerViewer) {
+      this.render.containerViewer.remove()
+      delete this.render.containerViewer
+    }
+    
+    this.models?.forEach((item, key) => {
+      item?.destroyRender()
+    })
+    this.render = null
+  }
+
+  /**
    * 移除模型，并维护关系
    * @param model 被移除的模型
    * @param destroy 销毁，缺省false
