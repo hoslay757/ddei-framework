@@ -681,8 +681,10 @@ class DDeiLayerCanvasRender {
     
 
     if (this.stageRender?.operateState == DDeiEnumOperateState.QUICK_EDITING) {
+      
+      let canvas = this.ddRender.getCanvas()
       //如果在画布范围内，但不在编辑的控件上，则确认解除快捷编辑状态
-      if (evt.target == this.ddRender.getCanvas() && (!this.stageRender.editorShadowControl || !this.stageRender.editorShadowControl?.isInAreaLoose(ex, ey))) {
+      if ((evt.target == canvas || evt.target == canvas.parentElement) && (!this.stageRender.editorShadowControl || !this.stageRender.editorShadowControl?.isInAreaLoose(ex, ey))) {
         DDeiUtil.getEditorText()?.enterValue()
       }
     }
@@ -1373,10 +1375,11 @@ class DDeiLayerCanvasRender {
           this.stage?.ddInstance?.bus?.executeAll();
           return;
         case DDeiEnumOperateState.QUICK_EDITING:
+          let canvas = this.ddRender.getCanvas()
           //如果不在编辑的控件上，则确认解除快捷编辑状态
-          if (evt.target == this.ddRender.canvas && (!this.stageRender.editorShadowControl || !this.stageRender.editorShadowControl?.isInAreaLoose(ex, ey))) {
+          if ((evt.target == canvas || evt.target == canvas.parentElement) && (!this.stageRender.editorShadowControl || !this.stageRender.editorShadowControl?.isInAreaLoose(ex, ey))) {
             DDeiUtil.getEditorText()?.enterValue()
-          } else if (evt.target != this.ddRender.canvas) {
+          } else if (evt.target != canvas && evt.target != canvas.parentElement) {
             return;
           }
           break;

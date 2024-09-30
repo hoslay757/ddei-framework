@@ -54,7 +54,7 @@ class DDeiEditorUtil {
   static getLineInitJSON(): object {
     if(!DDeiEditorUtil.lineInitJSON){
       DDeiEditorUtil.lineInitJSON = {
-        modelCode: "102058",
+        modelCode: "100401",
       };
     }
     return DDeiEditorUtil.lineInitJSON;
