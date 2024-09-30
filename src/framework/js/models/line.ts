@@ -95,16 +95,20 @@ class DDeiLine extends DDeiAbstractShape {
     //初始化composes
     if (json?.composes?.length > 0) {
       let composes = []
-      json?.composes.forEach(composeJSON => {
+      for (let ci = 0; ci < json.composes.length;ci++){
+        let composeJSON  = json.composes[ci];
         let def = DDeiUtil.getControlDefine(composeJSON)
+        
         let composeModel: DDeiAbstractShape = ddInstance.controlModelClasses[def.type].initByJSON(
           composeJSON,
           tempData,
           false
         );
+        composeModel.modelCode = composeModel.id
+        composeModel.id = model.id+"_comp_"+ci
         composeModel.pModel = model
         composes.push(composeModel)
-      });
+      };
       model.composes = composes
     }
     //基于初始化的宽度、高度，构建向量

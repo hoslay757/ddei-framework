@@ -195,8 +195,15 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
   }
 
   drawSelfToCanvas(composeRender, print) {
+    if(this.viewer){
+      if (!DDeiUtil.isModelHidden(this.model) && this.refreshShape) {
+        DDeiUtil.createRenderViewer(this.model, "VIEW", null, composeRender)
+      } else {
+        DDeiUtil.createRenderViewer(this.model, "VIEW-HIDDEN")
+      }
+    }
     //外部canvas
-    if (this.tempCanvas) {
+    else if (this.tempCanvas) {
       if (!DDeiUtil.isModelHidden(this.model)) {
         let outRect = this.tempCanvas.outRect
         //获取model的绝对位置

@@ -252,7 +252,13 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
    * 绘制自身到最外层canvas
    */
   drawSelfToCanvas(composeRender, print) {
-    if (this.tempCanvas) {
+    if (this.viewer) {
+      if (!DDeiUtil.isModelHidden(this.model) && this.refreshShape) {
+        DDeiUtil.createRenderViewer(this.model, "VIEW", null, composeRender)
+      } else {
+        DDeiUtil.createRenderViewer(this.model, "VIEW-HIDDEN")
+      }
+    }else if (this.tempCanvas) {
       let model = this.model
       if (!DDeiUtil.isModelHidden(this.model)) {
         let stage = model.stage
