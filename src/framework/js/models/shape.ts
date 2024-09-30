@@ -66,7 +66,7 @@ abstract class DDeiAbstractShape {
       
       props.ovs.forEach(pvd => {
         let pv = new Vector3(pvd.x, pvd.y, pvd.z || pvd.z == 0 ? pvd.z : 1)
-        let ovi = new Vector3(pvd.ovi.x, pvd.ovi.y, pvd.ovi.z || pvd.ovi.z == 0 ? pvd.ovi.z : 1)
+        
         if (pvd.index || pvd.index == 0) {
           pv.index = pvd.index
         }
@@ -76,7 +76,11 @@ abstract class DDeiAbstractShape {
         if (pvd.sita || pvd.sita == 0) {
           pv.sita = pvd.sita
         }
-        pv.ovi = ovi
+        
+        if(pvd.ovi){
+          let ovi = new Vector3(pvd.ovi.x, pvd.ovi.y, pvd.ovi.z || pvd.ovi.z == 0 ? pvd.ovi.z : 1)
+          pv.ovi = ovi
+        }
         this.ovs.push(pv);
       });
     }
@@ -1000,11 +1004,31 @@ abstract class DDeiAbstractShape {
       let pathPvs = this.opps;
       let st, en
       if (!(ov.index || ov.index == 0) || pathPvs.length <= ov.index) {
-        let proPoints = DDeiAbstractShape.getProjPointDists(pathPvs, ov.x, ov.y, false, 1);
-        let index = proPoints[0].index
-        ov.index = index
-        x = proPoints[0].x
-        y = proPoints[0].y
+        let index = -1
+        for(let qi = 0;qi < pathPvs.length;qi++){
+          let isInLine = false
+          if(qi == pathPvs.length-1){
+            isInLine = DDeiUtil.isPointInLine(ov, pathPvs[qi], pathPvs[0])
+          }else{
+            isInLine = DDeiUtil.isPointInLine(ov, pathPvs[qi], pathPvs[qi+1])
+          }
+          if (isInLine){
+            index = qi
+            break;
+          }
+        }
+        if (index != -1){
+          x = ov.x
+          y = ov.y
+          ov.index = index
+        }else{
+          let proPoints = DDeiAbstractShape.getProjPointDists(pathPvs, ov.x, ov.y, false, 1);
+          x = proPoints[0].x
+          y = proPoints[0].y
+          ov.index = proPoints[0].index
+          index = proPoints[0].index
+        }
+        
         //计算当前path的角度（方向）angle和投射后点的比例rate
         if (index == pathPvs.length - 1) {
           st = index;

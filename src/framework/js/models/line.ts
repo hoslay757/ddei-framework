@@ -577,7 +577,6 @@ class DDeiLine extends DDeiAbstractShape {
     })
     let sAngle = null;
     let eAngle = null;
-
     let startModel = startLink?.sm ? startLink?.sm : this.stage.tempStartOPpoint?.model
     let endModel = endLink?.sm ? endLink?.sm : this.stage.tempCursorOPpoint?.model
     let startRect, endRect;
@@ -671,6 +670,7 @@ class DDeiLine extends DDeiAbstractShape {
         forcePaths.push(newPV)
       }
     })
+    
     //执行自动路径生成
     let linePathData = calAutoLinePath(
       {

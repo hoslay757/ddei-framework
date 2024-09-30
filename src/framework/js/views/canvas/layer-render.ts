@@ -1583,6 +1583,11 @@ class DDeiLayerCanvasRender {
           delete initJSON.def
           delete initJSON.code
           delete initJSON.desc
+          initJSON.composes?.forEach(comp => {
+            if (comp) {
+              delete comp.attrs
+            }
+          });
           
           let dx, dy, opPoint
           

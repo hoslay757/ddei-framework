@@ -1276,7 +1276,7 @@ class DDeiEditor {
         if (control.startPoint && control.endPoint) {
           //读取配置
           let lineJson = DDeiUtil.getLineInitJSON();
-          let lineDefine = this.controls?.get(lineJson.modelCode ? lineJson.modelCode : lineJson.model ? lineJson.model : lineJson.id ? lineJson.id : lineJson.code);
+          let lineDefine = this.controls?.get(control?.model ? control.model : lineJson.modelCode ? lineJson.modelCode : lineJson.model ? lineJson.model : lineJson.id ? lineJson.id : lineJson.code);
           let initJSON = clone(lineDefine)
           initJSON.modelCode = initJSON.id
           initJSON.id = "line_" + (++stage.idIdx)
@@ -1306,6 +1306,13 @@ class DDeiEditor {
           delete initJSON.def
           delete initJSON.code
           delete initJSON.desc
+          delete initJSON.attrs
+          
+          initJSON.composes?.forEach(comp => {
+            if(comp){
+              delete comp.attrs
+            }
+          });
           //直线两个点
           let sx,sy,ex,ey
           if (control.startPoint.offsetX || control.startPoint.offsetX == 0) {
@@ -1328,10 +1335,7 @@ class DDeiEditor {
           } else if (control.endPoint.y || control.endPoint.y == 0) {
             ey = control.endPoint.y * stageRatio
           }
-          control.spvs?.forEach(spv => {
-            spv.x = spv.x * stageRatio
-            spv.y = spv.y * stageRatio
-          });
+          
           
           //跳过计算点
           if (!calPoints && control.pvs?.length >= 2) {
@@ -1348,12 +1352,20 @@ class DDeiEditor {
               } else if (pv.y || pv.y == 0) {
                 pvy = pv.y * stageRatio
               }
-              initJSON.pvs.push(new Vector3(pvx, pvy, 1))
+              initJSON.pvs.push(new Vector3(pvx-sx, pvy-sy, 1))
             });
           }else{
-            initJSON.pvs = [new Vector3(sx, sy, 1), new Vector3(ex, ey, 1)]
+            initJSON.pvs = [new Vector3(0, 0, 1), new Vector3(ex-sx, ey-sx, 1)]
           }
+          control.spvs?.forEach(spv => {
+            spv.x = (spv.x-sx) * stageRatio
+            spv.y = (spv.y-sy) * stageRatio
+          });
           initJSON.cpv = initJSON.pvs[0]
+          let moveMatrix = new Matrix3(
+            1, 0, sx,
+            0, 1, sy,
+            0, 0, 1);
           //初始化开始点和结束点
 
           let cc = DDeiLine.initByJSON(initJSON, { currentStage: stage, currentLayer: layer, currentContainer: layer });
@@ -1364,7 +1376,7 @@ class DDeiEditor {
               cc[i] = control[i];
             }
           }
-         
+          cc.transVectors(moveMatrix)
           //构造线段关键属性
           let smodel,emodel
           if (control.smodel) {
