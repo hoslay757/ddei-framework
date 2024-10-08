@@ -3127,6 +3127,40 @@ class DDeiUtil {
 
   }
 
+  static addLineLink(model, smodel, point, type):void {
+    let pathPvs = smodel.pvs;
+    let proPoints = DDeiAbstractShape.getProjPointDists(pathPvs, point.x, point.y, false, 1);
+    let index = proPoints[0].index
+    //计算当前path的角度（方向）angle和投射后点的比例rate
+    let distance = DDeiUtil.getPointDistance(pathPvs[index].x, pathPvs[index].y, pathPvs[index + 1].x, pathPvs[index + 1].y)
+    let sita = DDeiUtil.getLineAngle(pathPvs[index].x, pathPvs[index].y, pathPvs[index + 1].x, pathPvs[index + 1].y)
+    let pointDistance = DDeiUtil.getPointDistance(pathPvs[index].x, pathPvs[index].y, proPoints[0].x, proPoints[0].y)
+    let rate = pointDistance / distance
+    rate = rate > 1 ? rate : rate
+    //创建连接点
+    let id = "_" + DDeiUtil.getUniqueCode()
+    let dmpath
+    if (type == 1) {
+      dmpath = "startPoint"
+      smodel.exPvs[id] = new Vector3(model.startPoint.x, model.startPoint.y, model.startPoint.z)
+    } else if (type == 2) {
+      dmpath = "endPoint"
+      smodel.exPvs[id] = new Vector3(model.endPoint.x, model.endPoint.y, model.endPoint.z)
+    }
+    smodel.exPvs[id].rate = rate
+    smodel.exPvs[id].sita = sita
+    smodel.exPvs[id].index = index
+    smodel.exPvs[id].id = id
+    let link = new DDeiLink({
+      sm: smodel,
+      dm: model,
+      smpath: "exPvs." + id,
+      dmpath: dmpath,
+      stage: model.stage
+    });
+    model.stage?.addLink(link)
+  }
+
 }
 
 

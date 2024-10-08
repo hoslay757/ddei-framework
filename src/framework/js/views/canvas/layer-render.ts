@@ -1178,6 +1178,7 @@ class DDeiLayerCanvasRender {
                 if (model.modelType == 'DDeiLine') {
                   //如果原有的关联存在，取消原有的关联
                   let distLinks = this.stage?.getDistModelLinks(model.id);
+                  let skipStart = false,skipEnd = false
                   distLinks?.forEach(dl => {
                     if (!dl.disabled && (!dl.sm || moveOriginModels.indexOf(dl.sm) == -1)) {
                       this.stage?.removeLink(dl);
@@ -1185,61 +1186,40 @@ class DDeiLayerCanvasRender {
                       if (dl?.sm && dl?.smpath) {
                         eval("delete dl.sm." + dl.smpath)
                       }
+                    }else{
+                      if(dl.dmpath == 'startPoint'){
+                        skipStart = true
+                      } else if(dl.dmpath == 'endPoint'){
+                        skipEnd = true
+                      }
                     }
                   })
+                  
                   //根据开始点或结束点的位置建立新链接
-                  let lineInModelsStart = DDeiAbstractShape.findBottomModelsByArea(this.model, model.startPoint.x, model.startPoint.y, true, true);
-                  if (lineInModelsStart.length > 0) {
-                    for (let li = 0; li < lineInModelsStart.length; li++) {
-                      if (!model.linkModels?.has(lineInModelsStart[li].id) && moveOriginModelIds.indexOf(lineInModelsStart[li].id) == -1) {
-                        addLineLink(model, lineInModelsStart[li], model.startPoint, 1)
+                  if (!skipStart){
+                    let lineInModelsStart = DDeiAbstractShape.findBottomModelsByArea(this.model, model.startPoint.x, model.startPoint.y, true, true);
+                    if (lineInModelsStart.length > 0) {
+                      for (let li = 0; li < lineInModelsStart.length; li++) {
+                        if (!model.linkModels?.has(lineInModelsStart[li].id) && moveOriginModelIds.indexOf(lineInModelsStart[li].id) == -1) {
+                          DDeiUtil.addLineLink(model, lineInModelsStart[li], model.startPoint, 1)
+                        }
+                        break
                       }
-                      break
                     }
                   }
-                  let lineInModelsEnd = DDeiAbstractShape.findBottomModelsByArea(this.model, model.endPoint.x, model.endPoint.y, true, true);
-                  if (lineInModelsEnd.length > 0) {
+                  if (!skipEnd){
+                    let lineInModelsEnd = DDeiAbstractShape.findBottomModelsByArea(this.model, model.endPoint.x, model.endPoint.y, true, true);
+                    if (lineInModelsEnd.length > 0) {
 
-                    for (let li = 0; li < lineInModelsEnd.length; li++) {
-                      if (!model.linkModels?.has(lineInModelsEnd[li].id) && moveOriginModelIds.indexOf(lineInModelsEnd[li].id) == -1) {
-                        addLineLink(model, lineInModelsEnd[li], model.endPoint, 2)
+                      for (let li = 0; li < lineInModelsEnd.length; li++) {
+                        if (!model.linkModels?.has(lineInModelsEnd[li].id) && moveOriginModelIds.indexOf(lineInModelsEnd[li].id) == -1) {
+                          DDeiUtil.addLineLink(model, lineInModelsEnd[li], model.endPoint, 2)
+                        }
+                        break
                       }
-                      break
                     }
                   }
-                  function addLineLink(model, smodel, point, type) {
-                    let pathPvs = smodel.pvs;
-                    let proPoints = DDeiAbstractShape.getProjPointDists(pathPvs, point.x, point.y, false, 1);
-                    let index = proPoints[0].index
-                    //计算当前path的角度（方向）angle和投射后点的比例rate
-                    let distance = DDeiUtil.getPointDistance(pathPvs[index].x, pathPvs[index].y, pathPvs[index + 1].x, pathPvs[index + 1].y)
-                    let sita = DDeiUtil.getLineAngle(pathPvs[index].x, pathPvs[index].y, pathPvs[index + 1].x, pathPvs[index + 1].y)
-                    let pointDistance = DDeiUtil.getPointDistance(pathPvs[index].x, pathPvs[index].y, proPoints[0].x, proPoints[0].y)
-                    let rate = pointDistance / distance
-                    rate = rate > 1 ? rate : rate
-                    //创建连接点
-                    let id = "_" + DDeiUtil.getUniqueCode()
-                    let dmpath
-                    if (type == 1) {
-                      dmpath = "startPoint"
-                      smodel.exPvs[id] = new Vector3(model.startPoint.x, model.startPoint.y, model.startPoint.z)
-                    } else if (type == 2) {
-                      dmpath = "endPoint"
-                      smodel.exPvs[id] = new Vector3(model.endPoint.x, model.endPoint.y, model.endPoint.z)
-                    }
-                    smodel.exPvs[id].rate = rate
-                    smodel.exPvs[id].sita = sita
-                    smodel.exPvs[id].index = index
-                    smodel.exPvs[id].id = id
-                    let link = new DDeiLink({
-                      sm: smodel,
-                      dm: model,
-                      smpath: "exPvs." + id,
-                      dmpath: dmpath,
-                      stage: model.stage
-                    });
-                    model.stage?.addLink(link)
-                  }
+                  
                   //依附于线段存在的子控件，跟着线段移动
                   model.refreshLinkModels()
                 }
