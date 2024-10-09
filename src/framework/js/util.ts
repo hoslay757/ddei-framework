@@ -36,6 +36,8 @@ class DDeiUtil {
   static getSubControlJSON: Function;
   //钩子函数，返回线控件的定义
   static getLineInitJSON: Function;
+  //钩子函数，返回控件的定义
+  static getModelInitJSON: Function;
   //钩子函数，获取业务数据
   static getBusiData: Function;
   //钩子函数，获取快捷编辑文本框

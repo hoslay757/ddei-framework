@@ -352,15 +352,34 @@ class DDeiEditor {
   static changeInitConfigData(config:object,initConfigData:object){
     if (initConfigData.remove) {
       initConfigData.remove.extensions?.forEach(ext => {
-        if (config.extensions.indexOf(ext) != -1){
-          config.extensions.splice(config.extensions.indexOf(ext),1)
+        let findedNi = -1
+        for (let ni = 0; ni < config.extensions?.length; ni++) {
+          let existsExt = config.extensions[ni]
+          if (existsExt == ext || existsExt.name == ext.name || (existsExt && ext && existsExt.name == ext) || (ext && existsExt && existsExt == ext.name)) {
+            findedNi = ni
+            break;
+          }
+        }
+        if (findedNi != -1) {
+          config.extensions.splice(findedNi, 1)
         }
       });
     }
 
     if (initConfigData.append) {
+      if (!config.extensions){
+        config.extensions = []
+      }
       initConfigData.append.extensions?.forEach(ext => {
-        if (config.extensions.indexOf(ext) == -1) {
+        let finded = false
+        for (let ni = 0; ni < config.extensions?.length;ni++){
+          let existsExt = config.extensions[ni]
+          if (existsExt == ext || existsExt.name == ext.name || (existsExt && ext && existsExt.name == ext) || (ext && existsExt && existsExt == ext.name)){
+            finded = true
+            break;
+          }
+        }
+        if (!finded) {
           config.extensions.push(ext)
         }
       });
@@ -1275,7 +1294,7 @@ class DDeiEditor {
       controls.forEach(control => {
         if (control.startPoint && control.endPoint) {
           //读取配置
-          let lineJson = DDeiUtil.getLineInitJSON();
+          let lineJson = DDeiUtil.getLineInitJSON(this.ddInstance,control.smodel, control.emodel);
           let lineDefine = this.controls?.get(control?.model ? control.model : lineJson.modelCode ? lineJson.modelCode : lineJson.model ? lineJson.model : lineJson.id ? lineJson.id : lineJson.code);
           let initJSON = clone(lineDefine)
           initJSON.modelCode = initJSON.id

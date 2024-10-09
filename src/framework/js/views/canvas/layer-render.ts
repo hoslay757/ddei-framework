@@ -1533,7 +1533,7 @@ class DDeiLayerCanvasRender {
       case DDeiEnumOperateState.LINE_POINT_CHANGING: {
         //如果当前操作控件不存在，创建线段,生成影子控件，并把影子线段作为当前操作控件
         if (!this.stageRender.currentOperateShape) {
-          let lineJson = DDeiUtil.getLineInitJSON();
+          let lineJson = DDeiUtil.getLineInitJSON(this.stage.ddInstance);
           let editor = DDeiUtil.getEditorInsByDDei(this.stage.ddInstance)
           
           let lineDefine = editor.controls?.get(lineJson.modelCode ? lineJson.modelCode : lineJson.model ? lineJson.model : lineJson.id?lineJson.id : lineJson.code);

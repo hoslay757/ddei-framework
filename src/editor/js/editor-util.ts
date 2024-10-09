@@ -51,13 +51,20 @@ class DDeiEditorUtil {
   /**
   * 获取线的初始化JSON定义
   */
-  static getLineInitJSON(): object {
-    if(!DDeiEditorUtil.lineInitJSON){
+  static getLineInitJSON(ddInstance, smodel, emodel): object {
+    if (!DDeiEditorUtil.lineInitJSON) {
       DDeiEditorUtil.lineInitJSON = {
         modelCode: "100401",
       };
     }
     return DDeiEditorUtil.lineInitJSON;
+  }
+
+  /**
+  * 获取控件的初始化JSON定义
+  */
+  static getModelInitJSON(ddInstance, beginModel, models): object {
+    return models;
   }
 
   /**
