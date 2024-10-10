@@ -1024,6 +1024,9 @@ class DDeiLayerCanvasRender {
                           //删除源点
                           if (dl?.sm && dl?.smpath) {
                             eval("delete dl.sm." + dl.smpath)
+                            dl.sm.transVectors(new Matrix3())
+                            dl.sm.updateLinkModels();
+                            dl.sm.render?.enableRefreshShape()
                           }
                         }
                       })
@@ -1049,12 +1052,21 @@ class DDeiLayerCanvasRender {
                           stage: this.stage
                         });
 
-                        this.stage?.addLink(link)
-                        model?.initPVS()
-                        smodel.updateLinkModels();
+                        this.stage.addLink(link)
+                        model.initPVS()
+                        
+                        
                       }
                     }
                   }
+                  let dlinks = this.stage?.getDistModelLinks(model.id);
+                  dlinks?.forEach(dl=>{
+                    if(dl.sm){
+                      dl.sm.transVectors(new Matrix3())
+                      dl.sm.updateLinkModels();
+                      dl.sm.render.enableRefreshShape()
+                    }
+                  })
                   model.initPVS()
                   model.updateOVS()
                   //重新计算错线
@@ -1189,6 +1201,9 @@ class DDeiLayerCanvasRender {
                       //删除源点
                       if (dl?.sm && dl?.smpath) {
                         eval("delete dl.sm." + dl.smpath)
+                        dl.sm.transVectors(new Matrix3())
+                        dl.sm.updateLinkModels();
+                        dl.sm.render?.enableRefreshShape()
                       }
                     }else{
                       if(dl.dmpath == 'startPoint'){

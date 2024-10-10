@@ -470,6 +470,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         borderPVSS.push(pvs)
       }
     });
+    
     this.pvss = pvss
     this.borderPVSS = borderPVSS
   }
@@ -513,6 +514,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     if (!pvs || pvs?.length < 1) {
       return;
     }
+    let rest = false
     if (drawLine) {
       ctx.save();
       //绘制线条
@@ -592,7 +594,11 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         if (pv.end) {
           ctx.closePath()
         }
-        if (drawLine && pv.stroke) {
+        if ((drawLine || pv.forceStroke) && pv.stroke) {
+          if (pv.forceStroke){
+            ctx.strokeStyle = DDeiUtil.getColor(color);
+          }
+          rest = true
           ctx.stroke()
         }
       }
@@ -645,7 +651,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         ctx.stroke()
       }
     }
-    if (drawLine) {
+    if (drawLine || rest) {
       ctx.restore();
     }
 
@@ -661,13 +667,13 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let opacity = tempShape?.border?.opacity || tempShape?.border?.opacity == 0 ? tempShape?.border?.opacity : this.getCachedValue("border.opacity");
     let width = tempShape?.border?.width || tempShape?.border?.width == 0 ? tempShape?.border?.width : this.getCachedValue("border.width");
     let drawLine = ((type == 1 || type == '1') && (!opacity || opacity > 0) && width > 0)
-    if (drawLine) {
-      for (let i = 0; i < this.borderPVSS?.length; i++) {
-        let pvs = this.borderPVSS[i];
-        //创建path
-        this.createPath(pvs, tempShape, true)
-      }
+    // if (drawLine) {
+    for (let i = 0; i < this.borderPVSS?.length; i++) {
+      let pvs = this.borderPVSS[i];
+      //创建path
+      this.createPath(pvs, tempShape, true)
     }
+    // }
 
 
   }
@@ -1546,6 +1552,10 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let fillRect = DDeiAbstractShape.pvsToOutRect(textArea)
     if (scale == 3) {
       let lockExtWidth = this.getCachedValue("textStyle.lockWidth");
+      let paddingWeight = this.getCachedValue("textStyle.paddingWeight");
+      if (!paddingWeight){
+        paddingWeight = 0
+      }
       //获得 2d 上下文对象
       let canvas = this.getCanvas();
       let ctx = canvas.getContext('2d');
@@ -1714,7 +1724,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       //比较大小，如果超出文本区域则按照超出区域的实际大小进行扩展
       
       let textAreaOutRect = fillRect
-      let nowOutRect = { width: textAreaWidth / ratio, height: textAreaHeight / ratio }
+      let nowOutRect = { width: textAreaWidth / ratio + paddingWeight * 2, height: textAreaHeight / ratio + paddingWeight * 2 }
       if (nowOutRect.width > 40 && nowOutRect.height > fontSize) {
         let scaleX = nowOutRect.width / textAreaOutRect.width
         let scaleY = nowOutRect.height / textAreaOutRect.height

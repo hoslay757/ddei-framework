@@ -6,6 +6,7 @@ import { Matrix3, Vector3 } from 'three';
 import DDeiModelArrtibuteValue from './models/attribute/attribute-value';
 import DDeiStage from './models/stage';
 import DDeiColor from './color.js';
+import DDeiLink from './models/link.js';
 
 const expressBindValueReg = /#\{[^\{\}]*\}/;
 const contentSplitReg = /\+|\-|\*|\//;
@@ -3161,6 +3162,9 @@ class DDeiUtil {
       stage: model.stage
     });
     model.stage?.addLink(link)
+    smodel.transVectors(new Matrix3())
+    smodel.updateLinkModels();
+    smodel.render?.enableRefreshShape()
   }
 
 }

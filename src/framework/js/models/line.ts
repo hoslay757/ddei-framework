@@ -979,6 +979,9 @@ class DDeiLine extends DDeiAbstractShape {
         //删除源点
         if (dl?.sm && dl?.smpath) {
           eval("delete dl.sm." + dl.smpath)
+          dl.sm.transVectors(new Matrix3())
+          dl.sm.updateLinkModels();
+          dl.sm.render?.enableRefreshShape()
         }
         this.stage?.removeLink(dl);
       })

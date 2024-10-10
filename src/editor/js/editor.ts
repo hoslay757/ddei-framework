@@ -1439,6 +1439,7 @@ class DDeiEditor {
               stage: stage
             });
             stage.addLink(link)
+            smodel.transVectors(new Matrix3())
             
           }
           if (control.emodel) {
@@ -1458,6 +1459,7 @@ class DDeiEditor {
               stage: stage
             });
             stage.addLink(link)
+            emodel.transVectors(new Matrix3())
           }
           if (!control.isShadowControl) {
             layer.addModel(cc, false)
@@ -1470,6 +1472,8 @@ class DDeiEditor {
             smodel?.updateLinkModels();
             emodel?.updateLinkModels();
           }
+          smodel?.render?.enableRefreshShape()
+          emodel?.render?.enableRefreshShape()
           shapes.push(cc);
           
         }
