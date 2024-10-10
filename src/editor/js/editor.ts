@@ -23,6 +23,7 @@ import { DDeiLink } from "@ddei-core/framework/js/models/link"
 import type DDeiStage from "../../framework/js/models/stage";
 import DDeiLine from "../../framework/js/models/line"
 import DDeiFileState from "./enums/file-state";
+
 /**
  * DDei图形编辑器类，用于维护编辑器实例、全局状态以及全局属性
  */
@@ -170,6 +171,9 @@ class DDeiEditor {
         }
         if (!DDeiUtil.getLineInitJSON) {
           DDeiUtil.getLineInitJSON = DDeiEditorUtil.getLineInitJSON;
+        }
+        if (!DDeiUtil.getModelInitJSON) {
+          DDeiUtil.getModelInitJSON = DDeiEditorUtil.getModelInitJSON;
         }
         if (!DDeiUtil.getBusiData) {
           DDeiUtil.getBusiData = DDeiEditorUtil.getBusiData;
@@ -1111,7 +1115,7 @@ class DDeiEditor {
    * @param applyRatio 应用缩放
    * @param notify 通知刷新
    */
-  addControls(controls: object[],applyRatio: boolean = true, notify: boolean = true):DDeiAbstractShape[]{
+  addControls(controls: object[], applyRatio: boolean = true, notify: boolean = true, beforeInvoke:boolean = false):DDeiAbstractShape[]{
     if (controls?.length > 0){
     //添加控件到图层
     let stage = this.ddInstance.stage
@@ -1124,7 +1128,17 @@ class DDeiEditor {
         if (controlDefine) {
           //根据配置创建控件
           let controlModel = DDeiEditorUtil.createControl(controlDefine, this)
-          if (controlModel?.length > 0) {
+          let valid = false
+          if (!beforeInvoke) {
+            valid = true
+          } else {
+            let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_CREATE_BEFORE", "CREATE", { models: controlModel }, this.ddInstance)
+            if (rsState == 0 || rsState == 1) {
+              valid = true
+            }
+          }
+
+          if (valid && controlModel?.length > 0) {
             let cc = controlModel[0]
             //设置控件值
             for (let i in control){
@@ -1197,7 +1211,7 @@ class DDeiEditor {
    * @param applyRatio 应用缩放
    * @param notify 通知刷新
    */
-  addControlsToLayer(controls: object[], layerIndex: number = -1, applyRatio: boolean = true, notify: boolean = true): DDeiAbstractShape[]|null {
+  addControlsToLayer(controls: object[], layerIndex: number = -1, applyRatio: boolean = true, notify: boolean = true,beforeInvoke:boolean = false): DDeiAbstractShape[]|null {
     //添加控件到图层
     let stage = this.ddInstance.stage
     if (layerIndex > -1 && layerIndex < stage?.layers?.length){
@@ -1211,7 +1225,17 @@ class DDeiEditor {
           if (controlDefine) {
             //根据配置创建控件
             let controlModel = DDeiEditorUtil.createControl(controlDefine, this)
-            if (controlModel?.length > 0) {
+            let valid = false
+            if (!beforeInvoke){
+              valid = true
+            }else{
+              let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_CREATE_BEFORE", "CREATE", { models: controlModel }, this.ddInstance)
+              if (rsState == 0 || rsState == 1) {
+                valid = true
+              }
+            }
+            
+            if (valid && controlModel?.length > 0) {
               let cc = controlModel[0]
               //设置控件值
               for (let i in control) {

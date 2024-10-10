@@ -202,25 +202,30 @@ class DDeiAbstractShapeRender {
     let pushMulits = [];
     //当前操作层级容器
     this.stageRender.currentOperateContainer = pContainerModel;
-    let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
-    if (isCtrl) {
-      //判断当前操作控件是否选中
-      if (this.stageRender.currentOperateShape?.state == DDeiEnumControlState.SELECTED) {
-        pushMulits.push({ actionType: DDeiEnumBusCommandType.ModelChangeSelect, data: [{ id: this.model.id, value: DDeiEnumControlState.DEFAULT }] });
-      } else {
-        //选中当前操作控件
+    let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_SELECT_BEFORE", DDeiEnumOperateType.SELECT, { models: [this.model] }, this.stage?.ddInstance, evt)
+    if (rsState == 0 || rsState == 1) {
+      let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
+      if (isCtrl) {
+        //判断当前操作控件是否选中
+        if (this.stageRender.currentOperateShape?.state == DDeiEnumControlState.SELECTED) {
+          pushMulits.push({ actionType: DDeiEnumBusCommandType.ModelChangeSelect, data: [{ id: this.model.id, value: DDeiEnumControlState.DEFAULT }] });
+        } else {
+          //选中当前操作控件
+          pushMulits.push({ actionType: DDeiEnumBusCommandType.ModelChangeSelect, data: [{ id: this.model.id, value: DDeiEnumControlState.SELECTED }] });
+        }
+      }
+      //没有按下ctrl键，取消选中非当前控件
+      else {
+        pushMulits.push({ actionType: DDeiEnumBusCommandType.CancelCurLevelSelectedModels, data: { ignoreModels: [this.model] } });
         pushMulits.push({ actionType: DDeiEnumBusCommandType.ModelChangeSelect, data: [{ id: this.model.id, value: DDeiEnumControlState.SELECTED }] });
       }
+      this.model.layer.render.enableRefreshShape();
+      pushMulits.push({ actionType: DDeiEnumBusCommandType.StageChangeSelectModels });
+    
+      this.stage?.ddInstance?.bus?.pushMulit(pushMulits, evt);
+      this.stage?.ddInstance?.bus?.executeAll()
+      DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_SELECT_AFTER", DDeiEnumOperateType.SELECT, { models: [this.model] }, this.stage?.ddInstance, evt)
     }
-    //没有按下ctrl键，取消选中非当前控件
-    else {
-      pushMulits.push({ actionType: DDeiEnumBusCommandType.CancelCurLevelSelectedModels, data: { ignoreModels: [this.model] } });
-      pushMulits.push({ actionType: DDeiEnumBusCommandType.ModelChangeSelect, data: [{ id: this.model.id, value: DDeiEnumControlState.SELECTED }] });
-    }
-    this.model.layer.render.enableRefreshShape();
-    pushMulits.push({ actionType: DDeiEnumBusCommandType.StageChangeSelectModels });
-    this.stage?.ddInstance?.bus?.pushMulit(pushMulits, evt);
-    this.stage?.ddInstance?.bus?.executeAll()
     return true;
   }
 

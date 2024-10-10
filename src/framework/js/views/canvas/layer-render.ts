@@ -887,6 +887,7 @@ class DDeiLayerCanvasRender {
       //清空shadows
       this.clearShadowControls()
     } else {
+      
       //判断当前操作状态
       switch (this.stageRender.operateState) {
         //控件状态确认中
@@ -922,18 +923,21 @@ class DDeiLayerCanvasRender {
 
           //加载事件的配置
           let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_SELECT_BEFORE", DDeiEnumOperateType.SELECT, { models: Array.from(includedModels.values()) }, this.stage?.ddInstance, evt)
-          let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
-          if (!isCtrl) {
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
-          }
           if (rsState == 0 || rsState == 1) {
+            let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
+            if (!isCtrl) {
+              this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
+            }
+          
             this.stageRender.currentOperateContainer = this.model;
             includedModels.forEach((model, key) => {
               pushDatas.push({ id: model.id, value: DDeiEnumControlState.SELECTED });
             });
 
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, pushDatas, evt);
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.StageChangeSelectModels);
+            this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeSelect, pushDatas, evt);
+            this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels);
+            this.stage.ddInstance.bus.executeAll()
+            DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_SELECT_AFTER", DDeiEnumOperateType.SELECT, { models: Array.from(includedModels.values()) }, this.stage?.ddInstance, evt)
           } else {
             this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
             this.stageRender.operateState = DDeiEnumOperateState.NONE

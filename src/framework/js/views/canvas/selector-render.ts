@@ -497,6 +497,9 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       includedModels = this.stage?.selectedModels
       selectNumber = 1
     }
+    this.upIncludeModels?.forEach(im => {
+      im?.render?.enableRefreshShape()
+    });
     if (includedModels && includedModels.size > selectNumber) {
       includedModels.forEach((model, key) => {
         //获得 2d 上下文对象
@@ -515,6 +518,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         ctx.restore()
       });
     }
+    this.upIncludeModels = includedModels
 
   }
 
