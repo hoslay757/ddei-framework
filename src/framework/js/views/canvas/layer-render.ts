@@ -1693,7 +1693,6 @@ class DDeiLayerCanvasRender {
        
         //判定是否到达了另一个控件的操作点
         this.model.opPoints = [];
-        DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", "CHANGE_WPV", null, this.stage?.ddInstance, evt)
         if (this.model.opLine?.render) {
           this.model.opLine.render.enableRefreshShape()
         }
@@ -1703,9 +1702,11 @@ class DDeiLayerCanvasRender {
         // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
         let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, ex2, ey2, true, true);
         if (operateControls != null && operateControls.length > 0) {
-
+          DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", "LINE_POINT_CHANGING", { line: this.stageRender.currentOperateShape, model: operateControls[0] }, this.stage?.ddInstance, evt)
           operateControls[0].render.changeOpPoints(ex2, ey2, 1);
-
+          
+        }else{
+          DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", "LINE_POINT_CHANGING", { line: this.stageRender.currentOperateShape }, this.stage?.ddInstance, evt)
         }
         break;
       }
@@ -1987,6 +1988,7 @@ class DDeiLayerCanvasRender {
           if (allowBackActive) {
             DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_MOVE_IN_CONTROL", "MOVE_IN_CONTROL", { models: operateControls }, this.ddRender.model, evt)
           }
+
           for (let li = 0; li < operateControls.length;li++){
             let control = operateControls[li]
             control.render.mouseMove(evt)
@@ -2000,12 +2002,12 @@ class DDeiLayerCanvasRender {
           this.stage.ddInstance.bus.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'all-scroll' }, evt);
         } else if (!inSelector || this.stageRender.selector.passIndex == -1) {
           if (this.stage.ddInstance?.editMode == 1) {
-              this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
+            this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
           } else if (this.stage.ddInstance?.editMode == 2) {
             this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'grab' }, evt);
           }
           else if (this.stage.ddInstance?.editMode == 4) {
-            this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'crosshair' }, evt);
+            this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
           }
           let allowBackActive = DDeiUtil.isBackActive(this.stage?.ddInstance)
           if (allowBackActive) {

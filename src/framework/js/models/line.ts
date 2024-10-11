@@ -833,6 +833,7 @@ class DDeiLine extends DDeiAbstractShape {
   calLoosePVS(): void {
     //构造N个点，包围直线或曲线范围
     this.loosePVS = this.pvs
+
     //创建临时canvas绘制线段到临时canvas上，通过临时线段判断canvas的状态
     this.updateLooseCanvasSync();
   }
@@ -933,17 +934,13 @@ class DDeiLine extends DDeiAbstractShape {
   isInAreaLoose(x: number | undefined = undefined, y: number | undefined = undefined, loose: boolean = false): boolean {
     if (this.looseCanvas){
       let isArea = false
-      //直线判断
-      if(this.type == 1 || (Math.abs(this.startPoint.x - this.endPoint.x) <=2 || Math.abs(this.startPoint.y - this.endPoint.y) <= 2) || this.pvs.length < 3){
-        let projPoint = this.getProjPoint({ x: x, y: y }
-          , { in: -10, out: 10 }, 1, 2)
-        if (projPoint){
-          isArea = true
-        }
-        
-      }else{
-        isArea = super.isInAreaLoose(x, y, loose)
+      //通过垂直线来判断
+      let projPoint = this.getProjPoint({ x: x, y: y }
+        , { in: -10, out: 10 }, 1, 2)
+      if (projPoint){
+        isArea = true
       }
+      
       if (isArea) {
         let ctx = this.looseCanvas.getContext("2d");
         let stageRatio = this.stage?.getStageRatio()
