@@ -2124,6 +2124,13 @@ abstract class DDeiAbstractShape {
     selector.width -= 2 * paddingWeight
     selector.height -= 2 * paddingWeight
 
+    if (selector.width + deltaWidth < 10) {
+      return
+    }
+
+    if (selector.height + deltaHeight < 10) {
+      return
+    }
 
     //计算平移和缩放矩阵
     let selectCPVXDelta = deltaX == 0 ? deltaWidth / 2 : deltaX / 2
@@ -2131,6 +2138,8 @@ abstract class DDeiAbstractShape {
     let scaleWRate = 1 + deltaWidth / selector.width / stageRatio
     let scaleHRate = 1 + deltaHeight / selector.height / stageRatio
 
+
+    
     let itemMoveMatrix = new Matrix3(
       1, 0, -selector.cpv.x,
       0, 1, -selector.cpv.y,
