@@ -187,6 +187,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
                   //拆分并计算pvss
                   this.calPVSS(tempShape)
                   //创建剪切区
+                  
                   this.createClip(tempShape);
 
                   //绘制填充
@@ -366,70 +367,125 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
    */
   getBorderPVS(pvs, tempShape) {
     let stageRatio = this.model.getStageRatio()
-    let rat1 = this.ddRender.ratio * stageRatio;
     let round = tempShape?.border?.round ? tempShape?.border?.round : this.getCachedValue("border.round");
     let type = tempShape?.border?.type || tempShape?.border?.type == 0 ? tempShape?.border?.type : this.getCachedValue("border.type");
-    let width = tempShape?.border?.width ? tempShape?.border?.width : this.getCachedValue("border.width");
-
-    if (!type) {
-      width = 0
-    }
     if (!round) {
       round = 0
     }
-    round = round * stageRatio
-    if (pvs[0].rd || pvs[0].rd == 0) {
-      round = pvs[0].rd * stageRatio
-    }
-    //TODO 
-    round *= rat1
+    
+   
     let borderPVS = []
-    let toZeroMatrix = new Matrix3(
-      1, 0, -pvs[0].x,
-      0, 1, -pvs[0].y,
-      0, 0, 1);
-    //归到原点，求夹角
-    let p1 = new Vector3(pvs[1].x, pvs[1].y, 1)
-    p1.applyMatrix3(toZeroMatrix)
-    let lineAngle = -new Vector3(1, 0, 0).angleTo(p1) * 180 / Math.PI
-    let angle = 0;
-    if (p1.x >= 0 && p1.y >= 0) {
-      angle = lineAngle * DDeiConfig.ROTATE_UNIT
-    } else if (p1.x <= 0 && p1.y >= 0) {
-      angle = lineAngle * DDeiConfig.ROTATE_UNIT
-    } else if (p1.x <= 0 && p1.y <= 0) {
-      angle = - lineAngle * DDeiConfig.ROTATE_UNIT
-    } else if (p1.x >= 0 && p1.y <= 0) {
-      angle = - lineAngle * DDeiConfig.ROTATE_UNIT
+
+
+    for (let s = 0; s < pvs.length; s++) {
+      borderPVS[s] = clone(pvs[s]);
     }
-    let rotateMatrix = new Matrix3(
-      Math.cos(angle), Math.sin(angle), 0,
-      -Math.sin(angle), Math.cos(angle), 0,
-      0, 0, 1);
-    let roundPVS = new Vector3(round, 0, 1)
-    roundPVS.applyMatrix3(rotateMatrix)
-    borderPVS[0] = clone(pvs[0]);//new Vector3(pvs[0].x + roundPVS.x, pvs[0].y + roundPVS.y, 1);
-    borderPVS[0].x += roundPVS.x
-    borderPVS[0].y += roundPVS.y
+
+    //如果有round时，根据round所在路径，对整个pvs进行重新构建
+    let hasRound = false
+    for (let i = 1; i < borderPVS.length+1;i++){
+      
+      let rd = round;
+      let s = i
+      let e = s+1;
+      let upI = s - 1
+      if (s == borderPVS.length-1){
+        e = 0;
+      } else if (s == borderPVS.length){
+        s = 0
+        e = 1;
+        upI = borderPVS.length - 1
+      }
+      if (borderPVS[s].rd || borderPVS[s].rd == 0) {
+        rd = borderPVS[s].rd
+      }
+
+      if (rd && (borderPVS[s].stroke || borderPVS[s].fill)){
+        
+        hasRound = true
+        //两个path的夹角的二分之一
+        let usx = borderPVS[upI].x
+        let usy = borderPVS[upI].y
+        let sx = borderPVS[s].x
+        let sy = borderPVS[s].y
+        let ex = borderPVS[e].x
+        let ey = borderPVS[e].y
+        
+        let lineRadius = DDeiUtil.getLinesAngle(usx, usy, sx, sy, sx, sy, ex, ey, true) / 2;
+        let lineBCDistance = DDeiUtil.getPointDistance(sx, sy, ex, ey) 
+        let lineABDistance = DDeiUtil.getPointDistance(usx, usy, sx, sy)
+
+        //求当前夹角下的最大半径,只取最大maxR
+        let tanRadis = Math.tan(lineRadius);
+
+        let maxR = Math.abs(tanRadis * lineBCDistance)
+        rd = Math.min(maxR, rd, lineBCDistance / 2, lineABDistance / 2)
+        rd *= stageRatio
+        //计算当前rd在B上的落点BC'的长度
+        let lineBC1Distance = Math.abs(rd / tanRadis)
+        let distLength = Math.min(lineBCDistance / 2, lineABDistance / 2, lineBC1Distance)
+        //计算C’的坐标
+        
+        let bc1pv = DDeiUtil.getPathPoint(sx, sy, ex, ey, 1, distLength, -1, lineBCDistance)
+        
+        //记录rd与落点长度
+        borderPVS[s].roundDistLength = distLength
+        borderPVS[s].roundVal = rd
+        borderPVS[s].roundPV = bc1pv;
+        //两条相邻边的长度，方便后续判断
+        // borderPVS[s].roundABLen = lineABDistance
+        // borderPVS[s].roundBCLen = lineBCDistance
+      }
+    }
+   
+    
+
+    // let toZeroMatrix = new Matrix3(
+    //   1, 0, -pvs[0].x,
+    //   0, 1, -pvs[0].y,
+    //   0, 0, 1);
+    // //归到原点，求夹角
+    // let p1 = new Vector3(pvs[1].x, pvs[1].y, 1)
+    // p1.applyMatrix3(toZeroMatrix)
+    // let lineAngle = -new Vector3(1, 0, 0).angleTo(p1) * 180 / Math.PI
+    // let angle = 0;
+    // if (p1.x >= 0 && p1.y >= 0) {
+    //   angle = lineAngle * DDeiConfig.ROTATE_UNIT
+    // } else if (p1.x <= 0 && p1.y >= 0) {
+    //   angle = lineAngle * DDeiConfig.ROTATE_UNIT
+    // } else if (p1.x <= 0 && p1.y <= 0) {
+    //   angle = - lineAngle * DDeiConfig.ROTATE_UNIT
+    // } else if (p1.x >= 0 && p1.y <= 0) {
+    //   angle = - lineAngle * DDeiConfig.ROTATE_UNIT
+    // }
+    // let rotateMatrix = new Matrix3(
+    //   Math.cos(angle), Math.sin(angle), 0,
+    //   -Math.sin(angle), Math.cos(angle), 0,
+    //   0, 0, 1);
+    // let roundPVS = new Vector3(round, 0, 1)
+    // roundPVS.applyMatrix3(rotateMatrix)
+    // borderPVS[0] = clone(pvs[0]);//new Vector3(pvs[0].x + roundPVS.x, pvs[0].y + roundPVS.y, 1);
+    // borderPVS[0].x += roundPVS.x
+    // borderPVS[0].y += roundPVS.y
 
     //四个角的点，考虑边框的位置也要响应变小
-    let lastType = 0
-    for (let i = 1; i < pvs.length; i++) {
-      borderPVS[i] = clone(pvs[i])
-      if (borderPVS[i].type) {
-        lastType = borderPVS[i].type
-      }
-    }
-    if (lastType != 2 && lastType != 5) {
-      borderPVS[pvs.length] = clone(pvs[0])
-      if (borderPVS[borderPVS.length - 2].end) {
-        delete borderPVS[borderPVS.length - 2].end
-        borderPVS[borderPVS.length - 1].end = 1
-      }
-      if (borderPVS[borderPVS.length - 1].begin) {
-        delete borderPVS[borderPVS.length - 1].begin
-      }
-    }
+    // let lastType = 0
+    // for (let i = 1; i < pvs.length; i++) {
+    //   borderPVS[i] = clone(pvs[i])
+    //   if (borderPVS[i].type) {
+    //     lastType = borderPVS[i].type
+    //   }
+    // }
+    // if (lastType != 2 && lastType != 5) {
+    //   borderPVS[pvs.length] = clone(pvs[0])
+    //   if (borderPVS[borderPVS.length - 2].end) {
+    //     delete borderPVS[borderPVS.length - 2].end
+    //     borderPVS[borderPVS.length - 1].end = 1
+    //   }
+    //   if (borderPVS[borderPVS.length - 1].begin) {
+    //     delete borderPVS[borderPVS.length - 1].begin
+    //   }
+    // }
     return borderPVS
   }
   /**
@@ -506,11 +562,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     if (!round) {
       round = 0
     }
-    round = round * stageRatio
-
-    //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
-    let lineOffset = 0//1 * ratio / 2;
-
+    
     if (!pvs || pvs?.length < 1) {
       return;
     }
@@ -539,7 +591,11 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       if (pvs[0].begin) {
         ctx.beginPath();
       }
-      ctx.moveTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset)
+      if (!pvs[0].roundPV){
+        ctx.moveTo(pvs[0].x * rat1 , pvs[0].y * rat1)
+      }else{
+        ctx.moveTo(pvs[0].roundPV.x * rat1, pvs[0].roundPV.y * rat1)
+      }
 
       for (let i = 1; i < len; i++) {
         let pv = pvs[i];
@@ -554,10 +610,10 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           ctx.beginPath()
         }
         if (pv.move) {
-          ctx.moveTo(pv.x * rat1 + lineOffset, pv.y * rat1 + lineOffset)
+          ctx.moveTo(pv.x * rat1, pv.y * rat1)
         }
         if (pv.type == 3 || (drawLine && !pv.stroke)) {
-          ctx.moveTo(pv.x * rat1 + lineOffset, pv.y * rat1 + lineOffset)
+          ctx.moveTo(pv.x * rat1, pv.y * rat1)
         } else if (pv.type == 2 || pv.type == 4) {
           let rotate = this.model.rotate;
           if (!rotate) {
@@ -574,7 +630,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
             hr = pvs[i + 2].r
             i = i + 2
           }
-          ctx.ellipse((this.model.cpv.x + dx) * rat1 + lineOffset, (this.model.cpv.y + dy) * rat1 + lineOffset, wr * rat1 * scaleX, hr * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, upPV.rad, pv.rad, !pv.direct)
+          ctx.ellipse((this.model.cpv.x + dx) * rat1, (this.model.cpv.y + dy) * rat1, wr * rat1 * scaleX, hr * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, upPV.rad, pv.rad, !pv.direct)
         }
         //曲线
         else if (pv.type == 5) {
@@ -582,14 +638,30 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           let i2 = i + 2;
           let i3 = i + 3;
           i = i + 3
-          ctx.bezierCurveTo(pvs[i1].x * rat1 + lineOffset, pvs[i1].y * rat1 + lineOffset, pvs[i2].x * rat1 + lineOffset, pvs[i2].y * rat1 + lineOffset, pvs[i3].x * rat1 + lineOffset, pvs[i3].y * rat1 + lineOffset);
+          ctx.bezierCurveTo(pvs[i1].x * rat1, pvs[i1].y * rat1, pvs[i2].x * rat1, pvs[i2].y * rat1, pvs[i3].x * rat1, pvs[i3].y * rat1);
         }
         else {
-          let rd = round * rat1
-          if (pvs[s].rd || pvs[s].rd == 0) {
-            rd = pvs[s].rd * rat1
-          }
-          ctx.arcTo(pvs[s].x * rat1 + lineOffset, pvs[s].y * rat1 + lineOffset, pvs[e].x * rat1 + lineOffset, pvs[e].y * rat1 + lineOffset, rd);
+          
+          let sx = pvs[s].x * rat1
+          let sy = pvs[s].y * rat1
+          if(!pvs[s].roundVal){
+            
+            let ex = pvs[e].x * rat1
+            let ey = pvs[e].y * rat1
+            ctx.lineTo(sx, sy, ex, ey);
+          }else{
+            
+            let rd = pvs[s].roundVal
+            let ex = pvs[s].roundPV.x * rat1
+            let ey = pvs[s].roundPV.y * rat1
+            ctx.arcTo(sx, sy, ex, ey, rd);
+          }  
+        }
+        if(i == len-1 && pvs[0].roundVal){
+          let rd = pvs[0].roundVal
+          let ex = pvs[0].roundPV.x * rat1
+          let ey = pvs[0].roundPV.y * rat1
+          ctx.arcTo(pvs[0].x * rat1, pvs[0].y*rat1, ex, ey, rd);
         }
         if (pv.end) {
           ctx.closePath()
@@ -616,7 +688,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       let scaleY = Math.abs(bpv.y / 100)
       let x = pv.cx || pv.cx == 0 ? this.model.cpv.x + pv.cx : this.model.cpv.x
       let y = pv.cy || pv.cy == 0 ? this.model.cpv.y + pv.cy : this.model.cpv.y
-      ctx.ellipse(x * rat1 + lineOffset, y * rat1 + lineOffset, pv.r * rat1 * scaleX, pv.r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, DDeiConfig.ROTATE_UNIT * 0, Math.PI * 2)
+      ctx.ellipse(x * rat1, y * rat1 , pv.r * rat1 * scaleX, pv.r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, DDeiConfig.ROTATE_UNIT * 0, Math.PI * 2)
       if (pv.end) {
         ctx.closePath()
       }
@@ -628,8 +700,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         ctx.beginPath();
       }
       if (pvs[1].type == 1) {
-        ctx.moveTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset)
-        ctx.lineTo(pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset)
+        ctx.moveTo(pvs[0].x * rat1, pvs[0].y * rat1)
+        ctx.lineTo(pvs[1].x * rat1, pvs[1].y * rat1)
       } else {
         let rotate = this.model.rotate;
         if (!rotate) {
@@ -638,10 +710,10 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         let bpv = DDeiUtil.pointsToZero([this.model.bpv], this.model.cpv, rotate)[0]
         let scaleX = Math.abs(bpv.x / 100)
         let scaleY = Math.abs(bpv.y / 100)
-        ctx.moveTo(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset)
-        ctx.lineTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset)
-        ctx.ellipse(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pvs[0].r * rat1 * scaleX, pvs[0].r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, pvs[0].rad, pvs[1].rad, !pvs[1].direct)
-        ctx.lineTo(pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset)
+        ctx.moveTo(this.model.cpv.x * rat1, this.model.cpv.y * rat1)
+        ctx.lineTo(pvs[0].x * rat1, pvs[0].y * rat1)
+        ctx.ellipse(this.model.cpv.x * rat1, this.model.cpv.y * rat1, pvs[0].r * rat1 * scaleX, pvs[0].r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, pvs[0].rad, pvs[1].rad, !pvs[1].direct)
+        ctx.lineTo(pvs[1].x * rat1, pvs[1].y * rat1)
       }
 
       if (pvs[1].end) {

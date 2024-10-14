@@ -578,9 +578,9 @@ class DDeiUtil {
    * @param value 值
    * @param out 超出策略，-1原样，其他，比例
    */
-  static getPathPoint(x0: number, y0: number, x1: number, y1: number,mode:number = 1,value:number = 0,out:number = -1):object{
+  static getPathPoint(x0: number, y0: number, x1: number, y1: number,mode:number = 1,value:number = 0,out:number = -1,distance:number|null = null):object{
     //线段长度
-    let pointDistance = DDeiUtil.getPointDistance(x0, y0, x1, y1)
+    let pointDistance = distance ? distance : DDeiUtil.getPointDistance(x0, y0, x1, y1)
     let targetLen
     let rate;
     if (mode == 1) {
@@ -1238,17 +1238,56 @@ class DDeiUtil {
   /**
    * 计算线段相对于窗口的角度
    */
-  static getLineAngle(x1: number, y1: number, x2: number, y2: number): number {
+  static getLineAngle(x1: number, y1: number, x2: number, y2: number,radius:boolean = false): number {
     //归到原点，求夹角
     x2 -= x1
     y2 -= y1
     let v1 = new Vector3(1, 0, 0)
     let v2 = new Vector3(x2, y2, 0)
-    let lineAngle = v1.angleTo(v2) * 180 / Math.PI;
-    if (v1.cross(v2).z < 0) {
-      lineAngle = -lineAngle
+    if (radius){
+      return v1.angleTo(v2)
+    }else{
+      let lineAngle = v1.angleTo(v2) * 180 / Math.PI;
+      if (v1.cross(v2).z < 0) {
+        lineAngle = -lineAngle
+      }
+      return lineAngle;
     }
-    return lineAngle;
+
+  }
+
+  /**
+   * 计算两条线的夹角，连续相邻折线
+   */
+  static getLinesAngle(l1x1: number, l1y1: number, l1x2: number, l1y2: number, l2x1: number, l2y1: number, l2x2: number, l2y2: number,radius:boolean = false):number{
+    let vectorZero1 = new Vector3(1, 0, 0);
+    let vectorZero2 = new Vector3(1, 0, 0);
+
+    let vectorA = new Vector3(l1x1 - l1x2, l1y1 - l1y2, 0);
+
+    let vectorB = new Vector3(l2x2 - l1x2, l2y2 - l1y2, 0);
+    
+    let angle1 = vectorZero1.angleTo(vectorA)// * 180 / Math.PI;
+    if (vectorZero1.cross(vectorA).z < 0) {
+      angle1 = -angle1
+    }
+
+    let angle2 = vectorZero2.angleTo(vectorB)// * 180 / Math.PI;
+    if (vectorZero2.cross(vectorB).z < 0) {
+      angle2 = -angle2
+    }
+
+    let ar1 = angle1
+    let ar2 = angle2
+
+
+    let angleRadians = ar2 - ar1
+    if(!radius){
+      angleRadians = angleRadians * 180 / Math.PI;
+    }
+
+    return angleRadians
+    
   }
 
   /**
