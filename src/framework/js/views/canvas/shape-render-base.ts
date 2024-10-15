@@ -425,10 +425,9 @@ class DDeiAbstractShapeRender {
         shapeElement.style.setProperty("--borderType", type)
         shapeElement.style.setProperty("--borderWidth", width + "px")
       }
-
-      shapeElement.style.left = ((modelPos.left + (model.width * stageRatio - model.width) / 2 ) * rat1 - canvasDomPos.left - ruleWeight) + "px"
-      shapeElement.style.top = ((modelPos.top + (model.height * stageRatio - model.height) / 2 ) * rat1 - canvasDomPos.top - ruleWeight) + "px"
-
+      
+      shapeElement.style.left = (model.cpv.x * stageRatio + stage.wpv.x) - (shapeElement.offsetWidth ? shapeElement.offsetWidth : model.width * rat1) / 2 - ruleWeight + "px"
+      shapeElement.style.top = (model.cpv.y * stageRatio + stage.wpv.y) - (shapeElement.offsetHeight ? shapeElement.offsetHeight : model.height * rat1) / 2 - ruleWeight + "px"
 
       //背景
       //如果被选中，使用选中的颜色填充,没被选中，则使用默认颜色填充
