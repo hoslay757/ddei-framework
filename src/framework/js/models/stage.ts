@@ -412,17 +412,19 @@ class DDeiStage {
         stage.height = stage.ddInstance?.height ? stage.ddInstance?.height : paperSize?.height ? (h > 2 * paperSize.height ? h : 2 * paperSize.height) : h;
       }
       //第一张纸开始位置
+      let stageRatio = stage.getStageRatio()
       if (!stage.spv) {
-        let sx = stage.width / 2 - paperSize.width / 2
-        let sy = stage.height / 2 - paperSize.height / 2
+        let sx = stage.width / 2 - paperSize.width / 2 - (stageRatio-1) * (paperSize.width / (stageRatio * 2))
+        let sy = stage.height / 2 - paperSize.height / 2 - (stageRatio - 1) * (paperSize.height / (stageRatio * 2))
         stage.spv = new Vector3(sx, sy, 1)
       }
 
       //缺省定位在画布中心点位置
       if(!stage.wpv){
+        
         stage.wpv = {
           x:
-            stage.width > w ? -(stage.width - w) / 2 : 0,
+            stage.width > w ? -(stage.width - w ) / 2 : 0,
           y:
             stage.height > h ? -(stage.height - h) / 2 : 0,
           z: 0,

@@ -1163,11 +1163,11 @@ class DDeiEditor {
               m1.premultiply(scaleMatrix)
             }
                       
-            
-            
+            let centerMoveX = (-stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2) / stageRatio1
+            let centerMoveY = (-stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2) / stageRatio1
             let moveMatrix = new Matrix3(
-              1, 0, -stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2,
-              0, 1, -stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2 ,
+              1, 0, centerMoveX,
+              0, 1, centerMoveY,
               0, 0, 1);
 
             
@@ -1181,8 +1181,8 @@ class DDeiEditor {
               m1.premultiply(move1Matrix)
             } else if ((control.x || control.x == 0) && (control.y || control.y == 0)){
               let move1Matrix = new Matrix3(
-                1, 0, -(-stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2) + control.x * stageRatio,
-                0, 1, -(-stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2) + control.y * stageRatio,
+                1, 0, -centerMoveX + control.x * stageRatio,
+                0, 1, -centerMoveY + control.y * stageRatio,
                 0, 0, 1);
               m1.premultiply(move1Matrix)
             }
@@ -1245,7 +1245,8 @@ class DDeiEditor {
               }
 
               //设置大小以及坐标
-              let stageRatio = !applyRatio ? 1/stage.getStageRatio() : 1;
+              let stageRatio1 = stage.getStageRatio()
+              let stageRatio = !applyRatio ? 1 / stageRatio1 : 1;
               let m1 = new Matrix3()
               //缩放至目标大小
               if (control.width || control.height) {
@@ -1258,9 +1259,12 @@ class DDeiEditor {
                 m1.premultiply(scaleMatrix)
               }
 
+              let centerMoveX = (-stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2) / stageRatio1
+              let centerMoveY = (-stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2) / stageRatio1
+              
               let moveMatrix = new Matrix3(
-                1, 0, -stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2, //+ this.ddInstance.render.container.offsetWidth/2,
-                0, 1, -stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2,// + this.ddInstance.render.container.offsetHeight / 2,
+                1, 0, centerMoveX,
+                0, 1, centerMoveY,
                 0, 0, 1);
 
               m1.premultiply(moveMatrix)
@@ -1273,8 +1277,8 @@ class DDeiEditor {
                 m1.premultiply(move1Matrix)
               } else if ((control.x || control.x == 0) && (control.y || control.y == 0)) {
                 let move1Matrix = new Matrix3(
-                  1, 0, -(-stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2) + control.x * stageRatio,
-                  0, 1, -(-stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2) + control.y * stageRatio,
+                  1, 0, -centerMoveX + control.x * stageRatio,
+                  0, 1, -centerMoveY + control.y * stageRatio,
                   0, 0, 1);
                 m1.premultiply(move1Matrix)
               }
@@ -1310,10 +1314,11 @@ class DDeiEditor {
     let layer = stage?.layers[stage?.layerIndex];
     let shapes: DDeiAbstractShape[] = []
     if (layer) {
-      let stageRatio = !applyRatio ? 1/stage.getStageRatio() : 1
+      let stageRatio1 = stage.getStageRatio()
+      let stageRatio = !applyRatio ? 1 / stageRatio1 : 1
 
-      let moveX = -stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2
-      let moveY = -stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2
+      let moveX = (-stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2) / stageRatio1
+      let moveY = (-stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2) / stageRatio1
       
       controls.forEach(control => {
         if (control.startPoint && control.endPoint) {
