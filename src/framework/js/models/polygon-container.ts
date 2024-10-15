@@ -126,6 +126,8 @@ class DDeiPolygonContainer extends DDeiPolygon {
     this.models.forEach((item, key) => {
       item.initRender()
     });
+
+    delete this.__destroyed
   }
   /**
    * 添加模型，并维护关系
@@ -199,6 +201,17 @@ class DDeiPolygonContainer extends DDeiPolygon {
       item.destroyed();
     });
     super.destroyed();
+  }
+
+  /**
+   * 移除渲染器
+   */
+  destroyRender() {    
+    super.destroyRender();
+    this.midList.forEach(key => {
+      let item = this.models.get(key);
+      item?.destroyRender();
+    });
   }
 
   /**
@@ -289,6 +302,42 @@ class DDeiPolygonContainer extends DDeiPolygon {
           }
           models.push(subModel);
         }
+      }
+    })
+    return models;
+  }
+
+  /**
+   * 获取子模型,通过一个过滤器
+   */
+  getSubModelsByFilter(filterName: string | null = null, ignoreModelIds: string[], level: number = 1, params: object): DDeiAbstractShape[] {
+    let models: DDeiAbstractShape[] = [];
+    this.midList.forEach(mid => {
+      if (ignoreModelIds && ignoreModelIds?.indexOf(mid) != -1) {
+        return;
+      }
+      let subModel = null
+      if (this.models.get) {
+        subModel = this.models.get(mid)
+      } else {
+        subModel = this.models[mid]
+      }
+      if (subModel) {
+        let filterMethod = null;
+        if (filterName) {
+          let define = DDeiUtil.getControlDefine(subModel)
+          if (define && define.filters && define.filters[filterName]) {
+            filterMethod = define.filters[filterName];
+          }
+        }
+        if (!filterMethod || filterMethod(subModel, params)) {
+          if (level > 1 && subModel?.getSubModelsByFilter) {
+            let subModels = subModel.getSubModelsByFilter(filterName, ignoreModelIds, level - 1, params);
+            models = models.concat(subModels)
+          }
+          models.push(subModel);
+        }
+
       }
     })
     return models;

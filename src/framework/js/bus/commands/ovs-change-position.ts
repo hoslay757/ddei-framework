@@ -56,6 +56,7 @@ class DDeiBusCommandOVSChangePosition extends DDeiBusCommand {
         let dx = x - opPoint.x, dy = y - opPoint.y
         if (point.constraint) {
           switch (point.constraint.type) {
+            //不允许移动
             case 0: {
               return true;
             }

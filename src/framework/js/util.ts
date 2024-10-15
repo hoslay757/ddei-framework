@@ -6,6 +6,7 @@ import { Matrix3, Vector3 } from 'three';
 import DDeiModelArrtibuteValue from './models/attribute/attribute-value';
 import DDeiStage from './models/stage';
 import DDeiColor from './color.js';
+import DDeiLink from './models/link.js';
 
 const expressBindValueReg = /#\{[^\{\}]*\}/;
 const contentSplitReg = /\+|\-|\*|\//;
@@ -36,6 +37,8 @@ class DDeiUtil {
   static getSubControlJSON: Function;
   //钩子函数，返回线控件的定义
   static getLineInitJSON: Function;
+  //钩子函数，返回控件的定义
+  static getModelInitJSON: Function;
   //钩子函数，获取业务数据
   static getBusiData: Function;
   //钩子函数，获取快捷编辑文本框
@@ -48,9 +51,37 @@ class DDeiUtil {
   static invokeCallbackFunc: Function;
   //钩子函数，通知改变
   static notifyChange: Function;
+  //钩子函数，获取编辑器实例
+  static getEditorInsByDDei: Function;
+
+  //钩子函数，获取创建控件
+  static createControl: Function;
 
   //钩子函数,判断当前实例是否可以在后台激活，允许后台激活的实例，在当前实例为非ACTIVE_INSTANCE时，依然能够执行部分后台操作
   static isBackActive: Function;
+
+
+  //钩子函数,创建renderviewer元素，由editor在创建时传入
+  static createRenderViewer: Function;
+
+  //钩子函数,移除renderviewer元素，由editor在创建时传入
+  static removeRenderViewer: Function;
+
+  //钩子函数,判定控件否为hidden的函数，可以由外部来覆写，从而增加前置或者后置判断逻辑
+  static isModelHidden: Function = function(model:DDeiAbstractShape):boolean{
+    if (model.hidden){
+      return true;
+    }else{
+      let pModel = model.pModel;
+      while(pModel && pModel.baseModelType != 'DDeiLayer'){
+        if (pModel.hidden){
+          return true
+        }
+        pModel = pModel.pModel
+      }
+    }
+    return false
+  };
 
 
 
@@ -85,10 +116,6 @@ class DDeiUtil {
 
   //最新选择的颜色
   static recentlyChooseColors = null
-
-
-  //向临时canvas输出
-  static DRAW_TEMP_CANVAS = true;
 
   /**
    * 当前用户的操作系统
@@ -248,8 +275,9 @@ class DDeiUtil {
       md.cols = cols;
       md.initRender();
     } else {
+      
       md = DDeiUtil.cloneModel(model, true);
-      md.initRender();
+      
       //将当前操作控件加入临时选择控件
       md.id = md.id + "_shadow"
       if (md?.baseModelType == "DDeiContainer") {
@@ -266,6 +294,7 @@ class DDeiUtil {
         md.models = newModels;
         // md.midList = newMidList;
       }
+      md.initRender();
 
     }
     return md;
@@ -515,7 +544,7 @@ class DDeiUtil {
   }
 
   /**
-   * 声称唯一编码
+   * 生成唯一编码
    * @returns 
    */
   static getUniqueCode() {
@@ -537,6 +566,64 @@ class DDeiUtil {
    */
   static getPointDistance(x0: number, y0: number, x1: number, y1: number): number {
     return Math.sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2)
+  }
+
+  /**
+   * 已知两点求其中间以及延长线上的第三点，有len和rate两种计算策略,如果超出按out值，返回实际长度（0），或者按照out设置的值作为长度比例
+   * @param x0 点1x
+   * @param y0 点1y
+   * @param x1 点2x
+   * @param y1 点2y
+   * @param mode 模式，1长度，2比例
+   * @param value 值
+   * @param out 超出策略，-1原样，其他，比例
+   */
+  static getPathPoint(x0: number, y0: number, x1: number, y1: number,mode:number = 1,value:number = 0,out:number = -1,distance:number|null = null):object{
+    //线段长度
+    let pointDistance = distance ? distance : DDeiUtil.getPointDistance(x0, y0, x1, y1)
+    let targetLen
+    let rate;
+    if (mode == 1) {
+      targetLen = value
+      if (out != -1 && targetLen > pointDistance){
+        targetLen = pointDistance * out;
+      }
+      rate = targetLen/pointDistance
+    }else{
+      targetLen = pointDistance * value
+      if (out != -1 && targetLen > pointDistance) {
+        targetLen = pointDistance * out;
+      }
+      rate = targetLen / pointDistance
+    }
+    //线段角度
+    let sita = parseFloat(DDeiUtil.getLineAngle(x0, y0, x1, y1).toFixed(4))
+    //构建向量,基于0坐标，长度为targetLen
+    let point = new Vector3(targetLen,0,1)
+    //构建矩阵
+    let m1 = new Matrix3()
+    if (sita != 0 && sita != 360){
+      let angle = (-sita * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      let rotateMatrix = new Matrix3(
+        Math.cos(angle), Math.sin(angle), 0,
+        -Math.sin(angle), Math.cos(angle), 0,
+        0, 0, 1);
+      m1.premultiply(rotateMatrix)
+    }
+    let moveMatrix = new Matrix3(
+      1, 0, x0,
+      0, 1, y0,
+      0, 0, 1);
+
+
+    m1.premultiply(moveMatrix)
+
+    point.applyMatrix3(m1)
+    point.sita = sita;
+    point.rate = rate;
+    point.len = targetLen
+
+    return point;
   }
 
   /**
@@ -1151,17 +1238,56 @@ class DDeiUtil {
   /**
    * 计算线段相对于窗口的角度
    */
-  static getLineAngle(x1: number, y1: number, x2: number, y2: number): number {
+  static getLineAngle(x1: number, y1: number, x2: number, y2: number,radius:boolean = false): number {
     //归到原点，求夹角
     x2 -= x1
     y2 -= y1
     let v1 = new Vector3(1, 0, 0)
     let v2 = new Vector3(x2, y2, 0)
-    let lineAngle = v1.angleTo(v2) * 180 / Math.PI;
-    if (v1.cross(v2).z < 0) {
-      lineAngle = -lineAngle
+    if (radius){
+      return v1.angleTo(v2)
+    }else{
+      let lineAngle = v1.angleTo(v2) * 180 / Math.PI;
+      if (v1.cross(v2).z < 0) {
+        lineAngle = -lineAngle
+      }
+      return lineAngle;
     }
-    return lineAngle;
+
+  }
+
+  /**
+   * 计算两条线的夹角，连续相邻折线
+   */
+  static getLinesAngle(l1x1: number, l1y1: number, l1x2: number, l1y2: number, l2x1: number, l2y1: number, l2x2: number, l2y2: number,radius:boolean = false):number{
+    let vectorZero1 = new Vector3(1, 0, 0);
+    let vectorZero2 = new Vector3(1, 0, 0);
+
+    let vectorA = new Vector3(l1x1 - l1x2, l1y1 - l1y2, 0);
+
+    let vectorB = new Vector3(l2x2 - l1x2, l2y2 - l1y2, 0);
+    
+    let angle1 = vectorZero1.angleTo(vectorA)// * 180 / Math.PI;
+    if (vectorZero1.cross(vectorA).z < 0) {
+      angle1 = -angle1
+    }
+
+    let angle2 = vectorZero2.angleTo(vectorB)// * 180 / Math.PI;
+    if (vectorZero2.cross(vectorB).z < 0) {
+      angle2 = -angle2
+    }
+
+    let ar1 = angle1
+    let ar2 = angle2
+
+
+    let angleRadians = ar2 - ar1
+    if(!radius){
+      angleRadians = angleRadians * 180 / Math.PI;
+    }
+
+    return angleRadians
+    
   }
 
   /**
@@ -1564,7 +1690,6 @@ class DDeiUtil {
             dist = {}
           }
           for (let i in source) {
-            console.log(i)
             dist[i] = DDeiUtil.copyJSONValue(source[i], dist[i])
           }
           return dist;
@@ -3044,7 +3169,42 @@ class DDeiUtil {
 
   }
 
- 
+  static addLineLink(model, smodel, point, type):void {
+    let pathPvs = smodel.pvs;
+    let proPoints = DDeiAbstractShape.getProjPointDists(pathPvs, point.x, point.y, false, 1);
+    let index = proPoints[0].index
+    //计算当前path的角度（方向）angle和投射后点的比例rate
+    let distance = DDeiUtil.getPointDistance(pathPvs[index].x, pathPvs[index].y, pathPvs[index + 1].x, pathPvs[index + 1].y)
+    let sita = DDeiUtil.getLineAngle(pathPvs[index].x, pathPvs[index].y, pathPvs[index + 1].x, pathPvs[index + 1].y)
+    let pointDistance = DDeiUtil.getPointDistance(pathPvs[index].x, pathPvs[index].y, proPoints[0].x, proPoints[0].y)
+    let rate = pointDistance / distance
+    rate = rate > 1 ? rate : rate
+    //创建连接点
+    let id = "_" + DDeiUtil.getUniqueCode()
+    let dmpath
+    if (type == 1) {
+      dmpath = "startPoint"
+      smodel.exPvs[id] = new Vector3(model.startPoint.x, model.startPoint.y, model.startPoint.z)
+    } else if (type == 2) {
+      dmpath = "endPoint"
+      smodel.exPvs[id] = new Vector3(model.endPoint.x, model.endPoint.y, model.endPoint.z)
+    }
+    smodel.exPvs[id].rate = rate
+    smodel.exPvs[id].sita = sita
+    smodel.exPvs[id].index = index
+    smodel.exPvs[id].id = id
+    let link = new DDeiLink({
+      sm: smodel,
+      dm: model,
+      smpath: "exPvs." + id,
+      dmpath: dmpath,
+      stage: model.stage
+    });
+    model.stage?.addLink(link)
+    smodel.transVectors(new Matrix3())
+    smodel.updateLinkModels();
+    smodel.render?.enableRefreshShape()
+  }
 
 }
 

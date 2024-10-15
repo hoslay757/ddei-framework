@@ -58,6 +58,10 @@ class DDeiPluginBase{
     
     
   }
+
+  getInitConfig():object{
+    return this.initConfig
+  }
   getName(): string {
     return this.name;
   }
@@ -79,6 +83,12 @@ class DDeiPluginBase{
   defaultOptions: object | null | undefined;
 
   plugins:object[] = [];
+
+  //排序号，从小到大的顺序调用
+  order:number = 1
+
+  //初始化配置
+  initConfig:object|null = null;
 
 }
 

@@ -15,7 +15,7 @@ import DDeiCanvasRender from './ddei-render.js';
 import DDeiStageCanvasRender from './stage-render.js';
 import { Vector3, Matrix3 } from 'three';
 import DDeiLink from '../../models/link.js';
-import { cloneDeep } from 'lodash'
+import { cloneDeep,clone } from 'lodash'
 /**
  * DDeiLayer的渲染器类，用于渲染文件
  * 渲染器必须要有模型才可以初始化
@@ -62,6 +62,11 @@ class DDeiLayerCanvasRender {
    */
   renderCacheData: Map<string, object> = new Map();
 
+  /**
+   * 用于显示自身的容器
+   */
+  containerViewer:HTMLElement|null = null;
+
   // ============================ 方法 ===============================
   /**
    * 初始化
@@ -70,6 +75,28 @@ class DDeiLayerCanvasRender {
     this.ddRender = this.model.stage.ddInstance.render
     this.stage = this.model.stage
     this.stageRender = this.model.stage.render
+    this.initContainerViewer();
+  }
+
+  initContainerViewer() {
+    if (!this.containerViewer) {
+      let editorId = DDeiUtil.getEditorId(this.ddRender?.model);
+      this.containerViewer = document.getElementById(editorId + "_layer_" + this.model.id)
+      if (!this.containerViewer) {
+        //在容器上创建画布，画布用来渲染图形
+        let canvasViewerElement = this.ddRender.getCanvas().parentElement
+        if (canvasViewerElement) {
+          let containerElement = document.createElement("div")
+
+          containerElement.setAttribute("class", "ddei-editor-canvasview-contentlayer")
+          containerElement.setAttribute("id", editorId + "_layer_" + this.model.id)
+          canvasViewerElement.insertBefore(containerElement, this.ddRender.realCanvas)
+          this.containerViewer = containerElement
+
+
+        }
+      }
+    }
   }
 
   /**
@@ -85,16 +112,21 @@ class DDeiLayerCanvasRender {
     this.model.shadowControls = [];
   }
 
+  
+
   /**
    * 绘制图形
    */
   drawShape(inRect: boolean = true): void {
+    this.initContainerViewer();
     //只有当显示时才绘制图层
     if (this.model.display || this.model.tempDisplay) {
       let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.stage?.ddInstance, null)
       if (rsState == 0 || rsState == 1) {
         let rsState1 = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.stage?.ddInstance, null)
         if (rsState1 == 0 || rsState1 == 1) {
+          this.containerViewer.style.display = "block"
+          this.containerViewer.style.zIndex = this.tempZIndex
           //绘制子元素
           this.drawChildrenShapes(inRect);
           //绘制操作点
@@ -113,7 +145,8 @@ class DDeiLayerCanvasRender {
         DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_AFTER", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.stage?.ddInstance, null)
       }
     }else{
-      //绘制子元素
+      this.containerViewer.style.display = "none"
+      //隐藏子元素
       this.drawChildrenShapes(inRect,true);
     }
   }
@@ -123,15 +156,39 @@ class DDeiLayerCanvasRender {
   /**
    * 绘制背景
    */
-  drawBackground(px, py, pw, ph): void {
-    if (this.model.display || this.model.tempDisplay) {
+  drawBackground(px, py, pw, ph,isBottom): void {
+    this.initContainerViewer()
+    if (this.containerViewer && (this.model.display || this.model.tempDisplay)) {
+      let ratio = this.ddRender.ratio
+      if(!this.bgCanvas){
+        let editorId = DDeiUtil.getEditorId(this.ddRender?.model);
+        this.bgCanvas = document.getElementById(editorId + "_layerbg_" + this.model.id)
+        if (!this.bgCanvas){
+          let bgCanvas = document.createElement("canvas")
+          
+          bgCanvas.setAttribute("style", "z-index:0;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / ratio) + ");display:block;zoom:" + (1 / ratio));
+          bgCanvas.setAttribute("id",editorId + "_layerbg_" + this.model.id)
+          this.containerViewer.appendChild(bgCanvas)
+          this.bgCanvas = bgCanvas
+        }
+      }
+      this.bgCanvas.setAttribute("width", this.containerViewer.clientWidth * ratio);
+      this.bgCanvas.setAttribute("height", this.containerViewer.clientHeight * ratio);
       //获得 2d 上下文对象
-      let canvas = this.ddRender.getCanvas();
+      // let canvas = this.ddRender.getCanvas();
+      let canvas = this.bgCanvas;
       let ctx = canvas.getContext('2d');
       //获取全局缩放比例
       let rat1 = this.ddRender.ratio
       //保存状态
       ctx.save();
+
+      let ruleWeight = 0
+      if (this.stageRender.tempRuleDisplay == 1 || this.stageRender.tempRuleDisplay == '1') {
+        ruleWeight = 15
+      }
+      ctx.translate(-ruleWeight*rat1,-ruleWeight*rat1)
+
 
 
       //根据背景的设置绘制图层
@@ -160,20 +217,21 @@ class DDeiLayerCanvasRender {
       } else {
         bgInfoColor = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.color", true);
       }
-      if (!bgInfoColor) {
+      if (!bgInfoColor && isBottom) {
         bgInfoColor = DDeiUtil.getStyleValue("panel-background", this.ddRender.model);
       }
       // 绘制纯色背景
       if (bgInfoType == 1) {
-        
-        let bgInfoOpacity = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.opacity", true, bgInit);
-        //填充色
-        ctx.fillStyle = DDeiUtil.getColor(bgInfoColor)
-        //透明度
-        if (bgInfoOpacity || bgInfoOpacity == 0) {
-          ctx.globalAlpha = bgInfoOpacity
+        if (bgInfoColor){
+          let bgInfoOpacity = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.opacity", true, bgInit);
+          //填充色
+          ctx.fillStyle = DDeiUtil.getColor(bgInfoColor)
+          //透明度
+          if (bgInfoOpacity || bgInfoOpacity == 0) {
+            ctx.globalAlpha = bgInfoOpacity
+          }
+          ctx.fillRect(px, py, pw, ph)
         }
-        ctx.fillRect(px, py, pw, ph)
       }
       //绘制图片背景类型
       else if (bgInfoType == 2) {
@@ -306,20 +364,17 @@ class DDeiLayerCanvasRender {
   drawShadowControls(): void {
     if (this.model.shadowControls?.length > 0) {
       //获得 2d 上下文对象
-      let canvas = this.ddRender.getCanvas();
-      let ctx = canvas.getContext('2d');
+      // let canvas = this.ddRender.operateCanvas
+      
       this.model.shadowControls.forEach(item => {
         //保存状态
-        ctx.save();
-        item.render.drawShape();
+        // item.render.drawShape();
         item.render.enableRefreshShape()
         if (item.modelType == 'DDeiLine') {
-          item.render.drawShape({ color: "#017fff", dash: [], opacity: 0.7, fill: { color: '#017fff', opacity: 0.7 } });
+          item.render.drawShape({ color: "#017fff", dash: [], opacity: 0.7, fill: { color: '#017fff', opacity: 0.7 } }, 0, null, 99999);
         } else {
-          item.render.drawShape({ fill: { color: '#017fff', opacity: 0.7 } });
+          item.render.drawShape({ fill: { color: '#017fff', opacity: 0.7 } }, 0, null, 99999);
         }
-
-        ctx.restore();
       });
 
     }
@@ -346,16 +401,17 @@ class DDeiLayerCanvasRender {
       let y1 = y + canvas.height / rat1 / stageRatio;
       //遍历子元素，绘制子元素
       // let time1 = new Date().getTime()
-      for (let li = 0; li < this.model.midList.length;li++){
-        let key = this.model.midList[li]
-        let item = this.model.models.get(key);
-        if (!hidden && item?.render && (!inRect || item?.isInRect(x, y, x1, y1))) {
-          item.render.tempZIndex = this.tempZIndex+(li+1)
-          item.render.drawShape();
-        } else {
-          DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", "VIEW-HIDDEN", { models: [item] }, this.ddRender.model, null)
+      if(!hidden){
+        let rect = inRect ? { x: x, y: y, x1: x1, y1: y1 } : null
+        for (let li = 0; li < this.model.midList.length; li++) {
+          let key = this.model.midList[li]
+          let item = this.model.models.get(key);
+          item?.render?.drawShape(null, 0, rect, this.tempZIndex + (li + 1));
         }
+      }else{
+        DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", "VIEW-HIDDEN", { models: Array.from(this.model.models.values()) }, this.ddRender.model, null)
       }
+      
       
     }
   }
@@ -367,12 +423,14 @@ class DDeiLayerCanvasRender {
     if (this.model?.opPoints?.length > 0) {
       
       //获得 2d 上下文对象
-      let canvas = this.ddRender.getCanvas();
+      let canvas = this.ddRender.getCanvas()
       let ctx = canvas.getContext('2d');
       let stageRatio = this.stage?.getStageRatio()
-      let ratio = this.ddRender?.ratio * stageRatio;
+      let rat1 = this.ddRender.ratio;
+      let ratio = rat1 * stageRatio;
       //保存状态
       ctx.save();
+      // ctx.translate(rat1,rat1)
       let firstOp2Point, beforeOp2Point
       this.model?.opPoints.forEach(point => {
         if (!point || point.isSplit) {
@@ -443,9 +501,9 @@ class DDeiLayerCanvasRender {
   }
 
   enableRefreshShape() {
-    this.model.models.forEach(shape=>{
-      shape?.render?.enableRefreshShape();
-    })
+    // this.model.models.forEach(shape=>{
+    //   shape?.render?.enableRefreshShape();
+    // })
   }
 
   /**
@@ -454,20 +512,20 @@ class DDeiLayerCanvasRender {
   drawOpLine(): void {
     if (this.model.opLine) {
       //获得 2d 上下文对象
-      let canvas = this.ddRender.getCanvas();
-      let ctx = canvas.getContext('2d');
-      let ratio = this.ddRender?.ratio;
-      //保存状态
-      ctx.save();
+      // let canvas = this.ddRender.operateCanvas
+      // let ctx = canvas.getContext('2d');
+      // let ratio = this.ddRender?.ratio;
+      // //保存状态
+      // ctx.save();
       let lineRender = this.model.opLine.render
       let color = lineRender.getCachedValue("color");
       let weight = lineRender.getCachedValue("weight");
       lineRender.enableRefreshShape();
-      this.model.opLine.render.drawShape({ color: "red", opacity: 0.5, weight: weight * 1.5 })
+      this.model.opLine.render.drawShape({ color: "red", opacity: 0.5, weight: weight * 1.5 }, false, null, this.model.opLine.render.tempZIndex)
 
 
-      //恢复状态
-      ctx.restore();
+      // //恢复状态
+      // ctx.restore();
     }
   }
 
@@ -478,7 +536,7 @@ class DDeiLayerCanvasRender {
 
     if (this.model?.dragInPoints?.length > 0 || this.model?.dragOutPoints?.length > 0) {
       //获得 2d 上下文对象
-      let canvas = this.ddRender.getCanvas();
+      let canvas = this.ddRender.getCanvas()
       let ctx = canvas.getContext('2d');
       let stageRatio = this.stage?.getStageRatio()
       let ratio = this.ddRender.ratio * stageRatio;
@@ -623,8 +681,10 @@ class DDeiLayerCanvasRender {
     
 
     if (this.stageRender?.operateState == DDeiEnumOperateState.QUICK_EDITING) {
+      
+      let canvas = this.ddRender.getCanvas()
       //如果在画布范围内，但不在编辑的控件上，则确认解除快捷编辑状态
-      if (evt.target == this.ddRender.canvas && (!this.stageRender.editorShadowControl || !this.stageRender.editorShadowControl?.isInAreaLoose(ex, ey))) {
+      if ((evt.target == canvas || evt.target == canvas.parentElement) && (!this.stageRender.editorShadowControl || !this.stageRender.editorShadowControl?.isInAreaLoose(ex, ey))) {
         DDeiUtil.getEditorText()?.enterValue()
       }
     }
@@ -638,7 +698,7 @@ class DDeiLayerCanvasRender {
       if (ovPoint) {
         let ovsDefine = DDeiUtil.getControlDefine(model)?.define?.ovs;
         let ovd = ovsDefine[model.ovs.indexOf(ovPoint)];
-        if (ovd?.constraint?.type) {
+        if (ovd?.constraint?.type && ovd.constraint.type != 5) {
           isOvPoint = true;
           this.stageRender.operateState = DDeiEnumOperateState.OV_POINT_CHANGING
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { x: ex2, y: ey2, opPoint: ovPoint, model: model } }, evt);
@@ -827,6 +887,7 @@ class DDeiLayerCanvasRender {
       //清空shadows
       this.clearShadowControls()
     } else {
+      
       //判断当前操作状态
       switch (this.stageRender.operateState) {
         //控件状态确认中
@@ -862,18 +923,21 @@ class DDeiLayerCanvasRender {
 
           //加载事件的配置
           let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_SELECT_BEFORE", DDeiEnumOperateType.SELECT, { models: Array.from(includedModels.values()) }, this.stage?.ddInstance, evt)
-          let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
-          if (!isCtrl) {
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
-          }
           if (rsState == 0 || rsState == 1) {
+            let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
+            if (!isCtrl) {
+              this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
+            }
+          
             this.stageRender.currentOperateContainer = this.model;
             includedModels.forEach((model, key) => {
               pushDatas.push({ id: model.id, value: DDeiEnumControlState.SELECTED });
             });
 
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeSelect, pushDatas, evt);
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.StageChangeSelectModels);
+            this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ModelChangeSelect, pushDatas, evt);
+            this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels);
+            this.stage.ddInstance.bus.executeAll()
+            DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_SELECT_AFTER", DDeiEnumOperateType.SELECT, { models: Array.from(includedModels.values()) }, this.stage?.ddInstance, evt)
           } else {
             this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
             this.stageRender.operateState = DDeiEnumOperateState.NONE
@@ -902,7 +966,6 @@ class DDeiLayerCanvasRender {
 
               
               if (rsState == 0 || rsState == 1) {
-
                 if (model) {
                   model.syncVectors(item)
                 } else {
@@ -917,6 +980,7 @@ class DDeiLayerCanvasRender {
                   if ((opPoint?.model && (Math.abs(opPoint.x - item.startPoint.x) >= 1 || Math.abs(opPoint.y - item.startPoint.y) >= 1)) || maxLength >= 15) {
                     //影子控件转变为真实控件并创建
                     item.id = id
+                    item.destroyRender()
                     this.model.addModel(item,false)
                     item.initRender();
                     model = item;
@@ -960,6 +1024,9 @@ class DDeiLayerCanvasRender {
                           //删除源点
                           if (dl?.sm && dl?.smpath) {
                             eval("delete dl.sm." + dl.smpath)
+                            dl.sm.transVectors(new Matrix3())
+                            dl.sm.updateLinkModels();
+                            dl.sm.render?.enableRefreshShape()
                           }
                         }
                       })
@@ -985,12 +1052,21 @@ class DDeiLayerCanvasRender {
                           stage: this.stage
                         });
 
-                        this.stage?.addLink(link)
-                        model?.initPVS()
-                        smodel.updateLinkModels();
+                        this.stage.addLink(link)
+                        model.initPVS()
+                        
+                        
                       }
                     }
                   }
+                  let dlinks = this.stage?.getDistModelLinks(model.id);
+                  dlinks?.forEach(dl=>{
+                    if(dl.sm){
+                      dl.sm.transVectors(new Matrix3())
+                      dl.sm.updateLinkModels();
+                      dl.sm.render.enableRefreshShape()
+                    }
+                  })
                   model.initPVS()
                   model.updateOVS()
                   //重新计算错线
@@ -1118,68 +1194,51 @@ class DDeiLayerCanvasRender {
                 if (model.modelType == 'DDeiLine') {
                   //如果原有的关联存在，取消原有的关联
                   let distLinks = this.stage?.getDistModelLinks(model.id);
+                  let skipStart = false,skipEnd = false
                   distLinks?.forEach(dl => {
-                    if (!dl.sm || moveOriginModels.indexOf(dl.sm) == -1) {
+                    if (!dl.disabled && (!dl.sm || moveOriginModels.indexOf(dl.sm) == -1)) {
                       this.stage?.removeLink(dl);
                       //删除源点
                       if (dl?.sm && dl?.smpath) {
                         eval("delete dl.sm." + dl.smpath)
+                        dl.sm.transVectors(new Matrix3())
+                        dl.sm.updateLinkModels();
+                        dl.sm.render?.enableRefreshShape()
+                      }
+                    }else{
+                      if(dl.dmpath == 'startPoint'){
+                        skipStart = true
+                      } else if(dl.dmpath == 'endPoint'){
+                        skipEnd = true
                       }
                     }
                   })
+                  
                   //根据开始点或结束点的位置建立新链接
-                  let lineInModelsStart = DDeiAbstractShape.findBottomModelsByArea(this.model, model.startPoint.x, model.startPoint.y, true, true);
-                  if (lineInModelsStart.length > 0) {
-                    for (let li = 0; li < lineInModelsStart.length; li++) {
-                      if (!model.linkModels?.has(lineInModelsStart[li].id) && moveOriginModelIds.indexOf(lineInModelsStart[li].id) == -1) {
-                        addLineLink(model, lineInModelsStart[li], model.startPoint, 1)
+                  if (!skipStart){
+                    let lineInModelsStart = DDeiAbstractShape.findBottomModelsByArea(this.model, model.startPoint.x, model.startPoint.y, true, true);
+                    if (lineInModelsStart.length > 0) {
+                      for (let li = 0; li < lineInModelsStart.length; li++) {
+                        if (!model.linkModels?.has(lineInModelsStart[li].id) && moveOriginModelIds.indexOf(lineInModelsStart[li].id) == -1) {
+                          DDeiUtil.addLineLink(model, lineInModelsStart[li], model.startPoint, 1)
+                        }
+                        break
                       }
-                      break
                     }
                   }
-                  let lineInModelsEnd = DDeiAbstractShape.findBottomModelsByArea(this.model, model.endPoint.x, model.endPoint.y, true, true);
-                  if (lineInModelsEnd.length > 0) {
+                  if (!skipEnd){
+                    let lineInModelsEnd = DDeiAbstractShape.findBottomModelsByArea(this.model, model.endPoint.x, model.endPoint.y, true, true);
+                    if (lineInModelsEnd.length > 0) {
 
-                    for (let li = 0; li < lineInModelsEnd.length; li++) {
-                      if (!model.linkModels?.has(lineInModelsEnd[li].id) && moveOriginModelIds.indexOf(lineInModelsEnd[li].id) == -1) {
-                        addLineLink(model, lineInModelsEnd[li], model.endPoint, 2)
+                      for (let li = 0; li < lineInModelsEnd.length; li++) {
+                        if (!model.linkModels?.has(lineInModelsEnd[li].id) && moveOriginModelIds.indexOf(lineInModelsEnd[li].id) == -1) {
+                          DDeiUtil.addLineLink(model, lineInModelsEnd[li], model.endPoint, 2)
+                        }
+                        break
                       }
-                      break
                     }
                   }
-                  function addLineLink(model, smodel, point, type) {
-                    let pathPvs = smodel.pvs;
-                    let proPoints = DDeiAbstractShape.getProjPointDists(pathPvs, point.x, point.y, false, 1);
-                    let index = proPoints[0].index
-                    //计算当前path的角度（方向）angle和投射后点的比例rate
-                    let distance = DDeiUtil.getPointDistance(pathPvs[index].x, pathPvs[index].y, pathPvs[index + 1].x, pathPvs[index + 1].y)
-                    let sita = DDeiUtil.getLineAngle(pathPvs[index].x, pathPvs[index].y, pathPvs[index + 1].x, pathPvs[index + 1].y)
-                    let pointDistance = DDeiUtil.getPointDistance(pathPvs[index].x, pathPvs[index].y, proPoints[0].x, proPoints[0].y)
-                    let rate = pointDistance / distance
-                    rate = rate > 1 ? rate : rate
-                    //创建连接点
-                    let id = "_" + DDeiUtil.getUniqueCode()
-                    let dmpath
-                    if (type == 1) {
-                      dmpath = "startPoint"
-                      smodel.exPvs[id] = new Vector3(model.startPoint.x, model.startPoint.y, model.startPoint.z)
-                    } else if (type == 2) {
-                      dmpath = "endPoint"
-                      smodel.exPvs[id] = new Vector3(model.endPoint.x, model.endPoint.y, model.endPoint.z)
-                    }
-                    smodel.exPvs[id].rate = rate
-                    smodel.exPvs[id].sita = sita
-                    smodel.exPvs[id].index = index
-                    smodel.exPvs[id].id = id
-                    let link = new DDeiLink({
-                      sm: smodel,
-                      dm: model,
-                      smpath: "exPvs." + id,
-                      dmpath: dmpath,
-                      stage: model.stage
-                    });
-                    model.stage?.addLink(link)
-                  }
+                  
                   //依附于线段存在的子控件，跟着线段移动
                   model.refreshLinkModels()
                 }
@@ -1242,6 +1301,7 @@ class DDeiLayerCanvasRender {
           }
           //清空shadows
           this.clearShadowControls()
+          
           break;
         //表格内部拖拽中
         case DDeiEnumOperateState.TABLE_INNER_DRAG:
@@ -1250,6 +1310,7 @@ class DDeiLayerCanvasRender {
           this.stage?.ddInstance?.bus.push(DDeiEnumBusCommandType.CopyStyle, { models: [table], brushData: this.stage.brushData });
           break;
         case DDeiEnumOperateState.CONTROL_ROTATE:
+          DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_ROTATE_AFTER", DDeiEnumOperateType.ROTATE, { models: this.stageRender.dragObj.models }, this.stage?.ddInstance, evt)
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars);
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.NodifyChange);
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy);
@@ -1313,10 +1374,11 @@ class DDeiLayerCanvasRender {
           this.stage?.ddInstance?.bus?.executeAll();
           return;
         case DDeiEnumOperateState.QUICK_EDITING:
+          let canvas = this.ddRender.getCanvas()
           //如果不在编辑的控件上，则确认解除快捷编辑状态
-          if (evt.target == this.ddRender.canvas && (!this.stageRender.editorShadowControl || !this.stageRender.editorShadowControl?.isInAreaLoose(ex, ey))) {
+          if ((evt.target == canvas || evt.target == canvas.parentElement) && (!this.stageRender.editorShadowControl || !this.stageRender.editorShadowControl?.isInAreaLoose(ex, ey))) {
             DDeiUtil.getEditorText()?.enterValue()
-          } else if (evt.target != this.ddRender.canvas) {
+          } else if (evt.target != canvas && evt.target != canvas.parentElement) {
             return;
           }
           break;
@@ -1436,6 +1498,7 @@ class DDeiLayerCanvasRender {
           if (rsState == 0 || rsState == 1) {
             DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", DDeiEnumOperateType.DRAG, { models: sms }, this.ddRender.model, evt)
             //当前操作状态：控件拖拽中
+            
             this.stageRender.operateState = DDeiEnumOperateState.CONTROL_DRAGING
             //产生影子控件
             sms.forEach(m => {
@@ -1443,6 +1506,7 @@ class DDeiLayerCanvasRender {
               dragObj[md.id] = { dx: md.cpv.x - ex2, dy: md.cpv.y - ey2 }
               this.model.shadowControls.push(md);
             });
+            
             //将当前被拖动的控件转变为影子控件
             this.stageRender.currentOperateShape = this.model.shadowControls[this.model.shadowControls.length - 1]
           } else {
@@ -1488,8 +1552,45 @@ class DDeiLayerCanvasRender {
       case DDeiEnumOperateState.LINE_POINT_CHANGING: {
         //如果当前操作控件不存在，创建线段,生成影子控件，并把影子线段作为当前操作控件
         if (!this.stageRender.currentOperateShape) {
-          let lineJson = DDeiUtil.getLineInitJSON();
-          lineJson.id = "line_" + (++this.stage.idIdx)
+          let lineJson = DDeiUtil.getLineInitJSON(this.stage.ddInstance);
+          let editor = DDeiUtil.getEditorInsByDDei(this.stage.ddInstance)
+          
+          let lineDefine = editor.controls?.get(lineJson.modelCode ? lineJson.modelCode : lineJson.model ? lineJson.model : lineJson.id?lineJson.id : lineJson.code);
+          let initJSON = clone(lineDefine)
+          initJSON.modelCode = initJSON.id
+          initJSON.id = "line_" + (++this.stage.idIdx)
+          if (!lineJson.type) {
+            initJSON.type = 2
+          }else{
+            initJSON.type = lineJson.type
+          }
+          
+          if (initJSON.img) {
+            initJSON.fill = { type: 2, image: initJSON.img };
+            delete initJSON.img
+          }
+          if (initJSON.define) {
+            for (let i in initJSON?.define) {
+              initJSON[i] = initJSON.define[i];
+            }
+            delete initJSON.define
+          }
+          delete initJSON.ovs
+
+          delete initJSON.attrDefineMap
+          delete initJSON.filters
+          delete initJSON.icon
+          delete initJSON.groups
+          delete initJSON.name
+          delete initJSON.def
+          delete initJSON.code
+          delete initJSON.desc
+          initJSON.composes?.forEach(comp => {
+            if (comp) {
+              delete comp.attrs
+            }
+          });
+          
           let dx, dy, opPoint
           
           if (this.stageRender.dragObj.opPoint) {
@@ -1500,21 +1601,28 @@ class DDeiLayerCanvasRender {
             dx = this.stageRender.dragObj.dx
             dy = this.stageRender.dragObj.dy
           }
-          lineJson.cpv = new Vector3(dx, dy, 1);
+          //初始化位置矩阵
+          let moveMatrix = new Matrix3(
+            1, 0, dx,
+            0, 1, dy,
+            0, 0, 1);
 
-          //根据线的类型生成不同的初始化点
-          lineJson.type = 2
+          initJSON.cpv = new Vector3(0, 0, 1);
           //直线两个点
-          if (lineJson.type == 1) {
-            lineJson.pvs = [lineJson.cpv, new Vector3(ex2, ey2, 1)]
+          if (initJSON.type == 1) {
+            initJSON.pvs = [initJSON.cpv, new Vector3(ex2-dx, ey2-dy, 1)]
           } else {
-            lineJson.pvs = [lineJson.cpv, new Vector3((lineJson.cpv.x + ex2) / 2, lineJson.cpv.y, 1), new Vector3((lineJson.cpv.x + ex2) / 2, ey2, 1), new Vector3(ex2, ey2, 1)]
+            initJSON.pvs = [initJSON.cpv, new Vector3((ex2-dx) / 2, initJSON.cpv.y, 1), new Vector3((ex2-dx) / 2, ey2-dy, 1), new Vector3(ex2-dx, ey2-dy, 1)]
           }
           
+          
+           
+          let ddeiLine = DDeiLine.initByJSON(initJSON, { currentStage: this.stage, currentLayer: this.model, currentContainer: this.model });
+          ddeiLine.transVectors(moveMatrix)
+
           //初始化开始点和结束点
 
-          let ddeiLine = DDeiLine.initByJSON(lineJson, { currentStage: this.stage, currentLayer: this.model, currentContainer: this.model });
-          let lineShadow = DDeiUtil.getShadowControl(ddeiLine);
+           let lineShadow = DDeiUtil.getShadowControl(ddeiLine);
           this.model.shadowControls.push(lineShadow);
           //将当前被拖动的控件转变为影子控件
           this.stageRender.currentOperateShape = lineShadow
@@ -1546,8 +1654,8 @@ class DDeiLayerCanvasRender {
             dragPoint: lineShadow.pvs[lineShadow.pvs.length - 1],
             model: lineShadow,
             passIndex: 1,
-            opvsIndex: lineJson.pvs.length - 1,
-            opvs: lineJson.pvs,
+            opvsIndex: ddeiLine.pvs.length - 1,
+            opvs: ddeiLine.pvs,
             create: true
           }
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
@@ -1585,7 +1693,6 @@ class DDeiLayerCanvasRender {
        
         //判定是否到达了另一个控件的操作点
         this.model.opPoints = [];
-        DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", "CHANGE_WPV", null, this.stage?.ddInstance, evt)
         if (this.model.opLine?.render) {
           this.model.opLine.render.enableRefreshShape()
         }
@@ -1595,9 +1702,11 @@ class DDeiLayerCanvasRender {
         // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
         let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, ex2, ey2, true, true);
         if (operateControls != null && operateControls.length > 0) {
-
+          DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", "LINE_POINT_CHANGING", { line: this.stageRender.currentOperateShape, model: operateControls[0] }, this.stage?.ddInstance, evt)
           operateControls[0].render.changeOpPoints(ex2, ey2, 1);
-
+          
+        }else{
+          DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", "LINE_POINT_CHANGING", { line: this.stageRender.currentOperateShape }, this.stage?.ddInstance, evt)
         }
         break;
       }
@@ -1743,23 +1852,11 @@ class DDeiLayerCanvasRender {
       }
       //控件旋转
       case DDeiEnumOperateState.CONTROL_ROTATE: {
-        //获取当前移动的坐标量
-        // let movedPos = this.getMovedPositionDelta(evt);
-        // if (movedPos.x != 0) {
-        //计算上级控件的大小
-        let pContainerModel = this.stageRender?.currentOperateContainer;
-        if (!pContainerModel) {
-          pContainerModel = this.model;
-        }
-
+        let dragObj = this.stageRender.dragObj
         //更新旋转
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeRotate, { ex: ex2, ey: ey2, container: pContainerModel }, evt);
-        // //更新dragObj临时变量中的数值,确保坐标对应关系一致
-        // this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { deltaX: movedPos.x, deltaY: 0 }, evt);
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ModelChangeRotate, { ex: ex2, ey: ey2, container: dragObj.container, models: dragObj.models }, evt);
         //渲染图形
         this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.RefreshShape, null, evt);
-
-        // }
         break;
       }
       //快捷编辑中
@@ -1796,7 +1893,7 @@ class DDeiLayerCanvasRender {
           let sx = 0;
           let i = 0;
           //由于绘制缓存中的文本位置乘以了调整系数，因此这里判断时，需要利用这个系数反向判断
-          let scaleSize = DDeiUtil.DRAW_TEMP_CANVAS && rat1 < 2 ? 2 / rat1 : 1
+          let scaleSize = rat1 < 2 ? 2 / rat1 : 1
           for (; i < shadowControl.render.textUsedArea.length; i++) {
             let rowData = shadowControl.render.textUsedArea[i];
             let ry = rowData.y / scaleSize
@@ -1891,17 +1988,26 @@ class DDeiLayerCanvasRender {
           if (allowBackActive) {
             DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_MOVE_IN_CONTROL", "MOVE_IN_CONTROL", { models: operateControls }, this.ddRender.model, evt)
           }
-          operateControls.forEach(control => {
+
+          for (let li = 0; li < operateControls.length;li++){
+            let control = operateControls[li]
             control.render.mouseMove(evt)
-          })
+            if (control.baseModelType != 'DDeiContainer') {
+              break;
+            }
+          }
+       
           
           // operateControls[0].render.mouseMove(evt);
           this.stage.ddInstance.bus.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'all-scroll' }, evt);
         } else if (!inSelector || this.stageRender.selector.passIndex == -1) {
-         if (this.stage.ddInstance?.editMode == 1) {
+          if (this.stage.ddInstance?.editMode == 1) {
             this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
           } else if (this.stage.ddInstance?.editMode == 2) {
             this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'grab' }, evt);
+          }
+          else if (this.stage.ddInstance?.editMode == 4) {
+            this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
           }
           let allowBackActive = DDeiUtil.isBackActive(this.stage?.ddInstance)
           if (allowBackActive) {

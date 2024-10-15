@@ -15,6 +15,7 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
   // 通过一个JSON反向序列化成对象，模型数据与JSON完全一样
   static newInstance(props: object): DDeiRectContainerCanvasRender {
     return new DDeiRectContainerCanvasRender(props)
+    
   }
   
 
@@ -41,6 +42,9 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
 
   }
 
+  
+
+  
   /**
      * 创建图形
      */
@@ -52,7 +56,9 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
       this.ddRender.model,
       null
     )) {
-      if (!this.model.hidden) {
+      if (!DDeiUtil.isModelHidden(this.model)) {
+        //创建准备图形
+
         let canvas = this.ddRender.getCanvas();
         let ctx = canvas.getContext('2d');
 
@@ -98,6 +104,8 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
     }
 
   }
+
+
   /**
    * 绘制子元素
    */
@@ -137,6 +145,7 @@ class DDeiRectContainerCanvasRender extends DDeiRectangleCanvasRender {
           ctx.closePath();
           // ctx.clip();
           item.render.tempZIndex = this.tempZIndex + (m + 1)
+          
           item.render.drawShape(tempShape);
           //恢复
           ctx.restore();

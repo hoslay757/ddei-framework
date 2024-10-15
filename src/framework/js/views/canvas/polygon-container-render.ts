@@ -39,164 +39,159 @@ class DDeiPolygonContainerCanvasRender extends DDeiPolygonCanvasRender {
   }
 
   /**
-     * 创建图形
-     */
-  /**
    * 绘制图形
    */
-  drawShape(tempShape, composeRender: number = 0): void {
-    let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
-    if (composeRender || rsState == 0 || rsState == 1) {
-      let rsState1 = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", DDeiEnumOperateType.VIEW, { models: [this.model], tempShape: tempShape, composeRender: composeRender }, this.ddRender.model, null)
-      if (rsState1 == 0 || rsState1 == 1) {
-        if (!this.model.hidden && (this.refreshShape || this.isEditoring)) {
+  drawShape(tempShape, composeRender: number = 0, inRect: object | null = null, zIndex: number = 0): void {
+    if (!inRect || this.model.isInRect(inRect.x, inRect.y, inRect.x1, inRect.y1)) {
+      let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
+      if (composeRender || rsState == 0 || rsState == 1) {
+        let rsState1 = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", DDeiEnumOperateType.VIEW, { models: [this.model], tempShape: tempShape, composeRender: composeRender }, this.ddRender.model, null)
+        if (rsState1 == 0 || rsState1 == 1) {
+          if (!DDeiUtil.isModelHidden(this.model) && (this.refreshShape || this.isEditoring)) {
 
-          //创建准备图形
-          this.createTempShape();
-          //将当前控件以及composes按照zindex顺序排列并输出
-          let rendList = [];
-          if (this.model.composes?.length > 0) {
-            rendList = rendList.concat(this.model.composes);
-          }
-          rendList.push(this.model)
-          rendList.sort((a, b) => {
-
-            if ((a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
-              return a.cIndex - b.cIndex
-            } else if ((a.cIndex || a.cIndex == 0) && !(b.cIndex || b.cIndex == 0)) {
-              return 1
-            } else if (!(a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
-              return -1
-            } else {
-              return 0
+            //创建准备图形
+            this.createTempShape();
+            //将当前控件以及composes按照zindex顺序排列并输出
+            let rendList = [];
+            if (this.model.composes?.length > 0) {
+              rendList = rendList.concat(this.model.composes);
             }
-          })
-          rendList.forEach(c => {
-            if (c == this.model) {
-              //获得 2d 上下文对象
-              let canvas = this.getCanvas();
-              let ctx = canvas.getContext('2d');
+            rendList.push(this.model)
+            rendList.sort((a, b) => {
 
-
-              if (!tempShape && this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING || this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING_TEXT_SELECTING) {
-                if (this.isEditoring) {
-                  // tempShape = { border: { type: 1, dash: [10, 10], width: 1.25, color: "#017fff" } }
-                } else if (this.stage.render?.editorShadowControl) {
-                  if (this.model.id + "_shadow" == this.stage.render.editorShadowControl.id) {
-                    return;
-                  }
-                }
-              } else if (!tempShape && this.stage?.selectedModels?.size == 1 && Array.from(this.stage?.selectedModels.values())[0].id == this.model.id) {
-                tempShape = { border: { type: 1, width: 1, color: "#017fff", dash: [10, 5] }, drawCompose: false }
-              }
-              let oldRat1 = this.ddRender.ratio
-              this.ddRender.oldRatio = oldRat1
-              //获取缩放比例
-              if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
-
-                let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
-                let rat1 = oldRat1 * scaleSize
-                //去掉当前被编辑控件的边框显示
-                this.ddRender.ratio = rat1
-              }
-              this.calScaleType3Size(tempShape);
-              ctx.save();
-              //拆分并计算pvss
-              this.calPVSS(tempShape)
-              //创建剪切区
-              this.createClip(tempShape);
-
-              //绘制填充
-              this.drawFill(tempShape);
-              //绘制文本
-              this.drawText(tempShape);
-              //根据pvss绘制边框
-              this.drawBorder(tempShape);
-
-              this.drawChildrenShapes(tempShape);
-              ctx.restore();
-              if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
-                this.ddRender.ratio = oldRat1
-                delete this.ddRender.oldRatio
-              }
-
-            } else {
-              //绘制组合控件的内容
-              if (tempShape && tempShape?.drawCompose == false) {
-                c.render.drawShape(null, composeRender + 1)
+              if ((a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+                return a.cIndex - b.cIndex
+              } else if ((a.cIndex || a.cIndex == 0) && !(b.cIndex || b.cIndex == 0)) {
+                return 1
+              } else if (!(a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+                return -1
               } else {
-                c.render.drawShape(tempShape, composeRender + 1)
+                return 0
+              }
+            })
+            for (let ri = 0; ri < rendList.length; ri++) {
+              let c = rendList[ri]
+              if (c == this.model) {
+                //获得 2d 上下文对象
+                let canvas = this.getCanvas();
+                let ctx = canvas.getContext('2d');
+
+
+                if (!tempShape && this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING || this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING_TEXT_SELECTING) {
+                  if (this.isEditoring) {
+                    // tempShape = { border: { type: 1, dash: [10, 10], width: 1.25, color: "#017fff" } }
+                  } else if (this.stage.render?.editorShadowControl) {
+                    if (this.model.id + "_shadow" == this.stage.render.editorShadowControl.id) {
+                      return;
+                    }
+                  }
+                } else if (!tempShape && this.stage?.selectedModels?.size == 1 && Array.from(this.stage?.selectedModels.values())[0].id == this.model.id) {
+                  tempShape = { border: { type: 1, width: 1, color: "#017fff", dash: [10, 5] }, drawCompose: false }
+                }
+                let oldRat1 = this.ddRender.ratio
+                this.ddRender.oldRatio = oldRat1
+                //获取缩放比例
+                if (this.tempCanvas) {
+
+                  let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
+                  let rat1 = oldRat1 * scaleSize
+                  //去掉当前被编辑控件的边框显示
+                  this.ddRender.ratio = rat1
+                }
+                this.calScaleType3Size(tempShape);
+                ctx.save();
+                //拆分并计算pvss
+                this.calPVSS(tempShape)
+                //创建剪切区
+                this.createClip(tempShape);
+
+                //绘制填充
+                this.drawFill(tempShape);
+                //绘制文本
+                this.drawText(tempShape);
+                //根据pvss绘制边框
+                this.drawBorder(tempShape);
+
+                this.drawChildrenShapes(tempShape);
+                ctx.restore();
+                if (this.tempCanvas) {
+                  this.ddRender.ratio = oldRat1
+                  delete this.ddRender.oldRatio
+                }
+
+              } else {
+                //绘制组合控件的内容
+                if (tempShape && tempShape?.drawCompose == false) {
+                  c.render.drawShape(null, composeRender + 1, null, zIndex + ri)
+                } else {
+                  c.render.drawShape(tempShape, composeRender + 1, null, zIndex + ri)
+                }
               }
             }
-          })
 
-          if (!this.isEditoring) {
-            this.refreshShape = false
+            if (!this.isEditoring) {
+              this.refreshShape = false
+            }
           }
+
+          //外部canvas
+          this.drawSelfToCanvas(composeRender)
+
+        }
+        if (!composeRender) {
+          DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_AFTER", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
         }
 
-        //外部canvas
-        this.drawSelfToCanvas(composeRender)
-
       }
-      if (!composeRender) {
-        DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_AFTER", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
+    }else{
+      let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", "VIEW-HIDDEN", { models: [this.model] }, this.ddRender.model, null)
+      if (rsState == 0 || rsState == 1) {
+        //将canvas移动至画布位置
+        this.removeViewerCanvas()
       }
-
     }
   }
 
-  createTempShape() {
-    if (DDeiUtil.DRAW_TEMP_CANVAS) {
-      //如果高清屏，rat一般大于2印此系数为1保持不变，如果非高清则扩大为2倍保持清晰
-      //获取缩放比例
-      let stageRatio = this.model.getStageRatio()
-      let oldRat1 = this.ddRender.ratio
-      let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
-      let rat1 = oldRat1 * scaleSize
-      //测试剪切图形
-      //转换为图片
-      if (!this.tempCanvas) {
-        this.tempCanvas = document.createElement('canvas');
-        this.tempCanvas.setAttribute("style", "left:-99999px;position:fixed;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
-        // this.tempCanvas.setAttribute("style", "left:0px;top:0px;position:fixed;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
-
-        // let editorId = DDeiUtil.getEditorId(this.ddRender?.model);
-        // let editorEle = document.getElementById(editorId);
-        // editorEle.appendChild(this.tempCanvas)
+  /**
+   * 绘制自身到最外层canvas
+   */
+  drawSelfToCanvas(composeRender) {
+    if (this.tempCanvas) {
+      let model = this.model
+      let stage = model.stage
+      let ruleWeight = 0
+      if (stage.render.tempRuleDisplay == 1 || stage.render.tempRuleDisplay == '1') {
+        ruleWeight = 15
       }
-      let tempCanvas = this.tempCanvas
-      let pvs = this.model.operatePVS ? this.model.operatePVS : this.model.pvs
+      let stageRatio = this.model.getStageRatio()
+  
+      //获取model的绝对位置
+      if (!this.tempCanvas.parentElement) {
+        //将canvas移动至画布位置
+        let viewerEle = this.model.layer.render.containerViewer
+        viewerEle.appendChild(this.tempCanvas)
+      }
 
-      let outRect = DDeiAbstractShape.pvsToOutRect(pvs, stageRatio)
+      this.tempCanvas.style.zIndex = this.tempZIndex
+      this.tempCanvas.style.left = (this.model.cpv.x * stageRatio + this.model.stage.wpv.x) - this.tempCanvas.offsetWidth / 2 - ruleWeight + "px"
+      this.tempCanvas.style.top = (this.model.cpv.y * stageRatio + this.model.stage.wpv.y) - this.tempCanvas.offsetHeight / 2 - ruleWeight + "px"
 
-      let weight = 5
-      outRect.x -= weight
-      outRect.x1 += weight
-      outRect.y -= weight
-      outRect.y1 += weight
-      outRect.width += 2 * weight
-      outRect.height += 2 * weight
-
-      tempCanvas.style.width = outRect.width
-      tempCanvas.style.height = outRect.height
-      tempCanvas.setAttribute("width", outRect.width * rat1)
-      tempCanvas.setAttribute("height", outRect.height * rat1)
-
-      //获得 2d 上下文对象
-      let tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
-      tempCanvas.tx = -outRect.x * rat1
-      tempCanvas.ty = -outRect.y * rat1
-      tempCanvas.outRect = outRect
-
-      tempCtx.translate(tempCanvas.tx, tempCanvas.ty)
+      for (let m = 0; m < this.model.midList?.length; m++) {
+        let key = this.model.midList[m];
+        let item = this.model.models.get(key);
+        item.render?.drawSelfToCanvas(composeRender)
+      }
     }
+
+
+
+
   }
 
   /**
    * 绘制子元素
    */
-  drawChildrenShapes(tempShape): void {
+  drawChildrenShapes(tempShape, inRect: boolean = true, hidden: boolean = false): void {
 
     if (this.model.models?.size > 0) {
       let canvas = this.getCanvas();

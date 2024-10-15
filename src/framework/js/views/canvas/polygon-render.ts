@@ -69,50 +69,49 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   }
 
   createTempShape() {
-    if (DDeiUtil.DRAW_TEMP_CANVAS) {
-      //如果高清屏，rat一般大于2印此系数为1保持不变，如果非高清则扩大为2倍保持清晰
-      //获取缩放比例
-      let stageRatio = this.model.getStageRatio()
-      let oldRat1 = this.ddRender.ratio
-      let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
-      let rat1 = oldRat1 * scaleSize
-      //测试剪切图形
-      //转换为图片
-      if (!this.tempCanvas) {
-        this.tempCanvas = document.createElement('canvas');
-        this.tempCanvas.setAttribute("style", "left:-99999px;position:fixed;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
-        // this.tempCanvas.setAttribute("style", "left:0px;top:0px;position:fixed;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
-
-        // let editorId = DDeiUtil.getEditorId(this.ddRender?.model);
-        // let editorEle = document.getElementById(editorId);
-        // editorEle.appendChild(this.tempCanvas)
-      }
-      let tempCanvas = this.tempCanvas
-      let pvs = this.model.operatePVS ? this.model.operatePVS : this.model.pvs
-
-      let outRect = DDeiAbstractShape.pvsToOutRect(pvs,stageRatio)
-
-      let weight = 5
-      outRect.x -= weight
-      outRect.x1 += weight
-      outRect.y -= weight
-      outRect.y1 += weight
-      outRect.width += 2 * weight
-      outRect.height += 2 * weight
-
-      tempCanvas.style.width = outRect.width
-      tempCanvas.style.height = outRect.height
-      tempCanvas.setAttribute("width", outRect.width * rat1)
-      tempCanvas.setAttribute("height", outRect.height * rat1)
-
-      //获得 2d 上下文对象
-      let tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
-      tempCanvas.tx = -outRect.x * rat1
-      tempCanvas.ty = -outRect.y * rat1
-      tempCanvas.outRect = outRect
-
-      tempCtx.translate(tempCanvas.tx, tempCanvas.ty)
+    //如果高清屏，rat一般大于2印此系数为1保持不变，如果非高清则扩大为2倍保持清晰
+    //获取缩放比例
+    let stageRatio = this.model.getStageRatio()
+    let oldRat1 = this.ddRender.ratio
+    let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
+    let rat1 = oldRat1 * scaleSize
+    //测试剪切图形
+    //转换为图片
+    if (!this.tempCanvas) {
+      this.tempCanvas = document.createElement('canvas');
+      this.tempCanvas.setAttribute("style", "pointer-events:none;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;scale:" + (1 / rat1));
+      // this.tempCanvas.setAttribute("style", "pointer-events:none;left:-99999px;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 ) + ");display:block;zoom:" + (1));
+      // this.tempCanvas.setAttribute("style", "left:0px;top:0px;position:fixed;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
+      // let editorId = DDeiUtil.getEditorId(this.ddRender?.model);
+      // let editorEle = document.getElementById(editorId);
+      // editorEle.appendChild(this.tempCanvas)
     }
+    let tempCanvas = this.tempCanvas
+    let pvs = this.model.operatePVS ? this.model.operatePVS : this.model.pvs
+
+    let outRect = DDeiAbstractShape.pvsToOutRect(pvs,stageRatio)
+
+    let weight = 5
+    outRect.x -= weight
+    outRect.x1 += weight
+    outRect.y -= weight
+    outRect.y1 += weight
+    outRect.width += 2 * weight
+    outRect.height += 2 * weight
+
+    tempCanvas.style.width = outRect.width
+    tempCanvas.style.height = outRect.height
+    tempCanvas.setAttribute("width", outRect.width * rat1)
+    tempCanvas.setAttribute("height", outRect.height * rat1)
+
+    //获得 2d 上下文对象
+    let tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
+    tempCanvas.tx = -outRect.x * rat1
+    tempCanvas.ty = -outRect.y * rat1
+    tempCanvas.outRect = outRect
+
+    tempCtx.translate(tempCanvas.tx, tempCanvas.ty)
+    
   }
 
 
@@ -121,139 +120,180 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   /**
    * 绘制图形
    */
-  drawShape(tempShape, composeRender: number = 0): void {
-    let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
-    if (composeRender || rsState == 0 || rsState == 1) {
-      let rsState1 = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", DDeiEnumOperateType.VIEW, { models: [this.model], tempShape: tempShape, composeRender: composeRender }, this.ddRender.model, null)
-      if (rsState1 == 0 || rsState1 == 1) {
-        if (!this.model.hidden && (this.refreshShape || this.isEditoring)) {
+  drawShape(tempShape, composeRender: number = 0,inRect:object|null = null,zIndex:number = 0): void {
 
-          //创建准备图形
-          this.createTempShape();
-          //将当前控件以及composes按照zindex顺序排列并输出
-          let rendList = [];
-          if (this.model.composes?.length > 0) {
-            rendList = rendList.concat(this.model.composes);
-          }
-          rendList.push(this.model)
-          rendList.sort((a, b) => {
+    if (!inRect || this.model.isInRect(inRect.x, inRect.y, inRect.x1, inRect.y1)) {
+      this.tempZIndex = zIndex
+      let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
+      if (composeRender || rsState == 0 || rsState == 1) {
+        let rsState1 = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", DDeiEnumOperateType.VIEW, { models: [this.model], tempShape: tempShape, composeRender: composeRender }, this.ddRender.model, null)
+        if (rsState1 == 0 || rsState1 == 1) {
+          if(!this.viewer){
+            let print = false
+            if (!DDeiUtil.isModelHidden(this.model) && (this.refreshShape || this.isEditoring)) {
+              print = true
+              //创建准备图形
+              this.createTempShape();
+              //将当前控件以及composes按照zindex顺序排列并输出
+              let rendList = [];
+              if (this.model.composes?.length > 0) {
+                rendList = rendList.concat(this.model.composes);
+              }
+              rendList.push(this.model)
+              rendList.sort((a, b) => {
 
-            if ((a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
-              return a.cIndex - b.cIndex
-            } else if ((a.cIndex || a.cIndex == 0) && !(b.cIndex || b.cIndex == 0)) {
-              return 1
-            } else if (!(a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
-              return -1
-            } else {
-              return 0
-            }
-          })
-          rendList.forEach(c => {
-            if (c == this.model) {
-              //获得 2d 上下文对象
-              let canvas = this.getCanvas();
-              let ctx = canvas.getContext('2d');
+                if ((a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+                  return a.cIndex - b.cIndex
+                } else if ((a.cIndex || a.cIndex == 0) && !(b.cIndex || b.cIndex == 0)) {
+                  return 1
+                } else if (!(a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+                  return -1
+                } else {
+                  return 0
+                }
+              })
+              for(let ri = 0;ri < rendList.length;ri++){
+                let c = rendList[ri]
+                if (c == this.model) {
+                  this.tempZIndex = this.tempZIndex + ri
+                  //获得 2d 上下文对象
+                  let canvas = this.getCanvas();
+                  let ctx = canvas.getContext('2d');
 
 
-              if (!tempShape && this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING || this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING_TEXT_SELECTING) {
-                if (this.isEditoring) {
-                  // tempShape = { border: { type: 1, dash: [10, 10], width: 1.25, color: "#017fff" } }
-                } else if (this.stage.render?.editorShadowControl) {
-                  if (this.model.id + "_shadow" == this.stage.render.editorShadowControl.id) {
-                    return;
+                  if (!tempShape && this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING || this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING_TEXT_SELECTING) {
+                    if (this.isEditoring) {
+                      // tempShape = { border: { type: 1, dash: [10, 10], width: 1.25, color: "#017fff" } }
+                    } else if (this.stage.render?.editorShadowControl) {
+                      if (this.model.id + "_shadow" == this.stage.render.editorShadowControl.id) {
+                        return;
+                      }
+                    }
+                  } else if (!tempShape && this.stage?.selectedModels?.size == 1 && Array.from(this.stage?.selectedModels.values())[0].id == this.model.id) {
+                    tempShape = { border: { type: 1, width: 1, color: "#017fff", dash: [10, 5] }, drawCompose:false}
+                  }
+                  let oldRat1 = this.ddRender.ratio
+                  this.ddRender.oldRatio = oldRat1
+                  //获取缩放比例
+                  if (this.tempCanvas) {
+
+                    let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
+                    let rat1 = oldRat1 * scaleSize
+                    //去掉当前被编辑控件的边框显示
+                    this.ddRender.ratio = rat1
+                  }
+                  this.calScaleType3Size(tempShape);
+                  ctx.save();
+                  //拆分并计算pvss
+                  this.calPVSS(tempShape)
+                  //创建剪切区
+                  
+                  this.createClip(tempShape);
+
+                  //绘制填充
+                  this.drawFill(tempShape);
+                  //绘制文本
+                  this.drawText(tempShape);
+                  //根据pvss绘制边框
+                  this.drawBorder(tempShape);
+                  ctx.restore();
+                  if (this.tempCanvas) {
+                    this.ddRender.ratio = oldRat1
+                    delete this.ddRender.oldRatio
+                  }
+
+                } else {
+                  //绘制组合控件的内容
+                  if (tempShape && tempShape?.drawCompose == false){
+                    c.render.drawShape(null, composeRender + 1, null, zIndex+ri)
+                  }else{
+                    c.render.drawShape(tempShape, composeRender + 1, null, zIndex+ri)
                   }
                 }
-              } else if (!tempShape && this.stage?.selectedModels?.size == 1 && Array.from(this.stage?.selectedModels.values())[0].id == this.model.id) {
-                tempShape = { border: { type: 1, width: 1, color: "#017fff", dash: [10, 5] }, drawCompose:false}
-              }
-              let oldRat1 = this.ddRender.ratio
-              this.ddRender.oldRatio = oldRat1
-              //获取缩放比例
-              if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
-
-                let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
-                let rat1 = oldRat1 * scaleSize
-                //去掉当前被编辑控件的边框显示
-                this.ddRender.ratio = rat1
-              }
-              this.calScaleType3Size(tempShape);
-              ctx.save();
-              //拆分并计算pvss
-              this.calPVSS(tempShape)
-              //创建剪切区
-              this.createClip(tempShape);
-
-              //绘制填充
-              this.drawFill(tempShape);
-              //绘制文本
-              this.drawText(tempShape);
-              //根据pvss绘制边框
-              this.drawBorder(tempShape);
-              ctx.restore();
-              if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
-                this.ddRender.ratio = oldRat1
-                delete this.ddRender.oldRatio
+                
               }
 
-            } else {
-              //绘制组合控件的内容
-              if (tempShape && tempShape?.drawCompose == false){
-                c.render.drawShape(null, composeRender + 1)
-              }else{
-                c.render.drawShape(tempShape, composeRender + 1)
+              if (!this.isEditoring) {
+                this.refreshShape = false
               }
             }
-          })
 
-          if (!this.isEditoring) {
-            this.refreshShape = false
+            //外部canvas
+            this.drawSelfToCanvas(composeRender, print)
+          }else{
+            if (!DDeiUtil.isModelHidden(this.model) && (this.refreshShape || this.isEditoring)) {
+              DDeiUtil.createRenderViewer(this.model, "VIEW", tempShape, composeRender)
+            }else{
+              DDeiUtil.createRenderViewer(this.model,"VIEW-HIDDEN")
+            }
           }
         }
-
-        //外部canvas
-        this.drawSelfToCanvas(composeRender)
+        if (!composeRender) {
+          DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_AFTER", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
+        }
 
       }
-      if (!composeRender) {
-        DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_AFTER", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
+    } else {
+     
+      let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", "VIEW-HIDDEN", { models: [this.model] }, this.ddRender.model, null)
+      if (rsState == 0 || rsState == 1) {
+        if (!this.viewer) {
+          this.removeViewerCanvas()
+        }else{
+          DDeiUtil.createRenderViewer(this.model, "VIEW-HIDDEN")
+        }
       }
-
+      
     }
   }
+
+  
 
   /**
    * 绘制自身到最外层canvas
    */
-  drawSelfToCanvas(composeRender) {
-    if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
-      let canvas = this.getRenderCanvas(composeRender)
-      let ctx = canvas.getContext('2d');
-      let stageRatio = this.model.getStageRatio()
-      let oldRat1 = this.ddRender.ratio;
-      let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
-      let rat1 = oldRat1 * scaleSize
-      let outRect = this.tempCanvas.outRect
-      if (composeRender > 0) {
-        oldRat1 = rat1
+  drawSelfToCanvas(composeRender, print) {
+    if (this.viewer) {
+      if (!DDeiUtil.isModelHidden(this.model) && this.refreshShape) {
+        DDeiUtil.createRenderViewer(this.model, "VIEW", null, composeRender)
+      } else {
+        DDeiUtil.createRenderViewer(this.model, "VIEW-HIDDEN")
       }
-      ctx.save();
-      if (this.model.mirrorX || this.model.mirrorY){
-        let ratx = this.model.cpv.x * oldRat1 * stageRatio
-        let raty = this.model.cpv.y * oldRat1 * stageRatio
-        ctx.translate(ratx, raty)
-        if(this.model.mirrorX){
-          ctx.scale(-1, 1)
-        } 
-        if (this.model.mirrorY){
-          ctx.scale(1, -1)
+    }else if (this.tempCanvas) {
+      let model = this.model
+      if (!DDeiUtil.isModelHidden(this.model)) {
+        let stage = model.stage
+        let ruleWeight = 0
+        if (stage.render.tempRuleDisplay == 1 || stage.render.tempRuleDisplay == '1') {
+          ruleWeight = 15
         }
-        ctx.translate(-ratx, -raty)
+        let stageRatio = this.model.getStageRatio()
+        //获取model的绝对位置
+        if (!this.tempCanvas.parentElement) {
+          let viewerEle = this.model.layer.render.containerViewer
+          viewerEle.appendChild(this.tempCanvas)
+        }
+
+        this.tempCanvas.style.zIndex = this.tempZIndex
+        this.tempCanvas.style.left = (this.model.cpv.x * stageRatio + this.model.stage.wpv.x) - this.tempCanvas.offsetWidth / 2 - ruleWeight + "px"
+
+        this.tempCanvas.style.top = (this.model.cpv.y * stageRatio + this.model.stage.wpv.y) - this.tempCanvas.offsetHeight / 2 - ruleWeight + "px"
+        if (!print) {
+          this.model.composes?.forEach(comp => {
+            comp.render.drawSelfToCanvas(composeRender + 1)
+          })
+        }
+      }else{
+        this.removeViewerCanvas()
       }
-      ctx.drawImage(this.tempCanvas, 0, 0, outRect.width * rat1, outRect.height * rat1, (this.model.cpv.x * stageRatio - outRect.width / 2) * oldRat1, (this.model.cpv.y * stageRatio - outRect.height / 2) * oldRat1, outRect.width * oldRat1, outRect.height * oldRat1)
-      ctx.restore()
     }
+    
+
+
+
 
   }
+
 
   getRenderCanvas(composeRender) {
     if (composeRender) {
@@ -266,7 +306,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   }
 
   getCanvas() {
-    if (DDeiUtil.DRAW_TEMP_CANVAS) {
+    if (this.tempCanvas) {
       return this.tempCanvas;
     } else {
       return this.getRenderCanvas()
@@ -327,70 +367,125 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
    */
   getBorderPVS(pvs, tempShape) {
     let stageRatio = this.model.getStageRatio()
-    let rat1 = this.ddRender.ratio * stageRatio;
     let round = tempShape?.border?.round ? tempShape?.border?.round : this.getCachedValue("border.round");
     let type = tempShape?.border?.type || tempShape?.border?.type == 0 ? tempShape?.border?.type : this.getCachedValue("border.type");
-    let width = tempShape?.border?.width ? tempShape?.border?.width : this.getCachedValue("border.width");
-
-    if (!type) {
-      width = 0
-    }
     if (!round) {
       round = 0
     }
-    round = round * stageRatio
-    if (pvs[0].rd || pvs[0].rd == 0) {
-      round = pvs[0].rd * stageRatio
-    }
-    //TODO 
-    round *= rat1
+    
+   
     let borderPVS = []
-    let toZeroMatrix = new Matrix3(
-      1, 0, -pvs[0].x,
-      0, 1, -pvs[0].y,
-      0, 0, 1);
-    //归到原点，求夹角
-    let p1 = new Vector3(pvs[1].x, pvs[1].y, 1)
-    p1.applyMatrix3(toZeroMatrix)
-    let lineAngle = -new Vector3(1, 0, 0).angleTo(p1) * 180 / Math.PI
-    let angle = 0;
-    if (p1.x >= 0 && p1.y >= 0) {
-      angle = lineAngle * DDeiConfig.ROTATE_UNIT
-    } else if (p1.x <= 0 && p1.y >= 0) {
-      angle = lineAngle * DDeiConfig.ROTATE_UNIT
-    } else if (p1.x <= 0 && p1.y <= 0) {
-      angle = - lineAngle * DDeiConfig.ROTATE_UNIT
-    } else if (p1.x >= 0 && p1.y <= 0) {
-      angle = - lineAngle * DDeiConfig.ROTATE_UNIT
+
+
+    for (let s = 0; s < pvs.length; s++) {
+      borderPVS[s] = clone(pvs[s]);
     }
-    let rotateMatrix = new Matrix3(
-      Math.cos(angle), Math.sin(angle), 0,
-      -Math.sin(angle), Math.cos(angle), 0,
-      0, 0, 1);
-    let roundPVS = new Vector3(round, 0, 1)
-    roundPVS.applyMatrix3(rotateMatrix)
-    borderPVS[0] = clone(pvs[0]);//new Vector3(pvs[0].x + roundPVS.x, pvs[0].y + roundPVS.y, 1);
-    borderPVS[0].x += roundPVS.x
-    borderPVS[0].y += roundPVS.y
+
+    //如果有round时，根据round所在路径，对整个pvs进行重新构建
+    let hasRound = false
+    for (let i = 1; i < borderPVS.length+1;i++){
+      
+      let rd = round;
+      let s = i
+      let e = s+1;
+      let upI = s - 1
+      if (s == borderPVS.length-1){
+        e = 0;
+      } else if (s == borderPVS.length){
+        s = 0
+        e = 1;
+        upI = borderPVS.length - 1
+      }
+      if (borderPVS[s].rd || borderPVS[s].rd == 0) {
+        rd = borderPVS[s].rd
+      }
+
+      if (rd && (borderPVS[s].stroke || borderPVS[s].fill)){
+        
+        hasRound = true
+        //两个path的夹角的二分之一
+        let usx = borderPVS[upI].x
+        let usy = borderPVS[upI].y
+        let sx = borderPVS[s].x
+        let sy = borderPVS[s].y
+        let ex = borderPVS[e].x
+        let ey = borderPVS[e].y
+        
+        let lineRadius = DDeiUtil.getLinesAngle(usx, usy, sx, sy, sx, sy, ex, ey, true) / 2;
+        let lineBCDistance = DDeiUtil.getPointDistance(sx, sy, ex, ey) 
+        let lineABDistance = DDeiUtil.getPointDistance(usx, usy, sx, sy)
+
+        //求当前夹角下的最大半径,只取最大maxR
+        let tanRadis = Math.tan(lineRadius);
+
+        let maxR = Math.abs(tanRadis * lineBCDistance)
+        rd = Math.min(maxR, rd, lineBCDistance / 2, lineABDistance / 2)
+        rd *= stageRatio
+        //计算当前rd在B上的落点BC'的长度
+        let lineBC1Distance = Math.abs(rd / tanRadis)
+        let distLength = Math.min(lineBCDistance / 2, lineABDistance / 2, lineBC1Distance)
+        //计算C’的坐标
+        
+        let bc1pv = DDeiUtil.getPathPoint(sx, sy, ex, ey, 1, distLength, -1, lineBCDistance)
+        
+        //记录rd与落点长度
+        borderPVS[s].roundDistLength = distLength
+        borderPVS[s].roundVal = rd
+        borderPVS[s].roundPV = bc1pv;
+        //两条相邻边的长度，方便后续判断
+        // borderPVS[s].roundABLen = lineABDistance
+        // borderPVS[s].roundBCLen = lineBCDistance
+      }
+    }
+   
+    
+
+    // let toZeroMatrix = new Matrix3(
+    //   1, 0, -pvs[0].x,
+    //   0, 1, -pvs[0].y,
+    //   0, 0, 1);
+    // //归到原点，求夹角
+    // let p1 = new Vector3(pvs[1].x, pvs[1].y, 1)
+    // p1.applyMatrix3(toZeroMatrix)
+    // let lineAngle = -new Vector3(1, 0, 0).angleTo(p1) * 180 / Math.PI
+    // let angle = 0;
+    // if (p1.x >= 0 && p1.y >= 0) {
+    //   angle = lineAngle * DDeiConfig.ROTATE_UNIT
+    // } else if (p1.x <= 0 && p1.y >= 0) {
+    //   angle = lineAngle * DDeiConfig.ROTATE_UNIT
+    // } else if (p1.x <= 0 && p1.y <= 0) {
+    //   angle = - lineAngle * DDeiConfig.ROTATE_UNIT
+    // } else if (p1.x >= 0 && p1.y <= 0) {
+    //   angle = - lineAngle * DDeiConfig.ROTATE_UNIT
+    // }
+    // let rotateMatrix = new Matrix3(
+    //   Math.cos(angle), Math.sin(angle), 0,
+    //   -Math.sin(angle), Math.cos(angle), 0,
+    //   0, 0, 1);
+    // let roundPVS = new Vector3(round, 0, 1)
+    // roundPVS.applyMatrix3(rotateMatrix)
+    // borderPVS[0] = clone(pvs[0]);//new Vector3(pvs[0].x + roundPVS.x, pvs[0].y + roundPVS.y, 1);
+    // borderPVS[0].x += roundPVS.x
+    // borderPVS[0].y += roundPVS.y
 
     //四个角的点，考虑边框的位置也要响应变小
-    let lastType = 0
-    for (let i = 1; i < pvs.length; i++) {
-      borderPVS[i] = clone(pvs[i])
-      if (borderPVS[i].type) {
-        lastType = borderPVS[i].type
-      }
-    }
-    if (lastType != 2 && lastType != 5) {
-      borderPVS[pvs.length] = clone(pvs[0])
-      if (borderPVS[borderPVS.length - 2].end) {
-        delete borderPVS[borderPVS.length - 2].end
-        borderPVS[borderPVS.length - 1].end = 1
-      }
-      if (borderPVS[borderPVS.length - 1].begin) {
-        delete borderPVS[borderPVS.length - 1].begin
-      }
-    }
+    // let lastType = 0
+    // for (let i = 1; i < pvs.length; i++) {
+    //   borderPVS[i] = clone(pvs[i])
+    //   if (borderPVS[i].type) {
+    //     lastType = borderPVS[i].type
+    //   }
+    // }
+    // if (lastType != 2 && lastType != 5) {
+    //   borderPVS[pvs.length] = clone(pvs[0])
+    //   if (borderPVS[borderPVS.length - 2].end) {
+    //     delete borderPVS[borderPVS.length - 2].end
+    //     borderPVS[borderPVS.length - 1].end = 1
+    //   }
+    //   if (borderPVS[borderPVS.length - 1].begin) {
+    //     delete borderPVS[borderPVS.length - 1].begin
+    //   }
+    // }
     return borderPVS
   }
   /**
@@ -431,6 +526,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         borderPVSS.push(pvs)
       }
     });
+    
     this.pvss = pvss
     this.borderPVSS = borderPVSS
   }
@@ -466,14 +562,11 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     if (!round) {
       round = 0
     }
-    round = round * stageRatio
-
-    //偏移量，因为线是中线对齐，实际坐标应该加上偏移量
-    let lineOffset = 0//1 * ratio / 2;
-
+    
     if (!pvs || pvs?.length < 1) {
       return;
     }
+    let rest = false
     if (drawLine) {
       ctx.save();
       //绘制线条
@@ -498,7 +591,11 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       if (pvs[0].begin) {
         ctx.beginPath();
       }
-      ctx.moveTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset)
+      if (!pvs[0].roundPV){
+        ctx.moveTo(pvs[0].x * rat1 , pvs[0].y * rat1)
+      }else{
+        ctx.moveTo(pvs[0].roundPV.x * rat1, pvs[0].roundPV.y * rat1)
+      }
 
       for (let i = 1; i < len; i++) {
         let pv = pvs[i];
@@ -513,10 +610,10 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           ctx.beginPath()
         }
         if (pv.move) {
-          ctx.moveTo(pv.x * rat1 + lineOffset, pv.y * rat1 + lineOffset)
+          ctx.moveTo(pv.x * rat1, pv.y * rat1)
         }
         if (pv.type == 3 || (drawLine && !pv.stroke)) {
-          ctx.moveTo(pv.x * rat1 + lineOffset, pv.y * rat1 + lineOffset)
+          ctx.moveTo(pv.x * rat1, pv.y * rat1)
         } else if (pv.type == 2 || pv.type == 4) {
           let rotate = this.model.rotate;
           if (!rotate) {
@@ -533,7 +630,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
             hr = pvs[i + 2].r
             i = i + 2
           }
-          ctx.ellipse((this.model.cpv.x + dx) * rat1 + lineOffset, (this.model.cpv.y + dy) * rat1 + lineOffset, wr * rat1 * scaleX, hr * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, upPV.rad, pv.rad, !pv.direct)
+          ctx.ellipse((this.model.cpv.x + dx) * rat1, (this.model.cpv.y + dy) * rat1, wr * rat1 * scaleX, hr * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, upPV.rad, pv.rad, !pv.direct)
         }
         //曲线
         else if (pv.type == 5) {
@@ -541,19 +638,39 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           let i2 = i + 2;
           let i3 = i + 3;
           i = i + 3
-          ctx.bezierCurveTo(pvs[i1].x * rat1 + lineOffset, pvs[i1].y * rat1 + lineOffset, pvs[i2].x * rat1 + lineOffset, pvs[i2].y * rat1 + lineOffset, pvs[i3].x * rat1 + lineOffset, pvs[i3].y * rat1 + lineOffset);
+          ctx.bezierCurveTo(pvs[i1].x * rat1, pvs[i1].y * rat1, pvs[i2].x * rat1, pvs[i2].y * rat1, pvs[i3].x * rat1, pvs[i3].y * rat1);
         }
         else {
-          let rd = round * rat1
-          if (pvs[s].rd || pvs[s].rd == 0) {
-            rd = pvs[s].rd * rat1
-          }
-          ctx.arcTo(pvs[s].x * rat1 + lineOffset, pvs[s].y * rat1 + lineOffset, pvs[e].x * rat1 + lineOffset, pvs[e].y * rat1 + lineOffset, rd);
+          
+          let sx = pvs[s].x * rat1
+          let sy = pvs[s].y * rat1
+          if(!pvs[s].roundVal){
+            
+            let ex = pvs[e].x * rat1
+            let ey = pvs[e].y * rat1
+            ctx.lineTo(sx, sy, ex, ey);
+          }else{
+            
+            let rd = pvs[s].roundVal
+            let ex = pvs[s].roundPV.x * rat1
+            let ey = pvs[s].roundPV.y * rat1
+            ctx.arcTo(sx, sy, ex, ey, rd);
+          }  
+        }
+        if(i == len-1 && pvs[0].roundVal){
+          let rd = pvs[0].roundVal
+          let ex = pvs[0].roundPV.x * rat1
+          let ey = pvs[0].roundPV.y * rat1
+          ctx.arcTo(pvs[0].x * rat1, pvs[0].y*rat1, ex, ey, rd);
         }
         if (pv.end) {
           ctx.closePath()
         }
-        if (drawLine && pv.stroke) {
+        if ((drawLine || pv.forceStroke) && pv.stroke) {
+          if (pv.forceStroke){
+            ctx.strokeStyle = DDeiUtil.getColor(color);
+          }
+          rest = true
           ctx.stroke()
         }
       }
@@ -571,7 +688,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       let scaleY = Math.abs(bpv.y / 100)
       let x = pv.cx || pv.cx == 0 ? this.model.cpv.x + pv.cx : this.model.cpv.x
       let y = pv.cy || pv.cy == 0 ? this.model.cpv.y + pv.cy : this.model.cpv.y
-      ctx.ellipse(x * rat1 + lineOffset, y * rat1 + lineOffset, pv.r * rat1 * scaleX, pv.r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, DDeiConfig.ROTATE_UNIT * 0, Math.PI * 2)
+      ctx.ellipse(x * rat1, y * rat1 , pv.r * rat1 * scaleX, pv.r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, DDeiConfig.ROTATE_UNIT * 0, Math.PI * 2)
       if (pv.end) {
         ctx.closePath()
       }
@@ -583,8 +700,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         ctx.beginPath();
       }
       if (pvs[1].type == 1) {
-        ctx.moveTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset)
-        ctx.lineTo(pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset)
+        ctx.moveTo(pvs[0].x * rat1, pvs[0].y * rat1)
+        ctx.lineTo(pvs[1].x * rat1, pvs[1].y * rat1)
       } else {
         let rotate = this.model.rotate;
         if (!rotate) {
@@ -593,10 +710,10 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         let bpv = DDeiUtil.pointsToZero([this.model.bpv], this.model.cpv, rotate)[0]
         let scaleX = Math.abs(bpv.x / 100)
         let scaleY = Math.abs(bpv.y / 100)
-        ctx.moveTo(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset)
-        ctx.lineTo(pvs[0].x * rat1 + lineOffset, pvs[0].y * rat1 + lineOffset)
-        ctx.ellipse(this.model.cpv.x * rat1 + lineOffset, this.model.cpv.y * rat1 + lineOffset, pvs[0].r * rat1 * scaleX, pvs[0].r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, pvs[0].rad, pvs[1].rad, !pvs[1].direct)
-        ctx.lineTo(pvs[1].x * rat1 + lineOffset, pvs[1].y * rat1 + lineOffset)
+        ctx.moveTo(this.model.cpv.x * rat1, this.model.cpv.y * rat1)
+        ctx.lineTo(pvs[0].x * rat1, pvs[0].y * rat1)
+        ctx.ellipse(this.model.cpv.x * rat1, this.model.cpv.y * rat1, pvs[0].r * rat1 * scaleX, pvs[0].r * rat1 * scaleY, DDeiConfig.ROTATE_UNIT * rotate, pvs[0].rad, pvs[1].rad, !pvs[1].direct)
+        ctx.lineTo(pvs[1].x * rat1, pvs[1].y * rat1)
       }
 
       if (pvs[1].end) {
@@ -606,7 +723,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         ctx.stroke()
       }
     }
-    if (drawLine) {
+    if (drawLine || rest) {
       ctx.restore();
     }
 
@@ -622,13 +739,13 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let opacity = tempShape?.border?.opacity || tempShape?.border?.opacity == 0 ? tempShape?.border?.opacity : this.getCachedValue("border.opacity");
     let width = tempShape?.border?.width || tempShape?.border?.width == 0 ? tempShape?.border?.width : this.getCachedValue("border.width");
     let drawLine = ((type == 1 || type == '1') && (!opacity || opacity > 0) && width > 0)
-    if (drawLine) {
-      for (let i = 0; i < this.borderPVSS?.length; i++) {
-        let pvs = this.borderPVSS[i];
-        //创建path
-        this.createPath(pvs, tempShape, true)
-      }
+    // if (drawLine) {
+    for (let i = 0; i < this.borderPVSS?.length; i++) {
+      let pvs = this.borderPVSS[i];
+      //创建path
+      this.createPath(pvs, tempShape, true)
     }
+    // }
 
 
   }
@@ -662,7 +779,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       this.createTempShape()
       let oldRat1 = this.ddRender.ratio
       //获取缩放比例
-      if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
+      if (this.tempCanvas) {
 
         let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
         let rat1 = oldRat1 * scaleSize
@@ -679,7 +796,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           c.render.drawSelfToCanvas(1);
         }
       })
-      if (DDeiUtil.DRAW_TEMP_CANVAS && this.tempCanvas) {
+      if (this.tempCanvas) {
         this.ddRender.ratio = oldRat1
         delete this.ddRender.oldRatio
       }
@@ -752,8 +869,24 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let haveFilled = false;
     for (let i = 0; i < this.borderPVSS.length; i++) {
       if (this.borderPVSS[i][0].fill == 1) {
+        let hasOpacity = false
         haveFilled = true;
         let pvs = this.borderPVSS[i];
+        if(pvs[0].fillColor){
+          if (pvs[0].fillColor == "none") {
+            ctx.save();
+            hasOpacity = true
+            ctx.globalCompositeOperation = "destination-out"
+            fillColor = DDeiUtil.getColor("black");
+          }else if (pvs[0].fillColor == "border") {
+            fillColor = tempShape?.border?.color ? tempShape?.border?.color : this.getCachedValue("border.color")
+            if (!fillColor) {
+              fillColor = DDeiUtil.getStyleValue("canvas-control-border", this.ddRender.model);
+            }
+          }else{
+            fillColor = DDeiUtil.getColor(pvs[0].fillColor);
+          }
+        }
         //创建path
         this.createPath(pvs, tempShape)
         //纯色填充
@@ -783,6 +916,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         //图片填充
         else if (fillType == 2) {
           this.drawImage()
+        }
+        if(hasOpacity){
+          ctx.restore()
         }
       }
     }
@@ -1488,6 +1624,10 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let fillRect = DDeiAbstractShape.pvsToOutRect(textArea)
     if (scale == 3) {
       let lockExtWidth = this.getCachedValue("textStyle.lockWidth");
+      let paddingWeight = this.getCachedValue("textStyle.paddingWeight");
+      if (!paddingWeight){
+        paddingWeight = 0
+      }
       //获得 2d 上下文对象
       let canvas = this.getCanvas();
       let ctx = canvas.getContext('2d');
@@ -1656,7 +1796,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       //比较大小，如果超出文本区域则按照超出区域的实际大小进行扩展
       
       let textAreaOutRect = fillRect
-      let nowOutRect = { width: textAreaWidth / ratio, height: textAreaHeight / ratio }
+      let nowOutRect = { width: textAreaWidth / ratio + paddingWeight * 2, height: textAreaHeight / ratio + paddingWeight * 2 }
       if (nowOutRect.width > 40 && nowOutRect.height > fontSize) {
         let scaleX = nowOutRect.width / textAreaOutRect.width
         let scaleY = nowOutRect.height / textAreaOutRect.height
