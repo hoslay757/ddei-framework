@@ -436,6 +436,28 @@ class DDeiUtil {
     }
   }
 
+  static sortRendList(model){
+    //将当前控件以及composes按照zindex顺序排列并输出
+    let rendList = [];
+    if (model.composes?.length > 0) {
+      rendList = rendList.concat(model.composes);
+    }
+    rendList.push(model)
+    rendList.sort((a, b) => {
+
+      if ((a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+        return a.cIndex - b.cIndex
+      } else if ((a.cIndex || a.cIndex == 0) && !(b.cIndex || b.cIndex == 0)) {
+        return 1
+      } else if (!(a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+        return -1
+      } else {
+        return 0
+      }
+    })
+    return rendList
+  }
+
   /**
    * 设置样式属性，自动创建不存在的层级
    * @param model 模型

@@ -759,23 +759,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let rsState1 = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", DDeiEnumOperateType.VIEW, { models: [this.model], tempShape: tempShape, composeRender: drawCompose }, this.ddRender.model, null)
     if (rsState1 == 0 || rsState1 == 1) {
       //将当前控件以及composes按照zindex顺序排列并输出
-      let rendList = [];
-      if (this.model.composes?.length > 0) {
-        rendList = rendList.concat(this.model.composes);
-      }
-      rendList.push(this.model)
-      rendList.sort((a, b) => {
-
-        if ((a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
-          return a.cIndex - b.cIndex
-        } else if ((a.cIndex || a.cIndex == 0) && !(b.cIndex || b.cIndex == 0)) {
-          return 1
-        } else if (!(a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
-          return -1
-        } else {
-          return 0
-        }
-      })
+      let rendList = DDeiUtil.sortRendList(this.model)
+      
       this.createTempShape()
       let oldRat1 = this.ddRender.ratio
       //获取缩放比例

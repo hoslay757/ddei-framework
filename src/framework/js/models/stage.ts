@@ -1034,14 +1034,10 @@ class DDeiStage {
       //获得 2d 上下文对象
       let ctx = canvas.getContext('2d');
       //获取缩放比例
-      let oldRat1 = ddInstance.render.ratio
+      let rat1 = ddInstance.render.ratio
 
       //如果高清屏，rat一般大于2印此系数为1保持不变，如果非高清则扩大为2倍保持清晰
-      let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
-      let rat1 = oldRat1 * scaleSize
-      let rat2 = oldRat1 / window.remRatio
-      ddInstance.render.ratio = rat1
-      ddInstance.render.tempCanvas = canvas;
+
       let allLayers = false
       if (!models || models.length < 0){
         models = this.getLayerModels(null,100);
@@ -1049,30 +1045,23 @@ class DDeiStage {
       }
       //所选择区域的最大范围
       let outRect = DDeiAbstractShape.getOutRectByPV(models);
+      
       let stageRatio = this.getStageRatio()
       outRect.x *= stageRatio
       outRect.y *= stageRatio
       outRect.width *= stageRatio
       outRect.height *= stageRatio
-      let lineOffset = models[0].render.getCachedValue("border.width");
-      let addWidth = 0;
-      if (lineOffset) {
-        addWidth = lineOffset * rat1 * stageRatio
-        if (models.length > 1) {
-          addWidth = lineOffset * 2 * stageRatio
-        }
-      }
+      let lineOffset = 5 * stageRatio
+      let addWidth = 2 * lineOffset
       let editorId = DDeiUtil.getEditorId(ddInstance);
       let containerDiv = document.getElementById(editorId + "_ddei_cut_img_div")
 
-      canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat2) + ");display:block;zoom:" + (1 / rat2));
-      let cW = outRect.width * oldRat1 + addWidth
-      let cH = outRect.height * oldRat1 + addWidth
+      canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
+      let cW = (outRect.width + addWidth) * rat1
+      let cH = (outRect.height + addWidth) * rat1
       canvas.setAttribute("width", cW)
       canvas.setAttribute("height", cH)
-      ctx.scale(1 / scaleSize, 1 / scaleSize)
-      ctx.translate(-outRect.x * rat1, -outRect.y * rat1)
-
+      ctx.translate((-outRect.x + lineOffset - 5 * stageRatio) * rat1, (-outRect.y + lineOffset - 5 * stageRatio)  * rat1)
       containerDiv.appendChild(canvas)
 
       if (allLayers) {
@@ -1081,32 +1070,61 @@ class DDeiStage {
           ly.midList.forEach(mid => {
             let model = ly.models.get(mid)
             model?.render?.clearCachedValue()
-            model?.render?.drawShape({});
+            model?.render?.drawShape();
+            if (model.baseModelType == 'DDeiLine') {
+              let lineRect = DDeiAbstractShape.getOutRectByPV([model]);
+              ctx.drawImage(model.render.tempCanvas, (lineRect.x - 5) * stageRatio * rat1, (lineRect.y - 5) * stageRatio * rat1)
+            } else if (!model.render.viewer) {
+              ctx.drawImage(model.render.tempCanvas, model.x * stageRatio * rat1, model.y * stageRatio * rat1)
+            }
           })
         });
       } else {
         models[0].pModel.midList.forEach(mid => {
           models.forEach(item => {
             if (item.id == mid) {
-              item.render.clearCachedValue()
-              item.render.drawShape({});
+              let rendList = DDeiUtil.sortRendList(item)
+                rendList.forEach(rendItem=>{
+                  rendItem.render.clearCachedValue()
+                  rendItem.render.drawShape({});
+                  if (rendItem.baseModelType == 'DDeiLine') {
+                    let lineRect = DDeiAbstractShape.getOutRectByPV([rendItem]);
+                    ctx.drawImage(rendItem.render.tempCanvas, (lineRect.x - 5) * stageRatio * rat1, (lineRect.y - 5) * stageRatio * rat1)
+                  } else if (!rendItem.render.viewer) {
+                    ctx.drawImage(rendItem.render.tempCanvas, rendItem.x * stageRatio * rat1, rendItem.y * stageRatio * rat1)
+                  }
+
+                  this.drawComposeImageToCanvas(rendItem, ctx, stageRatio, rat1)
+              })
+              
             }
           })
         })
       }
 
 
-      ddInstance.render.ratio = oldRat1
       let dataURL = canvas.toDataURL()
       
 
       containerDiv.removeChild(canvas)
-      //清空临时canvas
-      ddInstance.render.tempCanvas = null;
 
       return dataURL;
     }
     return null;
+  }
+
+  private drawComposeImageToCanvas(model,ctx,stageRatio,rat1){
+    model.composes?.forEach(comp => {
+      comp.render.clearCachedValue()
+      comp.render.drawShape();
+      if (comp.baseModelType == 'DDeiLine') {
+        let lineRect = DDeiAbstractShape.getOutRectByPV([comp]);
+        ctx.drawImage(comp.render.tempCanvas, (lineRect.x - 5) * stageRatio * rat1, (lineRect.y - 5) * stageRatio * rat1)
+      } else if (!comp.render.viewer) {
+        ctx.drawImage(comp.render.tempCanvas, comp.x * stageRatio * rat1, comp.y * stageRatio * rat1)
+      }
+      this.drawComposeImageToCanvas(comp,ctx,stageRatio,rat1)
+    })
   }
 
 }

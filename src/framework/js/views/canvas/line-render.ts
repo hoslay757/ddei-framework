@@ -116,23 +116,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
               //创建准备图形
               this.createTempShape();
               //将当前控件以及composes按照zindex顺序排列并输出
-              let rendList = [];
-              if (this.model.composes?.length > 0) {
-                rendList = rendList.concat(this.model.composes);
-              }
-              rendList.push(this.model)
-              rendList.sort((a, b) => {
-
-                if ((a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
-                  return a.cIndex - b.cIndex
-                } else if ((a.cIndex || a.cIndex == 0) && !(b.cIndex || b.cIndex == 0)) {
-                  return 1
-                } else if (!(a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
-                  return -1
-                } else {
-                  return 0
-                }
-              })
+              let rendList = DDeiUtil.sortRendList(this.model)
               for(let ri = 0;ri < rendList.length;ri++){
                 let c = rendList[ri];
                 if (c == this.model) {
