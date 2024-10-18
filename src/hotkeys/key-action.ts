@@ -161,10 +161,12 @@ class DDeiKeyAction extends DDeiPluginBase {
               }
             }
           } else {
-            item.action.action(evt, ddInstance, editor,item);
-            matched = true;
-            if (item.break == true || item.break == 1) {
-              break;
+            let state = item.action.action(evt, ddInstance, editor,item);
+            if (state == undefined || state === true) {
+              matched = true;
+              if (item.break == true || item.break == 1) {
+                break;
+              }
             }
             
           }
@@ -185,7 +187,7 @@ class DDeiKeyAction extends DDeiPluginBase {
    * 键行为
    * @param evt 事件
    */
-  action(evt: Event, ddInstance: DDei): void {
+  action(evt: Event, ddInstance: DDei): void | boolean {
 
   }
 
