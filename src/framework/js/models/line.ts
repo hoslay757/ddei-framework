@@ -975,7 +975,7 @@ class DDeiLine extends DDeiAbstractShape {
       distLinks?.forEach(dl => {
         //删除源点
         if (dl?.sm && dl?.smpath) {
-          eval("delete dl.sm." + dl.smpath)
+          DDeiUtil.deletePropertyByPath(dl.sm, dl.smpath)
           dl.sm.transVectors(new Matrix3())
           dl.sm.updateLinkModels();
           dl.sm.render?.enableRefreshShape()

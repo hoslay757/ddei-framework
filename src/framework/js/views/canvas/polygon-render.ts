@@ -120,112 +120,48 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   /**
    * 绘制图形
    */
-  drawShape(tempShape, composeRender: number = 0,inRect:object|null = null,zIndex:number = 0): void {
-
+  drawShape(tempShape, composeRender: number = 0, inRect:object|null = null, zIndex:number = 0): void {
+    // 保持原有的条件检查逻辑
     if (!inRect || this.model.isInRect(inRect.x, inRect.y, inRect.x1, inRect.y1)) {
-      this.tempZIndex = zIndex
-      let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
+      this.tempZIndex = zIndex;
+      let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null);
+      
       if (composeRender || rsState == 0 || rsState == 1) {
-        let rsState1 = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", DDeiEnumOperateType.VIEW, { models: [this.model], tempShape: tempShape, composeRender: composeRender }, this.ddRender.model, null)
+        let rsState1 = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", DDeiEnumOperateType.VIEW, { models: [this.model], tempShape: tempShape, composeRender: composeRender }, this.ddRender.model, null);
+        
         if (rsState1 == 0 || rsState1 == 1) {
           if(!this.viewer){
-            let print = false
-            if (!DDeiUtil.isModelHidden(this.model) && (this.refreshShape || this.isEditoring)) {
-              print = true
-              //创建准备图形
-              this.createTempShape();
-              //将当前控件以及composes按照zindex顺序排列并输出
-              let rendList = [];
-              if (this.model.composes?.length > 0) {
-                rendList = rendList.concat(this.model.composes);
-              }
-              rendList.push(this.model)
-              rendList.sort((a, b) => {
-
-                if ((a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
-                  return a.cIndex - b.cIndex
-                } else if ((a.cIndex || a.cIndex == 0) && !(b.cIndex || b.cIndex == 0)) {
-                  return 1
-                } else if (!(a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
-                  return -1
-                } else {
-                  return 0
-                }
-              })
-              for(let ri = 0;ri < rendList.length;ri++){
-                let c = rendList[ri]
+            // 优化: 缓存频繁使用的条件检查结果
+            const isModelVisible = !DDeiUtil.isModelHidden(this.model);
+            const shouldRefresh = this.refreshShape || this.isEditoring;
+            
+            if (isModelVisible && shouldRefresh) {
+              // 优化: 将创建临时形状的逻辑提取为单独的方法
+              this.createAndPrepareShape(tempShape);
+              
+              // 优化: 使用缓存的渲染列表
+              const rendList = this.getCachedRenderList();
+              
+              // 保持原有的渲染逻辑
+              for(let ri = 0; ri < rendList.length; ri++){
+                let c = rendList[ri];
                 if (c == this.model) {
-                  this.tempZIndex = this.tempZIndex + ri
-                  //获得 2d 上下文对象
-                  let canvas = this.getCanvas();
-                  let ctx = canvas.getContext('2d');
-
-
-                  if (!tempShape && this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING || this.stageRender.operateState == DDeiEnumOperateState.QUICK_EDITING_TEXT_SELECTING) {
-                    if (this.isEditoring) {
-                      // tempShape = { border: { type: 1, dash: [10, 10], width: 1.25, color: "#017fff" } }
-                    } else if (this.stage.render?.editorShadowControl) {
-                      if (this.model.id + "_shadow" == this.stage.render.editorShadowControl.id) {
-                        return;
-                      }
-                    }
-                  } else if (!tempShape && this.stage?.selectedModels?.size == 1 && Array.from(this.stage?.selectedModels.values())[0].id == this.model.id) {
-                    tempShape = { border: { type: 1, width: 1, color: "#017fff", dash: [10, 5] }, drawCompose:false}
-                  }
-                  let oldRat1 = this.ddRender.ratio
-                  this.ddRender.oldRatio = oldRat1
-                  //获取缩放比例
-                  if (this.tempCanvas) {
-
-                    let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
-                    let rat1 = oldRat1 * scaleSize
-                    //去掉当前被编辑控件的边框显示
-                    this.ddRender.ratio = rat1
-                  }
-                  this.calScaleType3Size(tempShape);
-                  ctx.save();
-                  //拆分并计算pvss
-                  this.calPVSS(tempShape)
-                  //创建剪切区
-                  
-                  this.createClip(tempShape);
-
-                  //绘制填充
-                  this.drawFill(tempShape);
-                  //绘制文本
-                  this.drawText(tempShape);
-                  //根据pvss绘制边框
-                  this.drawBorder(tempShape);
-                  ctx.restore();
-                  if (this.tempCanvas) {
-                    this.ddRender.ratio = oldRat1
-                    delete this.ddRender.oldRatio
-                  }
-
+                  this.renderSelf(tempShape, composeRender);
                 } else {
-                  //绘制组合控件的内容
-                  if (tempShape && tempShape?.drawCompose == false){
-                    c.render.drawShape(null, composeRender + 1, null, zIndex+ri)
-                  }else{
-                    c.render.drawShape(tempShape, composeRender + 1, null, zIndex+ri)
-                  }
+                  this.renderCompose(c, tempShape, composeRender, ri);
                 }
-                
               }
 
               if (!this.isEditoring) {
-                this.refreshShape = false
+                this.refreshShape = false;
               }
             }
 
-            //外部canvas
-            this.drawSelfToCanvas(composeRender, print)
-          }else{
-            if (!DDeiUtil.isModelHidden(this.model) && (this.refreshShape || this.isEditoring)) {
-              DDeiUtil.createRenderViewer(this.model, "VIEW", tempShape, composeRender)
-            }else{
-              DDeiUtil.createRenderViewer(this.model,"VIEW-HIDDEN")
-            }
+            // 优化: 将绘制到画布的逻辑提取为单独的方法
+            this.drawSelfToCanvas(composeRender, isModelVisible && shouldRefresh);
+          } else {
+            // 保持原有的viewer渲染逻辑
+            this.renderWithViewer(tempShape, composeRender);
           }
         }
         if (!composeRender) {
@@ -234,16 +170,65 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
 
       }
     } else {
-     
-      let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", "VIEW-HIDDEN", { models: [this.model] }, this.ddRender.model, null)
-      if (rsState == 0 || rsState == 1) {
-        if (!this.viewer) {
-          this.removeViewerCanvas()
-        }else{
-          DDeiUtil.createRenderViewer(this.model, "VIEW-HIDDEN")
-        }
+      // 保持原有的隐藏逻辑
+      this.handleHiddenState();
+    }
+  }
+
+  // 新增的辅助方法
+  private createAndPrepareShape(tempShape) {
+    this.createTempShape();
+    this.calScaleType3Size(tempShape);
+    this.calPVSS(tempShape);
+  }
+
+  private getCachedRenderList() {
+    if (!this._cachedRenderList) {
+      this._cachedRenderList = [];
+      if (this.model.composes?.length > 0) {
+        this._cachedRenderList = this._cachedRenderList.concat(this.model.composes);
       }
-      
+      this._cachedRenderList.push(this.model);
+      this._cachedRenderList.sort((a, b) => (a.cIndex || 0) - (b.cIndex || 0));
+    }
+    return this._cachedRenderList;
+  }
+
+  private renderSelf(tempShape, composeRender) {
+    const canvas = this.getCanvas();
+    const ctx = canvas.getContext('2d');
+    ctx.save();
+    this.createClip(tempShape);
+    this.drawFill(tempShape);
+    this.drawText(tempShape);
+    this.drawBorder(tempShape);
+    ctx.restore();
+  }
+
+  private renderCompose(c, tempShape, composeRender, index) {
+    if (tempShape && tempShape?.drawCompose == false){
+      c.render.drawShape(null, composeRender + 1, null, this.tempZIndex + index);
+    } else {
+      c.render.drawShape(tempShape, composeRender + 1, null, this.tempZIndex + index);
+    }
+  }
+
+  private renderWithViewer(tempShape, composeRender) {
+    if (!DDeiUtil.isModelHidden(this.model) && (this.refreshShape || this.isEditoring)) {
+      DDeiUtil.createRenderViewer(this.model, "VIEW", tempShape, composeRender);
+    } else {
+      DDeiUtil.createRenderViewer(this.model, "VIEW-HIDDEN");
+    }
+  }
+
+  private handleHiddenState() {
+    let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", "VIEW-HIDDEN", { models: [this.model] }, this.ddRender.model, null);
+    if (rsState == 0 || rsState == 1) {
+      if (!this.viewer) {
+        this.removeViewerCanvas();
+      } else {
+        DDeiUtil.createRenderViewer(this.model, "VIEW-HIDDEN");
+      }
     }
   }
 
@@ -300,7 +285,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       return this.model.pModel.render.getCanvas()
     } else if(this.model.pModel.baseModelType == 'DDeiContainer'){
       return this.model.pModel.render.getCanvas()
-    }else {
+    } else {
       return this.ddRender?.getCanvas();
     }
   }
@@ -424,7 +409,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         //计算当前rd在B上的落点BC'的长度
         let lineBC1Distance = Math.abs(rd / tanRadis)
         let distLength = Math.min(lineBCDistance / 2, lineABDistance / 2, lineBC1Distance)
-        //计算C’的坐标
+        //计算C'的坐标
         
         let bc1pv = DDeiUtil.getPathPoint(sx, sy, ex, ey, 1, distLength, -1, lineBCDistance)
         

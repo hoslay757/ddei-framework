@@ -212,79 +212,62 @@ abstract class DDeiAbstractShape {
    */
   initPVS() {
     if (!this.cpv) {
-      if (this.initCPV) {
-        this.cpv = new Vector3(this.initCPV.x, this.initCPV.y, 1)
-        delete this.initCPV
-      } else {
-        this.cpv = new Vector3(0, 0, 1)
-      }
+      this.cpv = this.initCPV ? new Vector3(this.initCPV.x, this.initCPV.y, 1) : new Vector3(0, 0, 1);
+      delete this.initCPV;
     }
 
-
-    //通过定义初始化ovs
     if (!(this.ovs?.length > 0)) {
-      //通过采样计算pvs,可能存在多组pvs
-      let defineOvs = DDeiUtil.getControlDefine(this)?.define?.ovs;
+      const defineOvs = DDeiUtil.getControlDefine(this)?.define?.ovs;
       if (defineOvs?.length > 0) {
-        //全局缩放因子
-        let stageRatio = 1;//this.getStageRatio();
-        let ovs = []
-        defineOvs.forEach(ovd => {
-          //如果类型为3，则根据初始的角度、r计算初始位置
-          let scaleX = this.width / 100
-          let scaleY = this.height / 100
-          //圆形范围
+        const stageRatio = 1; // this.getStageRatio();
+        const scaleX = this.width / 100;
+        const scaleY = this.height / 100;
+
+        this.ovs = defineOvs.map(ovd => {
           if (ovd.constraint.type == 3) {
-            let rad = -ovd.isita * DDeiConfig.ROTATE_UNIT
-            let x = ovd.constraint.r * Math.cos(rad)
-            let y = ovd.constraint.r * Math.sin(rad)
-            let ov = new Vector3(x * scaleX * stageRatio, y * scaleY * stageRatio, ovd.z || ovd.z == 0 ? ovd.z : 1)
-            let ovi = new Vector3(0, 0, ovd.z || ovd.z == 0 ? ovd.z : 1)
-            ov.ovi = ovi
-            ovs.push(ov)
+            const rad = -ovd.isita * DDeiConfig.ROTATE_UNIT;
+            const x = ovd.constraint.r * Math.cos(rad);
+            const y = ovd.constraint.r * Math.sin(rad);
+            const ov = new Vector3(x * scaleX * stageRatio, y * scaleY * stageRatio, ovd.z || ovd.z == 0 ? ovd.z : 1);
+            ov.ovi = new Vector3(0, 0, ovd.z || ovd.z == 0 ? ovd.z : 1);
+            return ov;
           } else {
-            let ov = new Vector3(ovd.x * scaleX * stageRatio, ovd.y * scaleY * stageRatio, ovd.z || ovd.z == 0 ? ovd.z : 1)
-            let ovi = new Vector3(ovd.ix * scaleX * stageRatio, ovd.iy * scaleY * stageRatio, ovd.iz || ovd.iz == 0 ? ovd.iz : 1)
-            ov.ovi = ovi
-            ovs.push(ov)
+            const ov = new Vector3(ovd.x * scaleX * stageRatio, ovd.y * scaleY * stageRatio, ovd.z || ovd.z == 0 ? ovd.z : 1);
+            ov.ovi = new Vector3(ovd.ix * scaleX * stageRatio, ovd.iy * scaleY * stageRatio, ovd.iz || ovd.iz == 0 ? ovd.iz : 1);
+            return ov;
           }
         });
-        this.ovs = ovs
       }
     }
-    //如果是极坐标，则用极坐标的方式来计算pvs、hpv等信息，否则采用pvs的方式
-    if (this.poly == 2) {
-      //极坐标系中，采用基于原点的100向量表示水平
-      if (!(this.hpv?.length > 0)) {
-        this.hpv = [new Vector3(0, 0, 1), new Vector3(100, 0, 1)]
-      }
-      //用于计算缩放大小比率的点PV，以100为参考
-      if (!this.bpv) {
-        this.bpv = new Vector3(this.cpv.x + this.width, this.cpv.y + this.height, 1)
-      }
 
+    if (this.poly == 2) {
+      if (!(this.hpv?.length > 0)) {
+        this.hpv = [new Vector3(0, 0, 1), new Vector3(100, 0, 1)];
+      }
+      if (!this.bpv) {
+        this.bpv = new Vector3(this.cpv.x + this.width, this.cpv.y + this.height, 1);
+      }
       this.executeSample();
     } else {
       if (!this.pvs || this.pvs.length == 0) {
-        this.pvs = [];
-        this.pvs[0] = new Vector3(-this.width / 2, -this.height / 2, 1)
-        this.pvs[1] = new Vector3(this.width / 2, -this.height / 2, 1)
-        this.pvs[2] = new Vector3(this.width / 2, this.height / 2, 1)
-        this.pvs[3] = new Vector3(-this.width / 2, this.height / 2, 1)
+        const halfWidth = this.width / 2;
+        const halfHeight = this.height / 2;
+        this.pvs = [
+          new Vector3(-halfWidth, -halfHeight, 1),
+          new Vector3(halfWidth, -halfHeight, 1),
+          new Vector3(halfWidth, halfHeight, 1),
+          new Vector3(-halfWidth, halfHeight, 1)
+        ];
       }
       this.initHPV();
     }
 
-    //计算宽松判定矩阵
     this.calRotate();
     this.calLoosePVS();
-    this.composes?.forEach(compose => {
-      compose.initPVS()
-    });
+    this.composes?.forEach(compose => compose.initPVS());
     if (!this.isShadowControl) {
       this.updateExPvs();
     }
-
   }
 
   /**
@@ -668,9 +651,7 @@ abstract class DDeiAbstractShape {
       for (let k = sIdx; k < eIdx; k++) {
         for (let i = 0; i < attrPaths.length; i++) {
           if ((value === null || value === undefined || (isNumber(value) && isNaN(value))) && emptyDelete) {
-            try {
-              eval("delete this.sptStyle[" + k + "]." + attrPaths[i])
-            } catch (e) { }
+            DDeiUtil.deletePropertyByPath(this.sptStyle, k + "." + attrPaths[i])
             if (this.sptStyle[k]?.textStyle && JSON.stringify(this.sptStyle[k].textStyle) == "{}") {
               delete this.sptStyle[k].textStyle
             }
