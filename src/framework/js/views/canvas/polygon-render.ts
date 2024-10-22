@@ -72,19 +72,12 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     //如果高清屏，rat一般大于2印此系数为1保持不变，如果非高清则扩大为2倍保持清晰
     //获取缩放比例
     let stageRatio = this.model.getStageRatio()
-    let oldRat1 = this.ddRender.ratio
-    let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
-    let rat1 = oldRat1 * scaleSize
+    let rat1 = this.ddRender.ratio
     //测试剪切图形
     //转换为图片
     if (!this.tempCanvas) {
       this.tempCanvas = document.createElement('canvas');
       this.tempCanvas.setAttribute("style", "pointer-events:none;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;scale:" + (1 / rat1));
-      // this.tempCanvas.setAttribute("style", "pointer-events:none;left:-99999px;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 ) + ");display:block;zoom:" + (1));
-      // this.tempCanvas.setAttribute("style", "left:0px;top:0px;position:fixed;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
-      // let editorId = DDeiUtil.getEditorId(this.ddRender?.model);
-      // let editorEle = document.getElementById(editorId);
-      // editorEle.appendChild(this.tempCanvas)
     }
     let tempCanvas = this.tempCanvas
     let pvs = this.model.operatePVS ? this.model.operatePVS : this.model.pvs
@@ -747,15 +740,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       let rendList = DDeiUtil.sortRendList(this.model)
       
       this.createTempShape()
-      let oldRat1 = this.ddRender.ratio
-      //获取缩放比例
-      if (this.tempCanvas) {
 
-        let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
-        let rat1 = oldRat1 * scaleSize
-        //去掉当前被编辑控件的边框显示
-        this.ddRender.ratio = rat1
-      }
       rendList.forEach(c => {
         if (c == this.model) {
           //根据pvss绘制边框
@@ -766,10 +751,6 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           c.render.drawSelfToCanvas(1);
         }
       })
-      if (this.tempCanvas) {
-        this.ddRender.ratio = oldRat1
-        delete this.ddRender.oldRatio
-      }
       this.drawSelfToCanvas(0);
     }
 

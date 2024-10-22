@@ -88,16 +88,7 @@ class DDeiPolygonContainerCanvasRender extends DDeiPolygonCanvasRender {
                 } else if (!tempShape && this.stage?.selectedModels?.size == 1 && Array.from(this.stage?.selectedModels.values())[0].id == this.model.id) {
                   tempShape = { border: { type: 1, width: 1, color: "#017fff", dash: [10, 5] }, drawCompose: false }
                 }
-                let oldRat1 = this.ddRender.ratio
-                this.ddRender.oldRatio = oldRat1
-                //获取缩放比例
-                if (this.tempCanvas) {
 
-                  let scaleSize = oldRat1 < 2 ? 2 / oldRat1 : 1
-                  let rat1 = oldRat1 * scaleSize
-                  //去掉当前被编辑控件的边框显示
-                  this.ddRender.ratio = rat1
-                }
                 this.calScaleType3Size(tempShape);
                 ctx.save();
                 //拆分并计算pvss
@@ -114,10 +105,6 @@ class DDeiPolygonContainerCanvasRender extends DDeiPolygonCanvasRender {
 
                 this.drawChildrenShapes(tempShape);
                 ctx.restore();
-                if (this.tempCanvas) {
-                  this.ddRender.ratio = oldRat1
-                  delete this.ddRender.oldRatio
-                }
 
               } else {
                 //绘制组合控件的内容

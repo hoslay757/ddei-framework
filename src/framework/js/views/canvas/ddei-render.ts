@@ -73,6 +73,7 @@ class DDeiCanvasRender {
       let w = this.model.width ? this.model.width: this.container.clientWidth
       let h = this.model.height ? this.model.height: this.container.clientHeight
       this.canvas = this.realCanvas
+      
       this.realCanvas.setAttribute("style", "pointer-events:none;z-index:100;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / ratio) + ");display:block;zoom:" + (1 / ratio));
       this.realCanvas.setAttribute("width", w * ratio);
       this.realCanvas.setAttribute("height", h * ratio);

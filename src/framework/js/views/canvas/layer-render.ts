@@ -1885,15 +1885,17 @@ class DDeiLayerCanvasRender {
 
         let shadowControl = this.stageRender.editorShadowControl;
         if (shadowControl?.isInTextArea(ex2, ey2)) {
+          
           let cx = (ex2 - shadowControl.cpv.x) * rat1 * stageRatio;
           let cy = (ey2 - shadowControl.cpv.y) * rat1 * stageRatio;
+          
           //先判断行，再判断具体位置
           //textUsedArea记录的是基于中心点的偏移量
           let startIndex = 0;
           let sx = 0;
           let i = 0;
           //由于绘制缓存中的文本位置乘以了调整系数，因此这里判断时，需要利用这个系数反向判断
-          let scaleSize = rat1 < 2 ? 2 / rat1 : 1
+          let scaleSize = 1;//rat1 
           for (; i < shadowControl.render.textUsedArea.length; i++) {
             let rowData = shadowControl.render.textUsedArea[i];
             let ry = rowData.y / scaleSize
@@ -1919,7 +1921,7 @@ class DDeiLayerCanvasRender {
                 }
               }
               if (!sx) {
-                if (ex < shadowControl.cpv.x) {
+                if (ex2 < shadowControl.cpv.x) {
                   sx = startIndex
                 } else {
                   sx = startIndex + rowData.text.length;
@@ -1930,7 +1932,7 @@ class DDeiLayerCanvasRender {
             startIndex += rowData.text.length
           }
           if (!sx) {
-            if (ex < shadowControl.cpv.x) {
+            if (ex2 < shadowControl.cpv.x) {
               sx = 0
             } else {
               sx = startIndex + shadowControl.render.textUsedArea[i - 1].text.length;
