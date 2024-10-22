@@ -675,11 +675,13 @@ class DDeiEditorUtil {
             } break;
             
           }
-          if (left + dialog?.clientWidth > document.body.scrollWidth) {
-            left = document.body.scrollWidth - dialog?.clientWidth - 10
-          }
-          if (top + dialog?.clientHeight > document.body.scrollHeight) {
-            top = document.body.scrollHeight - dialog?.clientHeight - 10
+          if (!pos || pos.ignoreOutSide != 1){
+            if (left + dialog?.clientWidth > document.body.scrollWidth) {
+              left = document.body.scrollWidth - dialog?.clientWidth - 10
+            }
+            if (top + dialog?.clientHeight > document.body.scrollHeight) {
+              top = document.body.scrollHeight - dialog?.clientHeight - 10
+            }
           }
           dialog.style.left = left + "px"
           dialog.style.top = top + "px"
