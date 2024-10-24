@@ -582,8 +582,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         if (i == len - 1) {
           e = 0
         }
-        let dx = pv.dx ? pv.dx * stageRatio : 0
-        let dy = pv.dy ? pv.dy * stageRatio : 0
+        let dx = pv.dx ? pv.dx : 0
+        let dy = pv.dy ? pv.dy : 0
         if (pv.begin) {
           ctx.beginPath()
         }
