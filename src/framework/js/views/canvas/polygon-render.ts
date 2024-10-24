@@ -256,6 +256,20 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         this.tempCanvas.style.left = (this.model.cpv.x * stageRatio + this.model.stage.wpv.x) - this.tempCanvas.offsetWidth / 2 - ruleWeight + "px"
 
         this.tempCanvas.style.top = (this.model.cpv.y * stageRatio + this.model.stage.wpv.y) - this.tempCanvas.offsetHeight / 2 - ruleWeight + "px"
+    
+        let transform = ""
+        
+        if (this.model.mirrorX) {
+          transform += " rotateY(180deg)"
+        }
+        if (this.model.mirrorY) {
+          transform += " rotateX(180deg)"
+        }
+
+  
+        this.tempCanvas.style.transform = transform
+        
+        
         if (!print) {
           this.model.composes?.forEach(comp => {
             comp.render.drawSelfToCanvas(composeRender + 1)

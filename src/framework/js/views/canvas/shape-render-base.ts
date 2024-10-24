@@ -374,16 +374,11 @@ class DDeiAbstractShapeRender {
     if (stage.render.tempRuleDisplay == 1 || stage.render.tempRuleDisplay == '1') {
       ruleWeight = 15
     }
-    //位置
-    let canvasEle = document.getElementById(editor.id + "_canvas");
-    let canvasDomPos = DDeiUtil.getDomAbsPosition(canvasEle);
 
     let stageRatio = model.getStageRatio()
     //创建图形，修改图形大小、旋转、边框等属性，以及移动图形位置
 
-    //获取model的绝对位置
-    let modelPos = DDeiUtil.getModelsDomAbsPosition([model])
-
+ 
     let rat1 = window.remRatio
     if (DDeiUtil.isModelHidden(model)) {
       shapeElement.style.display = "none"
@@ -401,9 +396,15 @@ class DDeiAbstractShapeRender {
       if (model.rotate) {
         transform += " rotate(" + model.rotate + "deg)"
       }
-      if (transform) {
-        shapeElement.style.transform = transform
+
+      if (this.model.mirrorX) {
+        transform += " rotateY(180deg)"
       }
+      if (this.model.mirrorY) {
+        transform += " rotateX(180deg)"
+      }
+      shapeElement.style.transform = transform
+      
 
       //边框
       let type = tempShape?.border?.type || tempShape?.border?.type == 0 ? tempShape?.border?.type : render.getCachedValue("border.type")

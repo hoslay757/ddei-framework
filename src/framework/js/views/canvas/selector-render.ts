@@ -58,7 +58,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       } else {
         if (models?.length == 1 && (models[0].mirrorX || models[0].mirrorY)){
           let model = models[0]
-          let oldRat1 = this.ddRender.ratio * this/this.stage?.getStageRatio();
+          let oldRat1 = this.ddRender.ratio * this.stage?.getStageRatio();
           ctx.translate(model.cpv.x * oldRat1, model.cpv.y * oldRat1)
           if (model.mirrorX) {
             ctx.scale(-1, 1)
