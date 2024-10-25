@@ -923,6 +923,7 @@ class DDeiEditorUtil {
                   models = DDeiEditorUtil.createControl(controlDefine,editor)
                   
                   let iconPos = controlDefine?.define?.iconPos;
+                  
                   let outRect = DDeiAbstractShape.getOutRectByPV(models);
                   outRect.width += (iconPos?.dw ? iconPos.dw : 0)
                   outRect.height += (iconPos?.dh ? iconPos.dh : 0)
@@ -971,7 +972,9 @@ class DDeiEditorUtil {
                   localStorage.setItem("ICON-CACHE-" + editor.id + "-" + controlDefine.id, dataURL)
                   editor.icons[controlDefine.id] = dataURL
                 } catch (e) { 
-                  console.error(e)
+                  if(editor.debug){
+                    console.error(e)
+                  }
                  }
                 models?.forEach(md => {
                   md?.destroyed()
@@ -993,51 +996,60 @@ class DDeiEditorUtil {
    * 将多个元素绘制到canvas上
    */
   static drawModelsToCanvas(models:DDeiAbstractShape[],outRect,canvas,level:number = 0):void{
-    let rat1 = models[0].stage?.ddInstance?.render.ratio;
-    let ctx = canvas.getContext('2d', { willReadFrequently: true });
- 
-    let width = (outRect.width+4) * rat1
-    let height = (outRect.height+4) * rat1
-    if (level == 0){
-      canvas.setAttribute("width", width)
-      canvas.setAttribute("height", height)
-      canvas.style.width = width + 'px';
-      canvas.style.height = height + 'px';
-    }
-    models.forEach(model=>{
-      let rendList = [];
-      if (model.composes?.length > 0) {
-        rendList = rendList.concat(model.composes);
-      }
-      rendList.push(model)
-      rendList.sort((a, b) => {
-
-        if ((a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
-          return a.cIndex - b.cIndex
-        } else if ((a.cIndex || a.cIndex == 0) && !(b.cIndex || b.cIndex == 0)) {
-          return 1
-        } else if (!(a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
-          return -1
-        } else {
-          return 0
-        }
-      })
+    if (models?.length > 0){
+      let stage = models[0].stage
+      let rat1 = stage.ddInstance?.render.ratio;
+      canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
+      let ctx = canvas.getContext('2d', { willReadFrequently: true });
       
-      rendList?.forEach(mc => {
-        if(mc == model){
-          if(mc.render.tempCanvas){
-            ctx.drawImage(mc.render.tempCanvas, ((mc.essBounds ? mc.essBounds.x : mc.cpv.x) - outRect.x-2) * rat1, ((mc.essBounds ? mc.essBounds.y : mc.cpv.y) - outRect.y-2) * rat1)
-          }
-          if (model.baseModelType == "DDeiContainer") {
-            DDeiEditorUtil.drawModelsToCanvas(Array.from(model.models.values()), outRect, canvas, level + 1)
-          }
-        }else{
-          DDeiEditorUtil.drawModelsToCanvas([mc], outRect, canvas, level + 1)
+      let width = (outRect.width+4) * rat1
+      let height = (outRect.height+4) * rat1
+      if (level == 0){
+        canvas.setAttribute("width", width)
+        canvas.setAttribute("height", height)
+        canvas.style.width = width + 'px';
+        canvas.style.height = height + 'px';
+      }
+      
+      models.forEach(model=>{
+        let rendList = [];
+        if (model.composes?.length > 0) {
+          rendList = rendList.concat(model.composes);
         }
+        rendList.push(model)
+        rendList.sort((a, b) => {
+
+          if ((a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+            return a.cIndex - b.cIndex
+          } else if ((a.cIndex || a.cIndex == 0) && !(b.cIndex || b.cIndex == 0)) {
+            return 1
+          } else if (!(a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+            return -1
+          } else {
+            return 0
+          }
+        })
+        rendList?.forEach(mc => {
+          if(mc == model){
+            if(mc.render.tempCanvas){
+              if(mc.baseModelType !='DDeiLine'){
+                ctx.drawImage(mc.render.tempCanvas, 0, 0, mc.render.tempCanvas.width, mc.render.tempCanvas.height, ((mc.essBounds ? mc.essBounds.x : mc.cpv.x) - outRect.x) * rat1, ((mc.essBounds ? mc.essBounds.y : mc.cpv.y) - outRect.y - 2) * rat1, mc.essBounds.width * rat1, mc.essBounds.height * rat1)
+              }else{
+                ctx.drawImage(mc.render.tempCanvas, 0, 0, mc.render.tempCanvas.width, mc.render.tempCanvas.height, (mc.cpv.x - outRect.x) * rat1, (mc.cpv.y - outRect.y) * rat1, outRect.width * rat1, outRect.height * rat1)
+              }
+                
+            }
+            if (model.baseModelType == "DDeiContainer") {
+              DDeiEditorUtil.drawModelsToCanvas(Array.from(model.models.values()), outRect, canvas, level + 1)
+            }
+          }else{
+            DDeiEditorUtil.drawModelsToCanvas([mc], outRect, canvas, level + 1)
+          }
+          
+        })
         
       })
-      
-    })
+    }
     
     
   }

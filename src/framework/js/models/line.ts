@@ -988,7 +988,8 @@ class DDeiLine extends DDeiAbstractShape {
     if (!this.isShadowControl) {
       this.linkModels?.forEach(lm => {
         if (lm.dm) {
-          lm.dm.pModel.removeModel(lm.dm, true)
+          lm.dm.pModel?.removeModel(lm.dm)
+          lm.dm.destroyed()
         }
       })
       this.linkModels?.clear()

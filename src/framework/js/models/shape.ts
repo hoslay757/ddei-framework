@@ -768,6 +768,7 @@ abstract class DDeiAbstractShape {
     this.y = outRect.y
     this.width = outRect.width
     this.height = outRect.height
+    
     //记录缩放后的大小以及坐标
     this.essBounds = outRect;
 
@@ -812,8 +813,8 @@ abstract class DDeiAbstractShape {
     // 记录缩放后的大小以及坐标
     this.essBounds.x += this.cpv.x
     this.essBounds.y += this.cpv.y
-
-
+    this.essBounds.x1 += this.cpv.x
+    this.essBounds.y1 += this.cpv.y
   }
 
 
@@ -984,61 +985,86 @@ abstract class DDeiAbstractShape {
       let x, y
       let pathPvs = this.opps;
       let st, en
-      if (!(ov.index || ov.index == 0) || pathPvs.length <= ov.index) {
-        let index = -1
-        for(let qi = 0;qi < pathPvs.length;qi++){
-          let isInLine = false
-          if(qi == pathPvs.length-1){
-            isInLine = DDeiUtil.isPointInLine(ov, pathPvs[qi], pathPvs[0])
-          }else{
-            isInLine = DDeiUtil.isPointInLine(ov, pathPvs[qi], pathPvs[qi+1])
-          }
-          if (isInLine){
-            index = qi
-            break;
-          }
+      //oppoint:1为操作点只判定点，2为操作点，判定点以及中间，3为操作点，判定圆心
+      let op2Paths = []
+      for (let qi = 0; qi < pathPvs.length; qi++) {
+        let opp = pathPvs[qi];
+        if(opp.oppoint == 2){
+          op2Paths.push(opp)
         }
-        if (index != -1){
-          x = ov.x
-          y = ov.y
-          ov.index = index
-        }else{
-          let proPoints = DDeiAbstractShape.getProjPointDists(pathPvs, ov.x, ov.y, false, 1);
-          x = proPoints[0].x
-          y = proPoints[0].y
-          ov.index = proPoints[0].index
-          index = proPoints[0].index
-        }
-        
-        //计算当前path的角度（方向）angle和投射后点的比例rate
-        if (index == pathPvs.length - 1) {
-          st = index;
-          en = 0;
-        } else {
-          st = index;
-          en = index + 1;
-        }
-        let pointDistance = DDeiUtil.getPointDistance(pathPvs[st].x, pathPvs[st].y, ov.x, ov.y)
-        let distance = DDeiUtil.getPointDistance(pathPvs[st].x, pathPvs[st].y, pathPvs[en].x, pathPvs[en].y)
-        let rate = pointDistance / distance
-        ov.rate = rate > 1 ? rate : rate
-      } else {
-        let index = ov.index
-        //计算当前path的角度（方向）angle和投射后点的比例rate
-        if (index == pathPvs.length - 1) {
-          st = index;
-          en = 0;
-        } else {
-          st = index;
-          en = index + 1;
-        }
-        x = pathPvs[st].x + (ov.rate * (pathPvs[en].x - pathPvs[st].x))
-        y = pathPvs[st].y + (ov.rate * (pathPvs[en].y - pathPvs[st].y))
       }
-      let sita = parseFloat(DDeiUtil.getLineAngle(pathPvs[st].x, pathPvs[st].y, pathPvs[en].x, pathPvs[en].y).toFixed(4))
-      ov.x = x
-      ov.y = y
-      ov.sita = sita
+
+      if (op2Paths.length > 0){
+        //判断在操作点路径或者圆的边缘上
+        if (!(ov.index || ov.index == 0) || op2Paths.length <= ov.index) {
+          let index = -1
+          for (let qi = 0; qi < op2Paths.length; qi++) {
+            let isInLine = false
+            if (qi == op2Paths.length - 1) {
+              isInLine = DDeiUtil.isPointInLine(ov, op2Paths[qi], op2Paths[0])
+            } else {
+              isInLine = DDeiUtil.isPointInLine(ov, op2Paths[qi], op2Paths[qi + 1])
+            }
+            if (isInLine) {
+              index = qi
+              break;
+            }
+          }
+          if (index != -1) {
+            x = ov.x
+            y = ov.y
+            ov.index = index
+          } else {
+            let proPoints = DDeiAbstractShape.getProjPointDists(op2Paths, ov.x, ov.y, false, 1);
+            x = proPoints[0].x
+            y = proPoints[0].y
+            ov.index = proPoints[0].index
+            index = proPoints[0].index
+          }
+
+          //计算当前path的角度（方向）angle和投射后点的比例rate
+          if (index == op2Paths.length - 1) {
+            st = index;
+            en = 0;
+          } else {
+            st = index;
+            en = index + 1;
+          }
+          let pointDistance = DDeiUtil.getPointDistance(op2Paths[st].x, op2Paths[st].y, ov.x, ov.y)
+          let distance = DDeiUtil.getPointDistance(op2Paths[st].x, op2Paths[st].y, op2Paths[en].x, op2Paths[en].y)
+          let rate = pointDistance / distance
+          ov.rate = rate > 1 ? rate : rate
+        } else {
+          let index = ov.index
+          //计算当前path的角度（方向）angle和投射后点的比例rate
+          if (index == op2Paths.length - 1) {
+            st = index;
+            en = 0;
+          } else {
+            st = index;
+            en = index + 1;
+          }
+          x = op2Paths[st].x + (ov.rate * (op2Paths[en].x - op2Paths[st].x))
+          y = op2Paths[st].y + (ov.rate * (op2Paths[en].y - op2Paths[st].y))
+        }
+        ov.x = x
+        ov.y = y
+      }
+      let outRect = this.essBounds; 
+      
+      //以ov点位于路径上的角度作为ov点的角度
+      // let sita = parseFloat(DDeiUtil.getLineAngle(pathPvs[st].x, pathPvs[st].y, pathPvs[en].x, pathPvs[en].y).toFixed(4))
+      if (ov.x == outRect.x && ov.y > outRect.y && ov.y < outRect.y1){
+        ov.sita = 180
+      } else if (ov.x == outRect.x1 && ov.y > outRect.y && ov.y < outRect.y1) {
+        ov.sita = 0
+      } else if (ov.y == outRect.y && ov.x > outRect.x && ov.x < outRect.x1) {
+        ov.sita = -90
+      }else if (ov.y == outRect.y1 && ov.x > outRect.x && ov.x < outRect.x1) {
+        ov.sita = 90
+      }
+      
+      
     }
     //更新关联图形
     this.updateLinkModels();

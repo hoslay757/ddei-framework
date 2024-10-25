@@ -1370,7 +1370,7 @@ class DDeiUtil {
       context.backingStorePixelRatio || 1;
     window.remRatio = window.rem > 168 ? window.rem / 168 : 1
     let ratio = (window.devicePixelRatio || 1) / backingStore;
-    return ratio >= 2 ? ratio : 2
+    return ratio;
   }
 
   /**
@@ -2742,7 +2742,7 @@ class DDeiUtil {
         let ctx = canvas.getContext('2d');
         //获取缩放比例
         let rat1 = ddInstance.render.ratio
-        let rat2 = DDeiUtil.getPixelRatio(ctx);
+        let rat2 = Math.max(ddInstance.pixel,DDeiUtil.getPixelRatio(ctx));
         ddInstance.render.tempCanvas = canvas;
         //所选择区域的最大范围
         let models = ddInstance.stage.getLayerModels();

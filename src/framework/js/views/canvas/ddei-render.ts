@@ -68,7 +68,8 @@ class DDeiCanvasRender {
       //获得 2d 上下文对象
       let ctx = this.realCanvas.getContext('2d');
       //获取缩放比例
-      let ratio = DDeiUtil.getPixelRatio(ctx);
+      let ratio = Math.max(this.model.pixel,DDeiUtil.getPixelRatio(ctx));
+      
       this.container.appendChild(this.realCanvas);
       let w = this.model.width ? this.model.width: this.container.clientWidth
       let h = this.model.height ? this.model.height: this.container.clientHeight

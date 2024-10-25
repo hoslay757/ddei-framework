@@ -119,6 +119,9 @@ class DDei {
   //不执行任何操作
   disabled:boolean = false;
 
+  //最低的质量比率，用更高的倍数来显示图像，提升清晰度，默认2
+  pixel:number = 2;
+
   //当前引入的外部控件模型定义
   controlModelClasses: object;
   //当前引入的外部控件视图定义
