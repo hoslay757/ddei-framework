@@ -20,6 +20,14 @@ abstract class DDeiLayoutManager {
    */
   abstract changeSubModelBounds(): void
 
+
+  abstract transVectors(matrix):void
+  
+  /**
+   *  根据子模型大小，修改自身大小
+   */
+  abstract changeParentsBounds(): void
+
   /**
    * 验证是否可以从其他布局转换为本布局
    * @param oldLayout 旧布局

@@ -8,11 +8,23 @@ class DDeiLayoutManagerFree extends DDeiLayoutManager {
   // ============================ 方法 ===============================
 
   /**
-   * 修改模型的位置和大小
+   * 根据自身大小修改子模型大小
    */
   changeSubModelBounds(): void {
 
   }
+
+  transVectors(matrix): void {
+    this.container.transSelfVectors(matrix)
+  }
+
+  /**
+   * 根据子模型大小，修改自身大小
+   */
+  changeParentsBounds(): void {
+    
+  }
+
   canAppend(x: number, y: number, models: DDeiAbstractShape[]): boolean {
     //获取当前容器的上级，形成链路，直到layer
     let parentControls = this.container.getParents();

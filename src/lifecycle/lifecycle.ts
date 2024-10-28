@@ -37,6 +37,11 @@ class DDeiLifeCycle extends DDeiPluginBase {
   EVENT_CONTROL_DRAG_BEFORE: DDeiFuncData | null = null;
 
   /**
+ * 控件拖拽中，此方法为外部传入的勾子函数
+ */
+  EVENT_CONTROL_DRAGING: DDeiFuncData | null = null;
+
+  /**
    * 控件拖拽后，此方法为外部传入的勾子函数
    */
   EVENT_CONTROL_DRAG_AFTER: DDeiFuncData | null = null;
@@ -76,6 +81,11 @@ class DDeiLifeCycle extends DDeiPluginBase {
   EVENT_CONTROL_VIEW_BEFORE: DDeiFuncData | null = null;
 
   /**
+   * 控件绘制，此方法为外部传入的勾子函数
+   */
+  EVENT_CONTROL_VIEW: DDeiFuncData | null = null;
+
+  /**
    * 控件查看后，此方法为外部传入的勾子函数
    */
   EVENT_CONTROL_VIEW_AFTER: DDeiFuncData | null = null;
@@ -108,63 +118,73 @@ class DDeiLifeCycle extends DDeiPluginBase {
   /**
    * 关闭文件
    */
-  EVENT_AFTER_CLOSE_FILE: DDeiFuncData | null = null;
+  EVENT_CLOSE_FILE_AFTER: DDeiFuncData | null = null;
 
   /**
    * 切换文件
    */
-  EVENT_AFTER_CHANGE_FILE: DDeiFuncData | null = null;
+  EVENT_CHANGE_FILE_AFTER: DDeiFuncData | null = null;
 
   /**
    * 切换页签
    */
-  EVENT_AFTER_CHANGE_SHEET: DDeiFuncData | null = null;
+  EVENT_CHANGE_SHEET_AFTER: DDeiFuncData | null = null;
 
   /**
    * 删除页签
    */
-  EVENT_AFTER_DEL_SHEET: DDeiFuncData | null = null;
+  EVENT_DEL_SHEET_AFTER: DDeiFuncData | null = null;
 
   /**
    * 关闭文件
    */
-  EVENT_BEFORE_CLOSE_FILE: DDeiFuncData | null = null;
+  EVENT_CLOSE_FILE_BEFORE: DDeiFuncData | null = null;
 
   /**
    * 切换文件
    */
-  EVENT_BEFORE_CHANGE_FILE: DDeiFuncData | null = null;
+  EVENT_CHANGE_FILE_BEFORE: DDeiFuncData | null = null;
 
   /**
    * 切换页签
    */
-  EVENT_BEFORE_CHANGE_SHEET: DDeiFuncData | null = null;
+  EVENT_CHANGE_SHEET_BEFORE: DDeiFuncData | null = null;
 
   /**
    * 删除页签
    */
-  EVENT_BEFORE_DEL_SHEET: DDeiFuncData | null = null;
+  EVENT_DEL_SHEET_BEFORE: DDeiFuncData | null = null;
 
   /**
    * 新建文件
    */
-  EVENT_AFTER_ADD_FILE: DDeiFuncData | null = null;
+  EVENT_ADD_FILE_AFTER: DDeiFuncData | null = null;
 
   /**
    * 新建页签
    */
-  EVENT_AFTER_ADD_SHEET: DDeiFuncData | null = null;
+  EVENT_ADD_SHEET_AFTER: DDeiFuncData | null = null;
 
 
   /**
    * 新建文件
    */
-  EVENT_BEFORE_ADD_FILE: DDeiFuncData | null = null;
+  EVENT_ADD_FILE_BEFORE: DDeiFuncData | null = null;
 
   /**
    * 新建页签
    */
-  EVENT_BEFORE_ADD_SHEET: DDeiFuncData | null = null;
+  EVENT_ADD_SHEET_BEFORE: DDeiFuncData | null = null;
+
+  /**
+   * 控件旋转前，此方法为外部传入的勾子函数
+   */
+  EVENT_CONTROL_ROTATE_BEFORE: DDeiFuncData | null = null;
+
+  /**
+   * 控件旋转后，此方法为外部传入的勾子函数
+   */
+  EVENT_CONTROL_ROTATE_AFTER: DDeiFuncData | null = null;
 
   
   

@@ -56,7 +56,7 @@ class DDeiBusCommandCenterStageWPV extends DDeiBusCommand {
       }
       let ruleWeight = 0;
       if (ruleDisplay == 1 || ruleDisplay == "1") {
-        ruleWeight = 16;
+        ruleWeight = 15;
       }
       let centerX = stage.width / 2 - (maxOutRect.x + maxOutRect.width / 2) * stageRatio
       let centerY = stage.height / 2 - (maxOutRect.y + maxOutRect.height / 2) * stageRatio

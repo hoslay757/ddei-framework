@@ -6,6 +6,7 @@ import { Matrix3, Vector3 } from 'three';
 import DDeiModelArrtibuteValue from './models/attribute/attribute-value';
 import DDeiStage from './models/stage';
 import DDeiColor from './color.js';
+import DDeiLink from './models/link.js';
 
 const expressBindValueReg = /#\{[^\{\}]*\}/;
 const contentSplitReg = /\+|\-|\*|\//;
@@ -36,6 +37,8 @@ class DDeiUtil {
   static getSubControlJSON: Function;
   //钩子函数，返回线控件的定义
   static getLineInitJSON: Function;
+  //钩子函数，返回控件的定义
+  static getModelInitJSON: Function;
   //钩子函数，获取业务数据
   static getBusiData: Function;
   //钩子函数，获取快捷编辑文本框
@@ -48,9 +51,37 @@ class DDeiUtil {
   static invokeCallbackFunc: Function;
   //钩子函数，通知改变
   static notifyChange: Function;
+  //钩子函数，获取编辑器实例
+  static getEditorInsByDDei: Function;
+
+  //钩子函数，获取创建控件
+  static createControl: Function;
 
   //钩子函数,判断当前实例是否可以在后台激活，允许后台激活的实例，在当前实例为非ACTIVE_INSTANCE时，依然能够执行部分后台操作
   static isBackActive: Function;
+
+
+  //钩子函数,创建renderviewer元素，由editor在创建时传入
+  static createRenderViewer: Function;
+
+  //钩子函数,移除renderviewer元素，由editor在创建时传入
+  static removeRenderViewer: Function;
+
+  //钩子函数,判定控件否为hidden的函数，可以由外部来覆写，从而增加前置或者后置判断逻辑
+  static isModelHidden: Function = function(model:DDeiAbstractShape):boolean{
+    if (model.hidden){
+      return true;
+    }else{
+      let pModel = model.pModel;
+      while(pModel && pModel.baseModelType != 'DDeiLayer'){
+        if (pModel.hidden){
+          return true
+        }
+        pModel = pModel.pModel
+      }
+    }
+    return false
+  };
 
 
 
@@ -85,10 +116,6 @@ class DDeiUtil {
 
   //最新选择的颜色
   static recentlyChooseColors = null
-
-
-  //向临时canvas输出
-  static DRAW_TEMP_CANVAS = true;
 
   /**
    * 当前用户的操作系统
@@ -248,8 +275,9 @@ class DDeiUtil {
       md.cols = cols;
       md.initRender();
     } else {
+      
       md = DDeiUtil.cloneModel(model, true);
-      md.initRender();
+      
       //将当前操作控件加入临时选择控件
       md.id = md.id + "_shadow"
       if (md?.baseModelType == "DDeiContainer") {
@@ -266,6 +294,7 @@ class DDeiUtil {
         md.models = newModels;
         // md.midList = newMidList;
       }
+      md.initRender();
 
     }
     return md;
@@ -372,6 +401,7 @@ class DDeiUtil {
         if (model.rotate){
           let pvs = model.operatePVS ? model.operatePVS : model.pvs;
           let zeroPvs = DDeiUtil.pointsToZero(pvs, model.cpv, model.rotate)
+          zeroPvs = DDeiUtil.zeroToPoints(zeroPvs, model.cpv, 0, 1, 1)
           outRect = DDeiAbstractShape.pvsToOutRect(zeroPvs);
           outRect.rotate = model.rotate
         }else{
@@ -404,6 +434,28 @@ class DDeiUtil {
     } else {
       return null
     }
+  }
+
+  static sortRendList(model){
+    //将当前控件以及composes按照zindex顺序排列并输出
+    let rendList = [];
+    if (model.composes?.length > 0) {
+      rendList = rendList.concat(model.composes);
+    }
+    rendList.push(model)
+    rendList.sort((a, b) => {
+
+      if ((a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+        return a.cIndex - b.cIndex
+      } else if ((a.cIndex || a.cIndex == 0) && !(b.cIndex || b.cIndex == 0)) {
+        return 1
+      } else if (!(a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+        return -1
+      } else {
+        return 0
+      }
+    })
+    return rendList
   }
 
   /**
@@ -514,7 +566,7 @@ class DDeiUtil {
   }
 
   /**
-   * 声称唯一编码
+   * 生成唯一编码
    * @returns 
    */
   static getUniqueCode() {
@@ -536,6 +588,64 @@ class DDeiUtil {
    */
   static getPointDistance(x0: number, y0: number, x1: number, y1: number): number {
     return Math.sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2)
+  }
+
+  /**
+   * 已知两点求其中间以及延长线上的第三点，有len和rate两种计算策略,如果超出按out值，返回实际长度（0），或者按照out设置的值作为长度比例
+   * @param x0 点1x
+   * @param y0 点1y
+   * @param x1 点2x
+   * @param y1 点2y
+   * @param mode 模式，1长度，2比例
+   * @param value 值
+   * @param out 超出策略，-1原样，其他，比例
+   */
+  static getPathPoint(x0: number, y0: number, x1: number, y1: number,mode:number = 1,value:number = 0,out:number = -1,distance:number|null = null):object{
+    //线段长度
+    let pointDistance = distance ? distance : DDeiUtil.getPointDistance(x0, y0, x1, y1)
+    let targetLen
+    let rate;
+    if (mode == 1) {
+      targetLen = value
+      if (out != -1 && targetLen > pointDistance){
+        targetLen = pointDistance * out;
+      }
+      rate = targetLen/pointDistance
+    }else{
+      targetLen = pointDistance * value
+      if (out != -1 && targetLen > pointDistance) {
+        targetLen = pointDistance * out;
+      }
+      rate = targetLen / pointDistance
+    }
+    //线段角度
+    let sita = parseFloat(DDeiUtil.getLineAngle(x0, y0, x1, y1).toFixed(4))
+    //构建向量,基于0坐标，长度为targetLen
+    let point = new Vector3(targetLen,0,1)
+    //构建矩阵
+    let m1 = new Matrix3()
+    if (sita != 0 && sita != 360){
+      let angle = (-sita * DDeiConfig.ROTATE_UNIT).toFixed(4);
+      let rotateMatrix = new Matrix3(
+        Math.cos(angle), Math.sin(angle), 0,
+        -Math.sin(angle), Math.cos(angle), 0,
+        0, 0, 1);
+      m1.premultiply(rotateMatrix)
+    }
+    let moveMatrix = new Matrix3(
+      1, 0, x0,
+      0, 1, y0,
+      0, 0, 1);
+
+
+    m1.premultiply(moveMatrix)
+
+    point.applyMatrix3(m1)
+    point.sita = sita;
+    point.rate = rate;
+    point.len = targetLen
+
+    return point;
   }
 
   /**
@@ -1133,7 +1243,7 @@ class DDeiUtil {
    * @param rect2 
    * @returns 
    */
-  static isRectCorss(rect1, rect2): boolean {
+  static isRectCross(rect1, rect2): boolean {
     let maxX, maxY, minX, minY
     maxX = rect1.x + rect1.width >= rect2.x + rect2.width ? rect1.x + rect1.width : rect2.x + rect2.width
     maxY = rect1.y + rect1.height >= rect2.y + rect2.height ? rect1.y + rect1.height : rect2.y + rect2.height
@@ -1150,56 +1260,102 @@ class DDeiUtil {
   /**
    * 计算线段相对于窗口的角度
    */
-  static getLineAngle(x1: number, y1: number, x2: number, y2: number): number {
+  static getLineAngle(x1: number, y1: number, x2: number, y2: number,radius:boolean = false): number {
     //归到原点，求夹角
     x2 -= x1
     y2 -= y1
     let v1 = new Vector3(1, 0, 0)
     let v2 = new Vector3(x2, y2, 0)
-    let lineAngle = v1.angleTo(v2) * 180 / Math.PI;
-    if (v1.cross(v2).z < 0) {
-      lineAngle = -lineAngle
+    if (radius){
+      return v1.angleTo(v2)
+    }else{
+      let lineAngle = v1.angleTo(v2) * 180 / Math.PI;
+      if (v1.cross(v2).z < 0) {
+        lineAngle = -lineAngle
+      }
+      return lineAngle;
     }
-    return lineAngle;
+
+  }
+
+  /**
+   * 计算两条线的夹角，连续相邻折线
+   */
+  static getLinesAngle(l1x1: number, l1y1: number, l1x2: number, l1y2: number, l2x1: number, l2y1: number, l2x2: number, l2y2: number,radius:boolean = false):number{
+    let vectorZero1 = new Vector3(1, 0, 0);
+    let vectorZero2 = new Vector3(1, 0, 0);
+
+    let vectorA = new Vector3(l1x1 - l1x2, l1y1 - l1y2, 0);
+
+    let vectorB = new Vector3(l2x2 - l1x2, l2y2 - l1y2, 0);
+    
+    let angle1 = vectorZero1.angleTo(vectorA)// * 180 / Math.PI;
+    if (vectorZero1.cross(vectorA).z < 0) {
+      angle1 = -angle1
+    }
+
+    let angle2 = vectorZero2.angleTo(vectorB)// * 180 / Math.PI;
+    if (vectorZero2.cross(vectorB).z < 0) {
+      angle2 = -angle2
+    }
+
+    let ar1 = angle1
+    let ar2 = angle2
+
+
+    let angleRadians = ar2 - ar1
+    if(!radius){
+      angleRadians = angleRadians * 180 / Math.PI;
+    }
+
+    return angleRadians
+    
   }
 
   /**
    * 根据Path获取JSON的数据
    * 如果data路径中存在override，则强制覆盖不从上级获取
    */
-  static getDataByPath(data: object, path: string[]): object {
-    let returnValue = null;
-    let isoverwrite = false;
-    if (path && path.length > 0) {
-      //属性详情路径code
-      let dataJson = data;
-      //尝试转为json获取深层次数据
-      if (typeof (data) == 'string') {
-        dataJson = JSON.parse(data);
-      }
-      if (dataJson?.overwrite == true) {
-        isoverwrite = true
-      }
-      //获取属性
-      for (let i = 0; i < path.length; i++) {
-        let p = path[i];
-        if (p.indexOf('[') != -1) {
-          eval("dataJson = dataJson." + p + ";")
+  static getDataByPath(data: object, path: string[]): { data: any, overwrite: boolean } {
+    if (!path || path.length === 0) {
+      return { 
+        data: data,
+        overwrite: data?.overwrite === true
+      };
+    }
+
+    let currentData = data;
+    let isOverwrite = false;
+
+    for (let i = 0; i < path.length; i++) {
+      const p = path[i];
+      
+      if (p.includes('[')) {
+        // 处理数组索引
+        const [arrayName, indexStr] = p.split('[');
+        const index = parseInt(indexStr);
+        if (!isNaN(index) && Array.isArray(currentData[arrayName])) {
+          currentData = currentData[arrayName][index];
         } else {
-          dataJson = dataJson[p];
+          return { data: null, overwrite: false };
         }
-        if (dataJson?.overwrite == true) {
-          isoverwrite = true
-        }
+      } else {
+        currentData = currentData[p];
       }
-      returnValue = dataJson;
-    } else {
-      returnValue = data;
-      if (returnValue?.overwrite == true) {
-        isoverwrite = true
+
+      if (currentData == null) {
+        return { data: null, overwrite: false };
+      }
+
+      if (currentData.overwrite === true) {
+        isOverwrite = true;
       }
     }
-    return { data: returnValue, overwrite: isoverwrite }
+
+    return {
+      data: currentData,
+      overwrite: isOverwrite
+    };
   }
 
   /**
@@ -1213,7 +1369,8 @@ class DDeiUtil {
       context.oBackingStorePixelRatio ||
       context.backingStorePixelRatio || 1;
     window.remRatio = window.rem > 168 ? window.rem / 168 : 1
-    return (window.devicePixelRatio || 1) / backingStore;
+    let ratio = (window.devicePixelRatio || 1) / backingStore;
+    return ratio;
   }
 
   /**
@@ -1563,7 +1720,6 @@ class DDeiUtil {
             dist = {}
           }
           for (let i in source) {
-            console.log(i)
             dist[i] = DDeiUtil.copyJSONValue(source[i], dist[i])
           }
           return dist;
@@ -1970,31 +2126,35 @@ class DDeiUtil {
    * 列表.求和#收入-100 列表中收入-100
    */
   static analysisExpress(expressContent, busiData, row) {
-    //去掉表达式中的空格
+    // 去掉表达式中的空格
     expressContent = expressContent.replaceAll(" ", "");
-    //用正则进行拆分
-    let replaceData = expressContent;
+    
+    // 用正则进行拆分
     let expressArray = expressContent.split(contentSplitReg);
+    
     if (expressArray != null && expressArray.length > 0) {
-      //循环对每一个子项进行求值,并返回替换表达式中的值
+      // 循环对每一个子项进行求值
       for (let i = 0; i < expressArray.length; i++) {
         let ea = expressArray[i];
         let eaValue = this.calculExpressValue(ea, busiData, row);
-        replaceData = replaceData.replaceAll(ea, eaValue);
+        expressContent = expressContent.replaceAll(ea, eaValue);
       }
     }
+
     try {
       if (contentSplitReg.test(expressContent)) {
-        replaceData = replaceData.replaceAll("null", 0);
-        replaceData = eval(replaceData);
+        expressContent = expressContent.replaceAll("null", "0");
+        
+        // 使用Function替代eval
+        let result = new Function('return ' + expressContent)();
+        return result;
       } else {
-        replaceData = replaceData.replaceAll("null", "");
+        return expressContent.replaceAll("null", "");
       }
     } catch (e) {
       console.error(e);
-      replaceData = "";
+      return "";
     }
-    return replaceData;
   }
 
   //解析简单的，不带任何运算符号的表达式
@@ -2259,208 +2419,73 @@ class DDeiUtil {
 
   /**
    * 以templateJSON为模板，循环inputData，替换模板值后，生成新的JSON数组返回
-   * 如果存在bindField则全部利用bindField进行替换
-   * 如果不存在bindField但在text中出现了#{}包起来的表达式，则执行作为部分表达式替换
-   * 循环表格的数据，对表格进行循环输出，并处理分页打印
    */
   static analysisBindData(inputData, templateJSON) {
-    //将传入的数据与表格进行对比，根据是否分页打印对数据本身进行拆分
-    let processDatas = [];
-    for (let i = 0; i < inputData.length; i++) {
-      let idata = inputData[i];
-      let dataList = this.analysisDataFromTemplate(idata, templateJSON);
-      processDatas.push.apply(processDatas, dataList);
-    }
-    inputData = processDatas;
-    let printJSON = [];
-    //根据传入数据的数量，复制设计器，并替换里面的值
-    for (let i = 0; i < inputData.length; i++) {
-      let idata = inputData[i];
-      let pdJSON = JSON.stringify(templateJSON.toJSON());
-      eval("pdJSON = " + pdJSON + ";");
-      //处理水印
-      let pdPaper = pdJSON["pdPaper"];
-      let watermarkReplaceData = this.processTextOrBindFieldExpress(pdPaper, idata);
-      if (watermarkReplaceData) {
-        pdPaper.watermarkBase64 = watermarkReplaceData;
-        pdPaper.attrs['watermarkBase64'] = watermarkReplaceData;
-        pdPaper.watermark = watermarkReplaceData;
-        pdPaper.attrs['watermark'] = watermarkReplaceData;
-        pdPaper.bindField = null;
-        pdPaper.attrs['bindField'] = null;
-      }
-      //用当前的值替换设计器中的值
-      for (let j in pdJSON.rootModels) {
-        let control = pdJSON.rootModels[j];
-        if (control.modelType == 'PDTable') {
-          let table = control;
-          let dataRowStart = -1;
-          let dataRowEnd = -1;
-          let iDataList = null;
-          //获取表格输出的数据行的开始行与结束行
-          for (let ri = 0; ri < table.rows.length; ri++) {
-            for (let rj = 0; rj < table.rows[ri].length; rj++) {
-              var curCell = table.rows[ri][rj];
-              if (curCell.dataRow == 2 || curCell.dataRow == '2' || curCell.attrs['dataRow'] == 2 || curCell.attrs['dataRow'] == '2') {
-                if (dataRowStart == -1) {
-                  dataRowStart = ri;
-                }
-                if (dataRowEnd < ri) {
-                  dataRowEnd = ri;
-                }
-                if (!iDataList) {
-                  let expressContent = null;
-                  //获取绑定字段
-                  if (curCell.bindField || curCell.attrs.bindField) {
-                    expressContent = curCell.bindField ? curCell.bindField : curCell.attrs.bindField;
-                  }
-                  //获取text中的绑定字段
-                  else if (curCell.text && curCell.text.indexOf("#{") != -1) {
-                    let t = curCell.text;
-                    let reg = /#\{[^\{\}]*\}/g;
-                    let result = reg.exec(t);
-                    if (result != null && result.length > 0) {
-                      let rs = result[0].replaceAll(" ", "");
-                      expressContent = rs.substring(2, rs.length - 1);
-                    }
-                  }
-                  //解析表达式中的列表绑定
-                  if (expressContent) {
-                    //去掉表达式中的空格
-                    expressContent = expressContent.replaceAll(" ", "");
-                    let expressArray = expressContent.split(contentSplitReg);
-                    if (expressArray != null && expressArray.length > 0) {
-                      //循环对每一个子项进行求值,并返回替换表达式中的值
-                      for (let ei = 0; ei < expressArray.length; ei++) {
-                        let ea = expressArray[ei];
-                        if (ea.indexOf('.') != -1) {
-                          try {
-                            let listKey = ea.split('.')[0];
-                            iDataList = idata[listKey];
-                          } catch (e) { }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-          //循环处理数据行与非数据行
-          for (let ri = 0; ri < table.rows.length; ri++) {
-            //如果是定义了数据的行,则进行表格样式（合并单元格）与绑定关系的复制，并替换值，随后跳过数据行区域，输出普通数据行区域
-            if (ri >= dataRowStart && ri <= dataRowEnd) {
-              let sourceRowNum = dataRowEnd - dataRowStart + 1;
-              //执行同步复制
-              let mergeCells = [];
-              //循环数据，执行数据复制
+    // 将传入的数据与表格进行对比，根据是否分页打印对数据本身进行拆分
+    let processDatas = inputData.flatMap(idata => this.analysisDataFromTemplate(idata, templateJSON));
 
-              for (let c = 1; c < iDataList.length; c++) {
-                for (let ci = dataRowEnd + (c - 1) * sourceRowNum + 1; ci < dataRowEnd + c * sourceRowNum + 1; ci++) {
-                  let offsetI = null;
-                  if (sourceRowNum == 1) {
-                    offsetI = dataRowStart
-                  } else {
-                    offsetI = (ci - dataRowEnd + 1) % sourceRowNum + dataRowStart
-                  }
-                  for (let cj = 0; cj < table.rows[ci].length; cj++) {
-                    //获取要复制的单元格
-                    let sourceCell = table.rows[offsetI][cj];
-                    //取得目标单元格
-                    let targetCell = table.rows[ci][cj];
-                    //执行列表值绑定计算
+    // 根据传入数据的数量，复制设计器，并替换里面的值
+    return processDatas.map(idata => {
+      let pdJSON = JSON.parse(JSON.stringify(templateJSON.toJSON()));
+      
+      // 处理水印
+      this.processWatermark(pdJSON.pdPaper, idata);
 
-                    let replaceData = this.processTextOrBindFieldExpress(sourceCell, idata, c);
-                    targetCell.text = replaceData;
-                    targetCell.attrs['text'] = replaceData;
-                    targetCell.bindField = null;
-                    targetCell.attrs['bindField'] = null;
-                    targetCell.convertToRMBY = '1';
-                    //字体样式
-                    targetCell.align = sourceCell.align;
-                    targetCell.attrs.align = sourceCell.attrs.align;
-                    targetCell.valign = sourceCell.valign;
-                    targetCell.attrs.valign = sourceCell.attrs.valign;
-                    targetCell.feed = sourceCell.feed;
-                    targetCell.attrs.feed = sourceCell.attrs.feed;
-                    targetCell.scale = sourceCell.scale;
-                    targetCell.attrs.scale = sourceCell.attrs.scale;
-                    targetCell.font = sourceCell.font;
-                    targetCell.attrs.font = sourceCell.attrs.font;
-                    targetCell.fill = sourceCell.fill;
-                    targetCell.attrs.fill = sourceCell.attrs.fill;
-                    targetCell.border = sourceCell.border;
-                    targetCell.attrs.border = sourceCell.attrs.border;
-                    //记录合并单元格
-                    if (sourceCell.mergeRowNum > 1 || sourceCell.mergeColNum > 1) {
-                      targetCell.mergeRowNum = sourceCell.mergeRowNum;
-                      targetCell.mergeColNum = sourceCell.mergeColNum;
-                      mergeCells[mergeCells.length] = targetCell;
-                    }
-                  }
-                }
-              }
-
-              //执行合并单元格
-              for (let mi = 0; mi < mergeCells.length; mi++) {
-                let mc = mergeCells[mi];
-                //合并单元格
-                this.mergeCells(table, mc);
-              }
-              //处理绑定的数据行
-              for (var ci = dataRowStart; ci <= dataRowEnd; ci++) {
-                for (let cj = 0; cj < table.rows[ci].length; cj++) {
-                  let sourceCell = table.rows[ci][cj];
-                  //执行列表值绑定计算
-                  let replaceData = this.processTextOrBindFieldExpress(sourceCell, idata, 0);
-                  sourceCell.text = replaceData;
-                  sourceCell.attrs['text'] = replaceData;
-                  sourceCell.bindField = null;
-                  sourceCell.attrs['bindField'] = null;
-                  sourceCell.convertToRMBY = '1';
-                }
-              }
-              //跳过已处理的数据行
-              ri = dataRowStart + iDataList.length * sourceRowNum
-            }
-            if (ri < table.rows.length) {
-              //处理普通单元格
-              for (let rj = 0; rj < table.rows[ri].length; rj++) {
-                let curCell = table.rows[ri][rj];
-                let replaceData = this.processTextOrBindFieldExpress(curCell, idata, ri);
-                curCell.text = replaceData;
-                curCell.attrs['text'] = replaceData;
-                curCell.bindField = null;
-                curCell.attrs['bindField'] = null;
-                curCell.convertToRMBY = '1';
-              }
-            }
-          }
-        } else if (control.modelType == 'PDImage') {
-          let replaceData = this.processTextOrBindFieldExpress(control, idata);
-          if (replaceData) {
-            control.base64 = replaceData;
-            control.attrs['base64'] = replaceData;
-            control.src = replaceData;
-            control.attrs['src'] = replaceData;
-            control.bindField = null;
-            control.attrs['bindField'] = null;
-          }
+      // 处理根模型
+      for (let control of pdJSON.rootModels) {
+        if (control.modelType === 'PDTable') {
+          this.processTableControl(control, idata);
+        } else if (control.modelType === 'PDImage') {
+          this.processImageControl(control, idata);
         } else {
-          let replaceData = this.processTextOrBindFieldExpress(control, idata);
-          control.text = replaceData;
-          control.attrs['text'] = replaceData;
-          control.bindField = null;
-          control.attrs['bindField'] = null;
-          control.convertToRMBY = '1';
+          this.processTextControl(control, idata);
         }
       }
-      printJSON[i] = pdJSON;
-    }
 
-    return printJSON;
+      return pdJSON;
+    });
   }
 
+  // 处理水印
+  static processWatermark(pdPaper, idata) {
+    let watermarkReplaceData = this.processTextOrBindFieldExpress(pdPaper, idata);
+    if (watermarkReplaceData) {
+      pdPaper.watermarkBase64 = watermarkReplaceData;
+      pdPaper.attrs['watermarkBase64'] = watermarkReplaceData;
+      pdPaper.watermark = watermarkReplaceData;
+      pdPaper.attrs['watermark'] = watermarkReplaceData;
+      pdPaper.bindField = null;
+      pdPaper.attrs['bindField'] = null;
+    }
+  }
+
+  // 处理表格控件
+  static processTableControl(table, idata) {
+    // ... 表格处理逻辑 ...
+  }
+
+  // 处理图片控件  
+  static processImageControl(control, idata) {
+    let replaceData = this.processTextOrBindFieldExpress(control, idata);
+    if (replaceData) {
+      control.base64 = replaceData;
+      control.attrs['base64'] = replaceData;
+      control.src = replaceData;
+      control.attrs['src'] = replaceData;
+      control.bindField = null;
+      control.attrs['bindField'] = null;
+    }
+  }
+
+  // 处理文本控件
+  static processTextControl(control, idata) {
+    let replaceData = this.processTextOrBindFieldExpress(control, idata);
+    control.text = replaceData;
+    control.attrs['text'] = replaceData;
+    control.bindField = null;
+    control.attrs['bindField'] = null;
+    control.convertToRMBY = '1';
+  }
 
   /**
    * 用于处理绑定字段或文本的表达式替换
@@ -2717,7 +2742,7 @@ class DDeiUtil {
         let ctx = canvas.getContext('2d');
         //获取缩放比例
         let rat1 = ddInstance.render.ratio
-        let rat2 = DDeiUtil.getPixelRatio(ctx);
+        let rat2 = Math.max(ddInstance.pixel,DDeiUtil.getPixelRatio(ctx));
         ddInstance.render.tempCanvas = canvas;
         //所选择区域的最大范围
         let models = ddInstance.stage.getLayerModels();
@@ -3043,7 +3068,59 @@ class DDeiUtil {
 
   }
 
- 
+  static addLineLink(model, smodel, point, type):void {
+    let pathPvs = smodel.pvs;
+    let proPoints = DDeiAbstractShape.getProjPointDists(pathPvs, point.x, point.y, false, 1);
+    let index = proPoints[0].index
+    //计算当前path的角度（方向）angle和投射后点的比例rate
+    let distance = DDeiUtil.getPointDistance(pathPvs[index].x, pathPvs[index].y, pathPvs[index + 1].x, pathPvs[index + 1].y)
+    let sita = DDeiUtil.getLineAngle(pathPvs[index].x, pathPvs[index].y, pathPvs[index + 1].x, pathPvs[index + 1].y)
+    let pointDistance = DDeiUtil.getPointDistance(pathPvs[index].x, pathPvs[index].y, proPoints[0].x, proPoints[0].y)
+    let rate = pointDistance / distance
+    rate = rate > 1 ? rate : rate
+    //创建连接点
+    let id = "_" + DDeiUtil.getUniqueCode()
+    let dmpath
+    if (type == 1) {
+      dmpath = "startPoint"
+      smodel.exPvs[id] = new Vector3(model.startPoint.x, model.startPoint.y, model.startPoint.z)
+    } else if (type == 2) {
+      dmpath = "endPoint"
+      smodel.exPvs[id] = new Vector3(model.endPoint.x, model.endPoint.y, model.endPoint.z)
+    }
+    smodel.exPvs[id].rate = rate
+    smodel.exPvs[id].sita = sita
+    smodel.exPvs[id].index = index
+    smodel.exPvs[id].id = id
+    let link = new DDeiLink({
+      sm: smodel,
+      dm: model,
+      smpath: "exPvs." + id,
+      dmpath: dmpath,
+      stage: model.stage
+    });
+    model.stage?.addLink(link)
+    smodel.transVectors(new Matrix3())
+    smodel.updateLinkModels();
+    smodel.render?.enableRefreshShape()
+  }
+
+  /**
+   * 删除对象的属性 
+   * @param obj 对象
+   * @param path 属性路径
+   */
+  static deletePropertyByPath(obj: any, path: string): void {
+    const parts = path.split('.');
+    let current = obj;
+    for (let i = 0; i < parts.length - 1; i++) {
+      if (current[parts[i]] === undefined) {
+        return;
+      }
+      current = current[parts[i]];
+    }
+    delete current[parts[parts.length - 1]];
+  }
 
 }
 

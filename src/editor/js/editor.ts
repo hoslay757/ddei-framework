@@ -8,7 +8,7 @@ import DDeiFile from "./file";
 import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import { markRaw } from "vue";
 import config from "./config"
-import { cloneDeep } from "lodash";
+import { clone, cloneDeep } from "lodash";
 import FONTS from "../../framework/js/fonts/font"
 import { Matrix3, Vector3 } from 'three'
 import DDeiThemeBase from "@ddei-core/themes/theme";
@@ -23,6 +23,7 @@ import { DDeiLink } from "@ddei-core/framework/js/models/link"
 import type DDeiStage from "../../framework/js/models/stage";
 import DDeiLine from "../../framework/js/models/line"
 import DDeiFileState from "./enums/file-state";
+
 /**
  * DDei图形编辑器类，用于维护编辑器实例、全局状态以及全局属性
  */
@@ -34,6 +35,9 @@ class DDeiEditor {
     this.files = props.files ? props.files : []
     this.currentFileIndex = props.currentFileIndex ? props.currentFileIndex : -1;
     this.state = DDeiEditorState.DESIGNING;
+    if (props.currentLayout){
+      this.currentLayout = props.currentLayout
+    }
   }
   // ============================ 静态变量 ============================
 
@@ -127,7 +131,24 @@ class DDeiEditor {
     if (id && containerid) {
       if (!DDeiEditor.INSTANCE_POOL.get(id)) {
         //初始化DDeiEditor对象
-        let editorInstance = new DDeiEditor({ id: id, containerid: containerid });
+        let editorInitOptions = clone(options)
+        editorInitOptions.id = id
+        editorInitOptions.containerid = containerid
+        //对配置文件进行排序
+        editorInitOptions.extensions?.sort((a, b) => {
+          return a.order - b.order
+        })
+        for (let i = 0; i < editorInitOptions.extensions?.length; i++) {
+          if (editorInitOptions.extensions[i].getInitConfig) {
+            let initConfigData = editorInitOptions.extensions[i].getInitConfig()
+            //对配置进行复写、替换、或追加
+            if (initConfigData) {
+              DDeiEditor.changeInitConfigData(editorInitOptions, initConfigData);
+            }
+          }
+        }
+
+        let editorInstance = new DDeiEditor(editorInitOptions);
         if (!DDeiUtil.getAttrValueByConfig) {
           DDeiUtil.getAttrValueByConfig = DDeiEditorUtil.getAttrValueByConfig;
         }
@@ -151,6 +172,9 @@ class DDeiEditor {
         if (!DDeiUtil.getLineInitJSON) {
           DDeiUtil.getLineInitJSON = DDeiEditorUtil.getLineInitJSON;
         }
+        if (!DDeiUtil.getModelInitJSON) {
+          DDeiUtil.getModelInitJSON = DDeiEditorUtil.getModelInitJSON;
+        }
         if (!DDeiUtil.getBusiData) {
           DDeiUtil.getBusiData = DDeiEditorUtil.getBusiData;
         }
@@ -169,8 +193,16 @@ class DDeiEditor {
         if (!DDeiUtil.notifyChange) {
           DDeiUtil.notifyChange = DDeiEditorUtil.notifyChange;
         }
+
         if (!DDeiUtil.isBackActive) {
           DDeiUtil.isBackActive = DDeiEditorUtil.isBackActive;
+        }
+        if (!DDeiUtil.getEditorInsByDDei) {
+          DDeiUtil.getEditorInsByDDei = DDeiEditorUtil.getEditorInsByDDei;
+        }
+
+        if (!DDeiUtil.createControl) {
+          DDeiUtil.createControl = DDeiEditorUtil.createControl;
         }
         
         
@@ -222,7 +254,10 @@ class DDeiEditor {
 
         //装载插件
         if (options) {
-          editorInstance.options = options
+          
+          editorInstance.options = editorInitOptions
+          
+          
           options.extensions?.forEach(item => editorInstance.registerExtension(item))
           //注册快捷键
           for (let i in editorInstance.hotkeys){
@@ -310,6 +345,66 @@ class DDeiEditor {
       }
     }
     return null;
+  }
+
+  /**
+   * 修改初始化数据，有append，rewrite，remove三种
+   * @param editor 
+   * @param config 
+   * @param initConfigData 
+   */
+  static changeInitConfigData(config:object,initConfigData:object){
+    if (initConfigData.remove) {
+      initConfigData.remove.extensions?.forEach(ext => {
+        let findedNi = -1
+        for (let ni = 0; ni < config.extensions?.length; ni++) {
+          let existsExt = config.extensions[ni]
+          if (existsExt == ext || existsExt.name == ext.name || (existsExt && ext && existsExt.name == ext) || (ext && existsExt && existsExt == ext.name)) {
+            findedNi = ni
+            break;
+          }
+        }
+        if (findedNi != -1) {
+          config.extensions.splice(findedNi, 1)
+        }
+      });
+    }
+
+    if (initConfigData.append) {
+      if (!config.extensions){
+        config.extensions = []
+      }
+      initConfigData.append.extensions?.forEach(ext => {
+        let finded = false
+        for (let ni = 0; ni < config.extensions?.length;ni++){
+          let existsExt = config.extensions[ni]
+          if (existsExt == ext || existsExt.name == ext.name || (existsExt && ext && existsExt.name == ext) || (ext && existsExt && existsExt == ext.name)){
+            finded = true
+            break;
+          }
+        }
+        if (!finded) {
+          config.extensions.push(ext)
+        }
+      });
+    }
+
+    if (initConfigData.rewrite) {
+      for (let k in initConfigData.rewrite){
+        if(k != "config"){
+          config[k] = initConfigData.rewrite[k]
+        }
+        
+      }
+      if(initConfigData.rewrite.config){
+        for (let k in initConfigData.rewrite.config) {
+          if (!config.config){
+            config.config = {}
+          }
+          config.config[k] = initConfigData.rewrite.config[k]
+        }
+      }
+    }
   }
 
   /**
@@ -597,9 +692,9 @@ class DDeiEditor {
   menus: object = markRaw({});
   //当前引入的外部字体
   fonts: object[] = FONTS;
-  //当前引入的外部renderViewers以及创建后的实例
-  renderViewers: object[] = markRaw([]);
-  renderViewerIns: object = markRaw({});
+
+  //自定义viewer的映射，key为model.id, value为渲染元素
+  viewerMap: Map<string, object> = markRaw(new Map());
   //当前引入的外部菜单
   menuMapping: object = markRaw({});
   //当前引入的外部控件配置
@@ -1020,7 +1115,7 @@ class DDeiEditor {
    * @param applyRatio 应用缩放
    * @param notify 通知刷新
    */
-  addControls(controls: object[],applyRatio: boolean = true, notify: boolean = true):DDeiAbstractShape[]{
+  addControls(controls: object[], applyRatio: boolean = true, notify: boolean = true, beforeInvoke:boolean = false):DDeiAbstractShape[]{
     if (controls?.length > 0){
     //添加控件到图层
     let stage = this.ddInstance.stage
@@ -1033,7 +1128,17 @@ class DDeiEditor {
         if (controlDefine) {
           //根据配置创建控件
           let controlModel = DDeiEditorUtil.createControl(controlDefine, this)
-          if (controlModel?.length > 0) {
+          let valid = false
+          if (!beforeInvoke) {
+            valid = true
+          } else {
+            let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_CREATE_BEFORE", "CREATE", { models: controlModel }, this.ddInstance)
+            if (rsState == 0 || rsState == 1) {
+              valid = true
+            }
+          }
+
+          if (valid && controlModel?.length > 0) {
             let cc = controlModel[0]
             //设置控件值
             for (let i in control){
@@ -1043,7 +1148,9 @@ class DDeiEditor {
             }
             
             //设置大小以及坐标
-            let stageRatio = !applyRatio?1/stage.getStageRatio():1
+            let stageRatio1 = stage.getStageRatio();
+            let stageRatio = !applyRatio ? 1 / stageRatio1 :1
+            
             let m1 = new Matrix3()
             //缩放至目标大小
             if (control.width || control.height) {
@@ -1056,10 +1163,13 @@ class DDeiEditor {
               m1.premultiply(scaleMatrix)
             }
                       
+            let centerMoveX = (-stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2) / stageRatio1
+            let centerMoveY = (-stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2) / stageRatio1
             let moveMatrix = new Matrix3(
-              1, 0, -stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2, //+ this.ddInstance.render.container.offsetWidth/2,
-              0, 1, -stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2,// + this.ddInstance.render.container.offsetHeight / 2,
+              1, 0, centerMoveX,
+              0, 1, centerMoveY,
               0, 0, 1);
+
             
             m1.premultiply(moveMatrix)
             //位移至画布中心的相对位置
@@ -1071,8 +1181,8 @@ class DDeiEditor {
               m1.premultiply(move1Matrix)
             } else if ((control.x || control.x == 0) && (control.y || control.y == 0)){
               let move1Matrix = new Matrix3(
-                1, 0, -(-stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2) + control.x * stageRatio,
-                0, 1, -(-stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2) + control.y * stageRatio,
+                1, 0, -centerMoveX + control.x * stageRatio,
+                0, 1, -centerMoveY + control.y * stageRatio,
                 0, 0, 1);
               m1.premultiply(move1Matrix)
             }
@@ -1101,7 +1211,7 @@ class DDeiEditor {
    * @param applyRatio 应用缩放
    * @param notify 通知刷新
    */
-  addControlsToLayer(controls: object[], layerIndex: number = -1, applyRatio: boolean = true, notify: boolean = true): DDeiAbstractShape[]|null {
+  addControlsToLayer(controls: object[], layerIndex: number = -1, applyRatio: boolean = true, notify: boolean = true,beforeInvoke:boolean = false): DDeiAbstractShape[]|null {
     //添加控件到图层
     let stage = this.ddInstance.stage
     if (layerIndex > -1 && layerIndex < stage?.layers?.length){
@@ -1115,7 +1225,17 @@ class DDeiEditor {
           if (controlDefine) {
             //根据配置创建控件
             let controlModel = DDeiEditorUtil.createControl(controlDefine, this)
-            if (controlModel?.length > 0) {
+            let valid = false
+            if (!beforeInvoke){
+              valid = true
+            }else{
+              let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_CREATE_BEFORE", "CREATE", { models: controlModel }, this.ddInstance)
+              if (rsState == 0 || rsState == 1) {
+                valid = true
+              }
+            }
+            
+            if (valid && controlModel?.length > 0) {
               let cc = controlModel[0]
               //设置控件值
               for (let i in control) {
@@ -1125,7 +1245,8 @@ class DDeiEditor {
               }
 
               //设置大小以及坐标
-              let stageRatio = !applyRatio ? 1/stage.getStageRatio() : 1;
+              let stageRatio1 = stage.getStageRatio()
+              let stageRatio = !applyRatio ? 1 / stageRatio1 : 1;
               let m1 = new Matrix3()
               //缩放至目标大小
               if (control.width || control.height) {
@@ -1138,9 +1259,12 @@ class DDeiEditor {
                 m1.premultiply(scaleMatrix)
               }
 
+              let centerMoveX = (-stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2) / stageRatio1
+              let centerMoveY = (-stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2) / stageRatio1
+              
               let moveMatrix = new Matrix3(
-                1, 0, -stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2, //+ this.ddInstance.render.container.offsetWidth/2,
-                0, 1, -stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2,// + this.ddInstance.render.container.offsetHeight / 2,
+                1, 0, centerMoveX,
+                0, 1, centerMoveY,
                 0, 0, 1);
 
               m1.premultiply(moveMatrix)
@@ -1153,8 +1277,8 @@ class DDeiEditor {
                 m1.premultiply(move1Matrix)
               } else if ((control.x || control.x == 0) && (control.y || control.y == 0)) {
                 let move1Matrix = new Matrix3(
-                  1, 0, -(-stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2) + control.x * stageRatio,
-                  0, 1, -(-stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2) + control.y * stageRatio,
+                  1, 0, -centerMoveX + control.x * stageRatio,
+                  0, 1, -centerMoveY + control.y * stageRatio,
                   0, 0, 1);
                 m1.premultiply(move1Matrix)
               }
@@ -1190,21 +1314,53 @@ class DDeiEditor {
     let layer = stage?.layers[stage?.layerIndex];
     let shapes: DDeiAbstractShape[] = []
     if (layer) {
-      let stageRatio = !applyRatio ? 1/stage.getStageRatio() : 1
+      let stageRatio1 = stage.getStageRatio()
+      let stageRatio = !applyRatio ? 1 / stageRatio1 : 1
 
-      let moveX = -stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2
-      let moveY = -stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2
+      let moveX = (-stage.wpv.x + (this.ddInstance.render.canvas.width / this.ddInstance.render.ratio) / 2) / stageRatio1
+      let moveY = (-stage.wpv.y + (this.ddInstance.render.canvas.height / this.ddInstance.render.ratio) / 2) / stageRatio1
       
       controls.forEach(control => {
         if (control.startPoint && control.endPoint) {
           //读取配置
-          let lineJson = DDeiUtil.getLineInitJSON();
-          lineJson.id = "line_" + (++stage.idIdx)
+          let lineJson = DDeiUtil.getLineInitJSON(this.ddInstance,control.smodel, control.emodel);
+          let lineDefine = this.controls?.get(control?.model ? control.model : lineJson.modelCode ? lineJson.modelCode : lineJson.model ? lineJson.model : lineJson.id ? lineJson.id : lineJson.code);
+          let initJSON = clone(lineDefine)
+          initJSON.modelCode = initJSON.id
+          initJSON.id = "line_" + (++stage.idIdx)
+
           //线段类型
-          lineJson.type = 2
+          if (!lineJson.type) {
+            initJSON.type = 2
+          } else {
+            initJSON.type = lineJson.type
+          }
+          if (initJSON.img) {
+            initJSON.fill = { type: 2, image: initJSON.img };
+            delete initJSON.img
+          }
+          if (initJSON.define) {
+            for (let i in initJSON?.define) {
+              initJSON[i] = initJSON.define[i];
+            }
+            delete initJSON.define
+          }
+
+          delete initJSON.attrDefineMap
+          delete initJSON.filters
+          delete initJSON.icon
+          delete initJSON.groups
+          delete initJSON.name
+          delete initJSON.def
+          delete initJSON.code
+          delete initJSON.desc
+          delete initJSON.attrs
           
-          //根据线的类型生成不同的初始化点
-          lineJson.type = 2
+          initJSON.composes?.forEach(comp => {
+            if(comp){
+              delete comp.attrs
+            }
+          });
           //直线两个点
           let sx,sy,ex,ey
           if (control.startPoint.offsetX || control.startPoint.offsetX == 0) {
@@ -1227,14 +1383,11 @@ class DDeiEditor {
           } else if (control.endPoint.y || control.endPoint.y == 0) {
             ey = control.endPoint.y * stageRatio
           }
-          control.spvs?.forEach(spv => {
-            spv.x = spv.x * stageRatio
-            spv.y = spv.y * stageRatio
-          });
+          
           
           //跳过计算点
           if (!calPoints && control.pvs?.length >= 2) {
-            lineJson.pvs = []
+            initJSON.pvs = []
             control.pvs.forEach(pv => {
               let pvx,pvy
               if (pv.offsetX || pv.offsetX == 0) {
@@ -1247,15 +1400,23 @@ class DDeiEditor {
               } else if (pv.y || pv.y == 0) {
                 pvy = pv.y * stageRatio
               }
-              lineJson.pvs.push(new Vector3(pvx, pvy, 1))
+              initJSON.pvs.push(new Vector3(pvx-sx, pvy-sy, 1))
             });
           }else{
-            lineJson.pvs = [new Vector3(sx, sy, 1), new Vector3(ex, ey, 1)]
+            initJSON.pvs = [new Vector3(0, 0, 1), new Vector3(ex-sx, ey-sx, 1)]
           }
-          lineJson.cpv = lineJson.pvs[0]
+          control.spvs?.forEach(spv => {
+            spv.x = (spv.x-sx) * stageRatio
+            spv.y = (spv.y-sy) * stageRatio
+          });
+          initJSON.cpv = initJSON.pvs[0]
+          let moveMatrix = new Matrix3(
+            1, 0, sx,
+            0, 1, sy,
+            0, 0, 1);
           //初始化开始点和结束点
 
-          let cc = DDeiLine.initByJSON(lineJson, { currentStage: stage, currentLayer: layer, currentContainer: layer });
+          let cc = DDeiLine.initByJSON(initJSON, { currentStage: stage, currentLayer: layer, currentContainer: layer });
           
           //设置控件值
           for (let i in control) {
@@ -1263,7 +1424,7 @@ class DDeiEditor {
               cc[i] = control[i];
             }
           }
-         
+          cc.transVectors(moveMatrix)
           //构造线段关键属性
           let smodel,emodel
           if (control.smodel) {
@@ -1283,6 +1444,7 @@ class DDeiEditor {
               stage: stage
             });
             stage.addLink(link)
+            smodel.transVectors(new Matrix3())
             
           }
           if (control.emodel) {
@@ -1302,6 +1464,7 @@ class DDeiEditor {
               stage: stage
             });
             stage.addLink(link)
+            emodel.transVectors(new Matrix3())
           }
           if (!control.isShadowControl) {
             layer.addModel(cc, false)
@@ -1314,6 +1477,8 @@ class DDeiEditor {
             smodel?.updateLinkModels();
             emodel?.updateLinkModels();
           }
+          smodel?.render?.enableRefreshShape()
+          emodel?.render?.enableRefreshShape()
           shapes.push(cc);
           
         }
@@ -1332,7 +1497,7 @@ class DDeiEditor {
     this.bus.push(DDeiEnumBusCommandType.AddHistroy);
     this.changeState(DDeiEditorState.DESIGNING);
     // this.bus.push(DDeiEditorEnumBusCommandType.ClearTemplateUI);
-    this.bus.push(DDeiEnumBusCommandType.ClearTemplateVars);
+
     this.bus.push(DDeiEditorEnumBusCommandType.RefreshEditorParts);
     this.bus.push(DDeiEnumBusCommandType.StageChangeSelectModels);
     this.bus.push(DDeiEnumBusCommandType.UpdateSelectorBounds);
@@ -1348,6 +1513,8 @@ class DDeiEditor {
       this.notifyChange();
     }
   }
+
+  
 
   /**
    * 清除当前画布所有控件
@@ -1517,7 +1684,9 @@ class DDeiEditor {
         if (sheetIndex >=0){
           file.changeSheet(sheetIndex)
         }
+        ddInstance.stage.destroyRender()
         let stage = sheets[file.currentSheetIndex].stage;
+        
         stage.ddInstance = ddInstance;
         //刷新页面
         ddInstance.stage = stage;

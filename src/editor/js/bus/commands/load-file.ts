@@ -127,7 +127,6 @@ class DDeiEditorCommandLoadFile extends DDeiBusCommand {
             
             // if (!stage.wpv) {
             //   //缺省定位在画布中心点位置
-            //   debugger
             //   let w = ddInstance.render.canvas.width / ddInstance.render.ratio
             //   let h = ddInstance.render.canvas.height / ddInstance.render.ratio
             //   stage.wpv = {
@@ -203,7 +202,6 @@ class DDeiEditorCommandLoadFile extends DDeiBusCommand {
         
         // if (!stage.wpv) {
         //   //缺省定位在画布中心点位置
-        //   debugger
         //   let w = ddInstance.render.canvas.width / ddInstance.render.ratio
         //   let h = ddInstance.render.canvas.height / ddInstance.render.ratio
         //   stage.wpv = {

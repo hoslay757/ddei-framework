@@ -228,7 +228,7 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
    */
   after(data: object, bus: DDeiBus, evt: Event): boolean {
     //改变光标
-    bus.ddInstance?.bus?.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: "crosshair" }, evt);
+    bus.ddInstance?.bus?.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: "default" }, evt);
     return true;
   }
 

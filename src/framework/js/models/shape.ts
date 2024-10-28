@@ -61,10 +61,12 @@ abstract class DDeiAbstractShape {
 
     //控制点
     this.ovs = []
+    
     if (props.ovs) {
+      
       props.ovs.forEach(pvd => {
         let pv = new Vector3(pvd.x, pvd.y, pvd.z || pvd.z == 0 ? pvd.z : 1)
-        let ovi = new Vector3(pvd.ovi.x, pvd.ovi.y, pvd.ovi.z || pvd.ovi.z == 0 ? pvd.ovi.z : 1)
+        
         if (pvd.index || pvd.index == 0) {
           pv.index = pvd.index
         }
@@ -74,7 +76,11 @@ abstract class DDeiAbstractShape {
         if (pvd.sita || pvd.sita == 0) {
           pv.sita = pvd.sita
         }
-        pv.ovi = ovi
+        
+        if(pvd.ovi){
+          let ovi = new Vector3(pvd.ovi.x, pvd.ovi.y, pvd.ovi.z || pvd.ovi.z == 0 ? pvd.ovi.z : 1)
+          pv.ovi = ovi
+        }
         this.ovs.push(pv);
       });
     }
@@ -133,6 +139,11 @@ abstract class DDeiAbstractShape {
   cIndex: number | null;
   // 旋转,0/null 不旋转，默认0
   rotate: number | null;
+  
+  // 是否隐藏
+  hidden:boolean | null = null;
+
+  __destroyed:boolean|null = null;
 
   //中心点向量
   cpv: object;
@@ -201,78 +212,62 @@ abstract class DDeiAbstractShape {
    */
   initPVS() {
     if (!this.cpv) {
-      if (this.initCPV) {
-        this.cpv = new Vector3(this.initCPV.x, this.initCPV.y, 1)
-        delete this.initCPV
-      } else {
-        this.cpv = new Vector3(0, 0, 1)
-      }
+      this.cpv = this.initCPV ? new Vector3(this.initCPV.x, this.initCPV.y, 1) : new Vector3(0, 0, 1);
+      delete this.initCPV;
     }
 
-
-    //通过定义初始化ovs
     if (!(this.ovs?.length > 0)) {
-      //通过采样计算pvs,可能存在多组pvs
-      let defineOvs = DDeiUtil.getControlDefine(this)?.define?.ovs;
+      const defineOvs = DDeiUtil.getControlDefine(this)?.define?.ovs;
       if (defineOvs?.length > 0) {
-        //全局缩放因子
-        let stageRatio = 1;//this.getStageRatio();
-        let ovs = []
-        defineOvs.forEach(ovd => {
-          //如果类型为3，则根据初始的角度、r计算初始位置
-          let scaleX = this.width / 100
-          let scaleY = this.height / 100
+        const stageRatio = 1; // this.getStageRatio();
+        const scaleX = this.width / 100;
+        const scaleY = this.height / 100;
+
+        this.ovs = defineOvs.map(ovd => {
           if (ovd.constraint.type == 3) {
-            let rad = -ovd.isita * DDeiConfig.ROTATE_UNIT
-            let x = ovd.constraint.r * Math.cos(rad)
-            let y = ovd.constraint.r * Math.sin(rad)
-            let ov = new Vector3(x * scaleX * stageRatio, y * scaleY * stageRatio, ovd.z || ovd.z == 0 ? ovd.z : 1)
-            let ovi = new Vector3(0, 0, ovd.z || ovd.z == 0 ? ovd.z : 1)
-            ov.ovi = ovi
-            ovs.push(ov)
+            const rad = -ovd.isita * DDeiConfig.ROTATE_UNIT;
+            const x = ovd.constraint.r * Math.cos(rad);
+            const y = ovd.constraint.r * Math.sin(rad);
+            const ov = new Vector3(x * scaleX * stageRatio, y * scaleY * stageRatio, ovd.z || ovd.z == 0 ? ovd.z : 1);
+            ov.ovi = new Vector3(0, 0, ovd.z || ovd.z == 0 ? ovd.z : 1);
+            return ov;
           } else {
-            let ov = new Vector3(ovd.x * scaleX * stageRatio, ovd.y * scaleY * stageRatio, ovd.z || ovd.z == 0 ? ovd.z : 1)
-            let ovi = new Vector3(ovd.ix * scaleX * stageRatio, ovd.iy * scaleY * stageRatio, ovd.iz || ovd.iz == 0 ? ovd.iz : 1)
-            ov.ovi = ovi
-            ovs.push(ov)
+            const ov = new Vector3(ovd.x * scaleX * stageRatio, ovd.y * scaleY * stageRatio, ovd.z || ovd.z == 0 ? ovd.z : 1);
+            ov.ovi = new Vector3(ovd.ix * scaleX * stageRatio, ovd.iy * scaleY * stageRatio, ovd.iz || ovd.iz == 0 ? ovd.iz : 1);
+            return ov;
           }
         });
-        this.ovs = ovs
       }
     }
-    //如果是极坐标，则用极坐标的方式来计算pvs、hpv等信息，否则采用pvs的方式
-    if (this.poly == 2) {
-      //极坐标系中，采用基于原点的100向量表示水平
-      if (!(this.hpv?.length > 0)) {
-        this.hpv = [new Vector3(0, 0, 1), new Vector3(100, 0, 1)]
-      }
-      //用于计算缩放大小比率的点PV，以100为参考
-      if (!this.bpv) {
-        this.bpv = new Vector3(this.cpv.x + this.width, this.cpv.y + this.height, 1)
-      }
 
+    if (this.poly == 2) {
+      if (!(this.hpv?.length > 0)) {
+        this.hpv = [new Vector3(0, 0, 1), new Vector3(100, 0, 1)];
+      }
+      if (!this.bpv) {
+        this.bpv = new Vector3(this.cpv.x + this.width, this.cpv.y + this.height, 1);
+      }
       this.executeSample();
     } else {
       if (!this.pvs || this.pvs.length == 0) {
-        this.pvs = [];
-        this.pvs[0] = new Vector3(-this.width / 2, -this.height / 2, 1)
-        this.pvs[1] = new Vector3(this.width / 2, -this.height / 2, 1)
-        this.pvs[2] = new Vector3(this.width / 2, this.height / 2, 1)
-        this.pvs[3] = new Vector3(-this.width / 2, this.height / 2, 1)
+        const halfWidth = this.width / 2;
+        const halfHeight = this.height / 2;
+        this.pvs = [
+          new Vector3(-halfWidth, -halfHeight, 1),
+          new Vector3(halfWidth, -halfHeight, 1),
+          new Vector3(halfWidth, halfHeight, 1),
+          new Vector3(-halfWidth, halfHeight, 1)
+        ];
       }
       this.initHPV();
     }
 
-    //计算宽松判定矩阵
     this.calRotate();
     this.calLoosePVS();
-    this.composes?.forEach(compose => {
-      compose.initPVS()
-    });
+    this.composes?.forEach(compose => compose.initPVS());
     if (!this.isShadowControl) {
       this.updateExPvs();
     }
-
   }
 
   /**
@@ -477,6 +472,7 @@ abstract class DDeiAbstractShape {
     }
   }
 
+
   getOperatePVS(compose: boolean = false) {
     let pvs = this.operatePVS ? this.operatePVS : this.pvs
     let returnPVS = []
@@ -549,6 +545,7 @@ abstract class DDeiAbstractShape {
       let tcop = this.composes[i]
       tcop.syncVectors(scop, clonePV)
     }
+    this.getTopContainer()?.render?.enableRefreshShape()
     this.render?.enableRefreshShape()
   }
 
@@ -654,9 +651,7 @@ abstract class DDeiAbstractShape {
       for (let k = sIdx; k < eIdx; k++) {
         for (let i = 0; i < attrPaths.length; i++) {
           if ((value === null || value === undefined || (isNumber(value) && isNaN(value))) && emptyDelete) {
-            try {
-              eval("delete this.sptStyle[" + k + "]." + attrPaths[i])
-            } catch (e) { }
+            DDeiUtil.deletePropertyByPath(this.sptStyle, k + "." + attrPaths[i])
             if (this.sptStyle[k]?.textStyle && JSON.stringify(this.sptStyle[k].textStyle) == "{}") {
               delete this.sptStyle[k].textStyle
             }
@@ -773,6 +768,7 @@ abstract class DDeiAbstractShape {
     this.y = outRect.y
     this.width = outRect.width
     this.height = outRect.height
+    
     //记录缩放后的大小以及坐标
     this.essBounds = outRect;
 
@@ -817,8 +813,8 @@ abstract class DDeiAbstractShape {
     // 记录缩放后的大小以及坐标
     this.essBounds.x += this.cpv.x
     this.essBounds.y += this.cpv.y
-
-
+    this.essBounds.x1 += this.cpv.x
+    this.essBounds.y1 += this.cpv.y
   }
 
 
@@ -950,7 +946,7 @@ abstract class DDeiAbstractShape {
     //同步调整链接控件的数据
     let removeLinks = []
     links?.forEach(link => {
-      if (!ignoreModelIds || ignoreModelIds?.indexOf(link.dm?.id) == -1) {
+      if (!link.disabled && (!ignoreModelIds || ignoreModelIds?.indexOf(link.dm?.id) == -1)) {
         let dpv = link.getDistPV();
         if (dpv) {
           let spv = link.getSourcePV();
@@ -989,41 +985,86 @@ abstract class DDeiAbstractShape {
       let x, y
       let pathPvs = this.opps;
       let st, en
-      if (!(ov.index || ov.index == 0) || pathPvs.length <= ov.index) {
-        let proPoints = DDeiAbstractShape.getProjPointDists(pathPvs, ov.x, ov.y, false, 1);
-        let index = proPoints[0].index
-        ov.index = index
-        x = proPoints[0].x
-        y = proPoints[0].y
-        //计算当前path的角度（方向）angle和投射后点的比例rate
-        if (index == pathPvs.length - 1) {
-          st = index;
-          en = 0;
-        } else {
-          st = index;
-          en = index + 1;
+      //oppoint:1为操作点只判定点，2为操作点，判定点以及中间，3为操作点，判定圆心
+      let op2Paths = []
+      for (let qi = 0; qi < pathPvs.length; qi++) {
+        let opp = pathPvs[qi];
+        if(opp.oppoint == 2){
+          op2Paths.push(opp)
         }
-        let pointDistance = DDeiUtil.getPointDistance(pathPvs[st].x, pathPvs[st].y, ov.x, ov.y)
-        let distance = DDeiUtil.getPointDistance(pathPvs[st].x, pathPvs[st].y, pathPvs[en].x, pathPvs[en].y)
-        let rate = pointDistance / distance
-        ov.rate = rate > 1 ? rate : rate
-      } else {
-        let index = ov.index
-        //计算当前path的角度（方向）angle和投射后点的比例rate
-        if (index == pathPvs.length - 1) {
-          st = index;
-          en = 0;
-        } else {
-          st = index;
-          en = index + 1;
-        }
-        x = pathPvs[st].x + (ov.rate * (pathPvs[en].x - pathPvs[st].x))
-        y = pathPvs[st].y + (ov.rate * (pathPvs[en].y - pathPvs[st].y))
       }
-      let sita = parseFloat(DDeiUtil.getLineAngle(pathPvs[st].x, pathPvs[st].y, pathPvs[en].x, pathPvs[en].y).toFixed(4))
-      ov.x = x
-      ov.y = y
-      ov.sita = sita
+
+      if (op2Paths.length > 0){
+        //判断在操作点路径或者圆的边缘上
+        if (!(ov.index || ov.index == 0) || op2Paths.length <= ov.index) {
+          let index = -1
+          for (let qi = 0; qi < op2Paths.length; qi++) {
+            let isInLine = false
+            if (qi == op2Paths.length - 1) {
+              isInLine = DDeiUtil.isPointInLine(ov, op2Paths[qi], op2Paths[0])
+            } else {
+              isInLine = DDeiUtil.isPointInLine(ov, op2Paths[qi], op2Paths[qi + 1])
+            }
+            if (isInLine) {
+              index = qi
+              break;
+            }
+          }
+          if (index != -1) {
+            x = ov.x
+            y = ov.y
+            ov.index = index
+          } else {
+            let proPoints = DDeiAbstractShape.getProjPointDists(op2Paths, ov.x, ov.y, false, 1);
+            x = proPoints[0].x
+            y = proPoints[0].y
+            ov.index = proPoints[0].index
+            index = proPoints[0].index
+          }
+
+          //计算当前path的角度（方向）angle和投射后点的比例rate
+          if (index == op2Paths.length - 1) {
+            st = index;
+            en = 0;
+          } else {
+            st = index;
+            en = index + 1;
+          }
+          let pointDistance = DDeiUtil.getPointDistance(op2Paths[st].x, op2Paths[st].y, ov.x, ov.y)
+          let distance = DDeiUtil.getPointDistance(op2Paths[st].x, op2Paths[st].y, op2Paths[en].x, op2Paths[en].y)
+          let rate = pointDistance / distance
+          ov.rate = rate > 1 ? rate : rate
+        } else {
+          let index = ov.index
+          //计算当前path的角度（方向）angle和投射后点的比例rate
+          if (index == op2Paths.length - 1) {
+            st = index;
+            en = 0;
+          } else {
+            st = index;
+            en = index + 1;
+          }
+          x = op2Paths[st].x + (ov.rate * (op2Paths[en].x - op2Paths[st].x))
+          y = op2Paths[st].y + (ov.rate * (op2Paths[en].y - op2Paths[st].y))
+        }
+        ov.x = x
+        ov.y = y
+      }
+      let outRect = this.essBounds; 
+      
+      //以ov点位于路径上的角度作为ov点的角度
+      // let sita = parseFloat(DDeiUtil.getLineAngle(pathPvs[st].x, pathPvs[st].y, pathPvs[en].x, pathPvs[en].y).toFixed(4))
+      if (ov.x == outRect.x && ov.y > outRect.y && ov.y < outRect.y1){
+        ov.sita = 180
+      } else if (ov.x == outRect.x1 && ov.y > outRect.y && ov.y < outRect.y1) {
+        ov.sita = 0
+      } else if (ov.y == outRect.y && ov.x > outRect.x && ov.x < outRect.x1) {
+        ov.sita = -90
+      }else if (ov.y == outRect.y1 && ov.x > outRect.x && ov.x < outRect.x1) {
+        ov.sita = 90
+      }
+      
+      
     }
     //更新关联图形
     this.updateLinkModels();
@@ -1041,7 +1082,9 @@ abstract class DDeiAbstractShape {
         let ov = this.ovs[i]
         let ovd = defineOvs[i]
         //依附于Path，则根据比例和index更新位置
+        
         switch (ovd.constraint.type) {
+          //不允许移动
           case 0:
             {
               let dx = ov.x - ov.ovi.x
@@ -1058,6 +1101,7 @@ abstract class DDeiAbstractShape {
               this.updateOVSLink(ov, ovd, m1)
               break;
             };
+          //跟随路径
           case 1: {
             //构建验证路径
             let pathPvs = []
@@ -1151,6 +1195,45 @@ abstract class DDeiAbstractShape {
             }
             break;
           }
+          //不允许移动，固定路径位置，沿路径方向，固定在等比例或者等长度位置（长度不足则按照0.5比例位置）
+          case 5: {
+            //构建验证路径
+            let pathPvs = []
+            let pvsStr = ovd.constraint.pvs;
+            if (pvsStr?.length > 0) {
+              pvsStr.forEach(pvsS => {
+                //联动的点
+                let pvsData = DDeiUtil.getDataByPathList(this, pvsS)
+                if (Array.isArray(pvsData)) {
+                  pvsData.forEach(pvsD => {
+                    pathPvs.push(pvsD)
+                  })
+                } else {
+                  pathPvs.push(pvsData)
+                }
+
+              })
+            }
+            if (pathPvs.length == 2) {
+              let mode = 1;
+              let value
+              if (ovd.constraint.rate || ovd.constraint.rate == 0) {
+                mode = 2;
+                value = ovd.constraint.rate
+              }else{
+                value = ovd.constraint.len ? ovd.constraint.len : 0
+              }
+              
+              let point = DDeiUtil.getPathPoint(pathPvs[0].x, pathPvs[0].y, pathPvs[1].x, pathPvs[1].y, mode, value,0.5)
+              ov.x = point.x
+              ov.y = point.y
+              ov.sita = point.sita
+              ov.rate = point.rate
+              ov.len = point.len
+              this.updateOVSLink(ov, ovd)
+            }
+            break;
+          }
         }
       }
     }
@@ -1187,6 +1270,48 @@ abstract class DDeiAbstractShape {
             }
             break;
           }
+          //类型2 同步中心点
+          case 2: {
+            let pvsStr = link.pvs;
+            if (pvsStr?.length > 0) {
+              pvsStr.forEach(pvsS => {
+                //联动的点
+                let pvsData = DDeiUtil.getDataByPathList(this, pvsS)
+                if (pvsData) {
+                  let m1 = new Matrix3()
+                  let moveMatrix = new Matrix3(
+                    1, 0, -pvsData.cpv.x,
+                    0, 1, -pvsData.cpv.y,
+                    0, 0, 1);
+                  m1.premultiply(moveMatrix)
+                  if (pvsData.rotate != 0 && pvsData.rotate != 360) {
+                    let angle = (pvsData.rotate * DDeiConfig.ROTATE_UNIT).toFixed(4);
+                    let rotateMatrix = new Matrix3(
+                      Math.cos(angle), Math.sin(angle), 0,
+                      -Math.sin(angle), Math.cos(angle), 0,
+                      0, 0, 1);
+                    m1.premultiply(rotateMatrix)
+                  }
+                  if (point.sita != 0 && point.sita != 360) {
+                    let angle = (-point.sita * DDeiConfig.ROTATE_UNIT).toFixed(4);
+                    let rotateMatrix = new Matrix3(
+                      Math.cos(angle), Math.sin(angle), 0,
+                      -Math.sin(angle), Math.cos(angle), 0,
+                      0, 0, 1);
+                    m1.premultiply(rotateMatrix)
+                  }
+                  let moveMatrix1 = new Matrix3(
+                    1, 0, point.x,
+                    0, 1, point.y,
+                    0, 0, 1);
+                  m1.premultiply(moveMatrix1)
+                  pvsData.transVectors(m1)
+                }
+              });
+
+            }
+            break;
+          }
           //类型99 执行脚本，适合处理逻辑比较复杂的关系
           case 99: {
             if (!link.evalScript && link.script) {
@@ -1211,6 +1336,22 @@ abstract class DDeiAbstractShape {
    */
   getAccuContainer(): DDeiAbstractShape {
     return null;
+  }
+
+  /**
+   * 获取顶级容器（Layer之下）
+   * @return 获取layer之下的顶级容器
+   */
+  getTopContainer(): DDeiAbstractShape {
+    let model = this;
+    while (model.pModel && model.pModel.baseModelType != "DDeiLayer"){
+      model = model.pModel;
+    }
+    if(model == this){
+      return null
+    }else{
+      return model
+    }
   }
 
   /**
@@ -1741,34 +1882,72 @@ abstract class DDeiAbstractShape {
    * 移除自身的方法
    */
   destroyed() {
-    if(!this.isShadowControl){
-      //找到以自己为source的链接
-      let sourceLinks = this.stage?.getSourceModelLinks(this.id);
-      //删除链接
-      sourceLinks?.forEach(link => {
-        if (link.dm) {
-          link.dm.pModel.removeModel(link.dm, true)
-        }
-        this.stage?.removeLink(link);
-      })
+    if (!this.__destroyed){
+      if(!this.isShadowControl){
+        //找到以自己为source的链接
+        let sourceLinks = this.stage?.getSourceModelLinks(this.id);
+        //删除链接
+        sourceLinks?.forEach(link => {
+          if (link.dm) {
+            link.dm.pModel.removeModel(link.dm, true)
+          }
+          this.stage?.removeLink(link);
+        })
+        
+        let lines = this.stage?.getModelsByBaseType("DDeiLine");
+        //删除线链接
+        lines?.forEach(line => {
+          if (line.linkModels?.has(this.id)) {
+            
+            line.linkModels.delete(this.id)
+          }
+        })
+      }
+  
+      if (this.render?.tempCanvas) {
+        
+        this.render.tempCanvas.remove()
+        delete this.render.tempCanvas
+      }
+      if(this.render?.viewer){
+        DDeiUtil.removeRenderViewer(this)
+      }
       
-      let lines = this.stage?.getModelsByBaseType("DDeiLine");
-      //删除线链接
-      lines?.forEach(line => {
-        if (line.linkModels?.has(this.id)) {
-          
-          line.linkModels.delete(this.id)
-        }
-      })
+      this.composes?.forEach(comp => {
+        
+        comp.destroyed()
+      });
+      
+      
+      this.render = null
+      this.__destroyed = true
+      DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_DEL_AFTER", DDeiEnumOperateType.DESTROYED, { models: [this] }, this.stage?.ddInstance, null)
     }
+    
+  }
+
+  /**
+   * 移除渲染器
+   */
+  destroyRender() {
+
     if (this.render?.tempCanvas) {
       this.render.tempCanvas.remove()
       delete this.render.tempCanvas
     }
-    
+    if (this.render?.viewer) {
+      DDeiUtil.removeRenderViewer(this)
+    }
+
+    this.composes?.forEach(comp => {
+
+      comp.destroyRender()
+    });
+
+
     this.render = null
-    DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_DEL_AFTER", DDeiEnumOperateType.DESTROYED, { models: [this] }, this.stage?.ddInstance, null)
   }
+
   /**
      * 将模型转换为JSON
      */
@@ -1952,6 +2131,13 @@ abstract class DDeiAbstractShape {
     selector.width -= 2 * paddingWeight
     selector.height -= 2 * paddingWeight
 
+    if (selector.width + deltaWidth < 10) {
+      return
+    }
+
+    if (selector.height + deltaHeight < 10) {
+      return
+    }
 
     //计算平移和缩放矩阵
     let selectCPVXDelta = deltaX == 0 ? deltaWidth / 2 : deltaX / 2
@@ -1959,6 +2145,8 @@ abstract class DDeiAbstractShape {
     let scaleWRate = 1 + deltaWidth / selector.width / stageRatio
     let scaleHRate = 1 + deltaHeight / selector.height / stageRatio
 
+
+    
     let itemMoveMatrix = new Matrix3(
       1, 0, -selector.cpv.x,
       0, 1, -selector.cpv.y,
@@ -1999,14 +2187,19 @@ abstract class DDeiAbstractShape {
 
       m2.premultiply(itemMove1Matrix)
 
-
-      item.transVectors(m2)
+      if(item.baseModelType == 'DDeiContainer'){
+        item.layoutManager?.transVectors(m2);
+      }else{
+        item.transVectors(m2)
+      }
+      
 
 
 
       item.initPVS()
 
-      item.render?.enableRefreshShape()
+      item.getTopContainer()?.render?.enableRefreshShape()
+      this.render?.enableRefreshShape()
 
     })
   }
@@ -2268,7 +2461,7 @@ abstract class DDeiAbstractShape {
         let item = container.models.get(container.midList[mg]);
 
         //如果射线相交，则视为选中
-        if (item.isInAreaLoose(x, y, loose)) {
+        if (!DDeiUtil.isModelHidden(item) && item.isInAreaLoose(x, y, loose)) {
           //如果当前控件状态为选中，且是容器，则往下寻找控件，否则返回当前控件
           if ((item.state == DDeiEnumControlState.SELECTED || deep) && item.baseModelType == "DDeiContainer") {
             let subControls = DDeiAbstractShape.findBottomModelsByArea(item, x, y, loose, deep);
@@ -2354,7 +2547,7 @@ abstract class DDeiAbstractShape {
       for (let mg = container.midList.length - 1; mg >= 0; mg--) {
         let item = container.models.get(container.midList[mg]);
         //如果射线相交，则视为选中
-        if (DDeiAbstractShape.isInsidePolygon(item.pvs, { x: x, y: y })) {
+        if (!DDeiUtil.isModelHidden(item) && DDeiAbstractShape.isInsidePolygon(item.pvs, { x: x, y: y })) {
           //获取真实的容器控件
           let accuContainer = item.getAccuContainerByPos(x, y);
           if (accuContainer) {

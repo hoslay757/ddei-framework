@@ -33,7 +33,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
    */
   drawShape(): void {
     //获得 2d 上下文对象
-    let canvas = this.ddRender.getCanvas();
+    let canvas = this.ddRender.getCanvas()
     let ctx = canvas.getContext('2d');
     //保存状态
     ctx.save();
@@ -58,7 +58,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       } else {
         if (models?.length == 1 && (models[0].mirrorX || models[0].mirrorY)){
           let model = models[0]
-          let oldRat1 = this.ddRender.ratio * this/this.stage?.getStageRatio();
+          let oldRat1 = this.ddRender.ratio * this.stage?.getStageRatio();
           ctx.translate(model.cpv.x * oldRat1, model.cpv.y * oldRat1)
           if (model.mirrorX) {
             ctx.scale(-1, 1)
@@ -105,7 +105,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       let ovs = model.ovs;
       if (ovs?.length > 0) {
         //获得 2d 上下文对象
-        let canvas = this.ddRender.getCanvas();
+        let canvas = this.ddRender.getCanvas()
         let ctx = canvas.getContext('2d');
         let ratio = this.ddRender.ratio * this.stage.getStageRatio();
         let weight = 4
@@ -116,7 +116,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         for (let i = 0; i < ovs.length; i++) {
           let point = ovs[i]
           let pointDefine = ovsDefine[i]
-          if (pointDefine?.constraint?.type) {
+          if (pointDefine?.constraint?.type && pointDefine.constraint.type != 5) {
             ctx.beginPath();
             ctx.moveTo((point.x + weight) * ratio, point.y * ratio)
             ctx.lineTo(point.x * ratio, (point.y + weight) * ratio)
@@ -146,7 +146,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
   drawEditBorder(): void {
     if (this.stageRender.editorShadowControl?.textArea?.length > 3) {
       //获得 2d 上下文对象
-      let canvas = this.ddRender.getCanvas();
+      let canvas = this.ddRender.getCanvas()
       let ctx = canvas.getContext('2d');
       ctx.save()
       //获取全局缩放比例
@@ -202,7 +202,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       let lineModel = Array.from(this.stage?.selectedModels?.values())[0];
       if (lineModel.baseModelType == 'DDeiLine') {
         //获得 2d 上下文对象
-        let canvas = this.ddRender.getCanvas();
+        let canvas = this.ddRender.getCanvas()
         let ctx = canvas.getContext('2d');
         //获取全局缩放比例
         let stageRatio = this.stage.getStageRatio()
@@ -224,6 +224,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         let w30 = 2 * w15
         //保存状态
         ctx.save();
+        // ctx.translate(rat1,rat1)
         switch (type) {
           case 1: {
             this.drawSEPoint(pvs, w10, w20, ctx, rat1, ratio)
@@ -335,7 +336,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       return;
     }
     //获得 2d 上下文对象
-    let canvas = this.ddRender.getCanvas();
+    let canvas = this.ddRender.getCanvas()
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
     let stageRatio = this.stage?.getStageRatio()
@@ -496,24 +497,28 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       includedModels = this.stage?.selectedModels
       selectNumber = 1
     }
+    this.upIncludeModels?.forEach(im => {
+      im?.render?.enableRefreshShape()
+    });
     if (includedModels && includedModels.size > selectNumber) {
       includedModels.forEach((model, key) => {
         //获得 2d 上下文对象
-        let canvas = this.ddRender.getCanvas();
+        let canvas = this.ddRender.getCanvas()
         let ctx = canvas.getContext('2d');
         //保存状态
         ctx.save();
         model.render.enableRefreshShape()
         if (model.baseModelType == "DDeiLine") {
-          model.render.drawShape({ color: "red", dash: [] });
+          model.render.drawShape({ color: "red", dash: [] },0,null,99999);
         } else {
           //绘制临时Border
-          model.render.drawBorderAndComposesBorder({ type: 1, width: 1, color: "red", border: { type: 1, width: 1, color: "red" } },false);
+          model.render.drawShape({ type: 1, width: 1, color: "red", border: { type: 1,dash:[], width: 1, color: "red" } },0,null,99999);
 
         }
         ctx.restore()
       });
     }
+    this.upIncludeModels = includedModels
 
   }
 
@@ -542,7 +547,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       if (ovPoint) {
         let ovsDefine = DDeiUtil.getControlDefine(models[0])?.define?.ovs;
         let ovd = ovsDefine[models[0].ovs.indexOf(ovPoint)];
-        if (ovd?.constraint?.type) {
+        if (ovd?.constraint?.type && ovd.constraint.type != 5) {
           isOvPoint = true;
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: "pointer" }, evt);
         }
@@ -703,16 +708,45 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       }
       //旋转
       else if (this.model.passIndex == 9) {
-        //获取当前元素的中心位置
-        let dragObj = {
-          x: ex,
-          y: ey,
-          cx: this.model.cpv.x,
-          cy: this.model.cpv.y
+        
+        let pContainerModel = this.stageRender.currentOperateContainer;
+        if (!pContainerModel) {
+          pContainerModel = this.layer;
         }
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
-        //当前操作状态：改变控件大小中
-        this.stageRender.operateState = DDeiEnumOperateState.CONTROL_ROTATE
+
+        let selectedModels = pContainerModel.getSelectedModels();
+        if (selectedModels) {
+          if (selectedModels.set) {
+            selectedModels = Array.from(selectedModels.values());
+          }
+          let stop = false;
+          for (let i = 0; i < selectedModels.length; i++) {
+            let parentContainer = selectedModels[i].pModel;
+            if (parentContainer?.layoutManager) {
+              if (!parentContainer.layoutManager.canChangeRotate()) {
+                stop = true;
+                break;
+              }
+            }
+          }
+          if (!stop){
+            //获取当前元素的中心位置
+            let dragObj = {
+              x: ex,
+              y: ey,
+              cx: this.model.cpv.x,
+              cy: this.model.cpv.y,
+              models:selectedModels,
+              container: pContainerModel
+            }
+            let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_ROTATE_BEFORE", DDeiEnumOperateType.ROTATE, { models: dragObj.models }, this.stage.ddInstance, evt)
+            if (rsState == 0 || rsState == 1) {
+              this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
+              //当前操作状态：改变控件大小中
+              this.stageRender.operateState = DDeiEnumOperateState.CONTROL_ROTATE
+            }
+          }
+        }
       }
       //拖拽移动
       else if (this.model.passIndex == 13) {

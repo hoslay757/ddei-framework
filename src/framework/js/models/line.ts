@@ -95,16 +95,20 @@ class DDeiLine extends DDeiAbstractShape {
     //初始化composes
     if (json?.composes?.length > 0) {
       let composes = []
-      json?.composes.forEach(composeJSON => {
+      for (let ci = 0; ci < json.composes.length;ci++){
+        let composeJSON  = json.composes[ci];
         let def = DDeiUtil.getControlDefine(composeJSON)
+        
         let composeModel: DDeiAbstractShape = ddInstance.controlModelClasses[def.type].initByJSON(
           composeJSON,
           tempData,
           false
         );
+        composeModel.modelCode = composeModel.id
+        composeModel.id = model.id+"_comp_"+ci
         composeModel.pModel = model
         composes.push(composeModel)
-      });
+      };
       model.composes = composes
     }
     //基于初始化的宽度、高度，构建向量
@@ -187,7 +191,7 @@ class DDeiLine extends DDeiAbstractShape {
                 rectMap.set(l2.id, DDeiAbstractShape.getOutRectByPV([l2]))
               }
               let l2Rect = rectMap.get(l2.id);
-              if (DDeiUtil.isRectCorss(l1Rect, l2Rect)) {
+              if (DDeiUtil.isRectCross(l1Rect, l2Rect)) {
                 for (let pi = 0; pi < l1.pvs.length - 1; pi++) {
                   let p1 = l1.pvs[pi];
                   let p2 = l1.pvs[pi + 1];
@@ -577,7 +581,6 @@ class DDeiLine extends DDeiAbstractShape {
     })
     let sAngle = null;
     let eAngle = null;
-
     let startModel = startLink?.sm ? startLink?.sm : this.stage.tempStartOPpoint?.model
     let endModel = endLink?.sm ? endLink?.sm : this.stage.tempCursorOPpoint?.model
     let startRect, endRect;
@@ -630,16 +633,7 @@ class DDeiLine extends DDeiAbstractShape {
     let recommendPaths = getRecommendPath(sAngle, eAngle, startPoint, endPoint, startRect, endRect, outRect)
 
     //构建障碍物
-    let ignoreIds = [this.id]
-    let lines = this.layer.getModelsByBaseType("DDeiLine");
-    lines.forEach(l => {
-      l.linkModels?.forEach(link => {
-        if (link.dm?.id) {
-          ignoreIds.push(link.dm?.id)
-        }
-      })
-    })
-    let allModels = this.layer.getSubModels(ignoreIds, 10)
+    let allModels = this.layer.getSubModelsByFilter("LINE_OBI_FILTER",null, 10,{line:this})
     let obis = []
     allModels.forEach(model => {
       if (model.baseModelType != "DDeiLine" && model.operatePVS?.length > 0) {
@@ -680,6 +674,7 @@ class DDeiLine extends DDeiAbstractShape {
         forcePaths.push(newPV)
       }
     })
+    
     //执行自动路径生成
     let linePathData = calAutoLinePath(
       {
@@ -838,6 +833,7 @@ class DDeiLine extends DDeiAbstractShape {
   calLoosePVS(): void {
     //构造N个点，包围直线或曲线范围
     this.loosePVS = this.pvs
+
     //创建临时canvas绘制线段到临时canvas上，通过临时线段判断canvas的状态
     this.updateLooseCanvasSync();
   }
@@ -938,17 +934,13 @@ class DDeiLine extends DDeiAbstractShape {
   isInAreaLoose(x: number | undefined = undefined, y: number | undefined = undefined, loose: boolean = false): boolean {
     if (this.looseCanvas){
       let isArea = false
-      //直线判断
-      if(this.type == 1){
-        let projPoint = this.getProjPoint({ x: x, y: y }
-          , { in: -10, out: 10 }, 1, 2)
-        if (projPoint){
-          isArea = true
-        }
-        
-      }else{
-        isArea = super.isInAreaLoose(x, y, loose)
+      //通过垂直线来判断
+      let projPoint = this.getProjPoint({ x: x, y: y }
+        , { in: -10, out: 10 }, 1, 2)
+      if (projPoint){
+        isArea = true
       }
+      
       if (isArea) {
         let ctx = this.looseCanvas.getContext("2d");
         let stageRatio = this.stage?.getStageRatio()
@@ -983,7 +975,10 @@ class DDeiLine extends DDeiAbstractShape {
       distLinks?.forEach(dl => {
         //删除源点
         if (dl?.sm && dl?.smpath) {
-          eval("delete dl.sm." + dl.smpath)
+          DDeiUtil.deletePropertyByPath(dl.sm, dl.smpath)
+          dl.sm.transVectors(new Matrix3())
+          dl.sm.updateLinkModels();
+          dl.sm.render?.enableRefreshShape()
         }
         this.stage?.removeLink(dl);
       })
@@ -993,7 +988,8 @@ class DDeiLine extends DDeiAbstractShape {
     if (!this.isShadowControl) {
       this.linkModels?.forEach(lm => {
         if (lm.dm) {
-          lm.dm.pModel.removeModel(lm.dm, true)
+          lm.dm.pModel?.removeModel(lm.dm)
+          lm.dm.destroyed()
         }
       })
       this.linkModels?.clear()
@@ -1046,6 +1042,7 @@ class DDeiLine extends DDeiAbstractShape {
     this.composes?.forEach(compose => {
       compose.initRender()
     });
+    delete this.__destroyed
   }
 
 

@@ -41,12 +41,14 @@ class DDeiLayer {
     let ddInstance = layer.stage?.ddInstance;
     tempData[layer.id] = layer;
     let models: Map<String, DDeiAbstractShape> = new Map<String, DDeiAbstractShape>();
-    let midList = new Array();
+    let midList = layer.midList ? layer.midList : new Array();
     for (let key in json.models) {
       let item = json.models[key];
       let model = ddInstance.controlModelClasses[item.modelType].loadFromJSON(item, tempData);
       models.set(key, model)
-      midList.push(model.id)
+      if (midList.indexOf(model.id) == -1){
+        midList.push(model.id)
+      }
     }
     tempData['currentLayer'] = null;
     layer.models = models;
@@ -207,6 +209,43 @@ class DDeiLayer {
   }
 
   /**
+   * 获取子模型,通过一个过滤器
+   */
+  getSubModelsByFilter(filterName: string|null = null,ignoreModelIds: string[], level: number = 1, params:object): DDeiAbstractShape[] {
+    let models: DDeiAbstractShape[] = [];
+    this.midList.forEach(mid => {
+      if (ignoreModelIds && ignoreModelIds?.indexOf(mid) != -1) {
+        return;
+      }
+      let subModel = null
+      if (this.models.get) {
+        subModel = this.models.get(mid)
+      } else {
+        subModel = this.models[mid]
+      }
+      if (subModel) {
+        let filterMethod = null;
+        if (filterName){
+          let define = DDeiUtil.getControlDefine(subModel)
+          if (define && define.filters && define.filters[filterName]){
+            filterMethod = define.filters[filterName];
+          }
+        }
+        if (!filterMethod || filterMethod(subModel,params)) {
+          if (level > 1 && subModel?.getSubModelsByFilter) {
+            let subModels = subModel.getSubModelsByFilter(filterName, ignoreModelIds, level - 1, params);
+            models = models.concat(subModels)
+          }
+          models.push(subModel);
+        }
+        
+      }
+    })
+    return models;
+  }
+
+
+  /**
    * 添加模型，并维护关系
    * @param model 被添加的模型
    */
@@ -236,7 +275,7 @@ class DDeiLayer {
   */
   removeModels(models: DDeiAbstractShape[], destroy: boolean = false,notify:boolean = true): void {
     models?.forEach(model => {
-      this.removeModel(model, destroy)
+      this.removeModel(model, destroy,false)
     })
     if (notify) {
       this.notifyChange()
@@ -254,6 +293,38 @@ class DDeiLayer {
 
   cascadeRemoveSelf(): void {
   }
+
+  /**
+   * 移除自身的方法
+   */
+  destroyed() {
+    if (this.render?.containerViewer) {
+
+      this.render.containerViewer.remove()
+      delete this.render.containerViewer
+    }
+    this.render = null
+
+    this.models?.forEach((item,key)=>{
+      item?.destroyed()
+    })
+  }
+
+  /**
+   * 移除渲染器
+   */
+  destroyRender() {
+    if (this.render?.containerViewer) {
+      this.render.containerViewer.remove()
+      delete this.render.containerViewer
+    }
+    
+    this.models?.forEach((item, key) => {
+      item?.destroyRender()
+    })
+    this.render = null
+  }
+
   /**
    * 移除模型，并维护关系
    * @param model 被移除的模型

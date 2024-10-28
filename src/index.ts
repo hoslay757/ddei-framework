@@ -128,4 +128,7 @@ export * from "./lifecycle/lifecycle"
 export * from "./lifecycle/funcdata"
 export * from "./lifecycle/callresult"
 
+export * from "./framework/js/models/polygon-container"
+export * from "./framework/js/views/canvas/polygon-container-render"
+
 

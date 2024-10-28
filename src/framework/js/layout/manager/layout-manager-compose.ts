@@ -14,6 +14,20 @@ class DDeiLayoutManagerCompose extends DDeiLayoutManager {
    */
   changeSubModelBounds(): void {
   }
+
+  transVectors(matrix):void{
+    this.container.transVectors(matrix)
+  }
+
+  /**
+   * 根据子模型大小，修改自身大小
+   */
+  changeParentsBounds(): void {
+    this.container.updateBoundsByModels();
+    if (this.container.pModel) {
+      this.container.pModel.changeParentsBounds();
+    }
+  }
   canAppend(x: number, y: number, models: DDeiAbstractShape[]): boolean {
     return false;
   }

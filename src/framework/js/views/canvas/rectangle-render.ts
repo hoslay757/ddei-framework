@@ -83,24 +83,26 @@ class DDeiRectangleCanvasRender extends DDeiAbstractShapeRender {
   drawShape(tempShape): void {
     let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
     if (rsState == 0 || rsState == 1) {
-      //获得 2d 上下文对象
-      let canvas = this.ddRender.getCanvas();
-      let ctx = canvas.getContext('2d');
-      ctx.save();
-      //绘制边框
-      this.drawBorder(tempShape);
+      let rsState1 = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", DDeiEnumOperateType.VIEW, { models: [this.model],tempShape: tempShape }, this.ddRender.model, null)
+      if (rsState1 == 0 || rsState1 == 1) {
+        //获得 2d 上下文对象
+        let canvas = this.ddRender.getCanvas();
+        let ctx = canvas.getContext('2d');
+        ctx.save();
+        //绘制边框
+        this.drawBorder(tempShape);
 
-      //绘制填充
-      this.drawFill(tempShape);
+        //绘制填充
+        this.drawFill(tempShape);
 
-      //绘制文本
-      this.drawText(tempShape);
+        //绘制文本
+        this.drawText(tempShape);
 
-      //清空绘图时计算的临时变量
-      this.tempFillAreaRect = null
+        //清空绘图时计算的临时变量
+        this.tempFillAreaRect = null
 
-      ctx.restore();
-
+        ctx.restore();
+      }
       DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_AFTER", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
       
     }

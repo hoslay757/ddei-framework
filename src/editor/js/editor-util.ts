@@ -51,12 +51,20 @@ class DDeiEditorUtil {
   /**
   * 获取线的初始化JSON定义
   */
-  static getLineInitJSON(): object {
-    let dataJson = {
-      modelCode: "100401",
-    };
+  static getLineInitJSON(ddInstance, smodel, emodel): object {
+    if (!DDeiEditorUtil.lineInitJSON) {
+      DDeiEditorUtil.lineInitJSON = {
+        modelCode: "100401",
+      };
+    }
+    return DDeiEditorUtil.lineInitJSON;
+  }
 
-    return dataJson
+  /**
+  * 获取控件的初始化JSON定义
+  */
+  static getModelInitJSON(ddInstance, beginModel, models): object {
+    return models;
   }
 
   /**
@@ -83,7 +91,8 @@ class DDeiEditorUtil {
           inputEle = document.createElement("textarea")
           inputEle.setAttribute("id", inputId)
           inputEle.setAttribute("style", "width:100px;filter: opacity(0);user-select: none;pointer-events: none;border:none;resize:none;padding:0;z-index:9999;position:fixed;left:0;top:0;display:none;outline:none;");
-          document.body.appendChild(inputEle);
+          let editorEle = document.getElementById(editor.id);
+          editorEle.appendChild(inputEle);
           editor.quickEditorInput = inputEle;
           inputEle.enterValue = function () {
             //设置属性值
@@ -92,6 +101,9 @@ class DDeiEditorUtil {
             delete ddInstance.stage.brushDataText
             if (editor.quickEditorModel) {
               editor.quickEditorModel.sptStyle = ddInstance.stage.render.editorShadowControl.sptStyle
+              if (ddInstance.stage.render.editorShadowControl?.isShadowControl) {
+                ddInstance.stage.render.editorShadowControl.destroyed()
+              }
               ddInstance.stage.render.editorShadowControl = null;
               editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { models: [editor.quickEditorModel], paths: ["text"], value: inputEle.value }, null, true);
               editor.bus.push(DDeiEnumBusCommandType.NodifyChange);
@@ -637,12 +649,39 @@ class DDeiEditorUtil {
               left = absPos.left - (dialog.clientWidth / 2 - el.clientWidth / 2) + (pos.dx ? pos.dx : 0)
               top = (absPos.top + el.clientHeight + (pos.dy ? pos.dy : 0))
             } break;
+            //基于触发元素的左边
+            case 6: {
+              let absPos = DDeiUtil.getDomAbsPosition(el, editor)
+              left = absPos.left + (pos.dx ? pos.dx : 0) - dialog.clientWidth
+              top = (absPos.top + (pos.dy ? pos.dy : 0))
+            } break;
+            //基于触发元素的左边居中
+            case 7: {
+              let absPos = DDeiUtil.getDomAbsPosition(el, editor)
+              left = absPos.left + (pos.dx ? pos.dx : 0) - dialog.clientWidth
+              top = (absPos.top - (dialog.clientHeight - el.clientHeight) / 2 + (pos.dy ? pos.dy : 0))
+            } break;
+            //基于触发元素的右边
+            case 8: {
+              let absPos = DDeiUtil.getDomAbsPosition(el, editor)
+              left = absPos.left + (pos.dx ? pos.dx : 0)+el.clientWidth
+              top = (absPos.top + (pos.dy ? pos.dy : 0))
+            } break;
+            //基于触发元素的右边居中
+            case 9: {
+              let absPos = DDeiUtil.getDomAbsPosition(el, editor)
+              left = absPos.left + (pos.dx ? pos.dx : 0) + el.clientWidth
+              top = (absPos.top - (dialog.clientHeight - el.clientHeight) / 2 + (pos.dy ? pos.dy : 0))
+            } break;
+            
           }
-          if (left + dialog?.clientWidth > document.body.scrollWidth) {
-            left = document.body.scrollWidth - dialog?.clientWidth - 10
-          }
-          if (top + dialog?.clientHeight > document.body.scrollHeight) {
-            top = document.body.scrollHeight - dialog?.clientHeight - 10
+          if (!pos || pos.ignoreOutSide != 1){
+            if (left + dialog?.clientWidth > document.body.scrollWidth) {
+              left = document.body.scrollWidth - dialog?.clientWidth - 10
+            }
+            if (top + dialog?.clientHeight > document.body.scrollHeight) {
+              top = document.body.scrollHeight - dialog?.clientHeight - 10
+            }
           }
           dialog.style.left = left + "px"
           dialog.style.top = top + "px"
@@ -652,6 +691,52 @@ class DDeiEditorUtil {
 
 
 
+  }
+
+  /**
+   * 初始化弹出框，但不显示
+   * @param id 弹出框ID
+   * @param data 数据以及回调函数等选项
+   * @param el 事件的元素
+   */
+  static initDialog(editor: DDeiEditor, id: string, data: object, isPop: boolean = false, keepState: boolean = false) {
+    if (!isPop && !editor.tempDialogData) {
+      editor.tempDialogData = {}
+    } else if (isPop && !editor.tempPopData) {
+      editor.tempPopData = {}
+    }
+    //查看是否有同一group的弹出框，如果有则关闭同一group的其它弹出框
+    if (data.group) {
+      let loopData
+      if (isPop) {
+        loopData = editor.tempPopData
+      } else {
+        loopData = editor.tempDialogData
+      }
+      for (let oid in loopData) {
+        if (oid != id) {
+          let otherDialogData = loopData[oid]
+          if (otherDialogData && otherDialogData.group == data.group) {
+            DDeiEditorUtil.closeDialog(editor, oid)
+          }
+        }
+      }
+
+    }
+    //记录临时变量
+    if (data) {
+      data.keepState = keepState
+    }
+    if (isPop) {
+      editor.tempPopData[id] = data
+    } else {
+      editor.tempDialogData[id] = data
+      if (!keepState) {
+        editor.changeState(DDeiEditorState.PROPERTY_EDITING);
+      }
+    }
+    //修改编辑器状态为快捷编辑中
+    editor?.dialogs[id]?.viewer?.forceRefreshView();
   }
 
   /**
@@ -825,19 +910,20 @@ class DDeiEditorUtil {
           editor.icons = {}
           editor?.controls.forEach(controlDefine => {
             let cacheData = localStorage.getItem("ICON-CACHE-" + editor.id+"-" + controlDefine.id)
+            
             if (cacheData) {
               editor.icons[controlDefine.id] = cacheData
               return;
             } else {
               promiseArr.push(new Promise((resolve, reject) => {
+                let models = null
                 try {
-                  let canvas = document.createElement('canvas');
-                  //获取缩放比例
-                  let rat1 = ddInstance.render.ratio;
-                  ddInstance.render.tempCanvas = canvas;
+                  
                   //创建图形对象
-                  let models = DDeiEditorUtil.createControl(controlDefine,editor)
+                  models = DDeiEditorUtil.createControl(controlDefine,editor)
+                  
                   let iconPos = controlDefine?.define?.iconPos;
+                  
                   let outRect = DDeiAbstractShape.getOutRectByPV(models);
                   outRect.width += (iconPos?.dw ? iconPos.dw : 0)
                   outRect.height += (iconPos?.dh ? iconPos.dh : 0)
@@ -872,26 +958,27 @@ class DDeiEditorUtil {
                   }
                   outRect.width += (iconPos?.dw ? iconPos.dw : 0)
                   outRect.height += (iconPos?.dh ? iconPos.dh : 0)
-                  let width = (outRect.width + 4) * rat1
-                  let height = (outRect.height + 4) * rat1
-
-                  canvas.setAttribute("width", width)
-                  canvas.setAttribute("height", height)
-                  canvas.style.width = width + 'px';
-                  canvas.style.height = height + 'px';
-                  //获得 2d 上下文对象
-
-                  let ctx = canvas.getContext('2d', { willReadFrequently: true });
-
-                  ctx.translate(width / 2 + (iconPos?.dx ? iconPos.dx : 0), height / 2 + (iconPos?.dy ? iconPos.dy : 0))
+                  
+                  
                   models.forEach(model => {
                     model.initRender()
                     model.render.drawShape({ weight: 3, border: { width: 1.5 } })
                   })
+                  let canvas = document.createElement('canvas');
+                  
+                 
+                  DDeiEditorUtil.drawModelsToCanvas(models, outRect,canvas)
                   let dataURL = canvas.toDataURL("image/png");
                   localStorage.setItem("ICON-CACHE-" + editor.id + "-" + controlDefine.id, dataURL)
                   editor.icons[controlDefine.id] = dataURL
-                } catch (e) { console.error(e) }
+                } catch (e) { 
+                  if(editor.debug){
+                    console.error(e)
+                  }
+                 }
+                models?.forEach(md => {
+                  md?.destroyed()
+                })
                 resolve()
               }));
             }
@@ -903,6 +990,68 @@ class DDeiEditorUtil {
         }
       }
     });
+  }
+
+  /**
+   * 将多个元素绘制到canvas上
+   */
+  static drawModelsToCanvas(models:DDeiAbstractShape[],outRect,canvas,level:number = 0):void{
+    if (models?.length > 0){
+      let stage = models[0].stage
+      let rat1 = stage.ddInstance?.render.ratio;
+      canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
+      let ctx = canvas.getContext('2d', { willReadFrequently: true });
+      
+      let width = (outRect.width+4) * rat1
+      let height = (outRect.height+4) * rat1
+      if (level == 0){
+        canvas.setAttribute("width", width)
+        canvas.setAttribute("height", height)
+        canvas.style.width = width + 'px';
+        canvas.style.height = height + 'px';
+      }
+      
+      models.forEach(model=>{
+        let rendList = [];
+        if (model.composes?.length > 0) {
+          rendList = rendList.concat(model.composes);
+        }
+        rendList.push(model)
+        rendList.sort((a, b) => {
+
+          if ((a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+            return a.cIndex - b.cIndex
+          } else if ((a.cIndex || a.cIndex == 0) && !(b.cIndex || b.cIndex == 0)) {
+            return 1
+          } else if (!(a.cIndex || a.cIndex == 0) && (b.cIndex || b.cIndex == 0)) {
+            return -1
+          } else {
+            return 0
+          }
+        })
+        rendList?.forEach(mc => {
+          if(mc == model){
+            if(mc.render.tempCanvas){
+              if(mc.baseModelType !='DDeiLine'){
+                ctx.drawImage(mc.render.tempCanvas, 0, 0, mc.render.tempCanvas.width, mc.render.tempCanvas.height, ((mc.essBounds ? mc.essBounds.x : mc.cpv.x) - outRect.x) * rat1, ((mc.essBounds ? mc.essBounds.y : mc.cpv.y) - outRect.y - 2) * rat1, mc.essBounds.width * rat1, mc.essBounds.height * rat1)
+              }else{
+                ctx.drawImage(mc.render.tempCanvas, 0, 0, mc.render.tempCanvas.width, mc.render.tempCanvas.height, (mc.cpv.x - outRect.x) * rat1, (mc.cpv.y - outRect.y) * rat1, outRect.width * rat1, outRect.height * rat1)
+              }
+                
+            }
+            if (model.baseModelType == "DDeiContainer") {
+              DDeiEditorUtil.drawModelsToCanvas(Array.from(model.models.values()), outRect, canvas, level + 1)
+            }
+          }else{
+            DDeiEditorUtil.drawModelsToCanvas([mc], outRect, canvas, level + 1)
+          }
+          
+        })
+        
+      })
+    }
+    
+    
   }
 
   /**
@@ -927,7 +1076,7 @@ class DDeiEditorUtil {
     let models = [];
 
     let cc = control
-
+  
 
     //根据control的定义，初始化临时控件，并推送至上层Editor
     let searchPaths = [
@@ -948,7 +1097,7 @@ class DDeiEditorUtil {
       modelCode: cc.id,
     };
 
-
+    
     //设置配置的属性值
     searchPaths.forEach((key) => {
       if (configAtrs.get(key)) {
@@ -1051,7 +1200,7 @@ class DDeiEditorUtil {
 
         mergeControls.forEach(mc => {
           if (mc) {
-            container.addModel(mc)
+            container.addModel(mc,false)
             mc.pModel = container
           }
         })
