@@ -11,6 +11,12 @@ class DDeiLifeCycle extends DDeiPluginBase {
    */
   EVENT_CONTROL_SELECT_BEFORE: DDeiFuncData | null = null;
 
+
+  /**
+   * 控件双击
+   */
+  EVENT_CONTROL_DBL_CLICK: DDeiFuncData | null = null;
+
   /**
    * 控件选择后，此方法为外部传入的勾子函数
    */
@@ -185,8 +191,6 @@ class DDeiLifeCycle extends DDeiPluginBase {
    * 控件旋转后，此方法为外部传入的勾子函数
    */
   EVENT_CONTROL_ROTATE_AFTER: DDeiFuncData | null = null;
-
-  
   
   
   // ============================ 方法 ===============================
