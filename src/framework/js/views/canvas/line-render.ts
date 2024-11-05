@@ -57,15 +57,6 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     }
   }
 
-  enableRefreshShape() {
-    super.enableRefreshShape()
-    this.model.linkModels?.forEach(lm => {
-      if (lm.dm) {
-        lm.dm.render?.enableRefreshShape()
-      }
-    })
-  }
-
   createTempShape() {
     let rat1 = this.ddRender.ratio;
     //测试剪切图形

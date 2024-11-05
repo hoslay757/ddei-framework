@@ -70,6 +70,11 @@ class DDeiAbstractShapeRender {
     this.model.composes?.forEach(comp => {
       comp.render?.enableRefreshShape()
     })
+    this.model.linkModels?.forEach(lm => {
+      if (lm.dm) {
+        lm.dm.render?.enableRefreshShape()
+      }
+    })
   }
 
 

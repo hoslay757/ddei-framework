@@ -6,7 +6,7 @@ import DDeiUtil from "../../framework/js/util";
 import DDeiEnumBusCommandType from "../../framework/js/enums/bus-command-type";
 import DDeiEditorEnumBusCommandType from "./enums/editor-command-type";
 import DDeiEditorState from "./enums/editor-state";
-import DDeiLineLink from "../../framework/js/models/linelink";
+import DDeiModelLink from "../../framework/js/models/modellink";
 import { Matrix3 } from "three";
 import DDeiRectContainer from "../../framework/js/models/rect-container";
 import DDei from "../../framework/js/ddei";
@@ -105,10 +105,23 @@ class DDeiEditorUtil {
                 ddInstance.stage.render.editorShadowControl.destroyed()
               }
               ddInstance.stage.render.editorShadowControl = null;
-              editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { models: [editor.quickEditorModel], paths: ["text"], value: inputEle.value }, null, true);
-              editor.bus.push(DDeiEnumBusCommandType.NodifyChange);
-              editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
-              editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
+              if (editor.quickEditorModel?.depModel){
+                let depModel = editor.quickEditorModel.depModel
+                setTimeout(() => {
+                  depModel.refreshLinkModels()
+                  editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
+                  editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
+                  editor.bus?.executeAll();
+                }, 50);
+                editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { models: [editor.quickEditorModel], paths: ["text"], value: inputEle.value }, null, true);
+                editor.bus.push(DDeiEnumBusCommandType.NodifyChange);
+                editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
+              }else{
+                editor.bus.push(DDeiEnumBusCommandType.ModelChangeValue, { models: [editor.quickEditorModel], paths: ["text"], value: inputEle.value }, null, true);
+                editor.bus.push(DDeiEnumBusCommandType.NodifyChange);
+                editor.bus.push(DDeiEnumBusCommandType.RefreshShape);
+                editor.bus.push(DDeiEnumBusCommandType.AddHistroy);
+              }
             }
             inputEle.value = "";
             editor.changeState(DDeiEditorState.DESIGNING);
@@ -901,6 +914,7 @@ class DDeiEditorUtil {
    */
   static getControlIcons(editor: DDeiEditor): Promise{
     return new Promise((resolve, reject) => {
+      
       if (editor.icons && JSON.stringify(editor.icons) != "{}") {
         resolve(editor.icons);
       } else {
@@ -1142,13 +1156,14 @@ class DDeiEditorUtil {
         if (cIndex != -1) {
           cIndex++
           let linkControl = models[cIndex]
-          let lineLink = new DDeiLineLink({
-            line: cc,
+          let lineLink = new DDeiModelLink({
+            depModel: cc,
             type: linkData.type,
             dm: linkControl,
             dx: linkData.dx,
             dy: linkData.dy,
           })
+          linkControl.depModel = cc
           models[0].linkModels.set(linkControl.id, lineLink);
         }
       }

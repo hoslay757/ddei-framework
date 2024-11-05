@@ -512,9 +512,11 @@ class DDeiEditor {
       //注册并加载控件
       let controls = plugin.getControls(this)
       controls?.forEach(control => {
+      
         this.controls.set(control.id,control)
       });
     }
+    
 
     //控件分组
     if (plugin.getGroups) {

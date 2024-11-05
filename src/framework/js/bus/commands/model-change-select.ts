@@ -53,7 +53,6 @@ class DDeiBusCommandModelChangeSelect extends DDeiBusCommand {
     } else if (typeof (data) == "object") {
       let models = data.models;
       let state = data.value;
-      let stage = bus.ddInstance.stage;
       if (models) {
         models.forEach(item => {
           item.state = state;

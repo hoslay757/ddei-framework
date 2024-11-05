@@ -3,7 +3,6 @@ import DDeiAbstractShape from './shape'
 import { Matrix3, Vector3 } from 'three';
 import DDeiUtil from '../util';
 import { debounce, cloneDeep } from "lodash";
-import DDeiLineLink from './linelink';
 import DDeiLayer from './layer';
 import DDeiEnumBusCommandType from '../enums/bus-command-type';
 import DDeiModelArrtibuteValue from './attribute/attribute-value';
@@ -43,8 +42,6 @@ class DDeiLine extends DDeiAbstractShape {
     this.freeze = props.freeze ? props.freeze : 0;
 
     this.fill = props.fill
-
-    this.linkModels = props.linkModels ? props.linkModels : new Map();
 
     this.updateLooseCanvasSync = debounce(this.updateLooseCanvasSync, 30)
   }
@@ -282,11 +279,6 @@ class DDeiLine extends DDeiAbstractShape {
 
   //填充
   fill: object;
-  /**
-   * 线上的文本或者其他图形，图形的中点相对于线上某个点的坐标，持有一个增量
-   * 暂时只考虑：开始节点、结束节点，或者最中间的节点
-   */
-  linkModels: Map<string, DDeiLineLink>;
 
   // 本模型的唯一名称
   modelType: string = 'DDeiLine';
@@ -413,71 +405,6 @@ class DDeiLine extends DDeiAbstractShape {
     this.composes?.forEach(compose => {
       compose.initPVS()
     });
-  }
-
-  /**
-   * 初始化链接模型
-   */
-  initLinkModels() {
-    //加载子模型
-    let linkModels: Map<string, DDeiLineLink> = new Map<string, DDeiLineLink>();
-    for (let key in this.linkModels) {
-      let item = this.linkModels[key];
-      if (item?.dmid) {
-        let dm = this.stage.getModelById(item.dmid)
-        item.dm = dm
-        item.line = this;
-        let lm = new DDeiLineLink(item);
-
-        linkModels.set(key, lm)
-      }
-    }
-    this.linkModels = linkModels
-  }
-
-  /**
-   * 刷新链接模型
-   */
-  refreshLinkModels() {
-    //加载子模型
-    if (this.linkModels?.has) {
-
-      this.linkModels.forEach(lm => {
-        if (lm.dm) {
-          //同步坐标关系
-          let oldCPVX = lm.dm.cpv.x;
-          let oldCPVY = lm.dm.cpv.y;
-          let point = null;
-          if (lm.type == 1) {
-            point = this.startPoint;
-          } else if (lm.type == 2) {
-            point = this.endPoint;
-          } else if (lm.type == 3) {
-            //奇数，取正中间
-            let pi = Math.floor(this.pvs.length / 2)
-            if (this.pvs.length % 2 == 1) {
-              point = this.pvs[pi];
-            }
-            //偶数，取两边的中间点
-            else {
-              point = {
-                x: (this.pvs[pi - 1].x + this.pvs[pi].x) / 2,
-                y: (this.pvs[pi - 1].y + this.pvs[pi].y) / 2
-              }
-            }
-          }
-          let newCPVX = point.x + lm.dx;
-          let newCPVY = point.y + lm.dy;
-          let moveMatrix = new Matrix3(
-            1, 0, newCPVX - oldCPVX,
-            0, 1, newCPVY - oldCPVY,
-            0, 0, 1
-          )
-          lm.dm.transVectors(moveMatrix)
-          lm.dm.updateLinkModels();
-        }
-      })
-    }
   }
 
   /**
@@ -636,7 +563,7 @@ class DDeiLine extends DDeiAbstractShape {
     let allModels = this.layer.getSubModelsByFilter("LINE_OBI_FILTER",null, 10,{line:this})
     let obis = []
     allModels.forEach(model => {
-      if (model.baseModelType != "DDeiLine" && model.operatePVS?.length > 0) {
+      if (model.baseModelType != "DDeiLine" && model.operatePVS?.length > 0 && !model.depModel) {
         let obj = { points: model.operatePVS }
         if (model.id == startModel?.id || model.id == endModel?.id) {
           obj.isStartOrEnd = true
@@ -984,17 +911,7 @@ class DDeiLine extends DDeiAbstractShape {
       })
     }
     super.destroyed();
-    //移除自身所有附属控件
-    if (!this.isShadowControl) {
-      this.linkModels?.forEach(lm => {
-        if (lm.dm) {
-          lm.dm.pModel?.removeModel(lm.dm)
-          lm.dm.destroyed()
-        }
-      })
-      this.linkModels?.clear()
-      this.linkModels = null;
-    }
+    
 
     DDeiLine.calLineCross(layer);
   }

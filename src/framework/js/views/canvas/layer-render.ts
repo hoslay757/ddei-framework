@@ -1239,42 +1239,110 @@ class DDeiLayerCanvasRender {
                     }
                   }
                   
-                  //依附于线段存在的子控件，跟着线段移动
-                  model.refreshLinkModels()
+
                 }
                 //第二种情况，移动了非线控件，此时要判断两种情况
                 else {
                   
                   //情况A移动的是独立的控件，则更新其已连接线段的点，以确保线段始终连接当前图形
                   model.updateLinkModels(moveOriginLines);
-                  //情况B移动的是依附于线段存在的子控件，更新和线段的关系
-                  lines?.forEach(line => {
-                    if (line.linkModels?.has(model.id)) {
-                      let lm = line.linkModels?.get(model.id);
+                  //情况B移动的是依附于其它控件存在的子控件，则更新依附控件的关系
+                  if(model.depModel){
+                    let lm = model.depModel.linkModels?.get(model.id);
+                    if(model.depModel.baseModelType == 'DDeiLine'){
                       let point = null;
                       if (lm.type == 1) {
-                        point = line.startPoint;
+                        point = model.depModel.startPoint;
                       } else if (lm.type == 2) {
-                        point = line.endPoint;
+                        point = model.depModel.endPoint;
                       } else if (lm.type == 3) {
                         //奇数，取正中间
-                        let pi = Math.floor(line.pvs.length / 2)
-                        if (line.pvs.length % 3 == 0) {
-                          point = line.pvs[pi];
+                        let pi = Math.floor(model.depModel.pvs.length / 2)
+                        if (model.depModel.pvs.length % 3 == 0) {
+                          point = model.depModel.pvs[pi];
                         }
                         //偶数，取两边的中间点
                         else {
                           point = {
-                            x: (line.pvs[pi - 1].x + line.pvs[pi].x) / 2,
-                            y: (line.pvs[pi - 1].y + line.pvs[pi].y) / 2
+                            x: (model.depModel.pvs[pi - 1].x + model.depModel.pvs[pi].x) / 2,
+                            y: (model.depModel.pvs[pi - 1].y + model.depModel.pvs[pi].y) / 2
                           }
                         }
                       }
                       lm.dx = model.cpv.x - point.x
                       lm.dy = model.cpv.y - point.y
+                    }else{
+                      //cpv
+                      if (lm.type == 5) {
+                        lm.dx = model.cpv.x - model.depModel.cpv.x
+                        lm.dy = model.cpv.y - model.depModel.cpv.y
+                      }else{
+                        let essBounds = model.depModel.essBounds
+                        //文本图形的实际位置
+                        let dmEssBounds = lm.dm.essBounds;
+                        let point
+                        //上
+                        if (lm.type == 6) {
+                          point = {
+                            x: model.depModel.cpv.x,
+                            y: essBounds.y - dmEssBounds.height / 2
+                          }
+                        }
+                        //右
+                        else if (lm.type == 7) {
+                          point = {
+                            y: model.depModel.cpv.y,
+                            x: essBounds.x1 + dmEssBounds.width / 2
+                          }
+                        }
+                        //下
+                        else if (lm.type == 8) {
+                          point = {
+                            x: model.depModel.cpv.x,
+                            y: essBounds.y1 + dmEssBounds.height / 2
+                          }
+                        }
+                        //左
+                        else if (lm.type == 9) {
+                          point = {
+                            y: model.depModel.cpv.y,
+                            x: essBounds.x - dmEssBounds.width / 2
+                          }
+                        }
+                        lm.dx = model.cpv.x - point.x
+                        lm.dy = model.cpv.y - point.y
+                      }
                     }
-                  })
+                  }
+                  // lines?.forEach(line => {
+                  //   if (line.linkModels?.has(model.id)) {
+                  //     let lm = line.linkModels?.get(model.id);
+                  //     let point = null;
+                  //     if (lm.type == 1) {
+                  //       point = line.startPoint;
+                  //     } else if (lm.type == 2) {
+                  //       point = line.endPoint;
+                  //     } else if (lm.type == 3) {
+                  //       //奇数，取正中间
+                  //       let pi = Math.floor(line.pvs.length / 2)
+                  //       if (line.pvs.length % 3 == 0) {
+                  //         point = line.pvs[pi];
+                  //       }
+                  //       //偶数，取两边的中间点
+                  //       else {
+                  //         point = {
+                  //           x: (line.pvs[pi - 1].x + line.pvs[pi].x) / 2,
+                  //           y: (line.pvs[pi - 1].y + line.pvs[pi].y) / 2
+                  //         }
+                  //       }
+                  //     }
+                  //     lm.dx = model.cpv.x - point.x
+                  //     lm.dy = model.cpv.y - point.y
+                  //   }
+                  // })
                 }
+                //依附于存在的子控件，跟着线段移动
+                model.refreshLinkModels()
 
               }
               //重新计算错线

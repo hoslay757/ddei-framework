@@ -96,10 +96,12 @@ class DDeiStage {
       stage.refreshLinkCache()
     }
     //初始化线
-    let lines = stage.getModelsByBaseType("DDeiLine");
-    lines.forEach(line => {
-      line.initPVS()
-      line.initLinkModels();
+    let models = stage.getLayerModels([],100);
+    models.forEach(model => {
+      if (model.baseModelType == 'DDeiLine'){
+        model.initPVS()
+      }
+      model.initLinkModels();
     })
     return stage;
   }

@@ -7,6 +7,7 @@ import { Matrix3, Vector3 } from 'three';
 import { cloneDeep, clone, isNumber } from 'lodash'
 import DDeiModelArrtibuteValue from './attribute/attribute-value'
 import DDeiEnumOperateType from '../enums/operate-type'
+import DDeiModelLink from './modellink'
 /**
  * 抽象的图形类，定义了大多数图形都有的属性和方法
  */
@@ -108,7 +109,7 @@ abstract class DDeiAbstractShape {
         this.exPvs[pvd.id] = pv;
       }
     }
-
+    this.linkModels = props.linkModels ? props.linkModels : new Map();
 
 
   }
@@ -170,6 +171,15 @@ abstract class DDeiAbstractShape {
   //坐标描述方式，null/1为直角坐标，2为极坐标，默认直角坐标
   poly: number | null;
 
+  /**
+   * 依附于图形的文本或者其他图形，图形的中点相对于线上某个点的坐标，持有一个增量
+   * 线上：1开始节点、2结束节点，3中间的节点
+   * 其他：5.中心点（外接矩形）,6-9.上右下左对齐点（外接矩形）
+   */
+  linkModels: Map<string, DDeiModelLink>;
+
+  //依附控件的模型
+  depModel :DDeiAbstractShape|null = null;
 
   //镜像
   mirrorX: boolean = false;
@@ -264,6 +274,8 @@ abstract class DDeiAbstractShape {
 
     this.calRotate();
     this.calLoosePVS();
+    //联动更新链接控件
+    this.refreshLinkModels()
     this.composes?.forEach(compose => compose.initPVS());
     if (!this.isShadowControl) {
       this.updateExPvs();
@@ -494,6 +506,8 @@ abstract class DDeiAbstractShape {
     return returnPVS;
   }
 
+
+
   getAPVS() {
     let arr = [this.cpv]
     if (this.apvs?.length > 0) {
@@ -502,6 +516,115 @@ abstract class DDeiAbstractShape {
     return arr;
   }
 
+  
+
+  /**
+   * 刷新链接模型
+   */
+  refreshLinkModels() {
+    //加载子模型
+    if (this.linkModels?.has) {
+      this.linkModels.forEach(lm => {
+        if (lm.dm) {
+          //同步坐标关系
+          let oldCPVX = lm.dm.cpv.x;
+          let oldCPVY = lm.dm.cpv.y;
+          let point = null;
+          if (this.baseModelType == 'DDeiLine'){
+            if (lm.type == 1) {
+              point = this.startPoint;
+            } else if (lm.type == 2) {
+              point = this.endPoint;
+            } else if (lm.type == 3) {
+              //奇数，取正中间
+              let pi = Math.floor(this.pvs.length / 2)
+              if (this.pvs.length % 2 == 1) {
+                point = this.pvs[pi];
+              }
+              //偶数，取两边的中间点
+              else {
+                point = {
+                  x: (this.pvs[pi - 1].x + this.pvs[pi].x) / 2,
+                  y: (this.pvs[pi - 1].y + this.pvs[pi].y) / 2
+                }
+              }
+            }
+          }else{
+            //中心点
+            if (lm.type == 5) {
+              point = this.cpv;
+            }else{
+              //当前图形外接矩形
+              let essBounds = this.essBounds;
+              //文本图形的实际位置
+              let dmEssBounds = lm.dm.essBounds;
+              //上
+              if (lm.type == 6) {
+                point = {
+                  x: this.cpv.x,
+                  y: essBounds.y - dmEssBounds.height/2
+                }
+              }
+              //右
+              else if (lm.type == 7) {
+                point = {
+                  x: essBounds.x1 + dmEssBounds.width/2,
+                  y: this.cpv.y
+                }
+              }
+              //下
+              else if (lm.type == 8) {
+                point = {
+                  x: this.cpv.x,
+                  y: essBounds.y1 + dmEssBounds.height / 2
+                }
+              }
+              //左
+              else if (lm.type == 9) {
+                point = {
+                  x: essBounds.x - dmEssBounds.width / 2,
+                  y: this.cpv.y
+                }
+              }
+            }
+          }
+          let newCPVX = point.x + lm.dx;
+          let newCPVY = point.y + lm.dy;
+          let moveMatrix = new Matrix3(
+            1, 0, newCPVX - oldCPVX,
+            0, 1, newCPVY - oldCPVY,
+            0, 0, 1
+          )
+          
+          lm.dm.transVectors(moveMatrix)
+          lm.dm.updateLinkModels();
+        }
+      })
+    }
+  }
+
+
+  /**
+  * 初始化链接模型
+  */
+  initLinkModels() {
+    //加载子模型
+    let linkModels: Map<string, DDeiModelLink> = new Map<string, DDeiModelLink>();
+    for (let key in this.linkModels) {
+      let item = this.linkModels[key];
+      if (item?.dmid) {
+        let dm = this.stage.getModelById(item.dmid)
+        item.dm = dm
+        item.depModel = this;
+        dm.depModel = this;
+        let lm = new DDeiModelLink(item);
+
+        linkModels.set(key, lm)
+      }
+      
+    }
+    this.linkModels = linkModels
+  }
   /**
    * 同步向量
    * @param source 源模型
@@ -1902,6 +2025,21 @@ abstract class DDeiAbstractShape {
             line.linkModels.delete(this.id)
           }
         })
+
+
+        //移除自身所有附属控件
+        this.linkModels?.forEach(lm => {
+          if (lm.dm) {
+            lm.dm.pModel?.removeModel(lm.dm,true)
+            lm.dm.destroyed()
+          }
+        })
+        this.linkModels?.clear()
+        this.linkModels = null;
+
+        if(this.depModel){
+          this.depModel.linkModels?.delete(this.id)
+        }
       }
   
       if (this.render?.tempCanvas) {
