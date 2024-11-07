@@ -386,6 +386,26 @@ class DDeiUtil {
     return { left: actualLeft, top: actualTop }
   }
 
+  /**
+   * 返回dom到editor元素之间的滚动高度
+   * @param element 
+   */
+  static getDomScroll(element, editor): object {
+    //计算x坐标
+    let scrollTop = 0;
+    let scrollLeft = 0;
+    let current = element.parentElement;
+    let editorElement = document.getElementById(editor.id);
+    while (current && current != editorElement) {
+      scrollTop += current.scrollTop;
+      scrollLeft += current.scrollLeft;
+      current = current.parentElement;
+    }
+    
+    //返回结果
+    return { left: scrollLeft, top: scrollTop }
+  }
+
   
 
   /**

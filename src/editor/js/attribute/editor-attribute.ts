@@ -118,8 +118,11 @@ class DDeiEditorArrtibute extends DDeiArrtibuteDefine {
       propTopGroup.subGroups.forEach(group => {
         if (group?.children?.length > 0) {
           group.children.forEach(item => {
+            
             paths.forEach(path => {
+              
               if (path.indexOf(item.code) != -1) {
+                
                 item.visiable = true;
               }
             });

@@ -523,6 +523,10 @@ class DDeiEditorUtil {
       //处理图片,处理搜索
       let returnDatas = [];
       if (dataSource) {
+        //国际化处理
+        dataSource.forEach(item => {
+          item.text = editor.i18n(item.text)
+        });
         dataSource.forEach(item => {
           if (item.img) {
             if (DDeiEditorUtil.ICONS && DDeiEditorUtil.ICONS[item.img]) {
@@ -631,6 +635,7 @@ class DDeiEditorUtil {
         }
         //设置位置信息
         if (pos?.type) {
+          
           let left, top
           switch (pos.type) {
             //自由设置位置
@@ -641,50 +646,58 @@ class DDeiEditorUtil {
             //基于触发元素的底部
             case 2: {
               let absPos = DDeiUtil.getDomAbsPosition(el, editor)
-              left = absPos.left + (pos.dx ? pos.dx : 0)
-              top = (absPos.top - dialog?.clientHeight + (pos.dy ? pos.dy : 0))
+              let scrollData = DDeiUtil.getDomScroll(el, editor);
+              left = absPos.left + (pos.dx ? pos.dx : 0) - scrollData.left
+              top = (absPos.top - dialog?.clientHeight + (pos.dy ? pos.dy : 0)) - scrollData.top
             } break;
             //基于触发元素的底部居中
             case 3: {
               let absPos = DDeiUtil.getDomAbsPosition(el, editor)
-              left = absPos.left - (dialog.clientWidth / 2 - el.clientWidth / 2) + (pos.dx ? pos.dx : 0)
-              top = (absPos.top - dialog?.clientHeight + (pos.dy ? pos.dy : 0))
+              let scrollData = DDeiUtil.getDomScroll(el, editor);
+              left = absPos.left - (dialog.clientWidth / 2 - el.clientWidth / 2) + (pos.dx ? pos.dx : 0) - scrollData.left
+              top = (absPos.top - dialog?.clientHeight + (pos.dy ? pos.dy : 0)) - scrollData.top
             } break;
             //基于触发元素的顶部
             case 4: {
               let absPos = DDeiUtil.getDomAbsPosition(el, editor)
-              left = absPos.left + (pos.dx ? pos.dx : 0)
-              top = (absPos.top + el.clientHeight + (pos.dy ? pos.dy : 0))
+              let scrollData = DDeiUtil.getDomScroll(el, editor);
+              left = absPos.left + (pos.dx ? pos.dx : 0) - scrollData.left
+              top = (absPos.top + el.clientHeight + (pos.dy ? pos.dy : 0)) - scrollData.top
             } break;
             //基于触发元素的顶部居中
             case 5: {
               let absPos = DDeiUtil.getDomAbsPosition(el, editor)
-              left = absPos.left - (dialog.clientWidth / 2 - el.clientWidth / 2) + (pos.dx ? pos.dx : 0)
-              top = (absPos.top + el.clientHeight + (pos.dy ? pos.dy : 0))
+              let scrollData = DDeiUtil.getDomScroll(el, editor);
+              left = absPos.left - (dialog.clientWidth / 2 - el.clientWidth / 2) + (pos.dx ? pos.dx : 0) - scrollData.left
+              top = (absPos.top + el.clientHeight + (pos.dy ? pos.dy : 0)) - scrollData.top
             } break;
             //基于触发元素的左边
             case 6: {
               let absPos = DDeiUtil.getDomAbsPosition(el, editor)
-              left = absPos.left + (pos.dx ? pos.dx : 0) - dialog.clientWidth
-              top = (absPos.top + (pos.dy ? pos.dy : 0))
+              let scrollData = DDeiUtil.getDomScroll(el, editor);
+              left = absPos.left + (pos.dx ? pos.dx : 0) - dialog.clientWidth - scrollData.left
+              top = (absPos.top + (pos.dy ? pos.dy : 0)) - scrollData.top
             } break;
             //基于触发元素的左边居中
             case 7: {
               let absPos = DDeiUtil.getDomAbsPosition(el, editor)
-              left = absPos.left + (pos.dx ? pos.dx : 0) - dialog.clientWidth
-              top = (absPos.top - (dialog.clientHeight - el.clientHeight) / 2 + (pos.dy ? pos.dy : 0))
+              let scrollData = DDeiUtil.getDomScroll(el, editor);
+              left = absPos.left + (pos.dx ? pos.dx : 0) - dialog.clientWidth - scrollData.left
+              top = (absPos.top - (dialog.clientHeight - el.clientHeight) / 2 + (pos.dy ? pos.dy : 0)) - scrollData.top
             } break;
             //基于触发元素的右边
             case 8: {
               let absPos = DDeiUtil.getDomAbsPosition(el, editor)
-              left = absPos.left + (pos.dx ? pos.dx : 0)+el.clientWidth
-              top = (absPos.top + (pos.dy ? pos.dy : 0))
+              let scrollData = DDeiUtil.getDomScroll(el, editor);
+              left = absPos.left + (pos.dx ? pos.dx : 0) + el.clientWidth - scrollData.left
+              top = (absPos.top + (pos.dy ? pos.dy : 0)) - scrollData.top
             } break;
             //基于触发元素的右边居中
             case 9: {
               let absPos = DDeiUtil.getDomAbsPosition(el, editor)
-              left = absPos.left + (pos.dx ? pos.dx : 0) + el.clientWidth
-              top = (absPos.top - (dialog.clientHeight - el.clientHeight) / 2 + (pos.dy ? pos.dy : 0))
+              let scrollData = DDeiUtil.getDomScroll(el, editor);
+              left = absPos.left + (pos.dx ? pos.dx : 0) + el.clientWidth - scrollData.left
+              top = (absPos.top - (dialog.clientHeight - el.clientHeight) / 2 + (pos.dy ? pos.dy : 0)) - scrollData.top
             } break;
             
           }
@@ -790,34 +803,69 @@ class DDeiEditorUtil {
           } break;
           //基于触发元素的底部
           case 2: {
-            let absPos = DDeiUtil.getDomAbsPosition(el)
-            left = absPos.left + (pos.dx ? pos.dx : 0)
-            top = (absPos.top - dialog?.clientHeight + (pos.dy ? pos.dy : 0))
+            let absPos = DDeiUtil.getDomAbsPosition(el, editor)
+            let scrollData = DDeiUtil.getDomScroll(el, editor);
+            left = absPos.left + (pos.dx ? pos.dx : 0) - scrollData.left
+            top = (absPos.top - dialog?.clientHeight + (pos.dy ? pos.dy : 0)) - scrollData.top
           } break;
           //基于触发元素的底部居中
           case 3: {
-            let absPos = DDeiUtil.getDomAbsPosition(el)
-            left = absPos.left - (dialog.clientWidth / 2 - el.clientWidth / 2) + (pos.dx ? pos.dx : 0)
-            top = (absPos.top - dialog?.clientHeight + (pos.dy ? pos.dy : 0))
+            let absPos = DDeiUtil.getDomAbsPosition(el, editor)
+            let scrollData = DDeiUtil.getDomScroll(el, editor);
+            left = absPos.left - (dialog.clientWidth / 2 - el.clientWidth / 2) + (pos.dx ? pos.dx : 0) - scrollData.left
+            top = (absPos.top - dialog?.clientHeight + (pos.dy ? pos.dy : 0)) - scrollData.top
           } break;
           //基于触发元素的顶部
           case 4: {
-            let absPos = DDeiUtil.getDomAbsPosition(el)
-            left = absPos.left + (pos.dx ? pos.dx : 0)
-            top = (absPos.top + el.clientHeight + (pos.dy ? pos.dy : 0))
+            let absPos = DDeiUtil.getDomAbsPosition(el, editor)
+            let scrollData = DDeiUtil.getDomScroll(el, editor);
+            left = absPos.left + (pos.dx ? pos.dx : 0) - scrollData.left
+            top = (absPos.top + el.clientHeight + (pos.dy ? pos.dy : 0)) - scrollData.top
           } break;
           //基于触发元素的顶部居中
           case 5: {
-            let absPos = DDeiUtil.getDomAbsPosition(el)
-            left = absPos.left - (dialog.clientWidth / 2 - el.clientWidth / 2) + (pos.dx ? pos.dx : 0)
-            top = (absPos.top + el.clientHeight + (pos.dy ? pos.dy : 0))
+            let absPos = DDeiUtil.getDomAbsPosition(el, editor)
+            let scrollData = DDeiUtil.getDomScroll(el, editor);
+            left = absPos.left - (dialog.clientWidth / 2 - el.clientWidth / 2) + (pos.dx ? pos.dx : 0) - scrollData.left
+            top = (absPos.top + el.clientHeight + (pos.dy ? pos.dy : 0)) - scrollData.top
           } break;
+          //基于触发元素的左边
+          case 6: {
+            let absPos = DDeiUtil.getDomAbsPosition(el, editor)
+            let scrollData = DDeiUtil.getDomScroll(el, editor);
+            left = absPos.left + (pos.dx ? pos.dx : 0) - dialog.clientWidth - scrollData.left
+            top = (absPos.top + (pos.dy ? pos.dy : 0)) - scrollData.top
+          } break;
+          //基于触发元素的左边居中
+          case 7: {
+            let absPos = DDeiUtil.getDomAbsPosition(el, editor)
+            let scrollData = DDeiUtil.getDomScroll(el, editor);
+            left = absPos.left + (pos.dx ? pos.dx : 0) - dialog.clientWidth - scrollData.left
+            top = (absPos.top - (dialog.clientHeight - el.clientHeight) / 2 + (pos.dy ? pos.dy : 0)) - scrollData.top
+          } break;
+          //基于触发元素的右边
+          case 8: {
+            let absPos = DDeiUtil.getDomAbsPosition(el, editor)
+            let scrollData = DDeiUtil.getDomScroll(el, editor);
+            left = absPos.left + (pos.dx ? pos.dx : 0) + el.clientWidth - scrollData.left
+            top = (absPos.top + (pos.dy ? pos.dy : 0)) - scrollData.top
+          } break;
+          //基于触发元素的右边居中
+          case 9: {
+            let absPos = DDeiUtil.getDomAbsPosition(el, editor)
+            let scrollData = DDeiUtil.getDomScroll(el, editor);
+            left = absPos.left + (pos.dx ? pos.dx : 0) + el.clientWidth - scrollData.left
+            top = (absPos.top - (dialog.clientHeight - el.clientHeight) / 2 + (pos.dy ? pos.dy : 0)) - scrollData.top
+          } break;
+
         }
-        if (left + dialog?.clientWidth > document.body.scrollWidth) {
-          left = document.body.scrollWidth - dialog?.clientWidth - 10
-        }
-        if (top + dialog?.clientHeight > document.body.scrollHeight) {
-          top = document.body.scrollHeight - dialog?.clientHeight - 10
+        if (!pos || pos.ignoreOutSide != 1) {
+          if (left + dialog?.clientWidth > document.body.scrollWidth) {
+            left = document.body.scrollWidth - dialog?.clientWidth - 10
+          }
+          if (top + dialog?.clientHeight > document.body.scrollHeight) {
+            top = document.body.scrollHeight - dialog?.clientHeight - 10
+          }
         }
         dialog.style.left = left + "px"
         dialog.style.top = top + "px"
@@ -1127,8 +1175,17 @@ class DDeiEditorUtil {
     for (let i in cc?.define) {
       dataJson[i] = cc.define[i];
     }
+    for (let i in dataJson) {
+      let value = dataJson[i]
+      if (typeof (value) == 'string'){
+        dataJson[i] = editor.i18n(value);
+      }
+      
+    }
     //如果有from则根据from读取属性
     delete dataJson.ovs
+        
+
     let model: DDeiAbstractShape = editor.controlModelClasses[cc.type].initByJSON(
       dataJson,
       { currentStage: stage, currentLayer: layer,currentDdInstance:ddInstance }

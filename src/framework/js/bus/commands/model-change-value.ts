@@ -109,7 +109,7 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
                 DDeiUtil.setAttrValueByPath(model, paths, value)
                 model.render?.setCachedValue(paths, value)
               }
-              if(model.linkModels.size > 0){
+              if(model.linkModels?.size > 0){
                 //检查配置上是否有属性联动
                 let modelDefine = DDeiUtil.getControlDefine(model);
                 //如果存在配置，则直接采用配置，如果不存在配置则读取文本区域

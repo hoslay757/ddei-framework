@@ -160,14 +160,17 @@ class DDeiEditorCommandLoadFile extends DDeiBusCommand {
         }
       });
     }else{
+      let fileText = editor.i18n('ddei.file')
+      let newText = editor.i18n('ddei.new')
+      let pageText = editor.i18n('ddei.page')
        let file = DDeiFile.loadFromJSON(
           {
-            name: "新建文件_NEW",
-            path: "/新建文件_NEW",
+            name: newText+fileText+"_NEW",
+            path: "/" + newText + fileText +"_NEW",
             sheets: [
               new DDeiSheet({
-                name: "页面-1",
-                desc: "页面-1",
+                name: pageText+"-1",
+                desc: pageText+"-1",
                 stage: DDeiStage.initByJSON({ id: "stage_1" }, { currentDdInstance: ddInstance }),
                 active: DDeiActiveType.ACTIVE,
               }),
