@@ -1182,6 +1182,15 @@ class DDeiEditorUtil {
       }
       
     }
+    dataJson.composes?.forEach(compose => {
+      for (let i in compose) {
+        let value = compose[i]
+        if (typeof (value) == 'string') {
+          compose[i] = editor.i18n(value);
+        }
+
+      }
+    });
     //如果有from则根据from读取属性
     delete dataJson.ovs
         
@@ -1193,6 +1202,13 @@ class DDeiEditorUtil {
     models.push(model)
     //处理others
     control.others?.forEach(oc => {
+      for (let i in oc) {
+        let value = oc[i]
+        if (typeof (value) == 'string') {
+          oc[i] = editor.i18n(value);
+        }
+
+      }
       let otherModels = DDeiEditorUtil.createControl(oc, editor)
       if (otherModels?.length > 0) {
         models = models.concat(otherModels);
