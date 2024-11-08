@@ -655,6 +655,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         layer.shadowControls.push(lineShadow);
         this.stageRender.currentOperateShape = lineShadow
         this.stageRender.currentOperateShape.dragPoint = dragPoint
+        
         let dragObj = {
           x: ex,
           y: ey,
@@ -671,7 +672,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
           DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", DDeiEnumOperateType.LINK, null, this.stage?.ddInstance, evt)
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
           //改变光标
-          this.stage?.ddInstance?.bus?.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: "grabbing" }, evt);
+          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: "grabbing" }, evt);
 
           this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING
         }

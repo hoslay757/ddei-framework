@@ -511,19 +511,15 @@ class DDeiLayerCanvasRender {
    */
   drawOpLine(): void {
     if (this.model.opLine) {
-      //获得 2d 上下文对象
-      // let canvas = this.ddRender.operateCanvas
-      // let ctx = canvas.getContext('2d');
-      // let ratio = this.ddRender?.ratio;
       // //保存状态
       // ctx.save();
+      let opLine = this.model.opLine
       let lineRender = this.model.opLine.render
       let color = lineRender.getCachedValue("color");
       let weight = lineRender.getCachedValue("weight");
       lineRender.enableRefreshShape();
-      this.model.opLine.render.drawShape({ color: "red", opacity: 0.5, weight: weight * 1.5 }, false, null, this.model.opLine.render.tempZIndex)
-
-
+      opLine.render.drawShape({ color: "red", opacity: 0.5, weight: weight * 1.5 }, false, null, this.model.opLine.render.tempZIndex)
+      opLine.render.drawOpShape();
       // //恢复状态
       // ctx.restore();
     }
@@ -963,7 +959,7 @@ class DDeiLayerCanvasRender {
               let isStop = false;
               //加载事件的配置
               let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_DRAG_AFTER", DDeiEnumOperateType.DRAG, this.stageRender.dragObj, this.stage?.ddInstance, null)
-
+              
               
               if (rsState == 0 || rsState == 1) {
                 if (model) {
@@ -1619,6 +1615,7 @@ class DDeiLayerCanvasRender {
       }
       //线段修改点中
       case DDeiEnumOperateState.LINE_POINT_CHANGING: {
+        
         //如果当前操作控件不存在，创建线段,生成影子控件，并把影子线段作为当前操作控件
         if (!this.stageRender.currentOperateShape) {
           let lineJson = DDeiUtil.getLineInitJSON(this.stage.ddInstance);
@@ -2070,7 +2067,7 @@ class DDeiLayerCanvasRender {
        
           
           // operateControls[0].render.mouseMove(evt);
-          this.stage.ddInstance.bus.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'all-scroll' }, evt);
+        
         } else if (!inSelector || this.stageRender.selector.passIndex == -1) {
           if (this.stage.ddInstance?.editMode == 1) {
             this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);

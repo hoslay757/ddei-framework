@@ -627,7 +627,6 @@ class DDeiLine extends DDeiAbstractShape {
     //更新中间节点
     this.pvs = [this.startPoint]
     if (linePathData) {
-      // console.log("总时间:" + linePathData.totalTime + " = " + linePathData.buildPointTime + " + " + linePathData.lookForTime + " + " + linePathData.selectPathTime)
       //记录缓存数据
       if (this.stage?.render) {
         this.stage.render.linePathData = linePathData

@@ -117,7 +117,7 @@ class DDeiStage {
     }
    
     //初始化三个Layer
-    let dDeiLayer1 = DDeiLayer.initByJSON({ id: "layer_default", name: "图层" });
+    let dDeiLayer1 = DDeiLayer.initByJSON({ id: "layer_default", name: "L-1" });
     dDeiLayer1.index = 0;
     dDeiLayer1.stage = stage;
     stage.layers[0] = dDeiLayer1;
@@ -450,7 +450,7 @@ class DDeiStage {
     //如果layer不存在，创建一个空图层，添加进去
     if (!layer) {
       let curIdx = this.idIdx++;
-      layer = DDeiLayer.initByJSON({ id: "layer_" + curIdx, name: "图层-" + curIdx }); 
+      layer = DDeiLayer.initByJSON({ id: "layer_" + curIdx, name: "L-" + curIdx }); 
     } 
     //传入的是一个DDeiLayer的实例
     else if (layer.constructor?.ClsName == 'DDeiLayer' ){
@@ -462,7 +462,7 @@ class DDeiStage {
         json.id = "layer_" + curIdx
       }
       if (!json?.name) {
-        json.name = "图层-" + this.idIdx
+        json.name = "L-" + this.idIdx
       }
       layer = DDeiLayer.initByJSON(json); 
     }

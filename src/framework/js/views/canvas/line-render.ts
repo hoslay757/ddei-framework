@@ -15,6 +15,7 @@ import DDeiStageCanvasRender from './stage-render.js';
 import { cloneDeep } from 'lodash'
 import { Matrix3, Vector3 } from 'three';
 import DDeiEnumOperateType from '../../enums/operate-type.js';
+import DDeiEnumOperateState from '../../enums/operate-state.js';
 
 
 /**
@@ -694,7 +695,59 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
    * 鼠标按下事件
    */
   mouseDown(evt: Event): void {
-    super.mouseDown(evt);
+    let ex = evt.offsetX;
+    let ey = evt.offsetY;
+    ex /= window.remRatio
+    ey /= window.remRatio
+    ex -= this.stage.wpv.x;
+    ey -= this.stage.wpv.y
+    let stageRatio = this.stage.getStageRatio();
+    ex = ex / stageRatio
+    ey = ey / stageRatio
+
+    let tpdata
+    //操作图标的宽度
+    let weight = DDeiConfig.SELECTOR.OPERATE_ICON.weight;
+    let halfWeigth = weight * 0.5;
+    for (let i = 0; i < this.opvs.length; i++) {
+      let pv = this.opvs[i];
+      if (DDeiAbstractShape.isInsidePolygon(
+        [
+          { x: pv.x - halfWeigth, y: pv.y - halfWeigth },
+          { x: pv.x + halfWeigth, y: pv.y - halfWeigth },
+          { x: pv.x + halfWeigth, y: pv.y + halfWeigth },
+          { x: pv.x - halfWeigth, y: pv.y + halfWeigth }
+        ]
+        , { x: ex, y: ey })) {
+        tpdata = { type: this.opvsType[i], index: i }
+      }
+    }
+    if (tpdata){
+      let dragPoint = this.opvs[tpdata.index]
+      //创建影子控件
+      let lineShadow = DDeiUtil.getShadowControl(this.model);
+      this.layer.shadowControls.push(lineShadow);
+      this.stageRender.currentOperateShape = lineShadow
+      this.stageRender.currentOperateShape.dragPoint = dragPoint
+      let dragObj = {
+        x: ex,
+        y: ey,
+        dragPoint: dragPoint,
+        model: lineShadow,
+        opvsIndex: tpdata.index,
+        passIndex: tpdata.type,
+        opvs: this.opvs
+      }
+      let rsState = DDeiUtil.invokeCallbackFunc("EVENT_LINE_DRAG_BEFORE", DDeiEnumOperateType.DRAG, dragObj, this.stage?.ddInstance, evt)
+      if (rsState == 0 || rsState == 1) {
+        DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", DDeiEnumOperateType.LINK, null, this.stage?.ddInstance, evt)
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
+        //改变光标
+        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: "grabbing" }, evt);
+
+        this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING
+      }
+    }
   }
   /**
    * 绘制图形
@@ -717,8 +770,267 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       );
       if (accessLink) {
         this.layer.opLine = this.model
+
+        //计算线的操作点
+
+        let type = this.getCachedValue("type");
+        let pvs = this.model.pvs
+        let { startDX, startDY, endDX, endDY } = this.getPointShapeSize();
+        let opvs = [];
+        let opvsType = [];
+        opvs.push(pvs[0])
+        opvsType.push(1);
+
+        switch (type) {
+          case 2: {
+            for (let i = 1; i < pvs.length; i++) {
+              let x = (pvs[i].x + pvs[i - 1].x) / 2
+              let y = (pvs[i].y + pvs[i - 1].y) / 2
+
+              opvs.push(new Vector3(x, y, 1))
+              opvsType.push(3);
+
+              if (i != pvs.length - 1) {
+                opvs.push(pvs[i])
+                opvsType.push(2);
+              }
+            }
+            break;
+          }
+          case 3: {
+            if (pvs.length >= 4) {
+              //曲线
+              for (let i = 4; i <= pvs.length; i += 3) {
+                let i0 = i - 4;
+                let i1 = i - 3;
+                let i2 = i - 2;
+                let i3 = i - 1;
+                //输出中间控制点
+                if (i0 != 0) {
+                  opvs.push(new Vector3(pvs[i0].x, pvs[i0].y, 1))
+                  opvsType.push(4);
+                }
+                let stratX = pvs[i0].x
+                let stratY = pvs[i0].y
+                let endX = pvs[i3].x
+                let endY = pvs[i3].y
+                if (i0 == 0) {
+                  stratX = pvs[i0].x + startDX
+                  stratY = pvs[i0].y + startDY
+                }
+                if (i == pvs.length) {
+                  endX = pvs[i3].x + endDX
+                  endY = pvs[i3].y + endDY
+                }
+                //计算三次贝赛尔曲线的落点，通过落点来操作图形
+                let btx = stratX * DDeiUtil.p331t3 + DDeiUtil.p331t2t3 * pvs[i1].x + DDeiUtil.p33t21t3 * pvs[i2].x + DDeiUtil.p33t3 * endX
+                let bty = stratY * DDeiUtil.p331t3 + DDeiUtil.p331t2t3 * pvs[i1].y + DDeiUtil.p33t21t3 * pvs[i2].y + DDeiUtil.p33t3 * endY
+                opvs.push(new Vector3(btx, bty, 1))
+                opvsType.push(4);
+                btx = stratX * DDeiUtil.p661t3 + DDeiUtil.p661t2t3 * pvs[i1].x + DDeiUtil.p66t21t3 * pvs[i2].x + DDeiUtil.p66t3 * endX
+                bty = stratY * DDeiUtil.p661t3 + DDeiUtil.p661t2t3 * pvs[i1].y + DDeiUtil.p66t21t3 * pvs[i2].y + DDeiUtil.p66t3 * endY
+                opvs.push(new Vector3(btx, bty, 1))
+                opvsType.push(4);
+
+              }
+            }
+            break;
+          }
+        }
+        //结束点
+        opvs.push(pvs[pvs.length - 1])
+        opvsType.push(1);
+        this.opvs = opvs;
+        this.opvsType = opvsType;
+
+        let ex = evt.offsetX;
+        let ey = evt.offsetY;
+        ex /= window.remRatio
+        ey /= window.remRatio
+        ex -= this.stage.wpv.x;
+        ey -= this.stage.wpv.y
+        let stageRatio = this.stage?.getStageRatio();
+        ex = ex / stageRatio
+        ey = ey / stageRatio
+        
+        let tpdata
+        //操作图标的宽度
+        let weight = DDeiConfig.SELECTOR.OPERATE_ICON.weight;
+        let halfWeigth = weight * 0.5;
+        for (let i = 0; i < this.opvs.length; i++) {
+          let pv = this.opvs[i];
+          if (DDeiAbstractShape.isInsidePolygon(
+            [
+              { x: pv.x - halfWeigth, y: pv.y - halfWeigth },
+              { x: pv.x + halfWeigth, y: pv.y - halfWeigth },
+              { x: pv.x + halfWeigth, y: pv.y + halfWeigth },
+              { x: pv.x - halfWeigth, y: pv.y + halfWeigth }
+            ]
+            , { x: ex, y: ey })) {
+            tpdata = { type: this.opvsType[i], index: i }
+          }
+        }
+
+        if (tpdata) {
+          //如果类型为3，需要计算方向
+          let direct = null;
+          if (tpdata.type == 3) {
+            let beforeP = this.opvs[tpdata.index - 1]
+            let afterP = this.opvs[tpdata.index + 1]
+            //TODO 旋转的情况下，需要把旋转归0判断，x相等
+            if (Math.abs(beforeP.x - afterP.x) <= 1) {
+              direct = 2
+            } else {
+              direct = 1
+            }
+          }
+          this.stage.ddInstance.bus.insert(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { type: 'line', passIndex: tpdata.type, direct: direct, opvsIndex: tpdata.index }, evt,1);
+        } else {
+          this.stage.ddInstance.bus.insert(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { type: 'line', passIndex: -1, opvsIndex: -1 }, evt,1);
+        }
       }
     }
+  }
+
+  /**
+   * 绘制操作图形
+   */
+  drawOpShape(){
+   
+    //获得 2d 上下文对象
+    let canvas = this.tempCanvas
+    let ctx = canvas.getContext('2d');
+    //获取全局缩放比例
+    let stageRatio = this.stage.getStageRatio()
+    let rat1 = this.ddRender.ratio;
+    let ratio = rat1 * stageRatio;
+    rat1 = ratio
+    let pvs = this.model.pvs
+    let type = this.getCachedValue("type");
+    let weight = this.getCachedValue("weight");
+    let w10 = 1.3 * weight * ratio
+    if (w10 > 5 * rat1) {
+      w10 = 5 * rat1
+    } else if (w10 < 2 * rat1) {
+      w10 = 2 * rat1
+    }
+
+    let w15 = 1.5 * w10
+    let w20 = 2 * w10
+    let w30 = 2 * w15
+    let lineModel = this.model
+    //保存状态
+    ctx.save();
+
+    
+
+    switch (type) {
+      case 1: {
+        this.drawSEPoint(pvs, w10, w20, ctx, rat1, ratio)
+        break;
+      }
+      case 2: {
+        this.drawSEPoint(pvs, w10, w20, ctx, rat1, ratio)
+        //根据中间节点绘制操作点
+        ctx.strokeStyle = "#017fff";
+        ctx.fillStyle = "white";
+        for (let i = 1; i < pvs.length; i++) {
+          if (i != pvs.length - 1) {
+            ctx.save()
+            let x1 = pvs[i].x * rat1;
+            let y1 = pvs[i].y * rat1;
+            if (lineModel.rotate) {
+              ctx.translate(x1, y1)
+              ctx.rotate(lineModel.rotate * DDeiConfig.ROTATE_UNIT);
+              ctx.translate(-x1, -y1)
+            }
+            ctx.fillRect(x1 - w15, y1 - w15, w30, w30)
+            ctx.strokeRect(x1 - w15, y1 - w15, w30, w30)
+            ctx.restore()
+          }
+          ctx.save()
+          let x = (pvs[i].x + pvs[i - 1].x) / 2 * rat1
+          let y = (pvs[i].y + pvs[i - 1].y) / 2 * rat1
+          ctx.translate(x, y)
+          ctx.rotate(((lineModel.rotate ? lineModel.rotate : 0) + 45) * DDeiConfig.ROTATE_UNIT);
+          ctx.translate(-x, -y)
+          //菱形
+          ctx.fillRect(x - w10, y - w10, w20, w20)
+          ctx.strokeRect(x - w10, y - w10, w20, w20)
+          ctx.restore()
+        }
+        break;
+      }
+      case 3: {
+        this.drawSEPoint(pvs, w10, w20, ctx, rat1, ratio)
+        if (pvs.length >= 4) {
+          ctx.strokeStyle = "#017fff";
+          ctx.fillStyle = "white";
+          for (let i = 1; i < this.opvs.length - 1; i++) {
+            let pv = this.opvs[i];
+            ctx.beginPath()
+            ctx.ellipse(pv.x * rat1, pv.y * rat1, w20, w20, 0, 0, DDeiUtil.PI2);
+            ctx.closePath()
+            ctx.fill();
+            ctx.stroke();
+          }
+
+        }
+        break;
+      }
+    }
+
+    //恢复状态
+    ctx.restore();
+  }
+
+  getOvPointByPos(x: number = 0, y: number = 0): object {
+    if (x && y && this.ovs?.length > 0) {
+      for (let i = 0; i < this.ovs?.length; i++) {
+        let point = this.ovs[i]
+        if (Math.abs(x - point.x) <= 8 && Math.abs(y - point.y) <= 8) {
+          return point;
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
+   * 绘制开始和结束操作点
+   */
+  private drawSEPoint(pvs: object[], w10: number, w20: number, ctx: object, rat1: number, ratio: number): void {
+    ctx.strokeStyle = "red";
+    ctx.lineWidth = ratio
+    ctx.fillStyle = "white";
+    //白色打底
+    ctx.beginPath()
+    ctx.ellipse(pvs[0].x * rat1, pvs[0].y * rat1, w20, w20, 0, 0, DDeiUtil.PI2);
+    ctx.closePath()
+    ctx.fill();
+    ctx.beginPath()
+    ctx.ellipse(pvs[pvs.length - 1].x * rat1, pvs[pvs.length - 1].y * rat1, w20, w20, 0, 0, DDeiUtil.PI2);
+    ctx.closePath()
+    ctx.fill();
+    //最里面红点
+    ctx.fillStyle = "red";
+    ctx.beginPath()
+    ctx.ellipse(pvs[0].x * rat1, pvs[0].y * rat1, w10, w10, 0, 0, DDeiUtil.PI2);
+    ctx.closePath()
+    ctx.fill();
+    ctx.beginPath()
+    ctx.ellipse(pvs[pvs.length - 1].x * rat1, pvs[pvs.length - 1].y * rat1, w10, w10, 0, 0, DDeiUtil.PI2);
+    ctx.closePath()
+    ctx.fill();
+    //最外层红线
+    ctx.beginPath()
+    ctx.ellipse(pvs[0].x * rat1, pvs[0].y * rat1, w20, w20, 0, 0, DDeiUtil.PI2);
+    ctx.closePath()
+    ctx.stroke();
+    ctx.beginPath()
+    ctx.ellipse(pvs[pvs.length - 1].x * rat1, pvs[pvs.length - 1].y * rat1, w20, w20, 0, 0, DDeiUtil.PI2);
+    ctx.closePath()
+    ctx.stroke();
   }
 }
 
