@@ -8,7 +8,7 @@ import DDeiFile from "./file";
 import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import { markRaw } from "vue";
 import config from "./config"
-import { clone, cloneDeep } from "lodash";
+import { clone, cloneDeep, defaultsDeep } from "lodash";
 import FONTS from "../../framework/js/fonts/font"
 import { Matrix3, Vector3 } from 'three'
 import DDeiThemeBase from "@ddei-core/themes/theme";
@@ -408,12 +408,66 @@ class DDeiEditor {
   }
 
   /**
+   * 将语言包添加进当前editor
+   * @param langs 语言包
+   */
+  registerLangs(langs){
+    if (langs) {
+      for (let n in langs) {
+        //赋值
+        if (!this.langs[n]) {
+          this.langs[n] = langs[n]
+        }
+        //替换
+        else {
+          //已存在
+          this.langs[n] = defaultsDeep({}, langs[n], this.langs[n]);
+        }
+      }
+    };
+  }
+
+  setI18nLang(language){
+    if (!language){
+      language = navigator.language || navigator.userLanguage
+    }
+    if (!language) {
+      language = "zh_CN"
+    } else {
+      language = language.replace("-", "_")
+    }
+    if(!this.langs[language]){
+      this.lang = 'zh_CN'
+    }else{
+      this.lang = language
+    }
+    
+  }
+
+  i18n(path:string):string {
+    let lang = this.langs[this.lang]
+    let value = DDeiUtil.getDataByPathList(lang, path);
+    if (value) {
+      return value;
+    } else {
+      return path
+    }
+  }
+
+  /**
    * 注册外部插件
    */
   registerExtension(plugin): void {
     if (DDeiPluginBase.isSubclass(plugin, DDeiPluginBase)) {
       plugin = plugin.defaultIns
     } 
+    if(plugin.getLangs){
+      //注册并加载组件
+      let langs = plugin.getLangs(this)
+      this.registerLangs(langs)
+    }
+    
+
     if (plugin.getComponents) {
       //注册并加载组件
       let components = plugin.getComponents(this)
@@ -512,9 +566,11 @@ class DDeiEditor {
       //注册并加载控件
       let controls = plugin.getControls(this)
       controls?.forEach(control => {
+      
         this.controls.set(control.id,control)
       });
     }
+    
 
     //控件分组
     if (plugin.getGroups) {
@@ -680,6 +736,10 @@ class DDeiEditor {
   propeditors: object = markRaw({});
   //当前引入的外部面板
   panels: object = markRaw({});
+  //当前引入的国际化资源配置
+  langs: object = markRaw({});
+  //指定的国际化语言，未指定时读取浏览器的配置，当语言包不存在或设置不正确时默认采用zh_CN
+  lang: string|null = null;
   //当前引入的外部布局
   layouts: object = markRaw({});
   //当前引入的外部弹出框

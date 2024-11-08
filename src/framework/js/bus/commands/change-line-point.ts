@@ -138,14 +138,16 @@ class DDeiBusCommandChangeLinePoint extends DDeiBusCommand {
             let sp = pvs[sIndex]
             let ep = pvs[sIndex + 1]
             //TODO 旋转的情况下，需要把旋转归0判断，x相等
-            if (Math.abs(sp.x - ep.x) <= 1) {
-              sp.x = ex
-              ep.x = ex
-              lineModel.spvs[sIndex + 1] = { x: ex - startPoint.x, y: 0 }
-            } else {
-              sp.y = ey
-              ep.y = ey
-              lineModel.spvs[sIndex + 1] = { x: 0, y: ey - startPoint.y }
+            if(sp && ep){
+              if (Math.abs(sp.x - ep.x) <= 1) {
+                sp.x = ex
+                ep.x = ex
+                lineModel.spvs[sIndex + 1] = { x: ex - startPoint.x, y: 0 }
+              } else {
+                sp.y = ey
+                ep.y = ey
+                lineModel.spvs[sIndex + 1] = { x: 0, y: ey - startPoint.y }
+              }
             }
           }
         } break;

@@ -59,6 +59,7 @@ class DDeiPluginBase{
     
   }
 
+
   getInitConfig():object{
     return this.initConfig
   }

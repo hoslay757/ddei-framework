@@ -130,6 +130,12 @@ class DDeiBusCommandStageChangeSelectModels extends DDeiBusCommand {
       }else{
         editor.currentControlDefine = null;
       }
+      selectedModels?.forEach(model => {
+        model.render?.clearCachedValue()
+      });
+      oldSelectModels?.forEach(model => {
+        model.render?.clearCachedValue()
+      });
       
       
       DDeiEditorUtil.invokeCallbackFunc("EVENT_CONTROL_SELECT_AFTER", DDeiEnumOperateType.SELECT, { models: Array.from(selectedModels.values()) },bus.ddInstance,evt)

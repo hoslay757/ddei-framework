@@ -1,22 +1,19 @@
-import { Vector3 } from 'three';
-import DDeiUtil from '../util';
-import DDeiLine from './line';
-import DDeiAbstractShape from './shape';
+import type DDeiAbstractShape from './shape';
 /**
  * linelink是一个内置对象，用于保存线段和依附于线段图形的关系
  */
-class DDeiLineLink {
+class DDeiModelLink {
   constructor(props: object) {
-    this.line = props.line
+    this.depModel = props.depModel
     this.type = props.type
     this.dm = props.dm
     this.dx = props.dx ? props.dx : 0
     this.dy = props.dy ? props.dy : 0
   }
 
-  //父line对象，不序列化
-  line: DDeiLine;
-  //依附点类别，1开始，2结束，3中间
+  //依附model对象,不会序列化
+  depModel: DDeiAbstractShape;
+  //依附点类别，1开始点（线），2结束（线），3中间（线）,5.中心点（外接矩形）,6-9.上右下左对齐点（外接矩形）
   type: number;
   //目标模型，引用
   dm: DDeiAbstractShape;
@@ -48,5 +45,5 @@ class DDeiLineLink {
 
 }
 
-export {DDeiLineLink}
-export default DDeiLineLink
+export {DDeiModelLink}
+export default DDeiModelLink

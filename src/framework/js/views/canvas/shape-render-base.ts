@@ -70,6 +70,11 @@ class DDeiAbstractShapeRender {
     this.model.composes?.forEach(comp => {
       comp.render?.enableRefreshShape()
     })
+    this.model.linkModels?.forEach(lm => {
+      if (lm.dm) {
+        lm.dm.render?.enableRefreshShape()
+      }
+    })
   }
 
 
@@ -238,7 +243,7 @@ class DDeiAbstractShapeRender {
     
     //获取操作点，如果有则添加到其Layer
     if (this.layer) {
-      
+      this.stage.ddInstance.bus.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'all-scroll' }, evt,0);
       
       let modeName = DDeiUtil.getConfigValue("MODE_NAME", this.ddRender?.model);
       let accessLink = DDeiUtil.isAccess(
@@ -358,7 +363,7 @@ class DDeiAbstractShapeRender {
       this.layer.opPoints.push({ isSplit: 1 })
     }
     if (hasPoint) {
-      this.stage.ddInstance.bus.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'pointer' });
+      this.stage.ddInstance.bus.insert(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'pointer' },null,1);
     }
   }
 

@@ -109,6 +109,44 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
                 DDeiUtil.setAttrValueByPath(model, paths, value)
                 model.render?.setCachedValue(paths, value)
               }
+              if(model.linkModels?.size > 0){
+                //检查配置上是否有属性联动
+                let modelDefine = DDeiUtil.getControlDefine(model);
+                //如果存在配置，则直接采用配置，如果不存在配置则读取文本区域
+                if (modelDefine?.define?.sample?.depProps) {
+                  let depProps = modelDefine.define.sample.depProps;
+                  //判断是修改的哪个属性
+                  
+                  for (let type in depProps){
+                    let property = depProps[type]
+                    model.linkModels.forEach(lm => {
+                      if (lm.type == type && lm.dm) {
+                        DDeiUtil.setAttrValueByPath(lm.dm, "text", model[property])
+                        lm.dm.render?.setCachedValue("text", model[property])
+                        lm.dm.render?.enableRefreshShape()
+                      }
+                    });
+
+                  }
+                  model.refreshLinkModels()
+                }
+              }
+              if(model.depModel){
+                //检查配置上是否有属性联动
+                let modelDefine = DDeiUtil.getControlDefine(model.depModel);
+                //如果存在配置，则直接采用配置，如果不存在配置则读取文本区域
+                if (modelDefine?.define?.sample?.depProps) {
+                  let depProps = modelDefine.define.sample.depProps;
+                  let depLinkModel = model.depModel.linkModels?.get(model.id)
+                  let property = depProps[depLinkModel.type]
+                  if (property && depLinkModel){
+                    DDeiUtil.setAttrValueByPath(model.depModel, property, model.text)
+                    model.depModel.render?.setCachedValue(property, model.text)
+                    model.depModel.render?.enableRefreshShape()
+                  }
+                }
+              
+              }
               model.render?.enableRefreshShape()
             }
           });
