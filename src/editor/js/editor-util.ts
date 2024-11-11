@@ -11,6 +11,7 @@ import { Matrix3 } from "three";
 import DDeiRectContainer from "../../framework/js/models/rect-container";
 import DDei from "../../framework/js/ddei";
 import DDeiFuncCallResult from "@ddei-core/lifecycle/callresult";
+import {cloneDeep} from "lodash"
 
 
 class DDeiEditorUtil {
@@ -1172,8 +1173,10 @@ class DDeiEditorUtil {
     if (cc.img) {
       dataJson.fill = { type: 2, image: cc.img };
     }
+
+    
     for (let i in cc?.define) {
-      dataJson[i] = cc.define[i];
+      dataJson[i] = cloneDeep(cc.define[i]);
     }
     for (let i in dataJson) {
       let value = dataJson[i]
