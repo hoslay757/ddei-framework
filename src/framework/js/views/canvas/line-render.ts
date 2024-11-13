@@ -695,57 +695,67 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
    * 鼠标按下事件
    */
   mouseDown(evt: Event): void {
-    let ex = evt.offsetX;
-    let ey = evt.offsetY;
-    ex /= window.remRatio
-    ey /= window.remRatio
-    ex -= this.stage.wpv.x;
-    ey -= this.stage.wpv.y
-    let stageRatio = this.stage.getStageRatio();
-    ex = ex / stageRatio
-    ey = ey / stageRatio
 
-    let tpdata
-    //操作图标的宽度
-    let weight = DDeiConfig.SELECTOR.OPERATE_ICON.weight;
-    let halfWeigth = weight * 0.5;
-    for (let i = 0; i < this.opvs.length; i++) {
-      let pv = this.opvs[i];
-      if (DDeiAbstractShape.isInsidePolygon(
-        [
-          { x: pv.x - halfWeigth, y: pv.y - halfWeigth },
-          { x: pv.x + halfWeigth, y: pv.y - halfWeigth },
-          { x: pv.x + halfWeigth, y: pv.y + halfWeigth },
-          { x: pv.x - halfWeigth, y: pv.y + halfWeigth }
-        ]
-        , { x: ex, y: ey })) {
-        tpdata = { type: this.opvsType[i], index: i }
-      }
-    }
-    if (tpdata){
-      let dragPoint = this.opvs[tpdata.index]
-      //创建影子控件
-      let lineShadow = DDeiUtil.getShadowControl(this.model);
-      this.layer.shadowControls.push(lineShadow);
-      this.stageRender.currentOperateShape = lineShadow
-      this.stageRender.currentOperateShape.dragPoint = dragPoint
-      let dragObj = {
-        x: ex,
-        y: ey,
-        dragPoint: dragPoint,
-        model: lineShadow,
-        opvsIndex: tpdata.index,
-        passIndex: tpdata.type,
-        opvs: this.opvs
-      }
-      let rsState = DDeiUtil.invokeCallbackFunc("EVENT_LINE_DRAG_BEFORE", DDeiEnumOperateType.DRAG, dragObj, this.stage?.ddInstance, evt)
-      if (rsState == 0 || rsState == 1) {
-        DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", DDeiEnumOperateType.LINK, null, this.stage?.ddInstance, evt)
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
-        //改变光标
-        this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: "grabbing" }, evt);
 
-        this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING
+    if (this.layer) {
+      let modeName = DDeiUtil.getConfigValue("MODE_NAME", this.ddRender?.model);
+      let accessLink = DDeiUtil.isAccess(
+        DDeiEnumOperateType.LINK, [this.model], null, modeName,
+        this.ddRender?.model
+      );
+      if (accessLink) {
+        let ex = evt.offsetX;
+        let ey = evt.offsetY;
+        ex /= window.remRatio
+        ey /= window.remRatio
+        ex -= this.stage.wpv.x;
+        ey -= this.stage.wpv.y
+        let stageRatio = this.stage.getStageRatio();
+        ex = ex / stageRatio
+        ey = ey / stageRatio
+        let tpdata
+        //操作图标的宽度
+        let weight = DDeiConfig.SELECTOR.OPERATE_ICON.weight;
+        let halfWeigth = weight * 0.5;
+        for (let i = 0; i < this.opvs.length; i++) {
+          let pv = this.opvs[i];
+          if (DDeiAbstractShape.isInsidePolygon(
+            [
+              { x: pv.x - halfWeigth, y: pv.y - halfWeigth },
+              { x: pv.x + halfWeigth, y: pv.y - halfWeigth },
+              { x: pv.x + halfWeigth, y: pv.y + halfWeigth },
+              { x: pv.x - halfWeigth, y: pv.y + halfWeigth }
+            ]
+            , { x: ex, y: ey })) {
+            tpdata = { type: this.opvsType[i], index: i }
+          }
+        }
+        if (tpdata){
+          let dragPoint = this.opvs[tpdata.index]
+          //创建影子控件
+          let lineShadow = DDeiUtil.getShadowControl(this.model);
+          this.layer.shadowControls.push(lineShadow);
+          this.stageRender.currentOperateShape = lineShadow
+          this.stageRender.currentOperateShape.dragPoint = dragPoint
+          let dragObj = {
+            x: ex,
+            y: ey,
+            dragPoint: dragPoint,
+            model: lineShadow,
+            opvsIndex: tpdata.index,
+            passIndex: tpdata.type,
+            opvs: this.opvs
+          }
+          let rsState = DDeiUtil.invokeCallbackFunc("EVENT_LINE_DRAG_BEFORE", DDeiEnumOperateType.DRAG, dragObj, this.stage?.ddInstance, evt)
+          if (rsState == 0 || rsState == 1) {
+            DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", DDeiEnumOperateType.LINK, null, this.stage?.ddInstance, evt)
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
+            //改变光标
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: "grabbing" }, evt);
+
+            this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING
+          }
+        }
       }
     }
   }

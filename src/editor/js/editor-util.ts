@@ -1162,6 +1162,7 @@ class DDeiEditorUtil {
 
     
     //设置配置的属性值
+    
     searchPaths.forEach((key) => {
       if (configAtrs.get(key)) {
         dataJson[key] = configAtrs.get(key).data;
@@ -1223,6 +1224,7 @@ class DDeiEditorUtil {
     if (control?.define?.create == false) {
       models.splice(0, 1)
     }
+    
 
     //添加初始linkModels以及控件关联
     if (control?.define?.iLinkModels) {

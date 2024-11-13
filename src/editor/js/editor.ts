@@ -1247,7 +1247,21 @@ class DDeiEditor {
               m1.premultiply(move1Matrix)
             }
             cc.transVectors(m1)
+            //如果存在配置，则直接采用配置，如果不存在配置则读取文本区域
+            if (controlDefine?.define?.sample?.depProps) {
+              let depProps = controlDefine.define.sample.depProps;
+
+              //判断是修改的哪个属性
+              for (let type in depProps) {
+                let property = depProps[type]
+                let modelPropValue = cc[property];
+                if (modelPropValue) {
+                  DDeiUtil.createDepLinkModel(cc, modelPropValue, type)
+                }
+              }
+            }
             cc.updateLinkModels()
+            cc.refreshLinkModels()
 
             layer.addModel(cc, false)
             //绑定并初始化渲染器
@@ -1343,8 +1357,21 @@ class DDeiEditor {
                 m1.premultiply(move1Matrix)
               }
               cc.transVectors(m1)
-              cc.updateLinkModels()
+              //如果存在配置，则直接采用配置，如果不存在配置则读取文本区域
+              if (controlDefine?.define?.sample?.depProps) {
+                let depProps = controlDefine.define.sample.depProps;
 
+                //判断是修改的哪个属性
+                for (let type in depProps) {
+                  let property = depProps[type]
+                  let modelPropValue = cc[property];
+                  if (modelPropValue) {
+                    DDeiUtil.createDepLinkModel(cc, modelPropValue, type)
+                  }
+                }
+              }
+              cc.updateLinkModels()
+              cc.refreshLinkModels()
               layer.addModel(cc, false)
               //绑定并初始化渲染器
               cc.initRender();
@@ -1527,6 +1554,7 @@ class DDeiEditor {
             emodel.transVectors(new Matrix3())
           }
           if (!control.isShadowControl) {
+            cc.refreshLinkModels()
             layer.addModel(cc, false)
             cc.initRender()
           }else{
@@ -1537,6 +1565,7 @@ class DDeiEditor {
             smodel?.updateLinkModels();
             emodel?.updateLinkModels();
           }
+         
           smodel?.render?.enableRefreshShape()
           emodel?.render?.enableRefreshShape()
           shapes.push(cc);
