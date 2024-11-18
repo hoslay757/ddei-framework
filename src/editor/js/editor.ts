@@ -15,7 +15,6 @@ import DDeiThemeBase from "@ddei-core/themes/theme";
 import DDeiAbstractShape from "@ddei-core/framework/js/models/shape";
 import  DDeiLifeCycle  from "@ddei-core/lifecycle/lifecycle";
 import  DDeiFuncData  from "@ddei-core/lifecycle/funcdata";
-import { DDeiModelArrtibuteValue } from "@ddei-core/framework/js/models/attribute/attribute-value";
 import DDeiEnumBusCommandType from "../../framework/js/enums/bus-command-type";
 import DDeiEditorEnumBusCommandType from "./enums/editor-command-type";
 import { DDeiActiveType } from "./enums/active-type";
