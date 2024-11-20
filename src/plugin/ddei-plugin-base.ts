@@ -65,8 +65,9 @@ class DDeiPluginBase{
    * @returns 
    */
   modify(fn: Function): DDeiPluginBase {
-    fn(this)
-    return this;
+    let cloneThis = cloneDeep(this);
+    fn(cloneThis)
+    return cloneThis;
   }
 
 

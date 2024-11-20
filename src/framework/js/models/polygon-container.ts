@@ -545,6 +545,57 @@ class DDeiPolygonContainer extends DDeiPolygon {
   }
 
   /**
+   * 通过下层模型更新本层模型的信息
+   */
+  updateBoundsByModels(): void {
+    let subModels = Array.from(this.models.values());
+    let outRect = DDeiAbstractShape.getOutRectByPV(subModels);
+    this.setSelfBounds(outRect.x, outRect.y, outRect.width, outRect.height);
+    this.setModelChanged()
+  }
+
+  //仅设置自身的大小以及宽高
+  setSelfBounds(x, y, width, height) {
+
+    let m1 = new Matrix3()
+    let move1Matrix = new Matrix3(
+      1, 0, -this.cpv.x,
+      0, 1, -this.cpv.y,
+      0, 0, 1);
+    m1.premultiply(move1Matrix)
+    if(this.rotate){
+      let angle = DDeiUtil.preciseTimes(this.rotate, DDeiConfig.ROTATE_UNIT)
+      let rotateMatrix = new Matrix3(
+        Math.cos(angle), Math.sin(angle), 0,
+        -Math.sin(angle), Math.cos(angle), 0,
+        0, 0, 1);
+      m1.premultiply(rotateMatrix)
+    }
+
+    let scaleMatrix = new Matrix3(
+      width / this.essBounds.width, 0, 0,
+      0, height / this.essBounds.height, 0,
+      0, 0, 1);
+    m1.premultiply(scaleMatrix)
+    
+    if (this.rotate) {
+      let angle = -DDeiUtil.preciseTimes(this.rotate, DDeiConfig.ROTATE_UNIT)
+      let rotateMatrix = new Matrix3(
+        Math.cos(angle), Math.sin(angle), 0,
+        -Math.sin(angle), Math.cos(angle), 0,
+        0, 0, 1);
+      m1.premultiply(rotateMatrix)
+    }
+
+    let move2Matrix = new Matrix3(
+      1, 0, x + width / 2,
+      0, 1, y + height / 2,
+      0, 0, 1);
+    m1.premultiply(move2Matrix)
+    this.transSelfVectors(m1)
+  }
+
+  /**
    * 修改子元素大小
    */
   changeChildrenBounds(): boolean {

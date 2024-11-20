@@ -508,7 +508,7 @@ class DDeiConfig {
         return DDeiConfig.DIAMOND
       case "DDeiSelector":
         return DDeiConfig.SELECTOR
-      case "DDeiRectContainer":
+      case "DDeiPolygonContainer":
         return DDeiConfig.CONTAINER
       case "DDeiStage":
         return DDeiConfig.STAGE

@@ -2,8 +2,10 @@ import DDeiEnumBusCommandType from '../../enums/bus-command-type';
 import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
 import DDeiAbstractShape from '../../models/shape';
-import DDeiRectContainer from '../../models/rect-container';
 import DDeiEnumControlState from '../../enums/control-state';
+import DDeiUtil from '../../util';
+import { Matrix3 } from 'three';
+import DDeiLayoutManagerFactory from '../../layout/layout-manager-factory';
 /**
  * 组合控件的总线Command
  */
@@ -55,31 +57,29 @@ class DDeiBusCommandModelMerge extends DDeiBusCommand {
         //获取选中图形的外接矩形
         let outRect = DDeiAbstractShape.getOutRectByPV(models);
         //创建一个容器，添加到画布,其坐标等于外接矩形
-        let container: DDeiRectContainer = DDeiRectContainer.initByJSON({
-          id: "comp_" + ddInstance.stage.idIdx,
-          initCPV: {
-            x: outRect.x + outRect.width / 2,
-            y: outRect.y + outRect.height / 2,
-            z: 1
-          },
-          layout: "compose",
-          modelCode: "100202",
-          fill: {
-            type: 0
-          },
-          border: {
-            top: { type: 0 }
-          },
-          width: outRect.width / stageRatio,
-          height: outRect.height / stageRatio
-        },
-          {
-            currentLayer: layer,
-            currentStage: ddInstance.stage,
-            currentContainer: layer
-          });
-        //下标自增1
-        ddInstance.stage.idIdx++;
+
+        //读取配置
+        let controlDefine = DDeiUtil.getControlDefine({ modelCode: "100202"});
+          //根据配置创建控件
+        let container = DDeiUtil.createControl(controlDefine, DDeiUtil.getEditorInsByDDei(ddInstance))[0]
+        container.layout = "compose"
+        container.layoutManager = DDeiLayoutManagerFactory.getLayoutInstance("compose");
+        container.layoutManager.container = container;
+        container.fill = { type: 0 }
+        container.border = { type: 0 }
+        let m1 = new Matrix3()
+        //构建缩放矩阵，缩放到基准大小
+        let scaleMatrix = new Matrix3(
+          outRect.width  / container.essBounds.width, 0, 0,
+          0, outRect.height  / container.essBounds.height, 0,
+          0, 0, 1);
+        m1.premultiply(scaleMatrix)
+        let moveMatrix = new Matrix3(
+          1, 0, outRect.x + outRect.width / 2,
+          0, 1, outRect.y + outRect.height / 2,
+          0, 0, 1);
+        m1.premultiply(moveMatrix)
+        container.transVectors(m1)
 
         ddInstance.bus.insert(DDeiEnumBusCommandType.ModelChangeContainer, { newContainer: ddInstance.stage.layers[ddInstance.stage.layerIndex], models: [container], skipValid: true }, evt, 0);
         ddInstance.bus.insert(DDeiEnumBusCommandType.ModelChangeContainer, { newContainer: container, oldContainer: layer, models: models, skipValid: true }, evt, 1);

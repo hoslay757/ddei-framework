@@ -1,4 +1,3 @@
-import DDeiRectContainer from "../models/rect-container";
 /**
  * 布局管理器工厂
  */

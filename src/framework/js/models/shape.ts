@@ -2096,6 +2096,12 @@ abstract class DDeiAbstractShape {
       comp.destroyRender()
     });
 
+    if(this.models){
+      this.midList?.forEach(mid => {
+        this.models.get(mid)?.destroyRender()
+      });
+    }
+
 
     this.render = null
   }

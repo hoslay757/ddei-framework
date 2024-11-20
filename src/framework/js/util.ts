@@ -63,11 +63,26 @@ class DDeiUtil {
   static isBackActive: Function;
 
 
-  //钩子函数,创建renderviewer元素，由editor在创建时传入
-  static createRenderViewer: Function;
 
-  //钩子函数,移除renderviewer元素，由editor在创建时传入
-  static removeRenderViewer: Function;
+  //创建renderviewer元素
+  static createRenderViewer = function (model, operate, tempShape, composeRender) {
+    if (model?.stage?.ddInstance) {
+      let editor = DDeiUtil.getEditorInsByDDei(model.stage.ddInstance)
+      if (editor) {
+        editor.createRenderViewer(model, operate, tempShape, composeRender)
+      }
+    }
+  }
+
+  //移除renderviewer元素，由editor在创建时传入
+  static removeRenderViewer = function (model, operate, tempShape, composeRender) {
+    if (model?.stage?.ddInstance) {
+      let editor = DDeiUtil.getEditorInsByDDei(model.stage.ddInstance)
+      if (editor) {
+        editor.removeRenderViewer(model, operate, tempShape, composeRender)
+      }
+    }
+  }
 
   //钩子函数,判定控件否为hidden的函数，可以由外部来覆写，从而增加前置或者后置判断逻辑
   static isModelHidden: Function = function(model:DDeiAbstractShape):boolean{

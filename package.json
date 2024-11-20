@@ -1,6 +1,6 @@
 {
   "name": "ddei-framework",
-  "version": "1.2.43-11",
+  "version": "1.2.43",
   "private": false,
   "type": "module",
   "author": "hoslay <3697355039@qq.com>",
@@ -11,10 +11,11 @@
     "ddei-framework",
     "ddei-plugin",
     "ddei-editor",
+    "ddei-flow",
     "图形框架",
     "在线设计器"
   ],
-  "homepage": "https://www.ddei.top",
+  "homepage": "http://docs.ddei.top",
   "repository": {
     "type": "git",
     "url": "https://gitee.com/hoslay/ddei-framework.git"
