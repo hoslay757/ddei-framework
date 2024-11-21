@@ -603,6 +603,20 @@ abstract class DDeiAbstractShape {
     }
   }
 
+  /**
+   * 删除本图形的依附链接图形
+   * @param dmid 依附图形id
+   */
+  removeLinkModel(dmid: string, destroy: boolean = true, notify: boolean = true):void{
+    if (this.linkModels?.has) {
+      let link = this.linkModels.get(dmid);
+      if(link){
+        this.linkModels.delete(dmid)
+        this.pModel.removeModel(link.dm, destroy, notify)
+      }
+    }
+  }
+
 
   /**
   * 初始化链接模型
@@ -2082,6 +2096,12 @@ abstract class DDeiAbstractShape {
       comp.destroyRender()
     });
 
+    if(this.models){
+      this.midList?.forEach(mid => {
+        this.models.get(mid)?.destroyRender()
+      });
+    }
+
 
     this.render = null
   }
@@ -2234,6 +2254,7 @@ abstract class DDeiAbstractShape {
         0, 0, 1);
       models.forEach(m => {
         m.transVectors(moveMatrix)
+        m.refreshLinkModels()
         m.updateLinkModels(ignoreModelIds)
       })
     }

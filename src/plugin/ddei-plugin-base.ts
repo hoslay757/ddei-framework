@@ -59,6 +59,17 @@ class DDeiPluginBase{
     
   }
 
+  /**
+   * 修改自身的方法，通过传入一个回调函数，让插件使用者可以更灵活的修改插件属性
+   * @param fn 
+   * @returns 
+   */
+  modify(fn: Function): DDeiPluginBase {
+    let cloneThis = cloneDeep(this);
+    fn(cloneThis)
+    return cloneThis;
+  }
+
 
   getInitConfig():object{
     return this.initConfig

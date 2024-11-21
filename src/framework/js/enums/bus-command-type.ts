@@ -22,6 +22,7 @@ enum DDeiEnumBusCommandType {
   ModelChangeRotate = "model-change-rotate",
   ResetSelectorState = "reset-selector-state",
   ModelPush = "model-push",
+  CreateDepLinkModel = "create-dep-linkmodel",
   ModelChangeValue = "model-change-value",
   ChangeLayout = "change-layout",
   CopyStyle = "copy-style",

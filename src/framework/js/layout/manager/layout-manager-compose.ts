@@ -29,7 +29,7 @@ class DDeiLayoutManagerCompose extends DDeiLayoutManager {
     }
   }
   canAppend(x: number, y: number, models: DDeiAbstractShape[]): boolean {
-    return false;
+    return true;
   }
 
   append(x: number, y: number, models: DDeiAbstractShape[]): boolean {
@@ -38,9 +38,11 @@ class DDeiLayoutManagerCompose extends DDeiLayoutManager {
       let newContainer = this.container;
       if (oldContainer) {
         //将元素从旧容器移出
+        item.destroyRender()
         oldContainer.removeModel(item,false,false);
       }
       newContainer.addModel(item,false);
+      
       //绑定并初始化渲染器
       item.initRender();
     })

@@ -1793,7 +1793,7 @@ class DDeiLayerCanvasRender {
             pushData.oldContainer = pContainerModel
             if (isAlt) {
               //寻找鼠标落点当前所在的容器
-              let mouseOnContainers = DDeiAbstractShape.findBottomContainersByArea(this.model, ex, ey);
+              let mouseOnContainers = DDeiAbstractShape.findBottomContainersByArea(this.model, ex2, ey2);
               let lastOnContainer = this.model;
               if (mouseOnContainers && mouseOnContainers.length > 0) {
                 //获取最下层容器

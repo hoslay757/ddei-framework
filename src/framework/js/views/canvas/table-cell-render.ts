@@ -1,11 +1,11 @@
 import DDeiEnumControlState from '../../enums/control-state.js';
 import DDeiUtil from '../../util.js';
-import DDeiRectContainerCanvasRender from './rect-container-render.js';
+import DDeiPolygonContainerCanvasRender from './polygon-container-render.js';
 
 /**
  * 表格单元格的渲染器
  */
-class DDeiTableCellCanvasRender extends DDeiRectContainerCanvasRender {
+class DDeiTableCellCanvasRender extends DDeiPolygonContainerCanvasRender {
   // ============================ 构造函数 ============================
   constructor(props: object) {
     super(props)

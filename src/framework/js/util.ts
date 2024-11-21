@@ -7,6 +7,8 @@ import DDeiModelArrtibuteValue from './models/attribute/attribute-value';
 import DDeiStage from './models/stage';
 import DDeiColor from './color.js';
 import DDeiLink from './models/link.js';
+import DDeiEnumOperateType from './enums/operate-type.js';
+import DDeiModelLink from './models/modellink.js';
 
 const expressBindValueReg = /#\{[^\{\}]*\}/;
 const contentSplitReg = /\+|\-|\*|\//;
@@ -61,11 +63,26 @@ class DDeiUtil {
   static isBackActive: Function;
 
 
-  //钩子函数,创建renderviewer元素，由editor在创建时传入
-  static createRenderViewer: Function;
 
-  //钩子函数,移除renderviewer元素，由editor在创建时传入
-  static removeRenderViewer: Function;
+  //创建renderviewer元素
+  static createRenderViewer = function (model, operate, tempShape, composeRender) {
+    if (model?.stage?.ddInstance) {
+      let editor = DDeiUtil.getEditorInsByDDei(model.stage.ddInstance)
+      if (editor) {
+        editor.createRenderViewer(model, operate, tempShape, composeRender)
+      }
+    }
+  }
+
+  //移除renderviewer元素，由editor在创建时传入
+  static removeRenderViewer = function (model, operate, tempShape, composeRender) {
+    if (model?.stage?.ddInstance) {
+      let editor = DDeiUtil.getEditorInsByDDei(model.stage.ddInstance)
+      if (editor) {
+        editor.removeRenderViewer(model, operate, tempShape, composeRender)
+      }
+    }
+  }
 
   //钩子函数,判定控件否为hidden的函数，可以由外部来覆写，从而增加前置或者后置判断逻辑
   static isModelHidden: Function = function(model:DDeiAbstractShape):boolean{
@@ -608,6 +625,142 @@ class DDeiUtil {
    */
   static getPointDistance(x0: number, y0: number, x1: number, y1: number): number {
     return Math.sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2)
+  }
+
+  /**
+   * 创建依附快捷控件
+   * @param model 被依附控件
+   * @param text 文本
+   */
+  static createDepLinkModel(model:DDeiAbstractShape, text:string,type:number|null = null) {
+    if (text && model) {
+      let stage = model.stage
+      let ddInstance = stage.ddInstance
+      let editState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_EDIT_BEFORE", DDeiEnumOperateType.EDIT, { models: [model] }, ddInstance)
+      if (editState == 0 || editState == 1) {
+        //判断是否已存在快捷编辑图形
+        let realModel = null;
+        //参考点位
+        let posPoint = null;
+        //位置类型
+        let posType;
+        let isCreateRealModel = false
+        let isLineLM = false
+        //如果当前图形为线，或配置了depPos则创建
+        if (model.baseModelType == 'DDeiLine') {
+          posType = type ? type :3
+          //奇数，取正中间
+          let pi = Math.floor(model.pvs.length / 2)
+          if (model.pvs.length % 3 == 0) {
+            posPoint = model.pvs[pi];
+          }
+          //偶数，取两边的中间点
+          else {
+            posPoint = {
+              x: (model.pvs[pi - 1].x + model.pvs[pi].x) / 2,
+              y: (model.pvs[pi - 1].y + model.pvs[pi].y) / 2
+            }
+          }
+          model.linkModels.forEach(lm => {
+            if (lm.type == posType) {
+              realModel = lm.dm;
+            }
+          });
+          if (!realModel) {
+            isCreateRealModel = true;
+            isLineLM = true;
+          }
+        } else {
+          let modelDefine = DDeiUtil.getControlDefine(model);
+          //如果存在配置，则直接采用配置，如果不存在配置则读取文本区域
+          if (modelDefine?.define?.sample?.depPos) {
+            let depPos = modelDefine.define.sample.depPos;
+            let essBounds = model.essBounds;
+            let dmEssBounds = { width: 80, height: 18 }
+            posType = depPos.type;
+            if (!type || posType == type){
+              if (depPos.type == 5) {
+                posPoint = model.cpv;
+              } //上
+              else if (depPos.type == 6) {
+                posPoint = {
+                  x: model.cpv.x,
+                  y: essBounds.y - dmEssBounds.height / 2
+                }
+              }
+              //右
+              else if (depPos.type == 7) {
+                posPoint = {
+                  x: essBounds.x1 + dmEssBounds.width / 2,
+                  y: model.cpv.y
+                }
+              }
+              //下
+              else if (depPos.type == 8) {
+                posPoint = {
+                  x: model.cpv.x,
+                  y: essBounds.y1 + dmEssBounds.height / 2
+                }
+              }
+              //左
+              else if (depPos.type == 9) {
+                posPoint = {
+                  x: essBounds.x - dmEssBounds.width / 2,
+                  y: model.cpv.y
+                }
+              }
+              isCreateRealModel = true
+            }
+          }
+          
+        }
+        if (isCreateRealModel) {
+          //根据control的定义，初始化临时控件，并推送至上层Editor
+          let dataJson = {
+
+            modelCode: "100200",
+
+          };
+
+          let controlDefine = DDeiUtil.getControlDefine(dataJson)
+          for (let i in controlDefine?.define) {
+            dataJson[i] = cloneDeep(controlDefine.define[i]);
+          }
+          dataJson["id"] = "lsm_" + (stage.idIdx++)
+          dataJson["width"] = 80
+          dataJson["height"] = 28
+          dataJson["font"] = { size: 12 }
+          dataJson["text"] = text
+          dataJson["textStyle"] = { paddingWeight: 0 }
+          if (isLineLM) {
+
+            dataJson["fill"] = { type: 1, color: 'white' }
+          }
+          realModel = ddInstance.controlModelClasses["DDeiPolygon"].initByJSON(
+            dataJson,
+            { currentStage: stage, currentDdInstance: ddInstance, currentContainer: model.pModel }
+          );
+          let move1Matrix = new Matrix3(
+            1, 0, posPoint.x,
+            0, 1, posPoint.y,
+            0, 0, 1);
+          realModel.transVectors(move1Matrix)
+          model.layer.addModel(realModel, false);
+
+          realModel.initRender()
+          let lineLink = new DDeiModelLink({
+            depModel: model,
+            type: posType,
+            dm: realModel,
+            dx: 0,
+            dy: 0
+          })
+          realModel.depModel = model
+          model.linkModels.set(realModel.id, lineLink);
+        }
+        
+      }
+    }
   }
 
   /**

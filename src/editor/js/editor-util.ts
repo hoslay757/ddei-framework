@@ -8,9 +8,10 @@ import DDeiEditorEnumBusCommandType from "./enums/editor-command-type";
 import DDeiEditorState from "./enums/editor-state";
 import DDeiModelLink from "../../framework/js/models/modellink";
 import { Matrix3 } from "three";
-import DDeiRectContainer from "../../framework/js/models/rect-container";
 import DDei from "../../framework/js/ddei";
 import DDeiFuncCallResult from "@ddei-core/lifecycle/callresult";
+import {cloneDeep} from "lodash"
+import DDeiLayoutManagerFactory from "../../framework/js/layout/layout-manager-factory";
 
 
 class DDeiEditorUtil {
@@ -971,7 +972,7 @@ class DDeiEditorUtil {
           let ddInstance = editor.ddInstance
           editor.icons = {}
           editor?.controls.forEach(controlDefine => {
-            let cacheData = localStorage.getItem("ICON-CACHE-" + editor.id+"-" + controlDefine.id)
+            let cacheData = localStorage.getItem("ICON-CACHE-" + controlDefine.id)
             
             if (cacheData) {
               editor.icons[controlDefine.id] = cacheData
@@ -1031,7 +1032,7 @@ class DDeiEditorUtil {
                  
                   DDeiEditorUtil.drawModelsToCanvas(models, outRect,canvas)
                   let dataURL = canvas.toDataURL("image/png");
-                  localStorage.setItem("ICON-CACHE-" + editor.id + "-" + controlDefine.id, dataURL)
+                  localStorage.setItem("ICON-CACHE-" + controlDefine.id, dataURL)
                   editor.icons[controlDefine.id] = dataURL
                 } catch (e) { 
                   if(editor.debug){
@@ -1122,7 +1123,7 @@ class DDeiEditorUtil {
   static clearControlIcons(editor: DDeiEditor):void{
     editor.icons = {}
     editor?.controls.forEach(controlDefine => {
-      localStorage.removeItem("ICON-CACHE-" +editor.id+"-"+ controlDefine.id)
+      localStorage.removeItem("ICON-CACHE-" + controlDefine.id)
     })
   }
 
@@ -1161,6 +1162,7 @@ class DDeiEditorUtil {
 
     
     //设置配置的属性值
+    
     searchPaths.forEach((key) => {
       if (configAtrs.get(key)) {
         dataJson[key] = configAtrs.get(key).data;
@@ -1172,8 +1174,10 @@ class DDeiEditorUtil {
     if (cc.img) {
       dataJson.fill = { type: 2, image: cc.img };
     }
+
+    
     for (let i in cc?.define) {
-      dataJson[i] = cc.define[i];
+      dataJson[i] = cloneDeep(cc.define[i]);
     }
     for (let i in dataJson) {
       let value = dataJson[i]
@@ -1220,6 +1224,7 @@ class DDeiEditorUtil {
     if (control?.define?.create == false) {
       models.splice(0, 1)
     }
+    
 
     //添加初始linkModels以及控件关联
     if (control?.define?.iLinkModels) {
@@ -1262,29 +1267,29 @@ class DDeiEditorUtil {
         //获取选中图形的外接矩形
         let outRect = DDeiAbstractShape.getOutRectByPV(mergeControls);
         //创建一个容器，添加到画布,其坐标等于外接矩形
-        let container: DDeiRectContainer = DDeiRectContainer.initByJSON({
-          id: "comp_" + ddInstance.stage.idIdx,
-          initCPV: {
-            x: outRect.x + outRect.width / 2,
-            y: outRect.y + outRect.height / 2,
-            z: 1
-          },
-          layout: "compose",
-          modelCode: "100202",
-          fill: {
-            type: 0
-          },
-          border: {
-            top: { type: 0 }
-          },
-          width: outRect.width / stageRatio,
-          height: outRect.height / stageRatio
-        },
-          {
-            currentLayer: layer,
-            currentStage: ddInstance.stage,
-            currentContainer: layer
-          });
+
+        //读取配置
+        let controlDefine = DDeiUtil.getControlDefine({ modelCode: "100202" });
+        //根据配置创建控件
+        let container = DDeiUtil.createControl(controlDefine, DDeiUtil.getEditorInsByDDei(ddInstance))[0]
+        container.layout = "compose"
+        container.layoutManager = DDeiLayoutManagerFactory.getLayoutInstance("compose");
+        container.layoutManager.container = container;
+        container.fill = { type: 0 }
+        container.border = { type: 0 }
+        let m1 = new Matrix3()
+        //构建缩放矩阵，缩放到基准大小
+        let scaleMatrix = new Matrix3(
+          outRect.width / container.essBounds.width, 0, 0,
+          0, outRect.height / container.essBounds.height, 0,
+          0, 0, 1);
+        m1.premultiply(scaleMatrix)
+        let moveMatrix = new Matrix3(
+          1, 0, outRect.x + outRect.width / 2,
+          0, 1, outRect.y + outRect.height / 2,
+          0, 0, 1);
+        m1.premultiply(moveMatrix)
+        container.transVectors(m1)
 
         mergeControls.forEach(mc => {
           if (mc) {

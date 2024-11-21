@@ -1,10 +1,6 @@
 import DDeiEnumBusCommandType from '../../enums/bus-command-type';
-import { cloneDeep } from 'lodash'
 import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
-import DDeiTable from '../../models/table';
-import DDeiAbstractShape from '../../models/shape';
-import DDeiRectContainer from '../../models/rect-container';
 import DDeiEnumControlState from '../../enums/control-state';
 /**
  * 取消组合控件的总线Command

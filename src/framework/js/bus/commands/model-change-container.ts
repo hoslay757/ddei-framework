@@ -35,7 +35,6 @@ class DDeiBusCommandModelChangeContainer extends DDeiBusCommand {
     if (data?.models) {
       let oldContainer = data.oldContainer;
       let newContainer = data.newContainer;
-
       if (newContainer) {
         let models = data.models;
         let operateModels = []
@@ -72,6 +71,7 @@ class DDeiBusCommandModelChangeContainer extends DDeiBusCommand {
             newContainer.layoutManager = freeLayoutManager;
           }
           if (data.skipValid || newContainer.layoutManager?.canAppend(evt?.offsetX, evt?.offsetY, operateModels)) {
+            
             //交由新容器的布局管理器进行控件移入或交换
             let successAppend = newContainer.layoutManager?.append(evt?.offsetX, evt?.offsetY, operateModels);
             if (successAppend) {

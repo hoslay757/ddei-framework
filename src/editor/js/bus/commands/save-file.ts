@@ -3,7 +3,7 @@ import type DDeiBus from '@ddei-core/framework/js/bus/bus';
 import DDeiEditorEnumBusCommandType from '../../enums/editor-command-type';
 import DDeiBusCommand from '@ddei-core/framework/js/bus/bus-command';
 import DDeiActiveType from '../../enums/active-type';
-import DDeiStoreLocal from '@ddei-core/framework/js/store/local-store';
+// import DDeiStoreLocal from '@ddei-core/framework/js/store/local-store';
 import DDeiFileState from '../../enums/file-state';
 import DDeiEditor from '../../editor';
 import DDeiFile from '../../file';
@@ -54,15 +54,16 @@ class DDeiEditorCommandSaveFile extends DDeiBusCommand {
               json = converter.output(json)
             });
             json.state = DDeiFileState.NONE;
-            let storeIns = new DDeiStoreLocal();
+            
             //本地保存一份
-            try {
-              storeIns.save(file.id, json).then((data) => {
+            // try {
+            //   let storeIns = new DDeiStoreLocal();
+            //   storeIns.save(file.id, json).then((data) => {
 
-              });
-            } catch (e) {
-              console.error(e);
-            }
+            //   });
+            // } catch (e) {
+            //   console.error(e);
+            // }
             if (data.publish == 1) {
               file.state = DDeiFileState.PUBLISHING
               //调用SPI进行发布

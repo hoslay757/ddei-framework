@@ -185,21 +185,14 @@ class DDeiSelector extends DDeiRectangle {
           exeCalLoosePVS = false
           pvs = cloneDeep(models[0].pvs);
           this.cpv = cloneDeep(models[0].cpv)
-        } else if (models[0].baseModelType == "DDeiContainer" && models[0].layout == 'compose') {
-
-          pvs = cloneDeep(models[0].pvs)
-          this.cpv = cloneDeep(models[0].cpv)
-          let defineSample = DDeiUtil.getControlDefine(models[0])?.define?.sample;
-          this.eqrat = models[0]?.sample?.eqrat || defineSample?.eqrat
-        } else {
-          pvs = DDeiUtil.pointsToZero(models[0].operatePVS, models[0].cpv, models[0].rotate)
-          let oct = DDeiAbstractShape.pvsToOutRect(pvs);
-          pvs = [new Vector3(oct.x, oct.y, 1), new Vector3(oct.x1, oct.y, 1), new Vector3(oct.x1, oct.y1, 1), new Vector3(oct.x, oct.y1, 1)]
-          pvs = DDeiUtil.zeroToPoints(pvs, models[0].cpv, models[0].rotate)
-          this.cpv = clone(models[0].cpv)
-          let defineSample = DDeiUtil.getControlDefine(models[0])?.define?.sample;
-          this.eqrat = models[0]?.sample?.eqrat || defineSample?.eqrat
-        }
+        } 
+        pvs = DDeiUtil.pointsToZero(models[0].operatePVS, models[0].cpv, models[0].rotate)
+        let oct = DDeiAbstractShape.pvsToOutRect(pvs);
+        pvs = [new Vector3(oct.x, oct.y, 1), new Vector3(oct.x1, oct.y, 1), new Vector3(oct.x1, oct.y1, 1), new Vector3(oct.x, oct.y1, 1)]
+        pvs = DDeiUtil.zeroToPoints(pvs, models[0].cpv, models[0].rotate)
+        this.cpv = clone(models[0].cpv)
+        let defineSample = DDeiUtil.getControlDefine(models[0])?.define?.sample;
+        this.eqrat = models[0]?.sample?.eqrat || defineSample?.eqrat
       } else {
         this.eqrat = false
         for (let i = 0; i < models.length; i++) {

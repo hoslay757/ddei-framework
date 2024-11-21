@@ -201,88 +201,96 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     if (this.stage?.selectedModels?.size > 0) {
       let lineModel = Array.from(this.stage?.selectedModels?.values())[0];
       if (lineModel.baseModelType == 'DDeiLine') {
-        //获得 2d 上下文对象
-        let canvas = this.ddRender.getCanvas()
-        let ctx = canvas.getContext('2d');
-        //获取全局缩放比例
-        let stageRatio = this.stage.getStageRatio()
-        let rat1 = this.ddRender.ratio;
-        let ratio = rat1 * stageRatio;
-        rat1 = ratio
-        let pvs = lineModel.pvs
-        let type = DDeiModelArrtibuteValue.getAttrValueByState(lineModel, "type", true);
-        let weight = DDeiModelArrtibuteValue.getAttrValueByState(lineModel, "weight", true);
-        let w10 = 1.3 * weight * ratio
-        if (w10 > 5 * rat1) {
-          w10 = 5 * rat1
-        } else if (w10 < 2 * rat1) {
-          w10 = 2 * rat1
-        }
+        let modeName = DDeiUtil.getConfigValue("MODE_NAME", this.ddRender.model);
+        let accessLink = DDeiUtil.isAccess(
+          DDeiEnumOperateType.LINK, [lineModel], null, modeName,
+          this.ddRender.model
+        );
+        if (accessLink) {
+          //获得 2d 上下文对象
+          let canvas = this.ddRender.getCanvas()
+          let ctx = canvas.getContext('2d');
+          //获取全局缩放比例
+          let stageRatio = this.stage.getStageRatio()
+          let rat1 = this.ddRender.ratio;
+          let ratio = rat1 * stageRatio;
+          rat1 = ratio
+          let pvs = lineModel.pvs
+          let type = DDeiModelArrtibuteValue.getAttrValueByState(lineModel, "type", true);
+          let weight = DDeiModelArrtibuteValue.getAttrValueByState(lineModel, "weight", true);
+          let w10 = 1.3 * weight * ratio
+          if (w10 > 5 * rat1) {
+            w10 = 5 * rat1
+          } else if (w10 < 2 * rat1) {
+            w10 = 2 * rat1
+          }
 
-        let w15 = 1.5 * w10
-        let w20 = 2 * w10
-        let w30 = 2 * w15
-        //保存状态
-        ctx.save();
-        // ctx.translate(rat1,rat1)
-        switch (type) {
-          case 1: {
-            this.drawSEPoint(pvs, w10, w20, ctx, rat1, ratio)
-            break;
-          }
-          case 2: {
-            this.drawSEPoint(pvs, w10, w20, ctx, rat1, ratio)
-            //根据中间节点绘制操作点
-            ctx.strokeStyle = "#017fff";
-            ctx.fillStyle = "white";
-            for (let i = 1; i < pvs.length; i++) {
-              if (i != pvs.length - 1) {
-                ctx.save()
-                let x1 = pvs[i].x * rat1;
-                let y1 = pvs[i].y * rat1;
-                if (lineModel.rotate) {
-                  ctx.translate(x1, y1)
-                  ctx.rotate(lineModel.rotate * DDeiConfig.ROTATE_UNIT);
-                  ctx.translate(-x1, -y1)
-                }
-                ctx.fillRect(x1 - w15, y1 - w15, w30, w30)
-                ctx.strokeRect(x1 - w15, y1 - w15, w30, w30)
-                ctx.restore()
-              }
-              ctx.save()
-              let x = (pvs[i].x + pvs[i - 1].x) / 2 * rat1
-              let y = (pvs[i].y + pvs[i - 1].y) / 2 * rat1
-              ctx.translate(x, y)
-              ctx.rotate(((lineModel.rotate ? lineModel.rotate : 0) + 45) * DDeiConfig.ROTATE_UNIT);
-              ctx.translate(-x, -y)
-              //菱形
-              ctx.fillRect(x - w10, y - w10, w20, w20)
-              ctx.strokeRect(x - w10, y - w10, w20, w20)
-              ctx.restore()
+          let w15 = 1.5 * w10
+          let w20 = 2 * w10
+          let w30 = 2 * w15
+          //保存状态
+          ctx.save();
+          // ctx.translate(rat1,rat1)
+          switch (type) {
+            case 1: {
+              this.drawSEPoint(pvs, w10, w20, ctx, rat1, ratio)
+              break;
             }
-            break;
-          }
-          case 3: {
-            this.drawSEPoint(pvs, w10, w20, ctx, rat1, ratio)
-            if (pvs.length >= 4) {
+            case 2: {
+              this.drawSEPoint(pvs, w10, w20, ctx, rat1, ratio)
+              //根据中间节点绘制操作点
               ctx.strokeStyle = "#017fff";
               ctx.fillStyle = "white";
-              for (let i = 1; i < this.model.opvs.length - 1; i++) {
-                let pv = this.model.opvs[i];
-                ctx.beginPath()
-                ctx.ellipse(pv.x * rat1, pv.y * rat1, w20, w20, 0, 0, DDeiUtil.PI2);
-                ctx.closePath()
-                ctx.fill();
-                ctx.stroke();
+              for (let i = 1; i < pvs.length; i++) {
+                if (i != pvs.length - 1) {
+                  ctx.save()
+                  let x1 = pvs[i].x * rat1;
+                  let y1 = pvs[i].y * rat1;
+                  if (lineModel.rotate) {
+                    ctx.translate(x1, y1)
+                    ctx.rotate(lineModel.rotate * DDeiConfig.ROTATE_UNIT);
+                    ctx.translate(-x1, -y1)
+                  }
+                  ctx.fillRect(x1 - w15, y1 - w15, w30, w30)
+                  ctx.strokeRect(x1 - w15, y1 - w15, w30, w30)
+                  ctx.restore()
+                }
+                ctx.save()
+                let x = (pvs[i].x + pvs[i - 1].x) / 2 * rat1
+                let y = (pvs[i].y + pvs[i - 1].y) / 2 * rat1
+                ctx.translate(x, y)
+                ctx.rotate(((lineModel.rotate ? lineModel.rotate : 0) + 45) * DDeiConfig.ROTATE_UNIT);
+                ctx.translate(-x, -y)
+                //菱形
+                ctx.fillRect(x - w10, y - w10, w20, w20)
+                ctx.strokeRect(x - w10, y - w10, w20, w20)
+                ctx.restore()
               }
-
+              break;
             }
-            break;
-          }
-        }
+            case 3: {
+              this.drawSEPoint(pvs, w10, w20, ctx, rat1, ratio)
+              if (pvs.length >= 4) {
+                ctx.strokeStyle = "#017fff";
+                ctx.fillStyle = "white";
+                for (let i = 1; i < this.model.opvs.length - 1; i++) {
+                  let pv = this.model.opvs[i];
+                  ctx.beginPath()
+                  ctx.ellipse(pv.x * rat1, pv.y * rat1, w20, w20, 0, 0, DDeiUtil.PI2);
+                  ctx.closePath()
+                  ctx.fill();
+                  ctx.stroke();
+                }
 
-        //恢复状态
-        ctx.restore();
+              }
+              break;
+            }
+          }
+
+          //恢复状态
+          ctx.restore();
+        }
+      
       }
     }
 
@@ -555,23 +563,31 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
     }
     if (!isOvPoint) {
       if (models?.length == 1 && models[0]?.baseModelType == "DDeiLine") {
-        let tpdata = this.model.isOpvOnLine(ex, ey);
+        let modeName = DDeiUtil.getConfigValue("MODE_NAME", this.ddRender.model);
+        let accessLink = DDeiUtil.isAccess(
+          DDeiEnumOperateType.LINK, [models[0]], null, modeName,
+          this.ddRender.model
+        );
+        if (accessLink) {
+          let tpdata = this.model.isOpvOnLine(ex, ey);
 
-        if (tpdata) {
-          //如果类型为3，需要计算方向
-          let direct = null;
-          if (tpdata.type == 3) {
-            let beforeP = this.model.opvs[tpdata.index - 1]
-            let afterP = this.model.opvs[tpdata.index + 1]
-            //TODO 旋转的情况下，需要把旋转归0判断，x相等
-            if (Math.abs(beforeP.x - afterP.x) <= 1) {
-              direct = 2
-            } else {
-              direct = 1
+          if (tpdata) {
+            //如果类型为3，需要计算方向
+            let direct = null;
+            if (tpdata.type == 3) {
+              let beforeP = this.model.opvs[tpdata.index - 1]
+              let afterP = this.model.opvs[tpdata.index + 1]
+              //TODO 旋转的情况下，需要把旋转归0判断，x相等
+              if (Math.abs(beforeP.x - afterP.x) <= 1) {
+                direct = 2
+              } else {
+                direct = 1
+              }
             }
-          }
 
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { type: 'line', passIndex: tpdata.type, direct: direct, opvsIndex: tpdata.index }, evt);
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { type: 'line', passIndex: tpdata.type, direct: direct, opvsIndex: tpdata.index }, evt);
+            }
+          
         } else {
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { type: 'line', passIndex: -1, opvsIndex: -1 }, evt);
         }
@@ -649,32 +665,41 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
       if (this.stage?.selectedModels?.size > 0) {
         let layer = this.stage.layers[this.stage?.layerIndex];
         lineModel = Array.from(this.stage.selectedModels.values())[0]
-        let dragPoint = this.model.opvs[this.model.opvsIndex]
-        //创建影子控件
-        let lineShadow = DDeiUtil.getShadowControl(lineModel);
-        layer.shadowControls.push(lineShadow);
-        this.stageRender.currentOperateShape = lineShadow
-        this.stageRender.currentOperateShape.dragPoint = dragPoint
+        let modeName = DDeiUtil.getConfigValue("MODE_NAME", this.ddRender.model);
+        let accessLink = DDeiUtil.isAccess(
+          DDeiEnumOperateType.LINK, [lineModel], null, modeName,
+          this.ddRender.model
+        );
         
-        let dragObj = {
-          x: ex,
-          y: ey,
-          dragPoint: dragPoint,
-          model: lineShadow,
-          opvsIndex: this.model.opvsIndex,
-          passIndex: this.model.passIndex,
-          opvs: this.model.opvs
-        }
-        //加载事件的配置
-        
-        let rsState = DDeiUtil.invokeCallbackFunc("EVENT_LINE_DRAG_BEFORE", DDeiEnumOperateType.DRAG, dragObj, this.stage?.ddInstance, evt)
-        if (rsState == 0 || rsState == 1) {
-          DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", DDeiEnumOperateType.LINK, null, this.stage?.ddInstance, evt)
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
-          //改变光标
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: "grabbing" }, evt);
+        if (accessLink) {
+          let dragPoint = this.model.opvs[this.model.opvsIndex]
+          //创建影子控件
+          let lineShadow = DDeiUtil.getShadowControl(lineModel);
+          layer.shadowControls.push(lineShadow);
+          this.stageRender.currentOperateShape = lineShadow
+          this.stageRender.currentOperateShape.dragPoint = dragPoint
+          
+          let dragObj = {
+            x: ex,
+            y: ey,
+            dragPoint: dragPoint,
+            model: lineShadow,
+            opvsIndex: this.model.opvsIndex,
+            passIndex: this.model.passIndex,
+            opvs: this.model.opvs
+          }
+          //加载事件的配置
+          
+          let rsState = DDeiUtil.invokeCallbackFunc("EVENT_LINE_DRAG_BEFORE", DDeiEnumOperateType.DRAG, dragObj, this.stage?.ddInstance, evt)
+          if (rsState == 0 || rsState == 1) {
+            DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", DDeiEnumOperateType.LINK, null, this.stage?.ddInstance, evt)
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: dragObj }, evt);
+            //改变光标
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: "grabbing" }, evt);
 
-          this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING
+            this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING
+          }
+        
         }
       }
     } else {

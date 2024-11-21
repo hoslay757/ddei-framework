@@ -1,5 +1,5 @@
 import DDeiAbstractShape from './shape';
-import DDeiRectContainer from './rect-container';
+import DDeiPolygonContainer from './polygon-container';
 import DDeiTable from './table';
 import DDeiEnumControlState from '../enums/control-state';
 
@@ -10,7 +10,7 @@ import DDeiEnumControlState from '../enums/control-state';
  * 缺省布局为full
  * 单元格必须依附于表格控件才能存在
  */
-class DDeiTableCell extends DDeiRectContainer {
+class DDeiTableCell extends DDeiPolygonContainer {
 
   // ============================ 构造函数 ============================
   constructor(props: object) {
