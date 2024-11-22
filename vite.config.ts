@@ -9,7 +9,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'src/index.ts')
       },
-      external: ['vue', 'lodash', 'three']
+      external: ['vue']
     },
     //设置打包的文件和名称，名称这里可以先去npm官网搜索一下是否存在，否则后面发包不成功也要修改
     lib: {

@@ -2,7 +2,7 @@ import  DDeiConfig from '../config'
 import DDeiAbstractShape from './shape'
 import { Matrix3, Vector3 } from 'three';
 import DDeiUtil from '../util';
-import { debounce, cloneDeep } from "lodash";
+import { debounce, cloneDeep } from "lodash-es";
 import DDeiLayer from './layer';
 import DDeiEnumBusCommandType from '../enums/bus-command-type';
 import DDeiModelArrtibuteValue from './attribute/attribute-value';

@@ -2,7 +2,7 @@ import DDeiConfig from '../../config.js';
 import DDei from '../../ddei.js';
 import DDeiEnumBusCommandType from '../../enums/bus-command-type.js';
 import DDeiUtil from '../../util.js'
-import { throttle } from "lodash";
+import { throttle } from "lodash-es";
 
 /**
  * DDei图形框架的渲染器类，用于渲染图形框架

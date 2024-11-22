@@ -1,6 +1,6 @@
 import DDeiConfig from './config.js'
 import DDeiAbstractShape from './models/shape.js';
-import { clone, cloneDeep, isDate, isNumber, isString } from 'lodash'
+import { clone, cloneDeep, isDate, isNumber, isString } from 'lodash-es'
 import DDei from './ddei.js';
 import { Matrix3, Vector3 } from 'three';
 import DDeiModelArrtibuteValue from './models/attribute/attribute-value';

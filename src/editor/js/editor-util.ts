@@ -10,7 +10,7 @@ import DDeiModelLink from "../../framework/js/models/modellink";
 import { Matrix3 } from "three";
 import DDei from "../../framework/js/ddei";
 import DDeiFuncCallResult from "@ddei-core/lifecycle/callresult";
-import {cloneDeep} from "lodash"
+import {cloneDeep} from "lodash-es"
 import DDeiLayoutManagerFactory from "../../framework/js/layout/layout-manager-factory";
 
 

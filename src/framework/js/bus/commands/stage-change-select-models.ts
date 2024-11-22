@@ -1,6 +1,6 @@
 import DDeiEditorEnumBusCommandType from '@ddei-core/editor/js/enums/editor-command-type';
 import DDeiEnumBusCommandType from '../../enums/bus-command-type';
-import { cloneDeep } from 'lodash';
+import { cloneDeep } from 'lodash-es';
 import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
 import DDeiEnumOperateType from '../../enums/operate-type';

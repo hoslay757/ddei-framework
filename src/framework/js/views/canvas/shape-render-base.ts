@@ -1,4 +1,4 @@
-import { cloneDeep } from 'lodash';
+import { cloneDeep } from 'lodash-es';
 import DDeiConfig from '../../config.js'
 import DDei from '../../ddei.js';
 import DDeiEnumBusCommandType from '../../enums/bus-command-type.js';

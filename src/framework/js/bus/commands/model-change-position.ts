@@ -6,7 +6,7 @@ import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
 import { Matrix3, Vector3 } from 'three';
 import DDeiLayoutManagerFactory from '../../layout/layout-manager-factory';
-import { has } from 'lodash';
+import { has } from 'lodash-es';
 import DDeiUtil from '../../util';
 import DDeiEnumOperateType from '../../enums/operate-type';
 /**

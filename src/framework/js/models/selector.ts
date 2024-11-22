@@ -4,7 +4,7 @@ import DDeiEnumControlState from '../enums/control-state';
 import DDeiUtil from '../util';
 import DDeiRectangle from './rectangle';
 import DDeiAbstractShape from './shape';
-import { clone, cloneDeep } from 'lodash'
+import { clone, cloneDeep } from 'lodash-es'
 import { Matrix3, Vector3 } from 'three';
 import DDeiModelArrtibuteValue from './attribute/attribute-value';
 import DDeiEnumOperateState from '../enums/operate-state';

@@ -1,5 +1,5 @@
 import DDeiEnumBusCommandType from '../../enums/bus-command-type';
-import { debounce } from 'lodash';
+import { debounce } from 'lodash-es';
 import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
 import DDeiStage from '../../models/stage';

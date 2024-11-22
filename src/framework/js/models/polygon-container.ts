@@ -7,7 +7,7 @@ import DDeiLayoutManager from '../layout/layout-manager';
 import DDeiLayoutManagerFactory from '../layout/layout-manager-factory';
 import DDeiModelArrtibuteValue from './attribute/attribute-value'
 import DDeiUtil from '../util';
-import { cloneDeep } from 'lodash';
+import { cloneDeep } from 'lodash-es';
 import DDeiPolygon from './polygon';
 
 /**

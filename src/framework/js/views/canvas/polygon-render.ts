@@ -2,7 +2,7 @@ import DDeiConfig from '../../config.js'
 import DDeiEnumBusCommandType from '../../enums/bus-command-type.js';
 import DDeiUtil from '../../util.js'
 import DDeiAbstractShapeRender from './shape-render-base.js';
-import { clone, trim, cloneDeep } from 'lodash'
+import { clone, trim, cloneDeep } from 'lodash-es'
 import { Matrix3, Vector3 } from 'three';
 import DDeiEnumOperateType from '../../enums/operate-type.js';
 import DDeiAbstractShape from '../../models/shape.js';

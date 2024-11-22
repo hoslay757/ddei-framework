@@ -3,7 +3,7 @@ import DDeiUtil from '../util';
 import { Matrix3, Vector3 } from 'three';
 import DDeiConfig from '../config';
 import DDeiModelArrtibuteValue from './attribute/attribute-value'
-import { cloneDeep } from 'lodash';
+import { cloneDeep } from 'lodash-es';
 /**
  * polygon由3个以上点构成的图形
  * 主要样式属性：坐标、高宽、边框、字体、填充

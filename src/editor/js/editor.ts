@@ -8,7 +8,7 @@ import DDeiFile from "./file";
 import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import { markRaw } from "vue";
 import config from "./config"
-import { clone, cloneDeep, defaultsDeep } from "lodash";
+import { clone, cloneDeep, defaultsDeep } from "lodash-es";
 import FONTS from "../../framework/js/fonts/font"
 import { Matrix3, Vector3 } from 'three'
 import DDeiThemeBase from "@ddei-core/themes/theme";

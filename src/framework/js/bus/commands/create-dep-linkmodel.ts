@@ -5,7 +5,7 @@ import DDeiUtil from '../../util';
 import DDeiBus from '../bus';
 import DDeiBusCommand from '../bus-command';
 import { Matrix3 } from "three"
-import { cloneDeep } from "lodash"
+import { cloneDeep } from "lodash-es"
 import DDeiModelLink from '../../models/modellink';
 /**
  * 模型放置层级的总线Command

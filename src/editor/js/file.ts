@@ -4,7 +4,7 @@ import DDei from "../../framework/js/ddei";
 import DDeiActiveType from "./enums/active-type";
 import DDeiFileState from "./enums/file-state";
 import DDeiSheet from "./sheet";
-import { debounce } from "lodash";
+import { debounce } from "lodash-es";
 /**
  * DDei文件，文件包含了多个页签
  */
