@@ -173,6 +173,7 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
             }
           });
           bus.executeAll();
+          DDeiUtil.invokeCallbackFunc("EVENT_CONTENT_CHANGE_AFTER", "CHANGE", null, bus.ddInstance)
         }
 
       }

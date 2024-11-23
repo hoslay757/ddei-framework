@@ -62,7 +62,7 @@ class DDeiEditorCommandFileDirty extends DDeiBusCommand {
    * @returns 
    */
   static newInstance(): DDeiBusCommand {
-    return new DDeiEditorCommandFileDirty({ code: DDeiEditorEnumBusCommandType.RefreshEditorParts, name: "", desc: "" })
+    return new DDeiEditorCommandFileDirty({ code: DDeiEditorEnumBusCommandType.FileDirty, name: "", desc: "" })
   }
 
 }
