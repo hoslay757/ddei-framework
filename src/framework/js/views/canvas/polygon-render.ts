@@ -77,7 +77,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     //转换为图片
     if (!this.tempCanvas) {
       this.tempCanvas = document.createElement('canvas');
-      this.tempCanvas.setAttribute("style", "pointer-events:none;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;scale:" + (1 / rat1));
+      this.tempCanvas.setAttribute("style", "pointer-events:none;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");-webkit-transform:scale(" + (1 / rat1) + ");display:block;");
     }
     let tempCanvas = this.tempCanvas
     let pvs = this.model.operatePVS ? this.model.operatePVS : this.model.pvs
@@ -92,8 +92,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     outRect.width += 2 * weight
     outRect.height += 2 * weight
 
-    tempCanvas.style.width = outRect.width
-    tempCanvas.style.height = outRect.height
+    // tempCanvas.style.width = outRect.width
+    // tempCanvas.style.height = outRect.height
     tempCanvas.setAttribute("width", outRect.width * rat1)
     tempCanvas.setAttribute("height", outRect.height * rat1)
 
@@ -256,8 +256,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         this.tempCanvas.style.left = (this.model.cpv.x * stageRatio + this.model.stage.wpv.x) - this.tempCanvas.offsetWidth / 2 - ruleWeight + "px"
 
         this.tempCanvas.style.top = (this.model.cpv.y * stageRatio + this.model.stage.wpv.y) - this.tempCanvas.offsetHeight / 2 - ruleWeight + "px"
-    
-        let transform = ""
+        let rat1 = this.ddRender.ratio;
+        let transform = " scale("+(1/rat1)+")"
         
         if (this.model.mirrorX) {
           transform += " rotateY(180deg)"
@@ -265,9 +265,10 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         if (this.model.mirrorY) {
           transform += " rotateX(180deg)"
         }
-
   
         this.tempCanvas.style.transform = transform
+
+        
         
         
         if (!print) {

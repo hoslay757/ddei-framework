@@ -28,7 +28,7 @@ class DDeiEditorUtil {
    * 读取最近工具栏
    */
   static readRecentlyToolGroups() {
-    let groups = localStorage.getItem("ddei-recently-tool-groups");
+    let groups = DDeiUtil.getLocalStorageData("ddei-recently-tool-groups");
     if (groups) {
       try {
         DDeiEditorUtil.recentlyToolGroups = JSON.parse(groups)
@@ -46,7 +46,7 @@ class DDeiEditorUtil {
         DDeiEditorUtil.recentlyToolGroups.push({ id: group.id, expand: group.expand })
       }
     });
-    localStorage.setItem("ddei-recently-tool-groups", JSON.stringify(DDeiEditorUtil.recentlyToolGroups));
+    DDeiUtil.setLocalStorageData("ddei-recently-tool-groups", JSON.stringify(DDeiEditorUtil.recentlyToolGroups));
   }
 
   /**
@@ -961,9 +961,9 @@ class DDeiEditorUtil {
   /**
    * 获取控件的小图标
    */
-  static getControlIcons(editor: DDeiEditor): Promise{
+  static getControlIcons(editor: DDeiEditor): Promise {
     return new Promise((resolve, reject) => {
-      
+
       if (editor.icons && JSON.stringify(editor.icons) != "{}") {
         resolve(editor.icons);
       } else {
@@ -971,9 +971,9 @@ class DDeiEditorUtil {
           let promiseArr = []
           let ddInstance = editor.ddInstance
           editor.icons = {}
-          editor?.controls.forEach(controlDefine => {
-            let cacheData = localStorage.getItem("ICON-CACHE-" + controlDefine.id)
-            
+          editor.controls.forEach(controlDefine => {
+            let cacheData = DDeiUtil.getLocalStorageData("ICON-CACHE-" + controlDefine.id)
+
             if (cacheData) {
               editor.icons[controlDefine.id] = cacheData
               return;
@@ -981,12 +981,12 @@ class DDeiEditorUtil {
               promiseArr.push(new Promise((resolve, reject) => {
                 let models = null
                 try {
-                  
+
                   //创建图形对象
-                  models = DDeiEditorUtil.createControl(controlDefine,editor)
-                  
+                  models = DDeiEditorUtil.createControl(controlDefine, editor)
+
                   let iconPos = controlDefine?.define?.iconPos;
-                  
+
                   let outRect = DDeiAbstractShape.getOutRectByPV(models);
                   outRect.width += (iconPos?.dw ? iconPos.dw : 0)
                   outRect.height += (iconPos?.dh ? iconPos.dh : 0)
@@ -1021,24 +1021,24 @@ class DDeiEditorUtil {
                   }
                   outRect.width += (iconPos?.dw ? iconPos.dw : 0)
                   outRect.height += (iconPos?.dh ? iconPos.dh : 0)
-                  
-                  
+
+
                   models.forEach(model => {
                     model.initRender()
                     model.render.drawShape({ weight: 3, border: { width: 1.5 } })
                   })
                   let canvas = document.createElement('canvas');
-                  
-                 
-                  DDeiEditorUtil.drawModelsToCanvas(models, outRect,canvas)
+
+
+                  DDeiEditorUtil.drawModelsToCanvas(models, outRect, canvas)
                   let dataURL = canvas.toDataURL("image/png");
-                  localStorage.setItem("ICON-CACHE-" + controlDefine.id, dataURL)
+                  DDeiUtil.setLocalStorageData("ICON-CACHE-" + controlDefine.id, dataURL)
                   editor.icons[controlDefine.id] = dataURL
-                } catch (e) { 
-                  if(editor.debug){
+                } catch (e) {
+                  if (editor.debug) {
                     console.error(e)
                   }
-                 }
+                }
                 models?.forEach(md => {
                   md?.destroyed()
                 })
@@ -1062,7 +1062,7 @@ class DDeiEditorUtil {
     if (models?.length > 0){
       let stage = models[0].stage
       let rat1 = stage.ddInstance?.render.ratio;
-      canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
+      canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;-webkit-transform:scale(" + (1 / rat1)+");");
       let ctx = canvas.getContext('2d', { willReadFrequently: true });
       
       let width = (outRect.width+4) * rat1
@@ -1123,7 +1123,7 @@ class DDeiEditorUtil {
   static clearControlIcons(editor: DDeiEditor):void{
     editor.icons = {}
     editor?.controls.forEach(controlDefine => {
-      localStorage.removeItem("ICON-CACHE-" + controlDefine.id)
+      DDeiUtil.removeLocalStorageData("ICON-CACHE-" + controlDefine.id)
     })
   }
 

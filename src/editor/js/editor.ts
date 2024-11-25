@@ -1105,7 +1105,7 @@ class DDeiEditor {
   changeTheme(themeName: string){
     if(!themeName){
       if (this.GLOBAL_LOCAL_CACHE_THEME){
-        themeName = localStorage.getItem("ddei-theme-" + this.id);
+        themeName = DDeiUtil.getLocalStorageData("ddei-theme-" + this.id);
       }
     }
     let finded = false;
@@ -1158,9 +1158,9 @@ class DDeiEditor {
     }
     //更新图标
     if (this.GLOBAL_LOCAL_CACHE_THEME){
-      let curInsTheme = localStorage.getItem("ddei-theme-" + this.id);
+      let curInsTheme = DDeiUtil.getLocalStorageData("ddei-theme-" + this.id);
       if (!curInsTheme || curInsTheme != name) {
-        localStorage.setItem("ddei-theme-" + this.id, name);
+        DDeiUtil.setLocalStorageData("ddei-theme-" + this.id, name);
       }
     }
     

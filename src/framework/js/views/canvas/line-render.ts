@@ -64,7 +64,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     //转换为图片
     if (!this.tempCanvas) {
       this.tempCanvas = document.createElement('canvas');
-      this.tempCanvas.setAttribute("style", "pointer-events:none;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;scale:" + (1 / rat1));
+      this.tempCanvas.setAttribute("style", "pointer-events:none;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");-webkit-transform:scale(" + (1 / rat1) + ");display:block;");
     }
     let stageRatio = this.stage?.getStageRatio()
     let tempCanvas = this.tempCanvas
@@ -78,6 +78,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     outRect.y1 += weight
     outRect.width += 2 * weight
     outRect.height += 2 * weight
+    
     tempCanvas.setAttribute("width", outRect.width * rat1)
     tempCanvas.setAttribute("height", outRect.height * rat1)
     

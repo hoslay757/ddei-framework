@@ -63,6 +63,56 @@ class DDeiUtil {
   static isBackActive: Function;
 
 
+  //用于接管存取方法
+  static setLocalStorageData(key: string, value: object | string | null) {
+    
+    if (window.setLocalStorageData){
+      window.setLocalStorageData(key,value)
+    }else{
+      try {
+        if (localStorage) {
+          localStorage.setItem(key, value)
+        }
+      } catch (e) {
+        console.warn("No Access LocalStorage")
+      }
+    }
+  }
+
+  static getLocalStorageData(key: string): object | string | null {
+    if (window.getLocalStorageData) {
+      return window.getLocalStorageData(key)
+    } else {
+      try {
+        if (localStorage) {
+          return localStorage.getItem(key)
+        } else {
+          return null
+        }
+      } catch (e) {
+        console.warn("No Access LocalStorage")
+        return null
+      }
+
+    }
+  }
+
+  static removeLocalStorageData(key: string): void {
+    if (window.removeLocalStorageData) {
+      window.removeLocalStorageData(key)
+    } else {
+      try {
+        if (localStorage) {
+          localStorage.removeItem(key)
+        }
+      } catch (e) {
+        console.warn("No Access LocalStorage")
+      }
+    }
+    
+  }
+
+
 
   //创建renderviewer元素
   static createRenderViewer = function (model, operate, tempShape, composeRender) {
@@ -1622,7 +1672,7 @@ class DDeiUtil {
   // 16进制编码转rgb
   static hex2rgb(hex: string): string {
     let hexNum = hex.substring(1);
-    hexNum = '0x' + (hexNum.length < 6 ? repeatLetter(hexNum, 2) : hexNum);
+    hexNum = '0x' + (hexNum.length < 6 ? DDeiUtil.repeatLetter(hexNum, 2) : hexNum);
     let r = hexNum >> 16;
     let g = hexNum >> 8 & '0xff';
     let b = hexNum & '0xff';
@@ -1631,7 +1681,7 @@ class DDeiUtil {
 
   static hex2ddeicolor(hex: string): DDeiColor {
     let hexNum = hex.substring(1);
-    hexNum = '0x' + (hexNum.length < 6 ? repeatLetter(hexNum, 2) : hexNum);
+    hexNum = '0x' + (hexNum.length < 6 ? DDeiUtil.repeatLetter(hexNum, 2) : hexNum);
     let r = hexNum >> 16;
     let g = hexNum >> 8 & '0xff';
     let b = hexNum & '0xff';
@@ -1658,6 +1708,7 @@ class DDeiUtil {
   // rgb转16进制
   static rgb2hex(color: string): string {
     if (color){
+      color = color.trim()
       if (color.toLowerCase().startsWith("rgb")) {
         let rgb = color.split(',');
         let r = parseInt(rgb[0].split('(')[1]);
@@ -2857,7 +2908,7 @@ class DDeiUtil {
    * 读取最近写入颜色
    */
   static readRecentlyChooseColors() {
-    let colorStrs = localStorage.getItem("ddei-recently-choose-colors");
+    let colorStrs = DDeiUtil.getLocalStorageData("ddei-recently-choose-colors");
     if (colorStrs) {
       let colors = colorStrs.split(",")
       DDeiUtil.recentlyChooseColors = colors;
@@ -2881,7 +2932,7 @@ class DDeiUtil {
       DDeiUtil.recentlyChooseColors.splice(10, 1)
     }
 
-    localStorage.setItem("ddei-recently-choose-colors", DDeiUtil.recentlyChooseColors.toString());
+    DDeiUtil.setLocalStorageData("ddei-recently-choose-colors", DDeiUtil.recentlyChooseColors.toString());
   }
 
   static canvasToImage(canvas): Promise {
@@ -2935,7 +2986,7 @@ class DDeiUtil {
         if (outRect.height * rat1 > height * rat1) {
           scaleH = height / (outRect.height)
         }
-        canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat2) + ");display:block;zoom:" + (1 / rat2));
+        canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat2) + ");display:block;-webkit-transform:scale(" + (1 / rat2)+")");
         if (scaleW != 1 || scaleH != 1) {
           canvas.setAttribute("width", width * rat1 + addWidth)
           canvas.setAttribute("height", height * rat1 + addWidth)
@@ -2982,7 +3033,7 @@ class DDeiUtil {
 
         let editorId = DDeiUtil.getEditorId(ddInstance);
         let containerDiv = document.getElementById(editorId+"_ddei_cut_img_div")
-        canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
+        canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;-webkit-transform:scale(" + (1 / rat1)+")");
         canvas.setAttribute("width", width * rat1)
         canvas.setAttribute("height", height * rat1)
 

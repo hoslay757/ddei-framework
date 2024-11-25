@@ -1,3 +1,5 @@
+import DDeiUtil from "../util";
+
 const isSupportFontFamily = function (f) {
 
   //    f是要检测的字体
@@ -426,7 +428,7 @@ const FONTS = []
 
 const loadFonts = function () {
   let fontData = null
-  let fontJSON = localStorage.getItem('DDEI-CACHE-FONT')
+  let fontJSON = DDeiUtil.getLocalStorageData('DDEI-CACHE-FONT')
   if (fontJSON) {
     fontData = JSON.parse(fontJSON)
     fontData.forEach(fd => {
@@ -446,18 +448,18 @@ const loadFonts = function () {
             }
             //加入数据源
             FONTS.push(font)
-            localStorage.setItem('DDEI-CACHE-FONT', JSON.stringify(FONTS))
+            DDeiUtil.setLocalStorageData('DDEI-CACHE-FONT', JSON.stringify(FONTS))
           }
         })
       });
     };
   }
 }
-setTimeout(() => {
-  loadFonts()
-}, 500);
+// setTimeout(() => {
+//   loadFonts()
+// }, 500);
 
-export {FONTS}
+export { FONTS, loadFonts }
 export default FONTS;
 
 
