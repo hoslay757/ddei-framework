@@ -1489,7 +1489,7 @@ class DDeiEditor {
               initJSON.pvs.push(new Vector3(pvx-sx, pvy-sy, 1))
             });
           }else{
-            initJSON.pvs = [new Vector3(0, 0, 1), new Vector3(ex-sx, ey-sx, 1)]
+            initJSON.pvs = [new Vector3(0, 0, 1), new Vector3(ex-sx, ey-sy, 1)]
           }
           control.spvs?.forEach(spv => {
             spv.x = (spv.x-sx) * stageRatio
