@@ -4,7 +4,7 @@ import DDei from "../../framework/js/ddei";
 import DDeiActiveType from "./enums/active-type";
 import DDeiFileState from "./enums/file-state";
 import DDeiSheet from "./sheet";
-import { debounce } from "lodash";
+import { debounce } from "lodash-es";
 /**
  * DDei文件，文件包含了多个页签
  */
@@ -265,7 +265,7 @@ class DDeiFile {
       }
     }
     //写入版本号
-    json.ddeiVersion = 1243
+    json.ddeiVersion = 1244
     return json;
   }
 

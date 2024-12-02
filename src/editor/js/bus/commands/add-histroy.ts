@@ -3,7 +3,7 @@ import type DDeiBus from '@ddei-core/framework/js/bus/bus';
 import DDeiEditorEnumBusCommandType from '../../enums/editor-command-type';
 import DDeiBusCommand from '@ddei-core/framework/js/bus/bus-command';
 import DDeiActiveType from '../../enums/active-type';
-import { debounce } from 'lodash';
+import { debounce } from 'lodash-es';
 import DDeiFile from '../../file';
 /**
  * 记录当前快照的总线Command

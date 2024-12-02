@@ -4,7 +4,7 @@ import DDeiLayer from './layer'
 import DDeiEnumControlState from '../enums/control-state'
 import DDeiUtil from '../util'
 import { Matrix3, Vector3 } from 'three';
-import { cloneDeep, clone, isNumber } from 'lodash'
+import { cloneDeep, clone, isNumber } from 'lodash-es'
 import DDeiModelArrtibuteValue from './attribute/attribute-value'
 import DDeiEnumOperateType from '../enums/operate-type'
 import DDeiModelLink from './modellink'

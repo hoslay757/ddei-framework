@@ -12,7 +12,7 @@ import DDeiCanvasRender from './ddei-render.js';
 import DDeiLayerCanvasRender from './layer-render.js';
 import DDeiAbstractShapeRender from './shape-render-base.js';
 import DDeiStageCanvasRender from './stage-render.js';
-import { cloneDeep } from 'lodash'
+import { cloneDeep } from 'lodash-es'
 import { Matrix3, Vector3 } from 'three';
 import DDeiEnumOperateType from '../../enums/operate-type.js';
 import DDeiEnumOperateState from '../../enums/operate-state.js';
@@ -64,7 +64,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     //转换为图片
     if (!this.tempCanvas) {
       this.tempCanvas = document.createElement('canvas');
-      this.tempCanvas.setAttribute("style", "pointer-events:none;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;scale:" + (1 / rat1));
+      this.tempCanvas.setAttribute("style", "pointer-events:none;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");-webkit-transform:scale(" + (1 / rat1) + ");display:block;");
     }
     let stageRatio = this.stage?.getStageRatio()
     let tempCanvas = this.tempCanvas
@@ -78,6 +78,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     outRect.y1 += weight
     outRect.width += 2 * weight
     outRect.height += 2 * weight
+    
     tempCanvas.setAttribute("width", outRect.width * rat1)
     tempCanvas.setAttribute("height", outRect.height * rat1)
     
@@ -704,8 +705,8 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         this.ddRender?.model
       );
       if (accessLink) {
-        let ex = evt.offsetX;
-        let ey = evt.offsetY;
+        let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].clientX;
+        let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].clientY;
         ex /= window.remRatio
         ey /= window.remRatio
         ex -= this.stage.wpv.x;
@@ -853,8 +854,8 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         this.opvs = opvs;
         this.opvsType = opvsType;
 
-        let ex = evt.offsetX;
-        let ey = evt.offsetY;
+        let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].clientX;
+        let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].clientY;
         ex /= window.remRatio
         ey /= window.remRatio
         ex -= this.stage.wpv.x;

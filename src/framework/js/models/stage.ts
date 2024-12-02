@@ -1058,7 +1058,7 @@ class DDeiStage {
       let editorId = DDeiUtil.getEditorId(ddInstance);
       let containerDiv = document.getElementById(editorId + "_ddei_cut_img_div")
 
-      canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;zoom:" + (1 / rat1));
+      canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;-webkit-transform:scale(" + (1 / rat1)+")");
       let cW = (outRect.width + addWidth) * rat1
       let cH = (outRect.height + addWidth) * rat1
       canvas.setAttribute("width", cW)

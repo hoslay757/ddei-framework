@@ -1580,7 +1580,9 @@ class DDeiStageCanvasRender {
    * @param evt 事件
    */
   resetSelectorState(evt: Event): void {
-    this.selector.resetState(evt.offsetX - this.model.wpv.x, evt.offsetY - this.model.wpv.y);
+    let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].clientX;
+    let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].clientY;
+    this.selector.resetState(ex - this.model.wpv.x, ey - this.model.wpv.y);
   }
 
 
@@ -1597,8 +1599,8 @@ class DDeiStageCanvasRender {
     if (!this.model.ddInstance.eventCancel) {
       let canvas = this.ddRender.getCanvas();
       let rat1 = this.ddRender.ratio;
-      let ex = evt.offsetX;
-      let ey = evt.offsetY;
+      let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].clientX;
+      let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].clientY;
       ex /= window.remRatio
       ey /= window.remRatio
       //判断是否在滚动条区间

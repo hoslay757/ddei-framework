@@ -5,7 +5,7 @@ import DDeiBusCommand from '../bus-command';
 import { Matrix3, Vector3 } from 'three';
 import DDeiUtil from '../../util';
 import DDeiAbstractShape from '../../models/shape';
-import { min } from 'lodash';
+import { min } from 'lodash-es';
 /**
  * 修改线点坐标的总线Command
  */

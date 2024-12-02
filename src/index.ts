@@ -128,4 +128,8 @@ export * from "./lifecycle/callresult"
 export * from "./framework/js/models/polygon-container"
 export * from "./framework/js/views/canvas/polygon-container-render"
 
+export { Matrix3, Vector3 } from "three";
+
+export { cloneDeep, clone, debounce, throttle, trim, merge } from "lodash-es";
+
 

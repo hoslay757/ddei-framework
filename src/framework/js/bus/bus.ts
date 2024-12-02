@@ -1,7 +1,7 @@
 import DDei from "../ddei";
 import { COMMANDS } from "../command"
 import DDeiEnumBusCommandType from "../enums/bus-command-type";
-import { clone } from "lodash";
+import { clone } from "lodash-es";
 
 /**
  * DDeiBus图形框架的交换类，用于和其他外部应用进行数据交换

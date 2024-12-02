@@ -5,7 +5,7 @@ import DDeiEnumControlState from '../enums/control-state';
 import DDeiTableSelector from './table-selector';
 import DDeiUtil from '../util';
 import { Matrix3, Vector3 } from 'three';
-import { first } from 'lodash';
+import { first } from 'lodash-es';
 import DDeiEnumBusCommandType from '../enums/bus-command-type';
 
 

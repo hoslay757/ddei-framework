@@ -8,7 +8,7 @@ import DDeiFile from "./file";
 import DDeiPluginBase from "@ddei-core/plugin/ddei-plugin-base";
 import { markRaw } from "vue";
 import config from "./config"
-import { clone, cloneDeep, defaultsDeep } from "lodash";
+import { clone, cloneDeep, defaultsDeep } from "lodash-es";
 import FONTS from "../../framework/js/fonts/font"
 import { Matrix3, Vector3 } from 'three'
 import DDeiThemeBase from "@ddei-core/themes/theme";
@@ -1105,7 +1105,7 @@ class DDeiEditor {
   changeTheme(themeName: string){
     if(!themeName){
       if (this.GLOBAL_LOCAL_CACHE_THEME){
-        themeName = localStorage.getItem("ddei-theme-" + this.id);
+        themeName = DDeiUtil.getLocalStorageData("ddei-theme-" + this.id);
       }
     }
     let finded = false;
@@ -1158,9 +1158,9 @@ class DDeiEditor {
     }
     //更新图标
     if (this.GLOBAL_LOCAL_CACHE_THEME){
-      let curInsTheme = localStorage.getItem("ddei-theme-" + this.id);
+      let curInsTheme = DDeiUtil.getLocalStorageData("ddei-theme-" + this.id);
       if (!curInsTheme || curInsTheme != name) {
-        localStorage.setItem("ddei-theme-" + this.id, name);
+        DDeiUtil.setLocalStorageData("ddei-theme-" + this.id, name);
       }
     }
     
@@ -1489,7 +1489,7 @@ class DDeiEditor {
               initJSON.pvs.push(new Vector3(pvx-sx, pvy-sy, 1))
             });
           }else{
-            initJSON.pvs = [new Vector3(0, 0, 1), new Vector3(ex-sx, ey-sx, 1)]
+            initJSON.pvs = [new Vector3(0, 0, 1), new Vector3(ex-sx, ey-sy, 1)]
           }
           control.spvs?.forEach(spv => {
             spv.x = (spv.x-sx) * stageRatio
