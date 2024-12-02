@@ -625,8 +625,8 @@ class DDeiLayerCanvasRender {
    * @returns 计算的坐标增量
    */
   getMovedPositionDelta(evt): object {
-    let ex = evt.offsetX;
-    let ey = evt.offsetY;
+    let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].clientX;
+    let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].clientY;
     ex /= window.remRatio
     ey /= window.remRatio
     let stageRatio = this.stage.getStageRatio()
@@ -666,8 +666,8 @@ class DDeiLayerCanvasRender {
     let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
     //判断当前鼠标坐标是否落在选择器控件的区域内
     let stageRatio = this.model.getStageRatio()
-    let ex = evt.offsetX;
-    let ey = evt.offsetY;
+    let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].clientX;
+    let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].clientY;
     ex /= window.remRatio
     ey /= window.remRatio
     ex -= this.stage.wpv.x;
@@ -853,16 +853,18 @@ class DDeiLayerCanvasRender {
     }
     //ctrl、alt键的按下状态
     let isAlt = DDei.KEY_DOWN_STATE.get("alt");
-    let ex = evt.offsetX;
-    let ey = evt.offsetY;
-    ex /= window.remRatio
-    ey /= window.remRatio
-    let stageRatio = this.stage.getStageRatio()
-    ex -= this.stage.wpv.x;
-    ey -= this.stage.wpv.y
+    let ex2 = this.stage.ddInstance.render.inAreaX
+    let ey2 = this.stage.ddInstance.render.inAreaY
+    // let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].clientX;
+    // let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].clientY;
+    // ex /= window.remRatio
+    // ey /= window.remRatio
+    // let stageRatio = this.stage.getStageRatio()
+    // ex -= this.stage.wpv.x;
+    // ey -= this.stage.wpv.y
 
-    let ex2 = ex / stageRatio
-    let ey2 = ey / stageRatio
+    // let ex2 = ex / stageRatio
+    // let ey2 = ey / stageRatio
     //鼠标右键，显示菜单
     if (evt.button == 2) {
       //在鼠标位置显示菜单
@@ -1481,9 +1483,9 @@ class DDeiLayerCanvasRender {
     //ctrl、alt键的按下状态
     let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
     let isAlt = DDei.KEY_DOWN_STATE.get("alt");
-
-    let ex = evt.offsetX;
-    let ey = evt.offsetY;
+    
+    let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].clientX;
+    let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].clientY;
     ex /= window.remRatio
     ey /= window.remRatio
     let rat1 = this.ddRender?.ratio;

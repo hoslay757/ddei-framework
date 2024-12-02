@@ -89,8 +89,8 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
         let ex = null, ey = null
         if (window.event?.type == 'wheel') {
           let evt = window.event
-          ex = evt.offsetX;
-          ey = evt.offsetY;
+          ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].clientX;
+          ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].clientY;
           ex /= window.remRatio
           ey /= window.remRatio
           ex -= stage.wpv.x;

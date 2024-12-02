@@ -252,8 +252,8 @@ class DDeiAbstractShapeRender {
       );
       if (accessLink) {
         let stageRatio = this.stage?.getStageRatio()
-        let ex = evt.offsetX;
-        let ey = evt.offsetY;
+        let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].clientX;
+        let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].clientY;
         ex /= window.remRatio
         ey /= window.remRatio
         ex -= this.stage.wpv.x;

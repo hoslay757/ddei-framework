@@ -82,7 +82,9 @@ class DDeiBusCommandModelChangeContainer extends DDeiBusCommand {
               //更新新容器大小
               newContainer?.changeParentsBounds()
               //重新设置布局
-              newContainer?.layoutManager?.updateLayout(evt?.offsetX, evt?.offsetY, operateModels);
+              let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].clientX;
+              let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].clientY;
+              newContainer?.layoutManager?.updateLayout(ex, ey, operateModels);
             }
           }
         }

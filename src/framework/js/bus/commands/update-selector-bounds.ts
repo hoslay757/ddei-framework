@@ -41,8 +41,8 @@ class DDeiBusCommandUpdateSelectorBounds extends DDeiBusCommand {
         let selector = stage.render.selector;
         if (selector) {
           if (data?.operateState == DDeiEnumOperateState.SELECT_WORKING) {
-            let ex = evt.offsetX;
-            let ey = evt.offsetY;
+            let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].clientX;
+            let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].clientY;
 
             ex /= window.remRatio
             ey /= window.remRatio
