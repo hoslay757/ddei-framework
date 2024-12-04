@@ -1655,8 +1655,10 @@ class DDeiStageCanvasRender {
     if (!this.model.ddInstance.eventCancel) {
       if (this.operateState == DDeiEnumOperateState.STAGE_SCROLL_WORKING) {
         let canvasPos = DDeiUtil.getDomAbsPosition(this.ddRender?.canvas?.parentElement)
-        let ex = evt.pageX - canvasPos.left;
-        let ey = evt.pageY - canvasPos.top;
+        let pageX = evt.pageX || evt.pageX == 0 ? evt.pageX : evt.touches[0].pageX;
+        let pageY = evt.pageY || evt.pageY == 0 ? evt.pageY : evt.touches[0].pageY;
+        let ex = pageX - canvasPos.left;
+        let ey = pageY - canvasPos.top;
 
         if (this.dragObj?.scroll == 1) {
           let width = this.hScroll.width;

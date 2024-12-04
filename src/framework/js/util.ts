@@ -1745,6 +1745,7 @@ class DDeiUtil {
       return color;
     }
   }
+  
 
   // 将颜色转换为可用颜色(rgb),其他情况原样返回
   static getColorObj(color: string): DDeiColor|null {
@@ -3344,6 +3345,40 @@ class DDeiUtil {
       current = current[parts[i]];
     }
     delete current[parts[parts.length - 1]];
+  }
+
+  /**
+   * 判断是否为移动端
+   */
+  static isMobile() {
+    if(DDeiUtil.isMobileDevice == undefined){
+      // 判断是否为移动设备
+      if (DDeiUtil.isHarmonyOS()) {
+        DDeiUtil.isMobileDevice = true;
+      } else {
+        DDeiUtil.isMobileDevice = (
+          typeof window.orientation !== "undefined" || // 判断是否存在window.orientation属性，此属性在移动设备上一般存在
+          navigator.userAgent.indexOf('IEMobile') !== -1 || // 判断是否为Windows Phone
+          navigator.userAgent.indexOf('iPhone') !== -1 || // 判断是否为iPhone
+          navigator.userAgent.indexOf('Android') !== -1 && navigator.userAgent.indexOf('Mobile') !== -1 || // 判断是否为Android手机
+          navigator.userAgent.indexOf('BlackBerry') !== -1 || // 判断是否为BlackBerry
+          navigator.userAgent.indexOf('Opera Mini') !== -1 // 判断是否为Opera Mini浏览器
+        );
+      }
+    }
+    return DDeiUtil.isMobileDevice;
+    
+  }
+
+  /**
+   * 判断是否为鸿蒙设备
+   */
+  static isHarmonyOS() {
+    if (DDeiUtil.isHarmonyDevice == undefined) {
+      let userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      DDeiUtil.isHarmonyDevice = userAgent.includes("HarmonyOS");
+    }
+    return DDeiUtil.isHarmonyDevice;
   }
 
 }

@@ -675,7 +675,7 @@ class DDeiLayerCanvasRender {
     let ex2 = ex / stageRatio
     let ey2 = ey / stageRatio
     
-
+    
     if (this.stageRender?.operateState == DDeiEnumOperateState.QUICK_EDITING) {
       
       let canvas = this.ddRender.getCanvas()
