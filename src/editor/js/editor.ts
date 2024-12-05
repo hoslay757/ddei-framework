@@ -897,10 +897,12 @@ class DDeiEditor {
    */
   bindEvent(): void {
     window.removeEventListener('blur', this.blur);
-    document.removeEventListener('keydown', this.keyDown);
-    document.removeEventListener('keyup', this.keyUp);
-    document.addEventListener('keydown', this.keyDown);
-    document.addEventListener('keyup', this.keyUp);
+    if(!DDeiUtil.isMobile()){
+      document.removeEventListener('keydown', this.keyDown);
+      document.removeEventListener('keyup', this.keyUp);
+      document.addEventListener('keydown', this.keyDown);
+      document.addEventListener('keyup', this.keyUp);
+    }
     window.addEventListener('blur', this.blur);
   }
 

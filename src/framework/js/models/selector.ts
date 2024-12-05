@@ -570,7 +570,11 @@ class DDeiSelector extends DDeiRectangle {
       if (pv) {
         //操作图标的宽度
         let width = DDeiConfig.SELECTOR.OPERATE_ICON.weight;
-        let halfWidth = width * 0.5;
+        let b = 0.5;
+        if(DDeiUtil.isMobile()){{
+          b = 2.5;
+        }}
+        let halfWidth = width * b;
         return DDeiAbstractShape.isInsidePolygon(
           [
             { x: pv.x - halfWidth, y: pv.y - halfWidth },

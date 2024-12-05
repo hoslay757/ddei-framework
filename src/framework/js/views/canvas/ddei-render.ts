@@ -326,8 +326,8 @@ class DDeiCanvasRender {
    * 鼠标移动
    */
   mouseMove(evt: Event): void {
-    let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].clientX;
-    let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].clientY;
+    let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].pageX;
+    let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].pageY;
     ex /= window.remRatio
     ey /= window.remRatio
     let sx = evt.screenX;

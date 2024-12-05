@@ -3381,6 +3381,10 @@ class DDeiUtil {
     return DDeiUtil.isHarmonyDevice;
   }
 
+  static isLandscape() {
+    return (window.orientation || 0) === 90 || (window.orientation || 0) === -90;
+  }
+
 }
 
 

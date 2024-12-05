@@ -625,8 +625,8 @@ class DDeiLayerCanvasRender {
    * @returns 计算的坐标增量
    */
   getMovedPositionDelta(evt): object {
-    let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].clientX;
-    let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].clientY;
+    let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].pageX;
+    let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].pageY;
     ex /= window.remRatio
     ey /= window.remRatio
     let stageRatio = this.stage.getStageRatio()
@@ -666,8 +666,8 @@ class DDeiLayerCanvasRender {
     let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
     //判断当前鼠标坐标是否落在选择器控件的区域内
     let stageRatio = this.model.getStageRatio()
-    let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].clientX;
-    let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].clientY;
+    let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].pageX;
+    let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].pageY;
     ex /= window.remRatio
     ey /= window.remRatio
     ex -= this.stage.wpv.x;
@@ -711,117 +711,140 @@ class DDeiLayerCanvasRender {
       this.stageRender.selector.render.mouseDown(evt);
     }
     else {
-      let opPoint = this.model.getOpPointByPos(ex2, ey2);
       let isStop = false;
-      if (opPoint) {
-        //只有在控件内部才触发
-        let projPoint = null
-        let innerSize = 0
-        let outRect = DDeiAbstractShape.getOutRectByPV([opPoint.model])
-        if (outRect.height > 20 && outRect.width > 20) {
-          innerSize = -5;
-        }
-        if (opPoint.oppoint == 3 || (projPoint = opPoint.model.getProjPoint({ x: ex2, y: ey2 }, { in: innerSize, out: 15 }, 1, 2))) {
-          let modeName = DDeiUtil.getConfigValue("MODE_NAME", this.stage.ddInstance);
-          let accessLink = DDeiUtil.isAccess(
-            DDeiEnumOperateType.LINK, null, null, modeName,
-            this.stage.ddInstance
-          );
-          if (accessLink) {
-            isStop = true;
-            //当前操作状态：线改变点中
-            //记录当前的拖拽的x,y,写入dragObj作为临时变量
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { opPoint: opPoint } }, evt);
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
-            this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING_CONFIRM
+      if(!DDeiUtil.isMobile()){
+        let opPoint = this.model.getOpPointByPos(ex2, ey2);
+        if (opPoint) {
+          //只有在控件内部才触发
+          let projPoint = null
+          let innerSize = 0
+          let outRect = DDeiAbstractShape.getOutRectByPV([opPoint.model])
+          if (outRect.height > 20 && outRect.width > 20) {
+            innerSize = -5;
+          }
+          if (opPoint.oppoint == 3 || (projPoint = opPoint.model.getProjPoint({ x: ex2, y: ey2 }, { in: innerSize, out: 15 }, 1, 2))) {
+            let modeName = DDeiUtil.getConfigValue("MODE_NAME", this.stage.ddInstance);
+            let accessLink = DDeiUtil.isAccess(
+              DDeiEnumOperateType.LINK, null, null, modeName,
+              this.stage.ddInstance
+            );
+            if (accessLink) {
+              isStop = true;
+              //当前操作状态：线改变点中
+              //记录当前的拖拽的x,y,写入dragObj作为临时变量
+              this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { opPoint: opPoint } }, evt);
+              this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
+              this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING_CONFIRM
+            }
           }
         }
       }
 
       if (!isStop) {
-        // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
-        let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, ex2, ey2, true);
-        //光标所属位置是否有控件
-        //有控件：分发事件到当前控件
-        if (operateControls != null && operateControls.length > 0) {
-          //全局变量：当前操作控件=当前控件
-          let operateControl = operateControls[0];
-
-          this.stageRender.currentOperateShape = operateControl;
-          this.stageRender.tempSX = ex2
-          this.stageRender.tempSY = ey2
-          //当前操作状态:控件状态确认中
-          this.stageRender.operateState = DDeiEnumOperateState.CONTROL_CONFIRMING
-          //分发事件到当前控件
-          operateControl.render.mouseDown(evt);
-
-          //当前控件的上层控件，可能是一个layer也可能是容器
-          let pContainerModel = operateControl.pModel;
-          if (pContainerModel) {
-            //没有按下ctrl键
-            if (!isCtrl) {
-              let selectedModels = pContainerModel.getSelectedModels();
-              // 当前操作控件不在选中控件中，则清空所有当前选中控件
-              if (!selectedModels.has(operateControl.id)) {
-                //清空除了当前操作控件外所有选中状态控件
-                this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, { container: pContainerModel, curLevel: true }, evt);
-                this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ResetSelectorState, {}, evt);
-              }
+        
+        //如果是移动端，多判断一下是否在selector上
+        //判断当前鼠标坐标是否落在选择器控件的区域内
+        let inSelector = false
+        if(DDeiUtil.isMobile()){
+          if (this.stageRender.selector &&
+            this.stageRender.selector.isInAreaLoose(ex2, ey2, true)) {
+            
+            //派发给selector的mousemove事件，在事件中对具体坐标进行判断
+            this.stageRender.selector.render.mouseMove(evt);
+            this.stage.ddInstance.bus.executeAll();
+            if (this.stageRender.selector.passIndex != -1){
+              this.stageRender.selector.render.mouseDown(evt);
+              inSelector = true;
             }
+            
           }
         }
-        //无控件
-        else {
-          if (this.stage?.brushData) {
-            this.stage.brushData = null;
-            this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
-          }
-          //重置选择器位置
-          this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ResetSelectorState, { x: ex2, y: ey2 }, evt);
-          let clearSelect = false;
-          switch (this.stage.ddInstance?.editMode) {
-            case 1: {
-              //当前操作状态：选择器工作中
-              this.stageRender.operateState = DDeiEnumOperateState.SELECT_WORKING
+        
+        if (!inSelector){
+          // 获取光标，在当前操作层级的控件,后续所有的操作都围绕当前层级控件展开
+          let operateControls = DDeiAbstractShape.findBottomModelsByArea(this.model, ex2, ey2, true);
+          //光标所属位置是否有控件
+          //有控件：分发事件到当前控件
+          if (operateControls != null && operateControls.length > 0) {
+            //全局变量：当前操作控件=当前控件
+            let operateControl = operateControls[0];
 
-              //当没有按下ctrl键时，清空除了当前操作控件外所有选中状态控件
-              clearSelect = !isCtrl;
-              break;
-            }
-            case 2: {
-              //当前操作状态：抓手工作中
-              //记录当前的拖拽的x,y,写入dragObj作为临时变量
-              this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { dx: ex, dy: ey } }, evt);
-              this.stageRender.operateState = DDeiEnumOperateState.GRAB_WORKING
-              //当没有按下ctrl键时，清空除了当前操作控件外所有选中状态控件
-              clearSelect = !isCtrl;
-              break;
-            }
-            case 3: {
-              //当前操作状态：文本创建中
-              //记录当前的拖拽的x,y,写入dragObj作为临时变量
-              this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { dx: ex2, dy: ey2 } }, evt);
-              this.stageRender.operateState = DDeiEnumOperateState.TEXT_CREATING
-              clearSelect = true;
-            }
-            case 4: {
-              let modeName = DDeiUtil.getConfigValue("MODE_NAME", this.stage?.ddInstance);
-              let accessLink = DDeiUtil.isAccess(
-                DDeiEnumOperateType.LINK, null, null, modeName,
-                this.stage?.ddInstance
-              );
-              if (accessLink) {
-                //当前操作状态：线改变点中
-                //记录当前的拖拽的x,y,写入dragObj作为临时变量
-                this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { dx: ex2, dy: ey2 } }, evt);
-                this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING
+            this.stageRender.currentOperateShape = operateControl;
+            this.stageRender.tempSX = ex2
+            this.stageRender.tempSY = ey2
+            //当前操作状态:控件状态确认中
+            this.stageRender.operateState = DDeiEnumOperateState.CONTROL_CONFIRMING
+            //分发事件到当前控件
+            operateControl.render.mouseDown(evt);
 
-                clearSelect = true
+            //当前控件的上层控件，可能是一个layer也可能是容器
+            let pContainerModel = operateControl.pModel;
+            if (pContainerModel) {
+              //没有按下ctrl键
+              if (!isCtrl) {
+                let selectedModels = pContainerModel.getSelectedModels();
+                // 当前操作控件不在选中控件中，则清空所有当前选中控件
+                if (!selectedModels.has(operateControl.id)) {
+                  //清空除了当前操作控件外所有选中状态控件
+                  this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, { container: pContainerModel, curLevel: true }, evt);
+                  this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ResetSelectorState, {}, evt);
+                }
               }
             }
           }
-          if (clearSelect) {
-            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
+          //无控件
+          else {
+            if (this.stage?.brushData) {
+              this.stage.brushData = null;
+              this.stage.ddInstance.bus.push(DDeiEnumBusCommandType.ChangeCursor, { cursor: 'default' }, evt);
+            }
+            //重置选择器位置
+            this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ResetSelectorState, { x: ex2, y: ey2 }, evt);
+            let clearSelect = false;
+            switch (this.stage.ddInstance?.editMode) {
+              case 1: {
+                //当前操作状态：选择器工作中
+                this.stageRender.operateState = DDeiEnumOperateState.SELECT_WORKING
+
+                //当没有按下ctrl键时，清空除了当前操作控件外所有选中状态控件
+                clearSelect = !isCtrl;
+                break;
+              }
+              case 2: {
+                //当前操作状态：抓手工作中
+                //记录当前的拖拽的x,y,写入dragObj作为临时变量
+                this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { dx: ex, dy: ey } }, evt);
+                this.stageRender.operateState = DDeiEnumOperateState.GRAB_WORKING
+                //当没有按下ctrl键时，清空除了当前操作控件外所有选中状态控件
+                clearSelect = !isCtrl;
+                break;
+              }
+              case 3: {
+                //当前操作状态：文本创建中
+                //记录当前的拖拽的x,y,写入dragObj作为临时变量
+                this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { dx: ex2, dy: ey2 } }, evt);
+                this.stageRender.operateState = DDeiEnumOperateState.TEXT_CREATING
+                clearSelect = true;
+              }
+              case 4: {
+                let modeName = DDeiUtil.getConfigValue("MODE_NAME", this.stage?.ddInstance);
+                let accessLink = DDeiUtil.isAccess(
+                  DDeiEnumOperateType.LINK, null, null, modeName,
+                  this.stage?.ddInstance
+                );
+                if (accessLink) {
+                  //当前操作状态：线改变点中
+                  //记录当前的拖拽的x,y,写入dragObj作为临时变量
+                  this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.UpdateDragObj, { dragObj: { dx: ex2, dy: ey2 } }, evt);
+                  this.stageRender.operateState = DDeiEnumOperateState.LINE_POINT_CHANGING
+
+                  clearSelect = true
+                }
+              }
+            }
+            if (clearSelect) {
+              this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.CancelCurLevelSelectedModels, null, evt);
+            }
           }
         }
       }
@@ -855,8 +878,8 @@ class DDeiLayerCanvasRender {
     let isAlt = DDei.KEY_DOWN_STATE.get("alt");
     let ex2 = this.stage.ddInstance.render.inAreaX
     let ey2 = this.stage.ddInstance.render.inAreaY
-    // let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].clientX;
-    // let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].clientY;
+    // let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].pageX;
+    // let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].pageY;
     // ex /= window.remRatio
     // ey /= window.remRatio
     // let stageRatio = this.stage.getStageRatio()
@@ -1484,8 +1507,8 @@ class DDeiLayerCanvasRender {
     let isCtrl = DDei.KEY_DOWN_STATE.get("ctrl");
     let isAlt = DDei.KEY_DOWN_STATE.get("alt");
     
-    let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].clientX;
-    let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].clientY;
+    let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].pageX;
+    let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].pageY;
     ex /= window.remRatio
     ey /= window.remRatio
     let rat1 = this.ddRender?.ratio;
@@ -1563,6 +1586,7 @@ class DDeiLayerCanvasRender {
           let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_DRAG_BEFORE", DDeiEnumOperateType.DRAG, { models: sms }, this.ddRender.model, evt)
 
           if (rsState == 0 || rsState == 1) {
+            
             DDeiUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", DDeiEnumOperateType.DRAG, { models: sms }, this.ddRender.model, evt)
             //当前操作状态：控件拖拽中
             
