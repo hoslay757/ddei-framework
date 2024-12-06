@@ -718,17 +718,19 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         //操作图标的宽度
         let weight = DDeiConfig.SELECTOR.OPERATE_ICON.weight;
         let halfWeigth = weight * 0.5;
-        for (let i = 0; i < this.opvs.length; i++) {
-          let pv = this.opvs[i];
-          if (DDeiAbstractShape.isInsidePolygon(
-            [
-              { x: pv.x - halfWeigth, y: pv.y - halfWeigth },
-              { x: pv.x + halfWeigth, y: pv.y - halfWeigth },
-              { x: pv.x + halfWeigth, y: pv.y + halfWeigth },
-              { x: pv.x - halfWeigth, y: pv.y + halfWeigth }
-            ]
-            , { x: ex, y: ey })) {
-            tpdata = { type: this.opvsType[i], index: i }
+        if (this.opvs){
+          for (let i = 0; i < this.opvs.length; i++) {
+            let pv = this.opvs[i];
+            if (DDeiAbstractShape.isInsidePolygon(
+              [
+                { x: pv.x - halfWeigth, y: pv.y - halfWeigth },
+                { x: pv.x + halfWeigth, y: pv.y - halfWeigth },
+                { x: pv.x + halfWeigth, y: pv.y + halfWeigth },
+                { x: pv.x - halfWeigth, y: pv.y + halfWeigth }
+              ]
+              , { x: ex, y: ey })) {
+              tpdata = { type: this.opvsType[i], index: i }
+            }
           }
         }
         if (tpdata){
@@ -868,17 +870,19 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         //操作图标的宽度
         let weight = DDeiConfig.SELECTOR.OPERATE_ICON.weight;
         let halfWeigth = weight * 0.5;
-        for (let i = 0; i < this.opvs.length; i++) {
-          let pv = this.opvs[i];
-          if (DDeiAbstractShape.isInsidePolygon(
-            [
-              { x: pv.x - halfWeigth, y: pv.y - halfWeigth },
-              { x: pv.x + halfWeigth, y: pv.y - halfWeigth },
-              { x: pv.x + halfWeigth, y: pv.y + halfWeigth },
-              { x: pv.x - halfWeigth, y: pv.y + halfWeigth }
-            ]
-            , { x: ex, y: ey })) {
-            tpdata = { type: this.opvsType[i], index: i }
+        if (this.opvs){
+          for (let i = 0; i < this.opvs.length; i++) {
+            let pv = this.opvs[i];
+            if (DDeiAbstractShape.isInsidePolygon(
+              [
+                { x: pv.x - halfWeigth, y: pv.y - halfWeigth },
+                { x: pv.x + halfWeigth, y: pv.y - halfWeigth },
+                { x: pv.x + halfWeigth, y: pv.y + halfWeigth },
+                { x: pv.x - halfWeigth, y: pv.y + halfWeigth }
+              ]
+              , { x: ex, y: ey })) {
+              tpdata = { type: this.opvsType[i], index: i }
+            }
           }
         }
 
