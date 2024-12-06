@@ -391,7 +391,7 @@ class DDeiCanvasRender {
     if (touchData?.count == 2){
       if (!touchData.operate){
         let dist = touchData.curDist - touchData.upDist
-        if(Math.abs(dist) <= 1){
+        if(Math.abs(dist) <= 5){
           let dx = touchData.current[0].clientX - touchData.up[0].clientX
           let dy = touchData.current[0].clientY - touchData.up[0].clientY
           
