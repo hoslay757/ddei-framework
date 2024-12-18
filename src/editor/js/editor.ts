@@ -258,6 +258,11 @@ class DDeiEditor {
           
           
           options.extensions?.forEach(item => editorInstance.registerExtension(item))
+          editorInstance.plugins.forEach(plugin=>{
+            if(plugin.allInstalled){
+              plugin.allInstalled(editorInstance)
+            }
+          })
           //注册快捷键
           for (let i in editorInstance.hotkeys){
             let hotkey = editorInstance.hotkeys[i]
@@ -456,195 +461,11 @@ class DDeiEditor {
   /**
    * 注册外部插件
    */
-  registerExtension(plugin): void {
+  private registerExtension(plugin): void {
     if (DDeiPluginBase.isSubclass(plugin, DDeiPluginBase)) {
       plugin = plugin.defaultIns
     } 
-    if(plugin.getLangs){
-      //注册并加载组件
-      let langs = plugin.getLangs(this)
-      this.registerLangs(langs)
-    }
-    
-
-    if (plugin.getComponents) {
-      //注册并加载组件
-      let components = plugin.getComponents(this)
-      components?.forEach(component => {
-        this.panels[component.name] = component
-      }); 
-    }
-    if (plugin.getDialogs) {
-      //注册并加载弹出框
-      let dialogs = plugin.getDialogs(this)
-      dialogs?.forEach(dialog => {
-        this.dialogs[dialog.name] = cloneDeep(dialog)
-      }); 
-    }
-    if (plugin.getPanels) {
-      //注册并加载面板
-      let panels = plugin.getPanels(this)
-      panels?.forEach(panel => {
-        this.panels[panel.name] = panel
-      }); 
-    }
-
-    if (plugin.getLayouts) {
-      //注册并加载面板
-      let layouts = plugin.getLayouts(this)
-      layouts?.forEach(layout => {
-        this.layouts[layout.name] = layout
-      }); 
-    }
-
-    if (plugin.getPropEditors) {
-      //注册并加载属性编辑器
-      let propEditors = plugin.getPropEditors(this)
-      propEditors?.forEach(propEditor => {
-        this.propeditors[propEditor.name] = propEditor
-      });
-    }
-
-
-    if (plugin.getHotKeys) {
-      //注册并加载快捷键
-      let hotKeys = plugin.getHotKeys(this)
-      hotKeys?.forEach(hotkey => {
-        
-        this.hotkeys[hotkey.name] = hotkey
-
-      });
-    }
-
-    //加载字体插件
-    if (plugin.getFonts) {
-      //注册并加载菜单
-      let fonts = plugin.getFonts(this)
-      fonts?.forEach(font => {
-        this.fonts.push(font)
-        let fontObj = new FontFace(font.ch, 'url(' + font.font + ')')
-        fontObj.load().then(f => {
-          document.fonts.add(f)
-        })
-      });
-
-    }
-
-    //加载主题样式
-    if (plugin.getThemes) {
-      //注册并加载菜单
-      let themes = plugin.getThemes(this)
-      themes?.forEach(theme => {
-        let finded = false;
-        for (let i = 0; i < this.themes?.length; i++) {
-          if (this.themes[i].name == theme.name) {
-            finded = true
-            this.themes[i] = theme;
-            break;
-          }
-        }
-        if (!finded){
-          this.themes.push(theme)
-        }
-      });
-
-    }
-
-    //加载菜单相关插件
-    if (plugin.getMenus) {
-      //注册并加载菜单
-      let menus = plugin.getMenus(this)
-      menus?.forEach(menu => {
-        this.menus[menu.name] = menu;
-      });
-    }
-
-    //加载控件相关插件
-    //控件配置
-    if (plugin.getControls) {
-      //注册并加载控件
-      let controls = plugin.getControls(this)
-      controls?.forEach(control => {
-      
-        this.controls.set(control.id,control)
-      });
-    }
-    
-
-    //控件分组
-    if (plugin.getGroups) {
-      //注册并加载分组
-      let groups = plugin.getGroups(this)
-      groups?.forEach(group => {
-        let finded = false;
-        for(let i = 0;i < this.groups.length;i++){
-          if(this.groups[i].id == group.id){
-            this.groups[i] = group
-            finded = true
-            break;
-          }
-        }
-        if (!finded){
-          this.groups.push(group)
-        }
-      });
-    }
-
-    //控件模型定义
-    if (plugin.getModels) {
-      //注册并加载控件
-      let models = plugin.getModels(this)
-      models?.forEach(model => {
-        this.controlModelClasses[model.ClsName] = model
-      });
-    }
-
-    //控件视图定义
-    if (plugin.getViews) {
-      //注册并加载控件
-      let views = plugin.getViews(this)
-      views?.forEach(view => {
-        this.controlViewClasses[view.ClsName] = view
-      });
-    }
-
-
-    //加载转换器
-    if (plugin.getConverters) {
-      let converters = plugin.getConverters(this)
-      converters?.forEach(converter => {
-        this.converters[converter.name] = converter
-      });
-    }
-
-    //加载生命周期插件
-    if (plugin.getLifeCyclies){
-      let lifeCyclies = plugin.getLifeCyclies(this)
-      lifeCyclies?.forEach(lifeCycle => {
-        this.lifecyclies.push(lifeCycle)
-      });
-    }
-    
-    if (plugin.installed){
-      plugin.installed(this)
-    }
-
-    
-    let options = null;
-    if (plugin.getOptions){
-      options = plugin.getOptions() 
-    }
-    if (options){
-      let pluginType = plugin.getType();
-      if (pluginType == 'plugin'){
-        let pluginName = plugin.getName();
-        if (pluginName){
-          this.options[pluginName] = options;
-        }
-      } else if (pluginType == 'package') {
-        this.options = Object.assign({}, this.options, options)
-      }
-    }
+    plugin.mount(this);
   }
 
 
@@ -775,6 +596,9 @@ class DDeiEditor {
 
   //生命周期插件
   lifecyclies: DDeiLifeCycle[] = markRaw([]);
+
+  //当前引入的所有插件
+  plugins: [] = markRaw([]);
 
   //排序后的回调函数索引
   funcIndex: Map<string,DDeiFuncData[]> = new Map();
