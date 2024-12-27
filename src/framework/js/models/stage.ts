@@ -38,6 +38,13 @@ class DDeiStage {
     if (props.spv) {
       this.spv = new Vector3(props.spv.x, props.spv.y, 1)
     }
+    if (props.extData){
+      if (typeof (props.extData)=='string'){
+        this.extData = JSON.parse(props.extData);
+      }else{
+        this.extData = props.extData;
+      }
+    }
 
     this.links = []
     props?.links?.forEach(link => {
@@ -193,6 +200,11 @@ class DDeiStage {
    * 网格线的尺寸随缩放大小而改变
    */
   grid: any;
+
+  /**
+   * 扩展属性
+   */
+  extData:object = {}
 
   modelCode: string = "DDeiStage"
 

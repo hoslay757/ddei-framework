@@ -26,6 +26,13 @@ class DDeiLayer {
     this.print = props.print ? props.print : true;
     this.unicode = props.unicode ? props.unicode : DDeiUtil.getUniqueCode()
     this.bg = props.bg
+    if (props.extData) {
+      if (typeof (props.extData) == 'string') {
+        this.extData = JSON.parse(props.extData);
+      } else {
+        this.extData = props.extData;
+      }
+    }
 
 
 
@@ -94,6 +101,10 @@ class DDeiLayer {
   print: boolean = true;
 
   unicode: string;
+  /**
+   * 扩展属性
+   */
+  extData: object = {}
 
 
   bg: object | null;

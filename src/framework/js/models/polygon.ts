@@ -39,6 +39,13 @@ class DDeiPolygon extends DDeiAbstractShape {
         this.textArea.push(pv);
       });
     }
+    if (props.extData) {
+      if (typeof (props.extData) == 'string') {
+        this.extData = JSON.parse(props.extData);
+      } else {
+        this.extData = props.extData;
+      }
+    }
   }
 
   // ============================ 静态变量 ============================
@@ -131,6 +138,11 @@ class DDeiPolygon extends DDeiAbstractShape {
   modelType: string = 'DDeiPolygon';
   // 本模型的基础图形
   baseModelType: string = 'DDeiPolygon';
+
+  /**
+   * 扩展属性
+   */
+  extData: object = {}
 
   // ============================ 方法 ===============================
 
