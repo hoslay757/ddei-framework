@@ -71,6 +71,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     let pvs = this.model.getOperatePVS(true);
     
     let outRect = DDeiAbstractShape.pvsToOutRect(pvs, stageRatio)
+    
     let weight = 5 * stageRatio * rat1
     outRect.x -= weight
     outRect.x1 += weight
