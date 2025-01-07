@@ -126,7 +126,9 @@ class DDeiLayerCanvasRender {
         let rsState1 = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.stage?.ddInstance, null)
         if (rsState1 == 0 || rsState1 == 1) {
           this.containerViewer.style.display = "block"
-          this.containerViewer.style.zIndex = this.tempZIndex
+          if(this.tempZIndex || this.tempZIndex == 0){
+            this.containerViewer.style.zIndex = this.tempZIndex
+          }
           //绘制子元素
           this.drawChildrenShapes(inRect);
           //绘制操作点
@@ -403,10 +405,24 @@ class DDeiLayerCanvasRender {
       // let time1 = new Date().getTime()
       if(!hidden){
         let rect = inRect ? { x: x, y: y, x1: x1, y1: y1 } : null
+        let usedIndex = 0
         for (let li = 0; li < this.model.midList.length; li++) {
           let key = this.model.midList[li]
           let item = this.model.models.get(key);
-          item?.render?.drawShape(null, 0, rect, this.tempZIndex + (li + 1));
+          let subIndex = usedIndex+1
+          if(this.tempZIndex){
+            subIndex += this.tempZIndex
+          }
+          
+          item.render?.drawShape(null, 0, rect, subIndex);
+          if(item.modelNumber){
+            usedIndex += item.modelNumber+1
+          }else if(item.calModelNumber){
+            item.calModelNumber()
+            usedIndex += item.modelNumber + 1
+          }else{
+            usedIndex++
+          }
         }
       }else{
         DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", "VIEW-HIDDEN", { models: Array.from(this.model.models.values()) }, this.ddRender.model, null)
