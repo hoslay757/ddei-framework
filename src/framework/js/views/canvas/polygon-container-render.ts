@@ -45,6 +45,7 @@ class DDeiPolygonContainerCanvasRender extends DDeiPolygonCanvasRender {
     if (!inRect || this.model.isInRect(inRect.x, inRect.y, inRect.x1, inRect.y1)) {
       let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
       if (composeRender || rsState == 0 || rsState == 1) {
+        this.tempZIndex = zIndex;
         let rsState1 = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", DDeiEnumOperateType.VIEW, { models: [this.model], tempShape: tempShape, composeRender: composeRender }, this.ddRender.model, null)
         if (rsState1 == 0 || rsState1 == 1) {
           if (!DDeiUtil.isModelHidden(this.model) && (this.refreshShape || this.isEditoring)) {
@@ -192,7 +193,7 @@ class DDeiPolygonContainerCanvasRender extends DDeiPolygonCanvasRender {
       let usedMidIds = [];
       for (let n = 0; n < areaPVS.length; n++) {
         let pvs = areaPVS[n]
-
+        let usedIndex = 0
         for (let m = 0; m < this.model.midList?.length; m++) {
           let key = this.model.midList[m];
           let item = this.model.models.get(key);
@@ -212,8 +213,21 @@ class DDeiPolygonContainerCanvasRender extends DDeiPolygonCanvasRender {
           }
           ctx.closePath();
           // ctx.clip();
-          item.render.tempZIndex = this.tempZIndex + (m + 1)
-          item.render.drawShape(tempShape);
+          let subIndex = usedIndex + 1
+          if (this.tempZIndex) {
+            subIndex += this.tempZIndex
+          }
+          item.render.tempZIndex = subIndex
+          
+          item.render.drawShape(null, 0, null, subIndex);
+          if (item.modelNumber) {
+            usedIndex += item.modelNumber + 1
+          } else if (item.calModelNumber) {
+            item.calModelNumber()
+            usedIndex += item.modelNumber + 1
+          } else {
+            usedIndex++
+          }
           //恢复
           ctx.restore();
         }

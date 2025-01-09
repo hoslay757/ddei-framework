@@ -93,6 +93,9 @@ class DDeiPolygonContainer extends DDeiPolygon {
   // 模型的ID按照添加顺序的索引
   midList: Array<string>;
 
+  //当前容器模型数量
+  modelNumber: number = 0;
+
   // ============================ 方法 ===============================
 
 
@@ -111,6 +114,7 @@ class DDeiPolygonContainer extends DDeiPolygon {
         num++
       }
     })
+    this.modelNumber = num
     return num;
   }
 
@@ -142,7 +146,7 @@ class DDeiPolygonContainer extends DDeiPolygon {
       this.midList.push(model.id);
       model.pModel = this;
       model.layer = this.layer;
-      this.resortModelByZIndex();
+      // this.resortModelByZIndex();
       if (notify) {
         this.notifyChange()
       }
@@ -346,67 +350,134 @@ class DDeiPolygonContainer extends DDeiPolygon {
   /**
   * 将控件设置到顶层
   */
-  pushTop(models: DDeiAbstractShape[]): void {
-    models.forEach(item => {
-      let lastItem = this.models.get(this.midList[this.midList.length - 1]);
-      if (lastItem.id != item.id) {
-        let lastIndex = lastItem.zIndex ? lastItem?.zIndex : 0
-        item.zIndex = lastIndex + 1;
+  pushTop(models: DDeiAbstractShape[], notify: boolean = true): void {
+    let sortedModels = [...models]
+    sortedModels.sort((a, b) => {
+      if (this.midList.indexOf(a.id) > this.midList.indexOf(b.id)) {
+        return 1
+      } else if (this.midList.indexOf(a.id) < this.midList.indexOf(b.id)) {
+        return -1
+      } else {
+        return 0
       }
     })
-    this.resortModelByZIndex()
+    for (let i = 0; i < sortedModels.length; i++) {
+      let item = sortedModels[i]
+      let index = this.midList.indexOf(item.id)
+      this.midList.splice(index, 1)
+      //放到最后面
+      this.midList.push(item.id)
+    }
+
+    if (notify) {
+      this.notifyChange()
+    }
   }
 
   /**
    * 将控件设置到底层
    */
-  pushBottom(models: DDeiAbstractShape[]): void {
-    models.forEach(item => {
-      item.zIndex = null
-      let oldIdIndex = this.midList.indexOf(item.id);
-      if (oldIdIndex > 0) {
-        this.midList.splice(oldIdIndex, 1);
-        this.midList.splice(0, 0, item.id);
+  pushBottom(models: DDeiAbstractShape[], notify: boolean = true): void {
+    let sortedModels = [...models]
+    sortedModels.sort((a, b) => {
+      if (this.midList.indexOf(a.id) > this.midList.indexOf(b.id)) {
+        return 1
+      } else if (this.midList.indexOf(a.id) < this.midList.indexOf(b.id)) {
+        return -1
+      } else {
+        return 0
       }
-
     })
-    this.resortModelByZIndex()
+    //插入最前面
+    for (let i = sortedModels.length - 1; i >= 0; i--) {
+      let item = sortedModels[i]
+      let index = this.midList.indexOf(item.id)
+      this.midList.splice(index, 1)
+      this.midList.splice(0, 0, item.id)
+    }
+
+    if (notify) {
+      this.notifyChange()
+    }
   }
 
   /**
   * 将控件设置到上一层
   */
-  pushUp(models: DDeiAbstractShape[]): void {
-    models.forEach(item => {
-      if (!item.zIndex) {
-        item.zIndex = 1
+  pushUp(models: DDeiAbstractShape[], notify: boolean = true): void {
+    let sortedModels = [...models]
+    sortedModels.sort((a, b) => {
+      if (this.midList.indexOf(a.id) > this.midList.indexOf(b.id)) {
+        return 1
+      } else if (this.midList.indexOf(a.id) < this.midList.indexOf(b.id)) {
+        return -1
       } else {
-        item.zIndex++;
+        return 0
       }
-
     })
-    this.resortModelByZIndex()
+    //找到当前容器中lastModel之后的元素，交换坐标
+    for (let i = sortedModels.length - 1; i >= 0; i--) {
+      //找到当前元素下方元素
+      let md = sortedModels[i]
+      let exchangeMdIndex = -1
+      let mdIndex = this.midList.indexOf(md.id)
+      let j = mdIndex + 1
+      for (; j < this.midList.length; j++) {
+        let md1 = this.models.get(this.midList[j]);
+        if (md1.isInRect(md.essBounds.x, md.essBounds.y, md.essBounds.x + md.essBounds.width, md.essBounds.y + md.essBounds.height)) {
+          exchangeMdIndex = j;
+          break;
+        }
+      }
+      if (exchangeMdIndex != -1) {
+
+        let exchangeId = this.midList[exchangeMdIndex];
+        this.midList[exchangeMdIndex] = md.id
+        this.midList[mdIndex] = exchangeId
+      }
+    }
+    if (notify) {
+      this.notifyChange()
+    }
   }
 
   /**
    * 将控件设置到下一层
    */
-  pushDown(models: DDeiAbstractShape[]): void {
-    models.forEach(item => {
-      if (!item.zIndex || item.zIndex <= 1) {
-        item.zIndex = null
-        let oldIdIndex = this.midList.indexOf(item.id);
-        if (oldIdIndex > 0) {
-          let temp = this.midList[oldIdIndex];
-          this.midList[oldIdIndex] = this.midList[oldIdIndex - 1]
-          this.midList[oldIdIndex - 1] = temp;
-        }
+  pushDown(models: DDeiAbstractShape[], notify: boolean = true): void {
+    let sortedModels = [...models]
+    sortedModels.sort((a, b) => {
+      if (this.midList.indexOf(a.id) > this.midList.indexOf(b.id)) {
+        return 1
+      } else if (this.midList.indexOf(a.id) < this.midList.indexOf(b.id)) {
+        return -1
       } else {
-        item.zIndex--;
+        return 0
       }
-
     })
-    this.resortModelByZIndex()
+    //找到当前容器中lastModel之后的元素，交换坐标
+    for (let i = 0; i < sortedModels.length; i++) {
+      //找到当前元素下方元素
+      let md = sortedModels[i]
+      let exchangeMdIndex = -1
+      let mdIndex = this.midList.indexOf(md.id)
+      let j = mdIndex - 1
+      for (; j >= 0; j--) {
+        let md1 = this.models.get(this.midList[j]);
+        if (md1.isInRect(md.essBounds.x, md.essBounds.y, md.essBounds.x + md.essBounds.width, md.essBounds.y + md.essBounds.height)) {
+          exchangeMdIndex = j;
+          break;
+        }
+      }
+      if (exchangeMdIndex != -1) {
+        let exchangeId = this.midList[exchangeMdIndex];
+        this.midList[exchangeMdIndex] = md.id
+        this.midList[mdIndex] = exchangeId
+      }
+    }
+    if (notify) {
+      this.notifyChange()
+    }
   }
 
   /**

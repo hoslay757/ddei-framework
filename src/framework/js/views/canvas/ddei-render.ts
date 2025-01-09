@@ -326,8 +326,8 @@ class DDeiCanvasRender {
    * 鼠标移动
    */
   mouseMove(evt: Event): void {
-    let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].clientX;
-    let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].clientY;
+    let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].pageX;
+    let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].pageY;
     ex /= window.remRatio
     ey /= window.remRatio
     let sx = evt.screenX;
@@ -380,6 +380,50 @@ class DDeiCanvasRender {
       }
     }
 
+  }
+
+  /**
+   * 触控板的事件
+   */
+  touchWheel(evt:Event){
+    //根据两点触碰的规则识别移动画布或者放大缩小
+    let touchData = this.model.touchData;
+    if (touchData?.count == 2){
+      if (!touchData.operate){
+        let dist = touchData.curDist - touchData.upDist
+        if(Math.abs(dist) <= 5){
+          let dx = touchData.current[0].clientX - touchData.up[0].clientX
+          let dy = touchData.current[0].clientY - touchData.up[0].clientY
+          
+          this.mouseWPV(dx, dy, evt)
+          if (!touchData.operate1 && touchData.operate1 != 0){
+            touchData.operate1 = 0
+          }else{
+            touchData.operate1++
+          }
+        }else{
+          this.mouseScale(dist, evt)
+          if (!touchData.operate2 && touchData.operate2 != 0) {
+            touchData.operate2 = 0
+          } else {
+            touchData.operate2++
+          }
+        }
+        if (touchData.operate1 >= 5){
+          touchData.operate = 1
+        } else if (touchData.operate2 >= 5){
+          touchData.operate = 2
+        }
+      } else if (touchData.operate == 1) {
+        let dx = touchData.current[0].clientX - touchData.up[0].clientX
+        let dy = touchData.current[0].clientY - touchData.up[0].clientY
+
+        this.mouseWPV(dx, dy, evt)
+      } else if (touchData.operate == 2) {
+        let dist = touchData.curDist - touchData.upDist
+        this.mouseScale(dist, evt)
+      }
+    }
   }
 
 

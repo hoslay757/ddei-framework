@@ -534,8 +534,8 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
    * 鼠标移动事件，经由上层容器分发
    */
   mouseMove(evt: Event): void {
-    let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].clientX;
-    let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].clientY;
+    let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].pageX;
+    let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].pageY;
     ex /= window.remRatio
     ey /= window.remRatio
     ex -= this.stage.wpv.x;
@@ -592,6 +592,7 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { type: 'line', passIndex: -1, opvsIndex: -1 }, evt);
         }
       } else {
+        
         if (this.model.isOpvOn(1, ex, ey)) {
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ChangeSelectorPassIndex, { passIndex: 1, opvsIndex: -1 }, evt);
         }
@@ -650,8 +651,8 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
   * 鼠标按下事件，经由上层容器分发
   */
   mouseDown(evt: Event): void {
-    let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].clientX;
-    let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].clientY;
+    let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].pageX;
+    let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].pageY;
     ex /= window.remRatio
     ey /= window.remRatio
     ex -= this.stage.wpv.x;

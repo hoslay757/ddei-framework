@@ -2070,10 +2070,10 @@ abstract class DDeiAbstractShape {
         comp.destroyed()
       });
       
-      
+      let render = this.render
       this.render = null
       this.__destroyed = true
-      DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_DEL_AFTER", DDeiEnumOperateType.DESTROYED, { models: [this] }, this.stage?.ddInstance, null)
+      DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_DEL_AFTER", DDeiEnumOperateType.DESTROYED, { models: [this], renders: [render] }, this.stage?.ddInstance, null)
     }
     
   }

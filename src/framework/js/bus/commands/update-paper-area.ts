@@ -132,29 +132,28 @@ class DDeiBusCommandUpdatePaperArea extends DDeiBusCommand {
     if (rightPaperWidth > rightSpace) {
       extW = rightPaperWidth - rightSpace
 
-    } else if ((rightSpace - rightPaperWidth) >= paperWidth) {
-      extW = -parseInt((rightSpace - rightPaperWidth) / paperWidth) * paperWidth
-
+    } else if (rightSpace > rightPaperWidth) {
+      extW = -(rightSpace - rightPaperWidth)
     }
     if (leftPaperWidth > leftSpace) {
       extW = leftPaperWidth - leftSpace
       needMoveX = true
-    } else if (parseFloat((leftSpace - leftPaperWidth).toFixed(2)) > parseFloat(paperWidth.toFixed(2))) {
-      extW = - parseInt((leftSpace - leftPaperWidth) / paperWidth) * paperWidth
+    } else if (leftSpace > leftPaperWidth) {
+      extW = -(leftSpace - leftPaperWidth)
       needMoveX = true
     }
 
 
     if (bottomPaperWidth > bottomSpace) {
       extH = bottomPaperWidth - bottomSpace
-    } else if ((bottomSpace - bottomPaperWidth) >= paperHeight) {
-      extH = -parseInt((bottomSpace - bottomPaperWidth) / paperHeight) * paperHeight
+    } else if (bottomSpace > bottomPaperWidth) {
+      extH = -(bottomSpace - bottomPaperWidth)
     }
     if (topPaperWidth > topSpace) {
       extH = topPaperWidth - topSpace
       needMoveY = true
-    } else if (parseFloat((topSpace - topPaperWidth).toFixed(2)) > parseFloat(paperHeight.toFixed(2))) {
-      extH = - parseInt((topSpace - topPaperWidth) / paperHeight) * paperHeight
+    } else if (topSpace > topPaperWidth ) {
+      extH = - (topSpace - topPaperWidth)
       needMoveY = true
     }
 
@@ -166,8 +165,8 @@ class DDeiBusCommandUpdatePaperArea extends DDeiBusCommand {
       extH = 0;
     }
     if (extW || extH) {
-      stage.width += extW
-      stage.height += extH
+      stage.width = leftPaperWidth + rightPaperWidth
+      stage.height = bottomPaperWidth + topPaperWidth
       let mx = 0, my = 0
       if (needMoveX) {
         mx = extW

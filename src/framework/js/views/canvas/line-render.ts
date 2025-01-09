@@ -71,6 +71,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     let pvs = this.model.getOperatePVS(true);
     
     let outRect = DDeiAbstractShape.pvsToOutRect(pvs, stageRatio)
+    
     let weight = 5 * stageRatio * rat1
     outRect.x -= weight
     outRect.x1 += weight
@@ -705,8 +706,8 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         this.ddRender?.model
       );
       if (accessLink) {
-        let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].clientX;
-        let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].clientY;
+        let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].pageX;
+        let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].pageY;
         ex /= window.remRatio
         ey /= window.remRatio
         ex -= this.stage.wpv.x;
@@ -718,17 +719,19 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         //操作图标的宽度
         let weight = DDeiConfig.SELECTOR.OPERATE_ICON.weight;
         let halfWeigth = weight * 0.5;
-        for (let i = 0; i < this.opvs.length; i++) {
-          let pv = this.opvs[i];
-          if (DDeiAbstractShape.isInsidePolygon(
-            [
-              { x: pv.x - halfWeigth, y: pv.y - halfWeigth },
-              { x: pv.x + halfWeigth, y: pv.y - halfWeigth },
-              { x: pv.x + halfWeigth, y: pv.y + halfWeigth },
-              { x: pv.x - halfWeigth, y: pv.y + halfWeigth }
-            ]
-            , { x: ex, y: ey })) {
-            tpdata = { type: this.opvsType[i], index: i }
+        if (this.opvs){
+          for (let i = 0; i < this.opvs.length; i++) {
+            let pv = this.opvs[i];
+            if (DDeiAbstractShape.isInsidePolygon(
+              [
+                { x: pv.x - halfWeigth, y: pv.y - halfWeigth },
+                { x: pv.x + halfWeigth, y: pv.y - halfWeigth },
+                { x: pv.x + halfWeigth, y: pv.y + halfWeigth },
+                { x: pv.x - halfWeigth, y: pv.y + halfWeigth }
+              ]
+              , { x: ex, y: ey })) {
+              tpdata = { type: this.opvsType[i], index: i }
+            }
           }
         }
         if (tpdata){
@@ -854,8 +857,8 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         this.opvs = opvs;
         this.opvsType = opvsType;
 
-        let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].clientX;
-        let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].clientY;
+        let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].pageX;
+        let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].pageY;
         ex /= window.remRatio
         ey /= window.remRatio
         ex -= this.stage.wpv.x;
@@ -868,17 +871,19 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         //操作图标的宽度
         let weight = DDeiConfig.SELECTOR.OPERATE_ICON.weight;
         let halfWeigth = weight * 0.5;
-        for (let i = 0; i < this.opvs.length; i++) {
-          let pv = this.opvs[i];
-          if (DDeiAbstractShape.isInsidePolygon(
-            [
-              { x: pv.x - halfWeigth, y: pv.y - halfWeigth },
-              { x: pv.x + halfWeigth, y: pv.y - halfWeigth },
-              { x: pv.x + halfWeigth, y: pv.y + halfWeigth },
-              { x: pv.x - halfWeigth, y: pv.y + halfWeigth }
-            ]
-            , { x: ex, y: ey })) {
-            tpdata = { type: this.opvsType[i], index: i }
+        if (this.opvs){
+          for (let i = 0; i < this.opvs.length; i++) {
+            let pv = this.opvs[i];
+            if (DDeiAbstractShape.isInsidePolygon(
+              [
+                { x: pv.x - halfWeigth, y: pv.y - halfWeigth },
+                { x: pv.x + halfWeigth, y: pv.y - halfWeigth },
+                { x: pv.x + halfWeigth, y: pv.y + halfWeigth },
+                { x: pv.x - halfWeigth, y: pv.y + halfWeigth }
+              ]
+              , { x: ex, y: ey })) {
+              tpdata = { type: this.opvsType[i], index: i }
+            }
           }
         }
 

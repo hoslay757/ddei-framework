@@ -38,6 +38,13 @@ class DDeiStage {
     if (props.spv) {
       this.spv = new Vector3(props.spv.x, props.spv.y, 1)
     }
+    if (props.extData){
+      if (typeof (props.extData)=='string'){
+        this.extData = JSON.parse(props.extData);
+      }else{
+        this.extData = props.extData;
+      }
+    }
 
     this.links = []
     props?.links?.forEach(link => {
@@ -193,6 +200,11 @@ class DDeiStage {
    * 网格线的尺寸随缩放大小而改变
    */
   grid: any;
+
+  /**
+   * 扩展属性
+   */
+  extData:object = {}
 
   modelCode: string = "DDeiStage"
 
@@ -1046,24 +1058,29 @@ class DDeiStage {
         allLayers = true
       }
       //所选择区域的最大范围
-      let outRect = DDeiAbstractShape.getOutRectByPV(models);
-      
       let stageRatio = this.getStageRatio()
-      outRect.x *= stageRatio
-      outRect.y *= stageRatio
-      outRect.width *= stageRatio
-      outRect.height *= stageRatio
-      let lineOffset = 5 * stageRatio
+      let outRect = DDeiAbstractShape.getOutRectByPV(models, stageRatio);
+      
+      let lineOffset = 5
       let addWidth = 2 * lineOffset
+
+      outRect.x -= lineOffset
+      outRect.x1 += lineOffset
+      outRect.y -= lineOffset
+      outRect.y1 += lineOffset
+      outRect.width += addWidth
+      outRect.height += addWidth
+
       let editorId = DDeiUtil.getEditorId(ddInstance);
       let containerDiv = document.getElementById(editorId + "_ddei_cut_img_div")
 
       canvas.setAttribute("style", "-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");display:block;-webkit-transform:scale(" + (1 / rat1)+")");
-      let cW = (outRect.width + addWidth) * rat1
-      let cH = (outRect.height + addWidth) * rat1
+      let cW = (outRect.width ) * rat1
+      let cH = (outRect.height) * rat1
       canvas.setAttribute("width", cW)
       canvas.setAttribute("height", cH)
-      ctx.translate((-outRect.x + lineOffset - 5 * stageRatio) * rat1, (-outRect.y + lineOffset - 5 * stageRatio)  * rat1)
+      let weight = 5 * stageRatio
+      ctx.translate((-outRect.x - lineOffset) * rat1, (-outRect.y - lineOffset)  * rat1)
       containerDiv.appendChild(canvas)
 
       if (allLayers) {
@@ -1071,34 +1088,14 @@ class DDeiStage {
         layers.forEach(ly => {
           ly.midList.forEach(mid => {
             let model = ly.models.get(mid)
-            model?.render?.clearCachedValue()
-            model?.render?.drawShape();
-            if (model.baseModelType == 'DDeiLine') {
-              let lineRect = DDeiAbstractShape.getOutRectByPV([model]);
-              ctx.drawImage(model.render.tempCanvas, (lineRect.x - 5) * stageRatio * rat1, (lineRect.y - 5) * stageRatio * rat1)
-            } else if (!model.render.viewer) {
-              ctx.drawImage(model.render.tempCanvas, model.x * stageRatio * rat1, model.y * stageRatio * rat1)
-            }
+            this._drawControlToCanvas(model, ctx, stageRatio, rat1, lineOffset);
           })
         });
       } else {
         models[0].pModel.midList.forEach(mid => {
           models.forEach(item => {
             if (item.id == mid) {
-              let rendList = DDeiUtil.sortRendList(item)
-                rendList.forEach(rendItem=>{
-                  rendItem.render.clearCachedValue()
-                  rendItem.render.drawShape({});
-                  if (rendItem.baseModelType == 'DDeiLine') {
-                    let lineRect = DDeiAbstractShape.getOutRectByPV([rendItem]);
-                    ctx.drawImage(rendItem.render.tempCanvas, (lineRect.x - 5) * stageRatio * rat1, (lineRect.y - 5) * stageRatio * rat1)
-                  } else if (!rendItem.render.viewer) {
-                    ctx.drawImage(rendItem.render.tempCanvas, rendItem.x * stageRatio * rat1, rendItem.y * stageRatio * rat1)
-                  }
-
-                  this.drawComposeImageToCanvas(rendItem, ctx, stageRatio, rat1)
-              })
-              
+              this._drawControlToCanvas(item,ctx,stageRatio,rat1,lineOffset);
             }
           })
         })
@@ -1114,6 +1111,25 @@ class DDeiStage {
     }
     return null;
   }
+
+  private _drawControlToCanvas(item:DDeiAbstractShape,ctx,stageRatio,rat1,lineOffset):void{
+    let rendList = DDeiUtil.sortRendList(item)
+    rendList.forEach(rendItem => {
+      rendItem.render.clearCachedValue()
+      rendItem.render.drawShape({});
+      if (rendItem.baseModelType == 'DDeiLine') {
+        let lineRect = DDeiAbstractShape.getOutRectByPV([rendItem], stageRatio);
+        let shapeElement = rendItem.render.tempCanvas
+        let dWidth = (shapeElement.offsetWidth / rat1 - lineRect.width) / 2
+        let dHeight = (shapeElement.offsetHeight / rat1 - lineRect.height) / 2
+        ctx.drawImage(shapeElement, (lineRect.x - dWidth + lineOffset) * rat1, (lineRect.y - dHeight + lineOffset) * rat1)
+      } else if (!rendItem.render.viewer) {
+        ctx.drawImage(rendItem.render.tempCanvas, rendItem.x * stageRatio * rat1, rendItem.y * stageRatio * rat1)
+      }
+      this.drawComposeImageToCanvas(rendItem, ctx, stageRatio, rat1)
+    })
+  }
+  
 
   private drawComposeImageToCanvas(model,ctx,stageRatio,rat1){
     model.composes?.forEach(comp => {

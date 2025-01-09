@@ -1580,8 +1580,8 @@ class DDeiStageCanvasRender {
    * @param evt 事件
    */
   resetSelectorState(evt: Event): void {
-    let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].clientX;
-    let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].clientY;
+    let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].pageX;
+    let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].pageY;
     this.selector.resetState(ex - this.model.wpv.x, ey - this.model.wpv.y);
   }
 
@@ -1599,8 +1599,8 @@ class DDeiStageCanvasRender {
     if (!this.model.ddInstance.eventCancel) {
       let canvas = this.ddRender.getCanvas();
       let rat1 = this.ddRender.ratio;
-      let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].clientX;
-      let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].clientY;
+      let ex = evt.offsetX || evt.offsetX == 0 ? evt.offsetX : evt.touches[0].pageX;
+      let ey = evt.offsetY || evt.offsetY == 0 ? evt.offsetY : evt.touches[0].pageY;
       ex /= window.remRatio
       ey /= window.remRatio
       //判断是否在滚动条区间
@@ -1655,8 +1655,10 @@ class DDeiStageCanvasRender {
     if (!this.model.ddInstance.eventCancel) {
       if (this.operateState == DDeiEnumOperateState.STAGE_SCROLL_WORKING) {
         let canvasPos = DDeiUtil.getDomAbsPosition(this.ddRender?.canvas?.parentElement)
-        let ex = evt.pageX - canvasPos.left;
-        let ey = evt.pageY - canvasPos.top;
+        let pageX = evt.pageX || evt.pageX == 0 ? evt.pageX : evt.touches[0].pageX;
+        let pageY = evt.pageY || evt.pageY == 0 ? evt.pageY : evt.touches[0].pageY;
+        let ex = pageX - canvasPos.left;
+        let ey = pageY - canvasPos.top;
 
         if (this.dragObj?.scroll == 1) {
           let width = this.hScroll.width;
