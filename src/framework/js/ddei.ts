@@ -39,6 +39,9 @@ class DDei {
   */
   static KEY_DOWN_STATE: Map<string, boolean> = new Map();
 
+  //是否开启全局自动避障
+  GLOBAL_AUTO_OBI: boolean = true;
+
 
 
   // ============================ 静态方法 ============================
