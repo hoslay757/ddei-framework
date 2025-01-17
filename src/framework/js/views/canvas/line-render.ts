@@ -135,7 +135,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
 
                   //绘制线段
                   this.drawLine(tempShape);
-
+                  
 
                   ctx.restore();
                 } else {
@@ -395,6 +395,24 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       }
       //绘制端点
       this.drawPoint(tempLine, tempCtx);
+
+      //绘制清空区域
+      this.model.linkModels?.forEach(link => {
+        let linkModel = link.dm
+        ctx.save()
+        ctx.beginPath()
+        let pvs = linkModel.operatePVS ? linkModel.operatePVS : linkModel.pvs
+        ctx.globalCompositeOperation = "destination-out";
+
+        ctx.moveTo(pvs[0].x * rat1, pvs[0].y * rat1)
+        for (let lmi = 0; lmi < pvs.length; lmi++) {
+          ctx.lineTo(pvs[lmi].x * rat1, pvs[lmi].y * rat1)
+        }
+        ctx.closePath()
+        ctx.fill()
+        ctx.restore()
+      })
+
       ctx.restore();
     }
   }

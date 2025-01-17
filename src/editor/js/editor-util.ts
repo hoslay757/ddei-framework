@@ -349,9 +349,20 @@ class DDeiEditorUtil {
         stage.render.currentMenuShape = control;
         //显示菜单
         editor.setCurrentMenu(menuJSON);
+        
         let menuDialogId = DDeiUtil.getMenuControlId(editor);
         let menuEle = document.getElementById(menuDialogId);
-        let elePos = DDeiUtil.getDomAbsPosition(evt.currentTarget,editor)
+        let elePos = null;
+        if(control.modelType == 'DDeiSheet'){
+          elePos = DDeiUtil.getDomAbsPosition(evt.currentTarget, editor)
+        }else{
+          
+          elePos = DDeiUtil.getModelsDomAbsPosition([control]);
+          let editorDomPos = DDeiUtil.getDomAbsPosition(editor.htmlElement);
+          elePos.left = elePos.left - editorDomPos.left
+          elePos.top = elePos.top - editorDomPos.top
+        }
+        
         if (menuEle) {
           if (elePos.left + 200 > document.body.clientWidth) {
             menuEle.style.left = (document.body.clientWidth-200) + "px";
@@ -378,7 +389,10 @@ class DDeiEditorUtil {
      */
   static getMenuConfig(model: object, editor: DDeiEditor | null | undefined): object | null {
     if (editor?.menuMapping){
-      let menus = editor?.menuMapping[model?.modelType]
+      let menus = editor.menuMapping[model?.modelType]
+      if (!menus){
+        menus = editor.menuMapping[model?.modelCode]
+      }
       if (menus?.length > 0){
         return menus;
       }
