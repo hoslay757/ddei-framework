@@ -657,10 +657,13 @@ class DDeiStage {
   /**
    * 根据ID删除元素
    */
-  removeModelById(ids: string[]): void {
+  removeModelById(ids: string[], destroy: boolean = true, notify:boolean = true): void {
     this.layers.forEach(layer=>{
-      layer.removeModelById(ids);
+      layer.removeModelById(ids, destroy,false);
     })
+    if (notify) {
+      this.notifyChange();
+    }
   }
 
   /**

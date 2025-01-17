@@ -1421,8 +1421,8 @@ class DDeiEditor {
   /**
    * 移除当前画布控件
    */
-  removeControls(ids: string[], notify: boolean = true): void {
-    this.ddInstance.stage?.removeModelById(ids)
+  removeControls(ids: string[],destroyed:boolean = true, notify: boolean = true): void {
+    this.ddInstance.stage?.removeModelById(ids, destroyed,false)
     if (notify){
       this.notifyChange();
     }

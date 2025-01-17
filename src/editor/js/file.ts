@@ -265,7 +265,7 @@ class DDeiFile {
       }
     }
     //写入版本号
-    json.ddeiVersion = 1245
+    json.ddeiVersion = 1246
     return json;
   }
 

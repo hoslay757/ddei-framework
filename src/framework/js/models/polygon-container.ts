@@ -700,18 +700,21 @@ class DDeiPolygonContainer extends DDeiPolygon {
 
 
 
-  removeModelById(ids: string[]): void {
+  removeModelById(ids: string[],destroy: boolean = true, notify: boolean = true): void {
     ids?.forEach(id => {
       let model = this.getModelById(id)
       if (model) {
-        this.removeModel(model);
+        this.removeModel(model, destroy, false);
       }
     });
     this.models.forEach(model => {
       if (model.baseModelType == 'DDeiContainer') {
-        model.removeModelById(ids);
+        model.removeModelById(ids, destroy,false);
       }
     })
+    if (notify) {
+      this.notifyChange()
+    }
   }
 
   toJSON(): Object {
