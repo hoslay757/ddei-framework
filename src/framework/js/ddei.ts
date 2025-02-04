@@ -12,7 +12,6 @@ import DDeiFuncCallResult from "../../lifecycle/callresult";
  * DDei静态资源维护公共变量与实例池
  * DDei实例与一个容器（如：div）绑定，同一个页面上可以允许存在多个实例
  * DDei实例作为页面上打开操作的临时实例，一般只在页面存续期间有效，不会被序列化
- * TODO 国际化
  */
 class DDei {
   // ============================ 构造函数 ============================
@@ -41,6 +40,9 @@ class DDei {
 
   //是否开启全局自动避障
   GLOBAL_AUTO_OBI: boolean = true;
+
+  //开启webgl渲染,以获得更好的性能以及显示效果，在1.3版本后支持
+  GLOBAL_WEBGL: boolean = true;
 
 
 

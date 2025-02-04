@@ -16,6 +16,7 @@ import DDeiStageCanvasRender from './stage-render.js';
 import { Vector3, Matrix3 } from 'three';
 import DDeiLink from '../../models/link.js';
 import { cloneDeep,clone } from 'lodash-es'
+import { vertexShaderSrc, fragmentShaderSrc } from "./shader"
 /**
  * DDeiLayer的渲染器类，用于渲染文件
  * 渲染器必须要有模型才可以初始化
@@ -75,7 +76,68 @@ class DDeiLayerCanvasRender {
     this.ddRender = this.model.stage.ddInstance.render
     this.stage = this.model.stage
     this.stageRender = this.model.stage.render
-    this.initContainerViewer();
+    if(this.ddRender?.model.GLOBAL_WEBGL){
+      this.initGLCanvas()
+    }else{
+      this.initContainerViewer();
+    }
+  }
+
+  initGLCanvas() {
+    if (!this.glCanvas) {
+      let editorId = DDeiUtil.getEditorId(this.ddRender.model);
+      this.glCanvas = document.getElementById(editorId + "_gllayer_" + this.model.id)
+      if (!this.glCanvas) {
+        //在容器上创建画布，画布用来渲染图形
+        let ddCanvas = this.ddRender.getCanvas()
+        let canvasViewerElement = ddCanvas.parentElement
+        if (canvasViewerElement) {
+          let glCanvasElement = document.createElement("canvas")
+          glCanvasElement.setAttribute("id", editorId + "_gllayer_" + this.model.id)
+          glCanvasElement.setAttribute("class", "ddei-editor-canvasview-contentlayer")
+          glCanvasElement.setAttribute("width", ddCanvas.width)
+          glCanvasElement.setAttribute("height", ddCanvas.height)
+          canvasViewerElement.insertBefore(glCanvasElement, ddCanvas)
+          this.glCanvas = glCanvasElement
+          //初始化gl
+          //在webgl中绘制
+          let gl = glCanvasElement.getContext("webgl2", {
+            antialias: true,
+            antialiasSamples: 8
+          });
+          // 设置viewport
+          
+          gl.viewport(0, 0, glCanvasElement.width, glCanvasElement.height)
+
+          /**** 渲染器生成处理 ****/
+          // 创建顶点渲染器
+          const vertexShader = gl.createShader(gl.VERTEX_SHADER);
+          gl.shaderSource(vertexShader, vertexShaderSrc);
+          gl.compileShader(vertexShader);
+          // 创建片元渲染器
+          const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+          gl.shaderSource(fragmentShader, fragmentShaderSrc);
+          gl.compileShader(fragmentShader);
+          // 程序对象
+          const program = gl.createProgram();
+          gl.attachShader(program, vertexShader);
+          gl.attachShader(program, fragmentShader);
+          gl.linkProgram(program);
+          gl.useProgram(program);
+          gl.program = program;
+          //清空画布
+          gl.clearColor(255, 255, 255, 1);
+          gl.clear(gl.COLOR_BUFFER_BIT);
+
+          this.gl = gl
+        }
+      }else{
+        this.gl = this.glCanvas.getContext("webgl2", {
+          antialias: true,
+          antialiasSamples: 8
+        });
+      }
+    }
   }
 
   initContainerViewer() {
@@ -118,38 +180,47 @@ class DDeiLayerCanvasRender {
    * 绘制图形
    */
   drawShape(inRect: boolean = true): void {
-    this.initContainerViewer();
-    //只有当显示时才绘制图层
-    if (this.model.display || this.model.tempDisplay) {
-      let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.stage?.ddInstance, null)
-      if (rsState == 0 || rsState == 1) {
-        let rsState1 = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.stage?.ddInstance, null)
-        if (rsState1 == 0 || rsState1 == 1) {
-          this.containerViewer.style.display = "block"
-          if(this.tempZIndex || this.tempZIndex == 0){
-            this.containerViewer.style.zIndex = this.tempZIndex
-          }
-          //绘制子元素
-          this.drawChildrenShapes(inRect);
-          //绘制操作点
-          this.drawOpPoints();
-          //绘制操作线
-          this.drawOpLine();
-
-          //绘制移入移出效果图形
-          this.drawDragInOutPoints();
-
-          //绘制拖拽影子控件
-          this.drawShadowControls();
-
-          this.modelChanged = false;
-        }
-        DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_AFTER", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.stage?.ddInstance, null)
+    if (this.ddRender?.model.GLOBAL_WEBGL) {
+      this.initGLCanvas();
+      if (this.model.display || this.model.tempDisplay) {
+        this.glCanvas.style.display = "block"
+      }else{
+        this.glCanvas.style.display = "none"
       }
     }else{
-      this.containerViewer.style.display = "none"
-      //隐藏子元素
-      this.drawChildrenShapes(inRect,true);
+      this.initContainerViewer();
+      //只有当显示时才绘制图层
+      if (this.model.display || this.model.tempDisplay) {
+        let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.stage?.ddInstance, null)
+        if (rsState == 0 || rsState == 1) {
+          let rsState1 = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.stage?.ddInstance, null)
+          if (rsState1 == 0 || rsState1 == 1) {
+            this.containerViewer.style.display = "block"
+            if(this.tempZIndex || this.tempZIndex == 0){
+              this.containerViewer.style.zIndex = this.tempZIndex
+            }
+            //绘制子元素
+            this.drawChildrenShapes(inRect);
+            //绘制操作点
+            this.drawOpPoints();
+            //绘制操作线
+            this.drawOpLine();
+
+            //绘制移入移出效果图形
+            this.drawDragInOutPoints();
+
+            //绘制拖拽影子控件
+            this.drawShadowControls();
+
+            this.modelChanged = false;
+          }
+          DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_AFTER", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.stage?.ddInstance, null)
+        }
+      }else{
+        this.containerViewer.style.display = "none"
+        //隐藏子元素
+        this.drawChildrenShapes(inRect,true);
+      }
     }
   }
 
@@ -159,175 +230,276 @@ class DDeiLayerCanvasRender {
    * 绘制背景
    */
   drawBackground(px, py, pw, ph,isBottom): void {
-    this.initContainerViewer()
-    if (this.containerViewer && (this.model.display || this.model.tempDisplay)) {
-      let ratio = this.ddRender.ratio
-      if(!this.bgCanvas){
-        let editorId = DDeiUtil.getEditorId(this.ddRender?.model);
-        this.bgCanvas = document.getElementById(editorId + "_layerbg_" + this.model.id)
-        if (!this.bgCanvas){
-          let bgCanvas = document.createElement("canvas")
-          
-          bgCanvas.setAttribute("style", "z-index:0;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / ratio) + ");display:block;zoom:" + (1 / ratio));
-          bgCanvas.setAttribute("id",editorId + "_layerbg_" + this.model.id)
-          this.containerViewer.appendChild(bgCanvas)
-          this.bgCanvas = bgCanvas
-        }
-      }
-      this.bgCanvas.setAttribute("width", this.containerViewer.clientWidth * ratio);
-      this.bgCanvas.setAttribute("height", this.containerViewer.clientHeight * ratio);
-      //获得 2d 上下文对象
-      // let canvas = this.ddRender.getCanvas();
-      let canvas = this.bgCanvas;
-      let ctx = canvas.getContext('2d');
-      //获取全局缩放比例
-      let rat1 = this.ddRender.ratio
-      //保存状态
-      ctx.save();
-
-      let ruleWeight = 0
-      if (this.stageRender.tempRuleDisplay == 1 || this.stageRender.tempRuleDisplay == '1') {
-        ruleWeight = 15
-      }
-      ctx.translate(-ruleWeight*rat1,-ruleWeight*rat1)
-
-
-
-      //根据背景的设置绘制图层
-      //获取属性配置
-      let bgInit
-      if (this.ddRender?.model.background && typeof (this.ddRender?.model.background) == 'object') {
-        bgInit = this.ddRender?.model.background;
-      }
-      let bgInfoType = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.type", true, bgInit);
-      let bgInfoColor
-      if (this.model.bg?.color) {
-        bgInfoColor = this.model.bg.color
-      } else if (this.ddRender?.model.background) {
-        if (typeof (this.ddRender?.model.background) == 'string' || typeof (this.ddRender?.model.background) == 'number') {
-          if (this.ddRender?.model.background == "-1" || this.ddRender?.model.background == -1){
-            bgInfoType = -1;
-          }else{
-            bgInfoColor = this.ddRender?.model.background;
-            if (!bgInfoType){
-              bgInfoType = 1;
-            }
-          }
+    //根据背景的设置绘制图层
+    let ruleWeight = 0
+    let rat1 = this.ddRender.ratio
+    if (this.stageRender.tempRuleDisplay == 1 || this.stageRender.tempRuleDisplay == '1') {
+      ruleWeight = 15 * rat1
+    }
+    //获取属性配置
+    let bgInit
+    if (this.ddRender?.model.background && typeof (this.ddRender?.model.background) == 'object') {
+      bgInit = this.ddRender?.model.background;
+    }
+    let bgInfoType = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.type", true, bgInit);
+    let bgInfoColor
+    if (this.model.bg?.color) {
+      bgInfoColor = this.model.bg.color
+    } else if (this.ddRender?.model.background) {
+      if (typeof (this.ddRender?.model.background) == 'string' || typeof (this.ddRender?.model.background) == 'number') {
+        if (this.ddRender?.model.background == "-1" || this.ddRender?.model.background == -1) {
+          bgInfoType = -1;
         } else {
-          bgInfoColor = this.ddRender?.model.background.color
+          bgInfoColor = this.ddRender?.model.background;
+          if (!bgInfoType) {
+            bgInfoType = 1;
+          }
         }
       } else {
-        bgInfoColor = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.color", true);
+        bgInfoColor = this.ddRender?.model.background.color
       }
-      if (!bgInfoColor && isBottom) {
-        bgInfoColor = DDeiUtil.getStyleValue("panel-background", this.ddRender.model);
-      }
-      // 绘制纯色背景
-      if (bgInfoType == 1) {
-        if (bgInfoColor){
-          let bgInfoOpacity = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.opacity", true, bgInit);
-          //填充色
-          ctx.fillStyle = DDeiUtil.getColor(bgInfoColor)
-          //透明度
-          if (bgInfoOpacity || bgInfoOpacity == 0) {
-            ctx.globalAlpha = bgInfoOpacity
+    } else {
+      bgInfoColor = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.color", true);
+    }
+    if (!bgInfoColor && isBottom) {
+      bgInfoColor = DDeiUtil.getStyleValue("panel-background", this.ddRender.model);
+    }
+    if (this.model.display || this.model.tempDisplay){
+      if (this.ddRender?.model.GLOBAL_WEBGL) {
+        
+        if (this.gl) {
+          let stageRatio = this.stage.getStageRatio()
+          
+          let gl = this.gl
+          // 绘制纯色背景
+          if (bgInfoType == 1) {
+            if (bgInfoColor) {
+              //透明度
+              let bgInfoOpacity = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.opacity", true, bgInit);
+              //绘制矩形，作为背景
+              let program = gl.program
+
+
+              // 获取顶点着色器的变量
+              let positionAttributeLocation = gl.getAttribLocation(program, "a_position");
+              let colorAttributeLocation = gl.getAttribLocation(program, "a_color");
+              
+              let resolutionUniformLocation = gl.getUniformLocation(program, "u_resolution");
+              let ruleWeightUniformLocation = gl.getUniformLocation(program, "u_ruleweight");
+              
+              
+              // 顶点坐标数组
+              let vertexArray = [];
+              vertexArray = vertexArray.concat(DDeiUtil.getGLRect(px, py, pw, ph))
+              gl.enableVertexAttribArray(positionAttributeLocation);
+              let positionBuffer = gl.createBuffer();
+              gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+              gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexArray), gl.STATIC_DRAW);
+              // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
+              let normalize = false; // don't normalize the data
+              let stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
+              let offset = 0;        // start at the beginning of the buffer
+              gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, normalize, stride, offset);
+
+              // 颜色数组
+              let colorArray = [];
+              
+              colorArray = colorArray.concat(DDeiUtil.getGLColorArray(bgInfoColor, bgInfoOpacity))
+              
+              gl.enableVertexAttribArray(colorAttributeLocation);
+              let colorBuffer = gl.createBuffer();
+              gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+              gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colorArray), gl.STATIC_DRAW);
+
+             
+              
+              gl.vertexAttribPointer(colorAttributeLocation, 4, gl.FLOAT, normalize, stride, offset);
+              
+
+              // index buffer 初始化
+              const indexBuffer = gl.createBuffer();
+              gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+              const indices = [];
+              for (let i = 0; i < 1; i++) {
+                const base = i * 4;
+                indices.push(base, base + 1, base + 2, base + 2, base + 1, base + 3);
+              }
+              gl.bufferData(
+                gl.ELEMENT_ARRAY_BUFFER,
+                new Uint16Array(indices),
+                gl.STATIC_DRAW
+              );
+              gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+
+              // set the resolution
+              
+              gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
+              gl.uniform2f(ruleWeightUniformLocation, ruleWeight, ruleWeight);
+
+              //绘制元素
+              let primitiveType = gl.TRIANGLES;
+              let indexCount = 6 * 1;
+              let indexType = gl.UNSIGNED_SHORT;
+              //清空画布
+              // gl.clearColor(0, 0, 0, 0);
+              // gl.clear(gl.COLOR_BUFFER_BIT);
+              //设置缩放
+              
+              let ratio = rat1 * stageRatio
+              let ratioUniformLocation = gl.getUniformLocation(program, "f_ratio");
+              gl.uniform1f(ratioUniformLocation, 2);
+              //设置窗口位置
+              let worldSpaceUniformLocation = gl.getUniformLocation(program, "u_worldSpace");
+              
+              gl.uniform2f(worldSpaceUniformLocation, 0, 0);
+
+
+              //绘制
+              gl.drawElements(primitiveType, indexCount, indexType, offset);
+            }
           }
-          ctx.fillRect(px, py, pw, ph)
         }
-      }
-      //绘制图片背景类型
-      else if (bgInfoType == 2) {
-        let bgImage = DDeiUtil.getReplacibleValue(this.model, "bg.image");
-        if (!bgImage) {
-          bgImage = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.image", true, bgInit);
-        }
-        //没有图片，加载图片，有图片绘制图片
-        if (!this.bgImgObj || bgImage != this.upBgImage) {
-          this.initBgImage();
-        } else {
-          let bgImgMode = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.imageMode", true, bgInit);
-          let bgInfoOpacity = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.opacity", true, bgInit);
-          //透明度
-          if (bgInfoOpacity || bgInfoOpacity == 0) {
-            ctx.globalAlpha = bgInfoOpacity
+      } else {
+        this.initContainerViewer()
+        if (this.containerViewer) {
+          let ratio = this.ddRender.ratio
+          if(!this.bgCanvas){
+            let editorId = DDeiUtil.getEditorId(this.ddRender?.model);
+            this.bgCanvas = document.getElementById(editorId + "_layerbg_" + this.model.id)
+            if (!this.bgCanvas){
+              let bgCanvas = document.createElement("canvas")
+              
+              bgCanvas.setAttribute("style", "z-index:0;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / ratio) + ");display:block;zoom:" + (1 / ratio));
+              bgCanvas.setAttribute("id",editorId + "_layerbg_" + this.model.id)
+              this.containerViewer.appendChild(bgCanvas)
+              this.bgCanvas = bgCanvas
+            }
           }
-          let x = px;
-          let y = py;
-          let w = this.bgImgObj.width;
-          let h = this.bgImgObj.height;
-          let cwidth = pw
-          let cheight = ph
-          let ruleDisplay
-          if (this.stage.ruler?.display) {
-            ruleDisplay = this.stage.ruler.display;
-          } else if (this.stage.ddInstance.ruler != null && this.stage.ddInstance.ruler != undefined) {
-            if (typeof (this.model.ddInstance.ruler) == 'boolean') {
-              ruleDisplay = this.stage.ddInstance.ruler ? 1 : 0;
+          this.bgCanvas.setAttribute("width", this.containerViewer.clientWidth * ratio);
+          this.bgCanvas.setAttribute("height", this.containerViewer.clientHeight * ratio);
+          //获得 2d 上下文对象
+          // let canvas = this.ddRender.getCanvas();
+          let canvas = this.bgCanvas;
+          let ctx = canvas.getContext('2d');
+          //获取全局缩放比例
+          let rat1 = this.ddRender.ratio
+          //保存状态
+          ctx.save();
+
+          
+          ctx.translate(-ruleWeight, -ruleWeight)
+
+
+
+          
+          // 绘制纯色背景
+          if (bgInfoType == 1) {
+            if (bgInfoColor){
+              let bgInfoOpacity = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.opacity", true, bgInit);
+              //填充色
+              ctx.fillStyle = DDeiUtil.getColor(bgInfoColor)
+              //透明度
+              if (bgInfoOpacity || bgInfoOpacity == 0) {
+                ctx.globalAlpha = bgInfoOpacity
+              }
+              ctx.fillRect(px, py, pw, ph)
+            }
+          }
+          //绘制图片背景类型
+          else if (bgInfoType == 2) {
+            let bgImage = DDeiUtil.getReplacibleValue(this.model, "bg.image");
+            if (!bgImage) {
+              bgImage = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.image", true, bgInit);
+            }
+            //没有图片，加载图片，有图片绘制图片
+            if (!this.bgImgObj || bgImage != this.upBgImage) {
+              this.initBgImage();
             } else {
-              ruleDisplay = this.stage.ddInstance.ruler.display;
-            }
-          } else {
-            ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.stage, "ruler.display", true);
-          }
-          if (ruleDisplay == 1) {
-            cwidth -= 16 * rat1;
-            cheight -= 16 * rat1;
-          }
-          let scrollWeight = rat1 * 15;
+              let bgImgMode = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.imageMode", true, bgInit);
+              let bgInfoOpacity = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.opacity", true, bgInit);
+              //透明度
+              if (bgInfoOpacity || bgInfoOpacity == 0) {
+                ctx.globalAlpha = bgInfoOpacity
+              }
+              let x = px;
+              let y = py;
+              let w = this.bgImgObj.width;
+              let h = this.bgImgObj.height;
+              let cwidth = pw
+              let cheight = ph
+              let ruleDisplay
+              if (this.stage.ruler?.display) {
+                ruleDisplay = this.stage.ruler.display;
+              } else if (this.stage.ddInstance.ruler != null && this.stage.ddInstance.ruler != undefined) {
+                if (typeof (this.model.ddInstance.ruler) == 'boolean') {
+                  ruleDisplay = this.stage.ddInstance.ruler ? 1 : 0;
+                } else {
+                  ruleDisplay = this.stage.ddInstance.ruler.display;
+                }
+              } else {
+                ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.stage, "ruler.display", true);
+              }
+              if (ruleDisplay == 1) {
+                cwidth -= 16 * rat1;
+                cheight -= 16 * rat1;
+              }
+              let scrollWeight = rat1 * 15;
 
-          if (this.stageRender.hScroll == 1) {
-            cheight -= scrollWeight;
-          }
-          if (this.stageRender.vScroll == 1) {
-            cwidth -= scrollWeight;
-          }
-          //填充
-          if (bgImgMode == 2) {
-            //绘制图片
-            w = cwidth;
-            h = cheight;
-          }
-          //缩放
-          else if (bgImgMode == 1) {
-            let bgImageScale = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.imageScale", true, bgInit);
-            w = w * bgImageScale;
-            h = h * bgImageScale;
-          }
-          //对齐
-          if (bgImgMode != 2) {
-            let bgImageAlign = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.imageAlign", true,bgInit);
-            let align = 2;
-            let valign = 2;
-            switch (bgImageAlign) {
-              case 1: align = 1; valign = 1; break;
-              case 2: align = 2; valign = 1; break;
-              case 3: align = 3; valign = 1; break;
-              case 4: align = 1; valign = 2; break;
-              case 5: align = 2; valign = 2; break;
-              case 6: align = 3; valign = 2; break;
-              case 7: align = 1; valign = 3; break;
-              case 8: align = 2; valign = 3; break;
-              case 9: align = 3; valign = 3; break;
-              default: break;
+              if (this.stageRender.hScroll == 1) {
+                cheight -= scrollWeight;
+              }
+              if (this.stageRender.vScroll == 1) {
+                cwidth -= scrollWeight;
+              }
+              //填充
+              if (bgImgMode == 2) {
+                //绘制图片
+                w = cwidth;
+                h = cheight;
+              }
+              //缩放
+              else if (bgImgMode == 1) {
+                let bgImageScale = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.imageScale", true, bgInit);
+                w = w * bgImageScale;
+                h = h * bgImageScale;
+              }
+              //对齐
+              if (bgImgMode != 2) {
+                let bgImageAlign = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "bg.imageAlign", true,bgInit);
+                let align = 2;
+                let valign = 2;
+                switch (bgImageAlign) {
+                  case 1: align = 1; valign = 1; break;
+                  case 2: align = 2; valign = 1; break;
+                  case 3: align = 3; valign = 1; break;
+                  case 4: align = 1; valign = 2; break;
+                  case 5: align = 2; valign = 2; break;
+                  case 6: align = 3; valign = 2; break;
+                  case 7: align = 1; valign = 3; break;
+                  case 8: align = 2; valign = 3; break;
+                  case 9: align = 3; valign = 3; break;
+                  default: break;
+                }
+                switch (align) {
+                  case 1: x = px; break;
+                  case 2: x = px + (cwidth - w) / 2; break;
+                  case 3: x = px + cwidth - w; break;
+                }
+                switch (valign) {
+                  case 1: y = py; break;
+                  case 2: y = py + (cheight - h) / 2; break;
+                  case 3: y = py + cheight - h; break;
+                }
+              }
+              ctx.drawImage(this.bgImgObj, x, y, w, h);
             }
-            switch (align) {
-              case 1: x = px; break;
-              case 2: x = px + (cwidth - w) / 2; break;
-              case 3: x = px + cwidth - w; break;
-            }
-            switch (valign) {
-              case 1: y = py; break;
-              case 2: y = py + (cheight - h) / 2; break;
-              case 3: y = py + cheight - h; break;
-            }
+
           }
-          ctx.drawImage(this.bgImgObj, x, y, w, h);
+
+          //恢复状态
+          ctx.restore();
         }
-
       }
-
-      //恢复状态
-      ctx.restore();
     }
   }
 

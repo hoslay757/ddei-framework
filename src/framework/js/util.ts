@@ -3385,6 +3385,78 @@ class DDeiUtil {
     return (window.orientation || 0) === 90 || (window.orientation || 0) === -90;
   }
 
+
+  /**
+   * 构造webgl渲染矩形的位置点
+   * @param x 
+   * @param y 
+   * @param width 
+   * @param height 
+   * @returns 
+   */
+  static getGLRect(x, y, width, height) {
+    var x1 = x;
+    var x2 = x + width;
+    var y1 = y;
+    var y2 = y + height;
+    return [
+      x1, y1,
+      x2, y1,
+      x1, y2,
+      x2, y2,
+    ];
+  }
+
+
+
+  /**
+   * 构造webgl渲染矩形的颜色点
+   * @param color 颜色
+   * @param opacity 透明度
+   * @returns 
+   */
+  static getGLColor(color, opacity: number = 1) {
+    let rgbColor = DDeiUtil.getColorObj(color);
+    if (rgbColor){
+      rgbColor.r = rgbColor.r / 255;
+      rgbColor.g = rgbColor.g / 255;
+      rgbColor.b = rgbColor.b / 255;
+      rgbColor.a = opacity
+    }
+    return rgbColor
+
+  }
+
+  /**
+   * 构造webgl渲染矩形的颜色点
+   * @param color 颜色
+   * @param opacity 透明度
+   * @returns 
+   */
+  static getGLColorArray(color,opacity:number = 1) {
+    let rgbColor = DDeiUtil.getGLColor(color, opacity);
+    if (rgbColor){
+      let r = rgbColor.r;
+      let g = rgbColor.g;
+      let b = rgbColor.b;
+      let a = rgbColor.a;
+      return [
+        r, g, b, a,
+        r, g, b, a,
+        r, g, b, a,
+        r, g, b, a
+      ];
+    }else{
+      return [
+        0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0
+      ];
+    }
+    
+  }
+
 }
 
 

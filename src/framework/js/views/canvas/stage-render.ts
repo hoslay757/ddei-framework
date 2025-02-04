@@ -162,6 +162,7 @@ class DDeiStageCanvasRender {
         }
 
         //在最顶层layer绘制网格
+        
         this.drawGrid(topDisplayIndex == -1 ? 0 : topDisplayIndex)
 
         //绘制编辑时的影子控件
@@ -460,14 +461,14 @@ class DDeiStageCanvasRender {
     } else {
       paperType = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "paper.type", true);
     }
-    
+    let rat1 = this.ddRender.ratio;
+    let stageRatio = this.model.getStageRatio()
+    let ratio = rat1 * stageRatio;
     //获取纸张大小的定义
     let paperConfig = DDeiConfig.PAPER[paperType];
     if (paperConfig) {
       
-      let rat1 = this.ddRender.ratio;
-      let stageRatio = this.model.getStageRatio()
-      let ratio = rat1 * stageRatio;
+      
 
       //当前的窗口位置（乘以了窗口缩放比例）
       
@@ -533,7 +534,7 @@ class DDeiStageCanvasRender {
       }
       this.paperOutRect = paperOutRect;
       
-
+      
       
       //绘制当前纸张的每个图层背景
       let topDisplayIndex = -1;
@@ -542,51 +543,70 @@ class DDeiStageCanvasRender {
         if (this.model.layers[l].tempDisplay) {
           topDisplayIndex = l;
         } else if (this.model.layers[l].display == 1) {
+          //webgl渲染纸张边框
+          if (this.ddRender.model.GLOBAL_WEBGL && this.model.layers[l].render.gl) {
+            let gl = this.model.layers[l].render.gl
+            let paperSizeLocation = gl.getUniformLocation(gl.program, "paperSize");
+            gl.uniform3f(paperSizeLocation, paperWidth, paperHeight,1.0);
+            let paperWeightLocation = gl.getUniformLocation(gl.program, "paperWeight");
+            gl.uniform1f(paperWeightLocation, 2*stageRatio);
+          }
           this.model.layers[l].render.drawBackground(paperOutRect.x, paperOutRect.y, paperOutRect.w, paperOutRect.h, isBottom);
           isBottom = false
         }
       }
       if (topDisplayIndex != -1) {
+        //webgl渲染纸张边框
+        if (this.ddRender.model.GLOBAL_WEBGL && this.model.layers[topDisplayIndex].render.gl) {
+          let gl = this.model.layers[topDisplayIndex].render.gl
+          let paperSizeLocation = gl.getUniformLocation(gl.program, "paperSize");
+          gl.uniform3f(paperSizeLocation, paperWidth, paperHeight,1.0);
+          let paperWeightLocation = gl.getUniformLocation(gl.program, "paperWeight");
+          gl.uniform1f(paperWeightLocation, 2 * stageRatio);
+        }
         this.model.layers[topDisplayIndex].render.drawBackground(paperOutRect.x, paperOutRect.y, paperOutRect.w, paperOutRect.h, isBottom);
         isBottom = false
       }
-      //纸张从原点开始，根据配置输出和自动扩展
-      let canvas = this.model.layers[topDisplayIndex == -1 ? 0 : topDisplayIndex].render?.bgCanvas
-      if (canvas){
-        let ctx = canvas.getContext('2d');
-        //绘制分割虚线
-        ctx.save();
-        let ruleWeight = 0
-        if (this.tempRuleDisplay == 1 || this.tempRuleDisplay == '1') {
-          ruleWeight = 15
-        }
-        ctx.translate(-ruleWeight * rat1, -ruleWeight * rat1)
-        ctx.lineWidth = 1
-        ctx.fillStyle = "white"
-        ctx.strokeStyle = "grey"
-        // 外围矩形
-        // ctx.fillRect(paperOutRect.x, paperOutRect.y, paperOutRect.w, paperOutRect.h)
-        ctx.setLineDash([5, 5]);
-        for (let i = -leftExtNum + 1; i <= rightExtNum; i++) {
-          ctx.beginPath()
-          ctx.moveTo(posX + (i * paperWidth), paperOutRect.y)
-          ctx.lineTo(posX + (i * paperWidth), paperOutRect.y + paperOutRect.h)
-          ctx.stroke()
-        }
-        for (let i = -topExtNum + 1; i <= bottomExtNum; i++) {
-          ctx.beginPath()
-          ctx.moveTo(paperOutRect.x, posY + (i * paperHeight))
-          ctx.lineTo(paperOutRect.x + paperOutRect.w, posY + (i * paperHeight))
-          ctx.stroke()
-        }
+      //非webgl渲染
+      if(!this.ddRender?.model.GLOBAL_WEBGL) {
+        //纸张从原点开始，根据配置输出和自动扩展
+        let canvas = this.model.layers[topDisplayIndex == -1 ? 0 : topDisplayIndex].render?.bgCanvas
+        if (canvas){
+          let ctx = canvas.getContext('2d');
+          //绘制分割虚线
+          ctx.save();
+          let ruleWeight = 0
+          if (this.tempRuleDisplay == 1 || this.tempRuleDisplay == '1') {
+            ruleWeight = 15
+          }
+          ctx.translate(-ruleWeight * rat1, -ruleWeight * rat1)
+          ctx.lineWidth = 1
+          ctx.fillStyle = "white"
+          ctx.strokeStyle = "grey"
+          // 外围矩形
+          // ctx.fillRect(paperOutRect.x, paperOutRect.y, paperOutRect.w, paperOutRect.h)
+          ctx.setLineDash([5, 5]);
+          for (let i = -leftExtNum + 1; i <= rightExtNum; i++) {
+            ctx.beginPath()
+            ctx.moveTo(posX + (i * paperWidth), paperOutRect.y)
+            ctx.lineTo(posX + (i * paperWidth), paperOutRect.y + paperOutRect.h)
+            ctx.stroke()
+          }
+          for (let i = -topExtNum + 1; i <= bottomExtNum; i++) {
+            ctx.beginPath()
+            ctx.moveTo(paperOutRect.x, posY + (i * paperHeight))
+            ctx.lineTo(paperOutRect.x + paperOutRect.w, posY + (i * paperHeight))
+            ctx.stroke()
+          }
 
-        ctx.setLineDash([]);
-        let lineWidth = 1;
-        ctx.lineWidth = lineWidth
-        ctx.strokeStyle = "black"
-        ctx.strokeRect(posX + (-leftExtNum * paperWidth) - lineWidth, posY + (-topExtNum * paperHeight) - lineWidth, (rightExtNum + leftExtNum + 1) * paperWidth + 2 * lineWidth, (bottomExtNum + topExtNum + 1) * paperHeight + 2 * lineWidth)
+          ctx.setLineDash([]);
+          let lineWidth = 1;
+          ctx.lineWidth = lineWidth
+          ctx.strokeStyle = "black"
+          ctx.strokeRect(posX + (-leftExtNum * paperWidth) - lineWidth, posY + (-topExtNum * paperHeight) - lineWidth, (rightExtNum + leftExtNum + 1) * paperWidth + 2 * lineWidth, (bottomExtNum + topExtNum + 1) * paperHeight + 2 * lineWidth)
 
-        ctx.restore();
+          ctx.restore();
+        }
       }
     }else{
       let canvas = this.ddRender.getCanvas();
@@ -595,10 +615,26 @@ class DDeiStageCanvasRender {
         if (this.model.layers[l].tempDisplay) {
           topDisplayIndex = l;
         } else if (this.model.layers[l].display == 1) {
+          //webgl渲染纸张边框
+          if (this.ddRender.model.GLOBAL_WEBGL && this.model.layers[l].render.gl) {
+            let gl = this.model.layers[l].render.gl
+            let paperSizeLocation = gl.getUniformLocation(gl.program, "paperSize");
+            gl.uniform3f(paperSizeLocation, 0.0, 0.0, 0.0);
+            let paperWeightLocation = gl.getUniformLocation(gl.program, "paperWeight");
+            gl.uniform1f(paperWeightLocation, 2 * stageRatio);
+          }
           this.model.layers[l].render.drawBackground(0, 0, canvas.width, canvas.height);
         }
       }
       if (topDisplayIndex != -1) {
+        //webgl渲染纸张边框
+        if (this.ddRender.model.GLOBAL_WEBGL && this.model.layers[topDisplayIndex].render.gl) {
+          let gl = this.model.layers[topDisplayIndex].render.gl
+          let paperSizeLocation = gl.getUniformLocation(gl.program, "paperSize");
+          gl.uniform3f(paperSizeLocation, 0.0, 0.0, 0.0);
+          let paperWeightLocation = gl.getUniformLocation(gl.program, "paperWeight");
+          gl.uniform1f(paperWeightLocation, 2 * stageRatio);
+        }
         this.model.layers[topDisplayIndex].render.drawBackground(0, 0, canvas.width, canvas.height);
       }
     }
@@ -1004,9 +1040,15 @@ class DDeiStageCanvasRender {
   * 绘制网格
   */
   drawGrid(layerIndex:number) {
-    if (layerIndex == -1 || !this.model.layers[layerIndex].render.bgCanvas){
+    if (layerIndex == -1){
       return;
     }
+    if (!this.ddRender?.model.GLOBAL_WEBGL && !this.model.layers[layerIndex].render.bgCanvas){
+      return;
+    } else if (this.ddRender?.model.GLOBAL_WEBGL && !this.model.layers[layerIndex].render.gl){
+      return;
+    }
+    
     let paperType
     if (this.model.paper?.type) {
       paperType = this.model.paper.type;
@@ -1034,11 +1076,6 @@ class DDeiStageCanvasRender {
       }
       
       if (gridDisplay == 1 || gridDisplay == '1' || gridDisplay == 2 || gridDisplay == '2') {
-        //绘制横向点
-        //获得 2d 上下文对象
-        let canvas = this.model.layers[layerIndex].render.bgCanvas
-        let ctx = canvas.getContext('2d');
-        
         let rat1 = this.ddRender.ratio;
         let stageRatio = this.model.getStageRatio()
         let xDPI = this.ddRender.model.dpi.x;
@@ -1048,7 +1085,7 @@ class DDeiStageCanvasRender {
           if (typeof (this.model.ddInstance.ruler) == 'object') {
             ruleInit = this.model.ddInstance.ruler;
           }
-        } 
+        }
         let unit = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.unit", true, ruleInit);
         let rulerConfig = DDeiConfig.RULER[unit]
         //尺子间隔单位
@@ -1080,106 +1117,147 @@ class DDeiStageCanvasRender {
         let paperOutRect = this.paperOutRect
         //切分后单个part大小
         let splitedWeight = marginWeight / splitNumber;
-        //标尺的固定显示大小
-        ctx.save();
         let ruleWeight = 0
         if (this.tempRuleDisplay == 1 || this.tempRuleDisplay == '1') {
-          ruleWeight = 15
+          ruleWeight = 15 * rat1
         }
-        ctx.translate(-ruleWeight * rat1, -ruleWeight * rat1)
-        // 创建剪切区，只有在纸张范围内才显示网格线
-        // ctx.beginPath();
-        // ctx.moveTo(paperOutRect.x, paperOutRect.y);
-        // ctx.lineTo(paperOutRect.x + paperOutRect.w, paperOutRect.y);
-        // ctx.lineTo(paperOutRect.x + paperOutRect.w, paperOutRect.y + paperOutRect.h);
-        // ctx.lineTo(paperOutRect.x, paperOutRect.y + paperOutRect.h);
-        // ctx.stroke()
-
-        // ctx.clip()
-
-        
-
-        let fontSize = 11 * rat1
-        ctx.font = fontSize + "px Microsoft YaHei"
-        ctx.lineWidth = 1
-        ctx.strokeStyle = "rgb(190,190,190)"
-        ctx.fillStyle = "white"
-
+        let sx = paperOutRect.x 
+        let sy = paperOutRect.y 
         let ex = paperOutRect.x + paperOutRect.w
         let ey = paperOutRect.y + paperOutRect.h
-        if (gridDisplay == 2 || gridDisplay == '2') {
-          //纸张开始的位置
-          ctx.strokeStyle = DDeiUtil.getColorObj(DDeiUtil.getStyleValue("canvas-grid-dot", this.ddRender.model));
-          ctx.lineWidth = 2 * stageRatio
-          ctx.setLineDash([2 * stageRatio, splitedWeight - stageRatio])
-          for (let sx = this.paperStartX; sx <= ex; sx = sx + splitedWeight) {
-            ctx.beginPath()
-            ctx.moveTo(sx, paperOutRect.y);
-            ctx.lineTo(sx, ey);
-            ctx.stroke();
-          }
-          for (let sx = this.paperStartX; sx >= paperOutRect.x; sx = sx - splitedWeight) {
-            ctx.beginPath()
-            ctx.moveTo(sx, paperOutRect.y);
-            ctx.lineTo(sx, ey);
-            ctx.stroke();
-          }
-        } else if (gridDisplay == 1 || gridDisplay == '1') {
-          let strokeColor = DDeiUtil.getColorObj(DDeiUtil.getStyleValue("canvas-grid-line", this.ddRender.model));
-          let strokeLighten = strokeColor?.lighten(0.05);
+
+        if (this.ddRender?.model.GLOBAL_WEBGL){
+          let gl = this.model.layers[layerIndex].render.gl
+          let gridDisplayLocation = gl.getUniformLocation(gl.program, "gridDisplay");
+          let gridColorLocation = gl.getUniformLocation(gl.program, "gridColor");
+          let paperStartXLocation = gl.getUniformLocation(gl.program, "paperStartX");
+          let paperStartYLocation = gl.getUniformLocation(gl.program, "paperStartY");
+          let paperRectXLocation = gl.getUniformLocation(gl.program, "paperRectX");
+          let paperRectYLocation = gl.getUniformLocation(gl.program, "paperRectY");
+          let paperRectX1Location = gl.getUniformLocation(gl.program, "paperRectX1");
+          let paperRectY1Location = gl.getUniformLocation(gl.program, "paperRectY1");
+          let gridWeightLocation = gl.getUniformLocation(gl.program, "gridWeight");
           
-          for (let sx = this.paperStartX, n = 0; sx <= ex; sx = sx + splitedWeight, n++) {
-            let nMod = n % splitNumber
-            if (nMod != 0) {
-              ctx.strokeStyle = strokeLighten?.toColor();
-            } else {
-              ctx.strokeStyle = strokeColor?.toColor();
-            }
-            ctx.beginPath()
-            ctx.moveTo(sx, paperOutRect.y);
-            ctx.lineTo(sx, ey);
-            ctx.stroke();
-          }
-          for (let sx = this.paperStartX, n = 0; sx >= paperOutRect.x; sx = sx - splitedWeight, n++) {
-            let nMod = n % splitNumber
-            if (nMod != 0) {
-              ctx.strokeStyle = strokeLighten?.toColor();
-            } else {
-              ctx.strokeStyle = strokeColor?.toColor();
-            }
-            ctx.beginPath()
-            ctx.moveTo(sx, paperOutRect.y);
-            ctx.lineTo(sx, ey);
-            ctx.stroke();
-          }
-          for (let sy = this.paperStartY, n = 0; sy <= ey; sy = sy + splitedWeight, n++) {
-            let nMod = n % splitNumber
-            if (nMod != 0) {
-              ctx.strokeStyle = strokeLighten?.toColor();
-            } else {
-              ctx.strokeStyle = strokeColor?.toColor();
-            }
-            ctx.beginPath()
-            ctx.moveTo(paperOutRect.x, sy);
-            ctx.lineTo(ex, sy);
-            ctx.stroke();
+          
+          let gridSplitedWeightLocation = gl.getUniformLocation(gl.program, "gridSplitedWeight");
 
+          let displayValue = parseInt(gridDisplay)
+          gl.uniform1i(gridDisplayLocation, displayValue);
+          let gridColorValue
+          if (displayValue == 1) {
+            gridColorValue = DDeiUtil.getGLColor(DDeiUtil.getStyleValue("canvas-grid-line", this.ddRender.model))
+            gl.uniform1f(gridWeightLocation, 1);
+          } else if (displayValue == 2) {
+            gridColorValue = DDeiUtil.getGLColor(DDeiUtil.getStyleValue("canvas-grid-dot", this.ddRender.model));
+            gl.uniform1f(gridWeightLocation, 2*stageRatio);
           }
-          for (let sy = this.paperStartY, n = 0; sy >= paperOutRect.y; sy = sy - splitedWeight, n++) {
-            let nMod = n % splitNumber
-            if (nMod != 0) {
-              ctx.strokeStyle = strokeLighten?.toColor();
-            } else {
-              ctx.strokeStyle = strokeColor?.toColor();
-            }
-            ctx.beginPath()
-            ctx.moveTo(paperOutRect.x, sy);
-            ctx.lineTo(ex, sy);
-            ctx.stroke();
-
+          
+          if (gridColorValue){
+            gl.uniform4f(gridColorLocation, gridColorValue.r, gridColorValue.g, gridColorValue.b, gridColorValue.a);
           }
+          gl.uniform1f(paperStartXLocation, this.paperStartX);
+          gl.uniform1f(paperStartYLocation, this.paperStartY);
+          gl.uniform1f(paperRectXLocation, sx);
+          gl.uniform1f(paperRectYLocation, sy);
+          gl.uniform1f(paperRectX1Location, ex);
+          gl.uniform1f(paperRectY1Location, ey);
+          gl.uniform1f(gridSplitedWeightLocation, splitedWeight);
         }
-        ctx.restore();
+        //非webgl的绘制方式
+        else{
+          //绘制横向点
+          //获得 2d 上下文对象
+          let canvas = this.model.layers[layerIndex].render.bgCanvas
+          let ctx = canvas.getContext('2d');
+
+          
+          //标尺的固定显示大小
+          ctx.save();
+          
+          ctx.translate(-ruleWeight, -ruleWeight)
+
+          let fontSize = 11 * rat1
+          ctx.font = fontSize + "px Microsoft YaHei"
+          ctx.lineWidth = 1
+          ctx.strokeStyle = "rgb(190,190,190)"
+          ctx.fillStyle = "white"
+
+          if (gridDisplay == 2 || gridDisplay == '2') {
+            //纸张开始的位置
+            ctx.strokeStyle = DDeiUtil.getColorObj(DDeiUtil.getStyleValue("canvas-grid-dot", this.ddRender.model));
+            ctx.lineWidth = 2 * stageRatio
+            ctx.setLineDash([2 * stageRatio, splitedWeight - stageRatio])
+            
+            for (let sx = this.paperStartX; sx <= ex; sx = sx + splitedWeight) {
+              ctx.beginPath()
+              ctx.moveTo(sx, paperOutRect.y);
+              ctx.lineTo(sx, ey);
+              ctx.stroke();
+            }
+            for (let sx = this.paperStartX; sx >= paperOutRect.x; sx = sx - splitedWeight) {
+              ctx.beginPath()
+              ctx.moveTo(sx, paperOutRect.y);
+              ctx.lineTo(sx, ey);
+              ctx.stroke();
+            }
+          } else if (gridDisplay == 1 || gridDisplay == '1') {
+            let strokeColor = DDeiUtil.getColorObj(DDeiUtil.getStyleValue("canvas-grid-line", this.ddRender.model));
+            let strokeLighten = strokeColor?.lighten(0.05);
+
+            for (let sx = this.paperStartX, n = 0; sx <= ex; sx = sx + splitedWeight, n++) {
+              let nMod = n % splitNumber
+              if (nMod != 0) {
+                ctx.strokeStyle = strokeLighten?.toColor();
+              } else {
+                ctx.strokeStyle = strokeColor?.toColor();
+              }
+              ctx.beginPath()
+              ctx.moveTo(sx, paperOutRect.y);
+              ctx.lineTo(sx, ey);
+              ctx.stroke();
+            }
+            for (let sx = this.paperStartX, n = 0; sx >= paperOutRect.x; sx = sx - splitedWeight, n++) {
+              let nMod = n % splitNumber
+              if (nMod != 0) {
+                ctx.strokeStyle = strokeLighten?.toColor();
+              } else {
+                ctx.strokeStyle = strokeColor?.toColor();
+              }
+              ctx.beginPath()
+              ctx.moveTo(sx, paperOutRect.y);
+              ctx.lineTo(sx, ey);
+              ctx.stroke();
+            }
+            for (let sy = this.paperStartY, n = 0; sy <= ey; sy = sy + splitedWeight, n++) {
+              let nMod = n % splitNumber
+              if (nMod != 0) {
+                ctx.strokeStyle = strokeLighten?.toColor();
+              } else {
+                ctx.strokeStyle = strokeColor?.toColor();
+              }
+              ctx.beginPath()
+              ctx.moveTo(paperOutRect.x, sy);
+              ctx.lineTo(ex, sy);
+              ctx.stroke();
+
+            }
+            for (let sy = this.paperStartY, n = 0; sy >= paperOutRect.y; sy = sy - splitedWeight, n++) {
+              let nMod = n % splitNumber
+              if (nMod != 0) {
+                ctx.strokeStyle = strokeLighten?.toColor();
+              } else {
+                ctx.strokeStyle = strokeColor?.toColor();
+              }
+              ctx.beginPath()
+              ctx.moveTo(paperOutRect.x, sy);
+              ctx.lineTo(ex, sy);
+              ctx.stroke();
+
+            }
+          }
+          ctx.restore();
+        }
+        
       }
     }
   }
