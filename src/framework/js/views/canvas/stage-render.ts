@@ -545,11 +545,13 @@ class DDeiStageCanvasRender {
         } else if (this.model.layers[l].display == 1) {
           //webgl渲染纸张边框
           if (this.ddRender.model.GLOBAL_WEBGL && this.model.layers[l].render.gl) {
+            this.model.layers[l].render.beforeGLDraw();
             let gl = this.model.layers[l].render.gl
             let paperSizeLocation = gl.getUniformLocation(gl.program, "paperSize");
             gl.uniform3f(paperSizeLocation, paperWidth, paperHeight,1.0);
             let paperWeightLocation = gl.getUniformLocation(gl.program, "paperWeight");
             gl.uniform1f(paperWeightLocation, 2*stageRatio);
+            
           }
           this.model.layers[l].render.drawBackground(paperOutRect.x, paperOutRect.y, paperOutRect.w, paperOutRect.h, isBottom);
           isBottom = false
@@ -558,6 +560,7 @@ class DDeiStageCanvasRender {
       if (topDisplayIndex != -1) {
         //webgl渲染纸张边框
         if (this.ddRender.model.GLOBAL_WEBGL && this.model.layers[topDisplayIndex].render.gl) {
+          this.model.layers[topDisplayIndex].render.beforeGLDraw();
           let gl = this.model.layers[topDisplayIndex].render.gl
           let paperSizeLocation = gl.getUniformLocation(gl.program, "paperSize");
           gl.uniform3f(paperSizeLocation, paperWidth, paperHeight,1.0);
@@ -568,7 +571,7 @@ class DDeiStageCanvasRender {
         isBottom = false
       }
       //非webgl渲染
-      if(!this.ddRender?.model.GLOBAL_WEBGL) {
+      if(!this.ddRender.model.GLOBAL_WEBGL) {
         //纸张从原点开始，根据配置输出和自动扩展
         let canvas = this.model.layers[topDisplayIndex == -1 ? 0 : topDisplayIndex].render?.bgCanvas
         if (canvas){

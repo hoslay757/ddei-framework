@@ -77,25 +77,32 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     //转换为图片
     if (!this.tempCanvas) {
       this.tempCanvas = document.createElement('canvas');
-      this.tempCanvas.setAttribute("style", "pointer-events:none;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");-webkit-transform:scale(" + (1 / rat1) + ");display:block;");
+      if (!this.stage.ddInstance.GLOBAL_WEBGL) {
+        this.tempCanvas.setAttribute("style", "pointer-events:none;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");-webkit-transform:scale(" + (1 / rat1) + ");display:block;");
+      }else{
+        this.tempCanvas.setAttribute("style", "pointer-events:none;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;display:block;");
+      }
     }
     let tempCanvas = this.tempCanvas
     let pvs = this.model.operatePVS ? this.model.operatePVS : this.model.pvs
 
-    let outRect = DDeiAbstractShape.pvsToOutRect(pvs,stageRatio)
+    let outRect = DDeiAbstractShape.pvsToOutRect(pvs, stageRatio)
+    
+    if (!this.stage.ddInstance.GLOBAL_WEBGL){
+      let weight = 5
+      outRect.x -= weight
+      outRect.x1 += weight
+      outRect.y -= weight
+      outRect.y1 += weight
+      outRect.width += 2 * weight
+      outRect.height += 2 * weight
+    }
+    
 
-    let weight = 5
-    outRect.x -= weight
-    outRect.x1 += weight
-    outRect.y -= weight
-    outRect.y1 += weight
-    outRect.width += 2 * weight
-    outRect.height += 2 * weight
-
-    // tempCanvas.style.width = outRect.width
-    // tempCanvas.style.height = outRect.height
-    tempCanvas.setAttribute("width", outRect.width * rat1)
+    tempCanvas.setAttribute("width", outRect.width  * rat1)
     tempCanvas.setAttribute("height", outRect.height * rat1)
+    tempCanvas.style.width = outRect.width  + "px";
+    tempCanvas.style.height = outRect.height + "px";
 
     //获得 2d 上下文对象
     let tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
@@ -104,7 +111,6 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     tempCanvas.outRect = outRect
 
     tempCtx.translate(tempCanvas.tx, tempCanvas.ty)
-    
   }
 
 
@@ -231,54 +237,70 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
    * 绘制自身到最外层canvas
    */
   drawSelfToCanvas(composeRender, print) {
-    if (this.viewer) {
-      if (!DDeiUtil.isModelHidden(this.model) && this.refreshShape) {
-        DDeiUtil.createRenderViewer(this.model, "VIEW", null, composeRender)
-      } else {
-        DDeiUtil.createRenderViewer(this.model, "VIEW-HIDDEN")
-      }
-    }else if (this.tempCanvas) {
-      let model = this.model
+    if (this.stage.ddInstance.GLOBAL_WEBGL && this.layerRender.gl) {
       if (!DDeiUtil.isModelHidden(this.model)) {
-        let stage = model.stage
-        let ruleWeight = 0
-        if (stage.render.tempRuleDisplay == 1 || stage.render.tempRuleDisplay == '1') {
-          ruleWeight = 15
-        }
-        let stageRatio = this.model.getStageRatio()
-        //获取model的绝对位置
-        if (!this.tempCanvas.parentElement) {
-          let viewerEle = this.model.layer.render.containerViewer
-          viewerEle.appendChild(this.tempCanvas)
-        }
-
-        this.tempCanvas.style.zIndex = this.tempZIndex
-        this.tempCanvas.style.left = (this.model.cpv.x * stageRatio + this.model.stage.wpv.x) - this.tempCanvas.offsetWidth / 2 - ruleWeight + "px"
-
-        this.tempCanvas.style.top = (this.model.cpv.y * stageRatio + this.model.stage.wpv.y) - this.tempCanvas.offsetHeight / 2 - ruleWeight + "px"
-        let rat1 = this.ddRender.ratio;
-        let transform = " scale("+(1/rat1)+")"
+        let rat1 = this.ddRender.ratio
+        let outRect = this.tempCanvas.outRect
         
-        if (this.model.mirrorX) {
-          transform += " rotateY(180deg)"
-        }
-        if (this.model.mirrorY) {
-          transform += " rotateX(180deg)"
-        }
-  
-        this.tempCanvas.style.transform = transform
-
+        this.layerRender.renderModelsList.push(this.model);
+        this.layerRender.vertexArray = this.layerRender.vertexArray.concat(DDeiUtil.getGLRect(outRect.x * rat1, outRect.y * rat1, outRect.width * rat1, outRect.height * rat1 ))
+        // 颜色数组
+        this.layerRender.colorArray = this.layerRender.colorArray.concat(DDeiUtil.getGLColorArray("black", 0))
         
-        
-        
-        if (!print) {
-          this.model.composes?.forEach(comp => {
-            comp.render.drawSelfToCanvas(composeRender + 1)
-          })
-        }
-      }else{
-        this.removeViewerCanvas()
       }
+    } else {
+      if (this.viewer) {
+        if (!DDeiUtil.isModelHidden(this.model) && this.refreshShape) {
+          DDeiUtil.createRenderViewer(this.model, "VIEW", null, composeRender)
+        } else {
+          DDeiUtil.createRenderViewer(this.model, "VIEW-HIDDEN")
+        }
+      }else if (this.tempCanvas) {
+      
+        let model = this.model
+        if (!DDeiUtil.isModelHidden(this.model)) {
+          let stage = model.stage
+          let ruleWeight = 0
+          if (stage.render.tempRuleDisplay == 1 || stage.render.tempRuleDisplay == '1') {
+            ruleWeight = 15
+          }
+          let stageRatio = this.model.getStageRatio()
+          //获取model的绝对位置
+          if (!this.tempCanvas.parentElement) {
+            let viewerEle = this.model.layer.render.containerViewer
+            viewerEle.appendChild(this.tempCanvas)
+          }
+
+          this.tempCanvas.style.zIndex = this.tempZIndex
+          this.tempCanvas.style.left = (this.model.cpv.x * stageRatio + this.model.stage.wpv.x) - this.tempCanvas.offsetWidth / 2 - ruleWeight + "px"
+
+          this.tempCanvas.style.top = (this.model.cpv.y * stageRatio + this.model.stage.wpv.y) - this.tempCanvas.offsetHeight / 2 - ruleWeight + "px"
+          let rat1 = this.ddRender.ratio;
+          let transform = " scale(" + (1 / rat1) + ")"
+
+          if (this.model.mirrorX) {
+            transform += " rotateY(180deg)"
+          }
+          if (this.model.mirrorY) {
+            transform += " rotateX(180deg)"
+          }
+
+          this.tempCanvas.style.transform = transform
+
+
+
+
+          if (!print) {
+            this.model.composes?.forEach(comp => {
+              comp.render.drawSelfToCanvas(composeRender + 1)
+            })
+          }
+        } else {
+          this.removeViewerCanvas()
+        }
+      }
+      
+      
     }
     
 

@@ -3,12 +3,12 @@ in vec2 a_position;        //当前点
 uniform vec2 u_resolution; //当前屏幕可视区域大小
 uniform vec2 u_ruleweight; //标尺的坐标
 in vec4 a_color;    //颜色
-in vec3 a_texCoord;
+in vec2 a_texCoord; //纹理
 
 uniform float f_ratio;
 uniform vec2 u_worldSpace;
 
-out vec3 v_texCoord; 
+out vec2 v_texCoord; 
 
 out vec2 v_position;
 
@@ -30,6 +30,7 @@ void main() {
 
    gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
    v_texCoord = a_texCoord;
+   
    v_position = a_position;
    v_color = a_color;
 }`;
@@ -37,10 +38,9 @@ void main() {
 
 const fragmentShaderSrc = `#version 300 es
 precision mediump float;
-precision mediump sampler2DArray;
 
 // our texture
-uniform sampler2DArray u_image;
+uniform sampler2D u_texture;
 
 uniform int gridDisplay; //纸张开始点坐标X
 
@@ -69,7 +69,7 @@ uniform vec4 gridColor; //网格颜色
 
 
 // the texCoords passed in from the vertex shader.
-in vec3 v_texCoord;
+in vec2 v_texCoord;
 
 in vec2 v_position;
 
@@ -79,7 +79,15 @@ in vec4 v_color;
 out vec4 outColor;
 
 void main() {
-    if(v_position.x >= paperRectX && v_position.x <= paperRectX1
+    vec4 textureColor;
+    if(v_texCoord.x != 0.0){
+      textureColor = texture(u_texture, v_texCoord);
+    }
+    if(textureColor.a != 0.0){//如果有纹理，就从纹理中获取颜色
+      outColor = textureColor;
+      return;
+    }
+    else if(v_position.x >= paperRectX && v_position.x <= paperRectX1
         && v_position.y >= paperRectY && v_position.y <= paperRectY1){
       if(paperSize.z == 1.0){
         //最外围边线
@@ -111,6 +119,7 @@ void main() {
       }
     }
     outColor = v_color;
+    
 }`;
 
 export { vertexShaderSrc, fragmentShaderSrc }

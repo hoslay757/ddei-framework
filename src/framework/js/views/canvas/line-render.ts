@@ -64,14 +64,19 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     //转换为图片
     if (!this.tempCanvas) {
       this.tempCanvas = document.createElement('canvas');
-      this.tempCanvas.setAttribute("style", "pointer-events:none;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");-webkit-transform:scale(" + (1 / rat1) + ");display:block;");
+      if (!this.stage.ddInstance.GLOBAL_WEBGL) {
+        this.tempCanvas.setAttribute("style", "pointer-events:none;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");-webkit-transform:scale(" + (1 / rat1) + ");display:block;");
+      } else {
+        this.tempCanvas.setAttribute("style", "pointer-events:none;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;display:block;");
+      }
     }
-    let stageRatio = this.stage?.getStageRatio()
+    let stageRatio = this.stage.getStageRatio()
     let tempCanvas = this.tempCanvas
     let pvs = this.model.getOperatePVS(true);
     
     let outRect = DDeiAbstractShape.pvsToOutRect(pvs, stageRatio)
     
+
     let weight = 5 * stageRatio * rat1
     outRect.x -= weight
     outRect.x1 += weight
@@ -80,8 +85,11 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     outRect.width += 2 * weight
     outRect.height += 2 * weight
     
+    
     tempCanvas.setAttribute("width", outRect.width * rat1)
     tempCanvas.setAttribute("height", outRect.height * rat1)
+    tempCanvas.style.width = outRect.width + "px";
+    tempCanvas.style.height = outRect.height + "px";
     
     //获得 2d 上下文对象
     let tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
@@ -173,41 +181,53 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
   }
 
   drawSelfToCanvas(composeRender, print) {
-    if(this.viewer){
-      if (!DDeiUtil.isModelHidden(this.model) && this.refreshShape) {
-        DDeiUtil.createRenderViewer(this.model, "VIEW", null, composeRender)
-      } else {
-        DDeiUtil.createRenderViewer(this.model, "VIEW-HIDDEN")
-      }
-    }
-    //外部canvas
-    else if (this.tempCanvas) {
+    if (this.stage.ddInstance.GLOBAL_WEBGL && this.layerRender.gl) {
       if (!DDeiUtil.isModelHidden(this.model)) {
+        let rat1 = this.ddRender.ratio
         let outRect = this.tempCanvas.outRect
-        //获取model的绝对位置
-        let model = this.model
-        let stage = model.stage
-        let ruleWeight = 0
-        if (stage.render.tempRuleDisplay == 1 || stage.render.tempRuleDisplay == '1') {
-          ruleWeight = 15
-        }
-        if (!this.tempCanvas.parentElement) {
-          //将canvas移动至画布位置
-          let viewerEle = this.model.layer.render.containerViewer
-          viewerEle.appendChild(this.tempCanvas)
-        }
-        this.tempCanvas.style.zIndex = this.tempZIndex
+        this.layerRender.renderModelsList.push(this.model);
+        this.layerRender.vertexArray = this.layerRender.vertexArray.concat(DDeiUtil.getGLRect(outRect.x * rat1, outRect.y * rat1, outRect.width * rat1, outRect.height * rat1))
+        // 颜色数组
+        this.layerRender.colorArray = this.layerRender.colorArray.concat(DDeiUtil.getGLColorArray("black", 0))
 
-        this.tempCanvas.style.left = (outRect.x + outRect.x1) / 2 + this.model.stage.wpv.x - this.tempCanvas.offsetWidth / 2 - ruleWeight + "px"
-
-        this.tempCanvas.style.top = (outRect.y + outRect.y1) / 2 + this.model.stage.wpv.y - this.tempCanvas.offsetHeight / 2 - ruleWeight + "px"
-        if (!print) {
-          this.model.composes?.forEach(comp => {
-            comp.render.drawSelfToCanvas(composeRender + 1)
-          })
+      }
+    }else{
+      if(this.viewer){
+        if (!DDeiUtil.isModelHidden(this.model) && this.refreshShape) {
+          DDeiUtil.createRenderViewer(this.model, "VIEW", null, composeRender)
+        } else {
+          DDeiUtil.createRenderViewer(this.model, "VIEW-HIDDEN")
         }
-      } else {
-        this.removeViewerCanvas()
+      }
+      //外部canvas
+      else if (this.tempCanvas) {
+        if (!DDeiUtil.isModelHidden(this.model)) {
+          let outRect = this.tempCanvas.outRect
+          //获取model的绝对位置
+          let model = this.model
+          let stage = model.stage
+          let ruleWeight = 0
+          if (stage.render.tempRuleDisplay == 1 || stage.render.tempRuleDisplay == '1') {
+            ruleWeight = 15
+          }
+          if (!this.tempCanvas.parentElement) {
+            //将canvas移动至画布位置
+            let viewerEle = this.model.layer.render.containerViewer
+            viewerEle.appendChild(this.tempCanvas)
+          }
+          this.tempCanvas.style.zIndex = this.tempZIndex
+
+          this.tempCanvas.style.left = (outRect.x + outRect.x1) / 2 + this.model.stage.wpv.x - this.tempCanvas.offsetWidth / 2 - ruleWeight + "px"
+
+          this.tempCanvas.style.top = (outRect.y + outRect.y1) / 2 + this.model.stage.wpv.y - this.tempCanvas.offsetHeight / 2 - ruleWeight + "px"
+          if (!print) {
+            this.model.composes?.forEach(comp => {
+              comp.render.drawSelfToCanvas(composeRender + 1)
+            })
+          }
+        } else {
+          this.removeViewerCanvas()
+        }
       }
     }
   }
