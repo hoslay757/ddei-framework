@@ -759,8 +759,8 @@ class DDeiLayerCanvasRender {
         let opacity = 0.7
         let color = "#017fff"
         if (this.ddRender?.model.GLOBAL_WEBGL) {
-          opacity = 1
-          color = "rgb(114,163,279)"
+          opacity = 0.9
+          // color = "rgb(114,163,279)"
         }
         if (item.modelType == 'DDeiLine') {
           item.render.drawShape({ color: color, dash: [], opacity: opacity, fill: { color: color, opacity: opacity } }, 0, null, 99999);
