@@ -210,15 +210,15 @@ class DDeiLayerCanvasRender {
             }
             this.drawChildrenShapes(inRect);
             // //绘制操作点
-            // this.drawOpPoints();
+            this.drawOpPoints();
             // //绘制操作线
-            // this.drawOpLine();
+            this.drawOpLine();
 
             // //绘制移入移出效果图形
-            // this.drawDragInOutPoints();
+            this.drawDragInOutPoints();
 
             // //绘制拖拽影子控件
-            // this.drawShadowControls();
+            this.drawShadowControls();
             this.drawShapesGL();
             this.modelChanged = false;
           }
@@ -756,10 +756,16 @@ class DDeiLayerCanvasRender {
         //保存状态
         // item.render.drawShape();
         item.render.enableRefreshShape()
+        let opacity = 0.7
+        let color = "#017fff"
+        if (this.ddRender?.model.GLOBAL_WEBGL) {
+          opacity = 1
+          color = "rgb(114,163,279)"
+        }
         if (item.modelType == 'DDeiLine') {
-          item.render.drawShape({ color: "#017fff", dash: [], opacity: 0.7, fill: { color: '#017fff', opacity: 0.7 } }, 0, null, 99999);
+          item.render.drawShape({ color: color, dash: [], opacity: opacity, fill: { color: color, opacity: opacity } }, 0, null, 99999);
         } else {
-          item.render.drawShape({ fill: { color: '#017fff', opacity: 0.7 } }, 0, null, 99999);
+          item.render.drawShape({ fill: { color: color, opacity: opacity } }, 0, null, 99999);
         }
       });
 
