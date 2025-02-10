@@ -77,18 +77,14 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     //转换为图片
     if (!this.tempCanvas) {
       this.tempCanvas = document.createElement('canvas');
-      if (!this.stage.ddInstance.GLOBAL_WEBGL) {
-        this.tempCanvas.setAttribute("style", "pointer-events:none;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;-moz-transform:scale(" + (1 / rat1) + ");-webkit-transform:scale(" + (1 / rat1) + ");display:block;");
-      }else{
-        this.tempCanvas.setAttribute("style", "pointer-events:none;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;display:block;");
-      }
+      this.tempCanvas.setAttribute("style", "pointer-events:none;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;display:block;");
     }
     let tempCanvas = this.tempCanvas
     let pvs = this.model.operatePVS ? this.model.operatePVS : this.model.pvs
 
     let outRect = DDeiAbstractShape.pvsToOutRect(pvs, stageRatio)
     
-    if (!this.stage.ddInstance.GLOBAL_WEBGL){
+    // if (!this.stage.ddInstance.GLOBAL_WEBGL){
       let weight = 5
       outRect.x -= weight
       outRect.x1 += weight
@@ -96,7 +92,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       outRect.y1 += weight
       outRect.width += 2 * weight
       outRect.height += 2 * weight
-    }
+    // }
     
 
     tempCanvas.setAttribute("width", outRect.width  * rat1)
@@ -239,14 +235,15 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   drawSelfToCanvas(composeRender, print) {
     if (this.stage.ddInstance.GLOBAL_WEBGL && this.layerRender.gl) {
       if (!DDeiUtil.isModelHidden(this.model)) {
-        let rat1 = this.ddRender.ratio
-        let outRect = this.tempCanvas.outRect
         
+        let rat1 = this.ddRender.ratio
+        // let outRect = this.model.essBounds;
+        let outRect = this.tempCanvas.outRect;
         this.layerRender.renderModelsList.push(this.model);
-        this.layerRender.vertexArray = this.layerRender.vertexArray.concat(DDeiUtil.getGLRect(outRect.x * rat1, outRect.y * rat1, outRect.width * rat1, outRect.height * rat1 ))
+        this.layerRender.vertexArray = this.layerRender.vertexArray.concat(DDeiUtil.getGLRect(outRect.x, outRect.y, outRect.width, outRect.height ))
         // 颜色数组
         this.layerRender.colorArray = this.layerRender.colorArray.concat(DDeiUtil.getGLColorArray("black", 0))
-        
+        // document.body.appendChild(this.tempCanvas) 
       }
     } else {
       if (this.viewer) {
@@ -276,8 +273,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
 
           this.tempCanvas.style.top = (this.model.cpv.y * stageRatio + this.model.stage.wpv.y) - this.tempCanvas.offsetHeight / 2 - ruleWeight + "px"
           let rat1 = this.ddRender.ratio;
-          let transform = " scale(" + (1 / rat1) + ")"
-
+          // let transform = " scale(" + (1 / rat1) + ")"
+          let transform = "";
           if (this.model.mirrorX) {
             transform += " rotateY(180deg)"
           }

@@ -92,6 +92,26 @@ class DDeiStageCanvasRender {
   drawShape(): void {
     let rsState = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW_BEFORE", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
     if (rsState == 0 || rsState == 1) {
+      let ruleDisplay
+      let ruleInit
+      if (this.model.ruler?.display || this.model.ruler?.display == 0 || this.model.ruler?.display == false) {
+        ruleDisplay = this.model.ruler.display;
+      } else if (this.model.ddInstance.ruler != null && this.model.ddInstance.ruler != undefined) {
+        if (typeof (this.model.ddInstance.ruler) == 'boolean') {
+          ruleDisplay = this.model.ddInstance.ruler ? 1 : 0;
+        } else {
+          ruleInit = this.model.ddInstance.ruler
+          ruleDisplay = ruleInit.display;
+        }
+      } else {
+        ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
+      }
+      this.tempRuleDisplay = ruleDisplay
+      let ruleWeight = 0
+      if (this.tempRuleDisplay == 1 || this.tempRuleDisplay == "1") {
+        ruleWeight = 15
+      }
+      this.ruleWeight = ruleWeight;
       let rsState1 = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", DDeiEnumOperateType.VIEW, { models: [this.model] }, this.ddRender.model, null)
       //获得 2d 上下文对象
       let canvas = this.ddRender.getCanvas();
@@ -103,21 +123,7 @@ class DDeiStageCanvasRender {
         if (this.model.disabled || !this.model.width || !this.model.height){
           return;
         }
-        let ruleDisplay
-        let ruleInit
-        if (this.model.ruler?.display || this.model.ruler?.display == 0 || this.model.ruler?.display == false) {
-          ruleDisplay = this.model.ruler.display;
-        } else if (this.model.ddInstance.ruler != null && this.model.ddInstance.ruler != undefined) {
-          if (typeof (this.model.ddInstance.ruler) == 'boolean') {
-            ruleDisplay = this.model.ddInstance.ruler ? 1 : 0;
-          } else {
-            ruleInit = this.model.ddInstance.ruler
-            ruleDisplay = ruleInit.display;
-          }
-        } else {
-          ruleDisplay = DDeiModelArrtibuteValue.getAttrValueByState(this.model, "ruler.display", true);
-        }
-        this.tempRuleDisplay = ruleDisplay
+        
         //绘制纸张，以及图层背景
         
         this.drawPaper();
@@ -193,6 +199,13 @@ class DDeiStageCanvasRender {
 
         this.helpLines = null;
 
+        if (this.ddRender.model.GLOBAL_WEBGL) {
+          this.model.layers.forEach(layer=>{
+            
+            layer.render.glDraw()
+          })
+        }
+
 
         // DDeiLine.calLineCrossSync(this.model.layers[this.model.layerIndex])
       }
@@ -202,10 +215,7 @@ class DDeiStageCanvasRender {
       let viewerEles = canvas.parentElement?.getElementsByClassName("ddei-editor-canvasview-contentlayer");
       if (viewerEles){
         
-        let ruleWeight = 0
-        if (this.tempRuleDisplay == 1 || this.tempRuleDisplay == "1") {
-          ruleWeight = 15
-        }
+        
         let hScrollWeight = 0, vScrollWeight = 0;
         if (this.vScroll) {
           vScrollWeight = 15
@@ -543,74 +553,70 @@ class DDeiStageCanvasRender {
         if (this.model.layers[l].tempDisplay) {
           topDisplayIndex = l;
         } else if (this.model.layers[l].display == 1) {
-          //webgl渲染纸张边框
-          if (this.ddRender.model.GLOBAL_WEBGL && this.model.layers[l].render.gl) {
-            this.model.layers[l].render.beforeGLDraw();
-            let gl = this.model.layers[l].render.gl
-            let paperSizeLocation = gl.getUniformLocation(gl.program, "paperSize");
-            gl.uniform3f(paperSizeLocation, paperWidth, paperHeight,1.0);
-            let paperWeightLocation = gl.getUniformLocation(gl.program, "paperWeight");
-            gl.uniform1f(paperWeightLocation, 2*stageRatio);
-            
-          }
           this.model.layers[l].render.drawBackground(paperOutRect.x, paperOutRect.y, paperOutRect.w, paperOutRect.h, isBottom);
           isBottom = false
         }
       }
       if (topDisplayIndex != -1) {
-        //webgl渲染纸张边框
-        if (this.ddRender.model.GLOBAL_WEBGL && this.model.layers[topDisplayIndex].render.gl) {
-          this.model.layers[topDisplayIndex].render.beforeGLDraw();
-          let gl = this.model.layers[topDisplayIndex].render.gl
-          let paperSizeLocation = gl.getUniformLocation(gl.program, "paperSize");
-          gl.uniform3f(paperSizeLocation, paperWidth, paperHeight,1.0);
-          let paperWeightLocation = gl.getUniformLocation(gl.program, "paperWeight");
-          gl.uniform1f(paperWeightLocation, 2 * stageRatio);
-        }
         this.model.layers[topDisplayIndex].render.drawBackground(paperOutRect.x, paperOutRect.y, paperOutRect.w, paperOutRect.h, isBottom);
         isBottom = false
       }
-      //非webgl渲染
-      if(!this.ddRender.model.GLOBAL_WEBGL) {
-        //纸张从原点开始，根据配置输出和自动扩展
-        let canvas = this.model.layers[topDisplayIndex == -1 ? 0 : topDisplayIndex].render?.bgCanvas
-        if (canvas){
-          let ctx = canvas.getContext('2d');
-          //绘制分割虚线
-          ctx.save();
+      //纸张从原点开始，根据配置输出和自动扩展
+      let canvas = this.model.layers[topDisplayIndex == -1 ? 0 : topDisplayIndex].render?.bgCanvas
+      if (canvas){
+        let ctx = canvas.getContext('2d');
+        //绘制分割虚线
+        ctx.save();
+        let paperRect = { x: paperOutRect.x, y: paperOutRect.y, w: paperOutRect.w, h: paperOutRect.h }
+
+        if (this.ddRender.model.GLOBAL_WEBGL && this.model.layers[topDisplayIndex == -1 ? 0 : topDisplayIndex].render?.gl) {
+          posX = leftExtNum * paperWidth;
+          posY = topExtNum * paperHeight;
+          paperRect.x = 0
+          paperRect.y = 0
+        }else{
           let ruleWeight = 0
           if (this.tempRuleDisplay == 1 || this.tempRuleDisplay == '1') {
             ruleWeight = 15
           }
           ctx.translate(-ruleWeight * rat1, -ruleWeight * rat1)
-          ctx.lineWidth = 1
-          ctx.fillStyle = "white"
-          ctx.strokeStyle = "grey"
-          // 外围矩形
-          // ctx.fillRect(paperOutRect.x, paperOutRect.y, paperOutRect.w, paperOutRect.h)
-          ctx.setLineDash([5, 5]);
-          for (let i = -leftExtNum + 1; i <= rightExtNum; i++) {
-            ctx.beginPath()
-            ctx.moveTo(posX + (i * paperWidth), paperOutRect.y)
-            ctx.lineTo(posX + (i * paperWidth), paperOutRect.y + paperOutRect.h)
-            ctx.stroke()
-          }
-          for (let i = -topExtNum + 1; i <= bottomExtNum; i++) {
-            ctx.beginPath()
-            ctx.moveTo(paperOutRect.x, posY + (i * paperHeight))
-            ctx.lineTo(paperOutRect.x + paperOutRect.w, posY + (i * paperHeight))
-            ctx.stroke()
-          }
-
-          ctx.setLineDash([]);
-          let lineWidth = 1;
-          ctx.lineWidth = lineWidth
-          ctx.strokeStyle = "black"
-          ctx.strokeRect(posX + (-leftExtNum * paperWidth) - lineWidth, posY + (-topExtNum * paperHeight) - lineWidth, (rightExtNum + leftExtNum + 1) * paperWidth + 2 * lineWidth, (bottomExtNum + topExtNum + 1) * paperHeight + 2 * lineWidth)
-
-          ctx.restore();
         }
+        
+        
+        ctx.lineWidth = 1
+        ctx.fillStyle = "white"
+        ctx.strokeStyle = "grey"
+        // 外围矩形
+        // ctx.fillRect(paperOutRect.x, paperOutRect.y, paperOutRect.w, paperOutRect.h)
+        ctx.setLineDash([5, 5]);
+        for (let i = -leftExtNum + 1; i <= rightExtNum; i++) {
+          ctx.beginPath()
+          ctx.moveTo(posX + (i * paperWidth), paperRect.y)
+          ctx.lineTo(posX + (i * paperWidth), paperRect.y + paperRect.h)
+          ctx.stroke()
+        }
+        for (let i = -topExtNum + 1; i <= bottomExtNum; i++) {
+          ctx.beginPath()
+          ctx.moveTo(paperRect.x, posY + (i * paperHeight))
+          ctx.lineTo(paperRect.x + paperRect.w, posY + (i * paperHeight))
+          ctx.stroke()
+        }
+
+        ctx.setLineDash([]);
+        ctx.strokeStyle = "black"
+        if (this.ddRender.model.GLOBAL_WEBGL && this.model.layers[topDisplayIndex == -1 ? 0 : topDisplayIndex].render?.gl) {
+          let lineWidth = 2
+          ctx.lineWidth = lineWidth
+          ctx.strokeRect(0.5, 0.5, canvas.width-1, canvas.height-1)
+        }else{
+          let lineWidth = 1
+          ctx.lineWidth = lineWidth
+          ctx.strokeRect(posX + (-leftExtNum * paperWidth) - lineWidth, posY + (-topExtNum * paperHeight) - lineWidth, (rightExtNum + leftExtNum + 1) * paperWidth + 2 * lineWidth, (bottomExtNum + topExtNum + 1) * paperHeight + 2 * lineWidth)
+        }
+
+        ctx.restore();
       }
+      
     }else{
       let canvas = this.ddRender.getCanvas();
       let topDisplayIndex = -1;
@@ -618,26 +624,11 @@ class DDeiStageCanvasRender {
         if (this.model.layers[l].tempDisplay) {
           topDisplayIndex = l;
         } else if (this.model.layers[l].display == 1) {
-          //webgl渲染纸张边框
-          if (this.ddRender.model.GLOBAL_WEBGL && this.model.layers[l].render.gl) {
-            let gl = this.model.layers[l].render.gl
-            let paperSizeLocation = gl.getUniformLocation(gl.program, "paperSize");
-            gl.uniform3f(paperSizeLocation, 0.0, 0.0, 0.0);
-            let paperWeightLocation = gl.getUniformLocation(gl.program, "paperWeight");
-            gl.uniform1f(paperWeightLocation, 2 * stageRatio);
-          }
           this.model.layers[l].render.drawBackground(0, 0, canvas.width, canvas.height);
         }
       }
       if (topDisplayIndex != -1) {
-        //webgl渲染纸张边框
-        if (this.ddRender.model.GLOBAL_WEBGL && this.model.layers[topDisplayIndex].render.gl) {
-          let gl = this.model.layers[topDisplayIndex].render.gl
-          let paperSizeLocation = gl.getUniformLocation(gl.program, "paperSize");
-          gl.uniform3f(paperSizeLocation, 0.0, 0.0, 0.0);
-          let paperWeightLocation = gl.getUniformLocation(gl.program, "paperWeight");
-          gl.uniform1f(paperWeightLocation, 2 * stageRatio);
-        }
+
         this.model.layers[topDisplayIndex].render.drawBackground(0, 0, canvas.width, canvas.height);
       }
     }
@@ -1124,142 +1115,114 @@ class DDeiStageCanvasRender {
         if (this.tempRuleDisplay == 1 || this.tempRuleDisplay == '1') {
           ruleWeight = 15 * rat1
         }
-        let sx = paperOutRect.x 
-        let sy = paperOutRect.y 
+   
         let ex = paperOutRect.x + paperOutRect.w
         let ey = paperOutRect.y + paperOutRect.h
 
-        if (this.ddRender?.model.GLOBAL_WEBGL){
-          let gl = this.model.layers[layerIndex].render.gl
-          let gridDisplayLocation = gl.getUniformLocation(gl.program, "gridDisplay");
-          let gridColorLocation = gl.getUniformLocation(gl.program, "gridColor");
-          let paperStartXLocation = gl.getUniformLocation(gl.program, "paperStartX");
-          let paperStartYLocation = gl.getUniformLocation(gl.program, "paperStartY");
-          let paperRectXLocation = gl.getUniformLocation(gl.program, "paperRectX");
-          let paperRectYLocation = gl.getUniformLocation(gl.program, "paperRectY");
-          let paperRectX1Location = gl.getUniformLocation(gl.program, "paperRectX1");
-          let paperRectY1Location = gl.getUniformLocation(gl.program, "paperRectY1");
-          let gridWeightLocation = gl.getUniformLocation(gl.program, "gridWeight");
-          
-          
-          let gridSplitedWeightLocation = gl.getUniformLocation(gl.program, "gridSplitedWeight");
+        //绘制横向点
+        //获得 2d 上下文对象
+        let canvas = this.model.layers[layerIndex].render.bgCanvas
+        let ctx = canvas.getContext('2d');
 
-          let displayValue = parseInt(gridDisplay)
-          gl.uniform1i(gridDisplayLocation, displayValue);
-          let gridColorValue
-          if (displayValue == 1) {
-            gridColorValue = DDeiUtil.getGLColor(DDeiUtil.getStyleValue("canvas-grid-line", this.ddRender.model))
-            gl.uniform1f(gridWeightLocation, 1);
-          } else if (displayValue == 2) {
-            gridColorValue = DDeiUtil.getGLColor(DDeiUtil.getStyleValue("canvas-grid-dot", this.ddRender.model));
-            gl.uniform1f(gridWeightLocation, 2*stageRatio);
-          }
-          
-          if (gridColorValue){
-            gl.uniform4f(gridColorLocation, gridColorValue.r, gridColorValue.g, gridColorValue.b, gridColorValue.a);
-          }
-          gl.uniform1f(paperStartXLocation, this.paperStartX);
-          gl.uniform1f(paperStartYLocation, this.paperStartY);
-          gl.uniform1f(paperRectXLocation, sx);
-          gl.uniform1f(paperRectYLocation, sy);
-          gl.uniform1f(paperRectX1Location, ex);
-          gl.uniform1f(paperRectY1Location, ey);
-          gl.uniform1f(gridSplitedWeightLocation, splitedWeight);
+        
+        //标尺的固定显示大小
+        ctx.save();
+        
+        ctx.translate(-ruleWeight, -ruleWeight)
+
+        let fontSize = 11 * rat1
+        ctx.font = fontSize + "px Microsoft YaHei"
+        ctx.lineWidth = 1
+        ctx.strokeStyle = "rgb(190,190,190)"
+        ctx.fillStyle = "white"
+        let psx = this.paperStartX
+        let psy = this.paperStartY
+        let paperRect = {x:paperOutRect.x,y:paperOutRect.y,w:paperOutRect.w,h:paperOutRect.h}
+        if (this.ddRender.model.GLOBAL_WEBGL && this.model.layers[layerIndex].render.gl) {
+          ctx.translate(ruleWeight, ruleWeight)
+          psx -= paperRect.x
+          psy -= paperRect.y
+          ex -= paperRect.x
+          ey -= paperRect.y
+          paperRect.x = 0
+          paperRect.y = 0
         }
-        //非webgl的绘制方式
-        else{
-          //绘制横向点
-          //获得 2d 上下文对象
-          let canvas = this.model.layers[layerIndex].render.bgCanvas
-          let ctx = canvas.getContext('2d');
-
+        if (gridDisplay == 2 || gridDisplay == '2') {
+          //纸张开始的位置
+          ctx.strokeStyle = DDeiUtil.getColorObj(DDeiUtil.getStyleValue("canvas-grid-dot", this.ddRender.model));
+          ctx.lineWidth = 2 * stageRatio
+          ctx.setLineDash([2 * stageRatio, splitedWeight - stageRatio])
           
-          //标尺的固定显示大小
-          ctx.save();
-          
-          ctx.translate(-ruleWeight, -ruleWeight)
-
-          let fontSize = 11 * rat1
-          ctx.font = fontSize + "px Microsoft YaHei"
-          ctx.lineWidth = 1
-          ctx.strokeStyle = "rgb(190,190,190)"
-          ctx.fillStyle = "white"
-
-          if (gridDisplay == 2 || gridDisplay == '2') {
-            //纸张开始的位置
-            ctx.strokeStyle = DDeiUtil.getColorObj(DDeiUtil.getStyleValue("canvas-grid-dot", this.ddRender.model));
-            ctx.lineWidth = 2 * stageRatio
-            ctx.setLineDash([2 * stageRatio, splitedWeight - stageRatio])
-            
-            for (let sx = this.paperStartX; sx <= ex; sx = sx + splitedWeight) {
-              ctx.beginPath()
-              ctx.moveTo(sx, paperOutRect.y);
-              ctx.lineTo(sx, ey);
-              ctx.stroke();
-            }
-            for (let sx = this.paperStartX; sx >= paperOutRect.x; sx = sx - splitedWeight) {
-              ctx.beginPath()
-              ctx.moveTo(sx, paperOutRect.y);
-              ctx.lineTo(sx, ey);
-              ctx.stroke();
-            }
-          } else if (gridDisplay == 1 || gridDisplay == '1') {
-            let strokeColor = DDeiUtil.getColorObj(DDeiUtil.getStyleValue("canvas-grid-line", this.ddRender.model));
-            let strokeLighten = strokeColor?.lighten(0.05);
-
-            for (let sx = this.paperStartX, n = 0; sx <= ex; sx = sx + splitedWeight, n++) {
-              let nMod = n % splitNumber
-              if (nMod != 0) {
-                ctx.strokeStyle = strokeLighten?.toColor();
-              } else {
-                ctx.strokeStyle = strokeColor?.toColor();
-              }
-              ctx.beginPath()
-              ctx.moveTo(sx, paperOutRect.y);
-              ctx.lineTo(sx, ey);
-              ctx.stroke();
-            }
-            for (let sx = this.paperStartX, n = 0; sx >= paperOutRect.x; sx = sx - splitedWeight, n++) {
-              let nMod = n % splitNumber
-              if (nMod != 0) {
-                ctx.strokeStyle = strokeLighten?.toColor();
-              } else {
-                ctx.strokeStyle = strokeColor?.toColor();
-              }
-              ctx.beginPath()
-              ctx.moveTo(sx, paperOutRect.y);
-              ctx.lineTo(sx, ey);
-              ctx.stroke();
-            }
-            for (let sy = this.paperStartY, n = 0; sy <= ey; sy = sy + splitedWeight, n++) {
-              let nMod = n % splitNumber
-              if (nMod != 0) {
-                ctx.strokeStyle = strokeLighten?.toColor();
-              } else {
-                ctx.strokeStyle = strokeColor?.toColor();
-              }
-              ctx.beginPath()
-              ctx.moveTo(paperOutRect.x, sy);
-              ctx.lineTo(ex, sy);
-              ctx.stroke();
-
-            }
-            for (let sy = this.paperStartY, n = 0; sy >= paperOutRect.y; sy = sy - splitedWeight, n++) {
-              let nMod = n % splitNumber
-              if (nMod != 0) {
-                ctx.strokeStyle = strokeLighten?.toColor();
-              } else {
-                ctx.strokeStyle = strokeColor?.toColor();
-              }
-              ctx.beginPath()
-              ctx.moveTo(paperOutRect.x, sy);
-              ctx.lineTo(ex, sy);
-              ctx.stroke();
-
-            }
+          for (let sx = psx; sx <= ex; sx = sx + splitedWeight) {
+            ctx.beginPath()
+            ctx.moveTo(sx, paperRect.y);
+            ctx.lineTo(sx, ey);
+            ctx.stroke();
           }
-          ctx.restore();
+          for (let sx = psx; sx >= paperRect.x; sx = sx - splitedWeight) {
+            ctx.beginPath()
+            ctx.moveTo(sx, paperRect.y);
+            ctx.lineTo(sx, ey);
+            ctx.stroke();
+          }
+        } else if (gridDisplay == 1 || gridDisplay == '1') {
+          let strokeColor = DDeiUtil.getColorObj(DDeiUtil.getStyleValue("canvas-grid-line", this.ddRender.model));
+          let strokeLighten = strokeColor?.lighten(0.05);
+
+          for (let sx = psx, n = 0; sx <= ex; sx = sx + splitedWeight, n++) {
+            let nMod = n % splitNumber
+            if (nMod != 0) {
+              ctx.strokeStyle = strokeLighten?.toColor();
+            } else {
+              ctx.strokeStyle = strokeColor?.toColor();
+            }
+            ctx.beginPath()
+            ctx.moveTo(sx, paperRect.y);
+            ctx.lineTo(sx, ey);
+            ctx.stroke();
+          }
+          for (let sx = psx, n = 0; sx >= paperRect.x; sx = sx - splitedWeight, n++) {
+            let nMod = n % splitNumber
+            if (nMod != 0) {
+              ctx.strokeStyle = strokeLighten?.toColor();
+            } else {
+              ctx.strokeStyle = strokeColor?.toColor();
+            }
+            ctx.beginPath()
+            ctx.moveTo(sx, paperRect.y);
+            ctx.lineTo(sx, ey);
+            ctx.stroke();
+          }
+          for (let sy = psy, n = 0; sy <= ey; sy = sy + splitedWeight, n++) {
+            let nMod = n % splitNumber
+            if (nMod != 0) {
+              ctx.strokeStyle = strokeLighten?.toColor();
+            } else {
+              ctx.strokeStyle = strokeColor?.toColor();
+            }
+            ctx.beginPath()
+            ctx.moveTo(paperRect.x, sy);
+            ctx.lineTo(ex, sy);
+            ctx.stroke();
+
+          }
+          for (let sy = psy, n = 0; sy >= paperRect.y; sy = sy - splitedWeight, n++) {
+            let nMod = n % splitNumber
+            if (nMod != 0) {
+              ctx.strokeStyle = strokeLighten?.toColor();
+            } else {
+              ctx.strokeStyle = strokeColor?.toColor();
+            }
+            ctx.beginPath()
+            ctx.moveTo(paperRect.x, sy);
+            ctx.lineTo(ex, sy);
+            ctx.stroke();
+
+          }
         }
+        
+        ctx.restore();
+        
         
       }
     }
