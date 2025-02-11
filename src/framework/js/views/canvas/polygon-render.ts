@@ -72,14 +72,27 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     //如果高清屏，rat一般大于2印此系数为1保持不变，如果非高清则扩大为2倍保持清晰
     //获取缩放比例
     let stageRatio = this.model.getStageRatio()
-    let rat1 = this.ddRender.ratio
-    //测试剪切图形
-    //转换为图片
-    if (!this.tempCanvas) {
-      this.tempCanvas = document.createElement('canvas');
-      this.tempCanvas.setAttribute("style", "pointer-events:none;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;display:block;");
+    if (!this.tempShapeDraw && this.stage.ddInstance.GLOBAL_WEBGL && this.stage.render.glNewRat){
+      stageRatio = this.stage.render.glNewRat;
     }
-    let tempCanvas = this.tempCanvas
+    let rat1 = this.ddRender.ratio
+    let tempCanvas;
+    if (this.tempShapeDraw){
+      //转换为图片
+      if (!this.tempShapeCanvas) {
+        this.tempShapeCanvas = document.createElement('canvas');
+        this.tempShapeCanvas.setAttribute("style", "pointer-events:none;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;display:block;");
+      }
+      tempCanvas = this.tempShapeCanvas
+    }else{
+      //转换为图片
+      if (!this.tempCanvas) {
+        this.tempCanvas = document.createElement('canvas');
+        this.tempCanvas.setAttribute("style", "pointer-events:none;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;display:block;");
+      }
+      tempCanvas = this.tempCanvas
+    }
+    
     let pvs = this.model.operatePVS ? this.model.operatePVS : this.model.pvs
 
     let outRect = DDeiAbstractShape.pvsToOutRect(pvs, stageRatio)
@@ -93,8 +106,11 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       outRect.width += 2 * weight
       outRect.height += 2 * weight
     // }
-    
-
+    if (this.stage.ddInstance.GLOBAL_WEBGL) {
+      if (tempCanvas.width != outRect.width || tempCanvas.height != outRect.height){
+        this.needUpdateTextureIndex = 1
+      }
+    }
     tempCanvas.setAttribute("width", outRect.width  * rat1)
     tempCanvas.setAttribute("height", outRect.height * rat1)
     tempCanvas.style.width = outRect.width  + "px";
@@ -131,20 +147,25 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
             const shouldRefresh = this.refreshShape || this.isEditoring;
             
             if (isModelVisible && shouldRefresh) {
-              // 优化: 将创建临时形状的逻辑提取为单独的方法
-              this.createAndPrepareShape(tempShape);
-              
-              // 优化: 使用缓存的渲染列表
-              const rendList = this.getCachedRenderList();
-              
-              // 保持原有的渲染逻辑
-              for(let ri = 0; ri < rendList.length; ri++){
-                let c = rendList[ri];
-                if (c == this.model) {
-                  this.renderSelf(tempShape, composeRender);
-                } else {
-                  this.renderCompose(c, tempShape, composeRender, ri);
+              if (this.tempShapeDraw || !this.stage.ddInstance.GLOBAL_WEBGL || this.oldGlRat != this.stageRender.glNewRat){
+                // 优化: 将创建临时形状的逻辑提取为单独的方法
+                this.createAndPrepareShape(tempShape);
+                
+                // 优化: 使用缓存的渲染列表
+                const rendList = this.getCachedRenderList();
+                
+                // 保持原有的渲染逻辑
+                for(let ri = 0; ri < rendList.length; ri++){
+                  let c = rendList[ri];
+                  if (c == this.model) {
+                    this.renderSelf(tempShape, composeRender);
+                  } else {
+                    this.renderCompose(c, tempShape, composeRender, ri);
+                  }
                 }
+
+                this.oldGlRat = this.stageRender.glNewRat;
+                this.stageRender.glOldRat = this.stageRender.glNewRat;
               }
 
               if (!this.isEditoring) {
@@ -235,15 +256,39 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   drawSelfToCanvas(composeRender, print) {
     if (this.stage.ddInstance.GLOBAL_WEBGL && this.layerRender.gl) {
       if (!DDeiUtil.isModelHidden(this.model)) {
-        
-        let rat1 = this.ddRender.ratio
-        // let outRect = this.model.essBounds;
-        let outRect = this.tempCanvas.outRect;
+        let rat1 = this.ddRender.ratio;
+        let outRect = this.model.essBounds;
+        let stageRatio = this.model.getStageRatio()
         this.layerRender.renderModelsList.push(this.model);
-        this.layerRender.vertexArray = this.layerRender.vertexArray.concat(DDeiUtil.getGLRect(outRect.x, outRect.y, outRect.width, outRect.height ))
-        // 颜色数组
-        this.layerRender.colorArray = this.layerRender.colorArray.concat(DDeiUtil.getGLColorArray("black", 0))
-        // document.body.appendChild(this.tempCanvas) 
+        let wr = stageRatio / rat1
+        if(this.tempShapeDraw){
+          this.tempShapeVertexArray = DDeiUtil.getGLRect(outRect.x * stageRatio - 5 * wr, outRect.y * stageRatio - 5 * wr, outRect.width * stageRatio + 10 * wr, outRect.height * stageRatio + 10 * wr)
+          // 颜色数组
+          this.tempShapeColorArray = DDeiUtil.getGLColorArray("black", 0)
+          //更新纹理索引
+          this.updateTextureIndexBuff();
+        }else{
+          this.vertexArray = DDeiUtil.getGLRect(outRect.x * stageRatio - 5 * wr, outRect.y * stageRatio - 5 * wr, outRect.width * stageRatio + 10 * wr, outRect.height * stageRatio + 10 * wr)
+          // 颜色数组
+          this.colorArray = DDeiUtil.getGLColorArray("black", 0)
+          //检查是否需要更新纹理索引
+          let updateTextureIndex = false
+          if (!this.textureArea) {
+            updateTextureIndex = true;
+          } else if (this.needUpdateTextureIndex) {
+            updateTextureIndex = true;
+            delete this.textureArea;
+          }
+          //更新纹理索引
+          if (updateTextureIndex) {
+            this.updateTextureIndexBuff();
+
+            delete this.needUpdateTextureIndex;
+          }
+        }
+        
+        
+        
       }
     } else {
       if (this.viewer) {
@@ -318,7 +363,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   }
 
   getCanvas() {
-    if (this.tempCanvas) {
+    if (this.tempShapeDraw) {
+      return this.tempShapeCanvas;
+    }else if (this.tempCanvas) {
       return this.tempCanvas;
     } else {
       return this.getRenderCanvas()
@@ -379,6 +426,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
    */
   getBorderPVS(pvs, tempShape) {
     let stageRatio = this.model.getStageRatio()
+    if (!this.tempShapeDraw && this.stage.ddInstance.GLOBAL_WEBGL && this.stage.render.glNewRat) {
+      stageRatio = this.stage.render.glNewRat;
+    }
     let round = tempShape?.border?.round ? tempShape?.border?.round : this.getCachedValue("border.round");
     let type = tempShape?.border?.type || tempShape?.border?.type == 0 ? tempShape?.border?.type : this.getCachedValue("border.type");
     if (!round) {
@@ -555,6 +605,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
     let stageRatio = this.model.getStageRatio()
+    if (!this.tempShapeDraw && this.stage.ddInstance.GLOBAL_WEBGL && this.stage.render.glNewRat) {
+      stageRatio = this.stage.render.glNewRat;
+    }
     let rat1 = this.ddRender.ratio;
     let ratio = rat1 * stageRatio;
     rat1 = ratio
@@ -849,6 +902,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
 
     let fillType = tempShape?.fill?.type ? tempShape.fill.type : this.getCachedValue("fill.type");
     //保存状态
+    
     ctx.save();
     //找到第一个类型不为0的
     let haveFilled = false;
@@ -982,6 +1036,9 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
     let ctx = canvas.getContext('2d');
     //获取全局缩放比例
     let stageRatio = this.model.getStageRatio()
+    if (!this.tempShapeDraw && this.stage.ddInstance.GLOBAL_WEBGL && this.stage.render.glNewRat) {
+      stageRatio = this.stage.render.glNewRat;
+    }
     let rat1 = this.ddRender.ratio;
     let ratio = rat1 * stageRatio;
     rat1 = ratio

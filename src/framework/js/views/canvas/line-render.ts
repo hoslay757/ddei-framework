@@ -67,6 +67,9 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       this.tempCanvas.setAttribute("style", "pointer-events:none;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;display:block;");
     }
     let stageRatio = this.stage.getStageRatio()
+    if (this.stage.ddInstance.GLOBAL_WEBGL && this.stage.render.glNewRat) {
+      stageRatio = this.stage.render.glNewRat;
+    }
     let tempCanvas = this.tempCanvas
     let pvs = this.model.getOperatePVS(true);
     
@@ -80,7 +83,13 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     outRect.y1 += weight
     outRect.width += 2 * weight
     outRect.height += 2 * weight
+    if (this.stage.ddInstance.GLOBAL_WEBGL) {
+      if (tempCanvas.width != outRect.width || tempCanvas.height != outRect.height) {
+        this.needUpdateTextureIndex = 1
+      }
+    }
     
+    // document.body.appendChild(tempCanvas)
     
     tempCanvas.setAttribute("width", outRect.width * rat1)
     tempCanvas.setAttribute("height", outRect.height * rat1)
@@ -111,42 +120,46 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
             let print = false
             if (!DDeiUtil.isModelHidden(this.model) && this.refreshShape) {
               print = true
-              //创建准备图形
-              this.createTempShape();
-              //将当前控件以及composes按照zindex顺序排列并输出
-              let rendList = DDeiUtil.sortRendList(this.model)
-              for(let ri = 0;ri < rendList.length;ri++){
-                let c = rendList[ri];
-                if (c == this.model) {
-                  this.tempZIndex = this.tempZIndex+ri
-                  //获得 2d 上下文对象
-                  let canvas = this.getCanvas();
-                  let ctx = canvas.getContext('2d');
-                  ctx.save();
-                  //如果线段类型发生了改变，则重新绘制线段，计算中间点坐标
-                  if (this.inited && this.model.id.indexOf("_shadow") == -1 && (!this.upLineType || this.upLineType != this.model.type)) {
-                    this.upLineType = this.model.type
-                    this.model.freeze = 0
-                    this.model.spvs = []
+              // if (!this.stage.ddInstance.GLOBAL_WEBGL || this.oldGlRat != this.stageRender.glNewRat) {
+                //创建准备图形
+                this.createTempShape();
+                //将当前控件以及composes按照zindex顺序排列并输出
+                let rendList = DDeiUtil.sortRendList(this.model)
+                for(let ri = 0;ri < rendList.length;ri++){
+                  let c = rendList[ri];
+                  if (c == this.model) {
+                    this.tempZIndex = this.tempZIndex+ri
+                    //获得 2d 上下文对象
+                    let canvas = this.getCanvas();
+                    let ctx = canvas.getContext('2d');
+                    ctx.save();
+                    //如果线段类型发生了改变，则重新绘制线段，计算中间点坐标
+                    if (this.inited && this.model.id.indexOf("_shadow") == -1 && (!this.upLineType || this.upLineType != this.model.type)) {
+                      this.upLineType = this.model.type
+                      this.model.freeze = 0
+                      this.model.spvs = []
 
-                    this.model.refreshLinePoints()
-                    this.model.updateOVS()
-                    this.stageRender?.selector.updatePVSByModels();
-                  } else if (!this.inited) {
-                    this.inited = true;
-                    this.upLineType = this.model.type
+                      this.model.refreshLinePoints()
+                      this.model.updateOVS()
+                      this.stageRender?.selector.updatePVSByModels();
+                    } else if (!this.inited) {
+                      this.inited = true;
+                      this.upLineType = this.model.type
+                    }
+
+                    //绘制线段
+                    this.drawLine(tempShape);
+                    
+
+                    ctx.restore();
+                  } else {
+                    //绘制组合控件的内容
+                    c.render.drawShape(tempShape, 1,null,this.tempZIndex+ri)
                   }
-
-                  //绘制线段
-                  this.drawLine(tempShape);
-                  
-
-                  ctx.restore();
-                } else {
-                  //绘制组合控件的内容
-                  c.render.drawShape(tempShape, 1,null,this.tempZIndex+ri)
                 }
-              }
+                this.oldGlRat = this.stageRender.glNewRat;
+                this.stageRender.glOldRat = this.stageRender.glNewRat;
+              // }
               this.refreshShape = false
             }
 
@@ -179,12 +192,34 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
   drawSelfToCanvas(composeRender, print) {
     if (this.stage.ddInstance.GLOBAL_WEBGL && this.layerRender.gl) {
       if (!DDeiUtil.isModelHidden(this.model)) {
-        let outRect = this.tempCanvas.outRect
+        let stageRatio = this.model.getStageRatio();
+        let pvs = this.model.getOperatePVS(true);
+        let outRect = DDeiAbstractShape.pvsToOutRect(pvs, stageRatio)
+        let stageRatio1 = stageRatio
+        if (this.stage.ddInstance.GLOBAL_WEBGL && this.stage.render.glNewRat) {
+          stageRatio1 = this.stage.render.glNewRat;
+        }
+        let rat1 = this.ddRender.ratio;
+        let weight = 5 * stageRatio1 * stageRatio
         this.layerRender.renderModelsList.push(this.model);
-        this.layerRender.vertexArray = this.layerRender.vertexArray.concat(DDeiUtil.getGLRect(outRect.x, outRect.y, outRect.width, outRect.height))
+        this.vertexArray = DDeiUtil.getGLRect(outRect.x - weight, outRect.y - weight, outRect.width + 2 * weight, outRect.height + 2 * weight)
         // 颜色数组
-        this.layerRender.colorArray = this.layerRender.colorArray.concat(DDeiUtil.getGLColorArray("black", 0))
+        this.colorArray = DDeiUtil.getGLColorArray("black", 0)
+        //检查是否需要更新纹理索引
+        let updateTextureIndex = false
+        if (!this.textureArea) {
+          updateTextureIndex = true;
+        } else if (this.needUpdateTextureIndex) {
+          updateTextureIndex = true;
+          delete this.textureArea;
+        }
+        //更新纹理索引
+        if (updateTextureIndex) {
+       
+          this.updateTextureIndexBuff();
 
+          delete this.needUpdateTextureIndex;
+        }
       }
     }else{
       if(this.viewer){
@@ -255,6 +290,9 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
 
     //获取全局缩放比例
     let stageRatio = this.model.getStageRatio()
+    if (this.stage.ddInstance.GLOBAL_WEBGL && this.stage.render.glNewRat) {
+      stageRatio = this.stage.render.glNewRat;
+    }
     let rat1 = tempLine?.rat1 ? tempLine.rat1 : this.ddRender.ratio;
     let ratio = rat1 * stageRatio;
     rat1 = ratio
@@ -438,6 +476,9 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
    */
   getPointShapeSize(): { startDX: number, startDY: number, endDX: number, endDY: number } {
     let stageRatio = this.model.getStageRatio()
+    if (this.stage.ddInstance.GLOBAL_WEBGL && this.stage.render.glNewRat) {
+      stageRatio = this.stage.render.glNewRat;
+    }
     let pvs = this.model.pvs;
     let startDX = 0;
     let endDX = 0;
@@ -571,6 +612,9 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     }
     //获取全局缩放比例
     let stageRatio = this.model.getStageRatio()
+    if (this.stage.ddInstance.GLOBAL_WEBGL && this.stage.render.glNewRat) {
+      stageRatio = this.stage.render.glNewRat;
+    }
     let rat1 = tempLine?.rat1 ? tempLine.rat1 : this.ddRender.ratio;
     let ratio = rat1 * stageRatio;
     rat1 = ratio

@@ -123,7 +123,31 @@ class DDeiStageCanvasRender {
         if (this.model.disabled || !this.model.width || !this.model.height){
           return;
         }
-        
+        if (this.ddRender.model.GLOBAL_WEBGL) {
+          let stageRatio = this.model.getStageRatio();
+          //计算缩放比率
+          //判断区间是否发生改变
+          let oldRat, newRat
+          let ratioLevels = this.ddRender?.model.RATIO_LEVELS;
+          if (!this.oldStageRatio) {
+            this.oldStageRatio = stageRatio;
+          }
+
+          if (ratioLevels && ratioLevels.length > 0) {
+            for (let n = ratioLevels.length - 2; n >= 0; n = n - 2) {
+              let level = ratioLevels[n];
+              if (!oldRat && this.oldStageRatio >= level) {
+                oldRat = ratioLevels[n + 1]
+              }
+              if (!newRat && stageRatio >= level) {
+                newRat = ratioLevels[n + 1]
+              }
+            }
+          }
+          this.glOldRat = oldRat
+          this.glNewRat = newRat
+        }
+
         //绘制纸张，以及图层背景
         
         this.drawPaper();

@@ -138,12 +138,39 @@ class DDeiLayerCanvasRender {
           gl.enable(gl.BLEND);
           gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); // 标准的预乘Alpha混合函数
           this.gl = gl
+          //根据gl的配置，预分配图形纹理单元1，用于缓存绘制图形
+          let maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+          this.maxTextureSize = maxTextureSize;
+          gl.activeTexture(gl.TEXTURE2);
+          // 绑定纹理对象到目标上（先绑定到纹理单元后指定纹理类型绑定到目标上）,将所有纹理绑定到一起
+          this.combinedTexture = gl.createTexture();
+          gl.bindTexture(gl.TEXTURE_2D, this.combinedTexture);
+          // 配置纹理参数
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, maxTextureSize, maxTextureSize, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+
+          gl.activeTexture(gl.TEXTURE1);
+          // 绑定纹理对象到目标上（先绑定到纹理单元后指定纹理类型绑定到目标上）,将所有纹理绑定到一起
+          this.tempShapeTexture = gl.createTexture();
+          gl.bindTexture(gl.TEXTURE_2D, this.tempShapeTexture);
+          // 配置纹理参数
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, maxTextureSize, maxTextureSize, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+          // 将纹理单元编号传递给取样器
+          let tempTextureLocation = gl.getUniformLocation(gl.program, "temp_texture");
+          gl.uniform1i(tempTextureLocation, 1);
+          // 将纹理单元编号传递给取样器
+          let textureLocation = gl.getUniformLocation(gl.program, "u_texture");
+          gl.uniform1i(textureLocation, 2);
         }
       }else{
         this.gl = this.glCanvas.getContext("webgl2", {
           antialias: true,
           antialiasSamples: 8
         });
+        //根据gl的配置，预分配图形纹理单元1，用于缓存绘制图形
+        let maxTextureSize = this.gl.getParameter(this.gl.MAX_TEXTURE_SIZE);
+        this.maxTextureSize = maxTextureSize;
       }
     }
   }
@@ -264,6 +291,14 @@ class DDeiLayerCanvasRender {
     }
   }
 
+  updateGLTexture(index,rect,canvas):void{
+    let gl = this.gl
+    //激活纹理
+    eval("gl.activeTexture(gl.TEXTURE"+index+")");
+    //更新纹理数据
+    gl.texSubImage2D(gl.TEXTURE_2D, 0, rect.x, rect.y, rect.width, rect.height, gl.RGBA, gl.UNSIGNED_BYTE, canvas); // textureData[i] 是子纹理数据
+  }
+
   glDraw():void{
     let gl = this.gl
     //将背景加入渲染
@@ -284,21 +319,20 @@ class DDeiLayerCanvasRender {
       gl.uniform1i(bgTextureLocation, 0);
     }
 
+   
+   
 
     //清空画布
     gl.clearColor(255, 255, 255, 0.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     //绘制
     gl.drawElements(gl.TRIANGLES, 6 * this.glDrawCount, gl.UNSIGNED_SHORT, 0)
-    if (this.combinedTexture) {
-      gl.deleteTexture(this.combinedTexture);
-      delete this.combinedTexture
-    }
 
-    if (this.bgTexture) {
-      gl.deleteTexture(this.bgTexture);
-      delete this.bgTexture;
-    }
+
+    // if (this.tempShapeTexture) {
+    //   gl.deleteTexture(this.tempShapeTexture);
+    //   delete this.tempShapeTexture;
+    // }
 
     delete this.glDrawCount
     
@@ -309,6 +343,9 @@ class DDeiLayerCanvasRender {
     this.vertexArray = []
     this.colorArray = []
     this.renderModelsList = []
+
+    
+
   }
 
   /**
@@ -534,7 +571,7 @@ class DDeiLayerCanvasRender {
   }
 
   drawShapesGL():void{
-    let time1 = new Date().getTime();
+    let time0 = new Date().getTime();
     //获取全局缩放比例
     let rat1 = this.ddRender.ratio
     let stageRatio = this.model.getStageRatio()
@@ -554,115 +591,49 @@ class DDeiLayerCanvasRender {
       );
     }
 
+    
+    
+    
+
+    let time1 = new Date().getTime();
+    if (this.renderModelsList.length > 0) {
+      //渲染控件
+      for (let i = 0; i < this.renderModelsList.length; i++) {
+        let model = this.renderModelsList[i]
+        Array.prototype.push.apply(this.vertexArray, model.render.vertexArray);
+        Array.prototype.push.apply(this.colorArray, model.render.colorArray);
+        let tarr = model.render.texcoordArray;
+        let idx = i+1;
+        tarr[2] = idx;
+        tarr[5] = idx;
+        tarr[8] = idx;
+        tarr[11] = idx;
+        Array.prototype.push.apply(this.texcoordArray, tarr);
+      }
+    }
+    
     gl.enableVertexAttribArray(positionAttributeLocation);
     let positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    
+
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertexArray), gl.STATIC_DRAW);
-    
+
     this.glDrawCount = this.vertexArray.length / 8;
 
-    
+
     // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
     let normalize = false; // don't normalize the data
     let stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
     let offset = 0;        // start at the beginning of the buffer
     gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, normalize, stride, offset);
 
-    
+
     gl.enableVertexAttribArray(colorAttributeLocation);
     let colorBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.colorArray), gl.STATIC_DRAW);
     gl.vertexAttribPointer(colorAttributeLocation, 4, gl.FLOAT, normalize, stride, offset);
-    
-    
 
-    
-    let combinedTexture
-    let bgTexture
-    if (this.renderModelsList.length > 0) {
-      let maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
-      
-
-      //获取最大的models宽高
-      let maxModelWidth = -Infinity;
-      let maxModelHeight = -Infinity;
-      this.renderModelsList.forEach(renderModel => {
-        let outRect = renderModel.render.tempCanvas.outRect
-        maxModelWidth = Math.max(outRect.width, maxModelWidth);
-        maxModelHeight = Math.max(outRect.height, maxModelHeight);
-      });
-      maxModelWidth *= rat1;
-      maxModelHeight *= rat1;
-      
-      //单个纹理单元最大行容量和列容量
-      let maxColSize = parseInt(maxTextureSize / maxModelWidth)
-      let maxRowSize = parseInt(maxTextureSize / maxModelHeight)
-      //单个纹理最大容量
-      let maxCompSize = maxColSize * maxRowSize
-      if(this.ddRender.model.debug){
-        console.log("单个纹理单元最大容量："+maxCompSize)
-      }
-      //计算总共会占用几个纹理、几行、几列
-        
-      let totalTexture = parseInt(this.renderModelsList.length / maxCompSize) + (this.renderModelsList.length % maxCompSize == 0 ? 0 : 1);
-      if (this.ddRender.model.debug) {
-        console.log("总计纹理数：" + totalTexture)
-      }
-
-      // 申请总宽度和总高度
-      let applyWidth = (this.renderModelsList.length >= maxColSize ? maxColSize : this.renderModelsList.length) * maxModelWidth;
-      let applyHeight = (parseInt(this.renderModelsList.length / maxColSize) + (this.renderModelsList.length % maxColSize == 0 ? 0 : 1)) * maxModelHeight;
-      if (this.ddRender.model.debug) {
-        console.log("申请纹理1，大小：" + applyWidth + "  X   " + applyHeight);
-      }
-      gl.activeTexture(gl.TEXTURE1);
-      // 绑定纹理对象到目标上（先绑定到纹理单元后指定纹理类型绑定到目标上）,将所有纹理绑定到一起
-      combinedTexture = gl.createTexture();
-      gl.bindTexture(gl.TEXTURE_2D, combinedTexture);
-      // 配置纹理参数
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, applyWidth, applyHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-
-      // 填充子纹理到一个大纹理中
-      for (let i = 0; i < this.renderModelsList.length; i++) {
-        let model = this.renderModelsList[i]
-        let outRect = model.render.tempCanvas.outRect
-        //计算当前纹理索引和行列位置
-        let texturePageIdx = parseInt(i / maxCompSize);
-        //当前页的索引
-        let curPageIdx = (i - (texturePageIdx * maxCompSize))
-        let row = parseInt(curPageIdx / maxColSize);
-        let col = curPageIdx % maxColSize;
-        
-        
-        let xOffset = col * maxModelWidth; // 子纹理在x轴的偏移
-        let yOffset = row * maxModelHeight; // 子纹理在x轴的偏移
-        let realWidth = outRect.width * rat1
-        let realHeight = outRect.height * rat1
-
-        gl.texSubImage2D(gl.TEXTURE_2D, 0, xOffset, yOffset, realWidth, realHeight, gl.RGBA, gl.UNSIGNED_BYTE, model.render.tempCanvas); // textureData[i] 是子纹理数据
-        let xg = xOffset / applyWidth;
-        let x1g = xg + realWidth / applyWidth;
-        let yg = yOffset / applyHeight;
-        let y1g = yg + realHeight / applyHeight;
-        this.texcoordArray.push(
-          xg, yg, i+1,
-          x1g, yg, i+1,
-          xg, y1g, i+1,
-          x1g, y1g, i+1
-        );
-      }
-
-
-      // 将纹理单元编号传递给取样器
-      let textureLocation = gl.getUniformLocation(gl.program, "u_texture");
-      gl.uniform1i(textureLocation, 1);
-
-      
-      
-    }
     let time2 = new Date().getTime();
     // 顶点纹理坐标数组
     gl.enableVertexAttribArray(texcoordLocation);
@@ -678,11 +649,18 @@ class DDeiLayerCanvasRender {
     let indexBuffer = gl.createBuffer();
     
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    let indices = [];
-    for (let i = 0; i < this.glDrawCount; i++) {
-      const base = i * 4;
-      indices.push(base, base + 1, base + 2, base + 2, base + 1, base + 3);
+    let indices;
+    let maxIdx = this.glDrawCount * 6;
+    //超出扩展
+    if (this.ddRender.model.GL_INDEX_BUFF.length < maxIdx){
+      let startIndex = this.ddRender.model.GL_INDEX_BUFF.length/6;
+      let endIndex = startIndex+(maxIdx - this.ddRender.model.GL_INDEX_BUFF.length)/4
+      for (let i = startIndex; i < endIndex; i++) {
+        const base = i * 4;
+        this.ddRender.model.GL_INDEX_BUFF.push(base, base + 1, base + 2, base + 2, base + 1, base + 3);
+      }
     }
+    indices = this.ddRender.model.GL_INDEX_BUFF.slice(0, maxIdx)
     gl.bufferData(
       gl.ELEMENT_ARRAY_BUFFER,
       new Uint16Array(indices),
@@ -690,7 +668,7 @@ class DDeiLayerCanvasRender {
     );
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 
-    let time3 = new Date().getTime();
+    
     
     
    
@@ -706,10 +684,9 @@ class DDeiLayerCanvasRender {
     gl.uniform2f(wpvLocation, this.stage.wpv.x, this.stage.wpv.y);
     let windowSizeLocation = gl.getUniformLocation(gl.program, "u_windowsize");
     gl.uniform2f(windowSizeLocation, this.glCanvas.offsetWidth, this.glCanvas.offsetHeight);
-
+    let time3 = new Date().getTime();
     if (this.ddRender.model.debug) {
-      console.log("耗时1:  " + (time2 - time1))
-      console.log("耗时2:  " + (time3 - time2))
+      console.log("重绘:  " + (time3 - time0))
     }
     
   }
@@ -760,13 +737,15 @@ class DDeiLayerCanvasRender {
         let color = "#017fff"
         if (this.ddRender?.model.GLOBAL_WEBGL) {
           opacity = 0.9
-          // color = "rgb(114,163,279)"
+          item.render.tempShapeDraw = 1
         }
         if (item.modelType == 'DDeiLine') {
           item.render.drawShape({ color: color, dash: [], opacity: opacity, fill: { color: color, opacity: opacity } }, 0, null, 99999);
         } else {
           item.render.drawShape({ fill: { color: color, opacity: opacity } }, 0, null, 99999);
         }
+        delete item.render.tempShapeDraw
+        
       });
 
     }

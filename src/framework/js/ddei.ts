@@ -25,6 +25,13 @@ class DDei {
     this.EVENT_CONTROL_DEL_BEFORE = DDei.beforeOperateValid
     this.EVENT_CONTROL_EDIT_BEFORE = DDei.beforeOperateValid
     this.EVENT_CONTROL_VIEW_BEFORE = DDei.beforeOperateValid
+
+    let length = props.GL_INDEX_BUFF_SIZE ? props.GL_INDEX_BUFF_SIZE : this.GL_INDEX_BUFF_SIZE;
+    for (let i = 0; i < length;i++){
+      const base = i * 4;
+      this.GL_INDEX_BUFF.push(base, base + 1, base + 2, base + 2, base + 1, base + 3);
+    }
+    
   }
   // ============================ 静态变量 ============================
   /**
@@ -43,6 +50,18 @@ class DDei {
 
   //开启webgl渲染,以获得更好的性能以及显示效果，在1.3版本后支持
   GLOBAL_WEBGL: boolean = true;
+
+  /**
+   * 缩放比率配置，不同缩放比率对应的固定大小
+   */
+  RATIO_LEVELS = [0, 2, 4, 2.5, 6, 3, 8, 3.5]
+
+  /**
+   * 缺省索引大小
+   */
+  GL_INDEX_BUFF_SIZE = 1000;
+
+  GL_INDEX_BUFF = []
 
 
 

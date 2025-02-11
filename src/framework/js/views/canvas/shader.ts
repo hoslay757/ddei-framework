@@ -41,6 +41,8 @@ uniform sampler2D u_texture;
 
 uniform sampler2D bg_texture;
 
+uniform sampler2D temp_texture;
+
 // the texCoords passed in from the vertex shader.
 in vec2 v_texCoord;
 
