@@ -76,22 +76,13 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       stageRatio = this.stage.render.glNewRat;
     }
     let rat1 = this.ddRender.ratio
-    let tempCanvas;
-    if (this.tempShapeDraw){
-      //转换为图片
-      if (!this.tempShapeCanvas) {
-        this.tempShapeCanvas = document.createElement('canvas');
-        this.tempShapeCanvas.setAttribute("style", "pointer-events:none;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;display:block;");
-      }
-      tempCanvas = this.tempShapeCanvas
-    }else{
-      //转换为图片
-      if (!this.tempCanvas) {
-        this.tempCanvas = document.createElement('canvas');
-        this.tempCanvas.setAttribute("style", "pointer-events:none;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;display:block;");
-      }
-      tempCanvas = this.tempCanvas
+    //转换为图片
+    if (!this.tempCanvas) {
+      this.tempCanvas = document.createElement('canvas');
+      this.tempCanvas.setAttribute("style", "pointer-events:none;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;display:block;");
     }
+    let tempCanvas = this.tempCanvas
+  
     
     let pvs = this.model.operatePVS ? this.model.operatePVS : this.model.pvs
 
@@ -144,7 +135,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           if(!this.viewer){
             // 优化: 缓存频繁使用的条件检查结果
             const isModelVisible = !DDeiUtil.isModelHidden(this.model);
-            const shouldRefresh = this.refreshShape || this.isEditoring;
+            const shouldRefresh = this.refreshShape || this.isEditoring || this.tempShapeDraw;
             
             if (isModelVisible && shouldRefresh) {
               if (this.tempShapeDraw || !this.stage.ddInstance.GLOBAL_WEBGL || this.oldGlRat != this.stageRender.glNewRat){
@@ -259,15 +250,19 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         let rat1 = this.ddRender.ratio;
         let outRect = this.model.essBounds;
         let stageRatio = this.model.getStageRatio()
-        this.layerRender.renderModelsList.push(this.model);
+        
         let wr = stageRatio / rat1
         if(this.tempShapeDraw){
-          this.tempShapeVertexArray = DDeiUtil.getGLRect(outRect.x * stageRatio - 5 * wr, outRect.y * stageRatio - 5 * wr, outRect.width * stageRatio + 10 * wr, outRect.height * stageRatio + 10 * wr)
-          // 颜色数组
-          this.tempShapeColorArray = DDeiUtil.getGLColorArray("black", 0)
-          //更新纹理索引
-          this.updateTextureIndexBuff();
+          //直接绘制canvas到当前画布
+          let canvas = this.ddRender.getCanvas();
+          let ctx = canvas.getContext('2d');
+          //保存状态
+          ctx.save();
+          let essBounds = DDeiAbstractShape.pvsToOutRect(this.model.getOperatePVS(), stageRatio)
+          ctx.drawImage(this.tempCanvas, (essBounds.x-5) * rat1, (essBounds.y-5) * rat1)
+          ctx.restore();
         }else{
+          this.layerRender.renderModelsList.push(this.model);
           this.vertexArray = DDeiUtil.getGLRect(outRect.x * stageRatio - 5 * wr, outRect.y * stageRatio - 5 * wr, outRect.width * stageRatio + 10 * wr, outRect.height * stageRatio + 10 * wr)
           // 颜色数组
           this.colorArray = DDeiUtil.getGLColorArray("black", 0)
@@ -363,9 +358,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   }
 
   getCanvas() {
-    if (this.tempShapeDraw) {
-      return this.tempShapeCanvas;
-    }else if (this.tempCanvas) {
+    if (this.tempCanvas) {
       return this.tempCanvas;
     } else {
       return this.getRenderCanvas()

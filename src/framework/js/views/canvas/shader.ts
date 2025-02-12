@@ -56,19 +56,22 @@ out vec4 outColor;
 void main() {
     vec4 textureColor;
     vec4 bgTextureColor;
-    if(v_color.x == -1.0){
-      bgTextureColor = texture(bg_texture, v_texCoord);
-      // outColor = vec4(0.0,0.0,0.0,1.0);//bgTextureColor;
-      outColor = bgTextureColor;
-      return;
-    }else if(v_texCoord.x != 0.0){
+    if(v_texCoord.x != 0.0){//读取图形纹理
       textureColor = texture(u_texture, v_texCoord);
-      if(textureColor.a != 0.0){//如果有纹理，就从纹理中获取颜色
-        outColor = textureColor;
-        return;
-      }
     }
-    outColor = v_color;
+    if(v_color.x == -1.0){//读取背景纹理
+      bgTextureColor = texture(bg_texture, v_texCoord);
+    }
+    
+    if(textureColor.a != 0.0 && bgTextureColor.a != 0.0){
+      outColor = textureColor * bgTextureColor;
+    }else if(textureColor.a != 0.0){
+      outColor = textureColor;
+    }else if(bgTextureColor.a != 0.0){
+      outColor = bgTextureColor;
+    }else{
+      outColor = v_color;
+    }
   
 }`;
 

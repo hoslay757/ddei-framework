@@ -500,6 +500,7 @@ class DDeiEditor {
         this.ddInstance.applyConfig(custConfig)
       }
     }
+    delete this.GLOBAL_WEBGL
   }
 
   // ============================ 属性 ============================

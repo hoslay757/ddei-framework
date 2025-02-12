@@ -67,7 +67,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
       this.tempCanvas.setAttribute("style", "pointer-events:none;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;display:block;");
     }
     let stageRatio = this.stage.getStageRatio()
-    if (this.stage.ddInstance.GLOBAL_WEBGL && this.stage.render.glNewRat) {
+    if (!this.tempShapeDraw && this.stage.ddInstance.GLOBAL_WEBGL && this.stage.render.glNewRat) {
       stageRatio = this.stage.render.glNewRat;
     }
     let tempCanvas = this.tempCanvas
@@ -196,29 +196,41 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
         let pvs = this.model.getOperatePVS(true);
         let outRect = DDeiAbstractShape.pvsToOutRect(pvs, stageRatio)
         let stageRatio1 = stageRatio
-        if (this.stage.ddInstance.GLOBAL_WEBGL && this.stage.render.glNewRat) {
+        if (!this.tempShapeDraw && this.stage.ddInstance.GLOBAL_WEBGL && this.stage.render.glNewRat) {
           stageRatio1 = this.stage.render.glNewRat;
         }
         let rat1 = this.ddRender.ratio;
         let weight = 5 * stageRatio1 * stageRatio
-        this.layerRender.renderModelsList.push(this.model);
-        this.vertexArray = DDeiUtil.getGLRect(outRect.x - weight, outRect.y - weight, outRect.width + 2 * weight, outRect.height + 2 * weight)
-        // 颜色数组
-        this.colorArray = DDeiUtil.getGLColorArray("black", 0)
-        //检查是否需要更新纹理索引
-        let updateTextureIndex = false
-        if (!this.textureArea) {
-          updateTextureIndex = true;
-        } else if (this.needUpdateTextureIndex) {
-          updateTextureIndex = true;
-          delete this.textureArea;
-        }
-        //更新纹理索引
-        if (updateTextureIndex) {
-       
-          this.updateTextureIndexBuff();
+        if (this.tempShapeDraw) {
+          //直接绘制canvas到当前画布
+          let canvas = this.ddRender.getCanvas();
+          let ctx = canvas.getContext('2d');
+          //保存状态
+          ctx.save();
+          let weight = 5 * stageRatio * rat1
+          let lineRect = DDeiAbstractShape.getOutRectByPV([this.model], stageRatio1);
+          ctx.drawImage(this.tempCanvas, (lineRect.x - weight) * rat1, (lineRect.y - weight) * rat1)
+          ctx.restore();
+        } else {
+          this.layerRender.renderModelsList.push(this.model);
+          this.vertexArray = DDeiUtil.getGLRect(outRect.x - weight, outRect.y - weight, outRect.width + 2 * weight, outRect.height + 2 * weight)
+          // 颜色数组
+          this.colorArray = DDeiUtil.getGLColorArray("black", 0)
+          //检查是否需要更新纹理索引
+          let updateTextureIndex = false
+          if (!this.textureArea) {
+            updateTextureIndex = true;
+          } else if (this.needUpdateTextureIndex) {
+            updateTextureIndex = true;
+            delete this.textureArea;
+          }
+          //更新纹理索引
+          if (updateTextureIndex) {
+        
+            this.updateTextureIndexBuff();
 
-          delete this.needUpdateTextureIndex;
+            delete this.needUpdateTextureIndex;
+          }
         }
       }
     }else{
@@ -290,7 +302,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
 
     //获取全局缩放比例
     let stageRatio = this.model.getStageRatio()
-    if (this.stage.ddInstance.GLOBAL_WEBGL && this.stage.render.glNewRat) {
+    if (!this.tempShapeDraw && this.stage.ddInstance.GLOBAL_WEBGL && this.stage.render.glNewRat) {
       stageRatio = this.stage.render.glNewRat;
     }
     let rat1 = tempLine?.rat1 ? tempLine.rat1 : this.ddRender.ratio;
@@ -476,7 +488,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
    */
   getPointShapeSize(): { startDX: number, startDY: number, endDX: number, endDY: number } {
     let stageRatio = this.model.getStageRatio()
-    if (this.stage.ddInstance.GLOBAL_WEBGL && this.stage.render.glNewRat) {
+    if (!this.tempShapeDraw && this.stage.ddInstance.GLOBAL_WEBGL && this.stage.render.glNewRat) {
       stageRatio = this.stage.render.glNewRat;
     }
     let pvs = this.model.pvs;
@@ -612,7 +624,7 @@ class DDeiLineCanvasRender extends DDeiAbstractShapeRender {
     }
     //获取全局缩放比例
     let stageRatio = this.model.getStageRatio()
-    if (this.stage.ddInstance.GLOBAL_WEBGL && this.stage.render.glNewRat) {
+    if (!this.tempShapeDraw && this.stage.ddInstance.GLOBAL_WEBGL && this.stage.render.glNewRat) {
       stageRatio = this.stage.render.glNewRat;
     }
     let rat1 = tempLine?.rat1 ? tempLine.rat1 : this.ddRender.ratio;

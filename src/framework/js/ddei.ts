@@ -330,6 +330,25 @@ class DDei {
         }
       }
     }
+    if (this.GLOBAL_WEBGL) {
+      //检测webgl是否在当前浏览器可行
+      let isApply = true
+      try {
+        const canvas = document.createElement('canvas');
+        let gl = !!(canvas.getContext('webgl') || canvas.getContext('experimental-webgl'));
+        if (!gl) {
+          isApply = false;
+        }
+      } catch (e) {
+        isApply = false;
+      }
+      if (!isApply) {
+        console.warn("已开启Webgl但浏览器不支持，已自动切换为非WebGl模型。当图形过多时，此模式性能会有明显卡顿。")
+        this.GLOBAL_WEBGL = false;
+      }
+
+
+    }
     
   }
 

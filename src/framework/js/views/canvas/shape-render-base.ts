@@ -64,6 +64,8 @@ class DDeiAbstractShapeRender {
    */
   refreshShape: boolean = true;
 
+  unicode:string = DDeiUtil.getUniqueCode()
+
 
   enableRefreshShape() {
     this.refreshShape = true
@@ -536,24 +538,22 @@ class DDeiAbstractShapeRender {
    */
   updateTextureIndexBuff():void{
     let stageRatio = this.model.getStageRatio();
-    let tempCanvas;
-    let textureIndex = 2;
-    if (this.tempShapeDraw){
-      tempCanvas = this.tempShapeCanvas
-      textureIndex = 1;
-    }else if (this.stage.ddInstance.GLOBAL_WEBGL && this.stage.render.glNewRat) {
+    let tempCanvas = this.tempCanvas;
+    let textureIndex = 1;
+    let models = Array.from(this.layer.models.values());
+    if (this.stage.ddInstance.GLOBAL_WEBGL && this.stage.render.glNewRat) {
       stageRatio = this.stage.render.glNewRat;
-      tempCanvas = this.tempCanvas;
     }
     let realWidth = tempCanvas.width;//outRect.width * stageRatio * rat1
     let realHeight = tempCanvas.height;//outRect.height * stageRatio * rat1
 
     //计算位置，更新纹理以及索引
     let startX = 0, startY = 0;
-    let layer = this.layer;
+    
     //从左到右分配，在每个控件的右方、下方和左方分配，当控件发生变化时，重新分配新的空间，将老空间释放出来，如果空间已满，则重排
-    for (let i = 0; i < layer.midList.length; i++) {
-      let md = layer.models.get(layer.midList[i]);
+    
+    for (let i = 0; i < models.length; i++) {
+      let md = models[i]
       if (md != this.model) {
         if (md.render?.textureArea) {
           let area = md.render.textureArea;
@@ -565,9 +565,9 @@ class DDeiAbstractShapeRender {
           if (startX + realWidth > this.layerRender.maxTextureSize || startY + realHeight > this.layerRender.maxTextureSize) {
             isobi = true;
           } else {
-            for (let j = 0; j < layer.midList.length; j++) {
+            for (let j = 0; j < models.length; j++) {
               if (j != i) {
-                let mdj = layer.models.get(layer.midList[j]);
+                let mdj = models[j]
                 if (mdj != md && mdj != this.model && mdj.render?.textureArea) {
                   if (DDeiUtil.isRectCross({ x: startX, y: startY, width: realWidth, height: realHeight }, mdj.render.textureArea)) {
                     isobi = true
@@ -588,9 +588,9 @@ class DDeiAbstractShapeRender {
           if (startX + realWidth > this.layerRender.maxTextureSize || startY + realHeight > this.layerRender.maxTextureSize) {
             isobi = true;
           } else {
-            for (let j = 0; j < layer.midList.length; j++) {
+            for (let j = 0; j < models.length; j++) {
               if (j != i) {
-                let mdj = layer.models.get(layer.midList[j]);
+                let mdj = models[j]
                 if (mdj != md && mdj != this.model && mdj.render?.textureArea) {
                   if (DDeiUtil.isRectCross({ x: startX, y: startY, width: realWidth, height: realHeight }, mdj.render.textureArea)) {
                     isobi = true
@@ -611,9 +611,9 @@ class DDeiAbstractShapeRender {
           if (startX + realWidth > this.layerRender.maxTextureSize || startY + realHeight > this.layerRender.maxTextureSize) {
             isobi = true;
           } else {
-            for (let j = 0; j < layer.midList.length; j++) {
+            for (let j = 0; j < models.length; j++) {
               if (j != i) {
-                let mdj = layer.models.get(layer.midList[j]);
+                let mdj = models[j]
                 if (mdj != md && mdj != this.model && mdj.render?.textureArea) {
                   if (DDeiUtil.isRectCross({ x: startX, y: startY, width: realWidth, height: realHeight }, mdj.render.textureArea)) {
                     isobi = true
@@ -646,6 +646,7 @@ class DDeiAbstractShapeRender {
         x1g, y1g, -1
       ];
       //重新更新纹理
+      
       this.layerRender.updateGLTexture(textureIndex, this.textureArea, tempCanvas)
 
     }

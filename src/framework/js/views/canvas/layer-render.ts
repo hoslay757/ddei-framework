@@ -141,27 +141,16 @@ class DDeiLayerCanvasRender {
           //根据gl的配置，预分配图形纹理单元1，用于缓存绘制图形
           let maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
           this.maxTextureSize = maxTextureSize;
-          gl.activeTexture(gl.TEXTURE2);
+          gl.activeTexture(gl.TEXTURE1);
           // 绑定纹理对象到目标上（先绑定到纹理单元后指定纹理类型绑定到目标上）,将所有纹理绑定到一起
           this.combinedTexture = gl.createTexture();
           gl.bindTexture(gl.TEXTURE_2D, this.combinedTexture);
           // 配置纹理参数
           gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
           gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, maxTextureSize, maxTextureSize, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-
-          gl.activeTexture(gl.TEXTURE1);
-          // 绑定纹理对象到目标上（先绑定到纹理单元后指定纹理类型绑定到目标上）,将所有纹理绑定到一起
-          this.tempShapeTexture = gl.createTexture();
-          gl.bindTexture(gl.TEXTURE_2D, this.tempShapeTexture);
-          // 配置纹理参数
-          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, maxTextureSize, maxTextureSize, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-          // 将纹理单元编号传递给取样器
-          let tempTextureLocation = gl.getUniformLocation(gl.program, "temp_texture");
-          gl.uniform1i(tempTextureLocation, 1);
           // 将纹理单元编号传递给取样器
           let textureLocation = gl.getUniformLocation(gl.program, "u_texture");
-          gl.uniform1i(textureLocation, 2);
+          gl.uniform1i(textureLocation, 1);
         }
       }else{
         this.gl = this.glCanvas.getContext("webgl2", {
