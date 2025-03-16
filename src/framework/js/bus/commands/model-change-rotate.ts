@@ -77,6 +77,9 @@ class DDeiBusCommandModelChangeRotate extends DDeiBusCommand {
       item.updateLinkModels();
       item.getTopContainer()?.render?.enableRefreshShape()
       item.render?.enableRefreshShape()
+      if (stage.ddInstance.GLOBAL_WEBGL && item.render) {
+        item.render.needUpdateTextureIndex = 1
+      }
     }
     selector.transVectors(m1)
 

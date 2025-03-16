@@ -78,6 +78,11 @@ class DDeiBusCommandModelChangeValue extends DDeiBusCommand {
         if (models?.length > 0) {
           models.forEach(model => {
             if (model) {
+              if (model.render){
+                if (model.stage.ddInstance.GLOBAL_WEBGL) {
+                  model.render.needUpdateTextureIndex = 1
+                }
+              }
               //表格是修改里面的选中单元格
               if (model.baseModelType == 'DDeiTable') {
                 if (attrDefine?.modelCode == 'DDeiTable') {

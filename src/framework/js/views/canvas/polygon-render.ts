@@ -82,26 +82,24 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       this.tempCanvas.setAttribute("style", "pointer-events:none;position:absolute;-webkit-font-smoothing:antialiased;-moz-transform-origin:left top;display:block;");
     }
     let tempCanvas = this.tempCanvas
-  
+    
     
     let pvs = this.model.operatePVS ? this.model.operatePVS : this.model.pvs
 
     let outRect = DDeiAbstractShape.pvsToOutRect(pvs, stageRatio)
-    
+
+
     // if (!this.stage.ddInstance.GLOBAL_WEBGL){
-      let weight = 5
-      outRect.x -= weight
-      outRect.x1 += weight
-      outRect.y -= weight
-      outRect.y1 += weight
-      outRect.width += 2 * weight
-      outRect.height += 2 * weight
+    let weight = 5 ;
+    outRect.x -= weight
+    outRect.x1 += weight
+    outRect.y -= weight
+    outRect.y1 += weight
+    outRect.width += 2 * weight
+    outRect.height += 2 * weight
     // }
-    if (this.stage.ddInstance.GLOBAL_WEBGL) {
-      if (tempCanvas.width != outRect.width || tempCanvas.height != outRect.height){
-        this.needUpdateTextureIndex = 1
-      }
-    }
+
+
     tempCanvas.setAttribute("width", outRect.width  * rat1)
     tempCanvas.setAttribute("height", outRect.height * rat1)
     tempCanvas.style.width = outRect.width  + "px";
@@ -136,9 +134,8 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
             // 优化: 缓存频繁使用的条件检查结果
             const isModelVisible = !DDeiUtil.isModelHidden(this.model);
             const shouldRefresh = this.refreshShape || this.isEditoring || this.tempShapeDraw;
-            
             if (isModelVisible && shouldRefresh) {
-              if (this.tempShapeDraw || !this.stage.ddInstance.GLOBAL_WEBGL || this.oldGlRat != this.stageRender.glNewRat){
+              if (this.isEditoring || this.needUpdateTextureIndex || this.tempShapeDraw || !this.stage.ddInstance.GLOBAL_WEBGL || this.oldGlRat != this.stageRender.glNewRat){
                 // 优化: 将创建临时形状的逻辑提取为单独的方法
                 this.createAndPrepareShape(tempShape);
                 
@@ -250,19 +247,28 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
         let rat1 = this.ddRender.ratio;
         let outRect = this.model.essBounds;
         let stageRatio = this.model.getStageRatio()
-        
+        let model = this.model
         let wr = stageRatio / rat1
-        if(this.tempShapeDraw){
+        if (this.tempShapeDraw || this.isEditoring){
           //直接绘制canvas到当前画布
           let canvas = this.ddRender.getCanvas();
           let ctx = canvas.getContext('2d');
           //保存状态
           ctx.save();
           let essBounds = DDeiAbstractShape.pvsToOutRect(this.model.getOperatePVS(), stageRatio)
-          ctx.drawImage(this.tempCanvas, (essBounds.x-5) * rat1, (essBounds.y-5) * rat1)
+          let s25 = 2.5 * stageRatio;
+          let s5 = s25 * 2;
+          if (this.tempShapeDraw){
+            s25 = 5
+            s5 = 10
+          }
+          ctx.drawImage(this.tempCanvas, (essBounds.x - s25) * rat1, (essBounds.y - s25) * rat1, (essBounds.width + s5) * rat1, (essBounds.height + s5) * rat1)
           ctx.restore();
         }else{
           this.layerRender.renderModelsList.push(this.model);
+          if (this.model.rotate){
+             outRect = DDeiAbstractShape.pvsToOutRect(this.model.getOperatePVS());
+          }
           this.vertexArray = DDeiUtil.getGLRect(outRect.x * stageRatio - 5 * wr, outRect.y * stageRatio - 5 * wr, outRect.width * stageRatio + 10 * wr, outRect.height * stageRatio + 10 * wr)
           // 颜色数组
           this.colorArray = DDeiUtil.getGLColorArray("black", 0)
@@ -276,14 +282,12 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           }
           //更新纹理索引
           if (updateTextureIndex) {
+            
             this.updateTextureIndexBuff();
 
             delete this.needUpdateTextureIndex;
           }
         }
-        
-        
-        
       }
     } else {
       if (this.viewer) {
@@ -386,7 +390,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
       let width = tempShape?.border?.width ? tempShape?.border?.width : this.getCachedValue("border.width");
 
       let pvs = this.borderPVSS[i];
-      if ((type == 1 || type == '1') && width > 0) {
+      if (((type == 1 || type == '1') && width > 0) || this.model.midList?.length > 0) {
         let stageRatio = this.model.getStageRatio()
         width *= stageRatio
         let rat1 = this.ddRender.ratio;
@@ -397,7 +401,6 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
           pvs = DDeiUtil.pointsToZero(pvs, this.model.cpv, this.model.rotate)
           pvs = DDeiUtil.zeroToPoints(pvs, this.model.cpv, this.model.rotate, 1 + rat1 * width / this.model.width, 1 + rat1 * width / this.model.height)
         }
-
       }
 
       let canvas = this.getCanvas();

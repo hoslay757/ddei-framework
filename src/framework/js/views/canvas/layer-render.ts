@@ -1774,6 +1774,12 @@ class DDeiLayerCanvasRender {
           break;
         case DDeiEnumOperateState.CONTROL_ROTATE:
           DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_ROTATE_AFTER", DDeiEnumOperateType.ROTATE, { models: this.stageRender.dragObj.models }, this.stage?.ddInstance, evt)
+          //设置重绘制标志
+          if (this.stage.ddInstance.GLOBAL_WEBGL) {
+            this.stageRender.dragObj.models.forEach(model => {
+              model.render.needUpdateTextureIndex = 1
+            });
+          }
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.ClearTemplateVars);
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.NodifyChange);
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.AddHistroy);
@@ -1791,6 +1797,10 @@ class DDeiLayerCanvasRender {
               }
               model.updateLinkModels()
               operateModels.push(model)
+              //设置重绘制标志
+              if (this.stage.ddInstance.GLOBAL_WEBGL) {
+                model.render.needUpdateTextureIndex = 1
+              }
             }
           })
           this.stage?.ddInstance?.bus?.push(DDeiEnumBusCommandType.NodifyChange);

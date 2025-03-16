@@ -995,59 +995,59 @@ class DDeiEditorUtil {
               promiseArr.push(new Promise((resolve, reject) => {
                 let models = null
                 try {
+                  if (!controlDefine.disabled && !controlDefine.icon){
+                    //创建图形对象
+                    models = DDeiEditorUtil.createControl(controlDefine, editor)
+                    let iconPos = controlDefine?.define?.iconPos;
 
-                  //创建图形对象
-                  models = DDeiEditorUtil.createControl(controlDefine, editor)
+                    let outRect = DDeiAbstractShape.getOutRectByPV(models);
+                    outRect.width += (iconPos?.dw ? iconPos.dw : 0)
+                    outRect.height += (iconPos?.dh ? iconPos.dh : 0)
+                    //基准大小
+                    let baseWidth = 50
+                    let baseHeight = 50
 
-                  let iconPos = controlDefine?.define?.iconPos;
+                    //按高度缩放
+                    if (outRect.width > 0 && outRect.height > 0) {
+                      if (outRect.width > outRect.height) {
+                        baseWidth *= outRect.width / outRect.height
+                      } else {
+                        baseHeight *= outRect.height / outRect.width
+                      }
 
-                  let outRect = DDeiAbstractShape.getOutRectByPV(models);
-                  outRect.width += (iconPos?.dw ? iconPos.dw : 0)
-                  outRect.height += (iconPos?.dh ? iconPos.dh : 0)
-                  //基准大小
-                  let baseWidth = 50
-                  let baseHeight = 50
+                      //构建缩放矩阵，缩放到基准大小
+                      let scaleMatrix = new Matrix3(
+                        baseWidth / outRect.width, 0, 0,
+                        0, baseHeight / outRect.height, 0,
+                        0, 0, 1);
+                      models.forEach(model => {
+                        model.transVectors(scaleMatrix)
+                      });
 
-                  //按高度缩放
-                  if (outRect.width > 0 && outRect.height > 0) {
-                    if (outRect.width > outRect.height) {
-                      baseWidth *= outRect.width / outRect.height
-                    } else {
-                      baseHeight *= outRect.height / outRect.width
+                      outRect = DDeiAbstractShape.getOutRectByPV(models);
                     }
+                    if (!outRect.height) {
+                      outRect.height = baseHeight
+                    }
+                    if (!outRect.width) {
+                      outRect.width = baseWidth
+                    }
+                    outRect.width += (iconPos?.dw ? iconPos.dw : 0)
+                    outRect.height += (iconPos?.dh ? iconPos.dh : 0)
 
-                    //构建缩放矩阵，缩放到基准大小
-                    let scaleMatrix = new Matrix3(
-                      baseWidth / outRect.width, 0, 0,
-                      0, baseHeight / outRect.height, 0,
-                      0, 0, 1);
+
                     models.forEach(model => {
-                      model.transVectors(scaleMatrix)
-                    });
+                      model.initRender()
+                      model.render.drawShape({ weight: 3, border: { width: 1.5 } })
+                    })
+                    let canvas = document.createElement('canvas');
 
-                    outRect = DDeiAbstractShape.getOutRectByPV(models);
+
+                    DDeiEditorUtil.drawModelsToCanvas(models, outRect, canvas)
+                    let dataURL = canvas.toDataURL("image/png");
+                    DDeiUtil.setLocalStorageData("ICON-CACHE-" + controlDefine.id, dataURL)
+                    editor.icons[controlDefine.id] = dataURL
                   }
-                  if (!outRect.height) {
-                    outRect.height = baseHeight
-                  }
-                  if (!outRect.width) {
-                    outRect.width = baseWidth
-                  }
-                  outRect.width += (iconPos?.dw ? iconPos.dw : 0)
-                  outRect.height += (iconPos?.dh ? iconPos.dh : 0)
-
-
-                  models.forEach(model => {
-                    model.initRender()
-                    model.render.drawShape({ weight: 3, border: { width: 1.5 } })
-                  })
-                  let canvas = document.createElement('canvas');
-
-
-                  DDeiEditorUtil.drawModelsToCanvas(models, outRect, canvas)
-                  let dataURL = canvas.toDataURL("image/png");
-                  DDeiUtil.setLocalStorageData("ICON-CACHE-" + controlDefine.id, dataURL)
-                  editor.icons[controlDefine.id] = dataURL
                 } catch (e) {
                   if (editor.debug) {
                     console.error(e)

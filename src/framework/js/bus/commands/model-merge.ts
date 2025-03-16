@@ -67,6 +67,7 @@ class DDeiBusCommandModelMerge extends DDeiBusCommand {
         container.layoutManager.container = container;
         container.fill = { type: 0 }
         container.border = { type: 0 }
+ 
         let m1 = new Matrix3()
         //构建缩放矩阵，缩放到基准大小
         let scaleMatrix = new Matrix3(

@@ -49,7 +49,7 @@ class DDeiPolygonContainerCanvasRender extends DDeiPolygonCanvasRender {
         let rsState1 = DDeiUtil.invokeCallbackFunc("EVENT_CONTROL_VIEW", DDeiEnumOperateType.VIEW, { models: [this.model], tempShape: tempShape, composeRender: composeRender }, this.ddRender.model, null)
         if (rsState1 == 0 || rsState1 == 1) {
           if (!DDeiUtil.isModelHidden(this.model) && (this.refreshShape || this.isEditoring)) {
-
+            
             //创建准备图形
             this.createTempShape();
             //将当前控件以及composes按照zindex顺序排列并输出
@@ -95,6 +95,7 @@ class DDeiPolygonContainerCanvasRender extends DDeiPolygonCanvasRender {
                 //拆分并计算pvss
                 this.calPVSS(tempShape)
                 //创建剪切区
+                
                 this.createClip(tempShape);
 
                 //绘制填充
@@ -144,30 +145,72 @@ class DDeiPolygonContainerCanvasRender extends DDeiPolygonCanvasRender {
    * 绘制自身到最外层canvas
    */
   drawSelfToCanvas(composeRender) {
-    if (this.tempCanvas) {
-      let model = this.model
-      let stage = model.stage
-      let ruleWeight = 0
-      if (stage.render.tempRuleDisplay == 1 || stage.render.tempRuleDisplay == '1') {
-        ruleWeight = 15
-      }
-      let stageRatio = this.model.getStageRatio()
-  
-      //获取model的绝对位置
-      if (!this.tempCanvas.parentElement) {
-        //将canvas移动至画布位置
-        let viewerEle = this.model.layer.render.containerViewer
-        viewerEle.appendChild(this.tempCanvas)
-      }
+    if (this.stage.ddInstance.GLOBAL_WEBGL && this.layerRender.gl) {
+      if (!DDeiUtil.isModelHidden(this.model)) {
+        let rat1 = this.ddRender.ratio;
+        let outRect = this.model.essBounds;
+        let stageRatio = this.model.getStageRatio()
 
-      this.tempCanvas.style.zIndex = this.tempZIndex
-      this.tempCanvas.style.left = (this.model.cpv.x * stageRatio + this.model.stage.wpv.x) - this.tempCanvas.offsetWidth / 2 - ruleWeight + "px"
-      this.tempCanvas.style.top = (this.model.cpv.y * stageRatio + this.model.stage.wpv.y) - this.tempCanvas.offsetHeight / 2 - ruleWeight + "px"
+        let wr = stageRatio / rat1
+        if (this.tempShapeDraw) {
+          //直接绘制canvas到当前画布
+          let canvas = this.ddRender.getCanvas();
+          let ctx = canvas.getContext('2d');
+          //保存状态
+          ctx.save();
+          let essBounds = DDeiAbstractShape.pvsToOutRect(this.model.getOperatePVS(), stageRatio)
+          ctx.drawImage(this.tempCanvas, (essBounds.x - 5) * rat1, (essBounds.y - 5) * rat1)
+          ctx.restore();
+        } else {
+          this.layerRender.renderModelsList.push(this.model);
+          this.vertexArray = DDeiUtil.getGLRect(outRect.x * stageRatio - 5 * wr, outRect.y * stageRatio - 5 * wr, outRect.width * stageRatio + 10 * wr, outRect.height * stageRatio + 10 * wr)
+          // 颜色数组
+          this.colorArray = DDeiUtil.getGLColorArray("black", 0)
+          //检查是否需要更新纹理索引
+          let updateTextureIndex = false
+          if (!this.textureArea) {
+            updateTextureIndex = true;
+          } else if (this.needUpdateTextureIndex) {
+            updateTextureIndex = true;
+            delete this.textureArea;
+          }
+          //更新纹理索引
+          if (updateTextureIndex) {
+            this.updateTextureIndexBuff();
 
-      for (let m = 0; m < this.model.midList?.length; m++) {
-        let key = this.model.midList[m];
-        let item = this.model.models.get(key);
-        item.render?.drawSelfToCanvas(composeRender)
+            delete this.needUpdateTextureIndex;
+          }
+        }
+
+
+
+      }
+    }else{
+      if (this.tempCanvas) {
+        let model = this.model
+        let stage = model.stage
+        let ruleWeight = 0
+        if (stage.render.tempRuleDisplay == 1 || stage.render.tempRuleDisplay == '1') {
+          ruleWeight = 15
+        }
+        let stageRatio = this.model.getStageRatio()
+    
+        //获取model的绝对位置
+        if (!this.tempCanvas.parentElement) {
+          //将canvas移动至画布位置
+          let viewerEle = this.model.layer.render.containerViewer
+          viewerEle.appendChild(this.tempCanvas)
+        }
+
+        this.tempCanvas.style.zIndex = this.tempZIndex
+        this.tempCanvas.style.left = (this.model.cpv.x * stageRatio + this.model.stage.wpv.x) - this.tempCanvas.offsetWidth / 2 - ruleWeight + "px"
+        this.tempCanvas.style.top = (this.model.cpv.y * stageRatio + this.model.stage.wpv.y) - this.tempCanvas.offsetHeight / 2 - ruleWeight + "px"
+
+        for (let m = 0; m < this.model.midList?.length; m++) {
+          let key = this.model.midList[m];
+          let item = this.model.models.get(key);
+          item.render?.drawSelfToCanvas(composeRender)
+        }
       }
     }
 
@@ -184,9 +227,14 @@ class DDeiPolygonContainerCanvasRender extends DDeiPolygonCanvasRender {
     if (this.model.models?.size > 0) {
       let canvas = this.getCanvas();
       let ctx = canvas.getContext('2d');
+      
       //获取全局缩放比例
       let stageRatio = this.stage.getStageRatio()
-      let ratio = this.ddRender.ratio * stageRatio;
+      if (!this.tempShapeDraw && this.stage.ddInstance.GLOBAL_WEBGL && this.stage.render.glNewRat) {
+        stageRatio = this.stage.render.glNewRat;
+      }
+      let rat1 = this.ddRender.ratio;
+      let ratio = rat1 * stageRatio;
 
       let lineOffset = 0//1 * ratio / 2;
       let areaPVS = this.model.layoutManager.getAreasPVS();
@@ -200,18 +248,18 @@ class DDeiPolygonContainerCanvasRender extends DDeiPolygonCanvasRender {
           usedMidIds.push(item.id)
           //保存状态
           ctx.save();
-          ctx.beginPath();
-          for (let i = 0; i < pvs.length; i++) {
-            if (i == pvs.length - 1) {
-              ctx.lineTo(pvs[0].x * ratio + lineOffset, pvs[0].y * ratio + lineOffset);
-            } else if (i == 0) {
-              ctx.moveTo(pvs[i].x * ratio + lineOffset, pvs[i].y * ratio + lineOffset);
-              ctx.lineTo(pvs[i + 1].x * ratio + lineOffset, pvs[i + 1].y * ratio + lineOffset);
-            } else {
-              ctx.lineTo(pvs[i + 1].x * ratio + lineOffset, pvs[i + 1].y * ratio + lineOffset);
-            }
-          }
-          ctx.closePath();
+          // ctx.beginPath();
+          // for (let i = 0; i < pvs.length; i++) {
+          //   if (i == pvs.length - 1) {
+          //     ctx.lineTo(pvs[0].x * ratio + lineOffset, pvs[0].y * ratio + lineOffset);
+          //   } else if (i == 0) {
+          //     ctx.moveTo(pvs[i].x * ratio + lineOffset, pvs[i].y * ratio + lineOffset);
+          //     ctx.lineTo(pvs[i + 1].x * ratio + lineOffset, pvs[i + 1].y * ratio + lineOffset);
+          //   } else {
+          //     ctx.lineTo(pvs[i + 1].x * ratio + lineOffset, pvs[i + 1].y * ratio + lineOffset);
+          //   }
+          // }
+          // ctx.closePath();
           // ctx.clip();
           let subIndex = usedIndex + 1
           if (this.tempZIndex) {
@@ -219,7 +267,25 @@ class DDeiPolygonContainerCanvasRender extends DDeiPolygonCanvasRender {
           }
           item.render.tempZIndex = subIndex
           
-          item.render.drawShape(null, 0, null, subIndex);
+          if (this.stage.ddInstance.GLOBAL_WEBGL && this.layerRender.gl) {
+            let needDelete = false;
+            if (this.tempShapeDraw){
+              if (!item.render.tempShapeDraw){
+                item.render.tempShapeDraw = true
+                needDelete =  true;
+              }
+            }
+            
+            item.render.drawShape(null, 0, null, subIndex);
+            if (this.tempShapeDraw && needDelete) {
+              delete item.render.tempShapeDraw
+            }
+            let essBounds = DDeiAbstractShape.pvsToOutRect(item.getOperatePVS(), stageRatio)
+            
+            ctx.drawImage(item.render.tempCanvas, (essBounds.x - 5) * rat1, (essBounds.y - 5) * rat1)
+          }else{
+            item.render.drawShape(null, 0, null, subIndex);
+          }
           if (item.modelNumber) {
             usedIndex += item.modelNumber + 1
           } else if (item.calModelNumber) {
