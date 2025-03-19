@@ -199,13 +199,41 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
   }
 
   private renderSelf(tempShape, composeRender) {
+    
     const canvas = this.getCanvas();
     const ctx = canvas.getContext('2d');
     ctx.save();
+
+
+    //翻转
+    if (this.model.mirrorX || this.model.mirrorY) {
+      let rat1 = this.ddRender.ratio;
+      let stageRatio = this.model.getStageRatio()
+      if (!this.tempShapeDraw && this.stage.ddInstance.GLOBAL_WEBGL && this.stage.render.glNewRat) {
+        stageRatio = this.stage.render.glNewRat;
+      }
+      let ratio = stageRatio * rat1;
+      let tx = this.model.cpv.x * ratio
+      let ty = this.model.cpv.y * ratio
+      ctx.translate(tx, ty);
+      let xr = 1;
+      let yr = 1;
+      if (this.model.mirrorX) {
+        xr = -1
+      }
+      if (this.model.mirrorY) {
+        yr = -1;
+      }
+      ctx.scale(xr,yr)
+      ctx.translate(-tx, -ty);
+      
+    }
+   
     this.createClip(tempShape);
     this.drawFill(tempShape);
     this.drawText(tempShape);
     this.drawBorder(tempShape);
+    
     ctx.restore();
   }
 

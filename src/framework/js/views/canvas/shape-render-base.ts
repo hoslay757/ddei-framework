@@ -639,12 +639,25 @@ class DDeiAbstractShapeRender {
       let x1g = xg + realWidth / this.layerRender.maxTextureSize;
       let yg = startY / this.layerRender.maxTextureSize;
       let y1g = yg + realHeight / this.layerRender.maxTextureSize;
+      
       this.texcoordArray = [
         xg, yg, -1,
         x1g, yg, -1,
         xg, y1g, -1,
         x1g, y1g, -1
       ];
+      //翻转
+      // if (this.model.mirrorX) {
+      //   this.texcoordArray = [
+      //     x1g, yg, -1,
+      //     xg, yg, -1,
+      //     x1g, y1g, -1,
+      //     xg, y1g, -1
+      //   ]
+      // }
+      // if (this.model.mirrorY) {
+        
+      // }
       //重新更新纹理
       
       this.layerRender.updateGLTexture(textureIndex, this.textureArea, tempCanvas)

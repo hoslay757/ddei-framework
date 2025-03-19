@@ -72,6 +72,9 @@ class DDeiBusCommandModelCopyStyle extends DDeiBusCommand {
 
             }
             if (hasChange) {
+              if (stage.ddInstance.GLOBAL_WEBGL && model.render) {
+                model.render.needUpdateTextureIndex = 1
+              }
               bus.push(DDeiEnumBusCommandType.NodifyChange);
               bus.insert(DDeiEnumBusCommandType.AddHistroy, null, evt);
             }
