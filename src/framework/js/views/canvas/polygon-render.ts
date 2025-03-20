@@ -135,7 +135,7 @@ class DDeiPolygonCanvasRender extends DDeiAbstractShapeRender {
             const isModelVisible = !DDeiUtil.isModelHidden(this.model);
             const shouldRefresh = this.refreshShape || this.isEditoring || this.tempShapeDraw;
             if (isModelVisible && shouldRefresh) {
-              if (this.isEditoring || this.needUpdateTextureIndex || this.tempShapeDraw || !this.stage.ddInstance.GLOBAL_WEBGL || this.oldGlRat != this.stageRender.glNewRat){
+              if (this.childRender || this.isEditoring || this.needUpdateTextureIndex || this.tempShapeDraw || !this.stage.ddInstance.GLOBAL_WEBGL || this.oldGlRat != this.stageRender.glNewRat){
                 // 优化: 将创建临时形状的逻辑提取为单独的方法
                 this.createAndPrepareShape(tempShape);
                 

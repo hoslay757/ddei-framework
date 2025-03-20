@@ -147,40 +147,49 @@ class DDeiPolygonContainerCanvasRender extends DDeiPolygonCanvasRender {
   drawSelfToCanvas(composeRender) {
     if (this.stage.ddInstance.GLOBAL_WEBGL && this.layerRender.gl) {
       if (!DDeiUtil.isModelHidden(this.model)) {
-        let rat1 = this.ddRender.ratio;
-        let outRect = this.model.essBounds;
-        let stageRatio = this.model.getStageRatio()
+        // let rat1 = this.ddRender.ratio;
+        // let outRect = this.model.essBounds;
+        // let stageRatio = this.model.getStageRatio()
 
-        let wr = stageRatio / rat1
-        if (this.tempShapeDraw) {
-          //直接绘制canvas到当前画布
-          let canvas = this.ddRender.getCanvas();
-          let ctx = canvas.getContext('2d');
-          //保存状态
-          ctx.save();
-          let essBounds = DDeiAbstractShape.pvsToOutRect(this.model.getOperatePVS(), stageRatio)
-          ctx.drawImage(this.tempCanvas, (essBounds.x - 5) * rat1, (essBounds.y - 5) * rat1)
-          ctx.restore();
-        } else {
-          this.layerRender.renderModelsList.push(this.model);
-          this.vertexArray = DDeiUtil.getGLRect(outRect.x * stageRatio - 5 * wr, outRect.y * stageRatio - 5 * wr, outRect.width * stageRatio + 10 * wr, outRect.height * stageRatio + 10 * wr)
-          // 颜色数组
-          this.colorArray = DDeiUtil.getGLColorArray("black", 0)
-          //检查是否需要更新纹理索引
-          let updateTextureIndex = false
-          if (!this.textureArea) {
-            updateTextureIndex = true;
-          } else if (this.needUpdateTextureIndex) {
-            updateTextureIndex = true;
-            delete this.textureArea;
-          }
-          //更新纹理索引
-          if (updateTextureIndex) {
-            this.updateTextureIndexBuff();
+        // let wr = stageRatio / rat1
+        // if (this.tempShapeDraw) {
+        //   //直接绘制canvas到当前画布
+        //   let canvas = this.ddRender.getCanvas();
+        //   let ctx = canvas.getContext('2d');
+        //   //保存状态
+        //   ctx.save();
+        //   let essBounds = DDeiAbstractShape.pvsToOutRect(this.model.getOperatePVS(), stageRatio)
+        //   ctx.drawImage(this.tempCanvas, (essBounds.x - 5) * rat1, (essBounds.y - 5) * rat1)
+        //   ctx.restore();
+        // } else {
+        //   this.layerRender.renderModelsList.push(this.model);
+        //   if (this.model.rotate) {
+        //     outRect = DDeiAbstractShape.pvsToOutRect(this.model.getOperatePVS());
+        //   }
+        //   this.vertexArray = DDeiUtil.getGLRect(outRect.x * stageRatio - 5 * wr, outRect.y * stageRatio - 5 * wr, outRect.width * stageRatio + 10 * wr, outRect.height * stageRatio + 10 * wr)
+        //   // 颜色数组
+        //   this.colorArray = DDeiUtil.getGLColorArray("black", 0)
+        //   //检查是否需要更新纹理索引
+        //   let updateTextureIndex = false
+        //   if (!this.textureArea) {
+        //     updateTextureIndex = true;
+        //   } else if (this.needUpdateTextureIndex) {
+        //     updateTextureIndex = true;
+        //     delete this.textureArea;
+        //   }
+        //   //更新纹理索引
+        //   if (updateTextureIndex) {
+        //     this.updateTextureIndexBuff();
 
-            delete this.needUpdateTextureIndex;
-          }
+        //     delete this.needUpdateTextureIndex;
+        //   }
+        // }
+        for (let m = 0; m < this.model.midList?.length; m++) {
+          let key = this.model.midList[m];
+          let item = this.model.models.get(key);
+          item.render?.drawSelfToCanvas(composeRender)
         }
+
 
 
 
@@ -248,41 +257,17 @@ class DDeiPolygonContainerCanvasRender extends DDeiPolygonCanvasRender {
           usedMidIds.push(item.id)
           //保存状态
           ctx.save();
-          // ctx.beginPath();
-          // for (let i = 0; i < pvs.length; i++) {
-          //   if (i == pvs.length - 1) {
-          //     ctx.lineTo(pvs[0].x * ratio + lineOffset, pvs[0].y * ratio + lineOffset);
-          //   } else if (i == 0) {
-          //     ctx.moveTo(pvs[i].x * ratio + lineOffset, pvs[i].y * ratio + lineOffset);
-          //     ctx.lineTo(pvs[i + 1].x * ratio + lineOffset, pvs[i + 1].y * ratio + lineOffset);
-          //   } else {
-          //     ctx.lineTo(pvs[i + 1].x * ratio + lineOffset, pvs[i + 1].y * ratio + lineOffset);
-          //   }
-          // }
-          // ctx.closePath();
-          // ctx.clip();
           let subIndex = usedIndex + 1
           if (this.tempZIndex) {
             subIndex += this.tempZIndex
           }
           item.render.tempZIndex = subIndex
           
-          if (this.stage.ddInstance.GLOBAL_WEBGL && this.layerRender.gl) {
-            let needDelete = false;
-            if (this.tempShapeDraw){
-              if (!item.render.tempShapeDraw){
-                item.render.tempShapeDraw = true
-                needDelete =  true;
-              }
-            }
-            
+          if (this.stage.ddInstance.GLOBAL_WEBGL && this.layerRender.gl) { 
+            item.render.childRender = true;
+            item.render.needUpdateTextureIndex = 1;
             item.render.drawShape(null, 0, null, subIndex);
-            if (this.tempShapeDraw && needDelete) {
-              delete item.render.tempShapeDraw
-            }
-            let essBounds = DDeiAbstractShape.pvsToOutRect(item.getOperatePVS(), stageRatio)
-            
-            ctx.drawImage(item.render.tempCanvas, (essBounds.x - 5) * rat1, (essBounds.y - 5) * rat1)
+            delete item.render.childRender;
           }else{
             item.render.drawShape(null, 0, null, subIndex);
           }

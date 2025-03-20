@@ -540,7 +540,8 @@ class DDeiAbstractShapeRender {
     let stageRatio = this.model.getStageRatio();
     let tempCanvas = this.tempCanvas;
     let textureIndex = 1;
-    let models = Array.from(this.layer.models.values());
+    
+    let models = this.layer?.getSubModels(null, 100);
     if (this.stage.ddInstance.GLOBAL_WEBGL && this.stage.render.glNewRat) {
       stageRatio = this.stage.render.glNewRat;
     }
@@ -551,9 +552,10 @@ class DDeiAbstractShapeRender {
     let startX = 0, startY = 0;
     
     //从左到右分配，在每个控件的右方、下方和左方分配，当控件发生变化时，重新分配新的空间，将老空间释放出来，如果空间已满，则重排
-    
+
     for (let i = 0; i < models.length; i++) {
       let md = models[i]
+      
       if (md != this.model) {
         if (md.render?.textureArea) {
           let area = md.render.textureArea;
@@ -646,20 +648,8 @@ class DDeiAbstractShapeRender {
         xg, y1g, -1,
         x1g, y1g, -1
       ];
-      //翻转
-      // if (this.model.mirrorX) {
-      //   this.texcoordArray = [
-      //     x1g, yg, -1,
-      //     xg, yg, -1,
-      //     x1g, y1g, -1,
-      //     xg, y1g, -1
-      //   ]
-      // }
-      // if (this.model.mirrorY) {
-        
-      // }
+      console.log(this.model.id+"     "+xg+","+yg)
       //重新更新纹理
-      
       this.layerRender.updateGLTexture(textureIndex, this.textureArea, tempCanvas)
 
     }

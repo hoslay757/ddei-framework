@@ -2500,8 +2500,8 @@ class DDeiLayerCanvasRender {
         break;
       }
     }
+    
     this.stage?.ddInstance?.bus?.executeAll();
-
   }
 
 

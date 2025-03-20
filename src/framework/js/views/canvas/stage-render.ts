@@ -255,6 +255,8 @@ class DDeiStageCanvasRender {
           viewerEle.style.width = (canvas.offsetWidth / rat1 - ruleWeight - vScrollWeight) + "px"
           viewerEle.style.height = (canvas.offsetHeight / rat1 - ruleWeight - hScrollWeight) + "px"
         }
+        this.model.ddInstance.bus.push(DDeiEnumBusCommandType.RefreshShape, null, null);
+        this.model.ddInstance.bus.executeAllDelay(60)
         delete this.tempRuleDisplay
       }
     }
