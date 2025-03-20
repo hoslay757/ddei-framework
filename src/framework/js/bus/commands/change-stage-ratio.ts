@@ -51,8 +51,6 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
         //   0, scaleSize, 0,
         //   0, 0, 1);
         // stage?.spv.applyMatrix3(scaleMatrix)
-        let time1 = new Date().getTime()
-        let time2 = 0;
         stage.layers.forEach(layer => {
           layer.opPoints = []
           delete layer.opLine
@@ -71,13 +69,10 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
             //更新线段
             // DDeiBusCommandChangeStageRatio.calLineCross(layer)
           })
-          time2 = new Date().getTime()
           
         });
 
-        if (bus.ddInstance.debug) {
-          // console.log("缩放计算：" + (time2 - time1))
-        }
+   
 
         let oldWidth = stage.width
         let oldHeight = stage.height
@@ -113,22 +108,20 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
         
         let w = stage.ddInstance.render.canvas.width / stage.ddInstance.render.ratio
         let h = stage.ddInstance.render.canvas.height / stage.ddInstance.render.ratio
+        
         if (w < stage.width){
           stage.wpv.x = -wpvX - ox
         }else{
-          stage.wpv.x = 0
+          stage.wpv.x = (w - stage.width)/2
         }
         if (h < stage.height) {
           stage.wpv.y = -wpvY - oy
         }else{
-          stage.wpv.y = 0
+          stage.wpv.y = (h - stage.height)/2
         }
         DDeiEditorUtil.invokeCallbackFunc("EVENT_MOUSE_OPERATING", "CHANGE_RATIO",null , stage.ddInstance, evt)
         DDeiEditorUtil.invokeCallbackFunc("EVENT_STAGE_CHANGE_RATIO", "CHANGE_RATIO", data, stage.ddInstance, evt)
-        let time3 = new Date().getTime()
-        if (bus.ddInstance.debug) {
-          console.log("缩放：" + (time3 - time1))
-        }
+
         return true;
       }
     }

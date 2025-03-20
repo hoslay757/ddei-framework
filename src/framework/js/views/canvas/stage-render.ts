@@ -1353,7 +1353,6 @@ class DDeiStageCanvasRender {
         }
         
         if (direct == 1) {
-         
           markCtx.translate(markCanvas.width * 0.5, markCanvas.height * 0.5)
           markCtx.rotate(45 * DDeiConfig.ROTATE_UNIT);
           markCtx.translate(-markCanvas.width * 0.5, -markCanvas.height * 0.5)
@@ -1367,32 +1366,25 @@ class DDeiStageCanvasRender {
          
         }
         markCtx.clearRect(0, 0, markCanvas.width, markCanvas.height)
-        markCtx?.fillText(text, 0, (markCanvas.height - textSize.height) / 2)
+        
+        markCtx.fillText(text, (markCanvas.width - textSize.width) / 2, (markCanvas.height + textSize.height) / 2)
         let marginWidth = textSize.width + 50 * ratio
         let marginHeight = textSize.height + 100 * ratio
-        let paperOutRect = this.paperOutRect
-        let cwidth = this.model.width * rat1
-        let cheight = this.model.height * rat1
-        let startBaseX = this.model.spv.x * ratio
-        let wpvX = -this.model.wpv.x * rat1
-        let startBaseY = this.model.spv.y * ratio
-        let wpvY = -this.model.wpv.y * rat1
-        for (let x = startBaseX - wpvX; x <= cwidth; x += marginWidth) {
-          for (let y = startBaseY - wpvY; y <= cheight; y += marginHeight) {
-            ctx.drawImage(markCanvas, x, y)
-          }
-          for (let y = startBaseY - wpvY - marginHeight; y >= 0; y -= marginHeight) {
-            ctx.drawImage(markCanvas, x, y)
-          }
-        }
-        for (let x = startBaseX - wpvX - marginWidth; x >= 0; x -= marginWidth) {
-          for (let y = startBaseY - wpvY; y <= cheight; y += marginHeight) {
-            ctx.drawImage(markCanvas, x, y)
-          }
-          for (let y = startBaseY - wpvY - marginHeight; y >= 0; y -= marginHeight) {
+        let paperOutRect = this.paperOutRect  
+        //绘制线条
+        ctx.moveTo(paperOutRect.x, paperOutRect.y)
+        ctx.lineTo(paperOutRect.x + paperOutRect.w, paperOutRect.y)
+        ctx.lineTo(paperOutRect.x + paperOutRect.w, paperOutRect.y + paperOutRect.h)
+        ctx.lineTo(paperOutRect.x, paperOutRect.y + paperOutRect.h)
+        ctx.closePath();
+        ctx.clip();  
+        for (let x = paperOutRect.x; x <= paperOutRect.x + paperOutRect.w; x += marginWidth){
+          
+          for (let y = paperOutRect.y; y <= paperOutRect.y + paperOutRect.h; y += marginHeight) {
             ctx.drawImage(markCanvas, x, y)
           }
         }
+        
 
         ctx.restore();
         markCtx.restore();
@@ -1545,7 +1537,6 @@ class DDeiStageCanvasRender {
       this.vScroll = { height: height, contentHeight: height * height / maxHeight, y: height * curY / maxHeight, bn: curY / maxHeight };
     } else {
       this.vScroll = null;
-      this.model.wpv.y = 0
     }
     //计算横向滚动条信息
     if (maxWidth > canvasWidth) {
@@ -1553,7 +1544,6 @@ class DDeiStageCanvasRender {
       this.hScroll = { width: width, contentWidth: width * width / maxWidth, x: width * curX / maxWidth, bn: curX / maxWidth };
     } else {
       this.hScroll = null;
-      this.model.wpv.x = 0
     }
   }
   /**
