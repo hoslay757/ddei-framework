@@ -516,12 +516,20 @@ class DDeiSelectorCanvasRender extends DDeiRectangleCanvasRender {
         //保存状态
         ctx.save();
         model.render.enableRefreshShape()
+        let needRemove = false
+        if (!model.tempShapeDraw && model.stage.ddInstance.GLOBAL_WEBGL && model.stage.render.glNewRat) {
+          model.render.tempShapeDraw = 1
+          needRemove = true;
+        }
         if (model.baseModelType == "DDeiLine") {
           model.render.drawShape({ color: "red", dash: [] },0,null,99999);
         } else {
           //绘制临时Border
           model.render.drawShape({ type: 1, width: 1, color: "red", border: { type: 1,dash:[], width: 1, color: "red" } },0,null,99999);
 
+        }
+        if (needRemove){
+          delete model.render.tempShapeDraw
         }
         ctx.restore()
       });

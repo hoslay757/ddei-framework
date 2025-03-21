@@ -895,6 +895,7 @@ class DDeiLayerCanvasRender {
       opLine.render.drawShape({ color: "red", opacity: 0.5, weight: weight * 1.5 }, false, null, this.model.opLine.render.tempZIndex)
       opLine.render.drawOpShape();
       delete opLine.render.tempShapeDraw
+      
       // //恢复状态
       // ctx.restore();
     }
