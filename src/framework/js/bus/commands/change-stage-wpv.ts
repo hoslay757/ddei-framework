@@ -53,14 +53,10 @@ class DDeiBusCommandChangeStageWPV extends DDeiBusCommand {
         stage.wpv.y += (y - dragObj.dy) / ratio
       }
 
-      if (stage.wpv.x > 0) {
-        stage.wpv.x = 0
-      } else if (stage.wpv.x < -stage.width + hScrollWidth) {
+      if (stage.wpv.x < -stage.width + hScrollWidth) {
         stage.wpv.x = -stage.width + hScrollWidth
       }
-      if (stage.wpv.y > 0) {
-        stage.wpv.y = 0
-      } else if (stage.wpv.y < -stage.height + vScrollHeight) {
+      if (stage.wpv.y < -stage.height + vScrollHeight) {
         stage.wpv.y = -stage.height + vScrollHeight
       }
 
