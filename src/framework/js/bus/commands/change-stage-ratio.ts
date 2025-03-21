@@ -60,14 +60,14 @@ class DDeiBusCommandChangeStageRatio extends DDeiBusCommand {
           layer.shadowControls = []
           layer.midList.forEach(mid => {
             let model = layer.models.get(mid);
-            // if (model.baseModelType == 'DDeiLine') {
-            //   model.updateLooseCanvas()
-            // }
+            if (model.baseModelType == 'DDeiLine') {
+              model.updateLooseCanvas()
+            }
             
             model.getTopContainer()?.render?.enableRefreshShape()
             model.render?.enableRefreshShape()
             //更新线段
-            // DDeiBusCommandChangeStageRatio.calLineCross(layer)
+            DDeiBusCommandChangeStageRatio.calLineCross(layer)
           })
           
         });

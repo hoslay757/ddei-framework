@@ -778,10 +778,7 @@ class DDeiLine extends DDeiAbstractShape {
       //转换为图片
       if (!this.looseCanvas) {
         this.looseCanvas = document.createElement('canvas');
-        this.looseCanvas.setAttribute("style", "-moz-transform-origin:left top;position:absolute;left:0px;top:0px;");
-        // let editorId = DDeiUtil.getEditorId(this.stage?.ddInstance);
-        // let editorEle = document.getElementById(editorId);
-        // editorEle.appendChild(this.looseCanvas)
+        this.looseCanvas.setAttribute("style", "-moz-transform-origin:left top;");
       }
       let canvas = this.looseCanvas
       let stageRatio = this.stage?.getStageRatio()
@@ -798,19 +795,16 @@ class DDeiLine extends DDeiAbstractShape {
       outRect.y1 += weight
       outRect.width += 2 * weight
       outRect.height += 2 * weight
-      // this.loosePVS = Object.freeze([
-      //   new Vector3(outRect.x, outRect.y, 1),
-      //   new Vector3(outRect.x1, outRect.y, 1),
-      //   new Vector3(outRect.x1, outRect.y1, 1),
-      //   new Vector3(outRect.x, outRect.y1, 1)
-      // ])
+      
       this.loosePVS = this.pvs
       canvas.setAttribute("width", outRect.width)
       canvas.setAttribute("height", outRect.height)
       //获得 2d 上下文对象
       let ctx = canvas.getContext('2d', { willReadFrequently: true });
       ctx.translate(-outRect.x, -outRect.y)
+      this.render.tempShapeDraw = 1;
       this.render.drawLine({ color: "red", weight: weight, dash: [], rat1: 1, fill: { color: "red" } }, ctx)
+      delete this.render.tempShapeDraw;
     }
   }
 
@@ -859,6 +853,7 @@ class DDeiLine extends DDeiAbstractShape {
    */
   isInAreaLoose(x: number | undefined = undefined, y: number | undefined = undefined, loose: boolean = false): boolean {
     if (this.looseCanvas){
+      
       let isArea = false
       //通过垂直线来判断
       let projPoint = this.getProjPoint({ x: x, y: y }

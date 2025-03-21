@@ -891,8 +891,10 @@ class DDeiLayerCanvasRender {
       let color = lineRender.getCachedValue("color");
       let weight = lineRender.getCachedValue("weight");
       lineRender.enableRefreshShape();
+      opLine.render.tempShapeDraw = 1;
       opLine.render.drawShape({ color: "red", opacity: 0.5, weight: weight * 1.5 }, false, null, this.model.opLine.render.tempZIndex)
       opLine.render.drawOpShape();
+      delete opLine.render.tempShapeDraw
       // //恢复状态
       // ctx.restore();
     }
