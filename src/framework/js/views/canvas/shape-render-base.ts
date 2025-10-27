@@ -648,7 +648,6 @@ class DDeiAbstractShapeRender {
         xg, y1g, -1,
         x1g, y1g, -1
       ];
-      console.log(this.model.id+"     "+xg+","+yg)
       //重新更新纹理
       this.layerRender.updateGLTexture(textureIndex, this.textureArea, tempCanvas)
 

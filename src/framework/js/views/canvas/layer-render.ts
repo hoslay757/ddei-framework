@@ -560,7 +560,6 @@ class DDeiLayerCanvasRender {
   }
 
   drawShapesGL():void{
-    let time0 = new Date().getTime();
     //获取全局缩放比例
     let rat1 = this.ddRender.ratio
     let stageRatio = this.model.getStageRatio()
@@ -582,9 +581,6 @@ class DDeiLayerCanvasRender {
 
     
     
-    
-
-    let time1 = new Date().getTime();
     if (this.renderModelsList.length > 0) {
       //渲染控件
       for (let i = 0; i < this.renderModelsList.length; i++) {
@@ -623,7 +619,6 @@ class DDeiLayerCanvasRender {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.colorArray), gl.STATIC_DRAW);
     gl.vertexAttribPointer(colorAttributeLocation, 4, gl.FLOAT, normalize, stride, offset);
 
-    let time2 = new Date().getTime();
     // 顶点纹理坐标数组
     gl.enableVertexAttribArray(texcoordLocation);
     let texcoordBuffer = gl.createBuffer();
@@ -673,10 +668,6 @@ class DDeiLayerCanvasRender {
     gl.uniform2f(wpvLocation, this.stage.wpv.x, this.stage.wpv.y);
     let windowSizeLocation = gl.getUniformLocation(gl.program, "u_windowsize");
     gl.uniform2f(windowSizeLocation, this.glCanvas.offsetWidth, this.glCanvas.offsetHeight);
-    let time3 = new Date().getTime();
-    if (this.ddRender.model.debug) {
-      console.log("重绘:  " + (time3 - time0))
-    }
     
   }
   
@@ -757,7 +748,6 @@ class DDeiLayerCanvasRender {
       let x1 = x + canvas.width / rat1 / stageRatio;
       let y1 = y + canvas.height / rat1 / stageRatio;
       //遍历子元素，绘制子元素
-      // let time1 = new Date().getTime()
       if(!hidden){
         let rect = inRect ? { x: x, y: y, x1: x1, y1: y1 } : null
         let usedIndex = 0
