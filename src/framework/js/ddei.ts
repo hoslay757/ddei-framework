@@ -49,7 +49,7 @@ class DDei {
   GLOBAL_AUTO_OBI: boolean = true;
 
   //开启webgl渲染,以获得更好的性能以及显示效果，在1.3版本后支持
-  GLOBAL_WEBGL: boolean = true;
+  GLOBAL_WEBGL: boolean = false;
 
   /**
    * 缩放比率配置，不同缩放比率对应的固定大小
